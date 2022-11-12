@@ -1,0 +1,14 @@
+const totalHeight = 5
+const xVal = 3 + 2
+
+sketch MySketch(myVar = 5) {
+    start(0, 0)
+    lineTo(5, myVar)
+    horzLineTo(10)
+    vertLineTo(0)
+    close()
+}
+
+const mySketch = MySketch(totalHeight)
+
+print(`print worked: `, xVal)

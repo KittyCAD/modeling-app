@@ -1,0 +1,6 @@
+
+face myRadius = radius of 5 at 0, 5
+
+solid extrude myRadius by 5
+
+showPart(solid)
