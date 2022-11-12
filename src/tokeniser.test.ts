@@ -126,61 +126,98 @@ describe("testing helpers", () => {
     expect(isBlockEnd("5} + 5")).toBe(false);
     expect(isBlockEnd(" } + 5")).toBe(false);
   });
-
 });
 
 describe("testing lexer", () => {
   it("test lexer", () => {
-    expect(lexer("1 + 2")).toEqual([
-      { type: "number", value: "1" },
-      { type: "operator", value: "+" },
-      { type: "number", value: "2" },
+    expect(stringSummaryLexer("1  + 2")).toEqual([
+      "number       '1'        from 0 to 1",
+      "whitespace   '  '       from 1 to 3",
+      "operator     '+'        from 3 to 4",
+      "whitespace   ' '        from 4 to 5",
+      "number       '2'        from 5 to 6",
     ]);
-    expect(lexer("54 + 22500 + 6")).toEqual([
-      { type: "number", value: "54" },
-      { type: "operator", value: "+" },
-      { type: "number", value: "22500" },
-      { type: "operator", value: "+" },
-      { type: "number", value: "6" },
+    expect(stringSummaryLexer("54 + 22500 + 6")).toEqual([
+      "number       '54'       from 0 to 2",
+      "whitespace   ' '        from 2 to 3",
+      "operator     '+'        from 3 to 4",
+      "whitespace   ' '        from 4 to 5",
+      "number       '22500'    from 5 to 10",
+      "whitespace   ' '        from 10 to 11",
+      "operator     '+'        from 11 to 12",
+      "whitespace   ' '        from 12 to 13",
+      "number       '6'        from 13 to 14",
     ]);
-    expect(lexer("a + bo + t5 - 6")).toEqual([
-      { type: "word", value: "a" },
-      { type: "operator", value: "+" },
-      { type: "word", value: "bo" },
-      { type: "operator", value: "+" },
-      { type: "word", value: "t5" },
-      { type: "operator", value: "-" },
-      { type: "number", value: "6" },
+    expect(stringSummaryLexer("a + bo + t5 - 6")).toEqual([
+      "word         'a'        from 0 to 1",
+      "whitespace   ' '        from 1 to 2",
+      "operator     '+'        from 2 to 3",
+      "whitespace   ' '        from 3 to 4",
+      "word         'bo'       from 4 to 6",
+      "whitespace   ' '        from 6 to 7",
+      "operator     '+'        from 7 to 8",
+      "whitespace   ' '        from 8 to 9",
+      "word         't5'       from 9 to 11",
+      "whitespace   ' '        from 11 to 12",
+      "operator     '-'        from 12 to 13",
+      "whitespace   ' '        from 13 to 14",
+      "number       '6'        from 14 to 15",
     ]);
-    expect(lexer('a + "a str" - 6')).toEqual([
-      { type: "word", value: "a" },
-      { type: "operator", value: "+" },
-      { type: "string", value: '"a str"' },
-      { type: "operator", value: "-" },
-      { type: "number", value: "6" },
+    expect(stringSummaryLexer('a + "a str" - 6')).toEqual([
+      "word         'a'        from 0 to 1",
+      "whitespace   ' '        from 1 to 2",
+      "operator     '+'        from 2 to 3",
+      "whitespace   ' '        from 3 to 4",
+      "string       '\"a str\"'  from 4 to 11",
+      "whitespace   ' '        from 11 to 12",
+      "operator     '-'        from 12 to 13",
+      "whitespace   ' '        from 13 to 14",
+      "number       '6'        from 14 to 15",
     ]);
-    const sameWithOrWithoutWhiteSpaces = [
-      { type: "word", value: "a" },
-      { type: "operator", value: "+" },
-      { type: "string", value: "'str'" },
-    ];
-    expect(lexer("a + 'str'")).toEqual(sameWithOrWithoutWhiteSpaces);
-    expect(lexer("a +'str'")).toEqual(sameWithOrWithoutWhiteSpaces);
+    expect(stringSummaryLexer("a + 'str'")).toEqual([
+      "word         'a'        from 0 to 1",
+      "whitespace   ' '        from 1 to 2",
+      "operator     '+'        from 2 to 3",
+      "whitespace   ' '        from 3 to 4",
+      "string       ''str''    from 4 to 9",
+    ]);
+    expect(stringSummaryLexer("a +'str'")).toEqual([
+      "word         'a'        from 0 to 1",
+      "whitespace   ' '        from 1 to 2",
+      "operator     '+'        from 2 to 3",
+      "string       ''str''    from 3 to 8",
+    ]);
 
-    expect(lexer("a + (sick)")).toEqual([
-      { type: "word", value: "a" },
-      { type: "operator", value: "+" },
-      { type: "brace", value: "(" },
-      { type: "word", value: "sick" },
-      { type: "brace", value: ")" },
+    expect(stringSummaryLexer("a + (sick)")).toEqual([
+      "word         'a'        from 0 to 1",
+      "whitespace   ' '        from 1 to 2",
+      "operator     '+'        from 2 to 3",
+      "whitespace   ' '        from 3 to 4",
+      "brace        '('        from 4 to 5",
+      "word         'sick'     from 5 to 9",
+      "brace        ')'        from 9 to 10",
     ]);
 
-    expect(lexer("a + {sick}")).toEqual([
-      { type: "word", value: "a" },
-      { type: "operator", value: "+" },
-      { type: "brace", value: "{" },
-      { type: "word", value: "sick" },
-      { type: "brace", value: "}" },
+    expect(stringSummaryLexer("a + { sick}")).toEqual([
+      "word         'a'        from 0 to 1",
+      "whitespace   ' '        from 1 to 2",
+      "operator     '+'        from 2 to 3",
+      "whitespace   ' '        from 3 to 4",
+      "brace        '{'        from 4 to 5",
+      "whitespace   ' '        from 5 to 6",
+      "word         'sick'     from 6 to 10",
+      "brace        '}'        from 10 to 11",
     ]);
   });
 });
+
+// helpers
+
+const stringSummaryLexer = (input: string) =>
+  lexer(input).map(
+    ({ type, value, start, end }) =>
+      `${type.padEnd(12, " ")} ${`'${value}'`.padEnd(
+        10,
+        " "
+      )} from ${start} to ${end}`
+  );

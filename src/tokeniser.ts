@@ -30,60 +30,48 @@ function matchFirst(str: string, regex: RegExp) {
   return theMatch[0];
 }
 
-interface Token {
-  type: "number" | "word" | "operator" | "string" | "brace";
+export interface Token {
+  type: "number" | "word" | "operator" | "string" | "brace" | "whitespace";
   value: string;
+  start: number;
+  end: number;
 }
+
+const makeToken = (type: Token["type"], value: string, start: number): Token => ({
+  type,
+  value,
+  start,
+  end: start + value.length,
+})
 
 const returnTokenAtIndex = (str: string, startIndex: number): Token | null => {
   const strFromIndex = str.slice(startIndex);
   if (isOperator(strFromIndex)) {
-    return {
-      type: "operator",
-      value: matchFirst(strFromIndex, OPERATOR),
-    };
+    return makeToken("operator", matchFirst(strFromIndex, OPERATOR), startIndex);
   }
   if (isString(strFromIndex)) {
-    return {
-      type: "string",
-      value: matchFirst(strFromIndex, STRING),
-    };
+    return makeToken("string", matchFirst(strFromIndex, STRING), startIndex);
   }
   if (isParanEnd(strFromIndex)) {
-    return {
-      type: "brace",
-      value: matchFirst(strFromIndex, PARAN_END),
-    };
+    return makeToken("brace", matchFirst(strFromIndex, PARAN_END), startIndex);
   }
   if (isParanStart(strFromIndex)) {
-    return {
-      type: "brace",
-      value: matchFirst(strFromIndex, PARAN_START),
-    };
+    return makeToken("brace", matchFirst(strFromIndex, PARAN_START), startIndex);
   }
   if (isBlockStart(strFromIndex)) {
-    return {
-      type: "brace",
-      value: matchFirst(strFromIndex, BLOCK_START),
-    };
+    return makeToken("brace", matchFirst(strFromIndex, BLOCK_START), startIndex);
   }
   if (isBlockEnd(strFromIndex)) {
-    return {
-      type: "brace",
-      value: matchFirst(strFromIndex, BLOCK_END),
-    };
+    return makeToken("brace", matchFirst(strFromIndex, BLOCK_END), startIndex);
   }
   if (isNumber(strFromIndex)) {
-    return {
-      type: "number",
-      value: matchFirst(strFromIndex, NUMBER),
-    };
+    return makeToken("number", matchFirst(strFromIndex, NUMBER), startIndex);
   }
   if (isWord(strFromIndex)) {
-    return {
-      type: "word",
-      value: matchFirst(strFromIndex, WORD),
-    };
+    return makeToken("word", matchFirst(strFromIndex, WORD), startIndex);
+  }
+  if (isWhitespace(strFromIndex)) {
+    return makeToken("whitespace", matchFirst(strFromIndex, WHITESPACE), startIndex);
   }
   return null;
 };
