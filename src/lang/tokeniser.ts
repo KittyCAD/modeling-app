@@ -1,5 +1,3 @@
-import fsp from "node:fs/promises";
-
 const NUMBER = /^[0-9]+/;
 const WHITESPACE = /\s+/;
 const WORD = /^[a-zA-Z_][a-zA-Z0-9_]*/;
