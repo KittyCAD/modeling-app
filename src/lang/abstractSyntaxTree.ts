@@ -370,6 +370,9 @@ export const abstractSyntaxTree = (tokens: Token[]): Program => {
     if (typeof token === "undefined") {
       console.log("probably should throw");
     }
+    if (token.type === 'whitespace') {
+      return startTree(tokens, tokenIndex + 1, previousBody);
+    }
     if (token.type === "word" && token.value === "const") {
       const { declaration, lastIndex } = makeVariableDeclaration(
         tokens,
