@@ -1,0 +1,1 @@
+const myVar = "a str" + " another str"

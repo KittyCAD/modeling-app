@@ -87,7 +87,7 @@ interface GeneralStatement {
 
 interface ExpressionStatement extends GeneralStatement {
   type: "ExpressionStatement";
-  expression: BinaryExpression;
+  expression: BinaryExpression | CallExpression;
 }
 
 function makeExpressionStatement(
@@ -95,8 +95,17 @@ function makeExpressionStatement(
   index: number
 ): ExpressionStatement {
   const currentToken = tokens[index];
-  // if (nextToken.type === "operator") {
-  // }
+  const { token: nextToken } = nextMeaningfulToken(tokens, index);
+  if (nextToken.type === "brace" && nextToken.value === "(") {
+    const { expression } = makeCallExpression(tokens, index);
+    return {
+      type: "ExpressionStatement",
+      start: currentToken.start,
+      end: expression.end,
+      expression,
+    };
+  }
+
   const { expression } = makeBinaryExpression(tokens, index);
   return {
     type: "ExpressionStatement",
@@ -104,6 +113,79 @@ function makeExpressionStatement(
     end: expression.end,
     expression,
   };
+}
+
+interface CallExpression extends GeneralStatement {
+  type: "CallExpression";
+  callee: Identifier;
+  arguments: VariableDeclarator["init"][];
+  optional: boolean;
+}
+
+function makeCallExpression(
+  tokens: Token[],
+  index: number
+): {
+  expression: CallExpression;
+  lastIndex: number;
+} {
+  const currentToken = tokens[index];
+  const braceToken = nextMeaningfulToken(tokens, index);
+  // const firstArgumentToken = nextMeaningfulToken(tokens, braceToken.index);
+  const callee = makeIdentifier(tokens, index);
+  const args = makeArguments(tokens, braceToken.index);
+  // const closingBraceToken = nextMeaningfulToken(tokens, args.lastIndex);
+  const closingBraceToken = tokens[args.lastIndex];
+  return {
+    expression: {
+      type: "CallExpression",
+      start: currentToken.start,
+      end: closingBraceToken.end,
+      callee,
+      arguments: args.arguments,
+      optional: false,
+    },
+    lastIndex: args.lastIndex,
+  };
+}
+
+function makeArguments(
+  tokens: Token[],
+  index: number,
+  previousArgs: VariableDeclarator["init"][] = []
+): {
+  arguments: VariableDeclarator["init"][];
+  lastIndex: number;
+} {
+  const braceOrCommaToken = tokens[index];
+  const argumentToken = nextMeaningfulToken(tokens, index);
+  const shouldFinishRecursion = braceOrCommaToken.type === "brace" && braceOrCommaToken.value === ")";
+  if (shouldFinishRecursion) {
+    return {
+      arguments: previousArgs,
+      lastIndex: index,
+    };
+  }
+  const nextBraceOrCommaToken = nextMeaningfulToken(tokens, argumentToken.index);
+  const isIdentifierOrLiteral = nextBraceOrCommaToken.token.type === "comma" || nextBraceOrCommaToken.token.type === "brace"
+  if (!isIdentifierOrLiteral) {
+    const { expression, lastIndex} = makeBinaryExpression(tokens, index);
+    return makeArguments(tokens, lastIndex, [...previousArgs, expression]);
+  }
+  if (argumentToken.token.type === "word") {
+    const identifier = makeIdentifier(tokens, argumentToken.index);
+    return makeArguments(tokens, nextBraceOrCommaToken.index, [
+      ...previousArgs,
+      identifier,
+    ]);
+  } else if (
+    argumentToken.token.type === "number" ||
+    argumentToken.token.type === "string"
+  ) {
+    const literal = makeLiteral(tokens, argumentToken.index);
+    return makeArguments(tokens, nextBraceOrCommaToken.index, [...previousArgs, literal]);
+  }
+  throw new Error("Expected a previous if statement to match");
 }
 
 interface VariableDeclaration extends GeneralStatement {
@@ -174,7 +256,7 @@ function makeVariableDeclarators(
   };
 }
 
-type BinaryPart = Literal | Identifier;
+export type BinaryPart = Literal | Identifier;
 // | BinaryExpression
 // | CallExpression
 // | MemberExpression
@@ -207,7 +289,8 @@ function makeIdentifier(token: Token[], index: number): Identifier {
 
 function makeLiteral(tokens: Token[], index: number): Literal {
   const token = tokens[index];
-  const value = token.type === "number" ? Number(token.value) : token.value;
+  const value =
+    token.type === "number" ? Number(token.value) : token.value.slice(1, -1);
   return {
     type: "Literal",
     start: token.start,
@@ -295,6 +378,9 @@ export const abstractSyntaxTree = (tokens: Token[]): Program => {
       const nextThing = nextMeaningfulToken(tokens, lastIndex);
       return startTree(tokens, nextThing.index, [...previousBody, declaration]);
     }
+    if (token.type === "word" && token.value === "log") {
+      return [...previousBody, makeExpressionStatement(tokens, tokenIndex)];
+    }
     if (
       (token.type === "number" || token.type === "word") &&
       nextMeaningfulToken(tokens, tokenIndex).token.type === "operator"
@@ -302,7 +388,6 @@ export const abstractSyntaxTree = (tokens: Token[]): Program => {
       // return startTree(tokens, tokenIndex, [...previousBody, makeExpressionStatement(tokens, tokenIndex)]);
       return [...previousBody, makeExpressionStatement(tokens, tokenIndex)];
     }
-    console.log(tokenIndex, tokens.length, token);
     throw new Error("Unexpected token");
   };
   const body = startTree(tokens);
