@@ -3,21 +3,22 @@ import { lexer } from "./tokeniser";
 
 describe("findClosingBrace", () => {
   test("finds the closing brace", () => {
-    const basic = "( hey )"
-    expect(findClosingBrace(lexer(basic), 0)).toBe(4)
+    const basic = "( hey )";
+    expect(findClosingBrace(lexer(basic), 0)).toBe(4);
 
-    const handlesNonZeroIndex = "(indexForBracketToRightOfThisIsTwo(shouldBeFour)AndNotThisSix)"
-    expect(findClosingBrace(lexer(handlesNonZeroIndex), 2)).toBe(4)
-    expect(findClosingBrace(lexer(handlesNonZeroIndex), 0)).toBe(6)
-    
-    const handlesNested = "{a{b{c(}d]}eathou athoeu tah u} thatOneToTheLeftIsLast }"
-    expect(findClosingBrace(lexer(handlesNested), 0)).toBe(18)
+    const handlesNonZeroIndex =
+      "(indexForBracketToRightOfThisIsTwo(shouldBeFour)AndNotThisSix)";
+    expect(findClosingBrace(lexer(handlesNonZeroIndex), 2)).toBe(4);
+    expect(findClosingBrace(lexer(handlesNonZeroIndex), 0)).toBe(6);
+
+    const handlesNested =
+      "{a{b{c(}d]}eathou athoeu tah u} thatOneToTheLeftIsLast }";
+    expect(findClosingBrace(lexer(handlesNested), 0)).toBe(18);
 
     // throws when not started on a brace
-    expect(() => findClosingBrace(lexer(handlesNested), 1)).toThrow()
-    
-  })
-})
+    expect(() => findClosingBrace(lexer(handlesNested), 1)).toThrow();
+  });
+});
 
 describe("testing AST", () => {
   test("test 5 + 6", () => {
@@ -167,44 +168,44 @@ const newVar = myVar + 1
     const { body } = abstractSyntaxTree(tokens);
     expect(body).toEqual([
       {
-        "type": "ExpressionStatement",
-        "start": 0,
-        "end": 28,
-        "expression": {
-          "type": "CallExpression",
-          "start": 0,
-          "end": 28,
-          "callee": {
-            "type": "Identifier",
-            "start": 0,
-            "end": 3,
-            "name": "log"
+        type: "ExpressionStatement",
+        start: 0,
+        end: 28,
+        expression: {
+          type: "CallExpression",
+          start: 0,
+          end: 28,
+          callee: {
+            type: "Identifier",
+            start: 0,
+            end: 3,
+            name: "log",
           },
-          "arguments": [
+          arguments: [
             {
-              "type": "Literal",
-              "start": 4,
-              "end": 5,
-              "value": 5,
-              "raw": "5"
+              type: "Literal",
+              start: 4,
+              end: 5,
+              value: 5,
+              raw: "5",
             },
             {
-              "type": "Literal",
-              "start": 7,
-              "end": 14,
-              "value": "hello",
-              "raw": "\"hello\""
+              type: "Literal",
+              start: 7,
+              end: 14,
+              value: "hello",
+              raw: '"hello"',
             },
             {
-              "type": "Identifier",
-              "start": 16,
-              "end": 27,
-              "name": "aIdentifier"
-            }
+              type: "Identifier",
+              start: 16,
+              end: 27,
+              name: "aIdentifier",
+            },
           ],
-          "optional": false
-        }
-      }
+          optional: false,
+        },
+      },
     ]);
   });
 });
@@ -212,42 +213,117 @@ const newVar = myVar + 1
 describe("testing function declaration", () => {
   test("fn funcN = () => {}", () => {
     const tokens = lexer("fn funcN = () => {}");
-    // const tokens = lexer("const fn = () => {}");
-    const {body} = abstractSyntaxTree(tokens);
-    // console.log(JSON.stringify(body, null, 2));
+    const { body } = abstractSyntaxTree(tokens);
     expect(body).toEqual([
       {
-        "type": "VariableDeclaration",
-        "start": 0,
-        "end": 19,
-        "kind": "fn",
-        "declarations": [
+        type: "VariableDeclaration",
+        start: 0,
+        end: 19,
+        kind: "fn",
+        declarations: [
           {
-            "type": "VariableDeclarator",
-            "start": 3,
-            "end": 19,
-            "id": {
-              "type": "Identifier",
-              "start": 3,
-              "end": 8,
-              "name": "funcN"
+            type: "VariableDeclarator",
+            start: 3,
+            end: 19,
+            id: {
+              type: "Identifier",
+              start: 3,
+              end: 8,
+              name: "funcN",
             },
-            "init": {
-              "type": "FunctionExpression",
-              "start": 11,
-              "end": 19,
-              "id": null,
-              "params": [],
-              "body": {
-                "type": "BlockStatement",
-                "start": 17,
-                "end": 19,
-                "body": []
-              }
-            }
-          }
-        ]
-      }
+            init: {
+              type: "FunctionExpression",
+              start: 11,
+              end: 19,
+              id: null,
+              params: [],
+              body: {
+                type: "BlockStatement",
+                start: 17,
+                end: 19,
+                body: [],
+              },
+            },
+          },
+        ],
+      },
+    ]);
+  });
+  test("fn funcN = (a, b) => {return a + b}", () => {
+    const tokens = lexer(
+      ["fn funcN = (a, b) => {", "  return a + b", "}"].join("\n")
+    );
+    const { body } = abstractSyntaxTree(tokens);
+    expect(body).toEqual([
+      {
+        type: "VariableDeclaration",
+        start: 0,
+        end: 39,
+        kind: "fn",
+        declarations: [
+          {
+            type: "VariableDeclarator",
+            start: 3,
+            end: 39,
+            id: {
+              type: "Identifier",
+              start: 3,
+              end: 8,
+              name: "funcN",
+            },
+            init: {
+              type: "FunctionExpression",
+              start: 11,
+              end: 39,
+              id: null,
+              params: [
+                {
+                  type: "Identifier",
+                  start: 12,
+                  end: 13,
+                  name: "a",
+                },
+                {
+                  type: "Identifier",
+                  start: 15,
+                  end: 16,
+                  name: "b",
+                },
+              ],
+              body: {
+                type: "BlockStatement",
+                start: 21,
+                end: 39,
+                body: [
+                  {
+                    type: "ReturnStatement",
+                    start: 25,
+                    end: 37,
+                    argument: {
+                      type: "BinaryExpression",
+                      start: 32,
+                      end: 37,
+                      left: {
+                        type: "Identifier",
+                        start: 32,
+                        end: 33,
+                        name: "a",
+                      },
+                      operator: "+",
+                      right: {
+                        type: "Identifier",
+                        start: 36,
+                        end: 37,
+                        name: "b",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        ],
+      },
     ]);
   });
 });

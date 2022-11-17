@@ -88,7 +88,7 @@ interface GeneralStatement {
 
 interface ExpressionStatement extends GeneralStatement {
   type: "ExpressionStatement";
-  expression: BinaryExpression | CallExpression;
+  expression: Value;
 }
 
 function makeExpressionStatement(
@@ -125,7 +125,7 @@ function makeExpressionStatement(
 interface CallExpression extends GeneralStatement {
   type: "CallExpression";
   callee: Identifier;
-  arguments: VariableDeclarator["init"][];
+  arguments: Value[];
   optional: boolean;
 }
 
@@ -159,9 +159,9 @@ function makeCallExpression(
 function makeArguments(
   tokens: Token[],
   index: number,
-  previousArgs: VariableDeclarator["init"][] = []
+  previousArgs: Value[] = []
 ): {
-  arguments: VariableDeclarator["init"][];
+  arguments: Value[];
   lastIndex: number;
 } {
   const braceOrCommaToken = tokens[index];
@@ -237,10 +237,54 @@ function makeVariableDeclaration(
   };
 }
 
+type Value =
+  | Literal
+  | Identifier
+  | BinaryExpression
+  | FunctionExpression
+  | CallExpression;
+
+function makeValue(
+  tokens: Token[],
+  index: number
+): { value: Value; lastIndex: number } {
+  const currentToken = tokens[index];
+  const { token: nextToken } = nextMeaningfulToken(tokens, index);
+  if (nextToken.type === "brace" && nextToken.value === "(") {
+    const { expression, lastIndex } = makeCallExpression(tokens, index);
+    return {
+      value: expression,
+      lastIndex,
+    };
+  }
+  if (currentToken.type === "word" && nextToken.type === "operator") {
+    const { expression, lastIndex } = makeBinaryExpression(tokens, index);
+    return {
+      value: expression,
+      lastIndex,
+    };
+  }
+  if (currentToken.type === "word") {
+    const identifier = makeIdentifier(tokens, index);
+    return {
+      value: identifier,
+      lastIndex: index,
+    };
+  }
+  if (currentToken.type === "number" || currentToken.type === "string") {
+    const literal = makeLiteral(tokens, index);
+    return {
+      value: literal,
+      lastIndex: index,
+    };
+  }
+  throw new Error("Expected a previous if statement to match");
+}
+
 interface VariableDeclarator extends GeneralStatement {
   type: "VariableDeclarator";
   id: Identifier;
-  init: Literal | Identifier | BinaryExpression | FunctionExpression;
+  init: Value;
 }
 
 function makeVariableDeclarators(
@@ -255,7 +299,7 @@ function makeVariableDeclarators(
   const assignmentToken = nextMeaningfulToken(tokens, index);
   const contentsStartToken = nextMeaningfulToken(tokens, assignmentToken.index);
   const nextAfterInit = nextMeaningfulToken(tokens, contentsStartToken.index);
-  let init: VariableDeclarator["init"];
+  let init: Value;
   let lastIndex = contentsStartToken.index;
   if (
     contentsStartToken.token.type === "brace" &&
@@ -348,23 +392,40 @@ interface BinaryExpression extends GeneralStatement {
   right: BinaryPart;
 }
 
+function makeBinaryPart(
+  tokens: Token[],
+  index: number
+): { part: BinaryPart; lastIndex: number } {
+  const currentToken = tokens[index];
+  if (currentToken.type === "word") {
+    const identifier = makeIdentifier(tokens, index);
+    return {
+      part: identifier,
+      lastIndex: index,
+    };
+  }
+  if (currentToken.type === "number" || currentToken.type === "string") {
+    const literal = makeLiteral(tokens, index);
+    return {
+      part: literal,
+      lastIndex: index,
+    };
+  }
+  throw new Error("Expected a previous if statement to match");
+}
+
 function makeBinaryExpression(
   tokens: Token[],
   index: number
 ): { expression: BinaryExpression; lastIndex: number } {
   const currentToken = tokens[index];
-  let left: BinaryPart;
-  if (currentToken.type === "word") {
-    left = makeIdentifier(tokens, index);
-  } else {
-    left = makeLiteral(tokens, index);
-  }
+  const { part: left } = makeBinaryPart(tokens, index);
   const { token: operatorToken, index: operatorIndex } = nextMeaningfulToken(
     tokens,
     index
   );
   const rightToken = nextMeaningfulToken(tokens, operatorIndex);
-  const right = makeLiteral(tokens, rightToken.index);
+  const { part: right } = makeBinaryPart(tokens, rightToken.index);
   return {
     expression: {
       type: "BinaryExpression",
@@ -393,11 +454,7 @@ function makeFunctionExpression(
   const closingBraceIndex = findClosingBrace(tokens, index);
   const arrowToken = nextMeaningfulToken(tokens, closingBraceIndex);
   const bodyStartToken = nextMeaningfulToken(tokens, arrowToken.index);
-  // const { params, lastIndex: paramsLastIndex } = makeParams(
-  //   tokens,
-  //   nextToken.index
-  // );
-  const params: Identifier[] = [];
+  const { params } = makeParams(tokens, index);
   const { block, lastIndex: bodyLastIndex } = makeBlockStatement(
     tokens,
     bodyStartToken.index
@@ -413,6 +470,31 @@ function makeFunctionExpression(
     },
     lastIndex: bodyLastIndex,
   };
+}
+
+function makeParams(
+  tokens: Token[],
+  index: number,
+  previousParams: Identifier[] = []
+): { params: Identifier[]; lastIndex: number } {
+  const braceOrCommaToken = tokens[index];
+  const argumentToken = nextMeaningfulToken(tokens, index);
+  const shouldFinishRecursion =
+    (argumentToken.token.type === "brace" &&
+      argumentToken.token.value === ")") ||
+    (braceOrCommaToken.type === "brace" && braceOrCommaToken.value === ")");
+  if (shouldFinishRecursion) {
+    return { params: previousParams, lastIndex: index };
+  }
+  const nextBraceOrCommaToken = nextMeaningfulToken(
+    tokens,
+    argumentToken.index
+  );
+  const identifier = makeIdentifier(tokens, argumentToken.index);
+  return makeParams(tokens, nextBraceOrCommaToken.index, [
+    ...previousParams,
+    identifier,
+  ]);
 }
 
 interface BlockStatement extends GeneralStatement {
@@ -441,6 +523,29 @@ function makeBlockStatement(
   };
 }
 
+interface ReturnStatement extends GeneralStatement {
+  type: "ReturnStatement";
+  argument: Value;
+}
+
+function makeReturnStatement(
+  tokens: Token[],
+  index: number
+): { statement: ReturnStatement; lastIndex: number } {
+  const currentToken = tokens[index];
+  const nextToken = nextMeaningfulToken(tokens, index);
+  const { value, lastIndex } = makeValue(tokens, nextToken.index);
+  return {
+    statement: {
+      type: "ReturnStatement",
+      start: currentToken.start,
+      end: tokens[lastIndex].end,
+      argument: value,
+    },
+    lastIndex,
+  };
+}
+
 export type All = Program | ExpressionStatement[] | BinaryExpression | Literal;
 
 function nextMeaningfulToken(
@@ -459,7 +564,7 @@ function nextMeaningfulToken(
   return { token, index: newIndex };
 }
 
-type Body = ExpressionStatement | VariableDeclaration;
+type Body = ExpressionStatement | VariableDeclaration | ReturnStatement;
 
 function makeBody(
   tokens: Token[],
@@ -469,7 +574,11 @@ function makeBody(
   if (tokenIndex >= tokens.length) {
     return { body: previousBody, lastIndex: tokenIndex };
   }
+
   const token = tokens[tokenIndex];
+  if (token.type === "brace" && token.value === "}") {
+    return { body: previousBody, lastIndex: tokenIndex };
+  }
   if (typeof token === "undefined") {
     console.log("probably should throw");
   }
@@ -486,6 +595,11 @@ function makeBody(
     );
     const nextThing = nextMeaningfulToken(tokens, lastIndex);
     return makeBody(tokens, nextThing.index, [...previousBody, declaration]);
+  }
+  if (token.type === "word" && token.value === "return") {
+    const { statement, lastIndex } = makeReturnStatement(tokens, tokenIndex);
+    const nextThing = nextMeaningfulToken(tokens, lastIndex);
+    return makeBody(tokens, nextThing.index, [...previousBody, statement]);
   }
   if (token.type === "word" && token.value === "log") {
     const { expression, lastIndex } = makeExpressionStatement(
