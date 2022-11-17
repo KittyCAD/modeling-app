@@ -1,5 +1,23 @@
-import { abstractSyntaxTree } from "./abstractSyntaxTree";
+import { abstractSyntaxTree, findClosingBrace } from "./abstractSyntaxTree";
 import { lexer } from "./tokeniser";
+
+describe("findClosingBrace", () => {
+  test("finds the closing brace", () => {
+    const basic = "( hey )"
+    expect(findClosingBrace(lexer(basic), 0)).toBe(4)
+
+    const handlesNonZeroIndex = "(indexForBracketToRightOfThisIsTwo(shouldBeFour)AndNotThisSix)"
+    expect(findClosingBrace(lexer(handlesNonZeroIndex), 2)).toBe(4)
+    expect(findClosingBrace(lexer(handlesNonZeroIndex), 0)).toBe(6)
+    
+    const handlesNested = "{a{b{c(}d]}eathou athoeu tah u} thatOneToTheLeftIsLast }"
+    expect(findClosingBrace(lexer(handlesNested), 0)).toBe(18)
+
+    // throws when not started on a brace
+    expect(() => findClosingBrace(lexer(handlesNested), 1)).toThrow()
+    
+  })
+})
 
 describe("testing AST", () => {
   test("test 5 + 6", () => {

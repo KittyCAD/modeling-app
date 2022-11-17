@@ -402,3 +402,57 @@ export const abstractSyntaxTree = (tokens: Token[]): Program => {
   };
   return program;
 };
+
+export function findClosingBrace(
+  tokens: Token[],
+  index: number,
+  _braceCount: number = 0,
+  _searchOpeningBrace: string = ""
+): number {
+  const closingBraceMap: { [key: string]: string } = {
+    "(": ")",
+    "{": "}",
+    "[": "]",
+  };
+  const currentToken = tokens[index];
+  let searchOpeningBrace = _searchOpeningBrace;
+
+  const isFirstCall = !searchOpeningBrace && _braceCount === 0;
+  if (isFirstCall) {
+    searchOpeningBrace = currentToken.value;
+    if (!["(", "{", "["].includes(searchOpeningBrace)) {
+      throw new Error(
+        `expected to be started on a opening brace ( { [, instead found '${searchOpeningBrace}'`
+      );
+    }
+  }
+
+  const foundClosingBrace =
+    _braceCount === 1 &&
+    currentToken.value === closingBraceMap[searchOpeningBrace];
+  const foundAnotherOpeningBrace = currentToken.value === searchOpeningBrace;
+  const foundAnotherClosingBrace =
+    currentToken.value === closingBraceMap[searchOpeningBrace];
+
+  if (foundClosingBrace) {
+    return index;
+  }
+  if (foundAnotherOpeningBrace) {
+    return findClosingBrace(
+      tokens,
+      index + 1,
+      _braceCount + 1,
+      searchOpeningBrace
+    );
+  }
+  if (foundAnotherClosingBrace) {
+    return findClosingBrace(
+      tokens,
+      index + 1,
+      _braceCount - 1,
+      searchOpeningBrace
+    );
+  }
+  // non-brace token, increment and continue
+  return findClosingBrace(tokens, index + 1, _braceCount, searchOpeningBrace);
+}
