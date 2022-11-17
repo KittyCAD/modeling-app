@@ -3,8 +3,9 @@ const WHITESPACE = /\s+/;
 const WORD = /^[a-zA-Z_][a-zA-Z0-9_]*/;
 // regex that captures everything between two non escaped quotes and the quotes aren't captured in the match
 const STRING = /^(["'])(?:(?=(\\?))\2.)*?\1/;
-// regex for operators
-const OPERATOR = /^[>=|<=|+|\-|*|/|>|<|^|%]/;
+// verbose regex for finding operators, multiple character operators need to be first
+const OPERATOR = /^(>=|<=|==|=>|!=|\*|\+|-|\/|%|=|<|>|\||\^)/;
+
 const BLOCK_START = /^\{/;
 const BLOCK_END = /^\}/;
 const PARAN_START = /^\(/;

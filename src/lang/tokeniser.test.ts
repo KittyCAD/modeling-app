@@ -77,6 +77,8 @@ describe("testing helpers", () => {
     expect(isOperator("a+")).toBe(false);
     expect(isOperator("a+5")).toBe(false);
     expect(isOperator("5a+5")).toBe(false);
+    expect(isOperator(", newVar")).toBe(false);
+    expect(isOperator(",")).toBe(false);
   });
   it("test is paran start", () => {
     expect(isParanStart("(")).toBe(true);
@@ -137,7 +139,7 @@ describe("testing helpers", () => {
     expect(isComma("5 + 5")).toBe(false);
     expect(isComma("5, + 5")).toBe(false);
     expect(isComma(" , + 5")).toBe(false);
-  })
+  });
 });
 
 describe("testing lexer", () => {
@@ -236,6 +238,25 @@ describe("testing lexer", () => {
       "string       ''hello''  from 10  to 17",
       "brace        ')'        from 17  to 18",
     ]);
+    expect(stringSummaryLexer("fn funcName = (param1, param2) => {}")).toEqual([
+      "word         'fn'       from 0   to 2",
+      "whitespace   ' '        from 2   to 3",
+      "word         'funcName' from 3   to 11",
+      "whitespace   ' '        from 11  to 12",
+      "operator     '='        from 12  to 13",
+      "whitespace   ' '        from 13  to 14",
+      "brace        '('        from 14  to 15",
+      "word         'param1'   from 15  to 21",
+      "comma        ','        from 21  to 22",
+      "whitespace   ' '        from 22  to 23",
+      "word         'param2'   from 23  to 29",
+      "brace        ')'        from 29  to 30",
+      "whitespace   ' '        from 30  to 31",
+      "operator     '=>'       from 31  to 33",
+      "whitespace   ' '        from 33  to 34",
+      "brace        '{'        from 34  to 35",
+      "brace        '}'        from 35  to 36",
+    ]);
   });
 });
 
@@ -244,8 +265,7 @@ describe("testing lexer", () => {
 const stringSummaryLexer = (input: string) =>
   lexer(input).map(
     ({ type, value, start, end }) =>
-      `${type.padEnd(12, " ")} ${`'${value}'`.padEnd(
-        10,
-        " "
-      )} from ${String(start).padEnd(3, ' ')} to ${end}`
+      `${type.padEnd(12, " ")} ${`'${value}'`.padEnd(10, " ")} from ${String(
+        start
+      ).padEnd(3, " ")} to ${end}`
   );
