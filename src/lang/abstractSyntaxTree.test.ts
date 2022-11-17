@@ -208,3 +208,46 @@ const newVar = myVar + 1
     ]);
   });
 });
+
+describe("testing function declaration", () => {
+  test("fn funcN = () => {}", () => {
+    const tokens = lexer("fn funcN = () => {}");
+    // const tokens = lexer("const fn = () => {}");
+    const {body} = abstractSyntaxTree(tokens);
+    // console.log(JSON.stringify(body, null, 2));
+    expect(body).toEqual([
+      {
+        "type": "VariableDeclaration",
+        "start": 0,
+        "end": 19,
+        "kind": "fn",
+        "declarations": [
+          {
+            "type": "VariableDeclarator",
+            "start": 3,
+            "end": 19,
+            "id": {
+              "type": "Identifier",
+              "start": 3,
+              "end": 8,
+              "name": "funcN"
+            },
+            "init": {
+              "type": "FunctionExpression",
+              "start": 11,
+              "end": 19,
+              "id": null,
+              "params": [],
+              "body": {
+                "type": "BlockStatement",
+                "start": 17,
+                "end": 19,
+                "body": []
+              }
+            }
+          }
+        ]
+      }
+    ]);
+  });
+});

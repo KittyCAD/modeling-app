@@ -39,7 +39,8 @@ type syntaxType =
   | "NewExpression"
   | "ThisExpression"
   | "UpdateExpression"
-  | "ArrowFunctionExpression"
+  // | "ArrowFunctionExpression"
+  | "FunctionExpression"
   | "YieldExpression"
   | "AwaitExpression"
   | "ImportDeclaration"
@@ -93,25 +94,31 @@ interface ExpressionStatement extends GeneralStatement {
 function makeExpressionStatement(
   tokens: Token[],
   index: number
-): ExpressionStatement {
+): { expression: ExpressionStatement; lastIndex: number } {
   const currentToken = tokens[index];
   const { token: nextToken } = nextMeaningfulToken(tokens, index);
   if (nextToken.type === "brace" && nextToken.value === "(") {
-    const { expression } = makeCallExpression(tokens, index);
+    const { expression, lastIndex } = makeCallExpression(tokens, index);
     return {
+      expression: {
+        type: "ExpressionStatement",
+        start: currentToken.start,
+        end: expression.end,
+        expression,
+      },
+      lastIndex,
+    };
+  }
+
+  const { expression, lastIndex } = makeBinaryExpression(tokens, index);
+  return {
+    expression: {
       type: "ExpressionStatement",
       start: currentToken.start,
       end: expression.end,
       expression,
-    };
-  }
-
-  const { expression } = makeBinaryExpression(tokens, index);
-  return {
-    type: "ExpressionStatement",
-    start: currentToken.start,
-    end: expression.end,
-    expression,
+    },
+    lastIndex,
   };
 }
 
@@ -159,17 +166,23 @@ function makeArguments(
 } {
   const braceOrCommaToken = tokens[index];
   const argumentToken = nextMeaningfulToken(tokens, index);
-  const shouldFinishRecursion = braceOrCommaToken.type === "brace" && braceOrCommaToken.value === ")";
+  const shouldFinishRecursion =
+    braceOrCommaToken.type === "brace" && braceOrCommaToken.value === ")";
   if (shouldFinishRecursion) {
     return {
       arguments: previousArgs,
       lastIndex: index,
     };
   }
-  const nextBraceOrCommaToken = nextMeaningfulToken(tokens, argumentToken.index);
-  const isIdentifierOrLiteral = nextBraceOrCommaToken.token.type === "comma" || nextBraceOrCommaToken.token.type === "brace"
+  const nextBraceOrCommaToken = nextMeaningfulToken(
+    tokens,
+    argumentToken.index
+  );
+  const isIdentifierOrLiteral =
+    nextBraceOrCommaToken.token.type === "comma" ||
+    nextBraceOrCommaToken.token.type === "brace";
   if (!isIdentifierOrLiteral) {
-    const { expression, lastIndex} = makeBinaryExpression(tokens, index);
+    const { expression, lastIndex } = makeBinaryExpression(tokens, index);
     return makeArguments(tokens, lastIndex, [...previousArgs, expression]);
   }
   if (argumentToken.token.type === "word") {
@@ -183,7 +196,10 @@ function makeArguments(
     argumentToken.token.type === "string"
   ) {
     const literal = makeLiteral(tokens, argumentToken.index);
-    return makeArguments(tokens, nextBraceOrCommaToken.index, [...previousArgs, literal]);
+    return makeArguments(tokens, nextBraceOrCommaToken.index, [
+      ...previousArgs,
+      literal,
+    ]);
   }
   throw new Error("Expected a previous if statement to match");
 }
@@ -191,7 +207,7 @@ function makeArguments(
 interface VariableDeclaration extends GeneralStatement {
   type: "VariableDeclaration";
   declarations: VariableDeclarator[];
-  kind: "const" | "unknown"; //| "solid" | "surface" | "face"
+  kind: "const" | "unknown" | "fn"; //| "solid" | "surface" | "face"
 }
 
 function makeVariableDeclaration(
@@ -209,7 +225,12 @@ function makeVariableDeclaration(
       type: "VariableDeclaration",
       start: currentToken.start,
       end: declarations[declarations.length - 1].end,
-      kind: currentToken.value === "const" ? "const" : "unknown",
+      kind:
+        currentToken.value === "const"
+          ? "const"
+          : currentToken.value === "fn"
+          ? "fn"
+          : "unknown",
       declarations,
     },
     lastIndex,
@@ -219,7 +240,7 @@ function makeVariableDeclaration(
 interface VariableDeclarator extends GeneralStatement {
   type: "VariableDeclarator";
   id: Identifier;
-  init: Literal | Identifier | BinaryExpression;
+  init: Literal | Identifier | BinaryExpression | FunctionExpression;
 }
 
 function makeVariableDeclarators(
@@ -236,7 +257,27 @@ function makeVariableDeclarators(
   const nextAfterInit = nextMeaningfulToken(tokens, contentsStartToken.index);
   let init: VariableDeclarator["init"];
   let lastIndex = contentsStartToken.index;
-  if (nextAfterInit.token?.type === "operator") {
+  if (
+    contentsStartToken.token.type === "brace" &&
+    contentsStartToken.token.value === "("
+  ) {
+    const closingBraceIndex = findClosingBrace(
+      tokens,
+      contentsStartToken.index
+    );
+    const arrowToken = nextMeaningfulToken(tokens, closingBraceIndex);
+    if (
+      arrowToken.token.type === "operator" &&
+      arrowToken.token.value === "=>"
+    ) {
+      const { expression, lastIndex: arrowFunctionLastIndex } =
+        makeFunctionExpression(tokens, contentsStartToken.index);
+      init = expression;
+      lastIndex = arrowFunctionLastIndex;
+    } else {
+      throw new Error("TODO - handle expression with braces");
+    }
+  } else if (nextAfterInit.token?.type === "operator") {
     const binExp = makeBinaryExpression(tokens, contentsStartToken.index);
     init = binExp.expression;
     lastIndex = binExp.lastIndex;
@@ -337,6 +378,69 @@ function makeBinaryExpression(
   };
 }
 
+interface FunctionExpression extends GeneralStatement {
+  type: "FunctionExpression";
+  id: Identifier | null;
+  params: Identifier[];
+  body: BlockStatement;
+}
+
+function makeFunctionExpression(
+  tokens: Token[],
+  index: number
+): { expression: FunctionExpression; lastIndex: number } {
+  const currentToken = tokens[index];
+  const closingBraceIndex = findClosingBrace(tokens, index);
+  const arrowToken = nextMeaningfulToken(tokens, closingBraceIndex);
+  const bodyStartToken = nextMeaningfulToken(tokens, arrowToken.index);
+  // const { params, lastIndex: paramsLastIndex } = makeParams(
+  //   tokens,
+  //   nextToken.index
+  // );
+  const params: Identifier[] = [];
+  const { block, lastIndex: bodyLastIndex } = makeBlockStatement(
+    tokens,
+    bodyStartToken.index
+  );
+  return {
+    expression: {
+      type: "FunctionExpression",
+      start: currentToken.start,
+      end: tokens[bodyLastIndex].end,
+      id: null,
+      params,
+      body: block,
+    },
+    lastIndex: bodyLastIndex,
+  };
+}
+
+interface BlockStatement extends GeneralStatement {
+  type: "BlockStatement";
+  body: Body[];
+}
+
+function makeBlockStatement(
+  tokens: Token[],
+  index: number
+): { block: BlockStatement; lastIndex: number } {
+  const openingCurly = tokens[index];
+  const nextToken = nextMeaningfulToken(tokens, index);
+  const { body, lastIndex } =
+    nextToken.token.value === "}"
+      ? { body: [], lastIndex: nextToken.index }
+      : makeBody(tokens, nextToken.index);
+  return {
+    block: {
+      type: "BlockStatement",
+      start: openingCurly.start,
+      end: tokens[lastIndex].end,
+      body,
+    },
+    lastIndex,
+  };
+}
+
 export type All = Program | ExpressionStatement[] | BinaryExpression | Literal;
 
 function nextMeaningfulToken(
@@ -357,43 +461,54 @@ function nextMeaningfulToken(
 
 type Body = ExpressionStatement | VariableDeclaration;
 
+function makeBody(
+  tokens: Token[],
+  tokenIndex: number = 0,
+  previousBody: Body[] = []
+): { body: Body[]; lastIndex: number } {
+  if (tokenIndex >= tokens.length) {
+    return { body: previousBody, lastIndex: tokenIndex };
+  }
+  const token = tokens[tokenIndex];
+  if (typeof token === "undefined") {
+    console.log("probably should throw");
+  }
+  if (token.type === "whitespace") {
+    return makeBody(tokens, tokenIndex + 1, previousBody);
+  }
+  if (
+    token.type === "word" &&
+    (token.value === "const" || token.value === "fn")
+  ) {
+    const { declaration, lastIndex } = makeVariableDeclaration(
+      tokens,
+      tokenIndex
+    );
+    const nextThing = nextMeaningfulToken(tokens, lastIndex);
+    return makeBody(tokens, nextThing.index, [...previousBody, declaration]);
+  }
+  if (token.type === "word" && token.value === "log") {
+    const { expression, lastIndex } = makeExpressionStatement(
+      tokens,
+      tokenIndex
+    );
+    return { body: [...previousBody, expression], lastIndex };
+  }
+  if (
+    (token.type === "number" || token.type === "word") &&
+    nextMeaningfulToken(tokens, tokenIndex).token.type === "operator"
+  ) {
+    const { expression, lastIndex } = makeExpressionStatement(
+      tokens,
+      tokenIndex
+    );
+    // return startTree(tokens, tokenIndex, [...previousBody, makeExpressionStatement(tokens, tokenIndex)]);
+    return { body: [...previousBody, expression], lastIndex };
+  }
+  throw new Error("Unexpected token");
+}
 export const abstractSyntaxTree = (tokens: Token[]): Program => {
-  const startTree = (
-    tokens: Token[],
-    tokenIndex: number = 0,
-    previousBody: Body[] = []
-  ): Body[] => {
-    if (tokenIndex >= tokens.length) {
-      return previousBody;
-    }
-    const token = tokens[tokenIndex];
-    if (typeof token === "undefined") {
-      console.log("probably should throw");
-    }
-    if (token.type === 'whitespace') {
-      return startTree(tokens, tokenIndex + 1, previousBody);
-    }
-    if (token.type === "word" && token.value === "const") {
-      const { declaration, lastIndex } = makeVariableDeclaration(
-        tokens,
-        tokenIndex
-      );
-      const nextThing = nextMeaningfulToken(tokens, lastIndex);
-      return startTree(tokens, nextThing.index, [...previousBody, declaration]);
-    }
-    if (token.type === "word" && token.value === "log") {
-      return [...previousBody, makeExpressionStatement(tokens, tokenIndex)];
-    }
-    if (
-      (token.type === "number" || token.type === "word") &&
-      nextMeaningfulToken(tokens, tokenIndex).token.type === "operator"
-    ) {
-      // return startTree(tokens, tokenIndex, [...previousBody, makeExpressionStatement(tokens, tokenIndex)]);
-      return [...previousBody, makeExpressionStatement(tokens, tokenIndex)];
-    }
-    throw new Error("Unexpected token");
-  };
-  const body = startTree(tokens);
+  const { body } = makeBody(tokens);
   const program: Program = {
     type: "Program",
     start: 0,
