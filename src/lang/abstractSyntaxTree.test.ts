@@ -326,4 +326,128 @@ describe("testing function declaration", () => {
       },
     ]);
   });
+  test("call expression assignment", () => {
+    const tokens = lexer(
+      `fn funcN = (a, b) => { return a + b }
+const myVar = funcN(1, 2)`);
+    const { body } = abstractSyntaxTree(tokens);
+    expect(body).toEqual([
+      {
+        "type": "VariableDeclaration",
+        "start": 0,
+        "end": 37,
+        "kind": "fn",
+        "declarations": [
+          {
+            "type": "VariableDeclarator",
+            "start": 3,
+            "end": 37,
+            "id": {
+              "type": "Identifier",
+              "start": 3,
+              "end": 8,
+              "name": "funcN"
+            },
+            "init": {
+              "type": "FunctionExpression",
+              "start": 11,
+              "end": 37,
+              "id": null,
+              "params": [
+                {
+                  "type": "Identifier",
+                  "start": 12,
+                  "end": 13,
+                  "name": "a"
+                },
+                {
+                  "type": "Identifier",
+                  "start": 15,
+                  "end": 16,
+                  "name": "b"
+                }
+              ],
+              "body": {
+                "type": "BlockStatement",
+                "start": 21,
+                "end": 37,
+                "body": [
+                  {
+                    "type": "ReturnStatement",
+                    "start": 23,
+                    "end": 35,
+                    "argument": {
+                      "type": "BinaryExpression",
+                      "start": 30,
+                      "end": 35,
+                      "left": {
+                        "type": "Identifier",
+                        "start": 30,
+                        "end": 31,
+                        "name": "a"
+                      },
+                      "operator": "+",
+                      "right": {
+                        "type": "Identifier",
+                        "start": 34,
+                        "end": 35,
+                        "name": "b"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "type": "VariableDeclaration",
+        "start": 38,
+        "end": 63,
+        "kind": "const",
+        "declarations": [
+          {
+            "type": "VariableDeclarator",
+            "start": 44,
+            "end": 63,
+            "id": {
+              "type": "Identifier",
+              "start": 44,
+              "end": 49,
+              "name": "myVar"
+            },
+            "init": {
+              "type": "CallExpression",
+              "start": 52,
+              "end": 63,
+              "callee": {
+                "type": "Identifier",
+                "start": 52,
+                "end": 57,
+                "name": "funcN"
+              },
+              "arguments": [
+                {
+                  "type": "Literal",
+                  "start": 58,
+                  "end": 59,
+                  "value": 1,
+                  "raw": "1"
+                },
+                {
+                  "type": "Literal",
+                  "start": 61,
+                  "end": 62,
+                  "value": 2,
+                  "raw": "2"
+                }
+              ],
+              "optional": false
+            }
+          }
+        ]
+      }
+    ])
+  });
 });

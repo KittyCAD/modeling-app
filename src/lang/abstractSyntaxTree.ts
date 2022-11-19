@@ -389,7 +389,7 @@ function makeLiteral(tokens: Token[], index: number): Literal {
   };
 }
 
-interface BinaryExpression extends GeneralStatement {
+export interface BinaryExpression extends GeneralStatement {
   type: "BinaryExpression";
   operator: string;
   left: BinaryPart;
