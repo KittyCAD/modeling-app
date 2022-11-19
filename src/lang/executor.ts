@@ -24,6 +24,35 @@ export const executor = (ast: Program, rootOverride: {[key: string]: any} = {}):
           const left = getVal(declaration.init.left);
           const right = getVal(declaration.init.right);
           programMemory.root[variableName] = left + right;
+        } else if (declaration.init.type === "FunctionExpression") {
+          const fnInit = declaration.init;
+        
+          programMemory.root[declaration.id.name] = (...args: any[]) => {
+            const fnMemory: { [key: string]: any } = {
+              root: {
+                ...programMemory.root,
+              },
+            };
+            if(args.length > fnInit.params.length) {
+              throw new Error(`Too many arguments passed to function ${declaration.id.name}`)
+            } else if (args.length < fnInit.params.length) {
+              throw new Error(`Too few arguments passed to function ${declaration.id.name}`)
+            }
+            fnInit.params.forEach((param, index) => {
+              fnMemory.root[param.name] = args[index];
+            });
+            return executor(fnInit.body, fnMemory.root);
+          }
+        } else if(declaration.init.type === "CallExpression") {
+          const fnName = declaration.init.callee.name;
+          const fnArgs = declaration.init.arguments.map((arg) => {
+            if(arg.type === "Literal") {
+              return arg.value;
+            } else if(arg.type === "Identifier") {
+              return programMemory.root[arg.name];
+            }
+          })
+          programMemory.root[variableName] = programMemory.root[fnName](...fnArgs);
         }
       });
     } else if (statement.type === "ExpressionStatement") {
@@ -39,6 +68,8 @@ export const executor = (ast: Program, rootOverride: {[key: string]: any} = {}):
         });
         programMemory.root[functionName](...args);
       }
+    } else if(statement.type === "ReturnStatement") {
+      console.log("statement",statement)
     }
   });
   return programMemory;

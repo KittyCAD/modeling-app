@@ -325,6 +325,10 @@ function makeVariableDeclarators(
     const binExp = makeBinaryExpression(tokens, contentsStartToken.index);
     init = binExp.expression;
     lastIndex = binExp.lastIndex;
+  } else if (nextAfterInit.token?.type === "brace" && nextAfterInit.token.value === "(") {
+    const callExInfo = makeCallExpression(tokens, contentsStartToken.index);
+    init = callExInfo.expression
+    lastIndex = callExInfo.lastIndex
   } else {
     init = makeLiteral(tokens, contentsStartToken.index);
   }
@@ -585,6 +589,7 @@ function makeBody(
   if (token.type === "whitespace") {
     return makeBody(tokens, tokenIndex + 1, previousBody);
   }
+  const nextToken = nextMeaningfulToken(tokens, tokenIndex);
   if (
     token.type === "word" &&
     (token.value === "const" || token.value === "fn")
@@ -601,7 +606,7 @@ function makeBody(
     const nextThing = nextMeaningfulToken(tokens, lastIndex);
     return makeBody(tokens, nextThing.index, [...previousBody, statement]);
   }
-  if (token.type === "word" && token.value === "log") {
+  if (token.type === "word" && nextToken.token.type === "brace" && nextToken.token.value === '(') {
     const { expression, lastIndex } = makeExpressionStatement(
       tokens,
       tokenIndex
