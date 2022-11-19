@@ -98,5 +98,3 @@ export const lexer = (str: string): Token[] => {
   };
   return recursivelyTokenise(str);
 };
-
-// const example1 = await fsp.readFile("./examples/addition.cado", "ascii");

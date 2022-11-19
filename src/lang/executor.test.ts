@@ -58,12 +58,12 @@ log(5, myVar)`;
         "fn funcN = (a, b) => {",
         "  return a + b",
         "}",
-        "const theVar = 5",
-        "const myVar = funcN(1, theVar)",
+        "const theVar = 60",
+        "const magicNum = funcN(9, theVar)",
       ].join("\n")
     );
     expect(withoutStdFns(programMemory, ["funcN"])).toEqual({
-      root: { theVar: 5, myVar: 6 },
+      root: { theVar: 60, magicNum: 69 },
     });
   });
 });
