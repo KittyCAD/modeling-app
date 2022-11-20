@@ -329,125 +329,318 @@ describe("testing function declaration", () => {
   test("call expression assignment", () => {
     const tokens = lexer(
       `fn funcN = (a, b) => { return a + b }
-const myVar = funcN(1, 2)`);
+const myVar = funcN(1, 2)`
+    );
     const { body } = abstractSyntaxTree(tokens);
     expect(body).toEqual([
       {
-        "type": "VariableDeclaration",
-        "start": 0,
-        "end": 37,
-        "kind": "fn",
-        "declarations": [
+        type: "VariableDeclaration",
+        start: 0,
+        end: 37,
+        kind: "fn",
+        declarations: [
           {
-            "type": "VariableDeclarator",
-            "start": 3,
-            "end": 37,
-            "id": {
-              "type": "Identifier",
-              "start": 3,
-              "end": 8,
-              "name": "funcN"
+            type: "VariableDeclarator",
+            start: 3,
+            end: 37,
+            id: {
+              type: "Identifier",
+              start: 3,
+              end: 8,
+              name: "funcN",
             },
-            "init": {
-              "type": "FunctionExpression",
-              "start": 11,
-              "end": 37,
-              "id": null,
-              "params": [
+            init: {
+              type: "FunctionExpression",
+              start: 11,
+              end: 37,
+              id: null,
+              params: [
                 {
-                  "type": "Identifier",
-                  "start": 12,
-                  "end": 13,
-                  "name": "a"
+                  type: "Identifier",
+                  start: 12,
+                  end: 13,
+                  name: "a",
                 },
                 {
-                  "type": "Identifier",
-                  "start": 15,
-                  "end": 16,
-                  "name": "b"
-                }
+                  type: "Identifier",
+                  start: 15,
+                  end: 16,
+                  name: "b",
+                },
               ],
-              "body": {
-                "type": "BlockStatement",
-                "start": 21,
-                "end": 37,
-                "body": [
+              body: {
+                type: "BlockStatement",
+                start: 21,
+                end: 37,
+                body: [
                   {
-                    "type": "ReturnStatement",
-                    "start": 23,
-                    "end": 35,
-                    "argument": {
-                      "type": "BinaryExpression",
-                      "start": 30,
-                      "end": 35,
-                      "left": {
-                        "type": "Identifier",
-                        "start": 30,
-                        "end": 31,
-                        "name": "a"
+                    type: "ReturnStatement",
+                    start: 23,
+                    end: 35,
+                    argument: {
+                      type: "BinaryExpression",
+                      start: 30,
+                      end: 35,
+                      left: {
+                        type: "Identifier",
+                        start: 30,
+                        end: 31,
+                        name: "a",
                       },
-                      "operator": "+",
-                      "right": {
-                        "type": "Identifier",
-                        "start": 34,
-                        "end": 35,
-                        "name": "b"
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        ]
+                      operator: "+",
+                      right: {
+                        type: "Identifier",
+                        start: 34,
+                        end: 35,
+                        name: "b",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        ],
       },
       {
-        "type": "VariableDeclaration",
-        "start": 38,
-        "end": 63,
-        "kind": "const",
-        "declarations": [
+        type: "VariableDeclaration",
+        start: 38,
+        end: 63,
+        kind: "const",
+        declarations: [
           {
-            "type": "VariableDeclarator",
-            "start": 44,
-            "end": 63,
-            "id": {
-              "type": "Identifier",
-              "start": 44,
-              "end": 49,
-              "name": "myVar"
+            type: "VariableDeclarator",
+            start: 44,
+            end: 63,
+            id: {
+              type: "Identifier",
+              start: 44,
+              end: 49,
+              name: "myVar",
             },
-            "init": {
-              "type": "CallExpression",
-              "start": 52,
-              "end": 63,
-              "callee": {
-                "type": "Identifier",
-                "start": 52,
-                "end": 57,
-                "name": "funcN"
+            init: {
+              type: "CallExpression",
+              start: 52,
+              end: 63,
+              callee: {
+                type: "Identifier",
+                start: 52,
+                end: 57,
+                name: "funcN",
               },
-              "arguments": [
+              arguments: [
                 {
-                  "type": "Literal",
-                  "start": 58,
-                  "end": 59,
-                  "value": 1,
-                  "raw": "1"
+                  type: "Literal",
+                  start: 58,
+                  end: 59,
+                  value: 1,
+                  raw: "1",
                 },
                 {
-                  "type": "Literal",
-                  "start": 61,
-                  "end": 62,
-                  "value": 2,
-                  "raw": "2"
-                }
+                  type: "Literal",
+                  start: 61,
+                  end: 62,
+                  value: 2,
+                  raw: "2",
+                },
               ],
-              "optional": false
-            }
-          }
-        ]
-      }
-    ])
+              optional: false,
+            },
+          },
+        ],
+      },
+    ]);
+  });
+});
+
+describe("structures specific to this lang", () => {
+  test("sketch", () => {
+    let code = `sketch mySketch {
+  path myPath = lineTo(0,1)
+  lineTo(1,1)
+  path rightPath = lineTo(1,0)
+  close()
+}
+`;
+    const tokens = lexer(code);
+    const { body } = abstractSyntaxTree(tokens);
+    expect(body).toEqual([
+      {
+        type: "VariableDeclaration",
+        start: 0,
+        end: 102,
+        kind: "sketch",
+        declarations: [
+          {
+            type: "VariableDeclarator",
+            start: 7,
+            end: 102,
+            id: {
+              type: "Identifier",
+              start: 7,
+              end: 15,
+              name: "mySketch",
+            },
+            init: {
+              type: "SketchExpression",
+              start: 16,
+              end: 102,
+              body: {
+                type: "BlockStatement",
+                start: 16,
+                end: 102,
+                body: [
+                  {
+                    type: "VariableDeclaration",
+                    start: 20,
+                    end: 45,
+                    kind: "path",
+                    declarations: [
+                      {
+                        type: "VariableDeclarator",
+                        start: 25,
+                        end: 45,
+                        id: {
+                          type: "Identifier",
+                          start: 25,
+                          end: 31,
+                          name: "myPath",
+                        },
+                        init: {
+                          type: "CallExpression",
+                          start: 34,
+                          end: 45,
+                          callee: {
+                            type: "Identifier",
+                            start: 34,
+                            end: 40,
+                            name: "lineTo",
+                          },
+                          arguments: [
+                            {
+                              type: "Literal",
+                              start: 41,
+                              end: 42,
+                              value: 0,
+                              raw: "0",
+                            },
+                            {
+                              type: "Literal",
+                              start: 43,
+                              end: 44,
+                              value: 1,
+                              raw: "1",
+                            },
+                          ],
+                          optional: false,
+                        },
+                      },
+                    ],
+                  },
+                  {
+                    type: "ExpressionStatement",
+                    start: 48,
+                    end: 59,
+                    expression: {
+                      type: "CallExpression",
+                      start: 48,
+                      end: 59,
+                      callee: {
+                        type: "Identifier",
+                        start: 48,
+                        end: 54,
+                        name: "lineTo",
+                      },
+                      arguments: [
+                        {
+                          type: "Literal",
+                          start: 55,
+                          end: 56,
+                          value: 1,
+                          raw: "1",
+                        },
+                        {
+                          type: "Literal",
+                          start: 57,
+                          end: 58,
+                          value: 1,
+                          raw: "1",
+                        },
+                      ],
+                      optional: false,
+                    },
+                  },
+                  {
+                    type: "VariableDeclaration",
+                    start: 62,
+                    end: 90,
+                    kind: "path",
+                    declarations: [
+                      {
+                        type: "VariableDeclarator",
+                        start: 67,
+                        end: 90,
+                        id: {
+                          type: "Identifier",
+                          start: 67,
+                          end: 76,
+                          name: "rightPath",
+                        },
+                        init: {
+                          type: "CallExpression",
+                          start: 79,
+                          end: 90,
+                          callee: {
+                            type: "Identifier",
+                            start: 79,
+                            end: 85,
+                            name: "lineTo",
+                          },
+                          arguments: [
+                            {
+                              type: "Literal",
+                              start: 86,
+                              end: 87,
+                              value: 1,
+                              raw: "1",
+                            },
+                            {
+                              type: "Literal",
+                              start: 88,
+                              end: 89,
+                              value: 0,
+                              raw: "0",
+                            },
+                          ],
+                          optional: false,
+                        },
+                      },
+                    ],
+                  },
+                  {
+                    type: "ExpressionStatement",
+                    start: 93,
+                    end: 100,
+                    expression: {
+                      type: "CallExpression",
+                      start: 93,
+                      end: 100,
+                      callee: {
+                        type: "Identifier",
+                        start: 93,
+                        end: 98,
+                        name: "close",
+                      },
+                      arguments: [],
+                      optional: false,
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        ],
+      },
+    ]);
   });
 });
