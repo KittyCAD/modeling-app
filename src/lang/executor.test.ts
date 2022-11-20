@@ -2,40 +2,28 @@ import fs from "node:fs";
 
 import { abstractSyntaxTree } from "./abstractSyntaxTree";
 import { lexer } from "./tokeniser";
-import { executor } from "./executor";
+import { executor, ProgramMemory } from "./executor";
 
 describe("test", () => {
   it("test assigning two variables, the second summing with the first", () => {
     const code = `const myVar = 5
 const newVar = myVar + 1`;
-    const programMemory = exe(code);
-    expect(withoutStdFns(programMemory)).toEqual({
-      root: {
-        myVar: 5,
-        newVar: 6,
-      },
-    });
+    const { root } = exe(code);
+    expect(root.myVar).toBe(5);
+    expect(root.newVar).toBe(6);
   });
   it("test assigning a var with a string", () => {
     const code = `const myVar = "a str"`;
-    const programMemory = exe(code);
-    expect(withoutStdFns(programMemory)).toEqual({
-      root: {
-        myVar: "a str",
-      },
-    });
+    const { root } = exe(code);
+    expect(root.myVar).toBe("a str");
   });
   it("test assigning a var by cont concatenating two strings string", () => {
     const code = fs.readFileSync(
       "./src/lang/testExamples/variableDeclaration.cado",
       "utf-8"
     );
-    const programMemory = exe(code);
-    expect(withoutStdFns(programMemory)).toEqual({
-      root: {
-        myVar: "a str another str",
-      },
-    });
+    const { root } = exe(code);
+    expect(root.myVar).toBe("a str another str");
   });
   it("test with function call", () => {
     const code = `
@@ -44,16 +32,15 @@ log(5, myVar)`;
     const programMemoryOverride = {
       log: jest.fn(),
     };
-    const programMemory = executor(abstractSyntaxTree(lexer(code)), {
+    const { root } = executor(abstractSyntaxTree(lexer(code)), {
       root: programMemoryOverride,
+      _sketch: [],
     });
-    expect(withoutStdFns(programMemory)).toEqual({
-      root: { myVar: "hello" },
-    });
+    expect(root.myVar).toBe("hello");
     expect(programMemoryOverride.log).toHaveBeenCalledWith(5, "hello");
   });
   it("fn funcN = () => {}", () => {
-    const programMemory = exe(
+    const { root } = exe(
       [
         "fn funcN = (a, b) => {",
         "  return a + b",
@@ -62,9 +49,28 @@ log(5, myVar)`;
         "const magicNum = funcN(9, theVar)",
       ].join("\n")
     );
-    expect(withoutStdFns(programMemory, ["funcN"])).toEqual({
-      root: { theVar: 60, magicNum: 69 },
-    });
+    expect(root.theVar).toBe(60);
+    expect(root.magicNum).toBe(69);
+  });
+  it("sketch declaration", () => {
+    let code = `sketch mySketch {
+  path myPath = lineTo(0,1)
+  lineTo(1,1)
+  path rightPath = lineTo(1,0)
+  close()
+}
+`;
+    const { root } = exe(code);
+    expect(root.mySketch.map(({ previousPath, ...rest }: any) => rest)).toEqual(
+      [
+        { type: "base", from: [0, 0] },
+        { type: "toPoint", to: [0, 1], name: "myPath" },
+        { type: "toPoint", to: [1, 1] },
+        { type: "toPoint", to: [1, 0], name: "rightPath" },
+        { type: "close", firstPath: { type: "base", from: [0, 0] } },
+      ]
+    );
+    expect(root.mySketch[0]).toEqual(root.mySketch[4].firstPath);
   });
 });
 
@@ -72,19 +78,9 @@ log(5, myVar)`;
 
 function exe(
   code: string,
-  programMemory: { root: { [key: string]: any }; return?: any } = { root: {} }
+  programMemory: ProgramMemory = { root: {}, _sketch: [] }
 ) {
   const tokens = lexer(code);
   const ast = abstractSyntaxTree(tokens);
   return executor(ast, programMemory);
-}
-
-function withoutStdFns(obj: any, toDelete: string[] = []) {
-  const newRoot = { ...obj.root };
-  const newObj = { ...obj, root: newRoot };
-  delete newObj.root.log;
-  toDelete.forEach((key) => {
-    delete newObj.root[key];
-  });
-  return newObj;
 }

@@ -1,18 +1,22 @@
 import { Program, BinaryPart, BinaryExpression } from "./abstractSyntaxTree";
+import {Path, sketchFns } from "./sketch";
 
-interface ProgramMemory {
+export interface ProgramMemory {
   root: { [key: string]: any };
   return?: any;
+  _sketch: Path[];
 }
 
 export const executor = (
   node: Program,
-  programMemory: ProgramMemory = { root: {} }
+  programMemory: ProgramMemory = { root: {}, _sketch: [] },
+  options: { bodyType: "default" | "sketch" } = { bodyType: "default" }
 ): any => {
   const _programMemory: ProgramMemory = {
     root: {
       ...programMemory.root,
     },
+    _sketch: [],
     return: programMemory.return,
   };
   const { body } = node;
@@ -23,7 +27,22 @@ export const executor = (
         if (declaration.init.type === "Literal") {
           _programMemory.root[variableName] = declaration.init.value;
         } else if (declaration.init.type === "BinaryExpression") {
-          _programMemory.root[variableName] = getBinaryExpressionResult(declaration.init, _programMemory);
+          _programMemory.root[variableName] = getBinaryExpressionResult(
+            declaration.init,
+            _programMemory
+          );
+        } else if (declaration.init.type === "SketchExpression") {
+          const sketchInit = declaration.init;
+          const fnMemory: ProgramMemory = {
+            root: {
+              ..._programMemory.root,
+            },
+            _sketch: [],
+          };
+          const { _sketch } = executor(sketchInit.body, fnMemory, {
+            bodyType: "sketch",
+          });
+          _programMemory.root[variableName] = _sketch;
         } else if (declaration.init.type === "FunctionExpression") {
           const fnInit = declaration.init;
 
@@ -32,6 +51,7 @@ export const executor = (
               root: {
                 ..._programMemory.root,
               },
+              _sketch: [],
             };
             if (args.length > fnInit.params.length) {
               throw new Error(
@@ -56,9 +76,24 @@ export const executor = (
               return _programMemory.root[arg.name];
             }
           });
-          _programMemory.root[variableName] = _programMemory.root[fnName](
-            ...fnArgs
-          );
+          if ("lineTo" === fnName || "close" === fnName) {
+            if (options.bodyType !== "sketch") {
+              throw new Error(
+                `Cannot call ${fnName} outside of a sketch declaration`
+              );
+            }
+            const result = sketchFns[fnName](
+              _programMemory,
+              variableName,
+              ...fnArgs
+            );
+            _programMemory._sketch = result.programMemory._sketch;
+            _programMemory.root[variableName] = result.currentPath;
+          } else {
+            _programMemory.root[variableName] = _programMemory.root[fnName](
+              ...fnArgs
+            );
+          }
         }
       });
     } else if (statement.type === "ExpressionStatement") {
@@ -72,12 +107,24 @@ export const executor = (
             return _programMemory.root[arg.name];
           }
         });
-        _programMemory.root[functionName](...args);
+        if ("lineTo" === functionName || "close" === functionName) {
+          if (options.bodyType !== "sketch") {
+            throw new Error(
+              `Cannot call ${functionName} outside of a sketch declaration`
+            );
+          }
+          const result = sketchFns[functionName](_programMemory, "", ...args);
+          _programMemory._sketch = [...result.programMemory._sketch];
+        } else {
+          _programMemory.root[functionName](...args);
+        }
       }
     } else if (statement.type === "ReturnStatement") {
-      if(statement.argument.type === "BinaryExpression") {
-        const returnValue = getBinaryExpressionResult(statement.argument, _programMemory);
-        _programMemory.return = returnValue;
+      if (statement.argument.type === "BinaryExpression") {
+        _programMemory.return = getBinaryExpressionResult(
+          statement.argument,
+          _programMemory
+        );
       }
     }
   });
