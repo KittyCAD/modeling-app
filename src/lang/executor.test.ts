@@ -59,8 +59,9 @@ log(5, myVar)`;
   path rightPath = lineTo(1,0)
   close()
 }
+show(mySketch)
 `;
-    const { root } = exe(code);
+    const { root, return: _return } = exe(code);
     expect(root.mySketch.map(({ previousPath, ...rest }: any) => rest)).toEqual(
       [
         { type: "base", from: [0, 0] },
@@ -71,6 +72,15 @@ log(5, myVar)`;
       ]
     );
     expect(root.mySketch[0]).toEqual(root.mySketch[4].firstPath);
+    // hmm not sure what handle the "show" function
+    expect(_return).toEqual([
+      {
+        type: "Identifier",
+        start: 108,
+        end: 116,
+        name: "mySketch",
+      },
+    ]);
   });
 });
 

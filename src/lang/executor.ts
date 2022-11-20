@@ -10,7 +10,7 @@ export interface ProgramMemory {
 export const executor = (
   node: Program,
   programMemory: ProgramMemory = { root: {}, _sketch: [] },
-  options: { bodyType: "default" | "sketch" } = { bodyType: "default" }
+  options: { bodyType: "root" | "sketch" | "block" } = { bodyType: "root" }
 ): any => {
   const _programMemory: ProgramMemory = {
     root: {
@@ -65,7 +65,7 @@ export const executor = (
             fnInit.params.forEach((param, index) => {
               fnMemory.root[param.name] = args[index];
             });
-            return executor(fnInit.body, fnMemory).return;
+            return executor(fnInit.body, fnMemory, {bodyType: 'block'}).return;
           };
         } else if (declaration.init.type === "CallExpression") {
           const fnName = declaration.init.callee.name;
@@ -115,6 +115,14 @@ export const executor = (
           }
           const result = sketchFns[functionName](_programMemory, "", ...args);
           _programMemory._sketch = [...result.programMemory._sketch];
+        } else if("show" === functionName) {
+          if (options.bodyType !== "root") {
+            throw new Error(
+              `Cannot call ${functionName} outside of a root`
+            );
+          }
+          _programMemory.return = expression.arguments;
+
         } else {
           _programMemory.root[functionName](...args);
         }
