@@ -7,6 +7,9 @@ import { lexer } from "./lang/tokeniser";
 import { abstractSyntaxTree } from "./lang/abstractSyntaxTree";
 import { executor } from "./lang/executor";
 import { BufferGeometry } from "three";
+import CodeMirror from '@uiw/react-codemirror';
+import { javascript } from '@codemirror/lang-javascript';
+import { ViewUpdate } from '@codemirror/view'
 // import { Box } from "./lang/engine";
 
 const _code = `sketch mySketch {
@@ -22,6 +25,10 @@ const OrrthographicCamera = OrthographicCamera as any;
 function App() {
   const cam = useRef();
   const [code, setCode] = useState(_code);
+  const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
+    setCode(value)
+    console.log('value:', value, viewUpdate);
+  }, []);
   const [geoArray, setGeoArray] = useState<
     { geo: BufferGeometry; sourceRange: [number, number] }[]
   >([]);
@@ -53,13 +60,12 @@ function App() {
     <div className="h-screen">
       <Allotment>
         <div className="bg-red h-full">
-          <textarea
-            className="w-full p-4 h-64 font-mono"
-            onChange={(a) => setCode(a.target.value)}
-            value={code}
-          >
-            {code}
-          </textarea>
+          <CodeMirror
+            value={_code}
+            height="200px"
+            extensions={[javascript({ jsx: true })]}
+            onChange={onChange}
+          />
         </div>
         <div className="h-full">
           viewer
