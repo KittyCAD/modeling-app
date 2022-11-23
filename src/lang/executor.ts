@@ -85,6 +85,7 @@ export const executor = (
             const result = sketchFns[fnName](
               _programMemory,
               variableName,
+              [declaration.start, declaration.end],
               ...fnArgs
             );
             _programMemory._sketch = result.programMemory._sketch;
@@ -113,7 +114,7 @@ export const executor = (
               `Cannot call ${functionName} outside of a sketch declaration`
             );
           }
-          const result = sketchFns[functionName](_programMemory, "", ...args);
+          const result = sketchFns[functionName](_programMemory, "", [statement.start, statement.end], ...args);
           _programMemory._sketch = [...result.programMemory._sketch];
         } else if("show" === functionName) {
           if (options.bodyType !== "root") {

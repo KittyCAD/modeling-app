@@ -62,15 +62,19 @@ log(5, myVar)`;
 show(mySketch)
 `;
     const { root, return: _return } = exe(code);
-    expect(root.mySketch.map(({ previousPath, ...rest }: any) => rest)).toEqual(
-      [
-        { type: "base", from: [0, 0] },
-        { type: "toPoint", to: [0, 1], name: "myPath" },
-        { type: "toPoint", to: [1, 1] },
-        { type: "toPoint", to: [1, 0], name: "rightPath" },
-        { type: "close", firstPath: { type: "base", from: [0, 0] } },
-      ]
-    );
+    expect(
+      root.mySketch.map(({ previousPath, geo, ...rest }: any) => rest)
+    ).toEqual([
+      { type: "base", from: [0, 0] },
+      { type: "toPoint", to: [0, 1], sourceRange: [25, 45], name: "myPath" },
+      { type: "toPoint", to: [1, 1], sourceRange: [48, 59] },
+      { type: "toPoint", to: [1, 0], sourceRange: [67, 90], name: "rightPath" },
+      {
+        type: "close",
+        firstPath: { type: "base", from: [0, 0] },
+        sourceRange: [93, 100],
+      },
+    ]);
     expect(root.mySketch[0]).toEqual(root.mySketch[4].firstPath);
     // hmm not sure what handle the "show" function
     expect(_return).toEqual([
