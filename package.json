@@ -27,18 +27,31 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "fmt": "prettier --write ./src/**.{ts,tsx} && prettier --write ./src/**/*.{ts,tsx}"
   },
   "jest": {
     "transformIgnorePatterns": [
       "node_modules/(?!(three|allotment)/)"
     ]
   },
+  "prettier": {
+    "trailingComma": "es5",
+    "tabWidth": 2,
+    "semi": false,
+    "singleQuote": true
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "semi": [
+        "error",
+        "never"
+      ]
+    }
   },
   "browserslist": {
     "production": [
@@ -56,6 +69,7 @@
     "@types/three": "^0.146.0",
     "autoprefixer": "^10.4.13",
     "postcss": "^8.4.19",
+    "prettier": "^2.8.0",
     "tailwindcss": "^3.2.4"
   }
 }
