@@ -30,7 +30,7 @@
   },
   "jest": {
     "transformIgnorePatterns": [
-      "node_modules/(?!(three)/)"
+      "node_modules/(?!(three|allotment)/)"
     ]
   },
   "eslintConfig": {

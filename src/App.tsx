@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Allotment } from "allotment";
 import { OrbitControls, OrthographicCamera } from "@react-three/drei";
-import "allotment/dist/style.css";
+// import "allotment/dist/style.css";
 import { lexer } from "./lang/tokeniser";
 import { abstractSyntaxTree } from "./lang/abstractSyntaxTree";
 import { executor } from "./lang/executor";

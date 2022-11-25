@@ -1,9 +1,19 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import React from "react";
+import { render, screen } from "@testing-library/react";
+import App from "./App";
 
-test('renders learn react link', () => {
+let listener: ((rect: any) => void) | undefined = undefined;
+(global as any).ResizeObserver = class ResizeObserver {
+  constructor(ls: ((rect: any) => void) | undefined) {
+    listener = ls;
+  }
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
+
+test("renders learn react link", () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
+  const linkElement = screen.getByText(/viewer/i);
   expect(linkElement).toBeInTheDocument();
 });
