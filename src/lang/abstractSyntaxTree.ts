@@ -123,7 +123,7 @@ function makeExpressionStatement(
   }
 }
 
-interface CallExpression extends GeneralStatement {
+export interface CallExpression extends GeneralStatement {
   type: 'CallExpression'
   callee: Identifier
   arguments: Value[]
@@ -244,7 +244,7 @@ function makeVariableDeclaration(
   }
 }
 
-type Value =
+export type Value =
   | Literal
   | Identifier
   | BinaryExpression
@@ -371,7 +371,7 @@ export type BinaryPart = Literal | Identifier
 // | LogicalExpression
 // | ConditionalExpression
 
-interface Literal extends GeneralStatement {
+export interface Literal extends GeneralStatement {
   type: 'Literal'
   value: string | number | boolean | null
   raw: string
@@ -459,7 +459,7 @@ function makeBinaryExpression(
   }
 }
 
-interface SketchExpression extends GeneralStatement {
+export interface SketchExpression extends GeneralStatement {
   type: 'SketchExpression'
   body: BlockStatement
 }
@@ -483,7 +483,7 @@ function makeSketchExpression(
   }
 }
 
-interface FunctionExpression extends GeneralStatement {
+export interface FunctionExpression extends GeneralStatement {
   type: 'FunctionExpression'
   id: Identifier | null
   params: Identifier[]
