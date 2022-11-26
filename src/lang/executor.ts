@@ -76,7 +76,7 @@ export const executor = (
               return _programMemory.root[arg.name]
             }
           })
-          if ('lineTo' === fnName || 'close' === fnName) {
+          if ('lineTo' === fnName || 'close' === fnName || 'base' === fnName) {
             if (options.bodyType !== 'sketch') {
               throw new Error(
                 `Cannot call ${fnName} outside of a sketch declaration`
@@ -108,7 +108,7 @@ export const executor = (
             return _programMemory.root[arg.name]
           }
         })
-        if ('lineTo' === functionName || 'close' === functionName) {
+        if ('lineTo' === functionName || 'close' === functionName || 'base' === functionName) {
           if (options.bodyType !== 'sketch') {
             throw new Error(
               `Cannot call ${functionName} outside of a sketch declaration`

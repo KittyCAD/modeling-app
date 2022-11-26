@@ -49,12 +49,14 @@ export type Path =
   | {
       type: 'base'
       from: Coords2d
+      sourceRange: SourceRange
     }
 
 function addBasePath(programMemory: ProgramMemory) {
   const base: Path = {
     type: 'base',
     from: [0, 0],
+    sourceRange: [0, 0],
   }
   if (programMemory._sketch?.length === 0) {
     return {
@@ -90,6 +92,29 @@ function getCoordsFromPaths(paths: Path[], index = 0): Coords2d {
 }
 
 export const sketchFns = {
+  base: (programMemory: ProgramMemory,
+    name: string = '',
+    sourceRange: SourceRange,
+    ...args: any[]
+    ): PathReturn => {
+      if(programMemory._sketch?.length > 0) {
+        throw new Error('Base can only be called once')
+      }
+      const [x, y] = args as [number, number]
+      let from: [number, number] = [x, y]
+      const newPath: Path = {
+        type: 'base',
+        from,
+        sourceRange,
+      }
+      return {
+        programMemory: {
+          ...programMemory,
+          _sketch: [...(programMemory?._sketch || []), newPath],
+        },
+        currentPath: newPath,
+      }
+  },
   close: (
     programMemory: ProgramMemory,
     name: string = '',

@@ -65,13 +65,13 @@ show(mySketch)
     expect(
       root.mySketch.map(({ previousPath, geo, ...rest }: any) => rest)
     ).toEqual([
-      { type: 'base', from: [0, 0] },
+      { type: 'base', from: [0, 0], sourceRange: [0, 0] },
       { type: 'toPoint', to: [0, 1], sourceRange: [25, 45], name: 'myPath' },
       { type: 'toPoint', to: [1, 1], sourceRange: [48, 59] },
       { type: 'toPoint', to: [1, 0], sourceRange: [67, 90], name: 'rightPath' },
       {
         type: 'close',
-        firstPath: { type: 'base', from: [0, 0] },
+        firstPath: { type: 'base', from: [0, 0], sourceRange: [0, 0] },
         sourceRange: [93, 100],
       },
     ])
