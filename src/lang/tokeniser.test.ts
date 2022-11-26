@@ -18,7 +18,10 @@ describe('testing helpers', () => {
     expect(isNumber('5?')).toBe(true)
     expect(isNumber('5 + 6')).toBe(true)
     expect(isNumber('5 + a')).toBe(true)
-
+    expect(isNumber('-5')).toBe(true)
+    expect(isNumber('5.5')).toBe(true)
+    expect(isNumber('-5.5')).toBe(true)
+    
     expect(isNumber('a')).toBe(false)
     expect(isNumber('?')).toBe(false)
     expect(isNumber('?5')).toBe(false)
@@ -257,6 +260,46 @@ describe('testing lexer', () => {
       "brace        '{'        from 34  to 35",
       "brace        '}'        from 35  to 36",
     ])
+  })
+  it('test negative and decimal numbers', () => {
+    expect(stringSummaryLexer('-1')).toEqual([
+      "number       '-1'       from 0   to 2",
+    ])
+    expect(stringSummaryLexer('-1.5')).toEqual([
+      "number       '-1.5'     from 0   to 4",
+    ])
+    expect(stringSummaryLexer('1.5')).toEqual([
+      "number       '1.5'      from 0   to 3",
+    ])
+    expect(stringSummaryLexer('1.5 + 2.5')).toEqual([
+      "number       '1.5'      from 0   to 3",
+      "whitespace   ' '        from 3   to 4",
+      "operator     '+'        from 4   to 5",
+      "whitespace   ' '        from 5   to 6",
+      "number       '2.5'      from 6   to 9",
+    ])
+    expect(stringSummaryLexer('1.5 - 2.5')).toEqual([
+      "number       '1.5'      from 0   to 3",
+      "whitespace   ' '        from 3   to 4",
+      "operator     '-'        from 4   to 5",
+      "whitespace   ' '        from 5   to 6",
+      "number       '2.5'      from 6   to 9",
+    ])
+    expect(stringSummaryLexer('1.5 + -2.5')).toEqual([
+      "number       '1.5'      from 0   to 3",
+      "whitespace   ' '        from 3   to 4",
+      "operator     '+'        from 4   to 5",
+      "whitespace   ' '        from 5   to 6",
+      "number       '-2.5'     from 6   to 10",
+    ])
+    expect(stringSummaryLexer('-1.5 + 2.5')).toEqual([
+      "number       '-1.5'     from 0   to 4",
+      "whitespace   ' '        from 4   to 5",
+      "operator     '+'        from 5   to 6",
+      "whitespace   ' '        from 6   to 7",
+      "number       '2.5'      from 7   to 10",
+    ])
+
   })
 })
 

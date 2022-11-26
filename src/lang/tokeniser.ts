@@ -1,4 +1,6 @@
-const NUMBER = /^[0-9]+/
+// regular expression for number that includes a decimal point or starts with a minus sign
+const NUMBER = /^-?\d+(\.\d+)?/
+
 const WHITESPACE = /\s+/
 const WORD = /^[a-zA-Z_][a-zA-Z0-9_]*/
 // regex that captures everything between two non escaped quotes and the quotes aren't captured in the match
@@ -58,9 +60,6 @@ const makeToken = (
 
 const returnTokenAtIndex = (str: string, startIndex: number): Token | null => {
   const strFromIndex = str.slice(startIndex)
-  if (isOperator(strFromIndex)) {
-    return makeToken('operator', matchFirst(strFromIndex, OPERATOR), startIndex)
-  }
   if (isString(strFromIndex)) {
     return makeToken('string', matchFirst(strFromIndex, STRING), startIndex)
   }
@@ -81,6 +80,9 @@ const returnTokenAtIndex = (str: string, startIndex: number): Token | null => {
   }
   if (isNumber(strFromIndex)) {
     return makeToken('number', matchFirst(strFromIndex, NUMBER), startIndex)
+  }
+  if (isOperator(strFromIndex)) {
+    return makeToken('operator', matchFirst(strFromIndex, OPERATOR), startIndex)
   }
   if (isWord(strFromIndex)) {
     return makeToken('word', matchFirst(strFromIndex, WORD), startIndex)
