@@ -21,7 +21,7 @@ describe('testing helpers', () => {
     expect(isNumber('-5')).toBe(true)
     expect(isNumber('5.5')).toBe(true)
     expect(isNumber('-5.5')).toBe(true)
-    
+
     expect(isNumber('a')).toBe(false)
     expect(isNumber('?')).toBe(false)
     expect(isNumber('?5')).toBe(false)
@@ -299,7 +299,6 @@ describe('testing lexer', () => {
       "whitespace   ' '        from 6   to 7",
       "number       '2.5'      from 7   to 10",
     ])
-
   })
 })
 

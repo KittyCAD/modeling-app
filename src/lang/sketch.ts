@@ -92,28 +92,29 @@ function getCoordsFromPaths(paths: Path[], index = 0): Coords2d {
 }
 
 export const sketchFns = {
-  base: (programMemory: ProgramMemory,
+  base: (
+    programMemory: ProgramMemory,
     name: string = '',
     sourceRange: SourceRange,
     ...args: any[]
-    ): PathReturn => {
-      if(programMemory._sketch?.length > 0) {
-        throw new Error('Base can only be called once')
-      }
-      const [x, y] = args as [number, number]
-      let from: [number, number] = [x, y]
-      const newPath: Path = {
-        type: 'base',
-        from,
-        sourceRange,
-      }
-      return {
-        programMemory: {
-          ...programMemory,
-          _sketch: [...(programMemory?._sketch || []), newPath],
-        },
-        currentPath: newPath,
-      }
+  ): PathReturn => {
+    if (programMemory._sketch?.length > 0) {
+      throw new Error('Base can only be called once')
+    }
+    const [x, y] = args as [number, number]
+    let from: [number, number] = [x, y]
+    const newPath: Path = {
+      type: 'base',
+      from,
+      sourceRange,
+    }
+    return {
+      programMemory: {
+        ...programMemory,
+        _sketch: [...(programMemory?._sketch || []), newPath],
+      },
+      currentPath: newPath,
+    }
   },
   close: (
     programMemory: ProgramMemory,

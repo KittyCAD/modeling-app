@@ -113,6 +113,6 @@ function recastSketchExpression(
   indentation: string
 ): string {
   return `{
-${recast(expression.body, '',  indentation + '  ')}
+${recast(expression.body, '', indentation + '  ')}
 }`
 }

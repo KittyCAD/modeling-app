@@ -50,14 +50,13 @@ log(5, myVar)`
     expect(recasted).toBe(code.trim())
   })
   it('function declaration with call', () => {
-    const code =
-      [
-        'fn funcN = (a, b) => {',
-        '  return a + b',
-        '}',
-        'const theVar = 60',
-        'const magicNum = funcN(9, theVar)',
-      ].join('\n')
+    const code = [
+      'fn funcN = (a, b) => {',
+      '  return a + b',
+      '}',
+      'const theVar = 60',
+      'const magicNum = funcN(9, theVar)',
+    ].join('\n')
     const { ast } = code2ast(code)
     const recasted = recast(ast)
     expect(recasted).toBe(code.trim())
