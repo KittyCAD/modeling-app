@@ -2,15 +2,20 @@ import { useState } from 'react'
 import { DoubleSide } from 'three'
 import { useStore } from '../useStore'
 import { Intersection } from '@react-three/fiber'
+import { addSketchTo, Program } from '../lang/abstractSyntaxTree'
 
 const opacity = 0.1
 
 export const BasePlanes = () => {
   const [axisIndex, setAxisIndex] = useState<null | number>(null)
-  const { setGuiMode, guiMode } = useStore(({ guiMode, setGuiMode }) => ({
-    guiMode,
-    setGuiMode,
-  }))
+  const { setGuiMode, guiMode, ast, updateAst } = useStore(
+    ({ guiMode, setGuiMode, ast, updateAst }) => ({
+      guiMode,
+      setGuiMode,
+      ast,
+      updateAst,
+    })
+  )
 
   const onPointerEvent = ({
     intersections,
@@ -36,11 +41,25 @@ export const BasePlanes = () => {
     if (guiMode.sketchMode !== 'selectFace') {
       return null
     }
+
+    let _ast: Program = ast
+      ? ast
+      : {
+          type: 'Program',
+          start: 0,
+          end: 0,
+          body: [],
+        }
+    const { modifiedAst, id } = addSketchTo(_ast)
+
     setGuiMode({
       mode: 'sketch',
       sketchMode: 'points',
       axis: axisIndex === 0 ? 'yz' : axisIndex === 1 ? 'xy' : 'xz',
+      id
     })
+    
+    updateAst(modifiedAst)
   }
   if (guiMode.mode !== 'sketch') {
     return null

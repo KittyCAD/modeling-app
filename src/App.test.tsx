@@ -14,6 +14,6 @@ let listener: ((rect: any) => void) | undefined = undefined
 
 test('renders learn react link', () => {
   render(<App />)
-  const linkElement = screen.getByText(/viewer/i)
+  const linkElement = screen.getByText(/reset/i)
   expect(linkElement).toBeInTheDocument()
 })

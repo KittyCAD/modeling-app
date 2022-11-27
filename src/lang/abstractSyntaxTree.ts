@@ -557,7 +557,7 @@ function makeBlockStatement(
     block: {
       type: 'BlockStatement',
       start: openingCurly.start,
-      end: tokens[lastIndex].end,
+      end: tokens[lastIndex]?.end || 0,
       body,
     },
     lastIndex,
@@ -765,4 +765,238 @@ export function findClosingBrace(
   }
   // non-brace token, increment and continue
   return findClosingBrace(tokens, index + 1, _braceCount, searchOpeningBrace)
+}
+
+export function addSketchTo(
+  node: Program,
+  name = ''
+): { modifiedAst: Program; id: string } {
+  const _node = { ...node }
+  const dumbyStartend = { start: 0, end: 0 }
+  const _name = name || findUniqueName(node, 'mySketch')
+  const sketchBody: BlockStatement = {
+    type: 'BlockStatement',
+    ...dumbyStartend,
+    body: [],
+  }
+  const sketch: SketchExpression = {
+    type: 'SketchExpression',
+    ...dumbyStartend,
+    body: sketchBody,
+  }
+  const sketchVariableDeclaration: VariableDeclaration = {
+    type: 'VariableDeclaration',
+    ...dumbyStartend,
+    kind: 'sketch',
+    declarations: [
+      {
+        type: 'VariableDeclarator',
+        ...dumbyStartend,
+        id: {
+          type: 'Identifier',
+          ...dumbyStartend,
+          name: _name,
+        },
+        init: sketch,
+      },
+    ],
+  }
+  const showCallIndex = getShowIndex(_node)
+  if (showCallIndex === -1) {
+    _node.body = [...node.body, sketchVariableDeclaration]
+  } else {
+    const newBody = [...node.body]
+    newBody.splice(showCallIndex, 0, sketchVariableDeclaration)
+    _node.body = newBody
+  }
+
+  return {
+    modifiedAst: addToShow(_node, _name),
+    id: _name,
+  }
+}
+
+function findUniqueName(
+  ast: Program | string,
+  name: string,
+  index = 1
+): string {
+  let searchStr = ''
+  if (typeof ast === 'string') {
+    searchStr = ast
+  } else {
+    searchStr = JSON.stringify(ast)
+  }
+  const indexStr = `${index}`.padStart(3, '0')
+  const newName = `${name}${indexStr}`
+  const isInString = searchStr.includes(newName)
+  if (!isInString) {
+    return newName
+  }
+  return findUniqueName(searchStr, name, index + 1)
+}
+
+function addToShow(node: Program, name: string): Program {
+  const _node = { ...node }
+  const dumbyStartend = { start: 0, end: 0 }
+  const showCallIndex = getShowIndex(_node)
+  if (showCallIndex === -1) {
+    const showCall: CallExpression = {
+      type: 'CallExpression',
+      ...dumbyStartend,
+      callee: {
+        type: 'Identifier',
+        ...dumbyStartend,
+        name: 'show',
+      },
+      optional: false,
+      arguments: [
+        {
+          type: 'Identifier',
+          ...dumbyStartend,
+          name,
+        },
+      ],
+    }
+    const showExpressionStatement: ExpressionStatement = {
+      type: 'ExpressionStatement',
+      ...dumbyStartend,
+      expression: showCall,
+    }
+    _node.body = [..._node.body, showExpressionStatement]
+    return _node
+  }
+  const showCall = { ..._node.body[showCallIndex] } as ExpressionStatement
+  const showCallArgs = (showCall.expression as CallExpression).arguments
+  const newShowCallArgs: Value[] = [
+    ...showCallArgs,
+    {
+      type: 'Identifier',
+      ...dumbyStartend,
+      name,
+    },
+  ]
+  const newShowExpression: CallExpression = {
+    type: 'CallExpression',
+    ...dumbyStartend,
+    callee: {
+      type: 'Identifier',
+      ...dumbyStartend,
+      name: 'show',
+    },
+    optional: false,
+    arguments: newShowCallArgs,
+  }
+
+  _node.body[showCallIndex] = {
+    ...showCall,
+    expression: newShowExpression,
+  }
+  return _node
+}
+
+function getShowIndex(node: Program): number {
+  return node.body.findIndex(
+    (statement) =>
+      statement.type === 'ExpressionStatement' &&
+      statement.expression.type === 'CallExpression' &&
+      statement.expression.callee.type === 'Identifier' &&
+      statement.expression.callee.name === 'show'
+  )
+}
+
+export function addLine(
+  node: Program,
+  id: string,
+  to: [number, number]
+): { modifiedAst: Program; id: string } {
+  const _node = { ...node }
+  const dumbyStartend = { start: 0, end: 0 }
+  const { index, sketchDeclaration, sketchExpression } = getSketchStatement(_node, id)
+  const line: ExpressionStatement = {
+    type: 'ExpressionStatement',
+    ...dumbyStartend,
+    expression: {
+      type: 'CallExpression',
+      ...dumbyStartend,
+      callee: {
+        type: 'Identifier',
+        ...dumbyStartend,
+        name: 'lineTo',
+      },
+      optional: false,
+      arguments: [
+        {
+          type: 'Literal',
+          ...dumbyStartend,
+          value: to[0],
+          raw: `${to[0]}`,
+        },
+        {
+          type: 'Literal',
+          ...dumbyStartend,
+          value: to[1],
+          raw: `${to[1]}`,
+        },
+      ],
+    },
+  }
+  const newBody = [...sketchExpression.body.body, line]
+  const newSketchExpression: SketchExpression = {
+    ...sketchExpression,
+    body: {
+      ...sketchExpression.body,
+      body: newBody,
+    },
+  }
+  const newSketchDeclaration: VariableDeclaration = {
+    ...sketchDeclaration,
+    declarations: [
+      {
+        ...sketchDeclaration.declarations[0],
+        init: newSketchExpression,
+      },
+    ],
+  }
+  _node.body[index] = newSketchDeclaration
+  return {
+    modifiedAst: _node,
+    id,
+  }
+}
+
+function getSketchStatement(
+  node: Program,
+  id: string
+): {
+  sketchDeclaration: VariableDeclaration
+  sketchExpression: SketchExpression
+  index: number
+} {
+  const sketchStatementIndex = node.body.findIndex(
+    (statement) =>
+      statement.type === 'VariableDeclaration' &&
+      statement.kind === 'sketch' &&
+      statement.declarations[0].id.type === 'Identifier' &&
+      statement.declarations[0].id.name === id
+  )
+  const sketchStatement = node.body.find(
+    (statement) =>
+      statement.type === 'VariableDeclaration' &&
+      statement.kind === 'sketch' &&
+      statement.declarations[0].id.type === 'Identifier' &&
+      statement.declarations[0].id.name === id
+  )
+  if (
+    !sketchStatement ||
+    sketchStatement.type !== 'VariableDeclaration' ||
+    sketchStatement.declarations[0].init.type !== 'SketchExpression'
+  )
+    throw new Error('No sketch found')
+
+  return {
+    sketchDeclaration: sketchStatement,
+    sketchExpression: sketchStatement.declarations[0].init,
+    index: sketchStatementIndex,
+  }
 }

@@ -11,7 +11,7 @@ export const executor = (
   node: Program,
   programMemory: ProgramMemory = { root: {}, _sketch: [] },
   options: { bodyType: 'root' | 'sketch' | 'block' } = { bodyType: 'root' }
-): any => {
+): ProgramMemory => {
   const _programMemory: ProgramMemory = {
     root: {
       ...programMemory.root,
@@ -39,9 +39,13 @@ export const executor = (
             },
             _sketch: [],
           }
-          const { _sketch } = executor(sketchInit.body, fnMemory, {
+          let { _sketch } = executor(sketchInit.body, fnMemory, {
             bodyType: 'sketch',
           })
+          if (_sketch.length === 0) {
+            const {programMemory: newProgramMemory} = sketchFns.base(fnMemory, '', [0, 0], 0, 0)
+            _sketch = newProgramMemory._sketch
+          }
           _programMemory.root[variableName] = _sketch
         } else if (declaration.init.type === 'FunctionExpression') {
           const fnInit = declaration.init

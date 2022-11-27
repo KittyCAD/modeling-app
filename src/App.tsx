@@ -20,19 +20,11 @@ import { BasePlanes } from './components/BasePlanes'
 import { SketchPlane } from './components/SketchPlane'
 import { Logs } from './components/Logs'
 
-const _code = `sketch mySketch {
-  path myPath = lineTo(0,1)
-  lineTo(1,5)
-  path rightPath = lineTo(1,0)
-  close()
-}
-show(mySketch)`
 
 const OrrthographicCamera = OrthographicCamera as any
 
 function App() {
   const cam = useRef()
-  const [code, setCode] = useState(_code)
   const {
     editorView,
     setEditorView,
@@ -40,8 +32,12 @@ function App() {
     selectionRange,
     guiMode,
     setGuiMode,
+    lastGuiMode,
     removeError,
     addLog,
+    code,
+    setCode,
+    setAst,
   } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
@@ -51,6 +47,11 @@ function App() {
     setGuiMode: s.setGuiMode,
     removeError: s.removeError,
     addLog: s.addLog,
+    code: s.code,
+    setCode: s.setCode,
+    ast: s.ast,
+    setAst: s.setAst,
+    lastGuiMode: s.lastGuiMode
   }))
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
@@ -76,12 +77,14 @@ function App() {
     try {
       if (!code) {
         setGeoArray([])
+        setAst(null)
         removeError()
         return
       }
       const tokens = lexer(code)
-      const ast = abstractSyntaxTree(tokens)
-      const programMemory = executor(ast, {
+      const _ast = abstractSyntaxTree(tokens)
+      setAst(_ast)
+      const programMemory = executor(_ast, {
         root: {
           log: (a: any) => {
             addLog(a)
@@ -90,17 +93,20 @@ function App() {
         _sketch: [],
       })
       const geos: { geo: BufferGeometry; sourceRange: [number, number] }[] =
-        programMemory.root.mySketch
-          .map(
-            ({
-              geo,
-              sourceRange,
-            }: {
-              geo: BufferGeometry
-              sourceRange: [number, number]
-            }) => ({ geo, sourceRange })
-          )
-          .filter((a: any) => !!a.geo)
+        programMemory?.return?.flatMap(
+          ({ name }: { name: string }) =>
+            programMemory?.root?.[name]
+              ?.map(
+                ({
+                  geo,
+                  sourceRange,
+                }: {
+                  geo: BufferGeometry
+                  sourceRange: [number, number]
+                }) => ({ geo, sourceRange })
+              )
+              .filter((a: any) => !!a.geo) || []
+        ) || []
       setGeoArray(geos)
       removeError()
       console.log(programMemory)
@@ -114,10 +120,10 @@ function App() {
     <div className="h-screen">
       <Allotment>
         <Logs />
-        <div className="bg-red h-full">
+        <div className="bg-red h-full overflow-auto">
           <CodeMirror
-            value={_code}
-            height="200px"
+            className="h-full"
+            value={code}
             extensions={[javascript({ jsx: true }), lineHighlightField]}
             onChange={onChange}
             onUpdate={onUpdate}
@@ -125,7 +131,6 @@ function App() {
           />
         </div>
         <div className="h-full">
-          viewer
           <Toolbar />
           <div className="border h-full border-gray-300 relative">
             <div className="absolute inset-0">
@@ -162,7 +167,8 @@ function App() {
               </Canvas>
             </div>
             {guiMode.mode === 'codeError' && (
-              <div className="absolute inset-0 bg-gray-700/20">yo</div>
+              <div className="absolute inset-0 bg-gray-700/20">
+                <pre>{'last first: \n\n' + JSON.stringify(lastGuiMode, null, 2) + '\n\n' + JSON.stringify(guiMode)}</pre></div>
             )}
           </div>
         </div>

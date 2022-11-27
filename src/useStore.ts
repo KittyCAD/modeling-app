@@ -1,5 +1,7 @@
 import create from 'zustand'
 import { addLineHighlight, EditorView } from './editor/highlightextension'
+import { Program } from './lang/abstractSyntaxTree'
+import { recast } from './lang/recast'
 
 export type Range = [number, number]
 
@@ -11,6 +13,7 @@ type GuiModes =
       mode: 'sketch'
       sketchMode: 'points'
       axis: 'xy' | 'xz' | 'yz'
+      id: string
     }
   | {
       mode: 'sketch'
@@ -34,6 +37,11 @@ interface StoreState {
   logs: string[]
   addLog: (log: string) => void
   resetLogs: () => void
+  ast: Program | null
+  setAst: (ast: Program | null) => void
+  updateAst: (ast: Program) => void
+  code: string
+  setCode: (code: string) => void
 }
 
 export const useStore = create<StoreState>()((set, get) => ({
@@ -58,7 +66,12 @@ export const useStore = create<StoreState>()((set, get) => ({
   setGuiMode: (guiMode) => {
     const lastGuiMode = get().guiMode
     set({ guiMode })
-    set({ lastGuiMode })
+    if(guiMode.mode !== 'codeError') {
+      // don't set lastGuiMode to and error state
+      // as the point fo lastGuiMode is to restore the last healthy state
+      // todo maybe rename to lastHealthyGuiMode and remove this comment
+      set({ lastGuiMode })
+    }
   },
   removeError: () => {
     const lastGuiMode = get().lastGuiMode
@@ -74,4 +87,16 @@ export const useStore = create<StoreState>()((set, get) => ({
   resetLogs: () => {
     set({ logs: [] })
   },
+  ast: null,
+  setAst: (ast) => {
+    set({ ast })
+  },
+  updateAst: (ast) => {
+    const newCode = recast(ast)
+    set({ ast, code: newCode })
+  },
+  code: '',
+  setCode: (code) => {
+    set({ code })
+  }
 }))

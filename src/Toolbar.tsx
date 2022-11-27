@@ -19,6 +19,11 @@ export const Toolbar = () => {
           Start sketch
         </button>
       )}
+      {guiMode.mode === 'sketch' && guiMode.sketchMode === 'points' && (
+        <button>
+          LineTo TODO
+        </button>
+      )}
       {guiMode.mode !== 'default' && (
         <button onClick={() => setGuiMode({ mode: 'default' })}>exit</button>
       )}

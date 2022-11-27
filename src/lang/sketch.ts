@@ -1,5 +1,5 @@
 import { ProgramMemory } from './executor'
-import { lineGeo } from './engine'
+import { lineGeo, baseGeo } from './engine'
 import { BufferGeometry } from 'three'
 
 type Coords2d = [number, number]
@@ -49,14 +49,17 @@ export type Path =
   | {
       type: 'base'
       from: Coords2d
+      geo: BufferGeometry
       sourceRange: SourceRange
     }
 
 function addBasePath(programMemory: ProgramMemory) {
+  const geo = baseGeo({ from: [0, 0, 0] })
   const base: Path = {
     type: 'base',
     from: [0, 0],
     sourceRange: [0, 0],
+    geo,
   }
   if (programMemory._sketch?.length === 0) {
     return {
@@ -103,10 +106,12 @@ export const sketchFns = {
     }
     const [x, y] = args as [number, number]
     let from: [number, number] = [x, y]
+    const geo = baseGeo({ from: [x, y, 0] })
     const newPath: Path = {
       type: 'base',
       from,
       sourceRange,
+      geo,
     }
     return {
       programMemory: {
