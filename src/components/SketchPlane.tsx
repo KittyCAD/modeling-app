@@ -23,11 +23,11 @@ export const SketchPlane = () => {
   const ninety = Math.PI / 2
   const gridRotation: [number, number, number] = [0, 0, 0]
   const clickDetectPlaneRotation: [number, number, number] = [0, 0, 0]
-  if (guiMode.axis === 'yz') {
+  if (guiMode.axis === 'xy') {
     gridRotation[0] = ninety
-  } else if (guiMode.axis === 'xy') {
-    clickDetectPlaneRotation[0] = ninety
   } else if (guiMode.axis === 'xz') {
+    clickDetectPlaneRotation[0] = ninety
+  } else if (guiMode.axis === 'yz') {
     gridRotation[2] = ninety
     clickDetectPlaneRotation[1] = ninety
   }
@@ -50,10 +50,13 @@ export const SketchPlane = () => {
                 end: 0,
                 body: [],
               }
-          const { modifiedAst, id } = addLine(_ast, guiMode.id, [
-            point.x,
-            point.y,
-          ])
+          let addLinePoint: [number, number] = [point.x, point.y]
+          if (guiMode.axis === 'xz') {
+            addLinePoint = [point.x, point.z]
+          } else if (guiMode.axis === 'yz') {
+            addLinePoint = [point.z, point.y]
+          }
+          const { modifiedAst, id } = addLine(_ast, guiMode.id, addLinePoint)
           updateAst(modifiedAst)
         }}
       >

@@ -20,6 +20,7 @@ import { Toolbar } from './Toolbar'
 import { BasePlanes } from './components/BasePlanes'
 import { SketchPlane } from './components/SketchPlane'
 import { Logs } from './components/Logs'
+import { AxisIndicator } from './components/AxisIndicator'
 
 const OrrthographicCamera = OrthographicCamera as any
 
@@ -181,6 +182,7 @@ function App() {
                 )}
                 <BasePlanes />
                 <SketchPlane />
+                <AxisIndicator />
               </Canvas>
             </div>
             {guiMode.mode === 'codeError' && (

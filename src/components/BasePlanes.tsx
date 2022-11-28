@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { DoubleSide } from 'three'
 import { useStore } from '../useStore'
 import { Intersection } from '@react-three/fiber'
+import { Text } from '@react-three/drei'
 import { addSketchTo, Program } from '../lang/abstractSyntaxTree'
 
 const opacity = 0.1
@@ -51,11 +52,12 @@ export const BasePlanes = () => {
           body: [],
         }
     const { modifiedAst, id } = addSketchTo(_ast)
+    const axis = axisIndex === 0 ? 'xy' : axisIndex === 1 ? 'xz' : 'yz'
 
     setGuiMode({
       mode: 'sketch',
       sketchMode: 'points',
-      axis: axisIndex === 0 ? 'yz' : axisIndex === 1 ? 'xy' : 'xz',
+      axis,
       id,
     })
 
@@ -86,6 +88,12 @@ export const BasePlanes = () => {
             transparent
             opacity={opacity + (axisIndex === index ? 0.3 : 0)}
           />
+          <Text fontSize={1} color="#555" position={[1, 1, 0.01]}>
+            {index === 0 ? 'xy' : index === 1 ? 'xz' : 'yz'}
+          </Text>
+          <Text fontSize={1} color="#555" position={[1, 1, -0.01]}>
+            {index === 0 ? 'xy' : index === 1 ? 'xz' : 'yz'}
+          </Text>
         </mesh>
       ))}
     </>
