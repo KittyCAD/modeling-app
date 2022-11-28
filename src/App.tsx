@@ -1,10 +1,11 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useMemo } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { Allotment } from 'allotment'
 import { OrbitControls, OrthographicCamera } from '@react-three/drei'
 import { lexer } from './lang/tokeniser'
 import { abstractSyntaxTree } from './lang/abstractSyntaxTree'
 import { executor } from './lang/executor'
+import { recast } from './lang/recast'
 import { BufferGeometry } from 'three'
 import CodeMirror from '@uiw/react-codemirror'
 import { javascript } from '@codemirror/lang-javascript'
@@ -38,6 +39,8 @@ function App() {
     code,
     setCode,
     setAst,
+    formatCode,
+    ast,
   } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
@@ -51,7 +54,8 @@ function App() {
     setCode: s.setCode,
     ast: s.ast,
     setAst: s.setAst,
-    lastGuiMode: s.lastGuiMode
+    lastGuiMode: s.lastGuiMode,
+    formatCode: s.formatCode,
   }))
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
@@ -116,19 +120,27 @@ function App() {
       addLog(e)
     }
   }, [code])
+  const shouldFormat = useMemo(() => {
+    if(!ast) return false
+    const recastedCode = recast(ast)
+    return recastedCode !== code
+  }, [code, ast])
   return (
     <div className="h-screen">
       <Allotment>
         <Logs />
-        <div className="bg-red h-full overflow-auto">
-          <CodeMirror
-            className="h-full"
-            value={code}
-            extensions={[javascript({ jsx: true }), lineHighlightField]}
-            onChange={onChange}
-            onUpdate={onUpdate}
-            onCreateEditor={(_editorView) => setEditorView(_editorView)}
-          />
+        <div className="h-full flex flex-col items-start">
+          <button disabled={!shouldFormat} onClick={formatCode} className={`${!shouldFormat && "text-gray-300"}`}>format</button>
+          <div className="bg-red h-full w-full overflow-auto">
+            <CodeMirror
+              className="h-full"
+              value={code}
+              extensions={[javascript({ jsx: true }), lineHighlightField]}
+              onChange={onChange}
+              onUpdate={onUpdate}
+              onCreateEditor={(_editorView) => setEditorView(_editorView)}
+            />
+          </div>
         </div>
         <div className="h-full">
           <Toolbar />

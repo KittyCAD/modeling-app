@@ -1,7 +1,8 @@
 import create from 'zustand'
 import { addLineHighlight, EditorView } from './editor/highlightextension'
-import { Program } from './lang/abstractSyntaxTree'
+import { Program, abstractSyntaxTree } from './lang/abstractSyntaxTree'
 import { recast } from './lang/recast'
+import { lexer } from './lang/tokeniser'
 
 export type Range = [number, number]
 
@@ -42,6 +43,7 @@ interface StoreState {
   updateAst: (ast: Program) => void
   code: string
   setCode: (code: string) => void
+  formatCode: () => void
 }
 
 export const useStore = create<StoreState>()((set, get) => ({
@@ -66,7 +68,7 @@ export const useStore = create<StoreState>()((set, get) => ({
   setGuiMode: (guiMode) => {
     const lastGuiMode = get().guiMode
     set({ guiMode })
-    if(guiMode.mode !== 'codeError') {
+    if (guiMode.mode !== 'codeError') {
       // don't set lastGuiMode to and error state
       // as the point fo lastGuiMode is to restore the last healthy state
       // todo maybe rename to lastHealthyGuiMode and remove this comment
@@ -98,5 +100,11 @@ export const useStore = create<StoreState>()((set, get) => ({
   code: '',
   setCode: (code) => {
     set({ code })
-  }
+  },
+  formatCode: () => {
+    const code = get().code
+    const ast = abstractSyntaxTree(lexer(code))
+    const newCode = recast(ast)
+    set({ code: newCode, ast })
+  },
 }))
