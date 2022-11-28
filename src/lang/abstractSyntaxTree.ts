@@ -912,7 +912,10 @@ export function addLine(
 ): { modifiedAst: Program; id: string } {
   const _node = { ...node }
   const dumbyStartend = { start: 0, end: 0 }
-  const { index, sketchDeclaration, sketchExpression } = getSketchStatement(_node, id)
+  const { index, sketchDeclaration, sketchExpression } = getSketchStatement(
+    _node,
+    id
+  )
   const line: ExpressionStatement = {
     type: 'ExpressionStatement',
     ...dumbyStartend,

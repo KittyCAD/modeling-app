@@ -1,7 +1,7 @@
 import { BoxGeometry, SphereGeometry, BufferGeometry } from 'three'
 import { mergeBufferGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils'
 
-export function baseGeo({from}: {from: [number, number, number]}) {
+export function baseGeo({ from }: { from: [number, number, number] }) {
   const baseSphere = new SphereGeometry(0.25)
   baseSphere.translate(from[0], from[1], from[2])
   return baseSphere

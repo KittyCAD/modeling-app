@@ -43,7 +43,13 @@ export const executor = (
             bodyType: 'sketch',
           })
           if (_sketch.length === 0) {
-            const {programMemory: newProgramMemory} = sketchFns.base(fnMemory, '', [0, 0], 0, 0)
+            const { programMemory: newProgramMemory } = sketchFns.base(
+              fnMemory,
+              '',
+              [0, 0],
+              0,
+              0
+            )
             _sketch = newProgramMemory._sketch
           }
           _programMemory.root[variableName] = _sketch

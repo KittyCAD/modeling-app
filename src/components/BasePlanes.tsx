@@ -56,9 +56,9 @@ export const BasePlanes = () => {
       mode: 'sketch',
       sketchMode: 'points',
       axis: axisIndex === 0 ? 'yz' : axisIndex === 1 ? 'xy' : 'xz',
-      id
+      id,
     })
-    
+
     updateAst(modifiedAst)
   }
   if (guiMode.mode !== 'sketch') {

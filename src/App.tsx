@@ -21,7 +21,6 @@ import { BasePlanes } from './components/BasePlanes'
 import { SketchPlane } from './components/SketchPlane'
 import { Logs } from './components/Logs'
 
-
 const OrrthographicCamera = OrthographicCamera as any
 
 function App() {
@@ -121,7 +120,7 @@ function App() {
     }
   }, [code])
   const shouldFormat = useMemo(() => {
-    if(!ast) return false
+    if (!ast) return false
     const recastedCode = recast(ast)
     return recastedCode !== code
   }, [code, ast])
@@ -130,7 +129,13 @@ function App() {
       <Allotment>
         <Logs />
         <div className="h-full flex flex-col items-start">
-          <button disabled={!shouldFormat} onClick={formatCode} className={`${!shouldFormat && "text-gray-300"}`}>format</button>
+          <button
+            disabled={!shouldFormat}
+            onClick={formatCode}
+            className={`${!shouldFormat && 'text-gray-300'}`}
+          >
+            format
+          </button>
           <div className="bg-red h-full w-full overflow-auto">
             <CodeMirror
               className="h-full"
@@ -180,7 +185,13 @@ function App() {
             </div>
             {guiMode.mode === 'codeError' && (
               <div className="absolute inset-0 bg-gray-700/20">
-                <pre>{'last first: \n\n' + JSON.stringify(lastGuiMode, null, 2) + '\n\n' + JSON.stringify(guiMode)}</pre></div>
+                <pre>
+                  {'last first: \n\n' +
+                    JSON.stringify(lastGuiMode, null, 2) +
+                    '\n\n' +
+                    JSON.stringify(guiMode)}
+                </pre>
+              </div>
             )}
           </div>
         </div>
