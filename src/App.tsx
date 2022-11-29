@@ -104,7 +104,7 @@ function App() {
       const geos: ViewerArtifact[] =
         programMemory?.return?.flatMap(
           ({ name }: { name: string }) =>
-            processShownObjects(programMemory)(programMemory?.root?.[name]) ||
+            processShownObjects(programMemory, programMemory?.root?.[name]) ||
             []
         ) || []
       setGeoArray(geos)
@@ -263,7 +263,7 @@ function RenderViewerArtifacts({
       <Line
         geo={geo}
         sourceRange={sourceRange}
-        forceHighlight={forceHighlight}
+        forceHighlight={forceHighlight || editorCursor}
       />
     )
   }
@@ -273,7 +273,7 @@ function RenderViewerArtifacts({
         <RenderViewerArtifacts
           artifact={artifact}
           key={index}
-          forceHighlight={editorCursor}
+          forceHighlight={forceHighlight || editorCursor}
         />
       ))}
     </>

@@ -198,45 +198,48 @@ export type ViewerArtifact =
       children: ViewerArtifact[]
     }
 
+type PreviousTransforms = {
+  rotation: [number, number, number]
+  transform: [number, number, number]
+}[]
+
 export const processShownObjects =
-  (programMemory: ProgramMemory) =>
-  (geoMeta: Path[] | Transform): ViewerArtifact[] => {
+  (
+    programMemory: ProgramMemory,
+    geoMeta: Path[] | Transform,
+    previousTransforms: PreviousTransforms = []
+  ): ViewerArtifact[] => {
     if (Array.isArray(geoMeta)) {
-      return geoMeta.map(({ geo, sourceRange }) => ({
-        type: 'geo',
-        geo,
-        sourceRange,
-      }))
-    } else if (geoMeta.type === 'transform') {
-      console.log('transform', geoMeta, programMemory)
-      const geos = processShownObjects(programMemory)(
-        programMemory.root[geoMeta.id]
-      ).map((arg): ViewerArtifact => {
-        if (arg.type !== 'geo')
-          throw new Error('transform must be applied to geo')
-        const { geo, sourceRange } = arg
+      return geoMeta.map(({ geo, sourceRange }) => {
         const newGeo = geo.clone()
-        newGeo.rotateX(geoMeta.rotation[0])
-        newGeo.rotateY(geoMeta.rotation[1])
-        newGeo.rotateZ(geoMeta.rotation[2])
-        newGeo.translate(
-          geoMeta.transform[0],
-          geoMeta.transform[1],
-          geoMeta.transform[2]
-        )
+        previousTransforms.forEach(({ rotation, transform }) => {
+          newGeo.rotateX(rotation[0])
+          newGeo.rotateY(rotation[1])
+          newGeo.rotateZ(rotation[2])
+          newGeo.translate(transform[0], transform[1], transform[2])
+        })
+
         return {
           type: 'geo',
-          sourceRange,
           geo: newGeo,
+          sourceRange,
         }
       })
-      return [
-        {
-          type: 'parent',
-          sourceRange: geoMeta.sourceRange,
-          children: geos,
-        },
-      ]
+    } else if (geoMeta.type === 'transform') {
+      const referencedVar = programMemory.root[geoMeta.id]
+      const parentArtifact: ViewerArtifact = {
+        type: 'parent',
+        sourceRange: geoMeta.sourceRange,
+        children: processShownObjects(programMemory, referencedVar, [
+          ...previousTransforms,
+          {
+            rotation: geoMeta.rotation,
+            transform: geoMeta.transform,
+          },
+        ]),
+      }
+      return [parentArtifact]
     }
+
     throw new Error('Unknown geoMeta type')
   }
