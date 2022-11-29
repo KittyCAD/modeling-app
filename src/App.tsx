@@ -4,7 +4,7 @@ import { Allotment } from 'allotment'
 import { OrbitControls, OrthographicCamera } from '@react-three/drei'
 import { lexer } from './lang/tokeniser'
 import { abstractSyntaxTree } from './lang/abstractSyntaxTree'
-import { executor } from './lang/executor'
+import { executor, processShownObjects, ViewerArtifact } from './lang/executor'
 import { recast } from './lang/recast'
 import { BufferGeometry } from 'three'
 import CodeMirror from '@uiw/react-codemirror'
@@ -74,9 +74,7 @@ function App() {
     if (isNoChange) return
     setSelectionRange([range.from, range.to])
   }
-  const [geoArray, setGeoArray] = useState<
-    { geo: BufferGeometry; sourceRange: [number, number] }[]
-  >([])
+  const [geoArray, setGeoArray] = useState<ViewerArtifact[]>([])
   useEffect(() => {
     try {
       if (!code) {
@@ -91,25 +89,23 @@ function App() {
       const programMemory = executor(_ast, {
         root: {
           log: (a: any) => {
-            addLog(a)
+            let b = a
+            if (Array.isArray(a)) {
+              b = a.map(({ geo, ...rest }) => rest)
+              b = JSON.stringify(b, null, 2)
+            } else if (typeof a === 'object') {
+              b = JSON.stringify(a, null, 2)
+            }
+            addLog(b)
           },
         },
         _sketch: [],
       })
-      const geos: { geo: BufferGeometry; sourceRange: [number, number] }[] =
+      const geos: ViewerArtifact[] =
         programMemory?.return?.flatMap(
           ({ name }: { name: string }) =>
-            programMemory?.root?.[name]
-              ?.map(
-                ({
-                  geo,
-                  sourceRange,
-                }: {
-                  geo: BufferGeometry
-                  sourceRange: [number, number]
-                }) => ({ geo, sourceRange })
-              )
-              .filter((a: any) => !!a.geo) || []
+            processShownObjects(programMemory)(programMemory?.root?.[name]) ||
+            []
         ) || []
       setGeoArray(geos)
       removeError()
@@ -169,17 +165,9 @@ function App() {
                 />
                 <ambientLight />
                 <pointLight position={[10, 10, 10]} />
-                {geoArray.map(
-                  (
-                    {
-                      geo,
-                      sourceRange,
-                    }: { geo: BufferGeometry; sourceRange: [number, number] },
-                    index
-                  ) => (
-                    <Line key={index} geo={geo} sourceRange={sourceRange} />
-                  )
-                )}
+                {geoArray.map((artifact, index) => (
+                  <RenderViewerArtifacts artifact={artifact} key={index} />
+                ))}
                 <BasePlanes />
                 <SketchPlane />
                 <AxisIndicator />
@@ -207,9 +195,11 @@ export default App
 function Line({
   geo,
   sourceRange,
+  forceHighlight = false,
 }: {
   geo: BufferGeometry
   sourceRange: [number, number]
+  forceHighlight?: boolean
 }) {
   const { setHighlightRange, selectionRange } = useStore(
     ({ setHighlightRange, selectionRange }) => ({
@@ -240,8 +230,52 @@ function Line({
     >
       <primitive object={geo} />
       <meshStandardMaterial
-        color={hovered ? 'hotpink' : editorCursor ? 'skyblue' : 'orange'}
+        color={
+          hovered
+            ? 'hotpink'
+            : editorCursor || forceHighlight
+            ? 'skyblue'
+            : 'orange'
+        }
       />
     </mesh>
+  )
+}
+
+function RenderViewerArtifacts({
+  artifact,
+  forceHighlight = false,
+}: {
+  artifact: ViewerArtifact
+  forceHighlight?: boolean
+}) {
+  const { selectionRange } = useStore(({ selectionRange }) => ({
+    selectionRange,
+  }))
+  const [editorCursor, setEditorCursor] = useState(false)
+  useEffect(() => {
+    const shouldHighlight = isOverlapping(artifact.sourceRange, selectionRange)
+    setEditorCursor(shouldHighlight)
+  }, [selectionRange, artifact.sourceRange])
+  if (artifact.type === 'geo') {
+    const { geo, sourceRange } = artifact
+    return (
+      <Line
+        geo={geo}
+        sourceRange={sourceRange}
+        forceHighlight={forceHighlight}
+      />
+    )
+  }
+  return (
+    <>
+      {artifact.children.map((artifact, index) => (
+        <RenderViewerArtifacts
+          artifact={artifact}
+          key={index}
+          forceHighlight={editorCursor}
+        />
+      ))}
+    </>
   )
 }

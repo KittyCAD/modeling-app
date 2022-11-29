@@ -1,5 +1,6 @@
 import { Program, BinaryPart, BinaryExpression } from './abstractSyntaxTree'
-import { Path, sketchFns } from './sketch'
+import { Path, Transform, sketchFns } from './sketch'
+import { BufferGeometry } from 'three'
 
 export interface ProgramMemory {
   root: { [key: string]: any }
@@ -100,6 +101,17 @@ export const executor = (
             )
             _programMemory._sketch = result.programMemory._sketch
             _programMemory.root[variableName] = result.currentPath
+          } else if ('rx' === fnName) {
+            if (declaration.init.arguments[1].type !== 'Identifier')
+              throw new Error('rx must be called with an identifier')
+            const id = declaration.init.arguments[1].name
+            const result = sketchFns[fnName](
+              _programMemory,
+              [declaration.start, declaration.end],
+              fnArgs[0],
+              id
+            )
+            _programMemory.root[variableName] = result
           } else {
             _programMemory.root[variableName] = _programMemory.root[fnName](
               ...fnArgs
@@ -171,3 +183,60 @@ function getBinaryExpressionResult(
   const right = getVal(expression.right)
   return left + right
 }
+
+type SourceRange = [number, number]
+
+export type ViewerArtifact =
+  | {
+      type: 'geo'
+      sourceRange: SourceRange
+      geo: BufferGeometry
+    }
+  | {
+      type: 'parent'
+      sourceRange: SourceRange
+      children: ViewerArtifact[]
+    }
+
+export const processShownObjects =
+  (programMemory: ProgramMemory) =>
+  (geoMeta: Path[] | Transform): ViewerArtifact[] => {
+    if (Array.isArray(geoMeta)) {
+      return geoMeta.map(({ geo, sourceRange }) => ({
+        type: 'geo',
+        geo,
+        sourceRange,
+      }))
+    } else if (geoMeta.type === 'transform') {
+      console.log('transform', geoMeta, programMemory)
+      const geos = processShownObjects(programMemory)(
+        programMemory.root[geoMeta.id]
+      ).map((arg): ViewerArtifact => {
+        if (arg.type !== 'geo')
+          throw new Error('transform must be applied to geo')
+        const { geo, sourceRange } = arg
+        const newGeo = geo.clone()
+        newGeo.rotateX(geoMeta.rotation[0])
+        newGeo.rotateY(geoMeta.rotation[1])
+        newGeo.rotateZ(geoMeta.rotation[2])
+        newGeo.translate(
+          geoMeta.transform[0],
+          geoMeta.transform[1],
+          geoMeta.transform[2]
+        )
+        return {
+          type: 'geo',
+          sourceRange,
+          geo: newGeo,
+        }
+      })
+      return [
+        {
+          type: 'parent',
+          sourceRange: geoMeta.sourceRange,
+          children: geos,
+        },
+      ]
+    }
+    throw new Error('Unknown geoMeta type')
+  }

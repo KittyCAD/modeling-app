@@ -4,6 +4,8 @@ import { BufferGeometry } from 'three'
 
 type Coords2d = [number, number]
 type SourceRange = [number, number]
+type Rotation3 = [number, number, number]
+type Translate3 = [number, number, number]
 
 export type Path =
   | {
@@ -52,6 +54,14 @@ export type Path =
       geo: BufferGeometry
       sourceRange: SourceRange
     }
+
+export interface Transform {
+  type: 'transform'
+  rotation: Rotation3
+  transform: Translate3
+  id: string
+  sourceRange: SourceRange
+}
 
 function addBasePath(programMemory: ProgramMemory) {
   const geo = baseGeo({ from: [0, 0, 0] })
@@ -191,6 +201,22 @@ export const sketchFns = {
         _sketch: [...(_programMemory._sketch || []), currentPath],
       },
       currentPath,
+    }
+  },
+  rx: (
+    programMemory: ProgramMemory,
+    sourceRange: SourceRange,
+    rotationD: number,
+    id: string
+  ): Transform => {
+    if (!programMemory.root[id]) throw new Error(`No variable with name ${id}`)
+    const rotationR = rotationD * (Math.PI / 180)
+    return {
+      type: 'transform',
+      rotation: [rotationR, 0, 0],
+      transform: [0, 0, 0],
+      id,
+      sourceRange,
     }
   },
 }
