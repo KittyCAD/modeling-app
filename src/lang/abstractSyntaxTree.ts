@@ -42,6 +42,8 @@ type syntaxType =
   // | "ArrowFunctionExpression"
   | 'FunctionExpression'
   | 'SketchExpression'
+  | 'PipeExpression'
+  | 'PipeSubstitution'
   | 'YieldExpression'
   | 'AwaitExpression'
   | 'ImportDeclaration'
@@ -183,6 +185,20 @@ function makeArguments(
     const { expression, lastIndex } = makeBinaryExpression(tokens, index)
     return makeArguments(tokens, lastIndex, [...previousArgs, expression])
   }
+  if (
+    argumentToken.token.type === 'operator' &&
+    argumentToken.token.value === '%'
+  ) {
+    const value: PipeSubstitution = {
+      type: 'PipeSubstitution',
+      start: argumentToken.token.start,
+      end: argumentToken.token.end,
+    }
+    return makeArguments(tokens, nextBraceOrCommaToken.index, [
+      ...previousArgs,
+      value,
+    ])
+  }
   if (argumentToken.token.type === 'word') {
     const identifier = makeIdentifier(tokens, argumentToken.index)
     return makeArguments(tokens, nextBraceOrCommaToken.index, [
@@ -204,7 +220,7 @@ function makeArguments(
   ) {
     return makeArguments(tokens, argumentToken.index, previousArgs)
   }
-  throw new Error('Expected a previous if statement to match')
+  throw new Error('Expected a previous Argument if statement to match')
 }
 
 interface VariableDeclaration extends GeneralStatement {
@@ -251,6 +267,8 @@ export type Value =
   | FunctionExpression
   | CallExpression
   | SketchExpression
+  | PipeExpression
+  | PipeSubstitution
 
 function makeValue(
   tokens: Token[],
@@ -265,7 +283,7 @@ function makeValue(
       lastIndex,
     }
   }
-  if (currentToken.type === 'word' && nextToken.type === 'operator') {
+  if ((currentToken.type === 'word' || currentToken.type === 'number') && nextToken.type === 'operator') {
     const { expression, lastIndex } = makeBinaryExpression(tokens, index)
     return {
       value: expression,
@@ -286,7 +304,7 @@ function makeValue(
       lastIndex: index,
     }
   }
-  throw new Error('Expected a previous if statement to match')
+  throw new Error('Expected a previous Value if statement to match')
 }
 
 interface VariableDeclarator extends GeneralStatement {
@@ -303,6 +321,7 @@ function makeVariableDeclarators(
   declarations: VariableDeclarator[]
   lastIndex: number
 } {
+  const nextPipeOperator = hasPipeOperator(tokens, 0)
   const currentToken = tokens[index]
   const assignmentToken = nextMeaningfulToken(tokens, index)
   const declarationToken = previousMeaningfulToken(tokens, index)
@@ -310,7 +329,14 @@ function makeVariableDeclarators(
   const nextAfterInit = nextMeaningfulToken(tokens, contentsStartToken.index)
   let init: Value
   let lastIndex = contentsStartToken.index
-  if (
+  if (nextPipeOperator) {
+    const { expression, lastIndex: pipeLastIndex } = makePipeExpression(
+      tokens,
+      assignmentToken.index
+    )
+    init = expression
+    lastIndex = pipeLastIndex
+  } else if (
     contentsStartToken.token.type === 'brace' &&
     contentsStartToken.token.value === '('
   ) {
@@ -392,6 +418,10 @@ function makeIdentifier(token: Token[], index: number): Identifier {
   }
 }
 
+interface PipeSubstitution extends GeneralStatement {
+  type: 'PipeSubstitution'
+}
+
 function makeLiteral(tokens: Token[], index: number): Literal {
   const token = tokens[index]
   const value =
@@ -431,7 +461,7 @@ function makeBinaryPart(
       lastIndex: index,
     }
   }
-  throw new Error('Expected a previous if statement to match')
+  throw new Error('Expected a previous BinaryPart if statement to match')
 }
 
 function makeBinaryExpression(
@@ -481,6 +511,61 @@ function makeSketchExpression(
     },
     lastIndex: bodyLastIndex,
   }
+}
+
+export interface PipeExpression extends GeneralStatement {
+  type: 'PipeExpression'
+  body: Value[]
+}
+
+function makePipeExpression(
+  tokens: Token[],
+  index: number
+): { expression: PipeExpression; lastIndex: number } {
+  const currentToken = tokens[index]
+  const { body, lastIndex: bodyLastIndex } = makePipeBody(tokens, index)
+  const endToken = tokens[bodyLastIndex]
+  return {
+    expression: {
+      type: 'PipeExpression',
+      start: currentToken.start,
+      end: endToken.end,
+      body,
+    },
+    lastIndex: bodyLastIndex,
+  }
+}
+
+function makePipeBody(
+  tokens: Token[],
+  index: number,
+  previousValues: Value[] = []
+): { body: Value[]; lastIndex: number } {
+  const currentToken = tokens[index]
+  const expressionStart = nextMeaningfulToken(tokens, index)
+  let value: Value
+  let lastIndex: number
+  if (currentToken.type === 'operator') {
+    const beep = makeValue(tokens, expressionStart.index)
+    value = beep.value
+    lastIndex = beep.lastIndex
+  } else if (currentToken.type === 'brace' && currentToken.value === '{') {
+    const sketch = makeSketchExpression(tokens, index)
+    value = sketch.expression
+    lastIndex = sketch.lastIndex
+  } else {
+    throw new Error('Expected a previous PipeValue if statement to match')
+  }
+
+  const nextPipeToken = hasPipeOperator(tokens, index)
+  if (!nextPipeToken) {
+    return {
+      body: [...previousValues, value],
+      lastIndex,
+    }
+  }
+  // const nextToken = nextMeaningfulToken(tokens, nextPipeToken.index + 1)
+  return makePipeBody(tokens, nextPipeToken.index, [...previousValues, value])
 }
 
 export interface FunctionExpression extends GeneralStatement {
@@ -699,7 +784,6 @@ function makeBody(
     // return startTree(tokens, tokenIndex, [...previousBody, makeExpressionStatement(tokens, tokenIndex)]);
     return { body: [...previousBody, expression], lastIndex }
   }
-  console.log('should throw', tokens.slice(tokenIndex))
   throw new Error('Unexpected token')
 }
 export const abstractSyntaxTree = (tokens: Token[]): Program => {
@@ -711,6 +795,46 @@ export const abstractSyntaxTree = (tokens: Token[]): Program => {
     body: body,
   }
   return program
+}
+
+export function findNextDeclarationKeyword(
+  tokens: Token[],
+  index: number
+): { token: Token | null; index: number } {
+  const nextToken = nextMeaningfulToken(tokens, index)
+  if (nextToken.index >= tokens.length) {
+    return { token: null, index: tokens.length - 1 }
+  }
+  if (
+    nextToken.token.type === 'word' &&
+    (nextToken.token.value === 'const' ||
+      nextToken.token.value === 'fn' ||
+      nextToken.token.value === 'sketch' ||
+      nextToken.token.value === 'path')
+  ) {
+    return nextToken
+  }
+  return findNextDeclarationKeyword(tokens, nextToken.index)
+}
+
+export function hasPipeOperator(
+  tokens: Token[],
+  index: number,
+  _limitIndex = -1
+): { token: Token; index: number } | false {
+  let limitIndex = _limitIndex
+  if (limitIndex === -1) {
+    const nextDeclaration = findNextDeclarationKeyword(tokens, index)
+    limitIndex = nextDeclaration.index
+  }
+  const nextToken = nextMeaningfulToken(tokens, index)
+  if (nextToken.index >= limitIndex) {
+    return false
+  }
+  if (nextToken.token.type === 'operator' && nextToken.token.value === '|>') {
+    return nextToken
+  }
+  return hasPipeOperator(tokens, nextToken.index, limitIndex)
 }
 
 export function findClosingBrace(

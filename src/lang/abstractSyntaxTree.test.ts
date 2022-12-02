@@ -1,4 +1,8 @@
-import { abstractSyntaxTree, findClosingBrace } from './abstractSyntaxTree'
+import {
+  abstractSyntaxTree,
+  findClosingBrace,
+  hasPipeOperator,
+} from './abstractSyntaxTree'
 import { lexer } from './tokeniser'
 
 describe('findClosingBrace', () => {
@@ -641,6 +645,232 @@ describe('structures specific to this lang', () => {
           },
         ],
       },
+    ])
+  })
+})
+
+
+describe('testing hasPipeOperator', () => {
+  test('hasPipeOperator is true', () => {
+    let code = `sketch mySketch {
+  lineTo(2, 3)
+} |> rx(45, %)
+`
+
+    const tokens = lexer(code)
+    expect(hasPipeOperator(tokens, 0)).toEqual({
+      index: 16,
+      token: { end: 37, start: 35, type: 'operator', value: '|>' },
+    })
+  })
+  test('matches the first pipe', () => {
+    let code = `sketch mySketch {
+  lineTo(2, 3)
+} |> rx(45, %) |> rx(45, %)
+`
+    const tokens = lexer(code)
+    expect(hasPipeOperator(tokens, 0)).toEqual({
+      index: 16,
+      token: { end: 37, start: 35, type: 'operator', value: '|>' },
+    })
+  })
+  test('hasPipeOperator is false when the pipe operator is after a new variable declaration', () => {
+    let code = `sketch mySketch {
+  lineTo(2, 3)
+}
+const yo = myFunc(9()
+  |> rx(45, %)
+`
+    const tokens = lexer(code)
+    expect(hasPipeOperator(tokens, 0)).toEqual(false)
+  })
+})
+
+describe('testing pipe operator', () => {
+  test('pipe operator with sketch', () => {
+    let code = `sketch mySketch {
+  lineTo(2, 3)
+} |> rx(45, %)
+`
+    const tokens = lexer(code)
+    const { body } = abstractSyntaxTree(tokens)
+    expect(body).toEqual([
+      {
+        "type": "VariableDeclaration",
+        "start": 0,
+        "end": 47,
+        "kind": "sketch",
+        "declarations": [
+          {
+            "type": "VariableDeclarator",
+            "start": 7,
+            "end": 47,
+            "id": {
+              "type": "Identifier",
+              "start": 7,
+              "end": 15,
+              "name": "mySketch"
+            },
+            "init": {
+              "type": "PipeExpression",
+              "start": 16,
+              "end": 47,
+              "body": [
+                {
+                  "type": "SketchExpression",
+                  "start": 16,
+                  "end": 34,
+                  "body": {
+                    "type": "BlockStatement",
+                    "start": 16,
+                    "end": 34,
+                    "body": [
+                      {
+                        "type": "ExpressionStatement",
+                        "start": 20,
+                        "end": 32,
+                        "expression": {
+                          "type": "CallExpression",
+                          "start": 20,
+                          "end": 32,
+                          "callee": {
+                            "type": "Identifier",
+                            "start": 20,
+                            "end": 26,
+                            "name": "lineTo"
+                          },
+                          "arguments": [
+                            {
+                              "type": "Literal",
+                              "start": 27,
+                              "end": 28,
+                              "value": 2,
+                              "raw": "2"
+                            },
+                            {
+                              "type": "Literal",
+                              "start": 30,
+                              "end": 31,
+                              "value": 3,
+                              "raw": "3"
+                            }
+                          ],
+                          "optional": false
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "CallExpression",
+                  "start": 38,
+                  "end": 47,
+                  "callee": {
+                    "type": "Identifier",
+                    "start": 38,
+                    "end": 40,
+                    "name": "rx"
+                  },
+                  "arguments": [
+                    {
+                      "type": "Literal",
+                      "start": 41,
+                      "end": 43,
+                      "value": 45,
+                      "raw": "45"
+                    },
+                    {
+                      "type": "PipeSubstitution",
+                      "start": 45,
+                      "end": 46
+                    }
+                  ],
+                  "optional": false
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ])
+  })
+  test('pipe operator with binary expression', () => {
+    let code = `const myVar = 5 + 6 |> myFunc(45, %)`
+    const tokens = lexer(code)
+    const { body } = abstractSyntaxTree(tokens)
+    expect(body).toEqual([
+      {
+        "type": "VariableDeclaration",
+        "start": 0,
+        "end": 36,
+        "kind": "const",
+        "declarations": [
+          {
+            "type": "VariableDeclarator",
+            "start": 6,
+            "end": 36,
+            "id": {
+              "type": "Identifier",
+              "start": 6,
+              "end": 11,
+              "name": "myVar"
+            },
+            "init": {
+              "type": "PipeExpression",
+              "start": 12,
+              "end": 36,
+              "body": [
+                {
+                  "type": "BinaryExpression",
+                  "start": 14,
+                  "end": 19,
+                  "left": {
+                    "type": "Literal",
+                    "start": 14,
+                    "end": 15,
+                    "value": 5,
+                    "raw": "5"
+                  },
+                  "operator": "+",
+                  "right": {
+                    "type": "Literal",
+                    "start": 18,
+                    "end": 19,
+                    "value": 6,
+                    "raw": "6"
+                  }
+                },
+                {
+                  "type": "CallExpression",
+                  "start": 23,
+                  "end": 36,
+                  "callee": {
+                    "type": "Identifier",
+                    "start": 23,
+                    "end": 29,
+                    "name": "myFunc"
+                  },
+                  "arguments": [
+                    {
+                      "type": "Literal",
+                      "start": 30,
+                      "end": 32,
+                      "value": 45,
+                      "raw": "45"
+                    },
+                    {
+                      "type": "PipeSubstitution",
+                      "start": 34,
+                      "end": 35
+                    }
+                  ],
+                  "optional": false
+                }
+              ]
+            }
+          }
+        ]
+      }
     ])
   })
 })

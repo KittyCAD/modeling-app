@@ -299,6 +299,39 @@ describe('testing lexer', () => {
       "whitespace   ' '        from 6   to 7",
       "number       '2.5'      from 7   to 10",
     ])
+    
+  })
+  it('testing piping operator', () => {
+    const result = stringSummaryLexer(`sketch mySketch {
+      lineTo(2, 3)
+    } |> rx(45, %)`)
+    expect(result).toEqual([
+      "word         'sketch'   from 0   to 6",
+      "whitespace   ' '        from 6   to 7",
+      "word         'mySketch' from 7   to 15",
+      "whitespace   ' '        from 15  to 16",
+      "brace        '{'        from 16  to 17",
+      "whitespace   '\n      '  from 17  to 24",
+      "word         'lineTo'   from 24  to 30",
+      "brace        '('        from 30  to 31",
+      "number       '2'        from 31  to 32",
+      "comma        ','        from 32  to 33",
+      "whitespace   ' '        from 33  to 34",
+      "number       '3'        from 34  to 35",
+      "brace        ')'        from 35  to 36",
+      "whitespace   '\n    '    from 36  to 41",
+      "brace        '}'        from 41  to 42",
+      "whitespace   ' '        from 42  to 43",
+      "operator     '|>'       from 43  to 45",
+      "whitespace   ' '        from 45  to 46",
+      "word         'rx'       from 46  to 48",
+      "brace        '('        from 48  to 49",
+      "number       '45'       from 49  to 51",
+      "comma        ','        from 51  to 52",
+      "whitespace   ' '        from 52  to 53",
+      "operator     '%'        from 53  to 54",
+      "brace        ')'        from 54  to 55"
+    ])
   })
 })
 
