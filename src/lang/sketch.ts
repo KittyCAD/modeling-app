@@ -59,7 +59,7 @@ export interface Transform {
   type: 'transform'
   rotation: Rotation3
   transform: Translate3
-  id: string
+  sketch: Path[] | Transform
   sourceRange: SourceRange
 }
 
@@ -207,15 +207,14 @@ export const sketchFns = {
     programMemory: ProgramMemory,
     sourceRange: SourceRange,
     rotationD: number,
-    id: string
+    sketch: Path[] | Transform
   ): Transform => {
-    if (!programMemory.root[id]) throw new Error(`No variable with name ${id}`)
     const rotationR = rotationD * (Math.PI / 180)
     return {
       type: 'transform',
       rotation: [rotationR, 0, 0],
       transform: [0, 0, 0],
-      id,
+      sketch,
       sourceRange,
     }
   },

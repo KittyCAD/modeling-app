@@ -107,14 +107,14 @@ export const executor = (
             _programMemory._sketch = result.programMemory._sketch
             _programMemory.root[variableName] = result.currentPath
           } else if ('rx' === fnName) {
-            if (declaration.init.arguments[1].type !== 'Identifier')
-              throw new Error('rx must be called with an identifier')
-            const id = declaration.init.arguments[1].name
+            const sketch = declaration.init.arguments[1]
+            if(sketch.type !== 'Identifier') throw new Error('rx must be called with an identifier')
+            const sketchVal = _programMemory.root[sketch.name]
             const result = sketchFns[fnName](
               _programMemory,
               [declaration.start, declaration.end],
               fnArgs[0],
-              id
+              sketchVal
             )
             _programMemory.root[variableName] = result
           } else {
@@ -216,11 +216,9 @@ function executePipeBody(body: PipeExpression['body'], programMemory: ProgramMem
       } else if (arg.type === 'PipeSubstitution') {
         return previousResults[expressionIndex-1]
       }
-      console.log('yo',arg)
       throw new Error('Invalid argument type')
     })
     if (fnName === 'rx') {
-      console.log('rx', fnArgs[1])
       const result = sketchFns[fnName](
         programMemory,
         [expression.start, expression.end],
@@ -302,7 +300,7 @@ export const processShownObjects =
         }
       })
     } else if (geoMeta.type === 'transform') {
-      const referencedVar = programMemory.root[geoMeta.id]
+      const referencedVar = geoMeta.sketch
       const parentArtifact: ViewerArtifact = {
         type: 'parent',
         sourceRange: geoMeta.sourceRange,

@@ -3,6 +3,7 @@ import fs from 'node:fs'
 import { abstractSyntaxTree } from './abstractSyntaxTree'
 import { lexer } from './tokeniser'
 import { executor, ProgramMemory } from './executor'
+import { Transform } from './sketch'
 
 describe('test', () => {
   it('test assigning two variables, the second summing with the first', () => {
@@ -97,7 +98,61 @@ show(mySketch)
     expect(root.myVar).toBe(7)
   })
 
-  
+  it('rotated sketch', () => {
+    const code = [
+      'sketch mySk1 {',
+      '  lineTo(1,1)',
+      '  path myPath = lineTo(0, 1)',
+      '  lineTo(1,1)',
+      '}',
+      'const rotated = rx(90, mySk1)',
+      // 'show(mySk1)',
+    ].join('\n')
+    const { root } = exe(code)
+    expect(root.mySk1).toHaveLength(4)
+    expect(root?.rotated?.type).toBe('transform')
+  })
+
+  it('execute pipe sketch into call expression', () => {
+    const code = [
+      'sketch mySk1 {',
+      '  lineTo(1,1)',
+      '  path myPath = lineTo(0, 1)',
+      '  lineTo(1,1)',
+      '} |> rx(90, %)',
+    ].join('\n')
+    const { root } = exe(code)
+    const striptVersion = removeGeoFromSketch(root.mySk1)
+    expect(striptVersion).toEqual({
+      type: 'transform',
+      rotation: [1.5707963267948966, 0, 0],
+      transform: [0, 0, 0],
+      sketch: [
+        {
+          type: 'base',
+          from: [0, 0],
+          sourceRange: [0, 0],
+        },
+        {
+          type: 'toPoint',
+          to: [1, 1],
+          sourceRange: [17, 28],
+        },
+        {
+          type: 'toPoint',
+          to: [0, 1],
+          sourceRange: [36, 57],
+          name: 'myPath',
+        },
+        {
+          type: 'toPoint',
+          to: [1, 1],
+          sourceRange: [60, 71],
+        },
+      ],
+      sourceRange: [77, 86],
+    })
+  })
 })
 
 // helpers
@@ -109,4 +164,14 @@ function exe(
   const tokens = lexer(code)
   const ast = abstractSyntaxTree(tokens)
   return executor(ast, programMemory)
+}
+
+function removeGeoFromSketch(sketch: Transform): any {
+  if (!Array.isArray(sketch.sketch)) {
+    return removeGeoFromSketch(sketch.sketch)
+  }
+  return {
+    ...sketch,
+    sketch: sketch.sketch.map(({ geo, previousPath, ...rest }: any) => rest),
+  }
 }

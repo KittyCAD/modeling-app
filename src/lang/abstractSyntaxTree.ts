@@ -1243,10 +1243,10 @@ function debuggerr(tokens: Token[], indexes: number[], msg=''): string {
     topString += top
     bottomString += bottom
   })
-  const result = [`${msg} - debuggerr: ${sortedIndexes}`, topString, bottomString].join(
+  const debugResult = [`${msg} - debuggerr: ${sortedIndexes}`, topString, bottomString].join(
     '\n'
   )
-  console.log(result)
-  return result
+  console.log(debugResult)
+  return debugResult
 }
 
