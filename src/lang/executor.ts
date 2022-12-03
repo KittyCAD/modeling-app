@@ -1,4 +1,4 @@
-import { Program, BinaryPart, BinaryExpression } from './abstractSyntaxTree'
+import { Program, BinaryPart, BinaryExpression, PipeExpression } from './abstractSyntaxTree'
 import { Path, Transform, sketchFns } from './sketch'
 import { BufferGeometry } from 'three'
 
@@ -25,7 +25,12 @@ export const executor = (
     if (statement.type === 'VariableDeclaration') {
       statement.declarations.forEach((declaration) => {
         const variableName = declaration.id.name
-        if (declaration.init.type === 'Literal') {
+        if (declaration.init.type === 'PipeExpression') {
+          _programMemory.root[variableName] = getPipeExpressionResult(
+            declaration.init,
+            _programMemory
+          )
+        } else if (declaration.init.type === 'Literal') {
           _programMemory.root[variableName] = declaration.init.value
         } else if (declaration.init.type === 'BinaryExpression') {
           _programMemory.root[variableName] = getBinaryExpressionResult(
@@ -183,6 +188,77 @@ function getBinaryExpressionResult(
   const right = getVal(expression.right)
   return left + right
 }
+
+function getPipeExpressionResult(
+  expression: PipeExpression,
+  programMemory: ProgramMemory
+) {
+  const executedBody = executePipeBody(expression.body, programMemory)
+  const result = executedBody[executedBody.length - 1]
+  return result
+}
+
+function executePipeBody(body: PipeExpression['body'], programMemory: ProgramMemory, expressionIndex = 0, previousResults: any[] = []): any[] {
+  if (expressionIndex === body.length) {
+    return previousResults
+  }
+  const expression = body[expressionIndex]
+  if (expression.type === 'BinaryExpression') {
+    const result = getBinaryExpressionResult(expression, programMemory)
+    return executePipeBody(body, programMemory, expressionIndex + 1, [...previousResults, result])
+  } else if (expression.type === 'CallExpression') {
+    const fnName = expression.callee.name
+    const fnArgs = expression.arguments.map((arg) => {
+      if (arg.type === 'Literal') {
+        return arg.value
+      } else if (arg.type === 'Identifier') {
+        return programMemory.root[arg.name]
+      } else if (arg.type === 'PipeSubstitution') {
+        return previousResults[expressionIndex-1]
+      }
+      console.log('yo',arg)
+      throw new Error('Invalid argument type')
+    })
+    if (fnName === 'rx') {
+      console.log('rx', fnArgs[1])
+      const result = sketchFns[fnName](
+        programMemory,
+        [expression.start, expression.end],
+        fnArgs[0],
+        fnArgs[1]
+      )
+      return executePipeBody(body, programMemory, expressionIndex + 1, [...previousResults, result])
+    }
+    const result = programMemory.root[fnName](...fnArgs)
+    return executePipeBody(body, programMemory, expressionIndex + 1, [...previousResults, result])
+  } else if (expression.type === 'SketchExpression') {
+    const sketchBody = expression.body
+    const fnMemory: ProgramMemory = {
+      root: {
+        ...programMemory.root,
+      },
+      _sketch: [],
+    }
+    let { _sketch } = executor(sketchBody, fnMemory, {
+      bodyType: 'sketch',
+    })
+    if (_sketch.length === 0) {
+      const { programMemory: newProgramMemory } = sketchFns.base(
+        fnMemory,
+        '',
+        [0, 0],
+        0,
+        0
+      )
+      _sketch = newProgramMemory._sketch
+    }
+    // _programMemory.root[variableName] = _sketch
+    return executePipeBody(body, programMemory, expressionIndex + 1, [...previousResults, _sketch])
+  }
+
+  throw new Error('Invalid pipe expression')
+}
+
 
 type SourceRange = [number, number]
 

@@ -233,6 +233,7 @@ function makeVariableDeclaration(
   tokens: Token[],
   index: number
 ): { declaration: VariableDeclaration; lastIndex: number } {
+  // token index should point to a declaration keyword i.e. const, fn, sketch, path
   const currentToken = tokens[index]
   const declarationStartToken = nextMeaningfulToken(tokens, index)
   const { declarations, lastIndex } = makeVariableDeclarators(
@@ -283,7 +284,10 @@ function makeValue(
       lastIndex,
     }
   }
-  if ((currentToken.type === 'word' || currentToken.type === 'number') && nextToken.type === 'operator') {
+  if (
+    (currentToken.type === 'word' || currentToken.type === 'number') &&
+    nextToken.type === 'operator'
+  ) {
     const { expression, lastIndex } = makeBinaryExpression(tokens, index)
     return {
       value: expression,
@@ -321,12 +325,13 @@ function makeVariableDeclarators(
   declarations: VariableDeclarator[]
   lastIndex: number
 } {
-  const nextPipeOperator = hasPipeOperator(tokens, 0)
   const currentToken = tokens[index]
   const assignmentToken = nextMeaningfulToken(tokens, index)
   const declarationToken = previousMeaningfulToken(tokens, index)
   const contentsStartToken = nextMeaningfulToken(tokens, assignmentToken.index)
   const nextAfterInit = nextMeaningfulToken(tokens, contentsStartToken.index)
+  const pipeStartIndex = assignmentToken?.token?.type === 'operator' ? contentsStartToken.index : assignmentToken.index
+  const nextPipeOperator = hasPipeOperator(tokens, pipeStartIndex)
   let init: Value
   let lastIndex = contentsStartToken.index
   if (nextPipeOperator) {
@@ -814,7 +819,58 @@ export function findNextDeclarationKeyword(
   ) {
     return nextToken
   }
+  if (nextToken.token.type === 'brace' && nextToken.token.value === '(') {
+    const closingBraceIndex = findClosingBrace(tokens, nextToken.index)
+    const arrowToken = nextMeaningfulToken(tokens, closingBraceIndex)
+    if (
+      arrowToken?.token?.type === 'operator' &&
+      arrowToken.token.value === '=>'
+    ) {
+      return nextToken
+    }
+    // return findNextDeclarationKeyword(tokens, nextToken.index)
+    // probably should do something else here
+    // throw new Error('Unexpected token')
+  }
   return findNextDeclarationKeyword(tokens, nextToken.index)
+}
+
+export function findNextCallExpression(
+  tokens: Token[],
+  index: number
+): { token: Token | null; index: number } {
+  const nextToken = nextMeaningfulToken(tokens, index)
+  const veryNextToken = tokens[nextToken.index + 1] // i.e. without whitespace
+  if (nextToken.index >= tokens.length) {
+    return { token: null, index: tokens.length - 1 }
+  }
+  if (nextToken.token.type === 'word' && veryNextToken?.type === 'brace' && veryNextToken?.value === '(') {
+    return nextToken
+  }
+  return findNextCallExpression(tokens, nextToken.index)
+}
+
+
+export function findNextClosingCurlyBrace(
+  tokens: Token[],
+  index: number
+): { token: Token | null; index: number } {
+  const nextToken = nextMeaningfulToken(tokens, index)
+  if (nextToken.index >= tokens.length) {
+    return { token: null, index: tokens.length - 1 }
+  }
+  if (nextToken.token.type === 'brace' && nextToken.token.value === '}') {
+    return nextToken
+  }
+  if (nextToken.token.type === 'brace' && nextToken.token.value === '{') {
+    const closingBraceIndex = findClosingBrace(tokens, nextToken.index)
+    const tokenAfterClosingBrace = nextMeaningfulToken(
+      tokens,
+      closingBraceIndex
+    )
+    return findNextClosingCurlyBrace(tokens, tokenAfterClosingBrace.index)
+  }
+  return findNextClosingCurlyBrace(tokens, nextToken.index)
 }
 
 export function hasPipeOperator(
@@ -822,8 +878,27 @@ export function hasPipeOperator(
   index: number,
   _limitIndex = -1
 ): { token: Token; index: number } | false {
+  // this probably still needs some work
+  // should be called on expression statuments (i.e "lineTo" for lineTo(10, 10)) or "{" for sketch declarations
   let limitIndex = _limitIndex
   if (limitIndex === -1) {
+    const callExpressionEnd = isCallExpression(tokens, index)
+    if (callExpressionEnd !== -1) {
+      const tokenAfterCallExpression = nextMeaningfulToken(tokens, callExpressionEnd)
+      if (tokenAfterCallExpression?.token?.type === 'operator' && tokenAfterCallExpression.token.value === '|>') {
+        return tokenAfterCallExpression
+      }
+      return false
+    }
+    const currentToken = tokens[index]
+    if (currentToken?.type === 'brace' && currentToken?.value === '{') {
+      const closingBraceIndex = findClosingBrace(tokens, index)
+      const tokenAfterClosingBrace = nextMeaningfulToken(tokens, closingBraceIndex)
+      if (tokenAfterClosingBrace?.token?.type === 'operator' && tokenAfterClosingBrace.token.value === '|>') {
+        return tokenAfterClosingBrace
+      }
+      return false
+    }
     const nextDeclaration = findNextDeclarationKeyword(tokens, index)
     limitIndex = nextDeclaration.index
   }
@@ -843,6 +918,7 @@ export function findClosingBrace(
   _braceCount: number = 0,
   _searchOpeningBrace: string = ''
 ): number {
+  // should be called with the index of the opening brace
   const closingBraceMap: { [key: string]: string } = {
     '(': ')',
     '{': '}',
@@ -1127,3 +1203,50 @@ function getSketchStatement(
     index: sketchStatementIndex,
   }
 }
+
+function isCallExpression(
+  tokens: Token[],
+  index: number
+): number {
+  const currentToken = tokens[index]
+  const veryNextToken = tokens[index + 1] // i.e. no whitespace
+  if(currentToken.type === 'word' && veryNextToken.type === 'brace' &&veryNextToken.value === '(') {
+    return findClosingBrace(tokens, index + 1)
+  }
+  return -1
+}
+
+function debuggerr(tokens: Token[], indexes: number[], msg=''): string {
+  // return ''
+  const sortedIndexes = [...indexes].sort((a, b) => a - b)
+  const min = Math.min(...indexes)
+  const start = Math.min(Math.abs(min - 1), 0)
+  const max = Math.max(...indexes)
+  const end = Math.min(Math.abs(max + 1), tokens.length)
+  const debugTokens = tokens.slice(start, end)
+  const debugIndexes = indexes.map((i) => i - start)
+  const debugStrings: [string, string][] = debugTokens.map((token, index) => {
+    if (debugIndexes.includes(index)) {
+      return [
+        `${token.value.replaceAll('\n', ' ')}`,
+        '^'.padEnd(token.value.length, '_'),
+      ]
+    }
+    return [
+      token.value.replaceAll('\n', ' '),
+      ' '.padEnd(token.value.length, ' '),
+    ]
+  })
+  let topString = ''
+  let bottomString = ''
+  debugStrings.forEach(([top, bottom]) => {
+    topString += top
+    bottomString += bottom
+  })
+  const result = [`${msg} - debuggerr: ${sortedIndexes}`, topString, bottomString].join(
+    '\n'
+  )
+  console.log(result)
+  return result
+}
+

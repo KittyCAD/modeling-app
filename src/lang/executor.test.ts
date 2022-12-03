@@ -87,6 +87,17 @@ show(mySketch)
       },
     ])
   })
+
+  it('pipe binary expression into call expression', () => {
+    const code = [
+      'fn myFn = (a) => { return a + 1 }',
+      'const myVar = 5 + 1 |> myFn(%)',
+    ].join('\n')
+    const { root } = exe(code)
+    expect(root.myVar).toBe(7)
+  })
+
+  
 })
 
 // helpers

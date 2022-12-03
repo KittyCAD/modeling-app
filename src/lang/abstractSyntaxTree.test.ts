@@ -648,8 +648,6 @@ describe('structures specific to this lang', () => {
     ])
   })
 })
-
-
 describe('testing hasPipeOperator', () => {
   test('hasPipeOperator is true', () => {
     let code = `sketch mySketch {
@@ -669,10 +667,13 @@ describe('testing hasPipeOperator', () => {
 } |> rx(45, %) |> rx(45, %)
 `
     const tokens = lexer(code)
-    expect(hasPipeOperator(tokens, 0)).toEqual({
+    const result = hasPipeOperator(tokens, 0)
+    expect(result).toEqual({
       index: 16,
       token: { end: 37, start: 35, type: 'operator', value: '|>' },
     })
+    if (!result) throw new Error('should not happen')
+    expect(code.slice(result.token.start, result.token.end)).toEqual('|>')
   })
   test('hasPipeOperator is false when the pipe operator is after a new variable declaration', () => {
     let code = `sketch mySketch {
@@ -684,114 +685,235 @@ const yo = myFunc(9()
     const tokens = lexer(code)
     expect(hasPipeOperator(tokens, 0)).toEqual(false)
   })
+  test('hasPipeOperator with binary expression', () => {
+    let code = `const myVar2 = 5 + 1 |> myFn(%)`
+    const tokens = lexer(code)
+    const result = hasPipeOperator(tokens, 1)
+    expect(result).toEqual({
+      index: 12,
+      token: { end: 23, start: 21, type: 'operator', value: '|>' },
+    })
+    if (!result) throw new Error('should not happen')
+    expect(code.slice(result.token.start, result.token.end)).toEqual('|>')
+  })
+  test('hasPipeOperator of called mid sketchExpression on a callExpression, and called at the start of the sketchExpression at "{"', () => {
+    const code = [
+      'sketch mySk1 {',
+      '  lineTo(1,1)',
+      '  path myPath = lineTo(0, 1)',
+      '  lineTo(1,1)',
+      '} |> rx(90, %)',
+      'show(mySk1)',
+    ].join('\n')
+    const tokens = lexer(code)
+    const tokenWithMyPathIndex = tokens.findIndex(
+      ({ value }) => value === 'myPath'
+    )
+    const tokenWithLineToIndexForVarDecIndex = tokens.findIndex(
+      ({ value }, index) => value === 'lineTo' && index > tokenWithMyPathIndex
+    )
+    const result = hasPipeOperator(tokens, tokenWithLineToIndexForVarDecIndex)
+    expect(result).toBe(false)
+
+    const braceTokenIndex = tokens.findIndex(({ value }) => value === '{')
+    const result2 = hasPipeOperator(tokens, braceTokenIndex)
+    expect(result2).toEqual({
+      index: 36,
+      token: { end: 76, start: 74, type: 'operator', value: '|>' },
+    })
+    if (!result2) throw new Error('should not happen')
+    expect(code.slice(result2?.token?.start, result2?.token?.end)).toEqual('|>')
+  })
 })
 
-describe('testing pipe operator', () => {
+describe('testing pipe operator special', () => {
   test('pipe operator with sketch', () => {
     let code = `sketch mySketch {
   lineTo(2, 3)
+  path myPath = lineTo(0, 1)
+  lineTo(1,1)
 } |> rx(45, %)
 `
     const tokens = lexer(code)
     const { body } = abstractSyntaxTree(tokens)
     expect(body).toEqual([
       {
-        "type": "VariableDeclaration",
-        "start": 0,
-        "end": 47,
-        "kind": "sketch",
-        "declarations": [
+        type: 'VariableDeclaration',
+        start: 0,
+        end: 90,
+        kind: 'sketch',
+        declarations: [
           {
-            "type": "VariableDeclarator",
-            "start": 7,
-            "end": 47,
-            "id": {
-              "type": "Identifier",
-              "start": 7,
-              "end": 15,
-              "name": "mySketch"
+            type: 'VariableDeclarator',
+            start: 7,
+            end: 90,
+            id: {
+              type: 'Identifier',
+              start: 7,
+              end: 15,
+              name: 'mySketch',
             },
-            "init": {
-              "type": "PipeExpression",
-              "start": 16,
-              "end": 47,
-              "body": [
+            init: {
+              type: 'PipeExpression',
+              start: 16,
+              end: 90,
+              body: [
                 {
-                  "type": "SketchExpression",
-                  "start": 16,
-                  "end": 34,
-                  "body": {
-                    "type": "BlockStatement",
-                    "start": 16,
-                    "end": 34,
-                    "body": [
+                  type: 'SketchExpression',
+                  start: 16,
+                  end: 77,
+                  body: {
+                    type: 'BlockStatement',
+                    start: 16,
+                    end: 77,
+                    body: [
                       {
-                        "type": "ExpressionStatement",
-                        "start": 20,
-                        "end": 32,
-                        "expression": {
-                          "type": "CallExpression",
-                          "start": 20,
-                          "end": 32,
-                          "callee": {
-                            "type": "Identifier",
-                            "start": 20,
-                            "end": 26,
-                            "name": "lineTo"
+                        type: 'ExpressionStatement',
+                        start: 20,
+                        end: 32,
+                        expression: {
+                          type: 'CallExpression',
+                          start: 20,
+                          end: 32,
+                          callee: {
+                            type: 'Identifier',
+                            start: 20,
+                            end: 26,
+                            name: 'lineTo',
                           },
-                          "arguments": [
+                          arguments: [
                             {
-                              "type": "Literal",
-                              "start": 27,
-                              "end": 28,
-                              "value": 2,
-                              "raw": "2"
+                              type: 'Literal',
+                              start: 27,
+                              end: 28,
+                              value: 2,
+                              raw: '2',
                             },
                             {
-                              "type": "Literal",
-                              "start": 30,
-                              "end": 31,
-                              "value": 3,
-                              "raw": "3"
-                            }
+                              type: 'Literal',
+                              start: 30,
+                              end: 31,
+                              value: 3,
+                              raw: '3',
+                            },
                           ],
-                          "optional": false
-                        }
-                      }
-                    ]
-                  }
+                          optional: false,
+                        },
+                      },
+                      {
+                        type: 'VariableDeclaration',
+                        start: 35,
+                        end: 61,
+                        kind: 'path',
+                        declarations: [
+                          {
+                            type: 'VariableDeclarator',
+                            start: 40,
+                            end: 61,
+                            id: {
+                              type: 'Identifier',
+                              start: 40,
+                              end: 46,
+                              name: 'myPath',
+                            },
+                            init: {
+                              type: 'CallExpression',
+                              start: 49,
+                              end: 61,
+                              callee: {
+                                type: 'Identifier',
+                                start: 49,
+                                end: 55,
+                                name: 'lineTo',
+                              },
+                              arguments: [
+                                {
+                                  type: 'Literal',
+                                  start: 56,
+                                  end: 57,
+                                  value: 0,
+                                  raw: '0',
+                                },
+                                {
+                                  type: 'Literal',
+                                  start: 59,
+                                  end: 60,
+                                  value: 1,
+                                  raw: '1',
+                                },
+                              ],
+                              optional: false,
+                            },
+                          },
+                        ],
+                      },
+                      {
+                        type: 'ExpressionStatement',
+                        start: 64,
+                        end: 75,
+                        expression: {
+                          type: 'CallExpression',
+                          start: 64,
+                          end: 75,
+                          callee: {
+                            type: 'Identifier',
+                            start: 64,
+                            end: 70,
+                            name: 'lineTo',
+                          },
+                          arguments: [
+                            {
+                              type: 'Literal',
+                              start: 71,
+                              end: 72,
+                              value: 1,
+                              raw: '1',
+                            },
+                            {
+                              type: 'Literal',
+                              start: 73,
+                              end: 74,
+                              value: 1,
+                              raw: '1',
+                            },
+                          ],
+                          optional: false,
+                        },
+                      },
+                    ],
+                  },
                 },
                 {
-                  "type": "CallExpression",
-                  "start": 38,
-                  "end": 47,
-                  "callee": {
-                    "type": "Identifier",
-                    "start": 38,
-                    "end": 40,
-                    "name": "rx"
+                  type: 'CallExpression',
+                  start: 81,
+                  end: 90,
+                  callee: {
+                    type: 'Identifier',
+                    start: 81,
+                    end: 83,
+                    name: 'rx',
                   },
-                  "arguments": [
+                  arguments: [
                     {
-                      "type": "Literal",
-                      "start": 41,
-                      "end": 43,
-                      "value": 45,
-                      "raw": "45"
+                      type: 'Literal',
+                      start: 84,
+                      end: 86,
+                      value: 45,
+                      raw: '45',
                     },
                     {
-                      "type": "PipeSubstitution",
-                      "start": 45,
-                      "end": 46
-                    }
+                      type: 'PipeSubstitution',
+                      start: 88,
+                      end: 89,
+                    },
                   ],
-                  "optional": false
-                }
-              ]
-            }
-          }
-        ]
-      }
+                  optional: false,
+                },
+              ],
+            },
+          },
+        ],
+      },
     ])
   })
   test('pipe operator with binary expression', () => {
@@ -800,77 +922,77 @@ describe('testing pipe operator', () => {
     const { body } = abstractSyntaxTree(tokens)
     expect(body).toEqual([
       {
-        "type": "VariableDeclaration",
-        "start": 0,
-        "end": 36,
-        "kind": "const",
-        "declarations": [
+        type: 'VariableDeclaration',
+        start: 0,
+        end: 36,
+        kind: 'const',
+        declarations: [
           {
-            "type": "VariableDeclarator",
-            "start": 6,
-            "end": 36,
-            "id": {
-              "type": "Identifier",
-              "start": 6,
-              "end": 11,
-              "name": "myVar"
+            type: 'VariableDeclarator',
+            start: 6,
+            end: 36,
+            id: {
+              type: 'Identifier',
+              start: 6,
+              end: 11,
+              name: 'myVar',
             },
-            "init": {
-              "type": "PipeExpression",
-              "start": 12,
-              "end": 36,
-              "body": [
+            init: {
+              type: 'PipeExpression',
+              start: 12,
+              end: 36,
+              body: [
                 {
-                  "type": "BinaryExpression",
-                  "start": 14,
-                  "end": 19,
-                  "left": {
-                    "type": "Literal",
-                    "start": 14,
-                    "end": 15,
-                    "value": 5,
-                    "raw": "5"
+                  type: 'BinaryExpression',
+                  start: 14,
+                  end: 19,
+                  left: {
+                    type: 'Literal',
+                    start: 14,
+                    end: 15,
+                    value: 5,
+                    raw: '5',
                   },
-                  "operator": "+",
-                  "right": {
-                    "type": "Literal",
-                    "start": 18,
-                    "end": 19,
-                    "value": 6,
-                    "raw": "6"
-                  }
+                  operator: '+',
+                  right: {
+                    type: 'Literal',
+                    start: 18,
+                    end: 19,
+                    value: 6,
+                    raw: '6',
+                  },
                 },
                 {
-                  "type": "CallExpression",
-                  "start": 23,
-                  "end": 36,
-                  "callee": {
-                    "type": "Identifier",
-                    "start": 23,
-                    "end": 29,
-                    "name": "myFunc"
+                  type: 'CallExpression',
+                  start: 23,
+                  end: 36,
+                  callee: {
+                    type: 'Identifier',
+                    start: 23,
+                    end: 29,
+                    name: 'myFunc',
                   },
-                  "arguments": [
+                  arguments: [
                     {
-                      "type": "Literal",
-                      "start": 30,
-                      "end": 32,
-                      "value": 45,
-                      "raw": "45"
+                      type: 'Literal',
+                      start: 30,
+                      end: 32,
+                      value: 45,
+                      raw: '45',
                     },
                     {
-                      "type": "PipeSubstitution",
-                      "start": 34,
-                      "end": 35
-                    }
+                      type: 'PipeSubstitution',
+                      start: 34,
+                      end: 35,
+                    },
                   ],
-                  "optional": false
-                }
-              ]
-            }
-          }
-        ]
-      }
+                  optional: false,
+                },
+              ],
+            },
+          },
+        ],
+      },
     ])
   })
 })
