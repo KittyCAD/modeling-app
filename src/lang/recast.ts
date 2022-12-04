@@ -25,34 +25,19 @@ export function recast(
       } else if (statement.type === 'VariableDeclaration') {
         return statement.declarations
           .map((declaration) => {
-            if (declaration.init.type === 'BinaryExpression') {
-              return `${indentation}${statement.kind} ${
-                declaration.id.name
-              } = ${recastBinaryExpression(declaration.init)}`
-            } else if (declaration.init.type === 'Literal') {
-              return `${indentation}${statement.kind} ${
-                declaration.id.name
-              } = ${recastLiteral(declaration.init)}`
-            } else if (declaration.init.type === 'FunctionExpression') {
-              return `${indentation}${statement.kind} ${
-                declaration.id.name
-              } = ${recastFunction(declaration.init)}`
-            } else if (declaration.init.type === 'CallExpression') {
-              return `${indentation}${statement.kind} ${
-                declaration.id.name
-              } = ${recastCallExpression(declaration.init)}`
-            } else if (declaration.init.type === 'SketchExpression') {
-              return `${indentation}${statement.kind} ${
-                declaration.id.name
-              } ${recastSketchExpression(declaration.init, indentation)}`
-            }
-            return ''
+            const isSketchOrFirstPipeExpressionIsSketch = 
+              declaration.init.type === 'SketchExpression' ||
+              (declaration.init.type === 'PipeExpression' &&
+                declaration.init.body[0].type === 'SketchExpression')
+            
+            const assignmentString = isSketchOrFirstPipeExpressionIsSketch ? ' ' : ' = '
+            return `${indentation}${statement.kind} ${declaration.id.name}${assignmentString}${recastValue(declaration.init)}`
+            
           })
           .join('')
       } else if (statement.type === 'ReturnStatement') {
         return `${indentation}return ${recastArgument(statement.argument)}`
       }
-
       return statement.type
     })
     .join('\n')
@@ -70,7 +55,7 @@ function recastBinaryPart(part: BinaryPart): string {
   } else if (part.type === 'Identifier') {
     return part.name
   }
-  throw new Error(`Cannot recast ${part}`)
+  throw new Error(`Cannot recast BinaryPart ${part}`)
 }
 
 function recastLiteral(literal: Literal): string {
@@ -98,8 +83,10 @@ function recastArgument(argument: Value): string {
     return recastCallExpression(argument)
   } else if (argument.type === 'FunctionExpression') {
     return recastFunction(argument)
+  } else if (argument.type === 'PipeSubstitution') {
+    return '%'
   }
-  throw new Error(`Cannot recast ${argument}`)
+  throw new Error(`Cannot recast argument ${argument}`)
 }
 
 function recastFunction(expression: FunctionExpression): string {
@@ -115,4 +102,24 @@ function recastSketchExpression(
   return `{
 ${recast(expression.body, '', indentation + '  ')}
 }`
+}
+
+
+function recastValue(node: Value, indentation = ''): string {
+  if (node.type === 'BinaryExpression') {
+    return recastBinaryExpression(node)
+  } else if (node.type === 'Literal') {
+    return recastLiteral(node)
+  } else if (node.type === 'FunctionExpression') {
+    return recastFunction(node)
+  } else if (node.type === 'CallExpression') {
+    return recastCallExpression(node)
+  } else if (node.type === 'SketchExpression') {
+    return recastSketchExpression(node, indentation)
+  } else if (node.type === 'PipeExpression') {
+    return node.body.map((statement): string => 
+      recastValue(statement, indentation)
+    ).join('\n  |> ')
+  }
+  return ''
 }

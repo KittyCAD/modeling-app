@@ -74,6 +74,31 @@ show(mySketch)
     const recasted = recast(ast)
     expect(recasted).toBe(code.trim())
   })
+  it('sketch piped into callExpression', () => {
+    const code = [
+      'sketch mySk1 {',
+      '  lineTo(1, 1)',
+      '  path myPath = lineTo(0, 1)',
+      '  lineTo(1, 1)',
+      '}',
+      '  |> rx(90, %)',
+    ].join('\n')
+    const { ast } = code2ast(code)
+    const recasted = recast(ast)
+    expect(recasted).toBe(code.trim())
+  })
+  it('recast BinaryExpression piped into CallExpression', () => {
+    const code = [
+      'fn myFn = (a) => {',
+      '  return a + 1',
+      '}',
+      'const myVar = 5 + 1',
+      '  |> myFn(%)',
+    ].join('\n')
+    const { ast } = code2ast(code)
+    const recasted = recast(ast)
+    expect(recasted).toBe(code.trim())
+  })
 })
 
 // helpers
