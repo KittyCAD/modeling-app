@@ -14,7 +14,8 @@ type GuiModes =
       mode: 'sketch'
       sketchMode: 'points'
       axis: 'xy' | 'xz' | 'yz'
-      id: string
+      id?: string
+      pathToNode: (string | number)[]
     }
   | {
       mode: 'sketch'

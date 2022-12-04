@@ -330,7 +330,10 @@ function makeVariableDeclarators(
   const declarationToken = previousMeaningfulToken(tokens, index)
   const contentsStartToken = nextMeaningfulToken(tokens, assignmentToken.index)
   const nextAfterInit = nextMeaningfulToken(tokens, contentsStartToken.index)
-  const pipeStartIndex = assignmentToken?.token?.type === 'operator' ? contentsStartToken.index : assignmentToken.index
+  const pipeStartIndex =
+    assignmentToken?.token?.type === 'operator'
+      ? contentsStartToken.index
+      : assignmentToken.index
   const nextPipeOperator = hasPipeOperator(tokens, pipeStartIndex)
   let init: Value
   let lastIndex = contentsStartToken.index
@@ -844,12 +847,15 @@ export function findNextCallExpression(
   if (nextToken.index >= tokens.length) {
     return { token: null, index: tokens.length - 1 }
   }
-  if (nextToken.token.type === 'word' && veryNextToken?.type === 'brace' && veryNextToken?.value === '(') {
+  if (
+    nextToken.token.type === 'word' &&
+    veryNextToken?.type === 'brace' &&
+    veryNextToken?.value === '('
+  ) {
     return nextToken
   }
   return findNextCallExpression(tokens, nextToken.index)
 }
-
 
 export function findNextClosingCurlyBrace(
   tokens: Token[],
@@ -884,8 +890,14 @@ export function hasPipeOperator(
   if (limitIndex === -1) {
     const callExpressionEnd = isCallExpression(tokens, index)
     if (callExpressionEnd !== -1) {
-      const tokenAfterCallExpression = nextMeaningfulToken(tokens, callExpressionEnd)
-      if (tokenAfterCallExpression?.token?.type === 'operator' && tokenAfterCallExpression.token.value === '|>') {
+      const tokenAfterCallExpression = nextMeaningfulToken(
+        tokens,
+        callExpressionEnd
+      )
+      if (
+        tokenAfterCallExpression?.token?.type === 'operator' &&
+        tokenAfterCallExpression.token.value === '|>'
+      ) {
         return tokenAfterCallExpression
       }
       return false
@@ -893,8 +905,14 @@ export function hasPipeOperator(
     const currentToken = tokens[index]
     if (currentToken?.type === 'brace' && currentToken?.value === '{') {
       const closingBraceIndex = findClosingBrace(tokens, index)
-      const tokenAfterClosingBrace = nextMeaningfulToken(tokens, closingBraceIndex)
-      if (tokenAfterClosingBrace?.token?.type === 'operator' && tokenAfterClosingBrace.token.value === '|>') {
+      const tokenAfterClosingBrace = nextMeaningfulToken(
+        tokens,
+        closingBraceIndex
+      )
+      if (
+        tokenAfterClosingBrace?.token?.type === 'operator' &&
+        tokenAfterClosingBrace.token.value === '|>'
+      ) {
         return tokenAfterClosingBrace
       }
       return false
@@ -969,8 +987,9 @@ export function findClosingBrace(
 
 export function addSketchTo(
   node: Program,
+  axis: 'xy' | 'xz' | 'yz',
   name = ''
-): { modifiedAst: Program; id: string } {
+): { modifiedAst: Program; id: string; pathToNode: (string | number)[] } {
   const _node = { ...node }
   const dumbyStartend = { start: 0, end: 0 }
   const _name = name || findUniqueName(node, 'mySketch')
@@ -984,6 +1003,36 @@ export function addSketchTo(
     ...dumbyStartend,
     body: sketchBody,
   }
+
+  const rotate: CallExpression = {
+    type: 'CallExpression',
+    ...dumbyStartend,
+    callee: {
+      type: 'Identifier',
+      ...dumbyStartend,
+      name: axis === 'xz' ? 'rx' : 'ry',
+    },
+    arguments: [
+      {
+        type: 'Literal',
+        ...dumbyStartend,
+        value: axis === 'yz' ? -90 : 90,
+        raw: axis === 'yz' ? '-90' : '90',
+      },
+      {
+        type: 'PipeSubstitution',
+        ...dumbyStartend,
+      },
+    ],
+    optional: false,
+  }
+
+  const pipChain: PipeExpression = {
+    type: 'PipeExpression',
+    ...dumbyStartend,
+    body: [sketch, rotate],
+  }
+
   const sketchVariableDeclaration: VariableDeclaration = {
     type: 'VariableDeclaration',
     ...dumbyStartend,
@@ -997,22 +1046,35 @@ export function addSketchTo(
           ...dumbyStartend,
           name: _name,
         },
-        init: sketch,
+        init: axis === 'xy' ? sketch : pipChain,
       },
     ],
   }
   const showCallIndex = getShowIndex(_node)
+  let sketchIndex = showCallIndex
   if (showCallIndex === -1) {
     _node.body = [...node.body, sketchVariableDeclaration]
+    sketchIndex = _node.body.length - 1
   } else {
     const newBody = [...node.body]
     newBody.splice(showCallIndex, 0, sketchVariableDeclaration)
     _node.body = newBody
   }
+  let pathToNode: (string | number)[] = [
+    'body',
+    sketchIndex,
+    'declarations',
+    '0',
+    'init',
+  ]
+  if (axis !== 'xy') {
+    pathToNode = [...pathToNode, 'body', '0']
+  }
 
   return {
     modifiedAst: addToShow(_node, _name),
     id: _name,
+    pathToNode,
   }
 }
 
@@ -1107,15 +1169,15 @@ function getShowIndex(node: Program): number {
 
 export function addLine(
   node: Program,
-  id: string,
+  pathToNode: (string | number)[],
   to: [number, number]
-): { modifiedAst: Program; id: string } {
+): { modifiedAst: Program; pathToNode: (string | number)[] } {
   const _node = { ...node }
   const dumbyStartend = { start: 0, end: 0 }
-  const { index, sketchDeclaration, sketchExpression } = getSketchStatement(
+  const sketchExpression = getNodeFromPath(
     _node,
-    id
-  )
+    pathToNode
+  ) as SketchExpression
   const line: ExpressionStatement = {
     type: 'ExpressionStatement',
     ...dumbyStartend,
@@ -1145,78 +1207,28 @@ export function addLine(
     },
   }
   const newBody = [...sketchExpression.body.body, line]
-  const newSketchExpression: SketchExpression = {
-    ...sketchExpression,
-    body: {
-      ...sketchExpression.body,
-      body: newBody,
-    },
-  }
-  const newSketchDeclaration: VariableDeclaration = {
-    ...sketchDeclaration,
-    declarations: [
-      {
-        ...sketchDeclaration.declarations[0],
-        init: newSketchExpression,
-      },
-    ],
-  }
-  _node.body[index] = newSketchDeclaration
+  sketchExpression.body.body = newBody
   return {
     modifiedAst: _node,
-    id,
+    pathToNode,
   }
 }
 
-function getSketchStatement(
-  node: Program,
-  id: string
-): {
-  sketchDeclaration: VariableDeclaration
-  sketchExpression: SketchExpression
-  index: number
-} {
-  const sketchStatementIndex = node.body.findIndex(
-    (statement) =>
-      statement.type === 'VariableDeclaration' &&
-      statement.kind === 'sketch' &&
-      statement.declarations[0].id.type === 'Identifier' &&
-      statement.declarations[0].id.name === id
-  )
-  const sketchStatement = node.body.find(
-    (statement) =>
-      statement.type === 'VariableDeclaration' &&
-      statement.kind === 'sketch' &&
-      statement.declarations[0].id.type === 'Identifier' &&
-      statement.declarations[0].id.name === id
-  )
-  if (
-    !sketchStatement ||
-    sketchStatement.type !== 'VariableDeclaration' ||
-    sketchStatement.declarations[0].init.type !== 'SketchExpression'
-  )
-    throw new Error('No sketch found')
 
-  return {
-    sketchDeclaration: sketchStatement,
-    sketchExpression: sketchStatement.declarations[0].init,
-    index: sketchStatementIndex,
-  }
-}
-
-function isCallExpression(
-  tokens: Token[],
-  index: number
-): number {
+function isCallExpression(tokens: Token[], index: number): number {
   const currentToken = tokens[index]
   const veryNextToken = tokens[index + 1] // i.e. no whitespace
-  if(currentToken.type === 'word' && veryNextToken.type === 'brace' &&veryNextToken.value === '(') {
+  if (
+    currentToken.type === 'word' &&
+    veryNextToken.type === 'brace' &&
+    veryNextToken.value === '('
+  ) {
     return findClosingBrace(tokens, index + 1)
   }
   return -1
 }
 
-function debuggerr(tokens: Token[], indexes: number[], msg=''): string {
+function debuggerr(tokens: Token[], indexes: number[], msg = ''): string {
   // return ''
   const sortedIndexes = [...indexes].sort((a, b) => a - b)
   const min = Math.min(...indexes)
@@ -1243,10 +1255,19 @@ function debuggerr(tokens: Token[], indexes: number[], msg=''): string {
     topString += top
     bottomString += bottom
   })
-  const debugResult = [`${msg} - debuggerr: ${sortedIndexes}`, topString, bottomString].join(
-    '\n'
-  )
+  const debugResult = [
+    `${msg} - debuggerr: ${sortedIndexes}`,
+    topString,
+    bottomString,
+  ].join('\n')
   console.log(debugResult)
   return debugResult
 }
 
+function getNodeFromPath(node: Program, path: (string | number)[]) {
+  let currentNode = node as any
+  for (const pathItem of path) {
+    currentNode = currentNode[pathItem]
+  }
+  return currentNode
+}

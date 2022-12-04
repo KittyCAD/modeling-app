@@ -51,14 +51,15 @@ export const BasePlanes = () => {
           end: 0,
           body: [],
         }
-    const { modifiedAst, id } = addSketchTo(_ast)
     const axis = axisIndex === 0 ? 'xy' : axisIndex === 1 ? 'xz' : 'yz'
+    const { modifiedAst, id, pathToNode } = addSketchTo(_ast, axis)
 
     setGuiMode({
       mode: 'sketch',
       sketchMode: 'points',
       axis,
       id,
+      pathToNode,
     })
 
     updateAst(modifiedAst)
