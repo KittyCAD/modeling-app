@@ -1263,10 +1263,115 @@ function debuggerr(tokens: Token[], indexes: number[], msg = ''): string {
   return debugResult
 }
 
-function getNodeFromPath(node: Program, path: (string | number)[]) {
+export function getNodeFromPath(node: Program, path: (string | number)[]) {
   let currentNode = node as any
+  let successfulPaths: (string | number)[] = []
   for (const pathItem of path) {
-    currentNode = currentNode[pathItem]
+    try {
+      if (typeof currentNode[pathItem] !== 'object')
+        throw new Error('not an object')
+      currentNode = currentNode[pathItem]
+      successfulPaths.push(pathItem)
+    } catch (e) {
+      throw new Error(
+        `Could not find path ${pathItem} in node ${JSON.stringify(
+          currentNode,
+          null,
+          2
+        )}, successful path was ${successfulPaths}`
+      )
+    }
   }
   return currentNode
+}
+
+type Path = (string | number)[]
+
+export function getNodePathFromSourceRange(
+  node: Program,
+  sourceRange: [number, number],
+  previousPath: Path = []
+): Path {
+  const [start, end] = sourceRange
+  let path: Path = [...previousPath, 'body']
+  const _node = { ...node }
+  // loop over each statement in body getting the index with a for loop
+  for (
+    let statementIndex = 0;
+    statementIndex < _node.body.length;
+    statementIndex++
+  ) {
+    const statement = _node.body[statementIndex]
+    if (statement.start <= start && statement.end >= end) {
+      path.push(statementIndex)
+      if (statement.type === 'ExpressionStatement') {
+        const expression = statement.expression
+        if (expression.start <= start && expression.end >= end) {
+          path.push('expression')
+          if (expression.type === 'CallExpression') {
+            const callee = expression.callee
+            if (callee.start <= start && callee.end >= end) {
+              path.push('callee')
+              if (callee.type === 'Identifier') {
+              }
+            }
+          }
+        }
+      } else if (statement.type === 'VariableDeclaration') {
+        const declarations = statement.declarations
+
+        for (let decIndex = 0; decIndex < declarations.length; decIndex++) {
+          const declaration = declarations[decIndex]
+
+          if (declaration.start <= start && declaration.end >= end) {
+            path.push('declarations')
+            path.push(decIndex)
+            const init = declaration.init
+            if (init.start <= start && init.end >= end) {
+              path.push('init')
+              if (init.type === 'SketchExpression') {
+                const body = init.body
+                if (body.start <= start && body.end >= end) {
+                  path.push('body')
+                  if (body.type === 'BlockStatement') {
+                    path = getNodePathFromSourceRange(body, sourceRange, path)
+                  }
+                }
+              } else if (init.type === 'PipeExpression') {
+                const body = init.body
+                for (let pipeIndex = 0; pipeIndex < body.length; pipeIndex++) {
+                  const pipe = body[pipeIndex]
+                  if (pipe.start <= start && pipe.end >= end) {
+                    path.push('body')
+                    path.push(pipeIndex)
+                    if (pipe.type === 'SketchExpression') {
+                      const body = pipe.body
+                      if (body.start <= start && body.end >= end) {
+                        path.push('body')
+                        if (body.type === 'BlockStatement') {
+                          path = getNodePathFromSourceRange(
+                            body,
+                            sourceRange,
+                            path
+                          )
+                        }
+                      }
+                    }
+                  }
+                }
+              } else if (init.type === 'CallExpression') {
+                const callee = init.callee
+                if (callee.start <= start && callee.end >= end) {
+                  path.push('callee')
+                  if (callee.type === 'Identifier') {
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  return path
 }
