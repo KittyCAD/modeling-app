@@ -203,7 +203,13 @@ export const sketchFns = {
       currentPath,
     }
   },
-  rx: (
+  rx: RotateOnAxis([1, 0, 0]),
+  ry: RotateOnAxis([0, 1, 0]),
+  rz: RotateOnAxis([0, 0, 1]),
+}
+
+function RotateOnAxis(axisMultiplier: [number, number, number]) {
+  return (
     programMemory: ProgramMemory,
     sourceRange: SourceRange,
     rotationD: number,
@@ -212,10 +218,10 @@ export const sketchFns = {
     const rotationR = rotationD * (Math.PI / 180)
     return {
       type: 'transform',
-      rotation: [rotationR, 0, 0],
+      rotation: axisMultiplier.map((axis) => axis * rotationR) as Rotation3,
       transform: [0, 0, 0],
       sketch,
       sourceRange,
     }
-  },
+  }
 }

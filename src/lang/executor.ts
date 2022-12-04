@@ -106,7 +106,7 @@ export const executor = (
             )
             _programMemory._sketch = result.programMemory._sketch
             _programMemory.root[variableName] = result.currentPath
-          } else if ('rx' === fnName) {
+          } else if ('rx' === fnName || 'ry' === fnName || 'rz' === fnName) {
             const sketch = declaration.init.arguments[1]
             if(sketch.type !== 'Identifier') throw new Error('rx must be called with an identifier')
             const sketchVal = _programMemory.root[sketch.name]
@@ -218,7 +218,7 @@ function executePipeBody(body: PipeExpression['body'], programMemory: ProgramMem
       }
       throw new Error('Invalid argument type')
     })
-    if (fnName === 'rx') {
+    if ('rx' === fnName || 'ry' === fnName || 'rz' === fnName) {
       const result = sketchFns[fnName](
         programMemory,
         [expression.start, expression.end],
