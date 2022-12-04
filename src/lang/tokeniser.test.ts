@@ -299,7 +299,6 @@ describe('testing lexer', () => {
       "whitespace   ' '        from 6   to 7",
       "number       '2.5'      from 7   to 10",
     ])
-    
   })
   it('testing piping operator', () => {
     const result = stringSummaryLexer(`sketch mySketch {
@@ -330,7 +329,7 @@ describe('testing lexer', () => {
       "comma        ','        from 51  to 52",
       "whitespace   ' '        from 52  to 53",
       "operator     '%'        from 53  to 54",
-      "brace        ')'        from 54  to 55"
+      "brace        ')'        from 54  to 55",
     ])
   })
 })

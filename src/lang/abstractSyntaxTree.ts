@@ -1214,7 +1214,6 @@ export function addLine(
   }
 }
 
-
 function isCallExpression(tokens: Token[], index: number): number {
   const currentToken = tokens[index]
   const veryNextToken = tokens[index + 1] // i.e. no whitespace

@@ -1,4 +1,9 @@
-import { Program, BinaryPart, BinaryExpression, PipeExpression } from './abstractSyntaxTree'
+import {
+  Program,
+  BinaryPart,
+  BinaryExpression,
+  PipeExpression,
+} from './abstractSyntaxTree'
 import { Path, Transform, sketchFns } from './sketch'
 import { BufferGeometry } from 'three'
 
@@ -108,7 +113,8 @@ export const executor = (
             _programMemory.root[variableName] = result.currentPath
           } else if ('rx' === fnName || 'ry' === fnName || 'rz' === fnName) {
             const sketch = declaration.init.arguments[1]
-            if(sketch.type !== 'Identifier') throw new Error('rx must be called with an identifier')
+            if (sketch.type !== 'Identifier')
+              throw new Error('rx must be called with an identifier')
             const sketchVal = _programMemory.root[sketch.name]
             const result = sketchFns[fnName](
               _programMemory,
@@ -198,14 +204,22 @@ function getPipeExpressionResult(
   return result
 }
 
-function executePipeBody(body: PipeExpression['body'], programMemory: ProgramMemory, expressionIndex = 0, previousResults: any[] = []): any[] {
+function executePipeBody(
+  body: PipeExpression['body'],
+  programMemory: ProgramMemory,
+  expressionIndex = 0,
+  previousResults: any[] = []
+): any[] {
   if (expressionIndex === body.length) {
     return previousResults
   }
   const expression = body[expressionIndex]
   if (expression.type === 'BinaryExpression') {
     const result = getBinaryExpressionResult(expression, programMemory)
-    return executePipeBody(body, programMemory, expressionIndex + 1, [...previousResults, result])
+    return executePipeBody(body, programMemory, expressionIndex + 1, [
+      ...previousResults,
+      result,
+    ])
   } else if (expression.type === 'CallExpression') {
     const fnName = expression.callee.name
     const fnArgs = expression.arguments.map((arg) => {
@@ -214,7 +228,7 @@ function executePipeBody(body: PipeExpression['body'], programMemory: ProgramMem
       } else if (arg.type === 'Identifier') {
         return programMemory.root[arg.name]
       } else if (arg.type === 'PipeSubstitution') {
-        return previousResults[expressionIndex-1]
+        return previousResults[expressionIndex - 1]
       }
       throw new Error('Invalid argument type')
     })
@@ -225,10 +239,16 @@ function executePipeBody(body: PipeExpression['body'], programMemory: ProgramMem
         fnArgs[0],
         fnArgs[1]
       )
-      return executePipeBody(body, programMemory, expressionIndex + 1, [...previousResults, result])
+      return executePipeBody(body, programMemory, expressionIndex + 1, [
+        ...previousResults,
+        result,
+      ])
     }
     const result = programMemory.root[fnName](...fnArgs)
-    return executePipeBody(body, programMemory, expressionIndex + 1, [...previousResults, result])
+    return executePipeBody(body, programMemory, expressionIndex + 1, [
+      ...previousResults,
+      result,
+    ])
   } else if (expression.type === 'SketchExpression') {
     const sketchBody = expression.body
     const fnMemory: ProgramMemory = {
@@ -251,12 +271,14 @@ function executePipeBody(body: PipeExpression['body'], programMemory: ProgramMem
       _sketch = newProgramMemory._sketch
     }
     // _programMemory.root[variableName] = _sketch
-    return executePipeBody(body, programMemory, expressionIndex + 1, [...previousResults, _sketch])
+    return executePipeBody(body, programMemory, expressionIndex + 1, [
+      ...previousResults,
+      _sketch,
+    ])
   }
 
   throw new Error('Invalid pipe expression')
 }
-
 
 type SourceRange = [number, number]
 
@@ -277,43 +299,42 @@ type PreviousTransforms = {
   transform: [number, number, number]
 }[]
 
-export const processShownObjects =
-  (
-    programMemory: ProgramMemory,
-    geoMeta: Path[] | Transform,
-    previousTransforms: PreviousTransforms = []
-  ): ViewerArtifact[] => {
-    if (Array.isArray(geoMeta)) {
-      return geoMeta.map(({ geo, sourceRange }) => {
-        const newGeo = geo.clone()
-        previousTransforms.forEach(({ rotation, transform }) => {
-          newGeo.rotateX(rotation[0])
-          newGeo.rotateY(rotation[1])
-          newGeo.rotateZ(rotation[2])
-          newGeo.translate(transform[0], transform[1], transform[2])
-        })
-
-        return {
-          type: 'geo',
-          geo: newGeo,
-          sourceRange,
-        }
+export const processShownObjects = (
+  programMemory: ProgramMemory,
+  geoMeta: Path[] | Transform,
+  previousTransforms: PreviousTransforms = []
+): ViewerArtifact[] => {
+  if (Array.isArray(geoMeta)) {
+    return geoMeta.map(({ geo, sourceRange }) => {
+      const newGeo = geo.clone()
+      previousTransforms.forEach(({ rotation, transform }) => {
+        newGeo.rotateX(rotation[0])
+        newGeo.rotateY(rotation[1])
+        newGeo.rotateZ(rotation[2])
+        newGeo.translate(transform[0], transform[1], transform[2])
       })
-    } else if (geoMeta.type === 'transform') {
-      const referencedVar = geoMeta.sketch
-      const parentArtifact: ViewerArtifact = {
-        type: 'parent',
-        sourceRange: geoMeta.sourceRange,
-        children: processShownObjects(programMemory, referencedVar, [
-          ...previousTransforms,
-          {
-            rotation: geoMeta.rotation,
-            transform: geoMeta.transform,
-          },
-        ]),
-      }
-      return [parentArtifact]
-    }
 
-    throw new Error('Unknown geoMeta type')
+      return {
+        type: 'geo',
+        geo: newGeo,
+        sourceRange,
+      }
+    })
+  } else if (geoMeta.type === 'transform') {
+    const referencedVar = geoMeta.sketch
+    const parentArtifact: ViewerArtifact = {
+      type: 'parent',
+      sourceRange: geoMeta.sourceRange,
+      children: processShownObjects(programMemory, referencedVar, [
+        ...previousTransforms,
+        {
+          rotation: geoMeta.rotation,
+          transform: geoMeta.transform,
+        },
+      ]),
+    }
+    return [parentArtifact]
   }
+
+  throw new Error('Unknown geoMeta type')
+}

@@ -56,7 +56,11 @@ export const SketchPlane = () => {
           } else if (guiMode.axis === 'yz') {
             addLinePoint = [point.z, point.y]
           }
-          const { modifiedAst } = addLine(_ast, guiMode.pathToNode, addLinePoint)
+          const { modifiedAst } = addLine(
+            _ast,
+            guiMode.pathToNode,
+            addLinePoint
+          )
           updateAst(modifiedAst)
         }}
       >

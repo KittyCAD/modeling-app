@@ -25,14 +25,17 @@ export function recast(
       } else if (statement.type === 'VariableDeclaration') {
         return statement.declarations
           .map((declaration) => {
-            const isSketchOrFirstPipeExpressionIsSketch = 
+            const isSketchOrFirstPipeExpressionIsSketch =
               declaration.init.type === 'SketchExpression' ||
               (declaration.init.type === 'PipeExpression' &&
                 declaration.init.body[0].type === 'SketchExpression')
-            
-            const assignmentString = isSketchOrFirstPipeExpressionIsSketch ? ' ' : ' = '
-            return `${indentation}${statement.kind} ${declaration.id.name}${assignmentString}${recastValue(declaration.init)}`
-            
+
+            const assignmentString = isSketchOrFirstPipeExpressionIsSketch
+              ? ' '
+              : ' = '
+            return `${indentation}${statement.kind} ${
+              declaration.id.name
+            }${assignmentString}${recastValue(declaration.init)}`
           })
           .join('')
       } else if (statement.type === 'ReturnStatement') {
@@ -104,7 +107,6 @@ ${recast(expression.body, '', indentation + '  ')}
 }`
 }
 
-
 function recastValue(node: Value, indentation = ''): string {
   if (node.type === 'BinaryExpression') {
     return recastBinaryExpression(node)
@@ -117,9 +119,9 @@ function recastValue(node: Value, indentation = ''): string {
   } else if (node.type === 'SketchExpression') {
     return recastSketchExpression(node, indentation)
   } else if (node.type === 'PipeExpression') {
-    return node.body.map((statement): string => 
-      recastValue(statement, indentation)
-    ).join('\n  |> ')
+    return node.body
+      .map((statement): string => recastValue(statement, indentation))
+      .join('\n  |> ')
   }
   return ''
 }
