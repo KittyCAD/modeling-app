@@ -59,7 +59,13 @@ export interface Transform {
   type: 'transform'
   rotation: Rotation3
   transform: Translate3
-  sketch: Path[] | Transform
+  sketch: SketchGeo | Transform
+  sourceRange: SourceRange
+}
+
+export interface SketchGeo {
+  type: 'sketchGeo'
+  sketch: Path[]
   sourceRange: SourceRange
 }
 
@@ -213,7 +219,7 @@ function RotateOnAxis(axisMultiplier: [number, number, number]) {
     programMemory: ProgramMemory,
     sourceRange: SourceRange,
     rotationD: number,
-    sketch: Path[] | Transform
+    sketch: SketchGeo | Transform
   ): Transform => {
     const rotationR = rotationD * (Math.PI / 180)
     return {

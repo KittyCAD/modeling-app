@@ -4,7 +4,7 @@ import {
   BinaryExpression,
   PipeExpression,
 } from './abstractSyntaxTree'
-import { Path, Transform, sketchFns } from './sketch'
+import { Path, Transform, SketchGeo, sketchFns } from './sketch'
 import { BufferGeometry } from 'three'
 
 export interface ProgramMemory {
@@ -63,7 +63,12 @@ export const executor = (
             )
             _sketch = newProgramMemory._sketch
           }
-          _programMemory.root[variableName] = _sketch
+          const newSketch: SketchGeo = {
+            type: 'sketchGeo',
+            sketch: _sketch,
+            sourceRange: [sketchInit.start, sketchInit.end],
+          }
+          _programMemory.root[variableName] = newSketch
         } else if (declaration.init.type === 'FunctionExpression') {
           const fnInit = declaration.init
 
@@ -271,9 +276,14 @@ function executePipeBody(
       _sketch = newProgramMemory._sketch
     }
     // _programMemory.root[variableName] = _sketch
+    const newSketch: SketchGeo = {
+      type: 'sketchGeo',
+      sketch: _sketch,
+      sourceRange: [expression.start, expression.end],
+    }
     return executePipeBody(body, programMemory, expressionIndex + 1, [
       ...previousResults,
-      _sketch,
+      newSketch,
     ])
   }
 
@@ -284,7 +294,7 @@ type SourceRange = [number, number]
 
 export type ViewerArtifact =
   | {
-      type: 'geo'
+      type: 'sketchLine'
       sourceRange: SourceRange
       geo: BufferGeometry
     }
@@ -301,11 +311,11 @@ type PreviousTransforms = {
 
 export const processShownObjects = (
   programMemory: ProgramMemory,
-  geoMeta: Path[] | Transform,
+  geoMeta: SketchGeo | Transform,
   previousTransforms: PreviousTransforms = []
 ): ViewerArtifact[] => {
-  if (Array.isArray(geoMeta)) {
-    return geoMeta.map(({ geo, sourceRange }) => {
+  if (geoMeta?.type === 'sketchGeo') {
+    return geoMeta.sketch.map(({ geo, sourceRange }) => {
       const newGeo = geo.clone()
       previousTransforms.forEach(({ rotation, transform }) => {
         newGeo.rotateX(rotation[0])
@@ -315,7 +325,7 @@ export const processShownObjects = (
       })
 
       return {
-        type: 'geo',
+        type: 'sketchLine',
         geo: newGeo,
         sourceRange,
       }

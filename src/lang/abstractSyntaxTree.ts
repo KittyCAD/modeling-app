@@ -1176,7 +1176,8 @@ export function addLine(
   const dumbyStartend = { start: 0, end: 0 }
   const sketchExpression = getNodeFromPath(
     _node,
-    pathToNode
+    pathToNode,
+    'SketchExpression'
   ) as SketchExpression
   const line: ExpressionStatement = {
     type: 'ExpressionStatement',
@@ -1263,8 +1264,13 @@ function debuggerr(tokens: Token[], indexes: number[], msg = ''): string {
   return debugResult
 }
 
-export function getNodeFromPath(node: Program, path: (string | number)[]) {
+export function getNodeFromPath(
+  node: Program,
+  path: (string | number)[],
+  stopAt: string = ''
+) {
   let currentNode = node as any
+  let stopAtNode = null
   let successfulPaths: (string | number)[] = []
   for (const pathItem of path) {
     try {
@@ -1272,6 +1278,11 @@ export function getNodeFromPath(node: Program, path: (string | number)[]) {
         throw new Error('not an object')
       currentNode = currentNode[pathItem]
       successfulPaths.push(pathItem)
+      if (currentNode.type === stopAt) {
+        // it will match the deepest node of the type
+        // instead of returning at the first match
+        stopAtNode = currentNode
+      }
     } catch (e) {
       throw new Error(
         `Could not find path ${pathItem} in node ${JSON.stringify(
@@ -1282,7 +1293,7 @@ export function getNodeFromPath(node: Program, path: (string | number)[]) {
       )
     }
   }
-  return currentNode
+  return stopAtNode || currentNode
 }
 
 type Path = (string | number)[]

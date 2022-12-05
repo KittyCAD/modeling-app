@@ -56,9 +56,8 @@ export const BasePlanes = () => {
 
     setGuiMode({
       mode: 'sketch',
-      sketchMode: 'points',
+      sketchMode: 'sketchEdit',
       axis,
-      id,
       pathToNode,
     })
 

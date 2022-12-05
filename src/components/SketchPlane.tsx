@@ -14,7 +14,7 @@ export const SketchPlane = () => {
   if (guiMode.mode !== 'sketch') {
     return null
   }
-  if (guiMode.sketchMode !== 'points') {
+  if (guiMode.sketchMode !== 'points' && guiMode.sketchMode !== 'sketchEdit' ) {
     return null
   }
 
@@ -38,6 +38,9 @@ export const SketchPlane = () => {
         rotation={clickDetectPlaneRotation}
         name={sketchGridName}
         onClick={(e) => {
+          if (guiMode.sketchMode !== 'points') {
+            return
+          }
           const sketchGridIntersection = e.intersections.find(
             ({ object }) => object.name === sketchGridName
           )

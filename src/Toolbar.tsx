@@ -15,16 +15,50 @@ export const Toolbar = () => {
               sketchMode: 'selectFace',
             })
           }}
+          className="border m-1 px-1 rounded"
         >
           Start sketch
         </button>
       )}
-      {guiMode.mode === 'sketch' && guiMode.sketchMode === 'points' && (
-        <button>LineTo TODO</button>
+      {guiMode.mode === 'canEditSketch' && (
+        <button
+          onClick={() => {
+            setGuiMode({
+              mode: 'sketch',
+              sketchMode: 'sketchEdit',
+              pathToNode: guiMode.pathToNode,
+              axis: guiMode.axis,
+            })
+          }}
+          className="border m-1 px-1 rounded"
+        >
+          EditSketch
+        </button>
       )}
+
       {guiMode.mode !== 'default' && (
-        <button onClick={() => setGuiMode({ mode: 'default' })}>exit</button>
+        <button
+          onClick={() => setGuiMode({ mode: 'default' })}
+          className="border m-1 px-1 rounded"
+        >
+          Exit sketch
+        </button>
       )}
+      {guiMode.mode === 'sketch' &&
+        (guiMode.sketchMode === 'points' ||
+          guiMode.sketchMode === 'sketchEdit') && (
+          <button
+            className={`border m-1 px-1 rounded ${
+              guiMode.sketchMode === 'points' && 'bg-gray-400'
+            }`}
+            onClick={() => setGuiMode({
+              ...guiMode,
+              sketchMode: guiMode.sketchMode === 'points' ? 'sketchEdit' :'points',
+            })}
+          >
+            LineTo{guiMode.sketchMode === 'points' && '✅'}
+          </button>
+        )}
     </div>
   )
 }

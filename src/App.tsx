@@ -3,7 +3,11 @@ import { Canvas } from '@react-three/fiber'
 import { Allotment } from 'allotment'
 import { OrbitControls, OrthographicCamera } from '@react-three/drei'
 import { lexer } from './lang/tokeniser'
-import { abstractSyntaxTree } from './lang/abstractSyntaxTree'
+import {
+  abstractSyntaxTree,
+  getNodePathFromSourceRange,
+  getNodeFromPath
+} from './lang/abstractSyntaxTree'
 import { executor, processShownObjects, ViewerArtifact } from './lang/executor'
 import { recast } from './lang/recast'
 import { BufferGeometry } from 'three'
@@ -32,7 +36,6 @@ function App() {
     setSelectionRange,
     selectionRange,
     guiMode,
-    setGuiMode,
     lastGuiMode,
     removeError,
     addLog,
@@ -41,6 +44,8 @@ function App() {
     setAst,
     formatCode,
     ast,
+    setError,
+    errorState,
   } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
@@ -56,6 +61,8 @@ function App() {
     setAst: s.setAst,
     lastGuiMode: s.lastGuiMode,
     formatCode: s.formatCode,
+    setError: s.setError,
+    errorState: s.errorState,
   }))
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
@@ -110,8 +117,9 @@ function App() {
       setGeoArray(geos)
       removeError()
       console.log(programMemory)
+      setError()
     } catch (e: any) {
-      setGuiMode({ mode: 'codeError' })
+      setError('problem')
       console.log(e)
       addLog(e)
     }
@@ -173,7 +181,7 @@ function App() {
                 <AxisIndicator />
               </Canvas>
             </div>
-            {guiMode.mode === 'codeError' && (
+            {errorState.isError && (
               <div className="absolute inset-0 bg-gray-700/20">
                 <pre>
                   {'last first: \n\n' +
@@ -201,19 +209,39 @@ function Line({
   sourceRange: [number, number]
   forceHighlight?: boolean
 }) {
-  const { setHighlightRange, selectionRange } = useStore(
-    ({ setHighlightRange, selectionRange }) => ({
-      setHighlightRange,
-      selectionRange,
-    })
-  )
+  const { setHighlightRange, selectionRange, guiMode, setGuiMode, ast } =
+    useStore(
+      ({ setHighlightRange, selectionRange, guiMode, setGuiMode, ast }) => ({
+        setHighlightRange,
+        selectionRange,
+        guiMode,
+        setGuiMode,
+        ast,
+      })
+    )
   // This reference will give us direct access to the mesh
   const ref = useRef<BufferGeometry | undefined>() as any
   const [hovered, setHover] = useState(false)
   const [editorCursor, setEditorCursor] = useState(false)
+  const [didSetCanEdit, setDidSetCanEdit] = useState(false)
   useEffect(() => {
     const shouldHighlight = isOverlapping(sourceRange, selectionRange)
     setEditorCursor(shouldHighlight)
+    if (shouldHighlight && guiMode.mode === 'default' && ast) {
+      const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
+      const piper = getNodeFromPath(ast, pathToNode, 'PipeExpression')
+      const axis = piper.type !== 'PipeExpression' ? 'xy'
+        : piper?.body?.[1]?.callee?.name === 'rx' ? 'xz' : 'yz'
+      setGuiMode({ mode: 'canEditSketch', pathToNode, axis })
+      setDidSetCanEdit(true)
+    } else if (
+      !shouldHighlight &&
+      didSetCanEdit &&
+      guiMode.mode === 'canEditSketch'
+    ) {
+      setGuiMode({ mode: 'default' })
+      setDidSetCanEdit(false)
+    }
   }, [selectionRange, sourceRange])
 
   return (
@@ -257,7 +285,7 @@ function RenderViewerArtifacts({
     const shouldHighlight = isOverlapping(artifact.sourceRange, selectionRange)
     setEditorCursor(shouldHighlight)
   }, [selectionRange, artifact.sourceRange])
-  if (artifact.type === 'geo') {
+  if (artifact.type === 'sketchLine') {
     const { geo, sourceRange } = artifact
     return (
       <Line

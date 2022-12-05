@@ -6,6 +6,9 @@ import { lexer } from './lang/tokeniser'
 
 export type Range = [number, number]
 
+type Plane = 'xy' | 'xz' | 'yz'
+type PathToNode = (string | number)[]
+
 type GuiModes =
   | {
       mode: 'default'
@@ -13,17 +16,25 @@ type GuiModes =
   | {
       mode: 'sketch'
       sketchMode: 'points'
-      axis: 'xy' | 'xz' | 'yz'
+      axis: Plane
       id?: string
-      pathToNode: (string | number)[]
+      pathToNode: PathToNode
     }
+  | {
+      mode: 'sketch'
+      sketchMode: 'sketchEdit'
+      axis: Plane
+      pathToNode: PathToNode
+  }
   | {
       mode: 'sketch'
       sketchMode: 'selectFace'
     }
   | {
-      mode: 'codeError'
-    }
+      mode: 'canEditSketch'
+      pathToNode: PathToNode
+      axis: Plane
+  }
 
 interface StoreState {
   editorView: EditorView | null
@@ -45,6 +56,11 @@ interface StoreState {
   code: string
   setCode: (code: string) => void
   formatCode: () => void
+  errorState: {
+    isError: boolean
+    error: string
+  }
+  setError: (error?: string) => void
 }
 
 export const useStore = create<StoreState>()((set, get) => ({
@@ -69,19 +85,10 @@ export const useStore = create<StoreState>()((set, get) => ({
   setGuiMode: (guiMode) => {
     const lastGuiMode = get().guiMode
     set({ guiMode })
-    if (guiMode.mode !== 'codeError') {
-      // don't set lastGuiMode to and error state
-      // as the point fo lastGuiMode is to restore the last healthy state
-      // todo maybe rename to lastHealthyGuiMode and remove this comment
-      set({ lastGuiMode })
-    }
   },
   removeError: () => {
     const lastGuiMode = get().lastGuiMode
     const currentGuiMode = get().guiMode
-    if (currentGuiMode.mode === 'codeError') {
-      set({ guiMode: lastGuiMode })
-    }
   },
   logs: [],
   addLog: (log) => {
@@ -108,4 +115,11 @@ export const useStore = create<StoreState>()((set, get) => ({
     const newCode = recast(ast)
     set({ code: newCode, ast })
   },
+  errorState: {
+    isError: false,
+    error: '',
+  },
+  setError: (error = '') => {
+    set({ errorState: { isError: !!error, error } })
+  }
 }))
