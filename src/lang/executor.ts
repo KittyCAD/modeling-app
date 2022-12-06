@@ -6,6 +6,7 @@ import {
 } from './abstractSyntaxTree'
 import { Path, Transform, SketchGeo, sketchFns } from './sketch'
 import { BufferGeometry } from 'three'
+import { LineGeos } from './engine'
 
 export interface ProgramMemory {
   root: { [key: string]: any }
@@ -296,8 +297,13 @@ export type ViewerArtifact =
   | {
       type: 'sketchLine'
       sourceRange: SourceRange
-      geo: BufferGeometry
+      geo: LineGeos
     }
+  | {
+      type: 'sketchBase',
+      sourceRange: SourceRange,
+      geo: BufferGeometry
+  }
   | {
       type: 'parent'
       sourceRange: SourceRange
@@ -315,20 +321,44 @@ export const processShownObjects = (
   previousTransforms: PreviousTransforms = []
 ): ViewerArtifact[] => {
   if (geoMeta?.type === 'sketchGeo') {
-    return geoMeta.sketch.map(({ geo, sourceRange }) => {
-      const newGeo = geo.clone()
-      previousTransforms.forEach(({ rotation, transform }) => {
-        newGeo.rotateX(rotation[0])
-        newGeo.rotateY(rotation[1])
-        newGeo.rotateZ(rotation[2])
-        newGeo.translate(transform[0], transform[1], transform[2])
-      })
-
-      return {
-        type: 'sketchLine',
-        geo: newGeo,
-        sourceRange,
+    return geoMeta.sketch.map(({ geo, sourceRange, type }) => {
+      if(type === 'toPoint') {
+        // const newGeo = geo.clone()
+        const newGeo: LineGeos = {
+            line: geo.line.clone(),
+            tip: geo.tip.clone(),
+            centre: geo.centre.clone(),
+        }
+        previousTransforms.forEach(({ rotation, transform }) => {
+          Object.values(newGeo).forEach((geoItem) => {
+            geoItem.rotateX(rotation[0])
+            geoItem.rotateY(rotation[1])
+            geoItem.rotateZ(rotation[2])
+            geoItem.translate(transform[0], transform[1], transform[2])
+          })
+        })
+        return {
+          type: 'sketchLine',
+          geo: newGeo,
+          sourceRange,
+        }
+      } else if(type === 'base') {
+        const newGeo = geo.clone()
+        previousTransforms.forEach(({ rotation, transform }) => {
+          newGeo.rotateX(rotation[0])
+          newGeo.rotateY(rotation[1])
+          newGeo.rotateZ(rotation[2])
+          newGeo.translate(transform[0], transform[1], transform[2])
+        })
+        return {
+          type: 'sketchBase',
+          geo: newGeo,
+          sourceRange,
+        }
       }
+      console.log('type',type)
+      
+      throw new Error('Unknown geo type')
     })
   } else if (geoMeta.type === 'transform') {
     const referencedVar = geoMeta.sketch

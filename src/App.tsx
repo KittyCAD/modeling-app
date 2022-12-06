@@ -3,14 +3,9 @@ import { Canvas } from '@react-three/fiber'
 import { Allotment } from 'allotment'
 import { OrbitControls, OrthographicCamera } from '@react-three/drei'
 import { lexer } from './lang/tokeniser'
-import {
-  abstractSyntaxTree,
-  getNodePathFromSourceRange,
-  getNodeFromPath
-} from './lang/abstractSyntaxTree'
+import { abstractSyntaxTree } from './lang/abstractSyntaxTree'
 import { executor, processShownObjects, ViewerArtifact } from './lang/executor'
 import { recast } from './lang/recast'
-import { BufferGeometry } from 'three'
 import CodeMirror from '@uiw/react-codemirror'
 import { javascript } from '@codemirror/lang-javascript'
 import { ViewUpdate } from '@codemirror/view'
@@ -19,12 +14,12 @@ import {
   addLineHighlight,
 } from './editor/highlightextension'
 import { useStore } from './useStore'
-import { isOverlapping } from './lib/utils'
 import { Toolbar } from './Toolbar'
 import { BasePlanes } from './components/BasePlanes'
 import { SketchPlane } from './components/SketchPlane'
 import { Logs } from './components/Logs'
 import { AxisIndicator } from './components/AxisIndicator'
+import { RenderViewerArtifacts } from './components/SketchLine'
 
 const OrrthographicCamera = OrthographicCamera as any
 
@@ -160,7 +155,7 @@ function App() {
                 <OrbitControls
                   enableDamping={false}
                   enablePan
-                  enableRotate
+                  enableRotate={!(guiMode.mode === 'canEditSketch' || guiMode.mode === 'sketch')}
                   enableZoom
                   reverseOrbit={false}
                 />
@@ -199,111 +194,3 @@ function App() {
 }
 
 export default App
-
-function Line({
-  geo,
-  sourceRange,
-  forceHighlight = false,
-}: {
-  geo: BufferGeometry
-  sourceRange: [number, number]
-  forceHighlight?: boolean
-}) {
-  const { setHighlightRange, selectionRange, guiMode, setGuiMode, ast } =
-    useStore(
-      ({ setHighlightRange, selectionRange, guiMode, setGuiMode, ast }) => ({
-        setHighlightRange,
-        selectionRange,
-        guiMode,
-        setGuiMode,
-        ast,
-      })
-    )
-  // This reference will give us direct access to the mesh
-  const ref = useRef<BufferGeometry | undefined>() as any
-  const [hovered, setHover] = useState(false)
-  const [editorCursor, setEditorCursor] = useState(false)
-  const [didSetCanEdit, setDidSetCanEdit] = useState(false)
-  useEffect(() => {
-    const shouldHighlight = isOverlapping(sourceRange, selectionRange)
-    setEditorCursor(shouldHighlight)
-    if (shouldHighlight && guiMode.mode === 'default' && ast) {
-      const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
-      const piper = getNodeFromPath(ast, pathToNode, 'PipeExpression')
-      const axis = piper.type !== 'PipeExpression' ? 'xy'
-        : piper?.body?.[1]?.callee?.name === 'rx' ? 'xz' : 'yz'
-      setGuiMode({ mode: 'canEditSketch', pathToNode, axis })
-      setDidSetCanEdit(true)
-    } else if (
-      !shouldHighlight &&
-      didSetCanEdit &&
-      guiMode.mode === 'canEditSketch'
-    ) {
-      setGuiMode({ mode: 'default' })
-      setDidSetCanEdit(false)
-    }
-  }, [selectionRange, sourceRange])
-
-  return (
-    <mesh
-      ref={ref}
-      onPointerOver={(event) => {
-        setHover(true)
-        setHighlightRange(sourceRange)
-      }}
-      onPointerOut={(event) => {
-        setHover(false)
-        setHighlightRange([0, 0])
-      }}
-    >
-      <primitive object={geo} />
-      <meshStandardMaterial
-        color={
-          hovered
-            ? 'hotpink'
-            : editorCursor || forceHighlight
-            ? 'skyblue'
-            : 'orange'
-        }
-      />
-    </mesh>
-  )
-}
-
-function RenderViewerArtifacts({
-  artifact,
-  forceHighlight = false,
-}: {
-  artifact: ViewerArtifact
-  forceHighlight?: boolean
-}) {
-  const { selectionRange } = useStore(({ selectionRange }) => ({
-    selectionRange,
-  }))
-  const [editorCursor, setEditorCursor] = useState(false)
-  useEffect(() => {
-    const shouldHighlight = isOverlapping(artifact.sourceRange, selectionRange)
-    setEditorCursor(shouldHighlight)
-  }, [selectionRange, artifact.sourceRange])
-  if (artifact.type === 'sketchLine') {
-    const { geo, sourceRange } = artifact
-    return (
-      <Line
-        geo={geo}
-        sourceRange={sourceRange}
-        forceHighlight={forceHighlight || editorCursor}
-      />
-    )
-  }
-  return (
-    <>
-      {artifact.children.map((artifact, index) => (
-        <RenderViewerArtifacts
-          artifact={artifact}
-          key={index}
-          forceHighlight={forceHighlight || editorCursor}
-        />
-      ))}
-    </>
-  )
-}

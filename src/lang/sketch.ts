@@ -1,5 +1,5 @@
 import { ProgramMemory } from './executor'
-import { lineGeo, baseGeo } from './engine'
+import { lineGeo, baseGeo, LineGeos } from './engine'
 import { BufferGeometry } from 'three'
 
 type Coords2d = [number, number]
@@ -37,7 +37,7 @@ export type Path =
       name?: string
       to: Coords2d
       previousPath: Path
-      geo: BufferGeometry
+      geo: LineGeos
       sourceRange: SourceRange
     }
   | {
@@ -45,7 +45,7 @@ export type Path =
       name?: string
       firstPath: Path
       previousPath: Path
-      geo: BufferGeometry
+      geo: LineGeos
       sourceRange: SourceRange
     }
   | {
