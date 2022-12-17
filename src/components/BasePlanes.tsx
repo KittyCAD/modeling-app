@@ -88,10 +88,10 @@ export const BasePlanes = () => {
             transparent
             opacity={opacity + (axisIndex === index ? 0.3 : 0)}
           />
-          <Text fontSize={1} color="#555" position={[1, 1, 0.01]}>
+          <Text fontSize={1} color="#555" position={[1, 1, 0.01]} font={'/roboto.woff'}>
             {index === 0 ? 'xy' : index === 1 ? 'xz' : 'yz'}
           </Text>
-          <Text fontSize={1} color="#555" position={[1, 1, -0.01]}>
+          <Text fontSize={1} color="#555" position={[1, 1, -0.01]} font={'/roboto.woff'}>
             {index === 0 ? 'xy' : index === 1 ? 'xz' : 'yz'}
           </Text>
         </mesh>
