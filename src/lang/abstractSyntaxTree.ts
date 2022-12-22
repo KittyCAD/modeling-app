@@ -1219,27 +1219,33 @@ export function changeArguments(
   node: Program,
   pathToNode: (string | number)[],
   args: [number, number]
-): { modifiedAst: Program; pathToNode: (string | number)[] }{
+): { modifiedAst: Program; pathToNode: (string | number)[] } {
   const _node = { ...node }
   const dumbyStartend = { start: 0, end: 0 }
   // const thePath = getNodePathFromSourceRange(_node, sourceRange)
   const callExpression = getNodeFromPath(_node, pathToNode) as CallExpression
-  const newXArg: CallExpression['arguments'][number] = callExpression.arguments[0].type === 'Literal' ? {
-    type: 'Literal',
-    ...dumbyStartend,
-    value: args[0],
-    raw: `${args[0]}`,
-  } : {
-    ...callExpression.arguments[0]
-  }
-  const newYArg: CallExpression['arguments'][number] = callExpression.arguments[1].type === 'Literal' ? {
-    type: 'Literal',
-    ...dumbyStartend,
-    value: args[1],
-    raw: `${args[1]}`,
-  } : {
-    ...callExpression.arguments[1]
-  }
+  const newXArg: CallExpression['arguments'][number] =
+    callExpression.arguments[0].type === 'Literal'
+      ? {
+          type: 'Literal',
+          ...dumbyStartend,
+          value: args[0],
+          raw: `${args[0]}`,
+        }
+      : {
+          ...callExpression.arguments[0],
+        }
+  const newYArg: CallExpression['arguments'][number] =
+    callExpression.arguments[1].type === 'Literal'
+      ? {
+          type: 'Literal',
+          ...dumbyStartend,
+          value: args[1],
+          raw: `${args[1]}`,
+        }
+      : {
+          ...callExpression.arguments[1],
+        }
   callExpression.arguments = [newXArg, newYArg]
   return {
     modifiedAst: _node,

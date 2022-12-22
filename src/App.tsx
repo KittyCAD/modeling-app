@@ -155,7 +155,12 @@ function App() {
                 <OrbitControls
                   enableDamping={false}
                   enablePan
-                  enableRotate={!(guiMode.mode === 'canEditSketch' || guiMode.mode === 'sketch')}
+                  enableRotate={
+                    !(
+                      guiMode.mode === 'canEditSketch' ||
+                      guiMode.mode === 'sketch'
+                    )
+                  }
                   enableZoom
                   reverseOrbit={false}
                 />
