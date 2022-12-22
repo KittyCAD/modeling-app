@@ -3,6 +3,7 @@ import { addLineHighlight, EditorView } from './editor/highlightextension'
 import { Program, abstractSyntaxTree } from './lang/abstractSyntaxTree'
 import { recast } from './lang/recast'
 import { lexer } from './lang/tokeniser'
+import { Quaternion } from 'three'
 
 export type Range = [number, number]
 
@@ -17,6 +18,7 @@ type GuiModes =
       mode: 'sketch'
       sketchMode: 'points'
       axis: Plane
+      quaternion: Quaternion
       id?: string
       pathToNode: PathToNode
     }
@@ -24,8 +26,9 @@ type GuiModes =
       mode: 'sketch'
       sketchMode: 'sketchEdit'
       axis: Plane
+      quaternion: Quaternion
       pathToNode: PathToNode
-  }
+    }
   | {
       mode: 'sketch'
       sketchMode: 'selectFace'
@@ -34,7 +37,8 @@ type GuiModes =
       mode: 'canEditSketch'
       pathToNode: PathToNode
       axis: Plane
-  }
+      quaternion: Quaternion
+    }
 
 interface StoreState {
   editorView: EditorView | null
@@ -121,5 +125,5 @@ export const useStore = create<StoreState>()((set, get) => ({
   },
   setError: (error = '') => {
     set({ errorState: { isError: !!error, error } })
-  }
+  },
 }))

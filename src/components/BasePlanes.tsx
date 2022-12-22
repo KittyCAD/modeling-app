@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { DoubleSide } from 'three'
+import { DoubleSide, Vector3 } from 'three'
 import { useStore } from '../useStore'
 import { Intersection } from '@react-three/fiber'
 import { Text } from '@react-three/drei'
 import { addSketchTo, Program } from '../lang/abstractSyntaxTree'
+import { Quaternion } from 'three'
 
 const opacity = 0.1
 
@@ -52,12 +53,19 @@ export const BasePlanes = () => {
           body: [],
         }
     const axis = axisIndex === 0 ? 'xy' : axisIndex === 1 ? 'xz' : 'yz'
+    const quaternion = new Quaternion()
+    if (axisIndex === 1) {
+      quaternion.setFromAxisAngle(new Vector3(1, 0, 0), Math.PI / 2)
+    } else if (axisIndex === 2) {
+      quaternion.setFromAxisAngle(new Vector3(0, 1, 0), Math.PI / 2)
+    }
     const { modifiedAst, id, pathToNode } = addSketchTo(_ast, axis)
 
     setGuiMode({
       mode: 'sketch',
       sketchMode: 'sketchEdit',
       axis,
+      quaternion,
       pathToNode,
     })
 
@@ -88,10 +96,20 @@ export const BasePlanes = () => {
             transparent
             opacity={opacity + (axisIndex === index ? 0.3 : 0)}
           />
-          <Text fontSize={1} color="#555" position={[1, 1, 0.01]} font={'/roboto.woff'}>
+          <Text
+            fontSize={1}
+            color="#555"
+            position={[1, 1, 0.01]}
+            font={'/roboto.woff'}
+          >
             {index === 0 ? 'xy' : index === 1 ? 'xz' : 'yz'}
           </Text>
-          <Text fontSize={1} color="#555" position={[1, 1, -0.01]} font={'/roboto.woff'}>
+          <Text
+            fontSize={1}
+            color="#555"
+            position={[1, 1, -0.01]}
+            font={'/roboto.woff'}
+          >
             {index === 0 ? 'xy' : index === 1 ? 'xz' : 'yz'}
           </Text>
         </mesh>

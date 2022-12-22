@@ -1,5 +1,5 @@
 import { useStore } from '../useStore'
-import { DoubleSide } from 'three'
+import { DoubleSide, Vector3, Quaternion } from 'three'
 import { addLine, Program } from '../lang/abstractSyntaxTree'
 
 export const SketchPlane = () => {
@@ -14,28 +14,27 @@ export const SketchPlane = () => {
   if (guiMode.mode !== 'sketch') {
     return null
   }
-  if (guiMode.sketchMode !== 'points' && guiMode.sketchMode !== 'sketchEdit' ) {
+  if (guiMode.sketchMode !== 'points' && guiMode.sketchMode !== 'sketchEdit') {
     return null
   }
 
   const sketchGridName = 'sketchGrid'
 
-  const ninety = Math.PI / 2
-  const gridRotation: [number, number, number] = [0, 0, 0]
-  const clickDetectPlaneRotation: [number, number, number] = [0, 0, 0]
-  if (guiMode.axis === 'xy') {
-    gridRotation[0] = ninety
-  } else if (guiMode.axis === 'xz') {
-    clickDetectPlaneRotation[0] = ninety
-  } else if (guiMode.axis === 'yz') {
-    gridRotation[2] = ninety
-    clickDetectPlaneRotation[1] = ninety
-  }
+  let clickDetectQuaternion = guiMode.quaternion.clone()
+
+  let temp = new Quaternion().setFromAxisAngle(
+    new Vector3(1, 0, 0),
+    Math.PI / 2
+  )
+  const gridQuaternion = new Quaternion().multiplyQuaternions(
+    guiMode.quaternion,
+    temp
+  )
 
   return (
     <>
       <mesh
-        rotation={clickDetectPlaneRotation}
+        quaternion={clickDetectQuaternion}
         name={sketchGridName}
         onClick={(e) => {
           if (guiMode.sketchMode !== 'points') {
@@ -44,7 +43,12 @@ export const SketchPlane = () => {
           const sketchGridIntersection = e.intersections.find(
             ({ object }) => object.name === sketchGridName
           )
-          const point = roundy(sketchGridIntersection?.point)
+          const inverseQuaternion = clickDetectQuaternion.clone().invert()
+          let transformedPoint = sketchGridIntersection?.point.clone()
+          if (transformedPoint)
+            transformedPoint.applyQuaternion(inverseQuaternion)
+
+          const point = roundy(transformedPoint)
           let _ast: Program = ast
             ? ast
             : {
@@ -53,12 +57,7 @@ export const SketchPlane = () => {
                 end: 0,
                 body: [],
               }
-          let addLinePoint: [number, number] = [point.x, point.y]
-          if (guiMode.axis === 'xz') {
-            addLinePoint = [point.x, point.z]
-          } else if (guiMode.axis === 'yz') {
-            addLinePoint = [point.z, point.y]
-          }
+          const addLinePoint: [number, number] = [point.x, point.y]
           const { modifiedAst } = addLine(
             _ast,
             guiMode.pathToNode,
@@ -75,7 +74,10 @@ export const SketchPlane = () => {
           transparent
         />
       </mesh>
-      <gridHelper args={[30, 40, 'blue', 'hotpink']} rotation={gridRotation} />
+      <gridHelper
+        args={[30, 40, 'blue', 'hotpink']}
+        quaternion={gridQuaternion}
+      />
     </>
   )
 }

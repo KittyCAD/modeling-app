@@ -28,6 +28,7 @@ export const Toolbar = () => {
               sketchMode: 'sketchEdit',
               pathToNode: guiMode.pathToNode,
               axis: guiMode.axis,
+              quaternion: guiMode.quaternion,
             })
           }}
           className="border m-1 px-1 rounded"
@@ -51,10 +52,13 @@ export const Toolbar = () => {
             className={`border m-1 px-1 rounded ${
               guiMode.sketchMode === 'points' && 'bg-gray-400'
             }`}
-            onClick={() => setGuiMode({
-              ...guiMode,
-              sketchMode: guiMode.sketchMode === 'points' ? 'sketchEdit' :'points',
-            })}
+            onClick={() =>
+              setGuiMode({
+                ...guiMode,
+                sketchMode:
+                  guiMode.sketchMode === 'points' ? 'sketchEdit' : 'points',
+              })
+            }
           >
             LineTo{guiMode.sketchMode === 'points' && '✅'}
           </button>

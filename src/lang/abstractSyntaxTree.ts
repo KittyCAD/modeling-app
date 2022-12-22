@@ -1016,8 +1016,8 @@ export function addSketchTo(
       {
         type: 'Literal',
         ...dumbyStartend,
-        value: axis === 'yz' ? -90 : 90,
-        raw: axis === 'yz' ? '-90' : '90',
+        value: axis === 'yz' ? 90 : 90,
+        raw: axis === 'yz' ? '90' : '90',
       },
       {
         type: 'PipeSubstitution',

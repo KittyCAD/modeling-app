@@ -10,7 +10,7 @@ import { BufferGeometry } from 'three'
 import { useStore } from '../useStore'
 import { isOverlapping } from '../lib/utils'
 import { LineGeos } from '../lang/engine'
-import { Vector3 } from 'three'
+import { Vector3, DoubleSide, Quaternion, Vector2 } from 'three'
 
 function useHeightlight(sourceRange: [number, number]) {
   const { selectionRange, guiMode, setGuiMode, ast } = useStore((s) => ({
@@ -29,13 +29,25 @@ function useHeightlight(sourceRange: [number, number]) {
     if (shouldHighlight && guiMode.mode === 'default' && ast) {
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
       const piper = getNodeFromPath(ast, pathToNode, 'PipeExpression')
+      const quaternion = new Quaternion()
+      if (piper.type === 'PipeExpression') {
+        const rotateName = piper?.body?.[1]?.callee?.name
+        const rotateValue = piper?.body?.[1]?.arguments[0].value
+        let rotateAxis = new Vector3(1, 0, 0)
+        if (rotateName === 'ry') {
+          rotateAxis = new Vector3(0, 1, 0)
+        } else if (rotateName === 'rz') {
+          rotateAxis = new Vector3(0, 0, 1)
+        }
+        quaternion.setFromAxisAngle(rotateAxis, (Math.PI * rotateValue) / 180)
+      }
       const axis =
         piper.type !== 'PipeExpression'
           ? 'xy'
           : piper?.body?.[1]?.callee?.name === 'rx'
           ? 'xz'
           : 'yz'
-      setGuiMode({ mode: 'canEditSketch', pathToNode, axis })
+      setGuiMode({ mode: 'canEditSketch', pathToNode, axis, quaternion }) // TODO needs fix
       setDidSetCanEdit(true)
     } else if (
       !shouldHighlight &&
@@ -122,7 +134,9 @@ function MovingSphere({
   editorCursor: boolean
 }) {
   const ref = useRef<BufferGeometry | undefined>() as any
+  const detectionPlaneRef = useRef<BufferGeometry | undefined>() as any
   const lastPointerRef = useRef<Vector3>(new Vector3())
+  const point2DRef = useRef<Vector2>(new Vector2())
   const [hovered, setHover] = useState(false)
   const [isMouseDown, setIsMouseDown] = useState(false)
 
@@ -141,7 +155,6 @@ function MovingSphere({
       const [xArg, yArg] = callExpression?.arguments || []
       const x = xArg?.type === 'Literal' ? xArg.value : -1
       const y = yArg?.type === 'Literal' ? yArg.value : -1
-      console.log(callExpression)
       return {
         originalXY: [x, y],
       }
@@ -155,11 +168,11 @@ function MovingSphere({
     const handleMouseUp = () => {
       if (isMouseDown && ast) {
         const thePath = getNodePathFromSourceRange(ast, sourceRange)
-        const theNewPoints: [number, number] = [
-          roundOff(lastPointerRef.current.x, 2),
-          roundOff(lastPointerRef.current.y, 2),
+        let [x, y] = [
+          roundOff(point2DRef.current.x, 2),
+          roundOff(point2DRef.current.y, 2),
         ]
-        console.log('theNewPoints', theNewPoints)
+        let theNewPoints: [number, number] = [x, y]
         const { modifiedAst } = changeArguments(ast, thePath, theNewPoints)
         updateAst(modifiedAst)
         ref.current.position.set(0, 0, 0)
@@ -171,6 +184,14 @@ function MovingSphere({
       window.removeEventListener('mouseup', handleMouseUp)
     }
   }, [isMouseDown, ast])
+
+  let clickDetectPlaneQuaternion = new Quaternion()
+  if (
+    guiMode.mode === 'canEditSketch' ||
+    (guiMode.mode === 'sketch' && guiMode.sketchMode === 'sketchEdit')
+  ) {
+    clickDetectPlaneQuaternion = guiMode.quaternion.clone()
+  }
 
   return (
     <>
@@ -193,9 +214,23 @@ function MovingSphere({
       </mesh>
       {isMouseDown && (
         <mesh
-          position={[0, 0, 0.05]}
+          position={[0, 0, -0.05]}
+          quaternion={clickDetectPlaneQuaternion}
           onPointerMove={(a) => {
             const point = a.point
+
+            const transformedPoint = point.clone()
+            let inverseQuaternion = new Quaternion()
+            if (
+              guiMode.mode === 'canEditSketch' ||
+              (guiMode.mode === 'sketch' && guiMode.sketchMode === 'sketchEdit')
+            ) {
+              inverseQuaternion = guiMode.quaternion.clone()
+            }
+            inverseQuaternion = inverseQuaternion.invert()
+            transformedPoint.applyQuaternion(inverseQuaternion)
+            point2DRef.current.set(transformedPoint.x, transformedPoint.y)
+
             if (
               lastPointerRef.current.x === 0 &&
               lastPointerRef.current.y === 0 &&
@@ -223,8 +258,13 @@ function MovingSphere({
           }}
           name="my-mesh"
         >
-          <planeGeometry args={[50, 50]} />
-          <meshStandardMaterial color="blue" transparent opacity={0.2} />
+          <planeGeometry args={[50, 50]} ref={detectionPlaneRef} />
+          <meshStandardMaterial
+            side={DoubleSide}
+            color="blue"
+            transparent
+            opacity={0}
+          />
         </mesh>
       )}
     </>
