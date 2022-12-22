@@ -41,13 +41,7 @@ function useHeightlight(sourceRange: [number, number]) {
         }
         quaternion.setFromAxisAngle(rotateAxis, (Math.PI * rotateValue) / 180)
       }
-      const axis =
-        piper.type !== 'PipeExpression'
-          ? 'xy'
-          : piper?.body?.[1]?.callee?.name === 'rx'
-          ? 'xz'
-          : 'yz'
-      setGuiMode({ mode: 'canEditSketch', pathToNode, axis, quaternion }) // TODO needs fix
+      setGuiMode({ mode: 'canEditSketch', pathToNode, quaternion })
       setDidSetCanEdit(true)
     } else if (
       !shouldHighlight &&

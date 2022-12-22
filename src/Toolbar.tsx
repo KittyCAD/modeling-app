@@ -27,7 +27,6 @@ export const Toolbar = () => {
               mode: 'sketch',
               sketchMode: 'sketchEdit',
               pathToNode: guiMode.pathToNode,
-              axis: guiMode.axis,
               quaternion: guiMode.quaternion,
             })
           }}

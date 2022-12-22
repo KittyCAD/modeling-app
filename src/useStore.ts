@@ -17,7 +17,6 @@ type GuiModes =
   | {
       mode: 'sketch'
       sketchMode: 'points'
-      axis: Plane
       quaternion: Quaternion
       id?: string
       pathToNode: PathToNode
@@ -25,7 +24,6 @@ type GuiModes =
   | {
       mode: 'sketch'
       sketchMode: 'sketchEdit'
-      axis: Plane
       quaternion: Quaternion
       pathToNode: PathToNode
     }
@@ -36,7 +34,6 @@ type GuiModes =
   | {
       mode: 'canEditSketch'
       pathToNode: PathToNode
-      axis: Plane
       quaternion: Quaternion
     }
 
