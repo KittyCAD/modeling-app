@@ -12,51 +12,6 @@ import { isOverlapping } from '../lib/utils'
 import { LineGeos } from '../lang/engine'
 import { Vector3, DoubleSide, Quaternion, Vector2 } from 'three'
 
-function useHeightlight(sourceRange: [number, number]) {
-  const { selectionRange, guiMode, setGuiMode, ast } = useStore((s) => ({
-    setHighlightRange: s.setHighlightRange,
-    selectionRange: s.selectionRange,
-    guiMode: s.guiMode,
-    setGuiMode: s.setGuiMode,
-    ast: s.ast,
-  }))
-  // This reference will give us direct access to the mesh
-  const [editorCursor, setEditorCursor] = useState(false)
-  const [didSetCanEdit, setDidSetCanEdit] = useState(false)
-  useEffect(() => {
-    const shouldHighlight = isOverlapping(sourceRange, selectionRange)
-    setEditorCursor(shouldHighlight)
-    if (shouldHighlight && guiMode.mode === 'default' && ast) {
-      const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
-      const piper = getNodeFromPath(ast, pathToNode, 'PipeExpression')
-      const quaternion = new Quaternion()
-      if (piper.type === 'PipeExpression') {
-        const rotateName = piper?.body?.[1]?.callee?.name
-        const rotateValue = piper?.body?.[1]?.arguments[0].value
-        let rotateAxis = new Vector3(1, 0, 0)
-        if (rotateName === 'ry') {
-          rotateAxis = new Vector3(0, 1, 0)
-        } else if (rotateName === 'rz') {
-          rotateAxis = new Vector3(0, 0, 1)
-        }
-        quaternion.setFromAxisAngle(rotateAxis, (Math.PI * rotateValue) / 180)
-      }
-      setGuiMode({ mode: 'canEditSketch', pathToNode, quaternion })
-      setDidSetCanEdit(true)
-    } else if (
-      !shouldHighlight &&
-      didSetCanEdit &&
-      guiMode.mode === 'canEditSketch'
-    ) {
-      setGuiMode({ mode: 'default' })
-      setDidSetCanEdit(false)
-    }
-  }, [selectionRange, sourceRange])
-  return {
-    editorCursor,
-  }
-}
-
 function SketchLine({
   geo,
   sourceRange,
@@ -66,7 +21,6 @@ function SketchLine({
   sourceRange: [number, number]
   forceHighlight?: boolean
 }) {
-  const { editorCursor } = useHeightlight(sourceRange)
   const { setHighlightRange } = useStore(
     ({ setHighlightRange, selectionRange, guiMode, setGuiMode, ast }) => ({
       setHighlightRange,
@@ -95,19 +49,13 @@ function SketchLine({
       >
         <primitive object={geo.line} />
         <meshStandardMaterial
-          color={
-            hovered
-              ? 'hotpink'
-              : editorCursor || forceHighlight
-              ? 'skyblue'
-              : 'orange'
-          }
+          color={hovered ? 'hotpink' : forceHighlight ? 'skyblue' : 'orange'}
         />
       </mesh>
       <MovingSphere
         geo={geo.tip}
         sourceRange={sourceRange}
-        editorCursor={editorCursor || forceHighlight}
+        editorCursor={forceHighlight}
       />
     </>
   )
@@ -272,14 +220,51 @@ export function RenderViewerArtifacts({
   artifact: ViewerArtifact
   forceHighlight?: boolean
 }) {
-  const { selectionRange } = useStore(({ selectionRange }) => ({
-    selectionRange,
-  }))
+  const { selectionRange, guiMode, ast, setGuiMode } = useStore(
+    ({ selectionRange, guiMode, ast, setGuiMode }) => ({
+      selectionRange,
+      guiMode,
+      ast,
+      setGuiMode,
+    })
+  )
   const [editorCursor, setEditorCursor] = useState(false)
   useEffect(() => {
     const shouldHighlight = isOverlapping(artifact.sourceRange, selectionRange)
-    setEditorCursor(shouldHighlight)
+    setEditorCursor(shouldHighlight && artifact.type !== 'sketch')
   }, [selectionRange, artifact.sourceRange])
+
+  useEffect(() => {
+    const shouldHighlight = isOverlapping(artifact.sourceRange, selectionRange)
+    if (
+      shouldHighlight &&
+      (guiMode.mode === 'default' || guiMode.mode === 'canEditSketch') &&
+      artifact.type === 'sketch' &&
+      ast
+    ) {
+      const pathToNode = getNodePathFromSourceRange(ast, artifact.sourceRange)
+      const piper = getNodeFromPath(ast, pathToNode, 'PipeExpression')
+      const quaternion = new Quaternion()
+      if (piper.type === 'PipeExpression') {
+        const rotateName = piper?.body?.[1]?.callee?.name
+        const rotateValue = piper?.body?.[1]?.arguments[0].value
+        let rotateAxis = new Vector3(1, 0, 0)
+        if (rotateName === 'ry') {
+          rotateAxis = new Vector3(0, 1, 0)
+        } else if (rotateName === 'rz') {
+          rotateAxis = new Vector3(0, 0, 1)
+        }
+        quaternion.setFromAxisAngle(rotateAxis, (Math.PI * rotateValue) / 180)
+      }
+      setGuiMode({ mode: 'canEditSketch', pathToNode, quaternion })
+    } else if (
+      !shouldHighlight &&
+      guiMode.mode === 'canEditSketch' &&
+      artifact.type === 'sketch'
+    ) {
+      setGuiMode({ mode: 'default' })
+    }
+  }, [selectionRange, artifact.sourceRange, ast, guiMode.mode, setGuiMode])
   if (artifact.type === 'sketchLine') {
     const { geo, sourceRange } = artifact
     return (
