@@ -1,10 +1,11 @@
 import { ProgramMemory } from './executor'
 import { lineGeo, baseGeo, LineGeos } from './engine'
 import { BufferGeometry } from 'three'
+import { Quaternion, Vector3 } from 'three'
 
 type Coords2d = [number, number]
 type SourceRange = [number, number]
-type Rotation3 = [number, number, number]
+type Rotation3 = Quaternion
 type Translate3 = [number, number, number]
 
 export type Path =
@@ -222,9 +223,11 @@ function RotateOnAxis(axisMultiplier: [number, number, number]) {
     sketch: SketchGeo | Transform
   ): Transform => {
     const rotationR = rotationD * (Math.PI / 180)
+    const rotateVec = new Vector3(...axisMultiplier)
+    const quaternion = new Quaternion()
     return {
       type: 'transform',
-      rotation: axisMultiplier.map((axis) => axis * rotationR) as Rotation3,
+      rotation: quaternion.setFromAxisAngle(rotateVec, rotationR),
       transform: [0, 0, 0],
       sketch,
       sourceRange,

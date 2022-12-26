@@ -5,7 +5,7 @@ import {
   PipeExpression,
 } from './abstractSyntaxTree'
 import { Path, Transform, SketchGeo, sketchFns } from './sketch'
-import { BufferGeometry } from 'three'
+import { BufferGeometry, Quaternion } from 'three'
 import { LineGeos } from './engine'
 
 export interface ProgramMemory {
@@ -316,7 +316,7 @@ export type ViewerArtifact =
     }
 
 type PreviousTransforms = {
-  rotation: [number, number, number]
+  rotation: Quaternion
   transform: [number, number, number]
 }[]
 
@@ -338,10 +338,8 @@ export const processShownObjects = (
               centre: geo.centre.clone(),
             }
             previousTransforms.forEach(({ rotation, transform }) => {
-              Object.values(newGeo).forEach((geoItem) => {
-                geoItem.rotateX(rotation[0])
-                geoItem.rotateY(rotation[1])
-                geoItem.rotateZ(rotation[2])
+              Object.values(newGeo).forEach((geoItem: BufferGeometry) => {
+                geoItem.applyQuaternion(rotation)
                 geoItem.translate(transform[0], transform[1], transform[2])
               })
             })
@@ -353,9 +351,7 @@ export const processShownObjects = (
           } else if (type === 'base') {
             const newGeo = geo.clone()
             previousTransforms.forEach(({ rotation, transform }) => {
-              newGeo.rotateX(rotation[0])
-              newGeo.rotateY(rotation[1])
-              newGeo.rotateZ(rotation[2])
+              newGeo.applyQuaternion(rotation)
               newGeo.translate(transform[0], transform[1], transform[2])
             })
             return {
