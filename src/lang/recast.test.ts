@@ -99,6 +99,29 @@ show(mySketch)
     const recasted = recast(ast)
     expect(recasted).toBe(code.trim())
   })
+  it('recast array declaration', () => {
+    const code = ['const three = 3', "const yo = [1, '2', three, 4 + 5]"].join(
+      '\n'
+    )
+    const { ast } = code2ast(code)
+    const recasted = recast(ast)
+    expect(recasted).toBe(code.trim())
+  })
+  it('recast long array declaration', () => {
+    const code = [
+      'const three = 3',
+      'const yo = [',
+      '  1,',
+      "  '2',",
+      '  three,',
+      '  4 + 5,',
+      "  'hey oooooo really long long long'",
+      ']',
+    ].join('\n')
+    const { ast } = code2ast(code)
+    const recasted = recast(ast)
+    expect(recasted).toBe(code.trim())
+  })
 })
 
 // helpers

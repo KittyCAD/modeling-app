@@ -270,6 +270,7 @@ export type Value =
   | SketchExpression
   | PipeExpression
   | PipeSubstitution
+  | ArrayExpression
 
 function makeValue(
   tokens: Token[],
@@ -379,6 +380,16 @@ function makeVariableDeclarators(
     const callExInfo = makeCallExpression(tokens, contentsStartToken.index)
     init = callExInfo.expression
     lastIndex = callExInfo.lastIndex
+  } else if (
+    contentsStartToken.token.type === 'brace' &&
+    contentsStartToken.token.value === '['
+  ) {
+    const arrayExpression = makeArrayExpression(
+      tokens,
+      contentsStartToken.index
+    )
+    init = arrayExpression.expression
+    lastIndex = arrayExpression.lastIndex
   } else {
     init = makeLiteral(tokens, contentsStartToken.index)
   }
@@ -440,6 +451,66 @@ function makeLiteral(tokens: Token[], index: number): Literal {
     end: token.end,
     value,
     raw: token.value,
+  }
+}
+
+export interface ArrayExpression extends GeneralStatement {
+  type: 'ArrayExpression'
+  elements: Value[]
+}
+
+function makeArrayElements(
+  tokens: Token[],
+  index: number,
+  previousElements: Value[] = []
+): { elements: ArrayExpression['elements']; lastIndex: number } {
+  // should be called with the first token after the opening brace
+  const firstElementToken = tokens[index]
+  if (firstElementToken.type === 'brace' && firstElementToken.value === ']') {
+    return {
+      elements: previousElements,
+      lastIndex: index,
+    }
+  }
+  const currentElement = makeValue(tokens, index)
+  const nextToken = nextMeaningfulToken(tokens, currentElement.lastIndex)
+  const isClosingBrace =
+    nextToken.token.type === 'brace' && nextToken.token.value === ']'
+  const isComma = nextToken.token.type === 'comma'
+  if (!isClosingBrace && !isComma) {
+    throw new Error('Expected a comma or closing brace')
+  }
+  const nextCallIndex = isClosingBrace
+    ? nextToken.index
+    : nextMeaningfulToken(tokens, nextToken.index).index
+  return makeArrayElements(tokens, nextCallIndex, [
+    ...previousElements,
+    currentElement.value,
+  ])
+}
+
+function makeArrayExpression(
+  tokens: Token[],
+  index: number
+): {
+  expression: ArrayExpression
+  lastIndex: number
+} {
+  // should be called array opening brace '[' index
+  const openingBraceToken = tokens[index]
+  const firstElementToken = nextMeaningfulToken(tokens, index)
+  const { elements, lastIndex } = makeArrayElements(
+    tokens,
+    firstElementToken.index
+  )
+  return {
+    expression: {
+      type: 'ArrayExpression',
+      start: openingBraceToken.start,
+      end: tokens[lastIndex].end,
+      elements,
+    },
+    lastIndex,
   }
 }
 
@@ -554,9 +625,9 @@ function makePipeBody(
   let value: Value
   let lastIndex: number
   if (currentToken.type === 'operator') {
-    const beep = makeValue(tokens, expressionStart.index)
-    value = beep.value
-    lastIndex = beep.lastIndex
+    const val = makeValue(tokens, expressionStart.index)
+    value = val.value
+    lastIndex = val.lastIndex
   } else if (currentToken.type === 'brace' && currentToken.value === '{') {
     const sketch = makeSketchExpression(tokens, index)
     value = sketch.expression

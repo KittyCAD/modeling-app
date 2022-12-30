@@ -995,4 +995,77 @@ describe('testing pipe operator special', () => {
       },
     ])
   })
+  test('array expression', () => {
+    let code = `const yo = [1, '2', three, 4 + 5]`
+    const tokens = lexer(code)
+    const { body } = abstractSyntaxTree(tokens)
+    expect(body).toEqual([
+      {
+        type: 'VariableDeclaration',
+        start: 0,
+        end: 33,
+        kind: 'const',
+        declarations: [
+          {
+            type: 'VariableDeclarator',
+            start: 6,
+            end: 33,
+            id: {
+              type: 'Identifier',
+              start: 6,
+              end: 8,
+              name: 'yo',
+            },
+            init: {
+              type: 'ArrayExpression',
+              start: 11,
+              end: 33,
+              elements: [
+                {
+                  type: 'Literal',
+                  start: 12,
+                  end: 13,
+                  value: 1,
+                  raw: '1',
+                },
+                {
+                  type: 'Literal',
+                  start: 15,
+                  end: 18,
+                  value: '2',
+                  raw: "'2'",
+                },
+                {
+                  type: 'Identifier',
+                  start: 20,
+                  end: 25,
+                  name: 'three',
+                },
+                {
+                  type: 'BinaryExpression',
+                  start: 27,
+                  end: 32,
+                  left: {
+                    type: 'Literal',
+                    start: 27,
+                    end: 28,
+                    value: 4,
+                    raw: '4',
+                  },
+                  operator: '+',
+                  right: {
+                    type: 'Literal',
+                    start: 31,
+                    end: 32,
+                    value: 5,
+                    raw: '5',
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    ])
+  })
 })

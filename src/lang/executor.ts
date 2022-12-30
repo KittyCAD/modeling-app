@@ -43,6 +43,24 @@ export const executor = (
             declaration.init,
             _programMemory
           )
+        } else if (declaration.init.type === 'ArrayExpression') {
+          _programMemory.root[variableName] = declaration.init.elements.map(
+            (element) => {
+              if (element.type === 'Literal') {
+                return element.value
+              } else if (element.type === 'BinaryExpression') {
+                return getBinaryExpressionResult(element, _programMemory)
+              } else if (element.type === 'PipeExpression') {
+                return getPipeExpressionResult(element, _programMemory)
+              } else if (element.type === 'Identifier') {
+                return _programMemory.root[element.name]
+              } else {
+                throw new Error(
+                  `Unexpected element type ${element.type} in array expression`
+                )
+              }
+            }
+          )
         } else if (declaration.init.type === 'SketchExpression') {
           const sketchInit = declaration.init
           const fnMemory: ProgramMemory = {

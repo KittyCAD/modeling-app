@@ -12,6 +12,8 @@ const BLOCK_START = /^\{/
 const BLOCK_END = /^\}/
 const PARAN_START = /^\(/
 const PARAN_END = /^\)/
+const ARRAY_START = /^\[/
+const ARRAY_END = /^\]/
 const COMMA = /^,/
 
 export const isNumber = (character: string) => NUMBER.test(character)
@@ -23,6 +25,8 @@ export const isBlockStart = (character: string) => BLOCK_START.test(character)
 export const isBlockEnd = (character: string) => BLOCK_END.test(character)
 export const isParanStart = (character: string) => PARAN_START.test(character)
 export const isParanEnd = (character: string) => PARAN_END.test(character)
+export const isArrayStart = (character: string) => ARRAY_START.test(character)
+export const isArrayEnd = (character: string) => ARRAY_END.test(character)
 export const isComma = (character: string) => COMMA.test(character)
 
 function matchFirst(str: string, regex: RegExp) {
@@ -74,6 +78,12 @@ const returnTokenAtIndex = (str: string, startIndex: number): Token | null => {
   }
   if (isBlockEnd(strFromIndex)) {
     return makeToken('brace', matchFirst(strFromIndex, BLOCK_END), startIndex)
+  }
+  if (isArrayStart(strFromIndex)) {
+    return makeToken('brace', matchFirst(strFromIndex, ARRAY_START), startIndex)
+  }
+  if (isArrayEnd(strFromIndex)) {
+    return makeToken('brace', matchFirst(strFromIndex, ARRAY_END), startIndex)
   }
   if (isComma(strFromIndex)) {
     return makeToken('comma', matchFirst(strFromIndex, COMMA), startIndex)

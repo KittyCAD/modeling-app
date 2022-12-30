@@ -7,6 +7,7 @@ import {
   Value,
   FunctionExpression,
   SketchExpression,
+  ArrayExpression,
 } from './abstractSyntaxTree'
 
 export function recast(
@@ -19,6 +20,8 @@ export function recast(
       if (statement.type === 'ExpressionStatement') {
         if (statement.expression.type === 'BinaryExpression') {
           return indentation + recastBinaryExpression(statement.expression)
+        } else if (statement.expression.type === 'ArrayExpression') {
+          return indentation + recastArrayExpression(statement.expression)
         } else if (statement.expression.type === 'CallExpression') {
           return indentation + recastCallExpression(statement.expression)
         }
@@ -52,6 +55,25 @@ function recastBinaryExpression(expression: BinaryExpression): string {
   } ${recastBinaryPart(expression.right)}`
 }
 
+function recastArrayExpression(
+  expression: ArrayExpression,
+  indentation = ''
+): string {
+  const flatRecast = `[${expression.elements
+    .map((el) => recastValue(el))
+    .join(', ')}]`
+  const maxArrayLength = 40
+  if (flatRecast.length > maxArrayLength) {
+    const _indentation = indentation + '  '
+    return `[
+${_indentation}${expression.elements
+      .map((el) => recastValue(el))
+      .join(`,\n${_indentation}`)}
+]`
+  }
+  return flatRecast
+}
+
 function recastBinaryPart(part: BinaryPart): string {
   if (part.type === 'Literal') {
     return recastLiteral(part)
@@ -82,6 +104,8 @@ function recastArgument(argument: Value): string {
     return argument.name
   } else if (argument.type === 'BinaryExpression') {
     return recastBinaryExpression(argument)
+  } else if (argument.type === 'ArrayExpression') {
+    return recastArrayExpression(argument)
   } else if (argument.type === 'CallExpression') {
     return recastCallExpression(argument)
   } else if (argument.type === 'FunctionExpression') {
@@ -110,12 +134,16 @@ ${recast(expression.body, '', indentation + '  ')}
 function recastValue(node: Value, indentation = ''): string {
   if (node.type === 'BinaryExpression') {
     return recastBinaryExpression(node)
+  } else if (node.type === 'ArrayExpression') {
+    return recastArrayExpression(node, indentation)
   } else if (node.type === 'Literal') {
     return recastLiteral(node)
   } else if (node.type === 'FunctionExpression') {
     return recastFunction(node)
   } else if (node.type === 'CallExpression') {
     return recastCallExpression(node)
+  } else if (node.type === 'Identifier') {
+    return node.name
   } else if (node.type === 'SketchExpression') {
     return recastSketchExpression(node, indentation)
   } else if (node.type === 'PipeExpression') {

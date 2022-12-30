@@ -180,6 +180,16 @@ show(mySketch)
     //   sourceRange: [77, 86],
     // })
   })
+  it('execute array expression', () => {
+    const code = ['const three = 3', "const yo = [1, '2', three, 4 + 5]"].join(
+      '\n'
+    )
+    const { root } = exe(code)
+    expect(root).toEqual({
+      three: 3,
+      yo: [1, '2', 3, 9],
+    })
+  })
 })
 
 // helpers

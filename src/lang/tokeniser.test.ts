@@ -332,6 +332,23 @@ describe('testing lexer', () => {
       "brace        ')'        from 54  to 55",
     ])
   })
+  it('testing array declaration', () => {
+    const result = stringSummaryLexer(`const yo = [1, 2]`)
+    expect(result).toEqual([
+      "word         'const'    from 0   to 5",
+      "whitespace   ' '        from 5   to 6",
+      "word         'yo'       from 6   to 8",
+      "whitespace   ' '        from 8   to 9",
+      "operator     '='        from 9   to 10",
+      "whitespace   ' '        from 10  to 11",
+      "brace        '['        from 11  to 12",
+      "number       '1'        from 12  to 13",
+      "comma        ','        from 13  to 14",
+      "whitespace   ' '        from 14  to 15",
+      "number       '2'        from 15  to 16",
+      "brace        ']'        from 16  to 17",
+    ])
+  })
 })
 
 // helpers
