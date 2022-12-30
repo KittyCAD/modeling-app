@@ -61,6 +61,51 @@ function SketchLine({
   )
 }
 
+function ExtrudeWall({
+  geo,
+  sourceRange,
+  forceHighlight = false,
+}: {
+  geo: BufferGeometry
+  sourceRange: [number, number]
+  forceHighlight?: boolean
+}) {
+  const { setHighlightRange } = useStore(
+    ({ setHighlightRange, selectionRange, guiMode, setGuiMode, ast }) => ({
+      setHighlightRange,
+      selectionRange,
+      guiMode,
+      setGuiMode,
+      ast,
+    })
+  )
+  // This reference will give us direct access to the mesh
+  const ref = useRef<BufferGeometry | undefined>() as any
+  const [hovered, setHover] = useState(false)
+
+  return (
+    <>
+      <mesh
+        ref={ref}
+        onPointerOver={(event) => {
+          setHover(true)
+          setHighlightRange(sourceRange)
+        }}
+        onPointerOut={(event) => {
+          setHover(false)
+          setHighlightRange([0, 0])
+        }}
+      >
+        <primitive object={geo} />
+        <meshStandardMaterial
+          side={DoubleSide}
+          color={hovered ? 'hotpink' : forceHighlight ? 'skyblue' : 'orange'}
+        />
+      </mesh>
+    </>
+  )
+}
+
 const roundOff = (num: number, places: number): number => {
   const x = Math.pow(10, places)
   return Math.round(num * x) / x
@@ -187,7 +232,6 @@ function MovingSphere({
                   point,
                   lastPointerRef.current
                 )
-                console.log(originalXY)
                 if (originalXY[0] === -1) {
                   diff.x = 0
                 }
@@ -278,6 +322,15 @@ export function RenderViewerArtifacts({
   if (artifact.type === 'sketchBase') {
     console.log('BASE TODO')
     return null
+  }
+  if (artifact.type === 'extrudeWall') {
+    return (
+      <ExtrudeWall
+        geo={artifact.geo}
+        sourceRange={artifact.sourceRange}
+        forceHighlight={forceHighlight || editorCursor}
+      />
+    )
   }
   return (
     <>

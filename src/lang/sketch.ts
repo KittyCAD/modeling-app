@@ -1,5 +1,5 @@
 import { ProgramMemory } from './executor'
-import { lineGeo, baseGeo, LineGeos } from './engine'
+import { lineGeo, baseGeo, LineGeos, extrudeGeo } from './engine'
 import { BufferGeometry } from 'three'
 import { Quaternion, Vector3 } from 'three'
 
@@ -21,7 +21,6 @@ export type Path =
       type: 'horizontalLineTo'
       name?: string
       x: number
-      previousPath: Path
       geo: BufferGeometry
       sourceRange: SourceRange
     }
@@ -29,7 +28,6 @@ export type Path =
       type: 'verticalLineTo'
       name?: string
       y: number
-      previousPath: Path
       geo: BufferGeometry
       sourceRange: SourceRange
     }
@@ -37,15 +35,12 @@ export type Path =
       type: 'toPoint'
       name?: string
       to: Coords2d
-      previousPath: Path
       geo: LineGeos
       sourceRange: SourceRange
     }
   | {
       type: 'close'
       name?: string
-      firstPath: Path
-      previousPath: Path
       geo: LineGeos
       sourceRange: SourceRange
     }
@@ -60,13 +55,27 @@ export interface Transform {
   type: 'transform'
   rotation: Rotation3
   transform: Translate3
-  sketch: SketchGeo | Transform
+  sketch: SketchGeo | ExtrudeGeo | Transform
   sourceRange: SourceRange
 }
 
 export interface SketchGeo {
   type: 'sketchGeo'
   sketch: Path[]
+  sourceRange: SourceRange
+}
+
+export interface ExtrudeFace {
+  type: 'extrudeFace'
+  quaternion: Quaternion
+  translate: [number, number, number]
+  geo: BufferGeometry
+  sourceRanges: SourceRange[]
+}
+
+export interface ExtrudeGeo {
+  type: 'extrudeGeo'
+  surfaces: ExtrudeFace[]
   sourceRange: SourceRange
 }
 
@@ -159,8 +168,6 @@ export const sketchFns = {
 
     const newPath: Path = {
       type: 'close',
-      firstPath,
-      previousPath: lastPath,
       geo: lineGeo({ from: [...from, 0], to: [...to, 0] }),
       sourceRange,
     }
@@ -195,7 +202,6 @@ export const sketchFns = {
     const currentPath: Path = {
       type: 'toPoint',
       to: [x, y],
-      previousPath: lastPath,
       geo: lineGeo({ from: [...from, 0], to: [x, y, 0] }),
       sourceRange,
     }
@@ -213,6 +219,101 @@ export const sketchFns = {
   rx: RotateOnAxis([1, 0, 0]),
   ry: RotateOnAxis([0, 1, 0]),
   rz: RotateOnAxis([0, 0, 1]),
+  extrude: (
+    programMemory: ProgramMemory,
+    name: string = '',
+    sourceRange: SourceRange,
+    length: any,
+    // sketchVal: any
+    sketchVal: SketchGeo | Transform
+  ): ExtrudeGeo | Transform => {
+    const getSketchGeo = (sketchVal: SketchGeo | Transform): SketchGeo => {
+      if (
+        sketchVal.type === 'transform' &&
+        sketchVal.sketch.type === 'extrudeGeo'
+      )
+        throw new Error('Cannot extrude a extrude')
+      return sketchVal.type === 'transform'
+        ? getSketchGeo(sketchVal.sketch as any) // TODO fix types
+        : (sketchVal as SketchGeo) // TODO fix types
+    }
+    interface CombinedTransforms {
+      position: [number, number, number]
+      quaternion: Quaternion
+    }
+    const combineATransforms = (
+      translate: [number, number, number],
+      rotate: Quaternion,
+      currentPosition: [number, number, number],
+      currentRotation: Quaternion
+    ): CombinedTransforms => {
+      const newPosition = new Vector3(...currentPosition).applyQuaternion(
+        rotate
+      )
+      newPosition.add(new Vector3(...translate))
+      const newQuaternion = new Quaternion().multiplyQuaternions(
+        rotate.clone(),
+        currentRotation
+      )
+      return {
+        position: [newPosition.x, newPosition.y, newPosition.z],
+        quaternion: newQuaternion,
+      }
+    }
+    const transformFromSketch = (
+      sketchVal: SketchGeo | ExtrudeGeo | Transform,
+      currentPosition: [number, number, number] = [0, 0, 0],
+      currentRotation: Quaternion = new Quaternion()
+    ): CombinedTransforms => {
+      if (sketchVal.type === 'transform') {
+        const { transform, rotation } = sketchVal
+        const { position, quaternion } = combineATransforms(
+          transform,
+          rotation,
+          currentPosition,
+          currentRotation
+        )
+        return transformFromSketch(sketchVal.sketch, position, quaternion)
+      }
+      return {
+        position: currentPosition,
+        quaternion: currentRotation,
+      }
+    }
+    const sketch = getSketchGeo(sketchVal)
+    const { position, quaternion } = transformFromSketch(sketchVal)
+
+    const extrudeFaces: ExtrudeFace[] = []
+    console.log('sketch', sketch)
+    sketch.sketch.map((line, index) => {
+      if (line.type === 'toPoint' && index !== 0) {
+        const lastPoint = sketch.sketch[index - 1]
+        let from: [number, number] = [0, 0]
+        if (lastPoint.type === 'toPoint') {
+          from = lastPoint.to
+        } else if (lastPoint.type === 'base') {
+          from = lastPoint.from
+        }
+        const to = line.to
+        const geo = extrudeGeo({
+          from: [from[0], from[1], 0],
+          to: [to[0], to[1], 0],
+        })
+        extrudeFaces.push({
+          type: 'extrudeFace',
+          quaternion,
+          translate: position,
+          geo,
+          sourceRanges: [line.sourceRange, sourceRange],
+        })
+      }
+    })
+    return {
+      type: 'extrudeGeo',
+      sourceRange,
+      surfaces: extrudeFaces,
+    }
+  },
 }
 
 function RotateOnAxis(axisMultiplier: [number, number, number]) {

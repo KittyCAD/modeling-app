@@ -77,8 +77,7 @@ show(mySketch)
         sourceRange: [93, 100],
       },
     ])
-    expect(root.mySketch.sketch[0]).toEqual(root.mySketch.sketch[4].firstPath)
-    // hmm not sure what handle the "show" function
+    // expect(root.mySketch.sketch[0]).toEqual(root.mySketch.sketch[4].firstPath)
     expect(_return).toEqual([
       {
         type: 'Identifier',
@@ -195,11 +194,14 @@ function exe(
 }
 
 function removeGeoFromSketch(sketch: Transform | SketchGeo): any {
-  if (sketch.type !== 'sketchGeo') {
-    return removeGeoFromSketch(sketch.sketch)
+  if (sketch.type !== 'sketchGeo' && sketch.type === 'transform') {
+    return removeGeoFromSketch(sketch.sketch as any) // TODO fix type
   }
-  return {
-    ...sketch,
-    sketch: sketch.sketch.map(({ geo, previousPath, ...rest }: any) => rest),
+  if (sketch.type === 'sketchGeo') {
+    return {
+      ...sketch,
+      sketch: sketch.sketch.map(({ geo, previousPath, ...rest }: any) => rest),
+    }
   }
+  throw new Error('not a sketch')
 }

@@ -1,10 +1,47 @@
-import { BoxGeometry, SphereGeometry, BufferGeometry } from 'three'
-import { mergeBufferGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils'
+import {
+  BoxGeometry,
+  SphereGeometry,
+  BufferGeometry,
+  PlaneGeometry,
+} from 'three'
 
 export function baseGeo({ from }: { from: [number, number, number] }) {
   const baseSphere = new SphereGeometry(0.25)
   baseSphere.translate(from[0], from[1], from[2])
   return baseSphere
+}
+
+function trigCalcs({
+  from,
+  to,
+}: {
+  from: [number, number, number]
+  to: [number, number, number]
+}) {
+  const sq = (a: number): number => a * a
+  const centre = [
+    (from[0] + to[0]) / 2,
+    (from[1] + to[1]) / 2,
+    (from[2] + to[2]) / 2,
+  ]
+  const Hypotenuse3d = Math.sqrt(
+    sq(from[0] - to[0]) + sq(from[1] - to[1]) + sq(from[2] - to[2])
+  )
+  const ry = Math.atan2(from[2] - to[2], from[0] - to[0])
+  const Hypotenuse2d = Math.sqrt(sq(from[0] - to[0]) + sq(from[2] - to[2]))
+  const rz =
+    Math.abs(Math.atan((to[1] - from[1]) / Hypotenuse2d)) *
+    Math.sign(to[1] - from[1]) *
+    (Math.sign(to[0] - from[0]) || 1)
+
+  const sign = ry === 0 ? 1 : -1
+  return {
+    centre,
+    Hypotenuse: Hypotenuse3d,
+    ry,
+    rz,
+    sign,
+  }
 }
 
 export interface LineGeos {
@@ -20,26 +57,18 @@ export function lineGeo({
   from: [number, number, number]
   to: [number, number, number]
 }): LineGeos {
-  const sq = (a: number): number => a * a
-  const centre = [
-    (from[0] + to[0]) / 2,
-    (from[1] + to[1]) / 2,
-    (from[2] + to[2]) / 2,
-  ]
-  const Hypotenuse3d = Math.sqrt(
-    sq(from[0] - to[0]) + sq(from[1] - to[1]) + sq(from[2] - to[2])
-  )
-  const ang1 = Math.atan2(from[2] - to[2], from[0] - to[0])
-  const Hypotenuse2d = Math.sqrt(sq(from[0] - to[0]) + sq(from[2] - to[2]))
-  const ang2 =
-    Math.abs(Math.atan((to[1] - from[1]) / Hypotenuse2d)) *
-    Math.sign(to[1] - from[1]) *
-    (Math.sign(to[0] - from[0]) || 1)
+  const {
+    centre,
+    Hypotenuse: Hypotenuse3d,
+    ry,
+    rz,
+    // sign,
+  } = trigCalcs({ from, to })
 
-  // create BoxGeometry with size [Hypotenuse3d, 0.1, 0.1] centered at center, with rotation of [0, ang1, ang2]
+  // create BoxGeometry with size [Hypotenuse3d, 0.1, 0.1] centered at center, with rotation of [0, ry, rz]
   const lineBody = new BoxGeometry(Hypotenuse3d, 0.1, 0.1)
-  lineBody.rotateY(ang1)
-  lineBody.rotateZ(ang2)
+  lineBody.rotateY(ry)
+  lineBody.rotateZ(rz)
   lineBody.translate(centre[0], centre[1], centre[2])
 
   // create line end balls with SphereGeometry at `to` and `from` with radius of 0.15
@@ -51,12 +80,41 @@ export function lineGeo({
   // const lineEnd2 = new SphereGeometry(0.15);
   // lineEnd2.translate(from[0], from[1], from[2])
 
-  // group all three geometries
-  // return mergeBufferGeometries([lineBody, lineEnd1])
-  // return mergeBufferGeometries([lineBody, lineEnd1, lineEnd2]);
   return {
     line: lineBody,
     tip: lineEnd1,
     centre: centreSphere,
   }
+}
+
+export interface extrudeWallGeo {
+  line: BufferGeometry
+  tip: BufferGeometry
+  centre: BufferGeometry
+}
+
+export function extrudeGeo({
+  from,
+  to,
+}: {
+  from: [number, number, number]
+  to: [number, number, number]
+}): BufferGeometry {
+  const {
+    // centre,
+    Hypotenuse: Hypotenuse3d,
+    ry,
+    rz,
+    sign,
+  } = trigCalcs({ from, to })
+
+  const face = new PlaneGeometry(Hypotenuse3d, 4, 2, 2)
+  face.rotateX(Math.PI / 2)
+  face.translate(Hypotenuse3d / 2, 0, -2 * sign)
+
+  face.rotateY(ry)
+  face.rotateZ(rz)
+  face.translate(to[0], to[1], to[2])
+
+  return face
 }

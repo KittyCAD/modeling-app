@@ -4,7 +4,7 @@ import {
   BinaryExpression,
   PipeExpression,
 } from './abstractSyntaxTree'
-import { Path, Transform, SketchGeo, sketchFns } from './sketch'
+import { Path, Transform, SketchGeo, sketchFns, ExtrudeGeo } from './sketch'
 import { BufferGeometry, Quaternion } from 'three'
 import { LineGeos } from './engine'
 
@@ -95,7 +95,7 @@ export const executor = (
             return executor(fnInit.body, fnMemory, { bodyType: 'block' }).return
           }
         } else if (declaration.init.type === 'CallExpression') {
-          const fnName = declaration.init.callee.name
+          const functionName = declaration.init.callee.name
           const fnArgs = declaration.init.arguments.map((arg) => {
             if (arg.type === 'Literal') {
               return arg.value
@@ -103,13 +103,17 @@ export const executor = (
               return _programMemory.root[arg.name]
             }
           })
-          if ('lineTo' === fnName || 'close' === fnName || 'base' === fnName) {
+          if (
+            'lineTo' === functionName ||
+            'close' === functionName ||
+            'base' === functionName
+          ) {
             if (options.bodyType !== 'sketch') {
               throw new Error(
-                `Cannot call ${fnName} outside of a sketch declaration`
+                `Cannot call ${functionName} outside of a sketch declaration`
               )
             }
-            const result = sketchFns[fnName](
+            const result = sketchFns[functionName](
               _programMemory,
               variableName,
               [declaration.start, declaration.end],
@@ -117,22 +121,39 @@ export const executor = (
             )
             _programMemory._sketch = result.programMemory._sketch
             _programMemory.root[variableName] = result.currentPath
-          } else if ('rx' === fnName || 'ry' === fnName || 'rz' === fnName) {
+          } else if (
+            'rx' === functionName ||
+            'ry' === functionName ||
+            'rz' === functionName
+          ) {
             const sketch = declaration.init.arguments[1]
             if (sketch.type !== 'Identifier')
               throw new Error('rx must be called with an identifier')
             const sketchVal = _programMemory.root[sketch.name]
-            const result = sketchFns[fnName](
+            const result = sketchFns[functionName](
               _programMemory,
               [declaration.start, declaration.end],
               fnArgs[0],
               sketchVal
             )
             _programMemory.root[variableName] = result
-          } else {
-            _programMemory.root[variableName] = _programMemory.root[fnName](
-              ...fnArgs
+          } else if (functionName === 'extrude') {
+            const sketch = declaration.init.arguments[1]
+            if (sketch.type !== 'Identifier')
+              throw new Error('extrude must be called with an identifier')
+            const sketchVal = _programMemory.root[sketch.name]
+            const result = sketchFns[functionName](
+              _programMemory,
+              'yo',
+              [declaration.start, declaration.end],
+              fnArgs[0],
+              sketchVal
             )
+            _programMemory.root[variableName] = result
+          } else {
+            _programMemory.root[variableName] = _programMemory.root[
+              functionName
+            ](...fnArgs)
           }
         }
       })
@@ -227,7 +248,7 @@ function executePipeBody(
       result,
     ])
   } else if (expression.type === 'CallExpression') {
-    const fnName = expression.callee.name
+    const functionName = expression.callee.name
     const fnArgs = expression.arguments.map((arg) => {
       if (arg.type === 'Literal') {
         return arg.value
@@ -238,8 +259,12 @@ function executePipeBody(
       }
       throw new Error('Invalid argument type')
     })
-    if ('rx' === fnName || 'ry' === fnName || 'rz' === fnName) {
-      const result = sketchFns[fnName](
+    if (
+      'rx' === functionName ||
+      'ry' === functionName ||
+      'rz' === functionName
+    ) {
+      const result = sketchFns[functionName](
         programMemory,
         [expression.start, expression.end],
         fnArgs[0],
@@ -250,7 +275,20 @@ function executePipeBody(
         result,
       ])
     }
-    const result = programMemory.root[fnName](...fnArgs)
+    if (functionName === 'extrude') {
+      const result = sketchFns[functionName](
+        programMemory,
+        'yo',
+        [expression.start, expression.end],
+        fnArgs[0],
+        fnArgs[1]
+      )
+      return executePipeBody(body, programMemory, expressionIndex + 1, [
+        ...previousResults,
+        result,
+      ])
+    }
+    const result = programMemory.root[functionName](...fnArgs)
     return executePipeBody(body, programMemory, expressionIndex + 1, [
       ...previousResults,
       result,
@@ -305,6 +343,11 @@ export type ViewerArtifact =
       geo: BufferGeometry
     }
   | {
+      type: 'extrudeWall'
+      sourceRange: SourceRange
+      geo: BufferGeometry
+    }
+  | {
       type: 'parent'
       sourceRange: SourceRange
       children: ViewerArtifact[]
@@ -322,7 +365,7 @@ type PreviousTransforms = {
 
 export const processShownObjects = (
   programMemory: ProgramMemory,
-  geoMeta: SketchGeo | Transform,
+  geoMeta: SketchGeo | ExtrudeGeo | Transform,
   previousTransforms: PreviousTransforms = []
 ): ViewerArtifact[] => {
   if (geoMeta?.type === 'sketchGeo') {
@@ -349,7 +392,7 @@ export const processShownObjects = (
               sourceRange,
             }
           } else if (type === 'base') {
-            const newGeo = geo.clone()
+            const newGeo: BufferGeometry = geo.clone()
             previousTransforms.forEach(({ rotation, transform }) => {
               newGeo.applyQuaternion(rotation)
               newGeo.translate(transform[0], transform[1], transform[2])
@@ -378,7 +421,19 @@ export const processShownObjects = (
       ]),
     }
     return [parentArtifact]
-  }
+  } else if (geoMeta.type === 'extrudeGeo') {
+    const result: ViewerArtifact[] = geoMeta.surfaces.map((a) => {
+      const geo: BufferGeometry = a.geo.clone()
 
+      geo.applyQuaternion(a.quaternion)
+      geo.translate(a.translate[0], a.translate[1], a.translate[2])
+      return {
+        type: 'extrudeWall',
+        sourceRange: a.sourceRanges[0],
+        geo,
+      }
+    })
+    return result
+  }
   throw new Error('Unknown geoMeta type')
 }
