@@ -216,9 +216,9 @@ export const sketchFns = {
       currentPath,
     }
   },
-  rx: RotateOnAxis([1, 0, 0]),
-  ry: RotateOnAxis([0, 1, 0]),
-  rz: RotateOnAxis([0, 0, 1]),
+  rx: rotateOnAxis([1, 0, 0]),
+  ry: rotateOnAxis([0, 1, 0]),
+  rz: rotateOnAxis([0, 0, 1]),
   extrude: (
     programMemory: ProgramMemory,
     name: string = '',
@@ -237,54 +237,36 @@ export const sketchFns = {
         ? getSketchGeo(sketchVal.sketch as any) // TODO fix types
         : (sketchVal as SketchGeo) // TODO fix types
     }
-    interface CombinedTransforms {
-      position: [number, number, number]
-      quaternion: Quaternion
-    }
-    const combineATransforms = (
-      translate: [number, number, number],
-      rotate: Quaternion,
-      currentPosition: [number, number, number],
-      currentRotation: Quaternion
-    ): CombinedTransforms => {
-      const newPosition = new Vector3(...currentPosition).applyQuaternion(
-        rotate
-      )
-      newPosition.add(new Vector3(...translate))
-      const newQuaternion = new Quaternion().multiplyQuaternions(
-        rotate.clone(),
-        currentRotation
-      )
-      return {
-        position: [newPosition.x, newPosition.y, newPosition.z],
-        quaternion: newQuaternion,
-      }
-    }
-    const transformFromSketch = (
+
+    type PreviousTransforms = {
+      rotation: Quaternion
+      transform: [number, number, number]
+    }[]
+    const collectTransforms = (
       sketchVal: SketchGeo | ExtrudeGeo | Transform,
-      currentPosition: [number, number, number] = [0, 0, 0],
-      currentRotation: Quaternion = new Quaternion()
-    ): CombinedTransforms => {
-      if (sketchVal.type === 'transform') {
-        const { transform, rotation } = sketchVal
-        const { position, quaternion } = combineATransforms(
-          transform,
-          rotation,
-          currentPosition,
-          currentRotation
-        )
-        return transformFromSketch(sketchVal.sketch, position, quaternion)
-      }
-      return {
-        position: currentPosition,
-        quaternion: currentRotation,
-      }
+      previousTransforms: PreviousTransforms = []
+    ): PreviousTransforms => {
+      if (sketchVal.type !== 'transform') return previousTransforms
+      const newTransforms = [
+        ...previousTransforms,
+        {
+          rotation: sketchVal.rotation,
+          transform: sketchVal.transform,
+        },
+      ]
+      return collectTransforms(sketchVal.sketch, newTransforms)
     }
     const sketch = getSketchGeo(sketchVal)
-    const { position, quaternion } = transformFromSketch(sketchVal)
+    const previousTransforms = collectTransforms(sketchVal)
+    const position = new Vector3(0, 0, 0)
+    const quaternion = new Quaternion()
+    previousTransforms.forEach(({ rotation, transform }) => {
+      quaternion.multiply(rotation)
+      position.applyQuaternion(rotation.clone().invert())
+      position.add(new Vector3(...transform))
+    })
 
     const extrudeFaces: ExtrudeFace[] = []
-    console.log('sketch', sketch)
     sketch.sketch.map((line, index) => {
       if (line.type === 'toPoint' && index !== 0) {
         const lastPoint = sketch.sketch[index - 1]
@@ -302,7 +284,7 @@ export const sketchFns = {
         extrudeFaces.push({
           type: 'extrudeFace',
           quaternion,
-          translate: position,
+          translate: [position.x, position.y, position.z],
           geo,
           sourceRanges: [line.sourceRange, sourceRange],
         })
@@ -314,9 +296,10 @@ export const sketchFns = {
       surfaces: extrudeFaces,
     }
   },
+  translate,
 }
 
-function RotateOnAxis(axisMultiplier: [number, number, number]) {
+function rotateOnAxis(axisMultiplier: [number, number, number]) {
   return (
     programMemory: ProgramMemory,
     sourceRange: SourceRange,
@@ -333,5 +316,20 @@ function RotateOnAxis(axisMultiplier: [number, number, number]) {
       sketch,
       sourceRange,
     }
+  }
+}
+
+function translate(
+  programMemory: ProgramMemory,
+  sourceRange: SourceRange,
+  vec3: [number, number, number],
+  sketch: SketchGeo | Transform
+): Transform {
+  return {
+    type: 'transform',
+    rotation: new Quaternion(),
+    transform: vec3,
+    sketch,
+    sourceRange,
   }
 }

@@ -5,7 +5,7 @@ import {
   PipeExpression,
 } from './abstractSyntaxTree'
 import { Path, Transform, SketchGeo, sketchFns, ExtrudeGeo } from './sketch'
-import { BufferGeometry, Quaternion } from 'three'
+import { BufferGeometry, Quaternion, Vector3 } from 'three'
 import { LineGeos } from './engine'
 
 export interface ProgramMemory {
@@ -168,6 +168,19 @@ export const executor = (
               sketchVal
             )
             _programMemory.root[variableName] = result
+          } else if (functionName === 'translate') {
+            const sketch = declaration.init.arguments[1]
+            if (sketch.type !== 'Identifier')
+              throw new Error('rx must be called with an identifier')
+            const sketchVal = _programMemory.root[sketch.name]
+            const result = sketchFns[functionName](
+              _programMemory,
+              [declaration.start, declaration.end],
+              fnArgs[0],
+              sketchVal
+            )
+            _programMemory.root[variableName] = result
+            console.log('done translate', result)
           } else {
             _programMemory.root[variableName] = _programMemory.root[
               functionName
@@ -306,6 +319,18 @@ function executePipeBody(
         result,
       ])
     }
+    if (functionName === 'translate') {
+      const result = sketchFns[functionName](
+        programMemory,
+        [expression.start, expression.end],
+        fnArgs[0],
+        fnArgs[1]
+      )
+      return executePipeBody(body, programMemory, expressionIndex + 1, [
+        ...previousResults,
+        result,
+      ])
+    }
     const result = programMemory.root[functionName](...fnArgs)
     return executePipeBody(body, programMemory, expressionIndex + 1, [
       ...previousResults,
@@ -398,11 +423,19 @@ export const processShownObjects = (
               tip: geo.tip.clone(),
               centre: geo.centre.clone(),
             }
+            let rotationQuaternion = new Quaternion()
+            let position = new Vector3(0, 0, 0)
             previousTransforms.forEach(({ rotation, transform }) => {
-              Object.values(newGeo).forEach((geoItem: BufferGeometry) => {
-                geoItem.applyQuaternion(rotation)
-                geoItem.translate(transform[0], transform[1], transform[2])
-              })
+              const newQuant = rotation.clone()
+              newQuant.multiply(rotationQuaternion)
+              rotationQuaternion.copy(newQuant)
+              position.applyQuaternion(rotation)
+              position.add(new Vector3(...transform))
+            })
+            Object.values(newGeo).forEach((geoItem: BufferGeometry) => {
+              geoItem.applyQuaternion(rotationQuaternion.clone())
+              const position_ = position.clone()
+              geoItem.translate(position_.x, position_.y, position_.z)
             })
             return {
               type: 'sketchLine',
@@ -411,10 +444,15 @@ export const processShownObjects = (
             }
           } else if (type === 'base') {
             const newGeo: BufferGeometry = geo.clone()
+            const rotationQuaternion = new Quaternion()
+            let position = new Vector3(0, 0, 0)
+            // todo don't think this is right
             previousTransforms.forEach(({ rotation, transform }) => {
-              newGeo.applyQuaternion(rotation)
-              newGeo.translate(transform[0], transform[1], transform[2])
+              newGeo.applyQuaternion(rotationQuaternion)
+              newGeo.translate(position.x, position.y, position.z)
             })
+            newGeo.applyQuaternion(rotationQuaternion)
+            newGeo.translate(position.x, position.y, position.z)
             return {
               type: 'sketchBase',
               geo: newGeo,
@@ -431,11 +469,11 @@ export const processShownObjects = (
       type: 'parent',
       sourceRange: geoMeta.sourceRange,
       children: processShownObjects(programMemory, referencedVar, [
-        ...previousTransforms,
         {
           rotation: geoMeta.rotation,
           transform: geoMeta.transform,
         },
+        ...previousTransforms,
       ]),
     }
     return [parentArtifact]
@@ -443,8 +481,8 @@ export const processShownObjects = (
     const result: ViewerArtifact[] = geoMeta.surfaces.map((a) => {
       const geo: BufferGeometry = a.geo.clone()
 
-      geo.applyQuaternion(a.quaternion)
       geo.translate(a.translate[0], a.translate[1], a.translate[2])
+      geo.applyQuaternion(a.quaternion)
       return {
         type: 'extrudeWall',
         sourceRange: a.sourceRanges[0],
