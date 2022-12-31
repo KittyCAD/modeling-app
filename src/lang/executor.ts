@@ -180,7 +180,6 @@ export const executor = (
               sketchVal
             )
             _programMemory.root[variableName] = result
-            console.log('done translate', result)
           } else {
             _programMemory.root[variableName] = _programMemory.root[
               functionName
