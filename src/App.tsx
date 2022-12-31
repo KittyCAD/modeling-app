@@ -167,9 +167,10 @@ function App() {
                 <OrrthographicCamera
                   ref={cam}
                   makeDefault
-                  position={[0, 0, 10]}
-                  zoom={40}
+                  position={[0, 0, 1000]}
+                  zoom={100}
                   rotation={[0, 0, 0]}
+                  far={2000}
                 />
                 <ambientLight />
                 <pointLight position={[10, 10, 10]} />
