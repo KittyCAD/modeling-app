@@ -181,6 +181,23 @@ function makeArguments(
   const isIdentifierOrLiteral =
     nextBraceOrCommaToken.token.type === 'comma' ||
     nextBraceOrCommaToken.token.type === 'brace'
+  if (
+    argumentToken.token.type === 'brace' &&
+    argumentToken.token.value === '['
+  ) {
+    const { expression, lastIndex } = makeArrayExpression(
+      tokens,
+      argumentToken.index
+    )
+    const nextCommarOrBraceTokenIndex = nextMeaningfulToken(
+      tokens,
+      lastIndex
+    ).index
+    return makeArguments(tokens, nextCommarOrBraceTokenIndex, [
+      ...previousArgs,
+      expression,
+    ])
+  }
   if (!isIdentifierOrLiteral) {
     const { expression, lastIndex } = makeBinaryExpression(tokens, index)
     return makeArguments(tokens, lastIndex, [...previousArgs, expression])

@@ -286,6 +286,17 @@ function executePipeBody(
         return programMemory.root[arg.name]
       } else if (arg.type === 'PipeSubstitution') {
         return previousResults[expressionIndex - 1]
+      } else if (arg.type === 'ArrayExpression') {
+        return arg.elements.map((el) => {
+          if (el.type === 'Literal') {
+            return el.value
+          } else if (el.type === 'Identifier') {
+            return programMemory.root[el.name]
+          } else if (el.type === 'BinaryExpression') {
+            return getBinaryExpressionResult(el, programMemory)
+          }
+          throw new Error('Invalid argument type')
+        })
       }
       throw new Error('Invalid argument type')
     })
