@@ -122,6 +122,24 @@ show(mySketch)
     const recasted = recast(ast)
     expect(recasted).toBe(code.trim())
   })
+  it('recast long object exectution', () => {
+    const code = `const three = 3
+const yo = {
+  aStr: 'str',
+  anum: 2,
+  identifier: three,
+  binExp: 4 + 5
+}`
+    const { ast } = code2ast(code)
+    const recasted = recast(ast)
+    expect(recasted).toBe(code.trim())
+  })
+  it('recast short object exectution', () => {
+    const code = `const yo = { key: 'val' }`
+    const { ast } = code2ast(code)
+    const recasted = recast(ast)
+    expect(recasted).toBe(code.trim())
+  })
 })
 
 // helpers

@@ -349,6 +349,23 @@ describe('testing lexer', () => {
       "brace        ']'        from 16  to 17",
     ])
   })
+  it('testing object declaration', () => {
+    const result = stringSummaryLexer(`const yo = {key: 'value'}`)
+    expect(result).toEqual([
+      "word         'const'    from 0   to 5",
+      "whitespace   ' '        from 5   to 6",
+      "word         'yo'       from 6   to 8",
+      "whitespace   ' '        from 8   to 9",
+      "operator     '='        from 9   to 10",
+      "whitespace   ' '        from 10  to 11",
+      "brace        '{'        from 11  to 12",
+      "word         'key'      from 12  to 15",
+      "colon        ':'        from 15  to 16",
+      "whitespace   ' '        from 16  to 17",
+      "string       ''value''  from 17  to 24",
+      "brace        '}'        from 24  to 25",
+    ])
+  })
 })
 
 // helpers

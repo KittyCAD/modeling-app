@@ -190,6 +190,22 @@ show(mySketch)
       yo: [1, '2', 3, 9],
     })
   })
+  it('execute object expression', () => {
+    const code = [
+      'const three = 3',
+      "const yo = {aStr: 'str', anum: 2, identifier: three, binExp: 4 + 5}",
+    ].join('\n')
+    const { root } = exe(code)
+    expect(root).toEqual({
+      three: 3,
+      yo: {
+        aStr: 'str',
+        anum: 2,
+        identifier: 3,
+        binExp: 9,
+      },
+    })
+  })
 })
 
 // helpers

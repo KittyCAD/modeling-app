@@ -8,6 +8,7 @@ import {
   FunctionExpression,
   SketchExpression,
   ArrayExpression,
+  ObjectExpression,
 } from './abstractSyntaxTree'
 
 export function recast(
@@ -22,6 +23,8 @@ export function recast(
           return indentation + recastBinaryExpression(statement.expression)
         } else if (statement.expression.type === 'ArrayExpression') {
           return indentation + recastArrayExpression(statement.expression)
+        } else if (statement.expression.type === 'ObjectExpression') {
+          return indentation + recastObjectExpression(statement.expression)
         } else if (statement.expression.type === 'CallExpression') {
           return indentation + recastCallExpression(statement.expression)
         }
@@ -74,6 +77,25 @@ ${_indentation}${expression.elements
   return flatRecast
 }
 
+function recastObjectExpression(
+  expression: ObjectExpression,
+  indentation = ''
+): string {
+  const flatRecast = `{ ${expression.properties
+    .map((prop) => `${prop.key.name}: ${recastValue(prop.value)}`)
+    .join(', ')} }`
+  const maxArrayLength = 40
+  if (flatRecast.length > maxArrayLength) {
+    const _indentation = indentation + '  '
+    return `{
+${_indentation}${expression.properties
+      .map((prop) => `${prop.key.name}: ${recastValue(prop.value)}`)
+      .join(`,\n${_indentation}`)}
+}`
+  }
+  return flatRecast
+}
+
 function recastBinaryPart(part: BinaryPart): string {
   if (part.type === 'Literal') {
     return recastLiteral(part)
@@ -106,6 +128,8 @@ function recastArgument(argument: Value): string {
     return recastBinaryExpression(argument)
   } else if (argument.type === 'ArrayExpression') {
     return recastArrayExpression(argument)
+  } else if (argument.type === 'ObjectExpression') {
+    return recastObjectExpression(argument)
   } else if (argument.type === 'CallExpression') {
     return recastCallExpression(argument)
   } else if (argument.type === 'FunctionExpression') {
@@ -136,6 +160,8 @@ function recastValue(node: Value, indentation = ''): string {
     return recastBinaryExpression(node)
   } else if (node.type === 'ArrayExpression') {
     return recastArrayExpression(node, indentation)
+  } else if (node.type === 'ObjectExpression') {
+    return recastObjectExpression(node, indentation)
   } else if (node.type === 'Literal') {
     return recastLiteral(node)
   } else if (node.type === 'FunctionExpression') {

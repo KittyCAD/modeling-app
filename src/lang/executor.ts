@@ -3,6 +3,7 @@ import {
   BinaryPart,
   BinaryExpression,
   PipeExpression,
+  ObjectExpression,
 } from './abstractSyntaxTree'
 import { Path, Transform, SketchGeo, sketchFns, ExtrudeGeo } from './sketch'
 import { BufferGeometry, Quaternion, Vector3 } from 'three'
@@ -61,6 +62,9 @@ export const executor = (
               }
             }
           )
+        } else if (declaration.init.type === 'ObjectExpression') {
+          const obj = executeObjectExpression(_programMemory, declaration.init)
+          _programMemory.root[variableName] = obj
         } else if (declaration.init.type === 'SketchExpression') {
           const sketchInit = declaration.init
           const fnMemory: ProgramMemory = {
@@ -380,6 +384,41 @@ function executePipeBody(
   }
 
   throw new Error('Invalid pipe expression')
+}
+
+function executeObjectExpression(
+  _programMemory: ProgramMemory,
+  objExp: ObjectExpression
+) {
+  const obj: { [key: string]: any } = {}
+  objExp.properties.forEach((property) => {
+    if (property.type === 'ObjectProperty') {
+      if (property.value.type === 'Literal') {
+        obj[property.key.name] = property.value.value
+      } else if (property.value.type === 'BinaryExpression') {
+        obj[property.key.name] = getBinaryExpressionResult(
+          property.value,
+          _programMemory
+        )
+      } else if (property.value.type === 'PipeExpression') {
+        obj[property.key.name] = getPipeExpressionResult(
+          property.value,
+          _programMemory
+        )
+      } else if (property.value.type === 'Identifier') {
+        obj[property.key.name] = _programMemory.root[property.value.name]
+      } else {
+        throw new Error(
+          `Unexpected property type ${property.value.type} in object expression`
+        )
+      }
+    } else {
+      throw new Error(
+        `Unexpected property type ${property.type} in object expression`
+      )
+    }
+  })
+  return obj
 }
 
 type SourceRange = [number, number]

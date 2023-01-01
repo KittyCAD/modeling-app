@@ -20,6 +20,7 @@ type syntaxType =
   | 'MemberExpression'
   | 'ArrayExpression'
   | 'ObjectExpression'
+  | 'ObjectProperty'
   | 'Property'
   | 'LogicalExpression'
   | 'ConditionalExpression'
@@ -288,6 +289,7 @@ export type Value =
   | PipeExpression
   | PipeSubstitution
   | ArrayExpression
+  | ObjectExpression
 
 function makeValue(
   tokens: Token[],
@@ -379,6 +381,16 @@ function makeVariableDeclarators(
     } else {
       throw new Error('TODO - handle expression with braces')
     }
+  } else if (
+    contentsStartToken.token.type === 'brace' &&
+    contentsStartToken.token.value === '{'
+  ) {
+    const objectExpression = makeObjectExpression(
+      tokens,
+      contentsStartToken.index
+    )
+    init = objectExpression.expression
+    lastIndex = objectExpression.lastIndex
   } else if (
     declarationToken.token.type === 'word' &&
     declarationToken.token.value === 'sketch'
@@ -529,6 +541,81 @@ function makeArrayExpression(
     },
     lastIndex,
   }
+}
+
+export interface ObjectExpression extends GeneralStatement {
+  type: 'ObjectExpression'
+  properties: ObjectProperty[]
+}
+
+interface ObjectProperty extends GeneralStatement {
+  type: 'ObjectProperty'
+  key: Identifier
+  value: Value
+}
+
+function makeObjectExpression(
+  tokens: Token[],
+  index: number
+): {
+  expression: ObjectExpression
+  lastIndex: number
+} {
+  // should be called with the opening brace '{' index
+  const openingBraceToken = tokens[index]
+  const firstPropertyToken = nextMeaningfulToken(tokens, index)
+  const { properties, lastIndex } = makeObjectProperties(
+    tokens,
+    firstPropertyToken.index
+  )
+  return {
+    expression: {
+      type: 'ObjectExpression',
+      start: openingBraceToken.start,
+      end: tokens[lastIndex].end,
+      properties,
+    },
+    lastIndex,
+  }
+}
+
+function makeObjectProperties(
+  tokens: Token[],
+  index: number,
+  previousProperties: ObjectProperty[] = []
+): { properties: ObjectProperty[]; lastIndex: number } {
+  // should be called with the key after the opening brace '{'
+  const propertyKeyToken = tokens[index]
+  if (propertyKeyToken.type === 'brace' && propertyKeyToken.value === '}') {
+    return {
+      properties: previousProperties,
+      lastIndex: index,
+    }
+  }
+  const colonToken = nextMeaningfulToken(tokens, index)
+  const valueStartToken = nextMeaningfulToken(tokens, colonToken.index)
+  const value = makeValue(tokens, valueStartToken.index)
+  const commaOrClosingBraceToken = nextMeaningfulToken(tokens, value.lastIndex)
+  let objectProperty: ObjectProperty = {
+    type: 'ObjectProperty',
+    start: propertyKeyToken.start,
+    end: value.value.end,
+    key: makeIdentifier(tokens, index),
+    value: value.value,
+  }
+  const nextKeyToken = nextMeaningfulToken(
+    tokens,
+    commaOrClosingBraceToken.index
+  )
+  const nextKeyIndex =
+    commaOrClosingBraceToken.token.type === 'brace' &&
+    commaOrClosingBraceToken.token.value === '}'
+      ? commaOrClosingBraceToken.index
+      : nextKeyToken.index
+  return makeObjectProperties(tokens, nextKeyIndex, [
+    ...previousProperties,
+    objectProperty,
+  ])
 }
 
 export interface BinaryExpression extends GeneralStatement {

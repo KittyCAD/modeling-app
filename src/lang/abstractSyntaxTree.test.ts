@@ -1068,4 +1068,150 @@ describe('testing pipe operator special', () => {
       },
     ])
   })
+  test('object expression ast', () => {
+    const code = [
+      'const three = 3',
+      "const yo = {aStr: 'str', anum: 2, identifier: three, binExp: 4 + 5}",
+    ].join('\n')
+    const tokens = lexer(code)
+    const { body } = abstractSyntaxTree(tokens)
+    expect(body).toEqual([
+      {
+        type: 'VariableDeclaration',
+        start: 0,
+        end: 15,
+        kind: 'const',
+        declarations: [
+          {
+            type: 'VariableDeclarator',
+            start: 6,
+            end: 15,
+            id: {
+              type: 'Identifier',
+              start: 6,
+              end: 11,
+              name: 'three',
+            },
+            init: {
+              type: 'Literal',
+              start: 14,
+              end: 15,
+              value: 3,
+              raw: '3',
+            },
+          },
+        ],
+      },
+      {
+        type: 'VariableDeclaration',
+        start: 16,
+        end: 83,
+        kind: 'const',
+        declarations: [
+          {
+            type: 'VariableDeclarator',
+            start: 22,
+            end: 83,
+            id: {
+              type: 'Identifier',
+              start: 22,
+              end: 24,
+              name: 'yo',
+            },
+            init: {
+              type: 'ObjectExpression',
+              start: 27,
+              end: 83,
+              properties: [
+                {
+                  type: 'ObjectProperty',
+                  start: 28,
+                  end: 39,
+                  key: {
+                    type: 'Identifier',
+                    start: 28,
+                    end: 32,
+                    name: 'aStr',
+                  },
+                  value: {
+                    type: 'Literal',
+                    start: 34,
+                    end: 39,
+                    value: 'str',
+                    raw: "'str'",
+                  },
+                },
+                {
+                  type: 'ObjectProperty',
+                  start: 41,
+                  end: 48,
+                  key: {
+                    type: 'Identifier',
+                    start: 41,
+                    end: 45,
+                    name: 'anum',
+                  },
+                  value: {
+                    type: 'Literal',
+                    start: 47,
+                    end: 48,
+                    value: 2,
+                    raw: '2',
+                  },
+                },
+                {
+                  type: 'ObjectProperty',
+                  start: 50,
+                  end: 67,
+                  key: {
+                    type: 'Identifier',
+                    start: 50,
+                    end: 60,
+                    name: 'identifier',
+                  },
+                  value: {
+                    type: 'Identifier',
+                    start: 62,
+                    end: 67,
+                    name: 'three',
+                  },
+                },
+                {
+                  type: 'ObjectProperty',
+                  start: 69,
+                  end: 82,
+                  key: {
+                    type: 'Identifier',
+                    start: 69,
+                    end: 75,
+                    name: 'binExp',
+                  },
+                  value: {
+                    type: 'BinaryExpression',
+                    start: 77,
+                    end: 82,
+                    left: {
+                      type: 'Literal',
+                      start: 77,
+                      end: 78,
+                      value: 4,
+                      raw: '4',
+                    },
+                    operator: '+',
+                    right: {
+                      type: 'Literal',
+                      start: 81,
+                      end: 82,
+                      value: 5,
+                      raw: '5',
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    ])
+  })
 })
