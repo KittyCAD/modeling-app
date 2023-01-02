@@ -18,7 +18,7 @@ const newVar = myVar + 1`
     const { root } = exe(code)
     expect(root.myVar).toBe('a str')
   })
-  it('test assigning a var by cont concatenating two strings string', () => {
+  it('test assigning a var by cont concatenating two strings string execute', () => {
     const code = fs.readFileSync(
       './src/lang/testExamples/variableDeclaration.cado',
       'utf-8'
@@ -40,7 +40,7 @@ log(5, myVar)`
     expect(root.myVar).toBe('hello')
     expect(programMemoryOverride.log).toHaveBeenCalledWith(5, 'hello')
   })
-  it('fn funcN = () => {}', () => {
+  it('fn funcN = () => {} execute', () => {
     const { root } = exe(
       [
         'fn funcN = (a, b) => {',

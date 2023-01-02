@@ -1214,4 +1214,140 @@ describe('testing pipe operator special', () => {
       },
     ])
   })
+  test('nested object expression ast', () => {
+    const code = `const yo = {key: {
+  key2: 'value'
+}}`
+    const tokens = lexer(code)
+    const { body } = abstractSyntaxTree(tokens)
+    expect(body).toEqual([
+      {
+        type: 'VariableDeclaration',
+        start: 0,
+        end: 37,
+        kind: 'const',
+        declarations: [
+          {
+            type: 'VariableDeclarator',
+            start: 6,
+            end: 37,
+            id: {
+              type: 'Identifier',
+              start: 6,
+              end: 8,
+              name: 'yo',
+            },
+            init: {
+              type: 'ObjectExpression',
+              start: 11,
+              end: 37,
+              properties: [
+                {
+                  type: 'ObjectProperty',
+                  start: 12,
+                  end: 36,
+                  key: {
+                    type: 'Identifier',
+                    start: 12,
+                    end: 15,
+                    name: 'key',
+                  },
+                  value: {
+                    type: 'ObjectExpression',
+                    start: 17,
+                    end: 36,
+                    properties: [
+                      {
+                        type: 'ObjectProperty',
+                        start: 21,
+                        end: 34,
+                        key: {
+                          type: 'Identifier',
+                          start: 21,
+                          end: 25,
+                          name: 'key2',
+                        },
+                        value: {
+                          type: 'Literal',
+                          start: 27,
+                          end: 34,
+                          value: 'value',
+                          raw: "'value'",
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    ])
+  })
+  test('object expression with array ast', () => {
+    const code = `const yo = {key: [1, '2']}`
+    const tokens = lexer(code)
+    const { body } = abstractSyntaxTree(tokens)
+    expect(body).toEqual([
+      {
+        type: 'VariableDeclaration',
+        start: 0,
+        end: 26,
+        kind: 'const',
+        declarations: [
+          {
+            type: 'VariableDeclarator',
+            start: 6,
+            end: 26,
+            id: {
+              type: 'Identifier',
+              start: 6,
+              end: 8,
+              name: 'yo',
+            },
+            init: {
+              type: 'ObjectExpression',
+              start: 11,
+              end: 26,
+              properties: [
+                {
+                  type: 'ObjectProperty',
+                  start: 12,
+                  end: 25,
+                  key: {
+                    type: 'Identifier',
+                    start: 12,
+                    end: 15,
+                    name: 'key',
+                  },
+                  value: {
+                    type: 'ArrayExpression',
+                    start: 17,
+                    end: 25,
+                    elements: [
+                      {
+                        type: 'Literal',
+                        start: 18,
+                        end: 19,
+                        value: 1,
+                        raw: '1',
+                      },
+                      {
+                        type: 'Literal',
+                        start: 21,
+                        end: 24,
+                        value: '2',
+                        raw: "'2'",
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    ])
+  })
 })

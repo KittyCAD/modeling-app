@@ -297,7 +297,8 @@ function makeValue(
 ): { value: Value; lastIndex: number } {
   const currentToken = tokens[index]
   const { token: nextToken } = nextMeaningfulToken(tokens, index)
-  if (nextToken.type === 'brace' && nextToken.value === '(') {
+  // nextToken might be empty if it's at the end of the file
+  if (nextToken?.type === 'brace' && nextToken.value === '(') {
     const { expression, lastIndex } = makeCallExpression(tokens, index)
     return {
       value: expression,
@@ -305,14 +306,33 @@ function makeValue(
     }
   }
   if (
-    (currentToken.type === 'word' || currentToken.type === 'number') &&
-    nextToken.type === 'operator'
+    (currentToken.type === 'word' ||
+      currentToken.type === 'number' ||
+      currentToken.type === 'string') &&
+    nextToken?.type === 'operator'
   ) {
     const { expression, lastIndex } = makeBinaryExpression(tokens, index)
     return {
       value: expression,
       lastIndex,
     }
+  }
+  if (currentToken.type === 'brace' && currentToken.value === '{') {
+    const objExp = makeObjectExpression(tokens, index)
+    return {
+      value: objExp.expression,
+      lastIndex: objExp.lastIndex,
+    }
+  }
+  if (currentToken.type === 'brace' && currentToken.value === '[') {
+    const arrExp = makeArrayExpression(tokens, index)
+    return {
+      value: arrExp.expression,
+      lastIndex: arrExp.lastIndex,
+    }
+  }
+  if (currentToken.type === 'word' && nextToken.type === 'period') {
+    // TODO object access
   }
   if (currentToken.type === 'word') {
     const identifier = makeIdentifier(tokens, index)
@@ -326,6 +346,23 @@ function makeValue(
     return {
       value: literal,
       lastIndex: index,
+    }
+  }
+  if (currentToken.type === 'brace' && currentToken.value === '(') {
+    const closingBraceIndex = findClosingBrace(tokens, index)
+    const arrowToken = nextMeaningfulToken(tokens, closingBraceIndex)
+    if (
+      arrowToken.token.type === 'operator' &&
+      arrowToken.token.value === '=>'
+    ) {
+      const { expression, lastIndex: arrowFunctionLastIndex } =
+        makeFunctionExpression(tokens, index)
+      return {
+        value: expression,
+        lastIndex: arrowFunctionLastIndex,
+      }
+    } else {
+      throw new Error('TODO - handle expression with braces')
     }
   }
   throw new Error('Expected a previous Value if statement to match')
@@ -349,7 +386,6 @@ function makeVariableDeclarators(
   const assignmentToken = nextMeaningfulToken(tokens, index)
   const declarationToken = previousMeaningfulToken(tokens, index)
   const contentsStartToken = nextMeaningfulToken(tokens, assignmentToken.index)
-  const nextAfterInit = nextMeaningfulToken(tokens, contentsStartToken.index)
   const pipeStartIndex =
     assignmentToken?.token?.type === 'operator'
       ? contentsStartToken.index
@@ -365,62 +401,19 @@ function makeVariableDeclarators(
     init = expression
     lastIndex = pipeLastIndex
   } else if (
-    contentsStartToken.token.type === 'brace' &&
-    contentsStartToken.token.value === '('
-  ) {
-    const closingBraceIndex = findClosingBrace(tokens, contentsStartToken.index)
-    const arrowToken = nextMeaningfulToken(tokens, closingBraceIndex)
-    if (
-      arrowToken.token.type === 'operator' &&
-      arrowToken.token.value === '=>'
-    ) {
-      const { expression, lastIndex: arrowFunctionLastIndex } =
-        makeFunctionExpression(tokens, contentsStartToken.index)
-      init = expression
-      lastIndex = arrowFunctionLastIndex
-    } else {
-      throw new Error('TODO - handle expression with braces')
-    }
-  } else if (
-    contentsStartToken.token.type === 'brace' &&
-    contentsStartToken.token.value === '{'
-  ) {
-    const objectExpression = makeObjectExpression(
-      tokens,
-      contentsStartToken.index
-    )
-    init = objectExpression.expression
-    lastIndex = objectExpression.lastIndex
-  } else if (
     declarationToken.token.type === 'word' &&
     declarationToken.token.value === 'sketch'
   ) {
     const sketchExp = makeSketchExpression(tokens, assignmentToken.index)
     init = sketchExp.expression
     lastIndex = sketchExp.lastIndex
-  } else if (nextAfterInit.token?.type === 'operator') {
-    const binExp = makeBinaryExpression(tokens, contentsStartToken.index)
-    init = binExp.expression
-    lastIndex = binExp.lastIndex
-  } else if (
-    nextAfterInit.token?.type === 'brace' &&
-    nextAfterInit.token.value === '('
-  ) {
-    const callExInfo = makeCallExpression(tokens, contentsStartToken.index)
-    init = callExInfo.expression
-    lastIndex = callExInfo.lastIndex
-  } else if (
-    contentsStartToken.token.type === 'brace' &&
-    contentsStartToken.token.value === '['
-  ) {
-    const arrayExpression = makeArrayExpression(
+  } else {
+    const { value, lastIndex: valueLastIndex } = makeValue(
       tokens,
       contentsStartToken.index
     )
-    init = arrayExpression.expression
-    lastIndex = arrayExpression.lastIndex
-  } else {
-    init = makeLiteral(tokens, contentsStartToken.index)
+    init = value
+    lastIndex = valueLastIndex
   }
   const currentDeclarator: VariableDeclarator = {
     type: 'VariableDeclarator',
@@ -594,14 +587,18 @@ function makeObjectProperties(
   }
   const colonToken = nextMeaningfulToken(tokens, index)
   const valueStartToken = nextMeaningfulToken(tokens, colonToken.index)
-  const value = makeValue(tokens, valueStartToken.index)
-  const commaOrClosingBraceToken = nextMeaningfulToken(tokens, value.lastIndex)
+
+  const val = makeValue(tokens, valueStartToken.index)
+
+  const value = val.value
+  const valueLastIndex = val.lastIndex
+  const commaOrClosingBraceToken = nextMeaningfulToken(tokens, valueLastIndex)
   let objectProperty: ObjectProperty = {
     type: 'ObjectProperty',
     start: propertyKeyToken.start,
-    end: value.value.end,
+    end: value.end,
     key: makeIdentifier(tokens, index),
-    value: value.value,
+    value,
   }
   const nextKeyToken = nextMeaningfulToken(
     tokens,
