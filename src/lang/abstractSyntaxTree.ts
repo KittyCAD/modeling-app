@@ -377,7 +377,7 @@ function makeValue(
   throw new Error('Expected a previous Value if statement to match')
 }
 
-interface VariableDeclarator extends GeneralStatement {
+export interface VariableDeclarator extends GeneralStatement {
   type: 'VariableDeclarator'
   id: Identifier
   init: Value

@@ -26,6 +26,7 @@ export const SketchPlane = () => {
     new Vector3(1, 0, 0),
     Math.PI / 2
   )
+  let position = guiMode.position
   const gridQuaternion = new Quaternion().multiplyQuaternions(
     guiMode.quaternion,
     temp
@@ -35,6 +36,7 @@ export const SketchPlane = () => {
     <>
       <mesh
         quaternion={clickDetectQuaternion}
+        position={position}
         name={sketchGridName}
         onClick={(e) => {
           if (guiMode.sketchMode !== 'points') {
@@ -77,6 +79,7 @@ export const SketchPlane = () => {
       <gridHelper
         args={[30, 40, 'blue', 'hotpink']}
         quaternion={gridQuaternion}
+        position={position}
       />
     </>
   )

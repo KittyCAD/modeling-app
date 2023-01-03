@@ -193,8 +193,6 @@ export const sketchFns = {
     if (!_programMemory._sketch) {
       throw new Error('No sketch to draw on')
     }
-    const lastPath: Path =
-      _programMemory._sketch[_programMemory._sketch.length - 1]
     let from = getCoordsFromPaths(
       programMemory?._sketch,
       programMemory?._sketch.length - 1
@@ -238,33 +236,8 @@ export const sketchFns = {
         : (sketchVal as SketchGeo) // TODO fix types
     }
 
-    type PreviousTransforms = {
-      rotation: Quaternion
-      transform: [number, number, number]
-    }[]
-    const collectTransforms = (
-      sketchVal: SketchGeo | ExtrudeGeo | Transform,
-      previousTransforms: PreviousTransforms = []
-    ): PreviousTransforms => {
-      if (sketchVal.type !== 'transform') return previousTransforms
-      const newTransforms = [
-        ...previousTransforms,
-        {
-          rotation: sketchVal.rotation,
-          transform: sketchVal.transform,
-        },
-      ]
-      return collectTransforms(sketchVal.sketch, newTransforms)
-    }
     const sketch = getSketchGeo(sketchVal)
-    const previousTransforms = collectTransforms(sketchVal)
-    const position = new Vector3(0, 0, 0)
-    const quaternion = new Quaternion()
-    previousTransforms.forEach(({ rotation, transform }) => {
-      quaternion.multiply(rotation)
-      position.applyQuaternion(rotation.clone().invert())
-      position.add(new Vector3(...transform))
-    })
+    const { position, quaternion } = combineTransforms(sketchVal)
 
     const extrudeFaces: ExtrudeFace[] = []
     sketch.sketch.map((line, index) => {
@@ -284,7 +257,7 @@ export const sketchFns = {
         extrudeFaces.push({
           type: 'extrudeFace',
           quaternion,
-          translate: [position.x, position.y, position.z],
+          translate: position,
           geo,
           sourceRanges: [line.sourceRange, sourceRange],
         })
@@ -331,5 +304,67 @@ function translate(
     transform: vec3,
     sketch,
     sourceRange,
+  }
+}
+
+type PreviousTransforms = {
+  rotation: Quaternion
+  transform: [number, number, number]
+}[]
+
+function collectTransforms(
+  sketchVal: SketchGeo | ExtrudeGeo | Transform,
+  previousTransforms: PreviousTransforms = []
+): PreviousTransforms {
+  if (sketchVal.type !== 'transform') return previousTransforms
+  const newTransforms = [
+    ...previousTransforms,
+    {
+      rotation: sketchVal.rotation,
+      transform: sketchVal.transform,
+    },
+  ]
+  return collectTransforms(sketchVal.sketch, newTransforms)
+}
+
+export function combineTransforms(
+  sketchVal: SketchGeo | ExtrudeGeo | Transform
+): {
+  quaternion: Quaternion
+  position: [number, number, number]
+} {
+  const previousTransforms = collectTransforms(sketchVal)
+  const position = new Vector3(0, 0, 0)
+  const quaternion = new Quaternion()
+  previousTransforms.forEach(({ rotation, transform }) => {
+    quaternion.multiply(rotation)
+    position.applyQuaternion(rotation.clone().invert())
+    position.add(new Vector3(...transform))
+  })
+  return {
+    quaternion,
+    position: [position.x, position.y, position.z],
+  }
+}
+
+export function combineTransformsAlt(
+  sketchVal: SketchGeo | ExtrudeGeo | Transform
+): {
+  quaternion: Quaternion
+  position: [number, number, number]
+} {
+  const previousTransforms = collectTransforms(sketchVal)
+  let rotationQuaternion = new Quaternion()
+  let position = new Vector3(0, 0, 0)
+  previousTransforms.reverse().forEach(({ rotation, transform }) => {
+    const newQuant = rotation.clone()
+    newQuant.multiply(rotationQuaternion)
+    rotationQuaternion.copy(newQuant)
+    position.applyQuaternion(rotation)
+    position.add(new Vector3(...transform))
+  })
+  return {
+    quaternion: rotationQuaternion,
+    position: [position.x, position.y, position.z],
   }
 }

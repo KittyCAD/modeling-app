@@ -28,6 +28,7 @@ export const Toolbar = () => {
               sketchMode: 'sketchEdit',
               pathToNode: guiMode.pathToNode,
               quaternion: guiMode.quaternion,
+              position: guiMode.position,
             })
           }}
           className="border m-1 px-1 rounded"

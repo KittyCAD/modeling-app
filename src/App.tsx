@@ -41,6 +41,7 @@ function App() {
     ast,
     setError,
     errorState,
+    setProgramMemory,
   } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
@@ -58,6 +59,7 @@ function App() {
     formatCode: s.formatCode,
     setError: s.setError,
     errorState: s.errorState,
+    setProgramMemory: s.setProgramMemory,
   }))
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
@@ -103,6 +105,7 @@ function App() {
         },
         _sketch: [],
       })
+      setProgramMemory(programMemory)
       const geos: ViewerArtifact[] =
         programMemory?.return?.flatMap(
           ({ name }: { name: string }) =>

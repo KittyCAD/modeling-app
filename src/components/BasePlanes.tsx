@@ -65,6 +65,7 @@ export const BasePlanes = () => {
       mode: 'sketch',
       sketchMode: 'sketchEdit',
       quaternion,
+      position: [0, 0, 0],
       pathToNode,
     })
 

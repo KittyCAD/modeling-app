@@ -4,6 +4,7 @@ import {
   getNodeFromPath,
   CallExpression,
   changeArguments,
+  VariableDeclarator,
 } from '../lang/abstractSyntaxTree'
 import { ViewerArtifact } from '../lang/executor'
 import { BufferGeometry } from 'three'
@@ -11,6 +12,7 @@ import { useStore } from '../useStore'
 import { isOverlapping } from '../lib/utils'
 import { LineGeos } from '../lang/engine'
 import { Vector3, DoubleSide, Quaternion, Vector2 } from 'three'
+import { combineTransformsAlt } from '../lang/sketch'
 
 function SketchLine({
   geo,
@@ -129,9 +131,7 @@ function MovingSphere({
 
   const { setHighlightRange, guiMode, ast, updateAst } = useStore((s) => ({
     setHighlightRange: s.setHighlightRange,
-    selectionRange: s.selectionRange,
     guiMode: s.guiMode,
-    setGuiMode: s.setGuiMode,
     ast: s.ast,
     updateAst: s.updateAst,
   }))
@@ -173,11 +173,13 @@ function MovingSphere({
   }, [isMouseDown, ast])
 
   let clickDetectPlaneQuaternion = new Quaternion()
+  let position = new Vector3(0, 0, 0)
   if (
     guiMode.mode === 'canEditSketch' ||
     (guiMode.mode === 'sketch' && guiMode.sketchMode === 'sketchEdit')
   ) {
     clickDetectPlaneQuaternion = guiMode.quaternion.clone()
+    position = new Vector3(...guiMode.position)
   }
 
   return (
@@ -201,7 +203,7 @@ function MovingSphere({
       </mesh>
       {isMouseDown && (
         <mesh
-          position={[0, 0, -0.05]}
+          position={position}
           quaternion={clickDetectPlaneQuaternion}
           onPointerMove={(a) => {
             const point = a.point
@@ -264,12 +266,13 @@ export function RenderViewerArtifacts({
   artifact: ViewerArtifact
   forceHighlight?: boolean
 }) {
-  const { selectionRange, guiMode, ast, setGuiMode } = useStore(
-    ({ selectionRange, guiMode, ast, setGuiMode }) => ({
+  const { selectionRange, guiMode, ast, setGuiMode, programMemory } = useStore(
+    ({ selectionRange, guiMode, ast, setGuiMode, programMemory }) => ({
       selectionRange,
       guiMode,
       ast,
       setGuiMode,
+      programMemory,
     })
   )
   const [editorCursor, setEditorCursor] = useState(false)
@@ -287,20 +290,16 @@ export function RenderViewerArtifacts({
       ast
     ) {
       const pathToNode = getNodePathFromSourceRange(ast, artifact.sourceRange)
-      const piper = getNodeFromPath(ast, pathToNode, 'PipeExpression')
-      const quaternion = new Quaternion()
-      if (piper.type === 'PipeExpression') {
-        const rotateName = piper?.body?.[1]?.callee?.name
-        const rotateValue = piper?.body?.[1]?.arguments[0].value
-        let rotateAxis = new Vector3(1, 0, 0)
-        if (rotateName === 'ry') {
-          rotateAxis = new Vector3(0, 1, 0)
-        } else if (rotateName === 'rz') {
-          rotateAxis = new Vector3(0, 0, 1)
-        }
-        quaternion.setFromAxisAngle(rotateAxis, (Math.PI * rotateValue) / 180)
-      }
-      setGuiMode({ mode: 'canEditSketch', pathToNode, quaternion })
+      const varDec: VariableDeclarator = getNodeFromPath(
+        ast,
+        pathToNode,
+        'VariableDeclarator'
+      )
+      const varName = varDec?.id?.name
+      const { quaternion, position } = combineTransformsAlt(
+        programMemory.root[varName]
+      )
+      setGuiMode({ mode: 'canEditSketch', pathToNode, quaternion, position })
     } else if (
       !shouldHighlight &&
       guiMode.mode === 'canEditSketch' &&

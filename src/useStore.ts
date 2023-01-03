@@ -1,14 +1,15 @@
 import create from 'zustand'
 import { addLineHighlight, EditorView } from './editor/highlightextension'
 import { Program, abstractSyntaxTree } from './lang/abstractSyntaxTree'
+import { ProgramMemory } from './lang/executor'
 import { recast } from './lang/recast'
 import { lexer } from './lang/tokeniser'
 import { Quaternion } from 'three'
 
 export type Range = [number, number]
 
-type Plane = 'xy' | 'xz' | 'yz'
 type PathToNode = (string | number)[]
+type Position = [number, number, number]
 
 type GuiModes =
   | {
@@ -18,6 +19,7 @@ type GuiModes =
       mode: 'sketch'
       sketchMode: 'points'
       quaternion: Quaternion
+      position: Position
       id?: string
       pathToNode: PathToNode
     }
@@ -25,6 +27,7 @@ type GuiModes =
       mode: 'sketch'
       sketchMode: 'sketchEdit'
       quaternion: Quaternion
+      position: Position
       pathToNode: PathToNode
     }
   | {
@@ -35,6 +38,7 @@ type GuiModes =
       mode: 'canEditSketch'
       pathToNode: PathToNode
       quaternion: Quaternion
+      position: Position
     }
 
 interface StoreState {
@@ -62,6 +66,8 @@ interface StoreState {
     error: string
   }
   setError: (error?: string) => void
+  programMemory: ProgramMemory
+  setProgramMemory: (programMemory: ProgramMemory) => void
 }
 
 export const useStore = create<StoreState>()((set, get) => ({
@@ -123,4 +129,6 @@ export const useStore = create<StoreState>()((set, get) => ({
   setError: (error = '') => {
     set({ errorState: { isError: !!error, error } })
   },
+  programMemory: { root: {}, _sketch: [] },
+  setProgramMemory: (programMemory) => set({ programMemory }),
 }))
