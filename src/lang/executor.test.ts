@@ -206,6 +206,18 @@ show(mySketch)
       },
     })
   })
+  it('execute memberExpression', () => {
+    const code = ["const yo = {a: {b: '123'}}", "const myVar = yo.a['b']"].join(
+      '\n'
+    )
+    const { root } = exe(code)
+    expect(root).toEqual({
+      yo: {
+        a: { b: '123' },
+      },
+      myVar: '123',
+    })
+  })
 })
 
 // helpers

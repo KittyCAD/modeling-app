@@ -9,6 +9,7 @@ import {
   SketchExpression,
   ArrayExpression,
   ObjectExpression,
+  MemberExpression,
 } from './abstractSyntaxTree'
 
 export function recast(
@@ -155,6 +156,23 @@ ${recast(expression.body, '', indentation + '  ')}
 }`
 }
 
+function recastMemberExpression(
+  expression: MemberExpression,
+  indentation: string
+): string {
+  // TODO handle breaking into multiple lines if too long
+  let keyString =
+    expression.computed && expression.property.type === 'Identifier'
+      ? `[${expression.property.name}]`
+      : expression.property.type !== 'Identifier'
+      ? `[${expression.property.raw}]`
+      : `.${expression.property.name}`
+  if (expression.object.type === 'MemberExpression') {
+    return recastMemberExpression(expression.object, indentation) + keyString
+  }
+  return expression.object.name + keyString
+}
+
 function recastValue(node: Value, indentation = ''): string {
   if (node.type === 'BinaryExpression') {
     return recastBinaryExpression(node)
@@ -162,6 +180,8 @@ function recastValue(node: Value, indentation = ''): string {
     return recastArrayExpression(node, indentation)
   } else if (node.type === 'ObjectExpression') {
     return recastObjectExpression(node, indentation)
+  } else if (node.type === 'MemberExpression') {
+    return recastMemberExpression(node, indentation)
   } else if (node.type === 'Literal') {
     return recastLiteral(node)
   } else if (node.type === 'FunctionExpression') {

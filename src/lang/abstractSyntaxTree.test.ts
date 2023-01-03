@@ -1350,4 +1350,174 @@ describe('testing pipe operator special', () => {
       },
     ])
   })
+  test('object memberExpression simple', () => {
+    const code = `const prop = yo.one.two`
+    const tokens = lexer(code)
+    const { body } = abstractSyntaxTree(tokens)
+    expect(body).toEqual([
+      {
+        type: 'VariableDeclaration',
+        start: 0,
+        end: 23,
+        kind: 'const',
+        declarations: [
+          {
+            type: 'VariableDeclarator',
+            start: 6,
+            end: 23,
+            id: {
+              type: 'Identifier',
+              start: 6,
+              end: 10,
+              name: 'prop',
+            },
+            init: {
+              type: 'MemberExpression',
+              start: 13,
+              end: 23,
+              computed: false,
+              object: {
+                type: 'MemberExpression',
+                start: 13,
+                end: 19,
+                computed: false,
+                object: {
+                  type: 'Identifier',
+                  start: 13,
+                  end: 15,
+                  name: 'yo',
+                },
+                property: {
+                  type: 'Identifier',
+                  start: 16,
+                  end: 19,
+                  name: 'one',
+                },
+              },
+              property: {
+                type: 'Identifier',
+                start: 20,
+                end: 23,
+                name: 'two',
+              },
+            },
+          },
+        ],
+      },
+    ])
+  })
+  test('object memberExpression with square braces', () => {
+    const code = `const prop = yo.one["two"]`
+    const tokens = lexer(code)
+    const { body } = abstractSyntaxTree(tokens)
+    expect(body).toEqual([
+      {
+        type: 'VariableDeclaration',
+        start: 0,
+        end: 26,
+        kind: 'const',
+        declarations: [
+          {
+            type: 'VariableDeclarator',
+            start: 6,
+            end: 26,
+            id: {
+              type: 'Identifier',
+              start: 6,
+              end: 10,
+              name: 'prop',
+            },
+            init: {
+              type: 'MemberExpression',
+              start: 13,
+              end: 26,
+              computed: false,
+              object: {
+                type: 'MemberExpression',
+                start: 13,
+                end: 19,
+                computed: false,
+                object: {
+                  type: 'Identifier',
+                  start: 13,
+                  end: 15,
+                  name: 'yo',
+                },
+                property: {
+                  type: 'Identifier',
+                  start: 16,
+                  end: 19,
+                  name: 'one',
+                },
+              },
+              property: {
+                type: 'Literal',
+                start: 20,
+                end: 25,
+                value: 'two',
+                raw: '"two"',
+              },
+            },
+          },
+        ],
+      },
+    ])
+  })
+  test('object memberExpression with two square braces literal and identifier', () => {
+    const code = `const prop = yo["one"][two]`
+    const tokens = lexer(code)
+    const { body } = abstractSyntaxTree(tokens)
+    expect(body).toEqual([
+      {
+        type: 'VariableDeclaration',
+        start: 0,
+        end: 27,
+        kind: 'const',
+        declarations: [
+          {
+            type: 'VariableDeclarator',
+            start: 6,
+            end: 27,
+            id: {
+              type: 'Identifier',
+              start: 6,
+              end: 10,
+              name: 'prop',
+            },
+            init: {
+              type: 'MemberExpression',
+              start: 13,
+              end: 27,
+              computed: true,
+              object: {
+                type: 'MemberExpression',
+                start: 13,
+                end: 22,
+                computed: false,
+                object: {
+                  type: 'Identifier',
+                  start: 13,
+                  end: 15,
+                  name: 'yo',
+                },
+                property: {
+                  type: 'Literal',
+                  start: 16,
+                  end: 21,
+                  value: 'one',
+                  raw: '"one"',
+                },
+              },
+              property: {
+                type: 'Identifier',
+                start: 23,
+                end: 26,
+                name: 'two',
+              },
+            },
+          },
+        ],
+      },
+    ])
+  })
 })

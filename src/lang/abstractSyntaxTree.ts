@@ -290,6 +290,7 @@ export type Value =
   | PipeSubstitution
   | ArrayExpression
   | ObjectExpression
+  | MemberExpression
 
 function makeValue(
   tokens: Token[],
@@ -331,8 +332,16 @@ function makeValue(
       lastIndex: arrExp.lastIndex,
     }
   }
-  if (currentToken.type === 'word' && nextToken.type === 'period') {
-    // TODO object access
+  if (
+    currentToken.type === 'word' &&
+    (nextToken.type === 'period' ||
+      (nextToken.type === 'brace' && nextToken.value === '['))
+  ) {
+    const memberExpression = makeMemberExpression(tokens, index)
+    return {
+      value: memberExpression.expression,
+      lastIndex: memberExpression.lastIndex,
+    }
   }
   if (currentToken.type === 'word') {
     const identifier = makeIdentifier(tokens, index)
@@ -612,6 +621,100 @@ function makeObjectProperties(
   return makeObjectProperties(tokens, nextKeyIndex, [
     ...previousProperties,
     objectProperty,
+  ])
+}
+
+export interface MemberExpression extends GeneralStatement {
+  type: 'MemberExpression'
+  object: MemberExpression | Identifier
+  property: Identifier | Literal
+  computed: boolean
+}
+
+function makeMemberExpression(
+  tokens: Token[],
+  index: number
+): { expression: MemberExpression; lastIndex: number } {
+  const currentToken = tokens[index]
+  const keysInfo = collectObjectKeys(tokens, index)
+  const lastKey = keysInfo[keysInfo.length - 1]
+  const firstKey = keysInfo.shift()
+  if (!firstKey) throw new Error('Expected a key')
+  const root = makeIdentifier(tokens, index)
+  let memberExpression: MemberExpression = {
+    type: 'MemberExpression',
+    start: currentToken.start,
+    end: tokens[firstKey.index].end,
+    object: root,
+    property: firstKey.key,
+    computed: firstKey.computed,
+  }
+  keysInfo.forEach(({ key, computed, index }, i) => {
+    const endToken = tokens[index]
+    memberExpression = {
+      type: 'MemberExpression',
+      start: currentToken.start,
+      end: endToken.end,
+      object: memberExpression,
+      property: key,
+      computed,
+    }
+  })
+
+  return {
+    expression: memberExpression,
+    lastIndex: lastKey.index,
+  }
+}
+
+interface ObjectKeyInfo {
+  key: Identifier | Literal
+  index: number
+  computed: boolean
+}
+
+function collectObjectKeys(
+  tokens: Token[],
+  index: number,
+  previousKeys: ObjectKeyInfo[] = []
+): ObjectKeyInfo[] {
+  const nextToken = nextMeaningfulToken(tokens, index)
+  const periodOrOpeningBracketToken =
+    nextToken?.token?.type === 'brace' && nextToken.token.value === ']'
+      ? nextMeaningfulToken(tokens, nextToken.index)
+      : nextToken
+  if (
+    periodOrOpeningBracketToken?.token?.type !== 'period' &&
+    periodOrOpeningBracketToken?.token?.type !== 'brace'
+  ) {
+    return previousKeys
+  }
+  const keyToken = nextMeaningfulToken(
+    tokens,
+    periodOrOpeningBracketToken.index
+  )
+  const nextPeriodOrOpeningBracketToken = nextMeaningfulToken(
+    tokens,
+    keyToken.index
+  )
+  const isBraced =
+    nextPeriodOrOpeningBracketToken?.token?.type === 'brace' &&
+    nextPeriodOrOpeningBracketToken?.token?.value === ']'
+  const endIndex = isBraced
+    ? nextPeriodOrOpeningBracketToken.index
+    : keyToken.index
+  const key =
+    keyToken.token.type === 'word'
+      ? makeIdentifier(tokens, keyToken.index)
+      : makeLiteral(tokens, keyToken.index)
+  const computed = isBraced && keyToken.token.type === 'word' ? true : false
+  return collectObjectKeys(tokens, keyToken.index, [
+    ...previousKeys,
+    {
+      key,
+      index: endIndex,
+      computed,
+    },
   ])
 }
 

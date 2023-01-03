@@ -366,6 +366,67 @@ describe('testing lexer', () => {
       "brace        '}'        from 24  to 25",
     ])
   })
+  it('testing object property access', () => {
+    const result = stringSummaryLexer(`const yo = {key: 'value'}
+const prop = yo.key
+const prop2 = yo['key']
+const key = 'key'
+const prop3 = yo[key]`)
+    expect(result).toEqual([
+      "word         'const'    from 0   to 5",
+      "whitespace   ' '        from 5   to 6",
+      "word         'yo'       from 6   to 8",
+      "whitespace   ' '        from 8   to 9",
+      "operator     '='        from 9   to 10",
+      "whitespace   ' '        from 10  to 11",
+      "brace        '{'        from 11  to 12",
+      "word         'key'      from 12  to 15",
+      "colon        ':'        from 15  to 16",
+      "whitespace   ' '        from 16  to 17",
+      "string       ''value''  from 17  to 24",
+      "brace        '}'        from 24  to 25",
+      "whitespace   '\n'        from 25  to 26",
+      "word         'const'    from 26  to 31",
+      "whitespace   ' '        from 31  to 32",
+      "word         'prop'     from 32  to 36",
+      "whitespace   ' '        from 36  to 37",
+      "operator     '='        from 37  to 38",
+      "whitespace   ' '        from 38  to 39",
+      "word         'yo'       from 39  to 41",
+      "period       '.'        from 41  to 42",
+      "word         'key'      from 42  to 45",
+      "whitespace   '\n'        from 45  to 46",
+      "word         'const'    from 46  to 51",
+      "whitespace   ' '        from 51  to 52",
+      "word         'prop2'    from 52  to 57",
+      "whitespace   ' '        from 57  to 58",
+      "operator     '='        from 58  to 59",
+      "whitespace   ' '        from 59  to 60",
+      "word         'yo'       from 60  to 62",
+      "brace        '['        from 62  to 63",
+      "string       ''key''    from 63  to 68",
+      "brace        ']'        from 68  to 69",
+      "whitespace   '\n'        from 69  to 70",
+      "word         'const'    from 70  to 75",
+      "whitespace   ' '        from 75  to 76",
+      "word         'key'      from 76  to 79",
+      "whitespace   ' '        from 79  to 80",
+      "operator     '='        from 80  to 81",
+      "whitespace   ' '        from 81  to 82",
+      "string       ''key''    from 82  to 87",
+      "whitespace   '\n'        from 87  to 88",
+      "word         'const'    from 88  to 93",
+      "whitespace   ' '        from 93  to 94",
+      "word         'prop3'    from 94  to 99",
+      "whitespace   ' '        from 99  to 100",
+      "operator     '='        from 100 to 101",
+      "whitespace   ' '        from 101 to 102",
+      "word         'yo'       from 102 to 104",
+      "brace        '['        from 104 to 105",
+      "word         'key'      from 105 to 108",
+      "brace        ']'        from 108 to 109",
+    ])
+  })
 })
 
 // helpers

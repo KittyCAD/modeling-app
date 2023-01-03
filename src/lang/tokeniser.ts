@@ -16,6 +16,7 @@ const ARRAY_START = /^\[/
 const ARRAY_END = /^\]/
 const COMMA = /^,/
 const COLON = /^:/
+const PERIOD = /^\./
 
 export const isNumber = (character: string) => NUMBER.test(character)
 export const isWhitespace = (character: string) => WHITESPACE.test(character)
@@ -30,6 +31,7 @@ export const isArrayStart = (character: string) => ARRAY_START.test(character)
 export const isArrayEnd = (character: string) => ARRAY_END.test(character)
 export const isComma = (character: string) => COMMA.test(character)
 export const isColon = (character: string) => COLON.test(character)
+export const isPeriod = (character: string) => PERIOD.test(character)
 
 function matchFirst(str: string, regex: RegExp) {
   const theMatch = str.match(regex)
@@ -49,6 +51,7 @@ export interface Token {
     | 'whitespace'
     | 'comma'
     | 'colon'
+    | 'period'
   value: string
   start: number
   end: number
@@ -100,9 +103,10 @@ const returnTokenAtIndex = (str: string, startIndex: number): Token | null => {
   if (isWord(strFromIndex)) {
     return makeToken('word', matchFirst(strFromIndex, WORD), startIndex)
   }
-  if (isColon(strFromIndex)) {
+  if (isColon(strFromIndex))
     return makeToken('colon', matchFirst(strFromIndex, COLON), startIndex)
-  }
+  if (isPeriod(strFromIndex))
+    return makeToken('period', matchFirst(strFromIndex, PERIOD), startIndex)
   if (isWhitespace(strFromIndex)) {
     return makeToken(
       'whitespace',

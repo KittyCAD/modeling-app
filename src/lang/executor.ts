@@ -4,6 +4,7 @@ import {
   BinaryExpression,
   PipeExpression,
   ObjectExpression,
+  MemberExpression,
 } from './abstractSyntaxTree'
 import { Path, Transform, SketchGeo, sketchFns, ExtrudeGeo } from './sketch'
 import { BufferGeometry, Quaternion, Vector3 } from 'three'
@@ -116,6 +117,11 @@ export const executor = (
             })
             return executor(fnInit.body, fnMemory, { bodyType: 'block' }).return
           }
+        } else if (declaration.init.type === 'MemberExpression') {
+          _programMemory.root[variableName] = getMemberExpressionResult(
+            declaration.init,
+            _programMemory
+          )
         } else if (declaration.init.type === 'CallExpression') {
           const functionName = declaration.init.callee.name
           const fnArgs = declaration.init.arguments.map((arg) => {
@@ -189,6 +195,10 @@ export const executor = (
               functionName
             ](...fnArgs)
           }
+        } else {
+          throw new Error(
+            'Unsupported declaration type: ' + declaration.init.type
+          )
         }
       })
     } else if (statement.type === 'ExpressionStatement') {
@@ -238,6 +248,22 @@ export const executor = (
     }
   })
   return _programMemory
+}
+
+function getMemberExpressionResult(
+  expression: MemberExpression,
+  programMemory: ProgramMemory
+) {
+  const propertyName = (
+    expression.property.type === 'Identifier'
+      ? expression.property.name
+      : expression.property.value
+  ) as any
+  const object: any =
+    expression.object.type === 'MemberExpression'
+      ? getMemberExpressionResult(expression.object, programMemory)
+      : programMemory.root[expression.object.name]
+  return object[propertyName]
 }
 
 function getBinaryExpressionResult(
@@ -407,6 +433,11 @@ function executeObjectExpression(
         )
       } else if (property.value.type === 'Identifier') {
         obj[property.key.name] = _programMemory.root[property.value.name]
+      } else if (property.value.type === 'ObjectExpression') {
+        obj[property.key.name] = executeObjectExpression(
+          _programMemory,
+          property.value
+        )
       } else {
         throw new Error(
           `Unexpected property type ${property.value.type} in object expression`

@@ -140,6 +140,16 @@ const yo = {
     const recasted = recast(ast)
     expect(recasted).toBe(code.trim())
   })
+  it('recast object execution with member expression', () => {
+    const code = `const yo = { a: { b: { c: '123' } } }
+const key = 'c'
+const myVar = yo.a['b'][key]
+const key2 = 'b'
+const myVar2 = yo['a'][key2].c`
+    const { ast } = code2ast(code)
+    const recasted = recast(ast)
+    expect(recasted).toBe(code.trim())
+  })
 })
 
 // helpers
