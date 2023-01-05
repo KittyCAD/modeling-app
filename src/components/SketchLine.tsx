@@ -13,6 +13,7 @@ import { isOverlapping } from '../lib/utils'
 import { LineGeos } from '../lang/engine'
 import { Vector3, DoubleSide, Quaternion, Vector2 } from 'three'
 import { combineTransformsAlt } from '../lang/sketch'
+import { useSetCursor } from '../hooks/useSetCursor'
 
 function SketchLine({
   geo,
@@ -23,15 +24,10 @@ function SketchLine({
   sourceRange: [number, number]
   forceHighlight?: boolean
 }) {
-  const { setHighlightRange } = useStore(
-    ({ setHighlightRange, selectionRange, guiMode, setGuiMode, ast }) => ({
-      setHighlightRange,
-      selectionRange,
-      guiMode,
-      setGuiMode,
-      ast,
-    })
-  )
+  const { setHighlightRange } = useStore(({ setHighlightRange }) => ({
+    setHighlightRange,
+  }))
+  const onClick = useSetCursor(sourceRange)
   // This reference will give us direct access to the mesh
   const ref = useRef<BufferGeometry | undefined>() as any
   const [hovered, setHover] = useState(false)
@@ -48,6 +44,7 @@ function SketchLine({
           setHover(false)
           setHighlightRange([0, 0])
         }}
+        onClick={onClick}
       >
         <primitive object={geo.line} />
         <meshStandardMaterial
@@ -81,6 +78,7 @@ function ExtrudeWall({
       ast,
     })
   )
+  const onClick = useSetCursor(sourceRange)
   // This reference will give us direct access to the mesh
   const ref = useRef<BufferGeometry | undefined>() as any
   const [hovered, setHover] = useState(false)
@@ -97,6 +95,7 @@ function ExtrudeWall({
           setHover(false)
           setHighlightRange([0, 0])
         }}
+        onClick={onClick}
       >
         <primitive object={geo} />
         <meshStandardMaterial

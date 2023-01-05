@@ -46,6 +46,7 @@ interface StoreState {
   setEditorView: (editorView: EditorView) => void
   highlightRange: [number, number]
   setHighlightRange: (range: Range) => void
+  setCursor: (cursor: number) => void
   selectionRange: [number, number]
   setSelectionRange: (range: Range) => void
   guiMode: GuiModes
@@ -82,6 +83,13 @@ export const useStore = create<StoreState>()((set, get) => ({
     if (editorView) {
       editorView.dispatch({ effects: addLineHighlight.of(highlightRange) })
     }
+  },
+  setCursor: (cursor: number) => {
+    const editorView = get().editorView
+    if (!editorView) return
+    editorView.dispatch({
+      selection: { anchor: cursor, head: cursor },
+    })
   },
   selectionRange: [0, 0],
   setSelectionRange: (selectionRange) => {
