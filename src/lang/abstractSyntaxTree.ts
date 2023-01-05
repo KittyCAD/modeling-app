@@ -1267,7 +1267,7 @@ export function addSketchTo(
 ): { modifiedAst: Program; id: string; pathToNode: (string | number)[] } {
   const _node = { ...node }
   const dumbyStartend = { start: 0, end: 0 }
-  const _name = name || findUniqueName(node, 'mySketch')
+  const _name = name || findUniqueName(node, 'part')
   const sketchBody: BlockStatement = {
     type: 'BlockStatement',
     ...dumbyStartend,
