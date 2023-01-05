@@ -1,12 +1,12 @@
 import { useStore } from '../useStore'
 import { DoubleSide, Vector3, Quaternion } from 'three'
-import { addLine, Program } from '../lang/abstractSyntaxTree'
+import { Program } from '../lang/abstractSyntaxTree'
+import { addLine } from '../lang/modifyAst'
 
 export const SketchPlane = () => {
-  const { ast, setGuiMode, guiMode, updateAst } = useStore(
-    ({ guiMode, setGuiMode, ast, updateAst }) => ({
+  const { ast, guiMode, updateAst } = useStore(
+    ({ guiMode, ast, updateAst }) => ({
       guiMode,
-      setGuiMode,
       ast,
       updateAst,
     })

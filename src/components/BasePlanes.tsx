@@ -3,7 +3,8 @@ import { DoubleSide, Vector3 } from 'three'
 import { useStore } from '../useStore'
 import { Intersection } from '@react-three/fiber'
 import { Text } from '@react-three/drei'
-import { addSketchTo, Program } from '../lang/abstractSyntaxTree'
+import { addSketchTo } from '../lang/modifyAst'
+import { Program } from '../lang/abstractSyntaxTree'
 import { Quaternion } from 'three'
 
 const opacity = 0.1

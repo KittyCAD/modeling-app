@@ -3,9 +3,9 @@ import {
   getNodePathFromSourceRange,
   getNodeFromPath,
   CallExpression,
-  changeArguments,
   VariableDeclarator,
 } from '../lang/abstractSyntaxTree'
+import { changeArguments } from '../lang/modifyAst'
 import { ViewerArtifact } from '../lang/executor'
 import { BufferGeometry } from 'three'
 import { useStore } from '../useStore'
