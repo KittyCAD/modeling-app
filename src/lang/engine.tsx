@@ -96,9 +96,11 @@ export interface extrudeWallGeo {
 export function extrudeGeo({
   from,
   to,
+  length,
 }: {
   from: [number, number, number]
   to: [number, number, number]
+  length: number
 }): BufferGeometry {
   const {
     // centre,
@@ -108,9 +110,9 @@ export function extrudeGeo({
     sign,
   } = trigCalcs({ from, to })
 
-  const face = new PlaneGeometry(Hypotenuse3d, 4, 2, 2)
-  face.rotateX(Math.PI / 2)
-  face.translate(Hypotenuse3d / 2, 0, -2 * sign)
+  const face = new PlaneGeometry(Hypotenuse3d, length, 2, 2)
+  face.rotateX(Math.PI * 0.5)
+  face.translate(Hypotenuse3d * 0.5, 0, -length * 0.5 * sign)
 
   face.rotateY(ry)
   face.rotateZ(rz)

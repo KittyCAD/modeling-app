@@ -221,8 +221,7 @@ export const sketchFns = {
     programMemory: ProgramMemory,
     name: string = '',
     sourceRange: SourceRange,
-    length: any,
-    // sketchVal: any
+    length: number,
     sketchVal: SketchGeo | Transform
   ): ExtrudeGeo | Transform => {
     const getSketchGeo = (sketchVal: SketchGeo | Transform): SketchGeo => {
@@ -253,6 +252,7 @@ export const sketchFns = {
         const geo = extrudeGeo({
           from: [from[0], from[1], 0],
           to: [to[0], to[1], 0],
+          length,
         })
         extrudeFaces.push({
           type: 'extrudeFace',
