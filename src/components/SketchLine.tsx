@@ -209,15 +209,17 @@ function MovingSphere({
             const point = a.point
 
             const transformedPoint = point.clone()
-            let inverseQuaternion = new Quaternion()
+            const inverseQuaternion = new Quaternion()
             if (
               guiMode.mode === 'canEditSketch' ||
               (guiMode.mode === 'sketch' && guiMode.sketchMode === 'sketchEdit')
             ) {
-              inverseQuaternion = guiMode.quaternion.clone()
+              inverseQuaternion.copy(guiMode.quaternion.clone().invert())
             }
-            inverseQuaternion = inverseQuaternion.invert()
             transformedPoint.applyQuaternion(inverseQuaternion)
+            transformedPoint.sub(
+              position.clone().applyQuaternion(inverseQuaternion)
+            )
             point2DRef.current.set(transformedPoint.x, transformedPoint.y)
 
             if (
@@ -231,20 +233,25 @@ function MovingSphere({
             if (guiMode.mode)
               if (ref.current) {
                 const diff = new Vector3().subVectors(
-                  point,
+                  point.clone().applyQuaternion(inverseQuaternion),
                   lastPointerRef.current
+                    .clone()
+                    .applyQuaternion(inverseQuaternion)
                 )
                 if (originalXY[0] === -1) {
+                  // x arg is not a literal and should be locked
                   diff.x = 0
                 }
                 if (originalXY[1] === -1) {
+                  // y arg is not a literal and should be locked
                   diff.y = 0
                 }
-                ref.current.position.add(diff)
+                ref.current.position.add(
+                  diff.applyQuaternion(inverseQuaternion.invert())
+                )
                 lastPointerRef.current.set(point.x, point.y, point.z)
               }
           }}
-          name="my-mesh"
         >
           <planeGeometry args={[50, 50]} ref={detectionPlaneRef} />
           <meshStandardMaterial
