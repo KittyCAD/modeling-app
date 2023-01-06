@@ -1,10 +1,17 @@
 import { useStore } from './useStore'
+import { extrudeSketch } from './lang/modifyAst'
+import { getNodePathFromSourceRange } from './lang/abstractSyntaxTree'
 
 export const Toolbar = () => {
-  const { setGuiMode, guiMode } = useStore(({ guiMode, setGuiMode }) => ({
-    guiMode,
-    setGuiMode,
-  }))
+  const { setGuiMode, guiMode, selectionRange, ast, updateAst } = useStore(
+    ({ guiMode, setGuiMode, selectionRange, ast, updateAst }) => ({
+      guiMode,
+      setGuiMode,
+      selectionRange,
+      ast,
+      updateAst,
+    })
+  )
   return (
     <div>
       {guiMode.mode === 'default' && (
@@ -35,6 +42,32 @@ export const Toolbar = () => {
         >
           EditSketch
         </button>
+      )}
+      {guiMode.mode === 'canEditSketch' && (
+        <>
+          <button
+            onClick={() => {
+              if (!ast) return
+              const pathToNote = getNodePathFromSourceRange(ast, selectionRange)
+              const { modifiedAst } = extrudeSketch(ast, pathToNote)
+              updateAst(modifiedAst)
+            }}
+            className="border m-1 px-1 rounded"
+          >
+            ExtrudeSketch
+          </button>
+          <button
+            onClick={() => {
+              if (!ast) return
+              const pathToNote = getNodePathFromSourceRange(ast, selectionRange)
+              const { modifiedAst } = extrudeSketch(ast, pathToNote, false)
+              updateAst(modifiedAst)
+            }}
+            className="border m-1 px-1 rounded"
+          >
+            ExtrudeSketch (w/o pipe)
+          </button>
+        </>
       )}
 
       {guiMode.mode !== 'default' && (

@@ -8,6 +8,7 @@ import {
   ExpressionStatement,
   Value,
   getNodeFromPath,
+  VariableDeclarator,
 } from './abstractSyntaxTree'
 
 export function addSketchTo(
@@ -275,5 +276,102 @@ export function changeArguments(
   return {
     modifiedAst: _node,
     pathToNode,
+  }
+}
+
+export function extrudeSketch(
+  node: Program,
+  pathToNode: (string | number)[],
+  shouldPipe = true
+): { modifiedAst: Program; pathToNode: (string | number)[] } {
+  const _node = { ...node }
+  const dumbyStartend = { start: 0, end: 0 }
+  const sketchExpression = getNodeFromPath(
+    _node,
+    pathToNode,
+    'SketchExpression'
+  ) as SketchExpression
+
+  // determine if sketchExpression is in a pipeExpression or not
+  const pipeExpression = getNodeFromPath(_node, pathToNode, 'PipeExpression')
+  const isInPipeExpression = pipeExpression.type === 'PipeExpression'
+
+  const variableDeclorator = getNodeFromPath(
+    _node,
+    pathToNode,
+    'VariableDeclarator'
+  ) as VariableDeclarator
+
+  const extrudeCall: CallExpression = {
+    type: 'CallExpression',
+    ...dumbyStartend,
+    callee: {
+      type: 'Identifier',
+      ...dumbyStartend,
+      name: 'extrude',
+    },
+    optional: false,
+    arguments: [
+      {
+        type: 'Literal',
+        ...dumbyStartend,
+        value: 4,
+        raw: '4',
+      },
+      shouldPipe
+        ? {
+            type: 'PipeSubstitution',
+            ...dumbyStartend,
+          }
+        : {
+            type: 'Identifier',
+            ...dumbyStartend,
+            name: variableDeclorator.id.name,
+          },
+    ],
+  }
+  if (shouldPipe) {
+    const pipeChain: PipeExpression = isInPipeExpression
+      ? {
+          type: 'PipeExpression',
+          ...dumbyStartend,
+          body: [...pipeExpression.body, extrudeCall],
+        }
+      : {
+          type: 'PipeExpression',
+          ...dumbyStartend,
+          body: [sketchExpression, extrudeCall],
+        }
+
+    variableDeclorator.init = pipeChain
+
+    return {
+      modifiedAst: _node,
+      pathToNode,
+    }
+  }
+  const name = findUniqueName(node, 'part')
+  const VariableDeclaration: VariableDeclaration = {
+    type: 'VariableDeclaration',
+    ...dumbyStartend,
+    declarations: [
+      {
+        type: 'VariableDeclarator',
+        ...dumbyStartend,
+        id: {
+          type: 'Identifier',
+          ...dumbyStartend,
+          name,
+        },
+        init: extrudeCall,
+      },
+    ],
+    kind: 'const',
+  }
+  const showCallIndex = getShowIndex(_node)
+  _node.body.splice(showCallIndex, 0, VariableDeclaration)
+  return {
+    modifiedAst: addToShow(_node, name),
+    pathToNode: [...pathToNode.slice(0, -1), showCallIndex],
   }
 }
