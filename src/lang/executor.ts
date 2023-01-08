@@ -5,21 +5,108 @@ import {
   PipeExpression,
   ObjectExpression,
   MemberExpression,
+  Identifier,
 } from './abstractSyntaxTree'
-import { Path, Transform, SketchGeo, sketchFns, ExtrudeGeo } from './sketch'
-import { BufferGeometry, Quaternion, Vector3 } from 'three'
-import { LineGeos } from './engine'
+import { sketchFns } from './sketch'
+import { BufferGeometry } from 'three'
+
+export type SourceRange = [number, number]
+export type PathToNode = (string | number)[]
+export type Metadata = {
+  sourceRange: SourceRange
+  pathToNode: PathToNode
+}
+export type Position = [number, number, number]
+export type Rotation = [number, number, number, number]
+
+interface BasePath {
+  from: [number, number]
+  to: [number, number]
+  name?: string
+  __geoMeta: {
+    geos: {
+      geo: BufferGeometry
+      type: 'line' | 'lineEnd'
+    }[]
+    sourceRange: SourceRange
+    pathToNode: PathToNode
+  }
+}
+
+export interface ToPoint extends BasePath {
+  type: 'toPoint'
+}
+
+export interface HorizontalLineTo extends BasePath {
+  type: 'horizontalLineTo'
+  x: number
+}
+
+export interface AngledLineTo extends BasePath {
+  type: 'angledLineTo'
+  angle: number
+  x?: number
+  y?: number
+}
+
+interface GeoMeta {
+  __geoMeta: {
+    geo: BufferGeometry
+    sourceRange: SourceRange
+    pathToNode: PathToNode
+  }
+}
+
+export type Path = ToPoint | HorizontalLineTo | AngledLineTo
+
+export interface SketchGroup {
+  type: 'sketchGroup'
+  value: Path[]
+  position: Position
+  rotation: Rotation
+  __meta: Metadata[]
+}
+
+interface ExtrudePlane {
+  type: 'extrudePlane'
+  position: Position
+  rotation: Rotation
+}
+
+export type ExtrudeSurface = GeoMeta &
+  ExtrudePlane /* | ExtrudeRadius | ExtrudeSpline */
+
+export interface ExtrudeGroup {
+  type: 'extrudeGroup'
+  value: ExtrudeSurface[]
+  height: number
+  position: Position
+  rotation: Rotation
+  __meta: Metadata[]
+}
+
+/** UserVal not produced by one of our internal functions */
+export interface UserVal {
+  type: 'userVal'
+  value: any
+  __meta: Metadata[]
+}
+
+interface Memory {
+  [key: string]: UserVal | SketchGroup | ExtrudeGroup // | Memory
+}
 
 export interface ProgramMemory {
-  root: { [key: string]: any }
-  return?: any
-  _sketch: Path[]
+  root: Memory
+  return?: Identifier[]
+  _sketch?: Path[]
 }
 
 export const executor = (
   node: Program,
   programMemory: ProgramMemory = { root: {}, _sketch: [] },
-  options: { bodyType: 'root' | 'sketch' | 'block' } = { bodyType: 'root' }
+  options: { bodyType: 'root' | 'sketch' | 'block' } = { bodyType: 'root' },
+  previousPathToNode: PathToNode = []
 ): ProgramMemory => {
   const _programMemory: ProgramMemory = {
     root: {
@@ -29,43 +116,103 @@ export const executor = (
     return: programMemory.return,
   }
   const { body } = node
-  body.forEach((statement) => {
+  body.forEach((statement, bodyIndex) => {
     if (statement.type === 'VariableDeclaration') {
-      statement.declarations.forEach((declaration) => {
+      statement.declarations.forEach((declaration, index) => {
         const variableName = declaration.id.name
+        const pathToNode = [
+          ...previousPathToNode,
+          'body',
+          bodyIndex,
+          'declarations',
+          index,
+          'init',
+        ]
+        const sourceRange: SourceRange = [
+          declaration.init.start,
+          declaration.init.end,
+        ]
+        const __meta: Metadata[] = [
+          {
+            pathToNode,
+            sourceRange,
+          },
+        ]
+
         if (declaration.init.type === 'PipeExpression') {
-          _programMemory.root[variableName] = getPipeExpressionResult(
+          const value = getPipeExpressionResult(
             declaration.init,
-            _programMemory
+            _programMemory,
+            pathToNode
           )
-        } else if (declaration.init.type === 'Literal') {
-          _programMemory.root[variableName] = declaration.init.value
-        } else if (declaration.init.type === 'BinaryExpression') {
-          _programMemory.root[variableName] = getBinaryExpressionResult(
-            declaration.init,
-            _programMemory
-          )
-        } else if (declaration.init.type === 'ArrayExpression') {
-          _programMemory.root[variableName] = declaration.init.elements.map(
-            (element) => {
-              if (element.type === 'Literal') {
-                return element.value
-              } else if (element.type === 'BinaryExpression') {
-                return getBinaryExpressionResult(element, _programMemory)
-              } else if (element.type === 'PipeExpression') {
-                return getPipeExpressionResult(element, _programMemory)
-              } else if (element.type === 'Identifier') {
-                return _programMemory.root[element.name]
-              } else {
-                throw new Error(
-                  `Unexpected element type ${element.type} in array expression`
-                )
-              }
+          if (value?.type === 'sketchGroup' || value?.type === 'extrudeGroup') {
+            _programMemory.root[variableName] = value
+          } else {
+            _programMemory.root[variableName] = {
+              type: 'userVal',
+              value,
+              __meta,
             }
-          )
+          }
+        } else if (declaration.init.type === 'Literal') {
+          _programMemory.root[variableName] = {
+            type: 'userVal',
+            value: declaration.init.value,
+            __meta,
+          }
+        } else if (declaration.init.type === 'BinaryExpression') {
+          _programMemory.root[variableName] = {
+            type: 'userVal',
+            value: getBinaryExpressionResult(declaration.init, _programMemory),
+            __meta,
+          }
+        } else if (declaration.init.type === 'ArrayExpression') {
+          const valueInfo: { value: any; __meta?: Metadata }[] =
+            declaration.init.elements.map(
+              (element): { value: any; __meta?: Metadata } => {
+                if (element.type === 'Literal') {
+                  return {
+                    value: element.value,
+                  }
+                } else if (element.type === 'BinaryExpression') {
+                  return {
+                    value: getBinaryExpressionResult(element, _programMemory),
+                  }
+                } else if (element.type === 'PipeExpression') {
+                  return {
+                    value: getPipeExpressionResult(
+                      element,
+                      _programMemory,
+                      pathToNode
+                    ),
+                  }
+                } else if (element.type === 'Identifier') {
+                  const node = _programMemory.root[element.name]
+                  return {
+                    value: node.value,
+                    __meta: node.__meta[node.__meta.length - 1],
+                  }
+                } else {
+                  throw new Error(
+                    `Unexpected element type ${element.type} in array expression`
+                  )
+                }
+              }
+            )
+          const meta = valueInfo
+            .filter(({ __meta }) => __meta)
+            .map(({ __meta }) => __meta) as Metadata[]
+          _programMemory.root[variableName] = {
+            type: 'userVal',
+            value: valueInfo.map(({ value }) => value),
+            __meta: [...__meta, ...meta],
+          }
         } else if (declaration.init.type === 'ObjectExpression') {
-          const obj = executeObjectExpression(_programMemory, declaration.init)
-          _programMemory.root[variableName] = obj
+          _programMemory.root[variableName] = {
+            type: 'userVal',
+            value: executeObjectExpression(_programMemory, declaration.init),
+            __meta,
+          }
         } else if (declaration.init.type === 'SketchExpression') {
           const sketchInit = declaration.init
           const fnMemory: ProgramMemory = {
@@ -77,64 +224,66 @@ export const executor = (
           let { _sketch } = executor(sketchInit.body, fnMemory, {
             bodyType: 'sketch',
           })
-          if (_sketch.length === 0) {
-            const { programMemory: newProgramMemory } = sketchFns.base(
-              fnMemory,
-              '',
-              [0, 0],
-              0,
-              0
-            )
-            _sketch = newProgramMemory._sketch
-          }
-          const newSketch: SketchGeo = {
-            type: 'sketchGeo',
-            sketch: _sketch,
-            sourceRange: [sketchInit.start, sketchInit.end],
+          const newSketch: SketchGroup = {
+            type: 'sketchGroup',
+            value: _sketch || [],
+            position: [0, 0, 0],
+            rotation: [0, 0, 0, 1], //x,y,z,w
+            __meta,
           }
           _programMemory.root[variableName] = newSketch
         } else if (declaration.init.type === 'FunctionExpression') {
           const fnInit = declaration.init
 
-          _programMemory.root[declaration.id.name] = (...args: any[]) => {
-            const fnMemory: ProgramMemory = {
-              root: {
-                ..._programMemory.root,
-              },
-              _sketch: [],
-            }
-            if (args.length > fnInit.params.length) {
-              throw new Error(
-                `Too many arguments passed to function ${declaration.id.name}`
-              )
-            } else if (args.length < fnInit.params.length) {
-              throw new Error(
-                `Too few arguments passed to function ${declaration.id.name}`
-              )
-            }
-            fnInit.params.forEach((param, index) => {
-              fnMemory.root[param.name] = args[index]
-            })
-            return executor(fnInit.body, fnMemory, { bodyType: 'block' }).return
+          _programMemory.root[declaration.id.name] = {
+            type: 'userVal',
+            value: (...args: any[]) => {
+              const fnMemory: ProgramMemory = {
+                root: {
+                  ..._programMemory.root,
+                },
+                _sketch: [],
+              }
+              if (args.length > fnInit.params.length) {
+                throw new Error(
+                  `Too many arguments passed to function ${declaration.id.name}`
+                )
+              } else if (args.length < fnInit.params.length) {
+                throw new Error(
+                  `Too few arguments passed to function ${declaration.id.name}`
+                )
+              }
+              fnInit.params.forEach((param, index) => {
+                fnMemory.root[param.name] = {
+                  type: 'userVal',
+                  value: args[index],
+                  __meta,
+                }
+              })
+              return executor(fnInit.body, fnMemory, { bodyType: 'block' })
+                .return
+            },
+            __meta,
           }
         } else if (declaration.init.type === 'MemberExpression') {
-          _programMemory.root[variableName] = getMemberExpressionResult(
-            declaration.init,
-            _programMemory
-          )
+          _programMemory.root[variableName] = {
+            type: 'userVal',
+            value: getMemberExpressionResult(declaration.init, _programMemory),
+            __meta,
+          }
         } else if (declaration.init.type === 'CallExpression') {
           const functionName = declaration.init.callee.name
           const fnArgs = declaration.init.arguments.map((arg) => {
             if (arg.type === 'Literal') {
               return arg.value
             } else if (arg.type === 'Identifier') {
-              return _programMemory.root[arg.name]
+              return _programMemory.root[arg.name].value
             }
           })
           if (
             'lineTo' === functionName ||
-            'close' === functionName ||
-            'base' === functionName
+            'close' === functionName // ||
+            // 'base' === functionName
           ) {
             if (options.bodyType !== 'sketch') {
               throw new Error(
@@ -148,7 +297,11 @@ export const executor = (
               ...fnArgs
             )
             _programMemory._sketch = result.programMemory._sketch
-            _programMemory.root[variableName] = result.currentPath
+            _programMemory.root[variableName] = {
+              type: 'userVal',
+              value: result.currentPath,
+              __meta,
+            }
           } else if (
             'rx' === functionName ||
             'ry' === functionName ||
@@ -162,9 +315,9 @@ export const executor = (
               _programMemory,
               [declaration.start, declaration.end],
               fnArgs[0],
-              sketchVal
+              sketchVal as any // todo memory redo
             )
-            _programMemory.root[variableName] = result
+            _programMemory.root[variableName] = result as any // todo memory redo
           } else if (functionName === 'extrude') {
             const sketch = declaration.init.arguments[1]
             if (sketch.type !== 'Identifier')
@@ -175,9 +328,9 @@ export const executor = (
               'yo',
               [declaration.start, declaration.end],
               fnArgs[0],
-              sketchVal
+              sketchVal as any // todo memory redo
             )
-            _programMemory.root[variableName] = result
+            _programMemory.root[variableName] = result as any // todo memory redo
           } else if (functionName === 'translate') {
             const sketch = declaration.init.arguments[1]
             if (sketch.type !== 'Identifier')
@@ -187,13 +340,15 @@ export const executor = (
               _programMemory,
               [declaration.start, declaration.end],
               fnArgs[0],
-              sketchVal
+              sketchVal as any // todo memory redo
             )
-            _programMemory.root[variableName] = result
+            _programMemory.root[variableName] = result as any // todo memory redo
           } else {
-            _programMemory.root[variableName] = _programMemory.root[
-              functionName
-            ](...fnArgs)
+            _programMemory.root[variableName] = {
+              type: 'userVal',
+              value: _programMemory.root[functionName].value(...fnArgs),
+              __meta,
+            }
           }
         } else {
           throw new Error(
@@ -209,13 +364,13 @@ export const executor = (
           if (arg.type === 'Literal') {
             return arg.value
           } else if (arg.type === 'Identifier') {
-            return _programMemory.root[arg.name]
+            return _programMemory.root[arg.name].value
           }
         })
         if (
           'lineTo' === functionName ||
-          'close' === functionName ||
-          'base' === functionName
+          'close' === functionName
+          // || 'base' === functionName
         ) {
           if (options.bodyType !== 'sketch') {
             throw new Error(
@@ -228,14 +383,14 @@ export const executor = (
             [statement.start, statement.end],
             ...args
           )
-          _programMemory._sketch = [...result.programMemory._sketch]
+          _programMemory._sketch = [...(result.programMemory._sketch || [])]
         } else if ('show' === functionName) {
           if (options.bodyType !== 'root') {
             throw new Error(`Cannot call ${functionName} outside of a root`)
           }
-          _programMemory.return = expression.arguments
+          _programMemory.return = expression.arguments as any // todo memory redo
         } else {
-          _programMemory.root[functionName](...args)
+          _programMemory.root[functionName].value(...args)
         }
       }
     } else if (statement.type === 'ReturnStatement') {
@@ -262,7 +417,7 @@ function getMemberExpressionResult(
   const object: any =
     expression.object.type === 'MemberExpression'
       ? getMemberExpressionResult(expression.object, programMemory)
-      : programMemory.root[expression.object.name]
+      : programMemory.root[expression.object.name].value
   return object[propertyName]
 }
 
@@ -274,7 +429,7 @@ function getBinaryExpressionResult(
     if (part.type === 'Literal') {
       return part.value
     } else if (part.type === 'Identifier') {
-      return programMemory.root[part.name]
+      return programMemory.root[part.name].value
     }
   }
   const left = getVal(expression.left)
@@ -284,9 +439,14 @@ function getBinaryExpressionResult(
 
 function getPipeExpressionResult(
   expression: PipeExpression,
-  programMemory: ProgramMemory
+  programMemory: ProgramMemory,
+  previousPathToNode: PathToNode = []
 ) {
-  const executedBody = executePipeBody(expression.body, programMemory)
+  const executedBody = executePipeBody(
+    expression.body,
+    programMemory,
+    previousPathToNode
+  )
   const result = executedBody[executedBody.length - 1]
   return result
 }
@@ -294,6 +454,7 @@ function getPipeExpressionResult(
 function executePipeBody(
   body: PipeExpression['body'],
   programMemory: ProgramMemory,
+  previousPathToNode: PathToNode = [],
   expressionIndex = 0,
   previousResults: any[] = []
 ): any[] {
@@ -303,10 +464,13 @@ function executePipeBody(
   const expression = body[expressionIndex]
   if (expression.type === 'BinaryExpression') {
     const result = getBinaryExpressionResult(expression, programMemory)
-    return executePipeBody(body, programMemory, expressionIndex + 1, [
-      ...previousResults,
-      result,
-    ])
+    return executePipeBody(
+      body,
+      programMemory,
+      previousPathToNode,
+      expressionIndex + 1,
+      [...previousResults, result]
+    )
   } else if (expression.type === 'CallExpression') {
     const functionName = expression.callee.name
     const fnArgs = expression.arguments.map((arg) => {
@@ -341,10 +505,13 @@ function executePipeBody(
         fnArgs[0],
         fnArgs[1]
       )
-      return executePipeBody(body, programMemory, expressionIndex + 1, [
-        ...previousResults,
-        result,
-      ])
+      return executePipeBody(
+        body,
+        programMemory,
+        previousPathToNode,
+        expressionIndex + 1,
+        [...previousResults, result]
+      )
     }
     if (functionName === 'extrude') {
       const result = sketchFns[functionName](
@@ -354,10 +521,13 @@ function executePipeBody(
         fnArgs[0],
         fnArgs[1]
       )
-      return executePipeBody(body, programMemory, expressionIndex + 1, [
-        ...previousResults,
-        result,
-      ])
+      return executePipeBody(
+        body,
+        programMemory,
+        previousPathToNode,
+        expressionIndex + 1,
+        [...previousResults, result]
+      )
     }
     if (functionName === 'translate') {
       const result = sketchFns[functionName](
@@ -366,16 +536,22 @@ function executePipeBody(
         fnArgs[0],
         fnArgs[1]
       )
-      return executePipeBody(body, programMemory, expressionIndex + 1, [
-        ...previousResults,
-        result,
-      ])
+      return executePipeBody(
+        body,
+        programMemory,
+        previousPathToNode,
+        expressionIndex + 1,
+        [...previousResults, result]
+      )
     }
-    const result = programMemory.root[functionName](...fnArgs)
-    return executePipeBody(body, programMemory, expressionIndex + 1, [
-      ...previousResults,
-      result,
-    ])
+    const result = programMemory.root[functionName].value(...fnArgs)
+    return executePipeBody(
+      body,
+      programMemory,
+      previousPathToNode,
+      expressionIndex + 1,
+      [...previousResults, result]
+    )
   } else if (expression.type === 'SketchExpression') {
     const sketchBody = expression.body
     const fnMemory: ProgramMemory = {
@@ -387,26 +563,25 @@ function executePipeBody(
     let { _sketch } = executor(sketchBody, fnMemory, {
       bodyType: 'sketch',
     })
-    if (_sketch.length === 0) {
-      const { programMemory: newProgramMemory } = sketchFns.base(
-        fnMemory,
-        '',
-        [0, 0],
-        0,
-        0
-      )
-      _sketch = newProgramMemory._sketch
+    const newSketch: SketchGroup = {
+      type: 'sketchGroup',
+      value: _sketch || [],
+      position: [0, 0, 0],
+      rotation: [0, 0, 0, 1], //x,y,z,w
+      __meta: [
+        {
+          sourceRange: [expression.start, expression.end],
+          pathToNode: [...previousPathToNode, expressionIndex],
+        },
+      ],
     }
-    // _programMemory.root[variableName] = _sketch
-    const newSketch: SketchGeo = {
-      type: 'sketchGeo',
-      sketch: _sketch,
-      sourceRange: [expression.start, expression.end],
-    }
-    return executePipeBody(body, programMemory, expressionIndex + 1, [
-      ...previousResults,
-      newSketch,
-    ])
+    return executePipeBody(
+      body,
+      programMemory,
+      previousPathToNode,
+      expressionIndex + 1,
+      [...previousResults, newSketch]
+    )
   }
 
   throw new Error('Invalid pipe expression')
@@ -432,7 +607,7 @@ function executeObjectExpression(
           _programMemory
         )
       } else if (property.value.type === 'Identifier') {
-        obj[property.key.name] = _programMemory.root[property.value.name]
+        obj[property.key.name] = _programMemory.root[property.value.name].value
       } else if (property.value.type === 'ObjectExpression') {
         obj[property.key.name] = executeObjectExpression(
           _programMemory,
@@ -450,126 +625,4 @@ function executeObjectExpression(
     }
   })
   return obj
-}
-
-type SourceRange = [number, number]
-
-export type ViewerArtifact =
-  | {
-      type: 'sketchLine'
-      sourceRange: SourceRange
-      geo: LineGeos
-    }
-  | {
-      type: 'sketchBase'
-      sourceRange: SourceRange
-      geo: BufferGeometry
-    }
-  | {
-      type: 'extrudeWall'
-      sourceRange: SourceRange
-      geo: BufferGeometry
-    }
-  | {
-      type: 'parent'
-      sourceRange: SourceRange
-      children: ViewerArtifact[]
-    }
-  | {
-      type: 'sketch'
-      sourceRange: SourceRange
-      children: ViewerArtifact[]
-    }
-
-type PreviousTransforms = {
-  rotation: Quaternion
-  transform: [number, number, number]
-}[]
-
-export const processShownObjects = (
-  programMemory: ProgramMemory,
-  geoMeta: SketchGeo | ExtrudeGeo | Transform,
-  previousTransforms: PreviousTransforms = []
-): ViewerArtifact[] => {
-  if (geoMeta?.type === 'sketchGeo') {
-    return [
-      {
-        type: 'sketch',
-        sourceRange: geoMeta.sourceRange,
-        children: geoMeta.sketch.map(({ geo, sourceRange, type }) => {
-          if (type === 'toPoint') {
-            const newGeo: LineGeos = {
-              line: geo.line.clone(),
-              tip: geo.tip.clone(),
-              centre: geo.centre.clone(),
-            }
-            let rotationQuaternion = new Quaternion()
-            let position = new Vector3(0, 0, 0)
-            previousTransforms.forEach(({ rotation, transform }) => {
-              const newQuant = rotation.clone()
-              newQuant.multiply(rotationQuaternion)
-              rotationQuaternion.copy(newQuant)
-              position.applyQuaternion(rotation)
-              position.add(new Vector3(...transform))
-            })
-            Object.values(newGeo).forEach((geoItem: BufferGeometry) => {
-              geoItem.applyQuaternion(rotationQuaternion.clone())
-              const position_ = position.clone()
-              geoItem.translate(position_.x, position_.y, position_.z)
-            })
-            return {
-              type: 'sketchLine',
-              geo: newGeo,
-              sourceRange,
-            }
-          } else if (type === 'base') {
-            const newGeo: BufferGeometry = geo.clone()
-            const rotationQuaternion = new Quaternion()
-            let position = new Vector3(0, 0, 0)
-            // todo don't think this is right
-            previousTransforms.forEach(({ rotation, transform }) => {
-              newGeo.applyQuaternion(rotationQuaternion)
-              newGeo.translate(position.x, position.y, position.z)
-            })
-            newGeo.applyQuaternion(rotationQuaternion)
-            newGeo.translate(position.x, position.y, position.z)
-            return {
-              type: 'sketchBase',
-              geo: newGeo,
-              sourceRange,
-            }
-          }
-          throw new Error('Unknown geo type')
-        }),
-      },
-    ]
-  } else if (geoMeta.type === 'transform') {
-    const referencedVar = geoMeta.sketch
-    const parentArtifact: ViewerArtifact = {
-      type: 'parent',
-      sourceRange: geoMeta.sourceRange,
-      children: processShownObjects(programMemory, referencedVar, [
-        {
-          rotation: geoMeta.rotation,
-          transform: geoMeta.transform,
-        },
-        ...previousTransforms,
-      ]),
-    }
-    return [parentArtifact]
-  } else if (geoMeta.type === 'extrudeGeo') {
-    const result: ViewerArtifact[] = geoMeta.surfaces.map((a) => {
-      const geo: BufferGeometry = a.geo.clone()
-
-      geo.translate(a.translate[0], a.translate[1], a.translate[2])
-      geo.applyQuaternion(a.quaternion)
-      return {
-        type: 'extrudeWall',
-        sourceRange: a.sourceRanges[0],
-        geo,
-      }
-    })
-    return result
-  }
-  throw new Error('Unknown geoMeta type')
 }

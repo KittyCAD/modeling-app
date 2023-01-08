@@ -65,7 +65,7 @@ export const BasePlanes = () => {
     setGuiMode({
       mode: 'sketch',
       sketchMode: 'sketchEdit',
-      quaternion,
+      rotation: quaternion.toArray() as [number, number, number, number],
       position: [0, 0, 0],
       pathToNode,
     })

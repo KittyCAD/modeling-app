@@ -20,7 +20,7 @@ export const SketchPlane = () => {
 
   const sketchGridName = 'sketchGrid'
 
-  let clickDetectQuaternion = guiMode.quaternion.clone()
+  let clickDetectQuaternion = new Quaternion(...guiMode.rotation)
 
   let temp = new Quaternion().setFromAxisAngle(
     new Vector3(1, 0, 0),
@@ -28,7 +28,7 @@ export const SketchPlane = () => {
   )
   let position = guiMode.position
   const gridQuaternion = new Quaternion().multiplyQuaternions(
-    guiMode.quaternion,
+    new Quaternion(...guiMode.rotation),
     temp
   )
 
@@ -47,8 +47,12 @@ export const SketchPlane = () => {
           )
           const inverseQuaternion = clickDetectQuaternion.clone().invert()
           let transformedPoint = sketchGridIntersection?.point.clone()
-          if (transformedPoint)
+          if (transformedPoint) {
             transformedPoint.applyQuaternion(inverseQuaternion)
+            transformedPoint?.sub(
+              new Vector3(...position).applyQuaternion(inverseQuaternion)
+            )
+          }
 
           const point = roundy(transformedPoint)
           let _ast: Program = ast

@@ -1,100 +1,15 @@
-import { ProgramMemory } from './executor'
-import { lineGeo, baseGeo, LineGeos, extrudeGeo } from './engine'
-import { BufferGeometry } from 'three'
+import {
+  ProgramMemory,
+  Path,
+  SketchGroup,
+  ExtrudeGroup,
+  SourceRange,
+  ExtrudeSurface,
+} from './executor'
+import { lineGeo, extrudeGeo } from './engine'
 import { Quaternion, Vector3 } from 'three'
 
 type Coords2d = [number, number]
-type SourceRange = [number, number]
-type Rotation3 = Quaternion
-type Translate3 = [number, number, number]
-
-export type Path =
-  | {
-      type: 'points'
-      name?: string
-      from: Coords2d
-      to: Coords2d
-      geo: BufferGeometry
-      sourceRange: SourceRange
-    }
-  | {
-      type: 'horizontalLineTo'
-      name?: string
-      x: number
-      geo: BufferGeometry
-      sourceRange: SourceRange
-    }
-  | {
-      type: 'verticalLineTo'
-      name?: string
-      y: number
-      geo: BufferGeometry
-      sourceRange: SourceRange
-    }
-  | {
-      type: 'toPoint'
-      name?: string
-      to: Coords2d
-      geo: LineGeos
-      sourceRange: SourceRange
-    }
-  | {
-      type: 'close'
-      name?: string
-      geo: LineGeos
-      sourceRange: SourceRange
-    }
-  | {
-      type: 'base'
-      from: Coords2d
-      geo: BufferGeometry
-      sourceRange: SourceRange
-    }
-
-export interface Transform {
-  type: 'transform'
-  rotation: Rotation3
-  transform: Translate3
-  sketch: SketchGeo | ExtrudeGeo | Transform
-  sourceRange: SourceRange
-}
-
-export interface SketchGeo {
-  type: 'sketchGeo'
-  sketch: Path[]
-  sourceRange: SourceRange
-}
-
-export interface ExtrudeFace {
-  type: 'extrudeFace'
-  quaternion: Quaternion
-  translate: [number, number, number]
-  geo: BufferGeometry
-  sourceRanges: SourceRange[]
-}
-
-export interface ExtrudeGeo {
-  type: 'extrudeGeo'
-  surfaces: ExtrudeFace[]
-  sourceRange: SourceRange
-}
-
-function addBasePath(programMemory: ProgramMemory) {
-  const geo = baseGeo({ from: [0, 0, 0] })
-  const base: Path = {
-    type: 'base',
-    from: [0, 0],
-    sourceRange: [0, 0],
-    geo,
-  }
-  if (programMemory._sketch?.length === 0) {
-    return {
-      ...programMemory,
-      _sketch: [base],
-    }
-  }
-  return programMemory
-}
 
 interface PathReturn {
   programMemory: ProgramMemory
@@ -106,70 +21,74 @@ function getCoordsFromPaths(paths: Path[], index = 0): Coords2d {
   if (!currentPath) {
     return [0, 0]
   }
-  if (currentPath.type === 'points' || currentPath.type === 'toPoint') {
-    return currentPath.to
-  } else if (currentPath.type === 'base') {
-    return currentPath.from
-  } else if (currentPath.type === 'horizontalLineTo') {
+  if (currentPath.type === 'horizontalLineTo') {
     const pathBefore = getCoordsFromPaths(paths, index - 1)
     return [currentPath.x, pathBefore[1]]
-  } else if (currentPath.type === 'verticalLineTo') {
-    const pathBefore = getCoordsFromPaths(paths, index - 1)
-    return [pathBefore[0], currentPath.y]
+  } else if (currentPath.type === 'toPoint') {
+    return [currentPath.to[0], currentPath.to[1]]
   }
   return [0, 0]
 }
 
 export const sketchFns = {
-  base: (
-    programMemory: ProgramMemory,
-    name: string = '',
-    sourceRange: SourceRange,
-    ...args: any[]
-  ): PathReturn => {
-    if (programMemory._sketch?.length > 0) {
-      throw new Error('Base can only be called once')
-    }
-    const [x, y] = args as [number, number]
-    let from: [number, number] = [x, y]
-    const geo = baseGeo({ from: [x, y, 0] })
-    const newPath: Path = {
-      type: 'base',
-      from,
-      sourceRange,
-      geo,
-    }
-    return {
-      programMemory: {
-        ...programMemory,
-        _sketch: [...(programMemory?._sketch || []), newPath],
-      },
-      currentPath: newPath,
-    }
-  },
+  // base: (
+  //   programMemory: ProgramMemory,
+  //   name: string = '',
+  //   sourceRange: SourceRange,
+  //   ...args: any[]
+  // ): PathReturn => {
+  //   if ((programMemory?._sketch?.length || 0) > 0) {
+  //     throw new Error('Base can only be called once')
+  //   }
+  //   const [x, y] = args as [number, number]
+  //   let from: [number, number] = [x, y]
+  //   const geo = baseGeo({ from: [x, y, 0] })
+  //   const newPath: Path = {
+  //     type: 'base',
+  //     from,
+  //     sourceRange,
+  //     geo,
+  //   }
+  //   return {
+  //     programMemory: {
+  //       ...programMemory,
+  //       _sketch: [...(programMemory?._sketch || []), newPath],
+  //     },
+  //     currentPath: newPath,
+  //   }
+  // },
   close: (
     programMemory: ProgramMemory,
     name: string = '',
     sourceRange: SourceRange
   ): PathReturn => {
-    const lastPath = programMemory?._sketch?.[
-      programMemory?._sketch.length - 1
-    ] as Path
+    const firstPath = programMemory?._sketch?.[0] as Path
 
     let from = getCoordsFromPaths(
-      programMemory?._sketch,
-      programMemory?._sketch.length - 1
+      programMemory?._sketch || [],
+      (programMemory?._sketch?.length || 1) - 1
     )
-    const firstPath = programMemory?._sketch?.[0] as Path
-    if (lastPath?.type === 'base') {
-      throw new Error('Cannot close a base path')
-    }
-    let to = getCoordsFromPaths(programMemory?._sketch, 0)
 
+    let to = getCoordsFromPaths(programMemory?._sketch || [], 0)
+    const geo = lineGeo({ from: [...from, 0], to: [...to, 0] })
     const newPath: Path = {
-      type: 'close',
-      geo: lineGeo({ from: [...from, 0], to: [...to, 0] }),
-      sourceRange,
+      type: 'toPoint',
+      from,
+      to,
+      __geoMeta: {
+        sourceRange,
+        pathToNode: [], // TODO
+        geos: [
+          {
+            type: 'line',
+            geo: geo.line,
+          },
+          {
+            type: 'lineEnd',
+            geo: geo.tip,
+          },
+        ],
+      },
     }
     if (name) {
       newPath.name = name
@@ -177,7 +96,14 @@ export const sketchFns = {
     return {
       programMemory: {
         ...programMemory,
-        _sketch: [...(programMemory?._sketch || []), newPath],
+        _sketch: [
+          {
+            ...firstPath,
+            from,
+          },
+          ...(programMemory?._sketch || []).slice(1),
+          newPath,
+        ],
       },
       currentPath: newPath,
     }
@@ -188,28 +114,41 @@ export const sketchFns = {
     sourceRange: SourceRange,
     ...args: any[]
   ): PathReturn => {
-    const _programMemory = addBasePath(programMemory)
     const [x, y] = args
-    if (!_programMemory._sketch) {
+    if (!programMemory._sketch) {
       throw new Error('No sketch to draw on')
     }
     let from = getCoordsFromPaths(
-      programMemory?._sketch,
-      programMemory?._sketch.length - 1
+      programMemory?._sketch || [],
+      (programMemory?._sketch?.length || 1) - 1
     )
+    const geo = lineGeo({ from: [...from, 0], to: [x, y, 0] })
     const currentPath: Path = {
       type: 'toPoint',
       to: [x, y],
-      geo: lineGeo({ from: [...from, 0], to: [x, y, 0] }),
-      sourceRange,
+      from,
+      __geoMeta: {
+        sourceRange,
+        pathToNode: [], // TODO
+        geos: [
+          {
+            type: 'line',
+            geo: geo.line,
+          },
+          {
+            type: 'lineEnd',
+            geo: geo.tip,
+          },
+        ],
+      },
     }
     if (name) {
       currentPath.name = name
     }
     return {
       programMemory: {
-        ..._programMemory,
-        _sketch: [...(_programMemory._sketch || []), currentPath],
+        ...programMemory,
+        _sketch: [...(programMemory._sketch || []), currentPath],
       },
       currentPath,
     }
@@ -222,31 +161,22 @@ export const sketchFns = {
     name: string = '',
     sourceRange: SourceRange,
     length: number,
-    sketchVal: SketchGeo | Transform
-  ): ExtrudeGeo | Transform => {
-    const getSketchGeo = (sketchVal: SketchGeo | Transform): SketchGeo => {
-      if (
-        sketchVal.type === 'transform' &&
-        sketchVal.sketch.type === 'extrudeGeo'
-      )
-        throw new Error('Cannot extrude a extrude')
-      return sketchVal.type === 'transform'
-        ? getSketchGeo(sketchVal.sketch as any) // TODO fix types
-        : (sketchVal as SketchGeo) // TODO fix types
+    sketchVal: SketchGroup
+  ): ExtrudeGroup => {
+    const getSketchGeo = (sketchVal: SketchGroup): SketchGroup => {
+      return sketchVal
     }
 
     const sketch = getSketchGeo(sketchVal)
-    const { position, quaternion } = combineTransforms(sketchVal)
+    const { position, rotation } = sketchVal
 
-    const extrudeFaces: ExtrudeFace[] = []
-    sketch.sketch.map((line, index) => {
+    const extrudeSurfaces: ExtrudeSurface[] = []
+    sketch.value.map((line, index) => {
       if (line.type === 'toPoint' && index !== 0) {
-        const lastPoint = sketch.sketch[index - 1]
+        const lastPoint = sketch.value[index - 1]
         let from: [number, number] = [0, 0]
         if (lastPoint.type === 'toPoint') {
           from = lastPoint.to
-        } else if (lastPoint.type === 'base') {
-          from = lastPoint.from
         }
         const to = line.to
         const geo = extrudeGeo({
@@ -254,117 +184,87 @@ export const sketchFns = {
           to: [to[0], to[1], 0],
           length,
         })
-        extrudeFaces.push({
-          type: 'extrudeFace',
-          quaternion,
-          translate: position,
-          geo,
-          sourceRanges: [line.sourceRange, sourceRange],
+        extrudeSurfaces.push({
+          type: 'extrudePlane',
+          position, // todo should come from extrudeGeo
+          rotation, // todo should come from extrudeGeo
+          __geoMeta: {
+            geo,
+            sourceRange: line.__geoMeta.sourceRange,
+            pathToNode: line.__geoMeta.pathToNode,
+          },
         })
       }
     })
     return {
-      type: 'extrudeGeo',
-      sourceRange,
-      surfaces: extrudeFaces,
+      type: 'extrudeGroup',
+      value: extrudeSurfaces,
+      height: length,
+      position,
+      rotation,
+      __meta: [
+        {
+          sourceRange,
+          pathToNode: [], // TODO
+        },
+      ],
     }
   },
   translate,
 }
 
-function rotateOnAxis(axisMultiplier: [number, number, number]) {
+function rotateOnAxis<T extends SketchGroup | ExtrudeGroup>(
+  axisMultiplier: [number, number, number]
+) {
   return (
     programMemory: ProgramMemory,
     sourceRange: SourceRange,
     rotationD: number,
-    sketch: SketchGeo | Transform
-  ): Transform => {
+    sketch: T
+  ): T => {
     const rotationR = rotationD * (Math.PI / 180)
     const rotateVec = new Vector3(...axisMultiplier)
     const quaternion = new Quaternion()
+    quaternion.setFromAxisAngle(rotateVec, rotationR)
+
+    const position = new Vector3(...sketch.position)
+      .applyQuaternion(quaternion)
+      .toArray()
+
+    const existingQuat = new Quaternion(...sketch.rotation)
+    const rotation = quaternion.multiply(existingQuat).toArray()
     return {
-      type: 'transform',
-      rotation: quaternion.setFromAxisAngle(rotateVec, rotationR),
-      transform: [0, 0, 0],
-      sketch,
-      sourceRange,
+      ...sketch,
+      rotation,
+      position,
+      __meta: [
+        ...sketch.__meta,
+        {
+          sourceRange,
+          pathToNode: [], // TODO
+        },
+      ],
     }
   }
 }
 
-function translate(
+function translate<T extends SketchGroup | ExtrudeGroup>(
   programMemory: ProgramMemory,
   sourceRange: SourceRange,
   vec3: [number, number, number],
-  sketch: SketchGeo | Transform
-): Transform {
+  sketch: T
+): T {
+  const oldPosition = new Vector3(...sketch.position)
+  const newPosition = oldPosition.add(new Vector3(...vec3))
   return {
-    type: 'transform',
-    rotation: new Quaternion(),
-    transform: vec3,
-    sketch,
-    sourceRange,
-  }
-}
-
-type PreviousTransforms = {
-  rotation: Quaternion
-  transform: [number, number, number]
-}[]
-
-function collectTransforms(
-  sketchVal: SketchGeo | ExtrudeGeo | Transform,
-  previousTransforms: PreviousTransforms = []
-): PreviousTransforms {
-  if (sketchVal.type !== 'transform') return previousTransforms
-  const newTransforms = [
-    ...previousTransforms,
-    {
-      rotation: sketchVal.rotation,
-      transform: sketchVal.transform,
-    },
-  ]
-  return collectTransforms(sketchVal.sketch, newTransforms)
-}
-
-export function combineTransforms(
-  sketchVal: SketchGeo | ExtrudeGeo | Transform
-): {
-  quaternion: Quaternion
-  position: [number, number, number]
-} {
-  const previousTransforms = collectTransforms(sketchVal)
-  const position = new Vector3(0, 0, 0)
-  const quaternion = new Quaternion()
-  previousTransforms.forEach(({ rotation, transform }) => {
-    quaternion.multiply(rotation)
-    position.applyQuaternion(rotation.clone().invert())
-    position.add(new Vector3(...transform))
-  })
-  return {
-    quaternion,
-    position: [position.x, position.y, position.z],
-  }
-}
-
-export function combineTransformsAlt(
-  sketchVal: SketchGeo | ExtrudeGeo | Transform
-): {
-  quaternion: Quaternion
-  position: [number, number, number]
-} {
-  const previousTransforms = collectTransforms(sketchVal)
-  let rotationQuaternion = new Quaternion()
-  let position = new Vector3(0, 0, 0)
-  previousTransforms.reverse().forEach(({ rotation, transform }) => {
-    const newQuant = rotation.clone()
-    newQuant.multiply(rotationQuaternion)
-    rotationQuaternion.copy(newQuant)
-    position.applyQuaternion(rotation)
-    position.add(new Vector3(...transform))
-  })
-  return {
-    quaternion: rotationQuaternion,
-    position: [position.x, position.y, position.z],
+    ...sketch,
+    position: [newPosition.x, newPosition.y, newPosition.z],
+    __meta: [
+      ...sketch.__meta,
+      {
+        sourceRange,
+        pathToNode: [], // TODO
+      },
+    ],
   }
 }

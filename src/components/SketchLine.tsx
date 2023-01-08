@@ -3,109 +3,21 @@ import {
   getNodePathFromSourceRange,
   getNodeFromPath,
   CallExpression,
-  VariableDeclarator,
 } from '../lang/abstractSyntaxTree'
 import { changeArguments } from '../lang/modifyAst'
-import { ViewerArtifact } from '../lang/executor'
+import {
+  ExtrudeGroup,
+  ExtrudeSurface,
+  SketchGroup,
+  Path,
+  Rotation,
+  Position,
+} from '../lang/executor'
 import { BufferGeometry } from 'three'
 import { useStore } from '../useStore'
 import { isOverlapping } from '../lib/utils'
-import { LineGeos } from '../lang/engine'
-import { Vector3, DoubleSide, Quaternion, Vector2 } from 'three'
-import { combineTransformsAlt } from '../lang/sketch'
+import { Vector3, DoubleSide, Quaternion } from 'three'
 import { useSetCursor } from '../hooks/useSetCursor'
-
-function SketchLine({
-  geo,
-  sourceRange,
-  forceHighlight = false,
-}: {
-  geo: LineGeos
-  sourceRange: [number, number]
-  forceHighlight?: boolean
-}) {
-  const { setHighlightRange } = useStore(({ setHighlightRange }) => ({
-    setHighlightRange,
-  }))
-  const onClick = useSetCursor(sourceRange)
-  // This reference will give us direct access to the mesh
-  const ref = useRef<BufferGeometry | undefined>() as any
-  const [hovered, setHover] = useState(false)
-
-  return (
-    <>
-      <mesh
-        ref={ref}
-        onPointerOver={(event) => {
-          setHover(true)
-          setHighlightRange(sourceRange)
-        }}
-        onPointerOut={(event) => {
-          setHover(false)
-          setHighlightRange([0, 0])
-        }}
-        onClick={onClick}
-      >
-        <primitive object={geo.line} />
-        <meshStandardMaterial
-          color={hovered ? 'hotpink' : forceHighlight ? 'skyblue' : 'orange'}
-        />
-      </mesh>
-      <MovingSphere
-        geo={geo.tip}
-        sourceRange={sourceRange}
-        editorCursor={forceHighlight}
-      />
-    </>
-  )
-}
-
-function ExtrudeWall({
-  geo,
-  sourceRange,
-  forceHighlight = false,
-}: {
-  geo: BufferGeometry
-  sourceRange: [number, number]
-  forceHighlight?: boolean
-}) {
-  const { setHighlightRange } = useStore(
-    ({ setHighlightRange, selectionRange, guiMode, setGuiMode, ast }) => ({
-      setHighlightRange,
-      selectionRange,
-      guiMode,
-      setGuiMode,
-      ast,
-    })
-  )
-  const onClick = useSetCursor(sourceRange)
-  // This reference will give us direct access to the mesh
-  const ref = useRef<BufferGeometry | undefined>() as any
-  const [hovered, setHover] = useState(false)
-
-  return (
-    <>
-      <mesh
-        ref={ref}
-        onPointerOver={(event) => {
-          setHover(true)
-          setHighlightRange(sourceRange)
-        }}
-        onPointerOut={(event) => {
-          setHover(false)
-          setHighlightRange([0, 0])
-        }}
-        onClick={onClick}
-      >
-        <primitive object={geo} />
-        <meshStandardMaterial
-          side={DoubleSide}
-          color={hovered ? 'hotpink' : forceHighlight ? 'skyblue' : 'orange'}
-        />
-      </mesh>
-    </>
-  )
-}
 
 const roundOff = (num: number, places: number): number => {
   const x = Math.pow(10, places)
@@ -116,15 +28,19 @@ function MovingSphere({
   geo,
   sourceRange,
   editorCursor,
+  rotation,
+  position,
 }: {
   geo: BufferGeometry
   sourceRange: [number, number]
   editorCursor: boolean
+  rotation: Rotation
+  position: Position
 }) {
   const ref = useRef<BufferGeometry | undefined>() as any
   const detectionPlaneRef = useRef<BufferGeometry | undefined>() as any
   const lastPointerRef = useRef<Vector3>(new Vector3())
-  const point2DRef = useRef<Vector2>(new Vector2())
+  const point2DRef = useRef<Vector3>(new Vector3())
   const [hovered, setHover] = useState(false)
   const [isMouseDown, setIsMouseDown] = useState(false)
 
@@ -154,14 +70,22 @@ function MovingSphere({
     const handleMouseUp = () => {
       if (isMouseDown && ast) {
         const thePath = getNodePathFromSourceRange(ast, sourceRange)
-        let [x, y] = [
-          roundOff(point2DRef.current.x, 2),
-          roundOff(point2DRef.current.y, 2),
-        ]
+        const yo = point2DRef.current.clone()
+        const inverseQuaternion = new Quaternion()
+        if (
+          guiMode.mode === 'canEditSketch' ||
+          (guiMode.mode === 'sketch' && guiMode.sketchMode === 'sketchEdit')
+        ) {
+          inverseQuaternion.set(...guiMode.rotation)
+          inverseQuaternion.invert()
+        }
+        yo.sub(new Vector3(...position).applyQuaternion(inverseQuaternion))
+        let [x, y] = [roundOff(yo.x, 2), roundOff(yo.y, 2)]
         let theNewPoints: [number, number] = [x, y]
         const { modifiedAst } = changeArguments(ast, thePath, theNewPoints)
         updateAst(modifiedAst)
-        ref.current.position.set(0, 0, 0)
+        console.log('reset position')
+        ref.current.position.set(...position)
       }
       setIsMouseDown(false)
     }
@@ -169,31 +93,32 @@ function MovingSphere({
     return () => {
       window.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [isMouseDown, ast])
+  }, [isMouseDown])
 
-  let clickDetectPlaneQuaternion = new Quaternion()
-  let position = new Vector3(0, 0, 0)
-  if (
+  const inEditMode =
     guiMode.mode === 'canEditSketch' ||
     (guiMode.mode === 'sketch' && guiMode.sketchMode === 'sketchEdit')
-  ) {
-    clickDetectPlaneQuaternion = guiMode.quaternion.clone()
-    position = new Vector3(...guiMode.position)
+
+  let clickDetectPlaneQuaternion = new Quaternion()
+  if (inEditMode) {
+    clickDetectPlaneQuaternion = new Quaternion(...rotation)
   }
 
   return (
     <>
       <mesh
+        position={position}
+        quaternion={rotation}
         ref={ref}
         onPointerOver={(event) => {
-          setHover(true)
+          inEditMode && setHover(true)
           setHighlightRange(sourceRange)
         }}
         onPointerOut={(event) => {
           setHover(false)
           setHighlightRange([0, 0])
         }}
-        onPointerDown={() => setIsMouseDown(true)}
+        onPointerDown={() => inEditMode && setIsMouseDown(true)}
       >
         <primitive object={geo} scale={hovered ? 2 : 1} />
         <meshStandardMaterial
@@ -202,7 +127,6 @@ function MovingSphere({
       </mesh>
       {isMouseDown && (
         <mesh
-          position={position}
           quaternion={clickDetectPlaneQuaternion}
           onPointerMove={(a) => {
             const point = a.point
@@ -213,13 +137,11 @@ function MovingSphere({
               guiMode.mode === 'canEditSketch' ||
               (guiMode.mode === 'sketch' && guiMode.sketchMode === 'sketchEdit')
             ) {
-              inverseQuaternion.copy(guiMode.quaternion.clone().invert())
+              inverseQuaternion.set(...guiMode.rotation)
+              inverseQuaternion.invert()
             }
             transformedPoint.applyQuaternion(inverseQuaternion)
-            transformedPoint.sub(
-              position.clone().applyQuaternion(inverseQuaternion)
-            )
-            point2DRef.current.set(transformedPoint.x, transformedPoint.y)
+            point2DRef.current.copy(transformedPoint)
 
             if (
               lastPointerRef.current.x === 0 &&
@@ -248,7 +170,7 @@ function MovingSphere({
                 ref.current.position.add(
                   diff.applyQuaternion(inverseQuaternion.invert())
                 )
-                lastPointerRef.current.set(point.x, point.y, point.z)
+                lastPointerRef.current.copy(point.clone())
               }
           }}
         >
@@ -266,86 +188,258 @@ function MovingSphere({
 }
 
 export function RenderViewerArtifacts({
-  artifact,
-  forceHighlight = false,
+  artifacts,
 }: {
-  artifact: ViewerArtifact
-  forceHighlight?: boolean
+  artifacts: (ExtrudeGroup | SketchGroup)[]
 }) {
-  const { selectionRange, guiMode, ast, setGuiMode, programMemory } = useStore(
-    ({ selectionRange, guiMode, ast, setGuiMode, programMemory }) => ({
+  return (
+    <>
+      {artifacts.map((artifact, i) => (
+        <RenderViewerArtifact key={i} artifact={artifact} />
+      ))}
+    </>
+  )
+}
+
+function RenderViewerArtifact({
+  artifact,
+}: {
+  artifact: ExtrudeGroup | SketchGroup
+}) {
+  const { selectionRange, guiMode, ast, setGuiMode } = useStore(
+    ({ selectionRange, guiMode, ast, setGuiMode }) => ({
       selectionRange,
       guiMode,
       ast,
       setGuiMode,
-      programMemory,
     })
   )
   const [editorCursor, setEditorCursor] = useState(false)
   useEffect(() => {
-    const shouldHighlight = isOverlapping(artifact.sourceRange, selectionRange)
-    setEditorCursor(shouldHighlight && artifact.type !== 'sketch')
-  }, [selectionRange, artifact.sourceRange])
+    const shouldHighlight = isOverlapping(
+      artifact.__meta.slice(-1)[0].sourceRange,
+      selectionRange
+    )
+    setEditorCursor(shouldHighlight)
+  }, [selectionRange, artifact.__meta])
 
   useEffect(() => {
-    const shouldHighlight = isOverlapping(artifact.sourceRange, selectionRange)
+    const shouldHighlight = artifact.__meta.some((aMeta) =>
+      isOverlapping(aMeta.sourceRange, selectionRange)
+    )
     if (
       shouldHighlight &&
       (guiMode.mode === 'default' || guiMode.mode === 'canEditSketch') &&
-      artifact.type === 'sketch' &&
-      ast
+      ast &&
+      artifact.type === 'sketchGroup'
     ) {
-      const pathToNode = getNodePathFromSourceRange(ast, artifact.sourceRange)
-      const varDec: VariableDeclarator = getNodeFromPath(
+      const pathToNode = getNodePathFromSourceRange(
         ast,
-        pathToNode,
-        'VariableDeclarator'
+        artifact.__meta[0].sourceRange
       )
-      const varName = varDec?.id?.name
-      const { quaternion, position } = combineTransformsAlt(
-        programMemory.root[varName]
-      )
-      setGuiMode({ mode: 'canEditSketch', pathToNode, quaternion, position })
+      const { rotation, position } = artifact
+      setGuiMode({ mode: 'canEditSketch', pathToNode, rotation, position })
     } else if (
       !shouldHighlight &&
       guiMode.mode === 'canEditSketch' &&
-      artifact.type === 'sketch'
+      artifact.type === 'sketchGroup'
     ) {
       setGuiMode({ mode: 'default' })
     }
-  }, [selectionRange, artifact.sourceRange, ast, guiMode.mode, setGuiMode])
-  if (artifact.type === 'sketchLine') {
-    const { geo, sourceRange } = artifact
+  }, [selectionRange, artifact, ast, guiMode.mode, setGuiMode])
+
+  if (artifact.type === 'sketchGroup') {
     return (
-      <SketchLine
-        geo={geo}
-        sourceRange={sourceRange}
-        forceHighlight={forceHighlight || editorCursor}
-      />
+      <>
+        {artifact.value.map((geoInfo, key) => (
+          <PathRender
+            geoInfo={geoInfo}
+            key={key}
+            forceHighlight={editorCursor}
+            rotation={artifact.rotation}
+            position={artifact.position}
+          />
+        ))}
+      </>
     )
   }
-  if (artifact.type === 'sketchBase') {
-    console.log('BASE TODO')
-    return null
-  }
-  if (artifact.type === 'extrudeWall') {
+  if (artifact.type === 'extrudeGroup') {
     return (
-      <ExtrudeWall
-        geo={artifact.geo}
-        sourceRange={artifact.sourceRange}
-        forceHighlight={forceHighlight || editorCursor}
-      />
+      <>
+        {artifact.value.map((geoInfo, key) => (
+          <WallRender
+            geoInfo={geoInfo}
+            key={key}
+            forceHighlight={editorCursor}
+            rotation={artifact.rotation}
+            position={artifact.position}
+          />
+        ))}
+      </>
     )
   }
+  return null
+}
+
+function WallRender({
+  geoInfo,
+  forceHighlight = false,
+  rotation,
+  position,
+}: {
+  geoInfo: ExtrudeSurface
+  forceHighlight?: boolean
+  rotation: Rotation
+  position: Position
+}) {
+  const { setHighlightRange, selectionRange } = useStore(
+    ({ setHighlightRange, selectionRange }) => ({
+      setHighlightRange,
+      selectionRange,
+    })
+  )
+  const onClick = useSetCursor(geoInfo.__geoMeta.sourceRange)
+  // This reference will give us direct access to the mesh
+  const ref = useRef<BufferGeometry | undefined>() as any
+  const [hovered, setHover] = useState(false)
+
+  const [editorCursor, setEditorCursor] = useState(false)
+  useEffect(() => {
+    const shouldHighlight = isOverlapping(
+      geoInfo.__geoMeta.sourceRange,
+      selectionRange
+    )
+    setEditorCursor(shouldHighlight)
+  }, [selectionRange, geoInfo])
+
   return (
     <>
-      {artifact.children.map((artifact, index) => (
-        <RenderViewerArtifacts
-          artifact={artifact}
-          key={index}
-          forceHighlight={forceHighlight || editorCursor}
+      <mesh
+        quaternion={rotation}
+        position={position}
+        ref={ref}
+        onPointerOver={(event) => {
+          setHover(true)
+          setHighlightRange(geoInfo.__geoMeta.sourceRange)
+        }}
+        onPointerOut={(event) => {
+          setHover(false)
+          setHighlightRange([0, 0])
+        }}
+        onClick={onClick}
+      >
+        <primitive object={geoInfo.__geoMeta.geo} />
+        <meshStandardMaterial
+          side={DoubleSide}
+          color={
+            hovered
+              ? 'hotpink'
+              : forceHighlight || editorCursor
+              ? 'skyblue'
+              : 'orange'
+          }
         />
-      ))}
+      </mesh>
+    </>
+  )
+}
+
+function PathRender({
+  geoInfo,
+  forceHighlight = false,
+  rotation,
+  position,
+}: {
+  geoInfo: Path
+  forceHighlight?: boolean
+  rotation: Rotation
+  position: Position
+}) {
+  const { selectionRange } = useStore(({ selectionRange }) => ({
+    selectionRange,
+  }))
+  const [editorCursor, setEditorCursor] = useState(false)
+  useEffect(() => {
+    const shouldHighlight = isOverlapping(
+      geoInfo.__geoMeta.sourceRange,
+      selectionRange
+    )
+    setEditorCursor(shouldHighlight)
+  }, [selectionRange, geoInfo])
+  return (
+    <>
+      {geoInfo.__geoMeta.geos.map((meta, i) => {
+        if (meta.type === 'line') {
+          return (
+            <LineRender
+              key={i}
+              geo={meta.geo}
+              sourceRange={geoInfo.__geoMeta.sourceRange}
+              forceHighlight={forceHighlight || editorCursor}
+              rotation={rotation}
+              position={position}
+            />
+          )
+        }
+        if (meta.type === 'lineEnd') {
+          return (
+            <MovingSphere
+              key={i}
+              geo={meta.geo}
+              sourceRange={geoInfo.__geoMeta.sourceRange}
+              editorCursor={forceHighlight || editorCursor}
+              rotation={rotation}
+              position={position}
+            />
+          )
+        }
+      })}
+    </>
+  )
+}
+
+function LineRender({
+  geo,
+  sourceRange,
+  forceHighlight = false,
+  rotation,
+  position,
+}: {
+  geo: BufferGeometry
+  sourceRange: [number, number]
+  forceHighlight?: boolean
+  rotation: Rotation
+  position: Position
+}) {
+  const { setHighlightRange } = useStore(({ setHighlightRange }) => ({
+    setHighlightRange,
+  }))
+  const onClick = useSetCursor(sourceRange)
+  // This reference will give us direct access to the mesh
+  const ref = useRef<BufferGeometry | undefined>() as any
+  const [hovered, setHover] = useState(false)
+
+  return (
+    <>
+      <mesh
+        quaternion={rotation}
+        position={position}
+        ref={ref}
+        onPointerOver={(event) => {
+          setHover(true)
+          setHighlightRange(sourceRange)
+        }}
+        onPointerOut={(event) => {
+          setHover(false)
+          setHighlightRange([0, 0])
+        }}
+        onClick={onClick}
+      >
+        <primitive object={geo} />
+        <meshStandardMaterial
+          color={hovered ? 'hotpink' : forceHighlight ? 'skyblue' : 'orange'}
+        />
+      </mesh>
     </>
   )
 }

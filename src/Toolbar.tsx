@@ -34,7 +34,7 @@ export const Toolbar = () => {
               mode: 'sketch',
               sketchMode: 'sketchEdit',
               pathToNode: guiMode.pathToNode,
-              quaternion: guiMode.quaternion,
+              rotation: guiMode.rotation,
               position: guiMode.position,
             })
           }}

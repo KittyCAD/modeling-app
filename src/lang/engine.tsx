@@ -44,19 +44,17 @@ function trigCalcs({
   }
 }
 
-export interface LineGeos {
-  line: BufferGeometry
-  tip: BufferGeometry
-  centre: BufferGeometry
-}
-
 export function lineGeo({
   from,
   to,
 }: {
   from: [number, number, number]
   to: [number, number, number]
-}): LineGeos {
+}): {
+  line: BufferGeometry
+  tip: BufferGeometry
+  centre: BufferGeometry
+} {
   const {
     centre,
     Hypotenuse: Hypotenuse3d,

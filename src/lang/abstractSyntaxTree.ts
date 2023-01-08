@@ -453,7 +453,7 @@ export interface Literal extends GeneralStatement {
   raw: string
 }
 
-interface Identifier extends GeneralStatement {
+export interface Identifier extends GeneralStatement {
   type: 'Identifier'
   name: string
 }

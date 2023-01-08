@@ -2,21 +2,20 @@ import fs from 'node:fs'
 
 import { abstractSyntaxTree } from './abstractSyntaxTree'
 import { lexer } from './tokeniser'
-import { executor, ProgramMemory } from './executor'
-import { Transform, SketchGeo } from './sketch'
+import { executor, ProgramMemory, Path, SketchGroup } from './executor'
 
 describe('test', () => {
   it('test assigning two variables, the second summing with the first', () => {
     const code = `const myVar = 5
 const newVar = myVar + 1`
     const { root } = exe(code)
-    expect(root.myVar).toBe(5)
-    expect(root.newVar).toBe(6)
+    expect(root.myVar.value).toBe(5)
+    expect(root.newVar.value).toBe(6)
   })
   it('test assigning a var with a string', () => {
     const code = `const myVar = "a str"`
     const { root } = exe(code)
-    expect(root.myVar).toBe('a str')
+    expect(root.myVar.value).toBe('a str')
   })
   it('test assigning a var by cont concatenating two strings string execute', () => {
     const code = fs.readFileSync(
@@ -24,21 +23,30 @@ const newVar = myVar + 1`
       'utf-8'
     )
     const { root } = exe(code)
-    expect(root.myVar).toBe('a str another str')
+    expect(root.myVar.value).toBe('a str another str')
   })
   it('test with function call', () => {
     const code = `
 const myVar = "hello"
 log(5, myVar)`
-    const programMemoryOverride = {
-      log: jest.fn(),
+    const programMemoryOverride: ProgramMemory['root'] = {
+      log: {
+        type: 'userVal',
+        value: jest.fn(),
+        __meta: [
+          {
+            sourceRange: [0, 0],
+            pathToNode: [],
+          },
+        ],
+      },
     }
     const { root } = executor(abstractSyntaxTree(lexer(code)), {
       root: programMemoryOverride,
       _sketch: [],
     })
-    expect(root.myVar).toBe('hello')
-    expect(programMemoryOverride.log).toHaveBeenCalledWith(5, 'hello')
+    expect(root.myVar.value).toBe('hello')
+    expect(programMemoryOverride.log.value).toHaveBeenCalledWith(5, 'hello')
   })
   it('fn funcN = () => {} execute', () => {
     const { root } = exe(
@@ -50,39 +58,71 @@ log(5, myVar)`
         'const magicNum = funcN(9, theVar)',
       ].join('\n')
     )
-    expect(root.theVar).toBe(60)
-    expect(root.magicNum).toBe(69)
+    expect(root.theVar.value).toBe(60)
+    expect(root.magicNum.value).toBe(69)
   })
   it('sketch declaration', () => {
     let code = `sketch mySketch {
-  path myPath = lineTo(0,1)
-  lineTo(1,1)
-  path rightPath = lineTo(1,0)
+  path myPath = lineTo(0,2)
+  lineTo(2,3)
+  path rightPath = lineTo(5,-1)
   close()
 }
 show(mySketch)
 `
     const { root, return: _return } = exe(code)
-    expect(
-      root.mySketch.sketch.map(
-        ({ previousPath, firstPath, geo, ...rest }: any) => rest
-      )
-    ).toEqual([
-      { type: 'base', from: [0, 0], sourceRange: [0, 0] },
-      { type: 'toPoint', to: [0, 1], sourceRange: [25, 45], name: 'myPath' },
-      { type: 'toPoint', to: [1, 1], sourceRange: [48, 59] },
-      { type: 'toPoint', to: [1, 0], sourceRange: [67, 90], name: 'rightPath' },
+    // geo is three js buffer geometry and is very bloated to have in tests
+    const minusGeo = removeGeoFromPaths(root.mySketch.value)
+    expect(minusGeo).toEqual([
       {
-        type: 'close',
-        sourceRange: [93, 100],
+        type: 'toPoint',
+        to: [0, 2],
+        from: [5, -1],
+        __geoMeta: {
+          sourceRange: [25, 45],
+          pathToNode: [],
+          geos: ['line', 'lineEnd'],
+        },
+        name: 'myPath',
+      },
+      {
+        type: 'toPoint',
+        to: [2, 3],
+        from: [0, 2],
+        __geoMeta: {
+          sourceRange: [48, 59],
+          pathToNode: [],
+          geos: ['line', 'lineEnd'],
+        },
+      },
+      {
+        type: 'toPoint',
+        to: [5, -1],
+        from: [2, 3],
+        __geoMeta: {
+          sourceRange: [67, 91],
+          pathToNode: [],
+          geos: ['line', 'lineEnd'],
+        },
+        name: 'rightPath',
+      },
+      {
+        type: 'toPoint',
+        from: [5, -1],
+        to: [0, 2],
+        __geoMeta: {
+          sourceRange: [94, 101],
+          pathToNode: [],
+          geos: ['line', 'lineEnd'],
+        },
       },
     ])
     // expect(root.mySketch.sketch[0]).toEqual(root.mySketch.sketch[4].firstPath)
     expect(_return).toEqual([
       {
         type: 'Identifier',
-        start: 108,
-        end: 116,
+        start: 109,
+        end: 117,
         name: 'mySketch',
       },
     ])
@@ -94,7 +134,7 @@ show(mySketch)
       'const myVar = 5 + 1 |> myFn(%)',
     ].join('\n')
     const { root } = exe(code)
-    expect(root.myVar).toBe(7)
+    expect(root.myVar.value).toBe(7)
   })
 
   it('rotated sketch', () => {
@@ -108,8 +148,20 @@ show(mySketch)
       // 'show(mySk1)',
     ].join('\n')
     const { root } = exe(code)
-    expect(root.mySk1.sketch).toHaveLength(4)
-    expect(root?.rotated?.type).toBe('transform')
+    expect(root.mySk1.value).toHaveLength(3)
+    expect(root?.rotated?.type).toBe('sketchGroup')
+    if (
+      root?.mySk1?.type !== 'sketchGroup' ||
+      root?.rotated?.type !== 'sketchGroup'
+    )
+      throw new Error('not a sketch group')
+    expect(root.mySk1.rotation).toEqual([0, 0, 0, 1])
+    expect(root.rotated.rotation.map((a) => a.toFixed(4))).toEqual([
+      '0.7071',
+      '0.0000',
+      '0.0000',
+      '0.7071',
+    ])
   })
 
   it('execute pipe sketch into call expression', () => {
@@ -121,73 +173,87 @@ show(mySketch)
       '} |> rx(90, %)',
     ].join('\n')
     const { root } = exe(code)
-    const striptVersion = removeGeoFromSketch(root.mySk1)
+    const striptVersion = removeGeoFromSketch(root.mySk1 as SketchGroup)
     expect(striptVersion).toEqual({
-      type: 'sketchGeo',
-      sketch: [
-        {
-          type: 'base',
-          from: [0, 0],
-          sourceRange: [0, 0],
-        },
+      type: 'sketchGroup',
+      value: [
         {
           type: 'toPoint',
           to: [1, 1],
-          sourceRange: [17, 28],
+          from: [0, 0],
+          __geoMeta: {
+            sourceRange: [17, 28],
+            pathToNode: [],
+            geos: ['line', 'lineEnd'],
+          },
         },
         {
           type: 'toPoint',
           to: [0, 1],
-          sourceRange: [36, 57],
+          from: [1, 1],
+          __geoMeta: {
+            sourceRange: [36, 57],
+            pathToNode: [],
+            geos: ['line', 'lineEnd'],
+          },
           name: 'myPath',
         },
         {
           type: 'toPoint',
           to: [1, 1],
-          sourceRange: [60, 71],
+          from: [0, 1],
+          __geoMeta: {
+            sourceRange: [60, 71],
+            pathToNode: [],
+            geos: ['line', 'lineEnd'],
+          },
         },
       ],
-      sourceRange: [13, 73],
+      position: [0, 0, 0],
+      rotation: [0.7071067811865475, 0, 0, 0.7071067811865476],
+      __meta: [
+        {
+          sourceRange: [13, 73],
+          pathToNode: ['body', 0, 'declarations', 0, 'init', 0],
+        },
+        {
+          sourceRange: [77, 86],
+          pathToNode: [],
+        },
+      ],
     })
-    // old expect
-    // expect(striptVersion).toEqual({
-    //   type: 'transform',
-    //   rotation: [1.5707963267948966, 0, 0],
-    //   transform: [0, 0, 0],
-    //   sketch: [
-    //     {
-    //       type: 'base',
-    //       from: [0, 0],
-    //       sourceRange: [0, 0],
-    //     },
-    //     {
-    //       type: 'toPoint',
-    //       to: [1, 1],
-    //       sourceRange: [17, 28],
-    //     },
-    //     {
-    //       type: 'toPoint',
-    //       to: [0, 1],
-    //       sourceRange: [36, 57],
-    //       name: 'myPath',
-    //     },
-    //     {
-    //       type: 'toPoint',
-    //       to: [1, 1],
-    //       sourceRange: [60, 71],
-    //     },
-    //   ],
-    //   sourceRange: [77, 86],
-    // })
   })
   it('execute array expression', () => {
     const code = ['const three = 3', "const yo = [1, '2', three, 4 + 5]"].join(
       '\n'
     )
     const { root } = exe(code)
+    // TODO path to node is probably wrong here, zero indexes are not correct
     expect(root).toEqual({
-      three: 3,
-      yo: [1, '2', 3, 9],
+      three: {
+        type: 'userVal',
+        value: 3,
+        __meta: [
+          {
+            pathToNode: ['body', 0, 'declarations', 0, 'init'],
+            sourceRange: [14, 15],
+          },
+        ],
+      },
+      yo: {
+        type: 'userVal',
+        value: [1, '2', 3, 9],
+        __meta: [
+          {
+            pathToNode: ['body', 1, 'declarations', 0, 'init'],
+            sourceRange: [27, 49],
+          },
+          {
+            pathToNode: ['body', 0, 'declarations', 0, 'init'],
+            sourceRange: [14, 15],
+          },
+        ],
+      },
     })
   })
   it('execute object expression', () => {
@@ -196,14 +262,20 @@ show(mySketch)
       "const yo = {aStr: 'str', anum: 2, identifier: three, binExp: 4 + 5}",
     ].join('\n')
     const { root } = exe(code)
-    expect(root).toEqual({
-      three: 3,
-      yo: {
+    expect(root.yo).toEqual({
+      type: 'userVal',
+      value: {
         aStr: 'str',
         anum: 2,
         identifier: 3,
         binExp: 9,
       },
+      __meta: [
+        {
+          pathToNode: ['body', 1, 'declarations', 0, 'init'],
+          sourceRange: [27, 83],
+        },
+      ],
     })
   })
   it('execute memberExpression', () => {
@@ -211,11 +283,15 @@ show(mySketch)
       '\n'
     )
     const { root } = exe(code)
-    expect(root).toEqual({
-      yo: {
-        a: { b: '123' },
-      },
-      myVar: '123',
+    expect(root.myVar).toEqual({
+      type: 'userVal',
+      value: '123',
+      __meta: [
+        {
+          pathToNode: ['body', 1, 'declarations', 0, 'init'],
+          sourceRange: [41, 50],
+        },
+      ],
     })
   })
 })
@@ -231,15 +307,22 @@ function exe(
   return executor(ast, programMemory)
 }
 
-function removeGeoFromSketch(sketch: Transform | SketchGeo): any {
-  if (sketch.type !== 'sketchGeo' && sketch.type === 'transform') {
-    return removeGeoFromSketch(sketch.sketch as any) // TODO fix type
+function removeGeoFromSketch(sketch: SketchGroup): any {
+  return {
+    ...sketch,
+    value: removeGeoFromPaths(sketch.value),
   }
-  if (sketch.type === 'sketchGeo') {
+}
+
+function removeGeoFromPaths(paths: Path[]): any[] {
+  return paths.map((path: Path) => {
+    const newGeos = path?.__geoMeta?.geos.map((geo) => geo.type)
     return {
-      ...sketch,
-      sketch: sketch.sketch.map(({ geo, previousPath, ...rest }: any) => rest),
+      ...path,
+      __geoMeta: {
+        ...path.__geoMeta,
+        geos: newGeos,
+      },
     }
-  }
-  throw new Error('not a sketch')
+  })
 }

@@ -4,7 +4,7 @@ import { Allotment } from 'allotment'
 import { OrbitControls, OrthographicCamera } from '@react-three/drei'
 import { lexer } from './lang/tokeniser'
 import { abstractSyntaxTree } from './lang/abstractSyntaxTree'
-import { executor, processShownObjects, ViewerArtifact } from './lang/executor'
+import { executor, ExtrudeGroup, SketchGroup } from './lang/executor'
 import { recast } from './lang/recast'
 import CodeMirror from '@uiw/react-codemirror'
 import { javascript } from '@codemirror/lang-javascript'
@@ -78,7 +78,7 @@ function App() {
     if (isNoChange) return
     setSelectionRange([range.from, range.to])
   }
-  const [geoArray, setGeoArray] = useState<ViewerArtifact[]>([])
+  const [geoArray, setGeoArray] = useState<(ExtrudeGroup | SketchGroup)[]>([])
   useEffect(() => {
     try {
       if (!code) {
@@ -92,26 +92,44 @@ function App() {
       setAst(_ast)
       const programMemory = executor(_ast, {
         root: {
-          log: (a: any) => {
-            let b = a
-            if (Array.isArray(a)) {
-              b = a.map(({ geo, ...rest }) => rest)
-              b = JSON.stringify(b, null, 2)
-            } else if (typeof a === 'object') {
-              b = JSON.stringify(a, null, 2)
-            }
-            addLog(b)
+          log: {
+            type: 'userVal',
+            value: (a: any) => {
+              console.log('raw log', a)
+              let b = a
+              if (Array.isArray(a)) {
+                b = a.map(({ geo, __geoMeta, ...rest }) => rest)
+                b = JSON.stringify(b, null, 2)
+              } else if (typeof a === 'object') {
+                const { geo, __geoMeta, ...rest } = a
+                b = JSON.stringify(rest, null, 2)
+              }
+              addLog(b)
+            },
+            __meta: [
+              {
+                pathToNode: [],
+                sourceRange: [0, 0],
+              },
+            ],
           },
         },
         _sketch: [],
       })
       setProgramMemory(programMemory)
-      const geos: ViewerArtifact[] =
-        programMemory?.return?.flatMap(
-          ({ name }: { name: string }) =>
-            processShownObjects(programMemory, programMemory?.root?.[name]) ||
-            []
-        ) || []
+      const geos = programMemory?.return
+        ?.map(({ name }: { name: string }) => {
+          const artifact = programMemory?.root?.[name]
+          if (
+            artifact.type === 'extrudeGroup' ||
+            artifact.type === 'sketchGroup'
+          ) {
+            return artifact
+          }
+          return null
+        })
+        .filter((a) => a) as (ExtrudeGroup | SketchGroup)[]
+
       setGeoArray(geos)
       removeError()
       console.log(programMemory)
@@ -177,9 +195,7 @@ function App() {
                 />
                 <ambientLight />
                 <pointLight position={[10, 10, 10]} />
-                {geoArray.map((artifact, index) => (
-                  <RenderViewerArtifacts artifact={artifact} key={index} />
-                ))}
+                <RenderViewerArtifacts artifacts={geoArray} />
                 <BasePlanes />
                 <SketchPlane />
                 <AxisIndicator />

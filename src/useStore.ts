@@ -1,15 +1,11 @@
 import create from 'zustand'
 import { addLineHighlight, EditorView } from './editor/highlightextension'
 import { Program, abstractSyntaxTree } from './lang/abstractSyntaxTree'
-import { ProgramMemory } from './lang/executor'
+import { ProgramMemory, Position, PathToNode, Rotation } from './lang/executor'
 import { recast } from './lang/recast'
 import { lexer } from './lang/tokeniser'
-import { Quaternion } from 'three'
 
 export type Range = [number, number]
-
-type PathToNode = (string | number)[]
-type Position = [number, number, number]
 
 type GuiModes =
   | {
@@ -18,7 +14,7 @@ type GuiModes =
   | {
       mode: 'sketch'
       sketchMode: 'points'
-      quaternion: Quaternion
+      rotation: Rotation
       position: Position
       id?: string
       pathToNode: PathToNode
@@ -26,7 +22,7 @@ type GuiModes =
   | {
       mode: 'sketch'
       sketchMode: 'sketchEdit'
-      quaternion: Quaternion
+      rotation: Rotation
       position: Position
       pathToNode: PathToNode
     }
@@ -37,7 +33,7 @@ type GuiModes =
   | {
       mode: 'canEditSketch'
       pathToNode: PathToNode
-      quaternion: Quaternion
+      rotation: Rotation
       position: Position
     }
 
