@@ -6,6 +6,7 @@ import {
   ObjectExpression,
   MemberExpression,
   Identifier,
+  CallExpression,
 } from './abstractSyntaxTree'
 import { sketchFns } from './sketch'
 import { BufferGeometry } from 'three'
@@ -71,6 +72,7 @@ interface ExtrudePlane {
   type: 'extrudePlane'
   position: Position
   rotation: Rotation
+  name?: string
 }
 
 export type ExtrudeSurface = GeoMeta &
@@ -272,13 +274,19 @@ export const executor = (
             __meta,
           }
         } else if (declaration.init.type === 'CallExpression') {
+          // TODO: use executeCallExpression here instead
           const functionName = declaration.init.callee.name
           const fnArgs = declaration.init.arguments.map((arg) => {
             if (arg.type === 'Literal') {
               return arg.value
             } else if (arg.type === 'Identifier') {
               return _programMemory.root[arg.name].value
+            } else if (arg.type === 'ObjectExpression') {
+              return executeObjectExpression(_programMemory, arg)
             }
+            throw new Error(
+              `Unexpected argument type ${arg.type} in function call`
+            )
           })
           if (
             'lineTo' === functionName ||
@@ -331,7 +339,10 @@ export const executor = (
               sketchVal as any // todo memory redo
             )
             _programMemory.root[variableName] = result as any // todo memory redo
-          } else if (functionName === 'translate') {
+          } else if (
+            functionName === 'translate' ||
+            functionName === 'transform'
+          ) {
             const sketch = declaration.init.arguments[1]
             if (sketch.type !== 'Identifier')
               throw new Error('rx must be called with an identifier')
@@ -343,6 +354,22 @@ export const executor = (
               sketchVal as any // todo memory redo
             )
             _programMemory.root[variableName] = result as any // todo memory redo
+          } else if (functionName === 'getExtrudeWallTransform') {
+            const extrude = declaration.init.arguments[1]
+            if (extrude.type !== 'Identifier')
+              throw new Error('rx must be called with an identifier')
+            const sketchVal = _programMemory.root[extrude.name]
+            const value = sketchFns[functionName](
+              _programMemory,
+              [declaration.start, declaration.end],
+              fnArgs[0],
+              sketchVal as any // todo memory redo
+            )
+            _programMemory.root[variableName] = {
+              type: 'userVal',
+              value,
+              __meta,
+            }
           } else {
             _programMemory.root[variableName] = {
               type: 'userVal',
@@ -472,85 +499,16 @@ function executePipeBody(
       [...previousResults, result]
     )
   } else if (expression.type === 'CallExpression') {
-    const functionName = expression.callee.name
-    const fnArgs = expression.arguments.map((arg) => {
-      if (arg.type === 'Literal') {
-        return arg.value
-      } else if (arg.type === 'Identifier') {
-        return programMemory.root[arg.name]
-      } else if (arg.type === 'PipeSubstitution') {
-        return previousResults[expressionIndex - 1]
-      } else if (arg.type === 'ArrayExpression') {
-        return arg.elements.map((el) => {
-          if (el.type === 'Literal') {
-            return el.value
-          } else if (el.type === 'Identifier') {
-            return programMemory.root[el.name]
-          } else if (el.type === 'BinaryExpression') {
-            return getBinaryExpressionResult(el, programMemory)
-          }
-          throw new Error('Invalid argument type')
-        })
-      }
-      throw new Error('Invalid argument type')
-    })
-    if (
-      'rx' === functionName ||
-      'ry' === functionName ||
-      'rz' === functionName
-    ) {
-      const result = sketchFns[functionName](
-        programMemory,
-        [expression.start, expression.end],
-        fnArgs[0],
-        fnArgs[1]
-      )
-      return executePipeBody(
-        body,
-        programMemory,
-        previousPathToNode,
-        expressionIndex + 1,
-        [...previousResults, result]
-      )
-    }
-    if (functionName === 'extrude') {
-      const result = sketchFns[functionName](
-        programMemory,
-        'yo',
-        [expression.start, expression.end],
-        fnArgs[0],
-        fnArgs[1]
-      )
-      return executePipeBody(
-        body,
-        programMemory,
-        previousPathToNode,
-        expressionIndex + 1,
-        [...previousResults, result]
-      )
-    }
-    if (functionName === 'translate') {
-      const result = sketchFns[functionName](
-        programMemory,
-        [expression.start, expression.end],
-        fnArgs[0],
-        fnArgs[1]
-      )
-      return executePipeBody(
-        body,
-        programMemory,
-        previousPathToNode,
-        expressionIndex + 1,
-        [...previousResults, result]
-      )
-    }
-    const result = programMemory.root[functionName].value(...fnArgs)
-    return executePipeBody(
-      body,
+    return executeCallExpression(
       programMemory,
+      expression,
       previousPathToNode,
-      expressionIndex + 1,
-      [...previousResults, result]
+      {
+        isInPipe: true,
+        previousResults,
+        expressionIndex,
+        body,
+      }
     )
   } else if (expression.type === 'SketchExpression') {
     const sketchBody = expression.body
@@ -613,6 +571,19 @@ function executeObjectExpression(
           _programMemory,
           property.value
         )
+      } else if (property.value.type === 'ArrayExpression') {
+        obj[property.key.name] = property.value.elements.map((el) => {
+          if (el.type === 'Literal') {
+            return el.value
+          } else if (el.type === 'Identifier') {
+            return _programMemory.root[el.name].value
+          } else if (el.type === 'BinaryExpression') {
+            return getBinaryExpressionResult(el, _programMemory)
+          } else if (el.type === 'ObjectExpression') {
+            return executeObjectExpression(_programMemory, el)
+          }
+          throw new Error('Invalid argument type')
+        })
       } else {
         throw new Error(
           `Unexpected property type ${property.value.type} in object expression`
@@ -625,4 +596,132 @@ function executeObjectExpression(
     }
   })
   return obj
+}
+
+function executeCallExpression(
+  programMemory: ProgramMemory,
+  expression: CallExpression,
+  previousPathToNode: PathToNode = [],
+  pipeInfo: {
+    isInPipe: boolean
+    previousResults: any[]
+    expressionIndex: number
+    body: PipeExpression['body']
+  } = {
+    isInPipe: false,
+    previousResults: [],
+    expressionIndex: 0,
+    body: [],
+  }
+) {
+  const { isInPipe, previousResults, expressionIndex, body } = pipeInfo
+  const functionName = expression.callee.name
+  const fnArgs = expression.arguments.map((arg) => {
+    if (arg.type === 'Literal') {
+      return arg.value
+    } else if (arg.type === 'Identifier') {
+      const temp = programMemory.root[arg.name]
+      return temp?.type === 'userVal' ? temp.value : temp
+    } else if (arg.type === 'PipeSubstitution') {
+      return previousResults[expressionIndex - 1]
+    } else if (arg.type === 'ArrayExpression') {
+      return arg.elements.map((el) => {
+        if (el.type === 'Literal') {
+          return el.value
+        } else if (el.type === 'Identifier') {
+          return programMemory.root[el.name]
+        } else if (el.type === 'BinaryExpression') {
+          return getBinaryExpressionResult(el, programMemory)
+        }
+        throw new Error('Invalid argument type')
+      })
+    } else if (arg.type === 'CallExpression') {
+      const result: any = executeCallExpression(
+        programMemory,
+        arg,
+        previousPathToNode
+      )
+      return result
+    }
+    throw new Error('Invalid argument type')
+  })
+  if ('rx' === functionName || 'ry' === functionName || 'rz' === functionName) {
+    const result = sketchFns[functionName](
+      programMemory,
+      [expression.start, expression.end],
+      fnArgs[0],
+      fnArgs[1]
+    )
+    return isInPipe
+      ? executePipeBody(
+          body,
+          programMemory,
+          previousPathToNode,
+          expressionIndex + 1,
+          [...previousResults, result]
+        )
+      : result
+  }
+  if (functionName === 'extrude') {
+    const result = sketchFns[functionName](
+      programMemory,
+      'yo',
+      [expression.start, expression.end],
+      fnArgs[0],
+      fnArgs[1]
+    )
+    return isInPipe
+      ? executePipeBody(
+          body,
+          programMemory,
+          previousPathToNode,
+          expressionIndex + 1,
+          [...previousResults, result]
+        )
+      : result
+  }
+  if (functionName === 'translate' || functionName === 'transform') {
+    const result = sketchFns[functionName](
+      programMemory,
+      [expression.start, expression.end],
+      fnArgs[0],
+      fnArgs[1]
+    )
+    return isInPipe
+      ? executePipeBody(
+          body,
+          programMemory,
+          previousPathToNode,
+          expressionIndex + 1,
+          [...previousResults, result]
+        )
+      : result
+  }
+  if (functionName === 'getExtrudeWallTransform') {
+    const result = sketchFns[functionName](
+      programMemory,
+      [expression.start, expression.end],
+      fnArgs[0],
+      fnArgs[1]
+    )
+    return isInPipe
+      ? executePipeBody(
+          body,
+          programMemory,
+          previousPathToNode,
+          expressionIndex + 1,
+          [...previousResults, result]
+        )
+      : result
+  }
+  const result = programMemory.root[functionName].value(...fnArgs)
+  return isInPipe
+    ? executePipeBody(
+        body,
+        programMemory,
+        previousPathToNode,
+        expressionIndex + 1,
+        [...previousResults, result]
+      )
+    : result
 }

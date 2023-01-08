@@ -5,6 +5,8 @@ import {
   ExtrudeGroup,
   SourceRange,
   ExtrudeSurface,
+  Position,
+  Rotation,
 } from './executor'
 import { lineGeo, extrudeGeo } from './engine'
 import { Quaternion, Vector3 } from 'three'
@@ -179,21 +181,40 @@ export const sketchFns = {
           from = lastPoint.to
         }
         const to = line.to
-        const geo = extrudeGeo({
+        const {
+          geo,
+          position: facePosition,
+          rotation: faceRotation,
+        } = extrudeGeo({
           from: [from[0], from[1], 0],
           to: [to[0], to[1], 0],
           length,
         })
-        extrudeSurfaces.push({
+        const groupQuaternion = new Quaternion(...rotation)
+        const currentWallQuat = new Quaternion(...faceRotation)
+        const unifiedQuit = new Quaternion().multiplyQuaternions(
+          currentWallQuat,
+          groupQuaternion.clone().invert()
+        )
+
+        const facePositionVector = new Vector3(...facePosition)
+        facePositionVector.applyQuaternion(groupQuaternion.clone())
+        const unifiedPosition = new Vector3().addVectors(
+          facePositionVector,
+          new Vector3(...position)
+        )
+        const surface: ExtrudeSurface = {
           type: 'extrudePlane',
-          position, // todo should come from extrudeGeo
-          rotation, // todo should come from extrudeGeo
+          position: unifiedPosition.toArray() as Position,
+          rotation: unifiedQuit.toArray() as Rotation,
           __geoMeta: {
             geo,
             sourceRange: line.__geoMeta.sourceRange,
             pathToNode: line.__geoMeta.pathToNode,
           },
-        })
+        }
+        line.name && (surface.name = line.name)
+        extrudeSurfaces.push(surface)
       }
     })
     return {
@@ -211,6 +232,8 @@ export const sketchFns = {
     }
   },
   translate,
+  transform,
+  getExtrudeWallTransform,
 }
 
 function rotateOnAxis<T extends SketchGroup | ExtrudeGroup>(
@@ -258,7 +281,7 @@ function translate<T extends SketchGroup | ExtrudeGroup>(
   const newPosition = oldPosition.add(new Vector3(...vec3))
   return {
     ...sketch,
-    position: [newPosition.x, newPosition.y, newPosition.z],
+    position: newPosition.toArray(),
     __meta: [
       ...sketch.__meta,
       {
@@ -266,5 +289,54 @@ function translate<T extends SketchGroup | ExtrudeGroup>(
         pathToNode: [], // TODO
       },
     ],
+  }
+}
+
+function transform<T extends SketchGroup | ExtrudeGroup>(
+  programMemory: ProgramMemory,
+  sourceRange: SourceRange,
+  transformInfo: {
+    position: Position
+    quaternion: Rotation
+  },
+  sketch: T
+): T {
+  const quaternionToApply = new Quaternion(...transformInfo.quaternion)
+  const newQuaternion = new Quaternion(...sketch.rotation).multiply(
+    quaternionToApply.invert()
+  )
+
+  const oldPosition = new Vector3(...sketch.position)
+  const newPosition = oldPosition
+    .applyQuaternion(quaternionToApply)
+    .add(new Vector3(...transformInfo.position))
+  return {
+    ...sketch,
+    position: newPosition.toArray(),
+    rotation: newQuaternion.toArray(),
+    __meta: [
+      ...sketch.__meta,
+      {
+        sourceRange,
+        pathToNode: [], // TODO
+      },
+    ],
+  }
+}
+
+function getExtrudeWallTransform(
+  programMemory: ProgramMemory,
+  sourceRange: SourceRange,
+  pathName: string,
+  extrudeGroup: ExtrudeGroup
+): {
+  position: Position
+  quaternion: Rotation
+} {
+  const path = extrudeGroup.value.find((path) => path.name === pathName)
+  if (!path) throw new Error(`Could not find path with name ${pathName}`)
+  return {
+    position: path.position,
+    quaternion: path.rotation,
   }
 }

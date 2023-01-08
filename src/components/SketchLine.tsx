@@ -84,7 +84,6 @@ function MovingSphere({
         let theNewPoints: [number, number] = [x, y]
         const { modifiedAst } = changeArguments(ast, thePath, theNewPoints)
         updateAst(modifiedAst)
-        console.log('reset position')
         ref.current.position.set(...position)
       }
       setIsMouseDown(false)

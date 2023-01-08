@@ -76,8 +76,13 @@ show(mySketch001)`
         value: [
           {
             type: 'extrudePlane',
-            position: [0, 0, 0],
-            rotation: [0.3826834323650898, 0, 0, 0.9238795325112867],
+            position: [
+              -0.5650000000000001, -2.602152954766495, -2.602152954766495,
+            ],
+            rotation: [
+              0.20394238048109659, 0.7817509623502217, -0.3238118510036805,
+              0.4923604609001174,
+            ],
             __geoMeta: {
               geo: 'PlaneGeometry',
               sourceRange: [47, 66],
@@ -91,6 +96,132 @@ show(mySketch001)`
         __meta: [
           {
             sourceRange: [89, 102],
+            pathToNode: [],
+          },
+        ],
+      },
+    ])
+  })
+  test('sketch extrude and sketch on one of the faces', () => {
+    const code = `
+sketch sk1 {
+  lineTo(-2.5, 0)
+  path p = lineTo(0, 10)
+  lineTo(2.5, 0)
+}
+  |> rx(45, %)
+  |> translate([1,0,1], %)
+  |> ry(5, %)
+const theExtrude = extrude(2, sk1)
+const theTransf = getExtrudeWallTransform('p', theExtrude)
+sketch sk2 {
+  lineTo(-2.5, 0)
+  path p = lineTo(0, 3)
+  lineTo(2.5, 0)
+}
+  |> transform(theTransf, %)
+  |> extrude(2, %)
+  
+
+show(theExtrude, sk2)`
+    const programMemory = executor(abstractSyntaxTree(lexer(code)))
+    const geos = programMemory?.return?.map(
+      (a) => programMemory?.root?.[a.name]
+    )
+    const artifactsWithoutGeos = removeGeo(geos as any)
+    expect(artifactsWithoutGeos).toEqual([
+      {
+        type: 'extrudeGroup',
+        value: [
+          {
+            type: 'extrudePlane',
+            position: [
+              0.14624915180581843, 3.5355339059327373, 4.540063765792454,
+            ],
+            rotation: [
+              -0.24844095888221532, 0.7523143130765927, -0.2910733573455524,
+              -0.5362616571538269,
+            ],
+            __geoMeta: {
+              geo: 'PlaneGeometry',
+              sourceRange: [39, 56],
+              pathToNode: [],
+            },
+            name: 'p',
+          },
+          {
+            type: 'extrudePlane',
+            position: [
+              2.636735897035183, 3.5355339059327386, 4.322174408923308,
+            ],
+            rotation: [
+              0.22212685137378593, 0.7027132469491032, -0.3116187916437232,
+              0.5997895323824204,
+            ],
+            __geoMeta: {
+              geo: 'PlaneGeometry',
+              sourceRange: [59, 73],
+              pathToNode: [],
+            },
+          },
+        ],
+        height: 2,
+        position: [1.083350440839404, 0, 0.9090389553440874],
+        rotation: [
+          0.38231920253318413, 0.04029905920751535, -0.01669241687462921,
+          0.9230002039112792,
+        ],
+        __meta: [
+          {
+            sourceRange: [138, 166],
+            pathToNode: [],
+          },
+        ],
+      },
+      {
+        type: 'extrudeGroup',
+        value: [
+          {
+            type: 'extrudePlane',
+            position: [
+              0.43055783927228125, 5.453687003425103, 4.311246666755821,
+            ],
+            rotation: [
+              0.5307054034531232, -0.4972416536396126, 0.3641462373475848,
+              -0.5818075544860157,
+            ],
+            __geoMeta: {
+              geo: 'PlaneGeometry',
+              sourceRange: [264, 280],
+              pathToNode: [],
+            },
+            name: 'p',
+          },
+          {
+            type: 'extrudePlane',
+            position: [
+              -0.3229447858093035, 3.7387011520000146, 2.6556327856208117,
+            ],
+            rotation: [
+              0.06000443169260189, 0.12863059446321826, 0.6408199244764428,
+              -0.7544557394170275,
+            ],
+            __geoMeta: {
+              geo: 'PlaneGeometry',
+              sourceRange: [283, 297],
+              pathToNode: [],
+            },
+          },
+        ],
+        height: 2,
+        position: [0.14624915180581843, 3.5355339059327373, 4.540063765792454],
+        rotation: [
+          0.24844095888221532, -0.7523143130765927, 0.2910733573455524,
+          -0.5362616571538269,
+        ],
+        __meta: [
+          {
+            sourceRange: [334, 347],
             pathToNode: [],
           },
         ],

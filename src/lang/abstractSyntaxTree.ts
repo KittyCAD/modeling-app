@@ -199,6 +199,23 @@ function makeArguments(
       expression,
     ])
   }
+  if (
+    argumentToken.token.type === 'brace' &&
+    argumentToken.token.value === '{'
+  ) {
+    const { expression, lastIndex } = makeObjectExpression(
+      tokens,
+      argumentToken.index
+    )
+    const nextCommarOrBraceTokenIndex = nextMeaningfulToken(
+      tokens,
+      lastIndex
+    ).index
+    return makeArguments(tokens, nextCommarOrBraceTokenIndex, [
+      ...previousArgs,
+      expression,
+    ])
+  }
   if (!isIdentifierOrLiteral) {
     const { expression, lastIndex } = makeBinaryExpression(tokens, index)
     return makeArguments(tokens, lastIndex, [...previousArgs, expression])
@@ -215,6 +232,25 @@ function makeArguments(
     return makeArguments(tokens, nextBraceOrCommaToken.index, [
       ...previousArgs,
       value,
+    ])
+  }
+
+  if (
+    argumentToken.token.type === 'word' &&
+    nextBraceOrCommaToken.token.type === 'brace' &&
+    nextBraceOrCommaToken.token.value === '('
+  ) {
+    const { expression, lastIndex } = makeCallExpression(
+      tokens,
+      argumentToken.index
+    )
+    const nextCommarOrBraceTokenIndex = nextMeaningfulToken(
+      tokens,
+      lastIndex
+    ).index
+    return makeArguments(tokens, nextCommarOrBraceTokenIndex, [
+      ...previousArgs,
+      expression,
     ])
   }
   if (argumentToken.token.type === 'word') {

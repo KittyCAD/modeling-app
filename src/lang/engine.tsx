@@ -3,7 +3,10 @@ import {
   SphereGeometry,
   BufferGeometry,
   PlaneGeometry,
+  Quaternion,
+  Euler,
 } from 'three'
+import { Rotation, Position } from './executor'
 
 export function baseGeo({ from }: { from: [number, number, number] }) {
   const baseSphere = new SphereGeometry(0.25)
@@ -99,9 +102,13 @@ export function extrudeGeo({
   from: [number, number, number]
   to: [number, number, number]
   length: number
-}): BufferGeometry {
+}): {
+  geo: BufferGeometry
+  position: Position
+  rotation: Rotation
+} {
   const {
-    // centre,
+    centre,
     Hypotenuse: Hypotenuse3d,
     ry,
     rz,
@@ -116,5 +123,13 @@ export function extrudeGeo({
   face.rotateZ(rz)
   face.translate(to[0], to[1], to[2])
 
-  return face
+  const quat = new Quaternion()
+  const euler = new Euler(-Math.PI / 2, ry, rz * sign, 'XYZ')
+  quat.setFromEuler(euler)
+
+  return {
+    geo: face,
+    position: [centre[0], centre[1], centre[2]],
+    rotation: quat.toArray() as Rotation,
+  }
 }
