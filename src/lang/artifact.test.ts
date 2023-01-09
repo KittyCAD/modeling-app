@@ -98,6 +98,10 @@ show(mySketch001)`
             sourceRange: [89, 102],
             pathToNode: [],
           },
+          {
+            sourceRange: [20, 68],
+            pathToNode: ['body', 0, 'declarations', 0, 'init', 0],
+          },
         ],
       },
     ])
@@ -176,6 +180,10 @@ show(theExtrude, sk2)`
             sourceRange: [138, 166],
             pathToNode: [],
           },
+          {
+            sourceRange: [12, 75],
+            pathToNode: ['body', 0, 'declarations', 0, 'init', 0],
+          },
         ],
       },
       {
@@ -223,6 +231,10 @@ show(theExtrude, sk2)`
           {
             sourceRange: [334, 347],
             pathToNode: [],
+          },
+          {
+            sourceRange: [237, 299],
+            pathToNode: ['body', 3, 'declarations', 0, 'init', 0],
           },
         ],
       },

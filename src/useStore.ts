@@ -36,6 +36,12 @@ type GuiModes =
       rotation: Rotation
       position: Position
     }
+  | {
+      mode: 'canEditExtrude'
+      pathToNode: PathToNode
+      rotation: Rotation
+      position: Position
+    }
 
 interface StoreState {
   editorView: EditorView | null

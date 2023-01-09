@@ -216,7 +216,7 @@ function RenderViewerArtifact({
   const [editorCursor, setEditorCursor] = useState(false)
   useEffect(() => {
     const shouldHighlight = isOverlapping(
-      artifact.__meta.slice(-1)[0].sourceRange,
+      artifact.__meta[0].sourceRange,
       selectionRange
     )
     setEditorCursor(shouldHighlight)
@@ -239,9 +239,21 @@ function RenderViewerArtifact({
       const { rotation, position } = artifact
       setGuiMode({ mode: 'canEditSketch', pathToNode, rotation, position })
     } else if (
+      shouldHighlight &&
+      (guiMode.mode === 'default' || guiMode.mode === 'canEditSketch') &&
+      ast &&
+      artifact.type === 'extrudeGroup'
+    ) {
+      const pathToNode = getNodePathFromSourceRange(
+        ast,
+        artifact.__meta[0].sourceRange
+      )
+      const { rotation, position } = artifact
+      setGuiMode({ mode: 'canEditExtrude', pathToNode, rotation, position })
+    } else if (
       !shouldHighlight &&
-      guiMode.mode === 'canEditSketch' &&
-      artifact.type === 'sketchGroup'
+      (guiMode.mode === 'canEditSketch' || guiMode.mode === 'canEditExtrude') &&
+      (artifact.type === 'sketchGroup' || artifact.type === 'extrudeGroup')
     ) {
       setGuiMode({ mode: 'default' })
     }

@@ -10,6 +10,7 @@ import {
   getNodeFromPath,
   VariableDeclarator,
 } from './abstractSyntaxTree'
+import { PathToNode } from './executor'
 
 export function addSketchTo(
   node: Program,
@@ -107,6 +108,7 @@ export function addSketchTo(
 function findUniqueName(
   ast: Program | string,
   name: string,
+  pad = 3,
   index = 1
 ): string {
   let searchStr = ''
@@ -115,13 +117,13 @@ function findUniqueName(
   } else {
     searchStr = JSON.stringify(ast)
   }
-  const indexStr = `${index}`.padStart(3, '0')
+  const indexStr = `${index}`.padStart(pad, '0')
   const newName = `${name}${indexStr}`
   const isInString = searchStr.includes(newName)
   if (!isInString) {
     return newName
   }
-  return findUniqueName(searchStr, name, index + 1)
+  return findUniqueName(searchStr, name, pad, index + 1)
 }
 
 function addToShow(node: Program, name: string): Program {
@@ -374,4 +376,137 @@ export function extrudeSketch(
     modifiedAst: addToShow(_node, name),
     pathToNode: [...pathToNode.slice(0, -1), showCallIndex],
   }
+}
+
+export function sketchOnExtrudedFace(
+  node: Program,
+  pathToNode: (string | number)[]
+): { modifiedAst: Program; pathToNode: (string | number)[] } {
+  const _node = { ...node }
+  const dumbyStartend = { start: 0, end: 0 }
+  const newSketchName = findUniqueName(node, 'part')
+  const oldSketchName = getNodeFromPath(_node, pathToNode, 'VariableDeclarator')
+    .id.name
+  const expression = getNodeFromPath(_node, pathToNode, 'CallExpression') as
+    | VariableDeclarator
+    | CallExpression
+  const pathName =
+    expression.type === 'VariableDeclarator'
+      ? expression.id.name
+      : findUniqueName(node, 'path', 2)
+
+  if (expression.type === 'CallExpression') {
+    const block = getNodeFromPath(_node, pathToNode, 'BlockStatement')
+    const expressionIndex = getLastIndex(pathToNode)
+    if (expression.callee.name !== 'lineTo')
+      throw new Error('expected a lineTo call')
+    const newExpression: VariableDeclaration = {
+      type: 'VariableDeclaration',
+      ...dumbyStartend,
+      declarations: [
+        {
+          type: 'VariableDeclarator',
+          ...dumbyStartend,
+          id: {
+            type: 'Identifier',
+            ...dumbyStartend,
+            name: pathName,
+          },
+          init: expression,
+        },
+      ],
+      kind: 'path',
+    }
+
+    block.body.splice(expressionIndex, 1, newExpression)
+  }
+
+  // create pipe expression with a sketch block piped into a transform function
+  const sketchPipe: PipeExpression = {
+    type: 'PipeExpression',
+    ...dumbyStartend,
+    body: [
+      {
+        type: 'SketchExpression',
+        ...dumbyStartend,
+        body: {
+          type: 'BlockStatement',
+          ...dumbyStartend,
+          body: [],
+        },
+      },
+      {
+        type: 'CallExpression',
+        ...dumbyStartend,
+        callee: {
+          type: 'Identifier',
+          ...dumbyStartend,
+          name: 'transform',
+        },
+        optional: false,
+        arguments: [
+          {
+            type: 'CallExpression',
+            ...dumbyStartend,
+            callee: {
+              type: 'Identifier',
+              ...dumbyStartend,
+              name: 'getExtrudeWallTransform',
+            },
+            optional: false,
+            arguments: [
+              {
+                type: 'Literal',
+                ...dumbyStartend,
+                value: pathName,
+                raw: `'${pathName}'`,
+              },
+              {
+                type: 'Identifier',
+                ...dumbyStartend,
+                name: oldSketchName,
+              },
+            ],
+          },
+          {
+            type: 'PipeSubstitution',
+            ...dumbyStartend,
+          },
+        ],
+      },
+    ],
+  }
+  const variableDec: VariableDeclaration = {
+    type: 'VariableDeclaration',
+    ...dumbyStartend,
+    declarations: [
+      {
+        type: 'VariableDeclarator',
+        ...dumbyStartend,
+        id: {
+          type: 'Identifier',
+          ...dumbyStartend,
+          name: newSketchName,
+        },
+        init: sketchPipe,
+      },
+    ],
+    kind: 'sketch',
+  }
+
+  const showIndex = getShowIndex(_node)
+  _node.body.splice(showIndex, 0, variableDec)
+
+  return {
+    modifiedAst: addToShow(_node, newSketchName),
+    pathToNode,
+  }
+}
+
+const getLastIndex = (pathToNode: PathToNode): number => {
+  const last = pathToNode[pathToNode.length - 1]
+  if (typeof last === 'number') {
+    return last
+  }
+  return getLastIndex(pathToNode.slice(0, -1))
 }

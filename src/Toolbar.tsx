@@ -1,5 +1,5 @@
 import { useStore } from './useStore'
-import { extrudeSketch } from './lang/modifyAst'
+import { extrudeSketch, sketchOnExtrudedFace } from './lang/modifyAst'
 import { getNodePathFromSourceRange } from './lang/abstractSyntaxTree'
 
 export const Toolbar = () => {
@@ -27,8 +27,21 @@ export const Toolbar = () => {
           Start sketch
         </button>
       )}
-      {guiMode.mode === 'canEditSketch' && (
+      {guiMode.mode === 'canEditExtrude' && (
         <button
+          onClick={() => {
+            if (!ast) return
+            const pathToNode = getNodePathFromSourceRange(ast, selectionRange)
+            const { modifiedAst } = sketchOnExtrudedFace(ast, pathToNode)
+            updateAst(modifiedAst)
+          }}
+          className="border m-1 px-1 rounded"
+        >
+          SketchOnFace
+        </button>
+      )}
+      {(guiMode.mode === 'canEditSketch' || false) && (
+        /*guiMode.mode === 'canEditExtrude'*/ <button
           onClick={() => {
             setGuiMode({
               mode: 'sketch',
@@ -48,8 +61,8 @@ export const Toolbar = () => {
           <button
             onClick={() => {
               if (!ast) return
-              const pathToNote = getNodePathFromSourceRange(ast, selectionRange)
-              const { modifiedAst } = extrudeSketch(ast, pathToNote)
+              const pathToNode = getNodePathFromSourceRange(ast, selectionRange)
+              const { modifiedAst } = extrudeSketch(ast, pathToNode)
               updateAst(modifiedAst)
             }}
             className="border m-1 px-1 rounded"
@@ -59,8 +72,8 @@ export const Toolbar = () => {
           <button
             onClick={() => {
               if (!ast) return
-              const pathToNote = getNodePathFromSourceRange(ast, selectionRange)
-              const { modifiedAst } = extrudeSketch(ast, pathToNote, false)
+              const pathToNode = getNodePathFromSourceRange(ast, selectionRange)
+              const { modifiedAst } = extrudeSketch(ast, pathToNode, false)
               updateAst(modifiedAst)
             }}
             className="border m-1 px-1 rounded"
@@ -70,7 +83,7 @@ export const Toolbar = () => {
         </>
       )}
 
-      {guiMode.mode !== 'default' && (
+      {guiMode.mode === 'sketch' && (
         <button
           onClick={() => setGuiMode({ mode: 'default' })}
           className="border m-1 px-1 rounded"
