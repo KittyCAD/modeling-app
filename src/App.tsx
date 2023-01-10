@@ -19,7 +19,7 @@ import { BasePlanes } from './components/BasePlanes'
 import { SketchPlane } from './components/SketchPlane'
 import { Logs } from './components/Logs'
 import { AxisIndicator } from './components/AxisIndicator'
-import { RenderViewerArtifacts } from './components/SketchLine'
+import { RenderViewerArtifacts } from './components/RenderViewerArtifacts'
 
 const OrrthographicCamera = OrthographicCamera as any
 
