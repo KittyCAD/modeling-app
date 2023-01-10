@@ -12,6 +12,8 @@ import {
   Path,
   Rotation,
   Position,
+  PathToNode,
+  SourceRange,
 } from '../lang/executor'
 import { BufferGeometry } from 'three'
 import { useStore } from '../useStore'
@@ -191,9 +193,10 @@ export function RenderViewerArtifacts({
 }: {
   artifacts: (ExtrudeGroup | SketchGroup)[]
 }) {
+  useSetAppModeFromCursorLocation(artifacts)
   return (
     <>
-      {artifacts.map((artifact, i) => (
+      {artifacts?.map((artifact, i) => (
         <RenderViewerArtifact key={i} artifact={artifact} />
       ))}
     </>
@@ -205,59 +208,22 @@ function RenderViewerArtifact({
 }: {
   artifact: ExtrudeGroup | SketchGroup
 }) {
-  const { selectionRange, guiMode, ast, setGuiMode } = useStore(
-    ({ selectionRange, guiMode, ast, setGuiMode }) => ({
-      selectionRange,
-      guiMode,
-      ast,
-      setGuiMode,
-    })
-  )
-  const [editorCursor, setEditorCursor] = useState(false)
-  useEffect(() => {
-    const shouldHighlight = isOverlapping(
-      artifact.__meta[0].sourceRange,
-      selectionRange
-    )
-    setEditorCursor(shouldHighlight)
-  }, [selectionRange, artifact.__meta])
-
-  useEffect(() => {
-    const shouldHighlight = artifact.__meta.some((aMeta) =>
-      isOverlapping(aMeta.sourceRange, selectionRange)
-    )
-    if (
-      shouldHighlight &&
-      (guiMode.mode === 'default' || guiMode.mode === 'canEditSketch') &&
-      ast &&
-      artifact.type === 'sketchGroup'
-    ) {
-      const pathToNode = getNodePathFromSourceRange(
-        ast,
-        artifact.__meta[0].sourceRange
-      )
-      const { rotation, position } = artifact
-      setGuiMode({ mode: 'canEditSketch', pathToNode, rotation, position })
-    } else if (
-      shouldHighlight &&
-      (guiMode.mode === 'default' || guiMode.mode === 'canEditSketch') &&
-      ast &&
-      artifact.type === 'extrudeGroup'
-    ) {
-      const pathToNode = getNodePathFromSourceRange(
-        ast,
-        artifact.__meta[0].sourceRange
-      )
-      const { rotation, position } = artifact
-      setGuiMode({ mode: 'canEditExtrude', pathToNode, rotation, position })
-    } else if (
-      !shouldHighlight &&
-      (guiMode.mode === 'canEditSketch' || guiMode.mode === 'canEditExtrude') &&
-      (artifact.type === 'sketchGroup' || artifact.type === 'extrudeGroup')
-    ) {
-      setGuiMode({ mode: 'default' })
-    }
-  }, [selectionRange, artifact, ast, guiMode.mode, setGuiMode])
+  // const { selectionRange, guiMode, ast, setGuiMode } = useStore(
+  //   ({ selectionRange, guiMode, ast, setGuiMode }) => ({
+  //     selectionRange,
+  //     guiMode,
+  //     ast,
+  //     setGuiMode,
+  //   })
+  // )
+  // const [editorCursor, setEditorCursor] = useState(false)
+  // useEffect(() => {
+  //   const shouldHighlight = isOverlapping(
+  //     artifact.__meta.slice(-1)[0].sourceRange,
+  //     selectionRange
+  //   )
+  //   setEditorCursor(shouldHighlight)
+  // }, [selectionRange, artifact.__meta])
 
   if (artifact.type === 'sketchGroup') {
     return (
@@ -266,7 +232,7 @@ function RenderViewerArtifact({
           <PathRender
             geoInfo={geoInfo}
             key={key}
-            forceHighlight={editorCursor}
+            forceHighlight={false}
             rotation={artifact.rotation}
             position={artifact.position}
           />
@@ -281,7 +247,7 @@ function RenderViewerArtifact({
           <WallRender
             geoInfo={geoInfo}
             key={key}
-            forceHighlight={editorCursor}
+            forceHighlight={false}
             rotation={artifact.rotation}
             position={artifact.position}
           />
@@ -453,4 +419,92 @@ function LineRender({
       </mesh>
     </>
   )
+}
+
+type Boop = ExtrudeGroup | SketchGroup
+
+function useSetAppModeFromCursorLocation(artifacts: Boop[]) {
+  const { selectionRange, guiMode, setGuiMode, ast } = useStore(
+    ({ selectionRange, guiMode, setGuiMode, ast }) => ({
+      selectionRange,
+      guiMode,
+      setGuiMode,
+      ast,
+    })
+  )
+  useEffect(() => {
+    const artifactsWithinCursorRange: (
+      | {
+          parentType: Boop['type']
+          isParent: true
+          pathToNode: PathToNode
+          sourceRange: SourceRange
+          rotation: Rotation
+          position: Position
+        }
+      | {
+          parentType: Boop['type']
+          isParent: false
+          pathToNode: PathToNode
+          sourceRange: SourceRange
+        }
+    )[] = []
+    artifacts.forEach((artifact) => {
+      artifact.value.forEach((geo) => {
+        if (isOverlapping(geo.__geoMeta.sourceRange, selectionRange)) {
+          artifactsWithinCursorRange.push({
+            parentType: artifact.type,
+            isParent: false,
+            pathToNode: geo.__geoMeta.pathToNode,
+            sourceRange: geo.__geoMeta.sourceRange,
+          })
+        }
+      })
+      artifact.__meta.forEach((meta) => {
+        if (isOverlapping(meta.sourceRange, selectionRange)) {
+          artifactsWithinCursorRange.push({
+            parentType: artifact.type,
+            isParent: true,
+            pathToNode: meta.pathToNode,
+            sourceRange: meta.sourceRange,
+            rotation: artifact.rotation,
+            position: artifact.position,
+          })
+        }
+      })
+    })
+    const parentArtifacts = artifactsWithinCursorRange.filter((a) => a.isParent)
+    if (parentArtifacts.length > 1) {
+      console.log('multiple parents, might be an issue?', parentArtifacts)
+    }
+    const artifact = parentArtifacts[0]
+    const shouldHighlight = !!artifact
+    if (
+      shouldHighlight &&
+      (guiMode.mode === 'default' || guiMode.mode === 'canEditSketch') &&
+      ast &&
+      artifact.parentType === 'sketchGroup' &&
+      artifact.isParent
+    ) {
+      const pathToNode = getNodePathFromSourceRange(ast, artifact.sourceRange)
+      const { rotation, position } = artifact
+      setGuiMode({ mode: 'canEditSketch', pathToNode, rotation, position })
+    } else if (
+      shouldHighlight &&
+      (guiMode.mode === 'default' || guiMode.mode === 'canEditSketch') &&
+      ast &&
+      artifact.parentType === 'extrudeGroup' &&
+      artifact.isParent
+    ) {
+      const pathToNode = getNodePathFromSourceRange(ast, artifact.sourceRange)
+      const { rotation, position } = artifact
+      setGuiMode({ mode: 'canEditExtrude', pathToNode, rotation, position })
+    } else if (
+      !shouldHighlight &&
+      (guiMode.mode === 'canEditSketch' || guiMode.mode === 'canEditExtrude')
+      // (artifact.parentType === 'extrudeGroup' || artifact.type === 'extrudeGroup')
+    ) {
+      setGuiMode({ mode: 'default' })
+    }
+  }, [artifacts, selectionRange])
 }

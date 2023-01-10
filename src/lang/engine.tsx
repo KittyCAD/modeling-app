@@ -98,10 +98,12 @@ export function extrudeGeo({
   from,
   to,
   length,
+  extrusionDirection = 1,
 }: {
   from: [number, number, number]
   to: [number, number, number]
   length: number
+  extrusionDirection?: number
 }): {
   geo: BufferGeometry
   position: Position
@@ -124,7 +126,13 @@ export function extrudeGeo({
   face.translate(to[0], to[1], to[2])
 
   const quat = new Quaternion()
-  const euler = new Euler(-Math.PI / 2, ry, rz * sign, 'XYZ')
+  const otherSign = ry === 0 ? 1 : -1 // don't ask questions, it works okay
+  const euler = new Euler(
+    (Math.PI * otherSign * extrusionDirection) / 2,
+    ry,
+    rz * sign * -otherSign,
+    'XYZ'
+  )
   quat.setFromEuler(euler)
 
   return {

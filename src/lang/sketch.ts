@@ -173,13 +173,12 @@ export const sketchFns = {
     const { position, rotation } = sketchVal
 
     const extrudeSurfaces: ExtrudeSurface[] = []
+    const extrusionDirection = clockwiseSign(
+      sketch.value.map((line) => line.to)
+    )
     sketch.value.map((line, index) => {
-      if (line.type === 'toPoint' && index !== 0) {
-        const lastPoint = sketch.value[index - 1]
-        let from: [number, number] = [0, 0]
-        if (lastPoint.type === 'toPoint') {
-          from = lastPoint.to
-        }
+      if (line.type === 'toPoint') {
+        let from: [number, number] = line.from
         const to = line.to
         const {
           geo,
@@ -189,6 +188,7 @@ export const sketchFns = {
           from: [from[0], from[1], 0],
           to: [to[0], to[1], 0],
           length,
+          extrusionDirection,
         })
         const groupQuaternion = new Quaternion(...rotation)
         const currentWallQuat = new Quaternion(...faceRotation)
@@ -343,4 +343,14 @@ function getExtrudeWallTransform(
     position: path.position,
     quaternion: path.rotation,
   }
+}
+
+function clockwiseSign(points: [number, number][]): number {
+  let sum = 0
+  for (let i = 0; i < points.length; i++) {
+    const currentPoint = points[i]
+    const nextPoint = points[(i + 1) % points.length]
+    sum += (nextPoint[0] - currentPoint[0]) * (nextPoint[1] + currentPoint[1])
+  }
+  return sum >= 0 ? 1 : -1
 }

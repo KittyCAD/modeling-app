@@ -76,6 +76,19 @@ show(mySketch001)`
         value: [
           {
             type: 'extrudePlane',
+            position: [-0.795, -0.5444722215136415, -0.5444722215136416],
+            rotation: [
+              0.35471170441873584, 0.3467252481708758, -0.14361830020955396,
+              0.8563498075401887,
+            ],
+            __geoMeta: {
+              geo: 'PlaneGeometry',
+              sourceRange: [24, 44],
+              pathToNode: [],
+            },
+          },
+          {
+            type: 'extrudePlane',
             position: [
               -0.5650000000000001, -2.602152954766495, -2.602152954766495,
             ],
@@ -139,6 +152,19 @@ show(theExtrude, sk2)`
         value: [
           {
             type: 'extrudePlane',
+            position: [-0.1618929317752782, 0, 1.01798363377866],
+            rotation: [
+              0.3823192025331841, -0.04029905920751535, -0.016692416874629204,
+              0.9230002039112793,
+            ],
+            __geoMeta: {
+              geo: 'PlaneGeometry',
+              sourceRange: [16, 31],
+              pathToNode: [],
+            },
+          },
+          {
+            type: 'extrudePlane',
             position: [
               0.14624915180581843, 3.5355339059327373, 4.540063765792454,
             ],
@@ -189,6 +215,21 @@ show(theExtrude, sk2)`
       {
         type: 'extrudeGroup',
         value: [
+          {
+            type: 'extrudePlane',
+            position: [
+              0.5230004643466108, 4.393026831645281, 5.367870706359959,
+            ],
+            rotation: [
+              -0.5548685410139091, 0.7377864971619333, 0.3261466075583827,
+              -0.20351996751370383,
+            ],
+            __geoMeta: {
+              geo: 'PlaneGeometry',
+              sourceRange: [241, 256],
+              pathToNode: [],
+            },
+          },
           {
             type: 'extrudePlane',
             position: [

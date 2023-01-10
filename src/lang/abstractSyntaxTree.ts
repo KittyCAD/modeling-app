@@ -1348,7 +1348,8 @@ function debuggerr(tokens: Token[], indexes: number[], msg = ''): string {
 export function getNodeFromPath(
   node: Program,
   path: (string | number)[],
-  stopAt: string = ''
+  stopAt: string = '',
+  returnEarly = false
 ) {
   let currentNode = node as any
   let stopAtNode = null
@@ -1363,6 +1364,9 @@ export function getNodeFromPath(
         // it will match the deepest node of the type
         // instead of returning at the first match
         stopAtNode = currentNode
+        if (returnEarly) {
+          return stopAtNode
+        }
       }
     } catch (e) {
       throw new Error(

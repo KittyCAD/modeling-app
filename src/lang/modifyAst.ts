@@ -385,8 +385,12 @@ export function sketchOnExtrudedFace(
   const _node = { ...node }
   const dumbyStartend = { start: 0, end: 0 }
   const newSketchName = findUniqueName(node, 'part')
-  const oldSketchName = getNodeFromPath(_node, pathToNode, 'VariableDeclarator')
-    .id.name
+  const oldSketchName = getNodeFromPath(
+    _node,
+    pathToNode,
+    'VariableDeclarator',
+    true
+  ).id.name
   const expression = getNodeFromPath(_node, pathToNode, 'CallExpression') as
     | VariableDeclarator
     | CallExpression
