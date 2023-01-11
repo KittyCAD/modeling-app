@@ -449,7 +449,7 @@ function useSetAppModeFromCursorLocation(artifacts: Boop[]) {
           sourceRange: SourceRange
         }
     )[] = []
-    artifacts.forEach((artifact) => {
+    artifacts?.forEach((artifact) => {
       artifact.value.forEach((geo) => {
         if (isOverlapping(geo.__geoMeta.sourceRange, selectionRange)) {
           artifactsWithinCursorRange.push({
