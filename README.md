@@ -1,5 +1,7 @@
 ## Kurt demo project
 
+live at https://untitled-lang-git-main-kittycad.vercel.app/
+
 Not sure what to call this, it's both a language/interpreter and a UI that uses the language as the source of truth model the user build with direct-manipulation with the UI.
 
 It might make sense to split this repo up at some point, but not the lang and the UI are all togther in a react app
