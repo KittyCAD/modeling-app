@@ -202,11 +202,11 @@ export function addLine(
 ): { modifiedAst: Program; pathToNode: (string | number)[] } {
   const _node = { ...node }
   const dumbyStartend = { start: 0, end: 0 }
-  const sketchExpression = getNodeFromPath(
+  const { node: sketchExpression } = getNodeFromPath<SketchExpression>(
     _node,
     pathToNode,
     'SketchExpression'
-  ) as SketchExpression
+  )
   const line: ExpressionStatement = {
     type: 'ExpressionStatement',
     ...dumbyStartend,
@@ -251,7 +251,10 @@ export function changeArguments(
   const _node = { ...node }
   const dumbyStartend = { start: 0, end: 0 }
   // const thePath = getNodePathFromSourceRange(_node, sourceRange)
-  const callExpression = getNodeFromPath(_node, pathToNode) as CallExpression
+  const { node: callExpression } = getNodeFromPath<CallExpression>(
+    _node,
+    pathToNode
+  )
   const newXArg: CallExpression['arguments'][number] =
     callExpression.arguments[0].type === 'Literal'
       ? {
@@ -285,24 +288,29 @@ export function extrudeSketch(
   node: Program,
   pathToNode: (string | number)[],
   shouldPipe = true
-): { modifiedAst: Program; pathToNode: (string | number)[] } {
+): {
+  modifiedAst: Program
+  pathToNode: PathToNode
+  pathToExtrudeArg: PathToNode
+} {
   const _node = { ...node }
   const dumbyStartend = { start: 0, end: 0 }
-  const sketchExpression = getNodeFromPath(
+  const { node: sketchExpression } = getNodeFromPath<SketchExpression>(
     _node,
     pathToNode,
     'SketchExpression'
-  ) as SketchExpression
+  )
 
   // determine if sketchExpression is in a pipeExpression or not
-  const pipeExpression = getNodeFromPath(_node, pathToNode, 'PipeExpression')
-  const isInPipeExpression = pipeExpression.type === 'PipeExpression'
-
-  const variableDeclorator = getNodeFromPath(
+  const { node: pipeExpression } = getNodeFromPath<PipeExpression>(
     _node,
     pathToNode,
-    'VariableDeclarator'
-  ) as VariableDeclarator
+    'PipeExpression'
+  )
+  const isInPipeExpression = pipeExpression.type === 'PipeExpression'
+
+  const { node: variableDeclorator, path: pathToDecleration } =
+    getNodeFromPath<VariableDeclarator>(_node, pathToNode, 'VariableDeclarator')
 
   const extrudeCall: CallExpression = {
     type: 'CallExpression',
@@ -346,10 +354,19 @@ export function extrudeSketch(
         }
 
     variableDeclorator.init = pipeChain
+    const pathToExtrudeArg = [
+      ...pathToDecleration,
+      'init',
+      'body',
+      pipeChain.body.length - 1,
+      'arguments',
+      0,
+    ]
 
     return {
       modifiedAst: _node,
       pathToNode,
+      pathToExtrudeArg,
     }
   }
   const name = findUniqueName(node, 'part')
@@ -372,9 +389,19 @@ export function extrudeSketch(
   }
   const showCallIndex = getShowIndex(_node)
   _node.body.splice(showCallIndex, 0, VariableDeclaration)
+  const pathToExtrudeArg = [
+    'body',
+    showCallIndex,
+    'declarations',
+    0,
+    'init',
+    'arguments',
+    0,
+  ]
   return {
     modifiedAst: addToShow(_node, name),
     pathToNode: [...pathToNode.slice(0, -1), showCallIndex],
+    pathToExtrudeArg,
   }
 }
 
@@ -385,22 +412,27 @@ export function sketchOnExtrudedFace(
   const _node = { ...node }
   const dumbyStartend = { start: 0, end: 0 }
   const newSketchName = findUniqueName(node, 'part')
-  const oldSketchName = getNodeFromPath(
+  const oldSketchName = getNodeFromPath<VariableDeclarator>(
     _node,
     pathToNode,
     'VariableDeclarator',
     true
-  ).id.name
-  const expression = getNodeFromPath(_node, pathToNode, 'CallExpression') as
-    | VariableDeclarator
-    | CallExpression
+  ).node.id.name
+  const { node: expression } = getNodeFromPath<
+    VariableDeclarator | CallExpression
+  >(_node, pathToNode, 'CallExpression')
+
   const pathName =
     expression.type === 'VariableDeclarator'
       ? expression.id.name
       : findUniqueName(node, 'path', 2)
 
   if (expression.type === 'CallExpression') {
-    const block = getNodeFromPath(_node, pathToNode, 'BlockStatement')
+    const { node: block } = getNodeFromPath<BlockStatement>(
+      _node,
+      pathToNode,
+      'BlockStatement'
+    )
     const expressionIndex = getLastIndex(pathToNode)
     if (expression.callee.name !== 'lineTo')
       throw new Error('expected a lineTo call')

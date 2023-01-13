@@ -55,7 +55,10 @@ function MovingSphere({
   const { originalXY } = useMemo(() => {
     if (ast) {
       const thePath = getNodePathFromSourceRange(ast, sourceRange)
-      const callExpression = getNodeFromPath(ast, thePath) as CallExpression
+      const { node: callExpression } = getNodeFromPath<CallExpression>(
+        ast,
+        thePath
+      )
       const [xArg, yArg] = callExpression?.arguments || []
       const x = xArg?.type === 'Literal' ? xArg.value : -1
       const y = yArg?.type === 'Literal' ? yArg.value : -1

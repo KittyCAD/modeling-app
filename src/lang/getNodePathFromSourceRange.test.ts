@@ -21,7 +21,7 @@ describe('testing getNodePathFromSourceRange', () => {
 
     const ast = abstractSyntaxTree(lexer(code))
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
-    const node = getNodeFromPath(ast, nodePath)
+    const { node } = getNodeFromPath<any>(ast, nodePath)
 
     expect([node.start, node.end]).toEqual(sourceRange)
     expect(node.type).toBe('CallExpression')
