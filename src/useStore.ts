@@ -1,6 +1,10 @@
 import create from 'zustand'
 import { addLineHighlight, EditorView } from './editor/highlightextension'
-import { Program, abstractSyntaxTree } from './lang/abstractSyntaxTree'
+import {
+  Program,
+  abstractSyntaxTree,
+  getNodeFromPath,
+} from './lang/abstractSyntaxTree'
 import { ProgramMemory, Position, PathToNode, Rotation } from './lang/executor'
 import { recast } from './lang/recast'
 import { lexer } from './lang/tokeniser'
@@ -48,7 +52,7 @@ interface StoreState {
   setEditorView: (editorView: EditorView) => void
   highlightRange: [number, number]
   setHighlightRange: (range: Range) => void
-  setCursor: (cursor: number) => void
+  setCursor: (start: number, end?: number) => void
   selectionRange: [number, number]
   setSelectionRange: (range: Range) => void
   guiMode: GuiModes
@@ -60,7 +64,7 @@ interface StoreState {
   resetLogs: () => void
   ast: Program | null
   setAst: (ast: Program | null) => void
-  updateAst: (ast: Program) => void
+  updateAst: (ast: Program, focusPath?: PathToNode) => void
   code: string
   setCode: (code: string) => void
   formatCode: () => void
@@ -86,11 +90,11 @@ export const useStore = create<StoreState>()((set, get) => ({
       editorView.dispatch({ effects: addLineHighlight.of(highlightRange) })
     }
   },
-  setCursor: (cursor: number) => {
+  setCursor: (start: number, end: number = start) => {
     const editorView = get().editorView
     if (!editorView) return
     editorView.dispatch({
-      selection: { anchor: cursor, head: cursor },
+      selection: { anchor: start, head: end },
     })
   },
   selectionRange: [0, 0],
@@ -118,9 +122,19 @@ export const useStore = create<StoreState>()((set, get) => ({
   setAst: (ast) => {
     set({ ast })
   },
-  updateAst: (ast) => {
+  updateAst: (ast, focusPath) => {
     const newCode = recast(ast)
-    set({ ast, code: newCode })
+    const astWithUpdatedSource = abstractSyntaxTree(lexer(newCode))
+
+    set({ ast: astWithUpdatedSource, code: newCode })
+    if (focusPath) {
+      const { node } = getNodeFromPath<any>(astWithUpdatedSource, focusPath)
+      const { start, end } = node
+      if (!start || !end) return
+      setTimeout(() => {
+        get().setCursor(start, end)
+      })
+    }
   },
   code: '',
   setCode: (code) => {

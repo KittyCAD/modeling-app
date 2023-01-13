@@ -62,8 +62,11 @@ export const Toolbar = () => {
             onClick={() => {
               if (!ast) return
               const pathToNode = getNodePathFromSourceRange(ast, selectionRange)
-              const { modifiedAst } = extrudeSketch(ast, pathToNode)
-              updateAst(modifiedAst)
+              const { modifiedAst, pathToExtrudeArg } = extrudeSketch(
+                ast,
+                pathToNode
+              )
+              updateAst(modifiedAst, pathToExtrudeArg)
             }}
             className="border m-1 px-1 rounded"
           >
@@ -73,8 +76,12 @@ export const Toolbar = () => {
             onClick={() => {
               if (!ast) return
               const pathToNode = getNodePathFromSourceRange(ast, selectionRange)
-              const { modifiedAst } = extrudeSketch(ast, pathToNode, false)
-              updateAst(modifiedAst)
+              const { modifiedAst, pathToExtrudeArg } = extrudeSketch(
+                ast,
+                pathToNode,
+                false
+              )
+              updateAst(modifiedAst, pathToExtrudeArg)
             }}
             className="border m-1 px-1 rounded"
           >

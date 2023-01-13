@@ -1,82 +1,82 @@
+import { PathToNode } from './executor'
 import { Token } from './tokeniser'
 
 type syntaxType =
   | 'Program'
   | 'ExpressionStatement'
   | 'BinaryExpression'
-  | 'NumberLiteral'
-  | 'StringLiteral'
   | 'CallExpression'
   | 'Identifier'
   | 'BlockStatement'
-  | 'IfStatement'
-  | 'WhileStatement'
-  | 'FunctionDeclaration'
   | 'ReturnStatement'
   | 'VariableDeclaration'
   | 'VariableDeclarator'
-  | 'AssignmentExpression'
-  | 'UnaryExpression'
   | 'MemberExpression'
   | 'ArrayExpression'
   | 'ObjectExpression'
   | 'ObjectProperty'
-  | 'Property'
-  | 'LogicalExpression'
-  | 'ConditionalExpression'
-  | 'ForStatement'
-  | 'ForInStatement'
-  | 'ForOfStatement'
-  | 'BreakStatement'
-  | 'ContinueStatement'
-  | 'SwitchStatement'
-  | 'SwitchCase'
-  | 'ThrowStatement'
-  | 'TryStatement'
-  | 'CatchClause'
-  | 'ClassDeclaration'
-  | 'ClassBody'
-  | 'MethodDefinition'
-  | 'NewExpression'
-  | 'ThisExpression'
-  | 'UpdateExpression'
-  // | "ArrowFunctionExpression"
   | 'FunctionExpression'
   | 'SketchExpression'
   | 'PipeExpression'
   | 'PipeSubstitution'
-  | 'YieldExpression'
-  | 'AwaitExpression'
-  | 'ImportDeclaration'
-  | 'ImportSpecifier'
-  | 'ImportDefaultSpecifier'
-  | 'ImportNamespaceSpecifier'
-  | 'ExportNamedDeclaration'
-  | 'ExportDefaultDeclaration'
-  | 'ExportAllDeclaration'
-  | 'ExportSpecifier'
-  | 'TaggedTemplateExpression'
-  | 'TemplateLiteral'
-  | 'TemplateElement'
-  | 'SpreadElement'
-  | 'RestElement'
-  | 'SequenceExpression'
-  | 'DebuggerStatement'
-  | 'LabeledStatement'
-  | 'DoWhileStatement'
-  | 'WithStatement'
-  | 'EmptyStatement'
   | 'Literal'
-  | 'ArrayPattern'
-  | 'ObjectPattern'
-  | 'AssignmentPattern'
-  | 'MetaProperty'
-  | 'Super'
-  | 'Import'
-  | 'RegExpLiteral'
-  | 'BooleanLiteral'
-  | 'NullLiteral'
-  | 'TypeAnnotation'
+// | 'NumberLiteral'
+// | 'StringLiteral'
+// | 'IfStatement'
+// | 'WhileStatement'
+// | 'FunctionDeclaration'
+// | 'AssignmentExpression'
+// | 'UnaryExpression'
+// | 'Property'
+// | 'LogicalExpression'
+// | 'ConditionalExpression'
+// | 'ForStatement'
+// | 'ForInStatement'
+// | 'ForOfStatement'
+// | 'BreakStatement'
+// | 'ContinueStatement'
+// | 'SwitchStatement'
+// | 'SwitchCase'
+// | 'ThrowStatement'
+// | 'TryStatement'
+// | 'CatchClause'
+// | 'ClassDeclaration'
+// | 'ClassBody'
+// | 'MethodDefinition'
+// | 'NewExpression'
+// | 'ThisExpression'
+// | 'UpdateExpression'
+// | 'YieldExpression'
+// | 'AwaitExpression'
+// | 'ImportDeclaration'
+// | 'ImportSpecifier'
+// | 'ImportDefaultSpecifier'
+// | 'ImportNamespaceSpecifier'
+// | 'ExportNamedDeclaration'
+// | 'ExportDefaultDeclaration'
+// | 'ExportAllDeclaration'
+// | 'ExportSpecifier'
+// | 'TaggedTemplateExpression'
+// | 'TemplateLiteral'
+// | 'TemplateElement'
+// | 'SpreadElement'
+// | 'RestElement'
+// | 'SequenceExpression'
+// | 'DebuggerStatement'
+// | 'LabeledStatement'
+// | 'DoWhileStatement'
+// | 'WithStatement'
+// | 'EmptyStatement'
+// | 'ArrayPattern'
+// | 'ObjectPattern'
+// | 'AssignmentPattern'
+// | 'MetaProperty'
+// | 'Super'
+// | 'Import'
+// | 'RegExpLiteral'
+// | 'BooleanLiteral'
+// | 'NullLiteral'
+// | 'TypeAnnotation'
 
 export interface Program {
   type: syntaxType
@@ -1345,27 +1345,37 @@ function debuggerr(tokens: Token[], indexes: number[], msg = ''): string {
   return debugResult
 }
 
-export function getNodeFromPath(
+export function getNodeFromPath<T>(
   node: Program,
   path: (string | number)[],
   stopAt: string = '',
   returnEarly = false
-) {
+): {
+  node: T
+  path: PathToNode
+} {
   let currentNode = node as any
   let stopAtNode = null
-  let successfulPaths: (string | number)[] = []
+  let successfulPaths: PathToNode = []
+  let pathsExplored: PathToNode = []
   for (const pathItem of path) {
     try {
       if (typeof currentNode[pathItem] !== 'object')
         throw new Error('not an object')
       currentNode = currentNode[pathItem]
       successfulPaths.push(pathItem)
+      if (!stopAtNode) {
+        pathsExplored.push(pathItem)
+      }
       if (currentNode.type === stopAt) {
         // it will match the deepest node of the type
         // instead of returning at the first match
         stopAtNode = currentNode
         if (returnEarly) {
-          return stopAtNode
+          return {
+            node: stopAtNode,
+            path: pathsExplored,
+          }
         }
       }
     } catch (e) {
@@ -1378,7 +1388,10 @@ export function getNodeFromPath(
       )
     }
   }
-  return stopAtNode || currentNode
+  return {
+    node: stopAtNode || currentNode,
+    path: pathsExplored,
+  }
 }
 
 type Path = (string | number)[]
