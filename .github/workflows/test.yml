@@ -1,0 +1,16 @@
+# on pull requests, setup node, run `yarn install` and `yarn test:nowatch`
+
+name: Test
+
+on: [pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '18.x'
+      - run: yarn install
+      - run: yarn test:nowatch
