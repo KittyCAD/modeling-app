@@ -8,7 +8,12 @@ import {
   Identifier,
   CallExpression,
 } from './abstractSyntaxTree'
-import { sketchFns } from './sketch'
+import {
+  sketchFns,
+  internalFns,
+  InternalFnNames,
+  SketchFnNames,
+} from './sketch'
 import { BufferGeometry } from 'three'
 
 export type SourceRange = [number, number]
@@ -274,7 +279,6 @@ export const executor = (
             __meta,
           }
         } else if (declaration.init.type === 'CallExpression') {
-          // TODO: use executeCallExpression here instead
           const functionName = declaration.init.callee.name
           const fnArgs = declaration.init.arguments.map((arg) => {
             if (arg.type === 'Literal') {
@@ -288,20 +292,19 @@ export const executor = (
               `Unexpected argument type ${arg.type} in function call`
             )
           })
-          if (
-            'lineTo' === functionName ||
-            'close' === functionName // ||
-            // 'base' === functionName
-          ) {
+          if (functionName in sketchFns) {
+            const sketchFnName = functionName as SketchFnNames
             if (options.bodyType !== 'sketch') {
               throw new Error(
                 `Cannot call ${functionName} outside of a sketch declaration`
               )
             }
-            const result = sketchFns[functionName](
-              _programMemory,
-              variableName,
-              [declaration.start, declaration.end],
+            const result = sketchFns[sketchFnName](
+              {
+                programMemory: _programMemory,
+                name: variableName,
+                sourceRange: [declaration.start, declaration.end],
+              },
               ...fnArgs
             )
             _programMemory._sketch = result.programMemory._sketch
@@ -310,66 +313,20 @@ export const executor = (
               value: result.currentPath,
               __meta,
             }
-          } else if (
-            'rx' === functionName ||
-            'ry' === functionName ||
-            'rz' === functionName
-          ) {
-            const sketch = declaration.init.arguments[1]
-            if (sketch.type !== 'Identifier')
-              throw new Error('rx must be called with an identifier')
-            const sketchVal = _programMemory.root[sketch.name]
-            const result = sketchFns[functionName](
+          } else if (functionName in internalFns) {
+            const result = executeCallExpression(
               _programMemory,
-              [declaration.start, declaration.end],
-              fnArgs[0],
-              sketchVal as any // todo memory redo
+              declaration.init,
+              previousPathToNode,
+              {
+                sourceRangeOverride: [declaration.start, declaration.end],
+                isInPipe: false,
+                previousResults: [],
+                expressionIndex: 0,
+                body: [],
+              }
             )
             _programMemory.root[variableName] = result as any // todo memory redo
-          } else if (functionName === 'extrude') {
-            const sketch = declaration.init.arguments[1]
-            if (sketch.type !== 'Identifier')
-              throw new Error('extrude must be called with an identifier')
-            const sketchVal = _programMemory.root[sketch.name]
-            const result = sketchFns[functionName](
-              _programMemory,
-              'yo',
-              [declaration.start, declaration.end],
-              fnArgs[0],
-              sketchVal as any // todo memory redo
-            )
-            _programMemory.root[variableName] = result as any // todo memory redo
-          } else if (
-            functionName === 'translate' ||
-            functionName === 'transform'
-          ) {
-            const sketch = declaration.init.arguments[1]
-            if (sketch.type !== 'Identifier')
-              throw new Error('rx must be called with an identifier')
-            const sketchVal = _programMemory.root[sketch.name]
-            const result = sketchFns[functionName](
-              _programMemory,
-              [declaration.start, declaration.end],
-              fnArgs[0],
-              sketchVal as any // todo memory redo
-            )
-            _programMemory.root[variableName] = result as any // todo memory redo
-          } else if (functionName === 'getExtrudeWallTransform') {
-            const extrude = declaration.init.arguments[1]
-            if (extrude.type !== 'Identifier')
-              throw new Error('rx must be called with an identifier')
-            const sketchVal = _programMemory.root[extrude.name]
-            const value = sketchFns[functionName](
-              _programMemory,
-              [declaration.start, declaration.end],
-              fnArgs[0],
-              sketchVal as any // todo memory redo
-            )
-            _programMemory.root[variableName] = {
-              type: 'userVal',
-              value,
-              __meta,
-            }
           } else {
             _programMemory.root[variableName] = {
               type: 'userVal',
@@ -394,20 +351,18 @@ export const executor = (
             return _programMemory.root[arg.name].value
           }
         })
-        if (
-          'lineTo' === functionName ||
-          'close' === functionName
-          // || 'base' === functionName
-        ) {
+        if (functionName in sketchFns) {
           if (options.bodyType !== 'sketch') {
             throw new Error(
               `Cannot call ${functionName} outside of a sketch declaration`
             )
           }
-          const result = sketchFns[functionName](
-            _programMemory,
-            '',
-            [statement.start, statement.end],
+          const sketchFnName = functionName as SketchFnNames
+          const result = sketchFns[sketchFnName](
+            {
+              programMemory: _programMemory,
+              sourceRange: [statement.start, statement.end],
+            },
             ...args
           )
           _programMemory._sketch = [...(result.programMemory._sketch || [])]
@@ -607,6 +562,7 @@ function executeCallExpression(
     previousResults: any[]
     expressionIndex: number
     body: PipeExpression['body']
+    sourceRangeOverride?: SourceRange
   } = {
     isInPipe: false,
     previousResults: [],
@@ -614,7 +570,13 @@ function executeCallExpression(
     body: [],
   }
 ) {
-  const { isInPipe, previousResults, expressionIndex, body } = pipeInfo
+  const {
+    isInPipe,
+    previousResults,
+    expressionIndex,
+    body,
+    sourceRangeOverride,
+  } = pipeInfo
   const functionName = expression.callee.name
   const fnArgs = expression.arguments.map((arg) => {
     if (arg.type === 'Literal') {
@@ -645,10 +607,24 @@ function executeCallExpression(
     }
     throw new Error('Invalid argument type')
   })
-  if ('rx' === functionName || 'ry' === functionName || 'rz' === functionName) {
-    const result = sketchFns[functionName](
-      programMemory,
-      [expression.start, expression.end],
+  if (
+    functionName in internalFns &&
+    [
+      'rx',
+      'ry',
+      'rz',
+      'translate',
+      'transform',
+      'extrude',
+      'getExtrudeWallTransform',
+    ].includes(functionName)
+  ) {
+    const fnNameWithSketchOrExtrude = functionName as InternalFnNames
+    const result = internalFns[fnNameWithSketchOrExtrude](
+      {
+        programMemory,
+        sourceRange: sourceRangeOverride || [expression.start, expression.end],
+      },
       fnArgs[0],
       fnArgs[1]
     )
@@ -662,47 +638,14 @@ function executeCallExpression(
         )
       : result
   }
-  if (functionName === 'extrude') {
-    const result = sketchFns[functionName](
-      programMemory,
-      'yo',
-      [expression.start, expression.end],
-      fnArgs[0],
-      fnArgs[1]
-    )
-    return isInPipe
-      ? executePipeBody(
-          body,
-          programMemory,
-          previousPathToNode,
-          expressionIndex + 1,
-          [...previousResults, result]
-        )
-      : result
-  }
-  if (functionName === 'translate' || functionName === 'transform') {
-    const result = sketchFns[functionName](
-      programMemory,
-      [expression.start, expression.end],
-      fnArgs[0],
-      fnArgs[1]
-    )
-    return isInPipe
-      ? executePipeBody(
-          body,
-          programMemory,
-          previousPathToNode,
-          expressionIndex + 1,
-          [...previousResults, result]
-        )
-      : result
-  }
-  if (functionName === 'getExtrudeWallTransform') {
-    const result = sketchFns[functionName](
-      programMemory,
-      [expression.start, expression.end],
-      fnArgs[0],
-      fnArgs[1]
+  if (functionName in sketchFns) {
+    const sketchFnName = functionName as SketchFnNames
+    const result = sketchFns[sketchFnName](
+      {
+        programMemory,
+        sourceRange: sourceRangeOverride || [expression.start, expression.end],
+      },
+      ...fnArgs
     )
     return isInPipe
       ? executePipeBody(
