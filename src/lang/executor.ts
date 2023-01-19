@@ -416,7 +416,11 @@ function getBinaryExpressionResult(
   }
   const left = getVal(expression.left)
   const right = getVal(expression.right)
-  return left + right
+  if (expression.operator === '+') return left + right
+  if (expression.operator === '-') return left - right
+  if (expression.operator === '*') return left * right
+  if (expression.operator === '/') return left / right
+  if (expression.operator === '%') return left % right
 }
 
 function getPipeExpressionResult(

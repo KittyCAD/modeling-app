@@ -296,6 +296,34 @@ show(mySketch)
   })
 })
 
+describe('testing math operators', () => {
+  it('it can sum', () => {
+    const code = ['const myVar = 1 + 2'].join('\n')
+    const { root } = exe(code)
+    expect(root.myVar.value).toBe(3)
+  })
+  it('it can subtract', () => {
+    const code = ['const myVar = 1 - 2'].join('\n')
+    const { root } = exe(code)
+    expect(root.myVar.value).toBe(-1)
+  })
+  it('it can multiply', () => {
+    const code = ['const myVar = 1 * 2'].join('\n')
+    const { root } = exe(code)
+    expect(root.myVar.value).toBe(2)
+  })
+  it('it can divide', () => {
+    const code = ['const myVar = 1 / 2'].join('\n')
+    const { root } = exe(code)
+    expect(root.myVar.value).toBe(0.5)
+  })
+  it('it can modulus', () => {
+    const code = ['const myVar = 1 % 2'].join('\n')
+    const { root } = exe(code)
+    expect(root.myVar.value).toBe(1)
+  })
+})
+
 // helpers
 
 function exe(

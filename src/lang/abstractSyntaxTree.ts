@@ -473,7 +473,7 @@ function makeVariableDeclarators(
   }
 }
 
-export type BinaryPart = Literal | Identifier
+export type BinaryPart = Literal | Identifier | BinaryExpression
 // | BinaryExpression
 // | CallExpression
 // | MemberExpression
@@ -764,7 +764,7 @@ export interface BinaryExpression extends GeneralStatement {
 function makeBinaryPart(
   tokens: Token[],
   index: number
-): { part: BinaryPart; lastIndex: number } {
+): { part: Literal | Identifier; lastIndex: number } {
   const currentToken = tokens[index]
   if (currentToken.type === 'word') {
     const identifier = makeIdentifier(tokens, index)
@@ -785,26 +785,67 @@ function makeBinaryPart(
 
 function makeBinaryExpression(
   tokens: Token[],
-  index: number
+  index: number,
+  previousLeft?: BinaryPart
 ): { expression: BinaryExpression; lastIndex: number } {
   const currentToken = tokens[index]
-  const { part: left } = makeBinaryPart(tokens, index)
   const { token: operatorToken, index: operatorIndex } = nextMeaningfulToken(
     tokens,
     index
   )
   const rightToken = nextMeaningfulToken(tokens, operatorIndex)
-  const { part: right } = makeBinaryPart(tokens, rightToken.index)
+  const maybeAnotherOperator = nextMeaningfulToken(tokens, rightToken.index)
+  if (
+    maybeAnotherOperator.token?.type !== 'operator' ||
+    maybeAnotherOperator.token?.value === '|>'
+  ) {
+    // no more operators, no more nesting needed
+    const { part: left } = makeBinaryPart(tokens, index)
+    const { part: right } = makeBinaryPart(tokens, rightToken.index)
+    return {
+      expression: {
+        type: 'BinaryExpression',
+        start: previousLeft ? previousLeft.start : currentToken.start,
+        end: right.end,
+        left: previousLeft || left,
+        operator: operatorToken.value,
+        right,
+      },
+      lastIndex: rightToken.index,
+    }
+  }
+  if (
+    ['*', '/'].includes(operatorToken.value) ||
+    !['*', '/'].includes(maybeAnotherOperator.token.value)
+  ) {
+    const { part: left } = makeBinaryPart(tokens, index)
+    const { part: right } = makeBinaryPart(tokens, rightToken.index)
+    const carryLeftExpression: BinaryExpression = {
+      type: 'BinaryExpression',
+      start: previousLeft ? previousLeft.start : currentToken.start,
+      end: right.end,
+      left: previousLeft || left,
+      operator: operatorToken.value,
+      right,
+    }
+    return makeBinaryExpression(tokens, rightToken.index, carryLeftExpression)
+  }
+  const { part: left } = makeBinaryPart(tokens, index)
+
+  const { expression: right, lastIndex } = makeBinaryExpression(
+    tokens,
+    rightToken.index
+  )
   return {
     expression: {
       type: 'BinaryExpression',
-      start: currentToken.start,
+      start: previousLeft ? previousLeft.start : currentToken.start,
       end: right.end,
-      left,
+      left: previousLeft || left,
       operator: operatorToken.value,
       right,
     },
-    lastIndex: rightToken.index,
+    lastIndex,
   }
 }
 

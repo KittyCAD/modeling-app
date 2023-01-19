@@ -1521,3 +1521,237 @@ describe('testing pipe operator special', () => {
     ])
   })
 })
+
+describe('nests binary expressions correctly', () => {
+  it('it works with the simple case', () => {
+    const code = `const yo = 1 + 2`
+    const { body } = abstractSyntaxTree(lexer(code))
+    expect(body[0]).toEqual({
+      type: 'VariableDeclaration',
+      start: 0,
+      end: 16,
+      kind: 'const',
+      declarations: [
+        {
+          type: 'VariableDeclarator',
+          start: 6,
+          end: 16,
+          id: {
+            type: 'Identifier',
+            start: 6,
+            end: 8,
+            name: 'yo',
+          },
+          init: {
+            type: 'BinaryExpression',
+            start: 11,
+            end: 16,
+            left: {
+              type: 'Literal',
+              start: 11,
+              end: 12,
+              value: 1,
+              raw: '1',
+            },
+            operator: '+',
+            right: {
+              type: 'Literal',
+              start: 15,
+              end: 16,
+              value: 2,
+              raw: '2',
+            },
+          },
+        },
+      ],
+    })
+  })
+  it('it should nest according to precedence with multiply first', () => {
+    // should be binExp { binExp { lit-1 * lit-2 } + lit}
+    const code = `const yo = 1 * 2 + 3`
+    const { body } = abstractSyntaxTree(lexer(code))
+    expect(body[0]).toEqual({
+      type: 'VariableDeclaration',
+      start: 0,
+      end: 20,
+      kind: 'const',
+      declarations: [
+        {
+          type: 'VariableDeclarator',
+          start: 6,
+          end: 20,
+          id: {
+            type: 'Identifier',
+            start: 6,
+            end: 8,
+            name: 'yo',
+          },
+          init: {
+            type: 'BinaryExpression',
+            start: 11,
+            end: 20,
+            left: {
+              type: 'BinaryExpression',
+              start: 11,
+              end: 16,
+              left: {
+                type: 'Literal',
+                start: 11,
+                end: 12,
+                value: 1,
+                raw: '1',
+              },
+              operator: '*',
+              right: {
+                type: 'Literal',
+                start: 15,
+                end: 16,
+                value: 2,
+                raw: '2',
+              },
+            },
+            operator: '+',
+            right: {
+              type: 'Literal',
+              start: 19,
+              end: 20,
+              value: 3,
+              raw: '3',
+            },
+          },
+        },
+      ],
+    })
+  })
+  it('it should nest according to precedence with sum first', () => {
+    // should be binExp { lit-1 + binExp { lit-2 * lit-3 } }
+    const code = `const yo = 1 + 2 * 3`
+    const { body } = abstractSyntaxTree(lexer(code))
+    expect(body[0]).toEqual({
+      type: 'VariableDeclaration',
+      start: 0,
+      end: 20,
+      kind: 'const',
+      declarations: [
+        {
+          type: 'VariableDeclarator',
+          start: 6,
+          end: 20,
+          id: {
+            type: 'Identifier',
+            start: 6,
+            end: 8,
+            name: 'yo',
+          },
+          init: {
+            type: 'BinaryExpression',
+            start: 11,
+            end: 20,
+            left: {
+              type: 'Literal',
+              start: 11,
+              end: 12,
+              value: 1,
+              raw: '1',
+            },
+            operator: '+',
+            right: {
+              type: 'BinaryExpression',
+              start: 15,
+              end: 20,
+              left: {
+                type: 'Literal',
+                start: 15,
+                end: 16,
+                value: 2,
+                raw: '2',
+              },
+              operator: '*',
+              right: {
+                type: 'Literal',
+                start: 19,
+                end: 20,
+                value: 3,
+                raw: '3',
+              },
+            },
+          },
+        },
+      ],
+    })
+  })
+  it('it should nest properly with two opperators of equal precedence', () => {
+    const code = `const yo = 1 + 2 - 3`
+    const { body } = abstractSyntaxTree(lexer(code))
+    expect((body[0] as any).declarations[0].init).toEqual({
+      type: 'BinaryExpression',
+      start: 11,
+      end: 20,
+      left: {
+        type: 'BinaryExpression',
+        start: 11,
+        end: 16,
+        left: {
+          type: 'Literal',
+          start: 11,
+          end: 12,
+          value: 1,
+          raw: '1',
+        },
+        operator: '+',
+        right: {
+          type: 'Literal',
+          start: 15,
+          end: 16,
+          value: 2,
+          raw: '2',
+        },
+      },
+      operator: '-',
+      right: {
+        type: 'Literal',
+        start: 19,
+        end: 20,
+        value: 3,
+        raw: '3',
+      },
+    })
+  })
+  it('it should nest properly with two opperators of equal (but higher) precedence', () => {
+    const code = `const yo = 1 * 2 / 3`
+    const { body } = abstractSyntaxTree(lexer(code))
+    expect((body[0] as any).declarations[0].init).toEqual({
+      type: 'BinaryExpression',
+      start: 11,
+      end: 20,
+      left: {
+        type: 'BinaryExpression',
+        start: 11,
+        end: 16,
+        left: {
+          type: 'Literal',
+          start: 11,
+          end: 12,
+          value: 1,
+          raw: '1',
+        },
+        operator: '*',
+        right: {
+          type: 'Literal',
+          start: 15,
+          end: 16,
+          value: 2,
+          raw: '2',
+        },
+      },
+      operator: '/',
+      right: {
+        type: 'Literal',
+        start: 19,
+        end: 20,
+        value: 3,
+        raw: '3',
+      },
+    })
+  })
+})
