@@ -475,7 +475,6 @@ function makeVariableDeclarators(
 }
 
 export type BinaryPart = Literal | Identifier | BinaryExpression
-// | BinaryExpression
 // | CallExpression
 // | MemberExpression
 // | ArrayExpression
@@ -815,7 +814,6 @@ export function findEndOfBinaryExpression(
 function makeBinaryExpression(
   tokens: Token[],
   index: number
-  // previousLeft?: BinaryPart
 ): { expression: BinaryExpression; lastIndex: number } {
   const endIndex = findEndOfBinaryExpression(tokens, index)
   const expression = parseExpression(tokens.slice(index, endIndex + 1))

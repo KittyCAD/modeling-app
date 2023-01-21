@@ -1841,14 +1841,12 @@ describe('testing findEndofBinaryExpression', () => {
     expect(end).toBe(code.indexOf('2'))
   })
   it('lots of silly nesting: (1 + 2) / (5 - (3))', () => {
-    // const code = '(1 + 2) / (5 - 3) + 6'
     const code = '(1 + 2) / (5 - (3))\nconst yo = 5'
     const tokens = lexer(code)
     const end = findEndOfBinaryExpression(tokens, 0)
     expect(end).toBe(code.indexOf('))') + 1)
   })
   it('with pipe operator at the end', () => {
-    // const code = '(1 + 2) / (5 - 3) + 6'
     const code = '(1 + 2) / (5 - (3))\n  |> fn(%)'
     const tokens = lexer(code)
     const end = findEndOfBinaryExpression(tokens, 0)

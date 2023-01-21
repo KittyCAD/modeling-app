@@ -115,7 +115,8 @@ function recastBinaryPart(part: BinaryPart): string {
   } else if (part.type === 'BinaryExpression') {
     return recastBinaryExpression(part)
   }
-  throw new Error(`Cannot recast BinaryPart ${part}`)
+  return ''
+  // throw new Error(`Cannot recast BinaryPart ${part}`)
 }
 
 function recastLiteral(literal: Literal): string {
