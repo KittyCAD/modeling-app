@@ -1,12 +1,6 @@
 import { BinaryExpression, Literal, Identifier } from './abstractSyntaxTree'
 import { Token } from './tokeniser'
 
-interface Tree {
-  value: string
-  left?: Tree
-  right?: Tree
-}
-
 export function reversePolishNotation(
   tokens: Token[],
   previousPostfix: Token[] = [],

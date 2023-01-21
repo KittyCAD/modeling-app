@@ -761,28 +761,6 @@ export interface BinaryExpression extends GeneralStatement {
   right: BinaryPart
 }
 
-function makeBinaryPart(
-  tokens: Token[],
-  index: number
-): { part: Literal | Identifier; lastIndex: number } {
-  const currentToken = tokens[index]
-  if (currentToken.type === 'word') {
-    const identifier = makeIdentifier(tokens, index)
-    return {
-      part: identifier,
-      lastIndex: index,
-    }
-  }
-  if (currentToken.type === 'number' || currentToken.type === 'string') {
-    const literal = makeLiteral(tokens, index)
-    return {
-      part: literal,
-      lastIndex: index,
-    }
-  }
-  throw new Error('Expected a previous BinaryPart if statement to match')
-}
-
 export function findEndOfBinaryExpression(
   tokens: Token[],
   index: number
