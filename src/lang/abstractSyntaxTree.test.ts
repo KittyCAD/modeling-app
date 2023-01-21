@@ -2,6 +2,7 @@ import {
   abstractSyntaxTree,
   findClosingBrace,
   hasPipeOperator,
+  findEndOfBinaryExpression,
 } from './abstractSyntaxTree'
 import { lexer } from './tokeniser'
 
@@ -1753,5 +1754,104 @@ describe('nests binary expressions correctly', () => {
         raw: '3',
       },
     })
+  })
+  it('it should nest properly with longer example', () => {
+    const code = `const yo = 1 + 2 * (3 - 4) / 5 + 6`
+    const { body } = abstractSyntaxTree(lexer(code))
+    const init = (body[0] as any).declarations[0].init
+    expect(init).toEqual({
+      type: 'BinaryExpression',
+      operator: '+',
+      start: 11,
+      end: 34,
+      left: {
+        type: 'BinaryExpression',
+        operator: '+',
+        start: 11,
+        end: 30,
+        left: { type: 'Literal', value: 1, raw: '1', start: 11, end: 12 },
+        right: {
+          type: 'BinaryExpression',
+          operator: '/',
+          start: 15,
+          end: 30,
+          left: {
+            type: 'BinaryExpression',
+            operator: '*',
+            start: 15,
+            end: 26,
+            left: { type: 'Literal', value: 2, raw: '2', start: 15, end: 16 },
+            right: {
+              type: 'BinaryExpression',
+              operator: '-',
+              start: 20,
+              end: 25,
+              left: { type: 'Literal', value: 3, raw: '3', start: 20, end: 21 },
+              right: {
+                type: 'Literal',
+                value: 4,
+                raw: '4',
+                start: 24,
+                end: 25,
+              },
+            },
+          },
+          right: { type: 'Literal', value: 5, raw: '5', start: 29, end: 30 },
+        },
+      },
+      right: { type: 'Literal', value: 6, raw: '6', start: 33, end: 34 },
+    })
+  })
+})
+
+describe('testing findEndofBinaryExpression', () => {
+  it('1 + 2 * 3', () => {
+    const code = `1 + 2 * 3\nconst yo = 5`
+    const tokens = lexer(code)
+    const end = findEndOfBinaryExpression(tokens, 0)
+    expect(end).toBe(8)
+  })
+  it('(1 + 2) / 5 - 3', () => {
+    const code = `(1 + 25) / 5 - 3\nconst yo = 5`
+    const tokens = lexer(code)
+    const end = findEndOfBinaryExpression(tokens, 0)
+    expect(end).toBe(14)
+
+    // expect to have the same end if started later in the string at a legitimate place
+    const indexOf5 = code.indexOf('5')
+    const endStartingAtThe5 = findEndOfBinaryExpression(tokens, indexOf5)
+    expect(endStartingAtThe5).toBe(end)
+  })
+  it('whole thing wraped: ((1 + 2) / 5 - 3)', () => {
+    const code = '((1 + 2) / 5 - 3)\nconst yo = 5'
+    const tokens = lexer(code)
+    const end = findEndOfBinaryExpression(tokens, 0)
+    expect(end).toBe(code.indexOf('3)') + 1)
+  })
+  it('whole thing wraped but given index after the first brace: ((1 + 2) / 5 - 3)', () => {
+    const code = '((1 + 2) / 5 - 3)\nconst yo = 5'
+    const tokens = lexer(code)
+    const end = findEndOfBinaryExpression(tokens, 1)
+    expect(end).toBe(code.indexOf('3'))
+  })
+  it('given the index of a small wrapped section i.e. `1 + 2` in ((1 + 2) / 5 - 3)', () => {
+    const code = '((1 + 2) / 5 - 3)\nconst yo = 5'
+    const tokens = lexer(code)
+    const end = findEndOfBinaryExpression(tokens, 2)
+    expect(end).toBe(code.indexOf('2'))
+  })
+  it('lots of silly nesting: (1 + 2) / (5 - (3))', () => {
+    // const code = '(1 + 2) / (5 - 3) + 6'
+    const code = '(1 + 2) / (5 - (3))\nconst yo = 5'
+    const tokens = lexer(code)
+    const end = findEndOfBinaryExpression(tokens, 0)
+    expect(end).toBe(code.indexOf('))') + 1)
+  })
+  it('with pipe operator at the end', () => {
+    // const code = '(1 + 2) / (5 - 3) + 6'
+    const code = '(1 + 2) / (5 - (3))\n  |> fn(%)'
+    const tokens = lexer(code)
+    const end = findEndOfBinaryExpression(tokens, 0)
+    expect(end).toBe(code.indexOf('))') + 1)
   })
 })

@@ -407,11 +407,13 @@ function getBinaryExpressionResult(
   expression: BinaryExpression,
   programMemory: ProgramMemory
 ) {
-  const getVal = (part: BinaryPart) => {
+  const getVal = (part: BinaryPart): any => {
     if (part.type === 'Literal') {
       return part.value
     } else if (part.type === 'Identifier') {
       return programMemory.root[part.name].value
+    } else if (part.type === 'BinaryExpression') {
+      return getBinaryExpressionResult(part, programMemory)
     }
   }
   const left = getVal(expression.left)

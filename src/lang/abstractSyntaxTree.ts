@@ -1,5 +1,6 @@
 import { PathToNode } from './executor'
 import { Token } from './tokeniser'
+import { parseExpression } from './astMathExpressions'
 
 type syntaxType =
   | 'Program'
@@ -783,69 +784,44 @@ function makeBinaryPart(
   throw new Error('Expected a previous BinaryPart if statement to match')
 }
 
+export function findEndOfBinaryExpression(
+  tokens: Token[],
+  index: number
+): number {
+  const currentToken = tokens[index]
+  if (currentToken.type === 'brace' && currentToken.value === '(') {
+    const closingParenthesis = findClosingBrace(tokens, index)
+    const maybeAnotherOperator = nextMeaningfulToken(tokens, closingParenthesis)
+    if (
+      maybeAnotherOperator?.token?.type !== 'operator' ||
+      maybeAnotherOperator?.token?.value === '|>'
+    ) {
+      return closingParenthesis
+    }
+    const nextRight = nextMeaningfulToken(tokens, maybeAnotherOperator.index)
+    return findEndOfBinaryExpression(tokens, nextRight.index)
+  }
+  const maybeOperator = nextMeaningfulToken(tokens, index)
+  if (
+    maybeOperator?.token?.type !== 'operator' ||
+    maybeOperator?.token?.value === '|>'
+  ) {
+    return index
+  }
+  const nextRight = nextMeaningfulToken(tokens, maybeOperator.index)
+  return findEndOfBinaryExpression(tokens, nextRight.index)
+}
+
 function makeBinaryExpression(
   tokens: Token[],
-  index: number,
-  previousLeft?: BinaryPart
+  index: number
+  // previousLeft?: BinaryPart
 ): { expression: BinaryExpression; lastIndex: number } {
-  const currentToken = tokens[index]
-  const { token: operatorToken, index: operatorIndex } = nextMeaningfulToken(
-    tokens,
-    index
-  )
-  const rightToken = nextMeaningfulToken(tokens, operatorIndex)
-  const maybeAnotherOperator = nextMeaningfulToken(tokens, rightToken.index)
-  if (
-    maybeAnotherOperator.token?.type !== 'operator' ||
-    maybeAnotherOperator.token?.value === '|>'
-  ) {
-    // no more operators, no more nesting needed
-    const { part: left } = makeBinaryPart(tokens, index)
-    const { part: right } = makeBinaryPart(tokens, rightToken.index)
-    return {
-      expression: {
-        type: 'BinaryExpression',
-        start: previousLeft ? previousLeft.start : currentToken.start,
-        end: right.end,
-        left: previousLeft || left,
-        operator: operatorToken.value,
-        right,
-      },
-      lastIndex: rightToken.index,
-    }
-  }
-  if (
-    ['*', '/'].includes(operatorToken.value) ||
-    !['*', '/'].includes(maybeAnotherOperator.token.value)
-  ) {
-    const { part: left } = makeBinaryPart(tokens, index)
-    const { part: right } = makeBinaryPart(tokens, rightToken.index)
-    const carryLeftExpression: BinaryExpression = {
-      type: 'BinaryExpression',
-      start: previousLeft ? previousLeft.start : currentToken.start,
-      end: right.end,
-      left: previousLeft || left,
-      operator: operatorToken.value,
-      right,
-    }
-    return makeBinaryExpression(tokens, rightToken.index, carryLeftExpression)
-  }
-  const { part: left } = makeBinaryPart(tokens, index)
-
-  const { expression: right, lastIndex } = makeBinaryExpression(
-    tokens,
-    rightToken.index
-  )
+  const endIndex = findEndOfBinaryExpression(tokens, index)
+  const expression = parseExpression(tokens.slice(index, endIndex + 1))
   return {
-    expression: {
-      type: 'BinaryExpression',
-      start: previousLeft ? previousLeft.start : currentToken.start,
-      end: right.end,
-      left: previousLeft || left,
-      operator: operatorToken.value,
-      right,
-    },
-    lastIndex,
+    expression,
+    lastIndex: endIndex,
   }
 }
 
@@ -1336,6 +1312,61 @@ export function findClosingBrace(
   // non-brace token, increment and continue
   return findClosingBrace(tokens, index + 1, _braceCount, searchOpeningBrace)
 }
+
+// function findOpeningBrace(
+//   tokens: Token[],
+//   index: number,
+//   _braceCount: number = 0,
+//   _searchClosingBrace: string = ''
+// ): number {
+//   // should be called with the index of the opening brace
+//   const closingBraceMap: { [key: string]: string } = {
+//     ')': '(',
+//     '}': '{',
+//     ']': '[',
+//   }
+//   const currentToken = tokens[index]
+//   let searchClosingBrace = _searchClosingBrace
+
+//   const isFirstCall = !searchClosingBrace && _braceCount === 0
+//   if (isFirstCall) {
+//     searchClosingBrace = currentToken.value
+//     if (![')', '}', ']'].includes(searchClosingBrace)) {
+//       throw new Error(
+//         `expected to be started on a opening brace ( { [, instead found '${searchClosingBrace}'`
+//       )
+//     }
+//   }
+
+//   const foundOpeningBrace =
+//     _braceCount === 1 &&
+//     currentToken.value === closingBraceMap[searchClosingBrace]
+//   const foundAnotherClosingBrace = currentToken.value === searchClosingBrace
+//   const foundAnotherOpeningBrace =
+//     currentToken.value === closingBraceMap[searchClosingBrace]
+
+//   if (foundOpeningBrace) {
+//     return index
+//   }
+//   if (foundAnotherClosingBrace) {
+//     return findOpeningBrace(
+//       tokens,
+//       index - 1,
+//       _braceCount + 1,
+//       searchClosingBrace
+//     )
+//   }
+//   if (foundAnotherOpeningBrace) {
+//     return findOpeningBrace(
+//       tokens,
+//       index - 1,
+//       _braceCount - 1,
+//       searchClosingBrace
+//     )
+//   }
+//   // non-brace token, increment and continue
+//   return findOpeningBrace(tokens, index - 1, _braceCount, searchClosingBrace)
+// }
 
 function isCallExpression(tokens: Token[], index: number): number {
   const currentToken = tokens[index]

@@ -318,10 +318,34 @@ describe('testing math operators', () => {
     expect(root.myVar.value).toBe(0.5)
   })
   it('it can modulus', () => {
-    const code = ['const myVar = 1 % 2'].join('\n')
+    const code = ['const myVar = 5 % 2'].join('\n')
     const { root } = exe(code)
     expect(root.myVar.value).toBe(1)
   })
+  it('it can do multiple operations', () => {
+    const code = ['const myVar = 1 + 2 * 3'].join('\n')
+    const { root } = exe(code)
+    expect(root.myVar.value).toBe(7)
+  })
+  it('big example with parans', () => {
+    const code = ['const myVar = 1 + 2 * (3 - 4) / -5 + 6'].join('\n')
+    const { root } = exe(code)
+    expect(root.myVar.value).toBe(7.4)
+  })
+  it('with identifier', () => {
+    const code = ['const yo = 6', 'const myVar = yo / 2'].join('\n')
+    const { root } = exe(code)
+    expect(root.myVar.value).toBe(3)
+  })
+  // TODO
+  // it('with callExpression', () => {
+  //   const code = [
+  //     'const yo = (a) => a * 2',
+  //     'const myVar = yo(2) + 2'
+  //   ].join('\n')
+  //   const { root } = exe(code)
+  //   expect(root.myVar.value).toBe(6)
+  // })
 })
 
 // helpers
