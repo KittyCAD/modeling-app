@@ -337,6 +337,11 @@ describe('testing math operators', () => {
     const { root } = exe(code)
     expect(root.myVar.value).toBe(3)
   })
+  it('with identifier', () => {
+    const code = ['const myVar = 2 * ((2 + 3 ) / 4 + 5)'].join('\n')
+    const { root } = exe(code)
+    expect(root.myVar.value).toBe(12.5)
+  })
   // TODO
   // it('with callExpression', () => {
   //   const code = [

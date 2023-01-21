@@ -29,7 +29,7 @@ export function reversePolishNotation(
   } else if (['+', '-', '*', '/', '%'].includes(currentToken.value)) {
     if (
       operators.length > 0 &&
-      precedence(operators[operators.length - 1]) >= precedence(currentToken)
+      _precedence(operators[operators.length - 1]) >= _precedence(currentToken)
     ) {
       return reversePolishNotation(
         tokens,
@@ -201,12 +201,16 @@ export function parseExpression(tokens: Token[]): BinaryExpression {
   return tree
 }
 
-function precedence(operator: Token): number {
+function _precedence(operator: Token): number {
+  return precedence(operator.value)
+}
+
+export function precedence(operator: string): number {
   // might be useful for refenecne to make it match
   // another commonly used lang https://www.w3schools.com/js/js_precedence.asp
-  if (['+', '-'].includes(operator.value)) {
+  if (['+', '-'].includes(operator)) {
     return 11
-  } else if (['*', '/', '%'].includes(operator.value)) {
+  } else if (['*', '/', '%'].includes(operator)) {
     return 12
   } else {
     return 0

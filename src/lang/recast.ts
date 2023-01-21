@@ -11,6 +11,7 @@ import {
   ObjectExpression,
   MemberExpression,
 } from './abstractSyntaxTree'
+import { precedence } from './astMathExpressions'
 
 export function recast(
   ast: Program,
@@ -54,9 +55,18 @@ export function recast(
 }
 
 function recastBinaryExpression(expression: BinaryExpression): string {
-  return `${recastBinaryPart(expression.left)} ${
+  const maybeWrapIt = (a: string, doit: boolean) => (doit ? `(${a})` : a)
+
+  const shouldWrapRight =
+    expression.right.type === 'BinaryExpression' &&
+    precedence(expression.operator) > precedence(expression.right.operator)
+  const shouldWrapLeft =
+    expression.left.type === 'BinaryExpression' &&
+    precedence(expression.operator) > precedence(expression.left.operator)
+
+  return `${maybeWrapIt(recastBinaryPart(expression.left), shouldWrapLeft)} ${
     expression.operator
-  } ${recastBinaryPart(expression.right)}`
+  } ${maybeWrapIt(recastBinaryPart(expression.right), shouldWrapRight)}`
 }
 
 function recastArrayExpression(
@@ -102,6 +112,8 @@ function recastBinaryPart(part: BinaryPart): string {
     return recastLiteral(part)
   } else if (part.type === 'Identifier') {
     return part.name
+  } else if (part.type === 'BinaryExpression') {
+    return recastBinaryExpression(part)
   }
   throw new Error(`Cannot recast BinaryPart ${part}`)
 }

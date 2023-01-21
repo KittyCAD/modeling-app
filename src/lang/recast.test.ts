@@ -99,6 +99,36 @@ show(mySketch)
     const recasted = recast(ast)
     expect(recasted).toBe(code.trim())
   })
+  it('recast nested binary expression', () => {
+    const code = ['const myVar = 1 + 2 * 5'].join('\n')
+    const { ast } = code2ast(code)
+    const recasted = recast(ast)
+    expect(recasted).toBe(code.trim())
+  })
+  it('recast nested binary expression with parans', () => {
+    const code = ['const myVar = 1 + (1 + 2) * 5'].join('\n')
+    const { ast } = code2ast(code)
+    const recasted = recast(ast)
+    expect(recasted).toBe(code.trim())
+  })
+  it('unnecessary paran wrap will be remove', () => {
+    const code = ['const myVar = 1 + (2 * 5)'].join('\n')
+    const { ast } = code2ast(code)
+    const recasted = recast(ast)
+    expect(recasted).toBe(code.replace('(', '').replace(')', ''))
+  })
+  it('complex nested binary expression', () => {
+    const code = ['1 * ((2 + 3) / 4 + 5)'].join('\n')
+    const { ast } = code2ast(code)
+    const recasted = recast(ast)
+    expect(recasted).toBe(code.trim())
+  })
+  it('multiplied paren expressions', () => {
+    const code = ['3 + (1 + 2) * (3 + 4)'].join('\n')
+    const { ast } = code2ast(code)
+    const recasted = recast(ast)
+    expect(recasted).toBe(code.trim())
+  })
   it('recast array declaration', () => {
     const code = ['const three = 3', "const yo = [1, '2', three, 4 + 5]"].join(
       '\n'
