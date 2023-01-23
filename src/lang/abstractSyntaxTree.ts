@@ -83,7 +83,7 @@ export interface Program {
   type: syntaxType
   start: number
   end: number
-  body: Body[]
+  body: BodyItem[]
 }
 interface GeneralStatement {
   type: syntaxType
@@ -937,7 +937,7 @@ function makeParams(
 
 export interface BlockStatement extends GeneralStatement {
   type: 'BlockStatement'
-  body: Body[]
+  body: BodyItem[]
 }
 
 function makeBlockStatement(
@@ -996,7 +996,7 @@ function nextMeaningfulToken(
   if (!token) {
     return { token, index: tokens.length }
   }
-  if (token.type === 'whitespace') {
+  if (isNotCodeToken(token)) {
     return nextMeaningfulToken(tokens, index, offset + 1)
   }
   return { token, index: newIndex }
@@ -1012,13 +1012,16 @@ function previousMeaningfulToken(
   if (!token) {
     return { token, index: 0 }
   }
-  if (token.type === 'whitespace') {
+  if (isNotCodeToken(token)) {
     return previousMeaningfulToken(tokens, index, offset + 1)
   }
   return { token, index: newIndex }
 }
 
-type Body = ExpressionStatement | VariableDeclaration | ReturnStatement
+export type BodyItem =
+  | ExpressionStatement
+  | VariableDeclaration
+  | ReturnStatement
 
 function makeBody(
   {
@@ -1028,8 +1031,8 @@ function makeBody(
     tokens: Token[]
     tokenIndex?: number
   },
-  previousBody: Body[] = []
-): { body: Body[]; lastIndex: number } {
+  previousBody: BodyItem[] = []
+): { body: BodyItem[]; lastIndex: number } {
   if (tokenIndex >= tokens.length) {
     return { body: previousBody, lastIndex: tokenIndex }
   }
@@ -1041,7 +1044,7 @@ function makeBody(
   if (typeof token === 'undefined') {
     console.log('probably should throw')
   }
-  if (token.type === 'whitespace') {
+  if (isNotCodeToken(token)) {
     return makeBody({ tokens, tokenIndex: tokenIndex + 1 }, previousBody)
   }
   const nextToken = nextMeaningfulToken(tokens, tokenIndex)
@@ -1531,4 +1534,12 @@ export function getNodePathFromSourceRange(
     }
   }
   return path
+}
+
+export function isNotCodeToken(token: Token): boolean {
+  return (
+    token.type === 'whitespace' ||
+    token.type === 'linecomment' ||
+    token.type === 'blockcomment'
+  )
 }

@@ -1,4 +1,4 @@
-import { recast } from './recast'
+import { recast, processTokens } from './recast'
 import { Program, abstractSyntaxTree } from './abstractSyntaxTree'
 import { lexer, Token } from './tokeniser'
 import fs from 'node:fs'
@@ -179,6 +179,90 @@ const myVar2 = yo['a'][key2].c`
     const { ast } = code2ast(code)
     const recasted = recast(ast)
     expect(recasted).toBe(code.trim())
+  })
+  it('code with comments', () => {
+    const code = `
+const yo = { a: { b: { c: '123' } } }
+// this is a comment
+const key = 'c'`
+
+    const { ast, tokens } = code2ast(code)
+    const processedTokens = processTokens(tokens)
+    const recasted = recast(ast, processedTokens)
+
+    expect(recasted).toBe(code.trim())
+  })
+  it('code with extra whitespace should be respected when recasted', () => {
+    const withExtraEmptylLineBetween = `
+const yo = { a: { b: { c: '123' } } }
+
+const key = 'c'`
+
+    const { ast, tokens } = code2ast(withExtraEmptylLineBetween)
+    const processedTokens = processTokens(tokens)
+    const recasted = recast(ast, processedTokens)
+
+    expect(recasted).toBe(withExtraEmptylLineBetween.trim())
+  })
+  it('code with block comment in between', () => {
+    const withExtraEmptylLineBetween = `
+const yo = { a: { b: { c: '123' } } }
+/* hi there
+yo yo yo
+*/
+const key = 'c'`
+
+    const { ast, tokens } = code2ast(withExtraEmptylLineBetween)
+    const processedTokens = processTokens(tokens)
+    const recasted = recast(ast, processedTokens)
+
+    expect(recasted).toBe(withExtraEmptylLineBetween.trim())
+  })
+  it('code with block comment line comment and empty line', () => {
+    const withExtraEmptylLineBetween = `
+const yo = { a: { b: { c: '123' } } }
+/* hi there
+yo yo yo
+*/
+
+// empty line above and line comment here
+const key = 'c'`
+
+    const { ast, tokens } = code2ast(withExtraEmptylLineBetween)
+    const processedTokens = processTokens(tokens)
+    const recasted = recast(ast, processedTokens)
+
+    expect(recasted).toBe(withExtraEmptylLineBetween.trim())
+  })
+  it('code comment at the start and end', () => {
+    const withExtraEmptylLineBetween = `
+// comment at the start
+const yo = { a: { b: { c: '123' } } }
+const key = 'c'
+// comment at the end`
+
+    const { ast, tokens } = code2ast(withExtraEmptylLineBetween)
+    const processedTokens = processTokens(tokens)
+    const recasted = recast(ast, processedTokens)
+
+    expect(recasted).toBe(withExtraEmptylLineBetween.trim())
+  })
+  it('comments and random new lines between statements within function declarations are fine', () => {
+    const withExtraEmptylLineBetween = `
+const fn = (a) => {
+  const yo = 5
+
+  // a comment
+
+
+  return a + yo
+
+}`
+
+    const { ast, tokens } = code2ast(withExtraEmptylLineBetween)
+    const processedTokens = processTokens(tokens)
+    const recasted = recast(ast, processedTokens)
+    expect(recasted).toBe(withExtraEmptylLineBetween.trim())
   })
 })
 
