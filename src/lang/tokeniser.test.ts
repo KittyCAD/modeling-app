@@ -10,6 +10,8 @@ import {
   isWord,
   isComma,
   lexer,
+  isLineComment,
+  isBlockComment,
 } from './tokeniser'
 
 describe('testing helpers', () => {
@@ -142,6 +144,29 @@ describe('testing helpers', () => {
     expect(isComma('5 + 5')).toBe(false)
     expect(isComma('5, + 5')).toBe(false)
     expect(isComma(' , + 5')).toBe(false)
+  })
+  it('test it matches line comments', () => {
+    expect(isLineComment('//')).toBe(true)
+    expect(isLineComment('// ')).toBe(true)
+    expect(isLineComment('//5')).toBe(true)
+    expect(isLineComment('//5 ')).toBe(true)
+
+    expect(isLineComment('5')).toBe(false)
+    expect(isLineComment('5 + 5')).toBe(false)
+    expect(isLineComment('5// + 5')).toBe(false)
+    expect(isLineComment(' // + 5')).toBe(false)
+  })
+  it('test it matches block comments', () => {
+    expect(isBlockComment('/*  */')).toBe(true)
+    expect(isBlockComment('/**/')).toBe(true)
+    expect(isBlockComment('/*5*/')).toBe(true)
+    expect(isBlockComment('/*5 */')).toBe(true)
+
+    expect(isBlockComment('/*')).toBe(false)
+    expect(isBlockComment('5')).toBe(false)
+    expect(isBlockComment('5 + 5')).toBe(false)
+    expect(isBlockComment('5/* + 5')).toBe(false)
+    expect(isBlockComment(' /* + 5')).toBe(false)
   })
 })
 
@@ -425,6 +450,71 @@ const prop3 = yo[key]`)
       "brace        '['        from 104 to 105",
       "word         'key'      from 105 to 108",
       "brace        ']'        from 108 to 109",
+    ])
+  })
+  it('testing tokenising line comments', () => {
+    const result = stringSummaryLexer(`const yo = 45 // this is a comment
+const yo = 6`)
+    expect(result).toEqual([
+      "word         'const'    from 0   to 5",
+      "whitespace   ' '        from 5   to 6",
+      "word         'yo'       from 6   to 8",
+      "whitespace   ' '        from 8   to 9",
+      "operator     '='        from 9   to 10",
+      "whitespace   ' '        from 10  to 11",
+      "number       '45'       from 11  to 13",
+      "whitespace   ' '        from 13  to 14",
+      "linecomment  '// this is a comment' from 14  to 34",
+      "whitespace   '\n'        from 34  to 35",
+      "word         'const'    from 35  to 40",
+      "whitespace   ' '        from 40  to 41",
+      "word         'yo'       from 41  to 43",
+      "whitespace   ' '        from 43  to 44",
+      "operator     '='        from 44  to 45",
+      "whitespace   ' '        from 45  to 46",
+      "number       '6'        from 46  to 47",
+    ])
+  })
+  it('testing tokenising line comments', () => {
+    const result = stringSummaryLexer(`log('hi')
+// comment on a line by itself
+const yo=45`)
+    expect(result).toEqual([
+      "word         'log'      from 0   to 3",
+      "brace        '('        from 3   to 4",
+      "string       ''hi''     from 4   to 8",
+      "brace        ')'        from 8   to 9",
+      "whitespace   '\n'        from 9   to 10",
+      "linecomment  '// comment on a line by itself' from 10  to 40",
+      "whitespace   '\n'        from 40  to 41",
+      "word         'const'    from 41  to 46",
+      "whitespace   ' '        from 46  to 47",
+      "word         'yo'       from 47  to 49",
+      "operator     '='        from 49  to 50",
+      "number       '45'       from 50  to 52",
+    ])
+  })
+  it('testing tokenising block comments', () => {
+    const result = stringSummaryLexer(`const yo = 45 /* this is a comment
+const ya = 6 */
+const yi=45`)
+    expect(result).toEqual([
+      "word         'const'    from 0   to 5",
+      "whitespace   ' '        from 5   to 6",
+      "word         'yo'       from 6   to 8",
+      "whitespace   ' '        from 8   to 9",
+      "operator     '='        from 9   to 10",
+      "whitespace   ' '        from 10  to 11",
+      "number       '45'       from 11  to 13",
+      "whitespace   ' '        from 13  to 14",
+      `blockcomment '/* this is a comment
+const ya = 6 */' from 14  to 50`,
+      "whitespace   '\n'        from 50  to 51",
+      "word         'const'    from 51  to 56",
+      "whitespace   ' '        from 56  to 57",
+      "word         'yi'       from 57  to 59",
+      "operator     '='        from 59  to 60",
+      "number       '45'       from 60  to 62",
     ])
   })
 })

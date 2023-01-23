@@ -1,4 +1,9 @@
-import { BinaryExpression, Literal, Identifier } from './abstractSyntaxTree'
+import {
+  BinaryExpression,
+  Literal,
+  Identifier,
+  isNotCodeToken,
+} from './abstractSyntaxTree'
 import { Token } from './tokeniser'
 
 export function reversePolishNotation(
@@ -45,7 +50,7 @@ export function reversePolishNotation(
     )
   } else if (currentToken.value === ')') {
     if (operators[operators.length - 1]?.value !== '(') {
-      // pop operators off the stack and pust them to postFix until we find the matching '('
+      // pop operators off the stack and push them to postFix until we find the matching '('
       return reversePolishNotation(
         tokens,
         [...previousPostfix, operators[operators.length - 1]],
@@ -58,7 +63,7 @@ export function reversePolishNotation(
       operators.slice(0, -1)
     )
   }
-  if (currentToken.type === 'whitespace') {
+  if (isNotCodeToken(currentToken)) {
     return reversePolishNotation(tokens.slice(1), previousPostfix, operators)
   }
   throw new Error('Unknown token')
