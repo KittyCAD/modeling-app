@@ -8,13 +8,11 @@ export function findTokensBetweenStatements(
 ): Token[] {
   // Find the start index of the range using binary search
   let startIndex = firstGreaterThanBinarySearch(tokens, statement1.end, 'start')
-  // let startIndex = binarySearch(tokens, statement1.end, (token) => token.start);
   if (startIndex < 0) {
     startIndex = ~startIndex
   }
 
   // Find the end index of the range using binary search
-  // let endIndex = binarySearch(tokens, statement2.start, (token) => token.end);
   let endIndex = firstGreaterThanBinarySearch(tokens, statement2.end, 'start')
   if (endIndex < 0) {
     endIndex = ~endIndex
