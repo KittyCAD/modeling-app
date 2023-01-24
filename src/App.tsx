@@ -42,6 +42,7 @@ function App() {
     setError,
     errorState,
     setProgramMemory,
+    tokens,
   } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
@@ -60,6 +61,7 @@ function App() {
     setError: s.setError,
     errorState: s.errorState,
     setProgramMemory: s.setProgramMemory,
+    tokens: s.tokens,
   }))
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
@@ -89,7 +91,7 @@ function App() {
       }
       const tokens = lexer(code)
       const _ast = abstractSyntaxTree(tokens)
-      setAst(_ast)
+      setAst(_ast, tokens)
       const programMemory = executor(_ast, {
         root: {
           log: {
@@ -142,7 +144,7 @@ function App() {
   }, [code])
   const shouldFormat = useMemo(() => {
     if (!ast) return false
-    const recastedCode = recast(ast)
+    const recastedCode = recast(ast, tokens)
     return recastedCode !== code
   }, [code, ast])
   return (

@@ -197,7 +197,7 @@ function recastSketchExpression(
   tokens: Token[] = []
 ): string {
   return `{
-${recast(expression.body, tokens, '', indentation + '  ')}
+${recast(expression.body, tokens, '', indentation + '  ').trimEnd()}
 }`
 }
 
@@ -240,7 +240,7 @@ function recastValue(
   } else if (node.type === 'Identifier') {
     return node.name
   } else if (node.type === 'SketchExpression') {
-    return recastSketchExpression(node, indentation)
+    return recastSketchExpression(node, indentation, tokens)
   } else if (node.type === 'PipeExpression') {
     return node.body
       .map((statement): string => recastValue(statement, indentation, tokens))
