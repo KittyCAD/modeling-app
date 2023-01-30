@@ -264,23 +264,6 @@ const fn = (a) => {
     const recasted = recast(ast, processedTokens)
     expect(recasted).toBe(withExtraEmptylLineBetween.trim())
   })
-  it('Comment with sketch', () => {
-    const withExtraEmptylLineBetween = `sketch part001 {
-  lineTo(5.98, -0.04)
-  // yo
-
-  lineTo(0.18, 0.03)
-}
-  |> rx(90, %)
-  |> extrude(9.6, %)
-
-show(part001)`
-
-    const { ast, tokens } = code2ast(withExtraEmptylLineBetween)
-    const processedTokens = processTokens(tokens)
-    const recasted = recast(ast, processedTokens)
-    expect(recasted).toBe(withExtraEmptylLineBetween.trim())
-  })
 })
 
 // helpers

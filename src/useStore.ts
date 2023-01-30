@@ -7,8 +7,7 @@ import {
 } from './lang/abstractSyntaxTree'
 import { ProgramMemory, Position, PathToNode, Rotation } from './lang/executor'
 import { recast } from './lang/recast'
-import { lexer, Token } from './lang/tokeniser'
-import { processTokens } from './lang/recast'
+import { lexer } from './lang/tokeniser'
 
 export type Range = [number, number]
 
@@ -64,7 +63,7 @@ interface StoreState {
   addLog: (log: string) => void
   resetLogs: () => void
   ast: Program | null
-  setAst: (ast: Program | null, tokens?: Token[]) => void
+  setAst: (ast: Program | null) => void
   updateAst: (ast: Program, focusPath?: PathToNode) => void
   code: string
   setCode: (code: string) => void
@@ -76,7 +75,6 @@ interface StoreState {
   setError: (error?: string) => void
   programMemory: ProgramMemory
   setProgramMemory: (programMemory: ProgramMemory) => void
-  tokens: Token[]
 }
 
 export const useStore = create<StoreState>()((set, get) => ({
@@ -121,16 +119,11 @@ export const useStore = create<StoreState>()((set, get) => ({
     set({ logs: [] })
   },
   ast: null,
-  setAst: (ast, tokens) => {
-    if (tokens) {
-      set({ tokens: processTokens(tokens), ast })
-    } else {
-      set({ ast, tokens: [] })
-    }
+  setAst: (ast) => {
+    set({ ast })
   },
   updateAst: (ast, focusPath) => {
-    const tokens = get().tokens
-    const newCode = recast(ast, tokens)
+    const newCode = recast(ast)
     const astWithUpdatedSource = abstractSyntaxTree(lexer(newCode))
 
     set({ ast: astWithUpdatedSource, code: newCode })
@@ -149,9 +142,8 @@ export const useStore = create<StoreState>()((set, get) => ({
   },
   formatCode: () => {
     const code = get().code
-    const tokens = lexer(code)
-    const ast = abstractSyntaxTree(tokens)
-    const newCode = recast(ast, processTokens(tokens))
+    const ast = abstractSyntaxTree(lexer(code))
+    const newCode = recast(ast)
     set({ code: newCode, ast })
   },
   errorState: {
@@ -163,5 +155,4 @@ export const useStore = create<StoreState>()((set, get) => ({
   },
   programMemory: { root: {}, _sketch: [] },
   setProgramMemory: (programMemory) => set({ programMemory }),
-  tokens: [],
 }))
