@@ -3,6 +3,9 @@ import {
   findClosingBrace,
   hasPipeOperator,
   findEndOfBinaryExpression,
+  findEndOfNonCodeNode,
+  _old_nextMeaningfulToken,
+  nextMeaningfulToken,
 } from './abstractSyntaxTree'
 import { lexer } from './tokeniser'
 
@@ -1002,6 +1005,12 @@ describe('testing pipe operator special', () => {
     const { body } = abstractSyntaxTree(tokens)
     expect(body).toEqual([
       {
+        "end": 6,
+        "start": 5,
+        "type": "NoneCodeNode",
+        "value": " ",
+      },
+      {
         type: 'VariableDeclaration',
         start: 0,
         end: 33,
@@ -1078,6 +1087,12 @@ describe('testing pipe operator special', () => {
     const { body } = abstractSyntaxTree(tokens)
     expect(body).toEqual([
       {
+        "end": 6,
+        "start": 5,
+        "type": "NoneCodeNode",
+        "value": " ",
+      },
+      {
         type: 'VariableDeclaration',
         start: 0,
         end: 15,
@@ -1102,6 +1117,18 @@ describe('testing pipe operator special', () => {
             },
           },
         ],
+      },
+      {
+        "end": 16,
+        "start": 15,
+        "type": "NoneCodeNode",
+        "value": "\n",
+      },
+      {
+        "end": 22,
+        "start": 21,
+        "type": "NoneCodeNode",
+        "value": " ",
       },
       {
         type: 'VariableDeclaration',
@@ -1223,6 +1250,12 @@ describe('testing pipe operator special', () => {
     const { body } = abstractSyntaxTree(tokens)
     expect(body).toEqual([
       {
+        "end": 6,
+        "start": 5,
+        "type": "NoneCodeNode",
+        "value": " ",
+      },
+      {
         type: 'VariableDeclaration',
         start: 0,
         end: 37,
@@ -1292,6 +1325,12 @@ describe('testing pipe operator special', () => {
     const { body } = abstractSyntaxTree(tokens)
     expect(body).toEqual([
       {
+        "end": 6,
+        "start": 5,
+        "type": "NoneCodeNode",
+        "value": " ",
+      },
+      {
         type: 'VariableDeclaration',
         start: 0,
         end: 26,
@@ -1357,6 +1396,12 @@ describe('testing pipe operator special', () => {
     const { body } = abstractSyntaxTree(tokens)
     expect(body).toEqual([
       {
+        "end": 6,
+        "start": 5,
+        "type": "NoneCodeNode",
+        "value": " ",
+      },
+      {
         type: 'VariableDeclaration',
         start: 0,
         end: 23,
@@ -1412,6 +1457,12 @@ describe('testing pipe operator special', () => {
     const tokens = lexer(code)
     const { body } = abstractSyntaxTree(tokens)
     expect(body).toEqual([
+      {
+        "end": 6,
+        "start": 5,
+        "type": "NoneCodeNode",
+        "value": " ",
+      },
       {
         type: 'VariableDeclaration',
         start: 0,
@@ -1470,6 +1521,12 @@ describe('testing pipe operator special', () => {
     const { body } = abstractSyntaxTree(tokens)
     expect(body).toEqual([
       {
+        "end": 6,
+        "start": 5,
+        "type": "NoneCodeNode",
+        "value": " ",
+      },
+      {
         type: 'VariableDeclaration',
         start: 0,
         end: 27,
@@ -1527,7 +1584,7 @@ describe('nests binary expressions correctly', () => {
   it('it works with the simple case', () => {
     const code = `const yo = 1 + 2`
     const { body } = abstractSyntaxTree(lexer(code))
-    expect(body[0]).toEqual({
+    expect(body[1]).toEqual({
       type: 'VariableDeclaration',
       start: 0,
       end: 16,
@@ -1571,7 +1628,7 @@ describe('nests binary expressions correctly', () => {
     // should be binExp { binExp { lit-1 * lit-2 } + lit}
     const code = `const yo = 1 * 2 + 3`
     const { body } = abstractSyntaxTree(lexer(code))
-    expect(body[0]).toEqual({
+    expect(body[1]).toEqual({
       type: 'VariableDeclaration',
       start: 0,
       end: 20,
@@ -1628,7 +1685,7 @@ describe('nests binary expressions correctly', () => {
     // should be binExp { lit-1 + binExp { lit-2 * lit-3 } }
     const code = `const yo = 1 + 2 * 3`
     const { body } = abstractSyntaxTree(lexer(code))
-    expect(body[0]).toEqual({
+    expect(body[1]).toEqual({
       type: 'VariableDeclaration',
       start: 0,
       end: 20,
@@ -1684,7 +1741,7 @@ describe('nests binary expressions correctly', () => {
   it('it should nest properly with two opperators of equal precedence', () => {
     const code = `const yo = 1 + 2 - 3`
     const { body } = abstractSyntaxTree(lexer(code))
-    expect((body[0] as any).declarations[0].init).toEqual({
+    expect((body[1] as any).declarations[0].init).toEqual({
       type: 'BinaryExpression',
       start: 11,
       end: 20,
@@ -1721,7 +1778,7 @@ describe('nests binary expressions correctly', () => {
   it('it should nest properly with two opperators of equal (but higher) precedence', () => {
     const code = `const yo = 1 * 2 / 3`
     const { body } = abstractSyntaxTree(lexer(code))
-    expect((body[0] as any).declarations[0].init).toEqual({
+    expect((body[1] as any).declarations[0].init).toEqual({
       type: 'BinaryExpression',
       start: 11,
       end: 20,
@@ -1758,7 +1815,7 @@ describe('nests binary expressions correctly', () => {
   it('it should nest properly with longer example', () => {
     const code = `const yo = 1 + 2 * (3 - 4) / 5 + 6`
     const { body } = abstractSyntaxTree(lexer(code))
-    const init = (body[0] as any).declarations[0].init
+    const init = (body[1] as any).declarations[0].init
     expect(init).toEqual({
       type: 'BinaryExpression',
       operator: '+',
@@ -1863,33 +1920,32 @@ const yo2 = 6`
     // filling with extra whitespace to make the source start end numbers match
     const codeWithoutComment = `const yo = 5
 ${comment
-  .split('')
-  .map(() => ' ')
-  .join('')}
+        .split('')
+        .map(() => ' ')
+        .join('')}
 const yo2 = 6`
     const { body } = abstractSyntaxTree(lexer(codeWithComment))
+    // console.log('a comments', JSON.stringify(body, null, 2), codeWithComment)
     const { body: bodyWithoutComment } = abstractSyntaxTree(
       lexer(codeWithoutComment)
     )
-    expect(body).toEqual(bodyWithoutComment)
+    expect(body[2].type).toBe('NoneCodeNode')
+    // expect(body).toEqual(bodyWithoutComment)
   })
   it('should ignore block comments', () => {
-    const comment = `/* this is a
+    const codeWithComment = `const yo = 5/* this is a
 multi line
-comment */`
-    const codeWithComment = `const yo = 5${comment}
-const yo2 = 6`
-    // filling with extra whitespace to make the source start end numbers match
-    const codeWithoutComment = `const yo = 5${comment
-      .split('')
-      .map(() => ' ')
-      .join('')}
+comment */
 const yo2 = 6`
     const { body } = abstractSyntaxTree(lexer(codeWithComment))
-    const { body: bodyWithoutComment } = abstractSyntaxTree(
-      lexer(codeWithoutComment)
-    )
-    expect(body).toEqual(bodyWithoutComment)
+    expect(body[2]).toEqual({
+      "end": 47,
+      "start": 12,
+      "type": "NoneCodeNode",
+      "value": `/* this is a
+multi line
+comment */\n`,
+    })
   })
   it('comment in function declaration', () => {
     const code = `const yo=(a)=>{
@@ -1897,47 +1953,61 @@ const yo2 = 6`
   return a
 }`
     const { body } = abstractSyntaxTree(lexer(code))
-    const yo = [
-      {
-        type: 'VariableDeclaration',
-        start: 0,
-        end: 51,
-        kind: 'const',
-        declarations: [
-          {
-            type: 'VariableDeclarator',
-            start: 6,
-            end: 51,
-            id: { type: 'Identifier', start: 6, end: 8, name: 'yo' },
-            init: {
-              type: 'FunctionExpression',
-              start: 9,
-              end: 51,
-              id: null,
-              params: [{ type: 'Identifier', start: 10, end: 11, name: 'a' }],
-              body: {
-                type: 'BlockStatement',
-                start: 14,
-                end: 51,
-                body: [
-                  {
-                    type: 'ReturnStatement',
-                    start: 41,
-                    end: 49,
-                    argument: {
-                      type: 'Identifier',
-                      start: 48,
-                      end: 49,
-                      name: 'a',
-                    },
-                  },
-                ],
-              },
-            },
-          },
-        ],
-      },
-    ]
-    expect(body).toEqual(yo)
+    expect((body[1] as any).declarations?.[0].init.body.body[0]).toEqual({
+      "end": 41,
+      "start": 15,
+      "type": "NoneCodeNode",
+      "value": `\n  // this is a comment\n  `,
+    })
+  })
+})
+
+describe('testing findEndOfNonCodeNode', () => {
+  it('should find the end of comment', () => {
+    const code = `//yo dawg
+const yo2 = 6`
+    const tokens = lexer(code)
+    const end = findEndOfNonCodeNode(tokens, 0)
+    expect(end).toBe(2)
+  })
+  it('should find the end of white space and comment between code', () => {
+    const code = `const yo = 6
+
+//yo dawg
+
+const yo2 = 7`
+    const tokens = lexer(code)
+    const tokenBeforeWhitespace = tokens.findIndex(
+      (t) => t.type === 'number' && t.value === '6'
+    )
+    const nonCodeEnd = findEndOfNonCodeNode(tokens, tokenBeforeWhitespace + 1)
+    const secondConst = tokens.findIndex(
+      (t, index) =>
+        index > tokenBeforeWhitespace &&
+        t.type === 'word' &&
+        t.value === 'const'
+    )
+    expect(nonCodeEnd).toBe(secondConst)
+  })
+})
+
+describe('testing nextMeaningfulToken', () => {
+  it('should find the next meaningful token', () => {
+    const code = `const yo = 6
+    
+//yo dawg
+
+const yo2 = 7`
+
+    const tokens = lexer(code)
+    const tokenBeforeWhitespace = tokens.findIndex(
+      (t) => t.type === 'number' && t.value === '6'
+    )
+    const nextMeaningfulTokenNew = nextMeaningfulToken(tokens, tokenBeforeWhitespace + 1)
+    const nextMeaningfulTokenold = _old_nextMeaningfulToken(tokens, tokenBeforeWhitespace + 1)
+
+    expect(nextMeaningfulTokenNew.token).toEqual(nextMeaningfulTokenold.token)
+    expect(nextMeaningfulTokenNew.index).toBe(nextMeaningfulTokenold.index)
+
   })
 })

@@ -21,6 +21,7 @@ type syntaxType =
   | 'PipeExpression'
   | 'PipeSubstitution'
   | 'Literal'
+  | 'NoneCodeNode'
 // | 'NumberLiteral'
 // | 'StringLiteral'
 // | 'IfStatement'
@@ -94,6 +95,100 @@ interface GeneralStatement {
 export interface ExpressionStatement extends GeneralStatement {
   type: 'ExpressionStatement'
   expression: Value
+}
+
+interface NoneCodeNode extends GeneralStatement {
+  type: 'NoneCodeNode'
+  // subType: 'linecomment' | 'blockcomment' | 'whitespace'
+  value: string
+}
+
+function makeNoneCodeNode(
+  tokens: Token[],
+  index: number
+): { node?: NoneCodeNode; lastIndex: number } {
+  const currentToken = tokens[index]
+  // const { token: nextToken } = nextMeaningfulToken(tokens, index)
+  const endIndex = findEndOfNonCodeNode(tokens, index)
+  const nonCodeTokens = tokens.slice(index, endIndex)
+  // console.log('nonCodeTokens', nonCodeTokens)
+  let value = nonCodeTokens
+    .map((t) => {
+      // const cleanedValue = t.value
+      let cleanedValue = t.value
+      // console.log('value', JSON.stringify(t.value))
+
+      // test if t.value is only whitespace
+      // if so, remove it
+      // if (/^\s+$/.test(cleanedValue)) {
+      //   console.log('yoyo')
+      //   cleanedValue = cleanedValue.split('').filter(a => a === '\n').join('')//.slice(1)
+      // }
+      // } else if(cleanedValue.endsWith('\n')) {
+        // cleanedValue = cleanedValue.slice(0, -1)
+      // }
+
+      if (t.value.endsWith('\n')) {
+        // cleanedValue = t.value.slice(0, -1)
+        // cleanedValue = cleanedValue.slice(0, -1)
+
+      }
+      // if (t.value.startsWith('\n')) {
+      //   cleanedValue = cleanedValue.slice(1)
+      // }
+      // if(t.value === '\n'){
+      //   cleanedValue = ''
+      // }
+      if (t.type === 'whitespace' && t.value.endsWith(' ')) {
+        // remove spaces from the end, but leave line breaks alone
+        // cleanedValue = t.value.replace(/ +$/, '')
+      }
+
+      // t.type === 'whitespace' && t.value.endsWith(' ')
+      // ?
+      // : t.value
+      return cleanedValue
+    })
+    .join('')
+  if (value.endsWith('\n')) {
+    // value = value.slice(1)
+
+  } else if (value.startsWith('\n')) {
+      // value = value.slice(0, -1)
+  }
+  // const { token: previousToken } = previousMeaningfulToken(tokens, index)
+
+  // const subType: NoneCodeNode['subType'] =
+  //   currentToken.type === 'linecomment'
+  //     ? 'linecomment'
+  //     : currentToken.type === 'blockcomment'
+  //     ? 'blockcomment'
+  //     : 'whitespace'
+  // const value = currentToken.type === 'whitespace' ? currentToken.value.replaceAll(' ', '') : currentToken.value
+  // if (value === '\n') {
+  //   return { lastIndex: index + 1 }
+  // }
+
+  const node: NoneCodeNode = {
+    type: 'NoneCodeNode',
+    start: currentToken.start,
+    end: tokens[endIndex - 1].end,
+    // subType,
+    value,
+  }
+  return { node, lastIndex: endIndex - 1 }
+}
+
+export function findEndOfNonCodeNode(tokens: Token[], index: number): number {
+  const currentToken = tokens[index]
+  if (
+    currentToken?.type === 'whitespace' ||
+    currentToken?.type === 'linecomment' ||
+    currentToken?.type === 'blockcomment'
+  ) {
+    return findEndOfNonCodeNode(tokens, index + 1)
+  }
+  return index
 }
 
 function makeExpressionStatement(
@@ -304,12 +399,12 @@ function makeVariableDeclaration(
         currentToken.value === 'const'
           ? 'const'
           : currentToken.value === 'fn'
-          ? 'fn'
-          : currentToken.value === 'sketch'
-          ? 'sketch'
-          : currentToken.value === 'path'
-          ? 'path'
-          : 'unknown',
+            ? 'fn'
+            : currentToken.value === 'sketch'
+              ? 'sketch'
+              : currentToken.value === 'path'
+                ? 'path'
+                : 'unknown',
       declarations,
     },
     lastIndex,
@@ -651,7 +746,7 @@ function makeObjectProperties(
   )
   const nextKeyIndex =
     commaOrClosingBraceToken.token.type === 'brace' &&
-    commaOrClosingBraceToken.token.value === '}'
+      commaOrClosingBraceToken.token.value === '}'
       ? commaOrClosingBraceToken.index
       : nextKeyToken.index
   return makeObjectProperties(tokens, nextKeyIndex, [
@@ -946,10 +1041,11 @@ function makeBlockStatement(
 ): { block: BlockStatement; lastIndex: number } {
   const openingCurly = tokens[index]
   const nextToken = nextMeaningfulToken(tokens, index)
+  const previous = nextToken.bonusNonCodeNode ? [nextToken.bonusNonCodeNode] : []
   const { body, lastIndex } =
     nextToken.token.value === '}'
       ? { body: [], lastIndex: nextToken.index }
-      : makeBody({ tokens, tokenIndex: nextToken.index })
+      : makeBody({ tokens, tokenIndex: nextToken.index }, previous)
   return {
     block: {
       type: 'BlockStatement',
@@ -986,7 +1082,7 @@ function makeReturnStatement(
 
 export type All = Program | ExpressionStatement[] | BinaryExpression | Literal
 
-function nextMeaningfulToken(
+export function _old_nextMeaningfulToken(
   tokens: Token[],
   index: number,
   offset: number = 1
@@ -997,7 +1093,30 @@ function nextMeaningfulToken(
     return { token, index: tokens.length }
   }
   if (isNotCodeToken(token)) {
-    return nextMeaningfulToken(tokens, index, offset + 1)
+    return _old_nextMeaningfulToken(tokens, index, offset + 1)
+  }
+  return { token, index: newIndex }
+}
+
+export function nextMeaningfulToken(
+  tokens: Token[],
+  index: number,
+  offset: number = 1
+): { token: Token; index: number; bonusNonCodeNode?: NoneCodeNode } {
+  const newIndex = index + offset
+  const token = tokens[newIndex]
+  if (!token) {
+    return { token, index: tokens.length }
+  }
+  if (isNotCodeToken(token)) {
+    const nonCodeNode = makeNoneCodeNode(tokens, newIndex)
+    const newnewIndex = nonCodeNode.lastIndex + 1
+    return {
+      token: tokens[newnewIndex],
+      index: newnewIndex,
+      bonusNonCodeNode: nonCodeNode?.node?.value ? nonCodeNode.node : undefined,
+    }
+    // return nextMeaningfulToken(tokens, index, offset + 1)
   }
   return { token, index: newIndex }
 }
@@ -1022,6 +1141,7 @@ export type BodyItem =
   | ExpressionStatement
   | VariableDeclaration
   | ReturnStatement
+  | NoneCodeNode
 
 function makeBody(
   {
@@ -1038,16 +1158,33 @@ function makeBody(
   }
 
   const token = tokens[tokenIndex]
+
   if (token.type === 'brace' && token.value === '}') {
     return { body: previousBody, lastIndex: tokenIndex }
   }
   if (typeof token === 'undefined') {
     console.log('probably should throw')
   }
+  const newBing = [...previousBody]
   if (isNotCodeToken(token)) {
-    return makeBody({ tokens, tokenIndex: tokenIndex + 1 }, previousBody)
+    const nextToken = nextMeaningfulToken(tokens, tokenIndex)
+    if (nextToken.bonusNonCodeNode) {
+      newBing.push(nextToken.bonusNonCodeNode)
+    }
+    return makeBody({ tokens, tokenIndex: nextToken.index }, newBing)
+
   }
   const nextToken = nextMeaningfulToken(tokens, tokenIndex)
+  if (nextToken.bonusNonCodeNode) {
+    newBing.push(nextToken.bonusNonCodeNode)
+  }
+
+  // if (nextToken.bonusNonCodeNode) {
+  //   return makeBody({ tokens, tokenIndex: nextToken.index + 1 }, [
+  //     ...previousBody,
+  //     nextToken.bonusNonCodeNode,
+  //   ])
+  // } else if (
   if (
     token.type === 'word' &&
     (token.value === 'const' ||
@@ -1059,19 +1196,29 @@ function makeBody(
       tokens,
       tokenIndex
     )
+    newBing.push(declaration)
     const nextThing = nextMeaningfulToken(tokens, lastIndex)
-    return makeBody({ tokens, tokenIndex: nextThing.index }, [
-      ...previousBody,
-      declaration,
-    ])
+    if (nextThing.bonusNonCodeNode) {
+      newBing.push(nextThing.bonusNonCodeNode)
+    }
+    // return makeBody({ tokens, tokenIndex: nextThing.index }, [
+    //   ...previousBody,
+    //   declaration,
+    // ])
+    return makeBody({ tokens, tokenIndex: nextThing.index }, newBing)
   }
   if (token.type === 'word' && token.value === 'return') {
     const { statement, lastIndex } = makeReturnStatement(tokens, tokenIndex)
+    newBing.push(statement)
     const nextThing = nextMeaningfulToken(tokens, lastIndex)
-    return makeBody({ tokens, tokenIndex: nextThing.index }, [
-      ...previousBody,
-      statement,
-    ])
+    if (nextThing.bonusNonCodeNode) {
+      newBing.push(nextThing.bonusNonCodeNode)
+    }
+    return makeBody({ tokens, tokenIndex: nextThing.index }, newBing)
+    // return makeBody({ tokens, tokenIndex: nextThing.index }, [
+    //   ...previousBody,
+    //   statement,
+    // ])
   }
   if (
     token.type === 'word' &&
@@ -1082,26 +1229,35 @@ function makeBody(
       tokens,
       tokenIndex
     )
+    newBing.push(expression)
     const nextThing = nextMeaningfulToken(tokens, lastIndex)
-    return makeBody({ tokens, tokenIndex: nextThing.index }, [
-      ...previousBody,
-      expression,
-    ])
+    if (nextThing.bonusNonCodeNode) {
+      newBing.push(nextThing.bonusNonCodeNode)
+    }
+    return makeBody({ tokens, tokenIndex: nextThing.index }, newBing)
   }
   if (
     (token.type === 'number' || token.type === 'word') &&
-    nextMeaningfulToken(tokens, tokenIndex).token.type === 'operator'
+    nextMeaningfulToken(tokens, tokenIndex)?.token?.type === 'operator'
   ) {
     const { expression, lastIndex } = makeExpressionStatement(
       tokens,
       tokenIndex
     )
     // return startTree(tokens, tokenIndex, [...previousBody, makeExpressionStatement(tokens, tokenIndex)]);
-    return { body: [...previousBody, expression], lastIndex }
+    newBing.push(expression)
+    const nextThing = nextMeaningfulToken(tokens, tokenIndex)
+    // if(nextThing.bonusNonCodeNode) {
+    //   newBing.push(nextThing.bonusNonCodeNode)
+    // }
+    return { body: newBing, lastIndex }
+    // return { body: [...previousBody, expression], lastIndex }
   }
+  console.log('Unexpected opps', token, tokenIndex, tokens.length)
   throw new Error('Unexpected token')
 }
-export const abstractSyntaxTree = (tokens: Token[]): Program => {
+
+export function abstractSyntaxTree(tokens: Token[]): Program {
   const { body } = makeBody({ tokens })
   const program: Program = {
     type: 'Program',
@@ -1409,6 +1565,7 @@ export function getNodeFromPath<T>(
   let stopAtNode = null
   let successfulPaths: PathToNode = []
   let pathsExplored: PathToNode = []
+  console.log('path to node is: ', path)
   for (const pathItem of path) {
     try {
       if (typeof currentNode[pathItem] !== 'object')

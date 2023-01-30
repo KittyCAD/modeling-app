@@ -144,7 +144,7 @@ function App() {
   }, [code])
   const shouldFormat = useMemo(() => {
     if (!ast) return false
-    const recastedCode = recast(ast, tokens)
+    const recastedCode = recast(ast, [])
     return recastedCode !== code
   }, [code, ast])
   return (

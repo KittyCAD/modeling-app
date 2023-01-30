@@ -32,14 +32,14 @@ const newVar = myVar + 1`
     const recasted = recast(ast)
     expect(recasted).toBe(code)
   })
-  it('test assigning a var by cont concatenating two strings string', () => {
+  it('test assigning a var by cont concatenating two strings string is stable', () => {
     const code = fs.readFileSync(
       './src/lang/testExamples/variableDeclaration.cado',
       'utf-8'
     )
-    const { ast } = code2ast(code)
-    const recasted = recast(ast)
-    expect(recasted).toBe(code.trim())
+    const recasted = recast(code2ast(code).ast)
+    const secondRecast = recast(code2ast(recasted).ast)
+    expect(recasted).toBe(secondRecast)
   })
   it('test with function call', () => {
     const code = `
@@ -72,7 +72,9 @@ show(mySketch)
 `
     const { ast } = code2ast(code)
     const recasted = recast(ast)
-    expect(recasted).toBe(code.trim())
+    console.log(`recasted:
+${recasted}`)
+    expect(recasted).toBe(code)
   })
   it('sketch piped into callExpression', () => {
     const code = [
@@ -214,7 +216,7 @@ const key = 'c'`
 
     const { ast, tokens } = code2ast(withExtraEmptylLineBetween)
     const processedTokens = processTokens(tokens)
-    const recasted = recast(ast, processedTokens)
+    const recasted = recast(ast, [])
 
     expect(recasted).toBe(withExtraEmptylLineBetween.trim())
   })
@@ -242,8 +244,8 @@ const key = 'c'
 // comment at the end`
 
     const { ast, tokens } = code2ast(withExtraEmptylLineBetween)
-    const processedTokens = processTokens(tokens)
-    const recasted = recast(ast, processedTokens)
+    const recasted = recast(ast, [])
+    console.log(recasted)
 
     expect(recasted).toBe(withExtraEmptylLineBetween.trim())
   })
@@ -276,9 +278,8 @@ const fn = (a) => {
 
 show(part001)`
 
-    const { ast, tokens } = code2ast(withExtraEmptylLineBetween)
-    const processedTokens = processTokens(tokens)
-    const recasted = recast(ast, processedTokens)
+    const { ast } = code2ast(withExtraEmptylLineBetween)
+    const recasted = recast(ast, [])
     expect(recasted).toBe(withExtraEmptylLineBetween.trim())
   })
 })

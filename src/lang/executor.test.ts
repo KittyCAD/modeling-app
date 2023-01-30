@@ -4,7 +4,7 @@ import { abstractSyntaxTree } from './abstractSyntaxTree'
 import { lexer } from './tokeniser'
 import { executor, ProgramMemory, Path, SketchGroup } from './executor'
 
-describe('test', () => {
+describe('executor', () => {
   it('test assigning two variables, the second summing with the first', () => {
     const code = `const myVar = 5
 const newVar = myVar + 1`
@@ -28,6 +28,7 @@ const newVar = myVar + 1`
   it('test with function call', () => {
     const code = `
 const myVar = "hello"
+
 log(5, myVar)`
     const programMemoryOverride: ProgramMemory['root'] = {
       log: {

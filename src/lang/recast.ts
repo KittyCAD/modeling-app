@@ -32,11 +32,11 @@ export function recast(
   previousWrittenCode = '',
   indentation = ''
 ): string {
-  let startComments = getStartNonCodeString(ast?.body?.[0], tokens)
+  // let startComments = getStartNonCodeString(ast?.body?.[0], tokens)
   return (
-    startComments +
+    
     ast.body
-      .map((statement) => {
+      .map((statement, index) => {
         if (statement.type === 'ExpressionStatement') {
           if (statement.expression.type === 'BinaryExpression') {
             return recastBinaryExpression(statement.expression)
@@ -65,16 +65,28 @@ export function recast(
             .join('')
         } else if (statement.type === 'ReturnStatement') {
           return `return ${recastArgument(statement.argument, tokens)}`
+        } else if (statement.type === 'NoneCodeNode') {
+          // return index === 0 ? '' : statement.value
+          return statement.value === ' ' ? '' : statement.value
+          // return statement.value
         }
         return statement.type
       })
-      .map(
-        (statementString, index) =>
-          indentation +
-          statementString +
-          getNonCodeString(ast.body, index, tokens)
-      )
-      .join('\n')
+      // .map(
+      //   (statementString, index, ar) => {
+      //     // const nonCodeString = getNonCodeString(ast.body, index, tokens)
+      //     // const startBit = index === ar.length-1 
+      //     // const expression = ast.body[index]
+      //     // const isNotCodeExpression = expression.type === 'NoneCodeNode'
+      //     return statementString
+      //     // return indentation +
+      //     // statementString
+      //     // nonCodeString
+
+      //   }
+      // )
+      // .join('\n')
+      .join('')
   )
 }
 
@@ -103,6 +115,7 @@ function recastArrayExpression(
   const maxArrayLength = 40
   if (flatRecast.length > maxArrayLength) {
     const _indentation = indentation + '  '
+    // const _indentation = indentation + '  '
     return `[
 ${_indentation}${expression.elements
       .map((el) => recastValue(el))
@@ -186,9 +199,7 @@ function recastFunction(
   tokens: Token[] = [],
   indentation = ''
 ): string {
-  return `(${expression.params.map((param) => param.name).join(', ')}) => {
-${recast(expression.body, tokens, '', indentation + '  ')}
-}`
+  return `(${expression.params.map((param) => param.name).join(', ')}) => {${recast(expression.body, tokens, '', indentation + '')}}`
 }
 
 function recastSketchExpression(
@@ -196,8 +207,7 @@ function recastSketchExpression(
   indentation: string,
   tokens: Token[] = []
 ): string {
-  return `{
-${recast(expression.body, tokens, '', indentation + '  ').trimEnd()}
+  return `{${recast(expression.body, tokens, '', indentation + '').trimEnd()}
 }`
 }
 
@@ -220,9 +230,10 @@ function recastMemberExpression(
 
 function recastValue(
   node: Value,
-  indentation = '',
+  indentation2 = '',
   tokens: Token[] = []
 ): string {
+  const indentation = ''
   if (node.type === 'BinaryExpression') {
     return recastBinaryExpression(node)
   } else if (node.type === 'ArrayExpression') {
