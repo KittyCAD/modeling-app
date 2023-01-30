@@ -17,8 +17,6 @@ const ARRAY_END = /^\]/
 const COMMA = /^,/
 const COLON = /^:/
 const PERIOD = /^\./
-const LINECOMMENT = /^\/\/.*/
-const BLOCKCOMMENT = /^\/\*[\s\S]*?\*\//
 
 export const isNumber = (character: string) => NUMBER.test(character)
 export const isWhitespace = (character: string) => WHITESPACE.test(character)
@@ -34,9 +32,6 @@ export const isArrayEnd = (character: string) => ARRAY_END.test(character)
 export const isComma = (character: string) => COMMA.test(character)
 export const isColon = (character: string) => COLON.test(character)
 export const isPeriod = (character: string) => PERIOD.test(character)
-export const isLineComment = (character: string) => LINECOMMENT.test(character)
-export const isBlockComment = (character: string) =>
-  BLOCKCOMMENT.test(character)
 
 function matchFirst(str: string, regex: RegExp) {
   const theMatch = str.match(regex)
@@ -57,8 +52,6 @@ export interface Token {
     | 'comma'
     | 'colon'
     | 'period'
-    | 'linecomment'
-    | 'blockcomment'
   value: string
   start: number
   end: number
@@ -79,14 +72,6 @@ const returnTokenAtIndex = (str: string, startIndex: number): Token | null => {
   const strFromIndex = str.slice(startIndex)
   if (isString(strFromIndex)) {
     return makeToken('string', matchFirst(strFromIndex, STRING), startIndex)
-  }
-  const isLineCommentBool = isLineComment(strFromIndex)
-  if (isLineCommentBool || isBlockComment(strFromIndex)) {
-    return makeToken(
-      isLineCommentBool ? 'linecomment' : 'blockcomment',
-      matchFirst(strFromIndex, isLineCommentBool ? LINECOMMENT : BLOCKCOMMENT),
-      startIndex
-    )
   }
   if (isParanEnd(strFromIndex)) {
     return makeToken('brace', matchFirst(strFromIndex, PARAN_END), startIndex)
