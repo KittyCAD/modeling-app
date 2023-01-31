@@ -62,6 +62,7 @@ export const SketchPlane = () => {
                 start: 0,
                 end: 0,
                 body: [],
+                nonCodeMeta: {},
               }
           const addLinePoint: [number, number] = [point.x, point.y]
           const { modifiedAst } = addLine(
