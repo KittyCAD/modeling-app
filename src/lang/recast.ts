@@ -197,7 +197,9 @@ function recastSketchExpression(
   expression: SketchExpression,
   indentation: string
 ): string {
-  return `{${recast(expression.body, '', indentation + '  ', true) || '\n  \n'}}`
+  return `{${
+    recast(expression.body, '', indentation + '  ', true) || '\n  \n'
+  }}`
 }
 
 function recastMemberExpression(

@@ -99,8 +99,10 @@ interface NoneCodeNode extends GeneralStatement {
 }
 
 interface NoneCodeMeta {
+  // Stores the whitespace/comments that go after the statement who's index we're using here
+  [statementIndex: number]: NoneCodeNode
+  // Which is why we also need `start` for and whitespace at the start of the file/block
   start?: NoneCodeNode
-  [key: number]: NoneCodeNode
 }
 
 function makeNoneCodeNode(
@@ -1118,9 +1120,9 @@ function makeBody(
     )
   }
   const nextToken = nextMeaningfulToken(tokens, tokenIndex)
-  if (nextToken.bonusNonCodeNode) {
-    nonCodeMeta[previousBody.length] = nextToken.bonusNonCodeNode
-  }
+  nextToken.bonusNonCodeNode &&
+    (nonCodeMeta[previousBody.length] = nextToken.bonusNonCodeNode)
+
   if (
     token.type === 'word' &&
     (token.value === 'const' ||
@@ -1133,10 +1135,9 @@ function makeBody(
       tokenIndex
     )
     const nextThing = nextMeaningfulToken(tokens, lastIndex)
+    nextThing.bonusNonCodeNode &&
+      (nonCodeMeta[previousBody.length] = nextThing.bonusNonCodeNode)
 
-    if (nextThing.bonusNonCodeNode) {
-      nonCodeMeta[previousBody.length] = nextThing.bonusNonCodeNode
-    }
     return makeBody(
       { tokens, tokenIndex: nextThing.index },
       [...previousBody, declaration],
@@ -1146,9 +1147,9 @@ function makeBody(
   if (token.type === 'word' && token.value === 'return') {
     const { statement, lastIndex } = makeReturnStatement(tokens, tokenIndex)
     const nextThing = nextMeaningfulToken(tokens, lastIndex)
-    if (nextThing.bonusNonCodeNode) {
-      nonCodeMeta[previousBody.length] = nextThing.bonusNonCodeNode
-    }
+    nextThing.bonusNonCodeNode &&
+      (nonCodeMeta[previousBody.length] = nextThing.bonusNonCodeNode)
+
     return makeBody(
       { tokens, tokenIndex: nextThing.index },
       [...previousBody, statement],

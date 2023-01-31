@@ -50,7 +50,7 @@ export function reversePolishNotation(
     )
   } else if (currentToken.value === ')') {
     if (operators[operators.length - 1]?.value !== '(') {
-      // pop operators off the stack and pust them to postFix until we find the matching '('
+      // pop operators off the stack and push them to postFix until we find the matching '('
       return reversePolishNotation(
         tokens,
         [...previousPostfix, operators[operators.length - 1]],
