@@ -52,6 +52,7 @@ export const BasePlanes = () => {
           start: 0,
           end: 0,
           body: [],
+          nonCodeMeta: {},
         }
     const axis = axisIndex === 0 ? 'xy' : axisIndex === 1 ? 'xz' : 'yz'
     const quaternion = new Quaternion()

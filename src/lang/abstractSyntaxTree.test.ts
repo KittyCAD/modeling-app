@@ -29,6 +29,7 @@ describe('testing AST', () => {
   test('test 5 + 6', () => {
     const tokens = lexer('5 +6')
     const result = abstractSyntaxTree(tokens)
+    delete (result as any).nonCodeMeta
     expect(result).toEqual({
       type: 'Program',
       start: 0,
@@ -219,6 +220,7 @@ describe('testing function declaration', () => {
   test('fn funcN = () => {}', () => {
     const tokens = lexer('fn funcN = () => {}')
     const { body } = abstractSyntaxTree(tokens)
+    delete (body[0] as any).declarations[0].init.body.nonCodeMeta
     expect(body).toEqual([
       {
         type: 'VariableDeclaration',
@@ -259,6 +261,7 @@ describe('testing function declaration', () => {
       ['fn funcN = (a, b) => {', '  return a + b', '}'].join('\n')
     )
     const { body } = abstractSyntaxTree(tokens)
+    delete (body[0] as any).declarations[0].init.body.nonCodeMeta
     expect(body).toEqual([
       {
         type: 'VariableDeclaration',
@@ -337,6 +340,7 @@ describe('testing function declaration', () => {
 const myVar = funcN(1, 2)`
     )
     const { body } = abstractSyntaxTree(tokens)
+    delete (body[0] as any).declarations[0].init.body.nonCodeMeta
     expect(body).toEqual([
       {
         type: 'VariableDeclaration',
@@ -469,6 +473,7 @@ describe('structures specific to this lang', () => {
 `
     const tokens = lexer(code)
     const { body } = abstractSyntaxTree(tokens)
+    delete (body[0] as any).declarations[0].init.body.nonCodeMeta
     expect(body).toEqual([
       {
         type: 'VariableDeclaration',
@@ -657,7 +662,9 @@ describe('testing hasPipeOperator', () => {
 `
 
     const tokens = lexer(code)
-    expect(hasPipeOperator(tokens, 0)).toEqual({
+    const result = hasPipeOperator(tokens, 0)
+    delete (result as any).bonusNonCodeNode
+    expect(result).toEqual({
       index: 16,
       token: { end: 37, start: 35, type: 'operator', value: '|>' },
     })
@@ -669,6 +676,7 @@ describe('testing hasPipeOperator', () => {
 `
     const tokens = lexer(code)
     const result = hasPipeOperator(tokens, 0)
+    delete (result as any).bonusNonCodeNode
     expect(result).toEqual({
       index: 16,
       token: { end: 37, start: 35, type: 'operator', value: '|>' },
@@ -690,6 +698,7 @@ const yo = myFunc(9()
     let code = `const myVar2 = 5 + 1 |> myFn(%)`
     const tokens = lexer(code)
     const result = hasPipeOperator(tokens, 1)
+    delete (result as any).bonusNonCodeNode
     expect(result).toEqual({
       index: 12,
       token: { end: 23, start: 21, type: 'operator', value: '|>' },
@@ -718,6 +727,7 @@ const yo = myFunc(9()
 
     const braceTokenIndex = tokens.findIndex(({ value }) => value === '{')
     const result2 = hasPipeOperator(tokens, braceTokenIndex)
+    delete (result2 as any).bonusNonCodeNode
     expect(result2).toEqual({
       index: 36,
       token: { end: 76, start: 74, type: 'operator', value: '|>' },
@@ -737,6 +747,8 @@ describe('testing pipe operator special', () => {
 `
     const tokens = lexer(code)
     const { body } = abstractSyntaxTree(tokens)
+    delete (body[0] as any).declarations[0].init.nonCodeMeta
+    delete (body[0] as any).declarations[0].init.body[0].body.nonCodeMeta
     expect(body).toEqual([
       {
         type: 'VariableDeclaration',
@@ -921,6 +933,7 @@ describe('testing pipe operator special', () => {
     let code = `const myVar = 5 + 6 |> myFunc(45, %)`
     const tokens = lexer(code)
     const { body } = abstractSyntaxTree(tokens)
+    delete (body as any)[0].declarations[0].init.nonCodeMeta
     expect(body).toEqual([
       {
         type: 'VariableDeclaration',
@@ -1800,6 +1813,76 @@ describe('nests binary expressions correctly', () => {
         },
       },
       right: { type: 'Literal', value: 6, raw: '6', start: 33, end: 34 },
+    })
+  })
+})
+
+describe('check nonCodeMeta data is attached to the AST correctly', () => {
+  it('comments between expressions', () => {
+    const code = `
+const yo = { a: { b: { c: '123' } } }
+// this is a comment
+const key = 'c'`
+    const nonCodeMetaInstance = {
+      type: 'NoneCodeNode',
+      start: code.indexOf('\n// this is a comment'),
+      end: code.indexOf('const key'),
+      value: '\n// this is a comment\n',
+    }
+    const { nonCodeMeta } = abstractSyntaxTree(lexer(code))
+    expect(nonCodeMeta[0]).toEqual(nonCodeMetaInstance)
+
+    // extra whitespace won't change it's position (0) or value (NB the start end would have changed though)
+    const codeWithExtraStartWhitespace = '\n\n\n' + code
+    const { nonCodeMeta: nonCodeMeta2 } = abstractSyntaxTree(
+      lexer(codeWithExtraStartWhitespace)
+    )
+    expect(nonCodeMeta2[0].value).toBe(nonCodeMetaInstance.value)
+    expect(nonCodeMeta2[0].start).not.toBe(nonCodeMetaInstance.start)
+  })
+  it('comments nested within a block statement', () => {
+    const code = `sketch mySketch {
+      path myPath = lineTo(0,1)
+      lineTo(1,1) /* this is 
+      a comment 
+      spanning a few lines */
+      path rightPath = lineTo(1,0)
+      close()
+    }
+    `
+
+    const { body } = abstractSyntaxTree(lexer(code))
+    const indexOfSecondLineToExpression = 1 // 0 index so `path myPath = lineTo(0,1)` is 0
+    const sketchNonCodeMeta = (body as any)[0].declarations[0].init.body
+      .nonCodeMeta
+    expect(sketchNonCodeMeta[indexOfSecondLineToExpression]).toEqual({
+      type: 'NoneCodeNode',
+      start: 67,
+      end: 133,
+      value:
+        ' /* this is \n      a comment \n      spanning a few lines */\n      ',
+    })
+  })
+  it('comments in a pipe expression', () => {
+    const code = [
+      'sketch mySk1 {',
+      '  lineTo(1, 1)',
+      '  path myPath = lineTo(0, 1)',
+      '  lineTo(1, 1)',
+      '}',
+      '// a comment',
+      '  |> rx(90, %)',
+    ].join('\n')
+
+    const { body } = abstractSyntaxTree(lexer(code))
+    const bing = abstractSyntaxTree(lexer(code))
+    const sketchNonCodeMeta = (body[0] as any).declarations[0].init.nonCodeMeta
+    expect(1).toBe(1)
+    expect(sketchNonCodeMeta[0]).toEqual({
+      type: 'NoneCodeNode',
+      start: 75,
+      end: 91,
+      value: '\n// a comment\n  ',
     })
   })
 })

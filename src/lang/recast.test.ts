@@ -47,7 +47,7 @@ const myVar = "hello"
 log(5, myVar)`
     const { ast } = code2ast(code)
     const recasted = recast(ast)
-    expect(recasted).toBe(code.trim())
+    expect(recasted).toBe(code)
   })
   it('function declaration with call', () => {
     const code = [
@@ -59,7 +59,7 @@ log(5, myVar)`
     ].join('\n')
     const { ast } = code2ast(code)
     const recasted = recast(ast)
-    expect(recasted).toBe(code.trim())
+    expect(recasted).toBe(code)
   })
   it('sketch declaration', () => {
     let code = `sketch mySketch {
@@ -97,7 +97,7 @@ show(mySketch)
     ].join('\n')
     const { ast } = code2ast(code)
     const recasted = recast(ast)
-    expect(recasted).toBe(code.trim())
+    expect(recasted).toBe(code)
   })
   it('recast nested binary expression', () => {
     const code = ['const myVar = 1 + 2 * 5'].join('\n')
@@ -179,6 +179,115 @@ const myVar2 = yo['a'][key2].c`
     const { ast } = code2ast(code)
     const recasted = recast(ast)
     expect(recasted).toBe(code.trim())
+  })
+})
+
+describe('testing recasting with comments and whitespace', () => {
+  it('code with comments', () => {
+    const code = `
+const yo = { a: { b: { c: '123' } } }
+// this is a comment
+const key = 'c'`
+
+    const { ast } = code2ast(code)
+    const recasted = recast(ast)
+
+    expect(recasted).toBe(code)
+  })
+  it('code with comment and extra lines', () => {
+    const code = `
+const yo = 'c' /* this is
+a
+comment */
+
+const yo = 'bing'`
+    const { ast } = code2ast(code)
+    const recasted = recast(ast)
+    expect(recasted).toBe(code)
+  })
+  it('comments at the start and end', () => {
+    const code = `
+// this is a comment
+
+const yo = { a: { b: { c: '123' } } }
+const key = 'c'
+
+// this is also a comment`
+    const { ast } = code2ast(code)
+    const recasted = recast(ast)
+    expect(recasted).toBe(code)
+  })
+  it('comments in a fn block', () => {
+    const code = `
+const myFn = () => {
+  // this is a comment
+  const yo = { a: { b: { c: '123' } } } /* block
+  comment */
+
+  const key = 'c'
+  // this is also a comment
+}`
+    const { ast } = code2ast(code)
+    const recasted = recast(ast)
+    expect(recasted).toBe(code)
+  })
+  it('comments in a sketch block', () => {
+    const code = `
+sketch mySketch { /* comment at start */
+  // comment at start more
+  path myPath = lineTo(0, 1) /* comment here with 
+  some whitespace below */
+
+
+  lineTo(1, 1)
+  /* comment before declaration*/path rightPath = lineTo(1, 0)
+  close()
+  // comment at end
+
+}`
+    const { ast } = code2ast(code)
+    const recasted = recast(ast)
+    expect(recasted).toBe(code)
+  })
+  it('comments in a pipe expression', () => {
+    const code = [
+      'sketch mySk1 {',
+      '  lineTo(1, 1)',
+      '  path myPath = lineTo(0, 1)',
+      '  lineTo(1, 1)',
+      '}',
+      '  // a comment',
+      '  |> rx(90, %)',
+    ].join('\n')
+    const { ast } = code2ast(code)
+    const recasted = recast(ast)
+    expect(recasted).toBe(code)
+  })
+  it('comments sprinkled in all over the place', () => {
+    const code = `
+/* comment at start */
+
+sketch mySk1 {
+  lineTo(1, 1)
+  // comment here
+  path myPath = lineTo(0, 1)
+  lineTo(1, 1) /* and
+  here 
+  */
+}
+  // a comment between pipe expression statements
+  |> rx(90, %)
+  // and another with just white space between others below
+  |> ry(45, %)
+
+
+  |> rx(45, %)
+  /*
+  one more for good measure
+  */`
+    const { ast } = code2ast(code)
+    const recasted = recast(ast)
+    expect(recasted).toBe(code)
   })
 })
 

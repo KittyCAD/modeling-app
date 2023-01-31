@@ -24,6 +24,7 @@ export function addSketchTo(
     type: 'BlockStatement',
     ...dumbyStartend,
     body: [],
+    nonCodeMeta: {},
   }
   const sketch: SketchExpression = {
     type: 'SketchExpression',
@@ -56,6 +57,7 @@ export function addSketchTo(
 
   const pipChain: PipeExpression = {
     type: 'PipeExpression',
+    nonCodeMeta: {},
     ...dumbyStartend,
     body: [sketch, rotate],
   }
@@ -344,11 +346,13 @@ export function extrudeSketch(
     const pipeChain: PipeExpression = isInPipeExpression
       ? {
           type: 'PipeExpression',
+          nonCodeMeta: {},
           ...dumbyStartend,
           body: [...pipeExpression.body, extrudeCall],
         }
       : {
           type: 'PipeExpression',
+          nonCodeMeta: {},
           ...dumbyStartend,
           body: [sketchExpression, extrudeCall],
         }
@@ -460,6 +464,7 @@ export function sketchOnExtrudedFace(
   // create pipe expression with a sketch block piped into a transform function
   const sketchPipe: PipeExpression = {
     type: 'PipeExpression',
+    nonCodeMeta: {},
     ...dumbyStartend,
     body: [
       {
@@ -469,6 +474,7 @@ export function sketchOnExtrudedFace(
           type: 'BlockStatement',
           ...dumbyStartend,
           body: [],
+          nonCodeMeta: {},
         },
       },
       {

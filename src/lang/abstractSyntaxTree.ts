@@ -21,6 +21,7 @@ type syntaxType =
   | 'PipeExpression'
   | 'PipeSubstitution'
   | 'Literal'
+  | 'NoneCodeNode'
 // | 'NumberLiteral'
 // | 'StringLiteral'
 // | 'IfStatement'
@@ -83,12 +84,49 @@ export interface Program {
   type: syntaxType
   start: number
   end: number
-  body: Body[]
+  body: BodyItem[]
+  nonCodeMeta: NoneCodeMeta
 }
 interface GeneralStatement {
   type: syntaxType
   start: number
   end: number
+}
+
+interface NoneCodeNode extends GeneralStatement {
+  type: 'NoneCodeNode'
+  value: string
+}
+
+interface NoneCodeMeta {
+  start?: NoneCodeNode
+  [key: number]: NoneCodeNode
+}
+
+function makeNoneCodeNode(
+  tokens: Token[],
+  index: number
+): { node?: NoneCodeNode; lastIndex: number } {
+  const currentToken = tokens[index]
+  const endIndex = findEndOfNonCodeNode(tokens, index)
+  const nonCodeTokens = tokens.slice(index, endIndex)
+  let value = nonCodeTokens.map((t) => t.value).join('')
+
+  const node: NoneCodeNode = {
+    type: 'NoneCodeNode',
+    start: currentToken.start,
+    end: tokens[endIndex - 1].end,
+    value,
+  }
+  return { node, lastIndex: endIndex - 1 }
+}
+
+export function findEndOfNonCodeNode(tokens: Token[], index: number): number {
+  const currentToken = tokens[index]
+  if (isNotCodeToken(currentToken)) {
+    return findEndOfNonCodeNode(tokens, index + 1)
+  }
+  return index
 }
 
 export interface ExpressionStatement extends GeneralStatement {
@@ -828,6 +866,7 @@ function makeSketchExpression(
 export interface PipeExpression extends GeneralStatement {
   type: 'PipeExpression'
   body: Value[]
+  nonCodeMeta: NoneCodeMeta
 }
 
 function makePipeExpression(
@@ -835,7 +874,11 @@ function makePipeExpression(
   index: number
 ): { expression: PipeExpression; lastIndex: number } {
   const currentToken = tokens[index]
-  const { body, lastIndex: bodyLastIndex } = makePipeBody(tokens, index)
+  const {
+    body,
+    lastIndex: bodyLastIndex,
+    nonCodeMeta,
+  } = makePipeBody(tokens, index)
   const endToken = tokens[bodyLastIndex]
   return {
     expression: {
@@ -843,6 +886,7 @@ function makePipeExpression(
       start: currentToken.start,
       end: endToken.end,
       body,
+      nonCodeMeta,
     },
     lastIndex: bodyLastIndex,
   }
@@ -851,8 +895,10 @@ function makePipeExpression(
 function makePipeBody(
   tokens: Token[],
   index: number,
-  previousValues: Value[] = []
-): { body: Value[]; lastIndex: number } {
+  previousValues: Value[] = [],
+  previousNonCodeMeta: NoneCodeMeta = {}
+): { body: Value[]; lastIndex: number; nonCodeMeta: NoneCodeMeta } {
+  const nonCodeMeta = { ...previousNonCodeMeta }
   const currentToken = tokens[index]
   const expressionStart = nextMeaningfulToken(tokens, index)
   let value: Value
@@ -874,10 +920,18 @@ function makePipeBody(
     return {
       body: [...previousValues, value],
       lastIndex,
+      nonCodeMeta,
     }
   }
-  // const nextToken = nextMeaningfulToken(tokens, nextPipeToken.index + 1)
-  return makePipeBody(tokens, nextPipeToken.index, [...previousValues, value])
+  if (nextPipeToken.bonusNonCodeNode) {
+    nonCodeMeta[previousValues.length] = nextPipeToken.bonusNonCodeNode
+  }
+  return makePipeBody(
+    tokens,
+    nextPipeToken.index,
+    [...previousValues, value],
+    nonCodeMeta
+  )
 }
 
 export interface FunctionExpression extends GeneralStatement {
@@ -937,7 +991,8 @@ function makeParams(
 
 export interface BlockStatement extends GeneralStatement {
   type: 'BlockStatement'
-  body: Body[]
+  body: BodyItem[]
+  nonCodeMeta: NoneCodeMeta
 }
 
 function makeBlockStatement(
@@ -945,10 +1000,10 @@ function makeBlockStatement(
   index: number
 ): { block: BlockStatement; lastIndex: number } {
   const openingCurly = tokens[index]
-  const nextToken = nextMeaningfulToken(tokens, index)
-  const { body, lastIndex } =
+  const nextToken = { token: tokens[index + 1], index: index + 1 }
+  const { body, lastIndex, nonCodeMeta } =
     nextToken.token.value === '}'
-      ? { body: [], lastIndex: nextToken.index }
+      ? { body: [], lastIndex: nextToken.index, nonCodeMeta: {} }
       : makeBody({ tokens, tokenIndex: nextToken.index })
   return {
     block: {
@@ -956,6 +1011,7 @@ function makeBlockStatement(
       start: openingCurly.start,
       end: tokens[lastIndex]?.end || 0,
       body,
+      nonCodeMeta,
     },
     lastIndex,
   }
@@ -986,18 +1042,24 @@ function makeReturnStatement(
 
 export type All = Program | ExpressionStatement[] | BinaryExpression | Literal
 
-function nextMeaningfulToken(
+export function nextMeaningfulToken(
   tokens: Token[],
   index: number,
   offset: number = 1
-): { token: Token; index: number } {
+): { token: Token; index: number; bonusNonCodeNode?: NoneCodeNode } {
   const newIndex = index + offset
   const token = tokens[newIndex]
   if (!token) {
     return { token, index: tokens.length }
   }
-  if (token.type === 'whitespace') {
-    return nextMeaningfulToken(tokens, index, offset + 1)
+  if (isNotCodeToken(token)) {
+    const nonCodeNode = makeNoneCodeNode(tokens, newIndex)
+    const newnewIndex = nonCodeNode.lastIndex + 1
+    return {
+      token: tokens[newnewIndex],
+      index: newnewIndex,
+      bonusNonCodeNode: nonCodeNode?.node?.value ? nonCodeNode.node : undefined,
+    }
   }
   return { token, index: newIndex }
 }
@@ -1012,13 +1074,13 @@ function previousMeaningfulToken(
   if (!token) {
     return { token, index: 0 }
   }
-  if (token.type === 'whitespace') {
+  if (isNotCodeToken(token)) {
     return previousMeaningfulToken(tokens, index, offset + 1)
   }
   return { token, index: newIndex }
 }
 
-type Body = ExpressionStatement | VariableDeclaration | ReturnStatement
+type BodyItem = ExpressionStatement | VariableDeclaration | ReturnStatement
 
 function makeBody(
   {
@@ -1028,23 +1090,37 @@ function makeBody(
     tokens: Token[]
     tokenIndex?: number
   },
-  previousBody: Body[] = []
-): { body: Body[]; lastIndex: number } {
+  previousBody: BodyItem[] = [],
+  previousNonCodeMeta: NoneCodeMeta = {}
+): { body: BodyItem[]; lastIndex: number; nonCodeMeta: NoneCodeMeta } {
+  const nonCodeMeta = { ...previousNonCodeMeta }
   if (tokenIndex >= tokens.length) {
-    return { body: previousBody, lastIndex: tokenIndex }
+    return { body: previousBody, lastIndex: tokenIndex, nonCodeMeta }
   }
 
   const token = tokens[tokenIndex]
   if (token.type === 'brace' && token.value === '}') {
-    return { body: previousBody, lastIndex: tokenIndex }
+    return { body: previousBody, lastIndex: tokenIndex, nonCodeMeta }
   }
-  if (typeof token === 'undefined') {
-    console.log('probably should throw')
-  }
-  if (token.type === 'whitespace') {
-    return makeBody({ tokens, tokenIndex: tokenIndex + 1 }, previousBody)
+  if (isNotCodeToken(token)) {
+    const nextToken = nextMeaningfulToken(tokens, tokenIndex, 0)
+    if (nextToken.bonusNonCodeNode) {
+      if (previousBody.length === 0) {
+        nonCodeMeta.start = nextToken.bonusNonCodeNode
+      } else {
+        nonCodeMeta[previousBody.length] = nextToken.bonusNonCodeNode
+      }
+    }
+    return makeBody(
+      { tokens, tokenIndex: nextToken.index },
+      previousBody,
+      nonCodeMeta
+    )
   }
   const nextToken = nextMeaningfulToken(tokens, tokenIndex)
+  if (nextToken.bonusNonCodeNode) {
+    nonCodeMeta[previousBody.length] = nextToken.bonusNonCodeNode
+  }
   if (
     token.type === 'word' &&
     (token.value === 'const' ||
@@ -1057,18 +1133,27 @@ function makeBody(
       tokenIndex
     )
     const nextThing = nextMeaningfulToken(tokens, lastIndex)
-    return makeBody({ tokens, tokenIndex: nextThing.index }, [
-      ...previousBody,
-      declaration,
-    ])
+
+    if (nextThing.bonusNonCodeNode) {
+      nonCodeMeta[previousBody.length] = nextThing.bonusNonCodeNode
+    }
+    return makeBody(
+      { tokens, tokenIndex: nextThing.index },
+      [...previousBody, declaration],
+      nonCodeMeta
+    )
   }
   if (token.type === 'word' && token.value === 'return') {
     const { statement, lastIndex } = makeReturnStatement(tokens, tokenIndex)
     const nextThing = nextMeaningfulToken(tokens, lastIndex)
-    return makeBody({ tokens, tokenIndex: nextThing.index }, [
-      ...previousBody,
-      statement,
-    ])
+    if (nextThing.bonusNonCodeNode) {
+      nonCodeMeta[previousBody.length] = nextThing.bonusNonCodeNode
+    }
+    return makeBody(
+      { tokens, tokenIndex: nextThing.index },
+      [...previousBody, statement],
+      nonCodeMeta
+    )
   }
   if (
     token.type === 'word' &&
@@ -1080,31 +1165,44 @@ function makeBody(
       tokenIndex
     )
     const nextThing = nextMeaningfulToken(tokens, lastIndex)
-    return makeBody({ tokens, tokenIndex: nextThing.index }, [
-      ...previousBody,
-      expression,
-    ])
+    if (nextThing.bonusNonCodeNode) {
+      nonCodeMeta[previousBody.length] = nextThing.bonusNonCodeNode
+    }
+
+    return makeBody(
+      { tokens, tokenIndex: nextThing.index },
+      [...previousBody, expression],
+      nonCodeMeta
+    )
   }
+  const nextThing = nextMeaningfulToken(tokens, tokenIndex)
   if (
     (token.type === 'number' || token.type === 'word') &&
-    nextMeaningfulToken(tokens, tokenIndex).token.type === 'operator'
+    nextThing.token.type === 'operator'
   ) {
+    if (nextThing.bonusNonCodeNode) {
+      nonCodeMeta[previousBody.length] = nextThing.bonusNonCodeNode
+    }
     const { expression, lastIndex } = makeExpressionStatement(
       tokens,
       tokenIndex
     )
-    // return startTree(tokens, tokenIndex, [...previousBody, makeExpressionStatement(tokens, tokenIndex)]);
-    return { body: [...previousBody, expression], lastIndex }
+    return {
+      body: [...previousBody, expression],
+      nonCodeMeta: nonCodeMeta,
+      lastIndex,
+    }
   }
   throw new Error('Unexpected token')
 }
 export const abstractSyntaxTree = (tokens: Token[]): Program => {
-  const { body } = makeBody({ tokens })
+  const { body, nonCodeMeta } = makeBody({ tokens })
   const program: Program = {
     type: 'Program',
     start: 0,
     end: body[body.length - 1].end,
     body: body,
+    nonCodeMeta,
   }
   return program
 }
@@ -1135,7 +1233,6 @@ export function findNextDeclarationKeyword(
     ) {
       return nextToken
     }
-    // return findNextDeclarationKeyword(tokens, nextToken.index)
     // probably should do something else here
     // throw new Error('Unexpected token')
   }
@@ -1187,7 +1284,7 @@ export function hasPipeOperator(
   tokens: Token[],
   index: number,
   _limitIndex = -1
-): { token: Token; index: number } | false {
+): ReturnType<typeof nextMeaningfulToken> | false {
   // this probably still needs some work
   // should be called on expression statuments (i.e "lineTo" for lineTo(10, 10)) or "{" for sketch declarations
   let limitIndex = _limitIndex
@@ -1531,4 +1628,12 @@ export function getNodePathFromSourceRange(
     }
   }
   return path
+}
+
+export function isNotCodeToken(token: Token): boolean {
+  return (
+    token?.type === 'whitespace' ||
+    token?.type === 'linecomment' ||
+    token?.type === 'blockcomment'
+  )
 }

@@ -1,3 +1,4 @@
+import { start } from 'repl'
 import {
   Program,
   BinaryExpression,
@@ -10,25 +11,27 @@ import {
   ArrayExpression,
   ObjectExpression,
   MemberExpression,
+  PipeExpression,
 } from './abstractSyntaxTree'
 import { precedence } from './astMathExpressions'
 
 export function recast(
   ast: Program,
   previousWrittenCode = '',
-  indentation = ''
+  indentation = '',
+  isWithBlock = false
 ): string {
   return ast.body
     .map((statement) => {
       if (statement.type === 'ExpressionStatement') {
         if (statement.expression.type === 'BinaryExpression') {
-          return indentation + recastBinaryExpression(statement.expression)
+          return recastBinaryExpression(statement.expression)
         } else if (statement.expression.type === 'ArrayExpression') {
-          return indentation + recastArrayExpression(statement.expression)
+          return recastArrayExpression(statement.expression)
         } else if (statement.expression.type === 'ObjectExpression') {
-          return indentation + recastObjectExpression(statement.expression)
+          return recastObjectExpression(statement.expression)
         } else if (statement.expression.type === 'CallExpression') {
-          return indentation + recastCallExpression(statement.expression)
+          return recastCallExpression(statement.expression)
         }
       } else if (statement.type === 'VariableDeclaration') {
         return statement.declarations
@@ -41,17 +44,47 @@ export function recast(
             const assignmentString = isSketchOrFirstPipeExpressionIsSketch
               ? ' '
               : ' = '
-            return `${indentation}${statement.kind} ${
+            return `${statement.kind} ${
               declaration.id.name
             }${assignmentString}${recastValue(declaration.init)}`
           })
           .join('')
       } else if (statement.type === 'ReturnStatement') {
-        return `${indentation}return ${recastArgument(statement.argument)}`
+        return `return ${recastArgument(statement.argument)}`
       }
       return statement.type
     })
-    .join('\n')
+    .map((recastStr, index, arr) => {
+      const isLegitCustomWhitespaceOrComment = (str: string) =>
+        str !== ' ' && str !== '\n' && str !== '  '
+
+      // determine the value of startString
+      const lastWhiteSpaceOrComment =
+        index > 0 ? ast?.nonCodeMeta?.[index - 1]?.value : ' '
+      // indentation of this line will be covered by the previous if we're using a custom whitespace or comment
+      let startString = isLegitCustomWhitespaceOrComment(
+        lastWhiteSpaceOrComment
+      )
+        ? ''
+        : indentation
+      if (index === 0) {
+        startString = ast?.nonCodeMeta?.start?.value || indentation
+      }
+      if (startString.endsWith('\n')) {
+        startString += indentation
+      }
+
+      // determine the value of endString
+      const maybeLineBreak: string =
+        index === arr.length - 1 && !isWithBlock ? '' : '\n'
+      let customWhiteSpaceOrComment = ast?.nonCodeMeta?.[index]?.value
+      if (!isLegitCustomWhitespaceOrComment(customWhiteSpaceOrComment))
+        customWhiteSpaceOrComment = ''
+      let endString = customWhiteSpaceOrComment || maybeLineBreak
+
+      return startString + recastStr + endString
+    })
+    .join('')
 }
 
 function recastBinaryExpression(expression: BinaryExpression): string {
@@ -155,18 +188,16 @@ function recastArgument(argument: Value): string {
 }
 
 function recastFunction(expression: FunctionExpression): string {
-  return `(${expression.params.map((param) => param.name).join(', ')}) => {
-  ${recast(expression.body)}
-}`
+  return `(${expression.params
+    .map((param) => param.name)
+    .join(', ')}) => {${recast(expression.body, '', '', true)}}`
 }
 
 function recastSketchExpression(
   expression: SketchExpression,
   indentation: string
 ): string {
-  return `{
-${recast(expression.body, '', indentation + '  ')}
-}`
+  return `{${recast(expression.body, '', indentation + '  ', true) || '\n  \n'}}`
 }
 
 function recastMemberExpression(
@@ -206,9 +237,30 @@ function recastValue(node: Value, indentation = ''): string {
   } else if (node.type === 'SketchExpression') {
     return recastSketchExpression(node, indentation)
   } else if (node.type === 'PipeExpression') {
-    return node.body
-      .map((statement): string => recastValue(statement, indentation))
-      .join('\n  |> ')
+    return recastPipeExpression(node)
   }
   return ''
+}
+
+function recastPipeExpression(expression: PipeExpression): string {
+  return expression.body
+    .map((statement, index, arr): string => {
+      let str = ''
+      let indentation = '  '
+      let maybeLineBreak = '\n'
+      str = recastValue(statement)
+      if (
+        expression.nonCodeMeta?.[index]?.value &&
+        expression.nonCodeMeta?.[index].value !== ' '
+      ) {
+        str += expression.nonCodeMeta[index]?.value
+        indentation = ''
+        maybeLineBreak = ''
+      }
+      if (index !== arr.length - 1) {
+        str += maybeLineBreak + indentation + '|> '
+      }
+      return str
+    })
+    .join('')
 }

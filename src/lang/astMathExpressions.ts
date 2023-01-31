@@ -1,4 +1,9 @@
-import { BinaryExpression, Literal, Identifier } from './abstractSyntaxTree'
+import {
+  BinaryExpression,
+  Literal,
+  Identifier,
+  isNotCodeToken,
+} from './abstractSyntaxTree'
 import { Token } from './tokeniser'
 
 export function reversePolishNotation(
@@ -58,7 +63,7 @@ export function reversePolishNotation(
       operators.slice(0, -1)
     )
   }
-  if (currentToken.type === 'whitespace') {
+  if (isNotCodeToken(currentToken)) {
     return reversePolishNotation(tokens.slice(1), previousPostfix, operators)
   }
   throw new Error('Unknown token')
