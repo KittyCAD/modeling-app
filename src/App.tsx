@@ -21,6 +21,7 @@ import { Logs } from './components/Logs'
 import { AxisIndicator } from './components/AxisIndicator'
 import { RenderViewerArtifacts } from './components/RenderViewerArtifacts'
 import { PanelHeader } from './components/PanelHeader'
+import { MemoryPanel } from './components/MemoryPanel'
 
 const OrrthographicCamera = OrthographicCamera as any
 
@@ -149,9 +150,9 @@ function App() {
   return (
     <div className="h-screen">
       <Allotment snap={true}>
-        <Allotment vertical defaultSizes={[4, 1]}>
+        <Allotment vertical defaultSizes={[4, 1, 1]}>
           <div className="h-full flex flex-col items-start">
-            <PanelHeader title="Code Editor" />
+            <PanelHeader title="Editor" />
             {/* <button
               disabled={!shouldFormat}
               onClick={formatCode}
@@ -170,6 +171,7 @@ function App() {
               />
             </div>
           </div>
+          <MemoryPanel />
           <Logs />
         </Allotment>
         <div className="h-full">
