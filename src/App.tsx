@@ -20,6 +20,7 @@ import { SketchPlane } from './components/SketchPlane'
 import { Logs } from './components/Logs'
 import { AxisIndicator } from './components/AxisIndicator'
 import { RenderViewerArtifacts } from './components/RenderViewerArtifacts'
+import { PanelHeader } from './components/PanelHeader'
 
 const OrrthographicCamera = OrthographicCamera as any
 
@@ -147,28 +148,32 @@ function App() {
   }, [code, ast])
   return (
     <div className="h-screen">
-      <Allotment>
-        <Logs />
-        <div className="h-full flex flex-col items-start">
-          <button
-            disabled={!shouldFormat}
-            onClick={formatCode}
-            className={`${!shouldFormat && 'text-gray-300'}`}
-          >
-            format
-          </button>
-          <div className="bg-red h-full w-full overflow-auto">
-            <CodeMirror
-              className="h-full"
-              value={code}
-              extensions={[javascript({ jsx: true }), lineHighlightField]}
-              onChange={onChange}
-              onUpdate={onUpdate}
-              onCreateEditor={(_editorView) => setEditorView(_editorView)}
-            />
+      <Allotment snap={true}>
+        <Allotment vertical defaultSizes={[4, 1]}>
+          <div className="h-full flex flex-col items-start">
+            <PanelHeader title="Code Editor" />
+            {/* <button
+              disabled={!shouldFormat}
+              onClick={formatCode}
+              className={`${!shouldFormat && 'text-gray-300'}`}
+            >
+              format
+            </button> */}
+            <div className="bg-red h-full w-full overflow-auto">
+              <CodeMirror
+                className="h-full"
+                value={code}
+                extensions={[javascript({ jsx: true }), lineHighlightField]}
+                onChange={onChange}
+                onUpdate={onUpdate}
+                onCreateEditor={(_editorView) => setEditorView(_editorView)}
+              />
+            </div>
           </div>
-        </div>
+          <Logs />
+        </Allotment>
         <div className="h-full">
+          <PanelHeader title="Drafting Board" />
           <Toolbar />
           <div className="border h-full border-gray-300 relative">
             <div className="absolute inset-0">
