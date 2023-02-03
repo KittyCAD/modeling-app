@@ -29,6 +29,8 @@ export const Logs = () => {
             displayArrayKey={false}
             displayDataTypes={false}
             displayObjectSize={true}
+            indentWidth={2}
+            quotesOnKeys={false}
             name={false}
           />
         </div>
