@@ -16,7 +16,6 @@ export const Logs = () => {
       element.scrollTop = element.scrollHeight - element.clientHeight
     }
   }, [logs])
-  console.log('them logs thoughn', logs)
   return (
     <div>
       <PanelHeader title="Logs" />

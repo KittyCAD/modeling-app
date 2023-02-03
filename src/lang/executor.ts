@@ -328,7 +328,7 @@ export const executor = (
             )
             if (
               result.type === 'extrudeGroup' ||
-              result.type === 'extrudePath'
+              result.type === 'sketchGroup'
             ) {
               _programMemory.root[variableName] = result
             } else {
