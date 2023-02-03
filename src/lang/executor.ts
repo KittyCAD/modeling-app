@@ -326,7 +326,18 @@ export const executor = (
                 body: [],
               }
             )
-            _programMemory.root[variableName] = result as any // todo memory redo
+            if (
+              result.type === 'extrudeGroup' ||
+              result.type === 'extrudePath'
+            ) {
+              _programMemory.root[variableName] = result
+            } else {
+              _programMemory.root[variableName] = {
+                type: 'userVal',
+                value: result,
+                __meta,
+              }
+            }
           } else {
             _programMemory.root[variableName] = {
               type: 'userVal',

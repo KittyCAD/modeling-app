@@ -39,11 +39,12 @@ function App() {
     code,
     setCode,
     setAst,
-    formatCode,
+    // formatCode,
     ast,
     setError,
     errorState,
     setProgramMemory,
+    resetLogs,
   } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
@@ -58,10 +59,11 @@ function App() {
     ast: s.ast,
     setAst: s.setAst,
     lastGuiMode: s.lastGuiMode,
-    formatCode: s.formatCode,
+    // formatCode: s.formatCode,
     setError: s.setError,
     errorState: s.errorState,
     setProgramMemory: s.setProgramMemory,
+    resetLogs: s.resetLogs,
   }))
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
@@ -92,21 +94,13 @@ function App() {
       const tokens = lexer(code)
       const _ast = abstractSyntaxTree(tokens)
       setAst(_ast)
+      resetLogs()
       const programMemory = executor(_ast, {
         root: {
           log: {
             type: 'userVal',
             value: (a: any) => {
-              console.log('raw log', a)
-              let b = a
-              if (Array.isArray(a)) {
-                b = a.map(({ geo, __geoMeta, ...rest }) => rest)
-                b = JSON.stringify(b, null, 2)
-              } else if (typeof a === 'object') {
-                const { geo, __geoMeta, ...rest } = a
-                b = JSON.stringify(rest, null, 2)
-              }
-              addLog(b)
+              addLog(a)
             },
             __meta: [
               {

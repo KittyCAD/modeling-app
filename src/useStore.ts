@@ -113,7 +113,12 @@ export const useStore = create<StoreState>()((set, get) => ({
   },
   logs: [],
   addLog: (log) => {
-    set((state) => ({ logs: [...state.logs, log] }))
+    if (Array.isArray(log)) {
+      const cleanLog: any = log.map(({ __geoMeta, ...rest }) => rest)
+      set((state) => ({ logs: [...state.logs, cleanLog] }))
+    } else {
+      set((state) => ({ logs: [...state.logs, log] }))
+    }
   },
   resetLogs: () => {
     set({ logs: [] })
