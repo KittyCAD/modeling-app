@@ -3,8 +3,9 @@ import {
   getNodePathFromSourceRange,
   getNodeFromPath,
   CallExpression,
+  ArrayExpression,
 } from '../lang/abstractSyntaxTree'
-import { changeArguments } from '../lang/modifyAst'
+import { changeArguments, changeSketchArguments } from '../lang/modifyAst'
 import {
   ExtrudeGroup,
   ExtrudeSurface,
@@ -59,7 +60,11 @@ function MovingSphere({
         ast,
         thePath
       )
-      const [xArg, yArg] = callExpression?.arguments || []
+      const [xArg, yArg] =
+        // TODO handle object argument plus function calls other than lineTo/lineTTo
+        guiMode.mode === 'sketch' && guiMode.sketchMode === 'sketchEdit'
+          ? callExpression?.arguments || []
+          : (callExpression?.arguments?.[0] as ArrayExpression)?.elements || []
       const x = xArg?.type === 'Literal' ? xArg.value : -1
       const y = yArg?.type === 'Literal' ? yArg.value : -1
       return {
@@ -79,7 +84,10 @@ function MovingSphere({
         const inverseQuaternion = new Quaternion()
         if (
           guiMode.mode === 'canEditSketch' ||
-          (guiMode.mode === 'sketch' && guiMode.sketchMode === 'sketchEdit')
+          guiMode.mode === 'canEditSketch2' ||
+          (guiMode.mode === 'sketch' &&
+            (guiMode.sketchMode === 'sketchEdit' ||
+              guiMode.sketchMode === 'sketchEdit2'))
         ) {
           inverseQuaternion.set(...guiMode.rotation)
           inverseQuaternion.invert()
@@ -87,7 +95,10 @@ function MovingSphere({
         yo.sub(new Vector3(...position).applyQuaternion(inverseQuaternion))
         let [x, y] = [roundOff(yo.x, 2), roundOff(yo.y, 2)]
         let theNewPoints: [number, number] = [x, y]
-        const { modifiedAst } = changeArguments(ast, thePath, theNewPoints)
+        const { modifiedAst } =
+          guiMode.mode === 'sketch' && guiMode.sketchMode === 'sketchEdit'
+            ? changeArguments(ast, thePath, theNewPoints)
+            : changeSketchArguments.lineTTo(ast, thePath, theNewPoints)
         updateAst(modifiedAst)
         ref.current.position.set(...position)
       }
@@ -101,7 +112,10 @@ function MovingSphere({
 
   const inEditMode =
     guiMode.mode === 'canEditSketch' ||
-    (guiMode.mode === 'sketch' && guiMode.sketchMode === 'sketchEdit')
+    guiMode.mode === 'canEditSketch2' ||
+    (guiMode.mode === 'sketch' &&
+      (guiMode.sketchMode === 'sketchEdit' ||
+        guiMode.sketchMode === 'sketchEdit2'))
 
   let clickDetectPlaneQuaternion = new Quaternion()
   if (inEditMode) {
@@ -139,7 +153,10 @@ function MovingSphere({
             const inverseQuaternion = new Quaternion()
             if (
               guiMode.mode === 'canEditSketch' ||
-              (guiMode.mode === 'sketch' && guiMode.sketchMode === 'sketchEdit')
+              guiMode.mode === 'canEditSketch2' ||
+              (guiMode.mode === 'sketch' &&
+                (guiMode.sketchMode === 'sketchEdit' ||
+                  guiMode.sketchMode === 'sketchEdit2'))
             ) {
               inverseQuaternion.set(...guiMode.rotation)
               inverseQuaternion.invert()
@@ -424,9 +441,9 @@ function LineRender({
   )
 }
 
-type Boop = ExtrudeGroup | SketchGroup
+type Artifact = ExtrudeGroup | SketchGroup
 
-function useSetAppModeFromCursorLocation(artifacts: Boop[]) {
+function useSetAppModeFromCursorLocation(artifacts: Artifact[]) {
   const { selectionRange, guiMode, setGuiMode, ast } = useStore(
     ({ selectionRange, guiMode, setGuiMode, ast }) => ({
       selectionRange,
@@ -438,7 +455,7 @@ function useSetAppModeFromCursorLocation(artifacts: Boop[]) {
   useEffect(() => {
     const artifactsWithinCursorRange: (
       | {
-          parentType: Boop['type']
+          parentType: Artifact['type']
           isParent: true
           pathToNode: PathToNode
           sourceRange: SourceRange
@@ -446,10 +463,12 @@ function useSetAppModeFromCursorLocation(artifacts: Boop[]) {
           position: Position
         }
       | {
-          parentType: Boop['type']
+          parentType: Artifact['type']
           isParent: false
           pathToNode: PathToNode
           sourceRange: SourceRange
+          rotation: Rotation
+          position: Position
         }
     )[] = []
     artifacts?.forEach((artifact) => {
@@ -460,6 +479,8 @@ function useSetAppModeFromCursorLocation(artifacts: Boop[]) {
             isParent: false,
             pathToNode: geo.__geoMeta.pathToNode,
             sourceRange: geo.__geoMeta.sourceRange,
+            rotation: artifact.rotation,
+            position: artifact.position,
           })
         }
       })
@@ -477,21 +498,32 @@ function useSetAppModeFromCursorLocation(artifacts: Boop[]) {
       })
     })
     const parentArtifacts = artifactsWithinCursorRange.filter((a) => a.isParent)
-    if (parentArtifacts.length > 1) {
-      console.log('multiple parents, might be an issue?', parentArtifacts)
-    }
+    const hasSketchArtifact = artifactsWithinCursorRange.filter(
+      ({ parentType }) => parentType === 'sketchGroup'
+    )
     const artifact = parentArtifacts[0]
-    const shouldHighlight = !!artifact
+    const shouldHighlight = !!artifact || hasSketchArtifact.length
     if (
       shouldHighlight &&
       (guiMode.mode === 'default' || guiMode.mode === 'canEditSketch') &&
       ast &&
-      artifact.parentType === 'sketchGroup' &&
+      artifact?.parentType === 'sketchGroup' &&
       artifact.isParent
     ) {
       const pathToNode = getNodePathFromSourceRange(ast, artifact.sourceRange)
       const { rotation, position } = artifact
       setGuiMode({ mode: 'canEditSketch', pathToNode, rotation, position })
+    } else if (
+      (guiMode.mode === 'default' || guiMode.mode === 'canEditSketch2') &&
+      ast &&
+      hasSketchArtifact.length
+    ) {
+      const pathToNode = getNodePathFromSourceRange(
+        ast,
+        hasSketchArtifact[0].sourceRange
+      )
+      const { rotation, position } = hasSketchArtifact[0]
+      setGuiMode({ mode: 'canEditSketch2', pathToNode, rotation, position })
     } else if (
       shouldHighlight &&
       (guiMode.mode === 'default' || guiMode.mode === 'canEditSketch') &&
@@ -504,8 +536,9 @@ function useSetAppModeFromCursorLocation(artifacts: Boop[]) {
       setGuiMode({ mode: 'canEditExtrude', pathToNode, rotation, position })
     } else if (
       !shouldHighlight &&
-      (guiMode.mode === 'canEditSketch' || guiMode.mode === 'canEditExtrude')
-      // (artifact.parentType === 'extrudeGroup' || artifact.type === 'extrudeGroup')
+      (guiMode.mode === 'canEditSketch' ||
+        guiMode.mode === 'canEditExtrude' ||
+        guiMode.mode === 'canEditSketch2')
     ) {
       setGuiMode({ mode: 'default' })
     }

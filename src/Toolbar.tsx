@@ -15,17 +15,30 @@ export const Toolbar = () => {
   return (
     <div>
       {guiMode.mode === 'default' && (
-        <button
-          onClick={() => {
-            setGuiMode({
-              mode: 'sketch',
-              sketchMode: 'selectFace',
-            })
-          }}
-          className="border m-1 px-1 rounded"
-        >
-          Start sketch
-        </button>
+        <>
+          <button
+            onClick={() => {
+              setGuiMode({
+                mode: 'sketch',
+                sketchMode: 'selectFace',
+              })
+            }}
+            className="border m-1 px-1 rounded"
+          >
+            Start sketch
+          </button>
+          <button
+            onClick={() => {
+              setGuiMode({
+                mode: 'sketch',
+                sketchMode: 'selectFace2',
+              })
+            }}
+            className="border m-1 px-1 rounded"
+          >
+            StartSketchV2
+          </button>
+        </>
       )}
       {guiMode.mode === 'canEditExtrude' && (
         <button
@@ -54,6 +67,23 @@ export const Toolbar = () => {
           className="border m-1 px-1 rounded"
         >
           EditSketch
+        </button>
+      )}
+      {(guiMode.mode === 'canEditSketch2' || false) && (
+        <button
+          onClick={() => {
+            setGuiMode({
+              mode: 'sketch',
+              sketchMode: 'sketchEdit2',
+              pathToNode: guiMode.pathToNode,
+              rotation: guiMode.rotation,
+              position: guiMode.position,
+              isTooltip: true,
+            })
+          }}
+          className="border m-1 px-1 rounded"
+        >
+          EditSketchV2
         </button>
       )}
       {guiMode.mode === 'canEditSketch' && (
@@ -108,6 +138,7 @@ export const Toolbar = () => {
             onClick={() =>
               setGuiMode({
                 ...guiMode,
+                isTooltip: true,
                 sketchMode:
                   guiMode.sketchMode === 'points' ? 'sketchEdit' : 'points',
               })
@@ -116,6 +147,58 @@ export const Toolbar = () => {
             LineTo{guiMode.sketchMode === 'points' && '✅'}
           </button>
         )}
+      {guiMode.mode === 'sketch' && 'isTooltip' in guiMode && (
+        <button
+          className={`border m-1 px-1 rounded ${
+            guiMode.sketchMode === 'points2' && 'bg-gray-400'
+          }`}
+          onClick={() =>
+            setGuiMode({
+              ...guiMode,
+              sketchMode:
+                guiMode.sketchMode === 'points2' ? 'sketchEdit2' : 'points2',
+            })
+          }
+        >
+          LineTo{guiMode.sketchMode === 'points2' && '✅'}
+        </button>
+      )}
+      {guiMode.mode === 'sketch' && 'isTooltip' in guiMode && (
+        <button
+          className={`border m-1 px-1 rounded ${
+            guiMode.sketchMode === 'relativeLine' && 'bg-gray-400'
+          }`}
+          onClick={() =>
+            setGuiMode({
+              ...guiMode,
+              sketchMode:
+                guiMode.sketchMode === 'relativeLine'
+                  ? 'sketchEdit2'
+                  : 'relativeLine',
+            })
+          }
+        >
+          Relative Line{guiMode.sketchMode === 'relativeLine' && '✅'}
+        </button>
+      )}
+      {guiMode.mode === 'sketch' && 'isTooltip' in guiMode && (
+        <button
+          className={`border m-1 px-1 rounded ${
+            guiMode.sketchMode === 'angledLine' && 'bg-gray-400'
+          }`}
+          onClick={() =>
+            setGuiMode({
+              ...guiMode,
+              sketchMode:
+                guiMode.sketchMode === 'angledLine'
+                  ? 'sketchEdit2'
+                  : 'angledLine',
+            })
+          }
+        >
+          AngledLine{guiMode.sketchMode === 'angledLine' && '✅'}
+        </button>
+      )}
     </div>
   )
 }

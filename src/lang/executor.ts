@@ -7,6 +7,7 @@ import {
   MemberExpression,
   Identifier,
   CallExpression,
+  ArrayExpression,
 } from './abstractSyntaxTree'
 import {
   sketchFns,
@@ -287,6 +288,8 @@ export const executor = (
               return _programMemory.root[arg.name].value
             } else if (arg.type === 'ObjectExpression') {
               return executeObjectExpression(_programMemory, arg)
+            } else if (arg.type === 'ArrayExpression') {
+              return executeArrayExpression(_programMemory, arg)
             }
             throw new Error(
               `Unexpected argument type ${arg.type} in function call`
@@ -544,18 +547,8 @@ function executeObjectExpression(
           property.value
         )
       } else if (property.value.type === 'ArrayExpression') {
-        obj[property.key.name] = property.value.elements.map((el) => {
-          if (el.type === 'Literal') {
-            return el.value
-          } else if (el.type === 'Identifier') {
-            return _programMemory.root[el.name].value
-          } else if (el.type === 'BinaryExpression') {
-            return getBinaryExpressionResult(el, _programMemory)
-          } else if (el.type === 'ObjectExpression') {
-            return executeObjectExpression(_programMemory, el)
-          }
-          throw new Error('Invalid argument type')
-        })
+        const result = executeArrayExpression(_programMemory, property.value)
+        obj[property.key.name] = result
       } else {
         throw new Error(
           `Unexpected property type ${property.value.type} in object expression`
@@ -568,6 +561,24 @@ function executeObjectExpression(
     }
   })
   return obj
+}
+
+function executeArrayExpression(
+  _programMemory: ProgramMemory,
+  arrExp: ArrayExpression
+) {
+  return arrExp.elements.map((el) => {
+    if (el.type === 'Literal') {
+      return el.value
+    } else if (el.type === 'Identifier') {
+      return _programMemory.root?.[el.name]?.value
+    } else if (el.type === 'BinaryExpression') {
+      return getBinaryExpressionResult(el, _programMemory)
+    } else if (el.type === 'ObjectExpression') {
+      return executeObjectExpression(_programMemory, el)
+    }
+    throw new Error('Invalid argument type')
+  })
 }
 
 function executeCallExpression(
@@ -604,16 +615,7 @@ function executeCallExpression(
     } else if (arg.type === 'PipeSubstitution') {
       return previousResults[expressionIndex - 1]
     } else if (arg.type === 'ArrayExpression') {
-      return arg.elements.map((el) => {
-        if (el.type === 'Literal') {
-          return el.value
-        } else if (el.type === 'Identifier') {
-          return programMemory.root[el.name]
-        } else if (el.type === 'BinaryExpression') {
-          return getBinaryExpressionResult(el, programMemory)
-        }
-        throw new Error('Invalid argument type')
-      })
+      return executeArrayExpression(programMemory, arg)
     } else if (arg.type === 'CallExpression') {
       const result: any = executeCallExpression(
         programMemory,
@@ -624,18 +626,7 @@ function executeCallExpression(
     }
     throw new Error('Invalid argument type')
   })
-  if (
-    functionName in internalFns &&
-    [
-      'rx',
-      'ry',
-      'rz',
-      'translate',
-      'transform',
-      'extrude',
-      'getExtrudeWallTransform',
-    ].includes(functionName)
-  ) {
+  if (functionName in internalFns) {
     const fnNameWithSketchOrExtrude = functionName as InternalFnNames
     const result = internalFns[fnNameWithSketchOrExtrude](
       {

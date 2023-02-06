@@ -5,12 +5,77 @@ import {
   CallExpression,
   PipeExpression,
   VariableDeclaration,
+  VariableDeclarator,
   ExpressionStatement,
   Value,
   getNodeFromPath,
-  VariableDeclarator,
+  Literal,
+  PipeSubstitution,
+  Identifier,
+  ArrayExpression,
 } from './abstractSyntaxTree'
 import { PathToNode } from './executor'
+import { GuiModes } from '../useStore'
+import { ProgramMemory } from './executor'
+
+export function addSketchToV2(
+  node: Program,
+  axis: 'xy' | 'xz' | 'yz',
+  name = ''
+): { modifiedAst: Program; id: string; pathToNode: (string | number)[] } {
+  const _node = { ...node }
+  const dumbyStartend = { start: 0, end: 0 }
+  const _name = name || findUniqueName(node, 'part')
+
+  const startSketchAt = createCallExpression('startSketchAt', [
+    createArrayExpression([createLiteral(0), createLiteral(0)]),
+  ])
+  const rotate = createCallExpression(axis === 'xz' ? 'rx' : 'ry', [
+    createLiteral(90),
+    createPipeSubstitution(),
+  ])
+  const initialLineTTo = createCallExpression('lineTTo', [
+    createArrayExpression([createLiteral(1), createLiteral(1)]),
+    createPipeSubstitution(),
+  ])
+
+  const pipeBody =
+    axis !== 'xy'
+      ? [startSketchAt, rotate, initialLineTTo]
+      : [startSketchAt, initialLineTTo]
+
+  const variableDeclaration = createVariableDeclaration(
+    _name,
+    createPipeExpression(pipeBody)
+  )
+
+  const showCallIndex = getShowIndex(_node)
+  let sketchIndex = showCallIndex
+  if (showCallIndex === -1) {
+    _node.body = [...node.body, variableDeclaration]
+    sketchIndex = _node.body.length - 1
+  } else {
+    const newBody = [...node.body]
+    newBody.splice(showCallIndex, 0, variableDeclaration)
+    _node.body = newBody
+  }
+  let pathToNode: (string | number)[] = [
+    'body',
+    sketchIndex,
+    'declarations',
+    '0',
+    'init',
+  ]
+  if (axis !== 'xy') {
+    pathToNode = [...pathToNode, 'body', '0']
+  }
+
+  return {
+    modifiedAst: addToShow(_node, _name),
+    id: _name,
+    pathToNode,
+  }
+}
 
 export function addSketchTo(
   node: Program,
@@ -40,18 +105,7 @@ export function addSketchTo(
       ...dumbyStartend,
       name: axis === 'xz' ? 'rx' : 'ry',
     },
-    arguments: [
-      {
-        type: 'Literal',
-        ...dumbyStartend,
-        value: axis === 'yz' ? 90 : 90,
-        raw: axis === 'yz' ? '90' : '90',
-      },
-      {
-        type: 'PipeSubstitution',
-        ...dumbyStartend,
-      },
-    ],
+    arguments: [createLiteral(90), createPipeSubstitution()],
     optional: false,
   }
 
@@ -197,7 +251,100 @@ function getShowIndex(node: Program): number {
   )
 }
 
-export function addLine(
+function addLineTToSketch(
+  node: Program,
+  pathToNode: (string | number)[],
+  to: [number, number]
+): { modifiedAst: Program; pathToNode: (string | number)[] } {
+  const _node = { ...node }
+  const { node: pipe } = getNodeFromPath<PipeExpression>(
+    _node,
+    pathToNode,
+    'PipeExpression'
+  )
+  const newLine = createCallExpression('lineTTo', [
+    createArrayExpression([createLiteral(to[0]), createLiteral(to[1])]),
+    createPipeSubstitution(),
+  ])
+  pipe.body = [...pipe.body, newLine]
+  return {
+    modifiedAst: _node,
+    pathToNode,
+  }
+}
+
+function addRelativeLine(
+  node: Program,
+  previousProgramMemory: ProgramMemory,
+  pathToNode: (string | number)[],
+  to: [number, number]
+  // from: [number, number],
+): { modifiedAst: Program; pathToNode: (string | number)[] } {
+  const _node = { ...node }
+  const { node: pipe } = getNodeFromPath<PipeExpression>(
+    _node,
+    pathToNode,
+    'PipeExpression'
+  )
+  const { node: varDec } = getNodeFromPath<VariableDeclarator>(
+    _node,
+    pathToNode,
+    'VariableDeclarator'
+  )
+  const variableName = varDec.id.name
+  const sketch = previousProgramMemory?.root?.[variableName]
+  if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
+  const last = sketch.value[sketch.value.length - 1]
+  const newLine = createCallExpression('line', [
+    createArrayExpression([
+      createLiteral(roundOff(to[0] - last.to[0], 2)),
+      createLiteral(roundOff(to[1] - last.to[1], 2)),
+    ]),
+    createPipeSubstitution(),
+  ])
+  pipe.body = [...pipe.body, newLine]
+  return {
+    modifiedAst: _node,
+    pathToNode,
+  }
+}
+
+function addAngledLine(
+  node: Program,
+  previousProgramMemory: ProgramMemory,
+  pathToNode: (string | number)[],
+  to: [number, number]
+  // from: [number, number],
+): { modifiedAst: Program; pathToNode: (string | number)[] } {
+  const _node = { ...node }
+  const { node: pipe } = getNodeFromPath<PipeExpression>(
+    _node,
+    pathToNode,
+    'PipeExpression'
+  )
+  const { node: varDec } = getNodeFromPath<VariableDeclarator>(
+    _node,
+    pathToNode,
+    'VariableDeclarator'
+  )
+  const variableName = varDec.id.name
+  const sketch = previousProgramMemory?.root?.[variableName]
+  if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
+  const last = sketch.value[sketch.value.length - 1]
+  const angle = roundOff(getAngle(last.to, to), 0)
+  const lineLength = roundOff(getLength(last.to, to), 2)
+  const newLine = createCallExpression('angledLine', [
+    createArrayExpression([createLiteral(angle), createLiteral(lineLength)]),
+    createPipeSubstitution(),
+  ])
+  pipe.body = [...pipe.body, newLine]
+  return {
+    modifiedAst: _node,
+    pathToNode,
+  }
+}
+
+function addLine(
   node: Program,
   pathToNode: (string | number)[],
   to: [number, number]
@@ -221,20 +368,7 @@ export function addLine(
         name: 'lineTo',
       },
       optional: false,
-      arguments: [
-        {
-          type: 'Literal',
-          ...dumbyStartend,
-          value: to[0],
-          raw: `${to[0]}`,
-        },
-        {
-          type: 'Literal',
-          ...dumbyStartend,
-          value: to[1],
-          raw: `${to[1]}`,
-        },
-      ],
+      arguments: [createLiteral(to[0]), createLiteral(to[1])],
     },
   }
   const newBody = [...sketchExpression.body.body, line]
@@ -259,23 +393,13 @@ export function changeArguments(
   )
   const newXArg: CallExpression['arguments'][number] =
     callExpression.arguments[0].type === 'Literal'
-      ? {
-          type: 'Literal',
-          ...dumbyStartend,
-          value: args[0],
-          raw: `${args[0]}`,
-        }
+      ? createLiteral(args[0])
       : {
           ...callExpression.arguments[0],
         }
   const newYArg: CallExpression['arguments'][number] =
     callExpression.arguments[1].type === 'Literal'
-      ? {
-          type: 'Literal',
-          ...dumbyStartend,
-          value: args[1],
-          raw: `${args[1]}`,
-        }
+      ? createLiteral(args[1])
       : {
           ...callExpression.arguments[1],
         }
@@ -284,6 +408,33 @@ export function changeArguments(
     modifiedAst: _node,
     pathToNode,
   }
+}
+
+export const changeSketchArguments = {
+  lineTTo: (
+    node: Program,
+    pathToNode: (string | number)[],
+    args: [number, number]
+  ): { modifiedAst: Program; pathToNode: (string | number)[] } => {
+    const _node = { ...node }
+    const dumbyStartend = { start: 0, end: 0 }
+    const { node: callExpression } = getNodeFromPath<CallExpression>(
+      _node,
+      pathToNode
+    )
+    const firstArg = (callExpression.arguments?.[0] as ArrayExpression)
+      ?.elements
+    const newXArg =
+      firstArg?.[0].type === 'Literal' ? createLiteral(args[0]) : firstArg?.[0]
+    const newYArg =
+      firstArg?.[1].type === 'Literal' ? createLiteral(args[1]) : firstArg?.[1]
+    firstArg[0] = newXArg
+    firstArg[1] = newYArg
+    return {
+      modifiedAst: _node,
+      pathToNode,
+    }
+  },
 }
 
 export function extrudeSketch(
@@ -324,17 +475,9 @@ export function extrudeSketch(
     },
     optional: false,
     arguments: [
-      {
-        type: 'Literal',
-        ...dumbyStartend,
-        value: 4,
-        raw: '4',
-      },
+      createLiteral(4),
       shouldPipe
-        ? {
-            type: 'PipeSubstitution',
-            ...dumbyStartend,
-          }
+        ? createPipeSubstitution()
         : {
             type: 'Identifier',
             ...dumbyStartend,
@@ -497,12 +640,7 @@ export function sketchOnExtrudedFace(
             },
             optional: false,
             arguments: [
-              {
-                type: 'Literal',
-                ...dumbyStartend,
-                value: pathName,
-                raw: `'${pathName}'`,
-              },
+              createLiteral(pathName),
               {
                 type: 'Identifier',
                 ...dumbyStartend,
@@ -510,10 +648,7 @@ export function sketchOnExtrudedFace(
               },
             ],
           },
-          {
-            type: 'PipeSubstitution',
-            ...dumbyStartend,
-          },
+          createPipeSubstitution(),
         ],
       },
     ],
@@ -551,4 +686,131 @@ const getLastIndex = (pathToNode: PathToNode): number => {
     return last
   }
   return getLastIndex(pathToNode.slice(0, -1))
+}
+
+function createLiteral(value: string | number): Literal {
+  return {
+    type: 'Literal',
+    start: 0,
+    end: 0,
+    value,
+    raw: `${value}`,
+  }
+}
+
+function createIdentifier(name: string): Identifier {
+  return {
+    type: 'Identifier',
+    start: 0,
+    end: 0,
+    name,
+  }
+}
+
+function createPipeSubstitution(): PipeSubstitution {
+  return {
+    type: 'PipeSubstitution',
+    start: 0,
+    end: 0,
+  }
+}
+
+function createCallExpression(
+  name: string,
+  args: CallExpression['arguments']
+): CallExpression {
+  return {
+    type: 'CallExpression',
+    start: 0,
+    end: 0,
+    callee: {
+      type: 'Identifier',
+      start: 0,
+      end: 0,
+      name,
+    },
+    optional: false,
+    arguments: args,
+  }
+}
+
+function createArrayExpression(
+  elements: ArrayExpression['elements']
+): ArrayExpression {
+  return {
+    type: 'ArrayExpression',
+    start: 0,
+    end: 0,
+    elements,
+  }
+}
+
+function createPipeExpression(body: PipeExpression['body']): PipeExpression {
+  return {
+    type: 'PipeExpression',
+    start: 0,
+    end: 0,
+    body,
+    nonCodeMeta: {},
+  }
+}
+
+function createVariableDeclaration(
+  varName: string,
+  init: VariableDeclarator['init'],
+  kind: VariableDeclaration['kind'] = 'const'
+): VariableDeclaration {
+  return {
+    type: 'VariableDeclaration',
+    start: 0,
+    end: 0,
+    declarations: [
+      {
+        type: 'VariableDeclarator',
+        start: 0,
+        end: 0,
+        id: createIdentifier(varName),
+        init,
+      },
+    ],
+    kind,
+  }
+}
+
+export function toolTipModification(
+  node: Program,
+  previousProgramMemory: ProgramMemory,
+  to: [number, number],
+  guiMode: GuiModes
+): { modifiedAst: Program } {
+  if (guiMode.mode !== 'sketch') throw new Error('expected sketch mode')
+  console.log('programMemory', previousProgramMemory)
+
+  if (guiMode.sketchMode === 'points')
+    return addLine(node, guiMode.pathToNode, to)
+  if (guiMode.sketchMode === 'points2')
+    return addLineTToSketch(node, guiMode.pathToNode, to)
+  if (guiMode.sketchMode === 'relativeLine')
+    return addRelativeLine(node, previousProgramMemory, guiMode.pathToNode, to)
+  if (guiMode.sketchMode === 'angledLine')
+    return addAngledLine(node, previousProgramMemory, guiMode.pathToNode, to)
+
+  throw new Error(`sketchmode: "${guiMode.sketchMode}" has not implemented`)
+}
+
+function roundOff(num: number, places: number): number {
+  const x = Math.pow(10, places)
+  return Math.round(num * x) / x
+}
+
+function getLength(a: [number, number], b: [number, number]): number {
+  const x = b[0] - a[0]
+  const y = b[1] - a[1]
+  return Math.sqrt(x * x + y * y)
+}
+
+function getAngle(a: [number, number], b: [number, number]): number {
+  const x = b[0] - a[0]
+  const y = b[1] - a[1]
+  return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360
 }

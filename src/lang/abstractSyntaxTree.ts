@@ -544,7 +544,7 @@ function makeIdentifier(token: Token[], index: number): Identifier {
   }
 }
 
-interface PipeSubstitution extends GeneralStatement {
+export interface PipeSubstitution extends GeneralStatement {
   type: 'PipeSubstitution'
 }
 
@@ -1487,7 +1487,7 @@ function debuggerr(tokens: Token[], indexes: number[], msg = ''): string {
     topString,
     bottomString,
   ].join('\n')
-  console.log(debugResult)
+  // console.log(debugResult)
   return debugResult
 }
 

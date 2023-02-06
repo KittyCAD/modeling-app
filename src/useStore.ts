@@ -11,13 +11,41 @@ import { lexer } from './lang/tokeniser'
 
 export type Range = [number, number]
 
-type GuiModes =
+export type GuiModes =
   | {
       mode: 'default'
     }
   | {
       mode: 'sketch'
       sketchMode: 'points'
+      isTooltip: true
+      rotation: Rotation
+      position: Position
+      id?: string
+      pathToNode: PathToNode
+    }
+  | {
+      mode: 'sketch'
+      sketchMode: 'points2'
+      isTooltip: true
+      rotation: Rotation
+      position: Position
+      id?: string
+      pathToNode: PathToNode
+    }
+  | {
+      mode: 'sketch'
+      sketchMode: 'relativeLine'
+      isTooltip: true
+      rotation: Rotation
+      position: Position
+      id?: string
+      pathToNode: PathToNode
+    }
+  | {
+      mode: 'sketch'
+      sketchMode: 'angledLine'
+      isTooltip: true
       rotation: Rotation
       position: Position
       id?: string
@@ -32,10 +60,28 @@ type GuiModes =
     }
   | {
       mode: 'sketch'
+      sketchMode: 'sketchEdit2'
+      isTooltip: true
+      rotation: Rotation
+      position: Position
+      pathToNode: PathToNode
+    }
+  | {
+      mode: 'sketch'
       sketchMode: 'selectFace'
     }
   | {
+      mode: 'sketch'
+      sketchMode: 'selectFace2'
+    }
+  | {
       mode: 'canEditSketch'
+      pathToNode: PathToNode
+      rotation: Rotation
+      position: Position
+    }
+  | {
+      mode: 'canEditSketch2'
       pathToNode: PathToNode
       rotation: Rotation
       position: Position

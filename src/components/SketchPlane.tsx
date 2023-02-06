@@ -1,20 +1,22 @@
 import { useStore } from '../useStore'
 import { DoubleSide, Vector3, Quaternion } from 'three'
 import { Program } from '../lang/abstractSyntaxTree'
-import { addLine } from '../lang/modifyAst'
+import { toolTipModification } from '../lang/modifyAst'
 
 export const SketchPlane = () => {
-  const { ast, guiMode, updateAst } = useStore(
-    ({ guiMode, ast, updateAst }) => ({
-      guiMode,
-      ast,
-      updateAst,
-    })
-  )
+  const { ast, guiMode, updateAst, programMemory } = useStore((s) => ({
+    guiMode: s.guiMode,
+    ast: s.ast,
+    updateAst: s.updateAst,
+    programMemory: s.programMemory,
+  }))
   if (guiMode.mode !== 'sketch') {
     return null
   }
-  if (guiMode.sketchMode !== 'points' && guiMode.sketchMode !== 'sketchEdit') {
+  if (
+    !(guiMode.sketchMode === 'points' || guiMode.sketchMode === 'points2') &&
+    !('isTooltip' in guiMode)
+  ) {
     return null
   }
 
@@ -39,7 +41,7 @@ export const SketchPlane = () => {
         position={position}
         name={sketchGridName}
         onClick={(e) => {
-          if (guiMode.sketchMode !== 'points') {
+          if (!('isTooltip' in guiMode)) {
             return
           }
           const sketchGridIntersection = e.intersections.find(
@@ -65,10 +67,11 @@ export const SketchPlane = () => {
                 nonCodeMeta: {},
               }
           const addLinePoint: [number, number] = [point.x, point.y]
-          const { modifiedAst } = addLine(
+          const { modifiedAst } = toolTipModification(
             _ast,
-            guiMode.pathToNode,
-            addLinePoint
+            programMemory,
+            addLinePoint,
+            guiMode
           )
           updateAst(modifiedAst)
         }}
