@@ -1,4 +1,4 @@
-import { useStore } from './useStore'
+import { useStore, toolTips } from './useStore'
 import { extrudeSketch, sketchOnExtrudedFace } from './lang/modifyAst'
 import { getNodePathFromSourceRange } from './lang/abstractSyntaxTree'
 
@@ -12,19 +12,7 @@ export const Toolbar = () => {
       updateAst,
     })
   )
-  const sketchToolTips = [
-    'lineTo',
-    'relativeLine',
-    'angledLine',
-    'angledLineOfXLength',
-    'angledLineOfYLength',
-    'angledLineToX',
-    'angledLineToY',
-    'xLine',
-    'yLine',
-    'xLineTo',
-    'yLineTo',
-  ]
+
   return (
     <div>
       {guiMode.mode === 'default' && (
@@ -113,7 +101,7 @@ export const Toolbar = () => {
           Exit sketch
         </button>
       )}
-      {sketchToolTips.map((sketchFnName) => {
+      {toolTips.map((sketchFnName) => {
         if (guiMode.mode !== 'sketch' || !('isTooltip' in guiMode)) return null
         return (
           <button

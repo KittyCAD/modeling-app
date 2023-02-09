@@ -10,6 +10,32 @@ import { recast } from './lang/recast'
 import { lexer } from './lang/tokeniser'
 
 export type Range = [number, number]
+export type TooTip =
+  | 'lineTo'
+  | 'relativeLine'
+  | 'angledLine'
+  | 'angledLineOfXLength'
+  | 'angledLineOfYLength'
+  | 'angledLineToX'
+  | 'angledLineToY'
+  | 'xLine'
+  | 'yLine'
+  | 'xLineTo'
+  | 'yLineTo'
+
+export const toolTips: TooTip[] = [
+  'lineTo',
+  'relativeLine',
+  'angledLine',
+  'angledLineOfXLength',
+  'angledLineOfYLength',
+  'angledLineToX',
+  'angledLineToY',
+  'xLine',
+  'yLine',
+  'xLineTo',
+  'yLineTo',
+]
 
 export type GuiModes =
   | {
@@ -17,97 +43,7 @@ export type GuiModes =
     }
   | {
       mode: 'sketch'
-      sketchMode: 'lineTo'
-      isTooltip: true
-      rotation: Rotation
-      position: Position
-      id?: string
-      pathToNode: PathToNode
-    }
-  | {
-      mode: 'sketch'
-      sketchMode: 'relativeLine'
-      isTooltip: true
-      rotation: Rotation
-      position: Position
-      id?: string
-      pathToNode: PathToNode
-    }
-  | {
-      mode: 'sketch'
-      sketchMode: 'angledLine'
-      isTooltip: true
-      rotation: Rotation
-      position: Position
-      id?: string
-      pathToNode: PathToNode
-    }
-  | {
-      mode: 'sketch'
-      sketchMode: 'angledLineOfXLength'
-      isTooltip: true
-      rotation: Rotation
-      position: Position
-      id?: string
-      pathToNode: PathToNode
-    }
-  | {
-      mode: 'sketch'
-      sketchMode: 'angledLineOfYLength'
-      isTooltip: true
-      rotation: Rotation
-      position: Position
-      id?: string
-      pathToNode: PathToNode
-    }
-  | {
-      mode: 'sketch'
-      sketchMode: 'angledLineToX'
-      isTooltip: true
-      rotation: Rotation
-      position: Position
-      id?: string
-      pathToNode: PathToNode
-    }
-  | {
-      mode: 'sketch'
-      sketchMode: 'angledLineToY'
-      isTooltip: true
-      rotation: Rotation
-      position: Position
-      id?: string
-      pathToNode: PathToNode
-    }
-  | {
-      mode: 'sketch'
-      sketchMode: 'xLine'
-      isTooltip: true
-      rotation: Rotation
-      position: Position
-      id?: string
-      pathToNode: PathToNode
-    }
-  | {
-      mode: 'sketch'
-      sketchMode: 'yLine'
-      isTooltip: true
-      rotation: Rotation
-      position: Position
-      id?: string
-      pathToNode: PathToNode
-    }
-  | {
-      mode: 'sketch'
-      sketchMode: 'xLineTo'
-      isTooltip: true
-      rotation: Rotation
-      position: Position
-      id?: string
-      pathToNode: PathToNode
-    }
-  | {
-      mode: 'sketch'
-      sketchMode: 'yLineTo'
+      sketchMode: TooTip
       isTooltip: true
       rotation: Rotation
       position: Position
