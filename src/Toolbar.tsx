@@ -15,19 +15,17 @@ export const Toolbar = () => {
   return (
     <div>
       {guiMode.mode === 'default' && (
-        <>
-          <button
-            onClick={() => {
-              setGuiMode({
-                mode: 'sketch',
-                sketchMode: 'selectFace',
-              })
-            }}
-            className="border m-1 px-1 rounded"
-          >
-            Start Sketch
-          </button>
-        </>
+        <button
+          onClick={() => {
+            setGuiMode({
+              mode: 'sketch',
+              sketchMode: 'selectFace',
+            })
+          }}
+          className="border m-1 px-1 rounded"
+        >
+          Start Sketch
+        </button>
       )}
       {guiMode.mode === 'canEditExtrude' && (
         <button

@@ -20,7 +20,7 @@ import { PathToNode } from './executor'
 import { GuiModes } from '../useStore'
 import { ProgramMemory, SourceRange } from './executor'
 
-export function addSketchToV2(
+export function addSketchTo(
   node: Program,
   axis: 'xy' | 'xz' | 'yz',
   name = ''
@@ -169,7 +169,7 @@ function getShowIndex(node: Program): number {
   )
 }
 
-function addLineTToSketch(
+function addLineTo(
   node: Program,
   pathToNode: (string | number)[],
   to: [number, number]
@@ -1272,7 +1272,7 @@ export function toolTipModification(
   if (guiMode.mode !== 'sketch') throw new Error('expected sketch mode')
 
   if (guiMode.sketchMode === 'points')
-    return addLineTToSketch(node, guiMode.pathToNode, to)
+    return addLineTo(node, guiMode.pathToNode, to)
   if (guiMode.sketchMode === 'relativeLine')
     return addRelativeLine(node, previousProgramMemory, guiMode.pathToNode, to)
   if (guiMode.sketchMode === 'angledLine')

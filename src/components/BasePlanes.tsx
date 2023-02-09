@@ -3,7 +3,7 @@ import { DoubleSide, Vector3 } from 'three'
 import { useStore } from '../useStore'
 import { Intersection } from '@react-three/fiber'
 import { Text } from '@react-three/drei'
-import { addSketchToV2 } from '../lang/modifyAst'
+import { addSketchTo } from '../lang/modifyAst'
 import { Program } from '../lang/abstractSyntaxTree'
 import { Quaternion } from 'three'
 
@@ -61,7 +61,7 @@ export const BasePlanes = () => {
     } else if (axisIndex === 2) {
       quaternion.setFromAxisAngle(new Vector3(0, 1, 0), Math.PI / 2)
     }
-    const { modifiedAst, id, pathToNode } = addSketchToV2(_ast, axis)
+    const { modifiedAst, id, pathToNode } = addSketchTo(_ast, axis)
 
     setGuiMode({
       mode: 'sketch',

@@ -1487,7 +1487,7 @@ function debuggerr(tokens: Token[], indexes: number[], msg = ''): string {
     topString,
     bottomString,
   ].join('\n')
-  // console.log(debugResult)
+  console.log(debugResult)
   return debugResult
 }
 
