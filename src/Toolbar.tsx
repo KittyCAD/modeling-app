@@ -115,7 +115,7 @@ export const Toolbar = () => {
                 sketchMode:
                   guiMode.sketchMode === sketchFnName
                     ? 'sketchEdit'
-                    : (sketchFnName as any),
+                    : sketchFnName,
               })
             }
           >
