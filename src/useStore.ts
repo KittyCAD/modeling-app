@@ -17,7 +17,7 @@ export type GuiModes =
     }
   | {
       mode: 'sketch'
-      sketchMode: 'points'
+      sketchMode: 'lineTo'
       isTooltip: true
       rotation: Rotation
       position: Position

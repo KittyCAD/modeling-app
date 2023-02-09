@@ -12,6 +12,19 @@ export const Toolbar = () => {
       updateAst,
     })
   )
+  const sketchToolTips = [
+    'lineTo',
+    'relativeLine',
+    'angledLine',
+    'angledLineOfXLength',
+    'angledLineOfYLength',
+    'angledLineToX',
+    'angledLineToY',
+    'xLine',
+    'yLine',
+    'xLineTo',
+    'yLineTo',
+  ]
   return (
     <div>
       {guiMode.mode === 'default' && (
@@ -100,196 +113,29 @@ export const Toolbar = () => {
           Exit sketch
         </button>
       )}
-      {guiMode.mode === 'sketch' && 'isTooltip' in guiMode && (
-        <button
-          className={`border m-1 px-1 rounded ${
-            guiMode.sketchMode === 'points' && 'bg-gray-400'
-          }`}
-          onClick={() =>
-            setGuiMode({
-              ...guiMode,
-              sketchMode:
-                guiMode.sketchMode === 'points' ? 'sketchEdit' : 'points',
-            })
-          }
-        >
-          LineTo{guiMode.sketchMode === 'points' && '✅'}
-        </button>
-      )}
-      {guiMode.mode === 'sketch' && 'isTooltip' in guiMode && (
-        <button
-          className={`border m-1 px-1 rounded ${
-            guiMode.sketchMode === 'relativeLine' && 'bg-gray-400'
-          }`}
-          onClick={() =>
-            setGuiMode({
-              ...guiMode,
-              sketchMode:
-                guiMode.sketchMode === 'relativeLine'
-                  ? 'sketchEdit'
-                  : 'relativeLine',
-            })
-          }
-        >
-          Relative Line{guiMode.sketchMode === 'relativeLine' && '✅'}
-        </button>
-      )}
-      {guiMode.mode === 'sketch' && 'isTooltip' in guiMode && (
-        <button
-          className={`border m-1 px-1 rounded ${
-            guiMode.sketchMode === 'angledLine' && 'bg-gray-400'
-          }`}
-          onClick={() =>
-            setGuiMode({
-              ...guiMode,
-              sketchMode:
-                guiMode.sketchMode === 'angledLine'
-                  ? 'sketchEdit'
-                  : 'angledLine',
-            })
-          }
-        >
-          AngledLine{guiMode.sketchMode === 'angledLine' && '✅'}
-        </button>
-      )}
-      {guiMode.mode === 'sketch' && 'isTooltip' in guiMode && (
-        <button
-          className={`border m-1 px-1 rounded ${
-            guiMode.sketchMode === 'xLine' && 'bg-gray-400'
-          }`}
-          onClick={() =>
-            setGuiMode({
-              ...guiMode,
-              sketchMode:
-                guiMode.sketchMode === 'xLine' ? 'sketchEdit' : 'xLine',
-            })
-          }
-        >
-          xLine{guiMode.sketchMode === 'xLine' && '✅'}
-        </button>
-      )}
-      {guiMode.mode === 'sketch' && 'isTooltip' in guiMode && (
-        <button
-          className={`border m-1 px-1 rounded ${
-            guiMode.sketchMode === 'yLine' && 'bg-gray-400'
-          }`}
-          onClick={() =>
-            setGuiMode({
-              ...guiMode,
-              sketchMode:
-                guiMode.sketchMode === 'yLine' ? 'sketchEdit' : 'yLine',
-            })
-          }
-        >
-          yLine{guiMode.sketchMode === 'yLine' && '✅'}
-        </button>
-      )}
-      {guiMode.mode === 'sketch' && 'isTooltip' in guiMode && (
-        <button
-          className={`border m-1 px-1 rounded ${
-            guiMode.sketchMode === 'xLineTo' && 'bg-gray-400'
-          }`}
-          onClick={() =>
-            setGuiMode({
-              ...guiMode,
-              sketchMode:
-                guiMode.sketchMode === 'xLineTo' ? 'sketchEdit' : 'xLineTo',
-            })
-          }
-        >
-          xLineTo{guiMode.sketchMode === 'xLineTo' && '✅'}
-        </button>
-      )}
-      {guiMode.mode === 'sketch' && 'isTooltip' in guiMode && (
-        <button
-          className={`border m-1 px-1 rounded ${
-            guiMode.sketchMode === 'yLineTo' && 'bg-gray-400'
-          }`}
-          onClick={() =>
-            setGuiMode({
-              ...guiMode,
-              sketchMode:
-                guiMode.sketchMode === 'yLineTo' ? 'sketchEdit' : 'yLineTo',
-            })
-          }
-        >
-          yLineTo{guiMode.sketchMode === 'yLineTo' && '✅'}
-        </button>
-      )}
-      {guiMode.mode === 'sketch' && 'isTooltip' in guiMode && (
-        <button
-          className={`border m-1 px-1 rounded ${
-            guiMode.sketchMode === 'angledLineOfXLength' && 'bg-gray-400'
-          }`}
-          onClick={() =>
-            setGuiMode({
-              ...guiMode,
-              sketchMode:
-                guiMode.sketchMode === 'angledLineOfXLength'
-                  ? 'sketchEdit'
-                  : 'angledLineOfXLength',
-            })
-          }
-        >
-          angledLineOfXLength
-          {guiMode.sketchMode === 'angledLineOfXLength' && '✅'}
-        </button>
-      )}
-      {guiMode.mode === 'sketch' && 'isTooltip' in guiMode && (
-        <button
-          className={`border m-1 px-1 rounded ${
-            guiMode.sketchMode === 'angledLineOfYLength' && 'bg-gray-400'
-          }`}
-          onClick={() =>
-            setGuiMode({
-              ...guiMode,
-              sketchMode:
-                guiMode.sketchMode === 'angledLineOfYLength'
-                  ? 'sketchEdit'
-                  : 'angledLineOfYLength',
-            })
-          }
-        >
-          angledLineOfYLength
-          {guiMode.sketchMode === 'angledLineOfYLength' && '✅'}
-        </button>
-      )}
-      {guiMode.mode === 'sketch' && 'isTooltip' in guiMode && (
-        <button
-          className={`border m-1 px-1 rounded ${
-            guiMode.sketchMode === 'angledLineToX' && 'bg-gray-400'
-          }`}
-          onClick={() =>
-            setGuiMode({
-              ...guiMode,
-              sketchMode:
-                guiMode.sketchMode === 'angledLineToX'
-                  ? 'sketchEdit'
-                  : 'angledLineToX',
-            })
-          }
-        >
-          angledLineToX{guiMode.sketchMode === 'angledLineToX' && '✅'}
-        </button>
-      )}
-      {guiMode.mode === 'sketch' && 'isTooltip' in guiMode && (
-        <button
-          className={`border m-1 px-1 rounded ${
-            guiMode.sketchMode === 'angledLineToY' && 'bg-gray-400'
-          }`}
-          onClick={() =>
-            setGuiMode({
-              ...guiMode,
-              sketchMode:
-                guiMode.sketchMode === 'angledLineToY'
-                  ? 'sketchEdit'
-                  : 'angledLineToY',
-            })
-          }
-        >
-          angledLineToY{guiMode.sketchMode === 'angledLineToY' && '✅'}
-        </button>
-      )}
+      {sketchToolTips.map((sketchFnName) => {
+        if (guiMode.mode !== 'sketch' || !('isTooltip' in guiMode)) return null
+        return (
+          <button
+            key={sketchFnName}
+            className={`border m-1 px-1 rounded ${
+              guiMode.sketchMode === sketchFnName && 'bg-gray-400'
+            }`}
+            onClick={() =>
+              setGuiMode({
+                ...guiMode,
+                sketchMode:
+                  guiMode.sketchMode === sketchFnName
+                    ? 'sketchEdit'
+                    : (sketchFnName as any),
+              })
+            }
+          >
+            {sketchFnName}
+            {guiMode.sketchMode === sketchFnName && '✅'}
+          </button>
+        )
+      })}
     </div>
   )
 }

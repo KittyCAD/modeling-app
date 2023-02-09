@@ -65,7 +65,7 @@ function MovingSphere({
         thePath
       )
       const [xArg, yArg] =
-        // TODO handle object argument plus function calls other than lineTo/lineTTo
+        // TODO handle object argument plus function calls other than lineTo
         guiMode.mode === 'sketch'
           ? callExpression?.arguments || []
           : (callExpression?.arguments?.[0] as ArrayExpression)?.elements || []

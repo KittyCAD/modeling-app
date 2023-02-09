@@ -36,15 +36,15 @@ export function addSketchTo(
     createLiteral(90),
     createPipeSubstitution(),
   ])
-  const initialLineTTo = createCallExpression('lineTTo', [
+  const initialLineTo = createCallExpression('lineTo', [
     createArrayExpression([createLiteral(1), createLiteral(1)]),
     createPipeSubstitution(),
   ])
 
   const pipeBody =
     axis !== 'xy'
-      ? [startSketchAt, rotate, initialLineTTo]
-      : [startSketchAt, initialLineTTo]
+      ? [startSketchAt, rotate, initialLineTo]
+      : [startSketchAt, initialLineTo]
 
   const variableDeclaration = createVariableDeclaration(
     _name,
@@ -180,7 +180,7 @@ function addLineTo(
     pathToNode,
     'PipeExpression'
   )
-  const newLine = createCallExpression('lineTTo', [
+  const newLine = createCallExpression('lineTo', [
     createArrayExpression([createLiteral(to[0]), createLiteral(to[1])]),
     createPipeSubstitution(),
   ])
@@ -529,8 +529,8 @@ export function changeSketchArguments(
   )
   if (guiMode.mode !== 'sketch') throw new Error('not in sketch mode')
 
-  if (callExpression.callee.name === 'lineTTo') {
-    return changeSketchArgumentsHelpers.lineTTo(_node, thePath, args)
+  if (callExpression.callee.name === 'lineTo') {
+    return changeSketchArgumentsHelpers.lineTo(_node, thePath, args)
   }
   if (callExpression.callee.name === 'line')
     return changeSketchArgumentsHelpers.line(_node, thePath, args, from)
@@ -846,7 +846,7 @@ const changeSketchArgumentsHelpers = {
       pathToNode,
     }
   },
-  lineTTo: (
+  lineTo: (
     node: Program,
     pathToNode: (string | number)[],
     args: [number, number]
@@ -1271,7 +1271,7 @@ export function toolTipModification(
 ): { modifiedAst: Program } {
   if (guiMode.mode !== 'sketch') throw new Error('expected sketch mode')
 
-  if (guiMode.sketchMode === 'points')
+  if (guiMode.sketchMode === 'lineTo')
     return addLineTo(node, guiMode.pathToNode, to)
   if (guiMode.sketchMode === 'relativeLine')
     return addRelativeLine(node, previousProgramMemory, guiMode.pathToNode, to)

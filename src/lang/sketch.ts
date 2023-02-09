@@ -52,7 +52,7 @@ export type InternalFnNames =
   | 'rx'
   | 'ry'
   | 'rz'
-  | 'lineTTo'
+  | 'lineTo'
   | 'yLineTo'
   | 'xLineTo'
   | 'line'
@@ -327,7 +327,7 @@ const getExtrudeWallTransform: InternalFn = (
   }
 }
 
-const lineTTo: InternalFn = (
+const lineTo: InternalFn = (
   { sourceRange, programMemory },
   data:
     | [number, number]
@@ -339,7 +339,7 @@ const lineTTo: InternalFn = (
   previousSketch: SketchGroup
 ): SketchGroup => {
   if (!previousSketch)
-    throw new Error('lineTTo must be called after startSketchAt')
+    throw new Error('lineTo must be called after startSketchAt')
   const sketchGroup = { ...previousSketch }
   const from = getCoordsFromPaths(
     sketchGroup.value,
@@ -389,7 +389,7 @@ const line: InternalFn = (
       },
   previousSketch: SketchGroup
 ): SketchGroup => {
-  if (!previousSketch) throw new Error('lineTTo must be called after lineTo')
+  if (!previousSketch) throw new Error('lineTo must be called after lineTo')
   const sketchGroup = { ...previousSketch }
   const from = getCoordsFromPaths(
     sketchGroup.value,
@@ -477,7 +477,7 @@ const xLineTo: InternalFn = (
     previousSketch.value.length - 1
   )
   const xVal = typeof data !== 'number' ? data.to : data
-  return lineTTo(meta, [xVal, from[1]], previousSketch)
+  return lineTo(meta, [xVal, from[1]], previousSketch)
 }
 
 const yLineTo: InternalFn = (
@@ -497,7 +497,7 @@ const yLineTo: InternalFn = (
     previousSketch.value.length - 1
   )
   const yVal = typeof data !== 'number' ? data.to : data
-  return lineTTo(meta, [from[0], yVal], previousSketch)
+  return lineTo(meta, [from[0], yVal], previousSketch)
 }
 
 const angledLine: InternalFn = (
@@ -512,7 +512,7 @@ const angledLine: InternalFn = (
       },
   previousSketch: SketchGroup
 ): SketchGroup => {
-  if (!previousSketch) throw new Error('lineTTo must be called after lineTo')
+  if (!previousSketch) throw new Error('lineTo must be called after lineTo')
   const sketchGroup = { ...previousSketch }
   const from = getCoordsFromPaths(
     sketchGroup.value,
@@ -567,7 +567,7 @@ const angledLineOfXLength: InternalFn = (
       },
   previousSketch: SketchGroup
 ): SketchGroup => {
-  if (!previousSketch) throw new Error('lineTTo must be called after lineTo')
+  if (!previousSketch) throw new Error('lineTo must be called after lineTo')
   const [angle, length] = 'angle' in data ? [data.angle, data.length] : data
   return line(
     { sourceRange, programMemory },
@@ -587,7 +587,7 @@ const angledLineOfYLength: InternalFn = (
       },
   previousSketch: SketchGroup
 ): SketchGroup => {
-  if (!previousSketch) throw new Error('lineTTo must be called after lineTo')
+  if (!previousSketch) throw new Error('lineTo must be called after lineTo')
   const [angle, length] = 'angle' in data ? [data.angle, data.length] : data
   return line(
     { sourceRange, programMemory },
@@ -607,7 +607,7 @@ const angledLineToX: InternalFn = (
       },
   previousSketch: SketchGroup
 ): SketchGroup => {
-  if (!previousSketch) throw new Error('lineTTo must be called after lineTo')
+  if (!previousSketch) throw new Error('lineTo must be called after lineTo')
   const from = getCoordsFromPaths(
     previousSketch.value,
     previousSketch.value.length - 1
@@ -615,7 +615,7 @@ const angledLineToX: InternalFn = (
   const [angle, xTo] = 'angle' in data ? [data.angle, data.to] : data
   const xComponent = xTo - from[0]
   const yComponent = xComponent * Math.tan((angle * Math.PI) / 180)
-  return lineTTo(
+  return lineTo(
     { sourceRange, programMemory },
     [xTo, from[1] + yComponent],
     previousSketch
@@ -633,7 +633,7 @@ const angledLineToY: InternalFn = (
       },
   previousSketch: SketchGroup
 ): SketchGroup => {
-  if (!previousSketch) throw new Error('lineTTo must be called after lineTo')
+  if (!previousSketch) throw new Error('lineTo must be called after lineTo')
   const from = getCoordsFromPaths(
     previousSketch.value,
     previousSketch.value.length - 1
@@ -641,7 +641,7 @@ const angledLineToY: InternalFn = (
   const [angle, yTo] = 'angle' in data ? [data.angle, data.to] : data
   const yComponent = yTo - from[1]
   const xComponent = yComponent / Math.tan((angle * Math.PI) / 180)
-  return lineTTo(
+  return lineTo(
     { sourceRange, programMemory },
     [from[0] + xComponent, yTo],
     previousSketch
@@ -734,7 +734,7 @@ export const internalFns: { [key in InternalFnNames]: InternalFn } = {
   translate,
   transform,
   getExtrudeWallTransform,
-  lineTTo,
+  lineTo,
   xLineTo,
   yLineTo,
   line,
