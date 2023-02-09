@@ -13,10 +13,7 @@ export const SketchPlane = () => {
   if (guiMode.mode !== 'sketch') {
     return null
   }
-  if (
-    !(guiMode.sketchMode === 'points' || guiMode.sketchMode === 'points2') &&
-    !('isTooltip' in guiMode)
-  ) {
+  if (!(guiMode.sketchMode === 'points') && !('isTooltip' in guiMode)) {
     return null
   }
 

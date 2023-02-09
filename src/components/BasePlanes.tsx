@@ -3,7 +3,7 @@ import { DoubleSide, Vector3 } from 'three'
 import { useStore } from '../useStore'
 import { Intersection } from '@react-three/fiber'
 import { Text } from '@react-three/drei'
-import { addSketchTo, addSketchToV2 } from '../lang/modifyAst'
+import { addSketchToV2 } from '../lang/modifyAst'
 import { Program } from '../lang/abstractSyntaxTree'
 import { Quaternion } from 'three'
 
@@ -41,10 +41,7 @@ export const BasePlanes = () => {
     if (guiMode.mode !== 'sketch') {
       return null
     }
-    if (
-      guiMode.sketchMode !== 'selectFace' &&
-      guiMode.sketchMode !== 'selectFace2'
-    ) {
+    if (guiMode.sketchMode !== 'selectFace') {
       return null
     }
 
@@ -64,39 +61,23 @@ export const BasePlanes = () => {
     } else if (axisIndex === 2) {
       quaternion.setFromAxisAngle(new Vector3(0, 1, 0), Math.PI / 2)
     }
-    const { modifiedAst, id, pathToNode } =
-      guiMode.sketchMode === 'selectFace'
-        ? addSketchTo(_ast, axis)
-        : addSketchToV2(_ast, axis)
+    const { modifiedAst, id, pathToNode } = addSketchToV2(_ast, axis)
 
-    if (guiMode.sketchMode === 'selectFace') {
-      setGuiMode({
-        mode: 'sketch',
-        sketchMode: 'sketchEdit',
-        rotation: quaternion.toArray() as [number, number, number, number],
-        position: [0, 0, 0],
-        pathToNode,
-      })
-    } else {
-      setGuiMode({
-        mode: 'sketch',
-        sketchMode: 'sketchEdit2',
-        rotation: quaternion.toArray() as [number, number, number, number],
-        position: [0, 0, 0],
-        pathToNode,
-        isTooltip: true,
-      })
-    }
+    setGuiMode({
+      mode: 'sketch',
+      sketchMode: 'sketchEdit',
+      rotation: quaternion.toArray() as [number, number, number, number],
+      position: [0, 0, 0],
+      pathToNode,
+      isTooltip: true,
+    })
 
     updateAst(modifiedAst)
   }
   if (guiMode.mode !== 'sketch') {
     return null
   }
-  if (
-    guiMode.sketchMode !== 'selectFace' &&
-    guiMode.sketchMode !== 'selectFace2'
-  ) {
+  if (guiMode.sketchMode !== 'selectFace') {
     return null
   }
   return (

@@ -5,10 +5,7 @@ import {
   CallExpression,
   ArrayExpression,
 } from '../lang/abstractSyntaxTree'
-import {
-  changeArguments,
-  changeSketchArguments,
-} from '../lang/modifyAst'
+import { changeSketchArguments } from '../lang/modifyAst'
 import {
   ExtrudeGroup,
   ExtrudeSurface,
@@ -69,7 +66,7 @@ function MovingSphere({
       )
       const [xArg, yArg] =
         // TODO handle object argument plus function calls other than lineTo/lineTTo
-        guiMode.mode === 'sketch' && guiMode.sketchMode === 'sketchEdit'
+        guiMode.mode === 'sketch'
           ? callExpression?.arguments || []
           : (callExpression?.arguments?.[0] as ArrayExpression)?.elements || []
       const x = xArg?.type === 'Literal' ? xArg.value : -1
@@ -91,10 +88,7 @@ function MovingSphere({
         const inverseQuaternion = new Quaternion()
         if (
           guiMode.mode === 'canEditSketch' ||
-          guiMode.mode === 'canEditSketch2' ||
-          (guiMode.mode === 'sketch' &&
-            (guiMode.sketchMode === 'sketchEdit' ||
-              guiMode.sketchMode === 'sketchEdit2'))
+          (guiMode.mode === 'sketch' && guiMode.sketchMode === 'sketchEdit')
         ) {
           inverseQuaternion.set(...guiMode.rotation)
           inverseQuaternion.invert()
@@ -102,17 +96,14 @@ function MovingSphere({
         yo.sub(new Vector3(...position).applyQuaternion(inverseQuaternion))
         let [x, y] = [roundOff(yo.x, 2), roundOff(yo.y, 2)]
         let theNewPoints: [number, number] = [x, y]
-        const { modifiedAst } =
-          guiMode.mode === 'sketch' && guiMode.sketchMode === 'sketchEdit'
-            ? changeArguments(ast, thePath, theNewPoints)
-            : changeSketchArguments(
-                ast,
-                programMemory,
-                sourceRange,
-                theNewPoints,
-                guiMode,
-                from
-              )
+        const { modifiedAst } = changeSketchArguments(
+          ast,
+          programMemory,
+          sourceRange,
+          theNewPoints,
+          guiMode,
+          from
+        )
 
         updateAst(modifiedAst)
         ref.current.position.set(...position)
@@ -127,10 +118,7 @@ function MovingSphere({
 
   const inEditMode =
     guiMode.mode === 'canEditSketch' ||
-    guiMode.mode === 'canEditSketch2' ||
-    (guiMode.mode === 'sketch' &&
-      (guiMode.sketchMode === 'sketchEdit' ||
-        guiMode.sketchMode === 'sketchEdit2'))
+    (guiMode.mode === 'sketch' && guiMode.sketchMode === 'sketchEdit')
 
   let clickDetectPlaneQuaternion = new Quaternion()
   if (inEditMode) {
@@ -168,10 +156,7 @@ function MovingSphere({
             const inverseQuaternion = new Quaternion()
             if (
               guiMode.mode === 'canEditSketch' ||
-              guiMode.mode === 'canEditSketch2' ||
-              (guiMode.mode === 'sketch' &&
-                (guiMode.sketchMode === 'sketchEdit' ||
-                  guiMode.sketchMode === 'sketchEdit2'))
+              (guiMode.mode === 'sketch' && guiMode.sketchMode === 'sketchEdit')
             ) {
               inverseQuaternion.set(...guiMode.rotation)
               inverseQuaternion.invert()
@@ -520,17 +505,7 @@ function useSetAppModeFromCursorLocation(artifacts: Artifact[]) {
     const artifact = parentArtifacts[0]
     const shouldHighlight = !!artifact || hasSketchArtifact.length
     if (
-      shouldHighlight &&
       (guiMode.mode === 'default' || guiMode.mode === 'canEditSketch') &&
-      ast &&
-      artifact?.parentType === 'sketchGroup' &&
-      artifact.isParent
-    ) {
-      const pathToNode = getNodePathFromSourceRange(ast, artifact.sourceRange)
-      const { rotation, position } = artifact
-      setGuiMode({ mode: 'canEditSketch', pathToNode, rotation, position })
-    } else if (
-      (guiMode.mode === 'default' || guiMode.mode === 'canEditSketch2') &&
       ast &&
       hasSketchArtifact.length
     ) {
@@ -539,22 +514,10 @@ function useSetAppModeFromCursorLocation(artifacts: Artifact[]) {
         hasSketchArtifact[0].sourceRange
       )
       const { rotation, position } = hasSketchArtifact[0]
-      setGuiMode({ mode: 'canEditSketch2', pathToNode, rotation, position })
-    } else if (
-      shouldHighlight &&
-      (guiMode.mode === 'default' || guiMode.mode === 'canEditSketch') &&
-      ast &&
-      artifact.parentType === 'extrudeGroup' &&
-      artifact.isParent
-    ) {
-      const pathToNode = getNodePathFromSourceRange(ast, artifact.sourceRange)
-      const { rotation, position } = artifact
-      setGuiMode({ mode: 'canEditExtrude', pathToNode, rotation, position })
+      setGuiMode({ mode: 'canEditSketch', pathToNode, rotation, position })
     } else if (
       !shouldHighlight &&
-      (guiMode.mode === 'canEditSketch' ||
-        guiMode.mode === 'canEditExtrude' ||
-        guiMode.mode === 'canEditSketch2')
+      (guiMode.mode === 'canEditExtrude' || guiMode.mode === 'canEditSketch')
     ) {
       setGuiMode({ mode: 'default' })
     }

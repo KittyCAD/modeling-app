@@ -26,15 +26,6 @@ export type GuiModes =
     }
   | {
       mode: 'sketch'
-      sketchMode: 'points2'
-      isTooltip: true
-      rotation: Rotation
-      position: Position
-      id?: string
-      pathToNode: PathToNode
-    }
-  | {
-      mode: 'sketch'
       sketchMode: 'relativeLine'
       isTooltip: true
       rotation: Rotation
@@ -126,13 +117,6 @@ export type GuiModes =
   | {
       mode: 'sketch'
       sketchMode: 'sketchEdit'
-      rotation: Rotation
-      position: Position
-      pathToNode: PathToNode
-    }
-  | {
-      mode: 'sketch'
-      sketchMode: 'sketchEdit2'
       isTooltip: true
       rotation: Rotation
       position: Position
@@ -143,17 +127,7 @@ export type GuiModes =
       sketchMode: 'selectFace'
     }
   | {
-      mode: 'sketch'
-      sketchMode: 'selectFace2'
-    }
-  | {
       mode: 'canEditSketch'
-      pathToNode: PathToNode
-      rotation: Rotation
-      position: Position
-    }
-  | {
-      mode: 'canEditSketch2'
       pathToNode: PathToNode
       rotation: Rotation
       position: Position
