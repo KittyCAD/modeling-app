@@ -77,6 +77,8 @@ function App() {
       setEditorView(viewUpdate.view)
     }
     const range = viewUpdate.state.selection.ranges[0]
+    // console.log(viewUpdate.state.selection.ranges)
+    // TODO allow multiple cursors so that we can do constrain style features
     const isNoChange =
       range.from === selectionRange[0] && range.to === selectionRange[1]
     if (isNoChange) return
