@@ -623,8 +623,10 @@ function executeCallExpression(
         previousPathToNode
       )
       return result
+    } else if (arg.type === 'ObjectExpression') {
+      return executeObjectExpression(programMemory, arg)
     }
-    throw new Error('Invalid argument type')
+    throw new Error('Invalid argument type in function call')
   })
   if (functionName in internalFns) {
     const fnNameWithSketchOrExtrude = functionName as InternalFnNames

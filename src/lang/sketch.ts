@@ -434,14 +434,13 @@ const xLine: InternalFn = (
   data:
     | number
     | {
-        to: number
-        // name?: string
+        length: number
         tag?: string
       },
   previousSketch: SketchGroup
 ): SketchGroup => {
   if (!previousSketch) throw new Error('bad bad bad')
-  const xVal = typeof data !== 'number' ? data.to : data
+  const xVal = typeof data !== 'number' ? data.length : data
   return line(meta, [xVal, 0], previousSketch)
 }
 
@@ -450,14 +449,14 @@ const yLine: InternalFn = (
   data:
     | number
     | {
-        to: number
+        length: number
         // name?: string
         tag?: string
       },
   previousSketch: SketchGroup
 ): SketchGroup => {
   if (!previousSketch) throw new Error('bad bad bad')
-  const yVal = typeof data !== 'number' ? data.to : data
+  const yVal = typeof data !== 'number' ? data.length : data
   return line(meta, [0, yVal], previousSketch)
 }
 

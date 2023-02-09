@@ -53,6 +53,78 @@ export type GuiModes =
     }
   | {
       mode: 'sketch'
+      sketchMode: 'angledLineOfXLength'
+      isTooltip: true
+      rotation: Rotation
+      position: Position
+      id?: string
+      pathToNode: PathToNode
+    }
+  | {
+      mode: 'sketch'
+      sketchMode: 'angledLineOfYLength'
+      isTooltip: true
+      rotation: Rotation
+      position: Position
+      id?: string
+      pathToNode: PathToNode
+    }
+  | {
+      mode: 'sketch'
+      sketchMode: 'angledLineToX'
+      isTooltip: true
+      rotation: Rotation
+      position: Position
+      id?: string
+      pathToNode: PathToNode
+    }
+  | {
+      mode: 'sketch'
+      sketchMode: 'angledLineToY'
+      isTooltip: true
+      rotation: Rotation
+      position: Position
+      id?: string
+      pathToNode: PathToNode
+    }
+  | {
+      mode: 'sketch'
+      sketchMode: 'xLine'
+      isTooltip: true
+      rotation: Rotation
+      position: Position
+      id?: string
+      pathToNode: PathToNode
+    }
+  | {
+      mode: 'sketch'
+      sketchMode: 'yLine'
+      isTooltip: true
+      rotation: Rotation
+      position: Position
+      id?: string
+      pathToNode: PathToNode
+    }
+  | {
+      mode: 'sketch'
+      sketchMode: 'xLineTo'
+      isTooltip: true
+      rotation: Rotation
+      position: Position
+      id?: string
+      pathToNode: PathToNode
+    }
+  | {
+      mode: 'sketch'
+      sketchMode: 'yLineTo'
+      isTooltip: true
+      rotation: Rotation
+      position: Position
+      id?: string
+      pathToNode: PathToNode
+    }
+  | {
+      mode: 'sketch'
       sketchMode: 'sketchEdit'
       rotation: Rotation
       position: Position

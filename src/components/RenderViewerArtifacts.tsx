@@ -5,7 +5,10 @@ import {
   CallExpression,
   ArrayExpression,
 } from '../lang/abstractSyntaxTree'
-import { changeArguments, changeSketchArguments } from '../lang/modifyAst'
+import {
+  changeArguments,
+  changeSketchArguments,
+} from '../lang/modifyAst'
 import {
   ExtrudeGroup,
   ExtrudeSurface,
@@ -33,12 +36,14 @@ function MovingSphere({
   editorCursor,
   rotation,
   position,
+  from,
 }: {
   geo: BufferGeometry
   sourceRange: [number, number]
   editorCursor: boolean
   rotation: Rotation
   position: Position
+  from: [number, number]
 }) {
   const ref = useRef<BufferGeometry | undefined>() as any
   const detectionPlaneRef = useRef<BufferGeometry | undefined>() as any
@@ -47,12 +52,14 @@ function MovingSphere({
   const [hovered, setHover] = useState(false)
   const [isMouseDown, setIsMouseDown] = useState(false)
 
-  const { setHighlightRange, guiMode, ast, updateAst } = useStore((s) => ({
-    setHighlightRange: s.setHighlightRange,
-    guiMode: s.guiMode,
-    ast: s.ast,
-    updateAst: s.updateAst,
-  }))
+  const { setHighlightRange, guiMode, ast, updateAst, programMemory } =
+    useStore((s) => ({
+      setHighlightRange: s.setHighlightRange,
+      guiMode: s.guiMode,
+      ast: s.ast,
+      updateAst: s.updateAst,
+      programMemory: s.programMemory,
+    }))
   const { originalXY } = useMemo(() => {
     if (ast) {
       const thePath = getNodePathFromSourceRange(ast, sourceRange)
@@ -98,7 +105,15 @@ function MovingSphere({
         const { modifiedAst } =
           guiMode.mode === 'sketch' && guiMode.sketchMode === 'sketchEdit'
             ? changeArguments(ast, thePath, theNewPoints)
-            : changeSketchArguments.lineTTo(ast, thePath, theNewPoints)
+            : changeSketchArguments(
+                ast,
+                programMemory,
+                sourceRange,
+                theNewPoints,
+                guiMode,
+                from
+              )
+
         updateAst(modifiedAst)
         ref.current.position.set(...position)
       }
@@ -383,6 +398,7 @@ function PathRender({
             <MovingSphere
               key={i}
               geo={meta.geo}
+              from={geoInfo.from}
               sourceRange={geoInfo.__geoMeta.sourceRange}
               editorCursor={forceHighlight || editorCursor}
               rotation={rotation}
