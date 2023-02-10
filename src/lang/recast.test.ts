@@ -62,12 +62,12 @@ log(5, myVar)`
     expect(recasted).toBe(code)
   })
   it('sketch declaration', () => {
-    let code = `sketch mySketch {
-  path myPath = lineTo(0, 1)
-  lineTo(1, 1)
-  path rightPath = lineTo(1, 0)
-  close()
-}
+    let code = `const mySketch = startSketchAt([0, 0])
+  |> lineTo({ to: [0, 1], tag: "myPath" }, %)
+  |> lineTo([1, 1], %)
+  |> lineTo({ to: [1, 0], tag: "rightPath" }, %)
+  |> close(%)
+
 show(mySketch)
 `
     const { ast } = code2ast(code)
@@ -76,11 +76,10 @@ show(mySketch)
   })
   it('sketch piped into callExpression', () => {
     const code = [
-      'sketch mySk1 {',
-      '  lineTo(1, 1)',
-      '  path myPath = lineTo(0, 1)',
-      '  lineTo(1, 1)',
-      '}',
+      'const mySk1 = startSketchAt([0, 0])',
+      '  |> lineTo([1, 1], %)',
+      '  |> lineTo({ to: [0, 1], tag: "myTag" }, %)',
+      '  |> lineTo([1, 1], %)',
       '  |> rx(90, %)',
     ].join('\n')
     const { ast } = code2ast(code)
@@ -231,31 +230,12 @@ const myFn = () => {
     const recasted = recast(ast)
     expect(recasted).toBe(code)
   })
-  it('comments in a sketch block', () => {
-    const code = `
-sketch mySketch { /* comment at start */
-  // comment at start more
-  path myPath = lineTo(0, 1) /* comment here with 
-  some whitespace below */
-
-
-  lineTo(1, 1)
-  /* comment before declaration*/path rightPath = lineTo(1, 0)
-  close()
-  // comment at end
-
-}`
-    const { ast } = code2ast(code)
-    const recasted = recast(ast)
-    expect(recasted).toBe(code)
-  })
   it('comments in a pipe expression', () => {
     const code = [
-      'sketch mySk1 {',
-      '  lineTo(1, 1)',
-      '  path myPath = lineTo(0, 1)',
-      '  lineTo(1, 1)',
-      '}',
+      'const mySk1 = startSketchAt([0, 0])',
+      '  |> lineTo([1, 1], %)',
+      '  |> lineTo({ to: [0, 1], tag: "myTag" }, %)',
+      '  |> lineTo([1, 1], %)',
       '  // a comment',
       '  |> rx(90, %)',
     ].join('\n')
@@ -267,14 +247,13 @@ sketch mySketch { /* comment at start */
     const code = `
 /* comment at start */
 
-sketch mySk1 {
-  lineTo(1, 1)
+const mySk1 = startSketchAt([0, 0])
+  |> lineTo([1, 1], %)
   // comment here
-  path myPath = lineTo(0, 1)
-  lineTo(1, 1) /* and
+  |> lineTo({ to: [0, 1], tag: 'myTag' }, %)
+  |> lineTo([1, 1], %) /* and
   here 
   */
-}
   // a comment between pipe expression statements
   |> rx(90, %)
   // and another with just white space between others below

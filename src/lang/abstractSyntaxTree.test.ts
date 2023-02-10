@@ -462,198 +462,6 @@ const myVar = funcN(1, 2)`
   })
 })
 
-describe('structures specific to this lang', () => {
-  test('sketch', () => {
-    let code = `sketch mySketch {
-  path myPath = lineTo(0,1)
-  lineTo(1,1)
-  path rightPath = lineTo(1,0)
-  close()
-}
-`
-    const tokens = lexer(code)
-    const { body } = abstractSyntaxTree(tokens)
-    delete (body[0] as any).declarations[0].init.body.nonCodeMeta
-    expect(body).toEqual([
-      {
-        type: 'VariableDeclaration',
-        start: 0,
-        end: 102,
-        kind: 'sketch',
-        declarations: [
-          {
-            type: 'VariableDeclarator',
-            start: 7,
-            end: 102,
-            id: {
-              type: 'Identifier',
-              start: 7,
-              end: 15,
-              name: 'mySketch',
-            },
-            init: {
-              type: 'SketchExpression',
-              start: 16,
-              end: 102,
-              body: {
-                type: 'BlockStatement',
-                start: 16,
-                end: 102,
-                body: [
-                  {
-                    type: 'VariableDeclaration',
-                    start: 20,
-                    end: 45,
-                    kind: 'path',
-                    declarations: [
-                      {
-                        type: 'VariableDeclarator',
-                        start: 25,
-                        end: 45,
-                        id: {
-                          type: 'Identifier',
-                          start: 25,
-                          end: 31,
-                          name: 'myPath',
-                        },
-                        init: {
-                          type: 'CallExpression',
-                          start: 34,
-                          end: 45,
-                          callee: {
-                            type: 'Identifier',
-                            start: 34,
-                            end: 40,
-                            name: 'lineTo',
-                          },
-                          arguments: [
-                            {
-                              type: 'Literal',
-                              start: 41,
-                              end: 42,
-                              value: 0,
-                              raw: '0',
-                            },
-                            {
-                              type: 'Literal',
-                              start: 43,
-                              end: 44,
-                              value: 1,
-                              raw: '1',
-                            },
-                          ],
-                          optional: false,
-                        },
-                      },
-                    ],
-                  },
-                  {
-                    type: 'ExpressionStatement',
-                    start: 48,
-                    end: 59,
-                    expression: {
-                      type: 'CallExpression',
-                      start: 48,
-                      end: 59,
-                      callee: {
-                        type: 'Identifier',
-                        start: 48,
-                        end: 54,
-                        name: 'lineTo',
-                      },
-                      arguments: [
-                        {
-                          type: 'Literal',
-                          start: 55,
-                          end: 56,
-                          value: 1,
-                          raw: '1',
-                        },
-                        {
-                          type: 'Literal',
-                          start: 57,
-                          end: 58,
-                          value: 1,
-                          raw: '1',
-                        },
-                      ],
-                      optional: false,
-                    },
-                  },
-                  {
-                    type: 'VariableDeclaration',
-                    start: 62,
-                    end: 90,
-                    kind: 'path',
-                    declarations: [
-                      {
-                        type: 'VariableDeclarator',
-                        start: 67,
-                        end: 90,
-                        id: {
-                          type: 'Identifier',
-                          start: 67,
-                          end: 76,
-                          name: 'rightPath',
-                        },
-                        init: {
-                          type: 'CallExpression',
-                          start: 79,
-                          end: 90,
-                          callee: {
-                            type: 'Identifier',
-                            start: 79,
-                            end: 85,
-                            name: 'lineTo',
-                          },
-                          arguments: [
-                            {
-                              type: 'Literal',
-                              start: 86,
-                              end: 87,
-                              value: 1,
-                              raw: '1',
-                            },
-                            {
-                              type: 'Literal',
-                              start: 88,
-                              end: 89,
-                              value: 0,
-                              raw: '0',
-                            },
-                          ],
-                          optional: false,
-                        },
-                      },
-                    ],
-                  },
-                  {
-                    type: 'ExpressionStatement',
-                    start: 93,
-                    end: 100,
-                    expression: {
-                      type: 'CallExpression',
-                      start: 93,
-                      end: 100,
-                      callee: {
-                        type: 'Identifier',
-                        start: 93,
-                        end: 98,
-                        name: 'close',
-                      },
-                      arguments: [],
-                      optional: false,
-                    },
-                  },
-                ],
-              },
-            },
-          },
-        ],
-      },
-    ])
-  })
-})
 describe('testing hasPipeOperator', () => {
   test('hasPipeOperator is true', () => {
     let code = `sketch mySketch {
@@ -739,186 +547,230 @@ const yo = myFunc(9()
 
 describe('testing pipe operator special', () => {
   test('pipe operator with sketch', () => {
-    let code = `sketch mySketch {
-  lineTo(2, 3)
-  path myPath = lineTo(0, 1)
-  lineTo(1,1)
+    let code = `const mySketch = startSketchAt([0, 0])
+  |> lineTo([2, 3], %)
+  |> lineTo({ to: [0, 1], tag: "myPath" }, %)
+  |> lineTo([1, 1], %)
 } |> rx(45, %)
 `
     const tokens = lexer(code)
     const { body } = abstractSyntaxTree(tokens)
     delete (body[0] as any).declarations[0].init.nonCodeMeta
-    delete (body[0] as any).declarations[0].init.body[0].body.nonCodeMeta
     expect(body).toEqual([
       {
         type: 'VariableDeclaration',
         start: 0,
-        end: 90,
-        kind: 'sketch',
+        end: 145,
+        kind: 'const',
         declarations: [
           {
             type: 'VariableDeclarator',
-            start: 7,
-            end: 90,
-            id: {
-              type: 'Identifier',
-              start: 7,
-              end: 15,
-              name: 'mySketch',
-            },
+            start: 6,
+            end: 145,
+            id: { type: 'Identifier', start: 6, end: 14, name: 'mySketch' },
             init: {
               type: 'PipeExpression',
-              start: 16,
-              end: 90,
+              start: 15,
+              end: 145,
               body: [
                 {
-                  type: 'SketchExpression',
-                  start: 16,
-                  end: 77,
-                  body: {
-                    type: 'BlockStatement',
-                    start: 16,
-                    end: 77,
-                    body: [
-                      {
-                        type: 'ExpressionStatement',
-                        start: 20,
-                        end: 32,
-                        expression: {
-                          type: 'CallExpression',
-                          start: 20,
-                          end: 32,
-                          callee: {
-                            type: 'Identifier',
-                            start: 20,
-                            end: 26,
-                            name: 'lineTo',
-                          },
-                          arguments: [
-                            {
-                              type: 'Literal',
-                              start: 27,
-                              end: 28,
-                              value: 2,
-                              raw: '2',
-                            },
-                            {
-                              type: 'Literal',
-                              start: 30,
-                              end: 31,
-                              value: 3,
-                              raw: '3',
-                            },
-                          ],
-                          optional: false,
-                        },
-                      },
-                      {
-                        type: 'VariableDeclaration',
-                        start: 35,
-                        end: 61,
-                        kind: 'path',
-                        declarations: [
-                          {
-                            type: 'VariableDeclarator',
-                            start: 40,
-                            end: 61,
-                            id: {
-                              type: 'Identifier',
-                              start: 40,
-                              end: 46,
-                              name: 'myPath',
-                            },
-                            init: {
-                              type: 'CallExpression',
-                              start: 49,
-                              end: 61,
-                              callee: {
-                                type: 'Identifier',
-                                start: 49,
-                                end: 55,
-                                name: 'lineTo',
-                              },
-                              arguments: [
-                                {
-                                  type: 'Literal',
-                                  start: 56,
-                                  end: 57,
-                                  value: 0,
-                                  raw: '0',
-                                },
-                                {
-                                  type: 'Literal',
-                                  start: 59,
-                                  end: 60,
-                                  value: 1,
-                                  raw: '1',
-                                },
-                              ],
-                              optional: false,
-                            },
-                          },
-                        ],
-                      },
-                      {
-                        type: 'ExpressionStatement',
-                        start: 64,
-                        end: 75,
-                        expression: {
-                          type: 'CallExpression',
-                          start: 64,
-                          end: 75,
-                          callee: {
-                            type: 'Identifier',
-                            start: 64,
-                            end: 70,
-                            name: 'lineTo',
-                          },
-                          arguments: [
-                            {
-                              type: 'Literal',
-                              start: 71,
-                              end: 72,
-                              value: 1,
-                              raw: '1',
-                            },
-                            {
-                              type: 'Literal',
-                              start: 73,
-                              end: 74,
-                              value: 1,
-                              raw: '1',
-                            },
-                          ],
-                          optional: false,
-                        },
-                      },
-                    ],
+                  type: 'CallExpression',
+                  start: 17,
+                  end: 38,
+                  callee: {
+                    type: 'Identifier',
+                    start: 17,
+                    end: 30,
+                    name: 'startSketchAt',
                   },
+                  arguments: [
+                    {
+                      type: 'ArrayExpression',
+                      start: 31,
+                      end: 37,
+                      elements: [
+                        {
+                          type: 'Literal',
+                          start: 32,
+                          end: 33,
+                          value: 0,
+                          raw: '0',
+                        },
+                        {
+                          type: 'Literal',
+                          start: 35,
+                          end: 36,
+                          value: 0,
+                          raw: '0',
+                        },
+                      ],
+                    },
+                  ],
+                  optional: false,
                 },
                 {
                   type: 'CallExpression',
-                  start: 81,
-                  end: 90,
+                  start: 44,
+                  end: 61,
                   callee: {
                     type: 'Identifier',
-                    start: 81,
-                    end: 83,
+                    start: 44,
+                    end: 50,
+                    name: 'lineTo',
+                  },
+                  arguments: [
+                    {
+                      type: 'ArrayExpression',
+                      start: 51,
+                      end: 57,
+                      elements: [
+                        {
+                          type: 'Literal',
+                          start: 52,
+                          end: 53,
+                          value: 2,
+                          raw: '2',
+                        },
+                        {
+                          type: 'Literal',
+                          start: 55,
+                          end: 56,
+                          value: 3,
+                          raw: '3',
+                        },
+                      ],
+                    },
+                    { type: 'PipeSubstitution', start: 59, end: 60 },
+                  ],
+                  optional: false,
+                },
+                {
+                  type: 'CallExpression',
+                  start: 67,
+                  end: 107,
+                  callee: {
+                    type: 'Identifier',
+                    start: 67,
+                    end: 73,
+                    name: 'lineTo',
+                  },
+                  arguments: [
+                    {
+                      type: 'ObjectExpression',
+                      start: 74,
+                      end: 103,
+                      properties: [
+                        {
+                          type: 'ObjectProperty',
+                          start: 76,
+                          end: 86,
+                          key: {
+                            type: 'Identifier',
+                            start: 76,
+                            end: 78,
+                            name: 'to',
+                          },
+                          value: {
+                            type: 'ArrayExpression',
+                            start: 80,
+                            end: 86,
+                            elements: [
+                              {
+                                type: 'Literal',
+                                start: 81,
+                                end: 82,
+                                value: 0,
+                                raw: '0',
+                              },
+                              {
+                                type: 'Literal',
+                                start: 84,
+                                end: 85,
+                                value: 1,
+                                raw: '1',
+                              },
+                            ],
+                          },
+                        },
+                        {
+                          type: 'ObjectProperty',
+                          start: 88,
+                          end: 101,
+                          key: {
+                            type: 'Identifier',
+                            start: 88,
+                            end: 91,
+                            name: 'tag',
+                          },
+                          value: {
+                            type: 'Literal',
+                            start: 93,
+                            end: 101,
+                            value: 'myPath',
+                            raw: '"myPath"',
+                          },
+                        },
+                      ],
+                    },
+                    { type: 'PipeSubstitution', start: 105, end: 106 },
+                  ],
+                  optional: false,
+                },
+                {
+                  type: 'CallExpression',
+                  start: 113,
+                  end: 130,
+                  callee: {
+                    type: 'Identifier',
+                    start: 113,
+                    end: 119,
+                    name: 'lineTo',
+                  },
+                  arguments: [
+                    {
+                      type: 'ArrayExpression',
+                      start: 120,
+                      end: 126,
+                      elements: [
+                        {
+                          type: 'Literal',
+                          start: 121,
+                          end: 122,
+                          value: 1,
+                          raw: '1',
+                        },
+                        {
+                          type: 'Literal',
+                          start: 124,
+                          end: 125,
+                          value: 1,
+                          raw: '1',
+                        },
+                      ],
+                    },
+                    { type: 'PipeSubstitution', start: 128, end: 129 },
+                  ],
+                  optional: false,
+                },
+                {
+                  type: 'CallExpression',
+                  start: 136,
+                  end: 145,
+                  callee: {
+                    type: 'Identifier',
+                    start: 136,
+                    end: 138,
                     name: 'rx',
                   },
                   arguments: [
                     {
                       type: 'Literal',
-                      start: 84,
-                      end: 86,
+                      start: 139,
+                      end: 141,
                       value: 45,
                       raw: '45',
                     },
-                    {
-                      type: 'PipeSubstitution',
-                      start: 88,
-                      end: 89,
-                    },
+                    { type: 'PipeSubstitution', start: 143, end: 144 },
                   ],
                   optional: false,
                 },
@@ -1841,47 +1693,42 @@ const key = 'c'`
     expect(nonCodeMeta2[0].start).not.toBe(nonCodeMetaInstance.start)
   })
   it('comments nested within a block statement', () => {
-    const code = `sketch mySketch {
-      path myPath = lineTo(0,1)
-      lineTo(1,1) /* this is 
+    const code = `const mySketch = startSketchAt([0,0])
+  |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
+  |> lineTo([1, 1], %) /* this is 
       a comment 
       spanning a few lines */
-      path rightPath = lineTo(1,0)
-      close()
-    }
-    `
+  |> lineTo({ to: [1,0], tag: "rightPath" }, %)
+  |> close(%)
+`
 
     const { body } = abstractSyntaxTree(lexer(code))
-    const indexOfSecondLineToExpression = 1 // 0 index so `path myPath = lineTo(0,1)` is 0
-    const sketchNonCodeMeta = (body as any)[0].declarations[0].init.body
-      .nonCodeMeta
+    const indexOfSecondLineToExpression = 2 // 0 index so `path myPath = lineTo(0,1)` is 0
+    const sketchNonCodeMeta = (body as any)[0].declarations[0].init.nonCodeMeta
     expect(sketchNonCodeMeta[indexOfSecondLineToExpression]).toEqual({
       type: 'NoneCodeNode',
-      start: 67,
-      end: 133,
+      start: 106,
+      end: 168,
       value:
-        ' /* this is \n      a comment \n      spanning a few lines */\n      ',
+        ' /* this is \n      a comment \n      spanning a few lines */\n  ',
     })
   })
   it('comments in a pipe expression', () => {
     const code = [
-      'sketch mySk1 {',
-      '  lineTo(1, 1)',
-      '  path myPath = lineTo(0, 1)',
-      '  lineTo(1, 1)',
-      '}',
+      'const mySk1 = startSketchAt([0, 0])',
+      '  |> lineTo([1, 1], %)',
+      '  |> lineTo({to: [0, 1], tag: "myPath"}, %)',
+      '  |> lineTo([1, 1], %)',
       '// a comment',
       '  |> rx(90, %)',
     ].join('\n')
 
     const { body } = abstractSyntaxTree(lexer(code))
-    const bing = abstractSyntaxTree(lexer(code))
     const sketchNonCodeMeta = (body[0] as any).declarations[0].init.nonCodeMeta
-    expect(1).toBe(1)
-    expect(sketchNonCodeMeta[0]).toEqual({
+    expect(sketchNonCodeMeta[3]).toEqual({
       type: 'NoneCodeNode',
-      start: 75,
-      end: 91,
+      start: 125,
+      end: 141,
       value: '\n// a comment\n  ',
     })
   })

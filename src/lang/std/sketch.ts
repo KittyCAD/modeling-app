@@ -27,15 +27,14 @@ import { getYComponent, getXComponent } from '../sketch'
 
 export type Coords2d = [number, number]
 
-export function getCoordsFromPaths(paths: Path[], index = 0): Coords2d {
-  const currentPath = paths[index]
-  if (!currentPath) {
+export function getCoordsFromPaths(skGroup: SketchGroup, index = 0): Coords2d {
+  const currentPath = skGroup?.value?.[index]
+  if (!currentPath && skGroup?.start) {
+    return skGroup.start
+  } else if (!currentPath) {
     return [0, 0]
   }
-  if (currentPath.type === 'horizontalLineTo') {
-    const pathBefore = getCoordsFromPaths(paths, index - 1)
-    return [currentPath.x, pathBefore[1]]
-  } else if (currentPath.type === 'toPoint') {
+  if (currentPath.type === 'toPoint') {
     return [currentPath.to[0], currentPath.to[1]]
   }
   return [0, 0]
@@ -56,10 +55,7 @@ const lineTo: SketchLineHelper = {
     if (!previousSketch)
       throw new Error('lineTo must be called after startSketchAt')
     const sketchGroup = { ...previousSketch }
-    const from = getCoordsFromPaths(
-      sketchGroup.value,
-      sketchGroup.value.length - 1
-    )
+    const from = getCoordsFromPaths(sketchGroup, sketchGroup.value.length - 1)
     const to = 'to' in data ? data.to : data
     const geo = lineGeo({
       from: [...from, 0],
@@ -144,10 +140,7 @@ const line: SketchLineHelper = {
   ): SketchGroup => {
     if (!previousSketch) throw new Error('lineTo must be called after lineTo')
     const sketchGroup = { ...previousSketch }
-    const from = getCoordsFromPaths(
-      sketchGroup.value,
-      sketchGroup.value.length - 1
-    )
+    const from = getCoordsFromPaths(sketchGroup, sketchGroup.value.length - 1)
     const args = 'to' in data ? data.to : data
     const to: [number, number] = [from[0] + args[0], from[1] + args[1]]
     const geo = lineGeo({
@@ -252,7 +245,7 @@ const xLineTo: SketchLineHelper = {
   ) => {
     if (!previousSketch) throw new Error('bad bad bad')
     const from = getCoordsFromPaths(
-      previousSketch.value,
+      previousSketch,
       previousSketch.value.length - 1
     )
     const xVal = typeof data !== 'number' ? data.to : data
@@ -308,7 +301,7 @@ const yLineTo: SketchLineHelper = {
   ) => {
     if (!previousSketch) throw new Error('bad bad bad')
     const from = getCoordsFromPaths(
-      previousSketch.value,
+      previousSketch,
       previousSketch.value.length - 1
     )
     const yVal = typeof data !== 'number' ? data.to : data
@@ -498,10 +491,7 @@ const angledLine: SketchLineHelper = {
   ) => {
     if (!previousSketch) throw new Error('lineTo must be called after lineTo')
     const sketchGroup = { ...previousSketch }
-    const from = getCoordsFromPaths(
-      sketchGroup.value,
-      sketchGroup.value.length - 1
-    )
+    const from = getCoordsFromPaths(sketchGroup, sketchGroup.value.length - 1)
     const [angle, length] = 'angle' in data ? [data.angle, data.length] : data
     const to: [number, number] = [
       from[0] + length * Math.cos((angle * Math.PI) / 180),
@@ -778,7 +768,7 @@ const angledLineToX: SketchLineHelper = {
   ) => {
     if (!previousSketch) throw new Error('lineTo must be called after lineTo')
     const from = getCoordsFromPaths(
-      previousSketch.value,
+      previousSketch,
       previousSketch.value.length - 1
     )
     const [angle, xTo] = 'angle' in data ? [data.angle, data.to] : data
@@ -867,7 +857,7 @@ const angledLineToY: SketchLineHelper = {
   ) => {
     if (!previousSketch) throw new Error('lineTo must be called after lineTo')
     const from = getCoordsFromPaths(
-      previousSketch.value,
+      previousSketch,
       previousSketch.value.length - 1
     )
     const [angle, yTo] = 'angle' in data ? [data.angle, data.to] : data

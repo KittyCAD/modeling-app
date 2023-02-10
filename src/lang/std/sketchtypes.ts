@@ -1,33 +1,5 @@
-import {
-  ProgramMemory,
-  Path,
-  SketchGroup,
-  ExtrudeGroup,
-  SourceRange,
-  ExtrudeSurface,
-  Position,
-  Rotation,
-} from '../executor'
-import {
-  getNodePathFromSourceRange,
-  Program,
-  BlockStatement,
-  SketchExpression,
-  CallExpression,
-  PipeExpression,
-  VariableDeclaration,
-  VariableDeclarator,
-  ExpressionStatement,
-  Value,
-  getNodeFromPath,
-  Literal,
-  PipeSubstitution,
-  Identifier,
-  ArrayExpression,
-  ObjectExpression,
-} from '../abstractSyntaxTree'
-import { lineGeo, extrudeGeo } from '../engine'
-import { Quaternion, Vector3 } from 'three'
+import { ProgramMemory, Path, SourceRange } from '../executor'
+import { Program } from '../abstractSyntaxTree'
 
 export interface InternalFirstArg {
   programMemory: ProgramMemory

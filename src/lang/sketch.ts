@@ -10,12 +10,8 @@ import {
 } from './executor'
 import { lineGeo, extrudeGeo } from './engine'
 import { Quaternion, Vector3 } from 'three'
-import { InternalFirstArg, PathReturn, InternalFn } from './std/sketchtypes'
+import { InternalFirstArg, InternalFn } from './std/sketchtypes'
 import { getCoordsFromPaths, sketchLineHelperMap } from './std/sketch'
-
-type SketchFn = (internals: InternalFirstArg, ...args: any[]) => PathReturn
-
-export type SketchFnNames = 'close' | 'lineTo'
 
 export type InternalFnNames =
   | 'extrude'
@@ -38,96 +34,6 @@ export type InternalFnNames =
   | 'angledLineToY'
   | 'startSketchAt'
   | 'closee'
-
-export const sketchFns: { [key in SketchFnNames]: SketchFn } = {
-  close: ({ programMemory, name = '', sourceRange }) => {
-    const firstPath = programMemory?._sketch?.[0] as Path
-
-    let from = getCoordsFromPaths(
-      programMemory?._sketch || [],
-      (programMemory?._sketch?.length || 1) - 1
-    )
-
-    let to = getCoordsFromPaths(programMemory?._sketch || [], 0)
-    const geo = lineGeo({ from: [...from, 0], to: [...to, 0] })
-    const newPath: Path = {
-      type: 'toPoint',
-      from,
-      to,
-      __geoMeta: {
-        sourceRange,
-        pathToNode: [], // TODO
-        geos: [
-          {
-            type: 'line',
-            geo: geo.line,
-          },
-          {
-            type: 'lineEnd',
-            geo: geo.tip,
-          },
-        ],
-      },
-    }
-    if (name) {
-      newPath.name = name
-    }
-    return {
-      programMemory: {
-        ...programMemory,
-        _sketch: [
-          {
-            ...firstPath,
-            from,
-          },
-          ...(programMemory?._sketch || []).slice(1),
-          newPath,
-        ],
-      },
-      currentPath: newPath,
-    }
-  },
-  lineTo: ({ programMemory, name = '', sourceRange }, ...args) => {
-    const [x, y] = args
-    if (!programMemory._sketch) {
-      throw new Error('No sketch to draw on')
-    }
-    let from = getCoordsFromPaths(
-      programMemory?._sketch || [],
-      (programMemory?._sketch?.length || 1) - 1
-    )
-    const geo = lineGeo({ from: [...from, 0], to: [x, y, 0] })
-    const currentPath: Path = {
-      type: 'toPoint',
-      to: [x, y],
-      from,
-      __geoMeta: {
-        sourceRange,
-        pathToNode: [], // TODO
-        geos: [
-          {
-            type: 'line',
-            geo: geo.line,
-          },
-          {
-            type: 'lineEnd',
-            geo: geo.tip,
-          },
-        ],
-      },
-    }
-    if (name) {
-      currentPath.name = name
-    }
-    return {
-      programMemory: {
-        ...programMemory,
-        _sketch: [...(programMemory._sketch || []), currentPath],
-      },
-      currentPath,
-    }
-  },
-}
 
 function rotateOnAxis<T extends SketchGroup | ExtrudeGroup>(
   axisMultiplier: [number, number, number]
@@ -326,7 +232,8 @@ const startSketchAt: InternalFn = (
   }
   return {
     type: 'sketchGroup',
-    value: [currentPath],
+    start: to,
+    value: [],
     position: [0, 0, 0],
     rotation: [0, 0, 0, 1],
     __meta: [
@@ -342,11 +249,8 @@ const closee: InternalFn = (
   { sourceRange, programMemory },
   sketchGroup: SketchGroup
 ): SketchGroup => {
-  const from = getCoordsFromPaths(
-    sketchGroup.value,
-    sketchGroup.value.length - 1
-  )
-  const to = getCoordsFromPaths(sketchGroup.value, 0)
+  const from = getCoordsFromPaths(sketchGroup, sketchGroup.value.length - 1)
+  const to = getCoordsFromPaths(sketchGroup, 0)
   const geo = lineGeo({
     from: [...from, 0],
     to: [...to, 0],

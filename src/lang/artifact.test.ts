@@ -5,10 +5,9 @@ import { executor, SketchGroup, ExtrudeGroup } from './executor'
 describe('testing artifacts', () => {
   test('sketch artifacts', () => {
     const code = `
-sketch mySketch001 {
-  lineTo(-1.59, -1.54)
-  lineTo(0.46, -5.82)
-}
+const mySketch001 = startSketchAt([0, 0])
+  |> lineTo([-1.59, -1.54], %)
+  |> lineTo([0.46, -5.82], %)
   |> rx(45, %)
 show(mySketch001)`
     const programMemory = executor(abstractSyntaxTree(lexer(code)))
@@ -19,13 +18,14 @@ show(mySketch001)`
     expect(artifactsWithoutGeos).toEqual([
       {
         type: 'sketchGroup',
+        start: [0, 0],
         value: [
           {
             type: 'toPoint',
             to: [-1.59, -1.54],
             from: [0, 0],
             __geoMeta: {
-              sourceRange: [24, 44],
+              sourceRange: [48, 73],
               pathToNode: [],
               geos: ['line', 'lineEnd'],
             },
@@ -35,7 +35,7 @@ show(mySketch001)`
             to: [0.46, -5.82],
             from: [-1.59, -1.54],
             __geoMeta: {
-              sourceRange: [47, 66],
+              sourceRange: [79, 103],
               pathToNode: [],
               geos: ['line', 'lineEnd'],
             },
@@ -44,24 +44,17 @@ show(mySketch001)`
         position: [0, 0, 0],
         rotation: [0.3826834323650898, 0, 0, 0.9238795325112867],
         __meta: [
-          {
-            sourceRange: [20, 68],
-            pathToNode: ['body', 0, 'declarations', 0, 'init', 0],
-          },
-          {
-            sourceRange: [74, 83],
-            pathToNode: [],
-          },
+          { sourceRange: [21, 42], pathToNode: [] },
+          { sourceRange: [109, 118], pathToNode: [] },
         ],
       },
     ])
   })
   test('extrude artifacts', () => {
     const code = `
-sketch mySketch001 {
-  lineTo(-1.59, -1.54)
-  lineTo(0.46, -5.82)
-}
+const mySketch001 = startSketchAt([0, 0])
+  |> lineTo([-1.59, -1.54], %)
+  |> lineTo([0.46, -5.82], %)
   |> rx(45, %)
   |> extrude(2, %)
 show(mySketch001)`
@@ -83,7 +76,7 @@ show(mySketch001)`
             ],
             __geoMeta: {
               geo: 'PlaneGeometry',
-              sourceRange: [24, 44],
+              sourceRange: [48, 73],
               pathToNode: [],
             },
           },
@@ -98,7 +91,7 @@ show(mySketch001)`
             ],
             __geoMeta: {
               geo: 'PlaneGeometry',
-              sourceRange: [47, 66],
+              sourceRange: [79, 103],
               pathToNode: [],
             },
           },
@@ -107,35 +100,27 @@ show(mySketch001)`
         position: [0, 0, 0],
         rotation: [0.3826834323650898, 0, 0, 0.9238795325112867],
         __meta: [
-          {
-            sourceRange: [89, 102],
-            pathToNode: [],
-          },
-          {
-            sourceRange: [20, 68],
-            pathToNode: ['body', 0, 'declarations', 0, 'init', 0],
-          },
+          { sourceRange: [124, 137], pathToNode: [] },
+          { sourceRange: [21, 42], pathToNode: [] },
         ],
       },
     ])
   })
   test('sketch extrude and sketch on one of the faces', () => {
     const code = `
-sketch sk1 {
-  lineTo(-2.5, 0)
-  path p = lineTo(0, 10)
-  lineTo(2.5, 0)
-}
+const sk1 = startSketchAt([0, 0])
+  |> lineTo([-2.5, 0], %)
+  |> lineTo({ to: [0, 10], tag: "p" }, %)
+  |> lineTo([2.5, 0], %)
   |> rx(45, %)
   |> translate([1,0,1], %)
   |> ry(5, %)
 const theExtrude = extrude(2, sk1)
 const theTransf = getExtrudeWallTransform('p', theExtrude)
-sketch sk2 {
-  lineTo(-2.5, 0)
-  path p = lineTo(0, 3)
-  lineTo(2.5, 0)
-}
+const sk2 = startSketchAt([0, 0])
+  |> lineTo([-2.5, 0], %)
+  |> lineTo({ to: [0, 3], tag: "p" }, %)
+  |> lineTo([2.5, 0], %)
   |> transform(theTransf, %)
   |> extrude(2, %)
   
@@ -159,7 +144,7 @@ show(theExtrude, sk2)`
             ],
             __geoMeta: {
               geo: 'PlaneGeometry',
-              sourceRange: [16, 31],
+              sourceRange: [40, 60],
               pathToNode: [],
             },
           },
@@ -174,7 +159,7 @@ show(theExtrude, sk2)`
             ],
             __geoMeta: {
               geo: 'PlaneGeometry',
-              sourceRange: [39, 56],
+              sourceRange: [66, 102],
               pathToNode: [],
             },
             name: 'p',
@@ -190,7 +175,7 @@ show(theExtrude, sk2)`
             ],
             __geoMeta: {
               geo: 'PlaneGeometry',
-              sourceRange: [59, 73],
+              sourceRange: [108, 127],
               pathToNode: [],
             },
           },
@@ -202,14 +187,8 @@ show(theExtrude, sk2)`
           0.9230002039112792,
         ],
         __meta: [
-          {
-            sourceRange: [138, 166],
-            pathToNode: [],
-          },
-          {
-            sourceRange: [12, 75],
-            pathToNode: ['body', 0, 'declarations', 0, 'init', 0],
-          },
+          { sourceRange: [190, 218], pathToNode: [] },
+          { sourceRange: [13, 34], pathToNode: [] },
         ],
       },
       {
@@ -226,7 +205,7 @@ show(theExtrude, sk2)`
             ],
             __geoMeta: {
               geo: 'PlaneGeometry',
-              sourceRange: [241, 256],
+              sourceRange: [317, 337],
               pathToNode: [],
             },
           },
@@ -241,7 +220,7 @@ show(theExtrude, sk2)`
             ],
             __geoMeta: {
               geo: 'PlaneGeometry',
-              sourceRange: [264, 280],
+              sourceRange: [343, 378],
               pathToNode: [],
             },
             name: 'p',
@@ -257,7 +236,7 @@ show(theExtrude, sk2)`
             ],
             __geoMeta: {
               geo: 'PlaneGeometry',
-              sourceRange: [283, 297],
+              sourceRange: [384, 403],
               pathToNode: [],
             },
           },
@@ -269,14 +248,8 @@ show(theExtrude, sk2)`
           -0.5362616571538269,
         ],
         __meta: [
-          {
-            sourceRange: [334, 347],
-            pathToNode: [],
-          },
-          {
-            sourceRange: [237, 299],
-            pathToNode: ['body', 3, 'declarations', 0, 'init', 0],
-          },
+          { sourceRange: [438, 451], pathToNode: [] },
+          { sourceRange: [290, 311], pathToNode: [] },
         ],
       },
     ])

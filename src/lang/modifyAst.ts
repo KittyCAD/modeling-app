@@ -1,7 +1,6 @@
 import {
   Program,
   BlockStatement,
-  SketchExpression,
   CallExpression,
   PipeExpression,
   VariableDeclaration,
@@ -222,10 +221,10 @@ export function extrudeSketch(
 } {
   const _node = { ...node }
   const dumbyStartend = { start: 0, end: 0 }
-  const { node: sketchExpression } = getNodeFromPath<SketchExpression>(
+  const { node: sketchExpression } = getNodeFromPath(
     _node,
     pathToNode,
-    'SketchExpression'
+    'SketchExpression' // TODO fix this #25
   )
 
   // determine if sketchExpression is in a pipeExpression or not
@@ -271,7 +270,7 @@ export function extrudeSketch(
           type: 'PipeExpression',
           nonCodeMeta: {},
           ...dumbyStartend,
-          body: [sketchExpression, extrudeCall],
+          body: [sketchExpression as any, extrudeCall], // TODO fix this #25
         }
 
     variableDeclorator.init = pipeChain
@@ -384,16 +383,17 @@ export function sketchOnExtrudedFace(
     nonCodeMeta: {},
     ...dumbyStartend,
     body: [
-      {
-        type: 'SketchExpression',
-        ...dumbyStartend,
-        body: {
-          type: 'BlockStatement',
-          ...dumbyStartend,
-          body: [],
-          nonCodeMeta: {},
-        },
-      },
+      // TODO fix this #25
+      // {
+      //   type: 'SketchExpression',
+      //   ...dumbyStartend,
+      //   body: {
+      //     type: 'BlockStatement',
+      //     ...dumbyStartend,
+      //     body: [],
+      //     nonCodeMeta: {},
+      //   },
+      // },
       {
         type: 'CallExpression',
         ...dumbyStartend,
@@ -442,7 +442,7 @@ export function sketchOnExtrudedFace(
         init: sketchPipe,
       },
     ],
-    kind: 'sketch',
+    kind: 'const',
   }
 
   const showIndex = getShowIndex(_node)
