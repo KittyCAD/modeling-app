@@ -1,5 +1,4 @@
 import {
-  getNodePathFromSourceRange,
   Program,
   BlockStatement,
   SketchExpression,
@@ -14,11 +13,8 @@ import {
   PipeSubstitution,
   Identifier,
   ArrayExpression,
-  ObjectExpression,
 } from './abstractSyntaxTree'
 import { PathToNode } from './executor'
-import { GuiModes } from '../useStore'
-import { ProgramMemory, SourceRange } from './executor'
 
 export function addSketchTo(
   node: Program,
@@ -169,718 +165,10 @@ function getShowIndex(node: Program): number {
   )
 }
 
-function addLineTo(
-  node: Program,
-  pathToNode: (string | number)[],
-  to: [number, number]
-): { modifiedAst: Program; pathToNode: (string | number)[] } {
-  const _node = { ...node }
-  const { node: pipe } = getNodeFromPath<PipeExpression>(
-    _node,
-    pathToNode,
-    'PipeExpression'
-  )
-  const newLine = createCallExpression('lineTo', [
-    createArrayExpression([createLiteral(to[0]), createLiteral(to[1])]),
-    createPipeSubstitution(),
-  ])
-  pipe.body = [...pipe.body, newLine]
-  return {
-    modifiedAst: _node,
-    pathToNode,
-  }
-}
-
-function addXLineTo(
-  node: Program,
-  previousProgramMemory: ProgramMemory,
-  pathToNode: (string | number)[],
-  to: [number, number]
-): { modifiedAst: Program; pathToNode: (string | number)[] } {
-  const _node = { ...node }
-  const { node: pipe } = getNodeFromPath<PipeExpression>(
-    _node,
-    pathToNode,
-    'PipeExpression'
-  )
-  const newLine = createCallExpression('xLineTo', [
-    createLiteral(to[0]),
-    createPipeSubstitution(),
-  ])
-  pipe.body = [...pipe.body, newLine]
-  return {
-    modifiedAst: _node,
-    pathToNode,
-  }
-}
-function addYLineTo(
-  node: Program,
-  previousProgramMemory: ProgramMemory,
-  pathToNode: (string | number)[],
-  to: [number, number]
-): { modifiedAst: Program; pathToNode: (string | number)[] } {
-  const _node = { ...node }
-  const { node: pipe } = getNodeFromPath<PipeExpression>(
-    _node,
-    pathToNode,
-    'PipeExpression'
-  )
-  const newLine = createCallExpression('yLineTo', [
-    createLiteral(to[1]),
-    createPipeSubstitution(),
-  ])
-  pipe.body = [...pipe.body, newLine]
-  return {
-    modifiedAst: _node,
-    pathToNode,
-  }
-}
-
-function addRelativeLine(
-  node: Program,
-  previousProgramMemory: ProgramMemory,
-  pathToNode: (string | number)[],
-  to: [number, number]
-  // from: [number, number],
-): { modifiedAst: Program; pathToNode: (string | number)[] } {
-  const _node = { ...node }
-  const { node: pipe } = getNodeFromPath<PipeExpression>(
-    _node,
-    pathToNode,
-    'PipeExpression'
-  )
-  const { node: varDec } = getNodeFromPath<VariableDeclarator>(
-    _node,
-    pathToNode,
-    'VariableDeclarator'
-  )
-  const variableName = varDec.id.name
-  const sketch = previousProgramMemory?.root?.[variableName]
-  if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
-  const last = sketch.value[sketch.value.length - 1]
-  const newLine = createCallExpression('line', [
-    createArrayExpression([
-      createLiteral(roundOff(to[0] - last.to[0], 2)),
-      createLiteral(roundOff(to[1] - last.to[1], 2)),
-    ]),
-    createPipeSubstitution(),
-  ])
-  pipe.body = [...pipe.body, newLine]
-  return {
-    modifiedAst: _node,
-    pathToNode,
-  }
-}
-
-function addYLine(
-  node: Program,
-  previousProgramMemory: ProgramMemory,
-  pathToNode: (string | number)[],
-  to: [number, number]
-  // from: [number, number],
-): { modifiedAst: Program; pathToNode: (string | number)[] } {
-  const _node = { ...node }
-  const { node: pipe } = getNodeFromPath<PipeExpression>(
-    _node,
-    pathToNode,
-    'PipeExpression'
-  )
-  const { node: varDec } = getNodeFromPath<VariableDeclarator>(
-    _node,
-    pathToNode,
-    'VariableDeclarator'
-  )
-  const variableName = varDec.id.name
-  const sketch = previousProgramMemory?.root?.[variableName]
-  if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
-  const last = sketch.value[sketch.value.length - 1]
-  const newLine = createCallExpression('yLine', [
-    createLiteral(roundOff(to[1] - last.to[1], 2)),
-    createPipeSubstitution(),
-  ])
-  pipe.body = [...pipe.body, newLine]
-  return {
-    modifiedAst: _node,
-    pathToNode,
-  }
-}
-
-function addXLine(
-  node: Program,
-  previousProgramMemory: ProgramMemory,
-  pathToNode: (string | number)[],
-  length: [number, number]
-  // from: [number, number],
-): { modifiedAst: Program; pathToNode: (string | number)[] } {
-  const _node = { ...node }
-  const { node: pipe } = getNodeFromPath<PipeExpression>(
-    _node,
-    pathToNode,
-    'PipeExpression'
-  )
-  const { node: varDec } = getNodeFromPath<VariableDeclarator>(
-    _node,
-    pathToNode,
-    'VariableDeclarator'
-  )
-  const variableName = varDec.id.name
-  const sketch = previousProgramMemory?.root?.[variableName]
-  if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
-  const last = sketch.value[sketch.value.length - 1]
-  const newLine = createCallExpression('xLine', [
-    createLiteral(roundOff(length[0] - last.to[0], 2)),
-    createPipeSubstitution(),
-  ])
-  pipe.body = [...pipe.body, newLine]
-  return {
-    modifiedAst: _node,
-    pathToNode,
-  }
-}
-
-function addAngledLine(
-  node: Program,
-  previousProgramMemory: ProgramMemory,
-  pathToNode: (string | number)[],
-  to: [number, number]
-  // from: [number, number],
-): { modifiedAst: Program; pathToNode: (string | number)[] } {
-  const _node = { ...node }
-  const { node: pipe } = getNodeFromPath<PipeExpression>(
-    _node,
-    pathToNode,
-    'PipeExpression'
-  )
-  const { node: varDec } = getNodeFromPath<VariableDeclarator>(
-    _node,
-    pathToNode,
-    'VariableDeclarator'
-  )
-  const variableName = varDec.id.name
-  const sketch = previousProgramMemory?.root?.[variableName]
-  if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
-  const last = sketch.value[sketch.value.length - 1]
-  const angle = roundOff(getAngle(last.to, to), 0)
-  const lineLength = roundOff(getLength(last.to, to), 2)
-  const newLine = createCallExpression('angledLine', [
-    createArrayExpression([createLiteral(angle), createLiteral(lineLength)]),
-    createPipeSubstitution(),
-  ])
-  pipe.body = [...pipe.body, newLine]
-  return {
-    modifiedAst: _node,
-    pathToNode,
-  }
-}
-
-function addAngledLineOfXLength(
-  node: Program,
-  previousProgramMemory: ProgramMemory,
-  pathToNode: (string | number)[],
-  to: [number, number]
-  // from: [number, number],
-): { modifiedAst: Program; pathToNode: (string | number)[] } {
-  const _node = { ...node }
-  const { node: pipe } = getNodeFromPath<PipeExpression>(
-    _node,
-    pathToNode,
-    'PipeExpression'
-  )
-  const { node: varDec } = getNodeFromPath<VariableDeclarator>(
-    _node,
-    pathToNode,
-    'VariableDeclarator'
-  )
-  const variableName = varDec.id.name
-  const sketch = previousProgramMemory?.root?.[variableName]
-  if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
-  const last = sketch.value[sketch.value.length - 1]
-  const angle = roundOff(getAngle(last.to, to), 0)
-  const xLength = roundOff(Math.abs(last.to[0] - to[0]), 2) || 0.1
-  const newLine = createCallExpression('angledLineOfXLength', [
-    createArrayExpression([createLiteral(angle), createLiteral(xLength)]),
-    createPipeSubstitution(),
-  ])
-  pipe.body = [...pipe.body, newLine]
-  return {
-    modifiedAst: _node,
-    pathToNode,
-  }
-}
-
-function addAngledLineOfYLength(
-  node: Program,
-  previousProgramMemory: ProgramMemory,
-  pathToNode: (string | number)[],
-  to: [number, number]
-  // from: [number, number],
-): { modifiedAst: Program; pathToNode: (string | number)[] } {
-  const _node = { ...node }
-  const { node: pipe } = getNodeFromPath<PipeExpression>(
-    _node,
-    pathToNode,
-    'PipeExpression'
-  )
-  const { node: varDec } = getNodeFromPath<VariableDeclarator>(
-    _node,
-    pathToNode,
-    'VariableDeclarator'
-  )
-  const variableName = varDec.id.name
-  const sketch = previousProgramMemory?.root?.[variableName]
-  if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
-  const last = sketch.value[sketch.value.length - 1]
-  const angle = roundOff(getAngle(last.to, to), 0)
-  const yLength = roundOff(Math.abs(last.to[1] - to[1]), 2) || 0.1
-  const newLine = createCallExpression('angledLineOfYLength', [
-    createArrayExpression([createLiteral(angle), createLiteral(yLength)]),
-    createPipeSubstitution(),
-  ])
-  pipe.body = [...pipe.body, newLine]
-  return {
-    modifiedAst: _node,
-    pathToNode,
-  }
-}
-
-function addAngledLineToX(
-  node: Program,
-  previousProgramMemory: ProgramMemory,
-  pathToNode: (string | number)[],
-  to: [number, number]
-  // from: [number, number],
-): { modifiedAst: Program; pathToNode: (string | number)[] } {
-  const _node = { ...node }
-  const { node: pipe } = getNodeFromPath<PipeExpression>(
-    _node,
-    pathToNode,
-    'PipeExpression'
-  )
-  const { node: varDec } = getNodeFromPath<VariableDeclarator>(
-    _node,
-    pathToNode,
-    'VariableDeclarator'
-  )
-  const variableName = varDec.id.name
-  const sketch = previousProgramMemory?.root?.[variableName]
-  if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
-  const last = sketch.value[sketch.value.length - 1]
-  const angle = roundOff(getAngle(last.to, to), 0)
-  const xArg = roundOff(to[0], 2)
-  const newLine = createCallExpression('angledLineToX', [
-    createArrayExpression([createLiteral(angle), createLiteral(xArg)]),
-    createPipeSubstitution(),
-  ])
-  pipe.body = [...pipe.body, newLine]
-  return {
-    modifiedAst: _node,
-    pathToNode,
-  }
-}
-
-function addAngledLineToY(
-  node: Program,
-  previousProgramMemory: ProgramMemory,
-  pathToNode: (string | number)[],
-  to: [number, number]
-  // from: [number, number],
-): { modifiedAst: Program; pathToNode: (string | number)[] } {
-  const _node = { ...node }
-  const { node: pipe } = getNodeFromPath<PipeExpression>(
-    _node,
-    pathToNode,
-    'PipeExpression'
-  )
-  const { node: varDec } = getNodeFromPath<VariableDeclarator>(
-    _node,
-    pathToNode,
-    'VariableDeclarator'
-  )
-  const variableName = varDec.id.name
-  const sketch = previousProgramMemory?.root?.[variableName]
-  if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
-  const last = sketch.value[sketch.value.length - 1]
-  const angle = roundOff(getAngle(last.to, to), 0)
-  const yArg = roundOff(to[1], 2)
-  const newLine = createCallExpression('angledLineToY', [
-    createArrayExpression([createLiteral(angle), createLiteral(yArg)]),
-    createPipeSubstitution(),
-  ])
-  pipe.body = [...pipe.body, newLine]
-  return {
-    modifiedAst: _node,
-    pathToNode,
-  }
-}
-
-export function changeSketchArguments(
-  node: Program,
-  programMemory: ProgramMemory,
-  sourceRange: SourceRange,
-  args: [number, number],
-  guiMode: GuiModes,
-  from: [number, number]
-): { modifiedAst: Program } {
-  const _node = { ...node }
-  const thePath = getNodePathFromSourceRange(_node, sourceRange)
-  const { node: callExpression, path } = getNodeFromPath<CallExpression>(
-    _node,
-    thePath
-  )
-  if (guiMode.mode !== 'sketch') throw new Error('not in sketch mode')
-
-  if (callExpression.callee.name === 'lineTo') {
-    return changeSketchArgumentsHelpers.lineTo(_node, thePath, args)
-  }
-  if (callExpression.callee.name === 'line')
-    return changeSketchArgumentsHelpers.line(_node, thePath, args, from)
-  if (callExpression.callee.name === 'angledLine')
-    return changeSketchArgumentsHelpers.angledLine(_node, thePath, args, from)
-  if (callExpression.callee.name === 'xLine')
-    return changeSketchArgumentsHelpers.xLine(_node, thePath, args, from)
-  if (callExpression.callee.name === 'yLine')
-    return changeSketchArgumentsHelpers.yLine(_node, thePath, args, from)
-  if (callExpression.callee.name === 'xLineTo')
-    return changeSketchArgumentsHelpers.xLineTo(_node, thePath, args, from)
-  if (callExpression.callee.name === 'yLineTo')
-    return changeSketchArgumentsHelpers.yLineTo(_node, thePath, args, from)
-  if (callExpression.callee.name === 'angledLineOfXLength')
-    return changeSketchArgumentsHelpers.angledLineOfXLength(
-      _node,
-      thePath,
-      args,
-      from
-    )
-  if (callExpression.callee.name === 'angledLineOfYLength')
-    return changeSketchArgumentsHelpers.angledLineOfYLength(
-      _node,
-      thePath,
-      args,
-      from
-    )
-  if (callExpression.callee.name === 'angledLineToX')
-    return changeSketchArgumentsHelpers.angledLineToX(
-      _node,
-      thePath,
-      args,
-      from
-    )
-  if (callExpression.callee.name === 'angledLineToY')
-    return changeSketchArgumentsHelpers.angledLineToY(
-      _node,
-      thePath,
-      args,
-      from
-    )
-
-  return {
-    modifiedAst: _node,
-  }
-}
-
-const changeSketchArgumentsHelpers = {
-  angledLine: (
-    node: Program,
-    pathToNode: (string | number)[],
-    to: [number, number],
-    from: [number, number]
-  ): { modifiedAst: Program; pathToNode: (string | number)[] } => {
-    const _node = { ...node }
-    const { node: callExpression, path } = getNodeFromPath<CallExpression>(
-      _node,
-      pathToNode
-    )
-    const angle = roundOff(getAngle(from, to), 0)
-    const lineLength = roundOff(getLength(from, to), 2)
-
-    const angleLit = createLiteral(angle)
-    const lengthLit = createLiteral(lineLength)
-
-    const firstArg = callExpression.arguments?.[0]
-    if (!mutateArrExp(firstArg, createArrayExpression([angleLit, lengthLit]))) {
-      mutateObjExpProp(firstArg, angleLit, 'angle')
-      mutateObjExpProp(firstArg, lengthLit, 'length')
-    }
-
-    return {
-      modifiedAst: _node,
-      pathToNode,
-    }
-  },
-  angledLineOfXLength: (
-    node: Program,
-    pathToNode: (string | number)[],
-    to: [number, number],
-    from: [number, number]
-  ): { modifiedAst: Program; pathToNode: (string | number)[] } => {
-    const _node = { ...node }
-    const { node: callExpression, path } = getNodeFromPath<CallExpression>(
-      _node,
-      pathToNode
-    )
-    const angle = roundOff(getAngle(from, to), 0)
-    const xLength = roundOff(Math.abs(to[0] - from[0]), 2)
-
-    const firstArg = callExpression.arguments?.[0]
-    const adjustedXLength = isAngleLiteral(firstArg)
-      ? Math.abs(xLength)
-      : xLength // todo make work for variable angle > 180
-
-    const angleLit = createLiteral(angle)
-    const lengthLit = createLiteral(adjustedXLength)
-
-    if (!mutateArrExp(firstArg, createArrayExpression([angleLit, lengthLit]))) {
-      mutateObjExpProp(firstArg, angleLit, 'angle')
-      mutateObjExpProp(firstArg, lengthLit, 'length')
-    }
-
-    return {
-      modifiedAst: _node,
-      pathToNode,
-    }
-  },
-  angledLineOfYLength: (
-    node: Program,
-    pathToNode: (string | number)[],
-    to: [number, number],
-    from: [number, number]
-  ): { modifiedAst: Program; pathToNode: (string | number)[] } => {
-    const _node = { ...node }
-    const { node: callExpression, path } = getNodeFromPath<CallExpression>(
-      _node,
-      pathToNode
-    )
-    const angle = roundOff(getAngle(from, to), 0)
-    const yLength = roundOff(to[1] - from[1], 2)
-
-    const firstArg = callExpression.arguments?.[0]
-    const adjustedYLength = isAngleLiteral(firstArg)
-      ? Math.abs(yLength)
-      : yLength // todo make work for variable angle > 180
-
-    const angleLit = createLiteral(angle)
-    const lengthLit = createLiteral(adjustedYLength)
-
-    if (!mutateArrExp(firstArg, createArrayExpression([angleLit, lengthLit]))) {
-      mutateObjExpProp(firstArg, angleLit, 'angle')
-      mutateObjExpProp(firstArg, lengthLit, 'length')
-    }
-
-    return {
-      modifiedAst: _node,
-      pathToNode,
-    }
-  },
-  angledLineToX: (
-    node: Program,
-    pathToNode: (string | number)[],
-    to: [number, number],
-    from: [number, number]
-  ): { modifiedAst: Program; pathToNode: (string | number)[] } => {
-    const _node = { ...node }
-    const { node: callExpression, path } = getNodeFromPath<CallExpression>(
-      _node,
-      pathToNode
-    )
-    const angle = roundOff(getAngle(from, to), 0)
-    const xLength = roundOff(to[0], 2)
-
-    const firstArg = callExpression.arguments?.[0]
-    const adjustedXLength = isAngleLiteral(firstArg)
-      ? Math.abs(xLength)
-      : xLength // todo make work for variable angle > 180
-
-    const angleLit = createLiteral(angle)
-    const lengthLit = createLiteral(adjustedXLength)
-
-    if (!mutateArrExp(firstArg, createArrayExpression([angleLit, lengthLit]))) {
-      mutateObjExpProp(firstArg, angleLit, 'angle')
-      mutateObjExpProp(firstArg, lengthLit, 'to')
-    }
-    return {
-      modifiedAst: _node,
-      pathToNode,
-    }
-  },
-  angledLineToY: (
-    node: Program,
-    pathToNode: (string | number)[],
-    to: [number, number],
-    from: [number, number]
-  ): { modifiedAst: Program; pathToNode: (string | number)[] } => {
-    const _node = { ...node }
-    const { node: callExpression, path } = getNodeFromPath<CallExpression>(
-      _node,
-      pathToNode
-    )
-    const angle = roundOff(getAngle(from, to), 0)
-    const xLength = roundOff(to[1], 2)
-
-    const firstArg = callExpression.arguments?.[0]
-    const adjustedXLength = isAngleLiteral(firstArg)
-      ? Math.abs(xLength)
-      : xLength // todo make work for variable angle > 180
-
-    const angleLit = createLiteral(angle)
-    const lengthLit = createLiteral(adjustedXLength)
-
-    if (!mutateArrExp(firstArg, createArrayExpression([angleLit, lengthLit]))) {
-      mutateObjExpProp(firstArg, angleLit, 'angle')
-      mutateObjExpProp(firstArg, lengthLit, 'to')
-    }
-    return {
-      modifiedAst: _node,
-      pathToNode,
-    }
-  },
-  xLine: (
-    node: Program,
-    pathToNode: (string | number)[],
-    to: [number, number],
-    from: [number, number]
-  ): { modifiedAst: Program; pathToNode: (string | number)[] } => {
-    const _node = { ...node }
-    const { node: callExpression } = getNodeFromPath<CallExpression>(
-      _node,
-      pathToNode
-    )
-    const newX = createLiteral(roundOff(to[0] - from[0], 2))
-    if (callExpression.arguments?.[0]?.type === 'Literal') {
-      callExpression.arguments[0] = newX
-    } else {
-      mutateObjExpProp(callExpression.arguments?.[0], newX, 'length')
-    }
-    return {
-      modifiedAst: _node,
-      pathToNode,
-    }
-  },
-  yLine: (
-    node: Program,
-    pathToNode: (string | number)[],
-    to: [number, number],
-    from: [number, number]
-  ): { modifiedAst: Program; pathToNode: (string | number)[] } => {
-    const _node = { ...node }
-    const { node: callExpression } = getNodeFromPath<CallExpression>(
-      _node,
-      pathToNode
-    )
-    const newY = createLiteral(roundOff(to[1] - from[1], 2))
-    if (callExpression.arguments?.[0]?.type === 'Literal') {
-      callExpression.arguments[0] = newY
-    } else {
-      mutateObjExpProp(callExpression.arguments?.[0], newY, 'length')
-    }
-    return {
-      modifiedAst: _node,
-      pathToNode,
-    }
-  },
-  xLineTo: (
-    node: Program,
-    pathToNode: (string | number)[],
-    to: [number, number],
-    from: [number, number]
-  ): { modifiedAst: Program; pathToNode: (string | number)[] } => {
-    const _node = { ...node }
-    const { node: callExpression } = getNodeFromPath<CallExpression>(
-      _node,
-      pathToNode
-    )
-    const newX = createLiteral(roundOff(to[0], 2))
-    if (callExpression.arguments?.[0]?.type === 'Literal') {
-      callExpression.arguments[0] = newX
-    } else {
-      mutateObjExpProp(callExpression.arguments?.[0], newX, 'to')
-    }
-    return {
-      modifiedAst: _node,
-      pathToNode,
-    }
-  },
-  yLineTo: (
-    node: Program,
-    pathToNode: (string | number)[],
-    to: [number, number],
-    from: [number, number]
-  ): { modifiedAst: Program; pathToNode: (string | number)[] } => {
-    const _node = { ...node }
-    const { node: callExpression } = getNodeFromPath<CallExpression>(
-      _node,
-      pathToNode
-    )
-    const newY = createLiteral(roundOff(to[1], 2))
-    if (callExpression.arguments?.[0]?.type === 'Literal') {
-      callExpression.arguments[0] = newY
-    } else {
-      mutateObjExpProp(callExpression.arguments?.[0], newY, 'to')
-    }
-    return {
-      modifiedAst: _node,
-      pathToNode,
-    }
-  },
-  line: (
-    node: Program,
-    pathToNode: (string | number)[],
-    to: [number, number],
-    from: [number, number]
-  ): { modifiedAst: Program; pathToNode: (string | number)[] } => {
-    const _node = { ...node }
-    const { node: callExpression, path } = getNodeFromPath<CallExpression>(
-      _node,
-      pathToNode
-    )
-
-    const toArrExp = createArrayExpression([
-      createLiteral(roundOff(to[0] - from[0], 2)),
-      createLiteral(roundOff(to[1] - from[1], 2)),
-    ])
-
-    mutateArrExp(callExpression.arguments?.[0], toArrExp) ||
-      mutateObjExpProp(callExpression.arguments?.[0], toArrExp, 'to')
-
-    return {
-      modifiedAst: _node,
-      pathToNode,
-    }
-  },
-  lineTo: (
-    node: Program,
-    pathToNode: (string | number)[],
-    args: [number, number]
-  ): { modifiedAst: Program; pathToNode: (string | number)[] } => {
-    const _node = { ...node }
-    const { node: callExpression, path } = getNodeFromPath<CallExpression>(
-      _node,
-      pathToNode
-    )
-
-    const toArrExp = createArrayExpression([
-      createLiteral(args[0]),
-      createLiteral(args[1]),
-    ])
-
-    mutateArrExp(callExpression.arguments?.[0], toArrExp) ||
-      mutateObjExpProp(callExpression.arguments?.[0], toArrExp, 'to')
-    return {
-      modifiedAst: _node,
-      pathToNode,
-    }
-  },
-}
-
-function isAngleLiteral(lineArugement: Value): boolean {
-  return lineArugement?.type === 'ArrayExpression'
-    ? lineArugement.elements[0].type === 'Literal'
-    : lineArugement?.type === 'ObjectExpression'
-    ? lineArugement.properties.find(({ key }) => key.name === 'angle')?.value
-        .type === 'Literal'
-    : false
-}
-
-function mutateArrExp(node: Value, updateWith: ArrayExpression): boolean {
+export function mutateArrExp(
+  node: Value,
+  updateWith: ArrayExpression
+): boolean {
   if (node.type === 'ArrayExpression') {
     node.elements.forEach((element, i) => {
       if (element.type === 'Literal') {
@@ -892,7 +180,7 @@ function mutateArrExp(node: Value, updateWith: ArrayExpression): boolean {
   return false
 }
 
-function mutateObjExpProp(
+export function mutateObjExpProp(
   node: Value,
   updateWith: Literal | ArrayExpression,
   key: string
@@ -1174,7 +462,7 @@ const getLastIndex = (pathToNode: PathToNode): number => {
   return getLastIndex(pathToNode.slice(0, -1))
 }
 
-function createLiteral(value: string | number): Literal {
+export function createLiteral(value: string | number): Literal {
   return {
     type: 'Literal',
     start: 0,
@@ -1184,7 +472,7 @@ function createLiteral(value: string | number): Literal {
   }
 }
 
-function createIdentifier(name: string): Identifier {
+export function createIdentifier(name: string): Identifier {
   return {
     type: 'Identifier',
     start: 0,
@@ -1193,7 +481,7 @@ function createIdentifier(name: string): Identifier {
   }
 }
 
-function createPipeSubstitution(): PipeSubstitution {
+export function createPipeSubstitution(): PipeSubstitution {
   return {
     type: 'PipeSubstitution',
     start: 0,
@@ -1201,7 +489,7 @@ function createPipeSubstitution(): PipeSubstitution {
   }
 }
 
-function createCallExpression(
+export function createCallExpression(
   name: string,
   args: CallExpression['arguments']
 ): CallExpression {
@@ -1220,7 +508,7 @@ function createCallExpression(
   }
 }
 
-function createArrayExpression(
+export function createArrayExpression(
   elements: ArrayExpression['elements']
 ): ArrayExpression {
   return {
@@ -1231,7 +519,9 @@ function createArrayExpression(
   }
 }
 
-function createPipeExpression(body: PipeExpression['body']): PipeExpression {
+export function createPipeExpression(
+  body: PipeExpression['body']
+): PipeExpression {
   return {
     type: 'PipeExpression',
     start: 0,
@@ -1241,7 +531,7 @@ function createPipeExpression(body: PipeExpression['body']): PipeExpression {
   }
 }
 
-function createVariableDeclaration(
+export function createVariableDeclaration(
   varName: string,
   init: VariableDeclarator['init'],
   kind: VariableDeclaration['kind'] = 'const'
@@ -1261,65 +551,4 @@ function createVariableDeclaration(
     ],
     kind,
   }
-}
-
-export function toolTipModification(
-  node: Program,
-  previousProgramMemory: ProgramMemory,
-  to: [number, number],
-  guiMode: GuiModes
-): { modifiedAst: Program } {
-  if (guiMode.mode !== 'sketch') throw new Error('expected sketch mode')
-
-  if (guiMode.sketchMode === 'lineTo')
-    return addLineTo(node, guiMode.pathToNode, to)
-  if (guiMode.sketchMode === 'relativeLine')
-    return addRelativeLine(node, previousProgramMemory, guiMode.pathToNode, to)
-  if (guiMode.sketchMode === 'angledLine')
-    return addAngledLine(node, previousProgramMemory, guiMode.pathToNode, to)
-  if (guiMode.sketchMode === 'xLine')
-    return addXLine(node, previousProgramMemory, guiMode.pathToNode, to)
-  if (guiMode.sketchMode === 'yLine')
-    return addYLine(node, previousProgramMemory, guiMode.pathToNode, to)
-  if (guiMode.sketchMode === 'xLineTo')
-    return addXLineTo(node, previousProgramMemory, guiMode.pathToNode, to)
-  if (guiMode.sketchMode === 'yLineTo')
-    return addYLineTo(node, previousProgramMemory, guiMode.pathToNode, to)
-  if (guiMode.sketchMode === 'angledLineOfXLength')
-    return addAngledLineOfXLength(
-      node,
-      previousProgramMemory,
-      guiMode.pathToNode,
-      to
-    )
-  if (guiMode.sketchMode === 'angledLineOfYLength')
-    return addAngledLineOfYLength(
-      node,
-      previousProgramMemory,
-      guiMode.pathToNode,
-      to
-    )
-  if (guiMode.sketchMode === 'angledLineToX')
-    return addAngledLineToX(node, previousProgramMemory, guiMode.pathToNode, to)
-  if (guiMode.sketchMode === 'angledLineToY')
-    return addAngledLineToY(node, previousProgramMemory, guiMode.pathToNode, to)
-
-  throw new Error(`sketchmode: "${guiMode.sketchMode}" has not implemented`)
-}
-
-function roundOff(num: number, places: number): number {
-  const x = Math.pow(10, places)
-  return Math.round(num * x) / x
-}
-
-function getLength(a: [number, number], b: [number, number]): number {
-  const x = b[0] - a[0]
-  const y = b[1] - a[1]
-  return Math.sqrt(x * x + y * y)
-}
-
-function getAngle(a: [number, number], b: [number, number]): number {
-  const x = b[0] - a[0]
-  const y = b[1] - a[1]
-  return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360
 }

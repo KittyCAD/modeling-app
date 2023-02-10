@@ -5,7 +5,7 @@ import {
   CallExpression,
   ArrayExpression,
 } from '../lang/abstractSyntaxTree'
-import { changeSketchArguments } from '../lang/modifyAst'
+import { changeSketchArguments } from '../lang/std/sketch'
 import {
   ExtrudeGroup,
   ExtrudeSurface,
@@ -21,11 +21,7 @@ import { useStore } from '../useStore'
 import { isOverlapping } from '../lib/utils'
 import { Vector3, DoubleSide, Quaternion } from 'three'
 import { useSetCursor } from '../hooks/useSetCursor'
-
-const roundOff = (num: number, places: number): number => {
-  const x = Math.pow(10, places)
-  return Math.round(num * x) / x
-}
+import { roundOff } from '../lib/utils'
 
 function MovingSphere({
   geo,
@@ -65,7 +61,6 @@ function MovingSphere({
         thePath
       )
       const [xArg, yArg] =
-        // TODO handle object argument plus function calls other than lineTo
         guiMode.mode === 'sketch'
           ? callExpression?.arguments || []
           : (callExpression?.arguments?.[0] as ArrayExpression)?.elements || []

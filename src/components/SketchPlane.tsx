@@ -1,7 +1,8 @@
 import { useStore } from '../useStore'
 import { DoubleSide, Vector3, Quaternion } from 'three'
 import { Program } from '../lang/abstractSyntaxTree'
-import { toolTipModification } from '../lang/modifyAst'
+import { toolTipModification } from '../lang/std/sketch'
+import { roundOff } from '../lib/utils'
 
 export const SketchPlane = () => {
   const { ast, guiMode, updateAst, programMemory } = useStore((s) => ({
@@ -91,10 +92,6 @@ export const SketchPlane = () => {
 }
 
 function roundy({ x, y, z }: any) {
-  const roundOff = (num: number, places: number): number => {
-    const x = Math.pow(10, places)
-    return Math.round(num * x) / x
-  }
   return {
     x: roundOff(x, 2),
     y: roundOff(y, 2),

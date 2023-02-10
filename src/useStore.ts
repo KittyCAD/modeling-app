@@ -12,7 +12,7 @@ import { lexer } from './lang/tokeniser'
 export type Range = [number, number]
 export type TooTip =
   | 'lineTo'
-  | 'relativeLine'
+  | 'line'
   | 'angledLine'
   | 'angledLineOfXLength'
   | 'angledLineOfYLength'
@@ -25,7 +25,7 @@ export type TooTip =
 
 export const toolTips: TooTip[] = [
   'lineTo',
-  'relativeLine',
+  'line',
   'angledLine',
   'angledLineOfXLength',
   'angledLineOfYLength',

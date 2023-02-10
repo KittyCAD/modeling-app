@@ -30,7 +30,7 @@
     "test": "react-scripts test",
     "test:nowatch": "react-scripts test --watchAll=false",
     "eject": "react-scripts eject",
-    "fmt": "prettier --write ./src/**.{ts,tsx} && prettier --write ./src/**/*.{ts,tsx}"
+    "fmt": "prettier --write ./src/**.{ts,tsx} && prettier --write ./src/**/*.{ts,tsx} && prettier --write ./src/lang/**/*.{ts,tsx}"
   },
   "jest": {
     "transformIgnorePatterns": [
