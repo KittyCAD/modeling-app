@@ -18,7 +18,7 @@ import {
 } from '../lang/executor'
 import { BufferGeometry } from 'three'
 import { useStore } from '../useStore'
-import { isOverlapping } from '../lib/utils'
+import { isOverlap } from '../lib/utils'
 import { Vector3, DoubleSide, Quaternion } from 'three'
 import { useSetCursor } from '../hooks/useSetCursor'
 import { roundOff } from '../lib/utils'
@@ -297,7 +297,7 @@ function WallRender({
 
   const [editorCursor, setEditorCursor] = useState(false)
   useEffect(() => {
-    const shouldHighlight = isOverlapping(
+    const shouldHighlight = isOverlap(
       geoInfo.__geoMeta.sourceRange,
       selectionRange
     )
@@ -352,7 +352,7 @@ function PathRender({
   }))
   const [editorCursor, setEditorCursor] = useState(false)
   useEffect(() => {
-    const shouldHighlight = isOverlapping(
+    const shouldHighlight = isOverlap(
       geoInfo.__geoMeta.sourceRange,
       selectionRange
     )
@@ -469,7 +469,7 @@ function useSetAppModeFromCursorLocation(artifacts: Artifact[]) {
     )[] = []
     artifacts?.forEach((artifact) => {
       artifact.value.forEach((geo) => {
-        if (isOverlapping(geo.__geoMeta.sourceRange, selectionRange)) {
+        if (isOverlap(geo.__geoMeta.sourceRange, selectionRange)) {
           artifactsWithinCursorRange.push({
             parentType: artifact.type,
             isParent: false,
@@ -481,7 +481,7 @@ function useSetAppModeFromCursorLocation(artifacts: Artifact[]) {
         }
       })
       artifact.__meta.forEach((meta) => {
-        if (isOverlapping(meta.sourceRange, selectionRange)) {
+        if (isOverlap(meta.sourceRange, selectionRange)) {
           artifactsWithinCursorRange.push({
             parentType: artifact.type,
             isParent: true,

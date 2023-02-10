@@ -1,8 +1,8 @@
-import { isOverlapping, roundOff } from './utils'
+import { isOverlap, roundOff } from './utils'
 import { Range } from '../useStore'
 
 describe('testing isOverlapping', () => {
-  testBothOrders([0, 5], [3, 10])
+  testBothOrders([0, 3], [3, 10])
   testBothOrders([0, 5], [3, 4])
   testBothOrders([0, 5], [5, 10])
   testBothOrders([0, 5], [6, 10], false)
@@ -13,8 +13,8 @@ describe('testing isOverlapping', () => {
 
 function testBothOrders(a: Range, b: Range, result = true) {
   it(`test is overlapping ${a} ${b}`, () => {
-    expect(isOverlapping(a, b)).toBe(result)
-    expect(isOverlapping(b, a)).toBe(result)
+    expect(isOverlap(a, b)).toBe(result)
+    expect(isOverlap(b, a)).toBe(result)
   })
 }
 

@@ -1,9 +1,9 @@
 import { Range } from '../useStore'
 
-export function isOverlapping(a: Range, b: Range) {
-  const startingRange = a[0] < b[0] ? a : b
-  const secondRange = a[0] < b[0] ? b : a
-  return startingRange[1] >= secondRange[0]
+export function isOverlap(a: Range, b: Range) {
+  const [startingRange, secondRange] = a[0] < b[0] ? [a, b] : [b, a]
+  const [lastOfFirst, firstOfSecond] = [startingRange[1], secondRange[0]]
+  return lastOfFirst >= firstOfSecond
 }
 
 export function roundOff(num: number, places: number = 2): number {
