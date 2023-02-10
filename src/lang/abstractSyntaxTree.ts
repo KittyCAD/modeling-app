@@ -320,14 +320,14 @@ function makeArguments(
 export interface VariableDeclaration extends GeneralStatement {
   type: 'VariableDeclaration'
   declarations: VariableDeclarator[]
-  kind: 'const' | 'unknown' | 'fn' | 'path' //| "solid" | "surface" | "face"
+  kind: 'const' | 'unknown' | 'fn' //| "solid" | "surface" | "face"
 }
 
 function makeVariableDeclaration(
   tokens: Token[],
   index: number
 ): { declaration: VariableDeclaration; lastIndex: number } {
-  // token index should point to a declaration keyword i.e. const, fn, path
+  // token index should point to a declaration keyword i.e. const, fn
   const currentToken = tokens[index]
   const declarationStartToken = nextMeaningfulToken(tokens, index)
   const { declarations, lastIndex } = makeVariableDeclarators(
@@ -344,8 +344,6 @@ function makeVariableDeclaration(
           ? 'const'
           : currentToken.value === 'fn'
           ? 'fn'
-          : currentToken.value === 'path'
-          ? 'path'
           : 'unknown',
       declarations,
     },
@@ -1086,7 +1084,7 @@ function makeBody(
 
   if (
     token.type === 'word' &&
-    (token.value === 'const' || token.value === 'fn' || token.value === 'path')
+    (token.value === 'const' || token.value === 'fn')
   ) {
     const { declaration, lastIndex } = makeVariableDeclaration(
       tokens,
@@ -1176,9 +1174,7 @@ export function findNextDeclarationKeyword(
   }
   if (
     nextToken.token.type === 'word' &&
-    (nextToken.token.value === 'const' ||
-      nextToken.token.value === 'fn' ||
-      nextToken.token.value === 'path')
+    (nextToken.token.value === 'const' || nextToken.token.value === 'fn')
   ) {
     return nextToken
   }

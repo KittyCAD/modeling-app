@@ -371,7 +371,7 @@ export function sketchOnExtrudedFace(
           init: expression,
         },
       ],
-      kind: 'path',
+      kind: 'const',
     }
 
     block.body.splice(expressionIndex, 1, newExpression)

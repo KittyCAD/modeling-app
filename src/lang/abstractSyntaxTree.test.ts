@@ -1703,7 +1703,7 @@ const key = 'c'`
 `
 
     const { body } = abstractSyntaxTree(lexer(code))
-    const indexOfSecondLineToExpression = 2 // 0 index so `path myPath = lineTo(0,1)` is 0
+    const indexOfSecondLineToExpression = 2
     const sketchNonCodeMeta = (body as any)[0].declarations[0].init.nonCodeMeta
     expect(sketchNonCodeMeta[indexOfSecondLineToExpression]).toEqual({
       type: 'NoneCodeNode',
