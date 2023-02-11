@@ -1,6 +1,5 @@
 import {
   Program,
-  BlockStatement,
   CallExpression,
   PipeExpression,
   VariableDeclaration,
@@ -387,7 +386,6 @@ export function sketchOnExtrudedFace(
     'const'
   )
   const expressionIndex = getLastIndex(pathToOldSketch)
-  console.log('expressionIndex', expressionIndex, pathToOldSketch)
   _node.body.splice(expressionIndex + 1, 0, newSketch)
 
   return {

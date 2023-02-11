@@ -12,9 +12,29 @@ export interface PathReturn {
   currentPath: Path
 }
 
-// export type SketchFn = (internals: InternalFirstArg, ...args: any[]) => PathReturn
-// type SketchFn = (internals: InternalFirstArg, ...args: any[]) => PathReturn
 export type InternalFn = (internals: InternalFirstArg, ...args: any[]) => any
+
+export type InternalFnNames =
+  | 'extrude'
+  | 'translate'
+  | 'transform'
+  | 'getExtrudeWallTransform'
+  | 'rx'
+  | 'ry'
+  | 'rz'
+  | 'lineTo'
+  | 'yLineTo'
+  | 'xLineTo'
+  | 'line'
+  | 'yLine'
+  | 'xLine'
+  | 'angledLine'
+  | 'angledLineOfXLength'
+  | 'angledLineToX'
+  | 'angledLineOfYLength'
+  | 'angledLineToY'
+  | 'startSketchAt'
+  | 'closee'
 
 export interface ModifyAstBase {
   node: Program

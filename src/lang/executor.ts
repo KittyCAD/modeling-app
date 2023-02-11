@@ -9,7 +9,8 @@ import {
   CallExpression,
   ArrayExpression,
 } from './abstractSyntaxTree'
-import { internalFns, InternalFnNames } from './sketch'
+import { InternalFnNames } from './std/stdTypes'
+import { internalFns } from './std/std'
 import { BufferGeometry } from 'three'
 
 export type SourceRange = [number, number]

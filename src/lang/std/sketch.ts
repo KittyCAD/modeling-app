@@ -12,7 +12,7 @@ import {
 import { lineGeo } from '../engine'
 import { GuiModes } from '../../useStore'
 
-import { SketchLineHelper, ModifyAstBase } from './sketchtypes'
+import { SketchLineHelper, ModifyAstBase, InternalFn } from './stdTypes'
 
 import {
   createLiteral,
@@ -26,7 +26,7 @@ import {
 } from '../modifyAst'
 import { roundOff, getLength, getAngle } from '../../lib/utils'
 
-import { getYComponent, getXComponent } from '../sketch'
+// import { getYComponent, getXComponent } from '../sketch'
 
 export type Coords2d = [number, number]
 
@@ -43,7 +43,7 @@ export function getCoordsFromPaths(skGroup: SketchGroup, index = 0): Coords2d {
   return [0, 0]
 }
 
-const lineTo: SketchLineHelper = {
+export const lineTo: SketchLineHelper = {
   fn: (
     { sourceRange, programMemory },
     data:
@@ -130,7 +130,7 @@ const lineTo: SketchLineHelper = {
   addTag: addTagWithTo('default'),
 }
 
-const line: SketchLineHelper = {
+export const line: SketchLineHelper = {
   fn: (
     { sourceRange, programMemory },
     data:
@@ -236,7 +236,7 @@ const line: SketchLineHelper = {
   addTag: addTagWithTo('default'),
 }
 
-const xLineTo: SketchLineHelper = {
+export const xLineTo: SketchLineHelper = {
   fn: (
     meta,
     data:
@@ -293,7 +293,7 @@ const xLineTo: SketchLineHelper = {
   addTag: addTagWithTo('default'),
 }
 
-const yLineTo: SketchLineHelper = {
+export const yLineTo: SketchLineHelper = {
   fn: (
     meta,
     data:
@@ -350,7 +350,7 @@ const yLineTo: SketchLineHelper = {
   addTag: addTagWithTo('default'),
 }
 
-const xLine: SketchLineHelper = {
+export const xLine: SketchLineHelper = {
   fn: (
     meta,
     data:
@@ -418,7 +418,7 @@ const xLine: SketchLineHelper = {
   addTag: addTagWithTo('length'),
 }
 
-const yLine: SketchLineHelper = {
+export const yLine: SketchLineHelper = {
   fn: (
     meta,
     data:
@@ -487,7 +487,7 @@ const yLine: SketchLineHelper = {
   addTag: addTagWithTo('length'),
 }
 
-const angledLine: SketchLineHelper = {
+export const angledLine: SketchLineHelper = {
   fn: (
     { sourceRange, programMemory },
     data:
@@ -599,7 +599,7 @@ const angledLine: SketchLineHelper = {
   addTag: addTagWithTo('angleLength'),
 }
 
-const angledLineOfXLength: SketchLineHelper = {
+export const angledLineOfXLength: SketchLineHelper = {
   fn: (
     { sourceRange, programMemory },
     data:
@@ -685,7 +685,7 @@ const angledLineOfXLength: SketchLineHelper = {
   addTag: addTagWithTo('angleLength'),
 }
 
-const angledLineOfYLength: SketchLineHelper = {
+export const angledLineOfYLength: SketchLineHelper = {
   fn: (
     { sourceRange, programMemory },
     data:
@@ -770,7 +770,7 @@ const angledLineOfYLength: SketchLineHelper = {
   addTag: addTagWithTo('angleLength'),
 }
 
-const angledLineToX: SketchLineHelper = {
+export const angledLineToX: SketchLineHelper = {
   fn: (
     { sourceRange, programMemory },
     data:
@@ -862,7 +862,7 @@ const angledLineToX: SketchLineHelper = {
   addTag: addTagWithTo('angleTo'),
 }
 
-const angledLineToY: SketchLineHelper = {
+export const angledLineToY: SketchLineHelper = {
   fn: (
     { sourceRange, programMemory },
     data:
@@ -1114,4 +1114,100 @@ function addTagWithTo(
     }
     throw new Error('lineTo must be called with an object or array')
   }
+}
+
+export const closee: InternalFn = (
+  { sourceRange, programMemory },
+  sketchGroup: SketchGroup
+): SketchGroup => {
+  const from = getCoordsFromPaths(sketchGroup, sketchGroup.value.length - 1)
+  const to = getCoordsFromPaths(sketchGroup, 0)
+  const geo = lineGeo({
+    from: [...from, 0],
+    to: [...to, 0],
+  })
+  const currentPath: Path = {
+    type: 'toPoint',
+    to,
+    from,
+    __geoMeta: {
+      sourceRange,
+      pathToNode: [], // TODO
+      geos: [
+        {
+          type: 'line',
+          geo: geo.line,
+        },
+        {
+          type: 'lineEnd',
+          geo: geo.tip,
+        },
+      ],
+    },
+  }
+  const newValue = [...sketchGroup.value]
+  newValue[0] = currentPath
+  return {
+    ...sketchGroup,
+    value: newValue,
+  }
+}
+
+export const startSketchAt: InternalFn = (
+  { sourceRange, programMemory },
+  data:
+    | [number, number]
+    | {
+        to: [number, number]
+        // name?: string
+        tag?: string
+      }
+): SketchGroup => {
+  const to = 'to' in data ? data.to : data
+  const currentPath: Path = {
+    type: 'toPoint',
+    to,
+    from: to,
+    __geoMeta: {
+      sourceRange,
+      pathToNode: [], // TODO
+      geos: [],
+    },
+  }
+  if ('tag' in data) {
+    currentPath.name = data.tag
+  }
+  return {
+    type: 'sketchGroup',
+    start: to,
+    value: [],
+    position: [0, 0, 0],
+    rotation: [0, 0, 0, 1],
+    __meta: [
+      {
+        sourceRange,
+        pathToNode: [], // TODO
+      },
+    ],
+  }
+}
+
+export function getYComponent(
+  angleDegree: number,
+  xComponent: number
+): [number, number] {
+  const normalisedAngle = ((angleDegree % 360) + 360) % 360 // between 0 and 360
+  let yComponent = xComponent * Math.tan((normalisedAngle * Math.PI) / 180)
+  const sign = normalisedAngle > 90 && normalisedAngle <= 270 ? -1 : 1
+  return [sign * xComponent, sign * yComponent]
+}
+
+export function getXComponent(
+  angleDegree: number,
+  yComponent: number
+): [number, number] {
+  const normalisedAngle = ((angleDegree % 360) + 360) % 360 // between 0 and 360
+  let xComponent = yComponent / Math.tan((normalisedAngle * Math.PI) / 180)
+  const sign = normalisedAngle > 180 && normalisedAngle <= 360 ? -1 : 1
+  return [sign * xComponent, sign * yComponent]
 }
