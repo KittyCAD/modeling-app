@@ -1,16 +1,20 @@
 import {
   Program,
-  BlockStatement,
-  SketchExpression,
   CallExpression,
   PipeExpression,
   VariableDeclaration,
+  VariableDeclarator,
   ExpressionStatement,
   Value,
   getNodeFromPath,
-  VariableDeclarator,
+  Literal,
+  PipeSubstitution,
+  Identifier,
+  ArrayExpression,
+  ObjectExpression,
 } from './abstractSyntaxTree'
-import { PathToNode } from './executor'
+import { PathToNode, ProgramMemory } from './executor'
+import { addTagForSketchOnFace } from './std/sketch'
 
 export function addSketchTo(
   node: Program,
@@ -20,73 +24,37 @@ export function addSketchTo(
   const _node = { ...node }
   const dumbyStartend = { start: 0, end: 0 }
   const _name = name || findUniqueName(node, 'part')
-  const sketchBody: BlockStatement = {
-    type: 'BlockStatement',
-    ...dumbyStartend,
-    body: [],
-    nonCodeMeta: {},
-  }
-  const sketch: SketchExpression = {
-    type: 'SketchExpression',
-    ...dumbyStartend,
-    body: sketchBody,
-  }
 
-  const rotate: CallExpression = {
-    type: 'CallExpression',
-    ...dumbyStartend,
-    callee: {
-      type: 'Identifier',
-      ...dumbyStartend,
-      name: axis === 'xz' ? 'rx' : 'ry',
-    },
-    arguments: [
-      {
-        type: 'Literal',
-        ...dumbyStartend,
-        value: axis === 'yz' ? 90 : 90,
-        raw: axis === 'yz' ? '90' : '90',
-      },
-      {
-        type: 'PipeSubstitution',
-        ...dumbyStartend,
-      },
-    ],
-    optional: false,
-  }
+  const startSketchAt = createCallExpression('startSketchAt', [
+    createArrayExpression([createLiteral(0), createLiteral(0)]),
+  ])
+  const rotate = createCallExpression(axis === 'xz' ? 'rx' : 'ry', [
+    createLiteral(90),
+    createPipeSubstitution(),
+  ])
+  const initialLineTo = createCallExpression('lineTo', [
+    createArrayExpression([createLiteral(1), createLiteral(1)]),
+    createPipeSubstitution(),
+  ])
 
-  const pipChain: PipeExpression = {
-    type: 'PipeExpression',
-    nonCodeMeta: {},
-    ...dumbyStartend,
-    body: [sketch, rotate],
-  }
+  const pipeBody =
+    axis !== 'xy'
+      ? [startSketchAt, rotate, initialLineTo]
+      : [startSketchAt, initialLineTo]
 
-  const sketchVariableDeclaration: VariableDeclaration = {
-    type: 'VariableDeclaration',
-    ...dumbyStartend,
-    kind: 'sketch',
-    declarations: [
-      {
-        type: 'VariableDeclarator',
-        ...dumbyStartend,
-        id: {
-          type: 'Identifier',
-          ...dumbyStartend,
-          name: _name,
-        },
-        init: axis === 'xy' ? sketch : pipChain,
-      },
-    ],
-  }
+  const variableDeclaration = createVariableDeclaration(
+    _name,
+    createPipeExpression(pipeBody)
+  )
+
   const showCallIndex = getShowIndex(_node)
   let sketchIndex = showCallIndex
   if (showCallIndex === -1) {
-    _node.body = [...node.body, sketchVariableDeclaration]
+    _node.body = [...node.body, variableDeclaration]
     sketchIndex = _node.body.length - 1
   } else {
     const newBody = [...node.body]
-    newBody.splice(showCallIndex, 0, sketchVariableDeclaration)
+    newBody.splice(showCallIndex, 0, variableDeclaration)
     _node.body = newBody
   }
   let pathToNode: (string | number)[] = [
@@ -107,7 +75,7 @@ export function addSketchTo(
   }
 }
 
-function findUniqueName(
+export function findUniqueName(
   ast: Program | string,
   name: string,
   pad = 3,
@@ -197,93 +165,58 @@ function getShowIndex(node: Program): number {
   )
 }
 
-export function addLine(
-  node: Program,
-  pathToNode: (string | number)[],
-  to: [number, number]
-): { modifiedAst: Program; pathToNode: (string | number)[] } {
-  const _node = { ...node }
-  const dumbyStartend = { start: 0, end: 0 }
-  const { node: sketchExpression } = getNodeFromPath<SketchExpression>(
-    _node,
-    pathToNode,
-    'SketchExpression'
-  )
-  const line: ExpressionStatement = {
-    type: 'ExpressionStatement',
-    ...dumbyStartend,
-    expression: {
-      type: 'CallExpression',
-      ...dumbyStartend,
-      callee: {
-        type: 'Identifier',
-        ...dumbyStartend,
-        name: 'lineTo',
-      },
-      optional: false,
-      arguments: [
-        {
-          type: 'Literal',
-          ...dumbyStartend,
-          value: to[0],
-          raw: `${to[0]}`,
-        },
-        {
-          type: 'Literal',
-          ...dumbyStartend,
-          value: to[1],
-          raw: `${to[1]}`,
-        },
-      ],
-    },
+export function mutateArrExp(
+  node: Value,
+  updateWith: ArrayExpression
+): boolean {
+  if (node.type === 'ArrayExpression') {
+    node.elements.forEach((element, i) => {
+      if (element.type === 'Literal') {
+        node.elements[i] = updateWith.elements[i]
+      }
+    })
+    return true
   }
-  const newBody = [...sketchExpression.body.body, line]
-  sketchExpression.body.body = newBody
-  return {
-    modifiedAst: _node,
-    pathToNode,
-  }
+  return false
 }
 
-export function changeArguments(
-  node: Program,
-  pathToNode: (string | number)[],
-  args: [number, number]
-): { modifiedAst: Program; pathToNode: (string | number)[] } {
-  const _node = { ...node }
-  const dumbyStartend = { start: 0, end: 0 }
-  // const thePath = getNodePathFromSourceRange(_node, sourceRange)
-  const { node: callExpression } = getNodeFromPath<CallExpression>(
-    _node,
-    pathToNode
-  )
-  const newXArg: CallExpression['arguments'][number] =
-    callExpression.arguments[0].type === 'Literal'
-      ? {
-          type: 'Literal',
-          ...dumbyStartend,
-          value: args[0],
-          raw: `${args[0]}`,
-        }
-      : {
-          ...callExpression.arguments[0],
-        }
-  const newYArg: CallExpression['arguments'][number] =
-    callExpression.arguments[1].type === 'Literal'
-      ? {
-          type: 'Literal',
-          ...dumbyStartend,
-          value: args[1],
-          raw: `${args[1]}`,
-        }
-      : {
-          ...callExpression.arguments[1],
-        }
-  callExpression.arguments = [newXArg, newYArg]
-  return {
-    modifiedAst: _node,
-    pathToNode,
+export function mutateObjExpProp(
+  node: Value,
+  updateWith: Literal | ArrayExpression,
+  key: string
+): boolean {
+  if (node.type === 'ObjectExpression') {
+    const keyIndex = node.properties.findIndex((a) => a.key.name === key)
+    if (keyIndex !== -1) {
+      if (
+        updateWith.type === 'Literal' &&
+        node.properties[keyIndex].value.type === 'Literal'
+      ) {
+        node.properties[keyIndex].value = updateWith
+        return true
+      } else if (
+        node.properties[keyIndex].value.type === 'ArrayExpression' &&
+        updateWith.type === 'ArrayExpression'
+      ) {
+        const arrExp = node.properties[keyIndex].value as ArrayExpression
+        arrExp.elements.forEach((element, i) => {
+          if (element.type === 'Literal') {
+            arrExp.elements[i] = updateWith.elements[i]
+          }
+        })
+      }
+      return true
+    } else {
+      node.properties.push({
+        type: 'ObjectProperty',
+        key: createIdentifier(key),
+        value: updateWith,
+        start: 0,
+        end: 0,
+      })
+    }
   }
+  return false
 }
 
 export function extrudeSketch(
@@ -297,10 +230,10 @@ export function extrudeSketch(
 } {
   const _node = { ...node }
   const dumbyStartend = { start: 0, end: 0 }
-  const { node: sketchExpression } = getNodeFromPath<SketchExpression>(
+  const { node: sketchExpression } = getNodeFromPath(
     _node,
     pathToNode,
-    'SketchExpression'
+    'SketchExpression' // TODO fix this #25
   )
 
   // determine if sketchExpression is in a pipeExpression or not
@@ -324,17 +257,9 @@ export function extrudeSketch(
     },
     optional: false,
     arguments: [
-      {
-        type: 'Literal',
-        ...dumbyStartend,
-        value: 4,
-        raw: '4',
-      },
+      createLiteral(4),
       shouldPipe
-        ? {
-            type: 'PipeSubstitution',
-            ...dumbyStartend,
-          }
+        ? createPipeSubstitution()
         : {
             type: 'Identifier',
             ...dumbyStartend,
@@ -354,7 +279,7 @@ export function extrudeSketch(
           type: 'PipeExpression',
           nonCodeMeta: {},
           ...dumbyStartend,
-          body: [sketchExpression, extrudeCall],
+          body: [sketchExpression as any, extrudeCall], // TODO fix this #25
         }
 
     variableDeclorator.init = pipeChain
@@ -411,137 +336,61 @@ export function extrudeSketch(
 
 export function sketchOnExtrudedFace(
   node: Program,
-  pathToNode: (string | number)[]
+  pathToNode: (string | number)[],
+  programMemory: ProgramMemory
 ): { modifiedAst: Program; pathToNode: (string | number)[] } {
-  const _node = { ...node }
-  const dumbyStartend = { start: 0, end: 0 }
+  let _node = { ...node }
   const newSketchName = findUniqueName(node, 'part')
-  const oldSketchName = getNodeFromPath<VariableDeclarator>(
-    _node,
-    pathToNode,
-    'VariableDeclarator',
-    true
-  ).node.id.name
-  const { node: expression } = getNodeFromPath<
-    VariableDeclarator | CallExpression
-  >(_node, pathToNode, 'CallExpression')
-
-  const pathName =
-    expression.type === 'VariableDeclarator'
-      ? expression.id.name
-      : findUniqueName(node, 'path', 2)
-
-  if (expression.type === 'CallExpression') {
-    const { node: block } = getNodeFromPath<BlockStatement>(
+  const { node: oldSketchNode, path: pathToOldSketch } =
+    getNodeFromPath<VariableDeclarator>(
       _node,
       pathToNode,
-      'BlockStatement'
+      'VariableDeclarator',
+      true
     )
-    const expressionIndex = getLastIndex(pathToNode)
-    if (expression.callee.name !== 'lineTo')
-      throw new Error('expected a lineTo call')
-    const newExpression: VariableDeclaration = {
-      type: 'VariableDeclaration',
-      ...dumbyStartend,
-      declarations: [
-        {
-          type: 'VariableDeclarator',
-          ...dumbyStartend,
-          id: {
-            type: 'Identifier',
-            ...dumbyStartend,
-            name: pathName,
-          },
-          init: expression,
-        },
-      ],
-      kind: 'path',
-    }
+  const oldSketchName = oldSketchNode.id.name
+  const { node: expression } = getNodeFromPath<CallExpression>(
+    _node,
+    pathToNode,
+    'CallExpression'
+  )
 
-    block.body.splice(expressionIndex, 1, newExpression)
-  }
+  const { modifiedAst, tag } = addTagForSketchOnFace(
+    {
+      previousProgramMemory: programMemory,
+      pathToNode,
+      node: _node,
+    },
+    expression.callee.name
+  )
+  _node = modifiedAst
 
-  // create pipe expression with a sketch block piped into a transform function
-  const sketchPipe: PipeExpression = {
-    type: 'PipeExpression',
-    nonCodeMeta: {},
-    ...dumbyStartend,
-    body: [
-      {
-        type: 'SketchExpression',
-        ...dumbyStartend,
-        body: {
-          type: 'BlockStatement',
-          ...dumbyStartend,
-          body: [],
-          nonCodeMeta: {},
-        },
-      },
-      {
-        type: 'CallExpression',
-        ...dumbyStartend,
-        callee: {
-          type: 'Identifier',
-          ...dumbyStartend,
-          name: 'transform',
-        },
-        optional: false,
-        arguments: [
-          {
-            type: 'CallExpression',
-            ...dumbyStartend,
-            callee: {
-              type: 'Identifier',
-              ...dumbyStartend,
-              name: 'getExtrudeWallTransform',
-            },
-            optional: false,
-            arguments: [
-              {
-                type: 'Literal',
-                ...dumbyStartend,
-                value: pathName,
-                raw: `'${pathName}'`,
-              },
-              {
-                type: 'Identifier',
-                ...dumbyStartend,
-                name: oldSketchName,
-              },
-            ],
-          },
-          {
-            type: 'PipeSubstitution',
-            ...dumbyStartend,
-          },
-        ],
-      },
-    ],
-  }
-  const variableDec: VariableDeclaration = {
-    type: 'VariableDeclaration',
-    ...dumbyStartend,
-    declarations: [
-      {
-        type: 'VariableDeclarator',
-        ...dumbyStartend,
-        id: {
-          type: 'Identifier',
-          ...dumbyStartend,
-          name: newSketchName,
-        },
-        init: sketchPipe,
-      },
-    ],
-    kind: 'sketch',
-  }
-
-  const showIndex = getShowIndex(_node)
-  _node.body.splice(showIndex, 0, variableDec)
+  const newSketch = createVariableDeclaration(
+    newSketchName,
+    createPipeExpression([
+      createCallExpression('startSketchAt', [
+        createArrayExpression([createLiteral(0), createLiteral(0)]),
+      ]),
+      createCallExpression('lineTo', [
+        createArrayExpression([createLiteral(1), createLiteral(1)]),
+        createPipeSubstitution(),
+      ]),
+      createCallExpression('transform', [
+        createCallExpression('getExtrudeWallTransform', [
+          createLiteral(tag),
+          createIdentifier(oldSketchName),
+        ]),
+        createPipeSubstitution(),
+      ]),
+    ]),
+    'const'
+  )
+  const expressionIndex = getLastIndex(pathToOldSketch)
+  _node.body.splice(expressionIndex + 1, 0, newSketch)
 
   return {
     modifiedAst: addToShow(_node, newSketchName),
-    pathToNode,
+    pathToNode: [...pathToNode.slice(0, -1), expressionIndex],
   }
 }
 
@@ -551,4 +400,112 @@ const getLastIndex = (pathToNode: PathToNode): number => {
     return last
   }
   return getLastIndex(pathToNode.slice(0, -1))
+}
+
+export function createLiteral(value: string | number): Literal {
+  return {
+    type: 'Literal',
+    start: 0,
+    end: 0,
+    value,
+    raw: `${value}`,
+  }
+}
+
+export function createIdentifier(name: string): Identifier {
+  return {
+    type: 'Identifier',
+    start: 0,
+    end: 0,
+    name,
+  }
+}
+
+export function createPipeSubstitution(): PipeSubstitution {
+  return {
+    type: 'PipeSubstitution',
+    start: 0,
+    end: 0,
+  }
+}
+
+export function createCallExpression(
+  name: string,
+  args: CallExpression['arguments']
+): CallExpression {
+  return {
+    type: 'CallExpression',
+    start: 0,
+    end: 0,
+    callee: {
+      type: 'Identifier',
+      start: 0,
+      end: 0,
+      name,
+    },
+    optional: false,
+    arguments: args,
+  }
+}
+
+export function createArrayExpression(
+  elements: ArrayExpression['elements']
+): ArrayExpression {
+  return {
+    type: 'ArrayExpression',
+    start: 0,
+    end: 0,
+    elements,
+  }
+}
+
+export function createPipeExpression(
+  body: PipeExpression['body']
+): PipeExpression {
+  return {
+    type: 'PipeExpression',
+    start: 0,
+    end: 0,
+    body,
+    nonCodeMeta: {},
+  }
+}
+
+export function createVariableDeclaration(
+  varName: string,
+  init: VariableDeclarator['init'],
+  kind: VariableDeclaration['kind'] = 'const'
+): VariableDeclaration {
+  return {
+    type: 'VariableDeclaration',
+    start: 0,
+    end: 0,
+    declarations: [
+      {
+        type: 'VariableDeclarator',
+        start: 0,
+        end: 0,
+        id: createIdentifier(varName),
+        init,
+      },
+    ],
+    kind,
+  }
+}
+
+export function createObjectExpression(properties: {
+  [key: string]: Value
+}): ObjectExpression {
+  return {
+    type: 'ObjectExpression',
+    start: 0,
+    end: 0,
+    properties: Object.entries(properties).map(([key, value]) => ({
+      type: 'ObjectProperty',
+      start: 0,
+      end: 0,
+      key: createIdentifier(key),
+      value,
+    })),
+  }
 }

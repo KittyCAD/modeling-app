@@ -11,17 +11,15 @@ const myFn = (a) => {
 }
 const otherVar = myFn(5)
 
-sketch theExtrude {
-  lineTo(-2.4, myVar)
-  lineTo(-0.76, otherVar)
-}
+const theExtrude = startSketchAt([0, 0]) 
+  |> lineTo([-2.4, myVar], %)
+  |> lineTo([-0.76, otherVar], %)
   |> extrude(4, %)
 
-sketch theSketch {
-  lineTo(-3.35, 0.17)
-  lineTo(0.98, 5.16)
-  lineTo(2.15, 4.32)
-}
+const theSketch = startSketchAt([0, 0])
+  |> lineTo([-3.35, 0.17], %)
+  |> lineTo([0.98, 5.16], %)
+  |> lineTo([2.15, 4.32], %)
   |> rx(90, %)
 show(theExtrude, theSketch)`
   const tokens = lexer(code)

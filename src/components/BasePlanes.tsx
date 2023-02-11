@@ -69,6 +69,7 @@ export const BasePlanes = () => {
       rotation: quaternion.toArray() as [number, number, number, number],
       position: [0, 0, 0],
       pathToNode,
+      isTooltip: true,
     })
 
     updateAst(modifiedAst)

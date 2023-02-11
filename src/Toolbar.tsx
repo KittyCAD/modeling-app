@@ -1,17 +1,18 @@
-import { useStore } from './useStore'
+import { useStore, toolTips } from './useStore'
 import { extrudeSketch, sketchOnExtrudedFace } from './lang/modifyAst'
 import { getNodePathFromSourceRange } from './lang/abstractSyntaxTree'
 
 export const Toolbar = () => {
-  const { setGuiMode, guiMode, selectionRange, ast, updateAst } = useStore(
-    ({ guiMode, setGuiMode, selectionRange, ast, updateAst }) => ({
-      guiMode,
-      setGuiMode,
-      selectionRange,
-      ast,
-      updateAst,
-    })
-  )
+  const { setGuiMode, guiMode, selectionRange, ast, updateAst, programMemory } =
+    useStore((s) => ({
+      guiMode: s.guiMode,
+      setGuiMode: s.setGuiMode,
+      selectionRange: s.selectionRange,
+      ast: s.ast,
+      updateAst: s.updateAst,
+      programMemory: s.programMemory,
+    }))
+
   return (
     <div>
       {guiMode.mode === 'default' && (
@@ -24,7 +25,7 @@ export const Toolbar = () => {
           }}
           className="border m-1 px-1 rounded"
         >
-          Start sketch
+          Start Sketch
         </button>
       )}
       {guiMode.mode === 'canEditExtrude' && (
@@ -32,7 +33,11 @@ export const Toolbar = () => {
           onClick={() => {
             if (!ast) return
             const pathToNode = getNodePathFromSourceRange(ast, selectionRange)
-            const { modifiedAst } = sketchOnExtrudedFace(ast, pathToNode)
+            const { modifiedAst } = sketchOnExtrudedFace(
+              ast,
+              pathToNode,
+              programMemory
+            )
             updateAst(modifiedAst)
           }}
           className="border m-1 px-1 rounded"
@@ -41,7 +46,7 @@ export const Toolbar = () => {
         </button>
       )}
       {(guiMode.mode === 'canEditSketch' || false) && (
-        /*guiMode.mode === 'canEditExtrude'*/ <button
+        <button
           onClick={() => {
             setGuiMode({
               mode: 'sketch',
@@ -49,11 +54,12 @@ export const Toolbar = () => {
               pathToNode: guiMode.pathToNode,
               rotation: guiMode.rotation,
               position: guiMode.position,
+              isTooltip: true,
             })
           }}
           className="border m-1 px-1 rounded"
         >
-          EditSketch
+          Edit Sketch
         </button>
       )}
       {guiMode.mode === 'canEditSketch' && (
@@ -98,24 +104,29 @@ export const Toolbar = () => {
           Exit sketch
         </button>
       )}
-      {guiMode.mode === 'sketch' &&
-        (guiMode.sketchMode === 'points' ||
-          guiMode.sketchMode === 'sketchEdit') && (
+      {toolTips.map((sketchFnName) => {
+        if (guiMode.mode !== 'sketch' || !('isTooltip' in guiMode)) return null
+        return (
           <button
+            key={sketchFnName}
             className={`border m-1 px-1 rounded ${
-              guiMode.sketchMode === 'points' && 'bg-gray-400'
+              guiMode.sketchMode === sketchFnName && 'bg-gray-400'
             }`}
             onClick={() =>
               setGuiMode({
                 ...guiMode,
                 sketchMode:
-                  guiMode.sketchMode === 'points' ? 'sketchEdit' : 'points',
+                  guiMode.sketchMode === sketchFnName
+                    ? 'sketchEdit'
+                    : sketchFnName,
               })
             }
           >
-            LineTo{guiMode.sketchMode === 'points' && '✅'}
+            {sketchFnName}
+            {guiMode.sketchMode === sketchFnName && '✅'}
           </button>
-        )}
+        )
+      })}
     </div>
   )
 }

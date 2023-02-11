@@ -3,8 +3,9 @@ import {
   getNodePathFromSourceRange,
   getNodeFromPath,
   CallExpression,
+  ArrayExpression,
 } from '../lang/abstractSyntaxTree'
-import { changeArguments } from '../lang/modifyAst'
+import { changeSketchArguments } from '../lang/std/sketch'
 import {
   ExtrudeGroup,
   ExtrudeSurface,
@@ -17,14 +18,10 @@ import {
 } from '../lang/executor'
 import { BufferGeometry } from 'three'
 import { useStore } from '../useStore'
-import { isOverlapping } from '../lib/utils'
+import { isOverlap } from '../lib/utils'
 import { Vector3, DoubleSide, Quaternion } from 'three'
 import { useSetCursor } from '../hooks/useSetCursor'
-
-const roundOff = (num: number, places: number): number => {
-  const x = Math.pow(10, places)
-  return Math.round(num * x) / x
-}
+import { roundOff } from '../lib/utils'
 
 function MovingSphere({
   geo,
@@ -32,12 +29,14 @@ function MovingSphere({
   editorCursor,
   rotation,
   position,
+  from,
 }: {
   geo: BufferGeometry
   sourceRange: [number, number]
   editorCursor: boolean
   rotation: Rotation
   position: Position
+  from: [number, number]
 }) {
   const ref = useRef<BufferGeometry | undefined>() as any
   const detectionPlaneRef = useRef<BufferGeometry | undefined>() as any
@@ -46,12 +45,14 @@ function MovingSphere({
   const [hovered, setHover] = useState(false)
   const [isMouseDown, setIsMouseDown] = useState(false)
 
-  const { setHighlightRange, guiMode, ast, updateAst } = useStore((s) => ({
-    setHighlightRange: s.setHighlightRange,
-    guiMode: s.guiMode,
-    ast: s.ast,
-    updateAst: s.updateAst,
-  }))
+  const { setHighlightRange, guiMode, ast, updateAst, programMemory } =
+    useStore((s) => ({
+      setHighlightRange: s.setHighlightRange,
+      guiMode: s.guiMode,
+      ast: s.ast,
+      updateAst: s.updateAst,
+      programMemory: s.programMemory,
+    }))
   const { originalXY } = useMemo(() => {
     if (ast) {
       const thePath = getNodePathFromSourceRange(ast, sourceRange)
@@ -59,7 +60,10 @@ function MovingSphere({
         ast,
         thePath
       )
-      const [xArg, yArg] = callExpression?.arguments || []
+      const [xArg, yArg] =
+        guiMode.mode === 'sketch'
+          ? callExpression?.arguments || []
+          : (callExpression?.arguments?.[0] as ArrayExpression)?.elements || []
       const x = xArg?.type === 'Literal' ? xArg.value : -1
       const y = yArg?.type === 'Literal' ? yArg.value : -1
       return {
@@ -87,7 +91,15 @@ function MovingSphere({
         yo.sub(new Vector3(...position).applyQuaternion(inverseQuaternion))
         let [x, y] = [roundOff(yo.x, 2), roundOff(yo.y, 2)]
         let theNewPoints: [number, number] = [x, y]
-        const { modifiedAst } = changeArguments(ast, thePath, theNewPoints)
+        const { modifiedAst } = changeSketchArguments(
+          ast,
+          programMemory,
+          sourceRange,
+          theNewPoints,
+          guiMode,
+          from
+        )
+
         updateAst(modifiedAst)
         ref.current.position.set(...position)
       }
@@ -285,7 +297,7 @@ function WallRender({
 
   const [editorCursor, setEditorCursor] = useState(false)
   useEffect(() => {
-    const shouldHighlight = isOverlapping(
+    const shouldHighlight = isOverlap(
       geoInfo.__geoMeta.sourceRange,
       selectionRange
     )
@@ -340,7 +352,7 @@ function PathRender({
   }))
   const [editorCursor, setEditorCursor] = useState(false)
   useEffect(() => {
-    const shouldHighlight = isOverlapping(
+    const shouldHighlight = isOverlap(
       geoInfo.__geoMeta.sourceRange,
       selectionRange
     )
@@ -366,6 +378,7 @@ function PathRender({
             <MovingSphere
               key={i}
               geo={meta.geo}
+              from={geoInfo.from}
               sourceRange={geoInfo.__geoMeta.sourceRange}
               editorCursor={forceHighlight || editorCursor}
               rotation={rotation}
@@ -424,9 +437,9 @@ function LineRender({
   )
 }
 
-type Boop = ExtrudeGroup | SketchGroup
+type Artifact = ExtrudeGroup | SketchGroup
 
-function useSetAppModeFromCursorLocation(artifacts: Boop[]) {
+function useSetAppModeFromCursorLocation(artifacts: Artifact[]) {
   const { selectionRange, guiMode, setGuiMode, ast } = useStore(
     ({ selectionRange, guiMode, setGuiMode, ast }) => ({
       selectionRange,
@@ -438,7 +451,7 @@ function useSetAppModeFromCursorLocation(artifacts: Boop[]) {
   useEffect(() => {
     const artifactsWithinCursorRange: (
       | {
-          parentType: Boop['type']
+          parentType: Artifact['type']
           isParent: true
           pathToNode: PathToNode
           sourceRange: SourceRange
@@ -446,25 +459,29 @@ function useSetAppModeFromCursorLocation(artifacts: Boop[]) {
           position: Position
         }
       | {
-          parentType: Boop['type']
+          parentType: Artifact['type']
           isParent: false
           pathToNode: PathToNode
           sourceRange: SourceRange
+          rotation: Rotation
+          position: Position
         }
     )[] = []
     artifacts?.forEach((artifact) => {
       artifact.value.forEach((geo) => {
-        if (isOverlapping(geo.__geoMeta.sourceRange, selectionRange)) {
+        if (isOverlap(geo.__geoMeta.sourceRange, selectionRange)) {
           artifactsWithinCursorRange.push({
             parentType: artifact.type,
             isParent: false,
             pathToNode: geo.__geoMeta.pathToNode,
             sourceRange: geo.__geoMeta.sourceRange,
+            rotation: artifact.rotation,
+            position: artifact.position,
           })
         }
       })
       artifact.__meta.forEach((meta) => {
-        if (isOverlapping(meta.sourceRange, selectionRange)) {
+        if (isOverlap(meta.sourceRange, selectionRange)) {
           artifactsWithinCursorRange.push({
             parentType: artifact.type,
             isParent: true,
@@ -477,35 +494,39 @@ function useSetAppModeFromCursorLocation(artifacts: Boop[]) {
       })
     })
     const parentArtifacts = artifactsWithinCursorRange.filter((a) => a.isParent)
-    if (parentArtifacts.length > 1) {
-      console.log('multiple parents, might be an issue?', parentArtifacts)
-    }
+    const hasSketchArtifact = artifactsWithinCursorRange.filter(
+      ({ parentType }) => parentType === 'sketchGroup'
+    )
+    const hasExtrudeArtifact = artifactsWithinCursorRange.filter(
+      ({ parentType }) => parentType === 'extrudeGroup'
+    )
     const artifact = parentArtifacts[0]
-    const shouldHighlight = !!artifact
+    const shouldHighlight = !!artifact || hasSketchArtifact.length
     if (
-      shouldHighlight &&
       (guiMode.mode === 'default' || guiMode.mode === 'canEditSketch') &&
       ast &&
-      artifact.parentType === 'sketchGroup' &&
-      artifact.isParent
+      hasSketchArtifact.length
     ) {
-      const pathToNode = getNodePathFromSourceRange(ast, artifact.sourceRange)
-      const { rotation, position } = artifact
+      const pathToNode = getNodePathFromSourceRange(
+        ast,
+        hasSketchArtifact[0].sourceRange
+      )
+      const { rotation, position } = hasSketchArtifact[0]
       setGuiMode({ mode: 'canEditSketch', pathToNode, rotation, position })
     } else if (
-      shouldHighlight &&
-      (guiMode.mode === 'default' || guiMode.mode === 'canEditSketch') &&
-      ast &&
-      artifact.parentType === 'extrudeGroup' &&
-      artifact.isParent
+      hasExtrudeArtifact.length &&
+      (guiMode.mode === 'default' || guiMode.mode === 'canEditExtrude') &&
+      ast
     ) {
-      const pathToNode = getNodePathFromSourceRange(ast, artifact.sourceRange)
-      const { rotation, position } = artifact
+      const pathToNode = getNodePathFromSourceRange(
+        ast,
+        hasExtrudeArtifact[0].sourceRange
+      )
+      const { rotation, position } = hasExtrudeArtifact[0]
       setGuiMode({ mode: 'canEditExtrude', pathToNode, rotation, position })
     } else if (
       !shouldHighlight &&
-      (guiMode.mode === 'canEditSketch' || guiMode.mode === 'canEditExtrude')
-      // (artifact.parentType === 'extrudeGroup' || artifact.type === 'extrudeGroup')
+      (guiMode.mode === 'canEditExtrude' || guiMode.mode === 'canEditSketch')
     ) {
       setGuiMode({ mode: 'default' })
     }

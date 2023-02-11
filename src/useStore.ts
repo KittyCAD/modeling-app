@@ -10,14 +10,41 @@ import { recast } from './lang/recast'
 import { lexer } from './lang/tokeniser'
 
 export type Range = [number, number]
+export type TooTip =
+  | 'lineTo'
+  | 'line'
+  | 'angledLine'
+  | 'angledLineOfXLength'
+  | 'angledLineOfYLength'
+  | 'angledLineToX'
+  | 'angledLineToY'
+  | 'xLine'
+  | 'yLine'
+  | 'xLineTo'
+  | 'yLineTo'
 
-type GuiModes =
+export const toolTips: TooTip[] = [
+  'lineTo',
+  'line',
+  'angledLine',
+  'angledLineOfXLength',
+  'angledLineOfYLength',
+  'angledLineToX',
+  'angledLineToY',
+  'xLine',
+  'yLine',
+  'xLineTo',
+  'yLineTo',
+]
+
+export type GuiModes =
   | {
       mode: 'default'
     }
   | {
       mode: 'sketch'
-      sketchMode: 'points'
+      sketchMode: TooTip
+      isTooltip: true
       rotation: Rotation
       position: Position
       id?: string
@@ -26,6 +53,7 @@ type GuiModes =
   | {
       mode: 'sketch'
       sketchMode: 'sketchEdit'
+      isTooltip: true
       rotation: Rotation
       position: Position
       pathToNode: PathToNode

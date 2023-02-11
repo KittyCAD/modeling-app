@@ -62,12 +62,11 @@ log(5, myVar)`
     expect(root.magicNum.value).toBe(69)
   })
   it('sketch declaration', () => {
-    let code = `sketch mySketch {
-  path myPath = lineTo(0,2)
-  lineTo(2,3)
-  path rightPath = lineTo(5,-1)
-  close()
-}
+    let code = `const mySketch = startSketchAt([0,0])
+  |> lineTo({to: [0,2], tag: "myPath"}, %)
+  |> lineTo([2,3], %)
+  |> lineTo({ to: [5,-1], tag: "rightPath" }, %)
+  // |> close(%)
 show(mySketch)
 `
     const { root, return: _return } = exe(code)
@@ -77,9 +76,9 @@ show(mySketch)
       {
         type: 'toPoint',
         to: [0, 2],
-        from: [5, -1],
+        from: [0, 0],
         __geoMeta: {
-          sourceRange: [25, 45],
+          sourceRange: [43, 80],
           pathToNode: [],
           geos: ['line', 'lineEnd'],
         },
@@ -90,7 +89,7 @@ show(mySketch)
         to: [2, 3],
         from: [0, 2],
         __geoMeta: {
-          sourceRange: [48, 59],
+          sourceRange: [86, 102],
           pathToNode: [],
           geos: ['line', 'lineEnd'],
         },
@@ -100,29 +99,19 @@ show(mySketch)
         to: [5, -1],
         from: [2, 3],
         __geoMeta: {
-          sourceRange: [67, 91],
+          sourceRange: [108, 151],
           pathToNode: [],
           geos: ['line', 'lineEnd'],
         },
         name: 'rightPath',
-      },
-      {
-        type: 'toPoint',
-        from: [5, -1],
-        to: [0, 2],
-        __geoMeta: {
-          sourceRange: [94, 101],
-          pathToNode: [],
-          geos: ['line', 'lineEnd'],
-        },
       },
     ])
     // expect(root.mySketch.sketch[0]).toEqual(root.mySketch.sketch[4].firstPath)
     expect(_return).toEqual([
       {
         type: 'Identifier',
-        start: 109,
-        end: 117,
+        start: 174,
+        end: 182,
         name: 'mySketch',
       },
     ])
@@ -139,13 +128,11 @@ show(mySketch)
 
   it('rotated sketch', () => {
     const code = [
-      'sketch mySk1 {',
-      '  lineTo(1,1)',
-      '  path myPath = lineTo(0, 1)',
-      '  lineTo(1,1)',
-      '}',
+      'const mySk1 = startSketchAt([0,0])',
+      '  |> lineTo([1,1], %)',
+      '  |> lineTo({to: [0, 1], tag: "myPath"}, %)',
+      '  |> lineTo([1, 1], %)',
       'const rotated = rx(90, mySk1)',
-      // 'show(mySk1)',
     ].join('\n')
     const { root } = exe(code)
     expect(root.mySk1.value).toHaveLength(3)
@@ -166,23 +153,24 @@ show(mySketch)
 
   it('execute pipe sketch into call expression', () => {
     const code = [
-      'sketch mySk1 {',
-      '  lineTo(1,1)',
-      '  path myPath = lineTo(0, 1)',
-      '  lineTo(1,1)',
-      '} |> rx(90, %)',
+      'const mySk1 = startSketchAt([0,0])',
+      '  |> lineTo([1,1], %)',
+      '  |> lineTo({to: [0, 1], tag: "myPath"}, %)',
+      '  |> lineTo([1,1], %)',
+      '  |> rx(90, %)',
     ].join('\n')
     const { root } = exe(code)
     const striptVersion = removeGeoFromSketch(root.mySk1 as SketchGroup)
     expect(striptVersion).toEqual({
       type: 'sketchGroup',
+      start: [0, 0],
       value: [
         {
           type: 'toPoint',
           to: [1, 1],
           from: [0, 0],
           __geoMeta: {
-            sourceRange: [17, 28],
+            sourceRange: [40, 56],
             pathToNode: [],
             geos: ['line', 'lineEnd'],
           },
@@ -192,7 +180,7 @@ show(mySketch)
           to: [0, 1],
           from: [1, 1],
           __geoMeta: {
-            sourceRange: [36, 57],
+            sourceRange: [62, 100],
             pathToNode: [],
             geos: ['line', 'lineEnd'],
           },
@@ -203,7 +191,7 @@ show(mySketch)
           to: [1, 1],
           from: [0, 1],
           __geoMeta: {
-            sourceRange: [60, 71],
+            sourceRange: [106, 122],
             pathToNode: [],
             geos: ['line', 'lineEnd'],
           },
@@ -212,14 +200,8 @@ show(mySketch)
       position: [0, 0, 0],
       rotation: [0.7071067811865475, 0, 0, 0.7071067811865476],
       __meta: [
-        {
-          sourceRange: [13, 73],
-          pathToNode: ['body', 0, 'declarations', 0, 'init', 0],
-        },
-        {
-          sourceRange: [77, 86],
-          pathToNode: [],
-        },
+        { sourceRange: [14, 34], pathToNode: [] },
+        { sourceRange: [128, 137], pathToNode: [] },
       ],
     })
   })

@@ -17,7 +17,6 @@ type syntaxType =
   | 'ObjectExpression'
   | 'ObjectProperty'
   | 'FunctionExpression'
-  | 'SketchExpression'
   | 'PipeExpression'
   | 'PipeSubstitution'
   | 'Literal'
@@ -321,14 +320,14 @@ function makeArguments(
 export interface VariableDeclaration extends GeneralStatement {
   type: 'VariableDeclaration'
   declarations: VariableDeclarator[]
-  kind: 'const' | 'unknown' | 'fn' | 'sketch' | 'path' //| "solid" | "surface" | "face"
+  kind: 'const' | 'unknown' | 'fn' //| "solid" | "surface" | "face"
 }
 
 function makeVariableDeclaration(
   tokens: Token[],
   index: number
 ): { declaration: VariableDeclaration; lastIndex: number } {
-  // token index should point to a declaration keyword i.e. const, fn, sketch, path
+  // token index should point to a declaration keyword i.e. const, fn
   const currentToken = tokens[index]
   const declarationStartToken = nextMeaningfulToken(tokens, index)
   const { declarations, lastIndex } = makeVariableDeclarators(
@@ -345,10 +344,6 @@ function makeVariableDeclaration(
           ? 'const'
           : currentToken.value === 'fn'
           ? 'fn'
-          : currentToken.value === 'sketch'
-          ? 'sketch'
-          : currentToken.value === 'path'
-          ? 'path'
           : 'unknown',
       declarations,
     },
@@ -362,7 +357,6 @@ export type Value =
   | BinaryExpression
   | FunctionExpression
   | CallExpression
-  | SketchExpression
   | PipeExpression
   | PipeSubstitution
   | ArrayExpression
@@ -486,13 +480,6 @@ function makeVariableDeclarators(
     )
     init = expression
     lastIndex = pipeLastIndex
-  } else if (
-    declarationToken.token.type === 'word' &&
-    declarationToken.token.value === 'sketch'
-  ) {
-    const sketchExp = makeSketchExpression(tokens, assignmentToken.index)
-    init = sketchExp.expression
-    lastIndex = sketchExp.lastIndex
   } else {
     const { value, lastIndex: valueLastIndex } = makeValue(
       tokens,
@@ -544,7 +531,7 @@ function makeIdentifier(token: Token[], index: number): Identifier {
   }
 }
 
-interface PipeSubstitution extends GeneralStatement {
+export interface PipeSubstitution extends GeneralStatement {
   type: 'PipeSubstitution'
 }
 
@@ -841,30 +828,6 @@ function makeBinaryExpression(
   }
 }
 
-export interface SketchExpression extends GeneralStatement {
-  type: 'SketchExpression'
-  body: BlockStatement
-}
-
-function makeSketchExpression(
-  tokens: Token[],
-  index: number
-): { expression: SketchExpression; lastIndex: number } {
-  const currentToken = tokens[index]
-  const { block, lastIndex: bodyLastIndex } = makeBlockStatement(tokens, index)
-  const endToken = tokens[bodyLastIndex]
-
-  return {
-    expression: {
-      type: 'SketchExpression',
-      start: currentToken.start,
-      end: endToken.end,
-      body: block,
-    },
-    lastIndex: bodyLastIndex,
-  }
-}
-
 export interface PipeExpression extends GeneralStatement {
   type: 'PipeExpression'
   body: Value[]
@@ -909,10 +872,6 @@ function makePipeBody(
     const val = makeValue(tokens, expressionStart.index)
     value = val.value
     lastIndex = val.lastIndex
-  } else if (currentToken.type === 'brace' && currentToken.value === '{') {
-    const sketch = makeSketchExpression(tokens, index)
-    value = sketch.expression
-    lastIndex = sketch.lastIndex
   } else {
     throw new Error('Expected a previous PipeValue if statement to match')
   }
@@ -1125,10 +1084,7 @@ function makeBody(
 
   if (
     token.type === 'word' &&
-    (token.value === 'const' ||
-      token.value === 'fn' ||
-      token.value === 'sketch' ||
-      token.value === 'path')
+    (token.value === 'const' || token.value === 'fn')
   ) {
     const { declaration, lastIndex } = makeVariableDeclaration(
       tokens,
@@ -1218,10 +1174,7 @@ export function findNextDeclarationKeyword(
   }
   if (
     nextToken.token.type === 'word' &&
-    (nextToken.token.value === 'const' ||
-      nextToken.token.value === 'fn' ||
-      nextToken.token.value === 'sketch' ||
-      nextToken.token.value === 'path')
+    (nextToken.token.value === 'const' || nextToken.token.value === 'fn')
   ) {
     return nextToken
   }
@@ -1287,7 +1240,7 @@ export function hasPipeOperator(
   _limitIndex = -1
 ): ReturnType<typeof nextMeaningfulToken> | false {
   // this probably still needs some work
-  // should be called on expression statuments (i.e "lineTo" for lineTo(10, 10)) or "{" for sketch declarations
+  // should be called on expression statuments (i.e "lineTo" for lineTo(10, 10))
   let limitIndex = _limitIndex
   if (limitIndex === -1) {
     const callExpressionEnd = isCallExpression(tokens, index)
@@ -1584,34 +1537,13 @@ export function getNodePathFromSourceRange(
             const init = declaration.init
             if (init.start <= start && init.end >= end) {
               path.push('init')
-              if (init.type === 'SketchExpression') {
-                const body = init.body
-                if (body.start <= start && body.end >= end) {
-                  path.push('body')
-                  if (body.type === 'BlockStatement') {
-                    path = getNodePathFromSourceRange(body, sourceRange, path)
-                  }
-                }
-              } else if (init.type === 'PipeExpression') {
+              if (init.type === 'PipeExpression') {
                 const body = init.body
                 for (let pipeIndex = 0; pipeIndex < body.length; pipeIndex++) {
                   const pipe = body[pipeIndex]
                   if (pipe.start <= start && pipe.end >= end) {
                     path.push('body')
                     path.push(pipeIndex)
-                    if (pipe.type === 'SketchExpression') {
-                      const body = pipe.body
-                      if (body.start <= start && body.end >= end) {
-                        path.push('body')
-                        if (body.type === 'BlockStatement') {
-                          path = getNodePathFromSourceRange(
-                            body,
-                            sourceRange,
-                            path
-                          )
-                        }
-                      }
-                    }
                   }
                 }
               } else if (init.type === 'CallExpression') {

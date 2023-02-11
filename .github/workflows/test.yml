@@ -14,3 +14,4 @@ jobs:
           node-version: '18.x'
       - run: yarn install
       - run: yarn test:nowatch
+      - run: yarn test:cov

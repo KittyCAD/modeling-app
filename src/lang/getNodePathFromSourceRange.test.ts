@@ -5,14 +5,13 @@ import { abstractSyntaxTree, getNodeFromPath } from './abstractSyntaxTree'
 describe('testing getNodePathFromSourceRange', () => {
   it('test it gets the right path for a `lineTo` CallExpression within a SketchExpression', () => {
     const code = `
-        const myVar = 5
-        sketch sk3 {
-            lineTo(1, 2)
-            path yo = lineTo(3, 4)
-            close()
-        }
-        `
-    const subStr = 'lineTo(3, 4)'
+const myVar = 5
+const sk3 = startSketchAt([0, 0])
+  |> lineTo([1, 2], %)
+  |> lineTo({ to: [3, 4], tag: 'yo' }, %)
+  |> close(%)
+`
+    const subStr = "lineTo({ to: [3, 4], tag: 'yo' }, %)"
     const lineToSubstringIndex = code.indexOf(subStr)
     const sourceRange: [number, number] = [
       lineToSubstringIndex,

@@ -7,13 +7,10 @@ import {
   MemberExpression,
   Identifier,
   CallExpression,
+  ArrayExpression,
 } from './abstractSyntaxTree'
-import {
-  sketchFns,
-  internalFns,
-  InternalFnNames,
-  SketchFnNames,
-} from './sketch'
+import { InternalFnNames } from './std/stdTypes'
+import { internalFns } from './std/std'
 import { BufferGeometry } from 'three'
 
 export type SourceRange = [number, number]
@@ -68,6 +65,7 @@ export type Path = ToPoint | HorizontalLineTo | AngledLineTo
 export interface SketchGroup {
   type: 'sketchGroup'
   value: Path[]
+  start?: Path['from']
   position: Position
   rotation: Rotation
   __meta: Metadata[]
@@ -220,25 +218,6 @@ export const executor = (
             value: executeObjectExpression(_programMemory, declaration.init),
             __meta,
           }
-        } else if (declaration.init.type === 'SketchExpression') {
-          const sketchInit = declaration.init
-          const fnMemory: ProgramMemory = {
-            root: {
-              ..._programMemory.root,
-            },
-            _sketch: [],
-          }
-          let { _sketch } = executor(sketchInit.body, fnMemory, {
-            bodyType: 'sketch',
-          })
-          const newSketch: SketchGroup = {
-            type: 'sketchGroup',
-            value: _sketch || [],
-            position: [0, 0, 0],
-            rotation: [0, 0, 0, 1], //x,y,z,w
-            __meta,
-          }
-          _programMemory.root[variableName] = newSketch
         } else if (declaration.init.type === 'FunctionExpression') {
           const fnInit = declaration.init
 
@@ -287,33 +266,14 @@ export const executor = (
               return _programMemory.root[arg.name].value
             } else if (arg.type === 'ObjectExpression') {
               return executeObjectExpression(_programMemory, arg)
+            } else if (arg.type === 'ArrayExpression') {
+              return executeArrayExpression(_programMemory, arg)
             }
             throw new Error(
               `Unexpected argument type ${arg.type} in function call`
             )
           })
-          if (functionName in sketchFns) {
-            const sketchFnName = functionName as SketchFnNames
-            if (options.bodyType !== 'sketch') {
-              throw new Error(
-                `Cannot call ${functionName} outside of a sketch declaration`
-              )
-            }
-            const result = sketchFns[sketchFnName](
-              {
-                programMemory: _programMemory,
-                name: variableName,
-                sourceRange: [declaration.start, declaration.end],
-              },
-              ...fnArgs
-            )
-            _programMemory._sketch = result.programMemory._sketch
-            _programMemory.root[variableName] = {
-              type: 'userVal',
-              value: result.currentPath,
-              __meta,
-            }
-          } else if (functionName in internalFns) {
+          if (functionName in internalFns) {
             const result = executeCallExpression(
               _programMemory,
               declaration.init,
@@ -362,22 +322,7 @@ export const executor = (
             return _programMemory.root[arg.name].value
           }
         })
-        if (functionName in sketchFns) {
-          if (options.bodyType !== 'sketch') {
-            throw new Error(
-              `Cannot call ${functionName} outside of a sketch declaration`
-            )
-          }
-          const sketchFnName = functionName as SketchFnNames
-          const result = sketchFns[sketchFnName](
-            {
-              programMemory: _programMemory,
-              sourceRange: [statement.start, statement.end],
-            },
-            ...args
-          )
-          _programMemory._sketch = [...(result.programMemory._sketch || [])]
-        } else if ('show' === functionName) {
+        if ('show' === functionName) {
           if (options.bodyType !== 'root') {
             throw new Error(`Cannot call ${functionName} outside of a root`)
           }
@@ -482,36 +427,6 @@ function executePipeBody(
         body,
       }
     )
-  } else if (expression.type === 'SketchExpression') {
-    const sketchBody = expression.body
-    const fnMemory: ProgramMemory = {
-      root: {
-        ...programMemory.root,
-      },
-      _sketch: [],
-    }
-    let { _sketch } = executor(sketchBody, fnMemory, {
-      bodyType: 'sketch',
-    })
-    const newSketch: SketchGroup = {
-      type: 'sketchGroup',
-      value: _sketch || [],
-      position: [0, 0, 0],
-      rotation: [0, 0, 0, 1], //x,y,z,w
-      __meta: [
-        {
-          sourceRange: [expression.start, expression.end],
-          pathToNode: [...previousPathToNode, expressionIndex],
-        },
-      ],
-    }
-    return executePipeBody(
-      body,
-      programMemory,
-      previousPathToNode,
-      expressionIndex + 1,
-      [...previousResults, newSketch]
-    )
   }
 
   throw new Error('Invalid pipe expression')
@@ -544,18 +459,8 @@ function executeObjectExpression(
           property.value
         )
       } else if (property.value.type === 'ArrayExpression') {
-        obj[property.key.name] = property.value.elements.map((el) => {
-          if (el.type === 'Literal') {
-            return el.value
-          } else if (el.type === 'Identifier') {
-            return _programMemory.root[el.name].value
-          } else if (el.type === 'BinaryExpression') {
-            return getBinaryExpressionResult(el, _programMemory)
-          } else if (el.type === 'ObjectExpression') {
-            return executeObjectExpression(_programMemory, el)
-          }
-          throw new Error('Invalid argument type')
-        })
+        const result = executeArrayExpression(_programMemory, property.value)
+        obj[property.key.name] = result
       } else {
         throw new Error(
           `Unexpected property type ${property.value.type} in object expression`
@@ -568,6 +473,24 @@ function executeObjectExpression(
     }
   })
   return obj
+}
+
+function executeArrayExpression(
+  _programMemory: ProgramMemory,
+  arrExp: ArrayExpression
+) {
+  return arrExp.elements.map((el) => {
+    if (el.type === 'Literal') {
+      return el.value
+    } else if (el.type === 'Identifier') {
+      return _programMemory.root?.[el.name]?.value
+    } else if (el.type === 'BinaryExpression') {
+      return getBinaryExpressionResult(el, _programMemory)
+    } else if (el.type === 'ObjectExpression') {
+      return executeObjectExpression(_programMemory, el)
+    }
+    throw new Error('Invalid argument type')
+  })
 }
 
 function executeCallExpression(
@@ -604,16 +527,7 @@ function executeCallExpression(
     } else if (arg.type === 'PipeSubstitution') {
       return previousResults[expressionIndex - 1]
     } else if (arg.type === 'ArrayExpression') {
-      return arg.elements.map((el) => {
-        if (el.type === 'Literal') {
-          return el.value
-        } else if (el.type === 'Identifier') {
-          return programMemory.root[el.name]
-        } else if (el.type === 'BinaryExpression') {
-          return getBinaryExpressionResult(el, programMemory)
-        }
-        throw new Error('Invalid argument type')
-      })
+      return executeArrayExpression(programMemory, arg)
     } else if (arg.type === 'CallExpression') {
       const result: any = executeCallExpression(
         programMemory,
@@ -621,21 +535,12 @@ function executeCallExpression(
         previousPathToNode
       )
       return result
+    } else if (arg.type === 'ObjectExpression') {
+      return executeObjectExpression(programMemory, arg)
     }
-    throw new Error('Invalid argument type')
+    throw new Error('Invalid argument type in function call')
   })
-  if (
-    functionName in internalFns &&
-    [
-      'rx',
-      'ry',
-      'rz',
-      'translate',
-      'transform',
-      'extrude',
-      'getExtrudeWallTransform',
-    ].includes(functionName)
-  ) {
+  if (functionName in internalFns) {
     const fnNameWithSketchOrExtrude = functionName as InternalFnNames
     const result = internalFns[fnNameWithSketchOrExtrude](
       {
@@ -644,25 +549,6 @@ function executeCallExpression(
       },
       fnArgs[0],
       fnArgs[1]
-    )
-    return isInPipe
-      ? executePipeBody(
-          body,
-          programMemory,
-          previousPathToNode,
-          expressionIndex + 1,
-          [...previousResults, result]
-        )
-      : result
-  }
-  if (functionName in sketchFns) {
-    const sketchFnName = functionName as SketchFnNames
-    const result = sketchFns[sketchFnName](
-      {
-        programMemory,
-        sourceRange: sourceRangeOverride || [expression.start, expression.end],
-      },
-      ...fnArgs
     )
     return isInPipe
       ? executePipeBody(

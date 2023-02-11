@@ -7,7 +7,6 @@ import {
   CallExpression,
   Value,
   FunctionExpression,
-  SketchExpression,
   ArrayExpression,
   ObjectExpression,
   MemberExpression,
@@ -36,17 +35,9 @@ export function recast(
       } else if (statement.type === 'VariableDeclaration') {
         return statement.declarations
           .map((declaration) => {
-            const isSketchOrFirstPipeExpressionIsSketch =
-              declaration.init.type === 'SketchExpression' ||
-              (declaration.init.type === 'PipeExpression' &&
-                declaration.init.body[0].type === 'SketchExpression')
-
-            const assignmentString = isSketchOrFirstPipeExpressionIsSketch
-              ? ' '
-              : ' = '
-            return `${statement.kind} ${
-              declaration.id.name
-            }${assignmentString}${recastValue(declaration.init)}`
+            return `${statement.kind} ${declaration.id.name} = ${recastValue(
+              declaration.init
+            )}`
           })
           .join('')
       } else if (statement.type === 'ReturnStatement') {
@@ -193,15 +184,6 @@ function recastFunction(expression: FunctionExpression): string {
     .join(', ')}) => {${recast(expression.body, '', '', true)}}`
 }
 
-function recastSketchExpression(
-  expression: SketchExpression,
-  indentation: string
-): string {
-  return `{${
-    recast(expression.body, '', indentation + '  ', true) || '\n  \n'
-  }}`
-}
-
 function recastMemberExpression(
   expression: MemberExpression,
   indentation: string
@@ -236,8 +218,6 @@ function recastValue(node: Value, indentation = ''): string {
     return recastCallExpression(node)
   } else if (node.type === 'Identifier') {
     return node.name
-  } else if (node.type === 'SketchExpression') {
-    return recastSketchExpression(node, indentation)
   } else if (node.type === 'PipeExpression') {
     return recastPipeExpression(node)
   }

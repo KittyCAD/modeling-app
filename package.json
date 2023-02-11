@@ -29,8 +29,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "test:nowatch": "react-scripts test --watchAll=false",
+    "test:cov": "react-scripts test --watchAll=false --coverage=true",
     "eject": "react-scripts eject",
-    "fmt": "prettier --write ./src/**.{ts,tsx} && prettier --write ./src/**/*.{ts,tsx}"
+    "fmt": "prettier --write ./src/**.{ts,tsx} && prettier --write ./src/**/*.{ts,tsx} && prettier --write ./src/lang/**/*.{ts,tsx}"
   },
   "jest": {
     "transformIgnorePatterns": [

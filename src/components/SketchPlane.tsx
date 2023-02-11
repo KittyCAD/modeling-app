@@ -1,20 +1,20 @@
 import { useStore } from '../useStore'
 import { DoubleSide, Vector3, Quaternion } from 'three'
 import { Program } from '../lang/abstractSyntaxTree'
-import { addLine } from '../lang/modifyAst'
+import { toolTipModification } from '../lang/std/sketch'
+import { roundOff } from '../lib/utils'
 
 export const SketchPlane = () => {
-  const { ast, guiMode, updateAst } = useStore(
-    ({ guiMode, ast, updateAst }) => ({
-      guiMode,
-      ast,
-      updateAst,
-    })
-  )
+  const { ast, guiMode, updateAst, programMemory } = useStore((s) => ({
+    guiMode: s.guiMode,
+    ast: s.ast,
+    updateAst: s.updateAst,
+    programMemory: s.programMemory,
+  }))
   if (guiMode.mode !== 'sketch') {
     return null
   }
-  if (guiMode.sketchMode !== 'points' && guiMode.sketchMode !== 'sketchEdit') {
+  if (!(guiMode.sketchMode === 'lineTo') && !('isTooltip' in guiMode)) {
     return null
   }
 
@@ -39,7 +39,7 @@ export const SketchPlane = () => {
         position={position}
         name={sketchGridName}
         onClick={(e) => {
-          if (guiMode.sketchMode !== 'points') {
+          if (!('isTooltip' in guiMode)) {
             return
           }
           const sketchGridIntersection = e.intersections.find(
@@ -65,10 +65,11 @@ export const SketchPlane = () => {
                 nonCodeMeta: {},
               }
           const addLinePoint: [number, number] = [point.x, point.y]
-          const { modifiedAst } = addLine(
+          const { modifiedAst } = toolTipModification(
             _ast,
-            guiMode.pathToNode,
-            addLinePoint
+            programMemory,
+            addLinePoint,
+            guiMode
           )
           updateAst(modifiedAst)
         }}
@@ -91,10 +92,6 @@ export const SketchPlane = () => {
 }
 
 function roundy({ x, y, z }: any) {
-  const roundOff = (num: number, places: number): number => {
-    const x = Math.pow(10, places)
-    return Math.round(num * x) / x
-  }
   return {
     x: roundOff(x, 2),
     y: roundOff(y, 2),
