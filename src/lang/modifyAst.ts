@@ -12,8 +12,10 @@ import {
   PipeSubstitution,
   Identifier,
   ArrayExpression,
+  ObjectExpression,
 } from './abstractSyntaxTree'
-import { PathToNode } from './executor'
+import { PathToNode, ProgramMemory } from './executor'
+import { addTagForSketchOnFace } from './std/sketch'
 
 export function addSketchTo(
   node: Program,
@@ -74,7 +76,7 @@ export function addSketchTo(
   }
 }
 
-function findUniqueName(
+export function findUniqueName(
   ast: Program | string,
   name: string,
   pad = 3,
@@ -205,6 +207,14 @@ export function mutateObjExpProp(
         })
       }
       return true
+    } else {
+      node.properties.push({
+        type: 'ObjectProperty',
+        key: createIdentifier(key),
+        value: updateWith,
+        start: 0,
+        end: 0,
+      })
     }
   }
   return false
@@ -327,130 +337,62 @@ export function extrudeSketch(
 
 export function sketchOnExtrudedFace(
   node: Program,
-  pathToNode: (string | number)[]
+  pathToNode: (string | number)[],
+  programMemory: ProgramMemory
 ): { modifiedAst: Program; pathToNode: (string | number)[] } {
-  const _node = { ...node }
-  const dumbyStartend = { start: 0, end: 0 }
+  let _node = { ...node }
   const newSketchName = findUniqueName(node, 'part')
-  const oldSketchName = getNodeFromPath<VariableDeclarator>(
-    _node,
-    pathToNode,
-    'VariableDeclarator',
-    true
-  ).node.id.name
-  const { node: expression } = getNodeFromPath<
-    VariableDeclarator | CallExpression
-  >(_node, pathToNode, 'CallExpression')
-
-  const pathName =
-    expression.type === 'VariableDeclarator'
-      ? expression.id.name
-      : findUniqueName(node, 'path', 2)
-
-  if (expression.type === 'CallExpression') {
-    const { node: block } = getNodeFromPath<BlockStatement>(
+  const { node: oldSketchNode, path: pathToOldSketch } =
+    getNodeFromPath<VariableDeclarator>(
       _node,
       pathToNode,
-      'BlockStatement'
+      'VariableDeclarator',
+      true
     )
-    const expressionIndex = getLastIndex(pathToNode)
-    if (expression.callee.name !== 'lineTo')
-      throw new Error('expected a lineTo call')
-    const newExpression: VariableDeclaration = {
-      type: 'VariableDeclaration',
-      ...dumbyStartend,
-      declarations: [
-        {
-          type: 'VariableDeclarator',
-          ...dumbyStartend,
-          id: {
-            type: 'Identifier',
-            ...dumbyStartend,
-            name: pathName,
-          },
-          init: expression,
-        },
-      ],
-      kind: 'const',
-    }
+  const oldSketchName = oldSketchNode.id.name
+  const { node: expression } = getNodeFromPath<CallExpression>(
+    _node,
+    pathToNode,
+    'CallExpression'
+  )
 
-    block.body.splice(expressionIndex, 1, newExpression)
-  }
+  const { modifiedAst, tag } = addTagForSketchOnFace(
+    {
+      previousProgramMemory: programMemory,
+      pathToNode,
+      node: _node,
+    },
+    expression.callee.name
+  )
+  _node = modifiedAst
 
-  // create pipe expression with a sketch block piped into a transform function
-  const sketchPipe: PipeExpression = {
-    type: 'PipeExpression',
-    nonCodeMeta: {},
-    ...dumbyStartend,
-    body: [
-      // TODO fix this #25
-      // {
-      //   type: 'SketchExpression',
-      //   ...dumbyStartend,
-      //   body: {
-      //     type: 'BlockStatement',
-      //     ...dumbyStartend,
-      //     body: [],
-      //     nonCodeMeta: {},
-      //   },
-      // },
-      {
-        type: 'CallExpression',
-        ...dumbyStartend,
-        callee: {
-          type: 'Identifier',
-          ...dumbyStartend,
-          name: 'transform',
-        },
-        optional: false,
-        arguments: [
-          {
-            type: 'CallExpression',
-            ...dumbyStartend,
-            callee: {
-              type: 'Identifier',
-              ...dumbyStartend,
-              name: 'getExtrudeWallTransform',
-            },
-            optional: false,
-            arguments: [
-              createLiteral(pathName),
-              {
-                type: 'Identifier',
-                ...dumbyStartend,
-                name: oldSketchName,
-              },
-            ],
-          },
-          createPipeSubstitution(),
-        ],
-      },
-    ],
-  }
-  const variableDec: VariableDeclaration = {
-    type: 'VariableDeclaration',
-    ...dumbyStartend,
-    declarations: [
-      {
-        type: 'VariableDeclarator',
-        ...dumbyStartend,
-        id: {
-          type: 'Identifier',
-          ...dumbyStartend,
-          name: newSketchName,
-        },
-        init: sketchPipe,
-      },
-    ],
-    kind: 'const',
-  }
-
-  const showIndex = getShowIndex(_node)
-  _node.body.splice(showIndex, 0, variableDec)
+  const newSketch = createVariableDeclaration(
+    newSketchName,
+    createPipeExpression([
+      createCallExpression('startSketchAt', [
+        createArrayExpression([createLiteral(0), createLiteral(0)]),
+      ]),
+      createCallExpression('lineTo', [
+        createArrayExpression([createLiteral(1), createLiteral(1)]),
+        createPipeSubstitution(),
+      ]),
+      createCallExpression('transform', [
+        createCallExpression('getExtrudeWallTransform', [
+          createLiteral(tag),
+          createIdentifier(oldSketchName),
+        ]),
+        createPipeSubstitution(),
+      ]),
+    ]),
+    'const'
+  )
+  const expressionIndex = getLastIndex(pathToOldSketch)
+  console.log('expressionIndex', expressionIndex, pathToOldSketch)
+  _node.body.splice(expressionIndex + 1, 0, newSketch)
 
   return {
     modifiedAst: addToShow(_node, newSketchName),
-    pathToNode,
+    pathToNode: [...pathToNode.slice(0, -1), expressionIndex],
   }
 }
 
@@ -550,5 +492,22 @@ export function createVariableDeclaration(
       },
     ],
     kind,
+  }
+}
+
+export function createObjectExpression(properties: {
+  [key: string]: Value
+}): ObjectExpression {
+  return {
+    type: 'ObjectExpression',
+    start: 0,
+    end: 0,
+    properties: Object.entries(properties).map(([key, value]) => ({
+      type: 'ObjectProperty',
+      start: 0,
+      end: 0,
+      key: createIdentifier(key),
+      value,
+    })),
   }
 }

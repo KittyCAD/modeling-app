@@ -1,9 +1,7 @@
 import {
-  ProgramMemory,
   Path,
   SketchGroup,
   ExtrudeGroup,
-  SourceRange,
   ExtrudeSurface,
   Position,
   Rotation,

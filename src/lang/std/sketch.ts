@@ -7,19 +7,22 @@ import {
   getNodeFromPath,
   getNodePathFromSourceRange,
   Value,
+  Literal,
 } from '../abstractSyntaxTree'
 import { lineGeo } from '../engine'
 import { GuiModes } from '../../useStore'
 
-import { SketchLineHelper } from './sketchtypes'
+import { SketchLineHelper, ModifyAstBase } from './sketchtypes'
 
 import {
   createLiteral,
   createCallExpression,
   createArrayExpression,
   createPipeSubstitution,
+  createObjectExpression,
   mutateArrExp,
   mutateObjExpProp,
+  findUniqueName,
 } from '../modifyAst'
 import { roundOff, getLength, getAngle } from '../../lib/utils'
 
@@ -124,6 +127,7 @@ const lineTo: SketchLineHelper = {
       pathToNode,
     }
   },
+  addTag: addTagWithTo('default'),
 }
 
 const line: SketchLineHelper = {
@@ -229,6 +233,7 @@ const line: SketchLineHelper = {
       pathToNode,
     }
   },
+  addTag: addTagWithTo('default'),
 }
 
 const xLineTo: SketchLineHelper = {
@@ -248,8 +253,8 @@ const xLineTo: SketchLineHelper = {
       previousSketch,
       previousSketch.value.length - 1
     )
-    const xVal = typeof data !== 'number' ? data.to : data
-    return lineTo.fn(meta, [xVal, from[1]], previousSketch)
+    const [xVal, tag] = typeof data !== 'number' ? [data.to, data.tag] : [data]
+    return lineTo.fn(meta, { to: [xVal, from[1]], tag }, previousSketch)
   },
   add: ({ node, previousProgramMemory, pathToNode, to }) => {
     const _node = { ...node }
@@ -285,6 +290,7 @@ const xLineTo: SketchLineHelper = {
       pathToNode,
     }
   },
+  addTag: addTagWithTo('default'),
 }
 
 const yLineTo: SketchLineHelper = {
@@ -304,8 +310,8 @@ const yLineTo: SketchLineHelper = {
       previousSketch,
       previousSketch.value.length - 1
     )
-    const yVal = typeof data !== 'number' ? data.to : data
-    return lineTo.fn(meta, [from[0], yVal], previousSketch)
+    const [yVal, tag] = typeof data !== 'number' ? [data.to, data.tag] : [data]
+    return lineTo.fn(meta, { to: [from[0], yVal], tag }, previousSketch)
   },
   add: ({ node, previousProgramMemory, pathToNode, to }) => {
     const _node = { ...node }
@@ -341,6 +347,7 @@ const yLineTo: SketchLineHelper = {
       pathToNode,
     }
   },
+  addTag: addTagWithTo('default'),
 }
 
 const xLine: SketchLineHelper = {
@@ -355,8 +362,9 @@ const xLine: SketchLineHelper = {
     previousSketch: SketchGroup
   ) => {
     if (!previousSketch) throw new Error('bad bad bad')
-    const xVal = typeof data !== 'number' ? data.length : data
-    return line.fn(meta, [xVal, 0], previousSketch)
+    const [xVal, tag] =
+      typeof data !== 'number' ? [data.length, data.tag] : [data]
+    return line.fn(meta, { to: [xVal, 0], tag }, previousSketch)
   },
   add: ({
     node,
@@ -407,6 +415,7 @@ const xLine: SketchLineHelper = {
       pathToNode,
     }
   },
+  addTag: addTagWithTo('length'),
 }
 
 const yLine: SketchLineHelper = {
@@ -422,8 +431,9 @@ const yLine: SketchLineHelper = {
     previousSketch: SketchGroup
   ) => {
     if (!previousSketch) throw new Error('bad bad bad')
-    const yVal = typeof data !== 'number' ? data.length : data
-    return line.fn(meta, [0, yVal], previousSketch)
+    const [yVal, tag] =
+      typeof data !== 'number' ? [data.length, data.tag] : [data]
+    return line.fn(meta, { to: [0, yVal], tag }, previousSketch)
   },
   add: ({
     node,
@@ -474,6 +484,7 @@ const yLine: SketchLineHelper = {
       pathToNode,
     }
   },
+  addTag: addTagWithTo('length'),
 }
 
 const angledLine: SketchLineHelper = {
@@ -585,6 +596,7 @@ const angledLine: SketchLineHelper = {
       pathToNode,
     }
   },
+  addTag: addTagWithTo('angleLength'),
 }
 
 const angledLineOfXLength: SketchLineHelper = {
@@ -601,10 +613,11 @@ const angledLineOfXLength: SketchLineHelper = {
     previousSketch: SketchGroup
   ) => {
     if (!previousSketch) throw new Error('lineTo must be called after lineTo')
-    const [angle, length] = 'angle' in data ? [data.angle, data.length] : data
+    const [angle, length, tag] =
+      'angle' in data ? [data.angle, data.length, data.tag] : data
     return line.fn(
       { sourceRange, programMemory },
-      getYComponent(angle, length),
+      { to: getYComponent(angle, length), tag },
       previousSketch
     )
   },
@@ -669,6 +682,7 @@ const angledLineOfXLength: SketchLineHelper = {
       pathToNode,
     }
   },
+  addTag: addTagWithTo('angleLength'),
 }
 
 const angledLineOfYLength: SketchLineHelper = {
@@ -684,10 +698,11 @@ const angledLineOfYLength: SketchLineHelper = {
     previousSketch: SketchGroup
   ) => {
     if (!previousSketch) throw new Error('lineTo must be called after lineTo')
-    const [angle, length] = 'angle' in data ? [data.angle, data.length] : data
+    const [angle, length, tag] =
+      'angle' in data ? [data.angle, data.length, data.tag] : data
     return line.fn(
       { sourceRange, programMemory },
-      getXComponent(angle, length),
+      { to: getXComponent(angle, length), tag },
       previousSketch
     )
   },
@@ -752,6 +767,7 @@ const angledLineOfYLength: SketchLineHelper = {
       pathToNode,
     }
   },
+  addTag: addTagWithTo('angleLength'),
 }
 
 const angledLineToX: SketchLineHelper = {
@@ -771,12 +787,14 @@ const angledLineToX: SketchLineHelper = {
       previousSketch,
       previousSketch.value.length - 1
     )
-    const [angle, xTo] = 'angle' in data ? [data.angle, data.to] : data
+    const [angle, xTo, tag] =
+      'angle' in data ? [data.angle, data.to, data.tag] : data
     const xComponent = xTo - from[0]
     const yComponent = xComponent * Math.tan((angle * Math.PI) / 180)
+    const yTo = from[1] + yComponent
     return lineTo.fn(
       { sourceRange, programMemory },
-      [xTo, from[1] + yComponent],
+      { to: [xTo, yTo], tag },
       previousSketch
     )
   },
@@ -841,6 +859,7 @@ const angledLineToX: SketchLineHelper = {
       pathToNode,
     }
   },
+  addTag: addTagWithTo('angleTo'),
 }
 
 const angledLineToY: SketchLineHelper = {
@@ -860,12 +879,14 @@ const angledLineToY: SketchLineHelper = {
       previousSketch,
       previousSketch.value.length - 1
     )
-    const [angle, yTo] = 'angle' in data ? [data.angle, data.to] : data
+    const [angle, yTo, tag] =
+      'angle' in data ? [data.angle, data.to, data.tag] : data
     const yComponent = yTo - from[1]
     const xComponent = yComponent / Math.tan((angle * Math.PI) / 180)
+    const xTo = from[0] + xComponent
     return lineTo.fn(
       { sourceRange, programMemory },
-      [from[0] + xComponent, yTo],
+      { to: [xTo, yTo], tag },
       previousSketch
     )
   },
@@ -930,6 +951,7 @@ const angledLineToY: SketchLineHelper = {
       pathToNode,
     }
   },
+  addTag: addTagWithTo('angleTo'),
 }
 
 export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
@@ -998,6 +1020,17 @@ export function toolTipModification(
   throw new Error('not a sketch line helper')
 }
 
+export function addTagForSketchOnFace(
+  a: ModifyAstBase,
+  expressionName: string
+) {
+  if (expressionName in sketchLineHelperMap) {
+    const { addTag } = sketchLineHelperMap[expressionName]
+    return addTag(a)
+  }
+  throw new Error('not a sketch line helper')
+}
+
 function isAngleLiteral(lineArugement: Value): boolean {
   return lineArugement?.type === 'ArrayExpression'
     ? lineArugement.elements[0].type === 'Literal'
@@ -1005,4 +1038,80 @@ function isAngleLiteral(lineArugement: Value): boolean {
     ? lineArugement.properties.find(({ key }) => key.name === 'angle')?.value
         .type === 'Literal'
     : false
+}
+
+type addTagFn = (a: ModifyAstBase) => { modifiedAst: Program; tag: string }
+
+function addTagWithTo(
+  argType: 'angleLength' | 'angleTo' | 'default' | 'length'
+): addTagFn {
+  return ({ node, pathToNode }) => {
+    let tagName = findUniqueName(node, 'seg', 2)
+    const _node = { ...node }
+    const { node: callExpression } = getNodeFromPath<CallExpression>(
+      _node,
+      pathToNode
+    )
+    const firstArg = callExpression.arguments?.[0]
+    if (firstArg.type === 'ObjectExpression') {
+      const existingTagName = firstArg.properties?.find(
+        (prop) => prop.key.name === 'tag'
+      )
+      if (!existingTagName) {
+        mutateObjExpProp(
+          callExpression.arguments?.[0],
+          createLiteral(tagName),
+          'tag'
+        )
+      } else {
+        tagName = `${(existingTagName.value as Literal).value}`
+      }
+      return {
+        modifiedAst: _node,
+        tag: tagName,
+      }
+    }
+    if (firstArg.type === 'ArrayExpression') {
+      const objExp =
+        argType === 'default'
+          ? createObjectExpression({
+              to: firstArg,
+              tag: createLiteral(tagName),
+            })
+          : argType === 'angleLength'
+          ? createObjectExpression({
+              angle: firstArg.elements[0],
+              length: firstArg.elements[1],
+              tag: createLiteral(tagName),
+            })
+          : createObjectExpression({
+              angle: firstArg.elements[0],
+              to: firstArg.elements[1],
+              tag: createLiteral(tagName),
+            })
+      callExpression.arguments[0] = objExp
+      return {
+        modifiedAst: _node,
+        tag: tagName,
+      }
+    }
+    if (firstArg.type === 'Literal') {
+      const objExp =
+        argType === 'length'
+          ? createObjectExpression({
+              length: firstArg,
+              tag: createLiteral(tagName),
+            })
+          : createObjectExpression({
+              to: firstArg,
+              tag: createLiteral(tagName),
+            })
+      callExpression.arguments[0] = objExp
+      return {
+        modifiedAst: _node,
+        tag: tagName,
+      }
+    }
+    throw new Error('lineTo must be called with an object or array')
+  }
 }

@@ -3,15 +3,15 @@ import { extrudeSketch, sketchOnExtrudedFace } from './lang/modifyAst'
 import { getNodePathFromSourceRange } from './lang/abstractSyntaxTree'
 
 export const Toolbar = () => {
-  const { setGuiMode, guiMode, selectionRange, ast, updateAst } = useStore(
-    ({ guiMode, setGuiMode, selectionRange, ast, updateAst }) => ({
-      guiMode,
-      setGuiMode,
-      selectionRange,
-      ast,
-      updateAst,
-    })
-  )
+  const { setGuiMode, guiMode, selectionRange, ast, updateAst, programMemory } =
+    useStore((s) => ({
+      guiMode: s.guiMode,
+      setGuiMode: s.setGuiMode,
+      selectionRange: s.selectionRange,
+      ast: s.ast,
+      updateAst: s.updateAst,
+      programMemory: s.programMemory,
+    }))
 
   return (
     <div>
@@ -33,7 +33,11 @@ export const Toolbar = () => {
           onClick={() => {
             if (!ast) return
             const pathToNode = getNodePathFromSourceRange(ast, selectionRange)
-            const { modifiedAst } = sketchOnExtrudedFace(ast, pathToNode)
+            const { modifiedAst } = sketchOnExtrudedFace(
+              ast,
+              pathToNode,
+              programMemory
+            )
             updateAst(modifiedAst)
           }}
           className="border m-1 px-1 rounded"
@@ -58,8 +62,7 @@ export const Toolbar = () => {
           Edit Sketch
         </button>
       )}
-      {/* TODO enable again */}
-      {/* {guiMode.mode === 'canEditSketch' && (
+      {guiMode.mode === 'canEditSketch' && (
         <>
           <button
             onClick={() => {
@@ -91,7 +94,7 @@ export const Toolbar = () => {
             ExtrudeSketch (w/o pipe)
           </button>
         </>
-      )} */}
+      )}
 
       {guiMode.mode === 'sketch' && (
         <button

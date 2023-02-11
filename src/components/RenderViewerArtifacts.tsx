@@ -497,6 +497,9 @@ function useSetAppModeFromCursorLocation(artifacts: Artifact[]) {
     const hasSketchArtifact = artifactsWithinCursorRange.filter(
       ({ parentType }) => parentType === 'sketchGroup'
     )
+    const hasExtrudeArtifact = artifactsWithinCursorRange.filter(
+      ({ parentType }) => parentType === 'extrudeGroup'
+    )
     const artifact = parentArtifacts[0]
     const shouldHighlight = !!artifact || hasSketchArtifact.length
     if (
@@ -510,6 +513,17 @@ function useSetAppModeFromCursorLocation(artifacts: Artifact[]) {
       )
       const { rotation, position } = hasSketchArtifact[0]
       setGuiMode({ mode: 'canEditSketch', pathToNode, rotation, position })
+    } else if (
+      hasExtrudeArtifact.length &&
+      (guiMode.mode === 'default' || guiMode.mode === 'canEditExtrude') &&
+      ast
+    ) {
+      const pathToNode = getNodePathFromSourceRange(
+        ast,
+        hasExtrudeArtifact[0].sourceRange
+      )
+      const { rotation, position } = hasExtrudeArtifact[0]
+      setGuiMode({ mode: 'canEditExtrude', pathToNode, rotation, position })
     } else if (
       !shouldHighlight &&
       (guiMode.mode === 'canEditExtrude' || guiMode.mode === 'canEditSketch')
