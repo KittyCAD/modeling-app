@@ -19,5 +19,6 @@ jobs:
           toolchain: stable
       - run: yarn install
       - run: yarn build:wasm
+      - run: yarn simpleserver
       - run: yarn test:nowatch
       - run: yarn test:cov
