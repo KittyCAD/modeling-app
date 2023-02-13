@@ -2,8 +2,10 @@ import init from '../wasm-lib/pkg/wasm_lib'
 
 const url =
   typeof window === 'undefined'
-    ? 'http://localhost:3000'
+    ? 'http://127.0.0.1:3000'
     : window.location.origin.includes('localhost')
-    ? 'http://localhost:3000'
+    ? 'http://127.0.0.1:3000'
     : window.location.origin
-export const initPromise = init(url + '/wasm/wasm_lib_bg.wasm')
+const fullUrl = url + '/wasm/wasm_lib_bg.wasm'
+console.log('fullUrl', fullUrl)
+export const initPromise = init(fullUrl)
