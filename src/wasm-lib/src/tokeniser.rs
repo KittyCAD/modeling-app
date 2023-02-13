@@ -24,7 +24,7 @@ pub enum TokenType {
 }
 
 #[wasm_bindgen]
-#[derive(Debug, PartialEq, Deserialize, Serialize)]
+#[derive(Debug, PartialEq, Deserialize, Serialize, Clone)]
 pub struct Token {
     pub token_type: TokenType,
     pub start: usize,
@@ -259,21 +259,22 @@ fn return_token_at_index(str: &str, start_index: usize) -> Option<Token> {
     None
 }
 
-
 fn lexer(str: &str) -> Vec<Token> {
-    let mut tokens: Vec<Token> = Vec::new();
-    let mut current_index = 0;
-    while current_index < str.len() {
+    fn recursivelyTokenise(str: &str, current_index: usize, previousTokens: Vec<Token>) -> Vec<Token> {
+        if current_index >= str.len() {
+            return previousTokens;
+        }
         let token = return_token_at_index(str, current_index);
         if token.is_none() {
-            current_index += 1;
-        } else {
-            let token = token.unwrap();
-            current_index += token.value.len();
-            tokens.push(token);
+            return recursivelyTokenise(str, current_index + 1, previousTokens)
         }
-    }
-    tokens
+        let token = token.unwrap();
+        let mut newTokens = previousTokens;
+        let tokenLength = token.value.len();
+        newTokens.push(token);
+        recursivelyTokenise(str, current_index + tokenLength, newTokens)
+    };
+    recursivelyTokenise(str, 0, Vec::new())
 }
 
 // wasm_bindgen wrapper for lexer
