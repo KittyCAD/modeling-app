@@ -69,86 +69,65 @@ lazy_static! {
     static ref BLOCKCOMMENT: Regex = Regex::new(r"^/\*[\s\S]*?\*/").unwrap();
 }
 
-#[wasm_bindgen]
-pub fn is_number(character: &str) -> bool {
+fn is_number(character: &str) -> bool {
     NUMBER.is_match(character)
 }
-
-#[wasm_bindgen]
-pub fn is_whitespace(character: &str) -> bool {
+fn is_whitespace(character: &str) -> bool {
     WHITESPACE.is_match(character)
 }
-
-#[wasm_bindgen]
-pub fn is_word(character: &str) -> bool {
+fn is_word(character: &str) -> bool {
     WORD.is_match(character)
 }
-
-#[wasm_bindgen]
-pub fn is_string(character: &str) -> bool {
+fn is_string(character: &str) -> bool {
     match STRING.find(character) {
         Some(m) => m.start() == 0,
         None => false,
     }
 }
-#[wasm_bindgen]
-pub fn is_operator(character: &str) -> bool {
+fn is_operator(character: &str) -> bool {
     OPERATOR.is_match(character)
 }
-// add rust equivalent for this typescript: export const isBlockStart = (character: string) => BLOCK_START.test(character)
-#[wasm_bindgen]
-pub fn is_block_start(character: &str) -> bool {
+fn is_block_start(character: &str) -> bool {
     BLOCK_START.is_match(character)
 }
-#[wasm_bindgen]
-pub fn is_block_end(character: &str) -> bool {
+fn is_block_end(character: &str) -> bool {
     BLOCK_END.is_match(character)
 }
-#[wasm_bindgen]
-pub fn is_paran_start(character: &str) -> bool {
+fn is_paran_start(character: &str) -> bool {
     PARAN_START.is_match(character)
 }
-#[wasm_bindgen]
-pub fn is_paran_end(character: &str) -> bool {
+fn is_paran_end(character: &str) -> bool {
     PARAN_END.is_match(character)
 }
-#[wasm_bindgen]
-pub fn is_array_start(character: &str) -> bool {
+fn is_array_start(character: &str) -> bool {
     ARRAY_START.is_match(character)
 }
-#[wasm_bindgen]
-pub fn is_array_end(character: &str) -> bool {
+fn is_array_end(character: &str) -> bool {
     ARRAY_END.is_match(character)
 }
-#[wasm_bindgen]
-pub fn is_comma(character: &str) -> bool {
+fn is_comma(character: &str) -> bool {
     COMMA.is_match(character)
 }
-#[wasm_bindgen]
-pub fn is_colon(character: &str) -> bool {
+fn is_colon(character: &str) -> bool {
     COLON.is_match(character)
 }
-#[wasm_bindgen]
-pub fn is_period(character: &str) -> bool {
+fn is_period(character: &str) -> bool {
     PERIOD.is_match(character)
 }
-#[wasm_bindgen]
-pub fn is_line_comment(character: &str) -> bool {
+fn is_line_comment(character: &str) -> bool {
     LINECOMMENT.is_match(character)
 }
-#[wasm_bindgen]
-pub fn is_block_comment(character: &str) -> bool {
+fn is_block_comment(character: &str) -> bool {
     BLOCKCOMMENT.is_match(character)
 }
 
-pub fn match_first(str: &str, regex: &Regex) -> String {
+fn match_first(str: &str, regex: &Regex) -> String {
     let the_match = regex.find(str).unwrap();
     let the_match_str = &str[the_match.start()..the_match.end()];
     the_match_str.to_string()
 }
 
-#[wasm_bindgen]
-pub fn make_token(token_type: TokenType, value: &str, start: usize) -> Token {
+fn make_token(token_type: TokenType, value: &str, start: usize) -> Token {
     Token {
         token_type: token_type,
         value: value.to_string(),
@@ -158,8 +137,7 @@ pub fn make_token(token_type: TokenType, value: &str, start: usize) -> Token {
 }
 
 
-#[wasm_bindgen]
-pub fn return_token_at_index(str: &str, start_index: usize) -> Option<Token> {
+fn return_token_at_index(str: &str, start_index: usize) -> Option<Token> {
     let str_from_index = &str[start_index..];
     if is_string(str_from_index) {
         return Some(make_token(
@@ -282,7 +260,7 @@ pub fn return_token_at_index(str: &str, start_index: usize) -> Option<Token> {
 }
 
 
-pub fn lexer(str: &str) -> Vec<Token> {
+fn lexer(str: &str) -> Vec<Token> {
     let mut tokens: Vec<Token> = Vec::new();
     let mut current_index = 0;
     while current_index < str.len() {
