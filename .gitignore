@@ -24,4 +24,4 @@ yarn-error.log*
 
 # rust
 src/wasm-lib/target
-public/wasm
+public/wasm_lib_bg.wasm

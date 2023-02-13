@@ -12,13 +12,13 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '16.x'
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
+      # - name: Set up Rust
+      #   uses: actions-rs/toolchain@v1
+      #   with:
+      #     profile: minimal
+      #     toolchain: stable
       - run: yarn install
       - run: yarn build:wasm
-      # - run: yarn simpleserver:ci
+      - run: yarn simpleserver:ci
       - run: yarn test:nowatch
-      # - run: yarn test:cov
+      - run: yarn test:cov
