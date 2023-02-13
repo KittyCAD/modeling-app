@@ -155,9 +155,9 @@ export const useStore = create<StoreState>()((set, get) => ({
   setAst: (ast) => {
     set({ ast })
   },
-  updateAst: (ast, focusPath) => {
+  updateAst: async (ast, focusPath) => {
     const newCode = recast(ast)
-    const astWithUpdatedSource = abstractSyntaxTree(lexer(newCode))
+    const astWithUpdatedSource = abstractSyntaxTree(await lexer(newCode))
 
     set({ ast: astWithUpdatedSource, code: newCode })
     if (focusPath) {
@@ -173,9 +173,9 @@ export const useStore = create<StoreState>()((set, get) => ({
   setCode: (code) => {
     set({ code })
   },
-  formatCode: () => {
+  formatCode: async () => {
     const code = get().code
-    const ast = abstractSyntaxTree(lexer(code))
+    const ast = abstractSyntaxTree(await lexer(code))
     const newCode = recast(ast)
     set({ code: newCode, ast })
   },
