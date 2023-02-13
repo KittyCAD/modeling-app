@@ -4,7 +4,12 @@ import {
   hasPipeOperator,
   findEndOfBinaryExpression,
 } from './abstractSyntaxTree'
-import { lexer } from './tokeniser'
+import { syncLexer as lexer } from './tokeniser'
+import { initPromise } from './rust'
+
+beforeAll(async () => {
+  await initPromise
+})
 
 describe('findClosingBrace', () => {
   test('finds the closing brace', () => {

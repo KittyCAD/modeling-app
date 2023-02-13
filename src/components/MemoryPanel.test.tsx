@@ -1,43 +1,47 @@
 import { processMemory } from './MemoryPanel'
-import { lexer } from '../lang/tokeniser'
 import { abstractSyntaxTree } from '../lang/abstractSyntaxTree'
 import { executor } from '../lang/executor'
+import { syncLexer as lexer } from '../lang/tokeniser'
+import { initPromise } from '../lang/rust'
+
+beforeAll(async () => {
+  await initPromise
+})
 
 describe('processMemory', () => {
-  const code = `
-const myVar = 5
-const myFn = (a) => {
-  return a - 2
-}
-const otherVar = myFn(5)
-
-const theExtrude = startSketchAt([0, 0]) 
-  |> lineTo([-2.4, myVar], %)
-  |> lineTo([-0.76, otherVar], %)
-  |> extrude(4, %)
-
-const theSketch = startSketchAt([0, 0])
-  |> lineTo([-3.35, 0.17], %)
-  |> lineTo([0.98, 5.16], %)
-  |> lineTo([2.15, 4.32], %)
-  |> rx(90, %)
-show(theExtrude, theSketch)`
-  const tokens = lexer(code)
-  const ast = abstractSyntaxTree(tokens)
-  const programMemory = executor(ast, {
-    root: {
-      log: {
-        type: 'userVal',
-        value: (a: any) => {
-          console.log('raw log', a)
-        },
-        __meta: [],
-      },
-    },
-    _sketch: [],
-  })
-
   it('should grab the values and remove and geo data', () => {
+    const code = `
+  const myVar = 5
+  const myFn = (a) => {
+    return a - 2
+  }
+  const otherVar = myFn(5)
+  
+  const theExtrude = startSketchAt([0, 0]) 
+    |> lineTo([-2.4, myVar], %)
+    |> lineTo([-0.76, otherVar], %)
+    |> extrude(4, %)
+  
+  const theSketch = startSketchAt([0, 0])
+    |> lineTo([-3.35, 0.17], %)
+    |> lineTo([0.98, 5.16], %)
+    |> lineTo([2.15, 4.32], %)
+    |> rx(90, %)
+  show(theExtrude, theSketch)`
+    const tokens = lexer(code)
+    const ast = abstractSyntaxTree(tokens)
+    const programMemory = executor(ast, {
+      root: {
+        log: {
+          type: 'userVal',
+          value: (a: any) => {
+            console.log('raw log', a)
+          },
+          __meta: [],
+        },
+      },
+      _sketch: [],
+    })
     const output = processMemory(programMemory)
     expect(output.myVar).toEqual(5)
     expect(output.myFn).toEqual('__function__')
