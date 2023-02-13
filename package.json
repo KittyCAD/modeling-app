@@ -33,12 +33,13 @@
     "test": "react-scripts test",
     "test:nowatch": "react-scripts test --watchAll=false",
     "test:cov": "react-scripts test --watchAll=false --coverage=true",
+    "simpleserver:ci": "http-server ./public --cors -p 3000 &",
+    "simpleserver": "http-server ./public --cors -p 3000",
     "eject": "react-scripts eject",
     "fmt": "prettier --write ./src/**.{ts,tsx} && prettier --write ./src/**/*.{ts,tsx} && prettier --write ./src/lang/**/*.{ts,tsx} && prettier --write ./src/wasm-lib/**/*.{js,ts}",
     "removething": "sed -i 's/import.meta.url//g' \"./src/wasm-lib/pkg/wasm_lib.js\"",
     "addthing": "echo \"import util from 'util'; if (typeof window !== 'undefined' && !window.TextEncoder) { window.TextEncoder = util.TextEncoder; window.TextDecoder = util.TextDecoder}\" | cat - ./src/wasm-lib/pkg/wasm_lib.js > temp && mv temp ./src/wasm-lib/pkg/wasm_lib.js",
     "dothing": "cp ./src/wasm-lib/pkg/wasm_lib.js.template.md ./src/wasm-lib/pkg/wasm_lib.js",
-    "simpleserver": "http-server ./public --cors -p 3000 ",
     "build:wasm": "(cd src/wasm-lib && wasm-pack build --target web --out-dir pkg) && mkdir public/wasm; cp src/wasm-lib/pkg/wasm_lib_bg.wasm public/wasm && yarn removething && yarn addthing && yarn fmt"
   },
   "jest": {
