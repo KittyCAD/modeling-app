@@ -1,8 +1,8 @@
 import fs from 'node:fs'
 
 import { abstractSyntaxTree } from './abstractSyntaxTree'
+import { lexer } from './tokeniser'
 import { executor, ProgramMemory, Path, SketchGroup } from './executor'
-import { syncLexer as lexer } from './tokeniser'
 import { initPromise } from './rust'
 
 beforeAll(async () => {

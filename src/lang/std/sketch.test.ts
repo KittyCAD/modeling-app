@@ -5,13 +5,13 @@ import {
   getYComponent,
   getXComponent,
 } from './sketch'
+import { lexer } from '../tokeniser'
 import {
   abstractSyntaxTree,
   getNodePathFromSourceRange,
 } from '../abstractSyntaxTree'
 import { recast } from '../recast'
 import { executor } from '../executor'
-import { syncLexer as lexer } from '../tokeniser'
 import { initPromise } from '../rust'
 
 beforeAll(async () => {

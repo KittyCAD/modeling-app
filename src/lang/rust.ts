@@ -7,5 +7,4 @@ const url =
     ? 'http://127.0.0.1:3000'
     : window.location.origin
 const fullUrl = url + '/wasm_lib_bg.wasm'
-console.log('fullUrl', fullUrl)
 export const initPromise = init(fullUrl)

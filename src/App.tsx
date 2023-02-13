@@ -93,46 +93,45 @@ function App() {
         removeError()
         return
       }
-      lexer(code).then((tokens) => {
-        const _ast = abstractSyntaxTree(tokens)
-        setAst(_ast)
-        resetLogs()
-        const programMemory = executor(_ast, {
-          root: {
-            log: {
-              type: 'userVal',
-              value: (a: any) => {
-                addLog(a)
-              },
-              __meta: [
-                {
-                  pathToNode: [],
-                  sourceRange: [0, 0],
-                },
-              ],
+      const tokens = lexer(code)
+      const _ast = abstractSyntaxTree(tokens)
+      setAst(_ast)
+      resetLogs()
+      const programMemory = executor(_ast, {
+        root: {
+          log: {
+            type: 'userVal',
+            value: (a: any) => {
+              addLog(a)
             },
+            __meta: [
+              {
+                pathToNode: [],
+                sourceRange: [0, 0],
+              },
+            ],
           },
-          _sketch: [],
-        })
-        setProgramMemory(programMemory)
-        const geos = programMemory?.return
-          ?.map(({ name }: { name: string }) => {
-            const artifact = programMemory?.root?.[name]
-            if (
-              artifact.type === 'extrudeGroup' ||
-              artifact.type === 'sketchGroup'
-            ) {
-              return artifact
-            }
-            return null
-          })
-          .filter((a) => a) as (ExtrudeGroup | SketchGroup)[]
-
-        setGeoArray(geos)
-        removeError()
-        console.log(programMemory)
-        setError()
+        },
+        _sketch: [],
       })
+      setProgramMemory(programMemory)
+      const geos = programMemory?.return
+        ?.map(({ name }: { name: string }) => {
+          const artifact = programMemory?.root?.[name]
+          if (
+            artifact.type === 'extrudeGroup' ||
+            artifact.type === 'sketchGroup'
+          ) {
+            return artifact
+          }
+          return null
+        })
+        .filter((a) => a) as (ExtrudeGroup | SketchGroup)[]
+
+      setGeoArray(geos)
+      removeError()
+      console.log(programMemory)
+      setError()
     } catch (e: any) {
       setError('problem')
       console.log(e)
@@ -223,26 +222,3 @@ function App() {
 }
 
 export default App
-
-/*
-
-articoke
-fresh basil * 2
-olives
-avacado
-punent of tomato
-capsicum * 2
-chilli * 2
-cucumber
-lettuce
-lime
-
-
-tofu
-burger patties
-pizza bases
-bread rolls
-penne pasta
-
-
-*/

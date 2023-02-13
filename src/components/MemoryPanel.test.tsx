@@ -1,7 +1,7 @@
 import { processMemory } from './MemoryPanel'
+import { lexer } from '../lang/tokeniser'
 import { abstractSyntaxTree } from '../lang/abstractSyntaxTree'
 import { executor } from '../lang/executor'
-import { syncLexer as lexer } from '../lang/tokeniser'
 import { initPromise } from '../lang/rust'
 
 beforeAll(async () => {

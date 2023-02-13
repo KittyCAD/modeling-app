@@ -7,7 +7,7 @@ import {
 } from './lang/abstractSyntaxTree'
 import { ProgramMemory, Position, PathToNode, Rotation } from './lang/executor'
 import { recast } from './lang/recast'
-import { lexer } from './lang/tokeniser'
+import { asyncLexer } from './lang/tokeniser'
 
 export type Range = [number, number]
 export type TooTip =
@@ -157,7 +157,7 @@ export const useStore = create<StoreState>()((set, get) => ({
   },
   updateAst: async (ast, focusPath) => {
     const newCode = recast(ast)
-    const astWithUpdatedSource = abstractSyntaxTree(await lexer(newCode))
+    const astWithUpdatedSource = abstractSyntaxTree(await asyncLexer(newCode))
 
     set({ ast: astWithUpdatedSource, code: newCode })
     if (focusPath) {
@@ -175,7 +175,7 @@ export const useStore = create<StoreState>()((set, get) => ({
   },
   formatCode: async () => {
     const code = get().code
-    const ast = abstractSyntaxTree(await lexer(code))
+    const ast = abstractSyntaxTree(await asyncLexer(code))
     const newCode = recast(ast)
     set({ code: newCode, ast })
   },

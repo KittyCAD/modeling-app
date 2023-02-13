@@ -1,5 +1,5 @@
 import { parseExpression, reversePolishNotation } from './astMathExpressions'
-import { syncLexer as lexer } from './tokeniser'
+import { lexer } from './tokeniser'
 import { initPromise } from './rust'
 
 beforeAll(async () => {

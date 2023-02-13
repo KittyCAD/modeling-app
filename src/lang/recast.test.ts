@@ -1,7 +1,7 @@
 import { recast } from './recast'
 import { Program, abstractSyntaxTree } from './abstractSyntaxTree'
+import { lexer, Token } from './tokeniser'
 import fs from 'node:fs'
-import { syncLexer as lexer, Token } from './tokeniser'
 import { initPromise } from './rust'
 
 beforeAll(async () => {

@@ -29,19 +29,20 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "amazon-linux-extras install rust1 && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && source \"$HOME/.cargo/env\" && curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh -s -- -y && yarn build:wasm && react-scripts build",
+    "build": "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && source \"$HOME/.cargo/env\" && curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh -s -- -y && yarn build:wasm:ci && react-scripts build",
     "build:local": "react-scripts build",
     "test": "react-scripts test",
-    "test:nowatch": "http-server ./public --cors -p 3000 & react-scripts test --watchAll=false",
+    "test:nowatch": "react-scripts test --watchAll=false",
     "test:cov": "react-scripts test --watchAll=false --coverage=true",
     "simpleserver:ci": "http-server ./public --cors -p 3000 &",
     "simpleserver": "http-server ./public --cors -p 3000",
     "eject": "react-scripts eject",
     "fmt": "prettier --write ./src/**.{ts,tsx} && prettier --write ./src/**/*.{ts,tsx} && prettier --write ./src/lang/**/*.{ts,tsx} && prettier --write ./src/wasm-lib/**/*.{js,ts}",
-    "removething": "sed -i 's/import.meta.url//g' \"./src/wasm-lib/pkg/wasm_lib.js\"",
-    "addthing": "echo \"import util from 'util'; if (typeof window !== 'undefined' && !window.TextEncoder) { window.TextEncoder = util.TextEncoder; window.TextDecoder = util.TextDecoder}\" | cat - ./src/wasm-lib/pkg/wasm_lib.js > temp && mv temp ./src/wasm-lib/pkg/wasm_lib.js",
-    "dothing": "cp ./src/wasm-lib/pkg/wasm_lib.js.template.md ./src/wasm-lib/pkg/wasm_lib.js",
-    "build:wasm": "mkdir src/wasm-lib/pkg; cd src/wasm-lib && wasm-pack build --target web --out-dir pkg && cd ../../ && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn removething && yarn addthing && yarn fmt"
+    "remove-importmeta": "sed -i '' 's/import.meta.url//g' \"./src/wasm-lib/pkg/wasm_lib.js\"",
+    "remove-importmeta:ci": "sed -i 's/import.meta.url//g' \"./src/wasm-lib/pkg/wasm_lib.js\"",
+    "add-missing-import": "echo \"import util from 'util'; if (typeof window !== 'undefined' && !window.TextEncoder) { window.TextEncoder = util.TextEncoder; window.TextDecoder = util.TextDecoder}\" | cat - ./src/wasm-lib/pkg/wasm_lib.js > temp && mv temp ./src/wasm-lib/pkg/wasm_lib.js",
+    "build:wasm:ci": "mkdir src/wasm-lib/pkg; cd src/wasm-lib && wasm-pack build --target web --out-dir pkg && cd ../../ && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn remove-importmeta:ci && yarn add-missing-import && yarn fmt",
+    "build:wasm": "mkdir src/wasm-lib/pkg; cd src/wasm-lib && wasm-pack build --target web --out-dir pkg && cd ../../ && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn remove-importmeta && yarn add-missing-import && yarn fmt"
   },
   "jest": {
     "transformIgnorePatterns": [

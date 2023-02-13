@@ -1,6 +1,6 @@
 import { abstractSyntaxTree } from './abstractSyntaxTree'
+import { lexer } from './tokeniser'
 import { executor, SketchGroup, ExtrudeGroup } from './executor'
-import { syncLexer as lexer } from './tokeniser'
 import { initPromise } from './rust'
 
 beforeAll(async () => {

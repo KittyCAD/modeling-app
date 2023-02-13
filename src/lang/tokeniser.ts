@@ -19,7 +19,7 @@ export interface Token {
   end: number
 }
 
-export async function lexer(str: string): Promise<Token[]> {
+export async function asyncLexer(str: string): Promise<Token[]> {
   await initPromise
   const tokens = JSON.parse(lexer_js(str)).map(
     ({
@@ -42,9 +42,8 @@ export async function lexer(str: string): Promise<Token[]> {
   return tokens
 }
 
-export function syncLexer(str: string): Token[] {
-  // await initPromise
-  const tokens = JSON.parse(lexer_js(str)).map(
+export function lexer(str: string): Token[] {
+  return JSON.parse(lexer_js(str)).map(
     ({
       token_type,
       start,
@@ -62,5 +61,4 @@ export function syncLexer(str: string): Token[] {
       end,
     })
   ) as Token[]
-  return tokens
 }

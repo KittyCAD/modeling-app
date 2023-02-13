@@ -1,6 +1,6 @@
 import { getNodePathFromSourceRange } from './abstractSyntaxTree'
+import { lexer } from './tokeniser'
 import { abstractSyntaxTree, getNodeFromPath } from './abstractSyntaxTree'
-import { syncLexer as lexer } from './tokeniser'
 import { initPromise } from './rust'
 
 beforeAll(async () => {
