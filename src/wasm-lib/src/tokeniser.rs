@@ -281,9 +281,9 @@ fn lexer(str: &str) -> Vec<Token> {
 // test for this function and by extension lexer are done in javascript land src/lang/tokeniser.test.ts
 #[wasm_bindgen]
 pub fn lexer_js(str: &str) -> JsValue {
-    let yo = lexer(str);
+    let tokens = lexer(str);
     JsValue::from_str(
-        &serde_json::to_string(&yo)
+        &serde_json::to_string(&tokens)
             .expect("failed to serialize lexer output"),
     )
 }
