@@ -22,6 +22,7 @@
     "three": "^0.146.0",
     "typescript": "^4.4.2",
     "util": "^0.12.5",
+    "wasm-pack": "^0.10.3",
     "web-vitals": "^2.1.0",
     "zustand": "^4.1.4"
   },
