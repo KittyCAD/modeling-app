@@ -8,7 +8,7 @@ use serde_json;
 use serde::{Deserialize, Serialize};
 
 #[wasm_bindgen]
-#[derive(Debug, PartialEq, Copy, Clone, Deserialize, Serialize)]
+#[derive(Debug, PartialEq, Eq, Copy, Clone, Deserialize, Serialize)]
 pub enum TokenType {
     Number,
     Word,
@@ -24,7 +24,7 @@ pub enum TokenType {
 }
 
 #[wasm_bindgen]
-#[derive(Debug, PartialEq, Deserialize, Serialize, Clone)]
+#[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Clone)]
 pub struct Token {
     pub token_type: TokenType,
     pub start: usize,
@@ -129,7 +129,7 @@ fn match_first(str: &str, regex: &Regex) -> String {
 
 fn make_token(token_type: TokenType, value: &str, start: usize) -> Token {
     Token {
-        token_type: token_type,
+        token_type,
         value: value.to_string(),
         start,
         end: start + value.len(),
@@ -260,21 +260,21 @@ fn return_token_at_index(str: &str, start_index: usize) -> Option<Token> {
 }
 
 fn lexer(str: &str) -> Vec<Token> {
-    fn recursivelyTokenise(str: &str, current_index: usize, previousTokens: Vec<Token>) -> Vec<Token> {
+    fn recursively_tokenise(str: &str, current_index: usize, previous_tokens: Vec<Token>) -> Vec<Token> {
         if current_index >= str.len() {
-            return previousTokens;
+            return previous_tokens;
         }
         let token = return_token_at_index(str, current_index);
         if token.is_none() {
-            return recursivelyTokenise(str, current_index + 1, previousTokens)
+            return recursively_tokenise(str, current_index + 1, previous_tokens)
         }
         let token = token.unwrap();
-        let mut newTokens = previousTokens;
-        let tokenLength = token.value.len();
-        newTokens.push(token);
-        recursivelyTokenise(str, current_index + tokenLength, newTokens)
-    };
-    recursivelyTokenise(str, 0, Vec::new())
+        let mut new_tokens = previous_tokens;
+        let token_length = token.value.len();
+        new_tokens.push(token);
+        recursively_tokenise(str, current_index + token_length, new_tokens)
+    }
+    recursively_tokenise(str, 0, Vec::new())
 }
 
 // wasm_bindgen wrapper for lexer
@@ -286,6 +286,7 @@ pub fn lexer_js(str: &str) -> JsValue {
         &serde_json::to_string(&tokens)
             .expect("failed to serialize lexer output"),
     )
+    // serde_wasm_bindgen::to_value(&tokens).unwrap()
 }
 
 #[cfg(test)]
