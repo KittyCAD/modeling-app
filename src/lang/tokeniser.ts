@@ -19,29 +19,11 @@ export interface Token {
   end: number
 }
 
-const massageRustData = ({
-  token_type,
-  start,
-  end,
-  value,
-}: {
-  token_type: string
-  start: number
-  end: number
-  value: string
-}) => ({
-  type: token_type.toLowerCase(),
-  value,
-  start,
-  end,
-})
-
 export async function asyncLexer(str: string): Promise<Token[]> {
   await initPromise
-  const tokens = JSON.parse(lexer_js(str)).map(massageRustData) as Token[]
-  return tokens
+  return JSON.parse(lexer_js(str)) as Token[]
 }
 
 export function lexer(str: string): Token[] {
-  return JSON.parse(lexer_js(str)).map(massageRustData) as Token[]
+  return JSON.parse(lexer_js(str)) as Token[]
 }

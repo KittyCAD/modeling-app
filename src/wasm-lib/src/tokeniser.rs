@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 
 #[wasm_bindgen]
 #[derive(Debug, PartialEq, Eq, Copy, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "lowercase")]
 pub enum TokenType {
     Number,
     Word,
@@ -25,6 +26,7 @@ pub enum TokenType {
 #[wasm_bindgen]
 #[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Clone)]
 pub struct Token {
+    #[serde(rename = "type")]
     pub token_type: TokenType,
     pub start: usize,
     pub end: usize,
