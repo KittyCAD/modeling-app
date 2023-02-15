@@ -4,7 +4,6 @@ extern crate regex;
 use wasm_bindgen::prelude::*;
 use lazy_static::lazy_static;
 use regex::Regex;
-use serde_json;
 use serde::{Deserialize, Serialize};
 
 #[wasm_bindgen]
@@ -286,7 +285,6 @@ pub fn lexer_js(str: &str) -> JsValue {
         &serde_json::to_string(&tokens)
             .expect("failed to serialize lexer output"),
     )
-    // serde_wasm_bindgen::to_value(&tokens).unwrap()
 }
 
 #[cfg(test)]
