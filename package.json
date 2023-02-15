@@ -33,6 +33,7 @@
     "build:local": "react-scripts build",
     "test": "react-scripts test",
     "test:nowatch": "react-scripts test --watchAll=false",
+    "test:rust": "(cd src/wasm-lib && cargo test)",
     "test:cov": "react-scripts test --watchAll=false --coverage=true",
     "simpleserver:ci": "http-server ./public --cors -p 3000 &",
     "simpleserver": "http-server ./public --cors -p 3000",

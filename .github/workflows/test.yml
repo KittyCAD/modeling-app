@@ -17,3 +17,4 @@ jobs:
       - run: yarn simpleserver:ci
       - run: yarn test:nowatch
       - run: yarn test:cov
+      - run: yarn test:rust
