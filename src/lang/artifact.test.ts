@@ -190,7 +190,7 @@ show(theExtrude, sk2)`
           0.9230002039112792,
         ],
         __meta: [
-          { sourceRange: [190, 218], pathToNode: [] },
+          { sourceRange: [203, 218], pathToNode: [] },
           { sourceRange: [13, 34], pathToNode: [] },
         ],
       },

@@ -258,52 +258,11 @@ export const executor = (
             __meta,
           }
         } else if (declaration.init.type === 'CallExpression') {
-          const functionName = declaration.init.callee.name
-          const fnArgs = declaration.init.arguments.map((arg) => {
-            if (arg.type === 'Literal') {
-              return arg.value
-            } else if (arg.type === 'Identifier') {
-              return _programMemory.root[arg.name].value
-            } else if (arg.type === 'ObjectExpression') {
-              return executeObjectExpression(_programMemory, arg)
-            } else if (arg.type === 'ArrayExpression') {
-              return executeArrayExpression(_programMemory, arg)
-            }
-            throw new Error(
-              `Unexpected argument type ${arg.type} in function call`
-            )
-          })
-          if (functionName in internalFns) {
-            const result = executeCallExpression(
-              _programMemory,
-              declaration.init,
-              previousPathToNode,
-              {
-                sourceRangeOverride: [declaration.start, declaration.end],
-                isInPipe: false,
-                previousResults: [],
-                expressionIndex: 0,
-                body: [],
-              }
-            )
-            if (
-              result.type === 'extrudeGroup' ||
-              result.type === 'sketchGroup'
-            ) {
-              _programMemory.root[variableName] = result
-            } else {
-              _programMemory.root[variableName] = {
-                type: 'userVal',
-                value: result,
-                __meta,
-              }
-            }
-          } else {
-            _programMemory.root[variableName] = {
-              type: 'userVal',
-              value: _programMemory.root[functionName].value(...fnArgs),
-              __meta,
-            }
+          const result = executeCallExpression(_programMemory, declaration.init, previousPathToNode)
+          _programMemory.root[variableName] =  result?.type === 'sketchGroup' || result?.type === 'extrudeGroup' ? result : {
+            type: 'userVal',
+            value: result,
+            __meta,
           }
         } else {
           throw new Error(
