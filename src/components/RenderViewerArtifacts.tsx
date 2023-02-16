@@ -404,8 +404,8 @@ function LineRender({
   rotation: Rotation
   position: Position
 }) {
-  const { setHighlightRange } = useStore(({ setHighlightRange }) => ({
-    setHighlightRange,
+  const { setHighlightRange } = useStore((s) => ({
+    setHighlightRange: s.setHighlightRange,
   }))
   const onClick = useSetCursor(sourceRange)
   // This reference will give us direct access to the mesh

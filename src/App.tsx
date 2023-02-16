@@ -22,15 +22,17 @@ import { AxisIndicator } from './components/AxisIndicator'
 import { RenderViewerArtifacts } from './components/RenderViewerArtifacts'
 import { PanelHeader } from './components/PanelHeader'
 import { MemoryPanel } from './components/MemoryPanel'
+import { useHotKeyListener } from './hooks/useHotKeyListener'
 
 const OrrthographicCamera = OrthographicCamera as any
 
 function App() {
   const cam = useRef()
+  useHotKeyListener()
   const {
     editorView,
     setEditorView,
-    setSelectionRanges: setSelectionRange,
+    setSelectionRanges,
     selectionRanges: selectionRange,
     guiMode,
     lastGuiMode,
@@ -74,10 +76,7 @@ function App() {
     if (!editorView) {
       setEditorView(viewUpdate.view)
     }
-    const range = viewUpdate.state.selection.ranges[0]
     const ranges = viewUpdate.state.selection.ranges
-    // console.log(viewUpdate.state.selection.ranges)
-    // TODO allow multiple cursors so that we can do constrain style features
 
     const isChange =
       ranges.length !== selectionRange.length ||
@@ -86,7 +85,7 @@ function App() {
       })
 
     if (!isChange) return
-    setSelectionRange(ranges.map(({ from, to }) => [from, to]))
+    setSelectionRanges(ranges.map(({ from, to }) => [from, to]))
   }
   const [geoArray, setGeoArray] = useState<(ExtrudeGroup | SketchGroup)[]>([])
   useEffect(() => {
