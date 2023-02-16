@@ -7,9 +7,7 @@ import {
 import { lexer } from './tokeniser'
 import { initPromise } from './rust'
 
-beforeAll(async () => {
-  await initPromise
-})
+beforeAll(() => initPromise)
 
 describe('findClosingBrace', () => {
   test('finds the closing brace', () => {

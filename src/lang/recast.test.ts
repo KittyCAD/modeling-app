@@ -4,9 +4,7 @@ import { lexer, Token } from './tokeniser'
 import fs from 'node:fs'
 import { initPromise } from './rust'
 
-beforeAll(async () => {
-  await initPromise
-})
+beforeAll(() => initPromise)
 
 describe('recast', () => {
   it('recasts a simple program', () => {

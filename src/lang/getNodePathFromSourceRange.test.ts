@@ -3,9 +3,7 @@ import { lexer } from './tokeniser'
 import { abstractSyntaxTree, getNodeFromPath } from './abstractSyntaxTree'
 import { initPromise } from './rust'
 
-beforeAll(async () => {
-  await initPromise
-})
+beforeAll(() => initPromise)
 
 describe('testing getNodePathFromSourceRange', () => {
   it('test it gets the right path for a `lineTo` CallExpression within a SketchExpression', () => {

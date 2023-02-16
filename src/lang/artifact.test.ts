@@ -3,9 +3,7 @@ import { lexer } from './tokeniser'
 import { executor, SketchGroup, ExtrudeGroup } from './executor'
 import { initPromise } from './rust'
 
-beforeAll(async () => {
-  await initPromise
-})
+beforeAll(() => initPromise)
 
 describe('testing artifacts', () => {
   test('sketch artifacts', () => {

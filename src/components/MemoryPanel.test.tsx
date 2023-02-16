@@ -4,9 +4,7 @@ import { abstractSyntaxTree } from '../lang/abstractSyntaxTree'
 import { executor } from '../lang/executor'
 import { initPromise } from '../lang/rust'
 
-beforeAll(async () => {
-  await initPromise
-})
+beforeAll(() => initPromise)
 
 describe('processMemory', () => {
   it('should grab the values and remove and geo data', () => {

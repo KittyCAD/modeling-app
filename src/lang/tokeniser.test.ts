@@ -1,9 +1,7 @@
 import { lexer } from './tokeniser'
 import { initPromise } from './rust'
 
-beforeAll(async () => {
-  await initPromise
-})
+beforeAll(() => initPromise)
 
 describe('testing lexer', () => {
   it('test lexer', () => {

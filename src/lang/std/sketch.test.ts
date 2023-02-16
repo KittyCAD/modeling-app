@@ -14,9 +14,7 @@ import { recast } from '../recast'
 import { executor } from '../executor'
 import { initPromise } from '../rust'
 
-beforeAll(async () => {
-  await initPromise
-})
+beforeAll(() => initPromise)
 
 const eachQuad: [number, [number, number]][] = [
   [-315, [1, 1]],

@@ -5,9 +5,7 @@ import { lexer } from './tokeniser'
 import { executor, ProgramMemory, Path, SketchGroup } from './executor'
 import { initPromise } from './rust'
 
-beforeAll(async () => {
-  await initPromise
-})
+beforeAll(() => initPromise)
 
 describe('test', () => {
   it('test assigning two variables, the second summing with the first', () => {
