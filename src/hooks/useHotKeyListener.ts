@@ -5,7 +5,7 @@ export function useHotKeyListener() {
   const { setIsShiftDown } = useStore((s) => ({
     setIsShiftDown: s.setIsShiftDown,
   }))
-  const keyName = 'CapsLock' // TODO should be shift, but shift conflicts with the editor's use of the shift key atm.
+  const keyName = 'CapsLock' // TODO #32 should be shift, but shift conflicts with the editor's use of the shift key atm.
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) =>
       event.key === keyName && setIsShiftDown(true)
