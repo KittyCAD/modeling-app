@@ -147,7 +147,7 @@ function App() {
   return (
     <div className="h-screen">
       <Allotment snap={true}>
-        <Allotment vertical defaultSizes={[4, 1, 1]}>
+        <Allotment vertical defaultSizes={[4, 1, 1]} minSize={20}>
           <div className="h-full flex flex-col items-start">
             <PanelHeader title="Editor" />
             {/* <button
