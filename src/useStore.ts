@@ -10,6 +10,7 @@ import { recast } from './lang/recast'
 import { asyncLexer } from './lang/tokeniser'
 
 export type Range = [number, number]
+type Ranges = Range[]
 export type TooTip =
   | 'lineTo'
   | 'line'
@@ -53,7 +54,6 @@ export type GuiModes =
   | {
       mode: 'sketch'
       sketchMode: 'sketchEdit'
-      isTooltip: true
       rotation: Rotation
       position: Position
       pathToNode: PathToNode
@@ -81,12 +81,11 @@ interface StoreState {
   highlightRange: [number, number]
   setHighlightRange: (range: Range) => void
   setCursor: (start: number, end?: number) => void
-  selectionRange: [number, number]
-  setSelectionRange: (range: Range) => void
+  selectionRanges: Ranges
+  setSelectionRanges: (range: Ranges) => void
   guiMode: GuiModes
   lastGuiMode: GuiModes
   setGuiMode: (guiMode: GuiModes) => void
-  removeError: () => void
   logs: string[]
   addLog: (log: string) => void
   resetLogs: () => void
@@ -125,19 +124,14 @@ export const useStore = create<StoreState>()((set, get) => ({
       selection: { anchor: start, head: end },
     })
   },
-  selectionRange: [0, 0],
-  setSelectionRange: (selectionRange) => {
-    set({ selectionRange })
+  selectionRanges: [[0, 0]],
+  setSelectionRanges: (selectionRanges) => {
+    set({ selectionRanges })
   },
   guiMode: { mode: 'default' },
   lastGuiMode: { mode: 'default' },
   setGuiMode: (guiMode) => {
-    const lastGuiMode = get().guiMode
     set({ guiMode })
-  },
-  removeError: () => {
-    const lastGuiMode = get().lastGuiMode
-    const currentGuiMode = get().guiMode
   },
   logs: [],
   addLog: (log) => {

@@ -30,11 +30,10 @@ function App() {
   const {
     editorView,
     setEditorView,
-    setSelectionRange,
-    selectionRange,
+    setSelectionRanges: setSelectionRange,
+    selectionRanges: selectionRange,
     guiMode,
     lastGuiMode,
-    removeError,
     addLog,
     code,
     setCode,
@@ -48,11 +47,10 @@ function App() {
   } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
-    setSelectionRange: s.setSelectionRange,
-    selectionRange: s.selectionRange,
+    setSelectionRanges: s.setSelectionRanges,
+    selectionRanges: s.selectionRanges,
     guiMode: s.guiMode,
     setGuiMode: s.setGuiMode,
-    removeError: s.removeError,
     addLog: s.addLog,
     code: s.code,
     setCode: s.setCode,
@@ -77,12 +75,18 @@ function App() {
       setEditorView(viewUpdate.view)
     }
     const range = viewUpdate.state.selection.ranges[0]
+    const ranges = viewUpdate.state.selection.ranges
     // console.log(viewUpdate.state.selection.ranges)
     // TODO allow multiple cursors so that we can do constrain style features
-    const isNoChange =
-      range.from === selectionRange[0] && range.to === selectionRange[1]
-    if (isNoChange) return
-    setSelectionRange([range.from, range.to])
+
+    const isChange =
+      ranges.length !== selectionRange.length ||
+      ranges.some(({ from, to }, i) => {
+        return from !== selectionRange[i][0] || to !== selectionRange[i][1]
+      })
+
+    if (!isChange) return
+    setSelectionRange(ranges.map(({ from, to }) => [from, to]))
   }
   const [geoArray, setGeoArray] = useState<(ExtrudeGroup | SketchGroup)[]>([])
   useEffect(() => {
@@ -90,7 +94,6 @@ function App() {
       if (!code) {
         setGeoArray([])
         setAst(null)
-        removeError()
         return
       }
       const tokens = lexer(code)
@@ -129,7 +132,6 @@ function App() {
         .filter((a) => a) as (ExtrudeGroup | SketchGroup)[]
 
       setGeoArray(geos)
-      removeError()
       console.log(programMemory)
       setError()
     } catch (e: any) {
@@ -138,11 +140,11 @@ function App() {
       addLog(e)
     }
   }, [code])
-  const shouldFormat = useMemo(() => {
-    if (!ast) return false
-    const recastedCode = recast(ast)
-    return recastedCode !== code
-  }, [code, ast])
+  // const shouldFormat = useMemo(() => {
+  //   if (!ast) return false
+  //   const recastedCode = recast(ast)
+  //   return recastedCode !== code
+  // }, [code, ast])
   return (
     <div className="h-screen">
       <Allotment snap={true}>

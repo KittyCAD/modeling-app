@@ -88,7 +88,9 @@ function MovingSphere({
           inverseQuaternion.set(...guiMode.rotation)
           inverseQuaternion.invert()
         }
-        current2d.sub(new Vector3(...position).applyQuaternion(inverseQuaternion))
+        current2d.sub(
+          new Vector3(...position).applyQuaternion(inverseQuaternion)
+        )
         let [x, y] = [roundOff(current2d.x, 2), roundOff(current2d.y, 2)]
         let theNewPoints: [number, number] = [x, y]
         const { modifiedAst } = changeSketchArguments(
@@ -284,10 +286,10 @@ function WallRender({
   rotation: Rotation
   position: Position
 }) {
-  const { setHighlightRange, selectionRange } = useStore(
-    ({ setHighlightRange, selectionRange }) => ({
+  const { setHighlightRange, selectionRanges } = useStore(
+    ({ setHighlightRange, selectionRanges }) => ({
       setHighlightRange,
-      selectionRange,
+      selectionRanges,
     })
   )
   const onClick = useSetCursor(geoInfo.__geoMeta.sourceRange)
@@ -297,12 +299,11 @@ function WallRender({
 
   const [editorCursor, setEditorCursor] = useState(false)
   useEffect(() => {
-    const shouldHighlight = isOverlap(
-      geoInfo.__geoMeta.sourceRange,
-      selectionRange
+    const shouldHighlight = selectionRanges.some((range) =>
+      isOverlap(geoInfo.__geoMeta.sourceRange, range)
     )
     setEditorCursor(shouldHighlight)
-  }, [selectionRange, geoInfo])
+  }, [selectionRanges, geoInfo])
 
   return (
     <>
@@ -347,17 +348,16 @@ function PathRender({
   rotation: Rotation
   position: Position
 }) {
-  const { selectionRange } = useStore(({ selectionRange }) => ({
-    selectionRange,
+  const { selectionRanges } = useStore(({ selectionRanges }) => ({
+    selectionRanges,
   }))
   const [editorCursor, setEditorCursor] = useState(false)
   useEffect(() => {
-    const shouldHighlight = isOverlap(
-      geoInfo.__geoMeta.sourceRange,
-      selectionRange
+    const shouldHighlight = selectionRanges.some((range) =>
+      isOverlap(geoInfo.__geoMeta.sourceRange, range)
     )
     setEditorCursor(shouldHighlight)
-  }, [selectionRange, geoInfo])
+  }, [selectionRanges, geoInfo])
   return (
     <>
       {geoInfo.__geoMeta.geos.map((meta, i) => {
@@ -440,9 +440,9 @@ function LineRender({
 type Artifact = ExtrudeGroup | SketchGroup
 
 function useSetAppModeFromCursorLocation(artifacts: Artifact[]) {
-  const { selectionRange, guiMode, setGuiMode, ast } = useStore(
-    ({ selectionRange, guiMode, setGuiMode, ast }) => ({
-      selectionRange,
+  const { selectionRanges, guiMode, setGuiMode, ast } = useStore(
+    ({ selectionRanges, guiMode, setGuiMode, ast }) => ({
+      selectionRanges,
       guiMode,
       setGuiMode,
       ast,
@@ -469,7 +469,7 @@ function useSetAppModeFromCursorLocation(artifacts: Artifact[]) {
     )[] = []
     artifacts?.forEach((artifact) => {
       artifact.value.forEach((geo) => {
-        if (isOverlap(geo.__geoMeta.sourceRange, selectionRange)) {
+        if (isOverlap(geo.__geoMeta.sourceRange, selectionRanges[0])) {
           artifactsWithinCursorRange.push({
             parentType: artifact.type,
             isParent: false,
@@ -481,7 +481,7 @@ function useSetAppModeFromCursorLocation(artifacts: Artifact[]) {
         }
       })
       artifact.__meta.forEach((meta) => {
-        if (isOverlap(meta.sourceRange, selectionRange)) {
+        if (isOverlap(meta.sourceRange, selectionRanges[0])) {
           artifactsWithinCursorRange.push({
             parentType: artifact.type,
             isParent: true,
@@ -530,5 +530,5 @@ function useSetAppModeFromCursorLocation(artifacts: Artifact[]) {
     ) {
       setGuiMode({ mode: 'default' })
     }
-  }, [artifacts, selectionRange])
+  }, [artifacts, selectionRanges])
 }

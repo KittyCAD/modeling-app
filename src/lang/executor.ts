@@ -258,12 +258,19 @@ export const executor = (
             __meta,
           }
         } else if (declaration.init.type === 'CallExpression') {
-          const result = executeCallExpression(_programMemory, declaration.init, previousPathToNode)
-          _programMemory.root[variableName] =  result?.type === 'sketchGroup' || result?.type === 'extrudeGroup' ? result : {
-            type: 'userVal',
-            value: result,
-            __meta,
-          }
+          const result = executeCallExpression(
+            _programMemory,
+            declaration.init,
+            previousPathToNode
+          )
+          _programMemory.root[variableName] =
+            result?.type === 'sketchGroup' || result?.type === 'extrudeGroup'
+              ? result
+              : {
+                  type: 'userVal',
+                  value: result,
+                  __meta,
+                }
         } else {
           throw new Error(
             'Unsupported declaration type: ' + declaration.init.type
