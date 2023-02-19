@@ -1,7 +1,7 @@
 import { useStore } from '../useStore'
 import { DoubleSide, Vector3, Quaternion } from 'three'
 import { Program } from '../lang/abstractSyntaxTree'
-import { toolTipModification } from '../lang/std/sketch'
+import { addNewSketchLn } from '../lang/std/sketch'
 import { roundOff } from '../lib/utils'
 
 export const SketchPlane = () => {
@@ -38,7 +38,7 @@ export const SketchPlane = () => {
         quaternion={clickDetectQuaternion}
         position={position}
         name={sketchGridName}
-        onClick={(e) => {
+        onPointerDown={(e) => {
           if (!('isTooltip' in guiMode)) {
             return
           }
@@ -64,13 +64,13 @@ export const SketchPlane = () => {
                 body: [],
                 nonCodeMeta: {},
               }
-          const addLinePoint: [number, number] = [point.x, point.y]
-          const { modifiedAst } = toolTipModification(
-            _ast,
+          const { modifiedAst } = addNewSketchLn({
+            node: _ast,
             programMemory,
-            addLinePoint,
-            guiMode
-          )
+            to: [point.x, point.y],
+            fnName: guiMode.sketchMode,
+            pathToNode: guiMode.pathToNode,
+          })
           updateAst(modifiedAst)
         }}
       >

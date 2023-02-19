@@ -1,5 +1,6 @@
 import { ProgramMemory, Path, SourceRange } from '../executor'
 import { Program } from '../abstractSyntaxTree'
+import { TooTip } from '../../useStore'
 
 export interface InternalFirstArg {
   programMemory: ProgramMemory
@@ -44,6 +45,8 @@ export interface ModifyAstBase {
 
 interface addCall extends ModifyAstBase {
   to: [number, number]
+  from?: [number, number]
+  replaceExisting?: boolean
 }
 
 interface updateArgs extends ModifyAstBase {
@@ -65,4 +68,5 @@ export interface SketchLineHelper {
     modifiedAst: Program
     tag: string
   }
+  allowedTransforms: (a: ModifyAstBase) => TooTip[]
 }

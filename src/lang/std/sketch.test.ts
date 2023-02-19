@@ -1,7 +1,7 @@
 import {
   changeSketchArguments,
-  toolTipModification,
   addTagForSketchOnFace,
+  addNewSketchLn,
   getYComponent,
   getXComponent,
 } from './sketch'
@@ -128,10 +128,10 @@ show(mySketch001)`
   })
 })
 
-describe('testing toolTipModification', () => {
+describe('testing addNewSketchLn', () => {
   const lineToChange = 'lineTo([-1.59, -1.54], %)'
   const lineAfterChange = 'lineTo([2, 3], %)'
-  test('toolTipModification', () => {
+  test('addNewSketchLn', () => {
     const code = `
 const mySketch001 = startSketchAt([0, 0])
   |> rx(45, %)
@@ -141,12 +141,11 @@ show(mySketch001)`
     const ast = abstractSyntaxTree(lexer(code))
     const programMemory = executor(ast)
     const sourceStart = code.indexOf(lineToChange)
-    const { modifiedAst } = toolTipModification(ast, programMemory, [2, 3], {
-      mode: 'sketch',
-      sketchMode: 'lineTo',
-      isTooltip: true,
-      rotation: [0, 0, 0, 1],
-      position: [0, 0, 0],
+    const { modifiedAst } = addNewSketchLn({
+      node: ast,
+      programMemory,
+      to: [2, 3],
+      fnName: 'lineTo',
       pathToNode: ['body', 0, 'declarations', '0', 'init'],
     })
     const expectedCode = `

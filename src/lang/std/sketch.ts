@@ -1,16 +1,24 @@
-import { ProgramMemory, Path, SketchGroup, SourceRange } from '../executor'
+import {
+  ProgramMemory,
+  Path,
+  SketchGroup,
+  SourceRange,
+  PathToNode,
+} from '../executor'
 import {
   Program,
   PipeExpression,
   CallExpression,
   VariableDeclarator,
   getNodeFromPath,
+  getNodeFromPathCurry,
   getNodePathFromSourceRange,
   Value,
   Literal,
 } from '../abstractSyntaxTree'
 import { lineGeo } from '../engine'
-import { GuiModes } from '../../useStore'
+import { GuiModes, toolTips, TooTip } from '../../useStore'
+import { getLastIndex } from '../modifyAst'
 
 import { SketchLineHelper, ModifyAstBase, InternalFn } from './stdTypes'
 
@@ -41,6 +49,142 @@ export function getCoordsFromPaths(skGroup: SketchGroup, index = 0): Coords2d {
     return [currentPath.to[0], currentPath.to[1]]
   }
   return [0, 0]
+}
+
+const lineAndLineToAllowedTransforms: SketchLineHelper['allowedTransforms'] = ({
+  node,
+  pathToNode,
+}) => {
+  const { node: callExpression } = getNodeFromPath<CallExpression>(
+    node,
+    pathToNode
+  )
+  if (
+    callExpression.type !== 'CallExpression' ||
+    !toolTips.includes(callExpression.callee.name as any)
+  )
+    return []
+  const fnName = callExpression.callee.name
+  const firstArg = callExpression.arguments?.[0]
+  if (
+    firstArg.type !== 'ArrayExpression' &&
+    !(firstArg.type === 'ObjectExpression')
+  )
+    return []
+  const { val, tag } = getFirstArgValuesForXYFns(callExpression)
+  const [x, y] = val
+  if (x.type !== 'Literal' && y.type !== 'Literal') return []
+  if (x.type !== 'Literal' && y.type === 'Literal' && fnName === 'line')
+    return ['xLine', 'angledLineOfXLength']
+  if (x.type !== 'Literal' && y.type === 'Literal' && fnName === 'lineTo')
+    return ['xLineTo', 'angledLineToX']
+  if (x.type === 'Literal' && y.type !== 'Literal' && fnName === 'line')
+    return ['yLine', 'angledLineOfYLength']
+  if (x.type === 'Literal' && y.type !== 'Literal' && fnName === 'lineTo')
+    return ['yLineTo', 'angledLineToY']
+  if (x.type === 'Literal' && y.type === 'Literal') return toolTips
+  return []
+}
+
+const xyLineAllowedTransforms: SketchLineHelper['allowedTransforms'] = ({
+  node,
+  pathToNode,
+}) => {
+  const { node: callExpression } = getNodeFromPath<CallExpression>(
+    node,
+    pathToNode
+  )
+  const functionName = callExpression.callee.name
+  if (
+    callExpression.type !== 'CallExpression' ||
+    !toolTips.includes(callExpression.callee.name as any)
+  )
+    return []
+  const firstArg = callExpression.arguments?.[0]
+  if (firstArg.type !== 'Literal' && !(firstArg.type === 'ObjectExpression'))
+    return []
+  const { val, tag } = getFirstArgValuesForXYLineFns(callExpression)
+  const x = val
+  if (x.type !== 'Literal' && functionName === 'xLine')
+    return ['xLine', 'line', 'angledLineOfXLength']
+  if (x.type !== 'Literal' && functionName === 'xLineTo')
+    return ['xLineTo', 'lineTo', 'angledLineToX']
+  if (x.type !== 'Literal' && functionName === 'yLine')
+    return ['yLine', 'line', 'angledLineOfYLength']
+  if (x.type !== 'Literal' && functionName === 'yLineTo')
+    return ['yLineTo', 'lineTo', 'angledLineToY']
+  if (x.type === 'Literal' && functionName.startsWith('yLine'))
+    return toolTips.filter((a) => !a.startsWith('yLine'))
+  if (x.type === 'Literal' && functionName.startsWith('xLine'))
+    return toolTips.filter((a) => !a.startsWith('xLine'))
+
+  return []
+}
+
+const angledLineAllowedTransforms: SketchLineHelper['allowedTransforms'] = ({
+  node,
+  pathToNode,
+}) => {
+  const { node: callExpression } = getNodeFromPath<CallExpression>(
+    node,
+    pathToNode
+  )
+  const functionName = callExpression.callee.name
+  if (
+    callExpression.type !== 'CallExpression' ||
+    !toolTips.includes(callExpression.callee.name as any)
+  )
+    return []
+  const firstArg = callExpression.arguments?.[0]
+  if (
+    firstArg.type !== 'ArrayExpression' &&
+    !(firstArg.type === 'ObjectExpression')
+  )
+    return []
+  const { val } = getFirstArgValuesForAngleFns(callExpression)
+  const [angle, length] = val
+  if (angle.type !== 'Literal' && length.type !== 'Literal') return []
+  if (angle.type !== 'Literal' && length.type === 'Literal')
+    return [
+      'angledLineOfYLength',
+      'angledLineOfXLength',
+      'angledLineToY',
+      'angledLineToX',
+      'angledLine',
+    ]
+  if (
+    angle.type === 'Literal' &&
+    length.type !== 'Literal' &&
+    functionName === 'angledLine'
+  )
+    return ['angledLine']
+  if (
+    angle.type === 'Literal' &&
+    length.type !== 'Literal' &&
+    functionName === 'angledLineOfXLength'
+  )
+    return ['angledLineOfXLength', 'line', 'xLine']
+  if (
+    angle.type === 'Literal' &&
+    length.type !== 'Literal' &&
+    functionName === 'angledLineOfYLength'
+  )
+    return ['angledLineOfYLength', 'line', 'yLine']
+  if (
+    angle.type === 'Literal' &&
+    length.type !== 'Literal' &&
+    functionName === 'angledLineToX'
+  )
+    return ['angledLineToX', 'lineTo', 'xLineTo']
+  if (
+    angle.type === 'Literal' &&
+    length.type !== 'Literal' &&
+    functionName === 'angledLineToY'
+  )
+    return ['angledLineToY', 'lineTo', 'yLineTo']
+  if (angle.type === 'Literal' && length.type === 'Literal') return toolTips
+
+  return []
 }
 
 export const lineTo: SketchLineHelper = {
@@ -128,6 +272,7 @@ export const lineTo: SketchLineHelper = {
     }
   },
   addTag: addTagWithTo('default'),
+  allowedTransforms: lineAndLineToAllowedTransforms,
 }
 
 export const line: SketchLineHelper = {
@@ -234,6 +379,7 @@ export const line: SketchLineHelper = {
     }
   },
   addTag: addTagWithTo('default'),
+  allowedTransforms: lineAndLineToAllowedTransforms,
 }
 
 export const xLineTo: SketchLineHelper = {
@@ -256,18 +402,27 @@ export const xLineTo: SketchLineHelper = {
     const [xVal, tag] = typeof data !== 'number' ? [data.to, data.tag] : [data]
     return lineTo.fn(meta, { to: [xVal, from[1]], tag }, previousSketch)
   },
-  add: ({ node, previousProgramMemory, pathToNode, to }) => {
+  add: ({ node, pathToNode, to, replaceExisting }) => {
     const _node = { ...node }
-    const { node: pipe } = getNodeFromPath<PipeExpression>(
-      _node,
-      pathToNode,
-      'PipeExpression'
-    )
+    const getNode = getNodeFromPathCurry(_node, pathToNode)
+    const { node: callExpression } = getNode<CallExpression>('CallExpression')
+    const { node: pipe } = getNode<PipeExpression>('PipeExpression')
+
+    const firstArg = firstArgReplacementXYLine({
+      callExpression,
+      newVal: createLiteral(roundOff(to[0], 2)),
+    })
     const newLine = createCallExpression('xLineTo', [
-      createLiteral(to[0]),
+      firstArg,
       createPipeSubstitution(),
     ])
-    pipe.body = [...pipe.body, newLine]
+
+    const callIndex = getLastIndex(pathToNode)
+    if (replaceExisting) {
+      pipe.body[callIndex] = newLine
+    } else {
+      pipe.body = [...pipe.body, newLine]
+    }
     return {
       modifiedAst: _node,
       pathToNode,
@@ -291,6 +446,7 @@ export const xLineTo: SketchLineHelper = {
     }
   },
   addTag: addTagWithTo('default'),
+  allowedTransforms: xyLineAllowedTransforms,
 }
 
 export const yLineTo: SketchLineHelper = {
@@ -313,18 +469,26 @@ export const yLineTo: SketchLineHelper = {
     const [yVal, tag] = typeof data !== 'number' ? [data.to, data.tag] : [data]
     return lineTo.fn(meta, { to: [from[0], yVal], tag }, previousSketch)
   },
-  add: ({ node, previousProgramMemory, pathToNode, to }) => {
+  add: ({ node, pathToNode, to, replaceExisting }) => {
     const _node = { ...node }
-    const { node: pipe } = getNodeFromPath<PipeExpression>(
-      _node,
-      pathToNode,
-      'PipeExpression'
-    )
+    const getNode = getNodeFromPathCurry(_node, pathToNode)
+    const { node: callExpression } = getNode<CallExpression>('CallExpression')
+    const { node: pipe } = getNode<PipeExpression>('PipeExpression')
+
+    const firstArg = firstArgReplacementXYLine({
+      callExpression,
+      newVal: createLiteral(roundOff(to[1], 2)),
+    })
     const newLine = createCallExpression('yLineTo', [
-      createLiteral(to[1]),
+      firstArg,
       createPipeSubstitution(),
     ])
-    pipe.body = [...pipe.body, newLine]
+    const callIndex = getLastIndex(pathToNode)
+    if (replaceExisting) {
+      pipe.body[callIndex] = newLine
+    } else {
+      pipe.body = [...pipe.body, newLine]
+    }
     return {
       modifiedAst: _node,
       pathToNode,
@@ -348,6 +512,7 @@ export const yLineTo: SketchLineHelper = {
     }
   },
   addTag: addTagWithTo('default'),
+  allowedTransforms: xyLineAllowedTransforms,
 }
 
 export const xLine: SketchLineHelper = {
@@ -366,37 +531,27 @@ export const xLine: SketchLineHelper = {
       typeof data !== 'number' ? [data.length, data.tag] : [data]
     return line.fn(meta, { to: [xVal, 0], tag }, previousSketch)
   },
-  add: ({
-    node,
-    previousProgramMemory,
-    pathToNode,
-    to: length,
-    // from: [number, number],
-  }) => {
+  add: ({ node, pathToNode, to, from, replaceExisting }) => {
     const _node = { ...node }
-    const { node: pipe } = getNodeFromPath<PipeExpression>(
-      _node,
-      pathToNode,
-      'PipeExpression'
-    )
-    const { node: varDec } = getNodeFromPath<VariableDeclarator>(
-      _node,
-      pathToNode,
-      'VariableDeclarator'
-    )
-    const variableName = varDec.id.name
-    const sketch = previousProgramMemory?.root?.[variableName]
-    if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
-    const last = sketch.value[sketch.value.length - 1]
+    const getNode = getNodeFromPathCurry(_node, pathToNode)
+    const { node: callExpression } = getNode<CallExpression>('CallExpression')
+    if (!from) throw new Error('no from') // todo #29 remove
+    const { node: pipe } = getNode<PipeExpression>('PipeExpression')
+    const firstArg = firstArgReplacementXYLine({
+      callExpression,
+      newVal: createLiteral(roundOff(to[0] - from[0], 2)),
+    })
     const newLine = createCallExpression('xLine', [
-      createLiteral(roundOff(length[0] - last.to[0], 2)),
+      firstArg,
       createPipeSubstitution(),
     ])
-    pipe.body = [...pipe.body, newLine]
-    return {
-      modifiedAst: _node,
-      pathToNode,
+    const callIndex = getLastIndex(pathToNode)
+    if (replaceExisting) {
+      pipe.body[callIndex] = newLine
+    } else {
+      pipe.body = [...pipe.body, newLine]
     }
+    return { modifiedAst: _node, pathToNode }
   },
   updateArgs: ({ node, pathToNode, to, from }) => {
     const _node = { ...node }
@@ -416,6 +571,7 @@ export const xLine: SketchLineHelper = {
     }
   },
   addTag: addTagWithTo('length'),
+  allowedTransforms: xyLineAllowedTransforms,
 }
 
 export const yLine: SketchLineHelper = {
@@ -435,37 +591,27 @@ export const yLine: SketchLineHelper = {
       typeof data !== 'number' ? [data.length, data.tag] : [data]
     return line.fn(meta, { to: [0, yVal], tag }, previousSketch)
   },
-  add: ({
-    node,
-    previousProgramMemory,
-    pathToNode,
-    to,
-    // from: [number, number],
-  }) => {
+  add: ({ node, pathToNode, to, from, replaceExisting }) => {
     const _node = { ...node }
-    const { node: pipe } = getNodeFromPath<PipeExpression>(
-      _node,
-      pathToNode,
-      'PipeExpression'
-    )
-    const { node: varDec } = getNodeFromPath<VariableDeclarator>(
-      _node,
-      pathToNode,
-      'VariableDeclarator'
-    )
-    const variableName = varDec.id.name
-    const sketch = previousProgramMemory?.root?.[variableName]
-    if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
-    const last = sketch.value[sketch.value.length - 1]
+    const getNode = getNodeFromPathCurry(_node, pathToNode)
+    const { node: callExpression } = getNode<CallExpression>('CallExpression')
+    if (!from) throw new Error('no from') // todo #29 remove
+    const { node: pipe } = getNode<PipeExpression>('PipeExpression')
+    const firstArg = firstArgReplacementXYLine({
+      callExpression,
+      newVal: createLiteral(roundOff(to[1] - from[1], 2)),
+    })
     const newLine = createCallExpression('yLine', [
-      createLiteral(roundOff(to[1] - last.to[1], 2)),
+      firstArg,
       createPipeSubstitution(),
     ])
-    pipe.body = [...pipe.body, newLine]
-    return {
-      modifiedAst: _node,
-      pathToNode,
+    const callIndex = getLastIndex(pathToNode)
+    if (replaceExisting) {
+      pipe.body[callIndex] = newLine
+    } else {
+      pipe.body = [...pipe.body, newLine]
     }
+    return { modifiedAst: _node, pathToNode }
   },
   updateArgs: ({ node, pathToNode, to, from }) => {
     const _node = { ...node }
@@ -485,6 +631,7 @@ export const yLine: SketchLineHelper = {
     }
   },
   addTag: addTagWithTo('length'),
+  allowedTransforms: xyLineAllowedTransforms,
 }
 
 export const angledLine: SketchLineHelper = {
@@ -597,6 +744,7 @@ export const angledLine: SketchLineHelper = {
     }
   },
   addTag: addTagWithTo('angleLength'),
+  allowedTransforms: angledLineAllowedTransforms,
 }
 
 export const angledLineOfXLength: SketchLineHelper = {
@@ -683,6 +831,7 @@ export const angledLineOfXLength: SketchLineHelper = {
     }
   },
   addTag: addTagWithTo('angleLength'),
+  allowedTransforms: angledLineAllowedTransforms,
 }
 
 export const angledLineOfYLength: SketchLineHelper = {
@@ -768,6 +917,7 @@ export const angledLineOfYLength: SketchLineHelper = {
     }
   },
   addTag: addTagWithTo('angleLength'),
+  allowedTransforms: angledLineAllowedTransforms,
 }
 
 export const angledLineToX: SketchLineHelper = {
@@ -860,6 +1010,7 @@ export const angledLineToX: SketchLineHelper = {
     }
   },
   addTag: addTagWithTo('angleTo'),
+  allowedTransforms: angledLineAllowedTransforms,
 }
 
 export const angledLineToY: SketchLineHelper = {
@@ -952,6 +1103,7 @@ export const angledLineToY: SketchLineHelper = {
     }
   },
   addTag: addTagWithTo('angleTo'),
+  allowedTransforms: angledLineAllowedTransforms,
 }
 
 export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
@@ -998,26 +1150,74 @@ export function changeSketchArguments(
   throw new Error('not a sketch line helper')
 }
 
-export function toolTipModification(
-  node: Program,
-  previousProgramMemory: ProgramMemory,
-  to: [number, number],
-  guiMode: GuiModes
-): { modifiedAst: Program } {
-  if (guiMode.mode !== 'sketch') throw new Error('expected sketch mode')
+interface CreateLineFnCallArgs {
+  node: Program
+  programMemory: ProgramMemory
+  to: [number, number]
+  from: [number, number]
+  fnName: TooTip
+  pathToNode: PathToNode
+}
 
-  const mode = guiMode.sketchMode
-  if (mode in sketchLineHelperMap && mode !== 'selectFace') {
-    const { add } = sketchLineHelperMap[guiMode.sketchMode]
-    return add({
-      node,
-      previousProgramMemory,
-      pathToNode: guiMode.pathToNode,
-      to,
-    })
-  }
+export function addNewSketchLn({
+  node,
+  programMemory: previousProgramMemory,
+  to,
+  fnName,
+  pathToNode,
+}: Omit<CreateLineFnCallArgs, 'from'>): { modifiedAst: Program } {
+  const { add } = sketchLineHelperMap[fnName]
+  const { node: varDec } = getNodeFromPath<VariableDeclarator>(
+    node,
+    pathToNode,
+    'VariableDeclarator'
+  )
+  const variableName = varDec.id.name
+  const sketch = previousProgramMemory?.root?.[variableName]
+  if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
+  const last = sketch.value[sketch.value.length - 1]
+  const from = last.to
 
-  throw new Error('not a sketch line helper')
+  return add({
+    node,
+    previousProgramMemory,
+    pathToNode,
+    to,
+    from,
+    replaceExisting: false,
+  })
+}
+
+export function replaceSketchLine({
+  node,
+  programMemory,
+  sourceRange,
+  fnName,
+  to,
+  from,
+}: {
+  node: Program
+  programMemory: ProgramMemory
+  sourceRange: SourceRange
+  fnName: TooTip
+  to: [number, number]
+  from: [number, number]
+}): { modifiedAst: Program } {
+  if (!toolTips.includes(fnName)) throw new Error('not a tooltip')
+  const _node = { ...node }
+  const thePath = getNodePathFromSourceRange(_node, sourceRange)
+
+  const { add } = sketchLineHelperMap[fnName]
+  console.log('calling it', thePath, fnName)
+  const { modifiedAst } = add({
+    node: _node,
+    previousProgramMemory: programMemory,
+    pathToNode: thePath,
+    to,
+    from,
+    replaceExisting: true,
+  })
+  return { modifiedAst }
 }
 
 export function addTagForSketchOnFace(
@@ -1210,4 +1410,110 @@ export function getXComponent(
   let xComponent = yComponent / Math.tan((normalisedAngle * Math.PI) / 180)
   const sign = normalisedAngle > 180 && normalisedAngle <= 360 ? -1 : 1
   return [sign * xComponent, sign * yComponent]
+}
+
+function getFirstArgValuesForXYFns(callExpression: CallExpression): {
+  val: [Value, Value]
+  tag?: Value
+} {
+  // used for lineTo, line
+  const firstArg = callExpression.arguments[0]
+  if (firstArg.type === 'ArrayExpression') {
+    return { val: [firstArg.elements[0], firstArg.elements[1]] }
+  }
+  if (firstArg.type === 'ObjectExpression') {
+    const to = firstArg.properties.find((p) => p.key.name === 'to')?.value
+    const tag = firstArg.properties.find((p) => p.key.name === 'tag')?.value
+    if (to?.type === 'ArrayExpression') {
+      const [x, y] = to.elements
+      if (to.elements.length !== 2)
+        throw new Error('expected ArrayExpression of length 2')
+      return { val: [to.elements[0], to.elements[1]], tag }
+    }
+  }
+  throw new Error('expected ArrayExpression or ObjectExpression')
+}
+
+function getFirstArgValuesForAngleFns(callExpression: CallExpression): {
+  val: [Value, Value]
+  tag?: Value
+} {
+  // used for angledLine, angledLineOfXLength, angledLineToX, angledLineOfYLength, angledLineToY
+  const firstArg = callExpression.arguments[0]
+  if (firstArg.type === 'ArrayExpression') {
+    return { val: [firstArg.elements[0], firstArg.elements[1]] }
+  }
+  if (firstArg.type === 'ObjectExpression') {
+    const tag = firstArg.properties.find((p) => p.key.name === 'tag')?.value
+    const angle = firstArg.properties.find((p) => p.key.name === 'angle')?.value
+    const secondArgName = ['angledLineToX', 'angledLineTo+'].includes(
+      callExpression?.callee?.name
+    )
+      ? 'to'
+      : 'length'
+    const length = firstArg.properties.find(
+      (p) => p.key.name === secondArgName
+    )?.value
+    if (angle && length) {
+      return { val: [angle, length], tag }
+    }
+  }
+  throw new Error('expected ArrayExpression or ObjectExpression')
+}
+
+function getFirstArgValuesForXYLineFns(callExpression: CallExpression): {
+  val: Value
+  tag?: Value
+} {
+  // used for xLine, yLine, xLineTo, yLineTo
+  const firstArg = callExpression.arguments[0]
+  if (firstArg.type !== 'ObjectExpression') {
+    return { val: firstArg }
+  }
+  const tag = firstArg.properties.find((p) => p.key.name === 'tag')?.value
+  const secondArgName = ['xLineTo', 'yLineTo'].includes(
+    callExpression?.callee?.name
+  )
+    ? 'to'
+    : 'length'
+  const length = firstArg.properties.find(
+    (p) => p.key.name === secondArgName
+  )?.value
+  if (length) {
+    return { val: length, tag }
+  }
+  throw new Error('expected ArrayExpression or ObjectExpression')
+}
+
+function firstArgReplacementXYLine({
+  callExpression,
+  newVal,
+}: {
+  callExpression: CallExpression
+  newVal: Value
+}): Value {
+  const { val, tag } = getFirstArgValuesForXYLineFns(callExpression)
+  const fnName = callExpression?.callee?.name
+  const valToUse = val.type === 'Literal' ? val : newVal
+  if (tag) {
+    return createObjectExpression({
+      tag,
+      [fnName === 'xLineTo' || fnName === 'yLineTo' ? 'to' : 'length']:
+        valToUse,
+    })
+  }
+  return valToUse
+}
+
+export function allowedTransforms(a: ModifyAstBase): TooTip[] {
+  const { node, pathToNode } = a
+  const { node: callExpression } = getNodeFromPath<CallExpression>(
+    node,
+    pathToNode
+  )
+  if (callExpression.type !== 'CallExpression') return []
+  const expressionName = callExpression?.callee?.name
+  const fn = sketchLineHelperMap?.[expressionName]?.allowedTransforms
+  if (fn) return fn(a)
+  return []
 }
