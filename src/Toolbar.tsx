@@ -1,6 +1,7 @@
 import { useStore, toolTips } from './useStore'
 import { extrudeSketch, sketchOnExtrudedFace } from './lang/modifyAst'
 import { getNodePathFromSourceRange } from './lang/abstractSyntaxTree'
+import { HorzVert } from './components/Toolbar/HorzVert'
 
 export const Toolbar = () => {
   const {
@@ -136,6 +137,7 @@ export const Toolbar = () => {
                 ...(guiMode.sketchMode === sketchFnName
                   ? {
                       sketchMode: 'sketchEdit',
+                      // todo: ...guiMod is adding isTooltip: true, will probably just fix with xstate migtaion
                     }
                   : {
                       sketchMode: sketchFnName,
@@ -149,6 +151,8 @@ export const Toolbar = () => {
           </button>
         )
       })}
+      <br></br>
+      <HorzVert />
     </div>
   )
 }

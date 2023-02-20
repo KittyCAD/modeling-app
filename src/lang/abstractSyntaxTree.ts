@@ -1493,15 +1493,28 @@ export function getNodeFromPath<T>(
   }
 }
 
-type Path = (string | number)[]
+export function getNodeFromPathCurry(
+  node: Program,
+  path: (string | number)[]
+): <T>(
+  stopAt: string,
+  returnEarly?: boolean
+) => {
+  node: T
+  path: PathToNode
+} {
+  return <T>(stopAt: string = '', returnEarly = false) => {
+    return getNodeFromPath<T>(node, path, stopAt, returnEarly)
+  }
+}
 
 export function getNodePathFromSourceRange(
   node: Program,
   sourceRange: [number, number],
-  previousPath: Path = []
-): Path {
+  previousPath: PathToNode = []
+): PathToNode {
   const [start, end] = sourceRange
-  let path: Path = [...previousPath, 'body']
+  let path: PathToNode = [...previousPath, 'body']
   const _node = { ...node }
   // loop over each statement in body getting the index with a for loop
   for (

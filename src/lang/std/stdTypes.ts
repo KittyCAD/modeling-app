@@ -1,5 +1,6 @@
 import { ProgramMemory, Path, SourceRange } from '../executor'
-import { Program } from '../abstractSyntaxTree'
+import { Program, Value } from '../abstractSyntaxTree'
+import { TooTip } from '../../useStore'
 
 export interface InternalFirstArg {
   programMemory: ProgramMemory
@@ -44,11 +45,20 @@ export interface ModifyAstBase {
 
 interface addCall extends ModifyAstBase {
   to: [number, number]
+  from?: [number, number]
+  replaceExisting?: boolean
+  createCallback?: TransformCallback // TODO: #29 probably should not be optional
 }
 
 interface updateArgs extends ModifyAstBase {
   from: [number, number]
   to: [number, number]
+}
+
+export type TransformCallback = (args: [Value, Value]) => Value
+
+export type SketchCallTransfromMap = {
+  [key in TooTip]: TransformCallback
 }
 
 export interface SketchLineHelper {
@@ -65,4 +75,5 @@ export interface SketchLineHelper {
     modifiedAst: Program
     tag: string
   }
+  allowedTransforms: (a: ModifyAstBase) => Partial<SketchCallTransfromMap>
 }

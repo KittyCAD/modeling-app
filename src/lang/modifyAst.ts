@@ -394,7 +394,7 @@ export function sketchOnExtrudedFace(
   }
 }
 
-const getLastIndex = (pathToNode: PathToNode): number => {
+export const getLastIndex = (pathToNode: PathToNode): number => {
   const last = pathToNode[pathToNode.length - 1]
   if (typeof last === 'number') {
     return last
