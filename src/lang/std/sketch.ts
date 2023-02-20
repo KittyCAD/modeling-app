@@ -20,7 +20,13 @@ import { lineGeo } from '../engine'
 import { GuiModes, toolTips, TooTip } from '../../useStore'
 import { getLastIndex } from '../modifyAst'
 
-import { SketchLineHelper, ModifyAstBase, InternalFn } from './stdTypes'
+import {
+  SketchLineHelper,
+  ModifyAstBase,
+  InternalFn,
+  SketchCallTransfromMap,
+  TransformCallback,
+} from './stdTypes'
 
 import {
   createLiteral,
@@ -33,8 +39,6 @@ import {
   findUniqueName,
 } from '../modifyAst'
 import { roundOff, getLength, getAngle } from '../../lib/utils'
-
-// import { getYComponent, getXComponent } from '../sketch'
 
 export type Coords2d = [number, number]
 
@@ -51,9 +55,82 @@ export function getCoordsFromPaths(skGroup: SketchGroup, index = 0): Coords2d {
   return [0, 0]
 }
 
+function createCallWrapper(
+  a: TooTip,
+  val: [Value, Value] | Value,
+  tag?: Value
+) {
+  return createCallExpression(a, [
+    createFirstArg(a, val, tag),
+    createPipeSubstitution(),
+  ])
+}
+
+function createFirstArg(
+  sketchFn: TooTip,
+  val: Value | [Value, Value],
+  tag?: Value
+): Value {
+  if (!tag) {
+    if (Array.isArray(val)) {
+      return createArrayExpression(val)
+    }
+    return val
+  }
+  if (Array.isArray(val)) {
+    if (['line', 'lineTo'].includes(sketchFn))
+      return createObjectExpression({ to: createArrayExpression(val), tag })
+    if (
+      ['angledLine', 'angledLineOfXLength', 'angledLineOfYLength'].includes(
+        sketchFn
+      )
+    )
+      return createObjectExpression({ angle: val[0], length: val[1], tag })
+    if (['angledLineToX', 'angledLineToY'].includes(sketchFn))
+      return createObjectExpression({ angle: val[0], to: val[1], tag })
+  } else {
+    if (['xLine', 'yLine'].includes(sketchFn))
+      return createObjectExpression({ length: val, tag })
+    if (['xLineTo', 'yLineTo'].includes(sketchFn))
+      return createObjectExpression({ to: val, tag })
+  }
+  throw new Error('all sketch line types should have been covered')
+}
+
+function tranformerDefaults(
+  filterOut: TooTip[] = [],
+  tag?: Value
+): Partial<SketchCallTransfromMap> {
+  const All: SketchCallTransfromMap = {
+    line: (args) => createCallWrapper('line', args, tag),
+    lineTo: (args) => createCallWrapper('lineTo', args, tag),
+    angledLine: (args) => createCallWrapper('angledLine', args, tag),
+    angledLineOfXLength: (args) =>
+      createCallWrapper('angledLineOfXLength', args, tag),
+    angledLineOfYLength: (args) =>
+      createCallWrapper('angledLineOfYLength', args, tag),
+    angledLineToX: (args) => createCallWrapper('angledLineToX', args, tag),
+    angledLineToY: (args) => createCallWrapper('angledLineToY', args, tag),
+    xLine: (args) => createCallWrapper('xLine', args[0], tag),
+    xLineTo: (args) => createCallWrapper('xLineTo', args[0], tag),
+    yLine: (args) => createCallWrapper('yLine', args[1], tag),
+    yLineTo: (args) => createCallWrapper('yLineTo', args[1], tag),
+  }
+  const result: Partial<SketchCallTransfromMap> = {}
+  toolTips.forEach((key) => {
+    if (!filterOut.includes(key)) {
+      result[key] = All[key]
+    }
+  })
+  return result
+}
+
 const lineAndLineToAllowedTransforms: SketchLineHelper['allowedTransforms'] = ({
   node,
   pathToNode,
+}: {
+  node: Program
+  pathToNode: PathToNode
 }) => {
   const { node: callExpression } = getNodeFromPath<CallExpression>(
     node,
@@ -63,128 +140,201 @@ const lineAndLineToAllowedTransforms: SketchLineHelper['allowedTransforms'] = ({
     callExpression.type !== 'CallExpression' ||
     !toolTips.includes(callExpression.callee.name as any)
   )
-    return []
-  const fnName = callExpression.callee.name
+    return {}
+  const fnName = callExpression.callee.name as TooTip
   const firstArg = callExpression.arguments?.[0]
   if (
     firstArg.type !== 'ArrayExpression' &&
     !(firstArg.type === 'ObjectExpression')
   )
-    return []
+    return {}
   const { val, tag } = getFirstArgValuesForXYFns(callExpression)
   const [x, y] = val
-  if (x.type !== 'Literal' && y.type !== 'Literal') return []
+  if (x.type !== 'Literal' && y.type !== 'Literal') return {}
   if (x.type !== 'Literal' && y.type === 'Literal' && fnName === 'line')
-    return ['xLine', 'angledLineOfXLength']
+    return {
+      xLine: (args) => createCallWrapper('xLine', x, tag),
+      angledLineOfXLength: (args) =>
+        createCallWrapper('angledLineOfXLength', [args[0], x], tag),
+    }
   if (x.type !== 'Literal' && y.type === 'Literal' && fnName === 'lineTo')
-    return ['xLineTo', 'angledLineToX']
+    return {
+      xLineTo: (args) => createCallWrapper('xLineTo', x, tag),
+      angledLineToX: (args) =>
+        createCallWrapper('angledLineToX', [args[0], x], tag),
+    }
   if (x.type === 'Literal' && y.type !== 'Literal' && fnName === 'line')
-    return ['yLine', 'angledLineOfYLength']
+    return {
+      yLine: (args) => createCallWrapper('yLine', y, tag),
+      angledLineOfYLength: (args) =>
+        createCallWrapper('angledLineOfYLength', [args[0], y], tag),
+    }
   if (x.type === 'Literal' && y.type !== 'Literal' && fnName === 'lineTo')
-    return ['yLineTo', 'angledLineToY']
-  if (x.type === 'Literal' && y.type === 'Literal') return toolTips
-  return []
+    return {
+      yLineTo: (args) => createCallWrapper('yLineTo', y, tag),
+      angledLineToY: (args) =>
+        createCallWrapper('angledLineToY', [args[0], y], tag),
+    }
+  if (x.type === 'Literal' && y.type === 'Literal')
+    return tranformerDefaults([], tag)
+
+  return {}
 }
 
 const xyLineAllowedTransforms: SketchLineHelper['allowedTransforms'] = ({
   node,
   pathToNode,
+}: {
+  node: Program
+  pathToNode: PathToNode
 }) => {
   const { node: callExpression } = getNodeFromPath<CallExpression>(
     node,
     pathToNode
   )
-  const functionName = callExpression.callee.name
   if (
     callExpression.type !== 'CallExpression' ||
     !toolTips.includes(callExpression.callee.name as any)
   )
-    return []
+    return {}
+  const fnName = callExpression.callee.name
   const firstArg = callExpression.arguments?.[0]
   if (firstArg.type !== 'Literal' && !(firstArg.type === 'ObjectExpression'))
-    return []
+    return {}
   const { val, tag } = getFirstArgValuesForXYLineFns(callExpression)
   const x = val
-  if (x.type !== 'Literal' && functionName === 'xLine')
-    return ['xLine', 'line', 'angledLineOfXLength']
-  if (x.type !== 'Literal' && functionName === 'xLineTo')
-    return ['xLineTo', 'lineTo', 'angledLineToX']
-  if (x.type !== 'Literal' && functionName === 'yLine')
-    return ['yLine', 'line', 'angledLineOfYLength']
-  if (x.type !== 'Literal' && functionName === 'yLineTo')
-    return ['yLineTo', 'lineTo', 'angledLineToY']
-  if (x.type === 'Literal' && functionName.startsWith('yLine'))
-    return toolTips.filter((a) => !a.startsWith('yLine'))
-  if (x.type === 'Literal' && functionName.startsWith('xLine'))
-    return toolTips.filter((a) => !a.startsWith('xLine'))
+  if (x.type !== 'Literal' && fnName === 'xLine')
+    return {
+      xLine: (args) => createCallWrapper('xLine', x, tag),
+      line: (args) => createCallWrapper('line', [x, args[1]], tag),
+      angledLineOfXLength: (args) =>
+        createCallWrapper('angledLineOfXLength', [args[0], x], tag),
+    }
+  if (x.type !== 'Literal' && fnName === 'xLineTo')
+    return {
+      xLineTo: (args) => createCallWrapper('xLineTo', x, tag),
+      lineTo: (args) => createCallWrapper('lineTo', [x, args[1]], tag),
+      angledLineToX: (args) =>
+        createCallWrapper('angledLineToX', [args[0], x], tag),
+    }
+  if (x.type !== 'Literal' && fnName === 'yLine')
+    return {
+      yLine: (args) => createCallWrapper('yLine', x, tag),
+      line: (args) => createCallWrapper('line', [args[0], x], tag),
+      angledLineOfYLength: (args) =>
+        createCallWrapper('angledLineOfYLength', [args[0], x], tag),
+    }
+  if (x.type !== 'Literal' && fnName === 'yLineTo')
+    return {
+      yLineTo: (args) => createCallWrapper('yLineTo', x, tag),
+      lineTo: (args) => createCallWrapper('lineTo', [args[0], x], tag),
+      angledLineToY: (args) =>
+        createCallWrapper('angledLineToY', [args[0], x], tag),
+    }
+  if (x.type === 'Literal' && fnName.startsWith('yLine'))
+    return tranformerDefaults(['yLine'], tag)
+  if (x.type === 'Literal' && fnName.startsWith('xLine'))
+    return tranformerDefaults(['xLine'], tag)
 
-  return []
+  return {}
 }
 
 const angledLineAllowedTransforms: SketchLineHelper['allowedTransforms'] = ({
   node,
   pathToNode,
+}: {
+  node: Program
+  pathToNode: PathToNode
 }) => {
   const { node: callExpression } = getNodeFromPath<CallExpression>(
     node,
     pathToNode
   )
-  const functionName = callExpression.callee.name
   if (
     callExpression.type !== 'CallExpression' ||
     !toolTips.includes(callExpression.callee.name as any)
   )
-    return []
+    return {}
+  const fnName = callExpression.callee.name as TooTip
   const firstArg = callExpression.arguments?.[0]
   if (
     firstArg.type !== 'ArrayExpression' &&
     !(firstArg.type === 'ObjectExpression')
   )
-    return []
-  const { val } = getFirstArgValuesForAngleFns(callExpression)
+    return {}
+  const { val, tag } = getFirstArgValuesForAngleFns(callExpression)
   const [angle, length] = val
-  if (angle.type !== 'Literal' && length.type !== 'Literal') return []
+  if (angle.type !== 'Literal' && length.type !== 'Literal') return {}
   if (angle.type !== 'Literal' && length.type === 'Literal')
-    return [
-      'angledLineOfYLength',
-      'angledLineOfXLength',
-      'angledLineToY',
-      'angledLineToX',
-      'angledLine',
-    ]
+    return {
+      angledLineOfYLength: (args) =>
+        createCallWrapper('angledLineOfYLength', [angle, args[1]], tag),
+      angledLineOfXLength: (args) =>
+        createCallWrapper('angledLineOfXLength', [angle, args[1]], tag),
+      angledLineToY: (args) =>
+        createCallWrapper('angledLineToY', [angle, args[1]], tag),
+      angledLineToX: (args) =>
+        createCallWrapper('angledLineToX', [angle, args[1]], tag),
+      angledLine: (args) =>
+        createCallWrapper('angledLine', [angle, args[1]], tag),
+    }
   if (
     angle.type === 'Literal' &&
     length.type !== 'Literal' &&
-    functionName === 'angledLine'
+    fnName === 'angledLine'
   )
-    return ['angledLine']
+    return {
+      angledLine: (args) =>
+        createCallWrapper('angledLine', [args[0], length], tag),
+    }
   if (
     angle.type === 'Literal' &&
     length.type !== 'Literal' &&
-    functionName === 'angledLineOfXLength'
+    fnName === 'angledLineOfXLength'
   )
-    return ['angledLineOfXLength', 'line', 'xLine']
+    return {
+      angledLineOfXLength: (args) =>
+        createCallWrapper('angledLineOfXLength', [angle, args[1]], tag),
+      line: (args) => createCallWrapper('line', [length, args[1]], tag),
+      xLine: (args) => createCallWrapper('xLine', length, tag),
+    }
   if (
     angle.type === 'Literal' &&
     length.type !== 'Literal' &&
-    functionName === 'angledLineOfYLength'
+    fnName === 'angledLineOfYLength'
   )
-    return ['angledLineOfYLength', 'line', 'yLine']
+    return {
+      angledLineOfYLength: (args) =>
+        createCallWrapper('angledLineOfYLength', [args[0], length], tag),
+      line: (args) => createCallWrapper('line', [args[0], length], tag),
+      yLine: (args) => createCallWrapper('yLine', length, tag),
+    }
   if (
     angle.type === 'Literal' &&
     length.type !== 'Literal' &&
-    functionName === 'angledLineToX'
+    fnName === 'angledLineToX'
   )
-    return ['angledLineToX', 'lineTo', 'xLineTo']
+    return {
+      angledLineToX: (args) =>
+        createCallWrapper('angledLineToX', [args[0], length], tag),
+      lineTo: (args) => createCallWrapper('lineTo', [length, args[1]], tag),
+      xLineTo: (args) => createCallWrapper('xLineTo', length, tag),
+    }
   if (
     angle.type === 'Literal' &&
     length.type !== 'Literal' &&
-    functionName === 'angledLineToY'
+    fnName === 'angledLineToY'
   )
-    return ['angledLineToY', 'lineTo', 'yLineTo']
-  if (angle.type === 'Literal' && length.type === 'Literal') return toolTips
+    return {
+      angledLineToY: (args) =>
+        createCallWrapper('angledLineToY', [args[0], length], tag),
+      lineTo: (args) => createCallWrapper('lineTo', [args[0], length], tag),
+      yLineTo: (args) => createCallWrapper('yLineTo', length, tag),
+    }
+  if (angle.type === 'Literal' && length.type === 'Literal')
+    return tranformerDefaults([], tag)
 
-  return []
+  return {}
 }
 
 export const lineTo: SketchLineHelper = {
@@ -402,20 +552,22 @@ export const xLineTo: SketchLineHelper = {
     const [xVal, tag] = typeof data !== 'number' ? [data.to, data.tag] : [data]
     return lineTo.fn(meta, { to: [xVal, from[1]], tag }, previousSketch)
   },
-  add: ({ node, pathToNode, to, replaceExisting }) => {
+  add: ({ node, pathToNode, to, replaceExisting, createCallback }) => {
     const _node = { ...node }
     const getNode = getNodeFromPathCurry(_node, pathToNode)
     const { node: callExpression } = getNode<CallExpression>('CallExpression')
     const { node: pipe } = getNode<PipeExpression>('PipeExpression')
 
-    const firstArg = firstArgReplacementXYLine({
-      callExpression,
-      newVal: createLiteral(roundOff(to[0], 2)),
-    })
-    const newLine = createCallExpression('xLineTo', [
-      firstArg,
-      createPipeSubstitution(),
-    ])
+    const newVal = createLiteral(roundOff(to[0], 2))
+    const firstArg = replaceExisting
+      ? firstArgReplacementXYLine({
+          callExpression,
+          newVal: createLiteral(roundOff(to[0], 2)),
+        })
+      : newVal
+    const newLine = createCallback
+      ? createCallback([firstArg, firstArg])
+      : createCallExpression('xLineTo', [firstArg, createPipeSubstitution()])
 
     const callIndex = getLastIndex(pathToNode)
     if (replaceExisting) {
@@ -475,10 +627,13 @@ export const yLineTo: SketchLineHelper = {
     const { node: callExpression } = getNode<CallExpression>('CallExpression')
     const { node: pipe } = getNode<PipeExpression>('PipeExpression')
 
-    const firstArg = firstArgReplacementXYLine({
-      callExpression,
-      newVal: createLiteral(roundOff(to[1], 2)),
-    })
+    const newVal = createLiteral(roundOff(to[1], 2))
+    const firstArg = replaceExisting
+      ? firstArgReplacementXYLine({
+          callExpression,
+          newVal,
+        })
+      : newVal
     const newLine = createCallExpression('yLineTo', [
       firstArg,
       createPipeSubstitution(),
@@ -531,20 +686,23 @@ export const xLine: SketchLineHelper = {
       typeof data !== 'number' ? [data.length, data.tag] : [data]
     return line.fn(meta, { to: [xVal, 0], tag }, previousSketch)
   },
-  add: ({ node, pathToNode, to, from, replaceExisting }) => {
+  add: ({ node, pathToNode, to, from, replaceExisting, createCallback }) => {
     const _node = { ...node }
     const getNode = getNodeFromPathCurry(_node, pathToNode)
     const { node: callExpression } = getNode<CallExpression>('CallExpression')
     if (!from) throw new Error('no from') // todo #29 remove
     const { node: pipe } = getNode<PipeExpression>('PipeExpression')
-    const firstArg = firstArgReplacementXYLine({
-      callExpression,
-      newVal: createLiteral(roundOff(to[0] - from[0], 2)),
-    })
-    const newLine = createCallExpression('xLine', [
-      firstArg,
-      createPipeSubstitution(),
-    ])
+
+    const newVal = createLiteral(roundOff(to[0] - from[0], 2))
+    const firstArg = replaceExisting
+      ? firstArgReplacementXYLine({
+          callExpression,
+          newVal,
+        })
+      : newVal
+    const newLine = createCallback
+      ? createCallback([firstArg, firstArg])
+      : createCallExpression('xLine', [firstArg, createPipeSubstitution()])
     const callIndex = getLastIndex(pathToNode)
     if (replaceExisting) {
       pipe.body[callIndex] = newLine
@@ -597,10 +755,13 @@ export const yLine: SketchLineHelper = {
     const { node: callExpression } = getNode<CallExpression>('CallExpression')
     if (!from) throw new Error('no from') // todo #29 remove
     const { node: pipe } = getNode<PipeExpression>('PipeExpression')
-    const firstArg = firstArgReplacementXYLine({
-      callExpression,
-      newVal: createLiteral(roundOff(to[1] - from[1], 2)),
-    })
+    const newVal = createLiteral(roundOff(to[1] - from[1], 2))
+    const firstArg = replaceExisting
+      ? firstArgReplacementXYLine({
+          callExpression,
+          newVal,
+        })
+      : newVal
     const newLine = createCallExpression('yLine', [
       firstArg,
       createPipeSubstitution(),
@@ -1195,6 +1356,7 @@ export function replaceSketchLine({
   fnName,
   to,
   from,
+  createCallback,
 }: {
   node: Program
   programMemory: ProgramMemory
@@ -1202,13 +1364,13 @@ export function replaceSketchLine({
   fnName: TooTip
   to: [number, number]
   from: [number, number]
+  createCallback: TransformCallback
 }): { modifiedAst: Program } {
   if (!toolTips.includes(fnName)) throw new Error('not a tooltip')
   const _node = { ...node }
   const thePath = getNodePathFromSourceRange(_node, sourceRange)
 
   const { add } = sketchLineHelperMap[fnName]
-  console.log('calling it', thePath, fnName)
   const { modifiedAst } = add({
     node: _node,
     previousProgramMemory: programMemory,
@@ -1216,6 +1378,7 @@ export function replaceSketchLine({
     to,
     from,
     replaceExisting: true,
+    createCallback,
   })
   return { modifiedAst }
 }
@@ -1446,8 +1609,8 @@ function getFirstArgValuesForAngleFns(callExpression: CallExpression): {
   if (firstArg.type === 'ObjectExpression') {
     const tag = firstArg.properties.find((p) => p.key.name === 'tag')?.value
     const angle = firstArg.properties.find((p) => p.key.name === 'angle')?.value
-    const secondArgName = ['angledLineToX', 'angledLineTo+'].includes(
-      callExpression?.callee?.name
+    const secondArgName = ['angledLineToX', 'angledLineToY'].includes(
+      callExpression?.callee?.name as TooTip
     )
       ? 'to'
       : 'length'
@@ -1505,15 +1668,17 @@ function firstArgReplacementXYLine({
   return valToUse
 }
 
-export function allowedTransforms(a: ModifyAstBase): TooTip[] {
+export function allowedTransforms(
+  a: ModifyAstBase
+): Partial<SketchCallTransfromMap> {
   const { node, pathToNode } = a
   const { node: callExpression } = getNodeFromPath<CallExpression>(
     node,
     pathToNode
   )
-  if (callExpression.type !== 'CallExpression') return []
+  if (callExpression.type !== 'CallExpression') return {}
   const expressionName = callExpression?.callee?.name
   const fn = sketchLineHelperMap?.[expressionName]?.allowedTransforms
   if (fn) return fn(a)
-  return []
+  return {}
 }

@@ -11,25 +11,23 @@ import {
 import { toolTips } from '../../useStore'
 import { allowedTransforms, replaceSketchLine } from '../../lang/std/sketch'
 import { ProgramMemory, SketchGroup } from '../../lang/executor'
+import { TransformCallback } from '../../lang/std/stdTypes'
 
 export const HorzVert = () => {
-  const {
-    setGuiMode,
-    guiMode,
-    selectionRanges,
-    ast,
-    programMemory,
-    updateAst,
-  } = useStore((s) => ({
-    guiMode: s.guiMode,
-    setGuiMode: s.setGuiMode,
-    ast: s.ast,
-    updateAst: s.updateAst,
-    selectionRanges: s.selectionRanges,
-    programMemory: s.programMemory,
-  }))
+  const { guiMode, selectionRanges, ast, programMemory, updateAst } = useStore(
+    (s) => ({
+      guiMode: s.guiMode,
+      ast: s.ast,
+      updateAst: s.updateAst,
+      selectionRanges: s.selectionRanges,
+      programMemory: s.programMemory,
+    })
+  )
   const [enableHorz, setEnableHorz] = useState(false)
   const [enableVert, setEnableVert] = useState(false)
+  const [allowedTransformsMap, setAllowedTransformsMap] = useState<
+    ReturnType<typeof allowedTransforms>[]
+  >([])
   useEffect(() => {
     if (!ast) return
     const islineFn = (expression: Value): boolean => {
@@ -50,8 +48,12 @@ export const HorzVert = () => {
         previousProgramMemory: programMemory,
       })
     )
-    const horzAllowed = includedInAll(allowedSwaps, ['xLine', 'xLineTo'])
-    const vertAllowed = includedInAll(allowedSwaps, ['yLine', 'yLineTo'])
+    setAllowedTransformsMap(allowedSwaps)
+    const allowedSwapsnames = allowedSwaps.map((a) =>
+      Object.keys(a)
+    ) as TooTip[][]
+    const horzAllowed = includedInAll(allowedSwapsnames, ['xLine', 'xLineTo'])
+    const vertAllowed = includedInAll(allowedSwapsnames, ['yLine', 'yLineTo'])
     const isCursorsInLineFns = nodes.every(islineFn)
     const _enableHorz =
       isCursorsInLineFns &&
@@ -72,25 +74,29 @@ export const HorzVert = () => {
     if (ast) {
       // deep clone since we are mutating in a loop, of which any could fail
       let node = JSON.parse(JSON.stringify(ast))
-      selectionRanges.forEach((range) => {
+      selectionRanges.forEach((range, index) => {
         const { node: callExpression } = getNodeFromPath<CallExpression>(
           node,
           getNodePathFromSourceRange(node, range)
         )
         const [relLine, absLine]: [TooTip, TooTip] =
           vertOrHor === 'vert' ? ['yLine', 'yLineTo'] : ['xLine', 'xLineTo']
+        const finalLine = [
+          'line',
+          'angledLine',
+          'angledLineOfXLength',
+          'angledLineOfYLength',
+        ].includes(callExpression.callee.name)
+          ? relLine
+          : absLine
+        const createCallBackHelper = allowedTransformsMap[index][finalLine]
+        if (!createCallBackHelper) throw new Error('no callback helper')
         const { modifiedAst } = swapSketchHelper(
           programMemory,
           node,
           range,
-          [
-            'line',
-            'angledLine',
-            'angledLineOfXLength',
-            'angledLineOfYLength',
-          ].includes(callExpression.callee.name)
-            ? relLine
-            : absLine
+          finalLine,
+          createCallBackHelper
         )
         node = modifiedAst
       })
@@ -136,7 +142,8 @@ function swapSketchHelper(
   programMemory: ProgramMemory,
   ast: Program,
   range: Range,
-  newFnName: TooTip
+  newFnName: TooTip,
+  createCallback: TransformCallback
 ): { modifiedAst: Program } {
   const path = getNodePathFromSourceRange(ast, range)
   const varDec = getNodeFromPath<VariableDeclarator>(
@@ -157,6 +164,7 @@ function swapSketchHelper(
     fnName: newFnName,
     to,
     from,
+    createCallback,
   })
   return { modifiedAst }
 }
