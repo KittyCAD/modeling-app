@@ -79,7 +79,7 @@ function MovingSphere({
     const handleMouseUp = () => {
       if (isMouseDown && ast) {
         const thePath = getNodePathFromSourceRange(ast, sourceRange)
-        const yo = point2DRef.current.clone()
+        const current2d = point2DRef.current.clone()
         const inverseQuaternion = new Quaternion()
         if (
           guiMode.mode === 'canEditSketch' ||
@@ -88,8 +88,8 @@ function MovingSphere({
           inverseQuaternion.set(...guiMode.rotation)
           inverseQuaternion.invert()
         }
-        yo.sub(new Vector3(...position).applyQuaternion(inverseQuaternion))
-        let [x, y] = [roundOff(yo.x, 2), roundOff(yo.y, 2)]
+        current2d.sub(new Vector3(...position).applyQuaternion(inverseQuaternion))
+        let [x, y] = [roundOff(current2d.x, 2), roundOff(current2d.y, 2)]
         let theNewPoints: [number, number] = [x, y]
         const { modifiedAst } = changeSketchArguments(
           ast,

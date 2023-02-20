@@ -1,5 +1,8 @@
 import { parseExpression, reversePolishNotation } from './astMathExpressions'
 import { lexer } from './tokeniser'
+import { initPromise } from './rust'
+
+beforeAll(() => initPromise)
 
 describe('parseExpression', () => {
   it('parses a simple expression', () => {

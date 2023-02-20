@@ -12,6 +12,9 @@ import {
 } from '../abstractSyntaxTree'
 import { recast } from '../recast'
 import { executor } from '../executor'
+import { initPromise } from '../rust'
+
+beforeAll(() => initPromise)
 
 const eachQuad: [number, [number, number]][] = [
   [-315, [1, 1]],
@@ -159,32 +162,34 @@ show(mySketch001)`
 })
 
 describe('testing addTagForSketchOnFace', () => {
-  const originalLine = 'lineTo([-1.59, -1.54], %)'
-  const genCode = (line: string) => `
-const mySketch001 = startSketchAt([0, 0])
-  |> rx(45, %)
-  |> ${line}
-  |> lineTo([0.46, -5.82], %)
-show(mySketch001)`
-  const code = genCode(originalLine)
-  const ast = abstractSyntaxTree(lexer(code))
-  const programMemory = executor(ast)
-  const sourceStart = code.indexOf(originalLine)
-  const sourceRange: [number, number] = [
-    sourceStart,
-    sourceStart + originalLine.length,
-  ]
-  const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
-  const { modifiedAst } = addTagForSketchOnFace(
-    {
-      previousProgramMemory: programMemory,
-      pathToNode,
-      node: ast,
-    },
-    'lineTo'
-  )
-  const expectedCode = genCode(
-    "lineTo({ to: [-1.59, -1.54], tag: 'seg01' }, %)"
-  )
-  expect(recast(modifiedAst)).toBe(expectedCode)
+  it('needs to be in it', () => {
+    const originalLine = 'lineTo([-1.59, -1.54], %)'
+    const genCode = (line: string) => `
+  const mySketch001 = startSketchAt([0, 0])
+    |> rx(45, %)
+    |> ${line}
+    |> lineTo([0.46, -5.82], %)
+  show(mySketch001)`
+    const code = genCode(originalLine)
+    const ast = abstractSyntaxTree(lexer(code))
+    const programMemory = executor(ast)
+    const sourceStart = code.indexOf(originalLine)
+    const sourceRange: [number, number] = [
+      sourceStart,
+      sourceStart + originalLine.length,
+    ]
+    const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
+    const { modifiedAst } = addTagForSketchOnFace(
+      {
+        previousProgramMemory: programMemory,
+        pathToNode,
+        node: ast,
+      },
+      'lineTo'
+    )
+    const expectedCode = genCode(
+      "lineTo({ to: [-1.59, -1.54], tag: 'seg01' }, %)"
+    )
+    expect(recast(modifiedAst)).toBe(expectedCode)
+  })
 })

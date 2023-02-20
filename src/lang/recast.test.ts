@@ -2,6 +2,9 @@ import { recast } from './recast'
 import { Program, abstractSyntaxTree } from './abstractSyntaxTree'
 import { lexer, Token } from './tokeniser'
 import fs from 'node:fs'
+import { initPromise } from './rust'
+
+beforeAll(() => initPromise)
 
 describe('recast', () => {
   it('recasts a simple program', () => {

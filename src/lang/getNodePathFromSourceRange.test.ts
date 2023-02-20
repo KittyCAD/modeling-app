@@ -1,6 +1,9 @@
 import { getNodePathFromSourceRange } from './abstractSyntaxTree'
 import { lexer } from './tokeniser'
 import { abstractSyntaxTree, getNodeFromPath } from './abstractSyntaxTree'
+import { initPromise } from './rust'
+
+beforeAll(() => initPromise)
 
 describe('testing getNodePathFromSourceRange', () => {
   it('test it gets the right path for a `lineTo` CallExpression within a SketchExpression', () => {

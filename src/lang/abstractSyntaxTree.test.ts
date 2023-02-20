@@ -5,6 +5,9 @@ import {
   findEndOfBinaryExpression,
 } from './abstractSyntaxTree'
 import { lexer } from './tokeniser'
+import { initPromise } from './rust'
+
+beforeAll(() => initPromise)
 
 describe('findClosingBrace', () => {
   test('finds the closing brace', () => {

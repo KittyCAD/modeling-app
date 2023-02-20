@@ -1,6 +1,9 @@
 import { abstractSyntaxTree } from './abstractSyntaxTree'
 import { lexer } from './tokeniser'
 import { executor, SketchGroup, ExtrudeGroup } from './executor'
+import { initPromise } from './rust'
+
+beforeAll(() => initPromise)
 
 describe('testing artifacts', () => {
   test('sketch artifacts', () => {

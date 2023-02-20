@@ -11,7 +11,10 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: '18.x'
+          node-version: '16.x'
       - run: yarn install
+      - run: yarn build:wasm:ci
+      - run: yarn simpleserver:ci
       - run: yarn test:nowatch
       - run: yarn test:cov
+      - run: yarn test:rust

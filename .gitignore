@@ -21,3 +21,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# rust
+src/wasm-lib/target
+public/wasm_lib_bg.wasm

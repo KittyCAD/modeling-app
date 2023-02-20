@@ -3,6 +3,9 @@ import fs from 'node:fs'
 import { abstractSyntaxTree } from './abstractSyntaxTree'
 import { lexer } from './tokeniser'
 import { executor, ProgramMemory, Path, SketchGroup } from './executor'
+import { initPromise } from './rust'
+
+beforeAll(() => initPromise)
 
 describe('test', () => {
   it('test assigning two variables, the second summing with the first', () => {
