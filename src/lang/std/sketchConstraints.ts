@@ -8,7 +8,6 @@ import {
 import { replaceSketchLine } from '../../lang/std/sketch'
 import { ProgramMemory, SketchGroup } from '../../lang/executor'
 import { TransformCallback } from '../../lang/std/stdTypes'
-// import { getNodeFromPath, getNodePathFromSourceRange } from '../../lang/abstractSyntaxTree'
 
 export function swapSketchHelper(
   programMemory: ProgramMemory,

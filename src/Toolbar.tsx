@@ -131,7 +131,7 @@ export const Toolbar = () => {
             className={`border m-1 px-1 rounded ${
               guiMode.sketchMode === sketchFnName && 'bg-gray-400'
             }`}
-            onClick={() => {
+            onClick={() =>
               setGuiMode({
                 ...guiMode,
                 ...(guiMode.sketchMode === sketchFnName
@@ -144,7 +144,7 @@ export const Toolbar = () => {
                       isTooltip: true,
                     }),
               })
-            }}
+            }
           >
             {sketchFnName}
             {guiMode.sketchMode === sketchFnName && '✅'}

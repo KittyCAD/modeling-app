@@ -7,7 +7,6 @@ export function useSetCursor(sourceRange: Range) {
     isShiftDown: s.isShiftDown,
   }))
   return () => {
-    console.log('isShiftDown', isShiftDown, selectionRanges, sourceRange)
     const ranges = isShiftDown
       ? [...selectionRanges, sourceRange]
       : [sourceRange]
