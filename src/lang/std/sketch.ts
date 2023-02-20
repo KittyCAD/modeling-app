@@ -855,7 +855,7 @@ export const angledLine: SketchLineHelper = {
   },
   updateArgs: ({ node, pathToNode, to, from }) => {
     const _node = { ...node }
-    const { node: callExpression, path } = getNodeFromPath<CallExpression>(
+    const { node: callExpression } = getNodeFromPath<CallExpression>(
       _node,
       pathToNode
     )
