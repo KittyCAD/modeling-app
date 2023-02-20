@@ -118,7 +118,6 @@ show(mySketch001)`
       {
         mode: 'sketch',
         sketchMode: 'sketchEdit',
-        isTooltip: true,
         rotation: [0, 0, 0, 1],
         position: [0, 0, 0],
         pathToNode: ['body', 0, 'declarations', '0', 'init'],

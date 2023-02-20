@@ -3,15 +3,21 @@ import { extrudeSketch, sketchOnExtrudedFace } from './lang/modifyAst'
 import { getNodePathFromSourceRange } from './lang/abstractSyntaxTree'
 
 export const Toolbar = () => {
-  const { setGuiMode, guiMode, selectionRange, ast, updateAst, programMemory } =
-    useStore((s) => ({
-      guiMode: s.guiMode,
-      setGuiMode: s.setGuiMode,
-      selectionRange: s.selectionRange,
-      ast: s.ast,
-      updateAst: s.updateAst,
-      programMemory: s.programMemory,
-    }))
+  const {
+    setGuiMode,
+    guiMode,
+    selectionRanges,
+    ast,
+    updateAst,
+    programMemory,
+  } = useStore((s) => ({
+    guiMode: s.guiMode,
+    setGuiMode: s.setGuiMode,
+    selectionRanges: s.selectionRanges,
+    ast: s.ast,
+    updateAst: s.updateAst,
+    programMemory: s.programMemory,
+  }))
 
   return (
     <div>
@@ -32,7 +38,10 @@ export const Toolbar = () => {
         <button
           onClick={() => {
             if (!ast) return
-            const pathToNode = getNodePathFromSourceRange(ast, selectionRange)
+            const pathToNode = getNodePathFromSourceRange(
+              ast,
+              selectionRanges[0]
+            )
             const { modifiedAst } = sketchOnExtrudedFace(
               ast,
               pathToNode,
@@ -54,7 +63,6 @@ export const Toolbar = () => {
               pathToNode: guiMode.pathToNode,
               rotation: guiMode.rotation,
               position: guiMode.position,
-              isTooltip: true,
             })
           }}
           className="border m-1 px-1 rounded"
@@ -67,7 +75,10 @@ export const Toolbar = () => {
           <button
             onClick={() => {
               if (!ast) return
-              const pathToNode = getNodePathFromSourceRange(ast, selectionRange)
+              const pathToNode = getNodePathFromSourceRange(
+                ast,
+                selectionRanges[0]
+              )
               const { modifiedAst, pathToExtrudeArg } = extrudeSketch(
                 ast,
                 pathToNode
@@ -81,7 +92,10 @@ export const Toolbar = () => {
           <button
             onClick={() => {
               if (!ast) return
-              const pathToNode = getNodePathFromSourceRange(ast, selectionRange)
+              const pathToNode = getNodePathFromSourceRange(
+                ast,
+                selectionRanges[0]
+              )
               const { modifiedAst, pathToExtrudeArg } = extrudeSketch(
                 ast,
                 pathToNode,
@@ -105,7 +119,11 @@ export const Toolbar = () => {
         </button>
       )}
       {toolTips.map((sketchFnName) => {
-        if (guiMode.mode !== 'sketch' || !('isTooltip' in guiMode)) return null
+        if (
+          guiMode.mode !== 'sketch' ||
+          !('isTooltip' in guiMode || guiMode.sketchMode === 'sketchEdit')
+        )
+          return null
         return (
           <button
             key={sketchFnName}
@@ -115,10 +133,14 @@ export const Toolbar = () => {
             onClick={() =>
               setGuiMode({
                 ...guiMode,
-                sketchMode:
-                  guiMode.sketchMode === sketchFnName
-                    ? 'sketchEdit'
-                    : sketchFnName,
+                ...(guiMode.sketchMode === sketchFnName
+                  ? {
+                      sketchMode: 'sketchEdit',
+                    }
+                  : {
+                      sketchMode: sketchFnName,
+                      isTooltip: true,
+                    }),
               })
             }
           >

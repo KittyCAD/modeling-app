@@ -1,9 +1,17 @@
-import { useStore } from '../useStore'
+import { useStore, Range } from '../useStore'
 
-export function useSetCursor(sourceRange: [number, number]) {
-  const setCursor = useStore((state) => state.setCursor)
+export function useSetCursor(sourceRange: Range) {
+  const { setCursor, selectionRanges, isShiftDown } = useStore((s) => ({
+    setCursor: s.setCursor,
+    selectionRanges: s.selectionRanges,
+    isShiftDown: s.isShiftDown,
+  }))
   return () => {
-    setCursor(sourceRange[1])
+    console.log('isShiftDown', isShiftDown, selectionRanges, sourceRange)
+    const ranges = isShiftDown
+      ? [...selectionRanges, sourceRange]
+      : [sourceRange]
+    setCursor(ranges)
     const element: HTMLDivElement | null = document.querySelector('.cm-content')
     if (element) {
       element.focus()

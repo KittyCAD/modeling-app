@@ -8,8 +8,10 @@ import {
 import { ProgramMemory, Position, PathToNode, Rotation } from './lang/executor'
 import { recast } from './lang/recast'
 import { asyncLexer } from './lang/tokeniser'
+import { EditorSelection } from '@codemirror/state'
 
 export type Range = [number, number]
+export type Ranges = Range[]
 export type TooTip =
   | 'lineTo'
   | 'line'
@@ -53,7 +55,6 @@ export type GuiModes =
   | {
       mode: 'sketch'
       sketchMode: 'sketchEdit'
-      isTooltip: true
       rotation: Rotation
       position: Position
       pathToNode: PathToNode
@@ -80,13 +81,12 @@ interface StoreState {
   setEditorView: (editorView: EditorView) => void
   highlightRange: [number, number]
   setHighlightRange: (range: Range) => void
-  setCursor: (start: number, end?: number) => void
-  selectionRange: [number, number]
-  setSelectionRange: (range: Range) => void
+  setCursor: (selections: Ranges) => void
+  selectionRanges: Ranges
+  setSelectionRanges: (range: Ranges) => void
   guiMode: GuiModes
   lastGuiMode: GuiModes
   setGuiMode: (guiMode: GuiModes) => void
-  removeError: () => void
   logs: string[]
   addLog: (log: string) => void
   resetLogs: () => void
@@ -103,6 +103,8 @@ interface StoreState {
   setError: (error?: string) => void
   programMemory: ProgramMemory
   setProgramMemory: (programMemory: ProgramMemory) => void
+  isShiftDown: boolean
+  setIsShiftDown: (isShiftDown: boolean) => void
 }
 
 export const useStore = create<StoreState>()((set, get) => ({
@@ -118,26 +120,24 @@ export const useStore = create<StoreState>()((set, get) => ({
       editorView.dispatch({ effects: addLineHighlight.of(highlightRange) })
     }
   },
-  setCursor: (start: number, end: number = start) => {
-    const editorView = get().editorView
+  setCursor: (ranges: Ranges) => {
+    const { editorView } = get()
     if (!editorView) return
     editorView.dispatch({
-      selection: { anchor: start, head: end },
+      selection: EditorSelection.create(
+        [...ranges.map(([start, end]) => EditorSelection.cursor(end))],
+        ranges.length - 1
+      ),
     })
   },
-  selectionRange: [0, 0],
-  setSelectionRange: (selectionRange) => {
-    set({ selectionRange })
+  selectionRanges: [[0, 0]],
+  setSelectionRanges: (selectionRanges) => {
+    set({ selectionRanges })
   },
   guiMode: { mode: 'default' },
   lastGuiMode: { mode: 'default' },
   setGuiMode: (guiMode) => {
-    const lastGuiMode = get().guiMode
     set({ guiMode })
-  },
-  removeError: () => {
-    const lastGuiMode = get().lastGuiMode
-    const currentGuiMode = get().guiMode
   },
   logs: [],
   addLog: (log) => {
@@ -165,7 +165,7 @@ export const useStore = create<StoreState>()((set, get) => ({
       const { start, end } = node
       if (!start || !end) return
       setTimeout(() => {
-        get().setCursor(start, end)
+        get().setCursor([[start, end]])
       })
     }
   },
@@ -188,4 +188,6 @@ export const useStore = create<StoreState>()((set, get) => ({
   },
   programMemory: { root: {}, _sketch: [] },
   setProgramMemory: (programMemory) => set({ programMemory }),
+  isShiftDown: false,
+  setIsShiftDown: (isShiftDown) => set({ isShiftDown }),
 }))
