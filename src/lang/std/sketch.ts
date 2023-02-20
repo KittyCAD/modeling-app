@@ -555,16 +555,10 @@ export const xLineTo: SketchLineHelper = {
   add: ({ node, pathToNode, to, replaceExisting, createCallback }) => {
     const _node = { ...node }
     const getNode = getNodeFromPathCurry(_node, pathToNode)
-    const { node: callExpression } = getNode<CallExpression>('CallExpression')
     const { node: pipe } = getNode<PipeExpression>('PipeExpression')
 
     const newVal = createLiteral(roundOff(to[0], 2))
-    const firstArg = replaceExisting
-      ? firstArgReplacementXYLine({
-          callExpression,
-          newVal: createLiteral(roundOff(to[0], 2)),
-        })
-      : newVal
+    const firstArg = newVal
     const newLine = createCallback
       ? createCallback([firstArg, firstArg])
       : createCallExpression('xLineTo', [firstArg, createPipeSubstitution()])
@@ -621,23 +615,15 @@ export const yLineTo: SketchLineHelper = {
     const [yVal, tag] = typeof data !== 'number' ? [data.to, data.tag] : [data]
     return lineTo.fn(meta, { to: [from[0], yVal], tag }, previousSketch)
   },
-  add: ({ node, pathToNode, to, replaceExisting }) => {
+  add: ({ node, pathToNode, to, replaceExisting, createCallback }) => {
     const _node = { ...node }
     const getNode = getNodeFromPathCurry(_node, pathToNode)
-    const { node: callExpression } = getNode<CallExpression>('CallExpression')
     const { node: pipe } = getNode<PipeExpression>('PipeExpression')
 
     const newVal = createLiteral(roundOff(to[1], 2))
-    const firstArg = replaceExisting
-      ? firstArgReplacementXYLine({
-          callExpression,
-          newVal,
-        })
-      : newVal
-    const newLine = createCallExpression('yLineTo', [
-      firstArg,
-      createPipeSubstitution(),
-    ])
+    const newLine = createCallback
+      ? createCallback([newVal, newVal])
+      : createCallExpression('yLineTo', [newVal, createPipeSubstitution()])
     const callIndex = getLastIndex(pathToNode)
     if (replaceExisting) {
       pipe.body[callIndex] = newLine
@@ -689,17 +675,11 @@ export const xLine: SketchLineHelper = {
   add: ({ node, pathToNode, to, from, replaceExisting, createCallback }) => {
     const _node = { ...node }
     const getNode = getNodeFromPathCurry(_node, pathToNode)
-    const { node: callExpression } = getNode<CallExpression>('CallExpression')
     if (!from) throw new Error('no from') // todo #29 remove
     const { node: pipe } = getNode<PipeExpression>('PipeExpression')
 
     const newVal = createLiteral(roundOff(to[0] - from[0], 2))
-    const firstArg = replaceExisting
-      ? firstArgReplacementXYLine({
-          callExpression,
-          newVal,
-        })
-      : newVal
+    const firstArg = newVal
     const newLine = createCallback
       ? createCallback([firstArg, firstArg])
       : createCallExpression('xLine', [firstArg, createPipeSubstitution()])
@@ -749,23 +729,15 @@ export const yLine: SketchLineHelper = {
       typeof data !== 'number' ? [data.length, data.tag] : [data]
     return line.fn(meta, { to: [0, yVal], tag }, previousSketch)
   },
-  add: ({ node, pathToNode, to, from, replaceExisting }) => {
+  add: ({ node, pathToNode, to, from, replaceExisting, createCallback }) => {
     const _node = { ...node }
     const getNode = getNodeFromPathCurry(_node, pathToNode)
-    const { node: callExpression } = getNode<CallExpression>('CallExpression')
     if (!from) throw new Error('no from') // todo #29 remove
     const { node: pipe } = getNode<PipeExpression>('PipeExpression')
     const newVal = createLiteral(roundOff(to[1] - from[1], 2))
-    const firstArg = replaceExisting
-      ? firstArgReplacementXYLine({
-          callExpression,
-          newVal,
-        })
-      : newVal
-    const newLine = createCallExpression('yLine', [
-      firstArg,
-      createPipeSubstitution(),
-    ])
+    const newLine = createCallback
+      ? createCallback([newVal, newVal])
+      : createCallExpression('yLine', [newVal, createPipeSubstitution()])
     const callIndex = getLastIndex(pathToNode)
     if (replaceExisting) {
       pipe.body[callIndex] = newLine
@@ -1589,9 +1561,7 @@ function getFirstArgValuesForXYFns(callExpression: CallExpression): {
     const tag = firstArg.properties.find((p) => p.key.name === 'tag')?.value
     if (to?.type === 'ArrayExpression') {
       const [x, y] = to.elements
-      if (to.elements.length !== 2)
-        throw new Error('expected ArrayExpression of length 2')
-      return { val: [to.elements[0], to.elements[1]], tag }
+      return { val: [x, y], tag }
     }
   }
   throw new Error('expected ArrayExpression or ObjectExpression')
@@ -1635,6 +1605,7 @@ function getFirstArgValuesForXYLineFns(callExpression: CallExpression): {
   }
   const tag = firstArg.properties.find((p) => p.key.name === 'tag')?.value
   const secondArgName = ['xLineTo', 'yLineTo'].includes(
+    // const secondArgName = ['xLineTo', 'yLineTo', 'angledLineToX', 'angledLineToY'].includes(
     callExpression?.callee?.name
   )
     ? 'to'
@@ -1646,26 +1617,6 @@ function getFirstArgValuesForXYLineFns(callExpression: CallExpression): {
     return { val: length, tag }
   }
   throw new Error('expected ArrayExpression or ObjectExpression')
-}
-
-function firstArgReplacementXYLine({
-  callExpression,
-  newVal,
-}: {
-  callExpression: CallExpression
-  newVal: Value
-}): Value {
-  const { val, tag } = getFirstArgValuesForXYLineFns(callExpression)
-  const fnName = callExpression?.callee?.name
-  const valToUse = val.type === 'Literal' ? val : newVal
-  if (tag) {
-    return createObjectExpression({
-      tag,
-      [fnName === 'xLineTo' || fnName === 'yLineTo' ? 'to' : 'length']:
-        valToUse,
-    })
-  }
-  return valToUse
 }
 
 export function allowedTransforms(
