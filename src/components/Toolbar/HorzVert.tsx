@@ -72,37 +72,37 @@ export const HorzVert = () => {
   if (guiMode.mode !== 'sketch') return null
 
   const onClick = (vertOrHor: 'vert' | 'horz') => () => {
-    if (ast) {
-      // deep clone since we are mutating in a loop, of which any could fail
-      let node = JSON.parse(JSON.stringify(ast))
-      selectionRanges.forEach((range, index) => {
-        const { node: callExpression } = getNodeFromPath<CallExpression>(
-          node,
-          getNodePathFromSourceRange(node, range)
-        )
-        const [relLine, absLine]: [TooTip, TooTip] =
-          vertOrHor === 'vert' ? ['yLine', 'yLineTo'] : ['xLine', 'xLineTo']
-        const finalLine = [
-          'line',
-          'angledLine',
-          'angledLineOfXLength',
-          'angledLineOfYLength',
-        ].includes(callExpression.callee.name)
-          ? relLine
-          : absLine
-        const createCallBackHelper = allowedTransformsMap[index][finalLine]
-        if (!createCallBackHelper) throw new Error('no callback helper')
-        const { modifiedAst } = swapSketchHelper(
-          programMemory,
-          node,
-          range,
-          finalLine,
-          createCallBackHelper
-        )
-        node = modifiedAst
-      })
-      updateAst(node)
-    }
+    if (!ast) return
+
+    // deep clone since we are mutating in a loop, of which any could fail
+    let node = JSON.parse(JSON.stringify(ast))
+    selectionRanges.forEach((range, index) => {
+      const { node: callExpression } = getNodeFromPath<CallExpression>(
+        node,
+        getNodePathFromSourceRange(node, range)
+      )
+      const [relLine, absLine]: [TooTip, TooTip] =
+        vertOrHor === 'vert' ? ['yLine', 'yLineTo'] : ['xLine', 'xLineTo']
+      const finalLine = [
+        'line',
+        'angledLine',
+        'angledLineOfXLength',
+        'angledLineOfYLength',
+      ].includes(callExpression.callee.name)
+        ? relLine
+        : absLine
+      const createCallBackHelper = allowedTransformsMap[index][finalLine]
+      if (!createCallBackHelper) throw new Error('no callback helper')
+      const { modifiedAst } = swapSketchHelper(
+        programMemory,
+        node,
+        range,
+        finalLine,
+        createCallBackHelper
+      )
+      node = modifiedAst
+    })
+    updateAst(node)
   }
 
   return (
