@@ -1,8 +1,8 @@
-import { useRef, useState, useEffect, useMemo } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { Allotment } from 'allotment'
 import { OrbitControls, OrthographicCamera } from '@react-three/drei'
-import { lexer } from './lang/tokeniser'
+import { asyncLexer } from './lang/tokeniser'
 import { abstractSyntaxTree } from './lang/abstractSyntaxTree'
 import { executor, ExtrudeGroup, SketchGroup } from './lang/executor'
 import { recast } from './lang/recast'
@@ -40,8 +40,6 @@ function App() {
     code,
     setCode,
     setAst,
-    // formatCode,
-    ast,
     setError,
     errorState,
     setProgramMemory,
@@ -56,10 +54,8 @@ function App() {
     addLog: s.addLog,
     code: s.code,
     setCode: s.setCode,
-    ast: s.ast,
     setAst: s.setAst,
     lastGuiMode: s.lastGuiMode,
-    // formatCode: s.formatCode,
     setError: s.setError,
     errorState: s.errorState,
     setProgramMemory: s.setProgramMemory,
@@ -89,61 +85,60 @@ function App() {
   }
   const [geoArray, setGeoArray] = useState<(ExtrudeGroup | SketchGroup)[]>([])
   useEffect(() => {
-    try {
-      if (!code) {
-        setGeoArray([])
-        setAst(null)
-        return
-      }
-      const tokens = lexer(code)
-      const _ast = abstractSyntaxTree(tokens)
-      setAst(_ast)
-      resetLogs()
-      const programMemory = executor(_ast, {
-        root: {
-          log: {
-            type: 'userVal',
-            value: (a: any) => {
-              addLog(a)
-            },
-            __meta: [
-              {
-                pathToNode: [],
-                sourceRange: [0, 0],
+    const asyncWrap = async () => {
+      try {
+        if (!code) {
+          setGeoArray([])
+          setAst(null)
+          return
+        }
+        const tokens = await asyncLexer(code)
+        const _ast = abstractSyntaxTree(tokens)
+        console.log('setting ast')
+        setAst(_ast)
+        resetLogs()
+        const programMemory = executor(_ast, {
+          root: {
+            log: {
+              type: 'userVal',
+              value: (a: any) => {
+                addLog(a)
               },
-            ],
+              __meta: [
+                {
+                  pathToNode: [],
+                  sourceRange: [0, 0],
+                },
+              ],
+            },
           },
-        },
-        _sketch: [],
-      })
-      setProgramMemory(programMemory)
-      const geos = programMemory?.return
-        ?.map(({ name }: { name: string }) => {
-          const artifact = programMemory?.root?.[name]
-          if (
-            artifact.type === 'extrudeGroup' ||
-            artifact.type === 'sketchGroup'
-          ) {
-            return artifact
-          }
-          return null
+          _sketch: [],
         })
-        .filter((a) => a) as (ExtrudeGroup | SketchGroup)[]
+        setProgramMemory(programMemory)
+        const geos = programMemory?.return
+          ?.map(({ name }: { name: string }) => {
+            const artifact = programMemory?.root?.[name]
+            if (
+              artifact.type === 'extrudeGroup' ||
+              artifact.type === 'sketchGroup'
+            ) {
+              return artifact
+            }
+            return null
+          })
+          .filter((a) => a) as (ExtrudeGroup | SketchGroup)[]
 
-      setGeoArray(geos)
-      console.log(programMemory)
-      setError()
-    } catch (e: any) {
-      setError('problem')
-      console.log(e)
-      addLog(e)
+        setGeoArray(geos)
+        console.log(programMemory)
+        setError()
+      } catch (e: any) {
+        setError('problem')
+        console.log(e)
+        addLog(e)
+      }
     }
+    asyncWrap()
   }, [code])
-  // const shouldFormat = useMemo(() => {
-  //   if (!ast) return false
-  //   const recastedCode = recast(ast)
-  //   return recastedCode !== code
-  // }, [code, ast])
   return (
     <div className="h-screen">
       <Allotment snap={true}>
