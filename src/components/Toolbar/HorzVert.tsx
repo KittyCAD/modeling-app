@@ -8,7 +8,10 @@ import {
 } from '../../lang/abstractSyntaxTree'
 import { toolTips } from '../../useStore'
 import { allowedTransforms } from '../../lang/std/sketch'
-import { swapSketchHelper } from '../../lang/std/sketchConstraints'
+import {
+  swapSketchHelper,
+  includedInAll,
+} from '../../lang/std/sketchConstraints'
 
 export const HorzVert = () => {
   const { guiMode, selectionRanges, ast, programMemory, updateAst } = useStore(
@@ -38,6 +41,7 @@ export const HorzVert = () => {
     const nodes = paths.map(
       (pathToNode) => getNodeFromPath<Value>(ast, pathToNode).node
     )
+
     const allowedSwaps = paths.map((a) =>
       allowedTransforms({
         node: ast,
@@ -64,7 +68,7 @@ export const HorzVert = () => {
       guiMode.mode === 'sketch' &&
       guiMode.sketchMode === 'sketchEdit'
     if (enableVert !== _enableVert) setEnableVert(_enableVert)
-  }, [guiMode, selectionRanges, guiMode])
+  }, [guiMode, selectionRanges])
   if (guiMode.mode !== 'sketch') return null
 
   const onClick = (vertOrHor: 'vert' | 'horz') => () => {
@@ -123,14 +127,5 @@ export const HorzVert = () => {
         Vert
       </button>
     </>
-  )
-}
-
-function includedInAll(
-  allowedsOfEach: TooTip[][],
-  isIncludes: TooTip[]
-): boolean {
-  return allowedsOfEach.every((alloweds) =>
-    isIncludes.some((isInclude) => alloweds.includes(isInclude))
   )
 }
