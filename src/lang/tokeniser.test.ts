@@ -5,14 +5,14 @@ beforeAll(() => initPromise)
 
 describe('testing lexer', () => {
   it('async lexer works too', async () => {
-    const tokens = await asyncLexer('1  + 2')
-    expect(tokens).toEqual([
-      { type: 'number', start: 0, end: 1, value: '1' },
-      { type: 'whitespace', start: 1, end: 3, value: '  ' },
-      { type: 'operator', start: 3, end: 4, value: '+' },
-      { type: 'whitespace', start: 4, end: 5, value: ' ' },
-      { type: 'number', start: 5, end: 6, value: '2' },
-    ])
+    const code = '1  + 2'
+    const code2 = `const yo = {key: 'value'}`
+    const code3 = `const yo = 45 /* this is a comment
+const ya = 6 */
+const yi=45`
+    expect(await asyncLexer(code)).toEqual(lexer(code))
+    expect(await asyncLexer(code2)).toEqual(lexer(code2))
+    expect(await asyncLexer(code3)).toEqual(lexer(code3))
   })
   it('test lexer', () => {
     expect(stringSummaryLexer('1  + 2')).toEqual([
