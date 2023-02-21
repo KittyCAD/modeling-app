@@ -1,3 +1,4 @@
+import { Range, TooTip } from '../useStore'
 import {
   Program,
   CallExpression,
@@ -12,9 +13,14 @@ import {
   Identifier,
   ArrayExpression,
   ObjectExpression,
+  getNodePathFromSourceRange,
 } from './abstractSyntaxTree'
 import { PathToNode, ProgramMemory } from './executor'
-import { addTagForSketchOnFace } from './std/sketch'
+import {
+  addTagForSketchOnFace,
+  getFirstArg,
+  createFirstArg,
+} from './std/sketch'
 
 export function addSketchTo(
   node: Program,
@@ -508,4 +514,20 @@ export function createObjectExpression(properties: {
       value,
     })),
   }
+}
+
+export function giveSketchFnCallTag(ast: Program, range: Range): Program {
+  const { node: primaryCallExp } = getNodeFromPath<CallExpression>(
+    ast,
+    getNodePathFromSourceRange(ast, range)
+  )
+  const firstArg = getFirstArg(primaryCallExp)
+  const newSegName = findUniqueName(ast, 'seg', 2)
+  const newFirstArg = createFirstArg(
+    primaryCallExp.callee.name as TooTip,
+    firstArg.val,
+    firstArg.tag || createLiteral(newSegName)
+  )
+  primaryCallExp.arguments[0] = newFirstArg
+  return ast
 }

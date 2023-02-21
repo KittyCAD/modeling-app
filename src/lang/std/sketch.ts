@@ -66,7 +66,7 @@ function createCallWrapper(
   ])
 }
 
-function createFirstArg(
+export function createFirstArg(
   sketchFn: TooTip,
   val: Value | [Value, Value],
   tag?: Value
@@ -1617,6 +1617,31 @@ function getFirstArgValuesForXYLineFns(callExpression: CallExpression): {
     return { val: length, tag }
   }
   throw new Error('expected ArrayExpression or ObjectExpression')
+}
+
+export function getFirstArg(callExp: CallExpression): {
+  val: Value | [Value, Value]
+  tag?: Value
+} {
+  const name = callExp?.callee?.name
+  if (['lineTo', 'line'].includes(name)) {
+    return getFirstArgValuesForXYFns(callExp)
+  }
+  if (
+    [
+      'angledLine',
+      'angledLineOfXLength',
+      'angledLineToX',
+      'angledLineOfYLength',
+      'angledLineToY',
+    ].includes(name)
+  ) {
+    return getFirstArgValuesForAngleFns(callExp)
+  }
+  if (['xLine', 'yLine', 'xLineTo', 'yLineTo'].includes(name)) {
+    return getFirstArgValuesForXYLineFns(callExp)
+  }
+  throw new Error('unexpected call expression')
 }
 
 export function allowedTransforms(
