@@ -558,10 +558,9 @@ export const xLineTo: SketchLineHelper = {
     const { node: pipe } = getNode<PipeExpression>('PipeExpression')
 
     const newVal = createLiteral(roundOff(to[0], 2))
-    const firstArg = newVal
     const newLine = createCallback
-      ? createCallback([firstArg, firstArg])
-      : createCallExpression('xLineTo', [firstArg, createPipeSubstitution()])
+      ? createCallback([newVal, newVal])
+      : createCallExpression('xLineTo', [newVal, createPipeSubstitution()])
 
     const callIndex = getLastIndex(pathToNode)
     if (replaceExisting) {
@@ -824,30 +823,30 @@ export const angledLine: SketchLineHelper = {
     previousProgramMemory,
     pathToNode,
     to,
-    // from: [number, number],
+    from,
+    createCallback,
+    replaceExisting,
   }) => {
     const _node = { ...node }
-    const { node: pipe } = getNodeFromPath<PipeExpression>(
-      _node,
-      pathToNode,
-      'PipeExpression'
-    )
-    const { node: varDec } = getNodeFromPath<VariableDeclarator>(
-      _node,
-      pathToNode,
-      'VariableDeclarator'
-    )
-    const variableName = varDec.id.name
-    const sketch = previousProgramMemory?.root?.[variableName]
-    if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
-    const last = sketch.value[sketch.value.length - 1]
-    const angle = roundOff(getAngle(last.to, to), 0)
-    const lineLength = roundOff(getLength(last.to, to), 2)
-    const newLine = createCallExpression('angledLine', [
-      createArrayExpression([createLiteral(angle), createLiteral(lineLength)]),
-      createPipeSubstitution(),
-    ])
-    pipe.body = [...pipe.body, newLine]
+    const getNode = getNodeFromPathCurry(_node, pathToNode)
+    const { node: pipe } = getNode<PipeExpression>('PipeExpression')
+
+    if (!from) throw new Error('no from') // todo #29 remove
+    const newAngleVal = createLiteral(roundOff(getAngle(from, to), 0))
+    const newLengthVal = createLiteral(roundOff(getLength(from, to), 2))
+    const newLine = createCallback
+      ? createCallback([newAngleVal, newLengthVal])
+      : createCallExpression('angledLine', [
+          createArrayExpression([newAngleVal, newLengthVal]),
+          createPipeSubstitution(),
+        ])
+
+    const callIndex = getLastIndex(pathToNode)
+    if (replaceExisting) {
+      pipe.body[callIndex] = newLine
+    } else {
+      pipe.body = [...pipe.body, newLine]
+    }
     return {
       modifiedAst: _node,
       pathToNode,
