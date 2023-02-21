@@ -443,7 +443,19 @@ function executeObjectExpression(
 
 function executeArrayExpression(
   _programMemory: ProgramMemory,
-  arrExp: ArrayExpression
+  arrExp: ArrayExpression,
+  pipeInfo: {
+    isInPipe: boolean
+    previousResults: any[]
+    expressionIndex: number
+    body: PipeExpression['body']
+    sourceRangeOverride?: SourceRange
+  } = {
+    isInPipe: false,
+    previousResults: [],
+    expressionIndex: 0,
+    body: [],
+  }
 ) {
   return arrExp.elements.map((el) => {
     if (el.type === 'Literal') {
@@ -454,6 +466,14 @@ function executeArrayExpression(
       return getBinaryExpressionResult(el, _programMemory)
     } else if (el.type === 'ObjectExpression') {
       return executeObjectExpression(_programMemory, el)
+    } else if (el.type === 'CallExpression') {
+      const pipeResults: any[] = executeCallExpression(
+        _programMemory,
+        el,
+        [],
+        pipeInfo
+      )
+      return pipeResults[pipeResults.length - 1]
     }
     throw new Error('Invalid argument type')
   })
@@ -493,7 +513,7 @@ function executeCallExpression(
     } else if (arg.type === 'PipeSubstitution') {
       return previousResults[expressionIndex - 1]
     } else if (arg.type === 'ArrayExpression') {
-      return executeArrayExpression(programMemory, arg)
+      return executeArrayExpression(programMemory, arg, pipeInfo)
     } else if (arg.type === 'CallExpression') {
       const result: any = executeCallExpression(
         programMemory,

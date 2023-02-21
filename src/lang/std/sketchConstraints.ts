@@ -4,10 +4,10 @@ import {
   getNodeFromPath,
   Program,
   VariableDeclarator,
-} from '../../lang/abstractSyntaxTree'
-import { replaceSketchLine } from '../../lang/std/sketch'
-import { ProgramMemory, SketchGroup } from '../../lang/executor'
-import { TransformCallback } from '../../lang/std/stdTypes'
+} from '../abstractSyntaxTree'
+import { replaceSketchLine } from './sketch'
+import { ProgramMemory, SketchGroup } from '../executor'
+import { InternalFn, TransformCallback } from './stdTypes'
 
 export function swapSketchHelper(
   programMemory: ProgramMemory,
@@ -50,4 +50,17 @@ function getSketchSegmentIndexFromSourceRange(
   )
   if (!line) throw new Error('could not find matching line')
   return line
+}
+
+export const segLen: InternalFn = (
+  _,
+  segName: string,
+  sketchGroup: SketchGroup
+): number => {
+  const line = sketchGroup.value.find((seg) => seg.name === segName)
+  if (!line) return 0 // maybe this should throw, but the language doesn't have a way to handle errors yet
+  const result = Math.sqrt(
+    (line.from[1] - line.to[1]) ** 2 + (line.from[0] - line.to[0]) ** 2
+  )
+  return result
 }

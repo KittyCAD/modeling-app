@@ -13,6 +13,7 @@ import {
   closee,
   startSketchAt,
 } from './sketch'
+import { segLen } from './sketchConstraints'
 import { extrude, getExtrudeWallTransform } from './extrude'
 import { Quaternion, Vector3 } from 'three'
 import { SketchGroup, ExtrudeGroup, Position, Rotation } from '../executor'
@@ -78,6 +79,7 @@ export const internalFns: { [key in InternalFnNames]: InternalFn } = {
   translate,
   transform,
   getExtrudeWallTransform,
+  segLen,
   lineTo: lineTo.fn,
   xLineTo: xLineTo.fn,
   yLineTo: yLineTo.fn,
