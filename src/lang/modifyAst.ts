@@ -516,18 +516,26 @@ export function createObjectExpression(properties: {
   }
 }
 
-export function giveSketchFnCallTag(ast: Program, range: Range): Program {
+export function giveSketchFnCallTag(
+  ast: Program,
+  range: Range
+): { modifiedAst: Program; tag: string } {
   const { node: primaryCallExp } = getNodeFromPath<CallExpression>(
     ast,
     getNodePathFromSourceRange(ast, range)
   )
   const firstArg = getFirstArg(primaryCallExp)
-  const newSegName = findUniqueName(ast, 'seg', 2)
+  const tagValue = (firstArg.tag ||
+    createLiteral(findUniqueName(ast, 'seg', 2))) as Literal
+  const tagStr = String(tagValue.value)
   const newFirstArg = createFirstArg(
     primaryCallExp.callee.name as TooTip,
     firstArg.val,
-    firstArg.tag || createLiteral(newSegName)
+    tagValue
   )
   primaryCallExp.arguments[0] = newFirstArg
-  return ast
+  return {
+    modifiedAst: ast,
+    tag: tagStr,
+  }
 }

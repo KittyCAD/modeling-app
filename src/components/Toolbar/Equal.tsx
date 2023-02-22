@@ -12,7 +12,12 @@ import {
   swapSketchHelper,
 } from '../../lang/std/sketchConstraints'
 import { allowedTransforms } from '../../lang/std/sketch'
-import { giveSketchFnCallTag } from '../../lang/modifyAst'
+import {
+  createCallExpression,
+  createLiteral,
+  createPipeSubstitution,
+  giveSketchFnCallTag,
+} from '../../lang/modifyAst'
 
 export const Equal = () => {
   const { guiMode, selectionRanges, ast, programMemory, updateAst } = useStore(
@@ -85,8 +90,12 @@ export const Equal = () => {
     let node = JSON.parse(JSON.stringify(ast))
     const primarySelection = selectionRanges[0]
 
-    // Add tag to primarySelection fn call
-    node = giveSketchFnCallTag(node, primarySelection)
+    const { modifiedAst, tag } = giveSketchFnCallTag(node, primarySelection)
+    node = modifiedAst
+    const segLenCallExp = createCallExpression('segLen', [
+      createLiteral(tag),
+      createPipeSubstitution(),
+    ])
 
     selectionRanges.slice(1).forEach((range, index) => {
       const createCallBackHelper = allowedTransformsMap[index]['angledLine']
@@ -96,7 +105,7 @@ export const Equal = () => {
         node,
         range,
         'angledLine',
-        createCallBackHelper
+        ([a]) => createCallBackHelper([a, segLenCallExp])
       )
       node = modifiedAst
     })
