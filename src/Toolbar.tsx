@@ -2,6 +2,7 @@ import { useStore, toolTips } from './useStore'
 import { extrudeSketch, sketchOnExtrudedFace } from './lang/modifyAst'
 import { getNodePathFromSourceRange } from './lang/abstractSyntaxTree'
 import { HorzVert } from './components/Toolbar/HorzVert'
+import { Equal } from './components/Toolbar/Equal'
 
 export const Toolbar = () => {
   const {
@@ -153,6 +154,7 @@ export const Toolbar = () => {
       })}
       <br></br>
       <HorzVert />
+      <Equal />
     </div>
   )
 }
