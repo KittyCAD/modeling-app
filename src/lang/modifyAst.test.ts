@@ -1,3 +1,4 @@
+import { abstractSyntaxTree } from './abstractSyntaxTree'
 import {
   createLiteral,
   createIdentifier,
@@ -9,8 +10,13 @@ import {
   createPipeExpression,
   findUniqueName,
   addSketchTo,
+  giveSketchFnCallTag,
 } from './modifyAst'
 import { recast } from './recast'
+import { lexer } from './tokeniser'
+import { initPromise } from './rust'
+
+beforeAll(() => initPromise)
 
 describe('Testing createLiteral', () => {
   it('should create a literal', () => {
@@ -109,5 +115,55 @@ describe('Testing addSketchTo', () => {
   |> ry(90, %)
   |> lineTo([1, 1], %)
 show(part001)`)
+  })
+})
+
+function giveSketchFnCallTagTestHelper(
+  code: string,
+  searchStr: string
+): { tag: string; newCode: string } {
+  const ast = abstractSyntaxTree(lexer(code))
+  const start = code.indexOf(searchStr)
+  const range: [number, number] = [start, start + searchStr.length]
+  const { modifiedAst, tag } = giveSketchFnCallTag(ast, range)
+  const newCode = recast(modifiedAst)
+  return { tag, newCode }
+}
+
+describe('Testing giveSketchFnCallTag', () => {
+  const code = `const part001 = startSketchAt([0, 0])
+|> line([-2.57, -0.13], %)
+|> line([0, 0.83], %)
+|> line([0.82, 0.34], %)
+show(part001)`
+  it('Should add tag to a sketch function call', () => {
+    const { newCode, tag } = giveSketchFnCallTagTestHelper(
+      code,
+      'line([0, 0.83], %)'
+    )
+    expect(newCode).toContain("line({ to: [0, 0.83], tag: 'seg01' }, %)")
+    expect(tag).toBe('seg01')
+  })
+  it('Should create a unique tag if seg01 already exists', () => {
+    let _code = code.replace(
+      'line([-2.57, -0.13], %)',
+      "line({ to: [-2.57, -0.13], tag: 'seg01' }, %)"
+    )
+    const { newCode, tag } = giveSketchFnCallTagTestHelper(
+      _code,
+      'line([0, 0.83], %)'
+    )
+    expect(newCode).toContain("line({ to: [0, 0.83], tag: 'seg02' }, %)")
+    expect(tag).toBe('seg02')
+  })
+  it('Should return existing tag if it already exists', () => {
+    const lineOfInterest = "line({ to: [-2.57, -0.13], tag: 'butts' }, %)"
+    let _code = code.replace('line([-2.57, -0.13], %)', lineOfInterest)
+    const { newCode, tag } = giveSketchFnCallTagTestHelper(
+      _code,
+      lineOfInterest
+    )
+    expect(newCode).toContain(lineOfInterest)
+    expect(tag).toBe('butts')
   })
 })
