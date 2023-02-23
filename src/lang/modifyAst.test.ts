@@ -122,6 +122,9 @@ function giveSketchFnCallTagTestHelper(
   code: string,
   searchStr: string
 ): { tag: string; newCode: string } {
+  // giveSketchFnCallTag inputs and outputs an ast, which is very verbose for testing
+  // this wrapper changes the input and output to code
+  // making it more of an integration test, but easier to read the test intention is the goal
   const ast = abstractSyntaxTree(lexer(code))
   const start = code.indexOf(searchStr)
   const range: [number, number] = [start, start + searchStr.length]
@@ -157,13 +160,13 @@ show(part001)`
     expect(tag).toBe('seg02')
   })
   it('Should return existing tag if it already exists', () => {
-    const lineOfInterest = "line({ to: [-2.57, -0.13], tag: 'butts' }, %)"
-    let _code = code.replace('line([-2.57, -0.13], %)', lineOfInterest)
+    const lineButWithTag = "line({ to: [-2.57, -0.13], tag: 'butts' }, %)"
+    let _code = code.replace('line([-2.57, -0.13], %)', lineButWithTag)
     const { newCode, tag } = giveSketchFnCallTagTestHelper(
       _code,
-      lineOfInterest
+      lineButWithTag
     )
-    expect(newCode).toContain(lineOfInterest)
+    expect(newCode).toContain(lineButWithTag) // no change
     expect(tag).toBe('butts')
   })
 })

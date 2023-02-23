@@ -467,13 +467,11 @@ function executeArrayExpression(
     } else if (el.type === 'ObjectExpression') {
       return executeObjectExpression(_programMemory, el)
     } else if (el.type === 'CallExpression') {
-      const pipeResults: any[] = executeCallExpression(
-        _programMemory,
-        el,
-        [],
-        pipeInfo
-      )
-      return pipeResults[pipeResults.length - 1]
+      const result: any = executeCallExpression(_programMemory, el, [], {
+        ...pipeInfo,
+        isInPipe: false,
+      })
+      return result
     }
     throw new Error('Invalid argument type')
   })
@@ -503,8 +501,8 @@ function executeCallExpression(
     body,
     sourceRangeOverride,
   } = pipeInfo
-  const functionName = expression.callee.name
-  const fnArgs = expression.arguments.map((arg) => {
+  const functionName = expression?.callee?.name
+  const fnArgs = expression?.arguments?.map((arg) => {
     if (arg.type === 'Literal') {
       return arg.value
     } else if (arg.type === 'Identifier') {
