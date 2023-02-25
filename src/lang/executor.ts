@@ -516,7 +516,8 @@ function executeCallExpression(
       const result: any = executeCallExpression(
         programMemory,
         arg,
-        previousPathToNode
+        previousPathToNode,
+        pipeInfo
       )
       return result
     } else if (arg.type === 'ObjectExpression') {
