@@ -1798,3 +1798,28 @@ describe('testing findEndofBinaryExpression', () => {
     expect(tokens[end].value).toBe(')')
   })
 })
+
+describe('test UnaryExpression', () => {
+  it('should parse a unary expression in simple var dec situation', () => {
+    const code = `const myVar = -min(4, 100)`
+    const { body } = abstractSyntaxTree(lexer(code))
+    const myVarInit = (body?.[0] as any).declarations[0]?.init
+    expect(myVarInit).toEqual({
+      type: 'UnaryExpression',
+      operator: '-',
+      start: 14,
+      end: 26,
+      argument: {
+        type: 'CallExpression',
+        start: 15,
+        end: 26,
+        callee: { type: 'Identifier', start: 15, end: 18, name: 'min' },
+        arguments: [
+          { type: 'Literal', start: 19, end: 20, value: 4, raw: '4' },
+          { type: 'Literal', start: 22, end: 25, value: 100, raw: '100' },
+        ],
+        optional: false,
+      },
+    })
+  })
+})

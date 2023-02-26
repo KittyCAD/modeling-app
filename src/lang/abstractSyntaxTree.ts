@@ -21,13 +21,13 @@ type syntaxType =
   | 'PipeSubstitution'
   | 'Literal'
   | 'NoneCodeNode'
+  | 'UnaryExpression'
 // | 'NumberLiteral'
 // | 'StringLiteral'
 // | 'IfStatement'
 // | 'WhileStatement'
 // | 'FunctionDeclaration'
 // | 'AssignmentExpression'
-// | 'UnaryExpression'
 // | 'Property'
 // | 'LogicalExpression'
 // | 'ConditionalExpression'
@@ -240,6 +240,23 @@ function makeArguments(
     ])
   }
   if (
+    argumentToken.token.type === 'operator' &&
+    argumentToken.token.value === '-'
+  ) {
+    const { expression, lastIndex } = makeUnaryExpression(
+      tokens,
+      argumentToken.index
+    )
+    const nextCommarOrBraceTokenIndex = nextMeaningfulToken(
+      tokens,
+      lastIndex
+    ).index
+    return makeArguments(tokens, nextCommarOrBraceTokenIndex, [
+      ...previousArgs,
+      expression,
+    ])
+  }
+  if (
     argumentToken.token.type === 'brace' &&
     argumentToken.token.value === '{'
   ) {
@@ -362,6 +379,7 @@ export type Value =
   | ArrayExpression
   | ObjectExpression
   | MemberExpression
+  | UnaryExpression
 
 function makeValue(
   tokens: Token[],
@@ -459,6 +477,10 @@ function makeValue(
       throw new Error('TODO - handle expression with braces')
     }
   }
+  if (currentToken.type === 'operator' && currentToken.value === '-') {
+    const { expression, lastIndex } = makeUnaryExpression(tokens, index)
+    return { value: expression, lastIndex }
+  }
   throw new Error('Expected a previous Value if statement to match')
 }
 
@@ -520,10 +542,10 @@ export type BinaryPart =
   | Identifier
   | BinaryExpression
   | CallExpression
+  | UnaryExpression
 // | MemberExpression
 // | ArrayExpression
 // | ObjectExpression
-// | UnaryExpression
 // | LogicalExpression
 // | ConditionalExpression
 
@@ -858,6 +880,34 @@ function makeBinaryExpression(
   return {
     expression,
     lastIndex: endIndex,
+  }
+}
+
+export interface UnaryExpression extends GeneralStatement {
+  type: 'UnaryExpression'
+  operator: string
+  argument: BinaryPart
+}
+
+function makeUnaryExpression(
+  tokens: Token[],
+  index: number
+): { expression: UnaryExpression; lastIndex: number } {
+  const currentToken = tokens[index]
+  const nextToken = nextMeaningfulToken(tokens, index)
+  const { value: argument, lastIndex: argumentLastIndex } = makeValue(
+    tokens,
+    nextToken.index
+  )
+  return {
+    expression: {
+      type: 'UnaryExpression',
+      operator: currentToken.value,
+      start: currentToken.start,
+      end: tokens[argumentLastIndex].end,
+      argument: argument as BinaryPart,
+    },
+    lastIndex: argumentLastIndex,
   }
 }
 

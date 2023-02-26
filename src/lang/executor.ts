@@ -8,6 +8,7 @@ import {
   Identifier,
   CallExpression,
   ArrayExpression,
+  UnaryExpression,
 } from './abstractSyntaxTree'
 import { InternalFnNames } from './std/stdTypes'
 import { internalFns } from './std/std'
@@ -171,6 +172,12 @@ export const executor = (
             value: getBinaryExpressionResult(declaration.init, _programMemory),
             __meta,
           }
+        } else if (declaration.init.type === 'UnaryExpression') {
+          _programMemory.root[variableName] = {
+            type: 'userVal',
+            value: getUnaryExpressionResult(declaration.init, _programMemory),
+            __meta,
+          }
         } else if (declaration.init.type === 'ArrayExpression') {
           const valueInfo: { value: any; __meta?: Metadata }[] =
             declaration.init.elements.map(
@@ -329,24 +336,35 @@ function getBinaryExpressionResult(
   expression: BinaryExpression,
   programMemory: ProgramMemory
 ) {
-  const getVal = (part: BinaryPart): any => {
-    if (part.type === 'Literal') {
-      return part.value
-    } else if (part.type === 'Identifier') {
-      return programMemory.root[part.name].value
-    } else if (part.type === 'BinaryExpression') {
-      return getBinaryExpressionResult(part, programMemory)
-    } else if (part.type === 'CallExpression') {
-      return executeCallExpression(programMemory, part)
-    }
-  }
-  const left = getVal(expression.left)
-  const right = getVal(expression.right)
+  const left = getBinaryPartResult(expression.left, programMemory)
+  const right = getBinaryPartResult(expression.right, programMemory)
   if (expression.operator === '+') return left + right
   if (expression.operator === '-') return left - right
   if (expression.operator === '*') return left * right
   if (expression.operator === '/') return left / right
   if (expression.operator === '%') return left % right
+}
+
+function getBinaryPartResult(
+  part: BinaryPart,
+  programMemory: ProgramMemory
+): any {
+  if (part.type === 'Literal') {
+    return part.value
+  } else if (part.type === 'Identifier') {
+    return programMemory.root[part.name].value
+  } else if (part.type === 'BinaryExpression') {
+    return getBinaryExpressionResult(part, programMemory)
+  } else if (part.type === 'CallExpression') {
+    return executeCallExpression(programMemory, part)
+  }
+}
+
+function getUnaryExpressionResult(
+  expression: UnaryExpression,
+  programMemory: ProgramMemory
+) {
+  return -getBinaryPartResult(expression.argument, programMemory)
 }
 
 function getPipeExpressionResult(
@@ -524,6 +542,8 @@ function executeCallExpression(
       return result
     } else if (arg.type === 'ObjectExpression') {
       return executeObjectExpression(programMemory, arg)
+    } else if (arg.type === 'UnaryExpression') {
+      return getUnaryExpressionResult(arg, programMemory)
     }
     throw new Error('Invalid argument type in function call')
   })

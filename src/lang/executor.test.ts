@@ -342,6 +342,19 @@ describe('testing math operators', () => {
     const { root } = exe(code)
     expect(root.myVar.value).toBe(6)
   })
+  it('with unaryExpression', () => {
+    const code = 'const myVar = -min(100, 3)'
+    const { root } = exe(code)
+    expect(root.myVar.value).toBe(-3)
+  })
+  it('with unaryExpression in callExpression', () => {
+    const code = 'const myVar = min(-legLen(5, 4), 5)'
+    const code2 = 'const myVar = min(5 , -legLen(5, 4))'
+    const { root } = exe(code)
+    const { root: root2 } = exe(code2)
+    expect(root.myVar.value).toBe(-3)
+    expect(root.myVar.value).toBe(root2.myVar.value)
+  })
   // TODO
   // it('with nested callExpression and binaryExpression', () => {
   //   const code = 'const myVar = 2 + min(100, 1 + legLen(5, 3))'
