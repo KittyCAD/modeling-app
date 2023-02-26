@@ -11,6 +11,7 @@ import {
   ObjectExpression,
   MemberExpression,
   PipeExpression,
+  UnaryExpression,
 } from './abstractSyntaxTree'
 import { precedence } from './astMathExpressions'
 
@@ -93,6 +94,10 @@ function recastBinaryExpression(expression: BinaryExpression): string {
   } ${maybeWrapIt(recastBinaryPart(expression.right), shouldWrapRight)}`
 }
 
+function recastUnaryExpression(expression: UnaryExpression): string {
+  return `${expression.operator}${recastValue(expression.argument)}`
+}
+
 function recastArrayExpression(
   expression: ArrayExpression,
   indentation = ''
@@ -138,6 +143,8 @@ function recastBinaryPart(part: BinaryPart): string {
     return part.name
   } else if (part.type === 'BinaryExpression') {
     return recastBinaryExpression(part)
+  } else if (part.type === 'CallExpression') {
+    return recastCallExpression(part)
   }
   return ''
   // throw new Error(`Cannot recast BinaryPart ${part}`)
@@ -174,6 +181,8 @@ function recastArgument(argument: Value): string {
     return recastFunction(argument)
   } else if (argument.type === 'PipeSubstitution') {
     return '%'
+  } else if (argument.type === 'UnaryExpression') {
+    return recastUnaryExpression(argument)
   }
   throw new Error(`Cannot recast argument ${argument}`)
 }
@@ -220,6 +229,8 @@ function recastValue(node: Value, indentation = ''): string {
     return node.name
   } else if (node.type === 'PipeExpression') {
     return recastPipeExpression(node)
+  } else if (node.type === 'UnaryExpression') {
+    return recastUnaryExpression(node)
   }
   return ''
 }
