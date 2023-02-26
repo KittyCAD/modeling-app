@@ -351,7 +351,19 @@ function getBinaryExpressionResult(
 
 function getBinaryPartResult(
   part: BinaryPart,
-  programMemory: ProgramMemory
+  programMemory: ProgramMemory,
+  pipeInfo: {
+    isInPipe: boolean
+    previousResults: any[]
+    expressionIndex: number
+    body: PipeExpression['body']
+    sourceRangeOverride?: SourceRange
+  } = {
+    isInPipe: false,
+    previousResults: [],
+    expressionIndex: 0,
+    body: [],
+  }
 ): any {
   if (part.type === 'Literal') {
     return part.value
@@ -360,15 +372,35 @@ function getBinaryPartResult(
   } else if (part.type === 'BinaryExpression') {
     return getBinaryExpressionResult(part, programMemory)
   } else if (part.type === 'CallExpression') {
-    return executeCallExpression(programMemory, part)
+    console.log('executingCallExpression', pipeInfo.previousResults)
+    return executeCallExpression(programMemory, part, [], {
+      ...pipeInfo,
+      isInPipe: false,
+    })
   }
 }
 
 function getUnaryExpressionResult(
   expression: UnaryExpression,
-  programMemory: ProgramMemory
+  programMemory: ProgramMemory,
+  pipeInfo: {
+    isInPipe: boolean
+    previousResults: any[]
+    expressionIndex: number
+    body: PipeExpression['body']
+    sourceRangeOverride?: SourceRange
+  } = {
+    isInPipe: false,
+    previousResults: [],
+    expressionIndex: 0,
+    body: [],
+  }
 ) {
-  return -getBinaryPartResult(expression.argument, programMemory)
+  console.log('getUnaryExpressionResult', pipeInfo.previousResults)
+  return -getBinaryPartResult(expression.argument, programMemory, {
+    ...pipeInfo,
+    isInPipe: false,
+  })
 }
 
 function getPipeExpressionResult(
@@ -497,7 +529,10 @@ function executeArrayExpression(
       })
       return result
     } else if (el.type === 'UnaryExpression') {
-      return getUnaryExpressionResult(el, _programMemory)
+      return getUnaryExpressionResult(el, _programMemory, {
+        ...pipeInfo,
+        isInPipe: false,
+      })
     }
     throw new Error('Invalid argument type')
   })
@@ -549,7 +584,10 @@ function executeCallExpression(
     } else if (arg.type === 'ObjectExpression') {
       return executeObjectExpression(programMemory, arg)
     } else if (arg.type === 'UnaryExpression') {
-      return getUnaryExpressionResult(arg, programMemory)
+      return getUnaryExpressionResult(arg, programMemory, {
+        ...pipeInfo,
+        isInPipe: false,
+      })
     }
     throw new Error('Invalid argument type in function call')
   })

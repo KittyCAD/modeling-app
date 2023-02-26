@@ -371,6 +371,34 @@ describe('testing math operators', () => {
     const yVal = sketch.value?.[0]?.to?.[1]
     expect(yVal).toBe(-4)
   })
+  it('test that % substitution feeds down CallExp->ArrExp->UnaryExp->CallExp', () => {
+    const code = [
+      `const myVar = 3`,
+      `const part001 = startSketchAt([0, 0])`,
+      `  |> line({ to: [3, 4], tag: 'seg01' }, %)`,
+      `  |> line([`,
+      `  min(segLen('seg01', %), myVar),`,
+      `  -legLen(segLen('seg01', %), myVar)`,
+      `], %)`,
+      ``,
+      `show(part001)`,
+    ].join('\n')
+    const { root } = exe(code)
+    const sketch = removeGeoFromSketch(root.part001 as SketchGroup)
+    // expect -legLen(segLen('seg01', %), myVar) to equal -4 setting the y value back to 0
+    expect(sketch.value?.[1]?.from).toEqual([3, 4])
+    expect(sketch.value?.[1]?.to).toEqual([6, 0])
+    const removedUnaryExp = code.replace(
+      `-legLen(segLen('seg01', %), myVar)`,
+      `legLen(segLen('seg01', %), myVar)`
+    )
+    const { root: removedUnaryExpRoot } = exe(removedUnaryExp)
+    const removedUnaryExpRootSketch = removeGeoFromSketch(
+      removedUnaryExpRoot.part001 as SketchGroup
+    )
+    // without the minus sign, the y value should be 8
+    expect(removedUnaryExpRootSketch.value?.[1]?.to).toEqual([6, 8])
+  })
   // TODO
   // it('with nested callExpression and binaryExpression', () => {
   //   const code = 'const myVar = 2 + min(100, 1 + legLen(5, 3))'
