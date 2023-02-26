@@ -355,6 +355,22 @@ describe('testing math operators', () => {
     expect(root.myVar.value).toBe(-3)
     expect(root.myVar.value).toBe(root2.myVar.value)
   })
+  it('with unaryExpression in ArrayExpression', () => {
+    const code = 'const myVar = [1,-legLen(5, 4)]'
+    const { root } = exe(code)
+    expect(root.myVar.value).toEqual([1, -3])
+  })
+  it('with unaryExpression in ArrayExpression in CallExpression, checking nothing funny happens when used in a sketch', () => {
+    const code = [
+      'const part001 = startSketchAt([0, 0])',
+      '|> line([-2.21, -legLen(5, min(3, 999))], %)',
+    ].join('\n')
+    const { root } = exe(code)
+    const sketch = removeGeoFromSketch(root.part001 as SketchGroup)
+    // result of `-legLen(5, min(3, 999))` should be -4
+    const yVal = sketch.value?.[0]?.to?.[1]
+    expect(yVal).toBe(-4)
+  })
   // TODO
   // it('with nested callExpression and binaryExpression', () => {
   //   const code = 'const myVar = 2 + min(100, 1 + legLen(5, 3))'
@@ -374,7 +390,7 @@ function exe(
   return executor(ast, programMemory)
 }
 
-function removeGeoFromSketch(sketch: SketchGroup): any {
+function removeGeoFromSketch(sketch: SketchGroup): SketchGroup {
   return {
     ...sketch,
     value: removeGeoFromPaths(sketch.value),

@@ -204,6 +204,10 @@ export const executor = (
                     value: node.value,
                     __meta: node.__meta[node.__meta.length - 1],
                   }
+                } else if (element.type === 'UnaryExpression') {
+                  return {
+                    value: getUnaryExpressionResult(element, _programMemory),
+                  }
                 } else {
                   throw new Error(
                     `Unexpected element type ${element.type} in array expression`
@@ -492,6 +496,8 @@ function executeArrayExpression(
         isInPipe: false,
       })
       return result
+    } else if (el.type === 'UnaryExpression') {
+      return getUnaryExpressionResult(el, _programMemory)
     }
     throw new Error('Invalid argument type')
   })
