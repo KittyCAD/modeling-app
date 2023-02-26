@@ -20,6 +20,8 @@ export type InternalFnNames =
   | 'translate'
   | 'transform'
   | 'getExtrudeWallTransform'
+  | 'min'
+  | 'legLen'
   | 'segLen'
   | 'rx'
   | 'ry'

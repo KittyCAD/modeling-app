@@ -1742,13 +1742,13 @@ describe('testing findEndofBinaryExpression', () => {
     const code = `1 + 2 * 3\nconst yo = 5`
     const tokens = lexer(code)
     const end = findEndOfBinaryExpression(tokens, 0)
-    expect(end).toBe(8)
+    expect(tokens[end].value).toBe('3')
   })
   it('(1 + 2) / 5 - 3', () => {
     const code = `(1 + 25) / 5 - 3\nconst yo = 5`
     const tokens = lexer(code)
     const end = findEndOfBinaryExpression(tokens, 0)
-    expect(end).toBe(14)
+    expect(tokens[end].value).toBe('3')
 
     // expect to have the same end if started later in the string at a legitimate place
     const indexOf5 = code.indexOf('5')
@@ -1759,30 +1759,42 @@ describe('testing findEndofBinaryExpression', () => {
     const code = '((1 + 2) / 5 - 3)\nconst yo = 5'
     const tokens = lexer(code)
     const end = findEndOfBinaryExpression(tokens, 0)
-    expect(end).toBe(code.indexOf('3)') + 1)
+    expect(tokens[end].end).toBe(code.indexOf('3)') + 2)
   })
   it('whole thing wraped but given index after the first brace: ((1 + 2) / 5 - 3)', () => {
     const code = '((1 + 2) / 5 - 3)\nconst yo = 5'
     const tokens = lexer(code)
     const end = findEndOfBinaryExpression(tokens, 1)
-    expect(end).toBe(code.indexOf('3'))
+    expect(tokens[end].value).toBe('3')
   })
   it('given the index of a small wrapped section i.e. `1 + 2` in ((1 + 2) / 5 - 3)', () => {
     const code = '((1 + 2) / 5 - 3)\nconst yo = 5'
     const tokens = lexer(code)
     const end = findEndOfBinaryExpression(tokens, 2)
-    expect(end).toBe(code.indexOf('2'))
+    expect(tokens[end].value).toBe('2')
   })
   it('lots of silly nesting: (1 + 2) / (5 - (3))', () => {
     const code = '(1 + 2) / (5 - (3))\nconst yo = 5'
     const tokens = lexer(code)
     const end = findEndOfBinaryExpression(tokens, 0)
-    expect(end).toBe(code.indexOf('))') + 1)
+    expect(tokens[end].end).toBe(code.indexOf('))') + 2)
   })
   it('with pipe operator at the end', () => {
     const code = '(1 + 2) / (5 - (3))\n  |> fn(%)'
     const tokens = lexer(code)
     const end = findEndOfBinaryExpression(tokens, 0)
-    expect(end).toBe(code.indexOf('))') + 1)
+    expect(tokens[end].end).toBe(code.indexOf('))') + 2)
+  })
+  it('with call expression at the start of binary expression', () => {
+    const code = 'yo(2) + 3\n  |> fn(%)'
+    const tokens = lexer(code)
+    const end = findEndOfBinaryExpression(tokens, 0)
+    expect(tokens[end].value).toBe('3')
+  })
+  it('with call expression at the end of binary expression', () => {
+    const code = '3 + yo(2)\n  |> fn(%)'
+    const tokens = lexer(code)
+    const end = findEndOfBinaryExpression(tokens, 0)
+    expect(tokens[end].value).toBe(')')
   })
 })

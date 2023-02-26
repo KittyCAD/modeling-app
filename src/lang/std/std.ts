@@ -71,6 +71,11 @@ const translate: InternalFn = <T extends SketchGroup | ExtrudeGroup>(
   }
 }
 
+const min: InternalFn = (_, a: number, b: number): number => Math.min(a, b)
+
+const legLen: InternalFn = (_, hypotenuse: number, leg: number): number =>
+  Math.sqrt(hypotenuse ** 2 - Math.min(leg, hypotenuse) ** 2)
+
 export const internalFns: { [key in InternalFnNames]: InternalFn } = {
   rx: rotateOnAxis([1, 0, 0]),
   ry: rotateOnAxis([0, 1, 0]),
@@ -79,6 +84,8 @@ export const internalFns: { [key in InternalFnNames]: InternalFn } = {
   translate,
   transform,
   getExtrudeWallTransform,
+  min,
+  legLen,
   segLen,
   lineTo: lineTo.fn,
   xLineTo: xLineTo.fn,

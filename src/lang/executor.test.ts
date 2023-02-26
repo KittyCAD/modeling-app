@@ -327,12 +327,24 @@ describe('testing math operators', () => {
     const { root } = exe(code)
     expect(root.myVar.value).toBe(12.5)
   })
+  it('with callExpression at start', () => {
+    const code = 'const myVar = min(4, 100) + 2'
+    const { root } = exe(code)
+    expect(root.myVar.value).toBe(6)
+  })
+  it('with callExpression at end', () => {
+    const code = 'const myVar = 2 + min(4, 100)'
+    const { root } = exe(code)
+    expect(root.myVar.value).toBe(6)
+  })
+  it('with nested callExpression', () => {
+    const code = 'const myVar = 2 + min(100, legLen(5, 3))'
+    const { root } = exe(code)
+    expect(root.myVar.value).toBe(6)
+  })
   // TODO
-  // it('with callExpression', () => {
-  //   const code = [
-  //     'const yo = (a) => a * 2',
-  //     'const myVar = yo(2) + 2'
-  //   ].join('\n')
+  // it('with nested callExpression and binaryExpression', () => {
+  //   const code = 'const myVar = 2 + min(100, 1 + legLen(5, 3))'
   //   const { root } = exe(code)
   //   expect(root.myVar.value).toBe(6)
   // })

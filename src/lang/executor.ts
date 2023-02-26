@@ -336,6 +336,8 @@ function getBinaryExpressionResult(
       return programMemory.root[part.name].value
     } else if (part.type === 'BinaryExpression') {
       return getBinaryExpressionResult(part, programMemory)
+    } else if (part.type === 'CallExpression') {
+      return executeCallExpression(programMemory, part)
     }
   }
   const left = getVal(expression.left)

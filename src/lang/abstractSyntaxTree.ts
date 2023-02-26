@@ -173,7 +173,7 @@ export interface CallExpression extends GeneralStatement {
   optional: boolean
 }
 
-function makeCallExpression(
+export function makeCallExpression(
   tokens: Token[],
   index: number
 ): {
@@ -368,9 +368,23 @@ function makeValue(
   index: number
 ): { value: Value; lastIndex: number } {
   const currentToken = tokens[index]
-  const { token: nextToken } = nextMeaningfulToken(tokens, index)
-  // nextToken might be empty if it's at the end of the file
+  const { token: nextToken, index: nextTokenIndex } = nextMeaningfulToken(
+    tokens,
+    index
+  )
   if (nextToken?.type === 'brace' && nextToken.value === '(') {
+    const endIndex = findClosingBrace(tokens, nextTokenIndex)
+    const tokenAfterCallExpression = nextMeaningfulToken(tokens, endIndex)
+    if (
+      tokenAfterCallExpression?.token?.type === 'operator' &&
+      tokenAfterCallExpression.token.value !== '|>'
+    ) {
+      const { expression, lastIndex } = makeBinaryExpression(tokens, index)
+      return {
+        value: expression,
+        lastIndex,
+      }
+    }
     const { expression, lastIndex } = makeCallExpression(tokens, index)
     return {
       value: expression,
@@ -501,8 +515,11 @@ function makeVariableDeclarators(
   }
 }
 
-export type BinaryPart = Literal | Identifier | BinaryExpression
-// | CallExpression
+export type BinaryPart =
+  | Literal
+  | Identifier
+  | BinaryExpression
+  | CallExpression
 // | MemberExpression
 // | ArrayExpression
 // | ObjectExpression
@@ -795,6 +812,22 @@ export function findEndOfBinaryExpression(
   const currentToken = tokens[index]
   if (currentToken.type === 'brace' && currentToken.value === '(') {
     const closingParenthesis = findClosingBrace(tokens, index)
+    const maybeAnotherOperator = nextMeaningfulToken(tokens, closingParenthesis)
+    if (
+      maybeAnotherOperator?.token?.type !== 'operator' ||
+      maybeAnotherOperator?.token?.value === '|>'
+    ) {
+      return closingParenthesis
+    }
+    const nextRight = nextMeaningfulToken(tokens, maybeAnotherOperator.index)
+    return findEndOfBinaryExpression(tokens, nextRight.index)
+  }
+  if (
+    currentToken.type === 'word' &&
+    tokens?.[index + 1]?.type === 'brace' &&
+    tokens[index + 1].value === '('
+  ) {
+    const closingParenthesis = findClosingBrace(tokens, index + 1)
     const maybeAnotherOperator = nextMeaningfulToken(tokens, closingParenthesis)
     if (
       maybeAnotherOperator?.token?.type !== 'operator' ||
@@ -1478,7 +1511,7 @@ export function getNodeFromPath<T>(
         }
       }
     } catch (e) {
-      throw new Error(
+      console.error(
         `Could not find path ${pathItem} in node ${JSON.stringify(
           currentNode,
           null,
