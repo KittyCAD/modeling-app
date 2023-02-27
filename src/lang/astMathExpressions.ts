@@ -15,7 +15,7 @@ export function reversePolishNotation(
   operators: Token[] = []
 ): Token[] {
   if (tokens.length === 0) {
-    return [...previousPostfix, ...operators.slice().reverse()] // reverse mutates, so clone is needed
+    return [...previousPostfix, ...operators.slice().reverse()] // reverse mutates, so slice/clone is needed
   }
   const currentToken = tokens[0]
   if (

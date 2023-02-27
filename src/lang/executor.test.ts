@@ -399,12 +399,11 @@ describe('testing math operators', () => {
     // without the minus sign, the y value should be 8
     expect(removedUnaryExpRootSketch.value?.[1]?.to).toEqual([6, 8])
   })
-  // TODO
-  // it('with nested callExpression and binaryExpression', () => {
-  //   const code = 'const myVar = 2 + min(100, 1 + legLen(5, 3))'
-  //   const { root } = exe(code)
-  //   expect(root.myVar.value).toBe(6)
-  // })
+  it('with nested callExpression and binaryExpression', () => {
+    const code = 'const myVar = 2 + min(100, -1 + legLen(5, 3))'
+    const { root } = exe(code)
+    expect(root.myVar.value).toBe(5)
+  })
 })
 
 // helpers

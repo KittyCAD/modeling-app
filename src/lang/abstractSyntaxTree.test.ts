@@ -1823,3 +1823,39 @@ describe('test UnaryExpression', () => {
     })
   })
 })
+
+describe('testing nested call expressions', () => {
+  it('callExp in a binExp in a callExp', () => {
+    const code = 'const myVar = min(100, 1 + legLen(5, 3))'
+    const { body } = abstractSyntaxTree(lexer(code))
+    const myVarInit = (body?.[0] as any).declarations[0]?.init
+    expect(myVarInit).toEqual({
+      type: 'CallExpression',
+      start: 14,
+      end: 40,
+      callee: { type: 'Identifier', start: 14, end: 17, name: 'min' },
+      arguments: [
+        { type: 'Literal', start: 18, end: 21, value: 100, raw: '100' },
+        {
+          type: 'BinaryExpression',
+          operator: '+',
+          start: 23,
+          end: 39,
+          left: { type: 'Literal', value: 1, raw: '1', start: 23, end: 24 },
+          right: {
+            type: 'CallExpression',
+            start: 27,
+            end: 39,
+            callee: { type: 'Identifier', start: 27, end: 33, name: 'legLen' },
+            arguments: [
+              { type: 'Literal', start: 34, end: 35, value: 5, raw: '5' },
+              { type: 'Literal', start: 37, end: 38, value: 3, raw: '3' },
+            ],
+            optional: false,
+          },
+        },
+      ],
+      optional: false,
+    })
+  })
+})

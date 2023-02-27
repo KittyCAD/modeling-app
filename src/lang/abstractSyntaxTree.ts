@@ -273,8 +273,31 @@ function makeArguments(
       expression,
     ])
   }
+  if (
+    (argumentToken.token.type === 'word' ||
+      argumentToken.token.type === 'number' ||
+      argumentToken.token.type === 'string') &&
+    nextBraceOrCommaToken.token.type === 'operator'
+  ) {
+    const { expression, lastIndex } = makeBinaryExpression(
+      tokens,
+      argumentToken.index
+    )
+    const nextCommarOrBraceTokenIndex = nextMeaningfulToken(
+      tokens,
+      lastIndex
+    ).index
+    return makeArguments(tokens, nextCommarOrBraceTokenIndex, [
+      ...previousArgs,
+      expression,
+    ])
+  }
   if (!isIdentifierOrLiteral) {
-    const { expression, lastIndex } = makeBinaryExpression(tokens, index)
+    // I think this if statement might be dead code
+    const { expression, lastIndex } = makeBinaryExpression(
+      tokens,
+      nextBraceOrCommaToken.index
+    )
     return makeArguments(tokens, lastIndex, [...previousArgs, expression])
   }
   if (

@@ -372,7 +372,6 @@ function getBinaryPartResult(
   } else if (part.type === 'BinaryExpression') {
     return getBinaryExpressionResult(part, programMemory)
   } else if (part.type === 'CallExpression') {
-    console.log('executingCallExpression', pipeInfo.previousResults)
     return executeCallExpression(programMemory, part, [], {
       ...pipeInfo,
       isInPipe: false,
@@ -396,7 +395,6 @@ function getUnaryExpressionResult(
     body: [],
   }
 ) {
-  console.log('getUnaryExpressionResult', pipeInfo.previousResults)
   return -getBinaryPartResult(expression.argument, programMemory, {
     ...pipeInfo,
     isInPipe: false,
@@ -588,6 +586,8 @@ function executeCallExpression(
         ...pipeInfo,
         isInPipe: false,
       })
+    } else if (arg.type === 'BinaryExpression') {
+      return getBinaryExpressionResult(arg, programMemory)
     }
     throw new Error('Invalid argument type in function call')
   })
