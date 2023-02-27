@@ -184,9 +184,6 @@ const lineAndLineToAllowedTransforms: SketchLineHelper['allowedTransforms'] = ({
 const xyLineAllowedTransforms: SketchLineHelper['allowedTransforms'] = ({
   node,
   pathToNode,
-}: {
-  node: Program
-  pathToNode: PathToNode
 }) => {
   const { node: callExpression } = getNodeFromPath<CallExpression>(
     node,
@@ -242,9 +239,6 @@ const xyLineAllowedTransforms: SketchLineHelper['allowedTransforms'] = ({
 const angledLineAllowedTransforms: SketchLineHelper['allowedTransforms'] = ({
   node,
   pathToNode,
-}: {
-  node: Program
-  pathToNode: PathToNode
 }) => {
   const { node: callExpression } = getNodeFromPath<CallExpression>(
     node,
@@ -478,7 +472,9 @@ export const line: SketchLineHelper = {
     previousProgramMemory,
     pathToNode,
     to,
-    // from: [number, number],
+    from,
+    replaceExisting,
+    createCallback,
   }) => {
     const _node = { ...node }
     const { node: pipe } = getNodeFromPath<PipeExpression>(
@@ -486,6 +482,7 @@ export const line: SketchLineHelper = {
       pathToNode,
       'PipeExpression'
     )
+    if (!from) throw new Error('no from') // todo #29 remove
     const { node: varDec } = getNodeFromPath<VariableDeclarator>(
       _node,
       pathToNode,
@@ -494,15 +491,23 @@ export const line: SketchLineHelper = {
     const variableName = varDec.id.name
     const sketch = previousProgramMemory?.root?.[variableName]
     if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
-    const last = sketch.value[sketch.value.length - 1]
-    const newLine = createCallExpression('line', [
-      createArrayExpression([
-        createLiteral(roundOff(to[0] - last.to[0], 2)),
-        createLiteral(roundOff(to[1] - last.to[1], 2)),
-      ]),
-      createPipeSubstitution(),
-    ])
-    pipe.body = [...pipe.body, newLine]
+
+    const newXVal = createLiteral(roundOff(to[0] - from[0], 2))
+    const newYVal = createLiteral(roundOff(to[1] - from[1], 2))
+
+    const newLine = createCallback
+      ? createCallback([newXVal, newYVal])
+      : createCallExpression('line', [
+          createArrayExpression([newXVal, newYVal]),
+          createPipeSubstitution(),
+        ])
+    const callIndex = getLastIndex(pathToNode)
+    if (replaceExisting) {
+      pipe.body[callIndex] = newLine
+    } else {
+      pipe.body = [...pipe.body, newLine]
+    }
+
     return {
       modifiedAst: _node,
       pathToNode,

@@ -41,7 +41,7 @@ export function swapSketchHelper(
   return { modifiedAst }
 }
 
-function getSketchSegmentIndexFromSourceRange(
+export function getSketchSegmentIndexFromSourceRange(
   sketchGroup: SketchGroup,
   [rangeStart, rangeEnd]: Range
 ): SketchGroup['value'][number] {
@@ -58,12 +58,13 @@ export const segLen: InternalFn = (
   segName: string,
   sketchGroup: SketchGroup
 ): number => {
-  const line = sketchGroup.value.find((seg) => seg.name === segName)
-  if (!line) return 0 // maybe this should throw, but the language doesn't have a way to handle errors yet
-  const result = Math.sqrt(
+  const line = sketchGroup?.value.find((seg) => seg.name === segName)
+  // maybe this should throw, but the language doesn't have a way to handle errors yet
+  if (!line) return 0
+
+  return Math.sqrt(
     (line.from[1] - line.to[1]) ** 2 + (line.from[0] - line.to[0]) ** 2
   )
-  return result
 }
 
 export function includedInAll(

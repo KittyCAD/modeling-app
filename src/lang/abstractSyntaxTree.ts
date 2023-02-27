@@ -1,6 +1,7 @@
 import { PathToNode } from './executor'
 import { Token } from './tokeniser'
 import { parseExpression } from './astMathExpressions'
+import { Range } from '../useStore'
 
 type syntaxType =
   | 'Program'
@@ -1616,7 +1617,7 @@ export function getNodeFromPathCurry(
 
 export function getNodePathFromSourceRange(
   node: Program,
-  sourceRange: [number, number],
+  sourceRange: Range,
   previousPath: PathToNode = []
 ): PathToNode {
   const [start, end] = sourceRange
