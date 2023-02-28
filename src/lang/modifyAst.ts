@@ -233,9 +233,11 @@ export function extrudeSketch(
   ])
 
   if (shouldPipe) {
-    const pipeChain: PipeExpression = isInPipeExpression
-      ? createPipeExpression([...pipeExpression.body, extrudeCall])
-      : createPipeExpression([sketchExpression as any, extrudeCall])
+    const pipeChain = createPipeExpression(
+      isInPipeExpression
+        ? [...pipeExpression.body, extrudeCall]
+        : [sketchExpression as any, extrudeCall]
+    )
 
     variableDeclorator.init = pipeChain
     const pathToExtrudeArg = [
