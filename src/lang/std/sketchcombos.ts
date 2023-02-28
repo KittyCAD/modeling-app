@@ -96,10 +96,7 @@ export const attemptAtThing: TransformMap = {
       equalLength: {
         tooltip: 'line',
         createNode: ({ referenceSegName, varVal }) => {
-          const segLenVal: Value = createCallExpression('segLen', [
-            createLiteral(referenceSegName),
-            createPipeSubstitution(),
-          ])
+          const segLenVal: Value = createSegLen(referenceSegName)
           const minVal: Value = createCallExpression('min', [segLenVal, varVal])
           const legLenVal: Value = createCallExpression('legLen', [
             segLenVal,
@@ -121,19 +118,46 @@ export const attemptAtThing: TransformMap = {
     free: {
       equalLength: {
         tooltip: 'angledLine',
-        createNode: ({ referenceSegName, ...rest }) => {
-          const segLenVal: Value = createCallExpression('segLen', [
-            createLiteral(referenceSegName),
-            createPipeSubstitution(),
-          ])
-          return (args, tag) => {
-            return createCallWrapper('angledLine', [args[0], segLenVal], tag)
-          }
-        },
+        createNode:
+          ({ referenceSegName }) =>
+          (args, tag) =>
+            createCallWrapper(
+              'angledLine',
+              [args[0], createSegLen(referenceSegName)],
+              tag
+            ),
       },
       horizontal: { tooltip: 'xLine' },
       vertical: { tooltip: 'yLine' },
       equalangle: { tooltip: 'angledLine' },
+    },
+  },
+  angledLine: {
+    angle: {
+      equalLength: {
+        tooltip: 'angledLine',
+        createNode:
+          ({ referenceSegName, varVal }) =>
+          (_, tag) =>
+            createCallWrapper(
+              'angledLine',
+              [varVal, createSegLen(referenceSegName)],
+              tag
+            ),
+      },
+    },
+    free: {
+      equalLength: {
+        tooltip: 'angledLine',
+        createNode:
+          ({ referenceSegName }) =>
+          (args, tag) =>
+            createCallWrapper(
+              'angledLine',
+              [args[0], createSegLen(referenceSegName)],
+              tag
+            ),
+      },
     },
   },
 }
@@ -318,4 +342,11 @@ export function transformAstForSketchLines({
     node = modifiedAst
   })
   return { modifiedAst: node }
+}
+
+function createSegLen(referenceSegName: string): Value {
+  return createCallExpression('segLen', [
+    createLiteral(referenceSegName),
+    createPipeSubstitution(),
+  ])
 }
