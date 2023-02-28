@@ -108,23 +108,7 @@ function addToShow(node: Program, name: string): Program {
   const dumbyStartend = { start: 0, end: 0 }
   const showCallIndex = getShowIndex(_node)
   if (showCallIndex === -1) {
-    const showCall: CallExpression = {
-      type: 'CallExpression',
-      ...dumbyStartend,
-      callee: {
-        type: 'Identifier',
-        ...dumbyStartend,
-        name: 'show',
-      },
-      optional: false,
-      arguments: [
-        {
-          type: 'Identifier',
-          ...dumbyStartend,
-          name,
-        },
-      ],
-    }
+    const showCall = createCallExpression('show', [createIdentifier(name)])
     const showExpressionStatement: ExpressionStatement = {
       type: 'ExpressionStatement',
       ...dumbyStartend,
@@ -135,25 +119,8 @@ function addToShow(node: Program, name: string): Program {
   }
   const showCall = { ..._node.body[showCallIndex] } as ExpressionStatement
   const showCallArgs = (showCall.expression as CallExpression).arguments
-  const newShowCallArgs: Value[] = [
-    ...showCallArgs,
-    {
-      type: 'Identifier',
-      ...dumbyStartend,
-      name,
-    },
-  ]
-  const newShowExpression: CallExpression = {
-    type: 'CallExpression',
-    ...dumbyStartend,
-    callee: {
-      type: 'Identifier',
-      ...dumbyStartend,
-      name: 'show',
-    },
-    optional: false,
-    arguments: newShowCallArgs,
-  }
+  const newShowCallArgs: Value[] = [...showCallArgs, createIdentifier(name)]
+  const newShowExpression = createCallExpression('show', newShowCallArgs)
 
   _node.body[showCallIndex] = {
     ...showCall,
@@ -254,40 +221,21 @@ export function extrudeSketch(
   const { node: variableDeclorator, path: pathToDecleration } =
     getNodeFromPath<VariableDeclarator>(_node, pathToNode, 'VariableDeclarator')
 
-  const extrudeCall: CallExpression = {
-    type: 'CallExpression',
-    ...dumbyStartend,
-    callee: {
-      type: 'Identifier',
-      ...dumbyStartend,
-      name: 'extrude',
-    },
-    optional: false,
-    arguments: [
-      createLiteral(4),
-      shouldPipe
-        ? createPipeSubstitution()
-        : {
-            type: 'Identifier',
-            ...dumbyStartend,
-            name: variableDeclorator.id.name,
-          },
-    ],
-  }
+  const extrudeCall = createCallExpression('extrude', [
+    createLiteral(4),
+    shouldPipe
+      ? createPipeSubstitution()
+      : {
+          type: 'Identifier',
+          ...dumbyStartend,
+          name: variableDeclorator.id.name,
+        },
+  ])
+
   if (shouldPipe) {
     const pipeChain: PipeExpression = isInPipeExpression
-      ? {
-          type: 'PipeExpression',
-          nonCodeMeta: {},
-          ...dumbyStartend,
-          body: [...pipeExpression.body, extrudeCall],
-        }
-      : {
-          type: 'PipeExpression',
-          nonCodeMeta: {},
-          ...dumbyStartend,
-          body: [sketchExpression as any, extrudeCall], // TODO fix this #25
-        }
+      ? createPipeExpression([...pipeExpression.body, extrudeCall])
+      : createPipeExpression([sketchExpression as any, extrudeCall])
 
     variableDeclorator.init = pipeChain
     const pathToExtrudeArg = [
@@ -306,23 +254,7 @@ export function extrudeSketch(
     }
   }
   const name = findUniqueName(node, 'part')
-  const VariableDeclaration: VariableDeclaration = {
-    type: 'VariableDeclaration',
-    ...dumbyStartend,
-    declarations: [
-      {
-        type: 'VariableDeclarator',
-        ...dumbyStartend,
-        id: {
-          type: 'Identifier',
-          ...dumbyStartend,
-          name,
-        },
-        init: extrudeCall,
-      },
-    ],
-    kind: 'const',
-  }
+  const VariableDeclaration = createVariableDeclaration(name, extrudeCall)
   const showCallIndex = getShowIndex(_node)
   _node.body.splice(showCallIndex, 0, VariableDeclaration)
   const pathToExtrudeArg = [
