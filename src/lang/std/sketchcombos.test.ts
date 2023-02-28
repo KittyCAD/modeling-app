@@ -114,16 +114,16 @@ const part001 = startSketchAt([0, 0]) // ln2
   |> lineTo([1, 1], %) // ln3
   |> line({ to: [1.94, 3.82], tag: 'seg01' }, %) // ln4
   |> line([
-  min(segLen('seg01', %), myVar),
-  -legLen(segLen('seg01', %), myVar)
-], %) // ln5
+    min(segLen('seg01', %), myVar),
+    -legLen(segLen('seg01', %), myVar)
+  ], %) // ln5
   |> angledLine([248, segLen('seg01', %)], %) // ln6
   |> angledLine([myVar, segLen('seg01', %)], %) // ln7
   |> angledLine([45, segLen('seg01', %)], %) // ln8
   |> line([
-  min(segLen('seg01', %), myVar),
-  legLen(segLen('seg01', %), myVar)
-], %) // ln9
+    min(segLen('seg01', %), myVar),
+    legLen(segLen('seg01', %), myVar)
+  ], %) // ln9
 show(part001)`)
   })
 })

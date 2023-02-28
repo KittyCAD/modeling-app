@@ -926,7 +926,7 @@ function makeUnaryExpression(
   return {
     expression: {
       type: 'UnaryExpression',
-      operator: currentToken.value,
+      operator: currentToken.value === '!' ? '!' : '-',
       start: currentToken.start,
       end: tokens[argumentLastIndex].end,
       argument: argument as BinaryPart,

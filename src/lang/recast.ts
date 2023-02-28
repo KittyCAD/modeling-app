@@ -110,9 +110,9 @@ function recastArrayExpression(
     const _indentation = indentation + '  '
     return `[
 ${_indentation}${expression.elements
-      .map((el) => recastValue(el))
+      .map((el) => recastValue(el, _indentation))
       .join(`,\n${_indentation}`)}
-]`
+${indentation}]`
   }
   return flatRecast
 }
@@ -158,13 +158,16 @@ function recastLiteral(literal: Literal): string {
   return String(literal?.value)
 }
 
-function recastCallExpression(expression: CallExpression): string {
+function recastCallExpression(
+  expression: CallExpression,
+  indentation = ''
+): string {
   return `${expression.callee.name}(${expression.arguments
-    .map(recastArgument)
+    .map((arg) => recastArgument(arg, indentation))
     .join(', ')})`
 }
 
-function recastArgument(argument: Value): string {
+function recastArgument(argument: Value, indentation = ''): string {
   if (argument.type === 'Literal') {
     return recastLiteral(argument)
   } else if (argument.type === 'Identifier') {
@@ -172,7 +175,7 @@ function recastArgument(argument: Value): string {
   } else if (argument.type === 'BinaryExpression') {
     return recastBinaryExpression(argument)
   } else if (argument.type === 'ArrayExpression') {
-    return recastArrayExpression(argument)
+    return recastArrayExpression(argument, indentation)
   } else if (argument.type === 'ObjectExpression') {
     return recastObjectExpression(argument)
   } else if (argument.type === 'CallExpression') {
@@ -224,7 +227,7 @@ function recastValue(node: Value, indentation = ''): string {
   } else if (node.type === 'FunctionExpression') {
     return recastFunction(node)
   } else if (node.type === 'CallExpression') {
-    return recastCallExpression(node)
+    return recastCallExpression(node, indentation)
   } else if (node.type === 'Identifier') {
     return node.name
   } else if (node.type === 'PipeExpression') {
@@ -241,7 +244,7 @@ function recastPipeExpression(expression: PipeExpression): string {
       let str = ''
       let indentation = '  '
       let maybeLineBreak = '\n'
-      str = recastValue(statement)
+      str = recastValue(statement, indentation)
       if (
         expression.nonCodeMeta?.[index]?.value &&
         expression.nonCodeMeta?.[index].value !== ' '
