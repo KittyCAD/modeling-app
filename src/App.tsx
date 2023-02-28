@@ -94,7 +94,6 @@ function App() {
         }
         const tokens = await asyncLexer(code)
         const _ast = abstractSyntaxTree(tokens)
-        console.log('setting ast')
         setAst(_ast)
         resetLogs()
         const programMemory = executor(_ast, {

@@ -1,7 +1,8 @@
 import { TransformCallback } from './stdTypes'
-import { Range, toolTips, TooTip } from '../../useStore'
+import { Range, Ranges, toolTips, TooTip } from '../../useStore'
 import {
   CallExpression,
+  getNodeFromPath,
   getNodeFromPathCurry,
   getNodePathFromSourceRange,
   Program,
@@ -10,8 +11,10 @@ import {
 } from '../abstractSyntaxTree'
 import {
   createCallExpression,
+  createIdentifier,
   createLiteral,
   createPipeSubstitution,
+  giveSketchFnCallTag,
 } from '../modifyAst'
 import { createFirstArg, getFirstArg, replaceSketchLine } from './sketch'
 import { ProgramMemory } from '../executor'
@@ -25,7 +28,11 @@ type LineInputsType =
   | 'angle'
   | 'length'
 
-type ConstraintType = 'equalLength' | 'vertical' | 'horizontal' | 'equalangle'
+export type ConstraintType =
+  | 'equalLength'
+  | 'vertical'
+  | 'horizontal'
+  | 'equalangle'
 
 function createCallWrapper(
   a: TooTip,
@@ -42,6 +49,7 @@ export function replaceSketchCall(
   programMemory: ProgramMemory,
   ast: Program,
   range: Range,
+  transformTo: TooTip,
   createCallback: TransformCallback
 ): { modifiedAst: Program } {
   const path = getNodePathFromSourceRange(ast, range)
@@ -58,7 +66,7 @@ export function replaceSketchCall(
     node: ast,
     programMemory,
     sourceRange: range,
-    fnName: callExp.callee.name as TooTip,
+    fnName: transformTo || (callExp.callee.name as TooTip),
     to,
     from,
     createCallback,
@@ -111,7 +119,18 @@ export const attemptAtThing: TransformMap = {
       equalangle: { tooltip: 'angledLineOfYLength' },
     },
     free: {
-      equalLength: { tooltip: 'angledLine' },
+      equalLength: {
+        tooltip: 'angledLine',
+        createNode: ({ referenceSegName, ...rest }) => {
+          const segLenVal: Value = createCallExpression('segLen', [
+            createLiteral(referenceSegName),
+            createPipeSubstitution(),
+          ])
+          return (args, tag) => {
+            return createCallWrapper('angledLine', [args[0], segLenVal], tag)
+          }
+        },
+      },
       horizontal: { tooltip: 'xLine' },
       vertical: { tooltip: 'yLine' },
       equalangle: { tooltip: 'angledLine' },
@@ -227,4 +246,76 @@ export function getConstraintType(
   return null
 }
 
-// console.log(JSON.stringify(createAllowedTransformMap(), null, 2))
+export function getTransformInfos(
+  selectionRanges: Ranges,
+  ast: Program,
+  constraintType: ConstraintType
+): TransformInfo[] {
+  const paths = selectionRanges.map((selectionRange) =>
+    getNodePathFromSourceRange(ast, selectionRange)
+  )
+  const nodes = paths.map(
+    (pathToNode) => getNodeFromPath<Value>(ast, pathToNode).node
+  )
+
+  const theTransforms = nodes.slice(1).map((node) => {
+    if (node?.type === 'CallExpression')
+      return getTransformInfo(node, constraintType)
+
+    return false
+  }) as TransformInfo[]
+  return theTransforms
+}
+
+export function transformAstForSketchLines({
+  ast,
+  selectionRanges,
+  transformInfos: transformInfo,
+  programMemory,
+}: {
+  ast: Program
+  selectionRanges: Ranges
+  transformInfos: TransformInfo[]
+  programMemory: ProgramMemory
+}): { modifiedAst: Program } {
+  // deep clone since we are mutating in a loop, of which any could fail
+  let node = JSON.parse(JSON.stringify(ast))
+  const primarySelection = selectionRanges[0]
+
+  const { modifiedAst, tag } = giveSketchFnCallTag(node, primarySelection)
+  node = modifiedAst
+
+  selectionRanges.slice(1).forEach((range, index) => {
+    const callBack = transformInfo?.[index].createNode
+    const transformTo = transformInfo?.[index].tooltip
+    if (!callBack || !transformTo) throw new Error('no callback helper')
+
+    const callExpPath = getNodePathFromSourceRange(node, range)
+    const callExp = getNodeFromPath<CallExpression>(
+      node,
+      callExpPath,
+      'CallExpression'
+    )?.node
+    const first = callExp?.arguments[0]
+    const x =
+      first?.type === 'ArrayExpression'
+        ? first.elements[0]
+        : first?.type === 'ObjectExpression'
+        ? (first.properties.find((a: any) => a.key.name === 'to') as any)
+            ?.elements[0]
+        : first
+
+    const { modifiedAst } = replaceSketchCall(
+      programMemory,
+      node,
+      range,
+      transformTo,
+      callBack({
+        referenceSegName: tag,
+        varVal: createIdentifier(x.name),
+      })
+    )
+    node = modifiedAst
+  })
+  return { modifiedAst: node }
+}

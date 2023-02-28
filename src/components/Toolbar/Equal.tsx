@@ -1,23 +1,17 @@
 import { useState, useEffect } from 'react'
-import { toolTips, useStore, TooTip } from '../../useStore'
+import { toolTips, useStore } from '../../useStore'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
   Value,
   VariableDeclarator,
 } from '../../lang/abstractSyntaxTree'
+import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
 import {
-  isSketchVariablesLinked,
-  includedInAll,
-  swapSketchHelper,
-} from '../../lang/std/sketchConstraints'
-import { allowedTransforms } from '../../lang/std/sketch'
-import {
-  createCallExpression,
-  createLiteral,
-  createPipeSubstitution,
-  giveSketchFnCallTag,
-} from '../../lang/modifyAst'
+  TransformInfo,
+  transformAstForSketchLines,
+  getTransformInfos,
+} from '../../lang/std/sketchcombos'
 
 export const Equal = () => {
   const { guiMode, selectionRanges, ast, programMemory, updateAst } = useStore(
@@ -30,9 +24,7 @@ export const Equal = () => {
     })
   )
   const [enableEqual, setEnableEqual] = useState(false)
-  const [allowedTransformsMap, setAllowedTransformsMap] = useState<
-    ReturnType<typeof allowedTransforms>[]
-  >([])
+  const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
   useEffect(() => {
     if (!ast) return
     const paths = selectionRanges.map((selectionRange) =>
@@ -60,61 +52,32 @@ export const Equal = () => {
         toolTips.includes(node.callee.name as any)
     )
 
-    const allowedSwaps = paths.slice(1).map((a) =>
-      allowedTransforms({
-        node: ast,
-        pathToNode: a,
-        previousProgramMemory: programMemory,
-      })
-    )
-    setAllowedTransformsMap(allowedSwaps)
-    const allowedSwapsnames = allowedSwaps.map((a) =>
-      Object.keys(a)
-    ) as TooTip[][]
-    const hasCorrectTransforms = includedInAll(allowedSwapsnames, [
-      'angledLine',
-    ])
+    const theTransforms = getTransformInfos(selectionRanges, ast, 'equalLength')
+    setTransformInfos(theTransforms)
+
     const _enableEqual =
       !!secondaryVarDecs.length &&
       isAllTooltips &&
       isOthersLinkedToPrimary &&
-      hasCorrectTransforms
+      theTransforms.every(Boolean)
     setEnableEqual(_enableEqual)
   }, [guiMode, selectionRanges])
   if (guiMode.mode !== 'sketch') return null
 
-  const onClick = () => {
-    if (!ast) return
-
-    // deep clone since we are mutating in a loop, of which any could fail
-    let node = JSON.parse(JSON.stringify(ast))
-    const primarySelection = selectionRanges[0]
-
-    const { modifiedAst, tag } = giveSketchFnCallTag(node, primarySelection)
-    node = modifiedAst
-    const segLenCallExp = createCallExpression('segLen', [
-      createLiteral(tag),
-      createPipeSubstitution(),
-    ])
-
-    selectionRanges.slice(1).forEach((range, index) => {
-      const createCallBackHelper = allowedTransformsMap[index]['angledLine']
-      if (!createCallBackHelper) throw new Error('no callback helper')
-      const { modifiedAst } = swapSketchHelper(
-        programMemory,
-        node,
-        range,
-        'angledLine',
-        ([a]) => createCallBackHelper([a, segLenCallExp])
-      )
-      node = modifiedAst
-    })
-    updateAst(node)
-  }
-
   return (
     <button
-      onClick={onClick}
+      onClick={() =>
+        transformInfos &&
+        ast &&
+        updateAst(
+          transformAstForSketchLines({
+            ast,
+            selectionRanges,
+            transformInfos,
+            programMemory,
+          })?.modifiedAst
+        )
+      }
       className={`border m-1 px-1 rounded ${
         enableEqual ? 'bg-gray-50 text-gray-800' : 'bg-gray-200 text-gray-400'
       }`}
