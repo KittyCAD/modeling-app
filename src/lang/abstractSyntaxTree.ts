@@ -909,7 +909,7 @@ function makeBinaryExpression(
 
 export interface UnaryExpression extends GeneralStatement {
   type: 'UnaryExpression'
-  operator: string
+  operator: '-' | '!'
   argument: BinaryPart
 }
 

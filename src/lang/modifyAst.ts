@@ -14,6 +14,7 @@ import {
   ArrayExpression,
   ObjectExpression,
   getNodePathFromSourceRange,
+  UnaryExpression,
 } from './abstractSyntaxTree'
 import { PathToNode, ProgramMemory } from './executor'
 import {
@@ -513,6 +514,19 @@ export function createObjectExpression(properties: {
       key: createIdentifier(key),
       value,
     })),
+  }
+}
+
+export function createUnaryExpression(
+  argument: UnaryExpression['argument'],
+  operator: UnaryExpression['operator'] = '-'
+): UnaryExpression {
+  return {
+    type: 'UnaryExpression',
+    start: 0,
+    end: 0,
+    operator,
+    argument,
   }
 }
 

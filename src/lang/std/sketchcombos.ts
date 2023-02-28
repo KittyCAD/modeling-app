@@ -14,6 +14,7 @@ import {
   createIdentifier,
   createLiteral,
   createPipeSubstitution,
+  createUnaryExpression,
   giveSketchFnCallTag,
 } from '../modifyAst'
 import { createFirstArg, getFirstArg, replaceSketchLine } from './sketch'
@@ -103,7 +104,11 @@ export const attemptAtThing: TransformMap = {
             varVal,
           ])
           return (args, tag) => {
-            return createCallWrapper('line', [minVal, legLenVal], tag)
+            const signedLeg =
+              args[1].type === 'Literal' && Number(args[1].value) < 0
+                ? createUnaryExpression(legLenVal)
+                : legLenVal
+            return createCallWrapper('line', [minVal, signedLeg], tag)
           }
         },
       },

@@ -86,10 +86,11 @@ const part001 = startSketchAt([0, 0]) // ln2
   |> line([-0.62, -1.54], %) // ln6
   |> angledLine([myVar, 1.04], %) // ln7
   |> angledLine([45, 1.04], %) // ln8
+  |> line([myVar, 1], %) // ln9
 show(part001)`
   it('It should transform the ast', () => {
     const ast = abstractSyntaxTree(lexer(example))
-    const selectionRanges: Ranges = [4, 5, 6, 7, 8].map((ln) => {
+    const selectionRanges: Ranges = [4, 5, 6, 7, 8, 9].map((ln) => {
       const start = example.indexOf('// ln' + ln) - 7
       return [start, start]
     })
@@ -114,11 +115,15 @@ const part001 = startSketchAt([0, 0]) // ln2
   |> line({ to: [1.94, 3.82], tag: 'seg01' }, %) // ln4
   |> line([
   min(segLen('seg01', %), myVar),
-  legLen(segLen('seg01', %), myVar)
+  -legLen(segLen('seg01', %), myVar)
 ], %) // ln5
   |> angledLine([248, segLen('seg01', %)], %) // ln6
   |> angledLine([myVar, segLen('seg01', %)], %) // ln7
   |> angledLine([45, segLen('seg01', %)], %) // ln8
+  |> line([
+  min(segLen('seg01', %), myVar),
+  legLen(segLen('seg01', %), myVar)
+], %) // ln9
 show(part001)`)
   })
 })
