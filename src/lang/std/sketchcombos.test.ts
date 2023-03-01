@@ -90,6 +90,8 @@ const part001 = startSketchAt([0, 0]) // ln2
   |> angledLineOfXLength([50, 2.5], %) // ln-should be transformed to angledLine
   |> angledLineOfXLength([50, myVar], %) // ln-should use legAngX to calculate angle
   |> angledLineOfXLength([230, myVar], %) // ln-same as above but should have + 180 to match original quadrant
+  |> line([1, myVar], %) // ln-legLen again but yRelative
+  |> line([-1, myVar], %) // ln-negative legLen yRelative
 show(part001)`
   it('It should transform the ast', () => {
     const ast = abstractSyntaxTree(lexer(example))
@@ -104,6 +106,8 @@ show(part001)`
       '-should be transformed to angledLine',
       '-should use legAngX to calculate angle',
       '-same as above but should have + 180 to match original quadrant',
+      '-legLen again but yRelative',
+      '-negative legLen yRelative',
     ].map((ln) => {
       const start = example.indexOf('// ln' + ln) - 7
       return [start, start]
@@ -122,6 +126,7 @@ show(part001)`
       programMemory,
     })?.modifiedAst
     const newCode = recast(newAst)
+    console.log(newCode)
 
     expect(newCode).toBe(`const myVar = 3 // ln1
 const part001 = startSketchAt([0, 0]) // ln2
@@ -147,6 +152,14 @@ const part001 = startSketchAt([0, 0]) // ln2
     180 + legAngX(segLen('seg01', %), myVar),
     min(segLen('seg01', %), myVar)
   ], %) // ln-same as above but should have + 180 to match original quadrant
+  |> line([
+    legLen(segLen('seg01', %), myVar),
+    min(segLen('seg01', %), myVar)
+  ], %) // ln-legLen again but yRelative
+  |> line([
+    -legLen(segLen('seg01', %), myVar),
+    min(segLen('seg01', %), myVar)
+  ], %) // ln-negative legLen yRelative
 show(part001)`)
   })
 })

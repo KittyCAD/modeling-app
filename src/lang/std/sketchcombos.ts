@@ -1,6 +1,7 @@
 import { TransformCallback } from './stdTypes'
 import { Range, Ranges, toolTips, TooTip } from '../../useStore'
 import {
+  BinaryPart,
   CallExpression,
   getNodeFromPath,
   getNodeFromPathCurry,
@@ -102,35 +103,59 @@ const basicAngledLineCreateNode: TransformInfo['createNode'] =
       tag
     )
 
+const getMinAndSegLenVals = (
+  referenceSegName: string,
+  varVal: Value
+): [Value, BinaryPart] => {
+  const segLenVal = createSegLen(referenceSegName)
+  return [
+    createCallExpression('min', [segLenVal, varVal]),
+    createCallExpression('legLen', [segLenVal, varVal]),
+  ]
+}
+
+const getSignedLeg = (arg: Value, legLenVal: BinaryPart) =>
+  arg.type === 'Literal' && Number(arg.value) < 0
+    ? createUnaryExpression(legLenVal)
+    : legLenVal
+
 export const attemptAtThing: TransformMap = {
   line: {
     xRelative: {
       equalLength: {
         tooltip: 'line',
         createNode: ({ referenceSegName, varValA }) => {
-          const segLenVal: Value = createSegLen(referenceSegName)
-          const minVal: Value = createCallExpression('min', [
-            segLenVal,
-            varValA,
-          ])
-          const legLenVal: Value = createCallExpression('legLen', [
-            segLenVal,
-            varValA,
-          ])
-          return (args, tag) => {
-            const signedLeg =
-              args[1].type === 'Literal' && Number(args[1].value) < 0
-                ? createUnaryExpression(legLenVal)
-                : legLenVal
-            return createCallWrapper('line', [minVal, signedLeg], tag)
-          }
+          const [minVal, legLenVal] = getMinAndSegLenVals(
+            referenceSegName,
+            varValA
+          )
+          return (args, tag) =>
+            createCallWrapper(
+              'line',
+              [minVal, getSignedLeg(args[1], legLenVal)],
+              tag
+            )
         },
       },
       horizontal: { tooltip: 'xLine' },
       equalangle: { tooltip: 'angledLineOfXLength' },
     },
     yRelative: {
-      equalLength: { tooltip: 'line' },
+      equalLength: {
+        tooltip: 'line',
+        createNode: ({ referenceSegName, varValB }) => {
+          const [minVal, legLenVal] = getMinAndSegLenVals(
+            referenceSegName,
+            varValB
+          )
+          return (args, tag) =>
+            createCallWrapper(
+              'line',
+              [getSignedLeg(args[0], legLenVal), minVal],
+              tag
+            )
+        },
+      },
       vertical: { tooltip: 'yLine' },
       equalangle: { tooltip: 'angledLineOfYLength' },
     },
