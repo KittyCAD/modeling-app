@@ -81,16 +81,30 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
   const example = `const myVar = 3 // ln1
 const part001 = startSketchAt([0, 0]) // ln2
   |> lineTo([1, 1], %) // ln3
-  |> line({ to: [1.94, 3.82], tag: 'seg01' }, %) // ln4
-  |> line([myVar, -1], %) // ln5
-  |> line([-0.62, -1.54], %) // ln6
-  |> angledLine([myVar, 1.04], %) // ln7
-  |> angledLine([45, 1.04], %) // ln8
-  |> line([myVar, 1], %) // ln9
+  |> line([1.94, 3.82], %) // ln-should-get-tag
+  |> line([myVar, 1], %) // ln-should use legLen for y
+  |> line([myVar, -1], %) // ln-legLen but negative
+  |> line([-0.62, -1.54], %) // ln-should become angledLine
+  |> angledLine([myVar, 1.04], %) // ln-use segLen for secound arg
+  |> angledLine([45, 1.04], %) // ln-segLen again
+  |> angledLineOfXLength([50, 2.5], %) // ln-should be transformed to angledLine
+  |> angledLineOfXLength([50, myVar], %) // ln-should use legAngX to calculate angle
+  |> angledLineOfXLength([230, myVar], %) // ln-same as above but should have + 180 to match original quadrant
 show(part001)`
   it('It should transform the ast', () => {
     const ast = abstractSyntaxTree(lexer(example))
-    const selectionRanges: Ranges = [4, 5, 6, 7, 8, 9].map((ln) => {
+    const primaryLine = '-should-get-tag'
+    const selectionRanges: Ranges = [
+      primaryLine,
+      '-should use legLen for y',
+      '-legLen but negative',
+      '-should become angledLine',
+      '-use segLen for secound arg',
+      '-segLen again',
+      '-should be transformed to angledLine',
+      '-should use legAngX to calculate angle',
+      '-same as above but should have + 180 to match original quadrant',
+    ].map((ln) => {
       const start = example.indexOf('// ln' + ln) - 7
       return [start, start]
     })
@@ -112,18 +126,27 @@ show(part001)`
     expect(newCode).toBe(`const myVar = 3 // ln1
 const part001 = startSketchAt([0, 0]) // ln2
   |> lineTo([1, 1], %) // ln3
-  |> line({ to: [1.94, 3.82], tag: 'seg01' }, %) // ln4
-  |> line([
-    min(segLen('seg01', %), myVar),
-    -legLen(segLen('seg01', %), myVar)
-  ], %) // ln5
-  |> angledLine([248, segLen('seg01', %)], %) // ln6
-  |> angledLine([myVar, segLen('seg01', %)], %) // ln7
-  |> angledLine([45, segLen('seg01', %)], %) // ln8
+  |> line({ to: [1.94, 3.82], tag: 'seg01' }, %) // ln-should-get-tag
   |> line([
     min(segLen('seg01', %), myVar),
     legLen(segLen('seg01', %), myVar)
-  ], %) // ln9
+  ], %) // ln-should use legLen for y
+  |> line([
+    min(segLen('seg01', %), myVar),
+    -legLen(segLen('seg01', %), myVar)
+  ], %) // ln-legLen but negative
+  |> angledLine([248, segLen('seg01', %)], %) // ln-should become angledLine
+  |> angledLine([myVar, segLen('seg01', %)], %) // ln-use segLen for secound arg
+  |> angledLine([45, segLen('seg01', %)], %) // ln-segLen again
+  |> angledLine([50, segLen('seg01', %)], %) // ln-should be transformed to angledLine
+  |> angledLineOfXLength([
+    legAngX(segLen('seg01', %), myVar),
+    min(segLen('seg01', %), myVar)
+  ], %) // ln-should use legAngX to calculate angle
+  |> angledLineOfXLength([
+    180 + legAngX(segLen('seg01', %), myVar),
+    min(segLen('seg01', %), myVar)
+  ], %) // ln-same as above but should have + 180 to match original quadrant
 show(part001)`)
   })
 })

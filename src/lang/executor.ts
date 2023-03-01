@@ -338,10 +338,26 @@ function getMemberExpressionResult(
 
 function getBinaryExpressionResult(
   expression: BinaryExpression,
-  programMemory: ProgramMemory
+  programMemory: ProgramMemory,
+  pipeInfo: {
+    isInPipe: boolean
+    previousResults: any[]
+    expressionIndex: number
+    body: PipeExpression['body']
+    sourceRangeOverride?: SourceRange
+  } = {
+    isInPipe: false,
+    previousResults: [],
+    expressionIndex: 0,
+    body: [],
+  }
 ) {
-  const left = getBinaryPartResult(expression.left, programMemory)
-  const right = getBinaryPartResult(expression.right, programMemory)
+  const _pipeInfo = {
+    ...pipeInfo,
+    isInPipe: false,
+  }
+  const left = getBinaryPartResult(expression.left, programMemory, _pipeInfo)
+  const right = getBinaryPartResult(expression.right, programMemory, _pipeInfo)
   if (expression.operator === '+') return left + right
   if (expression.operator === '-') return left - right
   if (expression.operator === '*') return left * right
@@ -365,17 +381,18 @@ function getBinaryPartResult(
     body: [],
   }
 ): any {
+  const _pipeInfo = {
+    ...pipeInfo,
+    isInPipe: false,
+  }
   if (part.type === 'Literal') {
     return part.value
   } else if (part.type === 'Identifier') {
     return programMemory.root[part.name].value
   } else if (part.type === 'BinaryExpression') {
-    return getBinaryExpressionResult(part, programMemory)
+    return getBinaryExpressionResult(part, programMemory, _pipeInfo)
   } else if (part.type === 'CallExpression') {
-    return executeCallExpression(programMemory, part, [], {
-      ...pipeInfo,
-      isInPipe: false,
-    })
+    return executeCallExpression(programMemory, part, [], _pipeInfo)
   }
 }
 
@@ -511,20 +528,26 @@ function executeArrayExpression(
     body: [],
   }
 ) {
+  const _pipeInfo = {
+    ...pipeInfo,
+    isInPipe: false,
+  }
   return arrExp.elements.map((el) => {
     if (el.type === 'Literal') {
       return el.value
     } else if (el.type === 'Identifier') {
       return _programMemory.root?.[el.name]?.value
     } else if (el.type === 'BinaryExpression') {
-      return getBinaryExpressionResult(el, _programMemory)
+      return getBinaryExpressionResult(el, _programMemory, _pipeInfo)
     } else if (el.type === 'ObjectExpression') {
       return executeObjectExpression(_programMemory, el)
     } else if (el.type === 'CallExpression') {
-      const result: any = executeCallExpression(_programMemory, el, [], {
-        ...pipeInfo,
-        isInPipe: false,
-      })
+      const result: any = executeCallExpression(
+        _programMemory,
+        el,
+        [],
+        _pipeInfo
+      )
       return result
     } else if (el.type === 'UnaryExpression') {
       return getUnaryExpressionResult(el, _programMemory, {
@@ -561,6 +584,10 @@ function executeCallExpression(
     sourceRangeOverride,
   } = pipeInfo
   const functionName = expression?.callee?.name
+  const _pipeInfo = {
+    ...pipeInfo,
+    isInPipe: false,
+  }
   const fnArgs = expression?.arguments?.map((arg) => {
     if (arg.type === 'Literal') {
       return arg.value
@@ -582,12 +609,9 @@ function executeCallExpression(
     } else if (arg.type === 'ObjectExpression') {
       return executeObjectExpression(programMemory, arg)
     } else if (arg.type === 'UnaryExpression') {
-      return getUnaryExpressionResult(arg, programMemory, {
-        ...pipeInfo,
-        isInPipe: false,
-      })
+      return getUnaryExpressionResult(arg, programMemory, _pipeInfo)
     } else if (arg.type === 'BinaryExpression') {
-      return getBinaryExpressionResult(arg, programMemory)
+      return getBinaryExpressionResult(arg, programMemory, _pipeInfo)
     }
     throw new Error('Invalid argument type in function call')
   })

@@ -22,6 +22,8 @@ export type InternalFnNames =
   | 'getExtrudeWallTransform'
   | 'min'
   | 'legLen'
+  | 'legAngX'
+  | 'legAngY'
   | 'segLen'
   | 'rx'
   | 'ry'

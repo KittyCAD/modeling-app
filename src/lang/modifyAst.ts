@@ -15,6 +15,7 @@ import {
   ObjectExpression,
   getNodePathFromSourceRange,
   UnaryExpression,
+  BinaryExpression,
 } from './abstractSyntaxTree'
 import { PathToNode, ProgramMemory } from './executor'
 import {
@@ -461,6 +462,21 @@ export function createUnaryExpression(
     end: 0,
     operator,
     argument,
+  }
+}
+
+export function createBinaryExpression([left, operator, right]: [
+  BinaryExpression['left'],
+  BinaryExpression['operator'],
+  BinaryExpression['right']
+]): BinaryExpression {
+  return {
+    type: 'BinaryExpression',
+    start: 0,
+    end: 0,
+    operator,
+    left,
+    right,
   }
 }
 

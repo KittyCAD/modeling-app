@@ -823,15 +823,7 @@ export const angledLine: SketchLineHelper = {
       value: [...sketchGroup.value, currentPath],
     }
   },
-  add: ({
-    node,
-    previousProgramMemory,
-    pathToNode,
-    to,
-    from,
-    createCallback,
-    replaceExisting,
-  }) => {
+  add: ({ node, pathToNode, to, from, createCallback, replaceExisting }) => {
     const _node = { ...node }
     const getNode = getNodeFromPathCurry(_node, pathToNode)
     const { node: pipe } = getNode<PipeExpression>('PipeExpression')
@@ -911,7 +903,9 @@ export const angledLineOfXLength: SketchLineHelper = {
     previousProgramMemory,
     pathToNode,
     to,
-    // from: [number, number],
+    from,
+    createCallback,
+    replaceExisting,
   }) => {
     const _node = { ...node }
     const { node: pipe } = getNodeFromPath<PipeExpression>(
@@ -927,14 +921,21 @@ export const angledLineOfXLength: SketchLineHelper = {
     const variableName = varDec.id.name
     const sketch = previousProgramMemory?.root?.[variableName]
     if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
-    const last = sketch.value[sketch.value.length - 1]
-    const angle = roundOff(getAngle(last.to, to), 0)
-    const xLength = roundOff(Math.abs(last.to[0] - to[0]), 2) || 0.1
-    const newLine = createCallExpression('angledLineOfXLength', [
-      createArrayExpression([createLiteral(angle), createLiteral(xLength)]),
-      createPipeSubstitution(),
-    ])
-    pipe.body = [...pipe.body, newLine]
+    if (!from) throw new Error('no from') // todo #29 remove
+    const angle = createLiteral(roundOff(getAngle(from, to), 0))
+    const xLength = createLiteral(roundOff(Math.abs(from[0] - to[0]), 2) || 0.1)
+    const newLine = createCallback
+      ? createCallback([angle, xLength])
+      : createCallExpression('angledLineOfXLength', [
+          createArrayExpression([angle, xLength]),
+          createPipeSubstitution(),
+        ])
+    const callIndex = getLastIndex(pathToNode)
+    if (replaceExisting) {
+      pipe.body[callIndex] = newLine
+    } else {
+      pipe.body = [...pipe.body, newLine]
+    }
     return {
       modifiedAst: _node,
       pathToNode,

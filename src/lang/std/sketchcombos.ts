@@ -10,6 +10,7 @@ import {
   VariableDeclarator,
 } from '../abstractSyntaxTree'
 import {
+  createBinaryExpression,
   createCallExpression,
   createIdentifier,
   createLiteral,
@@ -78,7 +79,8 @@ export function replaceSketchCall(
 export type TransformInfo = {
   tooltip: TooTip
   createNode?: (a: {
-    varVal: Value
+    varValA: Value // x / angle
+    varValB: Value // y / length or x y for angledLineOfXlength etc
     referenceSegName: string
   }) => (args: [Value, Value], tag?: Value) => Value
 }
@@ -91,17 +93,29 @@ type TransformMap = {
   }
 }
 
+const basicAngledLineCreateNode: TransformInfo['createNode'] =
+  ({ referenceSegName }) =>
+  (args, tag) =>
+    createCallWrapper(
+      'angledLine',
+      [args[0], createSegLen(referenceSegName)],
+      tag
+    )
+
 export const attemptAtThing: TransformMap = {
   line: {
     xRelative: {
       equalLength: {
         tooltip: 'line',
-        createNode: ({ referenceSegName, varVal }) => {
+        createNode: ({ referenceSegName, varValA }) => {
           const segLenVal: Value = createSegLen(referenceSegName)
-          const minVal: Value = createCallExpression('min', [segLenVal, varVal])
+          const minVal: Value = createCallExpression('min', [
+            segLenVal,
+            varValA,
+          ])
           const legLenVal: Value = createCallExpression('legLen', [
             segLenVal,
-            varVal,
+            varValA,
           ])
           return (args, tag) => {
             const signedLeg =
@@ -123,14 +137,7 @@ export const attemptAtThing: TransformMap = {
     free: {
       equalLength: {
         tooltip: 'angledLine',
-        createNode:
-          ({ referenceSegName }) =>
-          (args, tag) =>
-            createCallWrapper(
-              'angledLine',
-              [args[0], createSegLen(referenceSegName)],
-              tag
-            ),
+        createNode: basicAngledLineCreateNode,
       },
       horizontal: { tooltip: 'xLine' },
       vertical: { tooltip: 'yLine' },
@@ -142,11 +149,11 @@ export const attemptAtThing: TransformMap = {
       equalLength: {
         tooltip: 'angledLine',
         createNode:
-          ({ referenceSegName, varVal }) =>
+          ({ referenceSegName, varValA }) =>
           (_, tag) =>
             createCallWrapper(
               'angledLine',
-              [varVal, createSegLen(referenceSegName)],
+              [varValA, createSegLen(referenceSegName)],
               tag
             ),
       },
@@ -154,14 +161,60 @@ export const attemptAtThing: TransformMap = {
     free: {
       equalLength: {
         tooltip: 'angledLine',
+        createNode: basicAngledLineCreateNode,
+      },
+    },
+  },
+  angledLineOfXLength: {
+    free: {
+      equalLength: {
+        tooltip: 'angledLine',
+        createNode: basicAngledLineCreateNode,
+      },
+    },
+    angle: {
+      equalLength: {
+        tooltip: 'angledLine',
         createNode:
-          ({ referenceSegName }) =>
+          ({ referenceSegName, varValA }) =>
           (args, tag) =>
             createCallWrapper(
               'angledLine',
-              [args[0], createSegLen(referenceSegName)],
+              [varValA, createSegLen(referenceSegName)],
               tag
             ),
+      },
+    },
+    xRelative: {
+      equalLength: {
+        tooltip: 'angledLineOfXLength',
+        createNode: ({ referenceSegName, varValB }) => {
+          const minVal = createCallExpression('min', [
+            createSegLen(referenceSegName),
+            varValB,
+          ])
+          const legAngle = createCallExpression('legAngX', [
+            createSegLen(referenceSegName),
+            varValB,
+          ])
+          return (args, tag) => {
+            const ang =
+              (args[0].type === 'Literal' && Number(args[0].value)) || 0
+            const normalisedAngle = ((ang % 360) + 360) % 360 // between 0 and 360
+            const truncatedTo90 = Math.floor(normalisedAngle / 90) * 90
+            const binExp = createBinaryExpression([
+              createLiteral(truncatedTo90),
+              '+',
+              legAngle,
+            ])
+            const angleExp = truncatedTo90 == 0 ? legAngle : binExp
+            return createCallWrapper(
+              'angledLineOfXLength',
+              [angleExp, minVal],
+              tag
+            )
+          }
+        },
       },
     },
   },
@@ -325,14 +378,8 @@ export function transformAstForSketchLines({
       callExpPath,
       'CallExpression'
     )?.node
-    const first = callExp?.arguments[0]
-    const x =
-      first?.type === 'ArrayExpression'
-        ? first.elements[0]
-        : first?.type === 'ObjectExpression'
-        ? (first.properties.find((a: any) => a.key.name === 'to') as any)
-            ?.elements[0]
-        : first
+    const { val } = getFirstArg(callExp)
+    const [varValA, varValB] = Array.isArray(val) ? val : [val, val]
 
     const { modifiedAst } = replaceSketchCall(
       programMemory,
@@ -341,7 +388,8 @@ export function transformAstForSketchLines({
       transformTo,
       callBack({
         referenceSegName: tag,
-        varVal: createIdentifier(x.name),
+        varValA,
+        varValB,
       })
     )
     node = modifiedAst
