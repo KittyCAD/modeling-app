@@ -347,6 +347,42 @@ export const attemptAtThing: TransformMap = {
       },
     },
   },
+  angledLineToX: {
+    free: {
+      equalLength: {
+        tooltip: 'angledLine',
+        createNode: basicAngledLineCreateNode,
+      },
+    },
+    angle: {
+      equalLength: {
+        tooltip: 'angledLine',
+        createNode: angledLineAngleCreateNode,
+      },
+    },
+    xAbsolute: {
+      equalLength: {
+        tooltip: 'angledLineToX',
+        createNode:
+          ({ referenceSegName, varValB }) =>
+          (args, tag) => {
+            const angleToMatchLengthXCall = createCallExpression(
+              'angleToMatchLengthX',
+              [
+                createLiteral(referenceSegName),
+                varValB,
+                createPipeSubstitution(),
+              ]
+            )
+            return createCallWrapper(
+              'angledLineToX',
+              [getAngleLengthSign(args[0], angleToMatchLengthXCall), varValB],
+              tag
+            )
+          },
+      },
+    },
+  },
 }
 
 export function getTransformMapPath(
