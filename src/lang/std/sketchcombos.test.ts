@@ -78,9 +78,9 @@ function getConstraintTypeFromSourceHelper2(
 }
 
 describe('testing transformAstForSketchLines for equal length constraint', () => {
-  const example = `const myVar = 3 // ln1
-const part001 = startSketchAt([0, 0]) // ln2
-  |> lineTo([1, 1], %) // ln3
+  const example = `const myVar = 3
+const part001 = startSketchAt([0, 0])
+  |> lineTo([1, 1], %)
   |> line([1.94, 3.82], %) // ln-should-get-tag
   |> line([myVar, 1], %) // ln-should use legLen for y
   |> line([myVar, -1], %) // ln-legLen but negative
@@ -92,26 +92,22 @@ const part001 = startSketchAt([0, 0]) // ln2
   |> angledLineOfXLength([230, myVar], %) // ln-same as above but should have + 180 to match original quadrant
   |> line([1, myVar], %) // ln-legLen again but yRelative
   |> line([-1, myVar], %) // ln-negative legLen yRelative
+  |> angledLineOfYLength([58, 0.7], %) // ln-angledLineOfYLength-free should become angledLine
+  |> angledLineOfYLength([myAng, 0.7], %) // ln-angledLineOfYLength-angle should become angledLine
+  |> angledLineOfYLength([300, myVar], %) // ln-angledLineOfYLength-yRelative use legAngY
+  |> angledLineOfYLength([35, myVar], %) // ln-angledLineOfYLength-yRelative with angle > 90 use binExp
 show(part001)`
   it('It should transform the ast', () => {
     const ast = abstractSyntaxTree(lexer(example))
-    const primaryLine = '-should-get-tag'
-    const selectionRanges: Ranges = [
-      primaryLine,
-      '-should use legLen for y',
-      '-legLen but negative',
-      '-should become angledLine',
-      '-use segLen for secound arg',
-      '-segLen again',
-      '-should be transformed to angledLine',
-      '-should use legAngX to calculate angle',
-      '-same as above but should have + 180 to match original quadrant',
-      '-legLen again but yRelative',
-      '-negative legLen yRelative',
-    ].map((ln) => {
-      const start = example.indexOf('// ln' + ln) - 7
-      return [start, start]
-    })
+    const selectionRanges = example
+      .split('\n')
+      .filter((ln) => ln.includes('//'))
+      .map((ln) => {
+        const comment = ln.split('//')[1]
+        const start = example.indexOf('//' + comment) - 7
+        return [start, start]
+      }) as [number, number][]
+
     const programMemory = executor(ast)
     const transformInfos = getTransformInfos(
       selectionRanges,
@@ -126,11 +122,11 @@ show(part001)`
       programMemory,
     })?.modifiedAst
     const newCode = recast(newAst)
-    console.log(newCode)
+    // console.log(newCode)
 
-    expect(newCode).toBe(`const myVar = 3 // ln1
-const part001 = startSketchAt([0, 0]) // ln2
-  |> lineTo([1, 1], %) // ln3
+    expect(newCode).toBe(`const myVar = 3
+const part001 = startSketchAt([0, 0])
+  |> lineTo([1, 1], %)
   |> line({ to: [1.94, 3.82], tag: 'seg01' }, %) // ln-should-get-tag
   |> line([
     min(segLen('seg01', %), myVar),
@@ -160,6 +156,16 @@ const part001 = startSketchAt([0, 0]) // ln2
     -legLen(segLen('seg01', %), myVar),
     min(segLen('seg01', %), myVar)
   ], %) // ln-negative legLen yRelative
+  |> angledLine([58, segLen('seg01', %)], %) // ln-angledLineOfYLength-free should become angledLine
+  |> angledLine([myAng, segLen('seg01', %)], %) // ln-angledLineOfYLength-angle should become angledLine
+  |> angledLineOfXLength([
+    legAngY(segLen('seg01', %), myVar),
+    min(segLen('seg01', %), myVar)
+  ], %) // ln-angledLineOfYLength-yRelative use legAngY
+  |> angledLineOfXLength([
+    legAngY(segLen('seg01', %), myVar),
+    min(segLen('seg01', %), myVar)
+  ], %) // ln-angledLineOfYLength-yRelative with angle > 90 use binExp
 show(part001)`)
   })
 })

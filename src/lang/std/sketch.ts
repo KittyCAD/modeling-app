@@ -998,7 +998,9 @@ export const angledLineOfYLength: SketchLineHelper = {
     previousProgramMemory,
     pathToNode,
     to,
-    // from: [number, number],
+    from,
+    createCallback,
+    replaceExisting,
   }) => {
     const _node = { ...node }
     const { node: pipe } = getNodeFromPath<PipeExpression>(
@@ -1014,14 +1016,22 @@ export const angledLineOfYLength: SketchLineHelper = {
     const variableName = varDec.id.name
     const sketch = previousProgramMemory?.root?.[variableName]
     if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
-    const last = sketch.value[sketch.value.length - 1]
-    const angle = roundOff(getAngle(last.to, to), 0)
-    const yLength = roundOff(Math.abs(last.to[1] - to[1]), 2) || 0.1
-    const newLine = createCallExpression('angledLineOfYLength', [
-      createArrayExpression([createLiteral(angle), createLiteral(yLength)]),
-      createPipeSubstitution(),
-    ])
-    pipe.body = [...pipe.body, newLine]
+    if (!from) throw new Error('no from') // todo #29 remove
+
+    const angle = createLiteral(roundOff(getAngle(from, to), 0))
+    const yLength = createLiteral(roundOff(Math.abs(from[1] - to[1]), 2) || 0.1)
+    const newLine = createCallback
+      ? createCallback([angle, yLength])
+      : createCallExpression('angledLineOfYLength', [
+          createArrayExpression([angle, yLength]),
+          createPipeSubstitution(),
+        ])
+    const callIndex = getLastIndex(pathToNode)
+    if (replaceExisting) {
+      pipe.body[callIndex] = newLine
+    } else {
+      pipe.body = [...pipe.body, newLine]
+    }
     return {
       modifiedAst: _node,
       pathToNode,

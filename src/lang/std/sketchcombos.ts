@@ -102,6 +102,14 @@ const basicAngledLineCreateNode: TransformInfo['createNode'] =
       [args[0], createSegLen(referenceSegName)],
       tag
     )
+const angledLineAngleCreateNode: TransformInfo['createNode'] =
+  ({ referenceSegName, varValA }) =>
+  (args, tag) =>
+    createCallWrapper(
+      'angledLine',
+      [varValA, createSegLen(referenceSegName)],
+      tag
+    )
 
 const getMinAndSegLenVals = (
   referenceSegName: string,
@@ -114,10 +122,38 @@ const getMinAndSegLenVals = (
   ]
 }
 
+const getMinAndSegAngVals = (
+  referenceSegName: string,
+  varVal: Value,
+  fnName: 'legAngX' | 'legAngY' = 'legAngX'
+): [Value, BinaryPart] => {
+  const minVal = createCallExpression('min', [
+    createSegLen(referenceSegName),
+    varVal,
+  ])
+  const legAngle = createCallExpression(fnName, [
+    createSegLen(referenceSegName),
+    varVal,
+  ])
+  return [minVal, legAngle]
+}
+
 const getSignedLeg = (arg: Value, legLenVal: BinaryPart) =>
   arg.type === 'Literal' && Number(arg.value) < 0
     ? createUnaryExpression(legLenVal)
     : legLenVal
+
+const getLegAng = (arg: Value, legAngleVal: BinaryPart) => {
+  const ang = (arg.type === 'Literal' && Number(arg.value)) || 0
+  const normalisedAngle = ((ang % 360) + 360) % 360 // between 0 and 360
+  const truncatedTo90 = Math.floor(normalisedAngle / 90) * 90
+  const binExp = createBinaryExpression([
+    createLiteral(truncatedTo90),
+    '+',
+    legAngleVal,
+  ])
+  return truncatedTo90 == 0 ? legAngleVal : binExp
+}
 
 export const attemptAtThing: TransformMap = {
   line: {
@@ -200,45 +236,55 @@ export const attemptAtThing: TransformMap = {
     angle: {
       equalLength: {
         tooltip: 'angledLine',
-        createNode:
-          ({ referenceSegName, varValA }) =>
-          (args, tag) =>
-            createCallWrapper(
-              'angledLine',
-              [varValA, createSegLen(referenceSegName)],
-              tag
-            ),
+        createNode: angledLineAngleCreateNode,
       },
     },
     xRelative: {
       equalLength: {
         tooltip: 'angledLineOfXLength',
         createNode: ({ referenceSegName, varValB }) => {
-          const minVal = createCallExpression('min', [
-            createSegLen(referenceSegName),
-            varValB,
-          ])
-          const legAngle = createCallExpression('legAngX', [
-            createSegLen(referenceSegName),
-            varValB,
-          ])
-          return (args, tag) => {
-            const ang =
-              (args[0].type === 'Literal' && Number(args[0].value)) || 0
-            const normalisedAngle = ((ang % 360) + 360) % 360 // between 0 and 360
-            const truncatedTo90 = Math.floor(normalisedAngle / 90) * 90
-            const binExp = createBinaryExpression([
-              createLiteral(truncatedTo90),
-              '+',
-              legAngle,
-            ])
-            const angleExp = truncatedTo90 == 0 ? legAngle : binExp
-            return createCallWrapper(
+          const [minVal, legAngle] = getMinAndSegAngVals(
+            referenceSegName,
+            varValB
+          )
+          return (args, tag) =>
+            createCallWrapper(
               'angledLineOfXLength',
-              [angleExp, minVal],
+              [getLegAng(args[0], legAngle), minVal],
               tag
             )
-          }
+        },
+      },
+    },
+  },
+  angledLineOfYLength: {
+    free: {
+      equalLength: {
+        tooltip: 'angledLine',
+        createNode: basicAngledLineCreateNode,
+      },
+    },
+    angle: {
+      equalLength: {
+        tooltip: 'angledLine',
+        createNode: angledLineAngleCreateNode,
+      },
+    },
+    yRelative: {
+      equalLength: {
+        tooltip: 'angledLineOfYLength',
+        createNode: ({ referenceSegName, varValB }) => {
+          const [minVal, legAngle] = getMinAndSegAngVals(
+            referenceSegName,
+            varValB,
+            'legAngY'
+          )
+          return (args, tag) =>
+            createCallWrapper(
+              'angledLineOfXLength',
+              [getLegAng(args[0], legAngle), minVal],
+              tag
+            )
         },
       },
     },
