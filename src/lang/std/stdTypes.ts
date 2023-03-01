@@ -25,6 +25,8 @@ export type InternalFnNames =
   | 'legAngX'
   | 'legAngY'
   | 'segLen'
+  | 'angleToMatchLengthX'
+  | 'angleToMatchLengthY'
   | 'rx'
   | 'ry'
   | 'rz'

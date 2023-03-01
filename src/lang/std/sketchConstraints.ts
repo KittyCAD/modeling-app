@@ -67,6 +67,29 @@ export const segLen: InternalFn = (
   )
 }
 
+function angleToMatchLengthFactory(which: 'x' | 'y'): InternalFn {
+  return (_, segName: string, to: number, sketchGroup: SketchGroup): number => {
+    const isX = which === 'x'
+    const lineToMatch = sketchGroup?.value.find((seg) => seg.name === segName)
+    // maybe this should throw, but the language doesn't have a way to handle errors yet
+    if (!lineToMatch) return 0
+    const lengthToMatch = Math.sqrt(
+      (lineToMatch.from[1] - lineToMatch.to[1]) ** 2 +
+        (lineToMatch.from[0] - lineToMatch.to[0]) ** 2
+    )
+
+    const lastLine = sketchGroup?.value[sketchGroup.value.length - 1]
+    const diff = Math.abs(to - (isX ? lastLine.to[0] : lastLine.to[1]))
+
+    const angleR = Math[isX ? 'acos' : 'asin'](diff / lengthToMatch)
+
+    return diff > lengthToMatch ? 0 : (angleR * 180) / Math.PI
+  }
+}
+
+export const angleToMatchLengthX: InternalFn = angleToMatchLengthFactory('x')
+export const angleToMatchLengthY: InternalFn = angleToMatchLengthFactory('y')
+
 export function includedInAll(
   possibleFnCallSwapsForEachCursor: TooTip[][],
   eachHasAtLeastOneOfThese: TooTip[]

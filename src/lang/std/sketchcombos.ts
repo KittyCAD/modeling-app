@@ -155,6 +155,12 @@ const getLegAng = (arg: Value, legAngleVal: BinaryPart) => {
   return truncatedTo90 == 0 ? legAngleVal : binExp
 }
 
+const getAngleLengthSign = (arg: Value, legAngleVal: BinaryPart) => {
+  const ang = (arg.type === 'Literal' && Number(arg.value)) || 0
+  const normalisedAngle = ((ang % 180) + 180) % 180 // between 0 and 180
+  return normalisedAngle > 90 ? createUnaryExpression(legAngleVal) : legAngleVal
+}
+
 export const attemptAtThing: TransformMap = {
   line: {
     xRelative: {
@@ -203,6 +209,58 @@ export const attemptAtThing: TransformMap = {
       horizontal: { tooltip: 'xLine' },
       vertical: { tooltip: 'yLine' },
       equalangle: { tooltip: 'angledLine' },
+    },
+  },
+  lineTo: {
+    free: {
+      equalLength: {
+        tooltip: 'angledLine',
+        createNode: basicAngledLineCreateNode,
+      },
+    },
+    xAbsolute: {
+      equalLength: {
+        tooltip: 'angledLineToX',
+        createNode:
+          ({ referenceSegName, varValA }) =>
+          (args, tag) => {
+            const angleToMatchLengthXCall = createCallExpression(
+              'angleToMatchLengthX',
+              [
+                createLiteral(referenceSegName),
+                varValA,
+                createPipeSubstitution(),
+              ]
+            )
+            return createCallWrapper(
+              'angledLineToX',
+              [getAngleLengthSign(args[0], angleToMatchLengthXCall), varValA],
+              tag
+            )
+          },
+      },
+    },
+    yAbsolute: {
+      equalLength: {
+        tooltip: 'angledLineToY',
+        createNode:
+          ({ referenceSegName, varValB }) =>
+          (args, tag) => {
+            const angleToMatchLengthYCall = createCallExpression(
+              'angleToMatchLengthY',
+              [
+                createLiteral(referenceSegName),
+                varValB,
+                createPipeSubstitution(),
+              ]
+            )
+            return createCallWrapper(
+              'angledLineToY',
+              [getAngleLengthSign(args[0], angleToMatchLengthYCall), varValB],
+              tag
+            )
+          },
+      },
     },
   },
   angledLine: {

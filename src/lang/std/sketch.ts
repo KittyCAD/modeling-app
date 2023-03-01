@@ -1098,9 +1098,11 @@ export const angledLineToX: SketchLineHelper = {
   },
   add: ({
     node,
-    previousProgramMemory,
     pathToNode,
     to,
+    from,
+    createCallback,
+    replaceExisting,
     // from: [number, number],
   }) => {
     const _node = { ...node }
@@ -1109,22 +1111,21 @@ export const angledLineToX: SketchLineHelper = {
       pathToNode,
       'PipeExpression'
     )
-    const { node: varDec } = getNodeFromPath<VariableDeclarator>(
-      _node,
-      pathToNode,
-      'VariableDeclarator'
-    )
-    const variableName = varDec.id.name
-    const sketch = previousProgramMemory?.root?.[variableName]
-    if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
-    const last = sketch.value[sketch.value.length - 1]
-    const angle = roundOff(getAngle(last.to, to), 0)
-    const xArg = roundOff(to[0], 2)
-    const newLine = createCallExpression('angledLineToX', [
-      createArrayExpression([createLiteral(angle), createLiteral(xArg)]),
-      createPipeSubstitution(),
-    ])
-    pipe.body = [...pipe.body, newLine]
+    if (!from) throw new Error('no from') // todo #29 remove
+    const angle = createLiteral(roundOff(getAngle(from, to), 0))
+    const xArg = createLiteral(roundOff(to[0], 2))
+    const newLine = createCallback
+      ? createCallback([angle, xArg])
+      : createCallExpression('angledLineToX', [
+          createArrayExpression([angle, xArg]),
+          createPipeSubstitution(),
+        ])
+    const callIndex = getLastIndex(pathToNode)
+    if (replaceExisting) {
+      pipe.body[callIndex] = newLine
+    } else {
+      pipe.body = [...pipe.body, newLine]
+    }
     return {
       modifiedAst: _node,
       pathToNode,
@@ -1194,7 +1195,9 @@ export const angledLineToY: SketchLineHelper = {
     previousProgramMemory,
     pathToNode,
     to,
-    // from: [number, number],
+    from,
+    createCallback,
+    replaceExisting,
   }) => {
     const _node = { ...node }
     const { node: pipe } = getNodeFromPath<PipeExpression>(
@@ -1202,22 +1205,21 @@ export const angledLineToY: SketchLineHelper = {
       pathToNode,
       'PipeExpression'
     )
-    const { node: varDec } = getNodeFromPath<VariableDeclarator>(
-      _node,
-      pathToNode,
-      'VariableDeclarator'
-    )
-    const variableName = varDec.id.name
-    const sketch = previousProgramMemory?.root?.[variableName]
-    if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
-    const last = sketch.value[sketch.value.length - 1]
-    const angle = roundOff(getAngle(last.to, to), 0)
-    const yArg = roundOff(to[1], 2)
-    const newLine = createCallExpression('angledLineToY', [
-      createArrayExpression([createLiteral(angle), createLiteral(yArg)]),
-      createPipeSubstitution(),
-    ])
-    pipe.body = [...pipe.body, newLine]
+    if (!from) throw new Error('no from') // todo #29 remove
+    const angle = createLiteral(roundOff(getAngle(from, to), 0))
+    const yArg = createLiteral(roundOff(to[1], 2))
+    const newLine = createCallback
+      ? createCallback([angle, yArg])
+      : createCallExpression('angledLineToY', [
+          createArrayExpression([angle, yArg]),
+          createPipeSubstitution(),
+        ])
+    const callIndex = getLastIndex(pathToNode)
+    if (replaceExisting) {
+      pipe.body[callIndex] = newLine
+    } else {
+      pipe.body = [...pipe.body, newLine]
+    }
     return {
       modifiedAst: _node,
       pathToNode,

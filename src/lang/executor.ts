@@ -623,7 +623,8 @@ function executeCallExpression(
         sourceRange: sourceRangeOverride || [expression.start, expression.end],
       },
       fnArgs[0],
-      fnArgs[1]
+      fnArgs[1],
+      fnArgs[2]
     )
     return isInPipe
       ? executePipeBody(
