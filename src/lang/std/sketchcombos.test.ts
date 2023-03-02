@@ -4,6 +4,7 @@ import {
   getConstraintType,
   getTransformInfos,
   transformAstForSketchLines,
+  transformAstForHorzVert,
 } from './sketchcombos'
 import { initPromise } from '../rust'
 import { Ranges, TooTip } from '../../useStore'
@@ -189,7 +190,7 @@ show(part001)`
 
     const programMemory = executor(ast)
     const transformInfos = getTransformInfos(
-      selectionRanges,
+      selectionRanges.slice(1),
       ast,
       'equalLength'
     )
@@ -201,6 +202,143 @@ show(part001)`
       programMemory,
     })?.modifiedAst
     const newCode = recast(newAst)
+    expect(newCode).toBe(expectModifiedScript)
+  })
+})
+
+describe('testing transformAstForSketchLines for vertical and horizontal constraint', () => {
+  const inputScript = `const myVar = 2
+const myVar2 = 12
+const myVar3 = -10
+const part001 = startSketchAt([0, 0])
+  |> lineTo([1, 1], %)
+  |> line([-6.28, 1.4], %) // select for horizontal constraint 1
+  |> line([-1.07, myVar], %) // select for vertical constraint 1
+  |> line([myVar, 4.32], %) // select for horizontal constraint 2
+  |> line([6.35, -1.12], %) // select for vertical constraint 2
+  |> lineTo([5, 8], %) // select for horizontal constraint 3
+  |> lineTo([3, 11], %) // select for vertical constraint 3
+  |> lineTo([myVar2, 12.63], %) // select for horizontal constraint 4
+  |> lineTo([4.08, myVar2], %) // select for vertical constraint 4
+  |> angledLine([156, 1.34], %) // select for horizontal constraint 5
+  |> angledLine([103, 1.44], %) // select for vertical constraint 5
+  |> angledLine([-178, myVar], %) // select for horizontal constraint 6
+  |> angledLine([129, myVar], %) // select for vertical constraint 6
+  |> angledLineOfXLength([237, 1.05], %) // select for horizontal constraint 7
+  |> angledLineOfYLength([196, 1.11], %) // select for vertical constraint 7
+  |> angledLineOfXLength([194, myVar], %) // select for horizontal constraint 8
+  |> angledLineOfYLength([248, myVar], %) // select for vertical constraint 8
+  |> angledLineToX([202, -10.92], %) // select for horizontal constraint 9
+  |> angledLineToY([223, 7.68], %) // select for vertical constraint 9
+  |> angledLineToX([333, myVar3], %) // select for horizontal constraint 10
+  |> angledLineToY([301, myVar], %) // select for vertical constraint 10
+show(part001)`
+  it('It should transform horizontal lines the ast', () => {
+    //   const inputScript = `const myVar = 2
+    // const part001 = startSketchAt([0, 0])
+    //   |> lineTo([1, 1], %)
+    //   |> line([-6.28, 1.4], %) // select for horizontal constraint 1
+    //   |> line([-1.07, myVar], %) // select for vertical constraint 1
+    //   |> line([myVar, 4.32], %) // select for horizontal constraint 2
+    //   |> line([6.35, -1.12], %) // select for vertical constraint 2
+    // show(part001)`
+    const expectModifiedScript = `const myVar = 2
+const myVar2 = 12
+const myVar3 = -10
+const part001 = startSketchAt([0, 0])
+  |> lineTo([1, 1], %)
+  |> xLine(-6.28, %) // select for horizontal constraint 1
+  |> line([-1.07, myVar], %) // select for vertical constraint 1
+  |> xLine(myVar, %) // select for horizontal constraint 2
+  |> line([6.35, -1.12], %) // select for vertical constraint 2
+  |> xLineTo(5, %) // select for horizontal constraint 3
+  |> lineTo([3, 11], %) // select for vertical constraint 3
+  |> xLineTo(myVar2, %) // select for horizontal constraint 4
+  |> lineTo([4.08, myVar2], %) // select for vertical constraint 4
+  |> xLine(-1.22, %) // select for horizontal constraint 5
+  |> angledLine([103, 1.44], %) // select for vertical constraint 5
+  |> xLine(-myVar, %) // select for horizontal constraint 6
+  |> angledLine([129, myVar], %) // select for vertical constraint 6
+  |> xLine(-1.05, %) // select for horizontal constraint 7
+  |> angledLineOfYLength([196, 1.11], %) // select for vertical constraint 7
+  |> xLine(-myVar, %) // select for horizontal constraint 8
+  |> angledLineOfYLength([248, myVar], %) // select for vertical constraint 8
+  |> xLineTo(-10.92, %) // select for horizontal constraint 9
+  |> angledLineToY([223, 7.68], %) // select for vertical constraint 9
+  |> xLineTo(myVar3, %) // select for horizontal constraint 10
+  |> angledLineToY([301, myVar], %) // select for vertical constraint 10
+show(part001)`
+    const ast = abstractSyntaxTree(lexer(inputScript))
+    const selectionRanges = inputScript
+      .split('\n')
+      .filter((ln) => ln.includes('// select for horizontal constraint'))
+      .map((ln) => {
+        const comment = ln.split('//')[1]
+        const start = inputScript.indexOf('//' + comment) - 7
+        return [start, start]
+      }) as [number, number][]
+
+    const programMemory = executor(ast)
+    const transformInfos = getTransformInfos(selectionRanges, ast, 'horizontal')
+
+    const newAst = transformAstForHorzVert({
+      ast,
+      selectionRanges,
+      transformInfos,
+      programMemory,
+    })?.modifiedAst
+    const newCode = recast(newAst)
+    // console.log(newCode)
+    expect(newCode).toBe(expectModifiedScript)
+  })
+  it('It should transform vertical lines the ast', () => {
+    const expectModifiedScript = `const myVar = 2
+const myVar2 = 12
+const myVar3 = -10
+const part001 = startSketchAt([0, 0])
+  |> lineTo([1, 1], %)
+  |> line([-6.28, 1.4], %) // select for horizontal constraint 1
+  |> yLine(myVar, %) // select for vertical constraint 1
+  |> line([myVar, 4.32], %) // select for horizontal constraint 2
+  |> yLine(-1.12, %) // select for vertical constraint 2
+  |> lineTo([5, 8], %) // select for horizontal constraint 3
+  |> yLineTo(11, %) // select for vertical constraint 3
+  |> lineTo([myVar2, 12.63], %) // select for horizontal constraint 4
+  |> yLineTo(myVar2, %) // select for vertical constraint 4
+  |> angledLine([156, 1.34], %) // select for horizontal constraint 5
+  |> yLine(1.4, %) // select for vertical constraint 5
+  |> angledLine([-178, myVar], %) // select for horizontal constraint 6
+  |> yLine(myVar, %) // select for vertical constraint 6
+  |> angledLineOfXLength([237, 1.05], %) // select for horizontal constraint 7
+  |> yLine(-1.11, %) // select for vertical constraint 7
+  |> angledLineOfXLength([194, myVar], %) // select for horizontal constraint 8
+  |> yLine(-myVar, %) // select for vertical constraint 8
+  |> angledLineToX([202, -10.92], %) // select for horizontal constraint 9
+  |> yLineTo(7.68, %) // select for vertical constraint 9
+  |> angledLineToX([333, myVar3], %) // select for horizontal constraint 10
+  |> yLineTo(myVar, %) // select for vertical constraint 10
+show(part001)`
+    const ast = abstractSyntaxTree(lexer(inputScript))
+    const selectionRanges = inputScript
+      .split('\n')
+      .filter((ln) => ln.includes('// select for vertical constraint'))
+      .map((ln) => {
+        const comment = ln.split('//')[1]
+        const start = inputScript.indexOf('//' + comment) - 7
+        return [start, start]
+      }) as [number, number][]
+
+    const programMemory = executor(ast)
+    const transformInfos = getTransformInfos(selectionRanges, ast, 'vertical')
+
+    const newAst = transformAstForHorzVert({
+      ast,
+      selectionRanges,
+      transformInfos,
+      programMemory,
+    })?.modifiedAst
+    const newCode = recast(newAst)
+    // console.log(newCode)
     expect(newCode).toBe(expectModifiedScript)
   })
 })

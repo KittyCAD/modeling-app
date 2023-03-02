@@ -79,7 +79,7 @@ export function replaceSketchCall(
 
 export type TransformInfo = {
   tooltip: TooTip
-  createNode?: (a: {
+  createNode: (a: {
     varValA: Value // x / angle
     varValB: Value // y / length or x y for angledLineOfXlength etc
     referenceSegName: string
@@ -179,8 +179,13 @@ export const attemptAtThing: TransformMap = {
             )
         },
       },
-      horizontal: { tooltip: 'xLine' },
-      equalangle: { tooltip: 'angledLineOfXLength' },
+      horizontal: {
+        tooltip: 'xLine',
+        createNode:
+          ({ varValA }) =>
+          (_, tag) =>
+            createCallWrapper('xLine', varValA, tag),
+      },
     },
     yRelative: {
       equalLength: {
@@ -198,17 +203,29 @@ export const attemptAtThing: TransformMap = {
             )
         },
       },
-      vertical: { tooltip: 'yLine' },
-      equalangle: { tooltip: 'angledLineOfYLength' },
+      vertical: {
+        tooltip: 'yLine',
+        createNode:
+          ({ varValB }) =>
+          (_, tag) =>
+            createCallWrapper('yLine', varValB, tag),
+      },
     },
     free: {
       equalLength: {
         tooltip: 'angledLine',
         createNode: basicAngledLineCreateNode,
       },
-      horizontal: { tooltip: 'xLine' },
-      vertical: { tooltip: 'yLine' },
-      equalangle: { tooltip: 'angledLine' },
+      horizontal: {
+        tooltip: 'xLine',
+        createNode: () => (args, tag) =>
+          createCallWrapper('xLine', args[0], tag),
+      },
+      vertical: {
+        tooltip: 'yLine',
+        createNode: () => (args, tag) =>
+          createCallWrapper('yLine', args[1], tag),
+      },
     },
   },
   lineTo: {
@@ -216,6 +233,16 @@ export const attemptAtThing: TransformMap = {
       equalLength: {
         tooltip: 'angledLine',
         createNode: basicAngledLineCreateNode,
+      },
+      horizontal: {
+        tooltip: 'xLineTo',
+        createNode: () => (args, tag) =>
+          createCallWrapper('xLineTo', args[0], tag),
+      },
+      vertical: {
+        tooltip: 'yLineTo',
+        createNode: () => (args, tag) =>
+          createCallWrapper('yLineTo', args[1], tag),
       },
     },
     xAbsolute: {
@@ -239,6 +266,13 @@ export const attemptAtThing: TransformMap = {
             )
           },
       },
+      horizontal: {
+        tooltip: 'xLineTo',
+        createNode:
+          ({ varValA }) =>
+          (_, tag) =>
+            createCallWrapper('xLineTo', varValA, tag),
+      },
     },
     yAbsolute: {
       equalLength: {
@@ -261,6 +295,13 @@ export const attemptAtThing: TransformMap = {
             )
           },
       },
+      vertical: {
+        tooltip: 'yLineTo',
+        createNode:
+          ({ varValB }) =>
+          (_, tag) =>
+            createCallWrapper('yLineTo', varValB, tag),
+      },
     },
   },
   angledLine: {
@@ -282,6 +323,42 @@ export const attemptAtThing: TransformMap = {
         tooltip: 'angledLine',
         createNode: basicAngledLineCreateNode,
       },
+      vertical: {
+        tooltip: 'yLine',
+        createNode: () => (args, tag) =>
+          createCallWrapper('yLine', args[1], tag),
+      },
+      horizontal: {
+        tooltip: 'xLine',
+        createNode: () => (args, tag) =>
+          createCallWrapper('xLine', args[0], tag),
+      },
+    },
+    length: {
+      vertical: {
+        tooltip: 'yLine',
+        createNode:
+          ({ varValB }) =>
+          ([arg0], tag) => {
+            const val =
+              arg0.type === 'Literal' && Number(arg0.value) < 0
+                ? createUnaryExpression(varValB as BinaryPart)
+                : varValB
+            return createCallWrapper('yLine', val, tag)
+          },
+      },
+      horizontal: {
+        tooltip: 'xLine',
+        createNode:
+          ({ varValB }) =>
+          ([arg0], tag) => {
+            const val =
+              arg0.type === 'Literal' && Number(arg0.value) < 0
+                ? createUnaryExpression(varValB as BinaryPart)
+                : varValB
+            return createCallWrapper('xLine', val, tag)
+          },
+      },
     },
   },
   angledLineOfXLength: {
@@ -289,6 +366,11 @@ export const attemptAtThing: TransformMap = {
       equalLength: {
         tooltip: 'angledLine',
         createNode: basicAngledLineCreateNode,
+      },
+      horizontal: {
+        tooltip: 'xLine',
+        createNode: () => (args, tag) =>
+          createCallWrapper('xLine', args[0], tag),
       },
     },
     angle: {
@@ -313,6 +395,18 @@ export const attemptAtThing: TransformMap = {
             )
         },
       },
+      horizontal: {
+        tooltip: 'xLine',
+        createNode:
+          ({ varValB }) =>
+          ([arg0], tag) => {
+            const val =
+              arg0.type === 'Literal' && Number(arg0.value) < 0
+                ? createUnaryExpression(varValB as BinaryPart)
+                : varValB
+            return createCallWrapper('xLine', val, tag)
+          },
+      },
     },
   },
   angledLineOfYLength: {
@@ -320,6 +414,11 @@ export const attemptAtThing: TransformMap = {
       equalLength: {
         tooltip: 'angledLine',
         createNode: basicAngledLineCreateNode,
+      },
+      vertical: {
+        tooltip: 'yLine',
+        createNode: () => (args, tag) =>
+          createCallWrapper('yLine', args[1], tag),
       },
     },
     angle: {
@@ -345,6 +444,18 @@ export const attemptAtThing: TransformMap = {
             )
         },
       },
+      vertical: {
+        tooltip: 'yLine',
+        createNode:
+          ({ varValB }) =>
+          ([arg0], tag) => {
+            const val =
+              arg0.type === 'Literal' && Number(arg0.value) < 0
+                ? createUnaryExpression(varValB as BinaryPart)
+                : varValB
+            return createCallWrapper('yLine', val, tag)
+          },
+      },
     },
   },
   angledLineToX: {
@@ -352,6 +463,11 @@ export const attemptAtThing: TransformMap = {
       equalLength: {
         tooltip: 'angledLine',
         createNode: basicAngledLineCreateNode,
+      },
+      horizontal: {
+        tooltip: 'xLineTo',
+        createNode: () => (args, tag) =>
+          createCallWrapper('xLineTo', args[0], tag),
       },
     },
     angle: {
@@ -381,6 +497,13 @@ export const attemptAtThing: TransformMap = {
             )
           },
       },
+      horizontal: {
+        tooltip: 'xLineTo',
+        createNode:
+          ({ varValB }) =>
+          ([arg0], tag) =>
+            createCallWrapper('xLineTo', varValB, tag),
+      },
     },
   },
   angledLineToY: {
@@ -388,6 +511,11 @@ export const attemptAtThing: TransformMap = {
       equalLength: {
         tooltip: 'angledLine',
         createNode: basicAngledLineCreateNode,
+      },
+      vertical: {
+        tooltip: 'yLineTo',
+        createNode: () => (args, tag) =>
+          createCallWrapper('yLineTo', args[1], tag),
       },
     },
     angle: {
@@ -416,6 +544,13 @@ export const attemptAtThing: TransformMap = {
               tag
             )
           },
+      },
+      vertical: {
+        tooltip: 'yLineTo',
+        createNode:
+          ({ varValB }) =>
+          (_, tag) =>
+            createCallWrapper('yLineTo', varValB, tag),
       },
     },
   },
@@ -541,7 +676,7 @@ export function getTransformInfos(
     (pathToNode) => getNodeFromPath<Value>(ast, pathToNode).node
   )
 
-  const theTransforms = nodes.slice(1).map((node) => {
+  const theTransforms = nodes.map((node) => {
     if (node?.type === 'CallExpression')
       return getTransformInfo(node, constraintType)
 
@@ -553,7 +688,7 @@ export function getTransformInfos(
 export function transformAstForSketchLines({
   ast,
   selectionRanges,
-  transformInfos: transformInfo,
+  transformInfos,
   programMemory,
 }: {
   ast: Program
@@ -569,8 +704,8 @@ export function transformAstForSketchLines({
   node = modifiedAst
 
   selectionRanges.slice(1).forEach((range, index) => {
-    const callBack = transformInfo?.[index].createNode
-    const transformTo = transformInfo?.[index].tooltip
+    const callBack = transformInfos?.[index].createNode
+    const transformTo = transformInfos?.[index].tooltip
     if (!callBack || !transformTo) throw new Error('no callback helper')
 
     const callExpPath = getNodePathFromSourceRange(node, range)
@@ -589,6 +724,50 @@ export function transformAstForSketchLines({
       transformTo,
       callBack({
         referenceSegName: tag,
+        varValA,
+        varValB,
+      })
+    )
+    node = modifiedAst
+  })
+  return { modifiedAst: node }
+}
+
+export function transformAstForHorzVert({
+  ast,
+  selectionRanges,
+  transformInfos,
+  programMemory,
+}: {
+  ast: Program
+  selectionRanges: Ranges
+  transformInfos: TransformInfo[]
+  programMemory: ProgramMemory
+}): { modifiedAst: Program } {
+  // deep clone since we are mutating in a loop, of which any could fail
+  let node = JSON.parse(JSON.stringify(ast))
+
+  selectionRanges.forEach((range, index) => {
+    const callBack = transformInfos?.[index]?.createNode
+    const transformTo = transformInfos?.[index].tooltip
+    if (!callBack || !transformTo) throw new Error('no callback helper')
+
+    const callExpPath = getNodePathFromSourceRange(node, range)
+    const callExp = getNodeFromPath<CallExpression>(
+      node,
+      callExpPath,
+      'CallExpression'
+    )?.node
+    const { val } = getFirstArg(callExp)
+    const [varValA, varValB] = Array.isArray(val) ? val : [val, val]
+
+    const { modifiedAst } = replaceSketchCall(
+      programMemory,
+      node,
+      range,
+      transformTo,
+      callBack({
+        referenceSegName: '',
         varValA,
         varValB,
       })
