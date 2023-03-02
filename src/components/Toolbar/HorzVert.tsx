@@ -42,7 +42,6 @@ export const HorzVert = ({
     )
 
     const theTransforms = getTransformInfos(selectionRanges, ast, horOrVert)
-    console.log('setting theTransforms', theTransforms)
     setTransformInfos(theTransforms)
 
     const _enableHorz = isAllTooltips && theTransforms.every(Boolean)
