@@ -1,45 +1,11 @@
 import { Range, TooTip, toolTips } from '../../useStore'
 import {
-  getNodePathFromSourceRange,
-  getNodeFromPath,
   Program,
   VariableDeclarator,
   CallExpression,
 } from '../abstractSyntaxTree'
-import { replaceSketchLine } from './sketch'
-import { ProgramMemory, SketchGroup } from '../executor'
-import { InternalFn, TransformCallback } from './stdTypes'
-
-export function swapSketchHelper(
-  programMemory: ProgramMemory,
-  ast: Program,
-  range: Range,
-  newFnName: TooTip,
-  createCallback: TransformCallback
-): { modifiedAst: Program } {
-  const path = getNodePathFromSourceRange(ast, range)
-  const varDec = getNodeFromPath<VariableDeclarator>(
-    ast,
-    path,
-    'VariableDeclarator'
-  ).node
-  const varName = varDec.id.name
-  const sketchGroup = programMemory.root?.[varName]
-  if (!sketchGroup || sketchGroup.type !== 'sketchGroup')
-    throw new Error('not a sketch group')
-  const seg = getSketchSegmentIndexFromSourceRange(sketchGroup, range)
-  const { to, from } = seg
-  const { modifiedAst } = replaceSketchLine({
-    node: ast,
-    sourceRange: range,
-    programMemory,
-    fnName: newFnName,
-    to,
-    from,
-    createCallback,
-  })
-  return { modifiedAst }
-}
+import { SketchGroup } from '../executor'
+import { InternalFn } from './stdTypes'
 
 export function getSketchSegmentIndexFromSourceRange(
   sketchGroup: SketchGroup,

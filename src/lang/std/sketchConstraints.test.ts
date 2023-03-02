@@ -1,14 +1,13 @@
-import {
-  abstractSyntaxTree,
-  getNodePathFromSourceRange,
-} from '../abstractSyntaxTree'
+import { abstractSyntaxTree } from '../abstractSyntaxTree'
 import { executor } from '../executor'
 import { lexer } from '../tokeniser'
-import { swapSketchHelper } from './sketchConstraints'
-import { allowedTransforms } from './sketch'
+import {
+  ConstraintType,
+  getTransformInfos,
+  transformAstForHorzVert,
+} from './sketchcombos'
 import { recast } from '../recast'
 import { initPromise } from '../rust'
-import { TooTip } from '../../useStore'
 
 beforeAll(() => initPromise)
 
@@ -16,13 +15,11 @@ beforeAll(() => initPromise)
 function testingSwapSketchFnCall({
   inputCode,
   callToSwap,
-  // expectedNewCall,
-  toFnCallName,
+  constraintType,
 }: {
   inputCode: string
   callToSwap: string
-  // expectedNewCall: string
-  toFnCallName: TooTip
+  constraintType: ConstraintType
 }): {
   newCode: string
   originalRange: [number, number]
@@ -32,21 +29,15 @@ function testingSwapSketchFnCall({
   const tokens = lexer(inputCode)
   const ast = abstractSyntaxTree(tokens)
   const programMemory = executor(ast)
-  const pathToNode = getNodePathFromSourceRange(ast, range)
-  const _allowedTransforms = allowedTransforms({
-    node: ast,
-    previousProgramMemory: programMemory,
-    pathToNode,
-  })
-  const transformCallback = _allowedTransforms[toFnCallName]
-  if (!transformCallback) throw new Error('nope')
-  const { modifiedAst } = swapSketchHelper(
-    programMemory,
+  const transformInfos = getTransformInfos([range], ast, constraintType)
+
+  if (!transformInfos) throw new Error('nope')
+  const { modifiedAst } = transformAstForHorzVert({
     ast,
-    range,
-    toFnCallName,
-    transformCallback
-  )
+    programMemory,
+    selectionRanges: [range],
+    transformInfos,
+  })
   return {
     newCode: recast(modifiedAst),
     originalRange: range,
@@ -99,7 +90,7 @@ describe('testing swaping out sketch calls with xLine/xLineTo', () => {
     const { newCode, originalRange } = testingSwapSketchFnCall({
       inputCode: bigExample,
       callToSwap,
-      toFnCallName: 'xLine',
+      constraintType: 'horizontal',
     })
     expect(newCode).toContain(expectedLine)
     // new line should start at the same place as the old line
@@ -111,7 +102,7 @@ describe('testing swaping out sketch calls with xLine/xLineTo', () => {
     const { newCode, originalRange } = testingSwapSketchFnCall({
       inputCode: bigExample,
       callToSwap,
-      toFnCallName: 'xLine',
+      constraintType: 'horizontal',
     })
     expect(newCode).toContain(expectedLine)
     // new line should start at the same place as the old line
@@ -121,7 +112,7 @@ describe('testing swaping out sketch calls with xLine/xLineTo', () => {
     const { newCode, originalRange } = testingSwapSketchFnCall({
       inputCode: bigExample,
       callToSwap: "lineTo({ to: [1, 1], tag: 'abc1' }, %)",
-      toFnCallName: 'xLineTo',
+      constraintType: 'horizontal',
     })
     const expectedLine = "xLineTo({ to: 1, tag: 'abc1' }, %)"
     expect(newCode).toContain(expectedLine)
@@ -132,7 +123,7 @@ describe('testing swaping out sketch calls with xLine/xLineTo', () => {
     const { newCode, originalRange } = testingSwapSketchFnCall({
       inputCode: bigExample,
       callToSwap: 'lineTo([2.55, 3.58], %)',
-      toFnCallName: 'xLineTo',
+      constraintType: 'horizontal',
     })
     const expectedLine = 'xLineTo(2.55, %) // lineTo'
     expect(newCode).toContain(expectedLine)
@@ -149,7 +140,7 @@ describe('testing swaping out sketch calls with xLine/xLineTo', () => {
         `  tag: 'abc3'`,
         `}, %)`,
       ].join('\n'),
-      toFnCallName: 'xLine',
+      constraintType: 'horizontal',
     })
     const expectedLine = "xLine({ length: -1.56, tag: 'abc3' }, %)"
     expect(newCode).toContain(expectedLine)
@@ -160,7 +151,7 @@ describe('testing swaping out sketch calls with xLine/xLineTo', () => {
     const { newCode, originalRange } = testingSwapSketchFnCall({
       inputCode: bigExample,
       callToSwap: 'angledLine([63, 1.38], %)',
-      toFnCallName: 'xLine',
+      constraintType: 'horizontal',
     })
     const expectedLine = 'xLine(0.63, %) // angledLine'
     expect(newCode).toContain(expectedLine)
@@ -177,7 +168,7 @@ describe('testing swaping out sketch calls with xLine/xLineTo', () => {
         `  tag: 'abc4'`,
         `}, %)`,
       ].join('\n'),
-      toFnCallName: 'xLine',
+      constraintType: 'horizontal',
     })
     const expectedLine = "xLine({ length: -0.86, tag: 'abc4' }, %)"
     // hmm "-0.86" is correct since the angle is 104, but need to make sure this is compatiable `-myVar`
@@ -189,7 +180,7 @@ describe('testing swaping out sketch calls with xLine/xLineTo', () => {
     const { newCode, originalRange } = testingSwapSketchFnCall({
       inputCode: bigExample,
       callToSwap: 'angledLineOfXLength([319, 1.15], %)',
-      toFnCallName: 'xLine',
+      constraintType: 'horizontal',
     })
     const expectedLine = 'xLine(1.15, %) // angledLineOfXLength'
     expect(newCode).toContain(expectedLine)
@@ -206,7 +197,7 @@ describe('testing swaping out sketch calls with xLine/xLineTo', () => {
         `  tag: 'abc5'`,
         `}, %)`,
       ].join('\n'),
-      toFnCallName: 'yLine',
+      constraintType: 'vertical',
     })
     const expectedLine = "yLine({ length: 1.58, tag: 'abc5' }, %)"
     expect(newCode).toContain(expectedLine)
@@ -217,7 +208,7 @@ describe('testing swaping out sketch calls with xLine/xLineTo', () => {
     const { newCode, originalRange } = testingSwapSketchFnCall({
       inputCode: bigExample,
       callToSwap: 'angledLineOfYLength([50, 1.35], %)',
-      toFnCallName: 'yLine',
+      constraintType: 'vertical',
     })
     const expectedLine = 'yLine(1.35, %) // angledLineOfYLength'
     expect(newCode).toContain(expectedLine)
@@ -228,7 +219,7 @@ describe('testing swaping out sketch calls with xLine/xLineTo', () => {
     const { newCode, originalRange } = testingSwapSketchFnCall({
       inputCode: bigExample,
       callToSwap: "angledLineToX({ angle: 55, to: -2.89, tag: 'abc6' }, %)",
-      toFnCallName: 'xLineTo',
+      constraintType: 'horizontal',
     })
     const expectedLine = "xLineTo({ to: -2.89, tag: 'abc6' }, %)"
     expect(newCode).toContain(expectedLine)
@@ -239,7 +230,7 @@ describe('testing swaping out sketch calls with xLine/xLineTo', () => {
     const { newCode, originalRange } = testingSwapSketchFnCall({
       inputCode: bigExample,
       callToSwap: 'angledLineToX([291, 6.66], %)',
-      toFnCallName: 'xLineTo',
+      constraintType: 'horizontal',
     })
     const expectedLine = 'xLineTo(6.66, %) // angledLineToX'
     expect(newCode).toContain(expectedLine)
@@ -250,7 +241,7 @@ describe('testing swaping out sketch calls with xLine/xLineTo', () => {
     const { newCode, originalRange } = testingSwapSketchFnCall({
       inputCode: bigExample,
       callToSwap: "angledLineToY({ angle: 330, to: 2.53, tag: 'abc7' }, %)",
-      toFnCallName: 'yLineTo',
+      constraintType: 'vertical',
     })
     const expectedLine = "yLineTo({ to: 2.53, tag: 'abc7' }, %)"
     expect(newCode).toContain(expectedLine)
@@ -261,7 +252,7 @@ describe('testing swaping out sketch calls with xLine/xLineTo', () => {
     const { newCode, originalRange } = testingSwapSketchFnCall({
       inputCode: bigExample,
       callToSwap: 'angledLineToY([228, 2.14], %)',
-      toFnCallName: 'yLineTo',
+      constraintType: 'vertical',
     })
     const expectedLine = 'yLineTo(2.14, %) // angledLineToY'
     expect(newCode).toContain(expectedLine)
@@ -297,7 +288,7 @@ describe('testing swaping out sketch calls with xLine/xLineTo while keeping vari
     const { newCode, originalRange } = testingSwapSketchFnCall({
       inputCode: varExample,
       callToSwap: 'line([lineX, 2.13], %)',
-      toFnCallName: 'xLine',
+      constraintType: 'horizontal',
     })
     const expectedLine = 'xLine(lineX, %)'
     expect(newCode).toContain(expectedLine)
@@ -308,7 +299,7 @@ describe('testing swaping out sketch calls with xLine/xLineTo while keeping vari
     const { newCode, originalRange } = testingSwapSketchFnCall({
       inputCode: varExample,
       callToSwap: 'lineTo([lineToX, 2.85], %)',
-      toFnCallName: 'xLineTo',
+      constraintType: 'horizontal',
     })
     const expectedLine = 'xLineTo(lineToX, %)'
     expect(newCode).toContain(expectedLine)
@@ -319,7 +310,7 @@ describe('testing swaping out sketch calls with xLine/xLineTo while keeping vari
     const { newCode, originalRange } = testingSwapSketchFnCall({
       inputCode: varExample,
       callToSwap: 'angledLineOfXLength([329, angledLineOfXLengthX], %)',
-      toFnCallName: 'xLine',
+      constraintType: 'horizontal',
     })
     const expectedLine = 'xLine(angledLineOfXLengthX, %)'
     expect(newCode).toContain(expectedLine)
@@ -330,9 +321,9 @@ describe('testing swaping out sketch calls with xLine/xLineTo while keeping vari
     const { newCode, originalRange } = testingSwapSketchFnCall({
       inputCode: varExample,
       callToSwap: 'angledLineOfYLength([222, angledLineOfYLengthY], %)',
-      toFnCallName: 'yLine',
+      constraintType: 'vertical',
     })
-    const expectedLine = 'yLine(angledLineOfYLengthY, %)'
+    const expectedLine = 'yLine(-angledLineOfYLengthY, %)'
     expect(newCode).toContain(expectedLine)
     // new line should start at the same place as the old line
     expect(originalRange[0]).toBe(newCode.indexOf(expectedLine))
@@ -341,7 +332,7 @@ describe('testing swaping out sketch calls with xLine/xLineTo while keeping vari
     const { newCode, originalRange } = testingSwapSketchFnCall({
       inputCode: varExample,
       callToSwap: 'angledLineToX([330, angledLineToXx], %)',
-      toFnCallName: 'xLineTo',
+      constraintType: 'horizontal',
     })
     const expectedLine = 'xLineTo(angledLineToXx, %)'
     expect(newCode).toContain(expectedLine)
@@ -352,7 +343,7 @@ describe('testing swaping out sketch calls with xLine/xLineTo while keeping vari
     const { newCode, originalRange } = testingSwapSketchFnCall({
       inputCode: varExample,
       callToSwap: 'angledLineToY([217, angledLineToYy], %)',
-      toFnCallName: 'yLineTo',
+      constraintType: 'vertical',
     })
     const expectedLine = 'yLineTo(angledLineToYy, %)'
     expect(newCode).toContain(expectedLine)
@@ -365,7 +356,7 @@ describe('testing swaping out sketch calls with xLine/xLineTo while keeping vari
       testingSwapSketchFnCall({
         inputCode: varExample,
         callToSwap: 'angledLineToY([217, angledLineToYy], %)',
-        toFnCallName: 'xLineTo',
+        constraintType: 'horizontal',
       })
     expect(illegalConvert).toThrowError()
   })

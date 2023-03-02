@@ -82,5 +82,4 @@ export interface SketchLineHelper {
     modifiedAst: Program
     tag: string
   }
-  allowedTransforms: (a: ModifyAstBase) => Partial<SketchCallTransfromMap>
 }
