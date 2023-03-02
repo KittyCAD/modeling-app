@@ -81,6 +81,7 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
   const example = `const myVar = 3
 const myVar2 = 5
 const myAng = 40
+const myAng2 = 134
 const part001 = startSketchAt([0, 0])
   |> line([1, 3.82], %) // ln-should-get-tag
   |> lineTo([myVar, 1], %) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
@@ -89,6 +90,9 @@ const part001 = startSketchAt([0, 0])
   |> angledLineToX([45, 2.5], %) // ln-angledLineToX-free should become angledLine
   |> angledLineToX([myAng, 3], %) // ln-angledLineToX-angle should become angledLine
   |> angledLineToX([45, myVar2], %) // ln-angledLineToX-xAbsolute should use angleToMatchLengthX to get angle
+  |> angledLineToY([135, 5], %) // ln-angledLineToY-free should become angledLine
+  |> angledLineToY([myAng2, 4], %) // ln-angledLineToY-angle should become angledLine
+  |> angledLineToY([45, myVar2], %) // ln-angledLineToY-yAbsolute should use angleToMatchLengthY to get angle
   |> line([myVar, 1], %) // ln-should use legLen for y
   |> line([myVar, -1], %) // ln-legLen but negative
   |> line([-0.62, -1.54], %) // ln-should become angledLine
@@ -134,6 +138,7 @@ show(part001)`
     expect(newCode).toBe(`const myVar = 3
 const myVar2 = 5
 const myAng = 40
+const myAng2 = 134
 const part001 = startSketchAt([0, 0])
   |> line({ to: [1, 3.82], tag: 'seg01' }, %) // ln-should-get-tag
   |> angledLineToX([
@@ -151,6 +156,12 @@ const part001 = startSketchAt([0, 0])
     angleToMatchLengthX('seg01', myVar2, %),
     myVar2
   ], %) // ln-angledLineToX-xAbsolute should use angleToMatchLengthX to get angle
+  |> angledLine([315, segLen('seg01', %)], %) // ln-angledLineToY-free should become angledLine
+  |> angledLine([myAng2, segLen('seg01', %)], %) // ln-angledLineToY-angle should become angledLine
+  |> angledLineToY([
+    angleToMatchLengthY('seg01', myVar2, %),
+    myVar2
+  ], %) // ln-angledLineToY-yAbsolute should use angleToMatchLengthY to get angle
   |> line([
     min(segLen('seg01', %), myVar),
     legLen(segLen('seg01', %), myVar)
