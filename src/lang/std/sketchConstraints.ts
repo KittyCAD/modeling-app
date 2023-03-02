@@ -56,17 +56,6 @@ function angleToMatchLengthFactory(which: 'x' | 'y'): InternalFn {
 export const angleToMatchLengthX: InternalFn = angleToMatchLengthFactory('x')
 export const angleToMatchLengthY: InternalFn = angleToMatchLengthFactory('y')
 
-export function includedInAll(
-  possibleFnCallSwapsForEachCursor: TooTip[][],
-  eachHasAtLeastOneOfThese: TooTip[]
-): boolean {
-  return possibleFnCallSwapsForEachCursor.every((possibleFnCallSwap) =>
-    eachHasAtLeastOneOfThese.some((isInclude) =>
-      possibleFnCallSwap.includes(isInclude)
-    )
-  )
-}
-
 export function isSketchVariablesLinked(
   secondaryVarDec: VariableDeclarator,
   primaryVarDec: VariableDeclarator,

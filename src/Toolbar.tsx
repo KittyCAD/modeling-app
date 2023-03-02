@@ -153,7 +153,8 @@ export const Toolbar = () => {
         )
       })}
       <br></br>
-      <HorzVert />
+      <HorzVert horOrVert="horizontal" />
+      <HorzVert horOrVert="vertical" />
       <Equal />
     </div>
   )

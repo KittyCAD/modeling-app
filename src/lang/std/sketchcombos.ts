@@ -162,7 +162,7 @@ const getAngleLengthSign = (arg: Value, legAngleVal: BinaryPart) => {
   return normalisedAngle > 90 ? createUnaryExpression(legAngleVal) : legAngleVal
 }
 
-export const attemptAtThing: TransformMap = {
+const transformMap: TransformMap = {
   line: {
     xRelative: {
       equalLength: {
@@ -657,7 +657,7 @@ export function getTransformMapPath(
   const isOneValFree =
     !Array.isArray(firstArg.val) && firstArg.val?.type === 'Literal'
   if (isTwoValFree || isOneValFree) {
-    const info = attemptAtThing?.[name]?.free?.[constraintType]
+    const info = transformMap?.[name]?.free?.[constraintType]
     if (info)
       return {
         toolTip: name,
@@ -670,7 +670,7 @@ export function getTransformMapPath(
   // check what constraints the function has
   const lineInputType = getConstraintType(firstArg.val, name)
   if (lineInputType) {
-    const info = attemptAtThing?.[name]?.[lineInputType]?.[constraintType]
+    const info = transformMap?.[name]?.[lineInputType]?.[constraintType]
     if (info)
       return {
         toolTip: name,
@@ -690,7 +690,7 @@ export function getTransformInfo(
   const path = getTransformMapPath(sketchFnExp, constraintType)
   if (!path) return false
   const { toolTip, lineInputType, constraintType: _constraintType } = path
-  const info = attemptAtThing?.[toolTip]?.[lineInputType]?.[_constraintType]
+  const info = transformMap?.[toolTip]?.[lineInputType]?.[_constraintType]
   if (!info) return false
   return info
 }

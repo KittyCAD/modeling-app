@@ -52,7 +52,11 @@ export const Equal = () => {
         toolTips.includes(node.callee.name as any)
     )
 
-    const theTransforms = getTransformInfos(selectionRanges, ast, 'equalLength')
+    const theTransforms = getTransformInfos(
+      selectionRanges.slice(1),
+      ast,
+      'equalLength'
+    )
     setTransformInfos(theTransforms)
 
     const _enableEqual =

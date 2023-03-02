@@ -1,19 +1,21 @@
 import { useState, useEffect } from 'react'
-import { TooTip, useStore } from '../../useStore'
+import { toolTips, useStore } from '../../useStore'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
   Value,
-  CallExpression,
 } from '../../lang/abstractSyntaxTree'
-import { toolTips } from '../../useStore'
-import { allowedTransforms } from '../../lang/std/sketch'
 import {
-  swapSketchHelper,
-  includedInAll,
-} from '../../lang/std/sketchConstraints'
+  TransformInfo,
+  getTransformInfos,
+  transformAstForHorzVert,
+} from '../../lang/std/sketchcombos'
 
-export const HorzVert = () => {
+export const HorzVert = ({
+  horOrVert,
+}: {
+  horOrVert: 'vertical' | 'horizontal'
+}) => {
   const { guiMode, selectionRanges, ast, programMemory, updateAst } = useStore(
     (s) => ({
       guiMode: s.guiMode,
@@ -24,108 +26,51 @@ export const HorzVert = () => {
     })
   )
   const [enableHorz, setEnableHorz] = useState(false)
-  const [enableVert, setEnableVert] = useState(false)
-  const [allowedTransformsMap, setAllowedTransformsMap] = useState<
-    ReturnType<typeof allowedTransforms>[]
-  >([])
+  const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
   useEffect(() => {
     if (!ast) return
-    const islineFn = (expression: Value): boolean => {
-      if (expression?.type !== 'CallExpression') return false
-      if (!toolTips.includes(expression.callee.name as any)) return false
-      return true
-    }
     const paths = selectionRanges.map((selectionRange) =>
       getNodePathFromSourceRange(ast, selectionRange)
     )
     const nodes = paths.map(
       (pathToNode) => getNodeFromPath<Value>(ast, pathToNode).node
     )
-
-    const allowedSwaps = paths.map((a) =>
-      allowedTransforms({
-        node: ast,
-        pathToNode: a,
-        previousProgramMemory: programMemory,
-      })
+    const isAllTooltips = nodes.every(
+      (node) =>
+        node?.type === 'CallExpression' &&
+        toolTips.includes(node.callee.name as any)
     )
-    setAllowedTransformsMap(allowedSwaps)
-    const allowedSwapsnames = allowedSwaps.map((a) =>
-      Object.keys(a)
-    ) as TooTip[][]
-    const horzAllowed = includedInAll(allowedSwapsnames, ['xLine', 'xLineTo'])
-    const vertAllowed = includedInAll(allowedSwapsnames, ['yLine', 'yLineTo'])
-    const isCursorsInLineFns = nodes.every(islineFn)
-    const _enableHorz =
-      isCursorsInLineFns &&
-      horzAllowed &&
-      guiMode.mode === 'sketch' &&
-      guiMode.sketchMode === 'sketchEdit'
-    if (enableHorz !== _enableHorz) setEnableHorz(_enableHorz)
-    const _enableVert =
-      isCursorsInLineFns &&
-      vertAllowed &&
-      guiMode.mode === 'sketch' &&
-      guiMode.sketchMode === 'sketchEdit'
-    if (enableVert !== _enableVert) setEnableVert(_enableVert)
+
+    const theTransforms = getTransformInfos(selectionRanges, ast, horOrVert)
+    console.log('setting theTransforms', theTransforms)
+    setTransformInfos(theTransforms)
+
+    const _enableHorz = isAllTooltips && theTransforms.every(Boolean)
+    setEnableHorz(_enableHorz)
   }, [guiMode, selectionRanges])
   if (guiMode.mode !== 'sketch') return null
 
-  const onClick = (vertOrHor: 'vert' | 'horz') => () => {
-    if (!ast) return
-
-    // deep clone since we are mutating in a loop, of which any could fail
-    let node = JSON.parse(JSON.stringify(ast))
-    selectionRanges.forEach((range, index) => {
-      const { node: callExpression } = getNodeFromPath<CallExpression>(
-        node,
-        getNodePathFromSourceRange(node, range)
-      )
-      const [relLine, absLine]: [TooTip, TooTip] =
-        vertOrHor === 'vert' ? ['yLine', 'yLineTo'] : ['xLine', 'xLineTo']
-      const finalLine = [
-        'line',
-        'angledLine',
-        'angledLineOfXLength',
-        'angledLineOfYLength',
-      ].includes(callExpression.callee.name)
-        ? relLine
-        : absLine
-      const createCallBackHelper = allowedTransformsMap[index][finalLine]
-      if (!createCallBackHelper) throw new Error('no callback helper')
-      const { modifiedAst } = swapSketchHelper(
-        programMemory,
-        node,
-        range,
-        finalLine,
-        createCallBackHelper
-      )
-      node = modifiedAst
-    })
-    updateAst(node)
-  }
-
   return (
-    <>
-      <button
-        onClick={onClick('horz')}
-        className={`border m-1 px-1 rounded ${
-          enableHorz ? 'bg-gray-50 text-gray-800' : 'bg-gray-200 text-gray-400'
-        }`}
-        disabled={!enableHorz}
-        title="yo dawg"
-      >
-        Horz
-      </button>
-      <button
-        onClick={onClick('vert')}
-        className={`border m-1 px-1 rounded ${
-          enableVert ? 'bg-gray-50 text-gray-800' : 'bg-gray-200 text-gray-400'
-        }`}
-        disabled={!enableVert}
-      >
-        Vert
-      </button>
-    </>
+    <button
+      onClick={() =>
+        transformInfos &&
+        ast &&
+        updateAst(
+          transformAstForHorzVert({
+            ast,
+            selectionRanges,
+            transformInfos,
+            programMemory,
+          })?.modifiedAst
+        )
+      }
+      className={`border m-1 px-1 rounded ${
+        enableHorz ? 'bg-gray-50 text-gray-800' : 'bg-gray-200 text-gray-400'
+      }`}
+      disabled={!enableHorz}
+      title="yo dawg"
+    >
+      {horOrVert === 'horizontal' ? 'Horz' : 'Vert'}
+    </button>
   )
 }
