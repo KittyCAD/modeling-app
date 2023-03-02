@@ -78,8 +78,9 @@ function getConstraintTypeFromSourceHelper2(
 }
 
 describe('testing transformAstForSketchLines for equal length constraint', () => {
-  const example = `const myVar = 3
+  const inputScript = `const myVar = 3
 const myVar2 = 5
+const myVar3 = 6
 const myAng = 40
 const myAng2 = 134
 const part001 = startSketchAt([0, 0])
@@ -92,7 +93,7 @@ const part001 = startSketchAt([0, 0])
   |> angledLineToX([45, myVar2], %) // ln-angledLineToX-xAbsolute should use angleToMatchLengthX to get angle
   |> angledLineToY([135, 5], %) // ln-angledLineToY-free should become angledLine
   |> angledLineToY([myAng2, 4], %) // ln-angledLineToY-angle should become angledLine
-  |> angledLineToY([45, myVar2], %) // ln-angledLineToY-yAbsolute should use angleToMatchLengthY to get angle
+  |> angledLineToY([45, myVar3], %) // ln-angledLineToY-yAbsolute should use angleToMatchLengthY to get angle
   |> line([myVar, 1], %) // ln-should use legLen for y
   |> line([myVar, -1], %) // ln-legLen but negative
   |> line([-0.62, -1.54], %) // ln-should become angledLine
@@ -108,35 +109,9 @@ const part001 = startSketchAt([0, 0])
   |> angledLineOfYLength([35, myVar], %) // ln-angledLineOfYLength-yRelative use legAngY
   |> angledLineOfYLength([305, myVar], %) // ln-angledLineOfYLength-yRelative with angle > 90 use binExp
 show(part001)`
-  it('It should transform the ast', () => {
-    const ast = abstractSyntaxTree(lexer(example))
-    const selectionRanges = example
-      .split('\n')
-      .filter((ln) => ln.includes('//'))
-      .map((ln) => {
-        const comment = ln.split('//')[1]
-        const start = example.indexOf('//' + comment) - 7
-        return [start, start]
-      }) as [number, number][]
-
-    const programMemory = executor(ast)
-    const transformInfos = getTransformInfos(
-      selectionRanges,
-      ast,
-      'equalLength'
-    )
-
-    const newAst = transformAstForSketchLines({
-      ast,
-      selectionRanges,
-      transformInfos,
-      programMemory,
-    })?.modifiedAst
-    const newCode = recast(newAst)
-    // console.log(newCode)
-
-    expect(newCode).toBe(`const myVar = 3
+  const expectModifiedScript = `const myVar = 3
 const myVar2 = 5
+const myVar3 = 6
 const myAng = 40
 const myAng2 = 134
 const part001 = startSketchAt([0, 0])
@@ -159,8 +134,8 @@ const part001 = startSketchAt([0, 0])
   |> angledLine([315, segLen('seg01', %)], %) // ln-angledLineToY-free should become angledLine
   |> angledLine([myAng2, segLen('seg01', %)], %) // ln-angledLineToY-angle should become angledLine
   |> angledLineToY([
-    angleToMatchLengthY('seg01', myVar2, %),
-    myVar2
+    angleToMatchLengthY('seg01', myVar3, %),
+    myVar3
   ], %) // ln-angledLineToY-yAbsolute should use angleToMatchLengthY to get angle
   |> line([
     min(segLen('seg01', %), myVar),
@@ -200,6 +175,32 @@ const part001 = startSketchAt([0, 0])
     270 + legAngY(segLen('seg01', %), myVar),
     min(segLen('seg01', %), myVar)
   ], %) // ln-angledLineOfYLength-yRelative with angle > 90 use binExp
-show(part001)`)
+show(part001)`
+  it('It should transform the ast', () => {
+    const ast = abstractSyntaxTree(lexer(inputScript))
+    const selectionRanges = inputScript
+      .split('\n')
+      .filter((ln) => ln.includes('//'))
+      .map((ln) => {
+        const comment = ln.split('//')[1]
+        const start = inputScript.indexOf('//' + comment) - 7
+        return [start, start]
+      }) as [number, number][]
+
+    const programMemory = executor(ast)
+    const transformInfos = getTransformInfos(
+      selectionRanges,
+      ast,
+      'equalLength'
+    )
+
+    const newAst = transformAstForSketchLines({
+      ast,
+      selectionRanges,
+      transformInfos,
+      programMemory,
+    })?.modifiedAst
+    const newCode = recast(newAst)
+    expect(newCode).toBe(expectModifiedScript)
   })
 })
