@@ -13,6 +13,11 @@ import {
   closee,
   startSketchAt,
 } from './sketch'
+import {
+  segLen,
+  angleToMatchLengthX,
+  angleToMatchLengthY,
+} from './sketchConstraints'
 import { extrude, getExtrudeWallTransform } from './extrude'
 import { Quaternion, Vector3 } from 'three'
 import { SketchGroup, ExtrudeGroup, Position, Rotation } from '../executor'
@@ -70,6 +75,17 @@ const translate: InternalFn = <T extends SketchGroup | ExtrudeGroup>(
   }
 }
 
+const min: InternalFn = (_, a: number, b: number): number => Math.min(a, b)
+
+const legLen: InternalFn = (_, hypotenuse: number, leg: number): number =>
+  Math.sqrt(hypotenuse ** 2 - Math.min(Math.abs(leg), Math.abs(hypotenuse)) ** 2)
+
+const legAngX: InternalFn = (_, hypotenuse: number, leg: number): number =>
+  (Math.acos(Math.min(leg, hypotenuse) / hypotenuse) * 180) / Math.PI
+
+const legAngY: InternalFn = (_, hypotenuse: number, leg: number): number =>
+  (Math.asin(Math.min(leg, hypotenuse) / hypotenuse) * 180) / Math.PI
+
 export const internalFns: { [key in InternalFnNames]: InternalFn } = {
   rx: rotateOnAxis([1, 0, 0]),
   ry: rotateOnAxis([0, 1, 0]),
@@ -78,6 +94,13 @@ export const internalFns: { [key in InternalFnNames]: InternalFn } = {
   translate,
   transform,
   getExtrudeWallTransform,
+  min,
+  legLen,
+  legAngX,
+  legAngY,
+  segLen,
+  angleToMatchLengthX,
+  angleToMatchLengthY,
   lineTo: lineTo.fn,
   xLineTo: xLineTo.fn,
   yLineTo: yLineTo.fn,

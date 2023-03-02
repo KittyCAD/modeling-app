@@ -8,6 +8,7 @@ import {
   Identifier,
   CallExpression,
   ArrayExpression,
+  UnaryExpression,
 } from './abstractSyntaxTree'
 import { InternalFnNames } from './std/stdTypes'
 import { internalFns } from './std/std'
@@ -171,6 +172,12 @@ export const executor = (
             value: getBinaryExpressionResult(declaration.init, _programMemory),
             __meta,
           }
+        } else if (declaration.init.type === 'UnaryExpression') {
+          _programMemory.root[variableName] = {
+            type: 'userVal',
+            value: getUnaryExpressionResult(declaration.init, _programMemory),
+            __meta,
+          }
         } else if (declaration.init.type === 'ArrayExpression') {
           const valueInfo: { value: any; __meta?: Metadata }[] =
             declaration.init.elements.map(
@@ -196,6 +203,10 @@ export const executor = (
                   return {
                     value: node.value,
                     __meta: node.__meta[node.__meta.length - 1],
+                  }
+                } else if (element.type === 'UnaryExpression') {
+                  return {
+                    value: getUnaryExpressionResult(element, _programMemory),
                   }
                 } else {
                   throw new Error(
@@ -327,24 +338,84 @@ function getMemberExpressionResult(
 
 function getBinaryExpressionResult(
   expression: BinaryExpression,
-  programMemory: ProgramMemory
-) {
-  const getVal = (part: BinaryPart): any => {
-    if (part.type === 'Literal') {
-      return part.value
-    } else if (part.type === 'Identifier') {
-      return programMemory.root[part.name].value
-    } else if (part.type === 'BinaryExpression') {
-      return getBinaryExpressionResult(part, programMemory)
-    }
+  programMemory: ProgramMemory,
+  pipeInfo: {
+    isInPipe: boolean
+    previousResults: any[]
+    expressionIndex: number
+    body: PipeExpression['body']
+    sourceRangeOverride?: SourceRange
+  } = {
+    isInPipe: false,
+    previousResults: [],
+    expressionIndex: 0,
+    body: [],
   }
-  const left = getVal(expression.left)
-  const right = getVal(expression.right)
+) {
+  const _pipeInfo = {
+    ...pipeInfo,
+    isInPipe: false,
+  }
+  const left = getBinaryPartResult(expression.left, programMemory, _pipeInfo)
+  const right = getBinaryPartResult(expression.right, programMemory, _pipeInfo)
   if (expression.operator === '+') return left + right
   if (expression.operator === '-') return left - right
   if (expression.operator === '*') return left * right
   if (expression.operator === '/') return left / right
   if (expression.operator === '%') return left % right
+}
+
+function getBinaryPartResult(
+  part: BinaryPart,
+  programMemory: ProgramMemory,
+  pipeInfo: {
+    isInPipe: boolean
+    previousResults: any[]
+    expressionIndex: number
+    body: PipeExpression['body']
+    sourceRangeOverride?: SourceRange
+  } = {
+    isInPipe: false,
+    previousResults: [],
+    expressionIndex: 0,
+    body: [],
+  }
+): any {
+  const _pipeInfo = {
+    ...pipeInfo,
+    isInPipe: false,
+  }
+  if (part.type === 'Literal') {
+    return part.value
+  } else if (part.type === 'Identifier') {
+    return programMemory.root[part.name].value
+  } else if (part.type === 'BinaryExpression') {
+    return getBinaryExpressionResult(part, programMemory, _pipeInfo)
+  } else if (part.type === 'CallExpression') {
+    return executeCallExpression(programMemory, part, [], _pipeInfo)
+  }
+}
+
+function getUnaryExpressionResult(
+  expression: UnaryExpression,
+  programMemory: ProgramMemory,
+  pipeInfo: {
+    isInPipe: boolean
+    previousResults: any[]
+    expressionIndex: number
+    body: PipeExpression['body']
+    sourceRangeOverride?: SourceRange
+  } = {
+    isInPipe: false,
+    previousResults: [],
+    expressionIndex: 0,
+    body: [],
+  }
+) {
+  return -getBinaryPartResult(expression.argument, programMemory, {
+    ...pipeInfo,
+    isInPipe: false,
+  })
 }
 
 function getPipeExpressionResult(
@@ -443,17 +514,46 @@ function executeObjectExpression(
 
 function executeArrayExpression(
   _programMemory: ProgramMemory,
-  arrExp: ArrayExpression
+  arrExp: ArrayExpression,
+  pipeInfo: {
+    isInPipe: boolean
+    previousResults: any[]
+    expressionIndex: number
+    body: PipeExpression['body']
+    sourceRangeOverride?: SourceRange
+  } = {
+    isInPipe: false,
+    previousResults: [],
+    expressionIndex: 0,
+    body: [],
+  }
 ) {
+  const _pipeInfo = {
+    ...pipeInfo,
+    isInPipe: false,
+  }
   return arrExp.elements.map((el) => {
     if (el.type === 'Literal') {
       return el.value
     } else if (el.type === 'Identifier') {
       return _programMemory.root?.[el.name]?.value
     } else if (el.type === 'BinaryExpression') {
-      return getBinaryExpressionResult(el, _programMemory)
+      return getBinaryExpressionResult(el, _programMemory, _pipeInfo)
     } else if (el.type === 'ObjectExpression') {
       return executeObjectExpression(_programMemory, el)
+    } else if (el.type === 'CallExpression') {
+      const result: any = executeCallExpression(
+        _programMemory,
+        el,
+        [],
+        _pipeInfo
+      )
+      return result
+    } else if (el.type === 'UnaryExpression') {
+      return getUnaryExpressionResult(el, _programMemory, {
+        ...pipeInfo,
+        isInPipe: false,
+      })
     }
     throw new Error('Invalid argument type')
   })
@@ -483,8 +583,12 @@ function executeCallExpression(
     body,
     sourceRangeOverride,
   } = pipeInfo
-  const functionName = expression.callee.name
-  const fnArgs = expression.arguments.map((arg) => {
+  const functionName = expression?.callee?.name
+  const _pipeInfo = {
+    ...pipeInfo,
+    isInPipe: false,
+  }
+  const fnArgs = expression?.arguments?.map((arg) => {
     if (arg.type === 'Literal') {
       return arg.value
     } else if (arg.type === 'Identifier') {
@@ -493,16 +597,21 @@ function executeCallExpression(
     } else if (arg.type === 'PipeSubstitution') {
       return previousResults[expressionIndex - 1]
     } else if (arg.type === 'ArrayExpression') {
-      return executeArrayExpression(programMemory, arg)
+      return executeArrayExpression(programMemory, arg, pipeInfo)
     } else if (arg.type === 'CallExpression') {
       const result: any = executeCallExpression(
         programMemory,
         arg,
-        previousPathToNode
+        previousPathToNode,
+        _pipeInfo
       )
       return result
     } else if (arg.type === 'ObjectExpression') {
       return executeObjectExpression(programMemory, arg)
+    } else if (arg.type === 'UnaryExpression') {
+      return getUnaryExpressionResult(arg, programMemory, _pipeInfo)
+    } else if (arg.type === 'BinaryExpression') {
+      return getBinaryExpressionResult(arg, programMemory, _pipeInfo)
     }
     throw new Error('Invalid argument type in function call')
   })
@@ -514,7 +623,8 @@ function executeCallExpression(
         sourceRange: sourceRangeOverride || [expression.start, expression.end],
       },
       fnArgs[0],
-      fnArgs[1]
+      fnArgs[1],
+      fnArgs[2]
     )
     return isInPipe
       ? executePipeBody(

@@ -327,15 +327,83 @@ describe('testing math operators', () => {
     const { root } = exe(code)
     expect(root.myVar.value).toBe(12.5)
   })
-  // TODO
-  // it('with callExpression', () => {
-  //   const code = [
-  //     'const yo = (a) => a * 2',
-  //     'const myVar = yo(2) + 2'
-  //   ].join('\n')
-  //   const { root } = exe(code)
-  //   expect(root.myVar.value).toBe(6)
-  // })
+  it('with callExpression at start', () => {
+    const code = 'const myVar = min(4, 100) + 2'
+    const { root } = exe(code)
+    expect(root.myVar.value).toBe(6)
+  })
+  it('with callExpression at end', () => {
+    const code = 'const myVar = 2 + min(4, 100)'
+    const { root } = exe(code)
+    expect(root.myVar.value).toBe(6)
+  })
+  it('with nested callExpression', () => {
+    const code = 'const myVar = 2 + min(100, legLen(5, 3))'
+    const { root } = exe(code)
+    expect(root.myVar.value).toBe(6)
+  })
+  it('with unaryExpression', () => {
+    const code = 'const myVar = -min(100, 3)'
+    const { root } = exe(code)
+    expect(root.myVar.value).toBe(-3)
+  })
+  it('with unaryExpression in callExpression', () => {
+    const code = 'const myVar = min(-legLen(5, 4), 5)'
+    const code2 = 'const myVar = min(5 , -legLen(5, 4))'
+    const { root } = exe(code)
+    const { root: root2 } = exe(code2)
+    expect(root.myVar.value).toBe(-3)
+    expect(root.myVar.value).toBe(root2.myVar.value)
+  })
+  it('with unaryExpression in ArrayExpression', () => {
+    const code = 'const myVar = [1,-legLen(5, 4)]'
+    const { root } = exe(code)
+    expect(root.myVar.value).toEqual([1, -3])
+  })
+  it('with unaryExpression in ArrayExpression in CallExpression, checking nothing funny happens when used in a sketch', () => {
+    const code = [
+      'const part001 = startSketchAt([0, 0])',
+      '|> line([-2.21, -legLen(5, min(3, 999))], %)',
+    ].join('\n')
+    const { root } = exe(code)
+    const sketch = removeGeoFromSketch(root.part001 as SketchGroup)
+    // result of `-legLen(5, min(3, 999))` should be -4
+    const yVal = sketch.value?.[0]?.to?.[1]
+    expect(yVal).toBe(-4)
+  })
+  it('test that % substitution feeds down CallExp->ArrExp->UnaryExp->CallExp', () => {
+    const code = [
+      `const myVar = 3`,
+      `const part001 = startSketchAt([0, 0])`,
+      `  |> line({ to: [3, 4], tag: 'seg01' }, %)`,
+      `  |> line([`,
+      `  min(segLen('seg01', %), myVar),`,
+      `  -legLen(segLen('seg01', %), myVar)`,
+      `], %)`,
+      ``,
+      `show(part001)`,
+    ].join('\n')
+    const { root } = exe(code)
+    const sketch = removeGeoFromSketch(root.part001 as SketchGroup)
+    // expect -legLen(segLen('seg01', %), myVar) to equal -4 setting the y value back to 0
+    expect(sketch.value?.[1]?.from).toEqual([3, 4])
+    expect(sketch.value?.[1]?.to).toEqual([6, 0])
+    const removedUnaryExp = code.replace(
+      `-legLen(segLen('seg01', %), myVar)`,
+      `legLen(segLen('seg01', %), myVar)`
+    )
+    const { root: removedUnaryExpRoot } = exe(removedUnaryExp)
+    const removedUnaryExpRootSketch = removeGeoFromSketch(
+      removedUnaryExpRoot.part001 as SketchGroup
+    )
+    // without the minus sign, the y value should be 8
+    expect(removedUnaryExpRootSketch.value?.[1]?.to).toEqual([6, 8])
+  })
+  it('with nested callExpression and binaryExpression', () => {
+    const code = 'const myVar = 2 + min(100, -1 + legLen(5, 3))'
+    const { root } = exe(code)
+    expect(root.myVar.value).toBe(5)
+  })
 })
 
 // helpers
@@ -349,7 +417,7 @@ function exe(
   return executor(ast, programMemory)
 }
 
-function removeGeoFromSketch(sketch: SketchGroup): any {
+function removeGeoFromSketch(sketch: SketchGroup): SketchGroup {
   return {
     ...sketch,
     value: removeGeoFromPaths(sketch.value),

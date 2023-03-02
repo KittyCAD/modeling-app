@@ -1,3 +1,4 @@
+import { Range, TooTip } from '../useStore'
 import {
   Program,
   CallExpression,
@@ -12,9 +13,16 @@ import {
   Identifier,
   ArrayExpression,
   ObjectExpression,
+  getNodePathFromSourceRange,
+  UnaryExpression,
+  BinaryExpression,
 } from './abstractSyntaxTree'
 import { PathToNode, ProgramMemory } from './executor'
-import { addTagForSketchOnFace } from './std/sketch'
+import {
+  addTagForSketchOnFace,
+  getFirstArg,
+  createFirstArg,
+} from './std/sketch'
 
 export function addSketchTo(
   node: Program,
@@ -101,23 +109,7 @@ function addToShow(node: Program, name: string): Program {
   const dumbyStartend = { start: 0, end: 0 }
   const showCallIndex = getShowIndex(_node)
   if (showCallIndex === -1) {
-    const showCall: CallExpression = {
-      type: 'CallExpression',
-      ...dumbyStartend,
-      callee: {
-        type: 'Identifier',
-        ...dumbyStartend,
-        name: 'show',
-      },
-      optional: false,
-      arguments: [
-        {
-          type: 'Identifier',
-          ...dumbyStartend,
-          name,
-        },
-      ],
-    }
+    const showCall = createCallExpression('show', [createIdentifier(name)])
     const showExpressionStatement: ExpressionStatement = {
       type: 'ExpressionStatement',
       ...dumbyStartend,
@@ -128,25 +120,8 @@ function addToShow(node: Program, name: string): Program {
   }
   const showCall = { ..._node.body[showCallIndex] } as ExpressionStatement
   const showCallArgs = (showCall.expression as CallExpression).arguments
-  const newShowCallArgs: Value[] = [
-    ...showCallArgs,
-    {
-      type: 'Identifier',
-      ...dumbyStartend,
-      name,
-    },
-  ]
-  const newShowExpression: CallExpression = {
-    type: 'CallExpression',
-    ...dumbyStartend,
-    callee: {
-      type: 'Identifier',
-      ...dumbyStartend,
-      name: 'show',
-    },
-    optional: false,
-    arguments: newShowCallArgs,
-  }
+  const newShowCallArgs: Value[] = [...showCallArgs, createIdentifier(name)]
+  const newShowExpression = createCallExpression('show', newShowCallArgs)
 
   _node.body[showCallIndex] = {
     ...showCall,
@@ -247,40 +222,23 @@ export function extrudeSketch(
   const { node: variableDeclorator, path: pathToDecleration } =
     getNodeFromPath<VariableDeclarator>(_node, pathToNode, 'VariableDeclarator')
 
-  const extrudeCall: CallExpression = {
-    type: 'CallExpression',
-    ...dumbyStartend,
-    callee: {
-      type: 'Identifier',
-      ...dumbyStartend,
-      name: 'extrude',
-    },
-    optional: false,
-    arguments: [
-      createLiteral(4),
-      shouldPipe
-        ? createPipeSubstitution()
-        : {
-            type: 'Identifier',
-            ...dumbyStartend,
-            name: variableDeclorator.id.name,
-          },
-    ],
-  }
-  if (shouldPipe) {
-    const pipeChain: PipeExpression = isInPipeExpression
-      ? {
-          type: 'PipeExpression',
-          nonCodeMeta: {},
-          ...dumbyStartend,
-          body: [...pipeExpression.body, extrudeCall],
-        }
+  const extrudeCall = createCallExpression('extrude', [
+    createLiteral(4),
+    shouldPipe
+      ? createPipeSubstitution()
       : {
-          type: 'PipeExpression',
-          nonCodeMeta: {},
+          type: 'Identifier',
           ...dumbyStartend,
-          body: [sketchExpression as any, extrudeCall], // TODO fix this #25
-        }
+          name: variableDeclorator.id.name,
+        },
+  ])
+
+  if (shouldPipe) {
+    const pipeChain = createPipeExpression(
+      isInPipeExpression
+        ? [...pipeExpression.body, extrudeCall]
+        : [sketchExpression as any, extrudeCall]
+    )
 
     variableDeclorator.init = pipeChain
     const pathToExtrudeArg = [
@@ -299,23 +257,7 @@ export function extrudeSketch(
     }
   }
   const name = findUniqueName(node, 'part')
-  const VariableDeclaration: VariableDeclaration = {
-    type: 'VariableDeclaration',
-    ...dumbyStartend,
-    declarations: [
-      {
-        type: 'VariableDeclarator',
-        ...dumbyStartend,
-        id: {
-          type: 'Identifier',
-          ...dumbyStartend,
-          name,
-        },
-        init: extrudeCall,
-      },
-    ],
-    kind: 'const',
-  }
+  const VariableDeclaration = createVariableDeclaration(name, extrudeCall)
   const showCallIndex = getShowIndex(_node)
   _node.body.splice(showCallIndex, 0, VariableDeclaration)
   const pathToExtrudeArg = [
@@ -507,5 +449,57 @@ export function createObjectExpression(properties: {
       key: createIdentifier(key),
       value,
     })),
+  }
+}
+
+export function createUnaryExpression(
+  argument: UnaryExpression['argument'],
+  operator: UnaryExpression['operator'] = '-'
+): UnaryExpression {
+  return {
+    type: 'UnaryExpression',
+    start: 0,
+    end: 0,
+    operator,
+    argument,
+  }
+}
+
+export function createBinaryExpression([left, operator, right]: [
+  BinaryExpression['left'],
+  BinaryExpression['operator'],
+  BinaryExpression['right']
+]): BinaryExpression {
+  return {
+    type: 'BinaryExpression',
+    start: 0,
+    end: 0,
+    operator,
+    left,
+    right,
+  }
+}
+
+export function giveSketchFnCallTag(
+  ast: Program,
+  range: Range
+): { modifiedAst: Program; tag: string } {
+  const { node: primaryCallExp } = getNodeFromPath<CallExpression>(
+    ast,
+    getNodePathFromSourceRange(ast, range)
+  )
+  const firstArg = getFirstArg(primaryCallExp)
+  const tagValue = (firstArg.tag ||
+    createLiteral(findUniqueName(ast, 'seg', 2))) as Literal
+  const tagStr = String(tagValue.value)
+  const newFirstArg = createFirstArg(
+    primaryCallExp.callee.name as TooTip,
+    firstArg.val,
+    tagValue
+  )
+  primaryCallExp.arguments[0] = newFirstArg
+  return {
+    modifiedAst: ast,
+    tag: tagStr,
   }
 }

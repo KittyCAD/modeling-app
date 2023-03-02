@@ -1,6 +1,7 @@
 import { PathToNode } from './executor'
 import { Token } from './tokeniser'
 import { parseExpression } from './astMathExpressions'
+import { Range } from '../useStore'
 
 type syntaxType =
   | 'Program'
@@ -21,13 +22,13 @@ type syntaxType =
   | 'PipeSubstitution'
   | 'Literal'
   | 'NoneCodeNode'
+  | 'UnaryExpression'
 // | 'NumberLiteral'
 // | 'StringLiteral'
 // | 'IfStatement'
 // | 'WhileStatement'
 // | 'FunctionDeclaration'
 // | 'AssignmentExpression'
-// | 'UnaryExpression'
 // | 'Property'
 // | 'LogicalExpression'
 // | 'ConditionalExpression'
@@ -173,7 +174,7 @@ export interface CallExpression extends GeneralStatement {
   optional: boolean
 }
 
-function makeCallExpression(
+export function makeCallExpression(
   tokens: Token[],
   index: number
 ): {
@@ -240,6 +241,23 @@ function makeArguments(
     ])
   }
   if (
+    argumentToken.token.type === 'operator' &&
+    argumentToken.token.value === '-'
+  ) {
+    const { expression, lastIndex } = makeUnaryExpression(
+      tokens,
+      argumentToken.index
+    )
+    const nextCommarOrBraceTokenIndex = nextMeaningfulToken(
+      tokens,
+      lastIndex
+    ).index
+    return makeArguments(tokens, nextCommarOrBraceTokenIndex, [
+      ...previousArgs,
+      expression,
+    ])
+  }
+  if (
     argumentToken.token.type === 'brace' &&
     argumentToken.token.value === '{'
   ) {
@@ -256,8 +274,31 @@ function makeArguments(
       expression,
     ])
   }
+  if (
+    (argumentToken.token.type === 'word' ||
+      argumentToken.token.type === 'number' ||
+      argumentToken.token.type === 'string') &&
+    nextBraceOrCommaToken.token.type === 'operator'
+  ) {
+    const { expression, lastIndex } = makeBinaryExpression(
+      tokens,
+      argumentToken.index
+    )
+    const nextCommarOrBraceTokenIndex = nextMeaningfulToken(
+      tokens,
+      lastIndex
+    ).index
+    return makeArguments(tokens, nextCommarOrBraceTokenIndex, [
+      ...previousArgs,
+      expression,
+    ])
+  }
   if (!isIdentifierOrLiteral) {
-    const { expression, lastIndex } = makeBinaryExpression(tokens, index)
+    // I think this if statement might be dead code
+    const { expression, lastIndex } = makeBinaryExpression(
+      tokens,
+      nextBraceOrCommaToken.index
+    )
     return makeArguments(tokens, lastIndex, [...previousArgs, expression])
   }
   if (
@@ -362,15 +403,30 @@ export type Value =
   | ArrayExpression
   | ObjectExpression
   | MemberExpression
+  | UnaryExpression
 
 function makeValue(
   tokens: Token[],
   index: number
 ): { value: Value; lastIndex: number } {
   const currentToken = tokens[index]
-  const { token: nextToken } = nextMeaningfulToken(tokens, index)
-  // nextToken might be empty if it's at the end of the file
+  const { token: nextToken, index: nextTokenIndex } = nextMeaningfulToken(
+    tokens,
+    index
+  )
   if (nextToken?.type === 'brace' && nextToken.value === '(') {
+    const endIndex = findClosingBrace(tokens, nextTokenIndex)
+    const tokenAfterCallExpression = nextMeaningfulToken(tokens, endIndex)
+    if (
+      tokenAfterCallExpression?.token?.type === 'operator' &&
+      tokenAfterCallExpression.token.value !== '|>'
+    ) {
+      const { expression, lastIndex } = makeBinaryExpression(tokens, index)
+      return {
+        value: expression,
+        lastIndex,
+      }
+    }
     const { expression, lastIndex } = makeCallExpression(tokens, index)
     return {
       value: expression,
@@ -445,6 +501,10 @@ function makeValue(
       throw new Error('TODO - handle expression with braces')
     }
   }
+  if (currentToken.type === 'operator' && currentToken.value === '-') {
+    const { expression, lastIndex } = makeUnaryExpression(tokens, index)
+    return { value: expression, lastIndex }
+  }
   throw new Error('Expected a previous Value if statement to match')
 }
 
@@ -501,12 +561,15 @@ function makeVariableDeclarators(
   }
 }
 
-export type BinaryPart = Literal | Identifier | BinaryExpression
-// | CallExpression
+export type BinaryPart =
+  | Literal
+  | Identifier
+  | BinaryExpression
+  | CallExpression
+  | UnaryExpression
 // | MemberExpression
 // | ArrayExpression
 // | ObjectExpression
-// | UnaryExpression
 // | LogicalExpression
 // | ConditionalExpression
 
@@ -805,6 +868,22 @@ export function findEndOfBinaryExpression(
     const nextRight = nextMeaningfulToken(tokens, maybeAnotherOperator.index)
     return findEndOfBinaryExpression(tokens, nextRight.index)
   }
+  if (
+    currentToken.type === 'word' &&
+    tokens?.[index + 1]?.type === 'brace' &&
+    tokens[index + 1].value === '('
+  ) {
+    const closingParenthesis = findClosingBrace(tokens, index + 1)
+    const maybeAnotherOperator = nextMeaningfulToken(tokens, closingParenthesis)
+    if (
+      maybeAnotherOperator?.token?.type !== 'operator' ||
+      maybeAnotherOperator?.token?.value === '|>'
+    ) {
+      return closingParenthesis
+    }
+    const nextRight = nextMeaningfulToken(tokens, maybeAnotherOperator.index)
+    return findEndOfBinaryExpression(tokens, nextRight.index)
+  }
   const maybeOperator = nextMeaningfulToken(tokens, index)
   if (
     maybeOperator?.token?.type !== 'operator' ||
@@ -825,6 +904,34 @@ function makeBinaryExpression(
   return {
     expression,
     lastIndex: endIndex,
+  }
+}
+
+export interface UnaryExpression extends GeneralStatement {
+  type: 'UnaryExpression'
+  operator: '-' | '!'
+  argument: BinaryPart
+}
+
+function makeUnaryExpression(
+  tokens: Token[],
+  index: number
+): { expression: UnaryExpression; lastIndex: number } {
+  const currentToken = tokens[index]
+  const nextToken = nextMeaningfulToken(tokens, index)
+  const { value: argument, lastIndex: argumentLastIndex } = makeValue(
+    tokens,
+    nextToken.index
+  )
+  return {
+    expression: {
+      type: 'UnaryExpression',
+      operator: currentToken.value === '!' ? '!' : '-',
+      start: currentToken.start,
+      end: tokens[argumentLastIndex].end,
+      argument: argument as BinaryPart,
+    },
+    lastIndex: argumentLastIndex,
   }
 }
 
@@ -1478,7 +1585,7 @@ export function getNodeFromPath<T>(
         }
       }
     } catch (e) {
-      throw new Error(
+      console.error(
         `Could not find path ${pathItem} in node ${JSON.stringify(
           currentNode,
           null,
@@ -1510,7 +1617,7 @@ export function getNodeFromPathCurry(
 
 export function getNodePathFromSourceRange(
   node: Program,
-  sourceRange: [number, number],
+  sourceRange: Range,
   previousPath: PathToNode = []
 ): PathToNode {
   const [start, end] = sourceRange

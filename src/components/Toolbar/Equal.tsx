@@ -4,18 +4,16 @@ import {
   getNodePathFromSourceRange,
   getNodeFromPath,
   Value,
+  VariableDeclarator,
 } from '../../lang/abstractSyntaxTree'
+import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
 import {
   TransformInfo,
+  transformAstForSketchLines,
   getTransformInfos,
-  transformAstForHorzVert,
 } from '../../lang/std/sketchcombos'
 
-export const HorzVert = ({
-  horOrVert,
-}: {
-  horOrVert: 'vertical' | 'horizontal'
-}) => {
+export const Equal = () => {
   const { guiMode, selectionRanges, ast, programMemory, updateAst } = useStore(
     (s) => ({
       guiMode: s.guiMode,
@@ -25,7 +23,7 @@ export const HorzVert = ({
       programMemory: s.programMemory,
     })
   )
-  const [enableHorz, setEnableHorz] = useState(false)
+  const [enableEqual, setEnableEqual] = useState(false)
   const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
   useEffect(() => {
     if (!ast) return
@@ -35,17 +33,38 @@ export const HorzVert = ({
     const nodes = paths.map(
       (pathToNode) => getNodeFromPath<Value>(ast, pathToNode).node
     )
+    const varDecs = paths.map(
+      (pathToNode) =>
+        getNodeFromPath<VariableDeclarator>(
+          ast,
+          pathToNode,
+          'VariableDeclarator'
+        )?.node
+    )
+    const primaryLine = varDecs[0]
+    const secondaryVarDecs = varDecs.slice(1)
+    const isOthersLinkedToPrimary = secondaryVarDecs.every((secondary) =>
+      isSketchVariablesLinked(secondary, primaryLine, ast)
+    )
     const isAllTooltips = nodes.every(
       (node) =>
         node?.type === 'CallExpression' &&
         toolTips.includes(node.callee.name as any)
     )
 
-    const theTransforms = getTransformInfos(selectionRanges, ast, horOrVert)
+    const theTransforms = getTransformInfos(
+      selectionRanges.slice(1),
+      ast,
+      'equalLength'
+    )
     setTransformInfos(theTransforms)
 
-    const _enableHorz = isAllTooltips && theTransforms.every(Boolean)
-    setEnableHorz(_enableHorz)
+    const _enableEqual =
+      !!secondaryVarDecs.length &&
+      isAllTooltips &&
+      isOthersLinkedToPrimary &&
+      theTransforms.every(Boolean)
+    setEnableEqual(_enableEqual)
   }, [guiMode, selectionRanges])
   if (guiMode.mode !== 'sketch') return null
 
@@ -55,7 +74,7 @@ export const HorzVert = ({
         transformInfos &&
         ast &&
         updateAst(
-          transformAstForHorzVert({
+          transformAstForSketchLines({
             ast,
             selectionRanges,
             transformInfos,
@@ -64,12 +83,12 @@ export const HorzVert = ({
         )
       }
       className={`border m-1 px-1 rounded ${
-        enableHorz ? 'bg-gray-50 text-gray-800' : 'bg-gray-200 text-gray-400'
+        enableEqual ? 'bg-gray-50 text-gray-800' : 'bg-gray-200 text-gray-400'
       }`}
-      disabled={!enableHorz}
+      disabled={!enableEqual}
       title="yo dawg"
     >
-      {horOrVert === 'horizontal' ? 'Horz' : 'Vert'}
+      Equal
     </button>
   )
 }

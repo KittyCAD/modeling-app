@@ -20,6 +20,13 @@ export type InternalFnNames =
   | 'translate'
   | 'transform'
   | 'getExtrudeWallTransform'
+  | 'min'
+  | 'legLen'
+  | 'legAngX'
+  | 'legAngY'
+  | 'segLen'
+  | 'angleToMatchLengthX'
+  | 'angleToMatchLengthY'
   | 'rx'
   | 'ry'
   | 'rz'
@@ -75,5 +82,4 @@ export interface SketchLineHelper {
     modifiedAst: Program
     tag: string
   }
-  allowedTransforms: (a: ModifyAstBase) => Partial<SketchCallTransfromMap>
 }

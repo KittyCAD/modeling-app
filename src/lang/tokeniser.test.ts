@@ -1,9 +1,19 @@
-import { lexer } from './tokeniser'
+import { lexer, asyncLexer } from './tokeniser'
 import { initPromise } from './rust'
 
 beforeAll(() => initPromise)
 
 describe('testing lexer', () => {
+  it('async lexer works too', async () => {
+    const code = '1  + 2'
+    const code2 = `const yo = {key: 'value'}`
+    const code3 = `const yo = 45 /* this is a comment
+const ya = 6 */
+const yi=45`
+    expect(await asyncLexer(code)).toEqual(lexer(code))
+    expect(await asyncLexer(code2)).toEqual(lexer(code2))
+    expect(await asyncLexer(code3)).toEqual(lexer(code3))
+  })
   it('test lexer', () => {
     expect(stringSummaryLexer('1  + 2')).toEqual([
       "number       '1'        from 0   to 1",

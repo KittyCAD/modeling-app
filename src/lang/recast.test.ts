@@ -273,6 +273,36 @@ const mySk1 = startSketchAt([0, 0])
   })
 })
 
+describe('testing call Expressions in BinaryExpressions and UnaryExpressions', () => {
+  it('nested callExpression in binaryExpression', () => {
+    const code = 'const myVar = 2 + min(100, legLen(5, 3))'
+    const { ast } = code2ast(code)
+    const recasted = recast(ast)
+    expect(recasted).toBe(code)
+  })
+  it('nested callExpression in unaryExpression', () => {
+    const code = 'const myVar = -min(100, legLen(5, 3))'
+    const { ast } = code2ast(code)
+    const recasted = recast(ast)
+    expect(recasted).toBe(code)
+  })
+  it('with unaryExpression in callExpression', () => {
+    const code = 'const myVar = min(5, -legLen(5, 4))'
+    const { ast } = code2ast(code)
+    const recasted = recast(ast)
+    expect(recasted).toBe(code)
+  })
+  it('with unaryExpression in sketch situation', () => {
+    const code = [
+      'const part001 = startSketchAt([0, 0])',
+      '|> line([-2.21, -legLen(5, min(3, 999))], %)',
+    ].join('\n')
+    const { ast } = code2ast(code)
+    const recasted = recast(ast)
+    expect(recasted).toBe(code)
+  })
+})
+
 // helpers
 
 function code2ast(code: string): { ast: Program; tokens: Token[] } {

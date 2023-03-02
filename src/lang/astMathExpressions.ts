@@ -3,6 +3,9 @@ import {
   Literal,
   Identifier,
   isNotCodeToken,
+  findClosingBrace,
+  CallExpression,
+  makeCallExpression,
 } from './abstractSyntaxTree'
 import { Token } from './tokeniser'
 
@@ -12,10 +15,21 @@ export function reversePolishNotation(
   operators: Token[] = []
 ): Token[] {
   if (tokens.length === 0) {
-    return [...previousPostfix, ...operators.slice().reverse()] // reverse mutates, so clone is needed
+    return [...previousPostfix, ...operators.slice().reverse()] // reverse mutates, so slice/clone is needed
   }
   const currentToken = tokens[0]
   if (
+    currentToken.type === 'word' &&
+    tokens?.[1]?.type === 'brace' &&
+    tokens?.[1]?.value === '('
+  ) {
+    const closingBrace = findClosingBrace(tokens, 1)
+    return reversePolishNotation(
+      tokens.slice(closingBrace + 1),
+      [...previousPostfix, ...tokens.slice(0, closingBrace + 1)],
+      operators
+    )
+  } else if (
     currentToken.type === 'number' ||
     currentToken.type === 'word' ||
     currentToken.type === 'string'
@@ -88,6 +102,7 @@ const buildTree = (
     | Literal
     | Identifier
     | ParenthesisToken
+    | CallExpression
   )[] = []
 ): BinaryExpression => {
   if (reversePolishNotationTokens.length === 0) {
@@ -109,6 +124,16 @@ const buildTree = (
       },
     ])
   } else if (currentToken.type === 'word') {
+    if (
+      reversePolishNotationTokens?.[1]?.type === 'brace' &&
+      reversePolishNotationTokens?.[1]?.value === '('
+    ) {
+      const closingBrace = findClosingBrace(reversePolishNotationTokens, 1)
+      return buildTree(reversePolishNotationTokens.slice(closingBrace + 1), [
+        ...stack,
+        makeCallExpression(reversePolishNotationTokens, 0).expression,
+      ])
+    }
     return buildTree(reversePolishNotationTokens.slice(1), [
       ...stack,
       {

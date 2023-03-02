@@ -1742,13 +1742,13 @@ describe('testing findEndofBinaryExpression', () => {
     const code = `1 + 2 * 3\nconst yo = 5`
     const tokens = lexer(code)
     const end = findEndOfBinaryExpression(tokens, 0)
-    expect(end).toBe(8)
+    expect(tokens[end].value).toBe('3')
   })
   it('(1 + 2) / 5 - 3', () => {
     const code = `(1 + 25) / 5 - 3\nconst yo = 5`
     const tokens = lexer(code)
     const end = findEndOfBinaryExpression(tokens, 0)
-    expect(end).toBe(14)
+    expect(tokens[end].value).toBe('3')
 
     // expect to have the same end if started later in the string at a legitimate place
     const indexOf5 = code.indexOf('5')
@@ -1759,30 +1759,103 @@ describe('testing findEndofBinaryExpression', () => {
     const code = '((1 + 2) / 5 - 3)\nconst yo = 5'
     const tokens = lexer(code)
     const end = findEndOfBinaryExpression(tokens, 0)
-    expect(end).toBe(code.indexOf('3)') + 1)
+    expect(tokens[end].end).toBe(code.indexOf('3)') + 2)
   })
   it('whole thing wraped but given index after the first brace: ((1 + 2) / 5 - 3)', () => {
     const code = '((1 + 2) / 5 - 3)\nconst yo = 5'
     const tokens = lexer(code)
     const end = findEndOfBinaryExpression(tokens, 1)
-    expect(end).toBe(code.indexOf('3'))
+    expect(tokens[end].value).toBe('3')
   })
   it('given the index of a small wrapped section i.e. `1 + 2` in ((1 + 2) / 5 - 3)', () => {
     const code = '((1 + 2) / 5 - 3)\nconst yo = 5'
     const tokens = lexer(code)
     const end = findEndOfBinaryExpression(tokens, 2)
-    expect(end).toBe(code.indexOf('2'))
+    expect(tokens[end].value).toBe('2')
   })
   it('lots of silly nesting: (1 + 2) / (5 - (3))', () => {
     const code = '(1 + 2) / (5 - (3))\nconst yo = 5'
     const tokens = lexer(code)
     const end = findEndOfBinaryExpression(tokens, 0)
-    expect(end).toBe(code.indexOf('))') + 1)
+    expect(tokens[end].end).toBe(code.indexOf('))') + 2)
   })
   it('with pipe operator at the end', () => {
     const code = '(1 + 2) / (5 - (3))\n  |> fn(%)'
     const tokens = lexer(code)
     const end = findEndOfBinaryExpression(tokens, 0)
-    expect(end).toBe(code.indexOf('))') + 1)
+    expect(tokens[end].end).toBe(code.indexOf('))') + 2)
+  })
+  it('with call expression at the start of binary expression', () => {
+    const code = 'yo(2) + 3\n  |> fn(%)'
+    const tokens = lexer(code)
+    const end = findEndOfBinaryExpression(tokens, 0)
+    expect(tokens[end].value).toBe('3')
+  })
+  it('with call expression at the end of binary expression', () => {
+    const code = '3 + yo(2)\n  |> fn(%)'
+    const tokens = lexer(code)
+    const end = findEndOfBinaryExpression(tokens, 0)
+    expect(tokens[end].value).toBe(')')
+  })
+})
+
+describe('test UnaryExpression', () => {
+  it('should parse a unary expression in simple var dec situation', () => {
+    const code = `const myVar = -min(4, 100)`
+    const { body } = abstractSyntaxTree(lexer(code))
+    const myVarInit = (body?.[0] as any).declarations[0]?.init
+    expect(myVarInit).toEqual({
+      type: 'UnaryExpression',
+      operator: '-',
+      start: 14,
+      end: 26,
+      argument: {
+        type: 'CallExpression',
+        start: 15,
+        end: 26,
+        callee: { type: 'Identifier', start: 15, end: 18, name: 'min' },
+        arguments: [
+          { type: 'Literal', start: 19, end: 20, value: 4, raw: '4' },
+          { type: 'Literal', start: 22, end: 25, value: 100, raw: '100' },
+        ],
+        optional: false,
+      },
+    })
+  })
+})
+
+describe('testing nested call expressions', () => {
+  it('callExp in a binExp in a callExp', () => {
+    const code = 'const myVar = min(100, 1 + legLen(5, 3))'
+    const { body } = abstractSyntaxTree(lexer(code))
+    const myVarInit = (body?.[0] as any).declarations[0]?.init
+    expect(myVarInit).toEqual({
+      type: 'CallExpression',
+      start: 14,
+      end: 40,
+      callee: { type: 'Identifier', start: 14, end: 17, name: 'min' },
+      arguments: [
+        { type: 'Literal', start: 18, end: 21, value: 100, raw: '100' },
+        {
+          type: 'BinaryExpression',
+          operator: '+',
+          start: 23,
+          end: 39,
+          left: { type: 'Literal', value: 1, raw: '1', start: 23, end: 24 },
+          right: {
+            type: 'CallExpression',
+            start: 27,
+            end: 39,
+            callee: { type: 'Identifier', start: 27, end: 33, name: 'legLen' },
+            arguments: [
+              { type: 'Literal', start: 34, end: 35, value: 5, raw: '5' },
+              { type: 'Literal', start: 37, end: 38, value: 3, raw: '3' },
+            ],
+            optional: false,
+          },
+        },
+      ],
+      optional: false,
+    })
   })
 })
