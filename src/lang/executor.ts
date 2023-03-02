@@ -603,7 +603,7 @@ function executeCallExpression(
         programMemory,
         arg,
         previousPathToNode,
-        pipeInfo
+        _pipeInfo
       )
       return result
     } else if (arg.type === 'ObjectExpression') {

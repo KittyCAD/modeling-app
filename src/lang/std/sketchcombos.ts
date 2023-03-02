@@ -87,9 +87,9 @@ export type TransformInfo = {
 }
 
 type TransformMap = {
-  [keya in TooTip]?: {
-    [keyb in LineInputsType | 'free']?: {
-      [keyc in ConstraintType]?: TransformInfo
+  [key in TooTip]: {
+    [key in LineInputsType | 'free']?: {
+      [key in ConstraintType]?: TransformInfo
     }
   }
 }
@@ -551,6 +551,50 @@ export const attemptAtThing: TransformMap = {
           ({ varValB }) =>
           (_, tag) =>
             createCallWrapper('yLineTo', varValB, tag),
+      },
+    },
+  },
+  xLine: {
+    free: {
+      equalLength: {
+        tooltip: 'xLine',
+        createNode:
+          ({ referenceSegName }) =>
+          (_, tag) =>
+            createCallWrapper('xLine', createSegLen(referenceSegName), tag),
+      },
+    },
+  },
+  yLine: {
+    free: {
+      equalLength: {
+        tooltip: 'yLine',
+        createNode:
+          ({ referenceSegName }) =>
+          (_, tag) =>
+            createCallWrapper('yLine', createSegLen(referenceSegName), tag),
+      },
+    },
+  },
+  xLineTo: {
+    free: {
+      equalLength: {
+        tooltip: 'xLine',
+        createNode:
+          ({ referenceSegName }) =>
+          (_, tag) =>
+            createCallWrapper('xLine', createSegLen(referenceSegName), tag),
+      },
+    },
+  },
+  yLineTo: {
+    free: {
+      equalLength: {
+        tooltip: 'yLine',
+        createNode:
+          ({ referenceSegName }) =>
+          (_, tag) =>
+            createCallWrapper('yLine', createSegLen(referenceSegName), tag),
       },
     },
   },

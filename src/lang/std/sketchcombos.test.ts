@@ -109,6 +109,10 @@ const part001 = startSketchAt([0, 0])
   |> angledLineOfYLength([myAng, 0.7], %) // ln-angledLineOfYLength-angle should become angledLine
   |> angledLineOfYLength([35, myVar], %) // ln-angledLineOfYLength-yRelative use legAngY
   |> angledLineOfYLength([305, myVar], %) // ln-angledLineOfYLength-yRelative with angle > 90 use binExp
+  |> xLine(1.03, %) // ln-xLine-free should sub in segLen
+  |> yLine(1.04, %) // ln-yLine-free should sub in segLen
+  |> xLineTo(30, %) // ln-xLineTo-free should convert to xLine
+  |> yLineTo(20, %) // ln-yLineTo-free should convert to yLine
 show(part001)`
   const expectModifiedScript = `const myVar = 3
 const myVar2 = 5
@@ -176,6 +180,10 @@ const part001 = startSketchAt([0, 0])
     270 + legAngY(segLen('seg01', %), myVar),
     min(segLen('seg01', %), myVar)
   ], %) // ln-angledLineOfYLength-yRelative with angle > 90 use binExp
+  |> xLine(segLen('seg01', %), %) // ln-xLine-free should sub in segLen
+  |> yLine(segLen('seg01', %), %) // ln-yLine-free should sub in segLen
+  |> xLine(segLen('seg01', %), %) // ln-xLineTo-free should convert to xLine
+  |> yLine(segLen('seg01', %), %) // ln-yLineTo-free should convert to yLine
 show(part001)`
   it('It should transform the ast', () => {
     const ast = abstractSyntaxTree(lexer(inputScript))
@@ -288,7 +296,6 @@ show(part001)`
       programMemory,
     })?.modifiedAst
     const newCode = recast(newAst)
-    // console.log(newCode)
     expect(newCode).toBe(expectModifiedScript)
   })
   it('It should transform vertical lines the ast', () => {
@@ -338,7 +345,6 @@ show(part001)`
       programMemory,
     })?.modifiedAst
     const newCode = recast(newAst)
-    // console.log(newCode)
     expect(newCode).toBe(expectModifiedScript)
   })
 })
