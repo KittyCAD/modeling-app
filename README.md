@@ -1,6 +1,6 @@
 ## Kurt demo project
 
-live at https://untitled-lang-git-main-kittycad.vercel.app/
+live at https://untitled-app.kittycad.io/
 
 Not sure what to call this, it's both a language/interpreter and a UI that uses the language as the source of truth model the user build with direct-manipulation with the UI.
 
