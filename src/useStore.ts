@@ -1,11 +1,8 @@
 import create from 'zustand'
 import { persist } from 'zustand/middleware'
 import { addLineHighlight, EditorView } from './editor/highlightextension'
-import {
-  Program,
-  abstractSyntaxTree,
-  getNodeFromPath,
-} from './lang/abstractSyntaxTree'
+import { Program, abstractSyntaxTree } from './lang/abstractSyntaxTree'
+import { getNodeFromPath } from './lang/queryAst'
 import { ProgramMemory, Position, PathToNode, Rotation } from './lang/executor'
 import { recast } from './lang/recast'
 import { asyncLexer } from './lang/tokeniser'

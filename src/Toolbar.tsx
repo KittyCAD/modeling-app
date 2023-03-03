@@ -1,6 +1,6 @@
 import { useStore, toolTips } from './useStore'
 import { extrudeSketch, sketchOnExtrudedFace } from './lang/modifyAst'
-import { getNodePathFromSourceRange } from './lang/abstractSyntaxTree'
+import { getNodePathFromSourceRange } from './lang/queryAst'
 import { HorzVert } from './components/Toolbar/HorzVert'
 import { Equal } from './components/Toolbar/Equal'
 

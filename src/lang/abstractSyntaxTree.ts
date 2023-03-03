@@ -123,7 +123,7 @@ function makeNoneCodeNode(
   return { node, lastIndex: endIndex - 1 }
 }
 
-export function findEndOfNonCodeNode(tokens: Token[], index: number): number {
+function findEndOfNonCodeNode(tokens: Token[], index: number): number {
   const currentToken = tokens[index]
   if (isNotCodeToken(currentToken)) {
     return findEndOfNonCodeNode(tokens, index + 1)
@@ -1110,7 +1110,7 @@ function makeReturnStatement(
 
 export type All = Program | ExpressionStatement[] | BinaryExpression | Literal
 
-export function nextMeaningfulToken(
+function nextMeaningfulToken(
   tokens: Token[],
   index: number,
   offset: number = 1
@@ -1271,7 +1271,7 @@ export const abstractSyntaxTree = (tokens: Token[]): Program => {
   return program
 }
 
-export function findNextDeclarationKeyword(
+function findNextDeclarationKeyword(
   tokens: Token[],
   index: number
 ): { token: Token | null; index: number } {
@@ -1300,7 +1300,7 @@ export function findNextDeclarationKeyword(
   return findNextDeclarationKeyword(tokens, nextToken.index)
 }
 
-export function findNextCallExpression(
+function findNextCallExpression(
   tokens: Token[],
   index: number
 ): { token: Token | null; index: number } {
@@ -1319,7 +1319,7 @@ export function findNextCallExpression(
   return findNextCallExpression(tokens, nextToken.index)
 }
 
-export function findNextClosingCurlyBrace(
+function findNextClosingCurlyBrace(
   tokens: Token[],
   index: number
 ): { token: Token | null; index: number } {
@@ -1447,61 +1447,6 @@ export function findClosingBrace(
   return findClosingBrace(tokens, index + 1, _braceCount, searchOpeningBrace)
 }
 
-// function findOpeningBrace(
-//   tokens: Token[],
-//   index: number,
-//   _braceCount: number = 0,
-//   _searchClosingBrace: string = ''
-// ): number {
-//   // should be called with the index of the opening brace
-//   const closingBraceMap: { [key: string]: string } = {
-//     ')': '(',
-//     '}': '{',
-//     ']': '[',
-//   }
-//   const currentToken = tokens[index]
-//   let searchClosingBrace = _searchClosingBrace
-
-//   const isFirstCall = !searchClosingBrace && _braceCount === 0
-//   if (isFirstCall) {
-//     searchClosingBrace = currentToken.value
-//     if (![')', '}', ']'].includes(searchClosingBrace)) {
-//       throw new Error(
-//         `expected to be started on a opening brace ( { [, instead found '${searchClosingBrace}'`
-//       )
-//     }
-//   }
-
-//   const foundOpeningBrace =
-//     _braceCount === 1 &&
-//     currentToken.value === closingBraceMap[searchClosingBrace]
-//   const foundAnotherClosingBrace = currentToken.value === searchClosingBrace
-//   const foundAnotherOpeningBrace =
-//     currentToken.value === closingBraceMap[searchClosingBrace]
-
-//   if (foundOpeningBrace) {
-//     return index
-//   }
-//   if (foundAnotherClosingBrace) {
-//     return findOpeningBrace(
-//       tokens,
-//       index - 1,
-//       _braceCount + 1,
-//       searchClosingBrace
-//     )
-//   }
-//   if (foundAnotherOpeningBrace) {
-//     return findOpeningBrace(
-//       tokens,
-//       index - 1,
-//       _braceCount - 1,
-//       searchClosingBrace
-//     )
-//   }
-//   // non-brace token, increment and continue
-//   return findOpeningBrace(tokens, index - 1, _braceCount, searchClosingBrace)
-// }
-
 function isCallExpression(tokens: Token[], index: number): number {
   const currentToken = tokens[index]
   const veryNextToken = tokens[index + 1] // i.e. no whitespace
@@ -1549,138 +1494,6 @@ function debuggerr(tokens: Token[], indexes: number[], msg = ''): string {
   ].join('\n')
   console.log(debugResult)
   return debugResult
-}
-
-export function getNodeFromPath<T>(
-  node: Program,
-  path: (string | number)[],
-  stopAt: string = '',
-  returnEarly = false
-): {
-  node: T
-  path: PathToNode
-} {
-  let currentNode = node as any
-  let stopAtNode = null
-  let successfulPaths: PathToNode = []
-  let pathsExplored: PathToNode = []
-  for (const pathItem of path) {
-    try {
-      if (typeof currentNode[pathItem] !== 'object')
-        throw new Error('not an object')
-      currentNode = currentNode[pathItem]
-      successfulPaths.push(pathItem)
-      if (!stopAtNode) {
-        pathsExplored.push(pathItem)
-      }
-      if (currentNode.type === stopAt) {
-        // it will match the deepest node of the type
-        // instead of returning at the first match
-        stopAtNode = currentNode
-        if (returnEarly) {
-          return {
-            node: stopAtNode,
-            path: pathsExplored,
-          }
-        }
-      }
-    } catch (e) {
-      console.error(
-        `Could not find path ${pathItem} in node ${JSON.stringify(
-          currentNode,
-          null,
-          2
-        )}, successful path was ${successfulPaths}`
-      )
-    }
-  }
-  return {
-    node: stopAtNode || currentNode,
-    path: pathsExplored,
-  }
-}
-
-export function getNodeFromPathCurry(
-  node: Program,
-  path: (string | number)[]
-): <T>(
-  stopAt: string,
-  returnEarly?: boolean
-) => {
-  node: T
-  path: PathToNode
-} {
-  return <T>(stopAt: string = '', returnEarly = false) => {
-    return getNodeFromPath<T>(node, path, stopAt, returnEarly)
-  }
-}
-
-export function getNodePathFromSourceRange(
-  node: Program,
-  sourceRange: Range,
-  previousPath: PathToNode = []
-): PathToNode {
-  const [start, end] = sourceRange
-  let path: PathToNode = [...previousPath, 'body']
-  const _node = { ...node }
-  // loop over each statement in body getting the index with a for loop
-  for (
-    let statementIndex = 0;
-    statementIndex < _node.body.length;
-    statementIndex++
-  ) {
-    const statement = _node.body[statementIndex]
-    if (statement.start <= start && statement.end >= end) {
-      path.push(statementIndex)
-      if (statement.type === 'ExpressionStatement') {
-        const expression = statement.expression
-        if (expression.start <= start && expression.end >= end) {
-          path.push('expression')
-          if (expression.type === 'CallExpression') {
-            const callee = expression.callee
-            if (callee.start <= start && callee.end >= end) {
-              path.push('callee')
-              if (callee.type === 'Identifier') {
-              }
-            }
-          }
-        }
-      } else if (statement.type === 'VariableDeclaration') {
-        const declarations = statement.declarations
-
-        for (let decIndex = 0; decIndex < declarations.length; decIndex++) {
-          const declaration = declarations[decIndex]
-
-          if (declaration.start <= start && declaration.end >= end) {
-            path.push('declarations')
-            path.push(decIndex)
-            const init = declaration.init
-            if (init.start <= start && init.end >= end) {
-              path.push('init')
-              if (init.type === 'PipeExpression') {
-                const body = init.body
-                for (let pipeIndex = 0; pipeIndex < body.length; pipeIndex++) {
-                  const pipe = body[pipeIndex]
-                  if (pipe.start <= start && pipe.end >= end) {
-                    path.push('body')
-                    path.push(pipeIndex)
-                  }
-                }
-              } else if (init.type === 'CallExpression') {
-                const callee = init.callee
-                if (callee.start <= start && callee.end >= end) {
-                  path.push('callee')
-                  if (callee.type === 'Identifier') {
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  return path
 }
 
 export function isNotCodeToken(token: Token): boolean {

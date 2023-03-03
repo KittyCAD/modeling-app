@@ -2,10 +2,10 @@ import {
   BinaryExpression,
   Literal,
   Identifier,
-  isNotCodeToken,
-  findClosingBrace,
   CallExpression,
+  findClosingBrace,
   makeCallExpression,
+  isNotCodeToken,
 } from './abstractSyntaxTree'
 import { Token } from './tokeniser'
 

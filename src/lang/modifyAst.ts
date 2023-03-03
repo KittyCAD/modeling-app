@@ -7,16 +7,15 @@ import {
   VariableDeclarator,
   ExpressionStatement,
   Value,
-  getNodeFromPath,
   Literal,
   PipeSubstitution,
   Identifier,
   ArrayExpression,
   ObjectExpression,
-  getNodePathFromSourceRange,
   UnaryExpression,
   BinaryExpression,
 } from './abstractSyntaxTree'
+import { getNodeFromPath, getNodePathFromSourceRange } from './queryAst'
 import { PathToNode, ProgramMemory } from './executor'
 import {
   addTagForSketchOnFace,

@@ -1,6 +1,6 @@
-import { getNodePathFromSourceRange } from './abstractSyntaxTree'
+import { getNodePathFromSourceRange, getNodeFromPath } from './queryAst'
 import { lexer } from './tokeniser'
-import { abstractSyntaxTree, getNodeFromPath } from './abstractSyntaxTree'
+import { abstractSyntaxTree } from './abstractSyntaxTree'
 import { initPromise } from './rust'
 
 beforeAll(() => initPromise)

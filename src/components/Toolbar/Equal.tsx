@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react'
 import { toolTips, useStore } from '../../useStore'
+import { Value, VariableDeclarator } from '../../lang/abstractSyntaxTree'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
-  Value,
-  VariableDeclarator,
-} from '../../lang/abstractSyntaxTree'
+} from '../../lang/queryAst'
 import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
 import {
   TransformInfo,

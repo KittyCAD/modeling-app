@@ -10,12 +10,14 @@ import {
   PipeExpression,
   CallExpression,
   VariableDeclarator,
-  getNodeFromPath,
-  getNodeFromPathCurry,
-  getNodePathFromSourceRange,
   Value,
   Literal,
 } from '../abstractSyntaxTree'
+import {
+  getNodeFromPath,
+  getNodeFromPathCurry,
+  getNodePathFromSourceRange,
+} from '../queryAst'
 import { lineGeo } from '../engine'
 import { GuiModes, toolTips, TooTip } from '../../useStore'
 import { getLastIndex } from '../modifyAst'
@@ -24,7 +26,6 @@ import {
   SketchLineHelper,
   ModifyAstBase,
   InternalFn,
-  SketchCallTransfromMap,
   TransformCallback,
 } from './stdTypes'
 
@@ -53,17 +54,6 @@ export function getCoordsFromPaths(skGroup: SketchGroup, index = 0): Coords2d {
     return [currentPath.to[0], currentPath.to[1]]
   }
   return [0, 0]
-}
-
-function createCallWrapper(
-  a: TooTip,
-  val: [Value, Value] | Value,
-  tag?: Value
-) {
-  return createCallExpression(a, [
-    createFirstArg(a, val, tag),
-    createPipeSubstitution(),
-  ])
 }
 
 export function createFirstArg(
@@ -95,34 +85,6 @@ export function createFirstArg(
       return createObjectExpression({ to: val, tag })
   }
   throw new Error('all sketch line types should have been covered')
-}
-
-function tranformerDefaults(
-  filterOut: TooTip[] = [],
-  tag?: Value
-): Partial<SketchCallTransfromMap> {
-  const All: SketchCallTransfromMap = {
-    line: (args) => createCallWrapper('line', args, tag),
-    lineTo: (args) => createCallWrapper('lineTo', args, tag),
-    angledLine: (args) => createCallWrapper('angledLine', args, tag),
-    angledLineOfXLength: (args) =>
-      createCallWrapper('angledLineOfXLength', args, tag),
-    angledLineOfYLength: (args) =>
-      createCallWrapper('angledLineOfYLength', args, tag),
-    angledLineToX: (args) => createCallWrapper('angledLineToX', args, tag),
-    angledLineToY: (args) => createCallWrapper('angledLineToY', args, tag),
-    xLine: (args) => createCallWrapper('xLine', args[0], tag),
-    xLineTo: (args) => createCallWrapper('xLineTo', args[0], tag),
-    yLine: (args) => createCallWrapper('yLine', args[1], tag),
-    yLineTo: (args) => createCallWrapper('yLineTo', args[1], tag),
-  }
-  const result: Partial<SketchCallTransfromMap> = {}
-  toolTips.forEach((key) => {
-    if (!filterOut.includes(key)) {
-      result[key] = All[key]
-    }
-  })
-  return result
 }
 
 export const lineTo: SketchLineHelper = {
@@ -567,7 +529,6 @@ export const angledLine: SketchLineHelper = {
       | {
           angle: number
           length: number
-          // name?: string
           tag?: string
         },
     previousSketch: SketchGroup
@@ -671,7 +632,6 @@ export const angledLineOfXLength: SketchLineHelper = {
       | {
           angle: number
           length: number
-          // name?: string
           tag?: string
         },
     previousSketch: SketchGroup
@@ -881,15 +841,7 @@ export const angledLineToX: SketchLineHelper = {
       previousSketch
     )
   },
-  add: ({
-    node,
-    pathToNode,
-    to,
-    from,
-    createCallback,
-    replaceExisting,
-    // from: [number, number],
-  }) => {
+  add: ({ node, pathToNode, to, from, createCallback, replaceExisting }) => {
     const _node = { ...node }
     const { node: pipe } = getNodeFromPath<PipeExpression>(
       _node,
@@ -926,9 +878,6 @@ export const angledLineToX: SketchLineHelper = {
     const xLength = roundOff(to[0], 2)
 
     const firstArg = callExpression.arguments?.[0]
-    // const adjustedXLength = isAngleLiteral(firstArg)
-    //   ? Math.abs(xLength)
-    //   : xLength // todo make work for variable angle > 180
     const adjustedXLength = xLength
 
     const angleLit = createLiteral(angle)
@@ -974,15 +923,7 @@ export const angledLineToY: SketchLineHelper = {
       previousSketch
     )
   },
-  add: ({
-    node,
-    previousProgramMemory,
-    pathToNode,
-    to,
-    from,
-    createCallback,
-    replaceExisting,
-  }) => {
+  add: ({ node, pathToNode, to, from, createCallback, replaceExisting }) => {
     const _node = { ...node }
     const { node: pipe } = getNodeFromPath<PipeExpression>(
       _node,
@@ -1019,9 +960,6 @@ export const angledLineToY: SketchLineHelper = {
     const xLength = roundOff(to[1], 2)
 
     const firstArg = callExpression.arguments?.[0]
-    // const adjustedXLength = isAngleLiteral(firstArg)
-    //   ? Math.abs(xLength)
-    //   : xLength // todo make work for variable angle > 180
     const adjustedXLength = xLength
 
     const angleLit = createLiteral(angle)

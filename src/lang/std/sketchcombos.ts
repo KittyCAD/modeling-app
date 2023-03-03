@@ -3,17 +3,18 @@ import { Range, Ranges, toolTips, TooTip } from '../../useStore'
 import {
   BinaryPart,
   CallExpression,
-  getNodeFromPath,
-  getNodeFromPathCurry,
-  getNodePathFromSourceRange,
   Program,
   Value,
   VariableDeclarator,
 } from '../abstractSyntaxTree'
 import {
+  getNodeFromPath,
+  getNodeFromPathCurry,
+  getNodePathFromSourceRange,
+} from '../queryAst'
+import {
   createBinaryExpression,
   createCallExpression,
-  createIdentifier,
   createLiteral,
   createPipeSubstitution,
   createUnaryExpression,
