@@ -6,10 +6,8 @@ import {
   getXComponent,
 } from './sketch'
 import { lexer } from '../tokeniser'
-import {
-  abstractSyntaxTree,
-  getNodePathFromSourceRange,
-} from '../abstractSyntaxTree'
+import { abstractSyntaxTree } from '../abstractSyntaxTree'
+import { getNodePathFromSourceRange } from '../queryAst'
 import { recast } from '../recast'
 import { executor } from '../executor'
 import { initPromise } from '../rust'

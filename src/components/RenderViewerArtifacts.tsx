@@ -1,10 +1,6 @@
 import { useRef, useState, useEffect, useMemo } from 'react'
-import {
-  getNodePathFromSourceRange,
-  getNodeFromPath,
-  CallExpression,
-  ArrayExpression,
-} from '../lang/abstractSyntaxTree'
+import { CallExpression, ArrayExpression } from '../lang/abstractSyntaxTree'
+import { getNodePathFromSourceRange, getNodeFromPath } from '../lang/queryAst'
 import { changeSketchArguments } from '../lang/std/sketch'
 import {
   ExtrudeGroup,
@@ -18,10 +14,9 @@ import {
 } from '../lang/executor'
 import { BufferGeometry } from 'three'
 import { useStore } from '../useStore'
-import { isOverlap } from '../lib/utils'
+import { isOverlap, roundOff } from '../lib/utils'
 import { Vector3, DoubleSide, Quaternion } from 'three'
 import { useSetCursor } from '../hooks/useSetCursor'
-import { roundOff } from '../lib/utils'
 
 function MovingSphere({
   geo,

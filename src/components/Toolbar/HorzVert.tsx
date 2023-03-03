@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { toolTips, useStore } from '../../useStore'
+import { Value } from '../../lang/abstractSyntaxTree'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
-  Value,
-} from '../../lang/abstractSyntaxTree'
+} from '../../lang/queryAst'
 import {
   TransformInfo,
   getTransformInfos,
