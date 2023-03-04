@@ -89,12 +89,11 @@ export function createFirstArg(
 
 export const lineTo: SketchLineHelper = {
   fn: (
-    { sourceRange, programMemory },
+    { sourceRange },
     data:
       | [number, number]
       | {
           to: [number, number]
-          // name?: string
           tag?: string
         },
     previousSketch: SketchGroup
@@ -135,18 +134,38 @@ export const lineTo: SketchLineHelper = {
       value: [...sketchGroup.value, currentPath],
     }
   },
-  add: ({ node, pathToNode, to }) => {
+  add: ({
+    node,
+    pathToNode,
+    to,
+    createCallback,
+    replaceExisting,
+    referencedSegment,
+  }) => {
     const _node = { ...node }
     const { node: pipe } = getNodeFromPath<PipeExpression>(
       _node,
       pathToNode,
       'PipeExpression'
     )
-    const newLine = createCallExpression('lineTo', [
-      createArrayExpression([createLiteral(to[0]), createLiteral(to[1])]),
-      createPipeSubstitution(),
-    ])
-    pipe.body = [...pipe.body, newLine]
+
+    const newVals: [Value, Value] = [
+      createLiteral(roundOff(to[0], 2)),
+      createLiteral(roundOff(to[1], 2)),
+    ]
+
+    const newLine = createCallback
+      ? createCallback(newVals, referencedSegment)
+      : createCallExpression('lineTo', [
+          createArrayExpression(newVals),
+          createPipeSubstitution(),
+        ])
+    const callIndex = getLastIndex(pathToNode)
+    if (replaceExisting) {
+      pipe.body[callIndex] = newLine
+    } else {
+      pipe.body = [...pipe.body, newLine]
+    }
     return {
       modifiedAst: _node,
       pathToNode,
@@ -237,7 +256,6 @@ export const line: SketchLineHelper = {
       pathToNode,
       'PipeExpression'
     )
-    if (!from) throw new Error('no from') // todo #29 remove
     const { node: varDec } = getNodeFromPath<VariableDeclarator>(
       _node,
       pathToNode,
@@ -431,7 +449,6 @@ export const xLine: SketchLineHelper = {
   add: ({ node, pathToNode, to, from, replaceExisting, createCallback }) => {
     const _node = { ...node }
     const getNode = getNodeFromPathCurry(_node, pathToNode)
-    if (!from) throw new Error('no from') // todo #29 remove
     const { node: pipe } = getNode<PipeExpression>('PipeExpression')
 
     const newVal = createLiteral(roundOff(to[0] - from[0], 2))
@@ -487,7 +504,6 @@ export const yLine: SketchLineHelper = {
   add: ({ node, pathToNode, to, from, replaceExisting, createCallback }) => {
     const _node = { ...node }
     const getNode = getNodeFromPathCurry(_node, pathToNode)
-    if (!from) throw new Error('no from') // todo #29 remove
     const { node: pipe } = getNode<PipeExpression>('PipeExpression')
     const newVal = createLiteral(roundOff(to[1] - from[1], 2))
     const newLine = createCallback
@@ -577,7 +593,6 @@ export const angledLine: SketchLineHelper = {
     const getNode = getNodeFromPathCurry(_node, pathToNode)
     const { node: pipe } = getNode<PipeExpression>('PipeExpression')
 
-    if (!from) throw new Error('no from') // todo #29 remove
     const newAngleVal = createLiteral(roundOff(getAngle(from, to), 0))
     const newLengthVal = createLiteral(roundOff(getLength(from, to), 2))
     const newLine = createCallback
@@ -668,7 +683,6 @@ export const angledLineOfXLength: SketchLineHelper = {
     const variableName = varDec.id.name
     const sketch = previousProgramMemory?.root?.[variableName]
     if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
-    if (!from) throw new Error('no from') // todo #29 remove
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const xLength = createLiteral(roundOff(Math.abs(from[0] - to[0]), 2) || 0.1)
     const newLine = createCallback
@@ -762,7 +776,6 @@ export const angledLineOfYLength: SketchLineHelper = {
     const variableName = varDec.id.name
     const sketch = previousProgramMemory?.root?.[variableName]
     if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
-    if (!from) throw new Error('no from') // todo #29 remove
 
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const yLength = createLiteral(roundOff(Math.abs(from[1] - to[1]), 2) || 0.1)
@@ -848,7 +861,6 @@ export const angledLineToX: SketchLineHelper = {
       pathToNode,
       'PipeExpression'
     )
-    if (!from) throw new Error('no from') // todo #29 remove
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const xArg = createLiteral(roundOff(to[0], 2))
     const newLine = createCallback
@@ -930,7 +942,6 @@ export const angledLineToY: SketchLineHelper = {
       pathToNode,
       'PipeExpression'
     )
-    if (!from) throw new Error('no from') // todo #29 remove
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const yArg = createLiteral(roundOff(to[1], 2))
     const newLine = createCallback
@@ -1067,6 +1078,7 @@ export function replaceSketchLine({
   to,
   from,
   createCallback,
+  referencedSegment,
 }: {
   node: Program
   programMemory: ProgramMemory
@@ -1075,6 +1087,7 @@ export function replaceSketchLine({
   to: [number, number]
   from: [number, number]
   createCallback: TransformCallback
+  referencedSegment?: Path
 }): { modifiedAst: Program } {
   if (!toolTips.includes(fnName)) throw new Error('not a tooltip')
   const _node = { ...node }
@@ -1085,6 +1098,7 @@ export function replaceSketchLine({
     node: _node,
     previousProgramMemory: programMemory,
     pathToNode: thePath,
+    referencedSegment,
     to,
     from,
     replaceExisting: true,

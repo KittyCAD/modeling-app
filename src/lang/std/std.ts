@@ -17,6 +17,10 @@ import {
   segLen,
   angleToMatchLengthX,
   angleToMatchLengthY,
+  segEndX,
+  segEndY,
+  lastSegX,
+  lastSegY,
 } from './sketchConstraints'
 import { extrude, getExtrudeWallTransform } from './extrude'
 import { Quaternion, Vector3 } from 'three'
@@ -100,6 +104,10 @@ export const internalFns: { [key in InternalFnNames]: InternalFn } = {
   legLen,
   legAngX,
   legAngY,
+  segEndX,
+  segEndY,
+  lastSegX,
+  lastSegY,
   segLen,
   angleToMatchLengthX,
   angleToMatchLengthY,
