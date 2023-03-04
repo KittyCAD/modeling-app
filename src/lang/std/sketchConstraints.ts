@@ -33,6 +33,28 @@ export const segLen: InternalFn = (
   )
 }
 
+function segEndFactory(which: 'x' | 'y'): InternalFn {
+  return (_, segName: string, sketchGroup: SketchGroup): number => {
+    const line = sketchGroup?.value.find((seg) => seg.name === segName)
+    // maybe this should throw, but the language doesn't have a way to handle errors yet
+    if (!line) return 0
+    return which === 'x' ? line.to[0] : line.to[1]
+  }
+}
+
+export const segEndX: InternalFn = segEndFactory('x')
+export const segEndY: InternalFn = segEndFactory('y')
+
+function lastSegFactory(which: 'x' | 'y'): InternalFn {
+  return (_, sketchGroup: SketchGroup): number => {
+    const lastLine = sketchGroup?.value[sketchGroup.value.length - 1]
+    return which === 'x' ? lastLine.to[0] : lastLine.to[1]
+  }
+}
+
+export const lastSegX: InternalFn = lastSegFactory('x')
+export const lastSegY: InternalFn = lastSegFactory('y')
+
 function angleToMatchLengthFactory(which: 'x' | 'y'): InternalFn {
   return (_, segName: string, to: number, sketchGroup: SketchGroup): number => {
     const isX = which === 'x'

@@ -24,6 +24,10 @@ export type InternalFnNames =
   | 'legLen'
   | 'legAngX'
   | 'legAngY'
+  | 'segEndX'
+  | 'segEndY'
+  | 'lastSegX'
+  | 'lastSegY'
   | 'segLen'
   | 'angleToMatchLengthX'
   | 'angleToMatchLengthY'
@@ -52,7 +56,8 @@ export interface ModifyAstBase {
 
 interface addCall extends ModifyAstBase {
   to: [number, number]
-  from?: [number, number]
+  from: [number, number]
+  referencedSegment?: Path
   replaceExisting?: boolean
   createCallback?: TransformCallback // TODO: #29 probably should not be optional
 }
@@ -62,7 +67,10 @@ interface updateArgs extends ModifyAstBase {
   to: [number, number]
 }
 
-export type TransformCallback = (args: [Value, Value]) => Value
+export type TransformCallback = (
+  args: [Value, Value],
+  referencedSegment?: Path
+) => Value
 
 export type SketchCallTransfromMap = {
   [key in TooTip]: TransformCallback

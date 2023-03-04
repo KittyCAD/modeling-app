@@ -5,9 +5,10 @@ import {
   getTransformInfos,
   transformAstForSketchLines,
   transformAstForHorzVert,
+  ConstraintType,
 } from './sketchcombos'
 import { initPromise } from '../rust'
-import { Ranges, TooTip } from '../../useStore'
+import { TooTip } from '../../useStore'
 import { executor } from '../../lang/executor'
 import { recast } from '../../lang/recast'
 
@@ -242,14 +243,6 @@ const part001 = startSketchAt([0, 0])
   |> angledLineToY([301, myVar], %) // select for vertical constraint 10
 show(part001)`
   it('It should transform horizontal lines the ast', () => {
-    //   const inputScript = `const myVar = 2
-    // const part001 = startSketchAt([0, 0])
-    //   |> lineTo([1, 1], %)
-    //   |> line([-6.28, 1.4], %) // select for horizontal constraint 1
-    //   |> line([-1.07, myVar], %) // select for vertical constraint 1
-    //   |> line([myVar, 4.32], %) // select for horizontal constraint 2
-    //   |> line([6.35, -1.12], %) // select for vertical constraint 2
-    // show(part001)`
     const expectModifiedScript = `const myVar = 2
 const myVar2 = 12
 const myVar3 = -10
@@ -348,3 +341,89 @@ show(part001)`
     expect(newCode).toBe(expectModifiedScript)
   })
 })
+
+describe('testing transformAstForSketchLines for vertical and horizontal distance constraints', () => {
+  describe('testing setHorzDistance for line', () => {
+    const inputScript = `const myVar = 1
+const part001 = startSketchAt([0, 0])
+  |> line([0.31, 1.67], %) // base selection
+  |> line([0.45, 1.46], %)
+  |> line([0.45, 1.46], %) // free
+  |> line([myVar, 0.01], %) // xRelative
+  |> line([0.7, myVar], %) // yRelative
+show(part001)`
+    it('testing for free to horizontal and vertical distance', () => {
+      const expectedHorizontalCode = helperThing(
+        inputScript,
+        ['// base selection', '// free'],
+        'setHorzDistance'
+      )
+      const expectedVerticalCode = helperThing(
+        inputScript,
+        ['// base selection', '// free'],
+        'setVertDistance'
+      )
+      expect(expectedHorizontalCode).toContain(
+        `lineTo([segEndX('seg01', %) + 1.21, 4.59], %) // free`
+      )
+      expect(expectedVerticalCode).toContain(
+        `lineTo([1.21, segEndY('seg01', %) + 4.59], %) // free`
+      )
+    })
+    it('testing for xRelative to vertical distance', () => {
+      const expectedCode = helperThing(
+        inputScript,
+        ['// base selection', '// xRelative'],
+        'setVertDistance'
+      )
+      expect(expectedCode).toContain(`|> lineTo([
+    lastSegX(%) + myVar,
+    segEndY('seg01', %) + 4.6
+  ], %) // xRelative`)
+    })
+    it('testing for yRelative to horizontal distance', () => {
+      const expectedCode = helperThing(
+        inputScript,
+        ['// base selection', '// yRelative'],
+        'setHorzDistance'
+      )
+      expect(expectedCode).toContain(`|> lineTo([
+    segEndX('seg01', %) + 2.91,
+    lastSegY(%) + myVar
+  ], %) // yRelative`)
+    })
+  })
+})
+
+function helperThing(
+  inputScript: string,
+  linesOfInterest: string[],
+  constraint: ConstraintType
+): string {
+  const ast = abstractSyntaxTree(lexer(inputScript))
+  const selectionRanges = inputScript
+    .split('\n')
+    .filter((ln) =>
+      linesOfInterest.some((lineOfInterest) => ln.includes(lineOfInterest))
+    )
+    .map((ln) => {
+      const comment = ln.split('//')[1]
+      const start = inputScript.indexOf('//' + comment) - 7
+      return [start, start]
+    }) as [number, number][]
+
+  const programMemory = executor(ast)
+  const transformInfos = getTransformInfos(
+    selectionRanges.slice(1),
+    ast,
+    constraint
+  )
+
+  const newAst = transformAstForSketchLines({
+    ast,
+    selectionRanges,
+    transformInfos,
+    programMemory,
+  })?.modifiedAst
+  return recast(newAst)
+}

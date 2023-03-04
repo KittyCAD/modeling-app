@@ -21,8 +21,9 @@ import {
   giveSketchFnCallTag,
 } from '../modifyAst'
 import { createFirstArg, getFirstArg, replaceSketchLine } from './sketch'
-import { ProgramMemory } from '../executor'
+import { Path, ProgramMemory } from '../executor'
 import { getSketchSegmentIndexFromSourceRange } from './sketchConstraints'
+import { roundOff } from '../../lib/utils'
 
 type LineInputsType =
   | 'xAbsolute'
@@ -37,6 +38,8 @@ export type ConstraintType =
   | 'vertical'
   | 'horizontal'
   | 'equalangle'
+  | 'setHorzDistance'
+  | 'setVertDistance'
 
 function createCallWrapper(
   a: TooTip,
@@ -54,7 +57,8 @@ export function replaceSketchCall(
   ast: Program,
   range: Range,
   transformTo: TooTip,
-  createCallback: TransformCallback
+  createCallback: TransformCallback,
+  referenceSegName: string
 ): { modifiedAst: Program } {
   const path = getNodePathFromSourceRange(ast, range)
   const getNode = getNodeFromPathCurry(ast, path)
@@ -65,11 +69,15 @@ export function replaceSketchCall(
   if (!sketchGroup || sketchGroup.type !== 'sketchGroup')
     throw new Error('not a sketch group')
   const seg = getSketchSegmentIndexFromSourceRange(sketchGroup, range)
+  const referencedSegment = sketchGroup.value.find(
+    (path) => path.name === referenceSegName
+  )
   const { to, from } = seg
   const { modifiedAst } = replaceSketchLine({
     node: ast,
     programMemory,
     sourceRange: range,
+    referencedSegment,
     fnName: transformTo || (callExp.callee.name as TooTip),
     to,
     from,
@@ -85,7 +93,7 @@ export type TransformInfo = {
     varValB: Value // y / length or x y for angledLineOfXlength etc
     referenceSegName: string
     tag?: Value
-  }) => (args: [Value, Value]) => Value
+  }) => (args: [Value, Value], referencedSegment?: Path) => Value
 }
 
 type TransformMap = {
@@ -163,6 +171,57 @@ const getAngleLengthSign = (arg: Value, legAngleVal: BinaryPart) => {
   return normalisedAngle > 90 ? createUnaryExpression(legAngleVal) : legAngleVal
 }
 
+const setHorzVertDistanceCreateNode =
+  (isX = true): TransformInfo['createNode'] =>
+  ({ referenceSegName, tag }) => {
+    return (args, referencedSegment) => {
+      const makeBinExp = (index: 0 | 1) => {
+        const arg = getArgLiteralVal(args?.[index])
+        return createBinaryExpression([
+          createSegEnd(referenceSegName, isX),
+          '+',
+          createLiteral(
+            roundOff(arg - (referencedSegment?.to?.[index] || 0), 2)
+          ),
+        ])
+      }
+      return createCallWrapper(
+        'lineTo',
+        isX ? [makeBinExp(0), args[1]] : [args[0], makeBinExp(1)],
+        tag
+      )
+    }
+  }
+
+const setHorzVertDistanceConstraintLineCreateNode =
+  (isX: boolean): TransformInfo['createNode'] =>
+  ({ referenceSegName, tag, varValA, varValB }) => {
+    const varVal = (isX ? varValB : varValA) as BinaryPart
+    const varValBinExp = createBinaryExpression([
+      createLastSeg(!isX),
+      '+',
+      varVal,
+    ])
+
+    return (args, referencedSegment) => {
+      const makeBinExp = (index: 0 | 1) => {
+        const arg = getArgLiteralVal(args?.[index])
+        return createBinaryExpression([
+          createSegEnd(referenceSegName, isX),
+          '+',
+          createLiteral(
+            roundOff(arg - (referencedSegment?.to?.[index] || 0), 2)
+          ),
+        ])
+      }
+      return createCallWrapper(
+        'lineTo',
+        isX ? [makeBinExp(0), varValBinExp] : [varValBinExp, makeBinExp(1)],
+        tag
+      )
+    }
+  }
+
 const transformMap: TransformMap = {
   line: {
     xRelative: {
@@ -188,6 +247,10 @@ const transformMap: TransformMap = {
           () =>
             createCallWrapper('xLine', varValA, tag),
       },
+      setVertDistance: {
+        tooltip: 'lineTo',
+        createNode: setHorzVertDistanceConstraintLineCreateNode(false),
+      },
     },
     yRelative: {
       equalLength: {
@@ -212,6 +275,10 @@ const transformMap: TransformMap = {
           () =>
             createCallWrapper('yLine', varValB, tag),
       },
+      setHorzDistance: {
+        tooltip: 'lineTo',
+        createNode: setHorzVertDistanceConstraintLineCreateNode(true),
+      },
     },
     free: {
       equalLength: {
@@ -231,6 +298,14 @@ const transformMap: TransformMap = {
           ({ tag }) =>
           (args) =>
             createCallWrapper('yLine', args[1], tag),
+      },
+      setHorzDistance: {
+        tooltip: 'lineTo',
+        createNode: setHorzVertDistanceCreateNode(true),
+      },
+      setVertDistance: {
+        tooltip: 'lineTo',
+        createNode: setHorzVertDistanceCreateNode(false),
       },
     },
   },
@@ -792,7 +867,8 @@ export function transformAstForSketchLines({
         referenceSegName: tag,
         varValA,
         varValB,
-      })
+      }),
+      tag
     )
     node = modifiedAst
   })
@@ -837,7 +913,8 @@ export function transformAstForHorzVert({
         varValA,
         varValB,
         tag,
-      })
+      }),
+      tag?.type === 'Literal' ? String(tag.value) : ''
     )
     node = modifiedAst
   })
@@ -849,4 +926,21 @@ function createSegLen(referenceSegName: string): Value {
     createLiteral(referenceSegName),
     createPipeSubstitution(),
   ])
+}
+
+function createSegEnd(referenceSegName: string, isX: boolean): CallExpression {
+  return createCallExpression(isX ? 'segEndX' : 'segEndY', [
+    createLiteral(referenceSegName),
+    createPipeSubstitution(),
+  ])
+}
+
+function createLastSeg(isX: boolean): CallExpression {
+  return createCallExpression(isX ? 'lastSegX' : 'lastSegY', [
+    createPipeSubstitution(),
+  ])
+}
+
+function getArgLiteralVal(arg: Value): number {
+  return arg?.type === 'Literal' ? Number(arg.value) : 0
 }
