@@ -81,7 +81,7 @@ export const Equal = () => {
           })?.modifiedAst
         )
       }
-      className={`border m-1 px-1 rounded ${
+      className={`border m-1 px-1 rounded text-xs ${
         enableEqual ? 'bg-gray-50 text-gray-800' : 'bg-gray-200 text-gray-400'
       }`}
       disabled={!enableEqual}
