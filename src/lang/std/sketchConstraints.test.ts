@@ -37,7 +37,7 @@ function testingSwapSketchFnCall({
     programMemory,
     selectionRanges: [range],
     transformInfos,
-    tag: '',
+    referenceSegName: '',
   })
   return {
     newCode: recast(modifiedAst),

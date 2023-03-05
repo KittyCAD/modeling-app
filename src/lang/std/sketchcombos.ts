@@ -823,7 +823,7 @@ export function transformSecondarySketchLinesTagFirst({
       selectionRanges: selectionRanges.slice(1),
       transformInfos,
       programMemory,
-      tag,
+      referenceSegName: tag,
     }),
     tagInfo: {
       tag,
@@ -837,13 +837,13 @@ export function transformAstSketchLines({
   selectionRanges,
   transformInfos,
   programMemory,
-  tag,
+  referenceSegName,
 }: {
   ast: Program
   selectionRanges: Ranges
   transformInfos: TransformInfo[]
   programMemory: ProgramMemory
-  tag: string
+  referenceSegName: string
 }): { modifiedAst: Program } {
   // deep clone since we are mutating in a loop, of which any could fail
   let node = JSON.parse(JSON.stringify(ast))
@@ -870,7 +870,7 @@ export function transformAstSketchLines({
       throw new Error('not a sketch group')
     const seg = getSketchSegmentIndexFromSourceRange(sketchGroup, range)
     const referencedSegment = sketchGroup.value.find(
-      (path) => path.name === tag
+      (path) => path.name === referenceSegName
     )
     const { to, from } = seg
     const { modifiedAst } = replaceSketchLine({
@@ -882,7 +882,7 @@ export function transformAstSketchLines({
       to,
       from,
       createCallback: callBack({
-        referenceSegName: tag,
+        referenceSegName,
         varValA,
         varValB,
         tag: callBackTag,

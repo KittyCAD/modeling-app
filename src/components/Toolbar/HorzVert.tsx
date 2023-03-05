@@ -60,7 +60,7 @@ export const HorzVert = ({
             selectionRanges,
             transformInfos,
             programMemory,
-            tag: '',
+            referenceSegName: '',
           })?.modifiedAst
         )
       }

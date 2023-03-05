@@ -287,7 +287,7 @@ show(part001)`
       selectionRanges,
       transformInfos,
       programMemory,
-      tag: '',
+      referenceSegName: '',
     })?.modifiedAst
     const newCode = recast(newAst)
     expect(newCode).toBe(expectModifiedScript)
@@ -337,7 +337,7 @@ show(part001)`
       selectionRanges,
       transformInfos,
       programMemory,
-      tag: '',
+      referenceSegName: '',
     })?.modifiedAst
     const newCode = recast(newAst)
     expect(newCode).toBe(expectModifiedScript)
