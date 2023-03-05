@@ -52,40 +52,6 @@ function createCallWrapper(
   ])
 }
 
-export function replaceSketchCall(
-  programMemory: ProgramMemory,
-  ast: Program,
-  range: Range,
-  transformTo: TooTip,
-  createCallback: TransformCallback,
-  referenceSegName: string
-): { modifiedAst: Program } {
-  const path = getNodePathFromSourceRange(ast, range)
-  const getNode = getNodeFromPathCurry(ast, path)
-  const varDec = getNode<VariableDeclarator>('VariableDeclarator').node
-  const callExp = getNode<CallExpression>('CallExpression').node
-  const varName = varDec.id.name
-  const sketchGroup = programMemory.root?.[varName]
-  if (!sketchGroup || sketchGroup.type !== 'sketchGroup')
-    throw new Error('not a sketch group')
-  const seg = getSketchSegmentIndexFromSourceRange(sketchGroup, range)
-  const referencedSegment = sketchGroup.value.find(
-    (path) => path.name === referenceSegName
-  )
-  const { to, from } = seg
-  const { modifiedAst } = replaceSketchLine({
-    node: ast,
-    programMemory,
-    sourceRange: range,
-    referencedSegment,
-    fnName: transformTo || (callExp.callee.name as TooTip),
-    to,
-    from,
-    createCallback,
-  })
-  return { modifiedAst }
-}
-
 export type TransformInfo = {
   tooltip: TooTip
   createNode: (a: {
@@ -887,28 +853,42 @@ export function transformAstSketchLines({
     const transformTo = transformInfos?.[index].tooltip
     if (!callBack || !transformTo) throw new Error('no callback helper')
 
-    const callExpPath = getNodePathFromSourceRange(node, range)
-    const callExp = getNodeFromPath<CallExpression>(
+    const getNode = getNodeFromPathCurry(
       node,
-      callExpPath,
-      'CallExpression'
-    )?.node
+      getNodePathFromSourceRange(node, range)
+    )
+
+    const callExp = getNode<CallExpression>('CallExpression')?.node
+    const varDec = getNode<VariableDeclarator>('VariableDeclarator').node
+
     const { val, tag: callBackTag } = getFirstArg(callExp)
     const [varValA, varValB] = Array.isArray(val) ? val : [val, val]
 
-    const { modifiedAst } = replaceSketchCall(
+    const varName = varDec.id.name
+    const sketchGroup = programMemory.root?.[varName]
+    if (!sketchGroup || sketchGroup.type !== 'sketchGroup')
+      throw new Error('not a sketch group')
+    const seg = getSketchSegmentIndexFromSourceRange(sketchGroup, range)
+    const referencedSegment = sketchGroup.value.find(
+      (path) => path.name === tag
+    )
+    const { to, from } = seg
+    const { modifiedAst } = replaceSketchLine({
+      node: node,
       programMemory,
-      node,
-      range,
-      transformTo,
-      callBack({
+      sourceRange: range,
+      referencedSegment,
+      fnName: transformTo || (callExp.callee.name as TooTip),
+      to,
+      from,
+      createCallback: callBack({
         referenceSegName: tag,
         varValA,
         varValB,
         tag: callBackTag,
       }),
-      tag
-    )
+    })
+
     node = modifiedAst
   })
   return { modifiedAst: node }
