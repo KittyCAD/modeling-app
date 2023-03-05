@@ -81,6 +81,9 @@ export interface SketchLineHelper {
   add: (a: addCall) => {
     modifiedAst: Program
     pathToNode: (string | number)[]
+    keyName?: string
+    isKeyEditable?: boolean
+    value?: number
   }
   updateArgs: (a: updateArgs) => {
     modifiedAst: Program
