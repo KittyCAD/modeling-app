@@ -4,7 +4,7 @@ import { lexer } from '../tokeniser'
 import {
   ConstraintType,
   getTransformInfos,
-  transformAstForHorzVert,
+  transformAstSketchLines,
 } from './sketchcombos'
 import { recast } from '../recast'
 import { initPromise } from '../rust'
@@ -32,11 +32,12 @@ function testingSwapSketchFnCall({
   const transformInfos = getTransformInfos([range], ast, constraintType)
 
   if (!transformInfos) throw new Error('nope')
-  const { modifiedAst } = transformAstForHorzVert({
+  const { modifiedAst } = transformAstSketchLines({
     ast,
     programMemory,
     selectionRanges: [range],
     transformInfos,
+    tag: '',
   })
   return {
     newCode: recast(modifiedAst),

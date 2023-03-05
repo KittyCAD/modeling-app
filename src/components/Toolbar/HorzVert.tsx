@@ -8,7 +8,7 @@ import {
 import {
   TransformInfo,
   getTransformInfos,
-  transformAstForHorzVert,
+  transformAstSketchLines,
 } from '../../lang/std/sketchcombos'
 
 export const HorzVert = ({
@@ -55,11 +55,12 @@ export const HorzVert = ({
         transformInfos &&
         ast &&
         updateAst(
-          transformAstForHorzVert({
+          transformAstSketchLines({
             ast,
             selectionRanges,
             transformInfos,
             programMemory,
+            tag: '',
           })?.modifiedAst
         )
       }

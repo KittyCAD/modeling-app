@@ -8,7 +8,7 @@ import {
 import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
 import {
   TransformInfo,
-  transformAstForSketchLines,
+  transformSecondarySketchLinesTagFirst,
   getTransformInfos,
 } from '../../lang/std/sketchcombos'
 
@@ -73,7 +73,7 @@ export const Equal = () => {
         transformInfos &&
         ast &&
         updateAst(
-          transformAstForSketchLines({
+          transformSecondarySketchLinesTagFirst({
             ast,
             selectionRanges,
             transformInfos,

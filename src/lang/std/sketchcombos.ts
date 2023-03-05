@@ -826,7 +826,7 @@ export function getTransformInfos(
   return theTransforms
 }
 
-export function transformAstForSketchLines({
+export function transformSecondarySketchLinesTagFirst({
   ast,
   selectionRanges,
   transformInfos,
@@ -836,15 +836,53 @@ export function transformAstForSketchLines({
   selectionRanges: Ranges
   transformInfos: TransformInfo[]
   programMemory: ProgramMemory
+}): {
+  modifiedAst: Program
+  tagInfo: {
+    tag: string
+    isTagExisting: boolean
+  }
+} {
+  // let node = JSON.parse(JSON.stringify(ast))
+  const primarySelection = selectionRanges[0]
+
+  const { modifiedAst, tag, isTagExisting } = giveSketchFnCallTag(
+    ast,
+    primarySelection
+  )
+
+  return {
+    ...transformAstSketchLines({
+      ast: modifiedAst,
+      selectionRanges: selectionRanges.slice(1),
+      transformInfos,
+      programMemory,
+      tag,
+    }),
+    tagInfo: {
+      tag,
+      isTagExisting,
+    },
+  }
+}
+
+export function transformAstSketchLines({
+  ast,
+  selectionRanges,
+  transformInfos,
+  programMemory,
+  tag,
+}: {
+  ast: Program
+  selectionRanges: Ranges
+  transformInfos: TransformInfo[]
+  programMemory: ProgramMemory
+  tag: string
 }): { modifiedAst: Program } {
   // deep clone since we are mutating in a loop, of which any could fail
   let node = JSON.parse(JSON.stringify(ast))
-  const primarySelection = selectionRanges[0]
 
-  const { modifiedAst, tag } = giveSketchFnCallTag(node, primarySelection)
-  node = modifiedAst
-
-  selectionRanges.slice(1).forEach((range, index) => {
+  selectionRanges.forEach((range, index) => {
     const callBack = transformInfos?.[index].createNode
     const transformTo = transformInfos?.[index].tooltip
     if (!callBack || !transformTo) throw new Error('no callback helper')
@@ -855,7 +893,7 @@ export function transformAstForSketchLines({
       callExpPath,
       'CallExpression'
     )?.node
-    const { val } = getFirstArg(callExp)
+    const { val, tag: callBackTag } = getFirstArg(callExp)
     const [varValA, varValB] = Array.isArray(val) ? val : [val, val]
 
     const { modifiedAst } = replaceSketchCall(
@@ -867,54 +905,9 @@ export function transformAstForSketchLines({
         referenceSegName: tag,
         varValA,
         varValB,
+        tag: callBackTag,
       }),
       tag
-    )
-    node = modifiedAst
-  })
-  return { modifiedAst: node }
-}
-
-export function transformAstForHorzVert({
-  ast,
-  selectionRanges,
-  transformInfos,
-  programMemory,
-}: {
-  ast: Program
-  selectionRanges: Ranges
-  transformInfos: TransformInfo[]
-  programMemory: ProgramMemory
-}): { modifiedAst: Program } {
-  // deep clone since we are mutating in a loop, of which any could fail
-  let node = JSON.parse(JSON.stringify(ast))
-
-  selectionRanges.forEach((range, index) => {
-    const callBack = transformInfos?.[index]?.createNode
-    const transformTo = transformInfos?.[index].tooltip
-    if (!callBack || !transformTo) throw new Error('no callback helper')
-
-    const callExpPath = getNodePathFromSourceRange(node, range)
-    const callExp = getNodeFromPath<CallExpression>(
-      node,
-      callExpPath,
-      'CallExpression'
-    )?.node
-    const { val, tag } = getFirstArg(callExp)
-    const [varValA, varValB] = Array.isArray(val) ? val : [val, val]
-
-    const { modifiedAst } = replaceSketchCall(
-      programMemory,
-      node,
-      range,
-      transformTo,
-      callBack({
-        referenceSegName: '',
-        varValA,
-        varValB,
-        tag,
-      }),
-      tag?.type === 'Literal' ? String(tag.value) : ''
     )
     node = modifiedAst
   })

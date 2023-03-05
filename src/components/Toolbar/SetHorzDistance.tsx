@@ -8,7 +8,7 @@ import {
 import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
 import {
   TransformInfo,
-  transformAstForSketchLines,
+  transformSecondarySketchLinesTagFirst,
   getTransformInfos,
 } from '../../lang/std/sketchcombos'
 
@@ -77,7 +77,7 @@ export const SetHorzDistance = ({
         transformInfos &&
         ast &&
         updateAst(
-          transformAstForSketchLines({
+          transformSecondarySketchLinesTagFirst({
             ast,
             selectionRanges,
             transformInfos,
@@ -85,7 +85,7 @@ export const SetHorzDistance = ({
           })?.modifiedAst
         )
       }
-      className={`border m-1 px-1 rounded ${
+      className={`border m-1 px-1 rounded text-xs ${
         enable ? 'bg-gray-50 text-gray-800' : 'bg-gray-200 text-gray-400'
       }`}
       disabled={!enable}
