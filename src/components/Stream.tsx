@@ -49,13 +49,7 @@ export const Stream = () => {
               videoRef.current.srcObject = event.streams[0]
               videoRef.current.autoplay = true
               videoRef.current.controls = true
-              // el.srcObject = event.streams[0]
-              // el.autoplay = true
-              // el.controls = true
-
-              // videoRef.current.srcObject = event.streams[0]
             }
-            // document.getElementById('__next').appendChild(el)
           }
           pc.oniceconnectionstatechange = (e) =>
             console.log(pc.iceConnectionState)
