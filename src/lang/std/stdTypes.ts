@@ -70,7 +70,10 @@ interface updateArgs extends ModifyAstBase {
 export type TransformCallback = (
   args: [Value, Value],
   referencedSegment?: Path
-) => Value
+) => {
+  callExp: Value
+  valueUsedInTransform?: number
+}
 
 export type SketchCallTransfromMap = {
   [key in TooTip]: TransformCallback
@@ -81,9 +84,7 @@ export interface SketchLineHelper {
   add: (a: addCall) => {
     modifiedAst: Program
     pathToNode: (string | number)[]
-    keyName?: string
-    isKeyEditable?: boolean
-    value?: number
+    valueUsedInTransform?: number
   }
   updateArgs: (a: updateArgs) => {
     modifiedAst: Program

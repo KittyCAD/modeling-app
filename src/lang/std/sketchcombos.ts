@@ -1,5 +1,5 @@
 import { TransformCallback } from './stdTypes'
-import { Range, Ranges, toolTips, TooTip } from '../../useStore'
+import { Ranges, toolTips, TooTip } from '../../useStore'
 import {
   BinaryPart,
   CallExpression,
@@ -21,7 +21,7 @@ import {
   giveSketchFnCallTag,
 } from '../modifyAst'
 import { createFirstArg, getFirstArg, replaceSketchLine } from './sketch'
-import { Path, ProgramMemory } from '../executor'
+import { ProgramMemory } from '../executor'
 import { getSketchSegmentIndexFromSourceRange } from './sketchConstraints'
 import { roundOff } from '../../lib/utils'
 
@@ -44,12 +44,16 @@ export type ConstraintType =
 function createCallWrapper(
   a: TooTip,
   val: [Value, Value] | Value,
-  tag?: Value
-) {
-  return createCallExpression(a, [
-    createFirstArg(a, val, tag),
-    createPipeSubstitution(),
-  ])
+  tag?: Value,
+  valueUsedInTransform?: number
+): ReturnType<TransformCallback> {
+  return {
+    callExp: createCallExpression(a, [
+      createFirstArg(a, val, tag),
+      createPipeSubstitution(),
+    ]),
+    valueUsedInTransform,
+  }
 }
 
 export type TransformInfo = {
@@ -59,7 +63,7 @@ export type TransformInfo = {
     varValB: Value // y / length or x y for angledLineOfXlength etc
     referenceSegName: string
     tag?: Value
-  }) => (args: [Value, Value], referencedSegment?: Path) => Value
+  }) => TransformCallback
 }
 
 type TransformMap = {
@@ -138,23 +142,26 @@ const getAngleLengthSign = (arg: Value, legAngleVal: BinaryPart) => {
 }
 
 const setHorzVertDistanceCreateNode =
-  (isX = true): TransformInfo['createNode'] =>
+  (
+    xOrY: 'x' | 'y',
+    index = xOrY === 'x' ? 0 : 1
+  ): TransformInfo['createNode'] =>
   ({ referenceSegName, tag }) => {
     return (args, referencedSegment) => {
-      const makeBinExp = (index: 0 | 1) => {
-        const arg = getArgLiteralVal(args?.[index])
-        return createBinaryExpression([
-          createSegEnd(referenceSegName, isX),
-          '+',
-          createLiteral(
-            roundOff(arg - (referencedSegment?.to?.[index] || 0), 2)
-          ),
-        ])
-      }
+      const valueUsedInTransform = roundOff(
+        getArgLiteralVal(args?.[index]) - (referencedSegment?.to?.[index] || 0),
+        2
+      )
+      const makeBinExp = createBinaryExpression([
+        createSegEnd(referenceSegName, !index),
+        '+',
+        createLiteral(valueUsedInTransform),
+      ])
       return createCallWrapper(
         'lineTo',
-        isX ? [makeBinExp(0), args[1]] : [args[0], makeBinExp(1)],
-        tag
+        !index ? [makeBinExp, args[1]] : [args[0], makeBinExp],
+        tag,
+        valueUsedInTransform
       )
     }
   }
@@ -267,11 +274,11 @@ const transformMap: TransformMap = {
       },
       setHorzDistance: {
         tooltip: 'lineTo',
-        createNode: setHorzVertDistanceCreateNode(true),
+        createNode: setHorzVertDistanceCreateNode('x'),
       },
       setVertDistance: {
         tooltip: 'lineTo',
-        createNode: setHorzVertDistanceCreateNode(false),
+        createNode: setHorzVertDistanceCreateNode('y'),
       },
     },
   },
@@ -804,6 +811,7 @@ export function transformSecondarySketchLinesTagFirst({
   programMemory: ProgramMemory
 }): {
   modifiedAst: Program
+  valueUsedInTransform?: number
   tagInfo: {
     tag: string
     isTagExisting: boolean
@@ -844,9 +852,10 @@ export function transformAstSketchLines({
   transformInfos: TransformInfo[]
   programMemory: ProgramMemory
   referenceSegName: string
-}): { modifiedAst: Program } {
+}): { modifiedAst: Program; valueUsedInTransform?: number } {
   // deep clone since we are mutating in a loop, of which any could fail
   let node = JSON.parse(JSON.stringify(ast))
+  let _valueUsedInTransform // TODO should this be an array?
 
   selectionRanges.forEach((range, index) => {
     const callBack = transformInfos?.[index].createNode
@@ -873,7 +882,7 @@ export function transformAstSketchLines({
       (path) => path.name === referenceSegName
     )
     const { to, from } = seg
-    const { modifiedAst } = replaceSketchLine({
+    const { modifiedAst, valueUsedInTransform } = replaceSketchLine({
       node: node,
       programMemory,
       sourceRange: range,
@@ -890,8 +899,11 @@ export function transformAstSketchLines({
     })
 
     node = modifiedAst
+    if (typeof valueUsedInTransform === 'number') {
+      _valueUsedInTransform = valueUsedInTransform
+    }
   })
-  return { modifiedAst: node }
+  return { modifiedAst: node, valueUsedInTransform: _valueUsedInTransform }
 }
 
 function createSegLen(referenceSegName: string): Value {

@@ -154,15 +154,19 @@ export const lineTo: SketchLineHelper = {
       createLiteral(roundOff(to[1], 2)),
     ]
 
-    const newLine = createCallback
-      ? createCallback(newVals, referencedSegment)
-      : createCallExpression('lineTo', [
-          createArrayExpression(newVals),
-          createPipeSubstitution(),
-        ])
+    const newLine = createCallExpression('lineTo', [
+      createArrayExpression(newVals),
+      createPipeSubstitution(),
+    ])
     const callIndex = getLastIndex(pathToNode)
-    if (replaceExisting) {
-      pipe.body[callIndex] = newLine
+    if (replaceExisting && createCallback) {
+      const boop = createCallback(newVals, referencedSegment)
+      pipe.body[callIndex] = boop.callExp
+      return {
+        modifiedAst: _node,
+        pathToNode,
+        valueUsedInTransform: boop.valueUsedInTransform,
+      }
     } else {
       pipe.body = [...pipe.body, newLine]
     }
@@ -269,7 +273,7 @@ export const line: SketchLineHelper = {
     const newYVal = createLiteral(roundOff(to[1] - from[1], 2))
 
     const newLine = createCallback
-      ? createCallback([newXVal, newYVal])
+      ? createCallback([newXVal, newYVal]).callExp
       : createCallExpression('line', [
           createArrayExpression([newXVal, newYVal]),
           createPipeSubstitution(),
@@ -336,7 +340,7 @@ export const xLineTo: SketchLineHelper = {
 
     const newVal = createLiteral(roundOff(to[0], 2))
     const newLine = createCallback
-      ? createCallback([newVal, newVal])
+      ? createCallback([newVal, newVal]).callExp
       : createCallExpression('xLineTo', [newVal, createPipeSubstitution()])
 
     const callIndex = getLastIndex(pathToNode)
@@ -397,7 +401,7 @@ export const yLineTo: SketchLineHelper = {
 
     const newVal = createLiteral(roundOff(to[1], 2))
     const newLine = createCallback
-      ? createCallback([newVal, newVal])
+      ? createCallback([newVal, newVal]).callExp
       : createCallExpression('yLineTo', [newVal, createPipeSubstitution()])
     const callIndex = getLastIndex(pathToNode)
     if (replaceExisting) {
@@ -454,7 +458,7 @@ export const xLine: SketchLineHelper = {
     const newVal = createLiteral(roundOff(to[0] - from[0], 2))
     const firstArg = newVal
     const newLine = createCallback
-      ? createCallback([firstArg, firstArg])
+      ? createCallback([firstArg, firstArg]).callExp
       : createCallExpression('xLine', [firstArg, createPipeSubstitution()])
     const callIndex = getLastIndex(pathToNode)
     if (replaceExisting) {
@@ -507,7 +511,7 @@ export const yLine: SketchLineHelper = {
     const { node: pipe } = getNode<PipeExpression>('PipeExpression')
     const newVal = createLiteral(roundOff(to[1] - from[1], 2))
     const newLine = createCallback
-      ? createCallback([newVal, newVal])
+      ? createCallback([newVal, newVal]).callExp
       : createCallExpression('yLine', [newVal, createPipeSubstitution()])
     const callIndex = getLastIndex(pathToNode)
     if (replaceExisting) {
@@ -596,7 +600,7 @@ export const angledLine: SketchLineHelper = {
     const newAngleVal = createLiteral(roundOff(getAngle(from, to), 0))
     const newLengthVal = createLiteral(roundOff(getLength(from, to), 2))
     const newLine = createCallback
-      ? createCallback([newAngleVal, newLengthVal])
+      ? createCallback([newAngleVal, newLengthVal]).callExp
       : createCallExpression('angledLine', [
           createArrayExpression([newAngleVal, newLengthVal]),
           createPipeSubstitution(),
@@ -686,7 +690,7 @@ export const angledLineOfXLength: SketchLineHelper = {
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const xLength = createLiteral(roundOff(Math.abs(from[0] - to[0]), 2) || 0.1)
     const newLine = createCallback
-      ? createCallback([angle, xLength])
+      ? createCallback([angle, xLength]).callExp
       : createCallExpression('angledLineOfXLength', [
           createArrayExpression([angle, xLength]),
           createPipeSubstitution(),
@@ -780,7 +784,7 @@ export const angledLineOfYLength: SketchLineHelper = {
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const yLength = createLiteral(roundOff(Math.abs(from[1] - to[1]), 2) || 0.1)
     const newLine = createCallback
-      ? createCallback([angle, yLength])
+      ? createCallback([angle, yLength]).callExp
       : createCallExpression('angledLineOfYLength', [
           createArrayExpression([angle, yLength]),
           createPipeSubstitution(),
@@ -864,7 +868,7 @@ export const angledLineToX: SketchLineHelper = {
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const xArg = createLiteral(roundOff(to[0], 2))
     const newLine = createCallback
-      ? createCallback([angle, xArg])
+      ? createCallback([angle, xArg]).callExp
       : createCallExpression('angledLineToX', [
           createArrayExpression([angle, xArg]),
           createPipeSubstitution(),
@@ -945,7 +949,7 @@ export const angledLineToY: SketchLineHelper = {
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const yArg = createLiteral(roundOff(to[1], 2))
     const newLine = createCallback
-      ? createCallback([angle, yArg])
+      ? createCallback([angle, yArg]).callExp
       : createCallExpression('angledLineToY', [
           createArrayExpression([angle, yArg]),
           createPipeSubstitution(),
@@ -1088,13 +1092,13 @@ export function replaceSketchLine({
   from: [number, number]
   createCallback: TransformCallback
   referencedSegment?: Path
-}): { modifiedAst: Program } {
+}): { modifiedAst: Program; valueUsedInTransform?: number } {
   if (!toolTips.includes(fnName)) throw new Error('not a tooltip')
   const _node = { ...node }
   const thePath = getNodePathFromSourceRange(_node, sourceRange)
 
   const { add } = sketchLineHelperMap[fnName]
-  const { modifiedAst } = add({
+  const { modifiedAst, valueUsedInTransform } = add({
     node: _node,
     previousProgramMemory: programMemory,
     pathToNode: thePath,
@@ -1104,7 +1108,7 @@ export function replaceSketchLine({
     replaceExisting: true,
     createCallback,
   })
-  return { modifiedAst }
+  return { modifiedAst, valueUsedInTransform }
 }
 
 export function addTagForSketchOnFace(
