@@ -4,7 +4,7 @@ import withBaseUrl from './lib/withBaseURL'
 import App from './App'
 
 export const Auth = () => {
-  const { data: user, error } = useSWR(withBaseUrl('/user'), fetcher) as any
+  const { data: user } = useSWR(withBaseUrl('/user'), fetcher) as any
   const isLocalHost =
     typeof window !== 'undefined' && window.location.hostname === 'localhost'
 
