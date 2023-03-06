@@ -22,6 +22,7 @@ import { RenderViewerArtifacts } from './components/RenderViewerArtifacts'
 import { PanelHeader } from './components/PanelHeader'
 import { MemoryPanel } from './components/MemoryPanel'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
+import { Stream } from './components/Stream'
 
 const OrrthographicCamera = OrthographicCamera as any
 
@@ -164,52 +165,55 @@ function App() {
           <MemoryPanel />
           <Logs />
         </Allotment>
-        <div className="h-full">
-          <PanelHeader title="Drafting Board" />
-          <Toolbar />
-          <div className="border h-full border-gray-300 relative">
-            <div className="absolute inset-0">
-              <Canvas>
-                <OrbitControls
-                  enableDamping={false}
-                  enablePan
-                  enableRotate={
-                    !(
-                      guiMode.mode === 'canEditSketch' ||
-                      guiMode.mode === 'sketch'
-                    )
-                  }
-                  enableZoom
-                  reverseOrbit={false}
-                />
-                <OrrthographicCamera
-                  ref={cam}
-                  makeDefault
-                  position={[0, 0, 1000]}
-                  zoom={100}
-                  rotation={[0, 0, 0]}
-                  far={2000}
-                />
-                <ambientLight />
-                <pointLight position={[10, 10, 10]} />
-                <RenderViewerArtifacts artifacts={geoArray} />
-                <BasePlanes />
-                <SketchPlane />
-                <AxisIndicator />
-              </Canvas>
-            </div>
-            {errorState.isError && (
-              <div className="absolute inset-0 bg-gray-700/20">
-                <pre>
-                  {'last first: \n\n' +
-                    JSON.stringify(lastGuiMode, null, 2) +
-                    '\n\n' +
-                    JSON.stringify(guiMode)}
-                </pre>
+        <Allotment vertical defaultSizes={[4, 1]} minSize={20}>
+          <div className="h-full">
+            <PanelHeader title="Drafting Board" />
+            <Toolbar />
+            <div className="border h-full border-gray-300 relative">
+              <div className="absolute inset-0">
+                <Canvas>
+                  <OrbitControls
+                    enableDamping={false}
+                    enablePan
+                    enableRotate={
+                      !(
+                        guiMode.mode === 'canEditSketch' ||
+                        guiMode.mode === 'sketch'
+                      )
+                    }
+                    enableZoom
+                    reverseOrbit={false}
+                  />
+                  <OrrthographicCamera
+                    ref={cam}
+                    makeDefault
+                    position={[0, 0, 1000]}
+                    zoom={100}
+                    rotation={[0, 0, 0]}
+                    far={2000}
+                  />
+                  <ambientLight />
+                  <pointLight position={[10, 10, 10]} />
+                  <RenderViewerArtifacts artifacts={geoArray} />
+                  <BasePlanes />
+                  <SketchPlane />
+                  <AxisIndicator />
+                </Canvas>
               </div>
-            )}
+              {errorState.isError && (
+                <div className="absolute inset-0 bg-gray-700/20">
+                  <pre>
+                    {'last first: \n\n' +
+                      JSON.stringify(lastGuiMode, null, 2) +
+                      '\n\n' +
+                      JSON.stringify(guiMode)}
+                  </pre>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+          <Stream />
+        </Allotment>
       </Allotment>
     </div>
   )
