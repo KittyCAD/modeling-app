@@ -77,14 +77,7 @@ export const Stream = () => {
       }
     })
 
-    return () => {
-      socket.close()
-      pc.close()
-    }
-  }, [])
-
-  useEffect(() => {
-    // TODO instead of logging, send to server
+    // TODO instead of logging, send use `socket` to send to server
     const debounceLog = throttle(console.log, 100)
     const handleMouseMove = (e: MouseEvent) => {
       if (videoRef.current) {
@@ -97,12 +90,15 @@ export const Stream = () => {
     if (videoRef.current) {
       videoRef.current.addEventListener('mousemove', handleMouseMove)
     }
+
     return () => {
+      socket.close()
+      pc.close()
       if (videoRef.current) {
         videoRef.current.removeEventListener('mousemove', handleMouseMove)
       }
     }
-  }, [videoRef])
+  }, [])
 
   return (
     <div>
