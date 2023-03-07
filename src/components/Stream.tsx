@@ -5,7 +5,11 @@ export const Stream = () => {
   const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
-    if (typeof window === 'undefined' || typeof RTCPeerConnection === 'undefined') return
+    if (
+      typeof window === 'undefined' ||
+      typeof RTCPeerConnection === 'undefined'
+    )
+      return
     const url = 'wss://dev.api.kittycad.io/ws/channel'
     const [pc, socket] = [new RTCPeerConnection(), new WebSocket(url)]
     // Connection opened
