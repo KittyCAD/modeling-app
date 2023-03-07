@@ -77,7 +77,10 @@ export const Stream = () => {
       }
     })
 
-    // TODO instead of logging, send use `socket` to send to server
+    // TODO instead of logging, send use `socket` to send to server, maybe something like?:
+    // const debounceLog = throttle((xy) => {
+    //   socket.send(JSON.stringify({ type: 'mouse', xy }))
+    // }, 100)
     const debounceLog = throttle(console.log, 100)
     const handleMouseMove = (e: MouseEvent) => {
       if (videoRef.current) {
