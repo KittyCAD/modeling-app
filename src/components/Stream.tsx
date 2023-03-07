@@ -83,7 +83,6 @@ export const Stream = () => {
     }
   }, [])
 
-  // write a userEffact that console.logs the mouse position inside the videoRef element
   useEffect(() => {
     const debounceLog = throttle(console.log, 100)
     const handleMouseMove = (e: MouseEvent) => {
@@ -91,7 +90,6 @@ export const Stream = () => {
         const rect = videoRef.current.getBoundingClientRect()
         const x = e.clientX - rect.left
         const y = e.clientY - rect.top
-        //debounce the console.log so that it's call no more than 10 times per second
         debounceLog([x, y])
       }
     }
