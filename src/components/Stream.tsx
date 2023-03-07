@@ -5,6 +5,7 @@ export const Stream = () => {
   const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
+    if (typeof window === 'undefined' || typeof RTCPeerConnection === 'undefined') return
     const url = 'wss://dev.api.kittycad.io/ws/channel'
     const [pc, socket] = [new RTCPeerConnection(), new WebSocket(url)]
     // Connection opened
@@ -41,15 +42,15 @@ export const Stream = () => {
             iceServers: message.ice_servers,
           })
           pc.ontrack = function (event) {
-            const el = document.createElement(
-              event.track.kind
-            ) as HTMLVideoElement
-
-            if (videoRef.current) {
-              videoRef.current.srcObject = event.streams[0]
-              videoRef.current.autoplay = true
-              videoRef.current.controls = true
-            }
+            console.log('has element?', videoRef.current)
+            setTimeout(() => {
+              console.log('has element in timeout?', videoRef.current)
+              if (videoRef.current) {
+                videoRef.current.srcObject = event.streams[0]
+                videoRef.current.autoplay = true
+                videoRef.current.controls = true
+              }
+            })
           }
           pc.oniceconnectionstatechange = (e) =>
             console.log(pc.iceConnectionState)
