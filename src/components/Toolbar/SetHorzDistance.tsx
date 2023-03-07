@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { create } from 'react-modal-promise'
 import { toolTips, useStore } from '../../useStore'
 import { Value, VariableDeclarator } from '../../lang/abstractSyntaxTree'
 import {
@@ -11,6 +12,10 @@ import {
   transformSecondarySketchLinesTagFirst,
   getTransformInfos,
 } from '../../lang/std/sketchcombos'
+import { GetInfoModal } from '../GetInfoModal'
+import { createLiteral } from '../../lang/modifyAst'
+
+const getModalInfo = create(GetInfoModal as any)
 
 export const SetHorzDistance = ({
   horOrVert,
@@ -73,23 +78,41 @@ export const SetHorzDistance = ({
 
   return (
     <button
-      onClick={() =>
-        transformInfos &&
-        ast &&
-        updateAst(
-          transformSecondarySketchLinesTagFirst({
-            ast,
-            selectionRanges,
-            transformInfos,
-            programMemory,
-          })?.modifiedAst
-        )
-      }
+      onClick={async () => {
+        if (transformInfos && ast) {
+          const { modifiedAst, tagInfo, valueUsedInTransform } =
+            transformSecondarySketchLinesTagFirst({
+              ast: JSON.parse(JSON.stringify(ast)),
+              selectionRanges,
+              transformInfos,
+              programMemory,
+            })
+          const { segName, value }: { segName: string; value: number } =
+            await getModalInfo({
+              segName: tagInfo?.tag,
+              isSegNameEditable: !tagInfo?.isTagExisting,
+              value: valueUsedInTransform,
+            } as any)
+          if (segName === tagInfo?.tag && value === valueUsedInTransform) {
+            updateAst(modifiedAst)
+          } else {
+            // transform again but forcing certain values
+            const { modifiedAst } = transformSecondarySketchLinesTagFirst({
+              ast,
+              selectionRanges,
+              transformInfos,
+              programMemory,
+              forceSegName: segName,
+              forceValueUsedInTransform: createLiteral(value),
+            })
+            updateAst(modifiedAst)
+          }
+        }
+      }}
       className={`border m-1 px-1 rounded text-xs ${
         enable ? 'bg-gray-50 text-gray-800' : 'bg-gray-200 text-gray-400'
       }`}
       disabled={!enable}
-      title="yo dawg"
     >
       {horOrVert}
     </button>

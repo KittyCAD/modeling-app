@@ -481,7 +481,8 @@ export function createBinaryExpression([left, operator, right]: [
 
 export function giveSketchFnCallTag(
   ast: Program,
-  range: Range
+  range: Range,
+  tag?: string
 ): { modifiedAst: Program; tag: string; isTagExisting: boolean } {
   const { node: primaryCallExp } = getNodeFromPath<CallExpression>(
     ast,
@@ -490,7 +491,7 @@ export function giveSketchFnCallTag(
   const firstArg = getFirstArg(primaryCallExp)
   const isTagExisting = !!firstArg.tag
   const tagValue = (firstArg.tag ||
-    createLiteral(findUniqueName(ast, 'seg', 2))) as Literal
+    createLiteral(tag || findUniqueName(ast, 'seg', 2))) as Literal
   const tagStr = String(tagValue.value)
   const newFirstArg = createFirstArg(
     primaryCallExp.callee.name as TooTip,

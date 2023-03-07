@@ -63,6 +63,7 @@ export type TransformInfo = {
     varValB: Value // y / length or x y for angledLineOfXlength etc
     referenceSegName: string
     tag?: Value
+    forceValueUsedInTransform?: Value
   }) => TransformCallback
 }
 
@@ -146,7 +147,7 @@ const setHorzVertDistanceCreateNode =
     xOrY: 'x' | 'y',
     index = xOrY === 'x' ? 0 : 1
   ): TransformInfo['createNode'] =>
-  ({ referenceSegName, tag }) => {
+  ({ referenceSegName, tag, forceValueUsedInTransform }) => {
     return (args, referencedSegment) => {
       const valueUsedInTransform = roundOff(
         getArgLiteralVal(args?.[index]) - (referencedSegment?.to?.[index] || 0),
@@ -155,7 +156,8 @@ const setHorzVertDistanceCreateNode =
       const makeBinExp = createBinaryExpression([
         createSegEnd(referenceSegName, !index),
         '+',
-        createLiteral(valueUsedInTransform),
+        (forceValueUsedInTransform as BinaryPart) ||
+          createLiteral(valueUsedInTransform),
       ])
       return createCallWrapper(
         'lineTo',
@@ -804,11 +806,15 @@ export function transformSecondarySketchLinesTagFirst({
   selectionRanges,
   transformInfos,
   programMemory,
+  forceSegName,
+  forceValueUsedInTransform,
 }: {
   ast: Program
   selectionRanges: Ranges
   transformInfos: TransformInfo[]
   programMemory: ProgramMemory
+  forceSegName?: string
+  forceValueUsedInTransform?: Value
 }): {
   modifiedAst: Program
   valueUsedInTransform?: number
@@ -822,7 +828,8 @@ export function transformSecondarySketchLinesTagFirst({
 
   const { modifiedAst, tag, isTagExisting } = giveSketchFnCallTag(
     ast,
-    primarySelection
+    primarySelection,
+    forceSegName
   )
 
   return {
@@ -832,6 +839,7 @@ export function transformSecondarySketchLinesTagFirst({
       transformInfos,
       programMemory,
       referenceSegName: tag,
+      forceValueUsedInTransform,
     }),
     tagInfo: {
       tag,
@@ -846,12 +854,14 @@ export function transformAstSketchLines({
   transformInfos,
   programMemory,
   referenceSegName,
+  forceValueUsedInTransform,
 }: {
   ast: Program
   selectionRanges: Ranges
   transformInfos: TransformInfo[]
   programMemory: ProgramMemory
   referenceSegName: string
+  forceValueUsedInTransform?: Value
 }): { modifiedAst: Program; valueUsedInTransform?: number } {
   // deep clone since we are mutating in a loop, of which any could fail
   let node = JSON.parse(JSON.stringify(ast))
@@ -895,6 +905,7 @@ export function transformAstSketchLines({
         varValA,
         varValB,
         tag: callBackTag,
+        forceValueUsedInTransform,
       }),
     })
 
