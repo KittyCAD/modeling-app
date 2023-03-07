@@ -83,10 +83,60 @@ export const Stream = () => {
     }
   }, [])
 
+  // write a userEffact that console.logs the mouse position inside the videoRef element
+  useEffect(() => {
+    const debounceLog = throttle(console.log, 100)
+    const handleMouseMove = (e: MouseEvent) => {
+      if (videoRef.current) {
+        const rect = videoRef.current.getBoundingClientRect()
+        const x = e.clientX - rect.left
+        const y = e.clientY - rect.top
+        //debounce the console.log so that it's call no more than 10 times per second
+        debounceLog([x, y])
+      }
+    }
+    if (videoRef.current) {
+      videoRef.current.addEventListener('mousemove', handleMouseMove)
+    }
+    return () => {
+      if (videoRef.current) {
+        videoRef.current.removeEventListener('mousemove', handleMouseMove)
+      }
+    }
+  }, [videoRef])
+
   return (
     <div>
       <PanelHeader title="Stream" />
       <video ref={videoRef} />
     </div>
   )
+}
+
+function throttle(
+  func: (...args: any[]) => any,
+  wait: number
+): (...args: any[]) => any {
+  let timeout: ReturnType<typeof setTimeout> | null
+  let latestArgs: any[]
+  let latestTimestamp: number
+
+  function later() {
+    timeout = null
+    func(...latestArgs)
+  }
+
+  function throttled(...args: any[]) {
+    const currentTimestamp = Date.now()
+    latestArgs = args
+
+    if (!latestTimestamp || currentTimestamp - latestTimestamp >= wait) {
+      latestTimestamp = currentTimestamp
+      func(...latestArgs)
+    } else if (!timeout) {
+      timeout = setTimeout(later, wait - (currentTimestamp - latestTimestamp))
+    }
+  }
+
+  return throttled
 }
