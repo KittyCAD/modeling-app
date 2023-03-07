@@ -46,15 +46,11 @@ export const Stream = () => {
             iceServers: message.ice_servers,
           })
           pc.ontrack = function (event) {
-            console.log('has element?', videoRef.current)
-            setTimeout(() => {
-              console.log('has element in timeout?', videoRef.current)
-              if (videoRef.current) {
-                videoRef.current.srcObject = event.streams[0]
-                videoRef.current.autoplay = true
-                videoRef.current.controls = true
-              }
-            })
+            if (videoRef.current) {
+              videoRef.current.srcObject = event.streams[0]
+              videoRef.current.autoplay = true
+              videoRef.current.controls = false
+            }
           }
           pc.oniceconnectionstatechange = (e) =>
             console.log(pc.iceConnectionState)
