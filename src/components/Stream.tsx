@@ -84,6 +84,7 @@ export const Stream = () => {
   }, [])
 
   useEffect(() => {
+    // TODO instead of logging, send to server
     const debounceLog = throttle(console.log, 100)
     const handleMouseMove = (e: MouseEvent) => {
       if (videoRef.current) {
