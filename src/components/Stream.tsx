@@ -46,15 +46,11 @@ export const Stream = () => {
             iceServers: message.ice_servers,
           })
           pc.ontrack = function (event) {
-            console.log('has element?', videoRef.current)
-            setTimeout(() => {
-              console.log('has element in timeout?', videoRef.current)
-              if (videoRef.current) {
-                videoRef.current.srcObject = event.streams[0]
-                videoRef.current.autoplay = true
-                videoRef.current.controls = true
-              }
-            })
+            if (videoRef.current) {
+              videoRef.current.srcObject = event.streams[0]
+              videoRef.current.autoplay = true
+              videoRef.current.controls = false
+            }
           }
           pc.oniceconnectionstatechange = (e) =>
             console.log(pc.iceConnectionState)
@@ -81,9 +77,29 @@ export const Stream = () => {
       }
     })
 
+    // TODO instead of logging, send use `socket` to send to server, maybe something like?:
+    // const debounceLog = throttle((xy) => {
+    //   socket.send(JSON.stringify({ type: 'mouse', xy }))
+    // }, 100)
+    const debounceLog = throttle(console.log, 100)
+    const handleMouseMove = (e: MouseEvent) => {
+      if (videoRef.current) {
+        const rect = videoRef.current.getBoundingClientRect()
+        const x = e.clientX - rect.left
+        const y = e.clientY - rect.top
+        debounceLog([x, y])
+      }
+    }
+    if (videoRef.current) {
+      videoRef.current.addEventListener('mousemove', handleMouseMove)
+    }
+
     return () => {
       socket.close()
       pc.close()
+      if (videoRef.current) {
+        videoRef.current.removeEventListener('mousemove', handleMouseMove)
+      }
     }
   }, [])
 
@@ -93,4 +109,32 @@ export const Stream = () => {
       <video ref={videoRef} />
     </div>
   )
+}
+
+function throttle(
+  func: (...args: any[]) => any,
+  wait: number
+): (...args: any[]) => any {
+  let timeout: ReturnType<typeof setTimeout> | null
+  let latestArgs: any[]
+  let latestTimestamp: number
+
+  function later() {
+    timeout = null
+    func(...latestArgs)
+  }
+
+  function throttled(...args: any[]) {
+    const currentTimestamp = Date.now()
+    latestArgs = args
+
+    if (!latestTimestamp || currentTimestamp - latestTimestamp >= wait) {
+      latestTimestamp = currentTimestamp
+      func(...latestArgs)
+    } else if (!timeout) {
+      timeout = setTimeout(later, wait - (currentTimestamp - latestTimestamp))
+    }
+  }
+
+  return throttled
 }
