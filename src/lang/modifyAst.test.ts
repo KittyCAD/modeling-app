@@ -121,16 +121,16 @@ show(part001)`)
 function giveSketchFnCallTagTestHelper(
   code: string,
   searchStr: string
-): { tag: string; newCode: string } {
+): { tag: string; newCode: string; isTagExisting: boolean } {
   // giveSketchFnCallTag inputs and outputs an ast, which is very verbose for testing
   // this wrapper changes the input and output to code
   // making it more of an integration test, but easier to read the test intention is the goal
   const ast = abstractSyntaxTree(lexer(code))
   const start = code.indexOf(searchStr)
   const range: [number, number] = [start, start + searchStr.length]
-  const { modifiedAst, tag } = giveSketchFnCallTag(ast, range)
+  const { modifiedAst, tag, isTagExisting } = giveSketchFnCallTag(ast, range)
   const newCode = recast(modifiedAst)
-  return { tag, newCode }
+  return { tag, newCode, isTagExisting }
 }
 
 describe('Testing giveSketchFnCallTag', () => {
@@ -140,33 +140,36 @@ describe('Testing giveSketchFnCallTag', () => {
 |> line([0.82, 0.34], %)
 show(part001)`
   it('Should add tag to a sketch function call', () => {
-    const { newCode, tag } = giveSketchFnCallTagTestHelper(
+    const { newCode, tag, isTagExisting } = giveSketchFnCallTagTestHelper(
       code,
       'line([0, 0.83], %)'
     )
     expect(newCode).toContain("line({ to: [0, 0.83], tag: 'seg01' }, %)")
     expect(tag).toBe('seg01')
+    expect(isTagExisting).toBe(false)
   })
   it('Should create a unique tag if seg01 already exists', () => {
     let _code = code.replace(
       'line([-2.57, -0.13], %)',
       "line({ to: [-2.57, -0.13], tag: 'seg01' }, %)"
     )
-    const { newCode, tag } = giveSketchFnCallTagTestHelper(
+    const { newCode, tag, isTagExisting } = giveSketchFnCallTagTestHelper(
       _code,
       'line([0, 0.83], %)'
     )
     expect(newCode).toContain("line({ to: [0, 0.83], tag: 'seg02' }, %)")
     expect(tag).toBe('seg02')
+    expect(isTagExisting).toBe(false)
   })
   it('Should return existing tag if it already exists', () => {
     const lineButWithTag = "line({ to: [-2.57, -0.13], tag: 'butts' }, %)"
     let _code = code.replace('line([-2.57, -0.13], %)', lineButWithTag)
-    const { newCode, tag } = giveSketchFnCallTagTestHelper(
+    const { newCode, tag, isTagExisting } = giveSketchFnCallTagTestHelper(
       _code,
       lineButWithTag
     )
     expect(newCode).toContain(lineButWithTag) // no change
     expect(tag).toBe('butts')
+    expect(isTagExisting).toBe(true)
   })
 })

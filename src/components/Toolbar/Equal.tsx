@@ -8,7 +8,7 @@ import {
 import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
 import {
   TransformInfo,
-  transformAstForSketchLines,
+  transformSecondarySketchLinesTagFirst,
   getTransformInfos,
 } from '../../lang/std/sketchcombos'
 
@@ -73,7 +73,7 @@ export const Equal = () => {
         transformInfos &&
         ast &&
         updateAst(
-          transformAstForSketchLines({
+          transformSecondarySketchLinesTagFirst({
             ast,
             selectionRanges,
             transformInfos,
@@ -81,7 +81,7 @@ export const Equal = () => {
           })?.modifiedAst
         )
       }
-      className={`border m-1 px-1 rounded ${
+      className={`border m-1 px-1 rounded text-xs ${
         enableEqual ? 'bg-gray-50 text-gray-800' : 'bg-gray-200 text-gray-400'
       }`}
       disabled={!enableEqual}

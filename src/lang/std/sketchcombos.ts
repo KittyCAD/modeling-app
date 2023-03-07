@@ -1,5 +1,5 @@
 import { TransformCallback } from './stdTypes'
-import { Range, Ranges, toolTips, TooTip } from '../../useStore'
+import { Ranges, toolTips, TooTip } from '../../useStore'
 import {
   BinaryPart,
   CallExpression,
@@ -21,7 +21,7 @@ import {
   giveSketchFnCallTag,
 } from '../modifyAst'
 import { createFirstArg, getFirstArg, replaceSketchLine } from './sketch'
-import { Path, ProgramMemory } from '../executor'
+import { ProgramMemory } from '../executor'
 import { getSketchSegmentIndexFromSourceRange } from './sketchConstraints'
 import { roundOff } from '../../lib/utils'
 
@@ -44,46 +44,16 @@ export type ConstraintType =
 function createCallWrapper(
   a: TooTip,
   val: [Value, Value] | Value,
-  tag?: Value
-) {
-  return createCallExpression(a, [
-    createFirstArg(a, val, tag),
-    createPipeSubstitution(),
-  ])
-}
-
-export function replaceSketchCall(
-  programMemory: ProgramMemory,
-  ast: Program,
-  range: Range,
-  transformTo: TooTip,
-  createCallback: TransformCallback,
-  referenceSegName: string
-): { modifiedAst: Program } {
-  const path = getNodePathFromSourceRange(ast, range)
-  const getNode = getNodeFromPathCurry(ast, path)
-  const varDec = getNode<VariableDeclarator>('VariableDeclarator').node
-  const callExp = getNode<CallExpression>('CallExpression').node
-  const varName = varDec.id.name
-  const sketchGroup = programMemory.root?.[varName]
-  if (!sketchGroup || sketchGroup.type !== 'sketchGroup')
-    throw new Error('not a sketch group')
-  const seg = getSketchSegmentIndexFromSourceRange(sketchGroup, range)
-  const referencedSegment = sketchGroup.value.find(
-    (path) => path.name === referenceSegName
-  )
-  const { to, from } = seg
-  const { modifiedAst } = replaceSketchLine({
-    node: ast,
-    programMemory,
-    sourceRange: range,
-    referencedSegment,
-    fnName: transformTo || (callExp.callee.name as TooTip),
-    to,
-    from,
-    createCallback,
-  })
-  return { modifiedAst }
+  tag?: Value,
+  valueUsedInTransform?: number
+): ReturnType<TransformCallback> {
+  return {
+    callExp: createCallExpression(a, [
+      createFirstArg(a, val, tag),
+      createPipeSubstitution(),
+    ]),
+    valueUsedInTransform,
+  }
 }
 
 export type TransformInfo = {
@@ -93,7 +63,8 @@ export type TransformInfo = {
     varValB: Value // y / length or x y for angledLineOfXlength etc
     referenceSegName: string
     tag?: Value
-  }) => (args: [Value, Value], referencedSegment?: Path) => Value
+    forceValueUsedInTransform?: Value
+  }) => TransformCallback
 }
 
 type TransformMap = {
@@ -172,23 +143,27 @@ const getAngleLengthSign = (arg: Value, legAngleVal: BinaryPart) => {
 }
 
 const setHorzVertDistanceCreateNode =
-  (isX = true): TransformInfo['createNode'] =>
-  ({ referenceSegName, tag }) => {
+  (
+    xOrY: 'x' | 'y',
+    index = xOrY === 'x' ? 0 : 1
+  ): TransformInfo['createNode'] =>
+  ({ referenceSegName, tag, forceValueUsedInTransform }) => {
     return (args, referencedSegment) => {
-      const makeBinExp = (index: 0 | 1) => {
-        const arg = getArgLiteralVal(args?.[index])
-        return createBinaryExpression([
-          createSegEnd(referenceSegName, isX),
-          '+',
-          createLiteral(
-            roundOff(arg - (referencedSegment?.to?.[index] || 0), 2)
-          ),
-        ])
-      }
+      const valueUsedInTransform = roundOff(
+        getArgLiteralVal(args?.[index]) - (referencedSegment?.to?.[index] || 0),
+        2
+      )
+      const makeBinExp = createBinaryExpression([
+        createSegEnd(referenceSegName, !index),
+        '+',
+        (forceValueUsedInTransform as BinaryPart) ||
+          createLiteral(valueUsedInTransform),
+      ])
       return createCallWrapper(
         'lineTo',
-        isX ? [makeBinExp(0), args[1]] : [args[0], makeBinExp(1)],
-        tag
+        !index ? [makeBinExp, args[1]] : [args[0], makeBinExp],
+        tag,
+        valueUsedInTransform
       )
     }
   }
@@ -301,11 +276,11 @@ const transformMap: TransformMap = {
       },
       setHorzDistance: {
         tooltip: 'lineTo',
-        createNode: setHorzVertDistanceCreateNode(true),
+        createNode: setHorzVertDistanceCreateNode('x'),
       },
       setVertDistance: {
         tooltip: 'lineTo',
-        createNode: setHorzVertDistanceCreateNode(false),
+        createNode: setHorzVertDistanceCreateNode('y'),
       },
     },
   },
@@ -826,99 +801,120 @@ export function getTransformInfos(
   return theTransforms
 }
 
-export function transformAstForSketchLines({
+export function transformSecondarySketchLinesTagFirst({
   ast,
   selectionRanges,
   transformInfos,
   programMemory,
+  forceSegName,
+  forceValueUsedInTransform,
 }: {
   ast: Program
   selectionRanges: Ranges
   transformInfos: TransformInfo[]
   programMemory: ProgramMemory
-}): { modifiedAst: Program } {
-  // deep clone since we are mutating in a loop, of which any could fail
-  let node = JSON.parse(JSON.stringify(ast))
+  forceSegName?: string
+  forceValueUsedInTransform?: Value
+}): {
+  modifiedAst: Program
+  valueUsedInTransform?: number
+  tagInfo: {
+    tag: string
+    isTagExisting: boolean
+  }
+} {
+  // let node = JSON.parse(JSON.stringify(ast))
   const primarySelection = selectionRanges[0]
 
-  const { modifiedAst, tag } = giveSketchFnCallTag(node, primarySelection)
-  node = modifiedAst
+  const { modifiedAst, tag, isTagExisting } = giveSketchFnCallTag(
+    ast,
+    primarySelection,
+    forceSegName
+  )
 
-  selectionRanges.slice(1).forEach((range, index) => {
+  return {
+    ...transformAstSketchLines({
+      ast: modifiedAst,
+      selectionRanges: selectionRanges.slice(1),
+      transformInfos,
+      programMemory,
+      referenceSegName: tag,
+      forceValueUsedInTransform,
+    }),
+    tagInfo: {
+      tag,
+      isTagExisting,
+    },
+  }
+}
+
+export function transformAstSketchLines({
+  ast,
+  selectionRanges,
+  transformInfos,
+  programMemory,
+  referenceSegName,
+  forceValueUsedInTransform,
+}: {
+  ast: Program
+  selectionRanges: Ranges
+  transformInfos: TransformInfo[]
+  programMemory: ProgramMemory
+  referenceSegName: string
+  forceValueUsedInTransform?: Value
+}): { modifiedAst: Program; valueUsedInTransform?: number } {
+  // deep clone since we are mutating in a loop, of which any could fail
+  let node = JSON.parse(JSON.stringify(ast))
+  let _valueUsedInTransform // TODO should this be an array?
+
+  selectionRanges.forEach((range, index) => {
     const callBack = transformInfos?.[index].createNode
     const transformTo = transformInfos?.[index].tooltip
     if (!callBack || !transformTo) throw new Error('no callback helper')
 
-    const callExpPath = getNodePathFromSourceRange(node, range)
-    const callExp = getNodeFromPath<CallExpression>(
+    const getNode = getNodeFromPathCurry(
       node,
-      callExpPath,
-      'CallExpression'
-    )?.node
-    const { val } = getFirstArg(callExp)
+      getNodePathFromSourceRange(node, range)
+    )
+
+    const callExp = getNode<CallExpression>('CallExpression')?.node
+    const varDec = getNode<VariableDeclarator>('VariableDeclarator').node
+
+    const { val, tag: callBackTag } = getFirstArg(callExp)
     const [varValA, varValB] = Array.isArray(val) ? val : [val, val]
 
-    const { modifiedAst } = replaceSketchCall(
+    const varName = varDec.id.name
+    const sketchGroup = programMemory.root?.[varName]
+    if (!sketchGroup || sketchGroup.type !== 'sketchGroup')
+      throw new Error('not a sketch group')
+    const seg = getSketchSegmentIndexFromSourceRange(sketchGroup, range)
+    const referencedSegment = sketchGroup.value.find(
+      (path) => path.name === referenceSegName
+    )
+    const { to, from } = seg
+    const { modifiedAst, valueUsedInTransform } = replaceSketchLine({
+      node: node,
       programMemory,
-      node,
-      range,
-      transformTo,
-      callBack({
-        referenceSegName: tag,
+      sourceRange: range,
+      referencedSegment,
+      fnName: transformTo || (callExp.callee.name as TooTip),
+      to,
+      from,
+      createCallback: callBack({
+        referenceSegName,
         varValA,
         varValB,
+        tag: callBackTag,
+        forceValueUsedInTransform,
       }),
-      tag
-    )
+    })
+
     node = modifiedAst
+    if (typeof valueUsedInTransform === 'number') {
+      _valueUsedInTransform = valueUsedInTransform
+    }
   })
-  return { modifiedAst: node }
-}
-
-export function transformAstForHorzVert({
-  ast,
-  selectionRanges,
-  transformInfos,
-  programMemory,
-}: {
-  ast: Program
-  selectionRanges: Ranges
-  transformInfos: TransformInfo[]
-  programMemory: ProgramMemory
-}): { modifiedAst: Program } {
-  // deep clone since we are mutating in a loop, of which any could fail
-  let node = JSON.parse(JSON.stringify(ast))
-
-  selectionRanges.forEach((range, index) => {
-    const callBack = transformInfos?.[index]?.createNode
-    const transformTo = transformInfos?.[index].tooltip
-    if (!callBack || !transformTo) throw new Error('no callback helper')
-
-    const callExpPath = getNodePathFromSourceRange(node, range)
-    const callExp = getNodeFromPath<CallExpression>(
-      node,
-      callExpPath,
-      'CallExpression'
-    )?.node
-    const { val, tag } = getFirstArg(callExp)
-    const [varValA, varValB] = Array.isArray(val) ? val : [val, val]
-
-    const { modifiedAst } = replaceSketchCall(
-      programMemory,
-      node,
-      range,
-      transformTo,
-      callBack({
-        referenceSegName: '',
-        varValA,
-        varValB,
-        tag,
-      }),
-      tag?.type === 'Literal' ? String(tag.value) : ''
-    )
-    node = modifiedAst
-  })
-  return { modifiedAst: node }
+  return { modifiedAst: node, valueUsedInTransform: _valueUsedInTransform }
 }
 
 function createSegLen(referenceSegName: string): Value {

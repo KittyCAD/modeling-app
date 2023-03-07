@@ -8,7 +8,7 @@ import {
 import {
   TransformInfo,
   getTransformInfos,
-  transformAstForHorzVert,
+  transformAstSketchLines,
 } from '../../lang/std/sketchcombos'
 
 export const HorzVert = ({
@@ -55,15 +55,16 @@ export const HorzVert = ({
         transformInfos &&
         ast &&
         updateAst(
-          transformAstForHorzVert({
+          transformAstSketchLines({
             ast,
             selectionRanges,
             transformInfos,
             programMemory,
+            referenceSegName: '',
           })?.modifiedAst
         )
       }
-      className={`border m-1 px-1 rounded ${
+      className={`border m-1 px-1 rounded text-xs ${
         enableHorz ? 'bg-gray-50 text-gray-800' : 'bg-gray-200 text-gray-400'
       }`}
       disabled={!enableHorz}

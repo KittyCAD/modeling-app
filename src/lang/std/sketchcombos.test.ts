@@ -3,8 +3,8 @@ import { lexer } from '../tokeniser'
 import {
   getConstraintType,
   getTransformInfos,
-  transformAstForSketchLines,
-  transformAstForHorzVert,
+  transformAstSketchLines,
+  transformSecondarySketchLinesTagFirst,
   ConstraintType,
 } from './sketchcombos'
 import { initPromise } from '../rust'
@@ -204,7 +204,7 @@ show(part001)`
       'equalLength'
     )
 
-    const newAst = transformAstForSketchLines({
+    const newAst = transformSecondarySketchLinesTagFirst({
       ast,
       selectionRanges,
       transformInfos,
@@ -282,11 +282,12 @@ show(part001)`
     const programMemory = executor(ast)
     const transformInfos = getTransformInfos(selectionRanges, ast, 'horizontal')
 
-    const newAst = transformAstForHorzVert({
+    const newAst = transformAstSketchLines({
       ast,
       selectionRanges,
       transformInfos,
       programMemory,
+      referenceSegName: '',
     })?.modifiedAst
     const newCode = recast(newAst)
     expect(newCode).toBe(expectModifiedScript)
@@ -331,11 +332,12 @@ show(part001)`
     const programMemory = executor(ast)
     const transformInfos = getTransformInfos(selectionRanges, ast, 'vertical')
 
-    const newAst = transformAstForHorzVert({
+    const newAst = transformAstSketchLines({
       ast,
       selectionRanges,
       transformInfos,
       programMemory,
+      referenceSegName: '',
     })?.modifiedAst
     const newCode = recast(newAst)
     expect(newCode).toBe(expectModifiedScript)
@@ -419,7 +421,7 @@ function helperThing(
     constraint
   )
 
-  const newAst = transformAstForSketchLines({
+  const newAst = transformSecondarySketchLinesTagFirst({
     ast,
     selectionRanges,
     transformInfos,

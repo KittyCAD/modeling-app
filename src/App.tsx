@@ -23,6 +23,7 @@ import { PanelHeader } from './components/PanelHeader'
 import { MemoryPanel } from './components/MemoryPanel'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
 import { Stream } from './components/Stream'
+import ModalContainer from 'react-modal-promise'
 
 const OrrthographicCamera = OrthographicCamera as any
 
@@ -140,6 +141,7 @@ function App() {
   }, [code])
   return (
     <div className="h-screen">
+      <ModalContainer />
       <Allotment snap={true}>
         <Allotment vertical defaultSizes={[4, 1, 1]} minSize={20}>
           <div className="h-full flex flex-col items-start">
