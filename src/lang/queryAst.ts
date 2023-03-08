@@ -1,6 +1,7 @@
-import { PathToNode } from './executor'
+import { PathToNode, ProgramMemory } from './executor'
 import { Range } from '../useStore'
 import { Program } from './abstractSyntaxTree'
+import { splitPathAtLastIndex } from './modifyAst'
 
 export function getNodeFromPath<T>(
   node: Program,
@@ -132,4 +133,38 @@ export function getNodePathFromSourceRange(
     }
   }
   return path
+}
+
+type Variables = { [key: string]: number }
+
+export function findAllPreviousVariables(
+  ast: Program,
+  programMemory: ProgramMemory,
+  sourceRange: Range,
+  type: 'number' | 'string' = 'number'
+): {
+  variables: Variables
+  bodyPath: PathToNode
+  insertIndex: number
+} {
+  const path = getNodePathFromSourceRange(ast, sourceRange)
+  const { path: pathToDec } = getNodeFromPath(ast, path, 'VariableDeclaration')
+  const { index: insertIndex, path: bodyPath } = splitPathAtLastIndex(pathToDec)
+
+  const { node: bodyItems } = getNodeFromPath<Program['body']>(ast, bodyPath)
+
+  const variables: Variables = {}
+  bodyItems.forEach((item) => {
+    if (item.type !== 'VariableDeclaration' || item.end > sourceRange[0]) return
+    const varName = item.declarations[0].id.name
+    const varValue = programMemory?.root[varName]
+    if (typeof varValue?.value !== type) return
+    variables[varName] = varValue.value
+  })
+
+  return {
+    insertIndex,
+    bodyPath: bodyPath,
+    variables,
+  }
 }
