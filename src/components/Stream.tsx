@@ -82,13 +82,12 @@ export const Stream = () => {
     //   socket.send(JSON.stringify({ type: 'mouse', xy }))
     // }, 100)
     const debounceLog = throttle(console.log, 100)
-    const handleMouseMove = (e: MouseEvent) => {
-      if (videoRef.current) {
-        const rect = videoRef.current.getBoundingClientRect()
-        const x = e.clientX - rect.left
-        const y = e.clientY - rect.top
-        debounceLog([x, y])
-      }
+    const handleMouseMove = ({ clientX, clientY }: MouseEvent) => {
+      if (!videoRef.current) return
+      const { left, top } = videoRef.current.getBoundingClientRect()
+      const x = clientX - left
+      const y = clientY - top
+      debounceLog([x, y])
     }
     if (videoRef.current) {
       videoRef.current.addEventListener('mousemove', handleMouseMove)
@@ -97,9 +96,8 @@ export const Stream = () => {
     return () => {
       socket.close()
       pc.close()
-      if (videoRef.current) {
-        videoRef.current.removeEventListener('mousemove', handleMouseMove)
-      }
+      if (!videoRef.current) return
+      videoRef.current.removeEventListener('mousemove', handleMouseMove)
     }
   }, [])
 
