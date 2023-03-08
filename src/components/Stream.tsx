@@ -77,17 +77,15 @@ export const Stream = () => {
       }
     })
 
-    // TODO instead of logging, send use `socket` to send to server, maybe something like?:
-    // const debounceLog = throttle((xy) => {
-    //   socket.send(JSON.stringify({ type: 'mouse', xy }))
-    // }, 100)
-    const debounceLog = throttle(console.log, 100)
+    const debounceSocketSend = throttle((message) => {
+      socket.send(JSON.stringify(message))
+    }, 100)
     const handleMouseMove = ({ clientX, clientY }: MouseEvent) => {
       if (!videoRef.current) return
       const { left, top } = videoRef.current.getBoundingClientRect()
       const x = clientX - left
       const y = clientY - top
-      debounceLog([x, y])
+      debounceSocketSend({ type: 'MouseMove', x: x, y: y })
     }
     if (videoRef.current) {
       videoRef.current.addEventListener('mousemove', handleMouseMove)
