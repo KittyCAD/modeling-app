@@ -335,12 +335,21 @@ export function sketchOnExtrudedFace(
   }
 }
 
-export const getLastIndex = (pathToNode: PathToNode): number => {
+export const getLastIndex = (pathToNode: PathToNode): number =>
+  splitPathAtLastIndex(pathToNode).index
+
+export function splitPathAtLastIndex(pathToNode: PathToNode): {
+  path: PathToNode
+  index: number
+} {
   const last = pathToNode[pathToNode.length - 1]
   if (typeof last === 'number') {
-    return last
+    return {
+      path: pathToNode.slice(0, -1),
+      index: last,
+    }
   }
-  return getLastIndex(pathToNode.slice(0, -1))
+  return splitPathAtLastIndex(pathToNode.slice(0, -1))
 }
 
 export function createLiteral(value: string | number): Literal {
