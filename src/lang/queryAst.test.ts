@@ -33,15 +33,15 @@ show(part001)`
       programMemory,
       [rangeStart, rangeStart]
     )
-    expect(variables).toEqual({
-      baseThick: 1,
-      armAngle: 60,
-      baseThickHalf: 0.5,
-      halfArmAngle: 30,
+    expect(variables).toEqual([
+      { key: 'baseThick', value: 1 },
+      { key: 'armAngle', value: 60 },
+      { key: 'baseThickHalf', value: 0.5 },
+      { key: 'halfArmAngle', value: 30 },
       // no arrExpShouldNotBeIncluded, variableBelowShouldNotBeIncluded etc
-    })
+    ])
     // there are 4 number variables and 2 non-number variables before the sketch var
-    // there the insert index should be 6
+    // ∴ the insert index should be 6
     expect(insertIndex).toEqual(6)
     expect(bodyPath).toEqual(['body'])
   })
