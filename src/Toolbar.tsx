@@ -4,6 +4,7 @@ import { getNodePathFromSourceRange } from './lang/queryAst'
 import { HorzVert } from './components/Toolbar/HorzVert'
 import { Equal } from './components/Toolbar/Equal'
 import { SetHorzDistance } from './components/Toolbar/SetHorzDistance'
+import { SetAngleLength } from './components/Toolbar/SetAngleLength'
 
 export const Toolbar = () => {
   const {
@@ -159,6 +160,8 @@ export const Toolbar = () => {
       <Equal />
       <SetHorzDistance horOrVert="setHorzDistance" />
       <SetHorzDistance horOrVert="setVertDistance" />
+      <SetAngleLength angleOrLength="setAngle" />
+      <SetAngleLength angleOrLength="setLength" />
     </div>
   )
 }

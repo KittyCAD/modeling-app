@@ -160,12 +160,15 @@ export const lineTo: SketchLineHelper = {
     ])
     const callIndex = getLastIndex(pathToNode)
     if (replaceExisting && createCallback) {
-      const boop = createCallback(newVals, referencedSegment)
-      pipe.body[callIndex] = boop.callExp
+      const { callExp, valueUsedInTransform } = createCallback(
+        newVals,
+        referencedSegment
+      )
+      pipe.body[callIndex] = callExp
       return {
         modifiedAst: _node,
         pathToNode,
-        valueUsedInTransform: boop.valueUsedInTransform,
+        valueUsedInTransform: valueUsedInTransform,
       }
     } else {
       pipe.body = [...pipe.body, newLine]
@@ -599,16 +602,23 @@ export const angledLine: SketchLineHelper = {
 
     const newAngleVal = createLiteral(roundOff(getAngle(from, to), 0))
     const newLengthVal = createLiteral(roundOff(getLength(from, to), 2))
-    const newLine = createCallback
-      ? createCallback([newAngleVal, newLengthVal]).callExp
-      : createCallExpression('angledLine', [
-          createArrayExpression([newAngleVal, newLengthVal]),
-          createPipeSubstitution(),
-        ])
+    const newLine = createCallExpression('angledLine', [
+      createArrayExpression([newAngleVal, newLengthVal]),
+      createPipeSubstitution(),
+    ])
 
     const callIndex = getLastIndex(pathToNode)
-    if (replaceExisting) {
-      pipe.body[callIndex] = newLine
+    if (replaceExisting && createCallback) {
+      const { callExp, valueUsedInTransform } = createCallback([
+        newAngleVal,
+        newLengthVal,
+      ])
+      pipe.body[callIndex] = callExp
+      return {
+        modifiedAst: _node,
+        pathToNode,
+        valueUsedInTransform,
+      }
     } else {
       pipe.body = [...pipe.body, newLine]
     }
