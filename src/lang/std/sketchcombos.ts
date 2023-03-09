@@ -81,14 +81,23 @@ type TransformMap = {
 const basicAngledLineCreateNode =
   (
     referenceSeg: 'ang' | 'len' | 'none' = 'none',
-    valToForce: 'ang' | 'len' | 'none' = 'none'
+    valToForce: 'ang' | 'len' | 'none' = 'none',
+    varValToUse: 'ang' | 'len' | 'none' = 'none'
   ): TransformInfo['createNode'] =>
-  ({ referenceSegName, tag, forceValueUsedInTransform }) =>
+  ({ referenceSegName, tag, forceValueUsedInTransform, varValA, varValB }) =>
   (args) => {
     const nonForcedAng =
-      referenceSeg === 'ang' ? createSegAngle(referenceSegName) : args[0]
+      varValToUse === 'ang'
+        ? varValA
+        : referenceSeg === 'ang'
+        ? createSegAngle(referenceSegName)
+        : args[0]
     const nonForcedLen =
-      referenceSeg === 'len' ? createSegLen(referenceSegName) : args[1]
+      varValToUse === 'len'
+        ? varValB
+        : referenceSeg === 'len'
+        ? createSegLen(referenceSegName)
+        : args[1]
     const shouldForceAng = valToForce === 'ang' && forceValueUsedInTransform
     const shouldForceLen = valToForce === 'len' && forceValueUsedInTransform
     return createCallWrapper(
@@ -403,6 +412,10 @@ const transformMap: TransformMap = {
               tag
             ),
       },
+      setLength: {
+        tooltip: 'angledLine',
+        createNode: basicAngledLineCreateNode('none', 'len', 'ang'),
+      },
     },
     free: {
       equalLength: {
@@ -448,6 +461,10 @@ const transformMap: TransformMap = {
                 : varValB
             return createCallWrapper('xLine', val, tag)
           },
+      },
+      setAngle: {
+        tooltip: 'angledLine',
+        createNode: basicAngledLineCreateNode('len', 'ang', 'len'),
       },
     },
   },
