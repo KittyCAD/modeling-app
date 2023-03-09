@@ -135,7 +135,7 @@ export function getNodePathFromSourceRange(
   return path
 }
 
-interface PrevVariable<T> {
+export interface PrevVariable<T> {
   key: string
   value: T
 }

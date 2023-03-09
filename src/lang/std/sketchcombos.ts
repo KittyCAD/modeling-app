@@ -15,6 +15,7 @@ import {
 import {
   createBinaryExpression,
   createCallExpression,
+  createIdentifier,
   createLiteral,
   createPipeSubstitution,
   createUnaryExpression,
@@ -40,6 +41,8 @@ export type ConstraintType =
   | 'equalangle'
   | 'setHorzDistance'
   | 'setVertDistance'
+  | 'setAngle'
+  | 'setLength'
 
 function createCallWrapper(
   a: TooTip,
@@ -75,14 +78,38 @@ type TransformMap = {
   }
 }
 
-const basicAngledLineCreateNode: TransformInfo['createNode'] =
-  ({ referenceSegName, tag }) =>
-  (args) =>
-    createCallWrapper(
+const basicAngledLineCreateNode =
+  (
+    referenceSeg: 'ang' | 'len' | 'none' = 'none',
+    valToForce: 'ang' | 'len' | 'none' = 'none',
+    varValToUse: 'ang' | 'len' | 'none' = 'none'
+  ): TransformInfo['createNode'] =>
+  ({ referenceSegName, tag, forceValueUsedInTransform, varValA, varValB }) =>
+  (args) => {
+    const nonForcedAng =
+      varValToUse === 'ang'
+        ? varValA
+        : referenceSeg === 'ang'
+        ? createSegAngle(referenceSegName)
+        : args[0]
+    const nonForcedLen =
+      varValToUse === 'len'
+        ? varValB
+        : referenceSeg === 'len'
+        ? createSegLen(referenceSegName)
+        : args[1]
+    const shouldForceAng = valToForce === 'ang' && forceValueUsedInTransform
+    const shouldForceLen = valToForce === 'len' && forceValueUsedInTransform
+    return createCallWrapper(
       'angledLine',
-      [args[0], createSegLen(referenceSegName)],
-      tag
+      [
+        shouldForceAng ? forceValueUsedInTransform : nonForcedAng,
+        shouldForceLen ? forceValueUsedInTransform : nonForcedLen,
+      ],
+      tag,
+      getArgLiteralVal(valToForce === 'ang' ? args[0] : args[1])
     )
+  }
 const angledLineAngleCreateNode: TransformInfo['createNode'] =
   ({ referenceSegName, varValA, tag }) =>
   () =>
@@ -133,7 +160,7 @@ const getLegAng = (arg: Value, legAngleVal: BinaryPart) => {
     '+',
     legAngleVal,
   ])
-  return truncatedTo90 == 0 ? legAngleVal : binExp
+  return truncatedTo90 === 0 ? legAngleVal : binExp
 }
 
 const getAngleLengthSign = (arg: Value, legAngleVal: BinaryPart) => {
@@ -258,7 +285,7 @@ const transformMap: TransformMap = {
     free: {
       equalLength: {
         tooltip: 'angledLine',
-        createNode: basicAngledLineCreateNode,
+        createNode: basicAngledLineCreateNode('len'),
       },
       horizontal: {
         tooltip: 'xLine',
@@ -282,13 +309,21 @@ const transformMap: TransformMap = {
         tooltip: 'lineTo',
         createNode: setHorzVertDistanceCreateNode('y'),
       },
+      setAngle: {
+        tooltip: 'angledLine',
+        createNode: basicAngledLineCreateNode('none', 'ang'),
+      },
+      setLength: {
+        tooltip: 'angledLine',
+        createNode: basicAngledLineCreateNode('none', 'len'),
+      },
     },
   },
   lineTo: {
     free: {
       equalLength: {
         tooltip: 'angledLine',
-        createNode: basicAngledLineCreateNode,
+        createNode: basicAngledLineCreateNode('len'),
       },
       horizontal: {
         tooltip: 'xLineTo',
@@ -377,11 +412,15 @@ const transformMap: TransformMap = {
               tag
             ),
       },
+      setLength: {
+        tooltip: 'angledLine',
+        createNode: basicAngledLineCreateNode('none', 'len', 'ang'),
+      },
     },
     free: {
       equalLength: {
         tooltip: 'angledLine',
-        createNode: basicAngledLineCreateNode,
+        createNode: basicAngledLineCreateNode('len'),
       },
       vertical: {
         tooltip: 'yLine',
@@ -423,13 +462,17 @@ const transformMap: TransformMap = {
             return createCallWrapper('xLine', val, tag)
           },
       },
+      setAngle: {
+        tooltip: 'angledLine',
+        createNode: basicAngledLineCreateNode('len', 'ang', 'len'),
+      },
     },
   },
   angledLineOfXLength: {
     free: {
       equalLength: {
         tooltip: 'angledLine',
-        createNode: basicAngledLineCreateNode,
+        createNode: basicAngledLineCreateNode('len'),
       },
       horizontal: {
         tooltip: 'xLine',
@@ -479,7 +522,7 @@ const transformMap: TransformMap = {
     free: {
       equalLength: {
         tooltip: 'angledLine',
-        createNode: basicAngledLineCreateNode,
+        createNode: basicAngledLineCreateNode('len'),
       },
       vertical: {
         tooltip: 'yLine',
@@ -530,7 +573,7 @@ const transformMap: TransformMap = {
     free: {
       equalLength: {
         tooltip: 'angledLine',
-        createNode: basicAngledLineCreateNode,
+        createNode: basicAngledLineCreateNode('len'),
       },
       horizontal: {
         tooltip: 'xLineTo',
@@ -580,7 +623,7 @@ const transformMap: TransformMap = {
     free: {
       equalLength: {
         tooltip: 'angledLine',
-        createNode: basicAngledLineCreateNode,
+        createNode: basicAngledLineCreateNode('len'),
       },
       vertical: {
         tooltip: 'yLineTo',
@@ -919,6 +962,13 @@ export function transformAstSketchLines({
 
 function createSegLen(referenceSegName: string): Value {
   return createCallExpression('segLen', [
+    createLiteral(referenceSegName),
+    createPipeSubstitution(),
+  ])
+}
+
+function createSegAngle(referenceSegName: string): Value {
+  return createCallExpression('segAngle', [
     createLiteral(referenceSegName),
     createPipeSubstitution(),
   ])
