@@ -160,6 +160,12 @@ export const executor = (
               __meta,
             }
           }
+        } else if (declaration.init.type === 'Identifier') {
+          _programMemory.root[variableName] = {
+            type: 'userVal',
+            value: _programMemory.root[declaration.init.name].value,
+            __meta,
+          }
         } else if (declaration.init.type === 'Literal') {
           _programMemory.root[variableName] = {
             type: 'userVal',
