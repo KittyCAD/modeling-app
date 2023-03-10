@@ -460,15 +460,26 @@ export const xLine: SketchLineHelper = {
 
     const newVal = createLiteral(roundOff(to[0] - from[0], 2))
     const firstArg = newVal
-    const newLine = createCallback
-      ? createCallback([firstArg, firstArg]).callExp
-      : createCallExpression('xLine', [firstArg, createPipeSubstitution()])
-    const callIndex = getLastIndex(pathToNode)
-    if (replaceExisting) {
-      pipe.body[callIndex] = newLine
-    } else {
-      pipe.body = [...pipe.body, newLine]
+
+    if (replaceExisting && createCallback) {
+      const callIndex = getLastIndex(pathToNode)
+      const { callExp, valueUsedInTransform } = createCallback([
+        firstArg,
+        firstArg,
+      ])
+      pipe.body[callIndex] = callExp
+      return {
+        modifiedAst: _node,
+        pathToNode,
+        valueUsedInTransform,
+      }
     }
+
+    const newLine = createCallExpression('xLine', [
+      firstArg,
+      createPipeSubstitution(),
+    ])
+    pipe.body = [...pipe.body, newLine]
     return { modifiedAst: _node, pathToNode }
   },
   updateArgs: ({ node, pathToNode, to, from }) => {
@@ -513,15 +524,22 @@ export const yLine: SketchLineHelper = {
     const getNode = getNodeFromPathCurry(_node, pathToNode)
     const { node: pipe } = getNode<PipeExpression>('PipeExpression')
     const newVal = createLiteral(roundOff(to[1] - from[1], 2))
-    const newLine = createCallback
-      ? createCallback([newVal, newVal]).callExp
-      : createCallExpression('yLine', [newVal, createPipeSubstitution()])
-    const callIndex = getLastIndex(pathToNode)
-    if (replaceExisting) {
-      pipe.body[callIndex] = newLine
-    } else {
-      pipe.body = [...pipe.body, newLine]
+    if (replaceExisting && createCallback) {
+      const callIndex = getLastIndex(pathToNode)
+      const { callExp, valueUsedInTransform } = createCallback([newVal, newVal])
+      pipe.body[callIndex] = callExp
+      return {
+        modifiedAst: _node,
+        pathToNode,
+        valueUsedInTransform,
+      }
     }
+
+    const newLine = createCallExpression('yLine', [
+      newVal,
+      createPipeSubstitution(),
+    ])
+    pipe.body = [...pipe.body, newLine]
     return { modifiedAst: _node, pathToNode }
   },
   updateArgs: ({ node, pathToNode, to, from }) => {
@@ -958,18 +976,23 @@ export const angledLineToY: SketchLineHelper = {
     )
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const yArg = createLiteral(roundOff(to[1], 2))
-    const newLine = createCallback
-      ? createCallback([angle, yArg]).callExp
-      : createCallExpression('angledLineToY', [
-          createArrayExpression([angle, yArg]),
-          createPipeSubstitution(),
-        ])
-    const callIndex = getLastIndex(pathToNode)
-    if (replaceExisting) {
-      pipe.body[callIndex] = newLine
-    } else {
-      pipe.body = [...pipe.body, newLine]
+
+    if (replaceExisting && createCallback) {
+      const { callExp, valueUsedInTransform } = createCallback([angle, yArg])
+      const callIndex = getLastIndex(pathToNode)
+      pipe.body[callIndex] = callExp
+      return {
+        modifiedAst: _node,
+        pathToNode,
+        valueUsedInTransform,
+      }
     }
+
+    const newLine = createCallExpression('angledLineToY', [
+      createArrayExpression([angle, yArg]),
+      createPipeSubstitution(),
+    ])
+    pipe.body = [...pipe.body, newLine]
     return {
       modifiedAst: _node,
       pathToNode,
