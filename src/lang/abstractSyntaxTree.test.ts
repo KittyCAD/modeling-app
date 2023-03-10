@@ -1859,3 +1859,39 @@ describe('testing nested call expressions', () => {
     })
   })
 })
+
+describe('should recognise callExpresions in binaryExpressions', () => {
+  const code = "xLineTo(segEndX('seg02', %) + 1, %)"
+  it('should recognise the callExp', () => {
+    const tokens = lexer(code)
+    const { body } = abstractSyntaxTree(tokens)
+    const callExpArgs = (body?.[0] as any).expression?.arguments
+    expect(callExpArgs).toEqual([
+      {
+        type: 'BinaryExpression',
+        operator: '+',
+        start: 8,
+        end: 31,
+        left: {
+          type: 'CallExpression',
+          start: 8,
+          end: 27,
+          callee: { type: 'Identifier', start: 8, end: 15, name: 'segEndX' },
+          arguments: [
+            {
+              type: 'Literal',
+              start: 16,
+              end: 23,
+              value: 'seg02',
+              raw: "'seg02'",
+            },
+            { type: 'PipeSubstitution', start: 25, end: 26 },
+          ],
+          optional: false,
+        },
+        right: { type: 'Literal', value: 1, raw: '1', start: 30, end: 31 },
+      },
+      { type: 'PipeSubstitution', start: 33, end: 34 },
+    ])
+  })
+})

@@ -183,10 +183,8 @@ export function makeCallExpression(
 } {
   const currentToken = tokens[index]
   const braceToken = nextMeaningfulToken(tokens, index)
-  // const firstArgumentToken = nextMeaningfulToken(tokens, braceToken.index);
   const callee = makeIdentifier(tokens, index)
   const args = makeArguments(tokens, braceToken.index)
-  // const closingBraceToken = nextMeaningfulToken(tokens, args.lastIndex);
   const closingBraceToken = tokens[args.lastIndex]
   return {
     expression: {
@@ -321,6 +319,25 @@ function makeArguments(
     nextBraceOrCommaToken.token.type === 'brace' &&
     nextBraceOrCommaToken.token.value === '('
   ) {
+    const closingBrace = findClosingBrace(tokens, nextBraceOrCommaToken.index)
+    const tokenAfterClosingBrace = nextMeaningfulToken(tokens, closingBrace)
+    if (
+      tokenAfterClosingBrace.token.type === 'operator' &&
+      tokenAfterClosingBrace.token.value !== '|>'
+    ) {
+      const { expression, lastIndex } = makeBinaryExpression(
+        tokens,
+        argumentToken.index
+      )
+      const nextCommarOrBraceTokenIndex = nextMeaningfulToken(
+        tokens,
+        lastIndex
+      ).index
+      return makeArguments(tokens, nextCommarOrBraceTokenIndex, [
+        ...previousArgs,
+        expression,
+      ])
+    }
     const { expression, lastIndex } = makeCallExpression(
       tokens,
       argumentToken.index
