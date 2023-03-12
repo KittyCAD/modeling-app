@@ -12,8 +12,11 @@ import {
   transformSecondarySketchLinesTagFirst,
   getTransformInfos,
 } from '../../lang/std/sketchcombos'
-import { GetInfoModal } from '../GetInfoModal'
-import { createLiteral } from '../../lang/modifyAst'
+import { GetInfoModal } from '../SetHorVertDistanceModal'
+import {
+  createIdentifier,
+  createVariableDeclaration,
+} from '../../lang/modifyAst'
 
 const getModalInfo = create(GetInfoModal as any)
 
@@ -87,25 +90,50 @@ export const SetHorzDistance = ({
               transformInfos,
               programMemory,
             })
-          const { segName, value }: { segName: string; value: number } =
-            await getModalInfo({
-              segName: tagInfo?.tag,
-              isSegNameEditable: !tagInfo?.isTagExisting,
-              value: valueUsedInTransform,
-            } as any)
+          const {
+            segName,
+            value,
+            valueNode,
+            variableName,
+            newVariableInsertIndex,
+          }: {
+            segName: string
+            value: number
+            valueNode: Value
+            variableName?: string
+            newVariableInsertIndex: number
+          } = await getModalInfo({
+            segName: tagInfo?.tag,
+            isSegNameEditable: !tagInfo?.isTagExisting,
+            value: valueUsedInTransform,
+            initialVariableName:
+              horOrVert === 'setHorzDistance' ? 'xDis' : 'yDis',
+          } as any)
           if (segName === tagInfo?.tag && value === valueUsedInTransform) {
             updateAst(modifiedAst)
           } else {
             // transform again but forcing certain values
-            const { modifiedAst } = transformSecondarySketchLinesTagFirst({
-              ast,
-              selectionRanges,
-              transformInfos,
-              programMemory,
-              forceSegName: segName,
-              forceValueUsedInTransform: createLiteral(value),
-            })
-            updateAst(modifiedAst)
+            const { modifiedAst: _modifiedAst } =
+              transformSecondarySketchLinesTagFirst({
+                ast,
+                selectionRanges,
+                transformInfos,
+                programMemory,
+                forceSegName: segName,
+                forceValueUsedInTransform: variableName
+                  ? createIdentifier(variableName)
+                  : valueNode,
+              })
+            if (variableName) {
+              const newBody = [..._modifiedAst.body]
+              newBody.splice(
+                newVariableInsertIndex,
+                0,
+                createVariableDeclaration(variableName, valueNode)
+              )
+              _modifiedAst.body = newBody
+            }
+            updateAst(_modifiedAst)
           }
         }
       }}

@@ -1,28 +1,55 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
+import { Value } from '../lang/abstractSyntaxTree'
+import {
+  AvailableVars,
+  addToInputHelper,
+  useCalc,
+  CalcResult,
+  CreateNewVariable,
+} from './AvailableVarsHelpers'
 
 export const GetInfoModal = ({
   isOpen,
   onResolve,
   onReject,
-  // fields: initialFields,
   segName: initialSegName,
   isSegNameEditable,
   value: initialValue,
+  initialVariableName,
 }: {
   isOpen: boolean
-  onResolve: (a: any) => void
+  onResolve: (a: {
+    value: string
+    segName: string
+    valueNode: Value
+    variableName?: string
+    newVariableInsertIndex: number
+  }) => void
   onReject: (a: any) => void
   segName: string
   isSegNameEditable: boolean
   value: number
+  initialVariableName: string
 }) => {
   const [segName, setSegName] = useState(initialSegName)
-  const [value, setValue] = useState(initialValue)
+  const [value, setValue] = useState(String(initialValue))
+  const [shouldCreateVariable, setShouldCreateVariable] = useState(false)
+
+  const {
+    prevVariables,
+    inputRef,
+    calcResult,
+    valueNode,
+    setNewVariableName,
+    newVariableName,
+    isNewVariableNameUnique,
+    newVariableInsertIndex,
+  } = useCalc({ value, initialVariableName })
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={onResolve}>
+      <Dialog as="div" className="relative z-10" onClose={onReject}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -53,6 +80,13 @@ export const GetInfoModal = ({
                 >
                   Constraint details
                 </Dialog.Title>
+                <div className="block text-sm font-medium text-gray-700 mt-3 font-mono capitalize">
+                  Available Variables
+                </div>
+                <AvailableVars
+                  prevVariables={prevVariables}
+                  onVarClick={addToInputHelper(inputRef, setValue)}
+                />
                 <label
                   htmlFor="val"
                   className="block text-sm font-medium text-gray-700 mt-3 font-mono"
@@ -61,16 +95,18 @@ export const GetInfoModal = ({
                 </label>
                 <div className="mt-1">
                   <input
-                    type="number"
+                    type="text"
                     name="val"
                     id="val"
+                    ref={inputRef}
                     className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md font-mono"
                     value={value}
                     onChange={(e) => {
-                      setValue(Number(e.target.value))
+                      setValue(e.target.value)
                     }}
                   />
                 </div>
+                <CalcResult calcResult={calcResult} />
                 <label
                   htmlFor="segName"
                   className="block text-sm font-medium text-gray-700 mt-3 font-mono"
@@ -90,12 +126,30 @@ export const GetInfoModal = ({
                     }}
                   />
                 </div>
+                <CreateNewVariable
+                  setNewVariableName={setNewVariableName}
+                  newVariableName={newVariableName}
+                  isNewVariableNameUnique={isNewVariableNameUnique}
+                  shouldCreateVariable={shouldCreateVariable}
+                  setShouldCreateVariable={setShouldCreateVariable}
+                />
 
                 <div className="mt-4">
                   <button
                     type="button"
                     className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                    onClick={() => onResolve({ segName, value })}
+                    onClick={() =>
+                      valueNode &&
+                      onResolve({
+                        segName,
+                        value,
+                        valueNode,
+                        newVariableInsertIndex,
+                        variableName: shouldCreateVariable
+                          ? newVariableName
+                          : undefined,
+                      })
+                    }
                   >
                     Add constraining value
                   </button>

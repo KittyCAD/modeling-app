@@ -12,7 +12,7 @@ import {
   getTransformInfos,
   transformAstSketchLines,
 } from '../../lang/std/sketchcombos'
-import { SetAngleLengthModal } from '../SetAngleModal'
+import { SetAngleLengthModal } from '../SetAngleLengthModal'
 import {
   createIdentifier,
   createVariableDeclaration,
@@ -69,18 +69,12 @@ export const SetAngleLength = ({
           programMemory,
           referenceSegName: '',
         })
-        const availableVarInfo = findAllPreviousVariables(
-          modifiedAst,
-          programMemory,
-          selectionRanges[0]
-        )
-
         try {
-          const { valueNode, variableName } = await getModalInfo({
-            value: valueUsedInTransform,
-            prevVariables: availableVarInfo.variables,
-            valueName: angleOrLength === 'setAngle' ? 'angle' : 'length',
-          } as any)
+          const { valueNode, variableName, newVariableInsertIndex } =
+            await getModalInfo({
+              value: valueUsedInTransform,
+              valueName: angleOrLength === 'setAngle' ? 'angle' : 'length',
+            } as any)
 
           const { modifiedAst: _modifiedAst } = transformAstSketchLines({
             ast: JSON.parse(JSON.stringify(ast)),
@@ -95,7 +89,7 @@ export const SetAngleLength = ({
           if (variableName) {
             const newBody = [..._modifiedAst.body]
             newBody.splice(
-              availableVarInfo.insertIndex,
+              newVariableInsertIndex,
               0,
               createVariableDeclaration(variableName, valueNode)
             )
