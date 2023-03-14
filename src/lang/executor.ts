@@ -477,8 +477,24 @@ function executePipeBody(
 
 function executeObjectExpression(
   _programMemory: ProgramMemory,
-  objExp: ObjectExpression
+  objExp: ObjectExpression,
+  pipeInfo: {
+    isInPipe: boolean
+    previousResults: any[]
+    expressionIndex: number
+    body: PipeExpression['body']
+    sourceRangeOverride?: SourceRange
+  } = {
+    isInPipe: false,
+    previousResults: [],
+    expressionIndex: 0,
+    body: [],
+  }
 ) {
+  const _pipeInfo = {
+    ...pipeInfo,
+    isInPipe: false,
+  }
   const obj: { [key: string]: any } = {}
   objExp.properties.forEach((property) => {
     if (property.type === 'ObjectProperty') {
@@ -504,6 +520,18 @@ function executeObjectExpression(
       } else if (property.value.type === 'ArrayExpression') {
         const result = executeArrayExpression(_programMemory, property.value)
         obj[property.key.name] = result
+      } else if (property.value.type === 'CallExpression') {
+        obj[property.key.name] = executeCallExpression(
+          _programMemory,
+          property.value,
+          [],
+          _pipeInfo
+        )
+      } else if (property.value.type === 'UnaryExpression') {
+        obj[property.key.name] = getUnaryExpressionResult(
+          property.value,
+          _programMemory
+        )
       } else {
         throw new Error(
           `Unexpected property type ${property.value.type} in object expression`
@@ -613,7 +641,7 @@ function executeCallExpression(
       )
       return result
     } else if (arg.type === 'ObjectExpression') {
-      return executeObjectExpression(programMemory, arg)
+      return executeObjectExpression(programMemory, arg, _pipeInfo)
     } else if (arg.type === 'UnaryExpression') {
       return getUnaryExpressionResult(arg, programMemory, _pipeInfo)
     } else if (arg.type === 'BinaryExpression') {
