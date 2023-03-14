@@ -9360,6 +9360,11 @@ sisteransi@^1.0.4, sisteransi@^1.0.5:
   resolved "https://registry.yarnpkg.com/sisteransi/-/sisteransi-1.0.5.tgz#134d681297756437cc05ca01370d3a7a571075ed"
   integrity sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==
 
+sketch-helpers@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/sketch-helpers/-/sketch-helpers-0.0.1.tgz#637ead1f6e39276408d2c2e2a48dfefe13dc0cb0"
+  integrity sha512-ePn4nTA5sVNR6+8JalyCPQ+K7tpuYtCrccw2QGL6H2N3JRq6bO8x9RmZpyjTe/+T0uSrd2+F41d+ibsrjHHSFg==
+
 slash@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/slash/-/slash-3.0.0.tgz#6539be870c165adbd5240220dbe361f1bc4d4634"

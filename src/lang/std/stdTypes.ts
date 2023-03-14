@@ -47,6 +47,7 @@ export type InternalFnNames =
   | 'angledLineToY'
   | 'startSketchAt'
   | 'closee'
+  | 'angledLineThatIntersects'
 
 export interface ModifyAstBase {
   node: Program
