@@ -153,7 +153,10 @@ function App() {
             >
               format
             </button> */}
-            <div className="bg-red h-full w-full overflow-auto">
+            <div
+              className="bg-red h-full w-full overflow-auto"
+              id="code-mirror-override"
+            >
               <CodeMirror
                 className="h-full"
                 value={code}
