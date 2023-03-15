@@ -20,9 +20,10 @@ code {
 
 
 #code-mirror-override .cm-focused .cm-cursor {
-  border-left: 1.2px solid black;
+  width: 0px;
 }
 #code-mirror-override .cm-cursor {
   display: block;
-  border-left: 5px solid #0084e2;
+  width: 200px;
+  background: linear-gradient(to right, rgb(0, 55, 94) 0%, #0084e2ff 2%, #0084e255 5%, transparent 100%);  
 }
