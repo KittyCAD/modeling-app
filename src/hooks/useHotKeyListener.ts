@@ -1,11 +1,15 @@
 import { useStore } from '../useStore'
 import { useEffect } from 'react'
 
+// Kurt's note: codeMirror styling overrides were needed to make this work
+// namely, the cursor needs to still be shown when the editor is not focused
+// search for code-mirror-override in the repo to find the relevant styles
+
 export function useHotKeyListener() {
   const { setIsShiftDown } = useStore((s) => ({
     setIsShiftDown: s.setIsShiftDown,
   }))
-  const keyName = 'CapsLock' // TODO #32 should be shift, but shift conflicts with the editor's use of the shift key atm.
+  const keyName = 'Shift'
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) =>
       event.key === keyName && setIsShiftDown(true)

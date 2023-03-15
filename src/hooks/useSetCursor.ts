@@ -11,9 +11,5 @@ export function useSetCursor(sourceRange: Range) {
       ? [...selectionRanges, sourceRange]
       : [sourceRange]
     setCursor(ranges)
-    const element: HTMLDivElement | null = document.querySelector('.cm-content')
-    if (element) {
-      element.focus()
-    }
   }
 }
