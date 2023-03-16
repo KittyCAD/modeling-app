@@ -70,7 +70,7 @@ export type Path = ToPoint | HorizontalLineTo | AngledLineTo | Base
 export interface SketchGroup {
   type: 'sketchGroup'
   value: Path[]
-  start?: Path
+  start?: Base
   position: Position
   rotation: Rotation
   __meta: Metadata[]
