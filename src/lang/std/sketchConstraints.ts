@@ -35,7 +35,10 @@ export const segLen: InternalFn = (
 
 function segEndFactory(which: 'x' | 'y'): InternalFn {
   return (_, segName: string, sketchGroup: SketchGroup): number => {
-    const line = sketchGroup?.value.find((seg) => seg.name === segName)
+    const line =
+      sketchGroup.start?.name === segName
+        ? sketchGroup.start
+        : sketchGroup?.value.find((seg) => seg.name === segName)
     // maybe this should throw, but the language doesn't have a way to handle errors yet
     if (!line) return 0
     return which === 'x' ? line.to[0] : line.to[1]

@@ -41,6 +41,10 @@ export interface ToPoint extends BasePath {
   type: 'toPoint'
 }
 
+export interface Base extends BasePath {
+  type: 'base'
+}
+
 export interface HorizontalLineTo extends BasePath {
   type: 'horizontalLineTo'
   x: number
@@ -61,12 +65,12 @@ interface GeoMeta {
   }
 }
 
-export type Path = ToPoint | HorizontalLineTo | AngledLineTo
+export type Path = ToPoint | HorizontalLineTo | AngledLineTo | Base
 
 export interface SketchGroup {
   type: 'sketchGroup'
   value: Path[]
-  start?: Path['from']
+  start?: Path
   position: Position
   rotation: Rotation
   __meta: Metadata[]

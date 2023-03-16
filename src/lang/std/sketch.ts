@@ -46,7 +46,7 @@ export type Coords2d = [number, number]
 export function getCoordsFromPaths(skGroup: SketchGroup, index = 0): Coords2d {
   const currentPath = skGroup?.value?.[index]
   if (!currentPath && skGroup?.start) {
-    return skGroup.start
+    return skGroup.start.to
   } else if (!currentPath) {
     return [0, 0]
   }
@@ -1296,7 +1296,7 @@ export const startSketchAt: InternalFn = (
   const to = 'to' in data ? data.to : data
   const geo = sketchBaseGeo({ to: [...to, 0] })
   const currentPath: Path = {
-    type: 'toPoint',
+    type: 'base',
     to,
     from: to,
     __geoMeta: {
@@ -1315,8 +1315,8 @@ export const startSketchAt: InternalFn = (
   }
   return {
     type: 'sketchGroup',
-    start: to,
-    value: [currentPath],
+    start: currentPath,
+    value: [],
     position: [0, 0, 0],
     rotation: [0, 0, 0, 1],
     __meta: [

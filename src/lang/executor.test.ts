@@ -166,7 +166,16 @@ show(mySketch)
     const striptVersion = removeGeoFromSketch(root.mySk1 as SketchGroup)
     expect(striptVersion).toEqual({
       type: 'sketchGroup',
-      start: [0, 0],
+      start: {
+        type: 'base',
+        to: [0, 0],
+        from: [0, 0],
+        __geoMeta: {
+          sourceRange: [14, 34],
+          pathToNode: [],
+          geos: ['sketchBase'],
+        },
+      },
       value: [
         {
           type: 'toPoint',
@@ -420,6 +429,15 @@ function exe(
 function removeGeoFromSketch(sketch: SketchGroup): SketchGroup {
   return {
     ...sketch,
+    start: !sketch.start
+      ? undefined
+      : {
+          ...sketch.start,
+          __geoMeta: {
+            ...sketch.start.__geoMeta,
+            geos: sketch.start.__geoMeta.geos.map((geo) => geo.type as any),
+          },
+        },
     value: removeGeoFromPaths(sketch.value),
   }
 }

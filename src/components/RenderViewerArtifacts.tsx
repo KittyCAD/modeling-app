@@ -240,6 +240,14 @@ function RenderViewerArtifact({
   if (artifact.type === 'sketchGroup') {
     return (
       <>
+        {artifact.start && (
+          <PathRender
+            geoInfo={artifact.start}
+            forceHighlight={false}
+            rotation={artifact.rotation}
+            position={artifact.position}
+          />
+        )}
         {artifact.value.map((geoInfo, key) => (
           <PathRender
             geoInfo={geoInfo}
