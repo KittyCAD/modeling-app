@@ -356,7 +356,7 @@ function PathRender({
   return (
     <>
       {geoInfo.__geoMeta.geos.map((meta, i) => {
-        if (meta.type === 'line') {
+        if (meta.type === 'line')
           return (
             <LineRender
               key={i}
@@ -367,8 +367,7 @@ function PathRender({
               position={position}
             />
           )
-        }
-        if (meta.type === 'lineEnd') {
+        if (meta.type === 'lineEnd')
           return (
             <MovingSphere
               key={i}
@@ -380,7 +379,17 @@ function PathRender({
               position={position}
             />
           )
-        }
+        if (meta.type === 'sketchBase')
+          return (
+            <LineRender
+              key={i}
+              geo={meta.geo}
+              sourceRange={geoInfo.__geoMeta.sourceRange}
+              forceHighlight={forceHighlight || editorCursor}
+              rotation={rotation}
+              position={position}
+            />
+          )
       })}
     </>
   )

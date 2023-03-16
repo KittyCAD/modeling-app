@@ -88,6 +88,12 @@ export function lineGeo({
   }
 }
 
+export function sketchBaseGeo({ to }: { to: [number, number, number] }): {
+  base: BufferGeometry
+} {
+  return { base: new SphereGeometry(0.25).translate(to[0], to[1], to[2]) }
+}
+
 export interface extrudeWallGeo {
   line: BufferGeometry
   tip: BufferGeometry

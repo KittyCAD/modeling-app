@@ -30,7 +30,7 @@ interface BasePath {
   __geoMeta: {
     geos: {
       geo: BufferGeometry
-      type: 'line' | 'lineEnd'
+      type: 'line' | 'lineEnd' | 'sketchBase'
     }[]
     sourceRange: SourceRange
     pathToNode: PathToNode
