@@ -21,7 +21,16 @@ show(mySketch001)`
     expect(artifactsWithoutGeos).toEqual([
       {
         type: 'sketchGroup',
-        start: [0, 0],
+        start: {
+          type: 'base',
+          to: [0, 0],
+          from: [0, 0],
+          __geoMeta: {
+            sourceRange: [21, 42],
+            pathToNode: [],
+            geos: ['sketchBase'],
+          },
+        },
         value: [
           {
             type: 'toPoint',
@@ -275,6 +284,15 @@ function removeGeo(arts: (SketchGroup | ExtrudeGroup)[]): any {
     }
     return {
       ...art,
+      start: art.start
+        ? {
+            ...art.start,
+            __geoMeta: {
+              ...art.start.__geoMeta,
+              geos: art.start.__geoMeta.geos.map((g) => g.type),
+            },
+          }
+        : {},
       value: art.value.map((v) => ({
         ...v,
         __geoMeta: {

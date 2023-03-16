@@ -240,6 +240,14 @@ function RenderViewerArtifact({
   if (artifact.type === 'sketchGroup') {
     return (
       <>
+        {artifact.start && (
+          <PathRender
+            geoInfo={artifact.start}
+            forceHighlight={false}
+            rotation={artifact.rotation}
+            position={artifact.position}
+          />
+        )}
         {artifact.value.map((geoInfo, key) => (
           <PathRender
             geoInfo={geoInfo}
@@ -356,7 +364,7 @@ function PathRender({
   return (
     <>
       {geoInfo.__geoMeta.geos.map((meta, i) => {
-        if (meta.type === 'line') {
+        if (meta.type === 'line')
           return (
             <LineRender
               key={i}
@@ -367,8 +375,7 @@ function PathRender({
               position={position}
             />
           )
-        }
-        if (meta.type === 'lineEnd') {
+        if (meta.type === 'lineEnd')
           return (
             <MovingSphere
               key={i}
@@ -380,7 +387,17 @@ function PathRender({
               position={position}
             />
           )
-        }
+        if (meta.type === 'sketchBase')
+          return (
+            <LineRender
+              key={i}
+              geo={meta.geo}
+              sourceRange={geoInfo.__geoMeta.sourceRange}
+              forceHighlight={forceHighlight || editorCursor}
+              rotation={rotation}
+              position={position}
+            />
+          )
       })}
     </>
   )

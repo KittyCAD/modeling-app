@@ -18,7 +18,7 @@ import {
   getNodeFromPathCurry,
   getNodePathFromSourceRange,
 } from '../queryAst'
-import { lineGeo } from '../engine'
+import { lineGeo, sketchBaseGeo } from '../engine'
 import { GuiModes, toolTips, TooTip } from '../../useStore'
 import { getLastIndex } from '../modifyAst'
 
@@ -46,7 +46,7 @@ export type Coords2d = [number, number]
 export function getCoordsFromPaths(skGroup: SketchGroup, index = 0): Coords2d {
   const currentPath = skGroup?.value?.[index]
   if (!currentPath && skGroup?.start) {
-    return skGroup.start
+    return skGroup.start.to
   } else if (!currentPath) {
     return [0, 0]
   }
@@ -82,6 +82,8 @@ export function createFirstArg(
     if (['xLine', 'yLine'].includes(sketchFn))
       return createObjectExpression({ length: val, tag })
     if (['xLineTo', 'yLineTo'].includes(sketchFn))
+      return createObjectExpression({ to: val, tag })
+    if (['startSketchAt'].includes(sketchFn))
       return createObjectExpression({ to: val, tag })
   }
   throw new Error('all sketch line types should have been covered')
@@ -895,18 +897,22 @@ export const angledLineToX: SketchLineHelper = {
     )
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const xArg = createLiteral(roundOff(to[0], 2))
-    const newLine = createCallback
-      ? createCallback([angle, xArg]).callExp
-      : createCallExpression('angledLineToX', [
-          createArrayExpression([angle, xArg]),
-          createPipeSubstitution(),
-        ])
-    const callIndex = getLastIndex(pathToNode)
-    if (replaceExisting) {
-      pipe.body[callIndex] = newLine
-    } else {
-      pipe.body = [...pipe.body, newLine]
+    if (replaceExisting && createCallback) {
+      const { callExp, valueUsedInTransform } = createCallback([angle, xArg])
+      const callIndex = getLastIndex(pathToNode)
+      pipe.body[callIndex] = callExp
+      return {
+        modifiedAst: _node,
+        pathToNode,
+        valueUsedInTransform,
+      }
     }
+
+    const callExp = createCallExpression('angledLineToX', [
+      createArrayExpression([angle, xArg]),
+      createPipeSubstitution(),
+    ])
+    pipe.body = [...pipe.body, callExp]
     return {
       modifiedAst: _node,
       pathToNode,
@@ -1288,14 +1294,20 @@ export const startSketchAt: InternalFn = (
       }
 ): SketchGroup => {
   const to = 'to' in data ? data.to : data
+  const geo = sketchBaseGeo({ to: [...to, 0] })
   const currentPath: Path = {
-    type: 'toPoint',
+    type: 'base',
     to,
     from: to,
     __geoMeta: {
       sourceRange,
       pathToNode: [], // TODO
-      geos: [],
+      geos: [
+        {
+          type: 'sketchBase',
+          geo: geo.base,
+        },
+      ],
     },
   }
   if ('tag' in data) {
@@ -1303,7 +1315,7 @@ export const startSketchAt: InternalFn = (
   }
   return {
     type: 'sketchGroup',
-    start: to,
+    start: currentPath,
     value: [],
     position: [0, 0, 0],
     rotation: [0, 0, 0, 1],
@@ -1393,7 +1405,7 @@ function getFirstArgValuesForXYLineFns(callExpression: CallExpression): {
     return { val: firstArg }
   }
   const tag = firstArg.properties.find((p) => p.key.name === 'tag')?.value
-  const secondArgName = ['xLineTo', 'yLineTo'].includes(
+  const secondArgName = ['xLineTo', 'yLineTo', 'startSketchAt'].includes(
     // const secondArgName = ['xLineTo', 'yLineTo', 'angledLineToX', 'angledLineToY'].includes(
     callExpression?.callee?.name
   )
@@ -1428,6 +1440,9 @@ export function getFirstArg(callExp: CallExpression): {
     return getFirstArgValuesForAngleFns(callExp)
   }
   if (['xLine', 'yLine', 'xLineTo', 'yLineTo'].includes(name)) {
+    return getFirstArgValuesForXYLineFns(callExp)
+  }
+  if (['startSketchAt'].includes(name)) {
     return getFirstArgValuesForXYLineFns(callExp)
   }
   throw new Error('unexpected call expression')

@@ -25,5 +25,5 @@ code {
 #code-mirror-override .cm-cursor {
   display: block;
   width: 200px;
-  background: linear-gradient(to right, rgb(0, 55, 94) 0%, #0084e2ff 2%, #0084e255 5%, transparent 100%);  
+  background: linear-gradient(to right, rgb(0, 55, 94) 0%, #0084e2ff 2%, #0084e255 5%, transparent 100%);
 }
