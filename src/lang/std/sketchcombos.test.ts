@@ -366,10 +366,10 @@ show(part001)`
         'setVertDistance'
       )
       expect(expectedHorizontalCode).toContain(
-        `lineTo([segEndX('seg01', %) + 1.21, 4.59], %) // free`
+        `lineTo([segEndX('seg01', %) + 0.9, 4.59], %) // free`
       )
       expect(expectedVerticalCode).toContain(
-        `lineTo([1.21, segEndY('seg01', %) + 4.59], %) // free`
+        `lineTo([1.21, segEndY('seg01', %) + 2.92], %) // free`
       )
     })
     it('testing for xRelative to vertical distance', () => {
@@ -380,7 +380,7 @@ show(part001)`
       )
       expect(expectedCode).toContain(`|> lineTo([
     lastSegX(%) + myVar,
-    segEndY('seg01', %) + 4.6
+    segEndY('seg01', %) + 2.93
   ], %) // xRelative`)
     })
     it('testing for yRelative to horizontal distance', () => {
@@ -390,7 +390,7 @@ show(part001)`
         'setHorzDistance'
       )
       expect(expectedCode).toContain(`|> lineTo([
-    segEndX('seg01', %) + 2.91,
+    segEndX('seg01', %) + 2.6,
     lastSegY(%) + myVar
   ], %) // yRelative`)
     })

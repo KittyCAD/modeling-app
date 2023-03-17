@@ -3,6 +3,7 @@ import { extrudeSketch, sketchOnExtrudedFace } from './lang/modifyAst'
 import { getNodePathFromSourceRange } from './lang/queryAst'
 import { HorzVert } from './components/Toolbar/HorzVert'
 import { EqualLength } from './components/Toolbar/EqualLength'
+import { EqualAngle } from './components/Toolbar/EqualAngle'
 import { SetHorzDistance } from './components/Toolbar/SetHorzDistance'
 import { SetAngleLength } from './components/Toolbar/SetAngleLength'
 
@@ -158,6 +159,7 @@ export const Toolbar = () => {
       <HorzVert horOrVert="horizontal" />
       <HorzVert horOrVert="vertical" />
       <EqualLength />
+      <EqualAngle />
       <SetHorzDistance horOrVert="setHorzDistance" />
       <SetHorzDistance horOrVert="setVertDistance" />
       <SetAngleLength angleOrLength="setAngle" />

@@ -1,3 +1,4 @@
+import { getAngle } from '../../lib/utils'
 import { Range, TooTip, toolTips } from '../../useStore'
 import {
   Program,
@@ -31,6 +32,17 @@ export const segLen: InternalFn = (
   return Math.sqrt(
     (line.from[1] - line.to[1]) ** 2 + (line.from[0] - line.to[0]) ** 2
   )
+}
+
+export const segAng: InternalFn = (
+  _,
+  segName: string,
+  sketchGroup: SketchGroup
+): number => {
+  const line = sketchGroup?.value.find((seg) => seg.name === segName)
+  // maybe this should throw, but the language doesn't have a way to handle errors yet
+  if (!line) return 0
+  return getAngle(line.from, line.to)
 }
 
 function segEndFactory(which: 'x' | 'y'): InternalFn {

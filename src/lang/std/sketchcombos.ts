@@ -1,5 +1,5 @@
 import { TransformCallback } from './stdTypes'
-import { Ranges, toolTips, TooTip } from '../../useStore'
+import { Ranges, toolTips, TooTip, Range } from '../../useStore'
 import {
   BinaryPart,
   CallExpression,
@@ -24,7 +24,7 @@ import {
 import { createFirstArg, getFirstArg, replaceSketchLine } from './sketch'
 import { ProgramMemory } from '../executor'
 import { getSketchSegmentIndexFromSourceRange } from './sketchConstraints'
-import { roundOff } from '../../lib/utils'
+import { getAngle, roundOff } from '../../lib/utils'
 
 type LineInputsType =
   | 'xAbsolute'
@@ -38,7 +38,7 @@ export type ConstraintType =
   | 'equalLength'
   | 'vertical'
   | 'horizontal'
-  | 'equalangle'
+  | 'equalAngle'
   | 'setHorzDistance'
   | 'setVertDistance'
   | 'setAngle'
@@ -101,12 +101,17 @@ const basicAngledLineCreateNode =
     varValToUse: 'ang' | 'len' | 'none' = 'none'
   ): TransformInfo['createNode'] =>
   ({ referenceSegName, tag, forceValueUsedInTransform, varValA, varValB }) =>
-  (args) => {
+  (args, path) => {
+    const refAng = path ? getAngle(path?.from, path?.to) : 0
     const nonForcedAng =
       varValToUse === 'ang'
         ? varValA
         : referenceSeg === 'ang'
-        ? createSegAngle(referenceSegName)
+        ? getClosesAngleDirection(
+            args[0],
+            refAng,
+            createSegAngle(referenceSegName) as BinaryPart
+          )
         : args[0]
     const nonForcedLen =
       varValToUse === 'len'
@@ -185,6 +190,19 @@ const getAngleLengthSign = (arg: Value, legAngleVal: BinaryPart) => {
   return normalisedAngle > 90 ? createUnaryExpression(legAngleVal) : legAngleVal
 }
 
+function getClosesAngleDirection(
+  arg: Value,
+  refAngle: number,
+  angleVal: BinaryPart
+) {
+  const currentAng = (arg.type === 'Literal' && Number(arg.value)) || 0
+  const angDiff = Math.abs(currentAng - refAngle)
+  const normalisedAngle = ((angDiff % 360) + 360) % 360 // between 0 and 180
+  return normalisedAngle > 90
+    ? createBinaryExpression([angleVal, '+', createLiteral(180)])
+    : angleVal
+}
+
 const setHorzVertDistanceCreateNode =
   (
     xOrY: 'x' | 'y',
@@ -221,7 +239,6 @@ const setHorzVertDistanceForAngleLineCreateNode =
         getArgLiteralVal(args?.[1]) - (referencedSegment?.to?.[index] || 0),
         2
       )
-      console.log('valueUsedInTransform', valueUsedInTransform)
       const makeBinExp = createBinaryExpression([
         createSegEnd(referenceSegName, !index),
         '+',
@@ -383,6 +400,10 @@ const transformMap: TransformMap = {
         tooltip: 'angledLine',
         createNode: basicAngledLineCreateNode('none', 'len'),
       },
+      equalAngle: {
+        tooltip: 'angledLine',
+        createNode: basicAngledLineCreateNode('ang'),
+      },
     },
   },
   lineTo: {
@@ -468,7 +489,6 @@ const transformMap: TransformMap = {
         createNode:
           ({ varValB, tag, forceValueUsedInTransform }) =>
           (args) => {
-            console.log(getArgLiteralVal(args[0]))
             return createCallWrapper(
               'angledLineToY',
               [forceValueUsedInTransform || args[0], varValB],
@@ -995,6 +1015,7 @@ export function transformSecondarySketchLinesTagFirst({
     ...transformAstSketchLines({
       ast: modifiedAst,
       selectionRanges: selectionRanges.slice(1),
+      referencedSegmentRange: primarySelection,
       transformInfos,
       programMemory,
       referenceSegName: tag,
@@ -1014,6 +1035,7 @@ export function transformAstSketchLines({
   programMemory,
   referenceSegName,
   forceValueUsedInTransform,
+  referencedSegmentRange,
 }: {
   ast: Program
   selectionRanges: Ranges
@@ -1021,6 +1043,7 @@ export function transformAstSketchLines({
   programMemory: ProgramMemory
   referenceSegName: string
   forceValueUsedInTransform?: Value
+  referencedSegmentRange?: Range
 }): { modifiedAst: Program; valueUsedInTransform?: number } {
   // deep clone since we are mutating in a loop, of which any could fail
   let node = JSON.parse(JSON.stringify(ast))
@@ -1047,9 +1070,12 @@ export function transformAstSketchLines({
     if (!sketchGroup || sketchGroup.type !== 'sketchGroup')
       throw new Error('not a sketch group')
     const seg = getSketchSegmentIndexFromSourceRange(sketchGroup, range)
-    const referencedSegment = sketchGroup.value.find(
-      (path) => path.name === referenceSegName
-    )
+    const referencedSegment = referencedSegmentRange
+      ? getSketchSegmentIndexFromSourceRange(
+          sketchGroup,
+          referencedSegmentRange
+        )
+      : sketchGroup.value.find((path) => path.name === referenceSegName)
     const { to, from } = seg
     const { modifiedAst, valueUsedInTransform } = replaceSketchLine({
       node: node,
@@ -1084,7 +1110,7 @@ function createSegLen(referenceSegName: string): Value {
 }
 
 function createSegAngle(referenceSegName: string): Value {
-  return createCallExpression('segAngle', [
+  return createCallExpression('segAng', [
     createLiteral(referenceSegName),
     createPipeSubstitution(),
   ])

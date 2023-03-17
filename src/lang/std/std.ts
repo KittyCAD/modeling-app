@@ -16,6 +16,7 @@ import {
 } from './sketch'
 import {
   segLen,
+  segAng,
   angleToMatchLengthX,
   angleToMatchLengthY,
   segEndX,
@@ -143,6 +144,7 @@ export const internalFns: { [key in InternalFnNames]: InternalFn } = {
   lastSegX,
   lastSegY,
   segLen,
+  segAng,
   angleToMatchLengthX,
   angleToMatchLengthY,
   lineTo: lineTo.fn,

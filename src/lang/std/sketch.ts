@@ -265,6 +265,7 @@ export const line: SketchLineHelper = {
     to,
     from,
     replaceExisting,
+    referencedSegment,
     createCallback,
   }) => {
     const _node = { ...node }
@@ -285,19 +286,25 @@ export const line: SketchLineHelper = {
     const newXVal = createLiteral(roundOff(to[0] - from[0], 2))
     const newYVal = createLiteral(roundOff(to[1] - from[1], 2))
 
-    const newLine = createCallback
-      ? createCallback([newXVal, newYVal]).callExp
-      : createCallExpression('line', [
-          createArrayExpression([newXVal, newYVal]),
-          createPipeSubstitution(),
-        ])
-    const callIndex = getLastIndex(pathToNode)
-    if (replaceExisting) {
-      pipe.body[callIndex] = newLine
-    } else {
-      pipe.body = [...pipe.body, newLine]
+    if (replaceExisting && createCallback) {
+      const callIndex = getLastIndex(pathToNode)
+      const { callExp, valueUsedInTransform } = createCallback(
+        [newXVal, newYVal],
+        referencedSegment
+      )
+      pipe.body[callIndex] = callExp
+      return {
+        modifiedAst: _node,
+        pathToNode,
+        valueUsedInTransform,
+      }
     }
 
+    const callExp = createCallExpression('line', [
+      createArrayExpression([newXVal, newYVal]),
+      createPipeSubstitution(),
+    ])
+    pipe.body = [...pipe.body, callExp]
     return {
       modifiedAst: _node,
       pathToNode,
@@ -653,7 +660,15 @@ export const angledLine: SketchLineHelper = {
       value: [...sketchGroup.value, currentPath],
     }
   },
-  add: ({ node, pathToNode, to, from, createCallback, replaceExisting }) => {
+  add: ({
+    node,
+    pathToNode,
+    to,
+    from,
+    createCallback,
+    replaceExisting,
+    referencedSegment,
+  }) => {
     const _node = { ...node }
     const getNode = getNodeFromPathCurry(_node, pathToNode)
     const { node: pipe } = getNode<PipeExpression>('PipeExpression')
@@ -665,12 +680,12 @@ export const angledLine: SketchLineHelper = {
       createPipeSubstitution(),
     ])
 
-    const callIndex = getLastIndex(pathToNode)
     if (replaceExisting && createCallback) {
-      const { callExp, valueUsedInTransform } = createCallback([
-        newAngleVal,
-        newLengthVal,
-      ])
+      const callIndex = getLastIndex(pathToNode)
+      const { callExp, valueUsedInTransform } = createCallback(
+        [newAngleVal, newLengthVal],
+        referencedSegment
+      )
       pipe.body[callIndex] = callExp
       return {
         modifiedAst: _node,
