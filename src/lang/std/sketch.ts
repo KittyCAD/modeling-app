@@ -369,16 +369,22 @@ export const xLineTo: SketchLineHelper = {
     const { node: pipe } = getNode<PipeExpression>('PipeExpression')
 
     const newVal = createLiteral(roundOff(to[0], 2))
-    const newLine = createCallback
-      ? createCallback([newVal, newVal]).callExp
-      : createCallExpression('xLineTo', [newVal, createPipeSubstitution()])
 
-    const callIndex = getLastIndex(pathToNode)
-    if (replaceExisting) {
-      pipe.body[callIndex] = newLine
-    } else {
-      pipe.body = [...pipe.body, newLine]
+    if (replaceExisting && createCallback) {
+      const callIndex = getLastIndex(pathToNode)
+      const { callExp, valueUsedInTransform } = createCallback([newVal, newVal])
+      pipe.body[callIndex] = callExp
+      return {
+        modifiedAst: _node,
+        pathToNode,
+        valueUsedInTransform,
+      }
     }
+    const callExp = createCallExpression('xLineTo', [
+      newVal,
+      createPipeSubstitution(),
+    ])
+    pipe.body = [...pipe.body, callExp]
     return {
       modifiedAst: _node,
       pathToNode,
@@ -430,15 +436,22 @@ export const yLineTo: SketchLineHelper = {
     const { node: pipe } = getNode<PipeExpression>('PipeExpression')
 
     const newVal = createLiteral(roundOff(to[1], 2))
-    const newLine = createCallback
-      ? createCallback([newVal, newVal]).callExp
-      : createCallExpression('yLineTo', [newVal, createPipeSubstitution()])
-    const callIndex = getLastIndex(pathToNode)
-    if (replaceExisting) {
-      pipe.body[callIndex] = newLine
-    } else {
-      pipe.body = [...pipe.body, newLine]
+
+    if (replaceExisting && createCallback) {
+      const callIndex = getLastIndex(pathToNode)
+      const { callExp, valueUsedInTransform } = createCallback([newVal, newVal])
+      pipe.body[callIndex] = callExp
+      return {
+        modifiedAst: _node,
+        pathToNode,
+        valueUsedInTransform,
+      }
     }
+    const callExp = createCallExpression('yLineTo', [
+      newVal,
+      createPipeSubstitution(),
+    ])
+    pipe.body = [...pipe.body, callExp]
     return {
       modifiedAst: _node,
       pathToNode,

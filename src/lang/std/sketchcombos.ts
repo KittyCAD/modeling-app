@@ -85,7 +85,6 @@ const xyLineSetLength =
   ): TransformInfo['createNode'] =>
   ({ referenceSegName, tag, forceValueUsedInTransform }) =>
   (args) => {
-    console.log('args', args)
     const segRef = createSegLen(referenceSegName)
     const lineVal = forceValueUsedInTransform
       ? forceValueUsedInTransform
@@ -206,6 +205,56 @@ const setHorzVertDistanceCreateNode =
       return createCallWrapper(
         'lineTo',
         !index ? [makeBinExp, args[1]] : [args[0], makeBinExp],
+        tag,
+        valueUsedInTransform
+      )
+    }
+  }
+const setHorzVertDistanceForAngleLineCreateNode =
+  (
+    xOrY: 'x' | 'y',
+    index = xOrY === 'x' ? 0 : 1
+  ): TransformInfo['createNode'] =>
+  ({ referenceSegName, tag, forceValueUsedInTransform, varValA }) => {
+    return (args, referencedSegment) => {
+      const valueUsedInTransform = roundOff(
+        getArgLiteralVal(args?.[1]) - (referencedSegment?.to?.[index] || 0),
+        2
+      )
+      console.log('valueUsedInTransform', valueUsedInTransform)
+      const makeBinExp = createBinaryExpression([
+        createSegEnd(referenceSegName, !index),
+        '+',
+        (forceValueUsedInTransform as BinaryPart) ||
+          createLiteral(valueUsedInTransform),
+      ])
+      return createCallWrapper(
+        xOrY === 'x' ? 'angledLineToX' : 'angledLineToY',
+        [varValA, makeBinExp],
+        tag,
+        valueUsedInTransform
+      )
+    }
+  }
+
+const setHorVertDistanceForXYLines =
+  (xOrY: 'x' | 'y'): TransformInfo['createNode'] =>
+  ({ referenceSegName, tag, forceValueUsedInTransform }) => {
+    return (args, referencedSegment) => {
+      const index = xOrY === 'x' ? 0 : 1
+      const valueUsedInTransform = roundOff(
+        getArgLiteralVal(args?.[index]) - (referencedSegment?.to?.[index] || 0),
+        2
+      )
+      const makeBinExp = createBinaryExpression([
+        createSegEnd(referenceSegName, xOrY === 'x'),
+        '+',
+        (forceValueUsedInTransform as BinaryPart) ||
+          createLiteral(valueUsedInTransform),
+      ])
+      return createCallWrapper(
+        xOrY === 'x' ? 'xLineTo' : 'yLineTo',
+        makeBinExp,
         tag,
         valueUsedInTransform
       )
@@ -446,6 +495,14 @@ const transformMap: TransformMap = {
       setLength: {
         tooltip: 'angledLine',
         createNode: basicAngledLineCreateNode('none', 'len', 'ang'),
+      },
+      setVertDistance: {
+        tooltip: 'angledLineToY',
+        createNode: setHorzVertDistanceForAngleLineCreateNode('y'),
+      },
+      setHorzDistance: {
+        tooltip: 'angledLineToX',
+        createNode: setHorzVertDistanceForAngleLineCreateNode('x'),
       },
     },
     free: {
@@ -715,27 +772,7 @@ const transformMap: TransformMap = {
       },
       setHorzDistance: {
         tooltip: 'xLineTo',
-        createNode: ({ referenceSegName, tag, forceValueUsedInTransform }) => {
-          return (args, referencedSegment) => {
-            console.log('args', args)
-            const valueUsedInTransform = roundOff(
-              getArgLiteralVal(args?.[0]) - (referencedSegment?.to?.[0] || 0),
-              2
-            )
-            const makeBinExp = createBinaryExpression([
-              createSegEnd(referenceSegName, true),
-              '+',
-              (forceValueUsedInTransform as BinaryPart) ||
-                createLiteral(valueUsedInTransform),
-            ])
-            return createCallWrapper(
-              'xLineTo',
-              makeBinExp,
-              tag,
-              valueUsedInTransform
-            )
-          }
-        },
+        createNode: setHorVertDistanceForXYLines('x'),
       },
       setLength: {
         tooltip: 'xLine',
@@ -756,6 +793,10 @@ const transformMap: TransformMap = {
         tooltip: 'yLine',
         createNode: xyLineSetLength('yLine'),
       },
+      setVertDistance: {
+        tooltip: 'yLineTo',
+        createNode: setHorVertDistanceForXYLines('y'),
+      },
     },
   },
   xLineTo: {
@@ -767,6 +808,10 @@ const transformMap: TransformMap = {
           () =>
             createCallWrapper('xLine', createSegLen(referenceSegName), tag),
       },
+      setLength: {
+        tooltip: 'xLine',
+        createNode: xyLineSetLength('xLine'),
+      },
     },
   },
   yLineTo: {
@@ -777,6 +822,10 @@ const transformMap: TransformMap = {
           ({ referenceSegName, tag }) =>
           () =>
             createCallWrapper('yLine', createSegLen(referenceSegName), tag),
+      },
+      setLength: {
+        tooltip: 'yLine',
+        createNode: xyLineSetLength('yLine'),
       },
     },
   },
