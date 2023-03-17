@@ -12,7 +12,7 @@ import {
   getTransformInfos,
 } from '../../lang/std/sketchcombos'
 
-export const Equal = () => {
+export const EqualLength = () => {
   const { guiMode, selectionRanges, ast, programMemory, updateAst } = useStore(
     (s) => ({
       guiMode: s.guiMode,
@@ -87,7 +87,7 @@ export const Equal = () => {
       disabled={!enableEqual}
       title="yo dawg"
     >
-      Equal
+      EqualLength
     </button>
   )
 }
