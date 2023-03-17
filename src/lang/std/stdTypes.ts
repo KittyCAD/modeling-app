@@ -29,6 +29,7 @@ export type InternalFnNames =
   | 'lastSegX'
   | 'lastSegY'
   | 'segLen'
+  | 'segAng'
   | 'angleToMatchLengthX'
   | 'angleToMatchLengthY'
   | 'rx'

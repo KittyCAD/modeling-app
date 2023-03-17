@@ -12,7 +12,7 @@ import {
   getTransformInfos,
 } from '../../lang/std/sketchcombos'
 
-export const Equal = () => {
+export const EqualAngle = () => {
   const { guiMode, selectionRanges, ast, programMemory, updateAst } = useStore(
     (s) => ({
       guiMode: s.guiMode,
@@ -54,7 +54,7 @@ export const Equal = () => {
     const theTransforms = getTransformInfos(
       selectionRanges.slice(1),
       ast,
-      'equalLength'
+      'equalAngle'
     )
     setTransformInfos(theTransforms)
 
@@ -87,7 +87,7 @@ export const Equal = () => {
       disabled={!enableEqual}
       title="yo dawg"
     >
-      Equal
+      EqualAngle
     </button>
   )
 }
