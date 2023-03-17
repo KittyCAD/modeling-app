@@ -32,14 +32,14 @@ export function addSketchTo(
   const _name = name || findUniqueName(node, 'part')
 
   const startSketchAt = createCallExpression('startSketchAt', [
-    createArrayExpression([createLiteral(0), createLiteral(0)]),
+    createLiteral('default'),
   ])
   const rotate = createCallExpression(axis === 'xz' ? 'rx' : 'ry', [
     createLiteral(90),
     createPipeSubstitution(),
   ])
-  const initialLineTo = createCallExpression('lineTo', [
-    createArrayExpression([createLiteral(1), createLiteral(1)]),
+  const initialLineTo = createCallExpression('line', [
+    createLiteral('default'),
     createPipeSubstitution(),
   ])
 

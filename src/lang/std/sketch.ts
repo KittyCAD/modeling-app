@@ -40,6 +40,7 @@ import {
   findUniqueName,
 } from '../modifyAst'
 import { roundOff, getLength, getAngle } from '../../lib/utils'
+import { getSketchSegmentIndexFromSourceRange } from './sketchConstraints'
 
 export type Coords2d = [number, number]
 
@@ -204,11 +205,12 @@ export const lineTo: SketchLineHelper = {
 
 export const line: SketchLineHelper = {
   fn: (
-    { sourceRange, programMemory },
+    { sourceRange },
     data:
       | [number, number]
+      | 'default'
       | {
-          to: [number, number]
+          to: [number, number] | 'default'
           // name?: string
           tag?: string
         },
@@ -217,7 +219,13 @@ export const line: SketchLineHelper = {
     if (!previousSketch) throw new Error('lineTo must be called after lineTo')
     const sketchGroup = { ...previousSketch }
     const from = getCoordsFromPaths(sketchGroup, sketchGroup.value.length - 1)
-    const args = 'to' in data ? data.to : data
+    let args: [number, number] = [0.2, 1]
+    if (data !== 'default' && 'to' in data && data.to !== 'default') {
+      args = data.to
+    } else if (data !== 'default' && !('to' in data)) {
+      args = data
+    }
+
     const to: [number, number] = [from[0] + args[0], from[1] + args[1]]
     const geo = lineGeo({
       from: [...from, 0],
@@ -242,7 +250,7 @@ export const line: SketchLineHelper = {
         ],
       },
     }
-    if ('tag' in data) {
+    if (data !== 'default' && 'tag' in data) {
       currentPath.name = data.tag
     }
     return {
@@ -307,9 +315,26 @@ export const line: SketchLineHelper = {
       createLiteral(roundOff(to[1] - from[1], 2)),
     ])
 
-    mutateArrExp(callExpression.arguments?.[0], toArrExp) ||
-      mutateObjExpProp(callExpression.arguments?.[0], toArrExp, 'to')
-
+    if (
+      callExpression.arguments?.[0].type === 'Literal' &&
+      callExpression.arguments?.[0].value === 'default'
+    ) {
+      callExpression.arguments[0] = toArrExp
+    } else if (callExpression.arguments?.[0].type === 'ObjectExpression') {
+      const toProp = callExpression.arguments?.[0].properties?.find(
+        ({ key }) => key.name === 'to'
+      )
+      if (
+        toProp &&
+        toProp.value.type === 'Literal' &&
+        toProp.value.value === 'default'
+      ) {
+        toProp.value = toArrExp
+      }
+    } else {
+      mutateArrExp(callExpression.arguments?.[0], toArrExp) ||
+        mutateObjExpProp(callExpression.arguments?.[0], toArrExp, 'to')
+    }
     return {
       modifiedAst: _node,
       pathToNode,
@@ -1085,21 +1110,71 @@ interface CreateLineFnCallArgs {
 }
 
 export function addNewSketchLn({
-  node,
+  node: _node,
   programMemory: previousProgramMemory,
   to,
   fnName,
   pathToNode,
 }: Omit<CreateLineFnCallArgs, 'from'>): { modifiedAst: Program } {
-  const { add } = sketchLineHelperMap[fnName]
+  const node = JSON.parse(JSON.stringify(_node))
+  const { add, updateArgs } = sketchLineHelperMap[fnName]
   const { node: varDec } = getNodeFromPath<VariableDeclarator>(
     node,
     pathToNode,
     'VariableDeclarator'
   )
+  const { node: pipeExp, path: pipePath } = getNodeFromPath<PipeExpression>(
+    node,
+    pathToNode,
+    'PipeExpression'
+  )
+  const maybeStartSketchAt = pipeExp.body.find(
+    (exp) =>
+      exp.type === 'CallExpression' &&
+      exp.callee.name === 'startSketchAt' &&
+      exp.arguments[0].type === 'Literal' &&
+      exp.arguments[0].value === 'default'
+  )
+  const maybeDefaultLine = pipeExp.body.findIndex(
+    (exp) =>
+      exp.type === 'CallExpression' &&
+      exp.callee.name === 'line' &&
+      exp.arguments[0].type === 'Literal' &&
+      exp.arguments[0].value === 'default'
+  )
+  const defaultLinePath = [...pipePath, 'body', maybeDefaultLine]
   const variableName = varDec.id.name
   const sketch = previousProgramMemory?.root?.[variableName]
   if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
+
+  if (maybeStartSketchAt) {
+    const startSketchAt = maybeStartSketchAt as any
+    startSketchAt.arguments[0] = createArrayExpression([
+      createLiteral(to[0]),
+      createLiteral(to[1]),
+    ])
+    return {
+      modifiedAst: node,
+    }
+  }
+  if (maybeDefaultLine !== -1) {
+    const defaultLine = getNodeFromPath<CallExpression>(
+      node,
+      defaultLinePath
+    ).node
+    const { from } = getSketchSegmentIndexFromSourceRange(sketch, [
+      defaultLine.start,
+      defaultLine.end,
+    ])
+    return updateArgs({
+      node,
+      previousProgramMemory,
+      pathToNode: defaultLinePath,
+      to,
+      from,
+    })
+  }
+
   const last = sketch.value[sketch.value.length - 1]
   const from = last.to
 
@@ -1287,13 +1362,20 @@ export const startSketchAt: InternalFn = (
   { sourceRange, programMemory },
   data:
     | [number, number]
+    | 'default'
     | {
-        to: [number, number]
+        to: [number, number] | 'default'
         // name?: string
         tag?: string
       }
 ): SketchGroup => {
-  const to = 'to' in data ? data.to : data
+  let to: [number, number] = [0, 0]
+  if (data !== 'default' && 'to' in data && data.to !== 'default') {
+    to = data.to
+  } else if (data !== 'default' && !('to' in data)) {
+    to = data
+  }
+
   const geo = sketchBaseGeo({ to: [...to, 0] })
   const currentPath: Path = {
     type: 'base',
@@ -1310,7 +1392,7 @@ export const startSketchAt: InternalFn = (
       ],
     },
   }
-  if ('tag' in data) {
+  if (data !== 'default' && 'tag' in data) {
     currentPath.name = data.tag
   }
   return {
@@ -1354,6 +1436,14 @@ function getFirstArgValuesForXYFns(callExpression: CallExpression): {
 } {
   // used for lineTo, line
   const firstArg = callExpression.arguments[0]
+  if (firstArg.type === 'Literal' && firstArg.value === 'default') {
+    return {
+      val:
+        callExpression.callee.name === 'startSketchAt'
+          ? [createLiteral(0), createLiteral(0)]
+          : [createLiteral(1), createLiteral(1)],
+    }
+  }
   if (firstArg.type === 'ArrayExpression') {
     return { val: [firstArg.elements[0], firstArg.elements[1]] }
   }
@@ -1363,6 +1453,8 @@ function getFirstArgValuesForXYFns(callExpression: CallExpression): {
     if (to?.type === 'ArrayExpression') {
       const [x, y] = to.elements
       return { val: [x, y], tag }
+    } else if (to?.type === 'Literal' && to.value === 'default') {
+      return { val: [createLiteral(0), createLiteral(0)], tag }
     }
   }
   throw new Error('expected ArrayExpression or ObjectExpression')

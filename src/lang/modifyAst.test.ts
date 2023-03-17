@@ -111,9 +111,9 @@ describe('Testing addSketchTo', () => {
       'yz'
     )
     const str = recast(result.modifiedAst)
-    expect(str).toBe(`const part001 = startSketchAt([0, 0])
+    expect(str).toBe(`const part001 = startSketchAt('default')
   |> ry(90, %)
-  |> lineTo([1, 1], %)
+  |> line('default', %)
 show(part001)`)
   })
 })
