@@ -303,6 +303,34 @@ describe('testing call Expressions in BinaryExpressions and UnaryExpressions', (
   })
 })
 
+describe('it recasts wrapped object expressions in pipe bodies with correct indentation', () => {
+  it('with a single line', () => {
+    const code = `const part001 = startSketchAt([-0.01, -0.08])
+  |> line({ to: [0.62, 4.15], tag: 'seg01' }, %)
+  |> line([2.77, -1.24], %)
+  |> angledLineThatIntersects({
+      angle: 201,
+      offset: -1.35,
+      intersectTag: 'seg01'
+    }, %)
+  |> line([-0.42, -1.72], %)
+show(part001)`
+    const { ast } = code2ast(code)
+    const recasted = recast(ast)
+    expect(recasted).toBe(code)
+  })
+  it('recasts wrapped object expressions NOT in pipe body correctly', () => {
+    const code = `angledLineThatIntersects({
+  angle: 201,
+  offset: -1.35,
+  intersectTag: 'seg01'
+}, %)`
+    const { ast } = code2ast(code)
+    const recasted = recast(ast)
+    expect(recasted).toBe(code)
+  })
+})
+
 // helpers
 
 function code2ast(code: string): { ast: Program; tokens: Token[] } {
