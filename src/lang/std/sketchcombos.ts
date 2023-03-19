@@ -1220,3 +1220,38 @@ function createLastSeg(isX: boolean): CallExpression {
 function getArgLiteralVal(arg: Value): number {
   return arg?.type === 'Literal' ? Number(arg.value) : 0
 }
+
+export function getConstraintLevelFromSourceRange(
+  cursorRange: Range,
+  ast: Program
+): 'free' | 'partial' | 'full' {
+  const { node: sketchFnExp } = getNodeFromPath<CallExpression>(
+    ast,
+    getNodePathFromSourceRange(ast, cursorRange)
+  )
+  const name = sketchFnExp?.callee?.name as TooTip
+  if (!toolTips.includes(name)) return 'free'
+
+  const firstArg = getFirstArg(sketchFnExp)
+
+  // check if the function is fully constrained
+  if (Array.isArray(firstArg.val)) {
+    const [a, b] = firstArg.val
+    if (a?.type !== 'Literal' && b?.type !== 'Literal') return 'full'
+  } else {
+    if (firstArg.val?.type !== 'Literal') return 'full'
+  }
+
+  // check if the function has no constraints
+  const isTwoValFree =
+    Array.isArray(firstArg.val) &&
+    firstArg.val?.[0]?.type === 'Literal' &&
+    firstArg.val?.[1]?.type === 'Literal'
+  const isOneValFree =
+    !Array.isArray(firstArg.val) && firstArg.val?.type === 'Literal'
+
+  if (isTwoValFree) return 'free'
+  if (isOneValFree) return 'partial'
+
+  return 'partial'
+}

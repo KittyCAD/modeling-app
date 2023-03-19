@@ -6,6 +6,7 @@ import {
   transformAstSketchLines,
   transformSecondarySketchLinesTagFirst,
   ConstraintType,
+  getConstraintLevelFromSourceRange,
 } from './sketchcombos'
 import { initPromise } from '../rust'
 import { TooTip } from '../../useStore'
@@ -429,3 +430,64 @@ function helperThing(
   })?.modifiedAst
   return recast(newAst)
 }
+
+describe('testing getConstraintLevelFromSourceRange', () => {
+  it('should devide up lines into free, partial and fully contrained', () => {
+    const code = `const baseLength = 3
+const baseThick = 1
+const armThick = 0.5
+const totalHeight = 4
+const armAngle = 60
+const totalLength = 9.74
+const yDatum = 0
+
+const baseThickHalf = baseThick / 2
+const halfHeight = totalHeight / 2
+const halfArmAngle = armAngle / 2
+
+const part001 = startSketchAt([-0.01, -0.05])
+  |> line([0.01, 0.94 + 0], %) // partial
+  |> xLine(3.03, %) // partial
+  |> angledLine({
+  angle: halfArmAngle,
+  length: 2.45,
+  tag: 'seg01bing'
+}, %) // partial
+  |> xLine(4.4, %) // partial
+  |> yLine(-1, %) // partial
+  |> xLine(-4.2 + 0, %) // full
+  |> angledLine([segAng('seg01bing', %) + 180, 1.79], %) // partial
+  |> line([1.44, -0.74], %) // free
+  |> xLine(3.36, %) // partial
+  |> line([-1.49, 1.06], %) // free
+  |> xLine(-3.43 + 0, %) // full
+  |> angledLineOfXLength([243 + 0, 1.2 + 0], %) // full
+show(part001)`
+    const ast = abstractSyntaxTree(lexer(code))
+    const constraintLevels: ReturnType<
+      typeof getConstraintLevelFromSourceRange
+    >[] = ['full', 'partial', 'free']
+    constraintLevels.forEach((constraintLevel) => {
+      const recursivelySeachCommentsAndCheckConstraintLevel = (
+        str: string,
+        offset: number = 0
+      ): null => {
+        const index = str.indexOf(`// ${constraintLevel}`, offset)
+        if (index === -1) {
+          return null
+        }
+        const offsetIndex = index - 7
+        const expectedConstraintLevel = getConstraintLevelFromSourceRange(
+          [offsetIndex, offsetIndex],
+          ast
+        )
+        expect(expectedConstraintLevel).toBe(constraintLevel)
+        return recursivelySeachCommentsAndCheckConstraintLevel(
+          str,
+          index + constraintLevel.length
+        )
+      }
+      recursivelySeachCommentsAndCheckConstraintLevel(code)
+    })
+  })
+})

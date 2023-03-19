@@ -17,6 +17,7 @@ import { useStore } from '../useStore'
 import { isOverlap, roundOff } from '../lib/utils'
 import { Vector3, DoubleSide, Quaternion } from 'three'
 import { useSetCursor } from '../hooks/useSetCursor'
+import { getConstraintLevelFromSourceRange } from '../lang/std/sketchcombos'
 
 function MovingSphere({
   geo,
@@ -416,13 +417,31 @@ function LineRender({
   rotation: Rotation
   position: Position
 }) {
-  const { setHighlightRange } = useStore((s) => ({
+  const { setHighlightRange, guiMode, ast } = useStore((s) => ({
     setHighlightRange: s.setHighlightRange,
+    guiMode: s.guiMode,
+    ast: s.ast,
   }))
   const onClick = useSetCursor(sourceRange)
   // This reference will give us direct access to the mesh
   const ref = useRef<BufferGeometry | undefined>() as any
   const [hovered, setHover] = useState(false)
+
+  const [baseColor, setBaseColor] = useState('orange')
+  useEffect(() => {
+    if (!ast || guiMode.mode !== 'sketch') {
+      setBaseColor('orange')
+      return
+    }
+    const level = getConstraintLevelFromSourceRange(sourceRange, ast)
+    if (level === 'free') {
+      setBaseColor('orange')
+    } else if (level === 'partial') {
+      setBaseColor('IndianRed')
+    } else if (level === 'full') {
+      setBaseColor('lightgreen')
+    }
+  }, [guiMode, ast, sourceRange])
 
   return (
     <>
@@ -430,11 +449,11 @@ function LineRender({
         quaternion={rotation}
         position={position}
         ref={ref}
-        onPointerOver={(event) => {
+        onPointerOver={(e) => {
           setHover(true)
           setHighlightRange(sourceRange)
         }}
-        onPointerOut={(event) => {
+        onPointerOut={(e) => {
           setHover(false)
           setHighlightRange([0, 0])
         }}
@@ -442,7 +461,7 @@ function LineRender({
       >
         <primitive object={geo} />
         <meshStandardMaterial
-          color={hovered ? 'hotpink' : forceHighlight ? 'skyblue' : 'orange'}
+          color={hovered ? 'hotpink' : forceHighlight ? 'skyblue' : baseColor}
         />
       </mesh>
     </>
