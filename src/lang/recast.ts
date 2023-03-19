@@ -118,7 +118,8 @@ ${indentation}]`
 
 function recastObjectExpression(
   expression: ObjectExpression,
-  indentation = ''
+  indentation = '',
+  isInPipeExpression = false
 ): string {
   const flatRecast = `{ ${expression.properties
     .map((prop) => `${prop.key.name}: ${recastValue(prop.value)}`)
@@ -130,7 +131,7 @@ function recastObjectExpression(
 ${_indentation}${expression.properties
       .map((prop) => `${prop.key.name}: ${recastValue(prop.value)}`)
       .join(`,\n${_indentation}`)}
-}`
+${isInPipeExpression ? '    ' : ''}}`
   }
   return flatRecast
 }
@@ -159,14 +160,19 @@ function recastLiteral(literal: Literal): string {
 
 function recastCallExpression(
   expression: CallExpression,
-  indentation = ''
+  indentation = '',
+  isInPipeExpression = false
 ): string {
   return `${expression.callee.name}(${expression.arguments
-    .map((arg) => recastArgument(arg, indentation))
+    .map((arg) => recastArgument(arg, indentation, isInPipeExpression))
     .join(', ')})`
 }
 
-function recastArgument(argument: Value, indentation = ''): string {
+function recastArgument(
+  argument: Value,
+  indentation = '',
+  isInPipeExpression = false
+): string {
   if (argument.type === 'Literal') {
     return recastLiteral(argument)
   } else if (argument.type === 'Identifier') {
@@ -176,7 +182,7 @@ function recastArgument(argument: Value, indentation = ''): string {
   } else if (argument.type === 'ArrayExpression') {
     return recastArrayExpression(argument, indentation)
   } else if (argument.type === 'ObjectExpression') {
-    return recastObjectExpression(argument)
+    return recastObjectExpression(argument, indentation, isInPipeExpression)
   } else if (argument.type === 'CallExpression') {
     return recastCallExpression(argument)
   } else if (argument.type === 'FunctionExpression') {
@@ -212,13 +218,18 @@ function recastMemberExpression(
   return expression.object.name + keyString
 }
 
-function recastValue(node: Value, indentation = ''): string {
+function recastValue(
+  node: Value,
+  _indentation = '',
+  isInPipeExpression = false
+): string {
+  const indentation = _indentation + (isInPipeExpression ? '  ' : '')
   if (node.type === 'BinaryExpression') {
     return recastBinaryExpression(node)
   } else if (node.type === 'ArrayExpression') {
     return recastArrayExpression(node, indentation)
   } else if (node.type === 'ObjectExpression') {
-    return recastObjectExpression(node, indentation)
+    return recastObjectExpression(node, indentation, isInPipeExpression)
   } else if (node.type === 'MemberExpression') {
     return recastMemberExpression(node, indentation)
   } else if (node.type === 'Literal') {
@@ -226,7 +237,7 @@ function recastValue(node: Value, indentation = ''): string {
   } else if (node.type === 'FunctionExpression') {
     return recastFunction(node)
   } else if (node.type === 'CallExpression') {
-    return recastCallExpression(node, indentation)
+    return recastCallExpression(node, indentation, isInPipeExpression)
   } else if (node.type === 'Identifier') {
     return node.name
   } else if (node.type === 'PipeExpression') {
@@ -243,7 +254,7 @@ function recastPipeExpression(expression: PipeExpression): string {
       let str = ''
       let indentation = '  '
       let maybeLineBreak = '\n'
-      str = recastValue(statement, indentation)
+      str = recastValue(statement, indentation, true)
       if (
         expression.nonCodeMeta?.[index]?.value &&
         expression.nonCodeMeta?.[index].value !== ' '
