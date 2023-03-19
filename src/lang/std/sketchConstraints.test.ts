@@ -366,18 +366,6 @@ describe('testing swaping out sketch calls with xLine/xLineTo while keeping vari
 
 describe('testing getSketchSegmentIndexFromSourceRange', () => {
   const code = `
-const baseLength = 3
-const baseThick = 1
-const armThick = 0.5
-const totalHeight = 4
-const armAngle = 60
-const totalLength = 9.74
-const yDatum = 0
-
-const baseThickHalf = baseThick / 2
-const halfHeight = totalHeight / 2
-const halfArmAngle = armAngle / 2
-
 const part001 = startSketchAt([0, 0.04]) // segment-in-start
   |> line([0, 0.4], %)
   |> xLine(3.48, %)
