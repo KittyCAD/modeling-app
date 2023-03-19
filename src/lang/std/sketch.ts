@@ -317,7 +317,7 @@ export const line: SketchLineHelper = {
   },
   updateArgs: ({ node, pathToNode, to, from }) => {
     const _node = { ...node }
-    const { node: callExpression, path } = getNodeFromPath<CallExpression>(
+    const { node: callExpression } = getNodeFromPath<CallExpression>(
       _node,
       pathToNode
     )
@@ -343,9 +343,9 @@ export const line: SketchLineHelper = {
       ) {
         toProp.value = toArrExp
       }
+      mutateObjExpProp(callExpression.arguments?.[0], toArrExp, 'to')
     } else {
-      mutateArrExp(callExpression.arguments?.[0], toArrExp) ||
-        mutateObjExpProp(callExpression.arguments?.[0], toArrExp, 'to')
+      mutateArrExp(callExpression.arguments?.[0], toArrExp)
     }
     return {
       modifiedAst: _node,

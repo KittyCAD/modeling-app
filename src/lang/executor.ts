@@ -507,7 +507,8 @@ function executeObjectExpression(
       } else if (property.value.type === 'BinaryExpression') {
         obj[property.key.name] = getBinaryExpressionResult(
           property.value,
-          _programMemory
+          _programMemory,
+          _pipeInfo
         )
       } else if (property.value.type === 'PipeExpression') {
         obj[property.key.name] = getPipeExpressionResult(
