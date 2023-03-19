@@ -12,6 +12,7 @@ import {
   VariableDeclarator,
   Value,
   Literal,
+  VariableDeclaration,
 } from '../abstractSyntaxTree'
 import {
   getNodeFromPath,
@@ -41,6 +42,10 @@ import {
 } from '../modifyAst'
 import { roundOff, getLength, getAngle } from '../../lib/utils'
 import { getSketchSegmentIndexFromSourceRange } from './sketchConstraints'
+import {
+  intersectionWithParallelLine,
+  perpendicularDistance,
+} from 'sketch-helpers'
 
 export type Coords2d = [number, number]
 
@@ -312,7 +317,7 @@ export const line: SketchLineHelper = {
   },
   updateArgs: ({ node, pathToNode, to, from }) => {
     const _node = { ...node }
-    const { node: callExpression, path } = getNodeFromPath<CallExpression>(
+    const { node: callExpression } = getNodeFromPath<CallExpression>(
       _node,
       pathToNode
     )
@@ -338,9 +343,9 @@ export const line: SketchLineHelper = {
       ) {
         toProp.value = toArrExp
       }
+      mutateObjExpProp(callExpression.arguments?.[0], toArrExp, 'to')
     } else {
-      mutateArrExp(callExpression.arguments?.[0], toArrExp) ||
-        mutateObjExpProp(callExpression.arguments?.[0], toArrExp, 'to')
+      mutateArrExp(callExpression.arguments?.[0], toArrExp)
     }
     return {
       modifiedAst: _node,
@@ -397,7 +402,7 @@ export const xLineTo: SketchLineHelper = {
       pathToNode,
     }
   },
-  updateArgs: ({ node, pathToNode, to, from }) => {
+  updateArgs: ({ node, pathToNode, to }) => {
     const _node = { ...node }
     const { node: callExpression } = getNodeFromPath<CallExpression>(
       _node,
@@ -1084,6 +1089,126 @@ export const angledLineToY: SketchLineHelper = {
   addTag: addTagWithTo('angleTo'),
 }
 
+export const angledLineThatIntersects: SketchLineHelper = {
+  fn: (
+    { sourceRange, programMemory },
+    data: {
+      angle: number
+      intersectTag: string
+      offset?: number
+      tag?: string
+    },
+    previousSketch: SketchGroup
+  ) => {
+    if (!previousSketch) throw new Error('lineTo must be called after lineTo')
+    const intersectPath = previousSketch.value.find(
+      ({ name }) => name === data.intersectTag
+    )
+    if (!intersectPath) throw new Error('intersectTag must match a line')
+    const from = getCoordsFromPaths(
+      previousSketch,
+      previousSketch.value.length - 1
+    )
+    const to = intersectionWithParallelLine({
+      line1: [intersectPath.from, intersectPath.to],
+      line1Offset: data.offset || 0,
+      line2Point: from,
+      line2Angle: data.angle,
+    })
+    return lineTo.fn(
+      { sourceRange, programMemory },
+      { to, tag: data.tag },
+      previousSketch
+    )
+  },
+  add: ({
+    node,
+    pathToNode,
+    to,
+    from,
+    createCallback,
+    replaceExisting,
+    referencedSegment,
+  }) => {
+    const _node = { ...node }
+    const { node: pipe } = getNodeFromPath<PipeExpression>(
+      _node,
+      pathToNode,
+      'PipeExpression'
+    )
+    const angle = createLiteral(roundOff(getAngle(from, to), 0))
+    if (!referencedSegment)
+      throw new Error('referencedSegment must be provided')
+    const offset = createLiteral(
+      roundOff(
+        perpendicularDistance(
+          referencedSegment?.from,
+          referencedSegment?.to,
+          to
+        ),
+        2
+      )
+    )
+
+    if (replaceExisting && createCallback) {
+      const { callExp, valueUsedInTransform } = createCallback([angle, offset])
+      const callIndex = getLastIndex(pathToNode)
+      pipe.body[callIndex] = callExp
+      return {
+        modifiedAst: _node,
+        pathToNode,
+        valueUsedInTransform,
+      }
+    }
+    throw new Error('not implemented')
+  },
+  updateArgs: ({ node, pathToNode, to, from, previousProgramMemory }) => {
+    const _node = { ...node }
+    const { node: callExpression, path } = getNodeFromPath<CallExpression>(
+      _node,
+      pathToNode
+    )
+    const angle = roundOff(getAngle(from, to), 0)
+
+    const firstArg = callExpression.arguments?.[0]
+    const intersectTag =
+      firstArg.type === 'ObjectExpression'
+        ? firstArg.properties.find((p) => p.key.name === 'intersectTag')
+            ?.value || createLiteral('')
+        : createLiteral('')
+    const intersectTagName =
+      intersectTag.type === 'Literal' ? intersectTag.value : ''
+    const { node: varDec } = getNodeFromPath<VariableDeclaration>(
+      _node,
+      pathToNode,
+      'VariableDeclaration'
+    )
+
+    const varName = varDec.declarations[0].id.name
+    const sketchGroup = previousProgramMemory.root[varName] as SketchGroup
+    const intersectPath = sketchGroup.value.find(
+      ({ name }) => name === intersectTagName
+    )
+    let offset = 0
+    if (intersectPath) {
+      offset = roundOff(
+        perpendicularDistance(intersectPath?.from, intersectPath?.to, to),
+        2
+      )
+    }
+
+    const angleLit = createLiteral(angle)
+
+    mutateObjExpProp(firstArg, angleLit, 'angle')
+    mutateObjExpProp(firstArg, createLiteral(offset), 'offset')
+    return {
+      modifiedAst: _node,
+      pathToNode,
+    }
+  },
+  addTag: addTagWithTo('angleTo'), // TODO might be wrong
+}
+
 export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
   line,
   lineTo,
@@ -1096,6 +1221,7 @@ export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
   angledLineOfYLength,
   angledLineToX,
   angledLineToY,
+  angledLineThatIntersects,
 } as const
 
 export function changeSketchArguments(
@@ -1116,6 +1242,7 @@ export function changeSketchArguments(
 
   if (callExpression?.callee?.name in sketchLineHelperMap) {
     const { updateArgs } = sketchLineHelperMap[callExpression.callee.name]
+    if (!updateArgs) throw new Error('not a sketch line helper')
     return updateArgs({
       node: _node,
       previousProgramMemory: programMemory,
@@ -1235,7 +1362,8 @@ export function replaceSketchLine({
   createCallback: TransformCallback
   referencedSegment?: Path
 }): { modifiedAst: Program; valueUsedInTransform?: number } {
-  if (!toolTips.includes(fnName)) throw new Error('not a tooltip')
+  if (![...toolTips, 'intersect'].includes(fnName))
+    throw new Error('not a tooltip')
   const _node = { ...node }
   const thePath = getNodePathFromSourceRange(_node, sourceRange)
 
@@ -1540,6 +1668,26 @@ function getFirstArgValuesForXYLineFns(callExpression: CallExpression): {
   throw new Error('expected ArrayExpression or ObjectExpression')
 }
 
+const getAngledLineThatIntersects = (
+  callExp: CallExpression
+): {
+  val: [Value, Value]
+  tag?: Value
+} => {
+  const firstArg = callExp.arguments[0]
+  if (firstArg.type === 'ObjectExpression') {
+    const tag = firstArg.properties.find((p) => p.key.name === 'tag')?.value
+    const angle = firstArg.properties.find((p) => p.key.name === 'angle')?.value
+    const offset = firstArg.properties.find(
+      (p) => p.key.name === 'offset'
+    )?.value
+    if (angle && offset) {
+      return { val: [angle, offset], tag }
+    }
+  }
+  throw new Error('expected ArrayExpression or ObjectExpression')
+}
+
 export function getFirstArg(callExp: CallExpression): {
   val: Value | [Value, Value]
   tag?: Value
@@ -1564,6 +1712,9 @@ export function getFirstArg(callExp: CallExpression): {
   }
   if (['startSketchAt'].includes(name)) {
     return getFirstArgValuesForXYLineFns(callExp)
+  }
+  if (['angledLineThatIntersects'].includes(name)) {
+    return getAngledLineThatIntersects(callExp)
   }
   throw new Error('unexpected call expression')
 }

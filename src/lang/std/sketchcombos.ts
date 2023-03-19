@@ -17,6 +17,7 @@ import {
   createCallExpression,
   createIdentifier,
   createLiteral,
+  createObjectExpression,
   createPipeSubstitution,
   createUnaryExpression,
   giveSketchFnCallTag,
@@ -43,6 +44,7 @@ export type ConstraintType =
   | 'setVertDistance'
   | 'setAngle'
   | 'setLength'
+  | 'intersect'
 
 function createCallWrapper(
   a: TooTip,
@@ -53,6 +55,38 @@ function createCallWrapper(
   return {
     callExp: createCallExpression(a, [
       createFirstArg(a, val, tag),
+      createPipeSubstitution(),
+    ]),
+    valueUsedInTransform,
+  }
+}
+
+function intersectCallWrapper({
+  fnName,
+  angleVal,
+  offsetVal,
+  intersectTag,
+  tag,
+  valueUsedInTransform,
+}: {
+  fnName: string
+  angleVal: Value
+  offsetVal: Value
+  intersectTag: Value
+  tag?: Value
+  valueUsedInTransform?: number
+}): ReturnType<TransformCallback> {
+  const firstArg: any = {
+    angle: angleVal,
+    offset: offsetVal,
+    intersectTag,
+  }
+  if (tag) {
+    firstArg['tag'] = tag
+  }
+  return {
+    callExp: createCallExpression(fnName, [
+      createObjectExpression(firstArg),
       createPipeSubstitution(),
     ]),
     valueUsedInTransform,
@@ -71,7 +105,7 @@ export type TransformInfo = {
 }
 
 type TransformMap = {
-  [key in TooTip]: {
+  [key in TooTip]?: {
     [key in LineInputsType | 'free']?: {
       [key in ConstraintType]?: TransformInfo
     }
@@ -307,6 +341,44 @@ const setHorzVertDistanceConstraintLineCreateNode =
     }
   }
 
+const setAngledIntersectLineForLines: TransformInfo['createNode'] =
+  ({ referenceSegName, tag, forceValueUsedInTransform }) =>
+  (args) => {
+    const valueUsedInTransform = roundOff(
+      args[1].type === 'Literal' ? Number(args[1].value) : 0,
+      2
+    )
+    const angle = args[0].type === 'Literal' ? Number(args[0].value) : 0
+    return intersectCallWrapper({
+      fnName: 'angledLineThatIntersects',
+      angleVal: createLiteral(angle),
+      offsetVal:
+        forceValueUsedInTransform || createLiteral(valueUsedInTransform),
+      intersectTag: createLiteral(referenceSegName),
+      tag,
+      valueUsedInTransform,
+    })
+  }
+
+const setAngledIntersectForAngledLines: TransformInfo['createNode'] =
+  ({ referenceSegName, tag, forceValueUsedInTransform, varValA }) =>
+  (args) => {
+    const valueUsedInTransform = roundOff(
+      args[1].type === 'Literal' ? Number(args[1].value) : 0,
+      2
+    )
+    // const angle = args[0].type === 'Literal' ? Number(args[0].value) : 0
+    return intersectCallWrapper({
+      fnName: 'angledLineThatIntersects',
+      angleVal: varValA,
+      offsetVal:
+        forceValueUsedInTransform || createLiteral(valueUsedInTransform),
+      intersectTag: createLiteral(referenceSegName),
+      tag,
+      valueUsedInTransform,
+    })
+  }
+
 const transformMap: TransformMap = {
   line: {
     xRelative: {
@@ -403,6 +475,10 @@ const transformMap: TransformMap = {
       equalAngle: {
         tooltip: 'angledLine',
         createNode: basicAngledLineCreateNode('ang'),
+      },
+      intersect: {
+        tooltip: 'angledLineThatIntersects',
+        createNode: setAngledIntersectLineForLines,
       },
     },
   },
@@ -523,6 +599,10 @@ const transformMap: TransformMap = {
       setHorzDistance: {
         tooltip: 'angledLineToX',
         createNode: setHorzVertDistanceForAngleLineCreateNode('x'),
+      },
+      intersect: {
+        tooltip: 'angledLineThatIntersects',
+        createNode: setAngledIntersectForAngledLines,
       },
     },
     free: {
@@ -798,6 +878,10 @@ const transformMap: TransformMap = {
         tooltip: 'xLine',
         createNode: xyLineSetLength('xLine'),
       },
+      intersect: {
+        tooltip: 'angledLineThatIntersects',
+        createNode: setAngledIntersectLineForLines,
+      },
     },
   },
   yLine: {
@@ -816,6 +900,10 @@ const transformMap: TransformMap = {
       setVertDistance: {
         tooltip: 'yLineTo',
         createNode: setHorVertDistanceForXYLines('y'),
+      },
+      intersect: {
+        tooltip: 'angledLineThatIntersects',
+        createNode: setAngledIntersectLineForLines,
       },
     },
   },
