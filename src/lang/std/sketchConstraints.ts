@@ -8,10 +8,19 @@ import {
 import { SketchGroup } from '../executor'
 import { InternalFn } from './stdTypes'
 
-export function getSketchSegmentIndexFromSourceRange(
+export function getSketchSegmentFromSourceRange(
   sketchGroup: SketchGroup,
   [rangeStart, rangeEnd]: Range
 ): SketchGroup['value'][number] {
+  const startSourceRange = sketchGroup.start?.__geoMeta.sourceRange
+  if (
+    startSourceRange &&
+    startSourceRange[0] <= rangeStart &&
+    startSourceRange[1] >= rangeEnd &&
+    sketchGroup.start
+  )
+    return sketchGroup.start
+
   const line = sketchGroup.value.find(
     ({ __geoMeta: { sourceRange } }) =>
       sourceRange[0] <= rangeStart && sourceRange[1] >= rangeEnd

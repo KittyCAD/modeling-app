@@ -1,5 +1,5 @@
 import { abstractSyntaxTree } from '../abstractSyntaxTree'
-import { executor } from '../executor'
+import { executor, SketchGroup } from '../executor'
 import { lexer } from '../tokeniser'
 import {
   ConstraintType,
@@ -8,6 +8,7 @@ import {
 } from './sketchcombos'
 import { recast } from '../recast'
 import { initPromise } from '../rust'
+import { getSketchSegmentFromSourceRange } from './sketchConstraints'
 
 beforeAll(() => initPromise)
 
@@ -360,5 +361,37 @@ describe('testing swaping out sketch calls with xLine/xLineTo while keeping vari
         constraintType: 'horizontal',
       })
     expect(illegalConvert).toThrowError()
+  })
+})
+
+describe('testing getSketchSegmentIndexFromSourceRange', () => {
+  const code = `
+const part001 = startSketchAt([0, 0.04]) // segment-in-start
+  |> line([0, 0.4], %)
+  |> xLine(3.48, %)
+  |> line([2.14, 1.35], %) // normal-segment
+  |> xLine(3.54, %)
+show(part001)`
+  it('normal case works', () => {
+    const programMemory = executor(abstractSyntaxTree(lexer(code)))
+    const index = code.indexOf('// normal-segment') - 7
+    const { __geoMeta, ...segment } = getSketchSegmentFromSourceRange(
+      programMemory.root['part001'] as SketchGroup,
+      [index, index]
+    )
+    expect(segment).toEqual({
+      type: 'toPoint',
+      to: [5.62, 1.79],
+      from: [3.48, 0.44],
+    })
+  })
+  it('verify it works when the segment is in the `start` property', () => {
+    const programMemory = executor(abstractSyntaxTree(lexer(code)))
+    const index = code.indexOf('// segment-in-start') - 7
+    const { __geoMeta, ...segment } = getSketchSegmentFromSourceRange(
+      programMemory.root['part001'] as SketchGroup,
+      [index, index]
+    )
+    expect(segment).toEqual({ type: 'base', to: [0, 0.04], from: [0, 0.04] })
   })
 })
