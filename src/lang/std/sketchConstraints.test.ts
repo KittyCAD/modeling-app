@@ -8,7 +8,7 @@ import {
 } from './sketchcombos'
 import { recast } from '../recast'
 import { initPromise } from '../rust'
-import { getSketchSegmentIndexFromSourceRange } from './sketchConstraints'
+import { getSketchSegmentFromSourceRange } from './sketchConstraints'
 
 beforeAll(() => initPromise)
 
@@ -375,7 +375,7 @@ show(part001)`
   it('normal case works', () => {
     const programMemory = executor(abstractSyntaxTree(lexer(code)))
     const index = code.indexOf('// normal-segment') - 7
-    const { __geoMeta, ...segment } = getSketchSegmentIndexFromSourceRange(
+    const { __geoMeta, ...segment } = getSketchSegmentFromSourceRange(
       programMemory.root['part001'] as SketchGroup,
       [index, index]
     )
@@ -388,7 +388,7 @@ show(part001)`
   it('verify it works when the segment is in the `start` property', () => {
     const programMemory = executor(abstractSyntaxTree(lexer(code)))
     const index = code.indexOf('// segment-in-start') - 7
-    const { __geoMeta, ...segment } = getSketchSegmentIndexFromSourceRange(
+    const { __geoMeta, ...segment } = getSketchSegmentFromSourceRange(
       programMemory.root['part001'] as SketchGroup,
       [index, index]
     )

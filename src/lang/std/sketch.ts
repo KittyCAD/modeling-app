@@ -41,7 +41,7 @@ import {
   findUniqueName,
 } from '../modifyAst'
 import { roundOff, getLength, getAngle } from '../../lib/utils'
-import { getSketchSegmentIndexFromSourceRange } from './sketchConstraints'
+import { getSketchSegmentFromSourceRange } from './sketchConstraints'
 import {
   intersectionWithParallelLine,
   perpendicularDistance,
@@ -1317,7 +1317,7 @@ export function addNewSketchLn({
       node,
       defaultLinePath
     ).node
-    const { from } = getSketchSegmentIndexFromSourceRange(sketch, [
+    const { from } = getSketchSegmentFromSourceRange(sketch, [
       defaultLine.start,
       defaultLine.end,
     ])

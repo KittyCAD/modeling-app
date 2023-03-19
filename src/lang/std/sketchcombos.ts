@@ -24,7 +24,7 @@ import {
 } from '../modifyAst'
 import { createFirstArg, getFirstArg, replaceSketchLine } from './sketch'
 import { ProgramMemory } from '../executor'
-import { getSketchSegmentIndexFromSourceRange } from './sketchConstraints'
+import { getSketchSegmentFromSourceRange } from './sketchConstraints'
 import { getAngle, roundOff } from '../../lib/utils'
 
 type LineInputsType =
@@ -1157,12 +1157,9 @@ export function transformAstSketchLines({
     const sketchGroup = programMemory.root?.[varName]
     if (!sketchGroup || sketchGroup.type !== 'sketchGroup')
       throw new Error('not a sketch group')
-    const seg = getSketchSegmentIndexFromSourceRange(sketchGroup, range)
+    const seg = getSketchSegmentFromSourceRange(sketchGroup, range)
     const referencedSegment = referencedSegmentRange
-      ? getSketchSegmentIndexFromSourceRange(
-          sketchGroup,
-          referencedSegmentRange
-        )
+      ? getSketchSegmentFromSourceRange(sketchGroup, referencedSegmentRange)
       : sketchGroup.value.find((path) => path.name === referenceSegName)
     const { to, from } = seg
     const { modifiedAst, valueUsedInTransform } = replaceSketchLine({

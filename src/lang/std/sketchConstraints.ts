@@ -8,7 +8,7 @@ import {
 import { SketchGroup } from '../executor'
 import { InternalFn } from './stdTypes'
 
-export function getSketchSegmentIndexFromSourceRange(
+export function getSketchSegmentFromSourceRange(
   sketchGroup: SketchGroup,
   [rangeStart, rangeEnd]: Range
 ): SketchGroup['value'][number] {
