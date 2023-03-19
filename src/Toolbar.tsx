@@ -4,6 +4,7 @@ import { getNodePathFromSourceRange } from './lang/queryAst'
 import { HorzVert } from './components/Toolbar/HorzVert'
 import { EqualLength } from './components/Toolbar/EqualLength'
 import { EqualAngle } from './components/Toolbar/EqualAngle'
+import { Intersect } from './components/Toolbar/Intersect'
 import { SetHorzDistance } from './components/Toolbar/SetHorzDistance'
 import { SetAngleLength } from './components/Toolbar/SetAngleLength'
 
@@ -123,38 +124,42 @@ export const Toolbar = () => {
           Exit sketch
         </button>
       )}
-      {toolTips.map((sketchFnName) => {
-        if (
-          guiMode.mode !== 'sketch' ||
-          !('isTooltip' in guiMode || guiMode.sketchMode === 'sketchEdit')
+      {toolTips
+        .filter(
+          (sketchFnName) => !['angledLineThatIntersects'].includes(sketchFnName)
         )
-          return null
-        return (
-          <button
-            key={sketchFnName}
-            className={`border m-0.5 px-0.5 rounded text-xs ${
-              guiMode.sketchMode === sketchFnName && 'bg-gray-400'
-            }`}
-            onClick={() =>
-              setGuiMode({
-                ...guiMode,
-                ...(guiMode.sketchMode === sketchFnName
-                  ? {
-                      sketchMode: 'sketchEdit',
-                      // todo: ...guiMod is adding isTooltip: true, will probably just fix with xstate migtaion
-                    }
-                  : {
-                      sketchMode: sketchFnName,
-                      isTooltip: true,
-                    }),
-              })
-            }
-          >
-            {sketchFnName}
-            {guiMode.sketchMode === sketchFnName && '✅'}
-          </button>
-        )
-      })}
+        .map((sketchFnName) => {
+          if (
+            guiMode.mode !== 'sketch' ||
+            !('isTooltip' in guiMode || guiMode.sketchMode === 'sketchEdit')
+          )
+            return null
+          return (
+            <button
+              key={sketchFnName}
+              className={`border m-0.5 px-0.5 rounded text-xs ${
+                guiMode.sketchMode === sketchFnName && 'bg-gray-400'
+              }`}
+              onClick={() =>
+                setGuiMode({
+                  ...guiMode,
+                  ...(guiMode.sketchMode === sketchFnName
+                    ? {
+                        sketchMode: 'sketchEdit',
+                        // todo: ...guiMod is adding isTooltip: true, will probably just fix with xstate migtaion
+                      }
+                    : {
+                        sketchMode: sketchFnName,
+                        isTooltip: true,
+                      }),
+                })
+              }
+            >
+              {sketchFnName}
+              {guiMode.sketchMode === sketchFnName && '✅'}
+            </button>
+          )
+        })}
       <br></br>
       <HorzVert horOrVert="horizontal" />
       <HorzVert horOrVert="vertical" />
@@ -164,6 +169,7 @@ export const Toolbar = () => {
       <SetHorzDistance horOrVert="setVertDistance" />
       <SetAngleLength angleOrLength="setAngle" />
       <SetAngleLength angleOrLength="setLength" />
+      <Intersect />
     </div>
   )
 }

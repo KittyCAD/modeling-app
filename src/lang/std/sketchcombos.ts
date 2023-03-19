@@ -17,6 +17,7 @@ import {
   createCallExpression,
   createIdentifier,
   createLiteral,
+  createObjectExpression,
   createPipeSubstitution,
   createUnaryExpression,
   giveSketchFnCallTag,
@@ -43,6 +44,7 @@ export type ConstraintType =
   | 'setVertDistance'
   | 'setAngle'
   | 'setLength'
+  | 'intersect'
 
 function createCallWrapper(
   a: TooTip,
@@ -53,6 +55,38 @@ function createCallWrapper(
   return {
     callExp: createCallExpression(a, [
       createFirstArg(a, val, tag),
+      createPipeSubstitution(),
+    ]),
+    valueUsedInTransform,
+  }
+}
+
+function intersectCallWrapper({
+  fnName,
+  angleVal,
+  offsetVal,
+  intersectTag,
+  tag,
+  valueUsedInTransform,
+}: {
+  fnName: string
+  angleVal: Value
+  offsetVal: Value
+  intersectTag: Value
+  tag?: Value
+  valueUsedInTransform?: number
+}): ReturnType<TransformCallback> {
+  const firstArg: any = {
+    angle: angleVal,
+    offset: offsetVal,
+    intersectTag,
+  }
+  if (tag) {
+    firstArg['tag'] = tag
+  }
+  return {
+    callExp: createCallExpression(fnName, [
+      createObjectExpression(firstArg),
       createPipeSubstitution(),
     ]),
     valueUsedInTransform,
@@ -71,7 +105,7 @@ export type TransformInfo = {
 }
 
 type TransformMap = {
-  [key in TooTip]: {
+  [key in TooTip]?: {
     [key in LineInputsType | 'free']?: {
       [key in ConstraintType]?: TransformInfo
     }
@@ -797,6 +831,28 @@ const transformMap: TransformMap = {
       setLength: {
         tooltip: 'xLine',
         createNode: xyLineSetLength('xLine'),
+      },
+      intersect: {
+        tooltip: 'angledLineThatIntersects' as TooTip,
+        createNode:
+          ({ referenceSegName, tag, forceValueUsedInTransform }) =>
+          (args) => {
+            const valueUsedInTransform = roundOff(
+              args[1].type === 'Literal' ? Number(args[1].value) : 0,
+              2
+            )
+            const angle = args[0].type === 'Literal' ? Number(args[0].value) : 0
+            return intersectCallWrapper({
+              fnName: 'angledLineThatIntersects',
+              angleVal: createLiteral(angle),
+              offsetVal:
+                forceValueUsedInTransform ||
+                createLiteral(valueUsedInTransform),
+              intersectTag: createLiteral(referenceSegName),
+              tag,
+              valueUsedInTransform,
+            })
+          },
       },
     },
   },

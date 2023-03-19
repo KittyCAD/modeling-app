@@ -12,7 +12,7 @@ import {
   angledLineToY,
   closee,
   startSketchAt,
-  getCoordsFromPaths,
+  angledLineThatIntersects,
 } from './sketch'
 import {
   segLen,
@@ -29,7 +29,6 @@ import { Quaternion, Vector3 } from 'three'
 import { SketchGroup, ExtrudeGroup, Position, Rotation } from '../executor'
 
 import { InternalFn, InternalFnNames, InternalFirstArg } from './stdTypes'
-import { intersectionWithParallelLine } from 'sketch-helpers'
 
 const transform: InternalFn = <T extends SketchGroup | ExtrudeGroup>(
   { sourceRange }: InternalFirstArg,
@@ -82,38 +81,6 @@ const translate: InternalFn = <T extends SketchGroup | ExtrudeGroup>(
   }
 }
 
-const angledLineThatIntersects: InternalFn = (
-  { sourceRange, programMemory },
-  data: {
-    angle: number
-    intersectTag: string
-    offset?: number
-    tag?: string
-  },
-  previousSketch: SketchGroup
-) => {
-  if (!previousSketch) throw new Error('lineTo must be called after lineTo')
-  const intersectPath = previousSketch.value.find(
-    ({ name }) => name === data.intersectTag
-  )
-  if (!intersectPath) throw new Error('intersectTag must match a line')
-  const from = getCoordsFromPaths(
-    previousSketch,
-    previousSketch.value.length - 1
-  )
-  const to = intersectionWithParallelLine({
-    line1: [intersectPath.from, intersectPath.to],
-    line1Offset: data.offset || 0,
-    line2Point: from,
-    line2Angle: data.angle,
-  })
-  return lineTo.fn(
-    { sourceRange, programMemory },
-    { to, tag: data.tag },
-    previousSketch
-  )
-}
-
 const min: InternalFn = (_, a: number, b: number): number => Math.min(a, b)
 
 const legLen: InternalFn = (_, hypotenuse: number, leg: number): number =>
@@ -158,7 +125,7 @@ export const internalFns: { [key in InternalFnNames]: InternalFn } = {
   angledLineToX: angledLineToX.fn,
   angledLineOfYLength: angledLineOfYLength.fn,
   angledLineToY: angledLineToY.fn,
-  angledLineThatIntersects,
+  angledLineThatIntersects: angledLineThatIntersects.fn,
   startSketchAt,
   closee,
 }

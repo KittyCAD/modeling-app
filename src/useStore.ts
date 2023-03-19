@@ -22,6 +22,7 @@ export type TooTip =
   | 'yLine'
   | 'xLineTo'
   | 'yLineTo'
+  | 'angledLineThatIntersects'
 
 export const toolTips: TooTip[] = [
   'lineTo',
@@ -35,6 +36,7 @@ export const toolTips: TooTip[] = [
   'yLine',
   'xLineTo',
   'yLineTo',
+  'angledLineThatIntersects',
 ]
 
 export type GuiModes =
