@@ -8,7 +8,7 @@ It might make sense to split this repo up at some point, but not the lang and th
 
 Originally Presented on 10/01/2023
 
-[Video](./larger-assets/2023-01-10/GMT20230110-193153_Recording_1920x1026.mp4)
+[Video](https://drive.google.com/file/d/183_wjqGdzZ8EEZXSqZ3eDcJocYPCyOdC/view?pli=1)
 
 [demo-slides.pdf](https://github.com/KittyCAD/Eng/files/10398178/demo.pdf)
 
