@@ -347,6 +347,11 @@ export function splitPathAtLastIndex(pathToNode: PathToNode): {
       path: pathToNode.slice(0, -1),
       index: last,
     }
+  } else if (pathToNode.length === 0) {
+    return {
+      path: [],
+      index: -1,
+    }
   }
   return splitPathAtLastIndex(pathToNode.slice(0, -1))
 }

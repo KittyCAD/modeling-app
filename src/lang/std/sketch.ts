@@ -1272,7 +1272,8 @@ export function addNewSketchLn({
   pathToNode,
 }: Omit<CreateLineFnCallArgs, 'from'>): { modifiedAst: Program } {
   const node = JSON.parse(JSON.stringify(_node))
-  const { add, updateArgs } = sketchLineHelperMap[fnName]
+  const { add, updateArgs } = sketchLineHelperMap?.[fnName] || {}
+  if (!add || !updateArgs) throw new Error('not a sketch line helper')
   const { node: varDec } = getNodeFromPath<VariableDeclarator>(
     node,
     pathToNode,
