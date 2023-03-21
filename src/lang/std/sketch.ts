@@ -1666,7 +1666,10 @@ function getFirstArgValuesForXYLineFns(callExpression: CallExpression): {
   if (length) {
     return { val: length, tag }
   }
-  throw new Error('expected ArrayExpression or ObjectExpression')
+  console.warn('expected ArrayExpression or ObjectExpression')
+  return {
+    val: createLiteral(1),
+  }
 }
 
 const getAngledLineThatIntersects = (

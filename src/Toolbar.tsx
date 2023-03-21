@@ -2,6 +2,7 @@ import { useStore, toolTips } from './useStore'
 import { extrudeSketch, sketchOnExtrudedFace } from './lang/modifyAst'
 import { getNodePathFromSourceRange } from './lang/queryAst'
 import { HorzVert } from './components/Toolbar/HorzVert'
+import { RemoveConstrainingValues } from './components/Toolbar/RemoveConstrainingValues'
 import { EqualLength } from './components/Toolbar/EqualLength'
 import { EqualAngle } from './components/Toolbar/EqualAngle'
 import { Intersect } from './components/Toolbar/Intersect'
@@ -170,6 +171,7 @@ export const Toolbar = () => {
       <SetAngleLength angleOrLength="setAngle" />
       <SetAngleLength angleOrLength="setLength" />
       <Intersect />
+      <RemoveConstrainingValues />
     </div>
   )
 }

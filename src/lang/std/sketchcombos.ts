@@ -45,6 +45,7 @@ export type ConstraintType =
   | 'setAngle'
   | 'setLength'
   | 'intersect'
+  | 'removeConstrainingValues'
 
 function createCallWrapper(
   a: TooTip,
@@ -939,6 +940,86 @@ const transformMap: TransformMap = {
   },
 }
 
+export function getRemoveConstraintsTransform(
+  sketchFnExp: CallExpression,
+  constraintType: ConstraintType
+): TransformInfo | false {
+  let name = sketchFnExp.callee.name as TooTip
+  if (!toolTips.includes(name)) {
+    return false
+  }
+  const xyLineMap: {
+    [key in TooTip]?: TooTip
+  } = {
+    xLine: 'line',
+    yLine: 'line',
+    xLineTo: 'lineTo',
+    yLineTo: 'lineTo',
+  }
+
+  const _name = xyLineMap[name]
+  if (_name) {
+    name = _name
+  }
+
+  const transformInfo: TransformInfo = {
+    tooltip: 'line',
+    // tooltip: name,
+    createNode:
+      ({ tag, referenceSegName }) =>
+      (args) => {
+        return createCallWrapper('line', args, tag)
+        // The following commented changes values to hardcode, but keeps the line type the same, maybe that's useful?
+
+        //   if (name === 'angledLineThatIntersects') {
+        //     return intersectCallWrapper({
+        //       fnName: name,
+        //       angleVal: args[0],
+        //       offsetVal: args[1],
+        //       intersectTag: createLiteral(referenceSegName),
+        //       tag,
+        //     })
+        //   }
+        //   return createCallWrapper(name, args, tag)
+      },
+  }
+
+  // check if the function is locked down and so can't be transformed
+  const firstArg = getFirstArg(sketchFnExp)
+  if (Array.isArray(firstArg.val)) {
+    const [a, b] = firstArg.val
+    if (a?.type !== 'Literal' && b?.type !== 'Literal') {
+      return transformInfo
+    }
+  } else {
+    if (firstArg.val?.type !== 'Literal') {
+      return transformInfo
+    }
+  }
+
+  // check if the function has no constraints
+  const isTwoValFree =
+    Array.isArray(firstArg.val) &&
+    firstArg.val?.[0]?.type === 'Literal' &&
+    firstArg.val?.[1]?.type === 'Literal'
+  if (isTwoValFree) {
+    return false
+  }
+  const isOneValFree =
+    !Array.isArray(firstArg.val) && firstArg.val?.type === 'Literal'
+  if (isOneValFree) {
+    return transformInfo
+  }
+
+  // check what constraints the function has
+  const lineInputType = getConstraintType(firstArg.val, name)
+  if (lineInputType) {
+    return transformInfo
+  }
+
+  return false
+}
+
 export function getTransformMapPath(
   sketchFnExp: CallExpression,
   constraintType: ConstraintType
@@ -1068,6 +1149,28 @@ export function getTransformInfos(
   return theTransforms
 }
 
+export function getRemoveConstraintsTransforms(
+  selectionRanges: Ranges,
+  ast: Program,
+  constraintType: ConstraintType
+): TransformInfo[] {
+  // return ()
+  const paths = selectionRanges.map((selectionRange) =>
+    getNodePathFromSourceRange(ast, selectionRange)
+  )
+  const nodes = paths.map(
+    (pathToNode) => getNodeFromPath<Value>(ast, pathToNode).node
+  )
+
+  const theTransforms = nodes.map((node) => {
+    if (node?.type === 'CallExpression')
+      return getRemoveConstraintsTransform(node, constraintType)
+
+    return false
+  }) as TransformInfo[]
+  return theTransforms
+}
+
 export function transformSecondarySketchLinesTagFirst({
   ast,
   selectionRanges,
@@ -1151,6 +1254,17 @@ export function transformAstSketchLines({
     const varDec = getNode<VariableDeclarator>('VariableDeclarator').node
 
     const { val, tag: callBackTag } = getFirstArg(callExp)
+    const _referencedSegmentNameVal =
+      callExp.arguments[0]?.type === 'ObjectExpression' &&
+      callExp.arguments[0].properties?.find(
+        (prop) => prop.key.name === 'intersectTag'
+      )?.value
+    const _referencedSegmentName =
+      referenceSegName ||
+      (_referencedSegmentNameVal &&
+        _referencedSegmentNameVal.type === 'Literal' &&
+        String(_referencedSegmentNameVal.value)) ||
+      ''
     const [varValA, varValB] = Array.isArray(val) ? val : [val, val]
 
     const varName = varDec.id.name
@@ -1160,7 +1274,7 @@ export function transformAstSketchLines({
     const seg = getSketchSegmentFromSourceRange(sketchGroup, range)
     const referencedSegment = referencedSegmentRange
       ? getSketchSegmentFromSourceRange(sketchGroup, referencedSegmentRange)
-      : sketchGroup.value.find((path) => path.name === referenceSegName)
+      : sketchGroup.value.find((path) => path.name === _referencedSegmentName)
     const { to, from } = seg
     const { modifiedAst, valueUsedInTransform } = replaceSketchLine({
       node: node,
@@ -1171,7 +1285,7 @@ export function transformAstSketchLines({
       to,
       from,
       createCallback: callBack({
-        referenceSegName,
+        referenceSegName: _referencedSegmentName,
         varValA,
         varValB,
         tag: callBackTag,
