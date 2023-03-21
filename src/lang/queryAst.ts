@@ -157,7 +157,7 @@ export function findAllPreviousVariables(
   const { node: bodyItems } = getNodeFromPath<Program['body']>(ast, bodyPath)
 
   const variables: PrevVariable<any>[] = []
-  bodyItems.forEach((item) => {
+  bodyItems?.forEach?.((item) => {
     if (item.type !== 'VariableDeclaration' || item.end > sourceRange[0]) return
     const varName = item.declarations[0].id.name
     const varValue = programMemory?.root[varName]
