@@ -988,7 +988,7 @@ export function getRemoveConstraintsTransform(
   const firstArg = getFirstArg(sketchFnExp)
   if (Array.isArray(firstArg.val)) {
     const [a, b] = firstArg.val
-    if (a?.type !== 'Literal' && b?.type !== 'Literal') {
+    if (a?.type !== 'Literal' || b?.type !== 'Literal') {
       return transformInfo
     }
   } else {
