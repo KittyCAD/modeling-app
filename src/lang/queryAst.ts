@@ -5,7 +5,7 @@ import { splitPathAtLastIndex } from './modifyAst'
 
 export function getNodeFromPath<T>(
   node: Program,
-  path: (string | number)[],
+  path: PathToNode,
   stopAt: string = '',
   returnEarly = false
 ): {
@@ -18,9 +18,9 @@ export function getNodeFromPath<T>(
   let pathsExplored: PathToNode = []
   for (const pathItem of path) {
     try {
-      if (typeof currentNode[pathItem] !== 'object')
+      if (typeof currentNode[pathItem[0]] !== 'object')
         throw new Error('not an object')
-      currentNode = currentNode[pathItem]
+      currentNode = currentNode[pathItem[0]]
       successfulPaths.push(pathItem)
       if (!stopAtNode) {
         pathsExplored.push(pathItem)
@@ -54,7 +54,7 @@ export function getNodeFromPath<T>(
 
 export function getNodeFromPathCurry(
   node: Program,
-  path: (string | number)[]
+  path: PathToNode
 ): <T>(
   stopAt: string,
   returnEarly?: boolean
@@ -73,7 +73,7 @@ export function getNodePathFromSourceRange(
   previousPath: PathToNode = []
 ): PathToNode {
   const [start, end] = sourceRange
-  let path: PathToNode = [...previousPath, 'body']
+  let path: PathToNode = [...previousPath, ['body', '']]
   const _node = { ...node }
   // loop over each statement in body getting the index with a for loop
   for (
@@ -83,15 +83,15 @@ export function getNodePathFromSourceRange(
   ) {
     const statement = _node.body[statementIndex]
     if (statement.start <= start && statement.end >= end) {
-      path.push(statementIndex)
+      path.push([statementIndex, 'index'])
       if (statement.type === 'ExpressionStatement') {
         const expression = statement.expression
         if (expression.start <= start && expression.end >= end) {
-          path.push('expression')
+          path.push(['expression', 'ExpressionStatement'])
           if (expression.type === 'CallExpression') {
             const callee = expression.callee
             if (callee.start <= start && callee.end >= end) {
-              path.push('callee')
+              path.push(['callee', 'CallExpression'])
               if (callee.type === 'Identifier') {
               }
             }
@@ -104,24 +104,59 @@ export function getNodePathFromSourceRange(
           const declaration = declarations[decIndex]
 
           if (declaration.start <= start && declaration.end >= end) {
-            path.push('declarations')
-            path.push(decIndex)
+            path.push(['declarations', 'VariableDeclaration'])
+            path.push([decIndex, 'index'])
             const init = declaration.init
             if (init.start <= start && init.end >= end) {
-              path.push('init')
+              path.push(['init', ''])
               if (init.type === 'PipeExpression') {
                 const body = init.body
                 for (let pipeIndex = 0; pipeIndex < body.length; pipeIndex++) {
                   const pipe = body[pipeIndex]
                   if (pipe.start <= start && pipe.end >= end) {
-                    path.push('body')
-                    path.push(pipeIndex)
+                    path.push(['body', 'PipeExpression'])
+                    path.push([pipeIndex, 'index'])
+                  }
+                  if (
+                    pipe.type === 'CallExpression' &&
+                    pipe.start <= start &&
+                    pipe.end >= end
+                  ) {
+                    if (pipe.callee.start <= start && pipe.callee.end >= end) {
+                      path.push(['callee', 'CallExpression'])
+                    } else {
+                      for (
+                        let argIndex = 0;
+                        argIndex < pipe.arguments.length;
+                        argIndex++
+                      ) {
+                        const arg = pipe.arguments[argIndex]
+                        if (arg.start <= start && arg.end >= end) {
+                          path.push(['arguments', 'CallExpression'])
+                          path.push([argIndex, 'index'])
+                          if (arg.type === 'ArrayExpression') {
+                            const elements = arg.elements
+                            for (
+                              let elIndex = 0;
+                              elIndex < elements.length;
+                              elIndex++
+                            ) {
+                              const el = elements[elIndex]
+                              if (el.start <= start && el.end >= end) {
+                                path.push(['elements', 'ArrayExpression'])
+                                path.push([elIndex, 'index'])
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
                   }
                 }
               } else if (init.type === 'CallExpression') {
                 const callee = init.callee
                 if (callee.start <= start && callee.end >= end) {
-                  path.push('callee')
+                  path.push(['callee', 'CallExpression'])
                   if (callee.type === 'Identifier') {
                   }
                 }

@@ -1,9 +1,7 @@
-import { PathToNode } from './executor'
 import { Token } from './tokeniser'
 import { parseExpression } from './astMathExpressions'
-import { Range } from '../useStore'
 
-type syntaxType =
+export type SyntaxType =
   | 'Program'
   | 'ExpressionStatement'
   | 'BinaryExpression'
@@ -81,14 +79,14 @@ type syntaxType =
 // | 'TypeAnnotation'
 
 export interface Program {
-  type: syntaxType
+  type: SyntaxType
   start: number
   end: number
   body: BodyItem[]
   nonCodeMeta: NoneCodeMeta
 }
 interface GeneralStatement {
-  type: syntaxType
+  type: SyntaxType
   start: number
   end: number
 }

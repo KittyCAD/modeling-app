@@ -1020,7 +1020,7 @@ export function getRemoveConstraintsTransform(
   return false
 }
 
-export function getTransformMapPath(
+function getTransformMapPath(
   sketchFnExp: CallExpression,
   constraintType: ConstraintType
 ):
@@ -1137,7 +1137,8 @@ export function getTransformInfos(
     getNodePathFromSourceRange(ast, selectionRange)
   )
   const nodes = paths.map(
-    (pathToNode) => getNodeFromPath<Value>(ast, pathToNode).node
+    (pathToNode) =>
+      getNodeFromPath<Value>(ast, pathToNode, 'CallExpression').node
   )
 
   const theTransforms = nodes.map((node) => {
@@ -1338,7 +1339,8 @@ export function getConstraintLevelFromSourceRange(
 ): 'free' | 'partial' | 'full' {
   const { node: sketchFnExp } = getNodeFromPath<CallExpression>(
     ast,
-    getNodePathFromSourceRange(ast, cursorRange)
+    getNodePathFromSourceRange(ast, cursorRange),
+    'CallExpression'
   )
   const name = sketchFnExp?.callee?.name as TooTip
   if (!toolTips.includes(name)) return 'free'

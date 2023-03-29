@@ -27,7 +27,7 @@ export function addSketchTo(
   node: Program,
   axis: 'xy' | 'xz' | 'yz',
   name = ''
-): { modifiedAst: Program; id: string; pathToNode: (string | number)[] } {
+): { modifiedAst: Program; id: string; pathToNode: PathToNode } {
   const _node = { ...node }
   const _name = name || findUniqueName(node, 'part')
 
@@ -63,15 +63,15 @@ export function addSketchTo(
     newBody.splice(showCallIndex, 0, variableDeclaration)
     _node.body = newBody
   }
-  let pathToNode: (string | number)[] = [
-    'body',
-    sketchIndex,
-    'declarations',
-    '0',
-    'init',
+  let pathToNode: PathToNode = [
+    ['body', ''],
+    [sketchIndex, 'index'],
+    ['declarations', 'VariableDeclaration'],
+    ['0', 'index'],
+    ['init', 'VariableDeclarator'],
   ]
   if (axis !== 'xy') {
-    pathToNode = [...pathToNode, 'body', '0']
+    pathToNode = [...pathToNode, ['body', ''], ['0', 'index']]
   }
 
   return {
@@ -194,7 +194,7 @@ export function mutateObjExpProp(
 
 export function extrudeSketch(
   node: Program,
-  pathToNode: (string | number)[],
+  pathToNode: PathToNode,
   shouldPipe = true
 ): {
   modifiedAst: Program
@@ -239,13 +239,13 @@ export function extrudeSketch(
     )
 
     variableDeclorator.init = pipeChain
-    const pathToExtrudeArg = [
+    const pathToExtrudeArg: PathToNode = [
       ...pathToDecleration,
-      'init',
-      'body',
-      pipeChain.body.length - 1,
-      'arguments',
-      0,
+      ['init', 'VariableDeclarator'],
+      ['body', ''],
+      [pipeChain.body.length - 1, 'index'],
+      ['arguments', 'CallExpression'],
+      [0, 'index'],
     ]
 
     return {
@@ -258,27 +258,27 @@ export function extrudeSketch(
   const VariableDeclaration = createVariableDeclaration(name, extrudeCall)
   const showCallIndex = getShowIndex(_node)
   _node.body.splice(showCallIndex, 0, VariableDeclaration)
-  const pathToExtrudeArg = [
-    'body',
-    showCallIndex,
-    'declarations',
-    0,
-    'init',
-    'arguments',
-    0,
+  const pathToExtrudeArg: PathToNode = [
+    ['body', ''],
+    [showCallIndex, 'index'],
+    ['declarations', 'VariableDeclaration'],
+    [0, 'index'],
+    ['init', 'VariableDeclarator'],
+    ['arguments', 'CallExpression'],
+    [0, 'index'],
   ]
   return {
     modifiedAst: addToShow(_node, name),
-    pathToNode: [...pathToNode.slice(0, -1), showCallIndex],
+    pathToNode: [...pathToNode.slice(0, -1), [showCallIndex, 'index']],
     pathToExtrudeArg,
   }
 }
 
 export function sketchOnExtrudedFace(
   node: Program,
-  pathToNode: (string | number)[],
+  pathToNode: PathToNode,
   programMemory: ProgramMemory
-): { modifiedAst: Program; pathToNode: (string | number)[] } {
+): { modifiedAst: Program; pathToNode: PathToNode } {
   let _node = { ...node }
   const newSketchName = findUniqueName(node, 'part')
   const { node: oldSketchNode, path: pathToOldSketch } =
@@ -330,7 +330,7 @@ export function sketchOnExtrudedFace(
 
   return {
     modifiedAst: addToShow(_node, newSketchName),
-    pathToNode: [...pathToNode.slice(0, -1), expressionIndex],
+    pathToNode: [...pathToNode.slice(0, -1), [expressionIndex, 'index']],
   }
 }
 
@@ -342,10 +342,10 @@ export function splitPathAtLastIndex(pathToNode: PathToNode): {
   index: number
 } {
   const last = pathToNode[pathToNode.length - 1]
-  if (typeof last === 'number') {
+  if (last && typeof last[0] === 'number') {
     return {
       path: pathToNode.slice(0, -1),
-      index: last,
+      index: last[0],
     }
   } else if (pathToNode.length === 0) {
     return {
@@ -354,6 +354,32 @@ export function splitPathAtLastIndex(pathToNode: PathToNode): {
     }
   }
   return splitPathAtLastIndex(pathToNode.slice(0, -1))
+}
+
+export function splitPathAtPipeExpression(pathToNode: PathToNode): {
+  path: PathToNode
+  index: number
+} {
+  const last = pathToNode[pathToNode.length - 1]
+
+  if (
+    last &&
+    last[1] === 'index' &&
+    pathToNode?.[pathToNode.length - 2]?.[1] === 'PipeExpression' &&
+    typeof last[0] === 'number'
+  ) {
+    return {
+      path: pathToNode.slice(0, -1),
+      index: last[0],
+    }
+  } else if (pathToNode.length === 0) {
+    return {
+      path: [],
+      index: -1,
+    }
+  }
+
+  return splitPathAtPipeExpression(pathToNode.slice(0, -1))
 }
 
 export function createLiteral(value: string | number): Literal {
@@ -499,7 +525,8 @@ export function giveSketchFnCallTag(
 ): { modifiedAst: Program; tag: string; isTagExisting: boolean } {
   const { node: primaryCallExp } = getNodeFromPath<CallExpression>(
     ast,
-    getNodePathFromSourceRange(ast, range)
+    getNodePathFromSourceRange(ast, range),
+    'CallExpression'
   )
   const firstArg = getFirstArg(primaryCallExp)
   const isTagExisting = !!firstArg.tag

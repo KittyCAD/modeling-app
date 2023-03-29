@@ -229,7 +229,13 @@ show(mySketch)
         value: 3,
         __meta: [
           {
-            pathToNode: ['body', 0, 'declarations', 0, 'init'],
+            pathToNode: [
+              ['body', ''],
+              [0, 'index'],
+              ['declarations', 'VariableDeclaration'],
+              [0, 'index'],
+              ['init', 'VariableDeclaration'],
+            ],
             sourceRange: [14, 15],
           },
         ],
@@ -239,11 +245,23 @@ show(mySketch)
         value: [1, '2', 3, 9],
         __meta: [
           {
-            pathToNode: ['body', 1, 'declarations', 0, 'init'],
+            pathToNode: [
+              ['body', ''],
+              [1, 'index'],
+              ['declarations', 'VariableDeclaration'],
+              [0, 'index'],
+              ['init', 'VariableDeclaration'],
+            ],
             sourceRange: [27, 49],
           },
           {
-            pathToNode: ['body', 0, 'declarations', 0, 'init'],
+            pathToNode: [
+              ['body', ''],
+              [0, 'index'],
+              ['declarations', 'VariableDeclaration'],
+              [0, 'index'],
+              ['init', 'VariableDeclaration'],
+            ],
             sourceRange: [14, 15],
           },
         ],
@@ -258,15 +276,16 @@ show(mySketch)
     const { root } = exe(code)
     expect(root.yo).toEqual({
       type: 'userVal',
-      value: {
-        aStr: 'str',
-        anum: 2,
-        identifier: 3,
-        binExp: 9,
-      },
+      value: { aStr: 'str', anum: 2, identifier: 3, binExp: 9 },
       __meta: [
         {
-          pathToNode: ['body', 1, 'declarations', 0, 'init'],
+          pathToNode: [
+            ['body', ''],
+            [1, 'index'],
+            ['declarations', 'VariableDeclaration'],
+            [0, 'index'],
+            ['init', 'VariableDeclaration'],
+          ],
           sourceRange: [27, 83],
         },
       ],
@@ -282,7 +301,13 @@ show(mySketch)
       value: '123',
       __meta: [
         {
-          pathToNode: ['body', 1, 'declarations', 0, 'init'],
+          pathToNode: [
+            ['body', ''],
+            [1, 'index'],
+            ['declarations', 'VariableDeclaration'],
+            [0, 'index'],
+            ['init', 'VariableDeclaration'],
+          ],
           sourceRange: [41, 50],
         },
       ],

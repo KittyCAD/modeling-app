@@ -15,7 +15,7 @@ import { internalFns } from './std/std'
 import { BufferGeometry } from 'three'
 
 export type SourceRange = [number, number]
-export type PathToNode = (string | number)[]
+export type PathToNode = [string | number, string][]
 export type Metadata = {
   sourceRange: SourceRange
   pathToNode: PathToNode
@@ -130,13 +130,13 @@ export const executor = (
     if (statement.type === 'VariableDeclaration') {
       statement.declarations.forEach((declaration, index) => {
         const variableName = declaration.id.name
-        const pathToNode = [
+        const pathToNode: PathToNode = [
           ...previousPathToNode,
-          'body',
-          bodyIndex,
-          'declarations',
-          index,
-          'init',
+          ['body', ''],
+          [bodyIndex, 'index'],
+          ['declarations', 'VariableDeclaration'],
+          [index, 'index'],
+          ['init', 'VariableDeclaration'],
         ]
         const sourceRange: SourceRange = [
           declaration.init.start,
