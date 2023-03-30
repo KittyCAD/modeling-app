@@ -1100,7 +1100,7 @@ function makeBlockStatement(
   }
 }
 
-interface ReturnStatement extends GeneralStatement {
+export interface ReturnStatement extends GeneralStatement {
   type: 'ReturnStatement'
   argument: Value
 }
