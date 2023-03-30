@@ -191,6 +191,23 @@ function moreNodePathFromSourceRange(
       }
     }
   }
+  if (_node.type === 'VariableDeclaration' && isInRange) {
+    const declarations = _node.declarations
+
+    for (let decIndex = 0; decIndex < declarations.length; decIndex++) {
+      const declaration = declarations[decIndex]
+      if (declaration.start <= start && declaration.end >= end) {
+        const init = declaration.init
+        if (init.start <= start && init.end >= end) {
+          path.push(['declarations', 'VariableDeclaration'])
+          path.push([decIndex, 'index'])
+          path.push(['init', ''])
+          return moreNodePathFromSourceRange(init, sourceRange, path)
+        }
+      }
+    }
+    return path
+  }
   throw new Error('not implemented')
 }
 
