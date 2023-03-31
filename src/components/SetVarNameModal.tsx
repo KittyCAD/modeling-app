@@ -73,7 +73,7 @@ export const SetVarNameModal = ({
                       })
                     }
                   >
-                    Add constraining value
+                    Add variable
                   </button>
                 </div>
               </Dialog.Panel>
