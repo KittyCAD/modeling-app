@@ -90,7 +90,7 @@ function moreNodePathFromSourceRange(
   let path: PathToNode = [...previousPath]
   const _node = { ...node }
 
-  if (start <= _node.start || end >= _node.end) return path
+  if (start < _node.start || end > _node.end) return path
 
   const isInRange = _node.start <= start && _node.end >= end
 
@@ -117,6 +117,7 @@ function moreNodePathFromSourceRange(
         }
       }
     }
+    return path
   }
   if (_node.type === 'BinaryExpression' && isInRange) {
     const { left, right } = _node
@@ -140,6 +141,7 @@ function moreNodePathFromSourceRange(
         return moreNodePathFromSourceRange(pipe, sourceRange, path)
       }
     }
+    return path
   }
   if (_node.type === 'ArrayExpression' && isInRange) {
     const { elements } = _node
@@ -151,6 +153,7 @@ function moreNodePathFromSourceRange(
         return moreNodePathFromSourceRange(element, sourceRange, path)
       }
     }
+    return path
   }
   if (_node.type === 'ObjectExpression' && isInRange) {
     const { properties } = _node
@@ -169,6 +172,7 @@ function moreNodePathFromSourceRange(
         }
       }
     }
+    return path
   }
   if (_node.type === 'ExpressionStatement' && isInRange) {
     const { expression } = _node
@@ -208,7 +212,16 @@ function moreNodePathFromSourceRange(
     }
     return path
   }
-  throw new Error('not implemented')
+  if (_node.type === 'UnaryExpression' && isInRange) {
+    const { argument } = _node
+    if (argument.start <= start && argument.end >= end) {
+      path.push(['argument', 'UnaryExpression'])
+      return moreNodePathFromSourceRange(argument, sourceRange, path)
+    }
+    return path
+  }
+  console.error('not implemented')
+  return path
 }
 
 export function getNodePathFromSourceRange(

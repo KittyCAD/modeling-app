@@ -3,6 +3,7 @@ import {
   findAllPreviousVariables,
   IsNodeSafeToReplace,
   isTypeInValue,
+  getNodePathFromSourceRange,
 } from './queryAst'
 import { lexer } from './tokeniser'
 import { initPromise } from './rust'
@@ -167,5 +168,42 @@ show(part001)`
       ])
       expect(isTypeInValue(val, 'PipeSubstitution')).toBe(false)
     })
+  })
+})
+
+describe('testing getNodePathFromSourceRange', () => {
+  const code = `const part001 = startSketchAt([0.39, -0.05])
+  |> line([0.94, 2.61], %)
+  |> line([-0.21, -1.4], %)
+show(part001)`
+  it('it finds the second line when cursor is put at the end', () => {
+    const searchLn = `line([0.94, 2.61], %)`
+    const sourceIndex = code.indexOf(searchLn) + searchLn.length
+    const ast = abstractSyntaxTree(lexer(code))
+    const result = getNodePathFromSourceRange(ast, [sourceIndex, sourceIndex])
+    expect(result).toEqual([
+      ['body', ''],
+      [0, 'index'],
+      ['declarations', 'VariableDeclaration'],
+      [0, 'index'],
+      ['init', ''],
+      ['body', 'PipeExpression'],
+      [1, 'index'],
+    ])
+  })
+  it('it finds the last line when cursor is put at the end', () => {
+    const searchLn = `line([-0.21, -1.4], %)`
+    const sourceIndex = code.indexOf(searchLn) + searchLn.length
+    const ast = abstractSyntaxTree(lexer(code))
+    const result = getNodePathFromSourceRange(ast, [sourceIndex, sourceIndex])
+    expect(result).toEqual([
+      ['body', ''],
+      [0, 'index'],
+      ['declarations', 'VariableDeclaration'],
+      [0, 'index'],
+      ['init', ''],
+      ['body', 'PipeExpression'],
+      [2, 'index'],
+    ])
   })
 })
