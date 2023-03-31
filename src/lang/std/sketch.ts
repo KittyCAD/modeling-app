@@ -796,7 +796,7 @@ export const angledLineOfXLength: SketchLineHelper = {
   },
   updateArgs: ({ node, pathToNode, to, from }) => {
     const _node = { ...node }
-    const { node: callExpression, path } = getNodeFromPath<CallExpression>(
+    const { node: callExpression } = getNodeFromPath<CallExpression>(
       _node,
       pathToNode
     )
@@ -890,7 +890,7 @@ export const angledLineOfYLength: SketchLineHelper = {
   },
   updateArgs: ({ node, pathToNode, to, from }) => {
     const _node = { ...node }
-    const { node: callExpression, path } = getNodeFromPath<CallExpression>(
+    const { node: callExpression } = getNodeFromPath<CallExpression>(
       _node,
       pathToNode
     )
@@ -978,7 +978,7 @@ export const angledLineToX: SketchLineHelper = {
   },
   updateArgs: ({ node, pathToNode, to, from }) => {
     const _node = { ...node }
-    const { node: callExpression, path } = getNodeFromPath<CallExpression>(
+    const { node: callExpression } = getNodeFromPath<CallExpression>(
       _node,
       pathToNode
     )
@@ -1064,7 +1064,7 @@ export const angledLineToY: SketchLineHelper = {
   },
   updateArgs: ({ node, pathToNode, to, from }) => {
     const _node = { ...node }
-    const { node: callExpression, path } = getNodeFromPath<CallExpression>(
+    const { node: callExpression } = getNodeFromPath<CallExpression>(
       _node,
       pathToNode
     )
@@ -1164,7 +1164,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
   },
   updateArgs: ({ node, pathToNode, to, from, previousProgramMemory }) => {
     const _node = { ...node }
-    const { node: callExpression, path } = getNodeFromPath<CallExpression>(
+    const { node: callExpression } = getNodeFromPath<CallExpression>(
       _node,
       pathToNode
     )
@@ -1234,7 +1234,7 @@ export function changeSketchArguments(
 ): { modifiedAst: Program } {
   const _node = { ...node }
   const thePath = getNodePathFromSourceRange(_node, sourceRange)
-  const { node: callExpression, path } = getNodeFromPath<CallExpression>(
+  const { node: callExpression, shallowPath } = getNodeFromPath<CallExpression>(
     _node,
     thePath
   )
@@ -1246,7 +1246,7 @@ export function changeSketchArguments(
     return updateArgs({
       node: _node,
       previousProgramMemory: programMemory,
-      pathToNode: path,
+      pathToNode: shallowPath,
       to: args,
       from,
     })
@@ -1279,11 +1279,8 @@ export function addNewSketchLn({
     pathToNode,
     'VariableDeclarator'
   )
-  const { node: pipeExp, path: pipePath } = getNodeFromPath<PipeExpression>(
-    node,
-    pathToNode,
-    'PipeExpression'
-  )
+  const { node: pipeExp, shallowPath: pipePath } =
+    getNodeFromPath<PipeExpression>(node, pathToNode, 'PipeExpression')
   const maybeStartSketchAt = pipeExp.body.find(
     (exp) =>
       exp.type === 'CallExpression' &&

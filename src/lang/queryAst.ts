@@ -10,8 +10,9 @@ import {
   VariableDeclaration,
   ReturnStatement,
   ArrayExpression,
+  Identifier,
 } from './abstractSyntaxTree'
-import { splitPathAtLastIndex } from './modifyAst'
+import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
 
 export function getNodeFromPath<T>(
   node: Program,
@@ -20,7 +21,8 @@ export function getNodeFromPath<T>(
   returnEarly = false
 ): {
   node: T
-  path: PathToNode
+  shallowPath: PathToNode
+  deepPath: PathToNode
 } {
   let currentNode = node as any
   let stopAtNode = null
@@ -46,7 +48,8 @@ export function getNodeFromPath<T>(
         if (returnEarly) {
           return {
             node: stopAtNode,
-            path: pathsExplored,
+            shallowPath: pathsExplored,
+            deepPath: successfulPaths,
           }
         }
       }
@@ -62,7 +65,8 @@ export function getNodeFromPath<T>(
   }
   return {
     node: stopAtNode || currentNode,
-    path: pathsExplored,
+    shallowPath: pathsExplored,
+    deepPath: successfulPaths,
   }
 }
 
@@ -77,7 +81,16 @@ export function getNodeFromPathCurry(
   path: PathToNode
 } {
   return <T>(stopAt: string = '', returnEarly = false) => {
-    return getNodeFromPath<T>(node, path, stopAt, returnEarly)
+    const { node: _node, shallowPath } = getNodeFromPath<T>(
+      node,
+      path,
+      stopAt,
+      returnEarly
+    )
+    return {
+      node: _node,
+      path: shallowPath,
+    }
   }
 }
 
@@ -264,7 +277,11 @@ export function findAllPreviousVariables(
   insertIndex: number
 } {
   const path = getNodePathFromSourceRange(ast, sourceRange)
-  const { path: pathToDec } = getNodeFromPath(ast, path, 'VariableDeclaration')
+  const { shallowPath: pathToDec } = getNodeFromPath(
+    ast,
+    path,
+    'VariableDeclaration'
+  )
   const { index: insertIndex, path: bodyPath } = splitPathAtLastIndex(pathToDec)
 
   const { node: bodyItems } = getNodeFromPath<Program['body']>(ast, bodyPath)
@@ -288,30 +305,50 @@ export function findAllPreviousVariables(
   }
 }
 
-export function IsNodeSafeToReplace(
+type ReplacerFn = (_ast: Program, varName: string) => { modifiedAst: Program }
+
+export function isNodeSafeToReplace(
   ast: Program,
   sourceRange: [number, number]
 ): {
   isSafe: boolean
   value: Value
+  replacer: ReplacerFn
 } {
   let path = getNodePathFromSourceRange(ast, sourceRange)
   if (path[path.length - 1][0] === 'callee') {
     path = path.slice(0, -1)
   }
-  const acceptedNodeTypes = ['BinaryExpression', 'Identifier', 'CallExpression']
-  const { node: value, path: outPath } = getNodeFromPath(
+  const acceptedNodeTypes = [
+    'BinaryExpression',
+    'Identifier',
+    'CallExpression',
+    'Literal',
+  ]
+  const { node: value, deepPath: outPath } = getNodeFromPath(
     ast,
     path,
     acceptedNodeTypes
   )
-  const { node: binValue, path: outBinPath } = getNodeFromPath(
+  const { node: binValue, shallowPath: outBinPath } = getNodeFromPath(
     ast,
     path,
     'BinaryExpression'
   )
   // binaryExpression should take precedence
-  const finVal = outBinPath.length > outPath.length ? binValue : value
+  const finVal =
+    (binValue as Value)?.type === 'BinaryExpression' ? binValue : value
+
+  const replaceNodeWithIdentifier: ReplacerFn = (_ast, varName) => {
+    const _path =
+      (binValue as Value)?.type === 'BinaryExpression' ? outBinPath : outPath
+    const identifier = createIdentifier(varName)
+    const last = _path[_path.length - 1]
+    const startPath = _path.slice(0, -1)
+    const nodeToReplace = getNodeFromPath(_ast, startPath).node as any
+    nodeToReplace[last[0]] = identifier
+    return { modifiedAst: _ast }
+  }
 
   const hasPipeSub = isTypeInValue(finVal as Value, 'PipeSubstitution')
   const isIdentifierCallee = path[path.length - 1][0] !== 'callee'
@@ -321,6 +358,7 @@ export function IsNodeSafeToReplace(
       isIdentifierCallee &&
       acceptedNodeTypes.includes((finVal as any)?.type),
     value: finVal as Value,
+    replacer: replaceNodeWithIdentifier,
   }
 }
 

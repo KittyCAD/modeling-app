@@ -15,7 +15,12 @@ import {
   UnaryExpression,
   BinaryExpression,
 } from './abstractSyntaxTree'
-import { getNodeFromPath, getNodePathFromSourceRange } from './queryAst'
+import {
+  findAllPreviousVariables,
+  getNodeFromPath,
+  getNodePathFromSourceRange,
+  isNodeSafeToReplace,
+} from './queryAst'
 import { PathToNode, ProgramMemory } from './executor'
 import {
   addTagForSketchOnFace,
@@ -217,7 +222,7 @@ export function extrudeSketch(
   )
   const isInPipeExpression = pipeExpression.type === 'PipeExpression'
 
-  const { node: variableDeclorator, path: pathToDecleration } =
+  const { node: variableDeclorator, shallowPath: pathToDecleration } =
     getNodeFromPath<VariableDeclarator>(_node, pathToNode, 'VariableDeclarator')
 
   const extrudeCall = createCallExpression('extrude', [
@@ -281,7 +286,7 @@ export function sketchOnExtrudedFace(
 ): { modifiedAst: Program; pathToNode: PathToNode } {
   let _node = { ...node }
   const newSketchName = findUniqueName(node, 'part')
-  const { node: oldSketchNode, path: pathToOldSketch } =
+  const { node: oldSketchNode, shallowPath: pathToOldSketch } =
     getNodeFromPath<VariableDeclarator>(
       _node,
       pathToNode,
@@ -544,4 +549,30 @@ export function giveSketchFnCallTag(
     tag: tagStr,
     isTagExisting,
   }
+}
+
+export function moveValueIntoNewVariable(
+  ast: Program,
+  programMemory: ProgramMemory,
+  sourceRange: Range,
+  variableName: string
+): {
+  modifiedAst: Program
+} {
+  const { isSafe, value, replacer } = isNodeSafeToReplace(ast, sourceRange)
+  if (!isSafe || value.type === 'Identifier') return { modifiedAst: ast }
+
+  const { insertIndex } = findAllPreviousVariables(
+    ast,
+    programMemory,
+    sourceRange
+  )
+  let _node = JSON.parse(JSON.stringify(ast))
+  _node = replacer(_node, variableName).modifiedAst
+  _node.body.splice(
+    insertIndex,
+    0,
+    createVariableDeclaration(variableName, value)
+  )
+  return { modifiedAst: _node }
 }
