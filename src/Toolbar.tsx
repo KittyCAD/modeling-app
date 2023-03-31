@@ -8,6 +8,7 @@ import { EqualAngle } from './components/Toolbar/EqualAngle'
 import { Intersect } from './components/Toolbar/Intersect'
 import { SetHorzDistance } from './components/Toolbar/SetHorzDistance'
 import { SetAngleLength } from './components/Toolbar/SetAngleLength'
+import { ConvertToVariable } from './components/Toolbar/ConvertVariable'
 
 export const Toolbar = () => {
   const {
@@ -162,6 +163,7 @@ export const Toolbar = () => {
           )
         })}
       <br></br>
+      <ConvertToVariable />
       <HorzVert horOrVert="horizontal" />
       <HorzVert horOrVert="vertical" />
       <EqualLength />

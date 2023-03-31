@@ -336,15 +336,15 @@ export function isNodeSafeToReplace(
     'BinaryExpression'
   )
   // binaryExpression should take precedence
-  const finVal =
-    (binValue as Value)?.type === 'BinaryExpression' ? binValue : value
+  const [finVal, finPath] =
+    (binValue as Value)?.type === 'BinaryExpression'
+      ? [binValue, outBinPath]
+      : [value, outPath]
 
   const replaceNodeWithIdentifier: ReplacerFn = (_ast, varName) => {
-    const _path =
-      (binValue as Value)?.type === 'BinaryExpression' ? outBinPath : outPath
     const identifier = createIdentifier(varName)
-    const last = _path[_path.length - 1]
-    const startPath = _path.slice(0, -1)
+    const last = finPath[finPath.length - 1]
+    const startPath = finPath.slice(0, -1)
     const nodeToReplace = getNodeFromPath(_ast, startPath).node as any
     nodeToReplace[last[0]] = identifier
     return { modifiedAst: _ast }
@@ -356,7 +356,8 @@ export function isNodeSafeToReplace(
     isSafe:
       !hasPipeSub &&
       isIdentifierCallee &&
-      acceptedNodeTypes.includes((finVal as any)?.type),
+      acceptedNodeTypes.includes((finVal as any)?.type) &&
+      finPath.map(([_, type]) => type).includes('VariableDeclaration'),
     value: finVal as Value,
     replacer: replaceNodeWithIdentifier,
   }
