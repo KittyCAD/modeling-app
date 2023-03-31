@@ -196,7 +196,7 @@ show(part001)`
     const sourceIndex = code.indexOf(searchLn) + searchLn.length
     const ast = abstractSyntaxTree(lexer(code))
     const result = getNodePathFromSourceRange(ast, [sourceIndex, sourceIndex])
-    expect(result).toEqual([
+    const expected  = [
       ['body', ''],
       [0, 'index'],
       ['declarations', 'VariableDeclaration'],
@@ -204,6 +204,20 @@ show(part001)`
       ['init', ''],
       ['body', 'PipeExpression'],
       [2, 'index'],
-    ])
+    ]
+    expect(result).toEqual(expected)
+    // expect similar result for start of line
+    const startSourceIndex = code.indexOf(searchLn)
+    const startResult = getNodePathFromSourceRange(
+      ast,
+      [startSourceIndex, startSourceIndex]
+    )
+    expect(startResult).toEqual([...expected, ['callee', 'CallExpression']])
+    // expect similar result when whole line is selected
+    const selectWholeThing = getNodePathFromSourceRange(
+      ast,
+      [startSourceIndex, sourceIndex]
+    )
+    expect(selectWholeThing).toEqual(expected)
   })
 })
