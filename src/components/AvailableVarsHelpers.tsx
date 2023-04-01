@@ -188,12 +188,14 @@ export const CreateNewVariable = ({
   setNewVariableName,
   shouldCreateVariable,
   setShouldCreateVariable,
+  showCheckbox = true,
 }: {
   isNewVariableNameUnique: boolean
   newVariableName: string
   setNewVariableName: (a: string) => void
   shouldCreateVariable: boolean
   setShouldCreateVariable: (a: boolean) => void
+  showCheckbox?: boolean
 }) => {
   return (
     <>
@@ -204,14 +206,16 @@ export const CreateNewVariable = ({
         Create new variable
       </label>
       <div className="mt-1 flex flex-1">
-        <input
-          type="checkbox"
-          className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md font-mono pl-1 flex-shrink"
-          checked={shouldCreateVariable}
-          onChange={(e) => {
-            setShouldCreateVariable(e.target.checked)
-          }}
-        />
+        {showCheckbox && (
+          <input
+            type="checkbox"
+            className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md font-mono pl-1 flex-shrink"
+            checked={shouldCreateVariable}
+            onChange={(e) => {
+              setShouldCreateVariable(e.target.checked)
+            }}
+          />
+        )}
         <input
           type="text"
           disabled={!shouldCreateVariable}

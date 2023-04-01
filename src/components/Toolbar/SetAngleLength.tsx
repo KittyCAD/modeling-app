@@ -34,7 +34,7 @@ export const SetAngleLength = ({
       programMemory: s.programMemory,
     })
   )
-  const [enableHorz, setEnableHorz] = useState(false)
+  const [enableAngLen, setEnableAngLen] = useState(false)
   const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
   useEffect(() => {
     if (!ast) return
@@ -42,7 +42,8 @@ export const SetAngleLength = ({
       getNodePathFromSourceRange(ast, selectionRange)
     )
     const nodes = paths.map(
-      (pathToNode) => getNodeFromPath<Value>(ast, pathToNode).node
+      (pathToNode) =>
+        getNodeFromPath<Value>(ast, pathToNode, 'CallExpression').node
     )
     const isAllTooltips = nodes.every(
       (node) =>
@@ -54,7 +55,7 @@ export const SetAngleLength = ({
     setTransformInfos(theTransforms)
 
     const _enableHorz = isAllTooltips && theTransforms.every(Boolean)
-    setEnableHorz(_enableHorz)
+    setEnableAngLen(_enableHorz)
   }, [guiMode, selectionRanges])
   if (guiMode.mode !== 'sketch') return null
 
@@ -102,9 +103,9 @@ export const SetAngleLength = ({
         }
       }}
       className={`border m-1 px-1 rounded text-xs ${
-        enableHorz ? 'bg-gray-50 text-gray-800' : 'bg-gray-200 text-gray-400'
+        enableAngLen ? 'bg-gray-50 text-gray-800' : 'bg-gray-200 text-gray-400'
       }`}
-      disabled={!enableHorz}
+      disabled={!enableAngLen}
     >
       {angleOrLength}
     </button>

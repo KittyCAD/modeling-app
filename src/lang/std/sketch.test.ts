@@ -118,7 +118,13 @@ show(mySketch001)`
         sketchMode: 'sketchEdit',
         rotation: [0, 0, 0, 1],
         position: [0, 0, 0],
-        pathToNode: ['body', 0, 'declarations', '0', 'init'],
+        pathToNode: [
+          ['body', ''],
+          [0, 'index'],
+          ['declarations', 'VariableDeclaration'],
+          [0, 'index'],
+          ['init', 'VariableDeclarator'],
+        ],
       },
       [0, 0]
     )
@@ -144,7 +150,13 @@ show(mySketch001)`
       programMemory,
       to: [2, 3],
       fnName: 'lineTo',
-      pathToNode: ['body', 0, 'declarations', '0', 'init'],
+      pathToNode: [
+        ['body', ''],
+        [0, 'index'],
+        ['declarations', 'VariableDeclaration'],
+        [0, 'index'],
+        ['init', 'VariableDeclarator'],
+      ],
     })
     const expectedCode = `
 const mySketch001 = startSketchAt([0, 0])

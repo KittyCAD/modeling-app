@@ -1,0 +1,61 @@
+import { useState, useEffect } from 'react'
+import { create } from 'react-modal-promise'
+import { useStore } from '../../useStore'
+import { isNodeSafeToReplace } from '../../lang/queryAst'
+import { SetVarNameModal } from '../SetVarNameModal'
+import { moveValueIntoNewVariable } from '../../lang/modifyAst'
+
+const getModalInfo = create(SetVarNameModal as any)
+
+export const ConvertToVariable = () => {
+  const { guiMode, selectionRanges, ast, programMemory, updateAst } = useStore(
+    (s) => ({
+      guiMode: s.guiMode,
+      ast: s.ast,
+      updateAst: s.updateAst,
+      selectionRanges: s.selectionRanges,
+      programMemory: s.programMemory,
+    })
+  )
+  const [enableAngLen, setEnableAngLen] = useState(false)
+  useEffect(() => {
+    if (!ast) return
+
+    const { isSafe, value } = isNodeSafeToReplace(ast, selectionRanges[0])
+    const canReplace = isSafe && value.type !== 'Identifier'
+    const isOnlyOneSelection = selectionRanges.length === 1
+
+    const _enableHorz = canReplace && isOnlyOneSelection
+    setEnableAngLen(_enableHorz)
+  }, [guiMode, selectionRanges])
+
+  return (
+    <button
+      onClick={async () => {
+        if (!ast) return
+        try {
+          const { variableName } = await getModalInfo({
+            valueName: 'var',
+          } as any)
+
+          const { modifiedAst: _modifiedAst } = moveValueIntoNewVariable(
+            ast,
+            programMemory,
+            selectionRanges[0],
+            variableName
+          )
+
+          updateAst(_modifiedAst)
+        } catch (e) {
+          console.log('e', e)
+        }
+      }}
+      className={`border m-1 px-1 rounded text-xs ${
+        enableAngLen ? 'bg-gray-50 text-gray-800' : 'bg-gray-200 text-gray-400'
+      }`}
+      disabled={!enableAngLen}
+    >
+      ConvertToVariable
+    </button>
+  )
+}

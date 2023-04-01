@@ -1,6 +1,7 @@
 import { ProgramMemory, Path, SourceRange } from '../executor'
 import { Program, Value } from '../abstractSyntaxTree'
 import { TooTip } from '../../useStore'
+import { PathToNode } from '../executor'
 
 export interface InternalFirstArg {
   programMemory: ProgramMemory
@@ -53,7 +54,7 @@ export type InternalFnNames =
 export interface ModifyAstBase {
   node: Program
   previousProgramMemory: ProgramMemory
-  pathToNode: (string | number)[]
+  pathToNode: PathToNode
 }
 
 interface addCall extends ModifyAstBase {
@@ -85,12 +86,12 @@ export interface SketchLineHelper {
   fn: InternalFn
   add: (a: addCall) => {
     modifiedAst: Program
-    pathToNode: (string | number)[]
+    pathToNode: PathToNode
     valueUsedInTransform?: number
   }
   updateArgs: (a: updateArgs) => {
     modifiedAst: Program
-    pathToNode: (string | number)[]
+    pathToNode: PathToNode
   }
   addTag: (a: ModifyAstBase) => {
     modifiedAst: Program
