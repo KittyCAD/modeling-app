@@ -350,9 +350,12 @@ const setAngledIntersectLineForLines: TransformInfo['createNode'] =
       2
     )
     const angle = args[0].type === 'Literal' ? Number(args[0].value) : 0
+    const angleVal = [0, 90, 180, 270].includes(angle)
+      ? createIdentifier(`_${angle}`)
+      : createLiteral(angle)
     return intersectCallWrapper({
       fnName: 'angledLineThatIntersects',
-      angleVal: createLiteral(angle),
+      angleVal,
       offsetVal:
         forceValueUsedInTransform || createLiteral(valueUsedInTransform),
       intersectTag: createLiteral(referenceSegName),
