@@ -126,6 +126,7 @@ const xyLineSetLength =
       : referenceSeg
       ? segRef
       : args[0]
+    // console.log({ lineVal, segRef, forceValueUsedInTransform, args })
     return createCallWrapper(xOrY, lineVal, tag, getArgLiteralVal(args[0]))
   }
 
@@ -894,8 +895,12 @@ const transformMap: TransformMap = {
         tooltip: 'yLine',
         createNode:
           ({ referenceSegName, tag }) =>
-          () =>
-            createCallWrapper('yLine', createSegLen(referenceSegName), tag),
+          (arg) => {
+            const argVal = getArgLiteralVal(arg[0])
+            let segLen = createSegLen(referenceSegName) as BinaryPart
+            if (argVal < 0) segLen = createUnaryExpression(segLen)
+            return createCallWrapper('yLine', segLen, tag, argVal)
+          },
       },
       setLength: {
         tooltip: 'yLine',
