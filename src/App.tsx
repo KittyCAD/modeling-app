@@ -111,6 +111,26 @@ function App() {
                 },
               ],
             },
+            _0: {
+              type: 'userVal',
+              value: 0,
+              __meta: [],
+            },
+            _90: {
+              type: 'userVal',
+              value: 90,
+              __meta: [],
+            },
+            _180: {
+              type: 'userVal',
+              value: 180,
+              __meta: [],
+            },
+            _270: {
+              type: 'userVal',
+              value: 270,
+              __meta: [],
+            },
           },
           _sketch: [],
         })
