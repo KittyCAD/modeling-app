@@ -1,6 +1,14 @@
 import { useRef, useState, useEffect, useMemo } from 'react'
-import { CallExpression, ArrayExpression } from '../lang/abstractSyntaxTree'
-import { getNodePathFromSourceRange, getNodeFromPath } from '../lang/queryAst'
+import {
+  CallExpression,
+  ArrayExpression,
+  PipeExpression,
+} from '../lang/abstractSyntaxTree'
+import {
+  getNodePathFromSourceRange,
+  getNodeFromPath,
+  getNodeFromPathCurry,
+} from '../lang/queryAst'
 import { changeSketchArguments } from '../lang/std/sketch'
 import {
   ExtrudeGroup,
@@ -18,6 +26,7 @@ import { isOverlap, roundOff } from '../lib/utils'
 import { Vector3, DoubleSide, Quaternion } from 'three'
 import { useSetCursor } from '../hooks/useSetCursor'
 import { getConstraintLevelFromSourceRange } from '../lang/std/sketchcombos'
+import { createCallExpression, createPipeSubstitution } from '../lang/modifyAst'
 
 function MovingSphere({
   geo,
@@ -352,8 +361,11 @@ function PathRender({
   rotation: Rotation
   position: Position
 }) {
-  const { selectionRanges } = useStore(({ selectionRanges }) => ({
-    selectionRanges,
+  const { selectionRanges, updateAstAsync, ast, guiMode } = useStore((s) => ({
+    selectionRanges: s.selectionRanges,
+    updateAstAsync: s.updateAstAsync,
+    ast: s.ast,
+    guiMode: s.guiMode,
   }))
   const [editorCursor, setEditorCursor] = useState(false)
   useEffect(() => {
@@ -397,6 +409,37 @@ function PathRender({
               forceHighlight={forceHighlight || editorCursor}
               rotation={rotation}
               position={position}
+              onClick={() => {
+                if (
+                  !ast ||
+                  !(guiMode.mode === 'sketch' && guiMode.sketchMode === 'line')
+                )
+                  return
+                const path = getNodePathFromSourceRange(
+                  ast,
+                  geoInfo.__geoMeta.sourceRange
+                )
+                const getNode = getNodeFromPathCurry(ast, path)
+                const maybeStartSketchAt =
+                  getNode<CallExpression>('CallExpression')
+                const pipe = getNode<PipeExpression>('PipeExpression')
+                if (
+                  maybeStartSketchAt?.node.callee.name === 'startSketchAt' &&
+                  pipe.node &&
+                  pipe.node.body.length > 2
+                ) {
+                  const modifiedAst = JSON.parse(JSON.stringify(ast))
+                  const _pipe = getNodeFromPath<PipeExpression>(
+                    modifiedAst,
+                    path,
+                    'PipeExpression'
+                  )
+                  _pipe.node.body.push(
+                    createCallExpression('close', [createPipeSubstitution()])
+                  )
+                  updateAstAsync(modifiedAst)
+                }
+              }}
             />
           )
       })}
@@ -410,12 +453,14 @@ function LineRender({
   forceHighlight = false,
   rotation,
   position,
+  onClick: _onClick = () => {},
 }: {
   geo: BufferGeometry
   sourceRange: [number, number]
   forceHighlight?: boolean
   rotation: Rotation
   position: Position
+  onClick?: () => void
 }) {
   const { setHighlightRange, guiMode, ast } = useStore((s) => ({
     setHighlightRange: s.setHighlightRange,
@@ -457,7 +502,10 @@ function LineRender({
           setHover(false)
           setHighlightRange([0, 0])
         }}
-        onClick={onClick}
+        onClick={() => {
+          _onClick()
+          onClick()
+        }}
       >
         <primitive object={geo} />
         <meshStandardMaterial

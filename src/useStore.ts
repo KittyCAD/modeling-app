@@ -93,6 +93,7 @@ interface StoreState {
   ast: Program | null
   setAst: (ast: Program | null) => void
   updateAst: (ast: Program, focusPath?: PathToNode) => void
+  updateAstAsync: (ast: Program, focusPath?: PathToNode) => void
   code: string
   setCode: (code: string) => void
   formatCode: () => void
@@ -106,6 +107,8 @@ interface StoreState {
   isShiftDown: boolean
   setIsShiftDown: (isShiftDown: boolean) => void
 }
+
+let pendingAstUpdates: number[] = []
 
 export const useStore = create<StoreState>()(
   persist(
@@ -159,6 +162,7 @@ export const useStore = create<StoreState>()(
       },
       updateAst: async (ast, focusPath) => {
         const newCode = recast(ast)
+        console.log('running update Ast', ast)
         const astWithUpdatedSource = abstractSyntaxTree(
           await asyncLexer(newCode)
         )
@@ -172,6 +176,17 @@ export const useStore = create<StoreState>()(
             get().setCursor([[start, end]])
           })
         }
+      },
+      updateAstAsync: async (ast, focusPath) => {
+        // clear any pending updates
+        pendingAstUpdates.forEach((id) => clearTimeout(id))
+        pendingAstUpdates = []
+        // setup a new update
+        pendingAstUpdates.push(
+          setTimeout(() => {
+            get().updateAst(ast, focusPath)
+          }, 100) as unknown as number
+        )
       },
       code: '',
       setCode: (code) => {

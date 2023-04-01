@@ -1479,12 +1479,14 @@ function addTagWithTo(
   }
 }
 
-export const closee: InternalFn = (
-  { sourceRange, programMemory },
+export const close: InternalFn = (
+  { sourceRange },
   sketchGroup: SketchGroup
 ): SketchGroup => {
   const from = getCoordsFromPaths(sketchGroup, sketchGroup.value.length - 1)
-  const to = getCoordsFromPaths(sketchGroup, 0)
+  const to = sketchGroup.start
+    ? sketchGroup.start.from
+    : getCoordsFromPaths(sketchGroup, 0)
   const geo = lineGeo({
     from: [...from, 0],
     to: [...to, 0],
@@ -1509,7 +1511,7 @@ export const closee: InternalFn = (
     },
   }
   const newValue = [...sketchGroup.value]
-  newValue[0] = currentPath
+  newValue.push(currentPath)
   return {
     ...sketchGroup,
     value: newValue,

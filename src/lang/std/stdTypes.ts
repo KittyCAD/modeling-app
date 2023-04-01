@@ -48,7 +48,7 @@ export type InternalFnNames =
   | 'angledLineOfYLength'
   | 'angledLineToY'
   | 'startSketchAt'
-  | 'closee'
+  | 'close'
   | 'angledLineThatIntersects'
 
 export interface ModifyAstBase {
