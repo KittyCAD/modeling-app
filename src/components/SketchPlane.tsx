@@ -5,12 +5,15 @@ import { addNewSketchLn } from '../lang/std/sketch'
 import { roundOff } from '../lib/utils'
 
 export const SketchPlane = () => {
-  const { ast, guiMode, updateAst, programMemory } = useStore((s) => ({
-    guiMode: s.guiMode,
-    ast: s.ast,
-    updateAst: s.updateAst,
-    programMemory: s.programMemory,
-  }))
+  const { ast, guiMode, updateAst, programMemory, updateAstAsync } = useStore(
+    (s) => ({
+      guiMode: s.guiMode,
+      ast: s.ast,
+      updateAst: s.updateAst,
+      updateAstAsync: s.updateAstAsync,
+      programMemory: s.programMemory,
+    })
+  )
   if (guiMode.mode !== 'sketch') {
     return null
   }
@@ -71,7 +74,7 @@ export const SketchPlane = () => {
             fnName: guiMode.sketchMode,
             pathToNode: guiMode.pathToNode,
           })
-          updateAst(modifiedAst)
+          updateAstAsync(modifiedAst)
         }}
       >
         <planeGeometry args={[30, 40]} />

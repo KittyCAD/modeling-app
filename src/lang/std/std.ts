@@ -10,7 +10,7 @@ import {
   angledLineToX,
   angledLineOfYLength,
   angledLineToY,
-  closee,
+  close,
   startSketchAt,
   angledLineThatIntersects,
 } from './sketch'
@@ -127,7 +127,7 @@ export const internalFns: { [key in InternalFnNames]: InternalFn } = {
   angledLineToY: angledLineToY.fn,
   angledLineThatIntersects: angledLineThatIntersects.fn,
   startSketchAt,
-  closee,
+  close,
 }
 
 function rotateOnAxis<T extends SketchGroup | ExtrudeGroup>(
