@@ -5,6 +5,7 @@ import {
   PlaneGeometry,
   Quaternion,
   Euler,
+  CylinderGeometry,
 } from 'three'
 import { Rotation, Position } from './executor'
 
@@ -63,7 +64,7 @@ export function lineGeo({
     Hypotenuse: Hypotenuse3d,
     ry,
     rz,
-    // sign,
+    sign,
   } = trigCalcs({ from, to })
 
   // create BoxGeometry with size [Hypotenuse3d, 0.1, 0.1] centered at center, with rotation of [0, ry, rz]
@@ -72,8 +73,13 @@ export function lineGeo({
   lineBody.rotateZ(rz)
   lineBody.translate(centre[0], centre[1], centre[2])
 
-  // create line end balls with SphereGeometry at `to` and `from` with radius of 0.15
-  const lineEnd1 = new SphereGeometry(0.15)
+  // create line end points with CylinderGeometry at `to`
+  const lineEnd1 = new CylinderGeometry(0.05, 0.22, 0.25, 4)
+  lineEnd1.translate(0, -0.1, 0)
+  lineEnd1.rotateY(Math.PI / 4)
+  lineEnd1.rotateZ(rz)
+  const _sign = to[0] === from[0] ? -sign : sign
+  lineEnd1.rotateZ((_sign * Math.PI) / 2)
   lineEnd1.translate(to[0], to[1], to[2])
 
   const centreSphere = new SphereGeometry(0.15)
