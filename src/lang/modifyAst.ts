@@ -527,12 +527,8 @@ export function createBinaryExpressionWithUnary([left, right]: [
   BinaryExpression['left'],
   BinaryExpression['right']
 ]): BinaryExpression {
-  if (right.type === 'UnaryExpression' && right.operator === '-') {
-    console.log('right', right.argument)
-    const yo = createBinaryExpression([left, '-', right.argument])
-    console.log('yo', yo)
-    return yo
-  }
+  if (right.type === 'UnaryExpression' && right.operator === '-')
+    return createBinaryExpression([left, '-', right.argument])
   return createBinaryExpression([left, '+', right])
 }
 
