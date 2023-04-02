@@ -478,13 +478,17 @@ function LineRender({
       setBaseColor('orange')
       return
     }
-    const level = getConstraintLevelFromSourceRange(sourceRange, ast)
-    if (level === 'free') {
+    try {
+      const level = getConstraintLevelFromSourceRange(sourceRange, ast)
+      if (level === 'free') {
+        setBaseColor('orange')
+      } else if (level === 'partial') {
+        setBaseColor('IndianRed')
+      } else if (level === 'full') {
+        setBaseColor('lightgreen')
+      }
+    } catch (e) {
       setBaseColor('orange')
-    } else if (level === 'partial') {
-      setBaseColor('IndianRed')
-    } else if (level === 'full') {
-      setBaseColor('lightgreen')
     }
   }, [guiMode, ast, sourceRange])
 

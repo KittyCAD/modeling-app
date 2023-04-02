@@ -14,6 +14,7 @@ import {
 } from '../queryAst'
 import {
   createBinaryExpression,
+  createBinaryExpressionWithUnary,
   createCallExpression,
   createIdentifier,
   createLiteral,
@@ -212,9 +213,8 @@ const getLegAng = (arg: Value, legAngleVal: BinaryPart) => {
   const ang = (arg.type === 'Literal' && Number(arg.value)) || 0
   const normalisedAngle = ((ang % 360) + 360) % 360 // between 0 and 360
   const truncatedTo90 = Math.floor(normalisedAngle / 90) * 90
-  const binExp = createBinaryExpression([
+  const binExp = createBinaryExpressionWithUnary([
     createLiteral(truncatedTo90),
-    '+',
     legAngleVal,
   ])
   return truncatedTo90 === 0 ? legAngleVal : binExp
@@ -235,7 +235,7 @@ function getClosesAngleDirection(
   const angDiff = Math.abs(currentAng - refAngle)
   const normalisedAngle = ((angDiff % 360) + 360) % 360 // between 0 and 180
   return normalisedAngle > 90
-    ? createBinaryExpression([angleVal, '+', createLiteral(180)])
+    ? createBinaryExpressionWithUnary([angleVal, createLiteral(180)])
     : angleVal
 }
 
@@ -250,9 +250,8 @@ const setHorzVertDistanceCreateNode =
         getArgLiteralVal(args?.[index]) - (referencedSegment?.to?.[index] || 0),
         2
       )
-      const makeBinExp = createBinaryExpression([
+      const makeBinExp = createBinaryExpressionWithUnary([
         createSegEnd(referenceSegName, !index),
-        '+',
         (forceValueUsedInTransform as BinaryPart) ||
           createLiteral(valueUsedInTransform),
       ])
@@ -275,15 +274,15 @@ const setHorzVertDistanceForAngleLineCreateNode =
         getArgLiteralVal(args?.[1]) - (referencedSegment?.to?.[index] || 0),
         2
       )
-      const makeBinExp = createBinaryExpression([
+      const binExp = createBinaryExpressionWithUnary([
         createSegEnd(referenceSegName, !index),
-        '+',
         (forceValueUsedInTransform as BinaryPart) ||
           createLiteral(valueUsedInTransform),
       ])
+      console.log('here or no?', binExp)
       return createCallWrapper(
         xOrY === 'x' ? 'angledLineToX' : 'angledLineToY',
-        [varValA, makeBinExp],
+        [varValA, binExp],
         tag,
         valueUsedInTransform
       )
@@ -299,9 +298,8 @@ const setHorVertDistanceForXYLines =
         getArgLiteralVal(args?.[index]) - (referencedSegment?.to?.[index] || 0),
         2
       )
-      const makeBinExp = createBinaryExpression([
+      const makeBinExp = createBinaryExpressionWithUnary([
         createSegEnd(referenceSegName, xOrY === 'x'),
-        '+',
         (forceValueUsedInTransform as BinaryPart) ||
           createLiteral(valueUsedInTransform),
       ])
@@ -318,18 +316,16 @@ const setHorzVertDistanceConstraintLineCreateNode =
   (isX: boolean): TransformInfo['createNode'] =>
   ({ referenceSegName, tag, varValA, varValB }) => {
     const varVal = (isX ? varValB : varValA) as BinaryPart
-    const varValBinExp = createBinaryExpression([
+    const varValBinExp = createBinaryExpressionWithUnary([
       createLastSeg(!isX),
-      '+',
       varVal,
     ])
 
     return (args, referencedSegment) => {
       const makeBinExp = (index: 0 | 1) => {
         const arg = getArgLiteralVal(args?.[index])
-        return createBinaryExpression([
+        return createBinaryExpressionWithUnary([
           createSegEnd(referenceSegName, isX),
-          '+',
           createLiteral(
             roundOff(arg - (referencedSegment?.to?.[index] || 0), 2)
           ),
@@ -1149,13 +1145,18 @@ export function getTransformInfos(
       getNodeFromPath<Value>(ast, pathToNode, 'CallExpression').node
   )
 
-  const theTransforms = nodes.map((node) => {
-    if (node?.type === 'CallExpression')
-      return getTransformInfo(node, constraintType)
+  try {
+    const theTransforms = nodes.map((node) => {
+      if (node?.type === 'CallExpression')
+        return getTransformInfo(node, constraintType)
 
-    return false
-  }) as TransformInfo[]
-  return theTransforms
+      return false
+    }) as TransformInfo[]
+    return theTransforms
+  } catch (error) {
+    console.log(error)
+    return []
+  }
 }
 
 export function getRemoveConstraintsTransforms(

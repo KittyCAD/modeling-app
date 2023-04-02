@@ -331,6 +331,14 @@ show(part001)`
   })
 })
 
+describe('it recasts binary expression using brackets where needed', () => {
+  it('when there are two minus in a row', () => {
+    const code = `const part001 = 1 - (def - abc)`
+    const recasted = recast(code2ast(code).ast)
+    expect(recasted).toBe(code)
+  })
+})
+
 // helpers
 
 function code2ast(code: string): { ast: Program; tokens: Token[] } {

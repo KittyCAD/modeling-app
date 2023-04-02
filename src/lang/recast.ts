@@ -83,7 +83,8 @@ function recastBinaryExpression(expression: BinaryExpression): string {
 
   const shouldWrapRight =
     expression.right.type === 'BinaryExpression' &&
-    precedence(expression.operator) > precedence(expression.right.operator)
+    (precedence(expression.operator) > precedence(expression.right.operator) ||
+      expression.right.operator === '-')
   const shouldWrapLeft =
     expression.left.type === 'BinaryExpression' &&
     precedence(expression.operator) > precedence(expression.left.operator)

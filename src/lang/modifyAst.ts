@@ -523,6 +523,15 @@ export function createBinaryExpression([left, operator, right]: [
   }
 }
 
+export function createBinaryExpressionWithUnary([left, right]: [
+  BinaryExpression['left'],
+  BinaryExpression['right']
+]): BinaryExpression {
+  if (right.type === 'UnaryExpression' && right.operator === '-')
+    return createBinaryExpression([left, '-', right.argument])
+  return createBinaryExpression([left, '+', right])
+}
+
 export function giveSketchFnCallTag(
   ast: Program,
   range: Range,

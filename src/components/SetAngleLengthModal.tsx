@@ -19,6 +19,7 @@ export const SetAngleLengthModal = ({
   isOpen: boolean
   onResolve: (a: {
     value: string
+    sign: number
     valueNode: Value
     variableName?: string
     newVariableInsertIndex: number
@@ -27,7 +28,8 @@ export const SetAngleLengthModal = ({
   value: number
   valueName: string
 }) => {
-  const [value, setValue] = useState(String(initialValue))
+  const [sign, setSign] = useState(Math.sign(Number(initialValue)))
+  const [value, setValue] = useState(String(initialValue * sign))
   const [shouldCreateVariable, setShouldCreateVariable] = useState(false)
 
   const {
@@ -39,7 +41,10 @@ export const SetAngleLengthModal = ({
     setNewVariableName,
     inputRef,
     newVariableInsertIndex,
-  } = useCalc({ value, initialVariableName: valueName })
+  } = useCalc({
+    value,
+    initialVariableName: valueName,
+  })
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -87,7 +92,13 @@ export const SetAngleLengthModal = ({
                 >
                   {valueName} Value
                 </label>
-                <div className="mt-1">
+                <div className="mt-1 flex">
+                  <button
+                    className="border border-gray-300 px-2"
+                    onClick={() => setSign(-sign)}
+                  >
+                    {sign > 0 ? '+' : '-'}
+                  </button>
                   <input
                     ref={inputRef}
                     type="text"
@@ -121,6 +132,7 @@ export const SetAngleLengthModal = ({
                       valueNode &&
                       onResolve({
                         value,
+                        sign,
                         valueNode,
                         newVariableInsertIndex,
                         variableName: shouldCreateVariable
