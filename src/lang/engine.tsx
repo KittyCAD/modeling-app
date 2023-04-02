@@ -74,7 +74,7 @@ export function lineGeo({
   lineBody.translate(centre[0], centre[1], centre[2])
 
   // create line end points with CylinderGeometry at `to`
-  const lineEnd1 = new CylinderGeometry(0.05, 0.15, 0.25, 4)
+  const lineEnd1 = new CylinderGeometry(0.05, 0.22, 0.25, 4)
   lineEnd1.translate(0, -0.1, 0)
   lineEnd1.rotateY(Math.PI / 4)
   lineEnd1.rotateZ(rz)
