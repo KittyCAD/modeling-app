@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react'
 import { create } from 'react-modal-promise'
 import { toolTips, useStore } from '../../useStore'
-import { Value, VariableDeclarator } from '../../lang/abstractSyntaxTree'
+import {
+  BinaryPart,
+  Value,
+  VariableDeclarator,
+} from '../../lang/abstractSyntaxTree'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -17,6 +21,7 @@ import {
   createIdentifier,
   createVariableDeclaration,
 } from '../../lang/modifyAst'
+import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 
 const getModalInfo = create(GetInfoModal as any)
 
@@ -95,12 +100,14 @@ export const Intersect = () => {
             valueNode,
             variableName,
             newVariableInsertIndex,
+            sign,
           }: {
             segName: string
             value: number
             valueNode: Value
             variableName?: string
             newVariableInsertIndex: number
+            sign: number
           } = await getModalInfo({
             segName: tagInfo?.tag,
             isSegNameEditable: !tagInfo?.isTagExisting,
@@ -111,6 +118,11 @@ export const Intersect = () => {
             updateAst(modifiedAst)
           } else {
             // transform again but forcing certain values
+            const finalValue = removeDoubleNegatives(
+              valueNode as BinaryPart,
+              sign,
+              variableName
+            )
             const { modifiedAst: _modifiedAst } =
               transformSecondarySketchLinesTagFirst({
                 ast,
@@ -118,9 +130,7 @@ export const Intersect = () => {
                 transformInfos,
                 programMemory,
                 forceSegName: segName,
-                forceValueUsedInTransform: variableName
-                  ? createIdentifier(variableName)
-                  : valueNode,
+                forceValueUsedInTransform: finalValue,
               })
             if (variableName) {
               const newBody = [..._modifiedAst.body]

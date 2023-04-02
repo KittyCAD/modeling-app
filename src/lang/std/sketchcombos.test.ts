@@ -138,7 +138,7 @@ const part001 = startSketchAt([0, 0])
       angleToMatchLengthX('seg01', myVar2, %),
       myVar2
     ], %) // ln-angledLineToX-xAbsolute should use angleToMatchLengthX to get angle
-  |> angledLine([315, segLen('seg01', %)], %) // ln-angledLineToY-free should become angledLine
+  |> angledLine([-45, segLen('seg01', %)], %) // ln-angledLineToY-free should become angledLine
   |> angledLine([myAng2, segLen('seg01', %)], %) // ln-angledLineToY-angle should become angledLine
   |> angledLineToY([
       angleToMatchLengthY('seg01', myVar3, %),
@@ -152,7 +152,7 @@ const part001 = startSketchAt([0, 0])
       min(segLen('seg01', %), myVar),
       -legLen(segLen('seg01', %), myVar)
     ], %) // ln-legLen but negative
-  |> angledLine([248, segLen('seg01', %)], %) // ln-should become angledLine
+  |> angledLine([-112, segLen('seg01', %)], %) // ln-should become angledLine
   |> angledLine([myVar, segLen('seg01', %)], %) // ln-use segLen for secound arg
   |> angledLine([45, segLen('seg01', %)], %) // ln-segLen again
   |> angledLine([54, segLen('seg01', %)], %) // ln-should be transformed to angledLine

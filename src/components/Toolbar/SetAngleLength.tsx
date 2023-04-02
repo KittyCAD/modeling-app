@@ -5,7 +5,6 @@ import { Value } from '../../lang/abstractSyntaxTree'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
-  findAllPreviousVariables,
 } from '../../lang/queryAst'
 import {
   TransformInfo,
@@ -13,10 +12,8 @@ import {
   transformAstSketchLines,
 } from '../../lang/std/sketchcombos'
 import { SetAngleLengthModal } from '../SetAngleLengthModal'
-import {
-  createIdentifier,
-  createVariableDeclaration,
-} from '../../lang/modifyAst'
+import { createVariableDeclaration } from '../../lang/modifyAst'
+import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 
 const getModalInfo = create(SetAngleLengthModal as any)
 
@@ -71,11 +68,16 @@ export const SetAngleLength = ({
           referenceSegName: '',
         })
         try {
-          const { valueNode, variableName, newVariableInsertIndex } =
+          const { valueNode, variableName, newVariableInsertIndex, sign } =
             await getModalInfo({
               value: valueUsedInTransform,
               valueName: angleOrLength === 'setAngle' ? 'angle' : 'length',
             } as any)
+          const finalValue = removeDoubleNegatives(
+            valueNode,
+            sign,
+            variableName
+          )
 
           const { modifiedAst: _modifiedAst } = transformAstSketchLines({
             ast: JSON.parse(JSON.stringify(ast)),
@@ -83,9 +85,7 @@ export const SetAngleLength = ({
             transformInfos,
             programMemory,
             referenceSegName: '',
-            forceValueUsedInTransform: variableName
-              ? createIdentifier(variableName)
-              : valueNode,
+            forceValueUsedInTransform: finalValue,
           })
           if (variableName) {
             const newBody = [..._modifiedAst.body]

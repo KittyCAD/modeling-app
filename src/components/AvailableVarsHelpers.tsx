@@ -1,7 +1,16 @@
 import { useEffect, useState, useRef } from 'react'
-import { abstractSyntaxTree, Value } from '../lang/abstractSyntaxTree'
+import {
+  abstractSyntaxTree,
+  BinaryPart,
+  Value,
+} from '../lang/abstractSyntaxTree'
 import { executor } from '../lang/executor'
-import { findUniqueName } from '../lang/modifyAst'
+import {
+  createIdentifier,
+  createLiteral,
+  createUnaryExpression,
+  findUniqueName,
+} from '../lang/modifyAst'
 import { findAllPreviousVariables, PrevVariable } from '../lang/queryAst'
 import { lexer } from '../lang/tokeniser'
 import { useStore } from '../useStore'
@@ -237,4 +246,33 @@ export const CreateNewVariable = ({
       )}
     </>
   )
+}
+
+export function removeDoubleNegatives(
+  valueNode: BinaryPart,
+  sign: number,
+  variableName?: string
+): BinaryPart {
+  let finValue: BinaryPart = variableName
+    ? createIdentifier(variableName)
+    : valueNode
+  if (sign === -1) finValue = createUnaryExpression(finValue)
+  if (
+    finValue.type === 'UnaryExpression' &&
+    finValue.operator === '-' &&
+    finValue.argument.type === 'UnaryExpression' &&
+    finValue.argument.operator === '-'
+  ) {
+    finValue = finValue.argument.argument
+  }
+  if (
+    finValue.type === 'UnaryExpression' &&
+    finValue.operator === '-' &&
+    finValue.argument.type === 'Literal' &&
+    typeof finValue.argument.value === 'number' &&
+    finValue.argument.value < 0
+  ) {
+    finValue = createLiteral(-finValue.argument.value)
+  }
+  return finValue
 }

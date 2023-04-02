@@ -25,6 +25,7 @@ export const GetInfoModal = ({
     valueNode: Value
     variableName?: string
     newVariableInsertIndex: number
+    sign: number
   }) => void
   onReject: (a: any) => void
   segName: string
@@ -32,8 +33,9 @@ export const GetInfoModal = ({
   value: number
   initialVariableName: string
 }) => {
+  const [sign, setSign] = useState(Math.sign(Number(initialValue)))
   const [segName, setSegName] = useState(initialSegName)
-  const [value, setValue] = useState(String(initialValue))
+  const [value, setValue] = useState(String(Math.abs(initialValue)))
   const [shouldCreateVariable, setShouldCreateVariable] = useState(false)
 
   const {
@@ -45,7 +47,7 @@ export const GetInfoModal = ({
     newVariableName,
     isNewVariableNameUnique,
     newVariableInsertIndex,
-  } = useCalc({ value, initialVariableName })
+  } = useCalc({ value: value, initialVariableName })
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -93,7 +95,13 @@ export const GetInfoModal = ({
                 >
                   Distance
                 </label>
-                <div className="mt-1">
+                <div className="mt-1 flex">
+                  <button
+                    className="border border-gray-300 px-2 mr-1"
+                    onClick={() => setSign(-sign)}
+                  >
+                    {sign > 0 ? '+' : '-'}
+                  </button>
                   <input
                     type="text"
                     name="val"
@@ -145,6 +153,7 @@ export const GetInfoModal = ({
                         value,
                         valueNode,
                         newVariableInsertIndex,
+                        sign,
                         variableName: shouldCreateVariable
                           ? newVariableName
                           : undefined,
