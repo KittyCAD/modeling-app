@@ -49,6 +49,7 @@ function MovingSphere({
   const point2DRef = useRef<Vector3>(new Vector3())
   const [hovered, setHover] = useState(false)
   const [isMouseDown, setIsMouseDown] = useState(false)
+  const baseColor = useConstraintColors(sourceRange)
 
   const { setHighlightRange, guiMode, ast, updateAst, programMemory } =
     useStore((s) => ({
@@ -145,7 +146,7 @@ function MovingSphere({
       >
         <primitive object={geo} scale={hovered ? 2 : 1} />
         <meshStandardMaterial
-          color={hovered ? 'hotpink' : editorCursor ? 'skyblue' : 'orange'}
+          color={hovered ? 'hotpink' : editorCursor ? 'skyblue' : baseColor}
         />
       </mesh>
       {isMouseDown && (
@@ -462,35 +463,15 @@ function LineRender({
   position: Position
   onClick?: () => void
 }) {
-  const { setHighlightRange, guiMode, ast } = useStore((s) => ({
+  const { setHighlightRange } = useStore((s) => ({
     setHighlightRange: s.setHighlightRange,
-    guiMode: s.guiMode,
-    ast: s.ast,
   }))
   const onClick = useSetCursor(sourceRange)
   // This reference will give us direct access to the mesh
   const ref = useRef<BufferGeometry | undefined>() as any
   const [hovered, setHover] = useState(false)
 
-  const [baseColor, setBaseColor] = useState('orange')
-  useEffect(() => {
-    if (!ast || guiMode.mode !== 'sketch') {
-      setBaseColor('orange')
-      return
-    }
-    try {
-      const level = getConstraintLevelFromSourceRange(sourceRange, ast)
-      if (level === 'free') {
-        setBaseColor('orange')
-      } else if (level === 'partial') {
-        setBaseColor('IndianRed')
-      } else if (level === 'full') {
-        setBaseColor('lightgreen')
-      }
-    } catch (e) {
-      setBaseColor('orange')
-    }
-  }, [guiMode, ast, sourceRange])
+  const baseColor = useConstraintColors(sourceRange)
 
   return (
     <>
@@ -614,4 +595,32 @@ function useSetAppModeFromCursorLocation(artifacts: Artifact[]) {
       setGuiMode({ mode: 'default' })
     }
   }, [artifacts, selectionRanges])
+}
+
+function useConstraintColors(sourceRange: [number, number]): string {
+  const { guiMode, ast } = useStore((s) => ({
+    guiMode: s.guiMode,
+    ast: s.ast,
+  }))
+  const [baseColor, setBaseColor] = useState('orange')
+  useEffect(() => {
+    if (!ast || guiMode.mode !== 'sketch') {
+      setBaseColor('orange')
+      return
+    }
+    try {
+      const level = getConstraintLevelFromSourceRange(sourceRange, ast)
+      if (level === 'free') {
+        setBaseColor('orange')
+      } else if (level === 'partial') {
+        setBaseColor('IndianRed')
+      } else if (level === 'full') {
+        setBaseColor('lightgreen')
+      }
+    } catch (e) {
+      setBaseColor('orange')
+    }
+  }, [guiMode, ast, sourceRange])
+
+  return baseColor
 }
