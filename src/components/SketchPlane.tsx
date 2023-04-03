@@ -1,19 +1,32 @@
-import { useStore } from '../useStore'
+import { useState } from 'react'
+import { Selections, useStore } from '../useStore'
 import { DoubleSide, Vector3, Quaternion } from 'three'
 import { Program } from '../lang/abstractSyntaxTree'
 import { addNewSketchLn } from '../lang/std/sketch'
 import { roundOff } from '../lib/utils'
 
 export const SketchPlane = () => {
-  const { ast, guiMode, updateAst, programMemory, updateAstAsync } = useStore(
-    (s) => ({
-      guiMode: s.guiMode,
-      ast: s.ast,
-      updateAst: s.updateAst,
-      updateAstAsync: s.updateAstAsync,
-      programMemory: s.programMemory,
-    })
-  )
+  const {
+    ast,
+    guiMode,
+    programMemory,
+    updateAstAsync,
+    setSelectionRanges,
+    selectionRanges,
+    isShiftDown,
+    setCursor,
+  } = useStore((s) => ({
+    guiMode: s.guiMode,
+    ast: s.ast,
+    updateAstAsync: s.updateAstAsync,
+    programMemory: s.programMemory,
+    setSelectionRanges: s.setSelectionRanges,
+    selectionRanges: s.selectionRanges,
+    isShiftDown: s.isShiftDown,
+    setCursor: s.setCursor,
+  }))
+  const [xHover, setXHover] = useState(false)
+  const [yHover, setYHover] = useState(false)
   if (guiMode.mode !== 'sketch') {
     return null
   }
@@ -34,6 +47,32 @@ export const SketchPlane = () => {
     new Quaternion(...guiMode.rotation),
     temp
   )
+
+  const onAxisClick = (name: 'y-axis' | 'x-axis') => () => {
+    const _selectionRanges: Selections = isShiftDown
+      ? selectionRanges
+      : {
+          codeBasedSelections: [
+            {
+              range: [0, 0],
+              type: 'default',
+            },
+          ],
+          otherSelections: [],
+        }
+    if (!isShiftDown) {
+      setCursor({
+        ..._selectionRanges,
+        otherSelections: [name],
+      })
+    }
+    setTimeout(() => {
+      setSelectionRanges({
+        ..._selectionRanges,
+        otherSelections: [name],
+      })
+    }, 100)
+  }
 
   return (
     <>
@@ -86,10 +125,49 @@ export const SketchPlane = () => {
         />
       </mesh>
       <gridHelper
-        args={[30, 40, 'blue', 'hotpink']}
+        args={[50, 50, 'blue', 'hotpink']}
         quaternion={gridQuaternion}
         position={position}
+        onClick={() =>
+          !isShiftDown &&
+          setSelectionRanges({
+            ...selectionRanges,
+            otherSelections: [],
+          })
+        }
       />
+      <mesh
+        onPointerOver={() => setXHover(true)}
+        onPointerOut={() => setXHover(false)}
+        onClick={onAxisClick('x-axis')}
+      >
+        <boxGeometry args={[50, 0.2, 0.05]} />
+        <meshStandardMaterial
+          color={
+            selectionRanges.otherSelections.includes('x-axis')
+              ? 'skyblue'
+              : xHover
+              ? '#FF5555'
+              : '#FF1111'
+          }
+        />
+      </mesh>
+      <mesh
+        onPointerOver={() => setYHover(true)}
+        onPointerOut={() => setYHover(false)}
+        onClick={onAxisClick('y-axis')}
+      >
+        <boxGeometry args={[0.2, 50, 0.05]} />
+        <meshStandardMaterial
+          color={
+            selectionRanges.otherSelections.includes('y-axis')
+              ? 'skyblue'
+              : yHover
+              ? '#5555FF'
+              : '#1111FF'
+          }
+        />
+      </mesh>
     </>
   )
 }
