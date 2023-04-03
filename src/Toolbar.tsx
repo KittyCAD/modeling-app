@@ -128,7 +128,8 @@ export const Toolbar = () => {
       )}
       {toolTips
         .filter(
-          (sketchFnName) => !['angledLineThatIntersects'].includes(sketchFnName)
+          // (sketchFnName) => !['angledLineThatIntersects'].includes(sketchFnName)
+          (sketchFnName) => ['line'].includes(sketchFnName)
         )
         .map((sketchFnName) => {
           if (

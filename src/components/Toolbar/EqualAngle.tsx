@@ -90,7 +90,7 @@ export const EqualAngle = () => {
       disabled={!enableEqual}
       title="yo dawg"
     >
-      EqualAngle
+      parallel
     </button>
   )
 }
