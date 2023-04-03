@@ -98,7 +98,7 @@ export function useCalc({
   const { ast, programMemory, selectionRange } = useStore((s) => ({
     ast: s.ast,
     programMemory: s.programMemory,
-    selectionRange: s.selectionRanges[0],
+    selectionRange: s.selectionRanges.codeBasedSelections[0].range,
   }))
   const inputRef = useRef<HTMLInputElement>(null)
   const [availableVarInfo, setAvailableVarInfo] = useState<

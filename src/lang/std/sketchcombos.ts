@@ -1,5 +1,5 @@
 import { TransformCallback } from './stdTypes'
-import { Ranges, toolTips, TooTip, Range } from '../../useStore'
+import { Selections, toolTips, TooTip, Selection } from '../../useStore'
 import {
   BinaryPart,
   CallExpression,
@@ -127,7 +127,6 @@ const xyLineSetLength =
       : referenceSeg
       ? segRef
       : args[0]
-    // console.log({ lineVal, segRef, forceValueUsedInTransform, args })
     return createCallWrapper(xOrY, lineVal, tag, getArgLiteralVal(args[0]))
   }
 
@@ -279,7 +278,6 @@ const setHorzVertDistanceForAngleLineCreateNode =
         (forceValueUsedInTransform as BinaryPart) ||
           createLiteral(valueUsedInTransform),
       ])
-      console.log('here or no?', binExp)
       return createCallWrapper(
         xOrY === 'x' ? 'angledLineToX' : 'angledLineToY',
         [varValA, binExp],
@@ -1099,7 +1097,7 @@ export function getTransformInfo(
 }
 
 export function getConstraintType(
-  val: Value | [Value, Value],
+  val: Value | [Value, Value] | [Value, Value, Value],
   fnName: TooTip
 ): LineInputsType | null {
   // this function assumes that for two val sketch functions that one arg is locked down not both
@@ -1133,12 +1131,12 @@ export function getConstraintType(
 }
 
 export function getTransformInfos(
-  selectionRanges: Ranges,
+  selectionRanges: Selections,
   ast: Program,
   constraintType: ConstraintType
 ): TransformInfo[] {
-  const paths = selectionRanges.map((selectionRange) =>
-    getNodePathFromSourceRange(ast, selectionRange)
+  const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
+    getNodePathFromSourceRange(ast, range)
   )
   const nodes = paths.map(
     (pathToNode) =>
@@ -1160,13 +1158,13 @@ export function getTransformInfos(
 }
 
 export function getRemoveConstraintsTransforms(
-  selectionRanges: Ranges,
+  selectionRanges: Selections,
   ast: Program,
   constraintType: ConstraintType
 ): TransformInfo[] {
   // return ()
-  const paths = selectionRanges.map((selectionRange) =>
-    getNodePathFromSourceRange(ast, selectionRange)
+  const paths = selectionRanges.codeBasedSelections.map((selectionRange) =>
+    getNodePathFromSourceRange(ast, selectionRange.range)
   )
   const nodes = paths.map(
     (pathToNode) => getNodeFromPath<Value>(ast, pathToNode).node
@@ -1190,7 +1188,7 @@ export function transformSecondarySketchLinesTagFirst({
   forceValueUsedInTransform,
 }: {
   ast: Program
-  selectionRanges: Ranges
+  selectionRanges: Selections
   transformInfos: TransformInfo[]
   programMemory: ProgramMemory
   forceSegName?: string
@@ -1204,7 +1202,7 @@ export function transformSecondarySketchLinesTagFirst({
   }
 } {
   // let node = JSON.parse(JSON.stringify(ast))
-  const primarySelection = selectionRanges[0]
+  const primarySelection = selectionRanges.codeBasedSelections[0].range
 
   const { modifiedAst, tag, isTagExisting } = giveSketchFnCallTag(
     ast,
@@ -1215,7 +1213,10 @@ export function transformSecondarySketchLinesTagFirst({
   return {
     ...transformAstSketchLines({
       ast: modifiedAst,
-      selectionRanges: selectionRanges.slice(1),
+      selectionRanges: {
+        ...selectionRanges,
+        codeBasedSelections: selectionRanges.codeBasedSelections.slice(1),
+      },
       referencedSegmentRange: primarySelection,
       transformInfos,
       programMemory,
@@ -1239,18 +1240,18 @@ export function transformAstSketchLines({
   referencedSegmentRange,
 }: {
   ast: Program
-  selectionRanges: Ranges
+  selectionRanges: Selections
   transformInfos: TransformInfo[]
   programMemory: ProgramMemory
   referenceSegName: string
   forceValueUsedInTransform?: Value
-  referencedSegmentRange?: Range
+  referencedSegmentRange?: Selection['range']
 }): { modifiedAst: Program; valueUsedInTransform?: number } {
   // deep clone since we are mutating in a loop, of which any could fail
   let node = JSON.parse(JSON.stringify(ast))
   let _valueUsedInTransform // TODO should this be an array?
 
-  selectionRanges.forEach((range, index) => {
+  selectionRanges.codeBasedSelections.forEach(({ range }, index) => {
     const callBack = transformInfos?.[index].createNode
     const transformTo = transformInfos?.[index].tooltip
     if (!callBack || !transformTo) throw new Error('no callback helper')
@@ -1343,7 +1344,7 @@ function getArgLiteralVal(arg: Value): number {
 }
 
 export function getConstraintLevelFromSourceRange(
-  cursorRange: Range,
+  cursorRange: Selection['range'],
   ast: Program
 ): 'free' | 'partial' | 'full' {
   const { node: sketchFnExp } = getNodeFromPath<CallExpression>(

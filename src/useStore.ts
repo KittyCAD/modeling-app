@@ -3,13 +3,25 @@ import { persist } from 'zustand/middleware'
 import { addLineHighlight, EditorView } from './editor/highlightextension'
 import { Program, abstractSyntaxTree } from './lang/abstractSyntaxTree'
 import { getNodeFromPath } from './lang/queryAst'
-import { ProgramMemory, Position, PathToNode, Rotation } from './lang/executor'
+import {
+  ProgramMemory,
+  Position,
+  PathToNode,
+  Rotation,
+  SourceRange,
+} from './lang/executor'
 import { recast } from './lang/recast'
 import { asyncLexer } from './lang/tokeniser'
 import { EditorSelection } from '@codemirror/state'
 
-export type Range = [number, number]
-export type Ranges = Range[]
+export type Selection = {
+  type: 'default' | 'line-end' | 'line-mid'
+  range: SourceRange
+}
+export type Selections = {
+  otherSelections: ('y-axis' | 'x-axis' | 'z-axis')[]
+  codeBasedSelections: Selection[]
+}
 export type TooTip =
   | 'lineTo'
   | 'line'
@@ -80,10 +92,11 @@ interface StoreState {
   editorView: EditorView | null
   setEditorView: (editorView: EditorView) => void
   highlightRange: [number, number]
-  setHighlightRange: (range: Range) => void
-  setCursor: (selections: Ranges) => void
-  selectionRanges: Ranges
-  setSelectionRanges: (range: Ranges) => void
+  setHighlightRange: (range: Selection['range']) => void
+  setCursor: (selections: Selections) => void
+  selectionRanges: Selections
+  selectionRangeTypeMap: { [key: number]: Selection['type'] }
+  setSelectionRanges: (range: Selections) => void
   guiMode: GuiModes
   lastGuiMode: GuiModes
   setGuiMode: (guiMode: GuiModes) => void
@@ -118,27 +131,39 @@ export const useStore = create<StoreState>()(
         set({ editorView })
       },
       highlightRange: [0, 0],
-      setHighlightRange: (highlightRange) => {
-        set({ highlightRange })
+      setHighlightRange: (selection) => {
+        set({ highlightRange: selection })
         const editorView = get().editorView
         if (editorView) {
-          editorView.dispatch({ effects: addLineHighlight.of(highlightRange) })
+          editorView.dispatch({ effects: addLineHighlight.of(selection) })
         }
       },
-      setCursor: (ranges: Ranges) => {
+      setCursor: (selections) => {
         const { editorView } = get()
         if (!editorView) return
-        editorView.dispatch({
-          selection: EditorSelection.create(
-            [...ranges.map(([start, end]) => EditorSelection.cursor(end))],
-            ranges.length - 1
-          ),
+        const ranges: ReturnType<typeof EditorSelection.cursor>[] = []
+        const selectionRangeTypeMap: { [key: number]: Selection['type'] } = {}
+        set({ selectionRangeTypeMap })
+        selections.codeBasedSelections.forEach(({ range, type }) => {
+          ranges.push(EditorSelection.cursor(range[1]))
+          selectionRangeTypeMap[range[1]] = type
+        })
+        setTimeout(() => {
+          editorView.dispatch({
+            selection: EditorSelection.create(
+              ranges,
+              selections.codeBasedSelections.length - 1
+            ),
+          })
         })
       },
-      selectionRanges: [[0, 0]],
-      setSelectionRanges: (selectionRanges) => {
-        set({ selectionRanges })
+      selectionRangeTypeMap: {},
+      selectionRanges: {
+        otherSelections: [],
+        codeBasedSelections: [],
       },
+      setSelectionRanges: (selectionRanges) =>
+        set({ selectionRanges, selectionRangeTypeMap: {} }),
       guiMode: { mode: 'default' },
       lastGuiMode: { mode: 'default' },
       setGuiMode: (guiMode) => {
@@ -162,7 +187,6 @@ export const useStore = create<StoreState>()(
       },
       updateAst: async (ast, focusPath) => {
         const newCode = recast(ast)
-        console.log('running update Ast', ast)
         const astWithUpdatedSource = abstractSyntaxTree(
           await asyncLexer(newCode)
         )
@@ -173,7 +197,15 @@ export const useStore = create<StoreState>()(
           const { start, end } = node
           if (!start || !end) return
           setTimeout(() => {
-            get().setCursor([[start, end]])
+            get().setCursor({
+              codeBasedSelections: [
+                {
+                  type: 'default',
+                  range: [start, end],
+                },
+              ],
+              otherSelections: [],
+            })
           })
         }
       },

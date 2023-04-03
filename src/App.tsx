@@ -45,6 +45,7 @@ function App() {
     errorState,
     setProgramMemory,
     resetLogs,
+    selectionRangeTypeMap,
   } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
@@ -61,6 +62,7 @@ function App() {
     errorState: s.errorState,
     setProgramMemory: s.setProgramMemory,
     resetLogs: s.resetLogs,
+    selectionRangeTypeMap: s.selectionRangeTypeMap,
   }))
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
@@ -76,13 +78,30 @@ function App() {
     const ranges = viewUpdate.state.selection.ranges
 
     const isChange =
-      ranges.length !== selectionRange.length ||
+      ranges.length !== selectionRange.codeBasedSelections.length ||
       ranges.some(({ from, to }, i) => {
-        return from !== selectionRange[i][0] || to !== selectionRange[i][1]
+        return (
+          from !== selectionRange.codeBasedSelections[i].range[0] ||
+          to !== selectionRange.codeBasedSelections[i].range[1]
+        )
       })
 
     if (!isChange) return
-    setSelectionRanges(ranges.map(({ from, to }) => [from, to]))
+    setSelectionRanges({
+      otherSelections: [],
+      codeBasedSelections: ranges.map(({ from, to }, i) => {
+        if (selectionRangeTypeMap[to]) {
+          return {
+            type: selectionRangeTypeMap[to],
+            range: [from, to],
+          }
+        }
+        return {
+          type: 'default',
+          range: [from, to],
+        }
+      }),
+    })
   }
   const [geoArray, setGeoArray] = useState<(ExtrudeGroup | SketchGroup)[]>([])
   useEffect(() => {
@@ -163,7 +182,7 @@ function App() {
     <div className="h-screen">
       <ModalContainer />
       <Allotment snap={true}>
-        <Allotment vertical defaultSizes={[4, 1, 1]} minSize={20}>
+        <Allotment vertical defaultSizes={[400, 1, 1]} minSize={20}>
           <div className="h-full flex flex-col items-start">
             <PanelHeader title="Editor" />
             {/* <button
@@ -190,7 +209,7 @@ function App() {
           <MemoryPanel />
           <Logs />
         </Allotment>
-        <Allotment vertical defaultSizes={[4, 1]} minSize={20}>
+        <Allotment vertical defaultSizes={[400, 1]} minSize={20}>
           <div className="h-full">
             <PanelHeader title="Drafting Board" />
             <Toolbar />

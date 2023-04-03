@@ -1,6 +1,6 @@
-import { Range } from '../useStore'
+import { SourceRange } from '../lang/executor'
 
-export function isOverlap(a: Range, b: Range) {
+export function isOverlap(a: SourceRange, b: SourceRange) {
   const [startingRange, secondRange] = a[0] < b[0] ? [a, b] : [b, a]
   const [lastOfFirst, firstOfSecond] = [startingRange[1], secondRange[0]]
   return lastOfFirst >= firstOfSecond

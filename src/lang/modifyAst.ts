@@ -1,4 +1,4 @@
-import { Range, TooTip } from '../useStore'
+import { Selection, TooTip } from '../useStore'
 import {
   Program,
   CallExpression,
@@ -534,7 +534,7 @@ export function createBinaryExpressionWithUnary([left, right]: [
 
 export function giveSketchFnCallTag(
   ast: Program,
-  range: Range,
+  range: Selection['range'],
   tag?: string
 ): { modifiedAst: Program; tag: string; isTagExisting: boolean } {
   const { node: primaryCallExp } = getNodeFromPath<CallExpression>(
@@ -563,7 +563,7 @@ export function giveSketchFnCallTag(
 export function moveValueIntoNewVariable(
   ast: Program,
   programMemory: ProgramMemory,
-  sourceRange: Range,
+  sourceRange: Selection['range'],
   variableName: string
 ): {
   modifiedAst: Program

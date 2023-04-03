@@ -64,7 +64,7 @@ export function getCoordsFromPaths(skGroup: SketchGroup, index = 0): Coords2d {
 
 export function createFirstArg(
   sketchFn: TooTip,
-  val: Value | [Value, Value],
+  val: Value | [Value, Value] | [Value, Value, Value],
   tag?: Value
 ): Value {
   if (!tag) {
@@ -84,6 +84,13 @@ export function createFirstArg(
       return createObjectExpression({ angle: val[0], length: val[1], tag })
     if (['angledLineToX', 'angledLineToY'].includes(sketchFn))
       return createObjectExpression({ angle: val[0], to: val[1], tag })
+    if (['angledLineThatIntersects'].includes(sketchFn) && val[2])
+      return createObjectExpression({
+        angle: val[0],
+        offset: val[1],
+        intersectTag: val[2],
+        tag,
+      })
   } else {
     if (['xLine', 'yLine'].includes(sketchFn))
       return createObjectExpression({ length: val, tag })
@@ -1678,7 +1685,7 @@ function getFirstArgValuesForXYLineFns(callExpression: CallExpression): {
 const getAngledLineThatIntersects = (
   callExp: CallExpression
 ): {
-  val: [Value, Value]
+  val: [Value, Value, Value]
   tag?: Value
 } => {
   const firstArg = callExp.arguments[0]
@@ -1688,15 +1695,18 @@ const getAngledLineThatIntersects = (
     const offset = firstArg.properties.find(
       (p) => p.key.name === 'offset'
     )?.value
-    if (angle && offset) {
-      return { val: [angle, offset], tag }
+    const intersectTag = firstArg.properties.find(
+      (p) => p.key.name === 'intersectTag'
+    )?.value
+    if (angle && offset && intersectTag) {
+      return { val: [angle, offset, intersectTag], tag }
     }
   }
   throw new Error('expected ArrayExpression or ObjectExpression')
 }
 
 export function getFirstArg(callExp: CallExpression): {
-  val: Value | [Value, Value]
+  val: Value | [Value, Value] | [Value, Value, Value]
   tag?: Value
 } {
   const name = callExp?.callee?.name

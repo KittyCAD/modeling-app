@@ -28,7 +28,7 @@ import { useSetCursor } from '../hooks/useSetCursor'
 import { getConstraintLevelFromSourceRange } from '../lang/std/sketchcombos'
 import { createCallExpression, createPipeSubstitution } from '../lang/modifyAst'
 
-function MovingSphere({
+function LineEnd({
   geo,
   sourceRange,
   editorCursor,
@@ -50,6 +50,8 @@ function MovingSphere({
   const [hovered, setHover] = useState(false)
   const [isMouseDown, setIsMouseDown] = useState(false)
   const baseColor = useConstraintColors(sourceRange)
+
+  const setCursor = useSetCursor(sourceRange, 'line-end')
 
   const { setHighlightRange, guiMode, ast, updateAst, programMemory } =
     useStore((s) => ({
@@ -84,7 +86,6 @@ function MovingSphere({
   useEffect(() => {
     const handleMouseUp = () => {
       if (isMouseDown && ast) {
-        const thePath = getNodePathFromSourceRange(ast, sourceRange)
         const current2d = point2DRef.current.clone()
         const inverseQuaternion = new Quaternion()
         if (
@@ -107,8 +108,8 @@ function MovingSphere({
           guiMode,
           from
         )
-
-        updateAst(modifiedAst)
+        if (!(current2d.x === 0 && current2d.y === 0 && current2d.z === 0))
+          updateAst(modifiedAst)
         ref.current.position.set(...position)
       }
       setIsMouseDown(false)
@@ -142,7 +143,10 @@ function MovingSphere({
           setHover(false)
           setHighlightRange([0, 0])
         }}
-        onPointerDown={() => inEditMode && setIsMouseDown(true)}
+        onPointerDown={() => {
+          inEditMode && setIsMouseDown(true)
+          setCursor()
+        }}
       >
         <primitive object={geo} scale={hovered ? 2 : 1} />
         <meshStandardMaterial
@@ -313,8 +317,8 @@ function WallRender({
 
   const [editorCursor, setEditorCursor] = useState(false)
   useEffect(() => {
-    const shouldHighlight = selectionRanges.some((range) =>
-      isOverlap(geoInfo.__geoMeta.sourceRange, range)
+    const shouldHighlight = selectionRanges.codeBasedSelections.some(
+      ({ range }) => isOverlap(geoInfo.__geoMeta.sourceRange, range)
     )
     setEditorCursor(shouldHighlight)
   }, [selectionRanges, geoInfo])
@@ -369,11 +373,17 @@ function PathRender({
     guiMode: s.guiMode,
   }))
   const [editorCursor, setEditorCursor] = useState(false)
+  const [editorLineCursor, setEditorLineCursor] = useState(false)
   useEffect(() => {
-    const shouldHighlight = selectionRanges.some((range) =>
-      isOverlap(geoInfo.__geoMeta.sourceRange, range)
+    const shouldHighlight = selectionRanges.codeBasedSelections.some(
+      ({ range }) => isOverlap(geoInfo.__geoMeta.sourceRange, range)
+    )
+    const shouldHighlightLine = selectionRanges.codeBasedSelections.some(
+      ({ range, type }) =>
+        isOverlap(geoInfo.__geoMeta.sourceRange, range) && type === 'default'
     )
     setEditorCursor(shouldHighlight)
+    setEditorLineCursor(shouldHighlightLine)
   }, [selectionRanges, geoInfo])
   return (
     <>
@@ -384,14 +394,14 @@ function PathRender({
               key={i}
               geo={meta.geo}
               sourceRange={geoInfo.__geoMeta.sourceRange}
-              forceHighlight={forceHighlight || editorCursor}
+              forceHighlight={editorLineCursor}
               rotation={rotation}
               position={position}
             />
           )
         if (meta.type === 'lineEnd')
           return (
-            <MovingSphere
+            <LineEnd
               key={i}
               geo={meta.geo}
               from={geoInfo.from}
@@ -407,7 +417,7 @@ function PathRender({
               key={i}
               geo={meta.geo}
               sourceRange={geoInfo.__geoMeta.sourceRange}
-              forceHighlight={forceHighlight || editorCursor}
+              forceHighlight={forceHighlight || editorLineCursor}
               rotation={rotation}
               position={position}
               onClick={() => {
@@ -533,7 +543,12 @@ function useSetAppModeFromCursorLocation(artifacts: Artifact[]) {
     )[] = []
     artifacts?.forEach((artifact) => {
       artifact.value.forEach((geo) => {
-        if (isOverlap(geo.__geoMeta.sourceRange, selectionRanges[0])) {
+        if (
+          isOverlap(
+            geo.__geoMeta.sourceRange,
+            selectionRanges.codeBasedSelections[0].range
+          )
+        ) {
           artifactsWithinCursorRange.push({
             parentType: artifact.type,
             isParent: false,
@@ -545,7 +560,12 @@ function useSetAppModeFromCursorLocation(artifacts: Artifact[]) {
         }
       })
       artifact.__meta.forEach((meta) => {
-        if (isOverlap(meta.sourceRange, selectionRanges[0])) {
+        if (
+          isOverlap(
+            meta.sourceRange,
+            selectionRanges.codeBasedSelections[0].range
+          )
+        ) {
           artifactsWithinCursorRange.push({
             parentType: artifact.type,
             isParent: true,

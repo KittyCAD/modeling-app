@@ -15,7 +15,7 @@ import { internalFns } from './std/std'
 import { BufferGeometry } from 'three'
 
 export type SourceRange = [number, number]
-export type PathToNode = [string | number, string][]
+export type PathToNode = [string | number, string][] // [pathKey, nodeType][]
 export type Metadata = {
   sourceRange: SourceRange
   pathToNode: PathToNode

@@ -67,14 +67,17 @@ export function lineGeo({
     sign,
   } = trigCalcs({ from, to })
 
+  const lineEndLength = 0.25
   // create BoxGeometry with size [Hypotenuse3d, 0.1, 0.1] centered at center, with rotation of [0, ry, rz]
-  const lineBody = new BoxGeometry(Hypotenuse3d, 0.1, 0.1)
+  const lineBody = new BoxGeometry(Hypotenuse3d - lineEndLength, 0.1, 0.1)
+  const __sign = to[0] === from[0] ? -1 : 1
+  lineBody.translate((__sign * lineEndLength) / 2, 0, 0)
   lineBody.rotateY(ry)
   lineBody.rotateZ(rz)
   lineBody.translate(centre[0], centre[1], centre[2])
 
   // create line end points with CylinderGeometry at `to`
-  const lineEnd1 = new CylinderGeometry(0.05, 0.22, 0.25, 4)
+  const lineEnd1 = new CylinderGeometry(0.05, 0.22, lineEndLength + 0.05, 4)
   lineEnd1.translate(0, -0.1, 0)
   lineEnd1.rotateY(Math.PI / 4)
   lineEnd1.rotateZ(rz)

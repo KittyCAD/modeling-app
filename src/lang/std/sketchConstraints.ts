@@ -1,16 +1,16 @@
 import { getAngle } from '../../lib/utils'
-import { Range, TooTip, toolTips } from '../../useStore'
+import { Selection, TooTip, toolTips } from '../../useStore'
 import {
   Program,
   VariableDeclarator,
   CallExpression,
 } from '../abstractSyntaxTree'
-import { SketchGroup } from '../executor'
+import { SketchGroup, SourceRange } from '../executor'
 import { InternalFn } from './stdTypes'
 
 export function getSketchSegmentFromSourceRange(
   sketchGroup: SketchGroup,
-  [rangeStart, rangeEnd]: Range
+  [rangeStart, rangeEnd]: SourceRange
 ): SketchGroup['value'][number] {
   const startSourceRange = sketchGroup.start?.__geoMeta.sourceRange
   if (
