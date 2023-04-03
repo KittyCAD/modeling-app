@@ -93,8 +93,9 @@ interface StoreState {
   setEditorView: (editorView: EditorView) => void
   highlightRange: [number, number]
   setHighlightRange: (range: Selection['range']) => void
-  setCursor: (selections: Selection['range'][]) => void
+  setCursor: (selections: Selections) => void
   selectionRanges: Selections
+  selectionRangeTypeMap: { [key: number]: Selection['type'] }
   setSelectionRanges: (range: Selections) => void
   guiMode: GuiModes
   lastGuiMode: GuiModes
@@ -131,34 +132,38 @@ export const useStore = create<StoreState>()(
       },
       highlightRange: [0, 0],
       setHighlightRange: (selection) => {
-        if (!('range' in selection)) return
         set({ highlightRange: selection })
         const editorView = get().editorView
         if (editorView) {
           editorView.dispatch({ effects: addLineHighlight.of(selection) })
         }
       },
-      setCursor: (codeBasedSelections) => {
+      setCursor: (selections) => {
         const { editorView } = get()
         if (!editorView) return
-        editorView.dispatch({
-          selection: EditorSelection.create(
-            [
-              ...codeBasedSelections.map((selection) =>
-                EditorSelection.cursor(selection[1])
-              ),
-            ],
-            codeBasedSelections.length - 1
-          ),
+        const ranges: ReturnType<typeof EditorSelection.cursor>[] = []
+        const selectionRangeTypeMap: { [key: number]: Selection['type'] } = {}
+        set({ selectionRangeTypeMap })
+        selections.codeBasedSelections.forEach(({ range, type }) => {
+          ranges.push(EditorSelection.cursor(range[1]))
+          selectionRangeTypeMap[range[1]] = type
+        })
+        setTimeout(() => {
+          editorView.dispatch({
+            selection: EditorSelection.create(
+              ranges,
+              selections.codeBasedSelections.length - 1
+            ),
+          })
         })
       },
+      selectionRangeTypeMap: {},
       selectionRanges: {
         otherSelections: [],
         codeBasedSelections: [],
       },
-      setSelectionRanges: (selectionRanges) => {
-        set({ selectionRanges })
-      },
+      setSelectionRanges: (selectionRanges) =>
+        set({ selectionRanges, selectionRangeTypeMap: {} }),
       guiMode: { mode: 'default' },
       lastGuiMode: { mode: 'default' },
       setGuiMode: (guiMode) => {
@@ -182,7 +187,6 @@ export const useStore = create<StoreState>()(
       },
       updateAst: async (ast, focusPath) => {
         const newCode = recast(ast)
-        console.log('running update Ast', ast)
         const astWithUpdatedSource = abstractSyntaxTree(
           await asyncLexer(newCode)
         )
@@ -193,7 +197,15 @@ export const useStore = create<StoreState>()(
           const { start, end } = node
           if (!start || !end) return
           setTimeout(() => {
-            get().setCursor([[start, end]])
+            get().setCursor({
+              codeBasedSelections: [
+                {
+                  type: 'default',
+                  range: [start, end],
+                },
+              ],
+              otherSelections: [],
+            })
           })
         }
       },

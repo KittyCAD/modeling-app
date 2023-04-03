@@ -37,15 +37,19 @@ export const RemoveConstrainingValues = () => {
         toolTips.includes(node.callee.name as any)
     )
 
-    const theTransforms = getRemoveConstraintsTransforms(
-      selectionRanges,
-      ast,
-      'removeConstrainingValues'
-    )
-    setTransformInfos(theTransforms)
+    try {
+      const theTransforms = getRemoveConstraintsTransforms(
+        selectionRanges,
+        ast,
+        'removeConstrainingValues'
+      )
+      setTransformInfos(theTransforms)
 
-    const _enableHorz = isAllTooltips && theTransforms.every(Boolean)
-    setEnableHorz(_enableHorz)
+      const _enableHorz = isAllTooltips && theTransforms.every(Boolean)
+      setEnableHorz(_enableHorz)
+    } catch (e) {
+      console.error(e)
+    }
   }, [guiMode, selectionRanges])
   if (guiMode.mode !== 'sketch') return null
 

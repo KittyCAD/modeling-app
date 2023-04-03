@@ -127,7 +127,6 @@ const xyLineSetLength =
       : referenceSeg
       ? segRef
       : args[0]
-    // console.log({ lineVal, segRef, forceValueUsedInTransform, args })
     return createCallWrapper(xOrY, lineVal, tag, getArgLiteralVal(args[0]))
   }
 
@@ -279,7 +278,6 @@ const setHorzVertDistanceForAngleLineCreateNode =
         (forceValueUsedInTransform as BinaryPart) ||
           createLiteral(valueUsedInTransform),
       ])
-      console.log('here or no?', binExp)
       return createCallWrapper(
         xOrY === 'x' ? 'angledLineToX' : 'angledLineToY',
         [varValA, binExp],
@@ -1099,7 +1097,7 @@ export function getTransformInfo(
 }
 
 export function getConstraintType(
-  val: Value | [Value, Value],
+  val: Value | [Value, Value] | [Value, Value, Value],
   fnName: TooTip
 ): LineInputsType | null {
   // this function assumes that for two val sketch functions that one arg is locked down not both

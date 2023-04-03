@@ -130,7 +130,6 @@ export const SetHorzDistance = ({
               sign,
               variableName
             )
-            console.log(finalValue)
             // transform again but forcing certain values
             const { modifiedAst: _modifiedAst } =
               transformSecondarySketchLinesTagFirst({

@@ -153,7 +153,7 @@ export const Intersect = () => {
       }`}
       disabled={!enable}
     >
-      Intersect
+      perpendicularDistance
     </button>
   )
 }
