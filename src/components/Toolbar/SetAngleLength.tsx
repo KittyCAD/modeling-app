@@ -35,8 +35,8 @@ export const SetAngleLength = ({
   const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
   useEffect(() => {
     if (!ast) return
-    const paths = selectionRanges.map((selectionRange) =>
-      getNodePathFromSourceRange(ast, selectionRange)
+    const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
+      getNodePathFromSourceRange(ast, range)
     )
     const nodes = paths.map(
       (pathToNode) =>
@@ -60,7 +60,7 @@ export const SetAngleLength = ({
     <button
       onClick={async () => {
         if (!(transformInfos && ast)) return
-        const { modifiedAst, valueUsedInTransform } = transformAstSketchLines({
+        const { valueUsedInTransform } = transformAstSketchLines({
           ast: JSON.parse(JSON.stringify(ast)),
           selectionRanges,
           transformInfos,

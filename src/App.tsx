@@ -76,13 +76,22 @@ function App() {
     const ranges = viewUpdate.state.selection.ranges
 
     const isChange =
-      ranges.length !== selectionRange.length ||
+      ranges.length !== selectionRange.codeBasedSelections.length ||
       ranges.some(({ from, to }, i) => {
-        return from !== selectionRange[i][0] || to !== selectionRange[i][1]
+        return (
+          from !== selectionRange.codeBasedSelections[i].range[0] ||
+          to !== selectionRange.codeBasedSelections[i].range[1]
+        )
       })
 
     if (!isChange) return
-    setSelectionRanges(ranges.map(({ from, to }) => [from, to]))
+    setSelectionRanges({
+      otherSelections: [],
+      codeBasedSelections: ranges.map(({ from, to }) => ({
+        type: 'default',
+        range: [from, to],
+      })),
+    })
   }
   const [geoArray, setGeoArray] = useState<(ExtrudeGroup | SketchGroup)[]>([])
   useEffect(() => {

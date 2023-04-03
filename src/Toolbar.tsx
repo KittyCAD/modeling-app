@@ -48,7 +48,7 @@ export const Toolbar = () => {
             if (!ast) return
             const pathToNode = getNodePathFromSourceRange(
               ast,
-              selectionRanges[0]
+              selectionRanges.codeBasedSelections[0].range
             )
             const { modifiedAst } = sketchOnExtrudedFace(
               ast,
@@ -85,7 +85,7 @@ export const Toolbar = () => {
               if (!ast) return
               const pathToNode = getNodePathFromSourceRange(
                 ast,
-                selectionRanges[0]
+                selectionRanges.codeBasedSelections[0].range
               )
               const { modifiedAst, pathToExtrudeArg } = extrudeSketch(
                 ast,
@@ -102,7 +102,7 @@ export const Toolbar = () => {
               if (!ast) return
               const pathToNode = getNodePathFromSourceRange(
                 ast,
-                selectionRanges[0]
+                selectionRanges.codeBasedSelections[0].range
               )
               const { modifiedAst, pathToExtrudeArg } = extrudeSketch(
                 ast,

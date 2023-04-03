@@ -1,5 +1,5 @@
 import { PathToNode, ProgramMemory } from './executor'
-import { Range } from '../useStore'
+import { Selection } from '../useStore'
 import {
   BinaryExpression,
   Program,
@@ -96,7 +96,7 @@ export function getNodeFromPathCurry(
 
 function moreNodePathFromSourceRange(
   node: Value | ExpressionStatement | VariableDeclaration | ReturnStatement,
-  sourceRange: Range,
+  sourceRange: Selection['range'],
   previousPath: PathToNode = [['body', '']]
 ): PathToNode {
   const [start, end] = sourceRange
@@ -239,7 +239,7 @@ function moreNodePathFromSourceRange(
 
 export function getNodePathFromSourceRange(
   node: Program,
-  sourceRange: Range,
+  sourceRange: Selection['range'],
   previousPath: PathToNode = [['body', '']]
 ): PathToNode {
   const [start, end] = sourceRange
@@ -269,7 +269,7 @@ export interface PrevVariable<T> {
 export function findAllPreviousVariables(
   ast: Program,
   programMemory: ProgramMemory,
-  sourceRange: Range,
+  sourceRange: Selection['range'],
   type: 'number' | 'string' = 'number'
 ): {
   variables: PrevVariable<typeof type extends 'number' ? number : string>[]

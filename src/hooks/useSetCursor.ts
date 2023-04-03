@@ -1,6 +1,6 @@
-import { useStore, Range } from '../useStore'
+import { useStore, Selection } from '../useStore'
 
-export function useSetCursor(sourceRange: Range) {
+export function useSetCursor(sourceRange: Selection['range']) {
   const { setCursor, selectionRanges, isShiftDown } = useStore((s) => ({
     setCursor: s.setCursor,
     selectionRanges: s.selectionRanges,
@@ -8,7 +8,10 @@ export function useSetCursor(sourceRange: Range) {
   }))
   return () => {
     const ranges = isShiftDown
-      ? [...selectionRanges, sourceRange]
+      ? [
+          ...selectionRanges.codeBasedSelections.map(({ range }) => range),
+          sourceRange,
+        ]
       : [sourceRange]
     setCursor(ranges)
   }

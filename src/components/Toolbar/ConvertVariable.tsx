@@ -21,9 +21,12 @@ export const ConvertToVariable = () => {
   useEffect(() => {
     if (!ast) return
 
-    const { isSafe, value } = isNodeSafeToReplace(ast, selectionRanges[0])
+    const { isSafe, value } = isNodeSafeToReplace(
+      ast,
+      selectionRanges.codeBasedSelections[0].range
+    )
     const canReplace = isSafe && value.type !== 'Identifier'
-    const isOnlyOneSelection = selectionRanges.length === 1
+    const isOnlyOneSelection = selectionRanges.codeBasedSelections.length === 1
 
     const _enableHorz = canReplace && isOnlyOneSelection
     setEnableAngLen(_enableHorz)
@@ -41,7 +44,7 @@ export const ConvertToVariable = () => {
           const { modifiedAst: _modifiedAst } = moveValueIntoNewVariable(
             ast,
             programMemory,
-            selectionRanges[0],
+            selectionRanges.codeBasedSelections[0].range,
             variableName
           )
 

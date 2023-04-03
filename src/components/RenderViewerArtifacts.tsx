@@ -313,8 +313,8 @@ function WallRender({
 
   const [editorCursor, setEditorCursor] = useState(false)
   useEffect(() => {
-    const shouldHighlight = selectionRanges.some((range) =>
-      isOverlap(geoInfo.__geoMeta.sourceRange, range)
+    const shouldHighlight = selectionRanges.codeBasedSelections.some(
+      ({ range }) => isOverlap(geoInfo.__geoMeta.sourceRange, range)
     )
     setEditorCursor(shouldHighlight)
   }, [selectionRanges, geoInfo])
@@ -370,8 +370,8 @@ function PathRender({
   }))
   const [editorCursor, setEditorCursor] = useState(false)
   useEffect(() => {
-    const shouldHighlight = selectionRanges.some((range) =>
-      isOverlap(geoInfo.__geoMeta.sourceRange, range)
+    const shouldHighlight = selectionRanges.codeBasedSelections.some(
+      ({ range }) => isOverlap(geoInfo.__geoMeta.sourceRange, range)
     )
     setEditorCursor(shouldHighlight)
   }, [selectionRanges, geoInfo])
@@ -533,7 +533,12 @@ function useSetAppModeFromCursorLocation(artifacts: Artifact[]) {
     )[] = []
     artifacts?.forEach((artifact) => {
       artifact.value.forEach((geo) => {
-        if (isOverlap(geo.__geoMeta.sourceRange, selectionRanges[0])) {
+        if (
+          isOverlap(
+            geo.__geoMeta.sourceRange,
+            selectionRanges.codeBasedSelections[0].range
+          )
+        ) {
           artifactsWithinCursorRange.push({
             parentType: artifact.type,
             isParent: false,
@@ -545,7 +550,12 @@ function useSetAppModeFromCursorLocation(artifacts: Artifact[]) {
         }
       })
       artifact.__meta.forEach((meta) => {
-        if (isOverlap(meta.sourceRange, selectionRanges[0])) {
+        if (
+          isOverlap(
+            meta.sourceRange,
+            selectionRanges.codeBasedSelections[0].range
+          )
+        ) {
           artifactsWithinCursorRange.push({
             parentType: artifact.type,
             isParent: true,

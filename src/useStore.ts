@@ -3,13 +3,25 @@ import { persist } from 'zustand/middleware'
 import { addLineHighlight, EditorView } from './editor/highlightextension'
 import { Program, abstractSyntaxTree } from './lang/abstractSyntaxTree'
 import { getNodeFromPath } from './lang/queryAst'
-import { ProgramMemory, Position, PathToNode, Rotation } from './lang/executor'
+import {
+  ProgramMemory,
+  Position,
+  PathToNode,
+  Rotation,
+  SourceRange,
+} from './lang/executor'
 import { recast } from './lang/recast'
 import { asyncLexer } from './lang/tokeniser'
 import { EditorSelection } from '@codemirror/state'
 
-export type Range = [number, number]
-export type Ranges = Range[]
+export type Selection = {
+  type: 'default' | 'line-end' | 'line-mid'
+  range: SourceRange
+}
+export type Selections = {
+  otherSelections: ('y-axis' | 'x-axis' | 'z-axis')[]
+  codeBasedSelections: Selection[]
+}
 export type TooTip =
   | 'lineTo'
   | 'line'
@@ -80,10 +92,10 @@ interface StoreState {
   editorView: EditorView | null
   setEditorView: (editorView: EditorView) => void
   highlightRange: [number, number]
-  setHighlightRange: (range: Range) => void
-  setCursor: (selections: Ranges) => void
-  selectionRanges: Ranges
-  setSelectionRanges: (range: Ranges) => void
+  setHighlightRange: (range: Selection['range']) => void
+  setCursor: (selections: Selection['range'][]) => void
+  selectionRanges: Selections
+  setSelectionRanges: (range: Selections) => void
   guiMode: GuiModes
   lastGuiMode: GuiModes
   setGuiMode: (guiMode: GuiModes) => void
@@ -118,24 +130,32 @@ export const useStore = create<StoreState>()(
         set({ editorView })
       },
       highlightRange: [0, 0],
-      setHighlightRange: (highlightRange) => {
-        set({ highlightRange })
+      setHighlightRange: (selection) => {
+        if (!('range' in selection)) return
+        set({ highlightRange: selection })
         const editorView = get().editorView
         if (editorView) {
-          editorView.dispatch({ effects: addLineHighlight.of(highlightRange) })
+          editorView.dispatch({ effects: addLineHighlight.of(selection) })
         }
       },
-      setCursor: (ranges: Ranges) => {
+      setCursor: (codeBasedSelections) => {
         const { editorView } = get()
         if (!editorView) return
         editorView.dispatch({
           selection: EditorSelection.create(
-            [...ranges.map(([start, end]) => EditorSelection.cursor(end))],
-            ranges.length - 1
+            [
+              ...codeBasedSelections.map((selection) =>
+                EditorSelection.cursor(selection[1])
+              ),
+            ],
+            codeBasedSelections.length - 1
           ),
         })
       },
-      selectionRanges: [[0, 0]],
+      selectionRanges: {
+        otherSelections: [],
+        codeBasedSelections: [],
+      },
       setSelectionRanges: (selectionRanges) => {
         set({ selectionRanges })
       },

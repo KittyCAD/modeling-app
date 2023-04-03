@@ -9,6 +9,7 @@ import {
 import { recast } from '../recast'
 import { initPromise } from '../rust'
 import { getSketchSegmentFromSourceRange } from './sketchConstraints'
+import { Selection } from '../../useStore'
 
 beforeAll(() => initPromise)
 
@@ -26,23 +27,30 @@ function testingSwapSketchFnCall({
   originalRange: [number, number]
 } {
   const startIndex = inputCode.indexOf(callToSwap)
-  const range: [number, number] = [startIndex, startIndex + callToSwap.length]
+  const range: Selection = {
+    type: 'default',
+    range: [startIndex, startIndex + callToSwap.length],
+  }
   const tokens = lexer(inputCode)
   const ast = abstractSyntaxTree(tokens)
   const programMemory = executor(ast)
-  const transformInfos = getTransformInfos([range], ast, constraintType)
+  const selections = {
+    codeBasedSelections: [range],
+    otherSelections: [],
+  }
+  const transformInfos = getTransformInfos(selections, ast, constraintType)
 
   if (!transformInfos) throw new Error('nope')
   const { modifiedAst } = transformAstSketchLines({
     ast,
     programMemory,
-    selectionRanges: [range],
+    selectionRanges: selections,
     transformInfos,
     referenceSegName: '',
   })
   return {
     newCode: recast(modifiedAst),
-    originalRange: range,
+    originalRange: range.range,
   }
 }
 

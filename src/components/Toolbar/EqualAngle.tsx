@@ -26,8 +26,8 @@ export const EqualAngle = () => {
   const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
   useEffect(() => {
     if (!ast) return
-    const paths = selectionRanges.map((selectionRange) =>
-      getNodePathFromSourceRange(ast, selectionRange)
+    const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
+      getNodePathFromSourceRange(ast, range)
     )
     const nodes = paths.map(
       (pathToNode) => getNodeFromPath<Value>(ast, pathToNode).node
@@ -52,7 +52,10 @@ export const EqualAngle = () => {
     )
 
     const theTransforms = getTransformInfos(
-      selectionRanges.slice(1),
+      {
+        ...selectionRanges,
+        codeBasedSelections: selectionRanges.codeBasedSelections.slice(1),
+      },
       ast,
       'equalAngle'
     )

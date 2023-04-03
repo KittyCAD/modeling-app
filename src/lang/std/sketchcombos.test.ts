@@ -9,7 +9,7 @@ import {
   getConstraintLevelFromSourceRange,
 } from './sketchcombos'
 import { initPromise } from '../rust'
-import { TooTip } from '../../useStore'
+import { Selections, TooTip } from '../../useStore'
 import { executor } from '../../lang/executor'
 import { recast } from '../../lang/recast'
 
@@ -78,6 +78,15 @@ function getConstraintTypeFromSourceHelper2(
   const arg = (ast.body[0] as any).expression.arguments[0] as Value
   const fnName = (ast.body[0] as any).expression.callee.name as TooTip
   return getConstraintType(arg, fnName)
+}
+
+function makeSelections(
+  codeBaseSelections: Selections['codeBasedSelections']
+): Selections {
+  return {
+    codeBasedSelections: codeBaseSelections,
+    otherSelections: [],
+  }
 }
 
 describe('testing transformAstForSketchLines for equal length constraint', () => {
@@ -189,25 +198,28 @@ const part001 = startSketchAt([0, 0])
 show(part001)`
   it('It should transform the ast', () => {
     const ast = abstractSyntaxTree(lexer(inputScript))
-    const selectionRanges = inputScript
+    const selectionRanges: Selections['codeBasedSelections'] = inputScript
       .split('\n')
       .filter((ln) => ln.includes('//'))
       .map((ln) => {
         const comment = ln.split('//')[1]
         const start = inputScript.indexOf('//' + comment) - 7
-        return [start, start]
-      }) as [number, number][]
+        return {
+          type: 'default',
+          range: [start, start],
+        }
+      })
 
     const programMemory = executor(ast)
     const transformInfos = getTransformInfos(
-      selectionRanges.slice(1),
+      makeSelections(selectionRanges.slice(1)),
       ast,
       'equalLength'
     )
 
     const newAst = transformSecondarySketchLinesTagFirst({
       ast,
-      selectionRanges,
+      selectionRanges: makeSelections(selectionRanges),
       transformInfos,
       programMemory,
     })?.modifiedAst
@@ -271,21 +283,28 @@ const part001 = startSketchAt([0, 0])
   |> angledLineToY([301, myVar], %) // select for vertical constraint 10
 show(part001)`
     const ast = abstractSyntaxTree(lexer(inputScript))
-    const selectionRanges = inputScript
+    const selectionRanges: Selections['codeBasedSelections'] = inputScript
       .split('\n')
       .filter((ln) => ln.includes('// select for horizontal constraint'))
       .map((ln) => {
         const comment = ln.split('//')[1]
         const start = inputScript.indexOf('//' + comment) - 7
-        return [start, start]
-      }) as [number, number][]
+        return {
+          type: 'default',
+          range: [start, start],
+        }
+      })
 
     const programMemory = executor(ast)
-    const transformInfos = getTransformInfos(selectionRanges, ast, 'horizontal')
+    const transformInfos = getTransformInfos(
+      makeSelections(selectionRanges),
+      ast,
+      'horizontal'
+    )
 
     const newAst = transformAstSketchLines({
       ast,
-      selectionRanges,
+      selectionRanges: makeSelections(selectionRanges),
       transformInfos,
       programMemory,
       referenceSegName: '',
@@ -321,21 +340,28 @@ const part001 = startSketchAt([0, 0])
   |> yLineTo(myVar, %) // select for vertical constraint 10
 show(part001)`
     const ast = abstractSyntaxTree(lexer(inputScript))
-    const selectionRanges = inputScript
+    const selectionRanges: Selections['codeBasedSelections'] = inputScript
       .split('\n')
       .filter((ln) => ln.includes('// select for vertical constraint'))
       .map((ln) => {
         const comment = ln.split('//')[1]
         const start = inputScript.indexOf('//' + comment) - 7
-        return [start, start]
-      }) as [number, number][]
+        return {
+          type: 'default',
+          range: [start, start],
+        }
+      })
 
     const programMemory = executor(ast)
-    const transformInfos = getTransformInfos(selectionRanges, ast, 'vertical')
+    const transformInfos = getTransformInfos(
+      makeSelections(selectionRanges),
+      ast,
+      'vertical'
+    )
 
     const newAst = transformAstSketchLines({
       ast,
-      selectionRanges,
+      selectionRanges: makeSelections(selectionRanges),
       transformInfos,
       programMemory,
       referenceSegName: '',
@@ -404,7 +430,7 @@ function helperThing(
   constraint: ConstraintType
 ): string {
   const ast = abstractSyntaxTree(lexer(inputScript))
-  const selectionRanges = inputScript
+  const selectionRanges: Selections['codeBasedSelections'] = inputScript
     .split('\n')
     .filter((ln) =>
       linesOfInterest.some((lineOfInterest) => ln.includes(lineOfInterest))
@@ -412,19 +438,22 @@ function helperThing(
     .map((ln) => {
       const comment = ln.split('//')[1]
       const start = inputScript.indexOf('//' + comment) - 7
-      return [start, start]
-    }) as [number, number][]
+      return {
+        type: 'default',
+        range: [start, start],
+      }
+    })
 
   const programMemory = executor(ast)
   const transformInfos = getTransformInfos(
-    selectionRanges.slice(1),
+    makeSelections(selectionRanges.slice(1)),
     ast,
     constraint
   )
 
   const newAst = transformSecondarySketchLinesTagFirst({
     ast,
-    selectionRanges,
+    selectionRanges: makeSelections(selectionRanges),
     transformInfos,
     programMemory,
   })?.modifiedAst
