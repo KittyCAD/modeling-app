@@ -12,8 +12,13 @@ import {
   transformAstSketchLines,
 } from '../../lang/std/sketchcombos'
 import { SetAngleLengthModal } from '../SetAngleLengthModal'
-import { createVariableDeclaration } from '../../lang/modifyAst'
+import {
+  createBinaryExpressionWithUnary,
+  createIdentifier,
+  createVariableDeclaration,
+} from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
+import { normaliseAngle } from '../../lib/utils'
 
 const getModalInfo = create(SetAngleLengthModal as any)
 
@@ -68,16 +73,47 @@ export const SetAngleLength = ({
           referenceSegName: '',
         })
         try {
+          const isReferencingYAxis =
+            selectionRanges.otherSelections.length === 1 &&
+            selectionRanges.otherSelections[0] === 'y-axis'
+          const isReferencingYAxisAngle =
+            isReferencingYAxis && angleOrLength === 'setAngle'
+
+          const isReferencingXAxis =
+            selectionRanges.otherSelections.length === 1 &&
+            selectionRanges.otherSelections[0] === 'x-axis'
+          const isReferencingXAxisAngle =
+            isReferencingXAxis && angleOrLength === 'setAngle'
+
+          let forceVal = valueUsedInTransform || 0
+          let calcIdentifier = createIdentifier('_0')
+          if (isReferencingYAxisAngle) {
+            calcIdentifier = createIdentifier(forceVal < 0 ? '_270' : '_90')
+            forceVal = normaliseAngle(forceVal + (forceVal < 0 ? 90 : -90))
+          } else if (isReferencingXAxisAngle) {
+            calcIdentifier = createIdentifier(
+              Math.abs(forceVal) > 90 ? '_180' : '_0'
+            )
+            forceVal =
+              Math.abs(forceVal) > 90
+                ? normaliseAngle(forceVal - 180)
+                : forceVal
+          }
           const { valueNode, variableName, newVariableInsertIndex, sign } =
             await getModalInfo({
-              value: valueUsedInTransform,
+              value: forceVal,
               valueName: angleOrLength === 'setAngle' ? 'angle' : 'length',
             } as any)
-          const finalValue = removeDoubleNegatives(
-            valueNode,
-            sign,
-            variableName
-          )
+          let finalValue = removeDoubleNegatives(valueNode, sign, variableName)
+          if (
+            isReferencingYAxisAngle ||
+            (isReferencingXAxisAngle && calcIdentifier.name !== '_0')
+          ) {
+            finalValue = createBinaryExpressionWithUnary([
+              calcIdentifier,
+              finalValue,
+            ])
+          }
 
           const { modifiedAst: _modifiedAst } = transformAstSketchLines({
             ast: JSON.parse(JSON.stringify(ast)),

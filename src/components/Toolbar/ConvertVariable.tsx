@@ -23,7 +23,7 @@ export const ConvertToVariable = () => {
 
     const { isSafe, value } = isNodeSafeToReplace(
       ast,
-      selectionRanges.codeBasedSelections[0].range
+      selectionRanges.codeBasedSelections?.[0]?.range || []
     )
     const canReplace = isSafe && value.type !== 'Identifier'
     const isOnlyOneSelection = selectionRanges.codeBasedSelections.length === 1

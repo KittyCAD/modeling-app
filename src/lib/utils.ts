@@ -20,6 +20,10 @@ export function getLength(a: [number, number], b: [number, number]): number {
 export function getAngle(a: [number, number], b: [number, number]): number {
   const x = b[0] - a[0]
   const y = b[1] - a[1]
-  const result = ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360
+  return normaliseAngle((Math.atan2(y, x) * 180) / Math.PI)
+}
+
+export function normaliseAngle(angle: number): number {
+  const result = ((angle % 360) + 360) % 360
   return result > 180 ? result - 360 : result
 }
