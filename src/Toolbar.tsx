@@ -6,9 +6,10 @@ import { RemoveConstrainingValues } from './components/Toolbar/RemoveConstrainin
 import { EqualLength } from './components/Toolbar/EqualLength'
 import { EqualAngle } from './components/Toolbar/EqualAngle'
 import { Intersect } from './components/Toolbar/Intersect'
-import { SetHorzDistance } from './components/Toolbar/SetHorzDistance'
+import { SetHorzVertDistance } from './components/Toolbar/SetHorzVertDistance'
 import { SetAngleLength } from './components/Toolbar/SetAngleLength'
 import { ConvertToVariable } from './components/Toolbar/ConvertVariable'
+import { SetAbsDistance } from './components/Toolbar/SetAbsDistance'
 
 export const Toolbar = () => {
   const {
@@ -169,8 +170,10 @@ export const Toolbar = () => {
       <HorzVert horOrVert="vertical" />
       <EqualLength />
       <EqualAngle />
-      <SetHorzDistance horOrVert="setHorzDistance" />
-      <SetHorzDistance horOrVert="setVertDistance" />
+      <SetHorzVertDistance horOrVert="setHorzDistance" />
+      <SetAbsDistance disType="xAbs" />
+      <SetHorzVertDistance horOrVert="setVertDistance" />
+      <SetAbsDistance disType="yAbs" />
       <SetAngleLength angleOrLength="setAngle" />
       <SetAngleLength angleOrLength="setLength" />
       <Intersect />
