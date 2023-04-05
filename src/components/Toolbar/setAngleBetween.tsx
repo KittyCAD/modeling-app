@@ -22,11 +22,7 @@ import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 
 const getModalInfo = create(GetInfoModal as any)
 
-export const SetHorzVertDistance = ({
-  horOrVert,
-}: {
-  horOrVert: 'setHorzDistance' | 'setVertDistance'
-}) => {
+export const SetAngleBetween = () => {
   const { guiMode, selectionRanges, ast, programMemory, updateAst } = useStore(
     (s) => ({
       guiMode: s.guiMode,
@@ -62,10 +58,7 @@ export const SetHorzVertDistance = ({
     const isAllTooltips = nodes.every(
       (node) =>
         node?.type === 'CallExpression' &&
-        [
-          ...toolTips,
-          'startSketchAt', // TODO probably a better place for this to live
-        ].includes(node.callee.name as any)
+        toolTips.includes(node.callee.name as any)
     )
 
     const theTransforms = getTransformInfos(
@@ -74,7 +67,7 @@ export const SetHorzVertDistance = ({
         codeBasedSelections: selectionRanges.codeBasedSelections.slice(1),
       },
       ast,
-      horOrVert
+      'setAngleBetween'
     )
     setTransformInfos(theTransforms)
 
@@ -116,8 +109,7 @@ export const SetHorzVertDistance = ({
             segName: tagInfo?.tag,
             isSegNameEditable: !tagInfo?.isTagExisting,
             value: valueUsedInTransform,
-            initialVariableName:
-              horOrVert === 'setHorzDistance' ? 'xDis' : 'yDis',
+            initialVariableName: 'angle',
           } as any)
           if (segName === tagInfo?.tag && value === valueUsedInTransform) {
             updateAst(modifiedAst)
@@ -155,7 +147,7 @@ export const SetHorzVertDistance = ({
       }`}
       disabled={!enable}
     >
-      {horOrVert}
+      angleBetween
     </button>
   )
 }

@@ -10,6 +10,7 @@ import { SetHorzVertDistance } from './components/Toolbar/SetHorzVertDistance'
 import { SetAngleLength } from './components/Toolbar/SetAngleLength'
 import { ConvertToVariable } from './components/Toolbar/ConvertVariable'
 import { SetAbsDistance } from './components/Toolbar/SetAbsDistance'
+import { SetAngleBetween } from './components/Toolbar/setAngleBetween'
 
 export const Toolbar = () => {
   const {
@@ -178,6 +179,7 @@ export const Toolbar = () => {
       <SetAngleLength angleOrLength="setLength" />
       <Intersect />
       <RemoveConstrainingValues />
+      <SetAngleBetween />
     </div>
   )
 }
