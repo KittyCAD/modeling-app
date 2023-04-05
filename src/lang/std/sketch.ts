@@ -953,7 +953,15 @@ export const angledLineToX: SketchLineHelper = {
       previousSketch
     )
   },
-  add: ({ node, pathToNode, to, from, createCallback, replaceExisting }) => {
+  add: ({
+    node,
+    pathToNode,
+    to,
+    from,
+    createCallback,
+    replaceExisting,
+    referencedSegment,
+  }) => {
     const _node = { ...node }
     const { node: pipe } = getNodeFromPath<PipeExpression>(
       _node,
@@ -963,7 +971,10 @@ export const angledLineToX: SketchLineHelper = {
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const xArg = createLiteral(roundOff(to[0], 2))
     if (replaceExisting && createCallback) {
-      const { callExp, valueUsedInTransform } = createCallback([angle, xArg])
+      const { callExp, valueUsedInTransform } = createCallback(
+        [angle, xArg],
+        referencedSegment
+      )
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       pipe.body[callIndex] = callExp
       return {
@@ -1038,7 +1049,15 @@ export const angledLineToY: SketchLineHelper = {
       previousSketch
     )
   },
-  add: ({ node, pathToNode, to, from, createCallback, replaceExisting }) => {
+  add: ({
+    node,
+    pathToNode,
+    to,
+    from,
+    createCallback,
+    replaceExisting,
+    referencedSegment,
+  }) => {
     const _node = { ...node }
     const { node: pipe } = getNodeFromPath<PipeExpression>(
       _node,
@@ -1049,7 +1068,10 @@ export const angledLineToY: SketchLineHelper = {
     const yArg = createLiteral(roundOff(to[1], 2))
 
     if (replaceExisting && createCallback) {
-      const { callExp, valueUsedInTransform } = createCallback([angle, yArg])
+      const { callExp, valueUsedInTransform } = createCallback(
+        [angle, yArg],
+        referencedSegment
+      )
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       pipe.body[callIndex] = callExp
       return {

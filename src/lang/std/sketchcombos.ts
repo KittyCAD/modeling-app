@@ -13,6 +13,7 @@ import {
   getNodePathFromSourceRange,
 } from '../queryAst'
 import {
+  createBinaryExpression,
   createBinaryExpressionWithUnary,
   createCallExpression,
   createIdentifier,
@@ -25,7 +26,7 @@ import {
 import { createFirstArg, getFirstArg, replaceSketchLine } from './sketch'
 import { ProgramMemory } from '../executor'
 import { getSketchSegmentFromSourceRange } from './sketchConstraints'
-import { getAngle, roundOff } from '../../lib/utils'
+import { getAngle, roundOff, normaliseAngle } from '../../lib/utils'
 
 type LineInputsType =
   | 'xAbsolute'
@@ -48,6 +49,7 @@ export type ConstraintType =
   | 'removeConstrainingValues'
   | 'xAbs'
   | 'yAbs'
+  | 'setAngleBetween'
 
 function createCallWrapper(
   a: TooTip,
@@ -294,13 +296,12 @@ const setAbsDistanceCreateNode =
     isXOrYLine = false,
     index = xOrY === 'x' ? 0 : 1
   ): TransformInfo['createNode'] =>
-  ({ tag, forceValueUsedInTransform, ...rest }) => {
-    return (args, referencedSegment, ...rest2) => {
+  ({ tag, forceValueUsedInTransform }) => {
+    return (args, referencedSegment) => {
       const valueUsedInTransform = roundOff(
         getArgLiteralVal(args?.[index]) - (referencedSegment?.to?.[index] || 0),
         2
       )
-      console.log(rest, rest2)
       const val =
         (forceValueUsedInTransform as BinaryPart) ||
         createLiteral(valueUsedInTransform)
@@ -434,6 +435,49 @@ const setAngledIntersectForAngledLines: TransformInfo['createNode'] =
     })
   }
 
+const setAngleBetweenCreateNode =
+  (tranformToType: 'none' | 'xAbs' | 'yAbs'): TransformInfo['createNode'] =>
+  ({ referenceSegName, tag, forceValueUsedInTransform, varValA, varValB }) => {
+    return (args, referencedSegment) => {
+      const refAngle = referencedSegment
+        ? getAngle(referencedSegment?.from, referencedSegment?.to)
+        : 0
+      let valueUsedInTransform = roundOff(
+        normaliseAngle(
+          (args[0].type === 'Literal' ? Number(args[0].value) : 0) - refAngle
+        )
+      )
+      let firstHalfValue = createSegAngle(referenceSegName) as BinaryPart
+      if (Math.abs(valueUsedInTransform) > 90) {
+        firstHalfValue = createBinaryExpression([
+          firstHalfValue,
+          '+',
+          createIdentifier('_180'),
+        ])
+        valueUsedInTransform = normaliseAngle(valueUsedInTransform - 180)
+      }
+      const binExp = createBinaryExpressionWithUnary([
+        firstHalfValue,
+        (forceValueUsedInTransform as BinaryPart) ||
+          createLiteral(valueUsedInTransform),
+      ])
+      return createCallWrapper(
+        tranformToType === 'none'
+          ? 'angledLine'
+          : tranformToType === 'xAbs'
+          ? 'angledLineToX'
+          : 'angledLineToY',
+        tranformToType === 'none'
+          ? [binExp, args[1]]
+          : tranformToType === 'xAbs'
+          ? [binExp, varValA]
+          : [binExp, varValB],
+        tag,
+        valueUsedInTransform
+      )
+    }
+  }
+
 const transformMap: TransformMap = {
   line: {
     xRelative: {
@@ -543,6 +587,10 @@ const transformMap: TransformMap = {
         tooltip: 'angledLineThatIntersects',
         createNode: setAngledIntersectLineForLines,
       },
+      setAngleBetween: {
+        tooltip: 'angledLine',
+        createNode: setAngleBetweenCreateNode('none'),
+      },
     },
   },
   lineTo: {
@@ -594,6 +642,10 @@ const transformMap: TransformMap = {
           () =>
             createCallWrapper('xLineTo', varValA, tag),
       },
+      setAngleBetween: {
+        tooltip: 'angledLineToX',
+        createNode: setAngleBetweenCreateNode('xAbs'),
+      },
     },
     yAbsolute: {
       equalLength: {
@@ -635,6 +687,10 @@ const transformMap: TransformMap = {
               getArgLiteralVal(args[0])
             )
           },
+      },
+      setAngleBetween: {
+        tooltip: 'angledLineToY',
+        createNode: setAngleBetweenCreateNode('yAbs'),
       },
     },
   },
