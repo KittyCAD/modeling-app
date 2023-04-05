@@ -25,7 +25,7 @@ import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 
 const getModalInfo = create(GetInfoModal as any)
 
-export const SetHorzDistance = ({
+export const SetHorzVertDistance = ({
   horOrVert,
 }: {
   horOrVert: 'setHorzDistance' | 'setVertDistance'

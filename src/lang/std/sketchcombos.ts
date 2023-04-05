@@ -13,7 +13,6 @@ import {
   getNodePathFromSourceRange,
 } from '../queryAst'
 import {
-  createBinaryExpression,
   createBinaryExpressionWithUnary,
   createCallExpression,
   createIdentifier,
@@ -47,6 +46,8 @@ export type ConstraintType =
   | 'setLength'
   | 'intersect'
   | 'removeConstrainingValues'
+  | 'xAbs'
+  | 'yAbs'
 
 function createCallWrapper(
   a: TooTip,
@@ -287,6 +288,61 @@ const setHorzVertDistanceForAngleLineCreateNode =
     }
   }
 
+const setAbsDistanceCreateNode =
+  (
+    xOrY: 'x' | 'y',
+    isXOrYLine = false,
+    index = xOrY === 'x' ? 0 : 1
+  ): TransformInfo['createNode'] =>
+  ({ tag, forceValueUsedInTransform, ...rest }) => {
+    return (args, referencedSegment, ...rest2) => {
+      const valueUsedInTransform = roundOff(
+        getArgLiteralVal(args?.[index]) - (referencedSegment?.to?.[index] || 0),
+        2
+      )
+      console.log(rest, rest2)
+      const val =
+        (forceValueUsedInTransform as BinaryPart) ||
+        createLiteral(valueUsedInTransform)
+      if (isXOrYLine) {
+        return createCallWrapper(
+          xOrY === 'x' ? 'xLineTo' : 'yLineTo',
+          val,
+          tag,
+          valueUsedInTransform
+        )
+      }
+      return createCallWrapper(
+        'lineTo',
+        !index ? [val, args[1]] : [args[0], val],
+        tag,
+        valueUsedInTransform
+      )
+    }
+  }
+const setAbsDistanceForAngleLineCreateNode =
+  (
+    xOrY: 'x' | 'y',
+    index = xOrY === 'x' ? 0 : 1
+  ): TransformInfo['createNode'] =>
+  ({ tag, forceValueUsedInTransform, varValA }) => {
+    return (args, referencedSegment) => {
+      const valueUsedInTransform = roundOff(
+        getArgLiteralVal(args?.[1]) - (referencedSegment?.to?.[index] || 0),
+        2
+      )
+      const val =
+        (forceValueUsedInTransform as BinaryPart) ||
+        createLiteral(valueUsedInTransform)
+      return createCallWrapper(
+        xOrY === 'x' ? 'angledLineToX' : 'angledLineToY',
+        [varValA, val],
+        tag,
+        valueUsedInTransform
+      )
+    }
+  }
+
 const setHorVertDistanceForXYLines =
   (xOrY: 'x' | 'y'): TransformInfo['createNode'] =>
   ({ referenceSegName, tag, forceValueUsedInTransform }) => {
@@ -459,9 +515,17 @@ const transformMap: TransformMap = {
         tooltip: 'lineTo',
         createNode: setHorzVertDistanceCreateNode('x'),
       },
+      xAbs: {
+        tooltip: 'lineTo',
+        createNode: setAbsDistanceCreateNode('x'),
+      },
       setVertDistance: {
         tooltip: 'lineTo',
         createNode: setHorzVertDistanceCreateNode('y'),
+      },
+      yAbs: {
+        tooltip: 'lineTo',
+        createNode: setAbsDistanceCreateNode('y'),
       },
       setAngle: {
         tooltip: 'angledLine',
@@ -595,9 +659,17 @@ const transformMap: TransformMap = {
         tooltip: 'angledLineToY',
         createNode: setHorzVertDistanceForAngleLineCreateNode('y'),
       },
+      yAbs: {
+        tooltip: 'angledLineToY',
+        createNode: setAbsDistanceForAngleLineCreateNode('y'),
+      },
       setHorzDistance: {
         tooltip: 'angledLineToX',
         createNode: setHorzVertDistanceForAngleLineCreateNode('x'),
+      },
+      xAbs: {
+        tooltip: 'angledLineToX',
+        createNode: setAbsDistanceForAngleLineCreateNode('x'),
       },
       intersect: {
         tooltip: 'angledLineThatIntersects',
@@ -881,6 +953,10 @@ const transformMap: TransformMap = {
         tooltip: 'angledLineThatIntersects',
         createNode: setAngledIntersectLineForLines,
       },
+      xAbs: {
+        tooltip: 'xLineTo',
+        createNode: setAbsDistanceCreateNode('x', true),
+      },
     },
   },
   yLine: {
@@ -907,6 +983,10 @@ const transformMap: TransformMap = {
       intersect: {
         tooltip: 'angledLineThatIntersects',
         createNode: setAngledIntersectLineForLines,
+      },
+      yAbs: {
+        tooltip: 'yLineTo',
+        createNode: setAbsDistanceCreateNode('y', true),
       },
     },
   },
