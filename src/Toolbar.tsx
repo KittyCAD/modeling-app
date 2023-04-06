@@ -171,10 +171,14 @@ export const Toolbar = () => {
       <HorzVert horOrVert="vertical" />
       <EqualLength />
       <EqualAngle />
-      <SetHorzVertDistance horOrVert="setHorzDistance" />
-      <SetAbsDistance disType="xAbs" />
-      <SetHorzVertDistance horOrVert="setVertDistance" />
-      <SetAbsDistance disType="yAbs" />
+      <SetHorzVertDistance buttonType="alignEndsVertically" />
+      <SetHorzVertDistance buttonType="setHorzDistance" />
+      <SetAbsDistance buttonType="snapToYAxis" />
+      <SetAbsDistance buttonType="xAbs" />
+      <SetHorzVertDistance buttonType="alignEndsHorizontally" />
+      <SetAbsDistance buttonType="snapToXAxis" />
+      <SetHorzVertDistance buttonType="setVertDistance" />
+      <SetAbsDistance buttonType="yAbs" />
       <SetAngleLength angleOrLength="setAngle" />
       <SetAngleLength angleOrLength="setLength" />
       <Intersect />

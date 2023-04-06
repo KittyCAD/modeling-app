@@ -399,3 +399,13 @@ function isTypeInArrayExp(
 ): boolean {
   return node.elements.some((el) => isTypeInValue(el, syntaxType))
 }
+
+export function isValueZero(val?: Value): boolean {
+  return (
+    (val?.type === 'Literal' && Number(val.value) === 0) ||
+    (val?.type === 'UnaryExpression' &&
+      val.operator === '-' &&
+      val.argument.type === 'Literal' &&
+      Number(val.argument.value) === 0)
+  )
+}
