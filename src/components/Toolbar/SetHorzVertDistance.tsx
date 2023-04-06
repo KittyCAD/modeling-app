@@ -15,17 +15,22 @@ import {
   TransformInfo,
   transformSecondarySketchLinesTagFirst,
   getTransformInfos,
+  ConstraintType,
 } from '../../lang/std/sketchcombos'
 import { GetInfoModal } from '../SetHorVertDistanceModal'
-import { createVariableDeclaration } from '../../lang/modifyAst'
+import { createLiteral, createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 
 const getModalInfo = create(GetInfoModal as any)
 
 export const SetHorzVertDistance = ({
-  horOrVert,
+  buttonType,
 }: {
-  horOrVert: 'setHorzDistance' | 'setVertDistance'
+  buttonType:
+    | 'setHorzDistance'
+    | 'setVertDistance'
+    | 'alignEndsHorizontally'
+    | 'alignEndsVertically'
 }) => {
   const { guiMode, selectionRanges, ast, programMemory, updateAst } = useStore(
     (s) => ({
@@ -36,6 +41,12 @@ export const SetHorzVertDistance = ({
       programMemory: s.programMemory,
     })
   )
+  const constraint: ConstraintType =
+    buttonType === 'setHorzDistance' || buttonType === 'setVertDistance'
+      ? buttonType
+      : buttonType === 'alignEndsHorizontally'
+      ? 'setVertDistance'
+      : 'setHorzDistance'
   const [enable, setEnable] = useState(false)
   const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
   useEffect(() => {
@@ -74,7 +85,7 @@ export const SetHorzVertDistance = ({
         codeBasedSelections: selectionRanges.codeBasedSelections.slice(1),
       },
       ast,
-      horOrVert
+      constraint
     )
     setTransformInfos(theTransforms)
 
@@ -86,6 +97,10 @@ export const SetHorzVertDistance = ({
     setEnable(_enableEqual)
   }, [guiMode, selectionRanges])
   if (guiMode.mode !== 'sketch') return null
+
+  const isAlign =
+    buttonType === 'alignEndsHorizontally' ||
+    buttonType === 'alignEndsVertically'
 
   return (
     <button
@@ -112,21 +127,24 @@ export const SetHorzVertDistance = ({
             variableName?: string
             newVariableInsertIndex: number
             sign: number
-          } = await getModalInfo({
-            segName: tagInfo?.tag,
-            isSegNameEditable: !tagInfo?.isTagExisting,
-            value: valueUsedInTransform,
-            initialVariableName:
-              horOrVert === 'setHorzDistance' ? 'xDis' : 'yDis',
-          } as any)
+          } = await (!isAlign &&
+            getModalInfo({
+              segName: tagInfo?.tag,
+              isSegNameEditable: !tagInfo?.isTagExisting,
+              value: valueUsedInTransform,
+              initialVariableName:
+                constraint === 'setHorzDistance' ? 'xDis' : 'yDis',
+            } as any))
           if (segName === tagInfo?.tag && value === valueUsedInTransform) {
             updateAst(modifiedAst)
           } else {
-            const finalValue = removeDoubleNegatives(
-              valueNode as BinaryPart,
-              sign,
-              variableName
-            )
+            let finalValue = isAlign
+              ? createLiteral(0)
+              : removeDoubleNegatives(
+                  valueNode as BinaryPart,
+                  sign,
+                  variableName
+                )
             // transform again but forcing certain values
             const { modifiedAst: _modifiedAst } =
               transformSecondarySketchLinesTagFirst({
@@ -155,7 +173,7 @@ export const SetHorzVertDistance = ({
       }`}
       disabled={!enable}
     >
-      {horOrVert}
+      {buttonType}
     </button>
   )
 }

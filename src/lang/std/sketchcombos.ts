@@ -1,16 +1,17 @@
 import { TransformCallback } from './stdTypes'
 import { Selections, toolTips, TooTip, Selection } from '../../useStore'
 import {
-  BinaryPart,
   CallExpression,
   Program,
   Value,
+  BinaryPart,
   VariableDeclarator,
 } from '../abstractSyntaxTree'
 import {
   getNodeFromPath,
   getNodeFromPathCurry,
   getNodePathFromSourceRange,
+  isValueZero,
 } from '../queryAst'
 import {
   createBinaryExpression,
@@ -252,14 +253,17 @@ const setHorzVertDistanceCreateNode =
         getArgLiteralVal(args?.[index]) - (referencedSegment?.to?.[index] || 0),
         2
       )
-      const makeBinExp = createBinaryExpressionWithUnary([
+      let finalValue: Value = createBinaryExpressionWithUnary([
         createSegEnd(referenceSegName, !index),
         (forceValueUsedInTransform as BinaryPart) ||
           createLiteral(valueUsedInTransform),
       ])
+      if (isValueZero(forceValueUsedInTransform)) {
+        finalValue = createSegEnd(referenceSegName, !index)
+      }
       return createCallWrapper(
         'lineTo',
-        !index ? [makeBinExp, args[1]] : [args[0], makeBinExp],
+        !index ? [finalValue, args[1]] : [args[0], finalValue],
         tag,
         valueUsedInTransform
       )

@@ -10,14 +10,22 @@ import {
   TransformInfo,
   getTransformInfos,
   transformAstSketchLines,
+  ConstraintType,
 } from '../../lang/std/sketchcombos'
 import { SetAngleLengthModal } from '../SetAngleLengthModal'
-import { createVariableDeclaration } from '../../lang/modifyAst'
+import {
+  createIdentifier,
+  createVariableDeclaration,
+} from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 
 const getModalInfo = create(SetAngleLengthModal as any)
 
-export const SetAbsDistance = ({ disType }: { disType: 'xAbs' | 'yAbs' }) => {
+export const SetAbsDistance = ({
+  buttonType,
+}: {
+  buttonType: 'xAbs' | 'yAbs' | 'snapToYAxis' | 'snapToXAxis'
+}) => {
   const {
     guiMode,
     selectionRanges: selections,
@@ -31,6 +39,12 @@ export const SetAbsDistance = ({ disType }: { disType: 'xAbs' | 'yAbs' }) => {
     selectionRanges: s.selectionRanges,
     programMemory: s.programMemory,
   }))
+  const disType: ConstraintType =
+    buttonType === 'xAbs' || buttonType === 'yAbs'
+      ? buttonType
+      : buttonType === 'snapToYAxis'
+      ? 'xAbs'
+      : 'yAbs'
   const [enableAngLen, setEnableAngLen] = useState(false)
   const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
   useEffect(() => {
@@ -69,6 +83,8 @@ export const SetAbsDistance = ({ disType }: { disType: 'xAbs' | 'yAbs' }) => {
   }, [guiMode, selections])
   if (guiMode.mode !== 'sketch') return null
 
+  const isAlign = buttonType === 'snapToYAxis' || buttonType === 'snapToXAxis'
+
   return (
     <button
       onClick={async () => {
@@ -83,11 +99,14 @@ export const SetAbsDistance = ({ disType }: { disType: 'xAbs' | 'yAbs' }) => {
         try {
           let forceVal = valueUsedInTransform || 0
           const { valueNode, variableName, newVariableInsertIndex, sign } =
-            await getModalInfo({
-              value: forceVal,
-              valueName: disType === 'yAbs' ? 'yDis' : 'xDis',
-            } as any)
-          let finalValue = removeDoubleNegatives(valueNode, sign, variableName)
+            await (!isAlign &&
+              getModalInfo({
+                value: forceVal,
+                valueName: disType === 'yAbs' ? 'yDis' : 'xDis',
+              } as any))
+          let finalValue = isAlign
+            ? createIdentifier('_0')
+            : removeDoubleNegatives(valueNode, sign, variableName)
 
           const { modifiedAst: _modifiedAst } = transformAstSketchLines({
             ast: JSON.parse(JSON.stringify(ast)),
@@ -117,7 +136,7 @@ export const SetAbsDistance = ({ disType }: { disType: 'xAbs' | 'yAbs' }) => {
       }`}
       disabled={!enableAngLen}
     >
-      {disType}
+      {buttonType}
     </button>
   )
 }
