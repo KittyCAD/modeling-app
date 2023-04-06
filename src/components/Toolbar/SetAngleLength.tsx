@@ -103,6 +103,7 @@ export const SetAngleLength = ({
             await getModalInfo({
               value: forceVal,
               valueName: angleOrLength === 'setAngle' ? 'angle' : 'length',
+              shouldCreateVariable: true,
             } as any)
           let finalValue = removeDoubleNegatives(valueNode, sign, variableName)
           if (
