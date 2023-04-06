@@ -15,6 +15,7 @@ export const SetAngleLengthModal = ({
   onReject,
   value: initialValue,
   valueName,
+  shouldCreateVariable: initialShouldCreateVariable = false,
 }: {
   isOpen: boolean
   onResolve: (a: {
@@ -27,10 +28,13 @@ export const SetAngleLengthModal = ({
   onReject: (a: any) => void
   value: number
   valueName: string
+  shouldCreateVariable: boolean
 }) => {
   const [sign, setSign] = useState(Math.sign(Number(initialValue)))
   const [value, setValue] = useState(String(initialValue * sign))
-  const [shouldCreateVariable, setShouldCreateVariable] = useState(false)
+  const [shouldCreateVariable, setShouldCreateVariable] = useState(
+    initialShouldCreateVariable
+  )
 
   const {
     prevVariables,
