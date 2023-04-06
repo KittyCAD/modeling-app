@@ -10,7 +10,7 @@ import { SetHorzVertDistance } from './components/Toolbar/SetHorzVertDistance'
 import { SetAngleLength } from './components/Toolbar/SetAngleLength'
 import { ConvertToVariable } from './components/Toolbar/ConvertVariable'
 import { SetAbsDistance } from './components/Toolbar/SetAbsDistance'
-import { SetAngleBetween } from './components/Toolbar/setAngleBetween'
+import { SetAngleBetween } from './components/Toolbar/SetAngleBetween'
 
 export const Toolbar = () => {
   const {
