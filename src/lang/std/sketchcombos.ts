@@ -1422,9 +1422,10 @@ export function transformAstSketchLines({
     const sketchGroup = programMemory.root?.[varName]
     if (!sketchGroup || sketchGroup.type !== 'sketchGroup')
       throw new Error('not a sketch group')
-    const seg = getSketchSegmentFromSourceRange(sketchGroup, range)
+    const seg = getSketchSegmentFromSourceRange(sketchGroup, range).segment
     const referencedSegment = referencedSegmentRange
       ? getSketchSegmentFromSourceRange(sketchGroup, referencedSegmentRange)
+          .segment
       : sketchGroup.value.find((path) => path.name === _referencedSegmentName)
     const { to, from } = seg
     const { modifiedAst, valueUsedInTransform } = replaceSketchLine({

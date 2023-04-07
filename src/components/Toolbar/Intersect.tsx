@@ -9,6 +9,7 @@ import {
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
+  isLinesParallelAndConstrained,
 } from '../../lang/queryAst'
 import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
 import {
@@ -17,10 +18,7 @@ import {
   getTransformInfos,
 } from '../../lang/std/sketchcombos'
 import { GetInfoModal } from '../SetHorVertDistanceModal'
-import {
-  createIdentifier,
-  createVariableDeclaration,
-} from '../../lang/modifyAst'
+import { createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 
 const getModalInfo = create(GetInfoModal as any)
@@ -37,9 +35,45 @@ export const Intersect = () => {
   )
   const [enable, setEnable] = useState(false)
   const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
+  const [forecdSelectionRanges, setForcedSelectionRanges] =
+    useState<typeof selectionRanges>()
   useEffect(() => {
     if (!ast) return
-    const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
+    if (selectionRanges.codeBasedSelections.length < 2) {
+      setEnable(false)
+      setForcedSelectionRanges({ ...selectionRanges })
+      return
+    }
+
+    const previousSegment =
+      selectionRanges.codeBasedSelections.length > 1 &&
+      isLinesParallelAndConstrained(
+        ast,
+        programMemory,
+        selectionRanges.codeBasedSelections[0],
+        selectionRanges.codeBasedSelections[1]
+      )
+    const shouldUsePreviousSegment =
+      selectionRanges.codeBasedSelections?.[1]?.type !== 'line-end' &&
+      previousSegment &&
+      previousSegment.isParallelAndConstrained
+    console.log(shouldUsePreviousSegment)
+
+    const _forcedSelectionRanges: typeof selectionRanges = {
+      ...selectionRanges,
+      codeBasedSelections: [
+        selectionRanges.codeBasedSelections?.[0],
+        shouldUsePreviousSegment
+          ? {
+              range: previousSegment.sourceRange,
+              type: 'line-end',
+            }
+          : selectionRanges.codeBasedSelections?.[1],
+      ],
+    }
+    setForcedSelectionRanges(_forcedSelectionRanges)
+
+    const paths = _forcedSelectionRanges.codeBasedSelections.map(({ range }) =>
       getNodePathFromSourceRange(ast, range)
     )
     const nodes = paths.map(
@@ -70,7 +104,8 @@ export const Intersect = () => {
     const theTransforms = getTransformInfos(
       {
         ...selectionRanges,
-        codeBasedSelections: selectionRanges.codeBasedSelections.slice(1),
+        codeBasedSelections:
+          _forcedSelectionRanges.codeBasedSelections.slice(1),
       },
       ast,
       'intersect'
@@ -81,7 +116,8 @@ export const Intersect = () => {
       secondaryVarDecs.length === 1 &&
       isAllTooltips &&
       isOthersLinkedToPrimary &&
-      theTransforms.every(Boolean)
+      theTransforms.every(Boolean) &&
+      _forcedSelectionRanges?.codeBasedSelections?.[1]?.type === 'line-end'
     setEnable(_enableEqual)
   }, [guiMode, selectionRanges])
   if (guiMode.mode !== 'sketch') return null
@@ -89,11 +125,11 @@ export const Intersect = () => {
   return (
     <button
       onClick={async () => {
-        if (transformInfos && ast) {
+        if (transformInfos && ast && forecdSelectionRanges) {
           const { modifiedAst, tagInfo, valueUsedInTransform } =
             transformSecondarySketchLinesTagFirst({
               ast: JSON.parse(JSON.stringify(ast)),
-              selectionRanges,
+              selectionRanges: forecdSelectionRanges,
               transformInfos,
               programMemory,
             })
@@ -129,7 +165,7 @@ export const Intersect = () => {
             const { modifiedAst: _modifiedAst } =
               transformSecondarySketchLinesTagFirst({
                 ast,
-                selectionRanges,
+                selectionRanges: forecdSelectionRanges,
                 transformInfos,
                 programMemory,
                 forceSegName: segName,

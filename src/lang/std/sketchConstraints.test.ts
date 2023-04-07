@@ -386,7 +386,7 @@ show(part001)`
     const { __geoMeta, ...segment } = getSketchSegmentFromSourceRange(
       programMemory.root['part001'] as SketchGroup,
       [index, index]
-    )
+    ).segment
     expect(segment).toEqual({
       type: 'toPoint',
       to: [5.62, 1.79],
@@ -399,7 +399,7 @@ show(part001)`
     const { __geoMeta, ...segment } = getSketchSegmentFromSourceRange(
       programMemory.root['part001'] as SketchGroup,
       [index, index]
-    )
+    ).segment
     expect(segment).toEqual({ type: 'base', to: [0, 0.04], from: [0, 0.04] })
   })
 })

@@ -1351,7 +1351,7 @@ export function addNewSketchLn({
     const { from } = getSketchSegmentFromSourceRange(sketch, [
       defaultLine.start,
       defaultLine.end,
-    ])
+    ]).segment
     return updateArgs({
       node,
       previousProgramMemory,
