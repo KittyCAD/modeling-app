@@ -7,10 +7,10 @@ import { EqualLength } from './components/Toolbar/EqualLength'
 import { EqualAngle } from './components/Toolbar/EqualAngle'
 import { Intersect } from './components/Toolbar/Intersect'
 import { SetHorzVertDistance } from './components/Toolbar/SetHorzVertDistance'
-import { SetAngleLength } from './components/Toolbar/SetAngleLength'
+import { SetAngleLength } from './components/Toolbar/setAngleLength'
 import { ConvertToVariable } from './components/Toolbar/ConvertVariable'
 import { SetAbsDistance } from './components/Toolbar/SetAbsDistance'
-import { SetAngleBetween } from './components/Toolbar/setAngleBetween'
+import { SetAngleBetween } from './components/Toolbar/SetAngleBetween'
 
 export const Toolbar = () => {
   const {

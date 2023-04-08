@@ -1,5 +1,5 @@
-import { PathToNode, ProgramMemory } from './executor'
-import { Selection } from '../useStore'
+import { PathToNode, ProgramMemory, SketchGroup, SourceRange } from './executor'
+import { Selection, TooTip } from '../useStore'
 import {
   BinaryExpression,
   Program,
@@ -13,6 +13,13 @@ import {
   Identifier,
 } from './abstractSyntaxTree'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
+import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
+import { getAngle } from '../lib/utils'
+import { getFirstArg } from './std/sketch'
+import {
+  getConstraintLevelFromSourceRange,
+  getConstraintType,
+} from './std/sketchcombos'
 
 export function getNodeFromPath<T>(
   node: Program,
@@ -242,7 +249,7 @@ export function getNodePathFromSourceRange(
   sourceRange: Selection['range'],
   previousPath: PathToNode = [['body', '']]
 ): PathToNode {
-  const [start, end] = sourceRange
+  const [start, end] = sourceRange || []
   let path: PathToNode = [...previousPath]
   const _node = { ...node }
 
@@ -408,4 +415,75 @@ export function isValueZero(val?: Value): boolean {
       val.argument.type === 'Literal' &&
       Number(val.argument.value) === 0)
   )
+}
+
+export function isLinesParallelAndConstrained(
+  ast: Program,
+  programMemory: ProgramMemory,
+  primaryLine: Selection,
+  secondaryLine: Selection
+): {
+  isParallelAndConstrained: boolean
+  sourceRange: SourceRange
+} {
+  try {
+    const EPSILON = 0.005
+    const primaryPath = getNodePathFromSourceRange(ast, primaryLine.range)
+    const secondaryPath = getNodePathFromSourceRange(ast, secondaryLine.range)
+    const secondaryNode = getNodeFromPath<CallExpression>(
+      ast,
+      secondaryPath,
+      'CallExpression'
+    ).node
+    const varDec = getNodeFromPath(ast, primaryPath, 'VariableDeclaration').node
+    const varName = (varDec as VariableDeclaration)?.declarations[0]?.id?.name
+    const path = programMemory?.root[varName] as SketchGroup
+    const primarySegment = getSketchSegmentFromSourceRange(
+      path,
+      primaryLine.range
+    ).segment
+    const { segment: secondarySegment, index: secondaryIndex } =
+      getSketchSegmentFromSourceRange(path, secondaryLine.range)
+    const primaryAngle = getAngle(primarySegment.from, primarySegment.to)
+    const secondaryAngle = getAngle(secondarySegment.from, secondarySegment.to)
+    const secondaryAngleAlt = getAngle(
+      secondarySegment.to,
+      secondarySegment.from
+    )
+    const isParallel =
+      Math.abs(primaryAngle - secondaryAngle) < EPSILON ||
+      Math.abs(primaryAngle - secondaryAngleAlt) < EPSILON
+
+    // is secordary line fully constrain, or has constrain type of 'angle'
+    const secondaryFirstArg = getFirstArg(secondaryNode)
+    const constraintType = getConstraintType(
+      secondaryFirstArg.val,
+      secondaryNode.callee.name as TooTip
+    )
+    const constraintLevel = getConstraintLevelFromSourceRange(
+      secondaryLine.range,
+      ast
+    )
+    const isConstrained =
+      constraintType === 'angle' || constraintLevel === 'full'
+
+    // get the previous segment
+    const prevSegment = (programMemory.root[varName] as SketchGroup).value[
+      secondaryIndex - 1
+    ]
+    const prevSourceRange = prevSegment.__geoMeta.sourceRange
+
+    const isParallelAndConstrained =
+      isParallel && isConstrained && !!prevSourceRange
+
+    return {
+      isParallelAndConstrained,
+      sourceRange: prevSourceRange,
+    }
+  } catch (e) {
+    return {
+      isParallelAndConstrained: false,
+      sourceRange: [0, 0],
+    }
+  }
 }

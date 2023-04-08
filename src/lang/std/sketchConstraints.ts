@@ -11,7 +11,10 @@ import { InternalFn } from './stdTypes'
 export function getSketchSegmentFromSourceRange(
   sketchGroup: SketchGroup,
   [rangeStart, rangeEnd]: SourceRange
-): SketchGroup['value'][number] {
+): {
+  segment: SketchGroup['value'][number]
+  index: number
+} {
   const startSourceRange = sketchGroup.start?.__geoMeta.sourceRange
   if (
     startSourceRange &&
@@ -19,14 +22,18 @@ export function getSketchSegmentFromSourceRange(
     startSourceRange[1] >= rangeEnd &&
     sketchGroup.start
   )
-    return sketchGroup.start
+    return { segment: sketchGroup.start, index: -1 }
 
-  const line = sketchGroup.value.find(
+  const lineIndex = sketchGroup.value.findIndex(
     ({ __geoMeta: { sourceRange } }) =>
       sourceRange[0] <= rangeStart && sourceRange[1] >= rangeEnd
   )
+  const line = sketchGroup.value[lineIndex]
   if (!line) throw new Error('could not find matching line')
-  return line
+  return {
+    segment: line,
+    index: lineIndex,
+  }
 }
 
 export const segLen: InternalFn = (

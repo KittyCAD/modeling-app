@@ -79,6 +79,7 @@ function stringSplice(str: string, index: number, count: number, add: string) {
   return str.slice(0, index) + (add || '') + str.slice(index + count)
 }
 
+// what a terriable name
 export function useCalc({
   value,
   initialVariableName: valueName = '',
