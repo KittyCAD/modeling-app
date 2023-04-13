@@ -11,17 +11,18 @@ import {
   transformSecondarySketchLinesTagFirst,
   getTransformInfos,
 } from '../../lang/std/sketchcombos'
+import { updateCursors } from '../../lang/util'
 
 export const EqualAngle = () => {
-  const { guiMode, selectionRanges, ast, programMemory, updateAst } = useStore(
-    (s) => ({
+  const { guiMode, selectionRanges, ast, programMemory, updateAst, setCursor } =
+    useStore((s) => ({
       guiMode: s.guiMode,
       ast: s.ast,
       updateAst: s.updateAst,
       selectionRanges: s.selectionRanges,
       programMemory: s.programMemory,
-    })
-  )
+      setCursor: s.setCursor,
+    }))
   const [enableEqual, setEnableEqual] = useState(false)
   const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
   useEffect(() => {
@@ -72,18 +73,19 @@ export const EqualAngle = () => {
 
   return (
     <button
-      onClick={() =>
-        transformInfos &&
-        ast &&
-        updateAst(
+      onClick={async () => {
+        if (!(transformInfos && ast)) return
+        const { modifiedAst, pathToNodeMap } =
           transformSecondarySketchLinesTagFirst({
             ast,
             selectionRanges,
             transformInfos,
             programMemory,
-          })?.modifiedAst
-        )
-      }
+          })
+        updateAst(modifiedAst, {
+          callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
+        })
+      }}
       className={`border m-1 px-1 rounded text-xs ${
         enableEqual ? 'bg-gray-50 text-gray-800' : 'bg-gray-200 text-gray-400'
       }`}

@@ -18,6 +18,7 @@ import {
   createVariableDeclaration,
 } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
+import { updateCursors } from '../../lang/util'
 
 const getModalInfo = create(SetAngleLengthModal as any)
 
@@ -26,19 +27,15 @@ export const SetAbsDistance = ({
 }: {
   buttonType: 'xAbs' | 'yAbs' | 'snapToYAxis' | 'snapToXAxis'
 }) => {
-  const {
-    guiMode,
-    selectionRanges: selections,
-    ast,
-    programMemory,
-    updateAst,
-  } = useStore((s) => ({
-    guiMode: s.guiMode,
-    ast: s.ast,
-    updateAst: s.updateAst,
-    selectionRanges: s.selectionRanges,
-    programMemory: s.programMemory,
-  }))
+  const { guiMode, selectionRanges, ast, programMemory, updateAst, setCursor } =
+    useStore((s) => ({
+      guiMode: s.guiMode,
+      ast: s.ast,
+      updateAst: s.updateAst,
+      selectionRanges: s.selectionRanges,
+      programMemory: s.programMemory,
+      setCursor: s.setCursor,
+    }))
   const disType: ConstraintType =
     buttonType === 'xAbs' || buttonType === 'yAbs'
       ? buttonType
@@ -49,7 +46,7 @@ export const SetAbsDistance = ({
   const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
   useEffect(() => {
     if (!ast) return
-    const paths = selections.codeBasedSelections.map(({ range }) =>
+    const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
       getNodePathFromSourceRange(ast, range)
     )
     const nodes = paths.map(
@@ -62,25 +59,25 @@ export const SetAbsDistance = ({
         toolTips.includes(node.callee.name as any)
     )
 
-    const theTransforms = getTransformInfos(selections, ast, disType)
+    const theTransforms = getTransformInfos(selectionRanges, ast, disType)
     setTransformInfos(theTransforms)
 
     const enableY =
       disType === 'yAbs' &&
-      selections.otherSelections.length === 1 &&
-      selections.otherSelections[0] === 'x-axis' // select the x axis to set the distance from it i.e. y
+      selectionRanges.otherSelections.length === 1 &&
+      selectionRanges.otherSelections[0] === 'x-axis' // select the x axis to set the distance from it i.e. y
     const enableX =
       disType === 'xAbs' &&
-      selections.otherSelections.length === 1 &&
-      selections.otherSelections[0] === 'y-axis' // select the y axis to set the distance from it i.e. x
+      selectionRanges.otherSelections.length === 1 &&
+      selectionRanges.otherSelections[0] === 'y-axis' // select the y axis to set the distance from it i.e. x
 
     const _enableHorz =
       isAllTooltips &&
       theTransforms.every(Boolean) &&
-      selections.codeBasedSelections.length === 1 &&
+      selectionRanges.codeBasedSelections.length === 1 &&
       (enableX || enableY)
     setEnableAngLen(_enableHorz)
-  }, [guiMode, selections])
+  }, [guiMode, selectionRanges])
   if (guiMode.mode !== 'sketch') return null
 
   const isAlign = buttonType === 'snapToYAxis' || buttonType === 'snapToXAxis'
@@ -91,7 +88,7 @@ export const SetAbsDistance = ({
         if (!(transformInfos && ast)) return
         const { valueUsedInTransform } = transformAstSketchLines({
           ast: JSON.parse(JSON.stringify(ast)),
-          selectionRanges: selections,
+          selectionRanges: selectionRanges,
           transformInfos,
           programMemory,
           referenceSegName: '',
@@ -108,14 +105,15 @@ export const SetAbsDistance = ({
             ? createIdentifier('_0')
             : removeDoubleNegatives(valueNode, sign, variableName)
 
-          const { modifiedAst: _modifiedAst } = transformAstSketchLines({
-            ast: JSON.parse(JSON.stringify(ast)),
-            selectionRanges: selections,
-            transformInfos,
-            programMemory,
-            referenceSegName: '',
-            forceValueUsedInTransform: finalValue,
-          })
+          const { modifiedAst: _modifiedAst, pathToNodeMap } =
+            transformAstSketchLines({
+              ast: JSON.parse(JSON.stringify(ast)),
+              selectionRanges: selectionRanges,
+              transformInfos,
+              programMemory,
+              referenceSegName: '',
+              forceValueUsedInTransform: finalValue,
+            })
           if (variableName) {
             const newBody = [..._modifiedAst.body]
             newBody.splice(
@@ -126,7 +124,9 @@ export const SetAbsDistance = ({
             _modifiedAst.body = newBody
           }
 
-          updateAst(_modifiedAst)
+          updateAst(_modifiedAst, {
+            callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
+          })
         } catch (e) {
           console.log('e', e)
         }

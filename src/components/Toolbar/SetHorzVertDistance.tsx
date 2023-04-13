@@ -20,6 +20,7 @@ import {
 import { GetInfoModal } from '../SetHorVertDistanceModal'
 import { createLiteral, createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
+import { updateCursors } from '../../lang/util'
 
 const getModalInfo = create(GetInfoModal as any)
 
@@ -32,15 +33,15 @@ export const SetHorzVertDistance = ({
     | 'alignEndsHorizontally'
     | 'alignEndsVertically'
 }) => {
-  const { guiMode, selectionRanges, ast, programMemory, updateAst } = useStore(
-    (s) => ({
+  const { guiMode, selectionRanges, ast, programMemory, updateAst, setCursor } =
+    useStore((s) => ({
       guiMode: s.guiMode,
       ast: s.ast,
       updateAst: s.updateAst,
       selectionRanges: s.selectionRanges,
       programMemory: s.programMemory,
-    })
-  )
+      setCursor: s.setCursor,
+    }))
   const constraint: ConstraintType =
     buttonType === 'setHorzDistance' || buttonType === 'setVertDistance'
       ? buttonType
@@ -105,67 +106,66 @@ export const SetHorzVertDistance = ({
   return (
     <button
       onClick={async () => {
-        if (transformInfos && ast) {
-          const { modifiedAst, tagInfo, valueUsedInTransform } =
+        if (!(transformInfos && ast)) return
+        const { modifiedAst, tagInfo, valueUsedInTransform, pathToNodeMap } =
+          transformSecondarySketchLinesTagFirst({
+            ast: JSON.parse(JSON.stringify(ast)),
+            selectionRanges,
+            transformInfos,
+            programMemory,
+          })
+        const {
+          segName,
+          value,
+          valueNode,
+          variableName,
+          newVariableInsertIndex,
+          sign,
+        }: {
+          segName: string
+          value: number
+          valueNode: Value
+          variableName?: string
+          newVariableInsertIndex: number
+          sign: number
+        } = await (!isAlign &&
+          getModalInfo({
+            segName: tagInfo?.tag,
+            isSegNameEditable: !tagInfo?.isTagExisting,
+            value: valueUsedInTransform,
+            initialVariableName:
+              constraint === 'setHorzDistance' ? 'xDis' : 'yDis',
+          } as any))
+        if (segName === tagInfo?.tag && value === valueUsedInTransform) {
+          updateAst(modifiedAst, {
+            callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
+          })
+        } else {
+          let finalValue = isAlign
+            ? createLiteral(0)
+            : removeDoubleNegatives(valueNode as BinaryPart, sign, variableName)
+          // transform again but forcing certain values
+          const { modifiedAst: _modifiedAst, pathToNodeMap } =
             transformSecondarySketchLinesTagFirst({
-              ast: JSON.parse(JSON.stringify(ast)),
+              ast,
               selectionRanges,
               transformInfos,
               programMemory,
+              forceSegName: segName,
+              forceValueUsedInTransform: finalValue,
             })
-          const {
-            segName,
-            value,
-            valueNode,
-            variableName,
-            newVariableInsertIndex,
-            sign,
-          }: {
-            segName: string
-            value: number
-            valueNode: Value
-            variableName?: string
-            newVariableInsertIndex: number
-            sign: number
-          } = await (!isAlign &&
-            getModalInfo({
-              segName: tagInfo?.tag,
-              isSegNameEditable: !tagInfo?.isTagExisting,
-              value: valueUsedInTransform,
-              initialVariableName:
-                constraint === 'setHorzDistance' ? 'xDis' : 'yDis',
-            } as any))
-          if (segName === tagInfo?.tag && value === valueUsedInTransform) {
-            updateAst(modifiedAst)
-          } else {
-            let finalValue = isAlign
-              ? createLiteral(0)
-              : removeDoubleNegatives(
-                  valueNode as BinaryPart,
-                  sign,
-                  variableName
-                )
-            // transform again but forcing certain values
-            const { modifiedAst: _modifiedAst } =
-              transformSecondarySketchLinesTagFirst({
-                ast,
-                selectionRanges,
-                transformInfos,
-                programMemory,
-                forceSegName: segName,
-                forceValueUsedInTransform: finalValue,
-              })
-            if (variableName) {
-              const newBody = [..._modifiedAst.body]
-              newBody.splice(
-                newVariableInsertIndex,
-                0,
-                createVariableDeclaration(variableName, valueNode)
-              )
-              _modifiedAst.body = newBody
-            }
-            updateAst(_modifiedAst)
+          if (variableName) {
+            const newBody = [..._modifiedAst.body]
+            newBody.splice(
+              newVariableInsertIndex,
+              0,
+              createVariableDeclaration(variableName, valueNode)
+            )
+            _modifiedAst.body = newBody
           }
+          updateAst(_modifiedAst, {
+            callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
+          })
         }
       }}
       className={`border m-1 px-1 rounded text-xs ${

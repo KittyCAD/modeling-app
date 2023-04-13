@@ -1392,14 +1392,18 @@ export function replaceSketchLine({
   from: [number, number]
   createCallback: TransformCallback
   referencedSegment?: Path
-}): { modifiedAst: Program; valueUsedInTransform?: number } {
+}): {
+  modifiedAst: Program
+  valueUsedInTransform?: number
+  pathToNode: PathToNode
+} {
   if (![...toolTips, 'intersect'].includes(fnName))
     throw new Error('not a tooltip')
   const _node = { ...node }
   const thePath = getNodePathFromSourceRange(_node, sourceRange)
 
   const { add } = sketchLineHelperMap[fnName]
-  const { modifiedAst, valueUsedInTransform } = add({
+  const { modifiedAst, valueUsedInTransform, pathToNode } = add({
     node: _node,
     previousProgramMemory: programMemory,
     pathToNode: thePath,
@@ -1409,7 +1413,7 @@ export function replaceSketchLine({
     replaceExisting: true,
     createCallback,
   })
-  return { modifiedAst, valueUsedInTransform }
+  return { modifiedAst, valueUsedInTransform, pathToNode }
 }
 
 export function addTagForSketchOnFace(

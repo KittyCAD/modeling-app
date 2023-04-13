@@ -88,7 +88,7 @@ export type GuiModes =
       position: Position
     }
 
-interface StoreState {
+export interface StoreState {
   editorView: EditorView | null
   setEditorView: (editorView: EditorView) => void
   highlightRange: [number, number]
@@ -105,7 +105,13 @@ interface StoreState {
   resetLogs: () => void
   ast: Program | null
   setAst: (ast: Program | null) => void
-  updateAst: (ast: Program, focusPath?: PathToNode) => void
+  updateAst: (
+    ast: Program,
+    optionalParams?: {
+      focusPath?: PathToNode
+      callBack?: (ast: Program) => void
+    }
+  ) => void
   updateAstAsync: (ast: Program, focusPath?: PathToNode) => void
   code: string
   setCode: (code: string) => void
@@ -185,11 +191,12 @@ export const useStore = create<StoreState>()(
       setAst: (ast) => {
         set({ ast })
       },
-      updateAst: async (ast, focusPath) => {
+      updateAst: async (ast, { focusPath, callBack = () => {} } = {}) => {
         const newCode = recast(ast)
         const astWithUpdatedSource = abstractSyntaxTree(
           await asyncLexer(newCode)
         )
+        callBack(astWithUpdatedSource)
 
         set({ ast: astWithUpdatedSource, code: newCode })
         if (focusPath) {
@@ -216,7 +223,7 @@ export const useStore = create<StoreState>()(
         // setup a new update
         pendingAstUpdates.push(
           setTimeout(() => {
-            get().updateAst(ast, focusPath)
+            get().updateAst(ast, { focusPath })
           }, 100) as unknown as number
         )
       },

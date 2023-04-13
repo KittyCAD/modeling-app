@@ -536,10 +536,16 @@ export function giveSketchFnCallTag(
   ast: Program,
   range: Selection['range'],
   tag?: string
-): { modifiedAst: Program; tag: string; isTagExisting: boolean } {
+): {
+  modifiedAst: Program
+  tag: string
+  isTagExisting: boolean
+  pathToNode: PathToNode
+} {
+  const path = getNodePathFromSourceRange(ast, range)
   const { node: primaryCallExp } = getNodeFromPath<CallExpression>(
     ast,
-    getNodePathFromSourceRange(ast, range),
+    path,
     'CallExpression'
   )
   const firstArg = getFirstArg(primaryCallExp)
@@ -557,6 +563,7 @@ export function giveSketchFnCallTag(
     modifiedAst: ast,
     tag: tagStr,
     isTagExisting,
+    pathToNode: path,
   }
 }
 

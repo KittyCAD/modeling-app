@@ -25,7 +25,7 @@ import {
   giveSketchFnCallTag,
 } from '../modifyAst'
 import { createFirstArg, getFirstArg, replaceSketchLine } from './sketch'
-import { ProgramMemory } from '../executor'
+import { PathToNode, ProgramMemory } from '../executor'
 import { getSketchSegmentFromSourceRange } from './sketchConstraints'
 import { getAngle, roundOff, normaliseAngle } from '../../lib/utils'
 
@@ -785,6 +785,10 @@ const transformMap: TransformMap = {
         tooltip: 'angledLine',
         createNode: basicAngledLineCreateNode('len', 'ang', 'len'),
       },
+      equalAngle: {
+        tooltip: 'angledLine',
+        createNode: basicAngledLineCreateNode('ang', 'len', 'len'),
+      },
     },
   },
   angledLineOfXLength: {
@@ -1319,6 +1323,8 @@ export function getRemoveConstraintsTransforms(
   return theTransforms
 }
 
+type PathToNodeMap = { [key: number]: PathToNode }
+
 export function transformSecondarySketchLinesTagFirst({
   ast,
   selectionRanges,
@@ -1336,6 +1342,7 @@ export function transformSecondarySketchLinesTagFirst({
 }): {
   modifiedAst: Program
   valueUsedInTransform?: number
+  pathToNodeMap: PathToNodeMap
   tagInfo: {
     tag: string
     isTagExisting: boolean
@@ -1344,30 +1351,46 @@ export function transformSecondarySketchLinesTagFirst({
   // let node = JSON.parse(JSON.stringify(ast))
   const primarySelection = selectionRanges.codeBasedSelections[0].range
 
-  const { modifiedAst, tag, isTagExisting } = giveSketchFnCallTag(
+  const { modifiedAst, tag, isTagExisting, pathToNode } = giveSketchFnCallTag(
     ast,
     primarySelection,
     forceSegName
   )
 
+  const result = transformAstSketchLines({
+    ast: modifiedAst,
+    selectionRanges: {
+      ...selectionRanges,
+      codeBasedSelections: selectionRanges.codeBasedSelections.slice(1),
+    },
+    referencedSegmentRange: primarySelection,
+    transformInfos,
+    programMemory,
+    referenceSegName: tag,
+    forceValueUsedInTransform,
+  })
+  const updatedPathToNodeMap = incrementPathToNodeMap(result.pathToNodeMap)
+  updatedPathToNodeMap[0] = pathToNode
+
   return {
-    ...transformAstSketchLines({
-      ast: modifiedAst,
-      selectionRanges: {
-        ...selectionRanges,
-        codeBasedSelections: selectionRanges.codeBasedSelections.slice(1),
-      },
-      referencedSegmentRange: primarySelection,
-      transformInfos,
-      programMemory,
-      referenceSegName: tag,
-      forceValueUsedInTransform,
-    }),
+    ...result,
+    pathToNodeMap: updatedPathToNodeMap,
     tagInfo: {
       tag,
       isTagExisting,
     },
   }
+}
+
+function incrementPathToNodeMap(
+  pathToNodeMap: PathToNodeMap,
+  increment = 1
+): PathToNodeMap {
+  const newMap: PathToNodeMap = {}
+  Object.entries(pathToNodeMap).forEach(([key, path]) => {
+    newMap[Number(key) + increment] = path
+  })
+  return newMap
 }
 
 export function transformAstSketchLines({
@@ -1386,10 +1409,15 @@ export function transformAstSketchLines({
   referenceSegName: string
   forceValueUsedInTransform?: Value
   referencedSegmentRange?: Selection['range']
-}): { modifiedAst: Program; valueUsedInTransform?: number } {
+}): {
+  modifiedAst: Program
+  valueUsedInTransform?: number
+  pathToNodeMap: PathToNodeMap
+} {
   // deep clone since we are mutating in a loop, of which any could fail
   let node = JSON.parse(JSON.stringify(ast))
   let _valueUsedInTransform // TODO should this be an array?
+  const pathToNodeMap: PathToNodeMap = {}
 
   selectionRanges.codeBasedSelections.forEach(({ range }, index) => {
     const callBack = transformInfos?.[index].createNode
@@ -1428,29 +1456,36 @@ export function transformAstSketchLines({
           .segment
       : sketchGroup.value.find((path) => path.name === _referencedSegmentName)
     const { to, from } = seg
-    const { modifiedAst, valueUsedInTransform } = replaceSketchLine({
-      node: node,
-      programMemory,
-      sourceRange: range,
-      referencedSegment,
-      fnName: transformTo || (callExp.callee.name as TooTip),
-      to,
-      from,
-      createCallback: callBack({
-        referenceSegName: _referencedSegmentName,
-        varValA,
-        varValB,
-        tag: callBackTag,
-        forceValueUsedInTransform,
-      }),
-    })
+    const { modifiedAst, valueUsedInTransform, pathToNode } = replaceSketchLine(
+      {
+        node: node,
+        programMemory,
+        sourceRange: range,
+        referencedSegment,
+        fnName: transformTo || (callExp.callee.name as TooTip),
+        to,
+        from,
+        createCallback: callBack({
+          referenceSegName: _referencedSegmentName,
+          varValA,
+          varValB,
+          tag: callBackTag,
+          forceValueUsedInTransform,
+        }),
+      }
+    )
 
     node = modifiedAst
+    pathToNodeMap[index] = pathToNode
     if (typeof valueUsedInTransform === 'number') {
       _valueUsedInTransform = valueUsedInTransform
     }
   })
-  return { modifiedAst: node, valueUsedInTransform: _valueUsedInTransform }
+  return {
+    modifiedAst: node,
+    valueUsedInTransform: _valueUsedInTransform,
+    pathToNodeMap,
+  }
 }
 
 function createSegLen(referenceSegName: string): Value {

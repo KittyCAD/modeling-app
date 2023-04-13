@@ -19,6 +19,7 @@ import {
 } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { normaliseAngle } from '../../lib/utils'
+import { updateCursors } from '../../lang/util'
 
 const getModalInfo = create(SetAngleLengthModal as any)
 
@@ -27,15 +28,15 @@ export const SetAngleLength = ({
 }: {
   angleOrLength: 'setAngle' | 'setLength'
 }) => {
-  const { guiMode, selectionRanges, ast, programMemory, updateAst } = useStore(
-    (s) => ({
+  const { guiMode, selectionRanges, ast, programMemory, updateAst, setCursor } =
+    useStore((s) => ({
       guiMode: s.guiMode,
       ast: s.ast,
       updateAst: s.updateAst,
       selectionRanges: s.selectionRanges,
       programMemory: s.programMemory,
-    })
-  )
+      setCursor: s.setCursor,
+    }))
   const [enableAngLen, setEnableAngLen] = useState(false)
   const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
   useEffect(() => {
@@ -116,14 +117,15 @@ export const SetAngleLength = ({
             ])
           }
 
-          const { modifiedAst: _modifiedAst } = transformAstSketchLines({
-            ast: JSON.parse(JSON.stringify(ast)),
-            selectionRanges,
-            transformInfos,
-            programMemory,
-            referenceSegName: '',
-            forceValueUsedInTransform: finalValue,
-          })
+          const { modifiedAst: _modifiedAst, pathToNodeMap } =
+            transformAstSketchLines({
+              ast: JSON.parse(JSON.stringify(ast)),
+              selectionRanges,
+              transformInfos,
+              programMemory,
+              referenceSegName: '',
+              forceValueUsedInTransform: finalValue,
+            })
           if (variableName) {
             const newBody = [..._modifiedAst.body]
             newBody.splice(
@@ -134,7 +136,9 @@ export const SetAngleLength = ({
             _modifiedAst.body = newBody
           }
 
-          updateAst(_modifiedAst)
+          updateAst(_modifiedAst, {
+            callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
+          })
         } catch (e) {
           console.log('e', e)
         }

@@ -10,7 +10,6 @@ import {
   VariableDeclaration,
   ReturnStatement,
   ArrayExpression,
-  Identifier,
 } from './abstractSyntaxTree'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
 import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
