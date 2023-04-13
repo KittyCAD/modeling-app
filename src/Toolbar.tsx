@@ -93,7 +93,7 @@ export const Toolbar = () => {
                 ast,
                 pathToNode
               )
-              updateAst(modifiedAst, pathToExtrudeArg)
+              updateAst(modifiedAst, { focusPath: pathToExtrudeArg })
             }}
             className="border m-1 px-1 rounded text-xs"
           >
@@ -111,7 +111,7 @@ export const Toolbar = () => {
                 pathToNode,
                 false
               )
-              updateAst(modifiedAst, pathToExtrudeArg)
+              updateAst(modifiedAst, { focusPath: pathToExtrudeArg })
             }}
             className="border m-1 px-1 rounded text-xs"
           >

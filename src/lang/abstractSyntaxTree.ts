@@ -668,7 +668,7 @@ function makeArrayExpression(
   expression: ArrayExpression
   lastIndex: number
 } {
-  // should be called array opening brace '[' index
+  // should be called with index to an array opening brace '['
   const openingBraceToken = tokens[index]
   const firstElementToken = nextMeaningfulToken(tokens, index)
   const { elements, lastIndex } = makeArrayElements(
