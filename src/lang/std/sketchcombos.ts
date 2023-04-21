@@ -741,6 +741,10 @@ const transformMap: TransformMap = {
         tooltip: 'angledLine',
         createNode: basicAngledLineCreateNode('len'),
       },
+      setLength: {
+        tooltip: 'angledLine',
+        createNode: basicAngledLineCreateNode('none', 'len'),
+      },
       vertical: {
         tooltip: 'yLine',
         createNode:
