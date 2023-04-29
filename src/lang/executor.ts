@@ -13,6 +13,11 @@ import {
 import { InternalFnNames } from './std/stdTypes'
 import { internalFns } from './std/std'
 import { BufferGeometry } from 'three'
+import {
+  EngineCommandManager,
+  ArtifactMap,
+  SourceRangeMap,
+} from './std/engineConnection'
 
 export type SourceRange = [number, number]
 export type PathToNode = [string | number, string][] // [pathKey, nodeType][]
@@ -28,6 +33,7 @@ interface BasePath {
   to: [number, number]
   name?: string
   __geoMeta: {
+    id: string
     geos: {
       geo: BufferGeometry
       type: 'line' | 'lineEnd' | 'sketchBase'
@@ -59,7 +65,9 @@ export interface AngledLineTo extends BasePath {
 
 interface GeoMeta {
   __geoMeta: {
-    geo: BufferGeometry
+    geo?: BufferGeometry
+    id: string
+    refId?: string
     sourceRange: SourceRange
     pathToNode: PathToNode
   }
@@ -102,33 +110,116 @@ export interface UserVal {
   __meta: Metadata[]
 }
 
+type MemoryItem = UserVal | SketchGroup | ExtrudeGroup
+
 interface Memory {
-  [key: string]: UserVal | SketchGroup | ExtrudeGroup // | Memory
+  [key: string]: MemoryItem
+}
+interface PendingMemory {
+  [key: string]: Promise<MemoryItem>
 }
 
 export interface ProgramMemory {
   root: Memory
+  pendingMemory: Partial<PendingMemory>
   return?: Identifier[]
-  _sketch?: Path[]
 }
 
-export const executor = (
+const addItemToMemory = (
+  programMemory: ProgramMemory,
+  key: string,
+  value: MemoryItem | Promise<MemoryItem>
+) => {
+  const _programMemory = programMemory
+  if (_programMemory.root[key] || _programMemory.pendingMemory[key]) {
+    throw new Error(`Memory item ${key} already exists`)
+  }
+  if (value instanceof Promise) {
+    _programMemory.pendingMemory[key] = value
+    value.then((resolvedValue) => {
+      _programMemory.root[key] = resolvedValue
+      delete _programMemory.pendingMemory[key]
+    })
+  } else {
+    _programMemory.root[key] = value
+  }
+  return _programMemory
+}
+
+const promisifyMemoryItem = async (obj: MemoryItem) => {
+  if (obj.value instanceof Promise) {
+    const resolvedGuy = await obj.value
+    return {
+      ...obj,
+      value: resolvedGuy,
+    }
+  }
+  return obj
+}
+
+const getMemoryItem = async (
+  programMemory: ProgramMemory,
+  key: string
+): Promise<MemoryItem> => {
+  if (programMemory.root[key]) {
+    return programMemory.root[key]
+  }
+  if (programMemory.pendingMemory[key]) {
+    return programMemory.pendingMemory[key] as Promise<MemoryItem>
+  }
+  throw new Error(`Memory item ${key} not found`)
+}
+
+export const executor = async (
   node: Program,
-  programMemory: ProgramMemory = { root: {}, _sketch: [] },
+  programMemory: ProgramMemory = { root: {}, pendingMemory: {} },
+  options: { bodyType: 'root' | 'sketch' | 'block' } = { bodyType: 'root' },
+  previousPathToNode: PathToNode = [],
+  // work around while the gemotry is still be stored on the frontend
+  // will be removed when the stream UI is added.
+  tempMapCallback: (a: {
+    artifactMap: ArtifactMap
+    sourceRangeMap: SourceRangeMap
+  }) => void = () => {}
+): Promise<ProgramMemory> => {
+  const engineCommandManager = new EngineCommandManager()
+  engineCommandManager.startNewSession()
+  const _programMemory = await _executor(
+    node,
+    programMemory,
+    engineCommandManager,
+    options,
+    previousPathToNode
+  )
+  const { artifactMap, sourceRangeMap } =
+    await engineCommandManager.waitForAllCommands()
+  tempMapCallback({ artifactMap, sourceRangeMap })
+
+  engineCommandManager.endSession()
+  return _programMemory
+}
+
+export const _executor = async (
+  node: Program,
+  programMemory: ProgramMemory = { root: {}, pendingMemory: {} },
+  engineCommandManager: EngineCommandManager,
   options: { bodyType: 'root' | 'sketch' | 'block' } = { bodyType: 'root' },
   previousPathToNode: PathToNode = []
-): ProgramMemory => {
-  const _programMemory: ProgramMemory = {
+): Promise<ProgramMemory> => {
+  let _programMemory: ProgramMemory = {
     root: {
       ...programMemory.root,
     },
-    _sketch: [],
+    pendingMemory: {
+      ...programMemory.pendingMemory,
+    },
     return: programMemory.return,
   }
   const { body } = node
-  body.forEach((statement, bodyIndex) => {
+  const proms: Promise<any>[] = []
+  body.forEach(async (statement, bodyIndex) => {
     if (statement.type === 'VariableDeclaration') {
-      statement.declarations.forEach((declaration, index) => {
+      statement.declarations.forEach(async (declaration, index) => {
         const variableName = declaration.id.name
         const pathToNode: PathToNode = [
           ...previousPathToNode,
@@ -150,73 +241,115 @@ export const executor = (
         ]
 
         if (declaration.init.type === 'PipeExpression') {
-          const value = getPipeExpressionResult(
+          const prom = getPipeExpressionResult(
             declaration.init,
             _programMemory,
+            engineCommandManager,
             pathToNode
           )
+          proms.push(prom)
+          const value = await prom
           if (value?.type === 'sketchGroup' || value?.type === 'extrudeGroup') {
-            _programMemory.root[variableName] = value
+            _programMemory = addItemToMemory(
+              _programMemory,
+              variableName,
+              value
+            )
           } else {
-            _programMemory.root[variableName] = {
+            _programMemory = addItemToMemory(_programMemory, variableName, {
               type: 'userVal',
               value,
               __meta,
-            }
+            })
           }
         } else if (declaration.init.type === 'Identifier') {
-          _programMemory.root[variableName] = {
+          _programMemory = addItemToMemory(_programMemory, variableName, {
             type: 'userVal',
             value: _programMemory.root[declaration.init.name].value,
             __meta,
-          }
+          })
         } else if (declaration.init.type === 'Literal') {
-          _programMemory.root[variableName] = {
+          _programMemory = addItemToMemory(_programMemory, variableName, {
             type: 'userVal',
             value: declaration.init.value,
             __meta,
-          }
+          })
         } else if (declaration.init.type === 'BinaryExpression') {
-          _programMemory.root[variableName] = {
-            type: 'userVal',
-            value: getBinaryExpressionResult(declaration.init, _programMemory),
-            __meta,
-          }
+          const prom = getBinaryExpressionResult(
+            declaration.init,
+            _programMemory,
+            engineCommandManager
+          )
+          proms.push(prom)
+          _programMemory = addItemToMemory(
+            _programMemory,
+            variableName,
+            promisifyMemoryItem({
+              type: 'userVal',
+              value: prom,
+              __meta,
+            })
+          )
         } else if (declaration.init.type === 'UnaryExpression') {
-          _programMemory.root[variableName] = {
-            type: 'userVal',
-            value: getUnaryExpressionResult(declaration.init, _programMemory),
-            __meta,
-          }
+          const prom = getUnaryExpressionResult(
+            declaration.init,
+            _programMemory,
+            engineCommandManager
+          )
+          proms.push(prom)
+          _programMemory = addItemToMemory(
+            _programMemory,
+            variableName,
+            promisifyMemoryItem({
+              type: 'userVal',
+              value: prom,
+              __meta,
+            })
+          )
         } else if (declaration.init.type === 'ArrayExpression') {
-          const valueInfo: { value: any; __meta?: Metadata }[] =
+          const valueInfo: Promise<{ value: any; __meta?: Metadata }>[] =
             declaration.init.elements.map(
-              (element): { value: any; __meta?: Metadata } => {
+              async (element): Promise<{ value: any; __meta?: Metadata }> => {
                 if (element.type === 'Literal') {
                   return {
                     value: element.value,
                   }
                 } else if (element.type === 'BinaryExpression') {
+                  const prom = getBinaryExpressionResult(
+                    element,
+                    _programMemory,
+                    engineCommandManager
+                  )
+                  proms.push(prom)
                   return {
-                    value: getBinaryExpressionResult(element, _programMemory),
+                    value: await prom,
                   }
                 } else if (element.type === 'PipeExpression') {
+                  const prom = getPipeExpressionResult(
+                    element,
+                    _programMemory,
+                    engineCommandManager,
+                    pathToNode
+                  )
+                  proms.push(prom)
                   return {
-                    value: getPipeExpressionResult(
-                      element,
-                      _programMemory,
-                      pathToNode
-                    ),
+                    value: await prom,
                   }
                 } else if (element.type === 'Identifier') {
-                  const node = _programMemory.root[element.name]
+                  const node = await getMemoryItem(_programMemory, element.name)
                   return {
                     value: node.value,
                     __meta: node.__meta[node.__meta.length - 1],
                   }
                 } else if (element.type === 'UnaryExpression') {
+                  const prom = getUnaryExpressionResult(
+                    element,
+                    _programMemory,
+                    engineCommandManager
+                  )
+                  proms.push(prom)
                   return {
-                    value: getUnaryExpressionResult(element, _programMemory),
+                    value: await prom,
                   }
                 } else {
                   throw new Error(
@@ -225,73 +358,116 @@ export const executor = (
                 }
               }
             )
-          const meta = valueInfo
+          const awaitedValueInfo = await Promise.all(valueInfo)
+          const meta = awaitedValueInfo
             .filter(({ __meta }) => __meta)
             .map(({ __meta }) => __meta) as Metadata[]
-          _programMemory.root[variableName] = {
+          _programMemory = addItemToMemory(_programMemory, variableName, {
             type: 'userVal',
-            value: valueInfo.map(({ value }) => value),
+            value: awaitedValueInfo.map(({ value }) => value),
             __meta: [...__meta, ...meta],
-          }
+          })
         } else if (declaration.init.type === 'ObjectExpression') {
-          _programMemory.root[variableName] = {
-            type: 'userVal',
-            value: executeObjectExpression(_programMemory, declaration.init),
-            __meta,
-          }
+          const prom = executeObjectExpression(
+            _programMemory,
+            declaration.init,
+            engineCommandManager
+          )
+          proms.push(prom)
+          _programMemory = addItemToMemory(
+            _programMemory,
+            variableName,
+            promisifyMemoryItem({
+              type: 'userVal',
+              value: prom,
+              __meta,
+            })
+          )
         } else if (declaration.init.type === 'FunctionExpression') {
           const fnInit = declaration.init
 
-          _programMemory.root[declaration.id.name] = {
-            type: 'userVal',
-            value: (...args: any[]) => {
-              const fnMemory: ProgramMemory = {
-                root: {
-                  ..._programMemory.root,
-                },
-                _sketch: [],
-              }
-              if (args.length > fnInit.params.length) {
-                throw new Error(
-                  `Too many arguments passed to function ${declaration.id.name}`
-                )
-              } else if (args.length < fnInit.params.length) {
-                throw new Error(
-                  `Too few arguments passed to function ${declaration.id.name}`
-                )
-              }
-              fnInit.params.forEach((param, index) => {
-                fnMemory.root[param.name] = {
-                  type: 'userVal',
-                  value: args[index],
-                  __meta,
+          _programMemory = addItemToMemory(
+            _programMemory,
+            declaration.id.name,
+            {
+              type: 'userVal',
+              value: async (...args: any[]) => {
+                let fnMemory: ProgramMemory = {
+                  root: {
+                    ..._programMemory.root,
+                  },
+                  pendingMemory: {
+                    ..._programMemory.pendingMemory,
+                  },
                 }
-              })
-              return executor(fnInit.body, fnMemory, { bodyType: 'block' })
-                .return
-            },
-            __meta,
-          }
+                if (args.length > fnInit.params.length) {
+                  throw new Error(
+                    `Too many arguments passed to function ${declaration.id.name}`
+                  )
+                } else if (args.length < fnInit.params.length) {
+                  throw new Error(
+                    `Too few arguments passed to function ${declaration.id.name}`
+                  )
+                }
+                fnInit.params.forEach((param, index) => {
+                  fnMemory = addItemToMemory(fnMemory, param.name, {
+                    type: 'userVal',
+                    value: args[index],
+                    __meta,
+                  })
+                })
+                const prom = _executor(
+                  fnInit.body,
+                  fnMemory,
+                  engineCommandManager,
+                  {
+                    bodyType: 'block',
+                  }
+                )
+                proms.push(prom)
+                const result = (await prom).return
+                return result
+              },
+              __meta,
+            }
+          )
         } else if (declaration.init.type === 'MemberExpression') {
-          _programMemory.root[variableName] = {
-            type: 'userVal',
-            value: getMemberExpressionResult(declaration.init, _programMemory),
-            __meta,
-          }
+          await Promise.all([...proms]) // TODO wait for previous promises, does that makes sense?
+          const prom = getMemberExpressionResult(
+            declaration.init,
+            _programMemory
+          )
+          proms.push(prom)
+          _programMemory = addItemToMemory(
+            _programMemory,
+            variableName,
+            promisifyMemoryItem({
+              type: 'userVal',
+              value: prom,
+              __meta,
+            })
+          )
         } else if (declaration.init.type === 'CallExpression') {
-          const result = executeCallExpression(
+          const prom = executeCallExpression(
             _programMemory,
             declaration.init,
+            engineCommandManager,
             previousPathToNode
           )
-          _programMemory.root[variableName] =
-            result?.type === 'sketchGroup' || result?.type === 'extrudeGroup'
-              ? result
-              : {
-                  type: 'userVal',
-                  value: result,
-                  __meta,
-                }
+          proms.push(prom)
+          _programMemory = addItemToMemory(
+            _programMemory,
+            variableName,
+            prom.then((a) => {
+              return a?.type === 'sketchGroup' || a?.type === 'extrudeGroup'
+                ? a
+                : {
+                    type: 'userVal',
+                    value: a,
+                    __meta,
+                  }
+            })
+          )
         } else {
           throw new Error(
             'Unsupported declaration type: ' + declaration.init.type
@@ -306,7 +482,7 @@ export const executor = (
           if (arg.type === 'Literal') {
             return arg.value
           } else if (arg.type === 'Identifier') {
-            return _programMemory.root[arg.name].value
+            return _programMemory.root[arg.name]?.value
           }
         })
         if ('show' === functionName) {
@@ -320,13 +496,17 @@ export const executor = (
       }
     } else if (statement.type === 'ReturnStatement') {
       if (statement.argument.type === 'BinaryExpression') {
-        _programMemory.return = getBinaryExpressionResult(
+        const prom = getBinaryExpressionResult(
           statement.argument,
-          _programMemory
+          _programMemory,
+          engineCommandManager
         )
+        proms.push(prom)
+        _programMemory.return = await prom
       }
     }
   })
+  await Promise.all(proms)
   return _programMemory
 }
 
@@ -342,13 +522,14 @@ function getMemberExpressionResult(
   const object: any =
     expression.object.type === 'MemberExpression'
       ? getMemberExpressionResult(expression.object, programMemory)
-      : programMemory.root[expression.object.name].value
-  return object[propertyName]
+      : programMemory.root[expression.object.name]?.value
+  return object?.[propertyName]
 }
 
-function getBinaryExpressionResult(
+async function getBinaryExpressionResult(
   expression: BinaryExpression,
   programMemory: ProgramMemory,
+  engineCommandManager: EngineCommandManager,
   pipeInfo: {
     isInPipe: boolean
     previousResults: any[]
@@ -366,8 +547,18 @@ function getBinaryExpressionResult(
     ...pipeInfo,
     isInPipe: false,
   }
-  const left = getBinaryPartResult(expression.left, programMemory, _pipeInfo)
-  const right = getBinaryPartResult(expression.right, programMemory, _pipeInfo)
+  const left = await getBinaryPartResult(
+    expression.left,
+    programMemory,
+    engineCommandManager,
+    _pipeInfo
+  )
+  const right = await getBinaryPartResult(
+    expression.right,
+    programMemory,
+    engineCommandManager,
+    _pipeInfo
+  )
   if (expression.operator === '+') return left + right
   if (expression.operator === '-') return left - right
   if (expression.operator === '*') return left * right
@@ -375,9 +566,10 @@ function getBinaryExpressionResult(
   if (expression.operator === '%') return left % right
 }
 
-function getBinaryPartResult(
+async function getBinaryPartResult(
   part: BinaryPart,
   programMemory: ProgramMemory,
+  engineCommandManager: EngineCommandManager,
   pipeInfo: {
     isInPipe: boolean
     previousResults: any[]
@@ -390,7 +582,7 @@ function getBinaryPartResult(
     expressionIndex: 0,
     body: [],
   }
-): any {
+): Promise<any> {
   const _pipeInfo = {
     ...pipeInfo,
     isInPipe: false,
@@ -400,15 +592,30 @@ function getBinaryPartResult(
   } else if (part.type === 'Identifier') {
     return programMemory.root[part.name].value
   } else if (part.type === 'BinaryExpression') {
-    return getBinaryExpressionResult(part, programMemory, _pipeInfo)
+    const prom = getBinaryExpressionResult(
+      part,
+      programMemory,
+      engineCommandManager,
+      _pipeInfo
+    )
+    const result = await prom
+    return result
   } else if (part.type === 'CallExpression') {
-    return executeCallExpression(programMemory, part, [], _pipeInfo)
+    const result = await executeCallExpression(
+      programMemory,
+      part,
+      engineCommandManager,
+      [],
+      _pipeInfo
+    )
+    return result
   }
 }
 
-function getUnaryExpressionResult(
+async function getUnaryExpressionResult(
   expression: UnaryExpression,
   programMemory: ProgramMemory,
+  engineCommandManager: EngineCommandManager,
   pipeInfo: {
     isInPipe: boolean
     previousResults: any[]
@@ -422,50 +629,64 @@ function getUnaryExpressionResult(
     body: [],
   }
 ) {
-  return -getBinaryPartResult(expression.argument, programMemory, {
-    ...pipeInfo,
-    isInPipe: false,
-  })
+  return -(await getBinaryPartResult(
+    expression.argument,
+    programMemory,
+    engineCommandManager,
+    {
+      ...pipeInfo,
+      isInPipe: false,
+    }
+  ))
 }
 
-function getPipeExpressionResult(
+async function getPipeExpressionResult(
   expression: PipeExpression,
   programMemory: ProgramMemory,
+  engineCommandManager: EngineCommandManager,
   previousPathToNode: PathToNode = []
 ) {
-  const executedBody = executePipeBody(
+  const executedBody = await executePipeBody(
     expression.body,
     programMemory,
+    engineCommandManager,
     previousPathToNode
   )
   const result = executedBody[executedBody.length - 1]
   return result
 }
 
-function executePipeBody(
+async function executePipeBody(
   body: PipeExpression['body'],
   programMemory: ProgramMemory,
+  engineCommandManager: EngineCommandManager,
   previousPathToNode: PathToNode = [],
   expressionIndex = 0,
   previousResults: any[] = []
-): any[] {
+): Promise<any[]> {
   if (expressionIndex === body.length) {
     return previousResults
   }
   const expression = body[expressionIndex]
   if (expression.type === 'BinaryExpression') {
-    const result = getBinaryExpressionResult(expression, programMemory)
+    const result = await getBinaryExpressionResult(
+      expression,
+      programMemory,
+      engineCommandManager
+    )
     return executePipeBody(
       body,
       programMemory,
+      engineCommandManager,
       previousPathToNode,
       expressionIndex + 1,
       [...previousResults, result]
     )
   } else if (expression.type === 'CallExpression') {
-    return executeCallExpression(
+    return await executeCallExpression(
       programMemory,
       expression,
+      engineCommandManager,
       previousPathToNode,
       {
         isInPipe: true,
@@ -479,9 +700,10 @@ function executePipeBody(
   throw new Error('Invalid pipe expression')
 }
 
-function executeObjectExpression(
+async function executeObjectExpression(
   _programMemory: ProgramMemory,
   objExp: ObjectExpression,
+  engineCommandManager: EngineCommandManager,
   pipeInfo: {
     isInPipe: boolean
     previousResults: any[]
@@ -500,43 +722,67 @@ function executeObjectExpression(
     isInPipe: false,
   }
   const obj: { [key: string]: any } = {}
-  objExp.properties.forEach((property) => {
+  const proms: Promise<any>[] = []
+  objExp.properties.forEach(async (property) => {
     if (property.type === 'ObjectProperty') {
       if (property.value.type === 'Literal') {
         obj[property.key.name] = property.value.value
       } else if (property.value.type === 'BinaryExpression') {
-        obj[property.key.name] = getBinaryExpressionResult(
+        const prom = getBinaryExpressionResult(
           property.value,
           _programMemory,
+          engineCommandManager,
           _pipeInfo
         )
+        proms.push(prom)
+        obj[property.key.name] = await prom
       } else if (property.value.type === 'PipeExpression') {
-        obj[property.key.name] = getPipeExpressionResult(
+        const prom = getPipeExpressionResult(
           property.value,
-          _programMemory
+          _programMemory,
+          engineCommandManager
         )
+        proms.push(prom)
+        obj[property.key.name] = await prom
       } else if (property.value.type === 'Identifier') {
-        obj[property.key.name] = _programMemory.root[property.value.name].value
+        obj[property.key.name] = (
+          await getMemoryItem(_programMemory, property.value.name)
+        ).value
       } else if (property.value.type === 'ObjectExpression') {
-        obj[property.key.name] = executeObjectExpression(
-          _programMemory,
-          property.value
-        )
-      } else if (property.value.type === 'ArrayExpression') {
-        const result = executeArrayExpression(_programMemory, property.value)
-        obj[property.key.name] = result
-      } else if (property.value.type === 'CallExpression') {
-        obj[property.key.name] = executeCallExpression(
+        const prom = executeObjectExpression(
           _programMemory,
           property.value,
+          engineCommandManager
+        )
+        proms.push(prom)
+        obj[property.key.name] = await prom
+      } else if (property.value.type === 'ArrayExpression') {
+        const prom = executeArrayExpression(
+          _programMemory,
+          property.value,
+          engineCommandManager
+        )
+        proms.push(prom)
+        obj[property.key.name] = await prom
+      } else if (property.value.type === 'CallExpression') {
+        const prom = executeCallExpression(
+          _programMemory,
+          property.value,
+          engineCommandManager,
           [],
           _pipeInfo
         )
+        proms.push(prom)
+        const result = await prom
+        obj[property.key.name] = result
       } else if (property.value.type === 'UnaryExpression') {
-        obj[property.key.name] = getUnaryExpressionResult(
+        const prom = getUnaryExpressionResult(
           property.value,
-          _programMemory
+          _programMemory,
+          engineCommandManager
         )
+        proms.push(prom)
+        obj[property.key.name] = await prom
       } else {
         throw new Error(
           `Unexpected property type ${property.value.type} in object expression`
@@ -548,12 +794,14 @@ function executeObjectExpression(
       )
     }
   })
+  await Promise.all(proms)
   return obj
 }
 
-function executeArrayExpression(
+async function executeArrayExpression(
   _programMemory: ProgramMemory,
   arrExp: ArrayExpression,
+  engineCommandManager: EngineCommandManager,
   pipeInfo: {
     isInPipe: boolean
     previousResults: any[]
@@ -571,36 +819,50 @@ function executeArrayExpression(
     ...pipeInfo,
     isInPipe: false,
   }
-  return arrExp.elements.map((el) => {
-    if (el.type === 'Literal') {
-      return el.value
-    } else if (el.type === 'Identifier') {
-      return _programMemory.root?.[el.name]?.value
-    } else if (el.type === 'BinaryExpression') {
-      return getBinaryExpressionResult(el, _programMemory, _pipeInfo)
-    } else if (el.type === 'ObjectExpression') {
-      return executeObjectExpression(_programMemory, el)
-    } else if (el.type === 'CallExpression') {
-      const result: any = executeCallExpression(
-        _programMemory,
-        el,
-        [],
-        _pipeInfo
-      )
-      return result
-    } else if (el.type === 'UnaryExpression') {
-      return getUnaryExpressionResult(el, _programMemory, {
-        ...pipeInfo,
-        isInPipe: false,
-      })
-    }
-    throw new Error('Invalid argument type')
-  })
+  return await Promise.all(
+    arrExp.elements.map((el) => {
+      if (el.type === 'Literal') {
+        return el.value
+      } else if (el.type === 'Identifier') {
+        return _programMemory.root?.[el.name]?.value
+      } else if (el.type === 'BinaryExpression') {
+        return getBinaryExpressionResult(
+          el,
+          _programMemory,
+          engineCommandManager,
+          _pipeInfo
+        )
+      } else if (el.type === 'ObjectExpression') {
+        return executeObjectExpression(_programMemory, el, engineCommandManager)
+      } else if (el.type === 'CallExpression') {
+        const result: any = executeCallExpression(
+          _programMemory,
+          el,
+          engineCommandManager,
+          [],
+          _pipeInfo
+        )
+        return result
+      } else if (el.type === 'UnaryExpression') {
+        return getUnaryExpressionResult(
+          el,
+          _programMemory,
+          engineCommandManager,
+          {
+            ...pipeInfo,
+            isInPipe: false,
+          }
+        )
+      }
+      throw new Error('Invalid argument type')
+    })
+  )
 }
 
-function executeCallExpression(
+async function executeCallExpression(
   programMemory: ProgramMemory,
   expression: CallExpression,
+  engineCommandManager: EngineCommandManager,
   previousPathToNode: PathToNode = [],
   pipeInfo: {
     isInPipe: boolean
@@ -627,59 +889,87 @@ function executeCallExpression(
     ...pipeInfo,
     isInPipe: false,
   }
-  const fnArgs = expression?.arguments?.map((arg) => {
-    if (arg.type === 'Literal') {
-      return arg.value
-    } else if (arg.type === 'Identifier') {
-      const temp = programMemory.root[arg.name]
-      return temp?.type === 'userVal' ? temp.value : temp
-    } else if (arg.type === 'PipeSubstitution') {
-      return previousResults[expressionIndex - 1]
-    } else if (arg.type === 'ArrayExpression') {
-      return executeArrayExpression(programMemory, arg, pipeInfo)
-    } else if (arg.type === 'CallExpression') {
-      const result: any = executeCallExpression(
-        programMemory,
-        arg,
-        previousPathToNode,
-        _pipeInfo
-      )
-      return result
-    } else if (arg.type === 'ObjectExpression') {
-      return executeObjectExpression(programMemory, arg, _pipeInfo)
-    } else if (arg.type === 'UnaryExpression') {
-      return getUnaryExpressionResult(arg, programMemory, _pipeInfo)
-    } else if (arg.type === 'BinaryExpression') {
-      return getBinaryExpressionResult(arg, programMemory, _pipeInfo)
-    }
-    throw new Error('Invalid argument type in function call')
-  })
+  const fnArgs = await Promise.all(
+    expression?.arguments?.map(async (arg) => {
+      if (arg.type === 'Literal') {
+        return arg.value
+      } else if (arg.type === 'Identifier') {
+        await new Promise((r) => setTimeout(r)) // push into next even loop, but also probably should fix this
+        const temp = await getMemoryItem(programMemory, arg.name)
+        return temp?.type === 'userVal' ? temp.value : temp
+      } else if (arg.type === 'PipeSubstitution') {
+        return previousResults[expressionIndex - 1]
+      } else if (arg.type === 'ArrayExpression') {
+        return await executeArrayExpression(
+          programMemory,
+          arg,
+          engineCommandManager,
+          pipeInfo
+        )
+      } else if (arg.type === 'CallExpression') {
+        const result: any = await executeCallExpression(
+          programMemory,
+          arg,
+          engineCommandManager,
+          previousPathToNode,
+          _pipeInfo
+        )
+        return result
+      } else if (arg.type === 'ObjectExpression') {
+        return await executeObjectExpression(
+          programMemory,
+          arg,
+          engineCommandManager,
+          _pipeInfo
+        )
+      } else if (arg.type === 'UnaryExpression') {
+        return getUnaryExpressionResult(
+          arg,
+          programMemory,
+          engineCommandManager,
+          _pipeInfo
+        )
+      } else if (arg.type === 'BinaryExpression') {
+        return getBinaryExpressionResult(
+          arg,
+          programMemory,
+          engineCommandManager,
+          _pipeInfo
+        )
+      }
+      throw new Error('Invalid argument type in function call')
+    })
+  )
   if (functionName in internalFns) {
     const fnNameWithSketchOrExtrude = functionName as InternalFnNames
-    const result = internalFns[fnNameWithSketchOrExtrude](
+    const result = await internalFns[fnNameWithSketchOrExtrude](
       {
         programMemory,
         sourceRange: sourceRangeOverride || [expression.start, expression.end],
+        engineCommandManager,
+        code: JSON.stringify(expression),
       },
       fnArgs[0],
       fnArgs[1],
       fnArgs[2]
     )
     return isInPipe
-      ? executePipeBody(
+      ? await executePipeBody(
           body,
           programMemory,
+          engineCommandManager,
           previousPathToNode,
           expressionIndex + 1,
           [...previousResults, result]
         )
       : result
   }
-  const result = programMemory.root[functionName].value(...fnArgs)
+  const result = await programMemory.root[functionName].value(...fnArgs)
   return isInPipe
-    ? executePipeBody(
+    ? await executePipeBody(
         body,
         programMemory,
+        engineCommandManager,
         previousPathToNode,
         expressionIndex + 1,
         [...previousResults, result]

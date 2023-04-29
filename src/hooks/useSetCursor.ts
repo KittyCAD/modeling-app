@@ -1,21 +1,10 @@
-import { useStore, Selection, Selections } from '../useStore'
+import { useStore, Selection } from '../useStore'
 
-export function useSetCursor(
-  sourceRange: Selection['range'],
-  type: Selection['type'] = 'default'
-) {
-  const { setCursor, selectionRanges, isShiftDown } = useStore((s) => ({
-    setCursor: s.setCursor,
-    selectionRanges: s.selectionRanges,
-    isShiftDown: s.isShiftDown,
+export function useSetCursor(id: string, type: Selection['type'] = 'default') {
+  const { engineCommandManager } = useStore((s) => ({
+    engineCommandManager: s.engineCommandManager,
   }))
   return () => {
-    const selections: Selections = {
-      ...selectionRanges,
-      codeBasedSelections: isShiftDown
-        ? [...selectionRanges.codeBasedSelections, { range: sourceRange, type }]
-        : [{ range: sourceRange, type }],
-    }
-    setCursor(selections)
+    engineCommandManager.click(id, type)
   }
 }

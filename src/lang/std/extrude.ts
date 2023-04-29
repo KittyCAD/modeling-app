@@ -9,17 +9,14 @@ import {
 import { Quaternion, Vector3 } from 'three'
 import { clockwiseSign } from './std'
 import { extrudeGeo } from '../engine'
+import { generateUuidFromHashSeed } from '../../lib/uuid'
 
 export const extrude: InternalFn = (
-  { sourceRange },
+  { sourceRange, engineCommandManager, code },
   length: number,
   sketchVal: SketchGroup
 ): ExtrudeGroup => {
-  const getSketchGeo = (sketchVal: SketchGroup): SketchGroup => {
-    return sketchVal
-  }
-
-  const sketch = getSketchGeo(sketchVal)
+  const sketch = sketchVal
   const { position, rotation } = sketchVal
 
   const extrudeSurfaces: ExtrudeSurface[] = []
@@ -28,16 +25,46 @@ export const extrude: InternalFn = (
     if (line.type === 'toPoint') {
       let from: [number, number] = line.from
       const to = line.to
-      const {
-        geo,
-        position: facePosition,
-        rotation: faceRotation,
-      } = extrudeGeo({
+
+      const extrudeData: {
+        from: [number, number, number]
+        to: [number, number, number]
+        length: number
+        extrusionDirection: number
+      } = {
         from: [from[0], from[1], 0],
         to: [to[0], to[1], 0],
         length,
         extrusionDirection,
+      }
+      const id = generateUuidFromHashSeed(
+        JSON.stringify({
+          code,
+          sourceRange,
+          date: {
+            length,
+            sketchVal,
+          },
+        })
+      )
+      engineCommandManager.sendCommand({
+        name: 'extrudeSeg',
+        id,
+        params: [
+          {
+            segId: line.__geoMeta.id,
+            length: extrudeData.length,
+            extrusionDirection: extrudeData.extrusionDirection,
+          },
+        ],
+        range: sourceRange,
       })
+
+      const {
+        geo,
+        position: facePosition,
+        rotation: faceRotation,
+      } = extrudeGeo(extrudeData)
       const groupQuaternion = new Quaternion(...rotation)
       const currentWallQuat = new Quaternion(...faceRotation)
       const unifiedQuit = new Quaternion().multiplyQuaternions(
@@ -56,7 +83,8 @@ export const extrude: InternalFn = (
         position: unifiedPosition.toArray() as Position,
         rotation: unifiedQuit.toArray() as Rotation,
         __geoMeta: {
-          geo,
+          id,
+          refId: line.__geoMeta.id,
           sourceRange: line.__geoMeta.sourceRange,
           pathToNode: line.__geoMeta.pathToNode,
         },
@@ -92,7 +120,7 @@ export const getExtrudeWallTransform: InternalFn = (
   position: Position
   quaternion: Rotation
 } => {
-  const path = extrudeGroup.value.find((path) => path.name === pathName)
+  const path = extrudeGroup?.value.find((path) => path.name === pathName)
   if (!path) throw new Error(`Could not find path with name ${pathName}`)
   return {
     position: path.position,

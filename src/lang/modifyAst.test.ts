@@ -16,7 +16,7 @@ import {
 import { recast } from './recast'
 import { lexer } from './tokeniser'
 import { initPromise } from './rust'
-import { executor } from './executor'
+import { executor } from '../lib/testHelpers'
 
 beforeAll(() => initPromise)
 
@@ -194,9 +194,9 @@ const part001 = startSketchAt([-1.2, 4.83])
 const yo = 5 + 6
 const yo2 = hmm([identifierGuy + 5])
 show(part001)`
-  it('should move a value into a new variable', () => {
+  it('should move a value into a new variable', async () => {
     const ast = abstractSyntaxTree(lexer(code))
-    const programMemory = executor(ast)
+    const programMemory = await executor(ast)
     const startIndex = code.indexOf('100 + 100') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
@@ -208,9 +208,9 @@ show(part001)`
     expect(newCode).toContain(`const newVar = 100 + 100`)
     expect(newCode).toContain(`angledLine([newVar, 3.09], %)`)
   })
-  it('should move a value into a new variable', () => {
+  it('should move a value into a new variable', async () => {
     const ast = abstractSyntaxTree(lexer(code))
-    const programMemory = executor(ast)
+    const programMemory = await executor(ast)
     const startIndex = code.indexOf('2.8') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
@@ -222,9 +222,9 @@ show(part001)`
     expect(newCode).toContain(`const newVar = 2.8`)
     expect(newCode).toContain(`line([newVar, 0], %)`)
   })
-  it('should move a value into a new variable', () => {
+  it('should move a value into a new variable', async () => {
     const ast = abstractSyntaxTree(lexer(code))
-    const programMemory = executor(ast)
+    const programMemory = await executor(ast)
     const startIndex = code.indexOf('def(')
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
@@ -236,9 +236,9 @@ show(part001)`
     expect(newCode).toContain(`const newVar = def('yo')`)
     expect(newCode).toContain(`angledLine([newVar, 3.09], %)`)
   })
-  it('should move a value into a new variable', () => {
+  it('should move a value into a new variable', async () => {
     const ast = abstractSyntaxTree(lexer(code))
-    const programMemory = executor(ast)
+    const programMemory = await executor(ast)
     const startIndex = code.indexOf('jkl(') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
@@ -250,9 +250,9 @@ show(part001)`
     expect(newCode).toContain(`const newVar = jkl('yo') + 2`)
     expect(newCode).toContain(`angledLine([newVar, 3.09], %)`)
   })
-  it('should move a value into a new variable', () => {
+  it('should move a value into a new variable', async () => {
     const ast = abstractSyntaxTree(lexer(code))
-    const programMemory = executor(ast)
+    const programMemory = await executor(ast)
     const startIndex = code.indexOf('identifierGuy +') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,

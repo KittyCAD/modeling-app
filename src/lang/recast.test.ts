@@ -64,7 +64,7 @@ log(5, myVar)`
     const recasted = recast(ast)
     expect(recasted).toBe(code)
   })
-  it('sketch declaration', () => {
+  it('recast sketch declaration', () => {
     let code = `const mySketch = startSketchAt([0, 0])
   |> lineTo({ to: [0, 1], tag: "myPath" }, %)
   |> lineTo([1, 1], %)

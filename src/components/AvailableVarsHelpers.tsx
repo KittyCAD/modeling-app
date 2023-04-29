@@ -148,18 +148,19 @@ export function useCalc({
       availableVarInfo.variables.forEach(({ key, value }) => {
         _programMem.root[key] = { type: 'userVal', value, __meta: [] }
       })
-      const programMemory = executor(ast, _programMem)
-      const resultDeclaration = ast.body.find(
-        (a) =>
-          a.type === 'VariableDeclaration' &&
-          a.declarations?.[0]?.id?.name === '__result__'
-      )
-      const init =
-        resultDeclaration?.type === 'VariableDeclaration' &&
-        resultDeclaration?.declarations?.[0]?.init
-      const result = programMemory?.root?.__result__?.value
-      setCalcResult(typeof result === 'number' ? String(result) : 'NAN')
-      init && setValueNode(init)
+      executor(ast, _programMem).then((programMemory) => {
+        const resultDeclaration = ast.body.find(
+          (a) =>
+            a.type === 'VariableDeclaration' &&
+            a.declarations?.[0]?.id?.name === '__result__'
+        )
+        const init =
+          resultDeclaration?.type === 'VariableDeclaration' &&
+          resultDeclaration?.declarations?.[0]?.init
+        const result = programMemory?.root?.__result__?.value
+        setCalcResult(typeof result === 'number' ? String(result) : 'NAN')
+        init && setValueNode(init)
+      })
     } catch (e) {
       setCalcResult('NAN')
       setValueNode(null)

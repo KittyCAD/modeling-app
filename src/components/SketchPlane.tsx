@@ -3,7 +3,7 @@ import { Selections, useStore } from '../useStore'
 import { DoubleSide, Vector3, Quaternion } from 'three'
 import { Program } from '../lang/abstractSyntaxTree'
 import { addNewSketchLn } from '../lang/std/sketch'
-import { roundOff } from '../lib/utils'
+import { isOverlap, roundOff } from '../lib/utils'
 
 export const SketchPlane = () => {
   const {
@@ -15,6 +15,8 @@ export const SketchPlane = () => {
     selectionRanges,
     isShiftDown,
     setCursor,
+    _engineCommandManager,
+    sourceRangeMap,
   } = useStore((s) => ({
     guiMode: s.guiMode,
     ast: s.ast,
@@ -24,6 +26,8 @@ export const SketchPlane = () => {
     selectionRanges: s.selectionRanges,
     isShiftDown: s.isShiftDown,
     setCursor: s.setCursor,
+    _engineCommandManager: s.engineCommandManager,
+    sourceRangeMap: s.sourceRangeMap,
   }))
   const [xHover, setXHover] = useState(false)
   const [yHover, setYHover] = useState(false)
@@ -67,6 +71,25 @@ export const SketchPlane = () => {
       })
     }
     setTimeout(() => {
+      const idBasedSelections = _selectionRanges.codeBasedSelections
+        .map(({ type, range }) => {
+          const hasOverlap = Object.entries(sourceRangeMap).filter(
+            ([_, sourceRange]) => {
+              return isOverlap(sourceRange, range)
+            }
+          )
+          if (hasOverlap.length) {
+            return {
+              type,
+              id: hasOverlap[0][0],
+            }
+          }
+        })
+        .filter(Boolean) as any
+      _engineCommandManager.cusorsSelected({
+        idBasedSelections,
+        otherSelections: [name],
+      })
       setSelectionRanges({
         ..._selectionRanges,
         otherSelections: [name],

@@ -14,6 +14,12 @@ import { recast } from './lang/recast'
 import { asyncLexer } from './lang/tokeniser'
 import { EditorSelection } from '@codemirror/state'
 import { BaseDirectory } from '@tauri-apps/api/fs'
+import { ArtifactMap, SourceRangeMap, EngineCommandManager } from './lang/std/engineConnection'
+// import {
+//   ArtifactMap,
+//   SourceRangeMap,
+//   EngineCommandManager,
+// } from './lang/std/engineConnection'
 
 export type Selection = {
   type: 'default' | 'line-end' | 'line-mid'
@@ -100,6 +106,7 @@ export interface StoreState {
   highlightRange: [number, number]
   setHighlightRange: (range: Selection['range']) => void
   setCursor: (selections: Selections) => void
+  setCursor2: (a: Selection) => void
   selectionRanges: Selections
   selectionRangeTypeMap: { [key: number]: Selection['type'] }
   setSelectionRanges: (range: Selections) => void
@@ -131,6 +138,14 @@ export interface StoreState {
   setProgramMemory: (programMemory: ProgramMemory) => void
   isShiftDown: boolean
   setIsShiftDown: (isShiftDown: boolean) => void
+  artifactMap: ArtifactMap
+  sourceRangeMap: SourceRangeMap
+  setArtifactNSourceRangeMaps: (a: {
+    artifactMap: ArtifactMap
+    sourceRangeMap: SourceRangeMap
+  }) => void
+  engineCommandManager: EngineCommandManager
+  setEngineCommandManager: (engineCommandManager: EngineCommandManager) => void
 
   // tauri specific app settings
   defaultDir: DefaultDir
@@ -168,8 +183,10 @@ export const useStore = create<StoreState>()(
         const selectionRangeTypeMap: { [key: number]: Selection['type'] } = {}
         set({ selectionRangeTypeMap })
         selections.codeBasedSelections.forEach(({ range, type }) => {
-          ranges.push(EditorSelection.cursor(range[1]))
-          selectionRangeTypeMap[range[1]] = type
+          if (range?.[1]) {
+            ranges.push(EditorSelection.cursor(range[1]))
+            selectionRangeTypeMap[range[1]] = type
+          }
         })
         setTimeout(() => {
           editorView.dispatch({
@@ -179,6 +196,16 @@ export const useStore = create<StoreState>()(
             ),
           })
         })
+      },
+      setCursor2: (codeSelections) => {
+        const currestSelections = get().selectionRanges
+        const selections: Selections = {
+          ...currestSelections,
+          codeBasedSelections: get().isShiftDown
+            ? [...currestSelections.codeBasedSelections, codeSelections]
+            : [codeSelections],
+        }
+        get().setCursor(selections)
       },
       selectionRangeTypeMap: {},
       selectionRanges: {
@@ -261,11 +288,17 @@ export const useStore = create<StoreState>()(
       setError: (error = '') => {
         set({ errorState: { isError: !!error, error } })
       },
-      programMemory: { root: {}, _sketch: [] },
+      programMemory: { root: {}, pendingMemory: {} },
       setProgramMemory: (programMemory) => set({ programMemory }),
       isShiftDown: false,
       setIsShiftDown: (isShiftDown) => set({ isShiftDown }),
-
+      artifactMap: {},
+      sourceRangeMap: {},
+      setArtifactNSourceRangeMaps: (maps) => set({ ...maps }),
+      engineCommandManager: new EngineCommandManager(),
+      setEngineCommandManager: (engineCommandManager) =>
+        set({ engineCommandManager }),
+  
       // tauri specific app settings
       defaultDir: {
         dir: '',

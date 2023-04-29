@@ -1,14 +1,6 @@
-import { useRef, useState, useEffect, useMemo } from 'react'
-import {
-  CallExpression,
-  ArrayExpression,
-  PipeExpression,
-} from '../lang/abstractSyntaxTree'
-import {
-  getNodePathFromSourceRange,
-  getNodeFromPath,
-  getNodeFromPathCurry,
-} from '../lang/queryAst'
+import { useRef, useState, useEffect, useMemo, Fragment } from 'react'
+import { CallExpression, ArrayExpression } from '../lang/abstractSyntaxTree'
+import { getNodePathFromSourceRange, getNodeFromPath } from '../lang/queryAst'
 import { changeSketchArguments } from '../lang/std/sketch'
 import {
   ExtrudeGroup,
@@ -21,23 +13,25 @@ import {
   SourceRange,
 } from '../lang/executor'
 import { BufferGeometry } from 'three'
-import { useStore } from '../useStore'
+import { Selections, useStore } from '../useStore'
 import { isOverlap, roundOff } from '../lib/utils'
 import { Vector3, DoubleSide, Quaternion } from 'three'
 import { useSetCursor } from '../hooks/useSetCursor'
 import { getConstraintLevelFromSourceRange } from '../lang/std/sketchcombos'
-import { createCallExpression, createPipeSubstitution } from '../lang/modifyAst'
+import { getSketchSegmentFromSourceRange } from '../lang/std/sketchConstraints'
 
 function LineEnd({
   geo,
   sourceRange,
   editorCursor,
+  id,
   rotation,
   position,
   from,
 }: {
   geo: BufferGeometry
   sourceRange: [number, number]
+  id: string
   editorCursor: boolean
   rotation: Rotation
   position: Position
@@ -51,15 +45,15 @@ function LineEnd({
   const [isMouseDown, setIsMouseDown] = useState(false)
   const baseColor = useConstraintColors(sourceRange)
 
-  const setCursor = useSetCursor(sourceRange, 'line-end')
+  const setCursor2 = useSetCursor(id, 'line-end')
 
-  const { setHighlightRange, guiMode, ast, updateAst, programMemory } =
+  const { guiMode, ast, updateAst, programMemory, engineCommandManager } =
     useStore((s) => ({
-      setHighlightRange: s.setHighlightRange,
       guiMode: s.guiMode,
       ast: s.ast,
       updateAst: s.updateAst,
       programMemory: s.programMemory,
+      engineCommandManager: s.engineCommandManager,
     }))
   const { originalXY } = useMemo(() => {
     if (ast) {
@@ -137,15 +131,15 @@ function LineEnd({
         ref={ref}
         onPointerOver={(event) => {
           inEditMode && setHover(true)
-          setHighlightRange(sourceRange)
+          engineCommandManager.hover(id)
         }}
         onPointerOut={(event) => {
           setHover(false)
-          setHighlightRange([0, 0])
+          engineCommandManager.hover()
         }}
         onPointerDown={() => {
           inEditMode && setIsMouseDown(true)
-          setCursor()
+          setCursor2()
         }}
       >
         <primitive object={geo} scale={hovered ? 2 : 1} />
@@ -215,296 +209,167 @@ function LineEnd({
   )
 }
 
-export function RenderViewerArtifacts({
-  artifacts,
-}: {
-  artifacts: (ExtrudeGroup | SketchGroup)[]
-}) {
-  useSetAppModeFromCursorLocation(artifacts)
-  return (
-    <>
-      {artifacts?.map((artifact, i) => (
-        <RenderViewerArtifact key={i} artifact={artifact} />
-      ))}
-    </>
-  )
+interface idSelections {
+  otherSelections: Selections['otherSelections']
+  idBasedSelections: { type: string; id: string }[]
 }
 
-function RenderViewerArtifact({
-  artifact,
-}: {
-  artifact: ExtrudeGroup | SketchGroup
-}) {
-  // const { selectionRange, guiMode, ast, setGuiMode } = useStore(
-  //   ({ selectionRange, guiMode, ast, setGuiMode }) => ({
-  //     selectionRange,
-  //     guiMode,
-  //     ast,
-  //     setGuiMode,
-  //   })
-  // )
-  // const [editorCursor, setEditorCursor] = useState(false)
-  // useEffect(() => {
-  //   const shouldHighlight = isOverlapping(
-  //     artifact.__meta.slice(-1)[0].sourceRange,
-  //     selectionRange
-  //   )
-  //   setEditorCursor(shouldHighlight)
-  // }, [selectionRange, artifact.__meta])
-
-  if (artifact.type === 'sketchGroup') {
-    return (
-      <>
-        {artifact.start && (
-          <PathRender
-            geoInfo={artifact.start}
-            forceHighlight={false}
-            rotation={artifact.rotation}
-            position={artifact.position}
-          />
-        )}
-        {artifact.value.map((geoInfo, key) => (
-          <PathRender
-            geoInfo={geoInfo}
-            key={key}
-            forceHighlight={false}
-            rotation={artifact.rotation}
-            position={artifact.position}
-          />
-        ))}
-      </>
-    )
-  }
-  if (artifact.type === 'extrudeGroup') {
-    return (
-      <>
-        {artifact.value.map((geoInfo, key) => (
-          <WallRender
-            geoInfo={geoInfo}
-            key={key}
-            forceHighlight={false}
-            rotation={artifact.rotation}
-            position={artifact.position}
-          />
-        ))}
-      </>
-    )
-  }
-  return null
-}
-
-function WallRender({
-  geoInfo,
-  forceHighlight = false,
-  rotation,
-  position,
-}: {
-  geoInfo: ExtrudeSurface
-  forceHighlight?: boolean
-  rotation: Rotation
-  position: Position
-}) {
-  const { setHighlightRange, selectionRanges } = useStore(
-    ({ setHighlightRange, selectionRanges }) => ({
-      setHighlightRange,
-      selectionRanges,
-    })
-  )
-  const onClick = useSetCursor(geoInfo.__geoMeta.sourceRange)
-  // This reference will give us direct access to the mesh
-  const ref = useRef<BufferGeometry | undefined>() as any
-  const [hovered, setHover] = useState(false)
-
-  const [editorCursor, setEditorCursor] = useState(false)
-  useEffect(() => {
-    const shouldHighlight = selectionRanges.codeBasedSelections.some(
-      ({ range }) => isOverlap(geoInfo.__geoMeta.sourceRange, range)
-    )
-    setEditorCursor(shouldHighlight)
-  }, [selectionRanges, geoInfo])
-
-  return (
-    <>
-      <mesh
-        quaternion={rotation}
-        position={position}
-        ref={ref}
-        onPointerOver={(event) => {
-          setHover(true)
-          setHighlightRange(geoInfo.__geoMeta.sourceRange)
-        }}
-        onPointerOut={(event) => {
-          setHover(false)
-          setHighlightRange([0, 0])
-        }}
-        onClick={onClick}
-      >
-        <primitive object={geoInfo.__geoMeta.geo} />
-        <meshStandardMaterial
-          side={DoubleSide}
-          color={
-            hovered
-              ? 'hotpink'
-              : forceHighlight || editorCursor
-              ? 'skyblue'
-              : 'orange'
-          }
-        />
-      </mesh>
-    </>
-  )
-}
-
-function PathRender({
-  geoInfo,
-  forceHighlight = false,
-  rotation,
-  position,
-}: {
-  geoInfo: Path
-  forceHighlight?: boolean
-  rotation: Rotation
-  position: Position
-}) {
-  const { selectionRanges, updateAstAsync, ast, guiMode } = useStore((s) => ({
-    selectionRanges: s.selectionRanges,
-    updateAstAsync: s.updateAstAsync,
-    ast: s.ast,
-    guiMode: s.guiMode,
+export function RenderViewerArtifacts() {
+  const ids = useSetAppModeFromCursorLocation()
+  const { artifactMap, engineCommandManager } = useStore((s) => ({
+    artifactMap: s.artifactMap,
+    engineCommandManager: s.engineCommandManager,
   }))
-  const [editorCursor, setEditorCursor] = useState(false)
-  const [editorLineCursor, setEditorLineCursor] = useState(false)
+  const [selections, setSelections] = useState<idSelections>({
+    otherSelections: [],
+    idBasedSelections: [],
+  })
+
   useEffect(() => {
-    const shouldHighlight = selectionRanges.codeBasedSelections.some(
-      ({ range }) => isOverlap(geoInfo.__geoMeta.sourceRange, range)
+    engineCommandManager.onCursorsSelected((selections) =>
+      setSelections(selections)
     )
-    const shouldHighlightLine = selectionRanges.codeBasedSelections.some(
-      ({ range, type }) =>
-        isOverlap(geoInfo.__geoMeta.sourceRange, range) && type === 'default'
-    )
-    setEditorCursor(shouldHighlight)
-    setEditorLineCursor(shouldHighlightLine)
-  }, [selectionRanges, geoInfo])
+  }, [engineCommandManager])
+
   return (
     <>
-      {geoInfo.__geoMeta.geos.map((meta, i) => {
-        if (meta.type === 'line')
-          return (
-            <LineRender
-              key={i}
-              geo={meta.geo}
-              sourceRange={geoInfo.__geoMeta.sourceRange}
-              forceHighlight={editorLineCursor}
-              rotation={rotation}
-              position={position}
-            />
-          )
-        if (meta.type === 'lineEnd')
-          return (
-            <LineEnd
-              key={i}
-              geo={meta.geo}
-              from={geoInfo.from}
-              sourceRange={geoInfo.__geoMeta.sourceRange}
-              editorCursor={forceHighlight || editorCursor}
-              rotation={rotation}
-              position={position}
-            />
-          )
-        if (meta.type === 'sketchBase')
-          return (
-            <LineRender
-              key={i}
-              geo={meta.geo}
-              sourceRange={geoInfo.__geoMeta.sourceRange}
-              forceHighlight={forceHighlight || editorLineCursor}
-              rotation={rotation}
-              position={position}
-              onClick={() => {
-                if (
-                  !ast ||
-                  !(guiMode.mode === 'sketch' && guiMode.sketchMode === 'line')
-                )
-                  return
-                const path = getNodePathFromSourceRange(
-                  ast,
-                  geoInfo.__geoMeta.sourceRange
-                )
-                const getNode = getNodeFromPathCurry(ast, path)
-                const maybeStartSketchAt =
-                  getNode<CallExpression>('CallExpression')
-                const pipe = getNode<PipeExpression>('PipeExpression')
-                if (
-                  maybeStartSketchAt?.node.callee.name === 'startSketchAt' &&
-                  pipe.node &&
-                  pipe.node.body.length > 2
-                ) {
-                  const modifiedAst = JSON.parse(JSON.stringify(ast))
-                  const _pipe = getNodeFromPath<PipeExpression>(
-                    modifiedAst,
-                    path,
-                    'PipeExpression'
-                  )
-                  _pipe.node.body.push(
-                    createCallExpression('close', [createPipeSubstitution()])
-                  )
-                  updateAstAsync(modifiedAst)
-                }
-              }}
-            />
-          )
+      {ids.map(({ id, name }) => {
+        const artifact = artifactMap[id]
+
+        const _artifact = artifact?.type === 'result' && artifact.data
+        if (!_artifact) return null
+        return (
+          <Fragment key={id}>
+            {_artifact.line && (
+              <PathRender
+                selections={selections}
+                id={id}
+                name={name}
+                artifact={_artifact.line}
+                type="default"
+              />
+            )}
+            {_artifact.tip && (
+              <PathRender
+                selections={selections}
+                id={id}
+                name={name}
+                artifact={_artifact.tip}
+                type="line-end"
+              />
+            )}
+            {_artifact.base && (
+              <PathRender
+                selections={selections}
+                id={id}
+                name={name}
+                artifact={_artifact.base}
+                type="default"
+              />
+            )}
+            {_artifact.geo && (
+              <PathRender
+                selections={selections}
+                id={_artifact.originalId}
+                name={name}
+                artifact={_artifact.geo}
+                type="default"
+              />
+            )}
+          </Fragment>
+        )
       })}
     </>
   )
 }
 
-function LineRender({
-  geo,
-  sourceRange,
-  forceHighlight = false,
-  rotation,
-  position,
-  onClick: _onClick = () => {},
+function PathRender({
+  id,
+  artifact,
+  type,
+  name,
+  selections,
 }: {
-  geo: BufferGeometry
-  sourceRange: [number, number]
-  forceHighlight?: boolean
-  rotation: Rotation
-  position: Position
-  onClick?: () => void
+  id: string
+  name: string
+  artifact: any
+  type?: 'default' | 'line-end' | 'line-mid'
+  selections: idSelections
 }) {
-  const { setHighlightRange } = useStore((s) => ({
-    setHighlightRange: s.setHighlightRange,
-  }))
-  const onClick = useSetCursor(sourceRange)
+  const { sourceRangeMap, programMemory, engineCommandManager } = useStore(
+    (s) => ({
+      sourceRangeMap: s.sourceRangeMap,
+      programMemory: s.programMemory,
+      engineCommandManager: s.engineCommandManager,
+    })
+  )
+  const sourceRange = sourceRangeMap[id] || [0, 0]
+  const onClick2 = useSetCursor(id, type)
   // This reference will give us direct access to the mesh
   const ref = useRef<BufferGeometry | undefined>() as any
   const [hovered, setHover] = useState(false)
 
   const baseColor = useConstraintColors(sourceRange)
 
+  const [editorCursor, setEditorCursor] = useState(false)
+  const [editorLineCursor, setEditorLineCursor] = useState(false)
+  useEffect(() => {
+    const shouldHighlight = selections.idBasedSelections.some(
+      ({ id: _id, type: _type }) => _id === id
+    )
+    const shouldHighlightLine = selections.idBasedSelections.some(
+      ({ id: _id, type: _type }) => _id === id && type === _type
+    )
+    setEditorCursor(shouldHighlight)
+    setEditorLineCursor(shouldHighlightLine)
+  }, [selections, sourceRange])
+
+  const forcer = type === 'line-end' ? editorCursor : editorLineCursor
+
+  const sketchOrExtrudeGroup = programMemory?.root?.[name] as SketchGroup
+  if (type === 'line-end') {
+    try {
+      const { segment } = getSketchSegmentFromSourceRange(
+        sketchOrExtrudeGroup,
+        sourceRange
+      )
+      return (
+        <LineEnd
+          geo={artifact}
+          from={segment.from}
+          id={id}
+          sourceRange={sourceRange}
+          editorCursor={editorCursor}
+          rotation={sketchOrExtrudeGroup.rotation}
+          position={sketchOrExtrudeGroup.position}
+        />
+      )
+    } catch (e) {}
+  }
+
   return (
     <>
       <mesh
-        quaternion={rotation}
-        position={position}
+        quaternion={sketchOrExtrudeGroup.rotation}
+        position={sketchOrExtrudeGroup.position}
         ref={ref}
         onPointerOver={(e) => {
           setHover(true)
-          setHighlightRange(sourceRange)
+          engineCommandManager.hover(id)
         }}
         onPointerOut={(e) => {
           setHover(false)
-          setHighlightRange([0, 0])
+          engineCommandManager.hover()
         }}
         onClick={() => {
-          _onClick()
-          onClick()
+          // _onClick()
+          onClick2()
         }}
       >
-        <primitive object={geo} />
+        <primitive object={artifact} />
         <meshStandardMaterial
-          color={hovered ? 'hotpink' : forceHighlight ? 'skyblue' : baseColor}
+          color={hovered ? 'hotpink' : forcer ? 'skyblue' : baseColor}
+          side={DoubleSide}
         />
       </mesh>
     </>
@@ -513,15 +378,25 @@ function LineRender({
 
 type Artifact = ExtrudeGroup | SketchGroup
 
-function useSetAppModeFromCursorLocation(artifacts: Artifact[]) {
-  const { selectionRanges, guiMode, setGuiMode, ast } = useStore(
-    ({ selectionRanges, guiMode, setGuiMode, ast }) => ({
-      selectionRanges,
-      guiMode,
-      setGuiMode,
-      ast,
-    })
-  )
+type IdAndName = { id: string; name: string }
+
+function useSetAppModeFromCursorLocation(): IdAndName[] {
+  const [ids, setIds] = useState<IdAndName[]>([])
+  const {
+    selectionRanges,
+    guiMode,
+    setGuiMode,
+    ast,
+    sourceRangeMap,
+    programMemory,
+  } = useStore((s) => ({
+    selectionRanges: s.selectionRanges,
+    guiMode: s.guiMode,
+    setGuiMode: s.setGuiMode,
+    ast: s.ast,
+    sourceRangeMap: s.sourceRangeMap,
+    programMemory: s.programMemory,
+  }))
   useEffect(() => {
     const artifactsWithinCursorRange: (
       | {
@@ -541,42 +416,67 @@ function useSetAppModeFromCursorLocation(artifacts: Artifact[]) {
           position: Position
         }
     )[] = []
-    artifacts?.forEach((artifact) => {
-      artifact.value.forEach((geo) => {
-        if (
-          isOverlap(
-            geo.__geoMeta.sourceRange,
-            selectionRanges.codeBasedSelections[0].range
-          )
-        ) {
+    const _ids: IdAndName[] = []
+    programMemory?.return?.forEach(({ name }: { name: string }) => {
+      const artifact = programMemory?.root?.[name]
+      if (artifact.type === 'extrudeGroup' || artifact.type === 'sketchGroup') {
+        let hasOverlap: Path | ExtrudeSurface | false = false
+        artifact?.value?.forEach((path) => {
+          const id = path.__geoMeta.id
+          _ids.push({ id, name })
+          const sourceRange = sourceRangeMap[id]
+          const refSourceRange = sourceRangeMap[(path?.__geoMeta as any)?.refId]
+          if (
+            isOverlap(
+              sourceRange,
+              selectionRanges.codeBasedSelections?.[0]?.range || []
+            )
+          ) {
+            hasOverlap = path
+          }
+          if (
+            refSourceRange &&
+            isOverlap(
+              refSourceRange,
+              selectionRanges.codeBasedSelections[0].range
+            )
+          ) {
+            hasOverlap = path
+          }
+        })
+        if (hasOverlap) {
+          const _hasOverlap = hasOverlap as Path | ExtrudeSurface
           artifactsWithinCursorRange.push({
             parentType: artifact.type,
             isParent: false,
-            pathToNode: geo.__geoMeta.pathToNode,
-            sourceRange: geo.__geoMeta.sourceRange,
+            pathToNode: _hasOverlap.__geoMeta.pathToNode,
+            sourceRange: _hasOverlap.__geoMeta.sourceRange,
             rotation: artifact.rotation,
             position: artifact.position,
           })
         }
-      })
-      artifact.__meta.forEach((meta) => {
-        if (
-          isOverlap(
-            meta.sourceRange,
-            selectionRanges.codeBasedSelections[0].range
-          )
-        ) {
-          artifactsWithinCursorRange.push({
-            parentType: artifact.type,
-            isParent: true,
-            pathToNode: meta.pathToNode,
-            sourceRange: meta.sourceRange,
-            rotation: artifact.rotation,
-            position: artifact.position,
-          })
-        }
-      })
+        artifact.__meta.forEach((meta) => {
+          if (
+            isOverlap(
+              meta.sourceRange,
+              selectionRanges.codeBasedSelections?.[0]?.range || []
+            )
+          ) {
+            artifactsWithinCursorRange.push({
+              parentType: artifact.type,
+              isParent: true,
+              pathToNode: meta.pathToNode,
+              sourceRange: meta.sourceRange,
+              rotation: artifact.rotation,
+              position: artifact.position,
+            })
+          }
+        })
+      }
     })
+
+    setIds(_ids)
+
     const parentArtifacts = artifactsWithinCursorRange.filter((a) => a.isParent)
     const hasSketchArtifact = artifactsWithinCursorRange.filter(
       ({ parentType }) => parentType === 'sketchGroup'
@@ -614,7 +514,8 @@ function useSetAppModeFromCursorLocation(artifacts: Artifact[]) {
     ) {
       setGuiMode({ mode: 'default' })
     }
-  }, [artifacts, selectionRanges])
+  }, [programMemory, selectionRanges, sourceRangeMap])
+  return ids
 }
 
 function useConstraintColors(sourceRange: [number, number]): string {

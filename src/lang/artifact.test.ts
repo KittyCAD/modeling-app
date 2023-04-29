@@ -1,19 +1,20 @@
 import { abstractSyntaxTree } from './abstractSyntaxTree'
 import { lexer } from './tokeniser'
-import { executor, SketchGroup, ExtrudeGroup } from './executor'
+import { SketchGroup, ExtrudeGroup } from './executor'
 import { initPromise } from './rust'
+import { executor } from '../lib/testHelpers'
 
 beforeAll(() => initPromise)
 
 describe('testing artifacts', () => {
-  test('sketch artifacts', () => {
+  test('sketch artifacts', async () => {
     const code = `
 const mySketch001 = startSketchAt([0, 0])
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)
   |> rx(45, %)
 show(mySketch001)`
-    const programMemory = executor(abstractSyntaxTree(lexer(code)))
+    const programMemory = await executor(abstractSyntaxTree(lexer(code)))
     const geos = programMemory?.return?.map(
       (a) => programMemory?.root?.[a.name]
     )
@@ -26,6 +27,7 @@ show(mySketch001)`
           to: [0, 0],
           from: [0, 0],
           __geoMeta: {
+            id: '66366561-6465-4734-a463-366330356563',
             sourceRange: [21, 42],
             pathToNode: [],
             geos: ['sketchBase'],
@@ -38,6 +40,7 @@ show(mySketch001)`
             from: [0, 0],
             __geoMeta: {
               sourceRange: [48, 73],
+              id: '30366338-6462-4330-a364-303935626163',
               pathToNode: [],
               geos: ['line', 'lineEnd'],
             },
@@ -48,6 +51,7 @@ show(mySketch001)`
             from: [-1.59, -1.54],
             __geoMeta: {
               sourceRange: [79, 103],
+              id: '32653334-6331-4231-b162-663334363535',
               pathToNode: [],
               geos: ['line', 'lineEnd'],
             },
@@ -62,7 +66,7 @@ show(mySketch001)`
       },
     ])
   })
-  test('extrude artifacts', () => {
+  test('extrude artifacts', async () => {
     const code = `
 const mySketch001 = startSketchAt([0, 0])
   |> lineTo([-1.59, -1.54], %)
@@ -70,7 +74,7 @@ const mySketch001 = startSketchAt([0, 0])
   |> rx(45, %)
   |> extrude(2, %)
 show(mySketch001)`
-    const programMemory = executor(abstractSyntaxTree(lexer(code)))
+    const programMemory = await executor(abstractSyntaxTree(lexer(code)))
     const geos = programMemory?.return?.map(
       (a) => programMemory?.root?.[a.name]
     )
@@ -87,7 +91,9 @@ show(mySketch001)`
               0.8563498075401887,
             ],
             __geoMeta: {
-              geo: 'PlaneGeometry',
+              id: expect.anything(),
+              geo: undefined,
+              refId: '30366338-6462-4330-a364-303935626163',
               sourceRange: [48, 73],
               pathToNode: [],
             },
@@ -102,7 +108,9 @@ show(mySketch001)`
               0.4923604609001174,
             ],
             __geoMeta: {
-              geo: 'PlaneGeometry',
+              id: expect.anything(),
+              geo: undefined,
+              refId: '32653334-6331-4231-b162-663334363535',
               sourceRange: [79, 103],
               pathToNode: [],
             },
@@ -118,7 +126,7 @@ show(mySketch001)`
       },
     ])
   })
-  test('sketch extrude and sketch on one of the faces', () => {
+  test('sketch extrude and sketch on one of the faces', async () => {
     const code = `
 const sk1 = startSketchAt([0, 0])
   |> lineTo([-2.5, 0], %)
@@ -138,7 +146,7 @@ const sk2 = startSketchAt([0, 0])
   
 
 show(theExtrude, sk2)`
-    const programMemory = executor(abstractSyntaxTree(lexer(code)))
+    const programMemory = await executor(abstractSyntaxTree(lexer(code)))
     const geos = programMemory?.return?.map(
       (a) => programMemory?.root?.[a.name]
     )
@@ -155,7 +163,9 @@ show(theExtrude, sk2)`
               0.9230002039112793,
             ],
             __geoMeta: {
-              geo: 'PlaneGeometry',
+              id: expect.anything(), // todo figure out why isn't deterministic
+              geo: undefined,
+              refId: '36613364-6238-4330-b766-613131633135',
               sourceRange: [40, 60],
               pathToNode: [],
             },
@@ -170,7 +180,9 @@ show(theExtrude, sk2)`
               -0.5362616571538269,
             ],
             __geoMeta: {
-              geo: 'PlaneGeometry',
+              id: expect.anything(),
+              geo: undefined,
+              refId: '32313832-3531-4933-b839-316634316237',
               sourceRange: [66, 102],
               pathToNode: [],
             },
@@ -186,7 +198,9 @@ show(theExtrude, sk2)`
               0.5997895323824204,
             ],
             __geoMeta: {
-              geo: 'PlaneGeometry',
+              id: expect.anything(),
+              geo: undefined,
+              refId: '31356564-3364-4562-a438-653732633238',
               sourceRange: [108, 127],
               pathToNode: [],
             },
@@ -216,7 +230,9 @@ show(theExtrude, sk2)`
               -0.20351996751370383,
             ],
             __geoMeta: {
-              geo: 'PlaneGeometry',
+              id: expect.anything(),
+              geo: undefined,
+              refId: '31623462-6433-4233-b361-303837663464',
               sourceRange: [317, 337],
               pathToNode: [],
             },
@@ -231,7 +247,9 @@ show(theExtrude, sk2)`
               -0.5818075544860157,
             ],
             __geoMeta: {
-              geo: 'PlaneGeometry',
+              id: expect.anything(),
+              geo: undefined,
+              refId: '66363230-3430-4961-b831-646363376538',
               sourceRange: [343, 378],
               pathToNode: [],
             },
@@ -247,7 +265,9 @@ show(theExtrude, sk2)`
               -0.7544557394170275,
             ],
             __geoMeta: {
-              geo: 'PlaneGeometry',
+              id: expect.anything(),
+              geo: undefined,
+              refId: '62366564-3261-4061-b533-623433336531',
               sourceRange: [384, 403],
               pathToNode: [],
             },
@@ -270,14 +290,17 @@ show(theExtrude, sk2)`
 
 function removeGeo(arts: (SketchGroup | ExtrudeGroup)[]): any {
   return arts.map((art) => {
-    if (art.type === 'extrudeGroup') {
+    if (!art) {
+      return {}
+    }
+    if (art?.type === 'extrudeGroup') {
       return {
         ...art,
         value: art.value.map((v) => ({
           ...v,
           __geoMeta: {
             ...v.__geoMeta,
-            geo: v.__geoMeta.geo.type,
+            geo: (v?.__geoMeta as any)?.geo?.type,
           },
         })),
       }

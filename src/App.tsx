@@ -4,7 +4,7 @@ import { Allotment } from 'allotment'
 import { OrbitControls, OrthographicCamera } from '@react-three/drei'
 import { asyncLexer } from './lang/tokeniser'
 import { abstractSyntaxTree } from './lang/abstractSyntaxTree'
-import { executor, ExtrudeGroup, SketchGroup } from './lang/executor'
+import { _executor, ExtrudeGroup, SketchGroup } from './lang/executor'
 import CodeMirror from '@uiw/react-codemirror'
 import { javascript } from '@codemirror/lang-javascript'
 import { ViewUpdate } from '@codemirror/view'
@@ -12,7 +12,7 @@ import {
   lineHighlightField,
   addLineHighlight,
 } from './editor/highlightextension'
-import { useStore } from './useStore'
+import { Selections, useStore } from './useStore'
 import { Toolbar } from './Toolbar'
 import { BasePlanes } from './components/BasePlanes'
 import { SketchPlane } from './components/SketchPlane'
@@ -24,6 +24,8 @@ import { MemoryPanel } from './components/MemoryPanel'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
 import { Stream } from './components/Stream'
 import ModalContainer from 'react-modal-promise'
+import { EngineCommandManager } from './lang/std/engineConnection'
+import { isOverlap } from './lib/utils'
 
 const OrrthographicCamera = OrthographicCamera as any
 
@@ -34,7 +36,7 @@ function App() {
     editorView,
     setEditorView,
     setSelectionRanges,
-    selectionRanges: selectionRange,
+    selectionRanges,
     guiMode,
     lastGuiMode,
     addLog,
@@ -46,6 +48,12 @@ function App() {
     setProgramMemory,
     resetLogs,
     selectionRangeTypeMap,
+    setArtifactMap,
+    engineCommandManager: _engineCommandManager,
+    setEngineCommandManager,
+    setHighlightRange,
+    setCursor2,
+    sourceRangeMap,
   } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
@@ -63,6 +71,14 @@ function App() {
     setProgramMemory: s.setProgramMemory,
     resetLogs: s.resetLogs,
     selectionRangeTypeMap: s.selectionRangeTypeMap,
+    setArtifactMap: s.setArtifactNSourceRangeMaps,
+    engineCommandManager: s.engineCommandManager,
+    setEngineCommandManager: s.setEngineCommandManager,
+    setHighlightRange: s.setHighlightRange,
+    isShiftDown: s.isShiftDown,
+    setCursor: s.setCursor,
+    setCursor2: s.setCursor2,
+    sourceRangeMap: s.sourceRangeMap,
   }))
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
@@ -78,18 +94,17 @@ function App() {
     const ranges = viewUpdate.state.selection.ranges
 
     const isChange =
-      ranges.length !== selectionRange.codeBasedSelections.length ||
+      ranges.length !== selectionRanges.codeBasedSelections.length ||
       ranges.some(({ from, to }, i) => {
         return (
-          from !== selectionRange.codeBasedSelections[i].range[0] ||
-          to !== selectionRange.codeBasedSelections[i].range[1]
+          from !== selectionRanges.codeBasedSelections[i].range[0] ||
+          to !== selectionRanges.codeBasedSelections[i].range[1]
         )
       })
 
     if (!isChange) return
-    setSelectionRanges({
-      otherSelections: [],
-      codeBasedSelections: ranges.map(({ from, to }, i) => {
+    const codeBasedSelections: Selections['codeBasedSelections'] = ranges.map(
+      ({ from, to }) => {
         if (selectionRangeTypeMap[to]) {
           return {
             type: selectionRangeTypeMap[to],
@@ -100,15 +115,38 @@ function App() {
           type: 'default',
           range: [from, to],
         }
-      }),
+      }
+    )
+    const idBasedSelections = codeBasedSelections
+      .map(({ type, range }) => {
+        const hasOverlap = Object.entries(sourceRangeMap).filter(
+          ([_, sourceRange]) => {
+            return isOverlap(sourceRange, range)
+          }
+        )
+        if (hasOverlap.length) {
+          return {
+            type,
+            id: hasOverlap[0][0],
+          }
+        }
+      })
+      .filter(Boolean) as any
+
+    _engineCommandManager.cusorsSelected({
+      otherSelections: [],
+      idBasedSelections,
+    })
+
+    setSelectionRanges({
+      otherSelections: [],
+      codeBasedSelections,
     })
   }
-  const [geoArray, setGeoArray] = useState<(ExtrudeGroup | SketchGroup)[]>([])
   useEffect(() => {
     const asyncWrap = async () => {
       try {
         if (!code) {
-          setGeoArray([])
           setAst(null)
           return
         }
@@ -116,60 +154,87 @@ function App() {
         const _ast = abstractSyntaxTree(tokens)
         setAst(_ast)
         resetLogs()
-        const programMemory = executor(_ast, {
-          root: {
-            log: {
-              type: 'userVal',
-              value: (a: any) => {
-                addLog(a)
-              },
-              __meta: [
-                {
-                  pathToNode: [],
-                  sourceRange: [0, 0],
+        if (_engineCommandManager) {
+          _engineCommandManager.endSession()
+        }
+        const engineCommandManager = new EngineCommandManager()
+        engineCommandManager.startNewSession()
+        setEngineCommandManager(engineCommandManager)
+        _executor(
+          _ast,
+          {
+            root: {
+              log: {
+                type: 'userVal',
+                value: (a: any) => {
+                  addLog(a)
                 },
-              ],
+                __meta: [
+                  {
+                    pathToNode: [],
+                    sourceRange: [0, 0],
+                  },
+                ],
+              },
+              _0: {
+                type: 'userVal',
+                value: 0,
+                __meta: [],
+              },
+              _90: {
+                type: 'userVal',
+                value: 90,
+                __meta: [],
+              },
+              _180: {
+                type: 'userVal',
+                value: 180,
+                __meta: [],
+              },
+              _270: {
+                type: 'userVal',
+                value: 270,
+                __meta: [],
+              },
             },
-            _0: {
-              type: 'userVal',
-              value: 0,
-              __meta: [],
-            },
-            _90: {
-              type: 'userVal',
-              value: 90,
-              __meta: [],
-            },
-            _180: {
-              type: 'userVal',
-              value: 180,
-              __meta: [],
-            },
-            _270: {
-              type: 'userVal',
-              value: 270,
-              __meta: [],
-            },
+            pendingMemory: {},
           },
-          _sketch: [],
-        })
-        setProgramMemory(programMemory)
-        const geos = programMemory?.return
-          ?.map(({ name }: { name: string }) => {
-            const artifact = programMemory?.root?.[name]
-            if (
-              artifact.type === 'extrudeGroup' ||
-              artifact.type === 'sketchGroup'
-            ) {
-              return artifact
-            }
-            return null
-          })
-          .filter((a) => a) as (ExtrudeGroup | SketchGroup)[]
+          engineCommandManager,
+          { bodyType: 'root' },
+          []
+        ).then(async (programMemory) => {
+          const { artifactMap, sourceRangeMap } =
+            await engineCommandManager.waitForAllCommands()
 
-        setGeoArray(geos)
-        console.log(programMemory)
-        setError()
+          setArtifactMap({ artifactMap, sourceRangeMap })
+          engineCommandManager.onHover((id) => {
+            if (!id) {
+              setHighlightRange([0, 0])
+            } else {
+              const sourceRange = sourceRangeMap[id]
+              setHighlightRange(sourceRange)
+            }
+          })
+          engineCommandManager.onSelection(({ id, type }) => {
+            setCursor2({ range: sourceRangeMap[id], type })
+          })
+          setProgramMemory(programMemory)
+          const geos = programMemory?.return
+            ?.map(({ name }: { name: string }) => {
+              const artifact = programMemory?.root?.[name]
+              if (
+                artifact.type === 'extrudeGroup' ||
+                artifact.type === 'sketchGroup'
+              ) {
+                return artifact
+              }
+              return null
+            })
+            .filter((a) => a) as (ExtrudeGroup | SketchGroup)[]
+
+          // console.log(programMemory)
+          setError()
+        })
       } catch (e: any) {
         setError('problem')
         console.log(e)
@@ -238,7 +303,7 @@ function App() {
                   />
                   <ambientLight />
                   <pointLight position={[10, 10, 10]} />
-                  <RenderViewerArtifacts artifacts={geoArray} />
+                  <RenderViewerArtifacts />
                   <BasePlanes />
                   <SketchPlane />
                   <AxisIndicator />
