@@ -13,6 +13,7 @@ import {
 import { recast } from './lang/recast'
 import { asyncLexer } from './lang/tokeniser'
 import { EditorSelection } from '@codemirror/state'
+import { ArtifactMap, SourceRangeMap } from './lang/std/engineConnection'
 
 export type Selection = {
   type: 'default' | 'line-end' | 'line-mid'
@@ -125,6 +126,12 @@ export interface StoreState {
   setProgramMemory: (programMemory: ProgramMemory) => void
   isShiftDown: boolean
   setIsShiftDown: (isShiftDown: boolean) => void
+  artifactMap: ArtifactMap
+  sourceRangeMap: SourceRangeMap
+  setArtifactNSourceRangeMaps: (a: {
+    artifactMap: ArtifactMap
+    sourceRangeMap: SourceRangeMap
+  }) => void
 }
 
 let pendingAstUpdates: number[] = []
@@ -248,6 +255,9 @@ export const useStore = create<StoreState>()(
       setProgramMemory: (programMemory) => set({ programMemory }),
       isShiftDown: false,
       setIsShiftDown: (isShiftDown) => set({ isShiftDown }),
+      artifactMap: {},
+      sourceRangeMap: {},
+      setArtifactNSourceRangeMaps: (maps) => set({ ...maps }),
     }),
     {
       name: 'store',

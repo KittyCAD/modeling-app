@@ -18,7 +18,7 @@ import { BasePlanes } from './components/BasePlanes'
 import { SketchPlane } from './components/SketchPlane'
 import { Logs } from './components/Logs'
 import { AxisIndicator } from './components/AxisIndicator'
-import { RenderViewerArtifacts } from './components/RenderViewerArtifacts'
+import { RenderViewerArtifacts2 } from './components/RenderViewerArtifacts'
 import { PanelHeader } from './components/PanelHeader'
 import { MemoryPanel } from './components/MemoryPanel'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
@@ -46,6 +46,7 @@ function App() {
     setProgramMemory,
     resetLogs,
     selectionRangeTypeMap,
+    setArtifactMap,
   } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
@@ -63,6 +64,7 @@ function App() {
     setProgramMemory: s.setProgramMemory,
     resetLogs: s.resetLogs,
     selectionRangeTypeMap: s.selectionRangeTypeMap,
+    setArtifactMap: s.setArtifactNSourceRangeMaps,
   }))
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
@@ -116,60 +118,69 @@ function App() {
         const _ast = abstractSyntaxTree(tokens)
         setAst(_ast)
         resetLogs()
-        const programMemory = executor(_ast, {
-          root: {
-            log: {
-              type: 'userVal',
-              value: (a: any) => {
-                addLog(a)
-              },
-              __meta: [
-                {
-                  pathToNode: [],
-                  sourceRange: [0, 0],
+        executor(
+          _ast,
+          {
+            root: {
+              log: {
+                type: 'userVal',
+                value: (a: any) => {
+                  addLog(a)
                 },
-              ],
+                __meta: [
+                  {
+                    pathToNode: [],
+                    sourceRange: [0, 0],
+                  },
+                ],
+              },
+              _0: {
+                type: 'userVal',
+                value: 0,
+                __meta: [],
+              },
+              _90: {
+                type: 'userVal',
+                value: 90,
+                __meta: [],
+              },
+              _180: {
+                type: 'userVal',
+                value: 180,
+                __meta: [],
+              },
+              _270: {
+                type: 'userVal',
+                value: 270,
+                __meta: [],
+              },
             },
-            _0: {
-              type: 'userVal',
-              value: 0,
-              __meta: [],
-            },
-            _90: {
-              type: 'userVal',
-              value: 90,
-              __meta: [],
-            },
-            _180: {
-              type: 'userVal',
-              value: 180,
-              __meta: [],
-            },
-            _270: {
-              type: 'userVal',
-              value: 270,
-              __meta: [],
-            },
+            _sketch: [],
           },
-          _sketch: [],
-        })
-        setProgramMemory(programMemory)
-        const geos = programMemory?.return
-          ?.map(({ name }: { name: string }) => {
-            const artifact = programMemory?.root?.[name]
-            if (
-              artifact.type === 'extrudeGroup' ||
-              artifact.type === 'sketchGroup'
-            ) {
-              return artifact
-            }
-            return null
-          })
-          .filter((a) => a) as (ExtrudeGroup | SketchGroup)[]
+          { bodyType: 'root' },
+          [],
+          ({ artifactMap, sourceRangeMap }) => {
+            setArtifactMap({ artifactMap, sourceRangeMap })
+          }
+        ).then((programMemory) => {
+          setProgramMemory(programMemory)
+          const geos = programMemory?.return
+            ?.map(({ name }: { name: string }) => {
+              const artifact = programMemory?.root?.[name]
+              if (
+                artifact.type === 'extrudeGroup' ||
+                artifact.type === 'sketchGroup'
+              ) {
+                return artifact
+              }
+              return null
+            })
+            .filter((a) => a) as (ExtrudeGroup | SketchGroup)[]
 
-        setGeoArray(geos)
-        console.log(programMemory)
-        setError()
+          setGeoArray(geos)
+          console.log(programMemory)
+          setError()
+        })
       } catch (e: any) {
         setError('problem')
         console.log(e)
@@ -238,7 +249,7 @@ function App() {
                   />
                   <ambientLight />
                   <pointLight position={[10, 10, 10]} />
-                  <RenderViewerArtifacts artifacts={geoArray} />
+                  <RenderViewerArtifacts2 />
                   <BasePlanes />
                   <SketchPlane />
                   <AxisIndicator />

@@ -96,7 +96,7 @@ describe('testing getXComponent', () => {
 describe('testing changeSketchArguments', () => {
   const lineToChange = 'lineTo([-1.59, -1.54], %)'
   const lineAfterChange = 'lineTo([2, 3], %)'
-  test('changeSketchArguments', () => {
+  test('changeSketchArguments', async () => {
     const genCode = (line: string) => `
 const mySketch001 = startSketchAt([0, 0])
     |> ${line}
@@ -106,7 +106,7 @@ show(mySketch001)`
     const code = genCode(lineToChange)
     const expectedCode = genCode(lineAfterChange)
     const ast = abstractSyntaxTree(lexer(code))
-    const programMemory = executor(ast)
+    const programMemory = await executor(ast)
     const sourceStart = code.indexOf(lineToChange)
     const { modifiedAst } = changeSketchArguments(
       ast,
@@ -135,7 +135,7 @@ show(mySketch001)`
 describe('testing addNewSketchLn', () => {
   const lineToChange = 'lineTo([-1.59, -1.54], %)'
   const lineAfterChange = 'lineTo([2, 3], %)'
-  test('addNewSketchLn', () => {
+  test('addNewSketchLn', async () => {
     const code = `
 const mySketch001 = startSketchAt([0, 0])
   |> rx(45, %)
@@ -143,7 +143,7 @@ const mySketch001 = startSketchAt([0, 0])
   |> lineTo([0.46, -5.82], %)
 show(mySketch001)`
     const ast = abstractSyntaxTree(lexer(code))
-    const programMemory = executor(ast)
+    const programMemory = await executor(ast)
     const sourceStart = code.indexOf(lineToChange)
     const { modifiedAst } = addNewSketchLn({
       node: ast,
@@ -170,7 +170,7 @@ show(mySketch001)`
 })
 
 describe('testing addTagForSketchOnFace', () => {
-  it('needs to be in it', () => {
+  it('needs to be in it', async () => {
     const originalLine = 'lineTo([-1.59, -1.54], %)'
     const genCode = (line: string) => `
   const mySketch001 = startSketchAt([0, 0])
@@ -180,7 +180,7 @@ describe('testing addTagForSketchOnFace', () => {
   show(mySketch001)`
     const code = genCode(originalLine)
     const ast = abstractSyntaxTree(lexer(code))
-    const programMemory = executor(ast)
+    const programMemory = await executor(ast)
     const sourceStart = code.indexOf(originalLine)
     const sourceRange: [number, number] = [
       sourceStart,

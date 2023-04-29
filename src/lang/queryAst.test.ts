@@ -19,7 +19,7 @@ import { recast } from './recast'
 beforeAll(() => initPromise)
 
 describe('findAllPreviousVariables', () => {
-  it('should find all previous variables', () => {
+  it('should find all previous variables', async () => {
     const code = `const baseThick = 1
 const armAngle = 60
 
@@ -38,7 +38,7 @@ const variableBelowShouldNotBeIncluded = 3
 show(part001)`
     const rangeStart = code.indexOf('// selection-range-7ish-before-this') - 7
     const ast = abstractSyntaxTree(lexer(code))
-    const programMemory = executor(ast)
+    const programMemory = await executor(ast)
 
     const { variables, bodyPath, insertIndex } = findAllPreviousVariables(
       ast,

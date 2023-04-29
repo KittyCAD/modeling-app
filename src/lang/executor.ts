@@ -13,6 +13,11 @@ import {
 import { InternalFnNames } from './std/stdTypes'
 import { internalFns } from './std/std'
 import { BufferGeometry } from 'three'
+import {
+  EngineCommandManager,
+  ArtifactMap,
+  SourceRangeMap,
+} from './std/engineConnection'
 
 export type SourceRange = [number, number]
 export type PathToNode = [string | number, string][] // [pathKey, nodeType][]
@@ -28,6 +33,7 @@ interface BasePath {
   to: [number, number]
   name?: string
   __geoMeta: {
+    id: string
     geos: {
       geo: BufferGeometry
       type: 'line' | 'lineEnd' | 'sketchBase'
@@ -60,6 +66,7 @@ export interface AngledLineTo extends BasePath {
 interface GeoMeta {
   __geoMeta: {
     geo: BufferGeometry
+    id: string
     sourceRange: SourceRange
     pathToNode: PathToNode
   }
@@ -112,12 +119,42 @@ export interface ProgramMemory {
   _sketch?: Path[]
 }
 
-export const executor = (
+export const executor = async (
   node: Program,
   programMemory: ProgramMemory = { root: {}, _sketch: [] },
   options: { bodyType: 'root' | 'sketch' | 'block' } = { bodyType: 'root' },
+  previousPathToNode: PathToNode = [],
+  // work around while the gemotry is still be stored on the frontend
+  // will be removed when the stream UI is added.
+  tempMapCallback: (a: {
+    artifactMap: ArtifactMap
+    sourceRangeMap: SourceRangeMap
+  }) => void = () => {}
+): Promise<ProgramMemory> => {
+  const engineCommandManager = new EngineCommandManager()
+  engineCommandManager.startNewSession()
+  const _programMemory = await _executor(
+    node,
+    programMemory,
+    engineCommandManager,
+    options,
+    previousPathToNode
+  )
+  const { artifactMap, sourceRangeMap } =
+    await engineCommandManager.waitForAllCommands()
+  tempMapCallback({ artifactMap, sourceRangeMap })
+
+  engineCommandManager.endSession()
+  return _programMemory
+}
+
+export const _executor = async (
+  node: Program,
+  programMemory: ProgramMemory = { root: {}, _sketch: [] },
+  engineCommandManager: EngineCommandManager,
+  options: { bodyType: 'root' | 'sketch' | 'block' } = { bodyType: 'root' },
   previousPathToNode: PathToNode = []
-): ProgramMemory => {
+): Promise<ProgramMemory> => {
   const _programMemory: ProgramMemory = {
     root: {
       ...programMemory.root,
@@ -153,6 +190,7 @@ export const executor = (
           const value = getPipeExpressionResult(
             declaration.init,
             _programMemory,
+            engineCommandManager,
             pathToNode
           )
           if (value?.type === 'sketchGroup' || value?.type === 'extrudeGroup') {
@@ -179,13 +217,21 @@ export const executor = (
         } else if (declaration.init.type === 'BinaryExpression') {
           _programMemory.root[variableName] = {
             type: 'userVal',
-            value: getBinaryExpressionResult(declaration.init, _programMemory),
+            value: getBinaryExpressionResult(
+              declaration.init,
+              _programMemory,
+              engineCommandManager
+            ),
             __meta,
           }
         } else if (declaration.init.type === 'UnaryExpression') {
           _programMemory.root[variableName] = {
             type: 'userVal',
-            value: getUnaryExpressionResult(declaration.init, _programMemory),
+            value: getUnaryExpressionResult(
+              declaration.init,
+              _programMemory,
+              engineCommandManager
+            ),
             __meta,
           }
         } else if (declaration.init.type === 'ArrayExpression') {
@@ -198,13 +244,18 @@ export const executor = (
                   }
                 } else if (element.type === 'BinaryExpression') {
                   return {
-                    value: getBinaryExpressionResult(element, _programMemory),
+                    value: getBinaryExpressionResult(
+                      element,
+                      _programMemory,
+                      engineCommandManager
+                    ),
                   }
                 } else if (element.type === 'PipeExpression') {
                   return {
                     value: getPipeExpressionResult(
                       element,
                       _programMemory,
+                      engineCommandManager,
                       pathToNode
                     ),
                   }
@@ -216,7 +267,11 @@ export const executor = (
                   }
                 } else if (element.type === 'UnaryExpression') {
                   return {
-                    value: getUnaryExpressionResult(element, _programMemory),
+                    value: getUnaryExpressionResult(
+                      element,
+                      _programMemory,
+                      engineCommandManager
+                    ),
                   }
                 } else {
                   throw new Error(
@@ -236,7 +291,11 @@ export const executor = (
         } else if (declaration.init.type === 'ObjectExpression') {
           _programMemory.root[variableName] = {
             type: 'userVal',
-            value: executeObjectExpression(_programMemory, declaration.init),
+            value: executeObjectExpression(
+              _programMemory,
+              declaration.init,
+              engineCommandManager
+            ),
             __meta,
           }
         } else if (declaration.init.type === 'FunctionExpression') {
@@ -244,7 +303,7 @@ export const executor = (
 
           _programMemory.root[declaration.id.name] = {
             type: 'userVal',
-            value: (...args: any[]) => {
+            value: async (...args: any[]) => {
               const fnMemory: ProgramMemory = {
                 root: {
                   ..._programMemory.root,
@@ -267,8 +326,11 @@ export const executor = (
                   __meta,
                 }
               })
-              return executor(fnInit.body, fnMemory, { bodyType: 'block' })
-                .return
+              return (
+                await _executor(fnInit.body, fnMemory, engineCommandManager, {
+                  bodyType: 'block',
+                })
+              ).return
             },
             __meta,
           }
@@ -282,6 +344,7 @@ export const executor = (
           const result = executeCallExpression(
             _programMemory,
             declaration.init,
+            engineCommandManager,
             previousPathToNode
           )
           _programMemory.root[variableName] =
@@ -322,7 +385,8 @@ export const executor = (
       if (statement.argument.type === 'BinaryExpression') {
         _programMemory.return = getBinaryExpressionResult(
           statement.argument,
-          _programMemory
+          _programMemory,
+          engineCommandManager
         )
       }
     }
@@ -349,6 +413,7 @@ function getMemberExpressionResult(
 function getBinaryExpressionResult(
   expression: BinaryExpression,
   programMemory: ProgramMemory,
+  engineCommandManager: EngineCommandManager,
   pipeInfo: {
     isInPipe: boolean
     previousResults: any[]
@@ -366,8 +431,18 @@ function getBinaryExpressionResult(
     ...pipeInfo,
     isInPipe: false,
   }
-  const left = getBinaryPartResult(expression.left, programMemory, _pipeInfo)
-  const right = getBinaryPartResult(expression.right, programMemory, _pipeInfo)
+  const left = getBinaryPartResult(
+    expression.left,
+    programMemory,
+    engineCommandManager,
+    _pipeInfo
+  )
+  const right = getBinaryPartResult(
+    expression.right,
+    programMemory,
+    engineCommandManager,
+    _pipeInfo
+  )
   if (expression.operator === '+') return left + right
   if (expression.operator === '-') return left - right
   if (expression.operator === '*') return left * right
@@ -378,6 +453,7 @@ function getBinaryExpressionResult(
 function getBinaryPartResult(
   part: BinaryPart,
   programMemory: ProgramMemory,
+  engineCommandManager: EngineCommandManager,
   pipeInfo: {
     isInPipe: boolean
     previousResults: any[]
@@ -400,15 +476,27 @@ function getBinaryPartResult(
   } else if (part.type === 'Identifier') {
     return programMemory.root[part.name].value
   } else if (part.type === 'BinaryExpression') {
-    return getBinaryExpressionResult(part, programMemory, _pipeInfo)
+    return getBinaryExpressionResult(
+      part,
+      programMemory,
+      engineCommandManager,
+      _pipeInfo
+    )
   } else if (part.type === 'CallExpression') {
-    return executeCallExpression(programMemory, part, [], _pipeInfo)
+    return executeCallExpression(
+      programMemory,
+      part,
+      engineCommandManager,
+      [],
+      _pipeInfo
+    )
   }
 }
 
 function getUnaryExpressionResult(
   expression: UnaryExpression,
   programMemory: ProgramMemory,
+  engineCommandManager: EngineCommandManager,
   pipeInfo: {
     isInPipe: boolean
     previousResults: any[]
@@ -422,20 +510,27 @@ function getUnaryExpressionResult(
     body: [],
   }
 ) {
-  return -getBinaryPartResult(expression.argument, programMemory, {
-    ...pipeInfo,
-    isInPipe: false,
-  })
+  return -getBinaryPartResult(
+    expression.argument,
+    programMemory,
+    engineCommandManager,
+    {
+      ...pipeInfo,
+      isInPipe: false,
+    }
+  )
 }
 
 function getPipeExpressionResult(
   expression: PipeExpression,
   programMemory: ProgramMemory,
+  engineCommandManager: EngineCommandManager,
   previousPathToNode: PathToNode = []
 ) {
   const executedBody = executePipeBody(
     expression.body,
     programMemory,
+    engineCommandManager,
     previousPathToNode
   )
   const result = executedBody[executedBody.length - 1]
@@ -445,6 +540,7 @@ function getPipeExpressionResult(
 function executePipeBody(
   body: PipeExpression['body'],
   programMemory: ProgramMemory,
+  engineCommandManager: EngineCommandManager,
   previousPathToNode: PathToNode = [],
   expressionIndex = 0,
   previousResults: any[] = []
@@ -454,10 +550,15 @@ function executePipeBody(
   }
   const expression = body[expressionIndex]
   if (expression.type === 'BinaryExpression') {
-    const result = getBinaryExpressionResult(expression, programMemory)
+    const result = getBinaryExpressionResult(
+      expression,
+      programMemory,
+      engineCommandManager
+    )
     return executePipeBody(
       body,
       programMemory,
+      engineCommandManager,
       previousPathToNode,
       expressionIndex + 1,
       [...previousResults, result]
@@ -466,6 +567,7 @@ function executePipeBody(
     return executeCallExpression(
       programMemory,
       expression,
+      engineCommandManager,
       previousPathToNode,
       {
         isInPipe: true,
@@ -482,6 +584,7 @@ function executePipeBody(
 function executeObjectExpression(
   _programMemory: ProgramMemory,
   objExp: ObjectExpression,
+  engineCommandManager: EngineCommandManager,
   pipeInfo: {
     isInPipe: boolean
     previousResults: any[]
@@ -508,34 +611,43 @@ function executeObjectExpression(
         obj[property.key.name] = getBinaryExpressionResult(
           property.value,
           _programMemory,
+          engineCommandManager,
           _pipeInfo
         )
       } else if (property.value.type === 'PipeExpression') {
         obj[property.key.name] = getPipeExpressionResult(
           property.value,
-          _programMemory
+          _programMemory,
+          engineCommandManager
         )
       } else if (property.value.type === 'Identifier') {
         obj[property.key.name] = _programMemory.root[property.value.name].value
       } else if (property.value.type === 'ObjectExpression') {
         obj[property.key.name] = executeObjectExpression(
           _programMemory,
-          property.value
+          property.value,
+          engineCommandManager
         )
       } else if (property.value.type === 'ArrayExpression') {
-        const result = executeArrayExpression(_programMemory, property.value)
+        const result = executeArrayExpression(
+          _programMemory,
+          property.value,
+          engineCommandManager
+        )
         obj[property.key.name] = result
       } else if (property.value.type === 'CallExpression') {
         obj[property.key.name] = executeCallExpression(
           _programMemory,
           property.value,
+          engineCommandManager,
           [],
           _pipeInfo
         )
       } else if (property.value.type === 'UnaryExpression') {
         obj[property.key.name] = getUnaryExpressionResult(
           property.value,
-          _programMemory
+          _programMemory,
+          engineCommandManager
         )
       } else {
         throw new Error(
@@ -554,6 +666,7 @@ function executeObjectExpression(
 function executeArrayExpression(
   _programMemory: ProgramMemory,
   arrExp: ArrayExpression,
+  engineCommandManager: EngineCommandManager,
   pipeInfo: {
     isInPipe: boolean
     previousResults: any[]
@@ -577,22 +690,33 @@ function executeArrayExpression(
     } else if (el.type === 'Identifier') {
       return _programMemory.root?.[el.name]?.value
     } else if (el.type === 'BinaryExpression') {
-      return getBinaryExpressionResult(el, _programMemory, _pipeInfo)
+      return getBinaryExpressionResult(
+        el,
+        _programMemory,
+        engineCommandManager,
+        _pipeInfo
+      )
     } else if (el.type === 'ObjectExpression') {
-      return executeObjectExpression(_programMemory, el)
+      return executeObjectExpression(_programMemory, el, engineCommandManager)
     } else if (el.type === 'CallExpression') {
       const result: any = executeCallExpression(
         _programMemory,
         el,
+        engineCommandManager,
         [],
         _pipeInfo
       )
       return result
     } else if (el.type === 'UnaryExpression') {
-      return getUnaryExpressionResult(el, _programMemory, {
-        ...pipeInfo,
-        isInPipe: false,
-      })
+      return getUnaryExpressionResult(
+        el,
+        _programMemory,
+        engineCommandManager,
+        {
+          ...pipeInfo,
+          isInPipe: false,
+        }
+      )
     }
     throw new Error('Invalid argument type')
   })
@@ -601,6 +725,7 @@ function executeArrayExpression(
 function executeCallExpression(
   programMemory: ProgramMemory,
   expression: CallExpression,
+  engineCommandManager: EngineCommandManager,
   previousPathToNode: PathToNode = [],
   pipeInfo: {
     isInPipe: boolean
@@ -636,21 +761,42 @@ function executeCallExpression(
     } else if (arg.type === 'PipeSubstitution') {
       return previousResults[expressionIndex - 1]
     } else if (arg.type === 'ArrayExpression') {
-      return executeArrayExpression(programMemory, arg, pipeInfo)
+      return executeArrayExpression(
+        programMemory,
+        arg,
+        engineCommandManager,
+        pipeInfo
+      )
     } else if (arg.type === 'CallExpression') {
       const result: any = executeCallExpression(
         programMemory,
         arg,
+        engineCommandManager,
         previousPathToNode,
         _pipeInfo
       )
       return result
     } else if (arg.type === 'ObjectExpression') {
-      return executeObjectExpression(programMemory, arg, _pipeInfo)
+      return executeObjectExpression(
+        programMemory,
+        arg,
+        engineCommandManager,
+        _pipeInfo
+      )
     } else if (arg.type === 'UnaryExpression') {
-      return getUnaryExpressionResult(arg, programMemory, _pipeInfo)
+      return getUnaryExpressionResult(
+        arg,
+        programMemory,
+        engineCommandManager,
+        _pipeInfo
+      )
     } else if (arg.type === 'BinaryExpression') {
-      return getBinaryExpressionResult(arg, programMemory, _pipeInfo)
+      return getBinaryExpressionResult(
+        arg,
+        programMemory,
+        engineCommandManager,
+        _pipeInfo
+      )
     }
     throw new Error('Invalid argument type in function call')
   })
@@ -660,6 +806,7 @@ function executeCallExpression(
       {
         programMemory,
         sourceRange: sourceRangeOverride || [expression.start, expression.end],
+        engineCommandManager,
       },
       fnArgs[0],
       fnArgs[1],
@@ -669,6 +816,7 @@ function executeCallExpression(
       ? executePipeBody(
           body,
           programMemory,
+          engineCommandManager,
           previousPathToNode,
           expressionIndex + 1,
           [...previousResults, result]
@@ -680,6 +828,7 @@ function executeCallExpression(
     ? executePipeBody(
         body,
         programMemory,
+        engineCommandManager,
         previousPathToNode,
         expressionIndex + 1,
         [...previousResults, result]

@@ -2,11 +2,13 @@ import { ProgramMemory, Path, SourceRange } from '../executor'
 import { Program, Value } from '../abstractSyntaxTree'
 import { TooTip } from '../../useStore'
 import { PathToNode } from '../executor'
+import { EngineCommandManager } from './engineConnection'
 
 export interface InternalFirstArg {
   programMemory: ProgramMemory
   name?: string
   sourceRange: SourceRange
+  engineCommandManager: EngineCommandManager
 }
 
 export interface PathReturn {

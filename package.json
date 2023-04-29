@@ -16,6 +16,7 @@
     "@types/react-dom": "^18.0.0",
     "@uiw/react-codemirror": "^4.15.1",
     "allotment": "^1.17.0",
+    "express": "^4.18.2",
     "http-server": "^14.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -23,8 +24,11 @@
     "react-modal-promise": "^1.0.2",
     "react-scripts": "5.0.1",
     "sketch-helpers": "^0.0.2",
+    "socket.io": "^4.6.1",
+    "socket.io-client": "^4.6.1",
     "swr": "^2.0.4",
     "three": "^0.146.0",
+    "ts-node": "^10.9.1",
     "typescript": "^4.4.2",
     "util": "^0.12.5",
     "wasm-pack": "^0.10.3",
@@ -47,7 +51,8 @@
     "remove-importmeta:ci": "sed -i 's/import.meta.url//g' \"./src/wasm-lib/pkg/wasm_lib.js\"",
     "add-missing-import": "echo \"import util from 'util'; if (typeof window !== 'undefined' && !window.TextEncoder) { window.TextEncoder = util.TextEncoder; window.TextDecoder = util.TextDecoder}\" | cat - ./src/wasm-lib/pkg/wasm_lib.js > temp && mv temp ./src/wasm-lib/pkg/wasm_lib.js",
     "build:wasm:ci": "mkdir src/wasm-lib/pkg; cd src/wasm-lib && wasm-pack build --target web --out-dir pkg && cd ../../ && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn remove-importmeta:ci && yarn add-missing-import && yarn fmt",
-    "build:wasm": "mkdir src/wasm-lib/pkg; cd src/wasm-lib && wasm-pack build --target web --out-dir pkg && cd ../../ && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn remove-importmeta && yarn add-missing-import && yarn fmt"
+    "build:wasm": "mkdir src/wasm-lib/pkg; cd src/wasm-lib && wasm-pack build --target web --out-dir pkg && cd ../../ && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn remove-importmeta && yarn add-missing-import && yarn fmt",
+    "socketserver": "ts-node --esm src/server/server.mts"
   },
   "jest": {
     "transformIgnorePatterns": [

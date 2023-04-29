@@ -196,7 +196,7 @@ const part001 = startSketchAt([0, 0])
   |> xLine(segLen('seg01', %), %) // ln-xLineTo-free should convert to xLine
   |> yLine(segLen('seg01', %), %) // ln-yLineTo-free should convert to yLine
 show(part001)`
-  it('It should transform the ast', () => {
+  it('It should transform the ast', async () => {
     const ast = abstractSyntaxTree(lexer(inputScript))
     const selectionRanges: Selections['codeBasedSelections'] = inputScript
       .split('\n')
@@ -210,7 +210,7 @@ show(part001)`
         }
       })
 
-    const programMemory = executor(ast)
+    const programMemory = await executor(ast)
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges.slice(1)),
       ast,
@@ -255,7 +255,7 @@ const part001 = startSketchAt([0, 0])
   |> angledLineToX([333, myVar3], %) // select for horizontal constraint 10
   |> angledLineToY([301, myVar], %) // select for vertical constraint 10
 show(part001)`
-  it('It should transform horizontal lines the ast', () => {
+  it('It should transform horizontal lines the ast', async () => {
     const expectModifiedScript = `const myVar = 2
 const myVar2 = 12
 const myVar3 = -10
@@ -295,7 +295,7 @@ show(part001)`
         }
       })
 
-    const programMemory = executor(ast)
+    const programMemory = await executor(ast)
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges),
       ast,
@@ -312,7 +312,7 @@ show(part001)`
     const newCode = recast(newAst)
     expect(newCode).toBe(expectModifiedScript)
   })
-  it('It should transform vertical lines the ast', () => {
+  it('It should transform vertical lines the ast', async () => {
     const expectModifiedScript = `const myVar = 2
 const myVar2 = 12
 const myVar3 = -10
@@ -352,7 +352,7 @@ show(part001)`
         }
       })
 
-    const programMemory = executor(ast)
+    const programMemory = await executor(ast)
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges),
       ast,
@@ -424,11 +424,11 @@ show(part001)`
   })
 })
 
-function helperThing(
+async function helperThing(
   inputScript: string,
   linesOfInterest: string[],
   constraint: ConstraintType
-): string {
+): Promise<string> {
   const ast = abstractSyntaxTree(lexer(inputScript))
   const selectionRanges: Selections['codeBasedSelections'] = inputScript
     .split('\n')
@@ -444,7 +444,7 @@ function helperThing(
       }
     })
 
-  const programMemory = executor(ast)
+  const programMemory = await executor(ast)
   const transformInfos = getTransformInfos(
     makeSelections(selectionRanges.slice(1)),
     ast,

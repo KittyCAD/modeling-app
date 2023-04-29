@@ -11,7 +11,7 @@ import { clockwiseSign } from './std'
 import { extrudeGeo } from '../engine'
 
 export const extrude: InternalFn = (
-  { sourceRange },
+  { sourceRange, engineCommandManager },
   length: number,
   sketchVal: SketchGroup
 ): ExtrudeGroup => {
@@ -28,16 +28,33 @@ export const extrude: InternalFn = (
     if (line.type === 'toPoint') {
       let from: [number, number] = line.from
       const to = line.to
-      const {
-        geo,
-        position: facePosition,
-        rotation: faceRotation,
-      } = extrudeGeo({
+
+      const extrudeData: {
+        from: [number, number, number]
+        to: [number, number, number]
+        length: number
+        extrusionDirection: number
+      } = {
         from: [from[0], from[1], 0],
         to: [to[0], to[1], 0],
         length,
         extrusionDirection,
+      }
+      const id =
+        Math.random().toString(36).substring(2) +
+        Math.random().toString(36).substring(2)
+      engineCommandManager.sendCommand({
+        name: 'lineGeo',
+        id,
+        params: [extrudeData],
+        range: sourceRange,
       })
+
+      const {
+        geo,
+        position: facePosition,
+        rotation: faceRotation,
+      } = extrudeGeo(extrudeData)
       const groupQuaternion = new Quaternion(...rotation)
       const currentWallQuat = new Quaternion(...faceRotation)
       const unifiedQuit = new Quaternion().multiplyQuaternions(
@@ -56,6 +73,7 @@ export const extrude: InternalFn = (
         position: unifiedPosition.toArray() as Position,
         rotation: unifiedQuit.toArray() as Rotation,
         __geoMeta: {
+          id,
           geo,
           sourceRange: line.__geoMeta.sourceRange,
           pathToNode: line.__geoMeta.pathToNode,

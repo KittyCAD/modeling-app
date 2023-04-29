@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useMemo } from 'react'
+import { useRef, useState, useEffect, useMemo, Fragment } from 'react'
 import {
   CallExpression,
   ArrayExpression,
@@ -220,6 +220,9 @@ export function RenderViewerArtifacts({
 }: {
   artifacts: (ExtrudeGroup | SketchGroup)[]
 }) {
+  const { artifactMap } = useStore((s) => ({
+    artifactMap: s.artifactMap,
+  }))
   useSetAppModeFromCursorLocation(artifacts)
   return (
     <>
@@ -230,28 +233,107 @@ export function RenderViewerArtifacts({
   )
 }
 
+export function RenderViewerArtifacts2() {
+  const { artifactMap } = useStore((s) => ({
+    artifactMap: s.artifactMap,
+  }))
+
+  return (
+    <>
+      {Object.entries(artifactMap).map(([id, artifact]) => {
+        const _artifact = artifact.type === 'result' && artifact.data
+        if (!_artifact) return null
+        return (
+          <Fragment key={id}>
+            {_artifact.line && (
+              <PathRender2 id={id} artifact={_artifact.line} type="line" />
+            )}
+            {_artifact.tip && (
+              <PathRender2 id={id} artifact={_artifact.tip} type="tip" />
+            )}
+            {_artifact.base && (
+              <PathRender2 id={id} artifact={_artifact.base} type="base" />
+            )}
+          </Fragment>
+        )
+      })}
+    </>
+  )
+}
+
+function PathRender2({
+  id,
+  artifact,
+  type,
+}: {
+  id: string
+  artifact: any
+  type?: string
+}) {
+  const { setHighlightRange, sourceRangeMap, selectionRanges } = useStore(
+    (s) => ({
+      setHighlightRange: s.setHighlightRange,
+      sourceRangeMap: s.sourceRangeMap,
+      selectionRanges: s.selectionRanges,
+    })
+  )
+  const sourceRange = sourceRangeMap[id] || [0, 0]
+  const onClick = useSetCursor(sourceRange)
+  // This reference will give us direct access to the mesh
+  const ref = useRef<BufferGeometry | undefined>() as any
+  const [hovered, setHover] = useState(false)
+
+  const baseColor = useConstraintColors(sourceRange)
+
+  const [editorCursor, setEditorCursor] = useState(false)
+  const [editorLineCursor, setEditorLineCursor] = useState(false)
+  useEffect(() => {
+    const shouldHighlight = selectionRanges.codeBasedSelections.some(
+      ({ range }) => isOverlap(sourceRange, range)
+    )
+    const shouldHighlightLine = selectionRanges.codeBasedSelections.some(
+      ({ range, type }) => isOverlap(sourceRange, range) && type === 'default'
+    )
+    setEditorCursor(shouldHighlight)
+    setEditorLineCursor(shouldHighlightLine)
+  }, [selectionRanges, sourceRange])
+
+  const forcer = type === 'tip' ? editorCursor : editorLineCursor
+
+  return (
+    <>
+      <mesh
+        quaternion={[0, 0, 0, 0]}
+        position={[0, 0, 0]}
+        ref={ref}
+        onPointerOver={(e) => {
+          setHover(true)
+          setHighlightRange(sourceRange)
+        }}
+        onPointerOut={(e) => {
+          setHover(false)
+          setHighlightRange([0, 0])
+        }}
+        onClick={() => {
+          // _onClick()
+          onClick()
+        }}
+      >
+        <primitive object={artifact} />
+        <meshStandardMaterial
+          color={hovered ? 'hotpink' : forcer ? 'skyblue' : baseColor}
+          // color={hovered ? 'hotpink' : 'skyblue'}
+        />
+      </mesh>
+    </>
+  )
+}
+
 function RenderViewerArtifact({
   artifact,
 }: {
   artifact: ExtrudeGroup | SketchGroup
 }) {
-  // const { selectionRange, guiMode, ast, setGuiMode } = useStore(
-  //   ({ selectionRange, guiMode, ast, setGuiMode }) => ({
-  //     selectionRange,
-  //     guiMode,
-  //     ast,
-  //     setGuiMode,
-  //   })
-  // )
-  // const [editorCursor, setEditorCursor] = useState(false)
-  // useEffect(() => {
-  //   const shouldHighlight = isOverlapping(
-  //     artifact.__meta.slice(-1)[0].sourceRange,
-  //     selectionRange
-  //   )
-  //   setEditorCursor(shouldHighlight)
-  // }, [selectionRange, artifact.__meta])
-
   if (artifact.type === 'sketchGroup') {
     return (
       <>

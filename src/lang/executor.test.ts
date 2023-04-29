@@ -8,27 +8,27 @@ import { initPromise } from './rust'
 beforeAll(() => initPromise)
 
 describe('test', () => {
-  it('test assigning two variables, the second summing with the first', () => {
+  it('test assigning two variables, the second summing with the first', async () => {
     const code = `const myVar = 5
 const newVar = myVar + 1`
-    const { root } = exe(code)
+    const { root } = await exe(code)
     expect(root.myVar.value).toBe(5)
     expect(root.newVar.value).toBe(6)
   })
-  it('test assigning a var with a string', () => {
+  it('test assigning a var with a string', async () => {
     const code = `const myVar = "a str"`
-    const { root } = exe(code)
+    const { root } = await exe(code)
     expect(root.myVar.value).toBe('a str')
   })
-  it('test assigning a var by cont concatenating two strings string execute', () => {
+  it('test assigning a var by cont concatenating two strings string execute', async () => {
     const code = fs.readFileSync(
       './src/lang/testExamples/variableDeclaration.cado',
       'utf-8'
     )
-    const { root } = exe(code)
+    const { root } = await exe(code)
     expect(root.myVar.value).toBe('a str another str')
   })
-  it('test with function call', () => {
+  it('test with function call', async () => {
     const code = `
 const myVar = "hello"
 log(5, myVar)`
@@ -44,15 +44,15 @@ log(5, myVar)`
         ],
       },
     }
-    const { root } = executor(abstractSyntaxTree(lexer(code)), {
+    const { root } = await executor(abstractSyntaxTree(lexer(code)), {
       root: programMemoryOverride,
       _sketch: [],
     })
     expect(root.myVar.value).toBe('hello')
     expect(programMemoryOverride.log.value).toHaveBeenCalledWith(5, 'hello')
   })
-  it('fn funcN = () => {} execute', () => {
-    const { root } = exe(
+  it('fn funcN = () => {} execute', async () => {
+    const { root } = await exe(
       [
         'fn funcN = (a, b) => {',
         '  return a + b',
@@ -64,7 +64,7 @@ log(5, myVar)`
     expect(root.theVar.value).toBe(60)
     expect(root.magicNum.value).toBe(69)
   })
-  it('sketch declaration', () => {
+  it('sketch declaration', async () => {
     let code = `const mySketch = startSketchAt([0,0])
   |> lineTo({to: [0,2], tag: "myPath"}, %)
   |> lineTo([2,3], %)
@@ -72,7 +72,7 @@ log(5, myVar)`
   // |> close(%)
 show(mySketch)
 `
-    const { root, return: _return } = exe(code)
+    const { root, return: _return } = await exe(code)
     // geo is three js buffer geometry and is very bloated to have in tests
     const minusGeo = removeGeoFromPaths(root.mySketch.value)
     expect(minusGeo).toEqual([
@@ -120,16 +120,16 @@ show(mySketch)
     ])
   })
 
-  it('pipe binary expression into call expression', () => {
+  it('pipe binary expression into call expression', async () => {
     const code = [
       'fn myFn = (a) => { return a + 1 }',
       'const myVar = 5 + 1 |> myFn(%)',
     ].join('\n')
-    const { root } = exe(code)
+    const { root } = await exe(code)
     expect(root.myVar.value).toBe(7)
   })
 
-  it('rotated sketch', () => {
+  it('rotated sketch', async () => {
     const code = [
       'const mySk1 = startSketchAt([0,0])',
       '  |> lineTo([1,1], %)',
@@ -137,7 +137,7 @@ show(mySketch)
       '  |> lineTo([1, 1], %)',
       'const rotated = rx(90, mySk1)',
     ].join('\n')
-    const { root } = exe(code)
+    const { root } = await exe(code)
     expect(root.mySk1.value).toHaveLength(3)
     expect(root?.rotated?.type).toBe('sketchGroup')
     if (
@@ -154,7 +154,7 @@ show(mySketch)
     ])
   })
 
-  it('execute pipe sketch into call expression', () => {
+  it('execute pipe sketch into call expression', async () => {
     const code = [
       'const mySk1 = startSketchAt([0,0])',
       '  |> lineTo([1,1], %)',
@@ -162,7 +162,7 @@ show(mySketch)
       '  |> lineTo([1,1], %)',
       '  |> rx(90, %)',
     ].join('\n')
-    const { root } = exe(code)
+    const { root } = await exe(code)
     const striptVersion = removeGeoFromSketch(root.mySk1 as SketchGroup)
     expect(striptVersion).toEqual({
       type: 'sketchGroup',
@@ -217,11 +217,11 @@ show(mySketch)
       ],
     })
   })
-  it('execute array expression', () => {
+  it('execute array expression', async () => {
     const code = ['const three = 3', "const yo = [1, '2', three, 4 + 5]"].join(
       '\n'
     )
-    const { root } = exe(code)
+    const { root } = await exe(code)
     // TODO path to node is probably wrong here, zero indexes are not correct
     expect(root).toEqual({
       three: {
@@ -268,12 +268,12 @@ show(mySketch)
       },
     })
   })
-  it('execute object expression', () => {
+  it('execute object expression', async () => {
     const code = [
       'const three = 3',
       "const yo = {aStr: 'str', anum: 2, identifier: three, binExp: 4 + 5}",
     ].join('\n')
-    const { root } = exe(code)
+    const { root } = await exe(code)
     expect(root.yo).toEqual({
       type: 'userVal',
       value: { aStr: 'str', anum: 2, identifier: 3, binExp: 9 },
@@ -291,11 +291,11 @@ show(mySketch)
       ],
     })
   })
-  it('execute memberExpression', () => {
+  it('execute memberExpression', async () => {
     const code = ["const yo = {a: {b: '123'}}", "const myVar = yo.a['b']"].join(
       '\n'
     )
-    const { root } = exe(code)
+    const { root } = await exe(code)
     expect(root.myVar).toEqual({
       type: 'userVal',
       value: '123',
@@ -316,96 +316,96 @@ show(mySketch)
 })
 
 describe('testing math operators', () => {
-  it('it can sum', () => {
+  it('it can sum', async () => {
     const code = ['const myVar = 1 + 2'].join('\n')
-    const { root } = exe(code)
+    const { root } = await exe(code)
     expect(root.myVar.value).toBe(3)
   })
-  it('it can subtract', () => {
+  it('it can subtract', async () => {
     const code = ['const myVar = 1 - 2'].join('\n')
-    const { root } = exe(code)
+    const { root } = await exe(code)
     expect(root.myVar.value).toBe(-1)
   })
-  it('it can multiply', () => {
+  it('it can multiply', async () => {
     const code = ['const myVar = 1 * 2'].join('\n')
-    const { root } = exe(code)
+    const { root } = await exe(code)
     expect(root.myVar.value).toBe(2)
   })
-  it('it can divide', () => {
+  it('it can divide', async () => {
     const code = ['const myVar = 1 / 2'].join('\n')
-    const { root } = exe(code)
+    const { root } = await exe(code)
     expect(root.myVar.value).toBe(0.5)
   })
-  it('it can modulus', () => {
+  it('it can modulus', async () => {
     const code = ['const myVar = 5 % 2'].join('\n')
-    const { root } = exe(code)
+    const { root } = await exe(code)
     expect(root.myVar.value).toBe(1)
   })
-  it('it can do multiple operations', () => {
+  it('it can do multiple operations', async () => {
     const code = ['const myVar = 1 + 2 * 3'].join('\n')
-    const { root } = exe(code)
+    const { root } = await exe(code)
     expect(root.myVar.value).toBe(7)
   })
-  it('big example with parans', () => {
+  it('big example with parans', async () => {
     const code = ['const myVar = 1 + 2 * (3 - 4) / -5 + 6'].join('\n')
-    const { root } = exe(code)
+    const { root } = await exe(code)
     expect(root.myVar.value).toBe(7.4)
   })
-  it('with identifier', () => {
+  it('with identifier', async () => {
     const code = ['const yo = 6', 'const myVar = yo / 2'].join('\n')
-    const { root } = exe(code)
+    const { root } = await exe(code)
     expect(root.myVar.value).toBe(3)
   })
-  it('with identifier', () => {
+  it('with identifier', async () => {
     const code = ['const myVar = 2 * ((2 + 3 ) / 4 + 5)'].join('\n')
-    const { root } = exe(code)
+    const { root } = await exe(code)
     expect(root.myVar.value).toBe(12.5)
   })
-  it('with callExpression at start', () => {
+  it('with callExpression at start', async () => {
     const code = 'const myVar = min(4, 100) + 2'
-    const { root } = exe(code)
+    const { root } = await exe(code)
     expect(root.myVar.value).toBe(6)
   })
-  it('with callExpression at end', () => {
+  it('with callExpression at end', async () => {
     const code = 'const myVar = 2 + min(4, 100)'
-    const { root } = exe(code)
+    const { root } = await exe(code)
     expect(root.myVar.value).toBe(6)
   })
-  it('with nested callExpression', () => {
+  it('with nested callExpression', async () => {
     const code = 'const myVar = 2 + min(100, legLen(5, 3))'
-    const { root } = exe(code)
+    const { root } = await exe(code)
     expect(root.myVar.value).toBe(6)
   })
-  it('with unaryExpression', () => {
+  it('with unaryExpression', async () => {
     const code = 'const myVar = -min(100, 3)'
-    const { root } = exe(code)
+    const { root } = await exe(code)
     expect(root.myVar.value).toBe(-3)
   })
-  it('with unaryExpression in callExpression', () => {
+  it('with unaryExpression in callExpression', async () => {
     const code = 'const myVar = min(-legLen(5, 4), 5)'
     const code2 = 'const myVar = min(5 , -legLen(5, 4))'
-    const { root } = exe(code)
-    const { root: root2 } = exe(code2)
+    const { root } = await exe(code)
+    const { root: root2 } = await exe(code2)
     expect(root.myVar.value).toBe(-3)
     expect(root.myVar.value).toBe(root2.myVar.value)
   })
-  it('with unaryExpression in ArrayExpression', () => {
+  it('with unaryExpression in ArrayExpression', async () => {
     const code = 'const myVar = [1,-legLen(5, 4)]'
-    const { root } = exe(code)
+    const { root } = await exe(code)
     expect(root.myVar.value).toEqual([1, -3])
   })
-  it('with unaryExpression in ArrayExpression in CallExpression, checking nothing funny happens when used in a sketch', () => {
+  it('with unaryExpression in ArrayExpression in CallExpression, checking nothing funny happens when used in a sketch', async () => {
     const code = [
       'const part001 = startSketchAt([0, 0])',
       '|> line([-2.21, -legLen(5, min(3, 999))], %)',
     ].join('\n')
-    const { root } = exe(code)
+    const { root } = await exe(code)
     const sketch = removeGeoFromSketch(root.part001 as SketchGroup)
     // result of `-legLen(5, min(3, 999))` should be -4
     const yVal = sketch.value?.[0]?.to?.[1]
     expect(yVal).toBe(-4)
   })
-  it('test that % substitution feeds down CallExp->ArrExp->UnaryExp->CallExp', () => {
+  it('test that % substitution feeds down CallExp->ArrExp->UnaryExp->CallExp', async () => {
     const code = [
       `const myVar = 3`,
       `const part001 = startSketchAt([0, 0])`,
@@ -417,7 +417,7 @@ describe('testing math operators', () => {
       ``,
       `show(part001)`,
     ].join('\n')
-    const { root } = exe(code)
+    const { root } = await exe(code)
     const sketch = removeGeoFromSketch(root.part001 as SketchGroup)
     // expect -legLen(segLen('seg01', %), myVar) to equal -4 setting the y value back to 0
     expect(sketch.value?.[1]?.from).toEqual([3, 4])
@@ -426,16 +426,16 @@ describe('testing math operators', () => {
       `-legLen(segLen('seg01', %), myVar)`,
       `legLen(segLen('seg01', %), myVar)`
     )
-    const { root: removedUnaryExpRoot } = exe(removedUnaryExp)
+    const { root: removedUnaryExpRoot } = await exe(removedUnaryExp)
     const removedUnaryExpRootSketch = removeGeoFromSketch(
       removedUnaryExpRoot.part001 as SketchGroup
     )
     // without the minus sign, the y value should be 8
     expect(removedUnaryExpRootSketch.value?.[1]?.to).toEqual([6, 8])
   })
-  it('with nested callExpression and binaryExpression', () => {
+  it('with nested callExpression and binaryExpression', async () => {
     const code = 'const myVar = 2 + min(100, -1 + legLen(5, 3))'
-    const { root } = exe(code)
+    const { root } = await exe(code)
     expect(root.myVar.value).toBe(5)
   })
 })

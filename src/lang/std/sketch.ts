@@ -102,9 +102,21 @@ export function createFirstArg(
   throw new Error('all sketch line types should have been covered')
 }
 
+type LineData = {
+  from: [number, number, number]
+  to: [number, number, number]
+}
+
+function makeId() {
+  return (
+    Math.random().toString(36).substring(2) +
+    Math.random().toString(36).substring(2)
+  )
+}
+
 export const lineTo: SketchLineHelper = {
   fn: (
-    { sourceRange },
+    { sourceRange, engineCommandManager },
     data:
       | [number, number]
       | {
@@ -118,16 +130,26 @@ export const lineTo: SketchLineHelper = {
     const sketchGroup = { ...previousSketch }
     const from = getCoordsFromPaths(sketchGroup, sketchGroup.value.length - 1)
     const to = 'to' in data ? data.to : data
-    const geo = lineGeo({
+
+    const lineData: LineData = {
       from: [...from, 0],
       to: [...to, 0],
+    }
+    const id = makeId()
+    engineCommandManager.sendCommand({
+      name: 'lineGeo',
+      id,
+      params: [lineData, previousSketch],
+      range: sourceRange,
     })
+    const geo = lineGeo(lineData)
     const currentPath: Path = {
       type: 'toPoint',
       to,
       from,
       __geoMeta: {
         sourceRange,
+        id,
         pathToNode: [], // TODO
         geos: [
           {
@@ -217,7 +239,7 @@ export const lineTo: SketchLineHelper = {
 
 export const line: SketchLineHelper = {
   fn: (
-    { sourceRange },
+    { sourceRange, engineCommandManager },
     data:
       | [number, number]
       | 'default'
@@ -239,15 +261,24 @@ export const line: SketchLineHelper = {
     }
 
     const to: [number, number] = [from[0] + args[0], from[1] + args[1]]
-    const geo = lineGeo({
+    const lineData: LineData = {
       from: [...from, 0],
       to: [...to, 0],
+    }
+    const id = makeId()
+    engineCommandManager.sendCommand({
+      name: 'lineGeo',
+      id,
+      params: [lineData, previousSketch],
+      range: sourceRange,
     })
+    const geo = lineGeo(lineData)
     const currentPath: Path = {
       type: 'toPoint',
       to,
       from,
       __geoMeta: {
+        id,
         sourceRange,
         pathToNode: [], // TODO
         geos: [
@@ -623,7 +654,7 @@ export const yLine: SketchLineHelper = {
 
 export const angledLine: SketchLineHelper = {
   fn: (
-    { sourceRange, programMemory },
+    { sourceRange, engineCommandManager },
     data:
       | [number, number]
       | {
@@ -641,15 +672,24 @@ export const angledLine: SketchLineHelper = {
       from[0] + length * Math.cos((angle * Math.PI) / 180),
       from[1] + length * Math.sin((angle * Math.PI) / 180),
     ]
-    const geo = lineGeo({
+    const lineData: LineData = {
       from: [...from, 0],
       to: [...to, 0],
+    }
+    const id = makeId()
+    engineCommandManager.sendCommand({
+      name: 'lineGeo',
+      id,
+      params: [lineData, previousSketch],
+      range: sourceRange,
     })
+    const geo = lineGeo(lineData)
     const currentPath: Path = {
       type: 'toPoint',
       to,
       from,
       __geoMeta: {
+        id,
         sourceRange,
         pathToNode: [], // TODO
         geos: [
@@ -740,7 +780,7 @@ export const angledLine: SketchLineHelper = {
 
 export const angledLineOfXLength: SketchLineHelper = {
   fn: (
-    { sourceRange, programMemory },
+    { sourceRange, programMemory, engineCommandManager },
     data:
       | [number, number]
       | {
@@ -754,7 +794,7 @@ export const angledLineOfXLength: SketchLineHelper = {
     const [angle, length, tag] =
       'angle' in data ? [data.angle, data.length, data.tag] : data
     return line.fn(
-      { sourceRange, programMemory },
+      { sourceRange, programMemory, engineCommandManager },
       { to: getYComponent(angle, length), tag },
       previousSketch
     )
@@ -833,7 +873,7 @@ export const angledLineOfXLength: SketchLineHelper = {
 
 export const angledLineOfYLength: SketchLineHelper = {
   fn: (
-    { sourceRange, programMemory },
+    { sourceRange, programMemory, engineCommandManager },
     data:
       | [number, number]
       | {
@@ -847,7 +887,7 @@ export const angledLineOfYLength: SketchLineHelper = {
     const [angle, length, tag] =
       'angle' in data ? [data.angle, data.length, data.tag] : data
     return line.fn(
-      { sourceRange, programMemory },
+      { sourceRange, programMemory, engineCommandManager },
       { to: getXComponent(angle, length), tag },
       previousSketch
     )
@@ -927,7 +967,7 @@ export const angledLineOfYLength: SketchLineHelper = {
 
 export const angledLineToX: SketchLineHelper = {
   fn: (
-    { sourceRange, programMemory },
+    { sourceRange, programMemory, engineCommandManager },
     data:
       | [number, number]
       | {
@@ -948,7 +988,7 @@ export const angledLineToX: SketchLineHelper = {
     const yComponent = xComponent * Math.tan((angle * Math.PI) / 180)
     const yTo = from[1] + yComponent
     return lineTo.fn(
-      { sourceRange, programMemory },
+      { sourceRange, programMemory, engineCommandManager },
       { to: [xTo, yTo], tag },
       previousSketch
     )
@@ -1023,7 +1063,7 @@ export const angledLineToX: SketchLineHelper = {
 
 export const angledLineToY: SketchLineHelper = {
   fn: (
-    { sourceRange, programMemory },
+    { sourceRange, programMemory, engineCommandManager },
     data:
       | [number, number]
       | {
@@ -1044,7 +1084,7 @@ export const angledLineToY: SketchLineHelper = {
     const xComponent = yComponent / Math.tan((angle * Math.PI) / 180)
     const xTo = from[0] + xComponent
     return lineTo.fn(
-      { sourceRange, programMemory },
+      { sourceRange, programMemory, engineCommandManager },
       { to: [xTo, yTo], tag },
       previousSketch
     )
@@ -1120,7 +1160,7 @@ export const angledLineToY: SketchLineHelper = {
 
 export const angledLineThatIntersects: SketchLineHelper = {
   fn: (
-    { sourceRange, programMemory },
+    { sourceRange, programMemory, engineCommandManager },
     data: {
       angle: number
       intersectTag: string
@@ -1145,7 +1185,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
       line2Angle: data.angle,
     })
     return lineTo.fn(
-      { sourceRange, programMemory },
+      { sourceRange, programMemory, engineCommandManager },
       { to, tag: data.tag },
       previousSketch
     )
@@ -1513,22 +1553,33 @@ function addTagWithTo(
 }
 
 export const close: InternalFn = (
-  { sourceRange },
+  { sourceRange, engineCommandManager },
   sketchGroup: SketchGroup
 ): SketchGroup => {
   const from = getCoordsFromPaths(sketchGroup, sketchGroup.value.length - 1)
   const to = sketchGroup.start
     ? sketchGroup.start.from
     : getCoordsFromPaths(sketchGroup, 0)
-  const geo = lineGeo({
+
+  const lineData: LineData = {
     from: [...from, 0],
     to: [...to, 0],
+  }
+  const id = makeId()
+  engineCommandManager.sendCommand({
+    name: 'lineGeo',
+    id,
+    params: [lineData],
+    range: sourceRange,
   })
+  const geo = lineGeo(lineData)
+
   const currentPath: Path = {
     type: 'toPoint',
     to,
     from,
     __geoMeta: {
+      id,
       sourceRange,
       pathToNode: [], // TODO
       geos: [
@@ -1552,7 +1603,7 @@ export const close: InternalFn = (
 }
 
 export const startSketchAt: InternalFn = (
-  { sourceRange, programMemory },
+  { sourceRange, programMemory, engineCommandManager },
   data:
     | [number, number]
     | 'default'
@@ -1569,12 +1620,23 @@ export const startSketchAt: InternalFn = (
     to = data
   }
 
-  const geo = sketchBaseGeo({ to: [...to, 0] })
+  const lineData: { to: [number, number, number] } = {
+    to: [...to, 0],
+  }
+  const id = makeId()
+  engineCommandManager.sendCommand({
+    name: 'sketchBaseGeo',
+    id,
+    params: [lineData],
+    range: sourceRange,
+  })
+  const geo = sketchBaseGeo(lineData)
   const currentPath: Path = {
     type: 'base',
     to,
     from: to,
     __geoMeta: {
+      id,
       sourceRange,
       pathToNode: [], // TODO
       geos: [

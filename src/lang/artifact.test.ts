@@ -6,14 +6,14 @@ import { initPromise } from './rust'
 beforeAll(() => initPromise)
 
 describe('testing artifacts', () => {
-  test('sketch artifacts', () => {
+  test('sketch artifacts', async () => {
     const code = `
 const mySketch001 = startSketchAt([0, 0])
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)
   |> rx(45, %)
 show(mySketch001)`
-    const programMemory = executor(abstractSyntaxTree(lexer(code)))
+    const programMemory = await executor(abstractSyntaxTree(lexer(code)))
     const geos = programMemory?.return?.map(
       (a) => programMemory?.root?.[a.name]
     )
@@ -62,7 +62,7 @@ show(mySketch001)`
       },
     ])
   })
-  test('extrude artifacts', () => {
+  test('extrude artifacts', async () => {
     const code = `
 const mySketch001 = startSketchAt([0, 0])
   |> lineTo([-1.59, -1.54], %)
@@ -70,7 +70,7 @@ const mySketch001 = startSketchAt([0, 0])
   |> rx(45, %)
   |> extrude(2, %)
 show(mySketch001)`
-    const programMemory = executor(abstractSyntaxTree(lexer(code)))
+    const programMemory = await executor(abstractSyntaxTree(lexer(code)))
     const geos = programMemory?.return?.map(
       (a) => programMemory?.root?.[a.name]
     )
@@ -118,7 +118,7 @@ show(mySketch001)`
       },
     ])
   })
-  test('sketch extrude and sketch on one of the faces', () => {
+  test('sketch extrude and sketch on one of the faces', async () => {
     const code = `
 const sk1 = startSketchAt([0, 0])
   |> lineTo([-2.5, 0], %)
@@ -138,7 +138,7 @@ const sk2 = startSketchAt([0, 0])
   
 
 show(theExtrude, sk2)`
-    const programMemory = executor(abstractSyntaxTree(lexer(code)))
+    const programMemory = await executor(abstractSyntaxTree(lexer(code)))
     const geos = programMemory?.return?.map(
       (a) => programMemory?.root?.[a.name]
     )

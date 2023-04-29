@@ -7,7 +7,7 @@ import { initPromise } from '../lang/rust'
 beforeAll(() => initPromise)
 
 describe('processMemory', () => {
-  it('should grab the values and remove and geo data', () => {
+  it('should grab the values and remove and geo data', async () => {
     const code = `
   const myVar = 5
   const myFn = (a) => {
@@ -28,7 +28,7 @@ describe('processMemory', () => {
   show(theExtrude, theSketch)`
     const tokens = lexer(code)
     const ast = abstractSyntaxTree(tokens)
-    const programMemory = executor(ast, {
+    const programMemory = await executor(ast, {
       root: {
         log: {
           type: 'userVal',
