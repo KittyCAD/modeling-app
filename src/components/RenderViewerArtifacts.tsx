@@ -220,9 +220,6 @@ export function RenderViewerArtifacts({
 }: {
   artifacts: (ExtrudeGroup | SketchGroup)[]
 }) {
-  const { artifactMap } = useStore((s) => ({
-    artifactMap: s.artifactMap,
-  }))
   useSetAppModeFromCursorLocation(artifacts)
   return (
     <>
@@ -246,13 +243,13 @@ export function RenderViewerArtifacts2() {
         return (
           <Fragment key={id}>
             {_artifact.line && (
-              <PathRender2 id={id} artifact={_artifact.line} type="line" />
+              <PathRender2 id={id} artifact={_artifact.line} type="default" />
             )}
             {_artifact.tip && (
-              <PathRender2 id={id} artifact={_artifact.tip} type="tip" />
+              <PathRender2 id={id} artifact={_artifact.tip} type="line-end" />
             )}
             {_artifact.base && (
-              <PathRender2 id={id} artifact={_artifact.base} type="base" />
+              <PathRender2 id={id} artifact={_artifact.base} type="default" />
             )}
           </Fragment>
         )
@@ -268,7 +265,7 @@ function PathRender2({
 }: {
   id: string
   artifact: any
-  type?: string
+  type?: 'default' | 'line-end' | 'line-mid'
 }) {
   const { setHighlightRange, sourceRangeMap, selectionRanges } = useStore(
     (s) => ({
@@ -278,7 +275,7 @@ function PathRender2({
     })
   )
   const sourceRange = sourceRangeMap[id] || [0, 0]
-  const onClick = useSetCursor(sourceRange)
+  const onClick = useSetCursor(sourceRange, type)
   // This reference will give us direct access to the mesh
   const ref = useRef<BufferGeometry | undefined>() as any
   const [hovered, setHover] = useState(false)
@@ -298,7 +295,7 @@ function PathRender2({
     setEditorLineCursor(shouldHighlightLine)
   }, [selectionRanges, sourceRange])
 
-  const forcer = type === 'tip' ? editorCursor : editorLineCursor
+  const forcer = type === 'line-end' ? editorCursor : editorLineCursor
 
   return (
     <>
@@ -322,7 +319,6 @@ function PathRender2({
         <primitive object={artifact} />
         <meshStandardMaterial
           color={hovered ? 'hotpink' : forcer ? 'skyblue' : baseColor}
-          // color={hovered ? 'hotpink' : 'skyblue'}
         />
       </mesh>
     </>
