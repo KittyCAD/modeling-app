@@ -234,6 +234,7 @@ export function RenderViewerArtifacts2() {
   const { artifactMap } = useStore((s) => ({
     artifactMap: s.artifactMap,
   }))
+  useSetAppModeFromCursorLocation2()
 
   return (
     <>
@@ -591,6 +592,123 @@ function LineRender({
 
 type Artifact = ExtrudeGroup | SketchGroup
 
+function useSetAppModeFromCursorLocation2() {
+  const {
+    selectionRanges,
+    guiMode,
+    setGuiMode,
+    ast,
+    sourceRangeMap,
+    programMemory,
+  } = useStore((s) => ({
+    selectionRanges: s.selectionRanges,
+    guiMode: s.guiMode,
+    setGuiMode: s.setGuiMode,
+    ast: s.ast,
+    sourceRangeMap: s.sourceRangeMap,
+    programMemory: s.programMemory,
+  }))
+  useEffect(() => {
+    const artifactsWithinCursorRange: (
+      | {
+          parentType: Artifact['type']
+          isParent: true
+          pathToNode: PathToNode
+          sourceRange: SourceRange
+          rotation: Rotation
+          position: Position
+        }
+      | {
+          parentType: Artifact['type']
+          isParent: false
+          pathToNode: PathToNode
+          sourceRange: SourceRange
+          rotation: Rotation
+          position: Position
+        }
+    )[] = []
+    programMemory?.return?.forEach(({ name }: { name: string }) => {
+      const artifact = programMemory?.root?.[name]
+      if (artifact.type === 'extrudeGroup' || artifact.type === 'sketchGroup') {
+        let hasOverlap: Path | ExtrudeSurface | false = false
+        artifact?.value?.forEach((path) => {
+          const id = path.__geoMeta.id
+          const sourceRange = sourceRangeMap[id]
+          if (
+            isOverlap(sourceRange, selectionRanges.codeBasedSelections[0].range)
+          ) {
+            hasOverlap = path
+          }
+        })
+        if (hasOverlap) {
+          const _hasOverlap = hasOverlap as Path | ExtrudeSurface
+          artifactsWithinCursorRange.push({
+            parentType: artifact.type,
+            isParent: false,
+            pathToNode: _hasOverlap.__geoMeta.pathToNode,
+            sourceRange: _hasOverlap.__geoMeta.sourceRange,
+            rotation: artifact.rotation,
+            position: artifact.position,
+          })
+        }
+        artifact.__meta.forEach((meta) => {
+          if (
+            isOverlap(
+              meta.sourceRange,
+              selectionRanges.codeBasedSelections[0].range
+            )
+          ) {
+            artifactsWithinCursorRange.push({
+              parentType: artifact.type,
+              isParent: true,
+              pathToNode: meta.pathToNode,
+              sourceRange: meta.sourceRange,
+              rotation: artifact.rotation,
+              position: artifact.position,
+            })
+          }
+        })
+      }
+    })
+    const parentArtifacts = artifactsWithinCursorRange.filter((a) => a.isParent)
+    const hasSketchArtifact = artifactsWithinCursorRange.filter(
+      ({ parentType }) => parentType === 'sketchGroup'
+    )
+    const hasExtrudeArtifact = artifactsWithinCursorRange.filter(
+      ({ parentType }) => parentType === 'extrudeGroup'
+    )
+    const artifact = parentArtifacts[0]
+    const shouldHighlight = !!artifact || hasSketchArtifact.length
+    if (
+      (guiMode.mode === 'default' || guiMode.mode === 'canEditSketch') &&
+      ast &&
+      hasSketchArtifact.length
+    ) {
+      const pathToNode = getNodePathFromSourceRange(
+        ast,
+        hasSketchArtifact[0].sourceRange
+      )
+      const { rotation, position } = hasSketchArtifact[0]
+      setGuiMode({ mode: 'canEditSketch', pathToNode, rotation, position })
+    } else if (
+      hasExtrudeArtifact.length &&
+      (guiMode.mode === 'default' || guiMode.mode === 'canEditExtrude') &&
+      ast
+    ) {
+      const pathToNode = getNodePathFromSourceRange(
+        ast,
+        hasExtrudeArtifact[0].sourceRange
+      )
+      const { rotation, position } = hasExtrudeArtifact[0]
+      setGuiMode({ mode: 'canEditExtrude', pathToNode, rotation, position })
+    } else if (
+      !shouldHighlight &&
+      (guiMode.mode === 'canEditExtrude' || guiMode.mode === 'canEditSketch')
+    ) {
+      setGuiMode({ mode: 'default' })
+    }
+  }, [programMemory, selectionRanges])
+}
 function useSetAppModeFromCursorLocation(artifacts: Artifact[]) {
   const { selectionRanges, guiMode, setGuiMode, ast } = useStore(
     ({ selectionRanges, guiMode, setGuiMode, ast }) => ({
