@@ -27,6 +27,7 @@ import { Vector3, DoubleSide, Quaternion } from 'three'
 import { useSetCursor } from '../hooks/useSetCursor'
 import { getConstraintLevelFromSourceRange } from '../lang/std/sketchcombos'
 import { createCallExpression, createPipeSubstitution } from '../lang/modifyAst'
+import { getSketchSegmentFromSourceRange } from '../lang/std/sketchConstraints'
 
 function LineEnd({
   geo,
@@ -231,26 +232,43 @@ export function RenderViewerArtifacts({
 }
 
 export function RenderViewerArtifacts2() {
+  const ids = useSetAppModeFromCursorLocation2()
   const { artifactMap } = useStore((s) => ({
     artifactMap: s.artifactMap,
   }))
-  useSetAppModeFromCursorLocation2()
 
   return (
     <>
-      {Object.entries(artifactMap).map(([id, artifact]) => {
-        const _artifact = artifact.type === 'result' && artifact.data
+      {ids.map(({ id, name }) => {
+        const artifact = artifactMap[id]
+
+        const _artifact = artifact?.type === 'result' && artifact.data
         if (!_artifact) return null
         return (
           <Fragment key={id}>
             {_artifact.line && (
-              <PathRender2 id={id} artifact={_artifact.line} type="default" />
+              <PathRender2
+                id={id}
+                name={name}
+                artifact={_artifact.line}
+                type="default"
+              />
             )}
             {_artifact.tip && (
-              <PathRender2 id={id} artifact={_artifact.tip} type="line-end" />
+              <PathRender2
+                id={id}
+                name={name}
+                artifact={_artifact.tip}
+                type="line-end"
+              />
             )}
             {_artifact.base && (
-              <PathRender2 id={id} artifact={_artifact.base} type="default" />
+              <PathRender2
+                id={id}
+                name={name}
+                artifact={_artifact.base}
+                type="default"
+              />
             )}
           </Fragment>
         )
@@ -263,18 +281,20 @@ function PathRender2({
   id,
   artifact,
   type,
+  name,
 }: {
   id: string
+  name: string
   artifact: any
   type?: 'default' | 'line-end' | 'line-mid'
 }) {
-  const { setHighlightRange, sourceRangeMap, selectionRanges } = useStore(
-    (s) => ({
+  const { setHighlightRange, sourceRangeMap, selectionRanges, programMemory } =
+    useStore((s) => ({
       setHighlightRange: s.setHighlightRange,
       sourceRangeMap: s.sourceRangeMap,
       selectionRanges: s.selectionRanges,
-    })
-  )
+      programMemory: s.programMemory,
+    }))
   const sourceRange = sourceRangeMap[id] || [0, 0]
   const onClick = useSetCursor(sourceRange, type)
   // This reference will give us direct access to the mesh
@@ -298,11 +318,30 @@ function PathRender2({
 
   const forcer = type === 'line-end' ? editorCursor : editorLineCursor
 
+  const sketchOrExtrudeGroup = programMemory?.root?.[name] as SketchGroup
+  if (type === 'line-end') {
+    console.log(artifact)
+    const { segment } = getSketchSegmentFromSourceRange(
+      sketchOrExtrudeGroup,
+      sourceRange
+    )
+    return (
+      <LineEnd
+        geo={artifact}
+        from={segment.from}
+        sourceRange={sourceRange}
+        editorCursor={editorCursor}
+        rotation={sketchOrExtrudeGroup.rotation}
+        position={sketchOrExtrudeGroup.position}
+      />
+    )
+  }
+
   return (
     <>
       <mesh
-        quaternion={[0, 0, 0, 0]}
-        position={[0, 0, 0]}
+        quaternion={sketchOrExtrudeGroup.rotation}
+        position={sketchOrExtrudeGroup.position}
         ref={ref}
         onPointerOver={(e) => {
           setHover(true)
@@ -592,7 +631,10 @@ function LineRender({
 
 type Artifact = ExtrudeGroup | SketchGroup
 
-function useSetAppModeFromCursorLocation2() {
+type IdAndName = { id: string; name: string }
+
+function useSetAppModeFromCursorLocation2(): IdAndName[] {
+  const [ids, setIds] = useState<IdAndName[]>([])
   const {
     selectionRanges,
     guiMode,
@@ -627,12 +669,14 @@ function useSetAppModeFromCursorLocation2() {
           position: Position
         }
     )[] = []
+    const _ids: IdAndName[] = []
     programMemory?.return?.forEach(({ name }: { name: string }) => {
       const artifact = programMemory?.root?.[name]
       if (artifact.type === 'extrudeGroup' || artifact.type === 'sketchGroup') {
         let hasOverlap: Path | ExtrudeSurface | false = false
         artifact?.value?.forEach((path) => {
           const id = path.__geoMeta.id
+          _ids.push({ id, name })
           const sourceRange = sourceRangeMap[id]
           if (
             isOverlap(sourceRange, selectionRanges.codeBasedSelections[0].range)
@@ -670,6 +714,9 @@ function useSetAppModeFromCursorLocation2() {
         })
       }
     })
+
+    setIds(_ids)
+
     const parentArtifacts = artifactsWithinCursorRange.filter((a) => a.isParent)
     const hasSketchArtifact = artifactsWithinCursorRange.filter(
       ({ parentType }) => parentType === 'sketchGroup'
@@ -708,6 +755,7 @@ function useSetAppModeFromCursorLocation2() {
       setGuiMode({ mode: 'default' })
     }
   }, [programMemory, selectionRanges])
+  return ids
 }
 function useSetAppModeFromCursorLocation(artifacts: Artifact[]) {
   const { selectionRanges, guiMode, setGuiMode, ast } = useStore(
