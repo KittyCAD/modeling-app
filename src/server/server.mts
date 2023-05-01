@@ -1,9 +1,9 @@
 import express from 'express'
 import http from 'http'
 import { Server } from 'socket.io'
-import { STLExporter } from 'three/examples/jsm/exporters/STLExporter.js';
-import { Mesh } from 'three';
-const exporter = new STLExporter();
+import { STLExporter } from 'three/examples/jsm/exporters/STLExporter.js'
+import { Mesh } from 'three'
+const exporter = new STLExporter()
 
 import { lineGeo, sketchBaseGeo } from '../lang/engine.js'
 
@@ -15,7 +15,7 @@ const io = new Server(server, {
   },
 })
 
-let theMap: {[key: string]: any} = {}
+let theMap: { [key: string]: any } = {}
 
 io.on('connection', (socket) => {
   console.log('a user connected')
@@ -25,29 +25,29 @@ io.on('connection', (socket) => {
     console.log('starting new session')
   })
 
-  socket.on('command', yo => {
-    console.log('got command!!', yo.name)
-    if(yo.name === 'lineGeo') {
-      const params = yo.data as any[]
+  socket.on('command', ({ name, data, id }) => {
+    console.log('got command!!', name)
+    if (name === 'lineGeo') {
+      const params = data as any[]
       console.log('params', params)
       const result: any = {}
       Object.entries(lineGeo(params[0])).forEach(([key, val]) => {
-        const stlString = exporter.parse(new Mesh(val));
+        const stlString = exporter.parse(new Mesh(val))
         result[key] = stlString
       })
       console.log('returning result')
       socket.emit('command', {
-        id: yo.id,
+        id,
         data: result,
       })
-    } else if( yo.name === 'sketchBaseGeo'){
+    } else if (name === 'sketchBaseGeo') {
       const result: any = {}
-      Object.entries(sketchBaseGeo(yo.data[0])).forEach(([key, val]) => {
-        const stlString = exporter.parse(new Mesh(val));
+      Object.entries(sketchBaseGeo(data[0])).forEach(([key, val]) => {
+        const stlString = exporter.parse(new Mesh(val))
         result[key] = stlString
       })
       socket.emit('command', {
-        id: yo.id,
+        id,
         data: result,
       })
     }

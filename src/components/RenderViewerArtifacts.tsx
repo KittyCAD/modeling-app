@@ -320,7 +320,6 @@ function PathRender2({
 
   const sketchOrExtrudeGroup = programMemory?.root?.[name] as SketchGroup
   if (type === 'line-end') {
-    console.log(artifact)
     const { segment } = getSketchSegmentFromSourceRange(
       sketchOrExtrudeGroup,
       sourceRange

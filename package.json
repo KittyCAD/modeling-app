@@ -46,7 +46,7 @@
     "simpleserver:ci": "http-server ./public --cors -p 3000 &",
     "simpleserver": "http-server ./public --cors -p 3000",
     "eject": "react-scripts eject",
-    "fmt": "prettier --write './src/**/*.{ts,tsx,js}'",
+    "fmt": "prettier --write './src/**/*.{ts,tsx,js,mts}'",
     "remove-importmeta": "sed -i '' 's/import.meta.url//g' \"./src/wasm-lib/pkg/wasm_lib.js\"",
     "remove-importmeta:ci": "sed -i 's/import.meta.url//g' \"./src/wasm-lib/pkg/wasm_lib.js\"",
     "add-missing-import": "echo \"import util from 'util'; if (typeof window !== 'undefined' && !window.TextEncoder) { window.TextEncoder = util.TextEncoder; window.TextDecoder = util.TextDecoder}\" | cat - ./src/wasm-lib/pkg/wasm_lib.js > temp && mv temp ./src/wasm-lib/pkg/wasm_lib.js",
