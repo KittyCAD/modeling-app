@@ -270,6 +270,14 @@ export function RenderViewerArtifacts2() {
                 type="default"
               />
             )}
+            {_artifact.geo && (
+              <PathRender2
+                id={_artifact.originalId}
+                name={name}
+                artifact={_artifact.geo}
+                type="default"
+              />
+            )}
           </Fragment>
         )
       })}
@@ -320,20 +328,22 @@ function PathRender2({
 
   const sketchOrExtrudeGroup = programMemory?.root?.[name] as SketchGroup
   if (type === 'line-end') {
-    const { segment } = getSketchSegmentFromSourceRange(
-      sketchOrExtrudeGroup,
-      sourceRange
-    )
-    return (
-      <LineEnd
-        geo={artifact}
-        from={segment.from}
-        sourceRange={sourceRange}
-        editorCursor={editorCursor}
-        rotation={sketchOrExtrudeGroup.rotation}
-        position={sketchOrExtrudeGroup.position}
-      />
-    )
+    try {
+      const { segment } = getSketchSegmentFromSourceRange(
+        sketchOrExtrudeGroup,
+        sourceRange
+      )
+      return (
+        <LineEnd
+          geo={artifact}
+          from={segment.from}
+          sourceRange={sourceRange}
+          editorCursor={editorCursor}
+          rotation={sketchOrExtrudeGroup.rotation}
+          position={sketchOrExtrudeGroup.position}
+        />
+      )
+    } catch (e) {}
   }
 
   return (
@@ -358,6 +368,7 @@ function PathRender2({
         <primitive object={artifact} />
         <meshStandardMaterial
           color={hovered ? 'hotpink' : forcer ? 'skyblue' : baseColor}
+          side={DoubleSide}
         />
       </mesh>
     </>
@@ -677,8 +688,18 @@ function useSetAppModeFromCursorLocation2(): IdAndName[] {
           const id = path.__geoMeta.id
           _ids.push({ id, name })
           const sourceRange = sourceRangeMap[id]
+          const refSourceRange = sourceRangeMap[(path?.__geoMeta as any)?.refId]
           if (
             isOverlap(sourceRange, selectionRanges.codeBasedSelections[0].range)
+          ) {
+            hasOverlap = path
+          }
+          if (
+            refSourceRange &&
+            isOverlap(
+              refSourceRange,
+              selectionRanges.codeBasedSelections[0].range
+            )
           ) {
             hasOverlap = path
           }

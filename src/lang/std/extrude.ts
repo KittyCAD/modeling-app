@@ -15,11 +15,7 @@ export const extrude: InternalFn = (
   length: number,
   sketchVal: SketchGroup
 ): ExtrudeGroup => {
-  const getSketchGeo = (sketchVal: SketchGroup): SketchGroup => {
-    return sketchVal
-  }
-
-  const sketch = getSketchGeo(sketchVal)
+  const sketch = sketchVal
   const { position, rotation } = sketchVal
 
   const extrudeSurfaces: ExtrudeSurface[] = []
@@ -44,9 +40,15 @@ export const extrude: InternalFn = (
         Math.random().toString(36).substring(2) +
         Math.random().toString(36).substring(2)
       engineCommandManager.sendCommand({
-        name: 'lineGeo',
+        name: 'extrudeSeg',
         id,
-        params: [extrudeData],
+        params: [
+          {
+            segId: line.__geoMeta.id,
+            length: extrudeData.length,
+            extrusionDirection: extrudeData.extrusionDirection,
+          },
+        ],
         range: sourceRange,
       })
 
@@ -74,7 +76,7 @@ export const extrude: InternalFn = (
         rotation: unifiedQuit.toArray() as Rotation,
         __geoMeta: {
           id,
-          geo,
+          refId: line.__geoMeta.id,
           sourceRange: line.__geoMeta.sourceRange,
           pathToNode: line.__geoMeta.pathToNode,
         },

@@ -49,10 +49,17 @@ export class EngineCommandManager {
     socket.on('command', ({ id, data, ...yo }: any) => {
       const command = this.artifactMap[id]
       const geos: any = {}
-      Object.entries(data).forEach(([key, val]: [string, any]) => {
-        const bufferGeometry = loader.parse(val)
-        geos[key] = bufferGeometry
-      })
+      if (data.geo) {
+        geos.position = data.position
+        geos.rotation = data.rotation
+        geos.originalId = data.originalId
+        geos.geo = loader.parse(data.geo)
+      } else {
+        Object.entries(data).forEach(([key, val]: [string, any]) => {
+          const bufferGeometry = loader.parse(val)
+          geos[key] = bufferGeometry
+        })
+      }
 
       if (command && command.type === 'pending') {
         const resolve = command.resolve
@@ -60,6 +67,17 @@ export class EngineCommandManager {
           type: 'result',
           data: geos,
         }
+        // if(geos.originalId) {
+        //   resolve({
+        //     id: geos.originalId,
+        //     geo: geos,
+        //   })
+        // } else {
+        //   resolve({
+        //     id,
+        //     geo: geos,
+        //   })
+        // }
         resolve({
           id,
           geo: geos,

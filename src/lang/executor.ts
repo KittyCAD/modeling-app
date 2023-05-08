@@ -65,8 +65,9 @@ export interface AngledLineTo extends BasePath {
 
 interface GeoMeta {
   __geoMeta: {
-    geo: BufferGeometry
+    geo?: BufferGeometry
     id: string
+    refId?: string
     sourceRange: SourceRange
     pathToNode: PathToNode
   }

@@ -5,7 +5,7 @@ import { STLExporter } from 'three/examples/jsm/exporters/STLExporter.js'
 import { Mesh } from 'three'
 const exporter = new STLExporter()
 
-import { lineGeo, sketchBaseGeo } from '../lang/engine.js'
+import { extrudeGeo, lineGeo, sketchBaseGeo } from '../lang/engine.js'
 
 const app = express()
 const server = http.createServer(app)
@@ -30,6 +30,7 @@ io.on('connection', (socket) => {
     if (name === 'lineGeo') {
       const params = data as any[]
       console.log('params', params)
+      theMap[id] = params[0]
       const result: any = {}
       Object.entries(lineGeo(params[0])).forEach(([key, val]) => {
         const stlString = exporter.parse(new Mesh(val))
@@ -42,10 +43,41 @@ io.on('connection', (socket) => {
       })
     } else if (name === 'sketchBaseGeo') {
       const result: any = {}
+      theMap[id] = data[0]
       Object.entries(sketchBaseGeo(data[0])).forEach(([key, val]) => {
         const stlString = exporter.parse(new Mesh(val))
         result[key] = stlString
       })
+      socket.emit('command', {
+        id,
+        data: result,
+      })
+      // } else if (name === 'extrudeGeo') {
+      //   theMap[id] = data[0]
+      //   let _result = extrudeGeo(data[0])
+      //   const result = {
+      //     ..._result,
+      //     geo: exporter.parse(new Mesh(_result.geo)),
+      //   }
+      //   console.log('did extrudeGeo', result)
+      //   socket.emit('command', {
+      //     id,
+      //     data: result,
+      //   })
+    } else if (name === 'extrudeSeg') {
+      theMap[id] = data[0]
+      const lineParams = theMap[data[0].segId]
+      let _result = extrudeGeo({
+        to: lineParams.to,
+        from: lineParams.from,
+        length: data[0].length,
+        extrusionDirection: data[0].extrusionDirection,
+      })
+      const result = {
+        ..._result,
+        originalId: data[0].segId,
+        geo: exporter.parse(new Mesh(_result.geo)),
+      }
       socket.emit('command', {
         id,
         data: result,

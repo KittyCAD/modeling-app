@@ -277,7 +277,7 @@ function removeGeo(arts: (SketchGroup | ExtrudeGroup)[]): any {
           ...v,
           __geoMeta: {
             ...v.__geoMeta,
-            geo: v.__geoMeta.geo.type,
+            geo: (v?.__geoMeta as any)?.geo.type,
           },
         })),
       }
