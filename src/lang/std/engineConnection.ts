@@ -93,6 +93,12 @@ export class EngineCommandManager {
   endSession() {
     socket.off('command')
   }
+  hover(id?: string) {
+    socket.emit('hover', id)
+  }
+  onHover(callback: (id?: string) => void) {
+    socket.on('hover', callback)
+  }
   sendCommand({
     name,
     id,

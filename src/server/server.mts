@@ -84,6 +84,9 @@ io.on('connection', (socket) => {
       })
     }
   })
+  socket.on('hover', (id) => {
+    socket.emit('hover', id)
+  })
 })
 
 server.listen(4000, () => {

@@ -13,7 +13,11 @@ import {
 import { recast } from './lang/recast'
 import { asyncLexer } from './lang/tokeniser'
 import { EditorSelection } from '@codemirror/state'
-import { ArtifactMap, SourceRangeMap } from './lang/std/engineConnection'
+import {
+  ArtifactMap,
+  SourceRangeMap,
+  EngineCommandManager,
+} from './lang/std/engineConnection'
 
 export type Selection = {
   type: 'default' | 'line-end' | 'line-mid'
@@ -132,6 +136,8 @@ export interface StoreState {
     artifactMap: ArtifactMap
     sourceRangeMap: SourceRangeMap
   }) => void
+  engineCommandManager: EngineCommandManager
+  setEngineCommandManager: (engineCommandManager: EngineCommandManager) => void
 }
 
 let pendingAstUpdates: number[] = []
@@ -258,6 +264,9 @@ export const useStore = create<StoreState>()(
       artifactMap: {},
       sourceRangeMap: {},
       setArtifactNSourceRangeMaps: (maps) => set({ ...maps }),
+      engineCommandManager: new EngineCommandManager(),
+      setEngineCommandManager: (engineCommandManager) =>
+        set({ engineCommandManager }),
     }),
     {
       name: 'store',

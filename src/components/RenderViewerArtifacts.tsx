@@ -24,12 +24,14 @@ function LineEnd({
   geo,
   sourceRange,
   editorCursor,
+  id,
   rotation,
   position,
   from,
 }: {
   geo: BufferGeometry
   sourceRange: [number, number]
+  id: string
   editorCursor: boolean
   rotation: Rotation
   position: Position
@@ -45,13 +47,13 @@ function LineEnd({
 
   const setCursor = useSetCursor(sourceRange, 'line-end')
 
-  const { setHighlightRange, guiMode, ast, updateAst, programMemory } =
+  const { guiMode, ast, updateAst, programMemory, engineCommandManager } =
     useStore((s) => ({
-      setHighlightRange: s.setHighlightRange,
       guiMode: s.guiMode,
       ast: s.ast,
       updateAst: s.updateAst,
       programMemory: s.programMemory,
+      engineCommandManager: s.engineCommandManager,
     }))
   const { originalXY } = useMemo(() => {
     if (ast) {
@@ -129,11 +131,11 @@ function LineEnd({
         ref={ref}
         onPointerOver={(event) => {
           inEditMode && setHover(true)
-          setHighlightRange(sourceRange)
+          engineCommandManager.hover(id)
         }}
         onPointerOut={(event) => {
           setHover(false)
-          setHighlightRange([0, 0])
+          engineCommandManager.hover()
         }}
         onPointerDown={() => {
           inEditMode && setIsMouseDown(true)
@@ -272,13 +274,17 @@ function PathRender({
   artifact: any
   type?: 'default' | 'line-end' | 'line-mid'
 }) {
-  const { setHighlightRange, sourceRangeMap, selectionRanges, programMemory } =
-    useStore((s) => ({
-      setHighlightRange: s.setHighlightRange,
-      sourceRangeMap: s.sourceRangeMap,
-      selectionRanges: s.selectionRanges,
-      programMemory: s.programMemory,
-    }))
+  const {
+    sourceRangeMap,
+    selectionRanges,
+    programMemory,
+    engineCommandManager,
+  } = useStore((s) => ({
+    sourceRangeMap: s.sourceRangeMap,
+    selectionRanges: s.selectionRanges,
+    programMemory: s.programMemory,
+    engineCommandManager: s.engineCommandManager,
+  }))
   const sourceRange = sourceRangeMap[id] || [0, 0]
   const onClick = useSetCursor(sourceRange, type)
   // This reference will give us direct access to the mesh
@@ -313,6 +319,7 @@ function PathRender({
         <LineEnd
           geo={artifact}
           from={segment.from}
+          id={id}
           sourceRange={sourceRange}
           editorCursor={editorCursor}
           rotation={sketchOrExtrudeGroup.rotation}
@@ -330,11 +337,11 @@ function PathRender({
         ref={ref}
         onPointerOver={(e) => {
           setHover(true)
-          setHighlightRange(sourceRange)
+          engineCommandManager.hover(id)
         }}
         onPointerOut={(e) => {
           setHover(false)
-          setHighlightRange([0, 0])
+          engineCommandManager.hover()
         }}
         onClick={() => {
           // _onClick()

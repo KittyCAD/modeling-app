@@ -4,7 +4,7 @@ import { Allotment } from 'allotment'
 import { OrbitControls, OrthographicCamera } from '@react-three/drei'
 import { asyncLexer } from './lang/tokeniser'
 import { abstractSyntaxTree } from './lang/abstractSyntaxTree'
-import { executor, ExtrudeGroup, SketchGroup } from './lang/executor'
+import { _executor, ExtrudeGroup, SketchGroup } from './lang/executor'
 import CodeMirror from '@uiw/react-codemirror'
 import { javascript } from '@codemirror/lang-javascript'
 import { ViewUpdate } from '@codemirror/view'
@@ -24,6 +24,7 @@ import { MemoryPanel } from './components/MemoryPanel'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
 import { Stream } from './components/Stream'
 import ModalContainer from 'react-modal-promise'
+import { EngineCommandManager } from './lang/std/engineConnection'
 
 const OrrthographicCamera = OrthographicCamera as any
 
@@ -47,6 +48,9 @@ function App() {
     resetLogs,
     selectionRangeTypeMap,
     setArtifactMap,
+    engineCommandManager: _engineCommandManager,
+    setEngineCommandManager,
+    setHighlightRange,
   } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
@@ -65,6 +69,9 @@ function App() {
     resetLogs: s.resetLogs,
     selectionRangeTypeMap: s.selectionRangeTypeMap,
     setArtifactMap: s.setArtifactNSourceRangeMaps,
+    engineCommandManager: s.engineCommandManager,
+    setEngineCommandManager: s.setEngineCommandManager,
+    setHighlightRange: s.setHighlightRange,
   }))
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
@@ -118,7 +125,13 @@ function App() {
         const _ast = abstractSyntaxTree(tokens)
         setAst(_ast)
         resetLogs()
-        executor(
+        if (_engineCommandManager) {
+          _engineCommandManager.endSession()
+        }
+        const engineCommandManager = new EngineCommandManager()
+        engineCommandManager.startNewSession()
+        setEngineCommandManager(engineCommandManager)
+        _executor(
           _ast,
           {
             root: {
@@ -157,12 +170,22 @@ function App() {
             },
             _sketch: [],
           },
+          engineCommandManager,
           { bodyType: 'root' },
-          [],
-          ({ artifactMap, sourceRangeMap }) => {
-            setArtifactMap({ artifactMap, sourceRangeMap })
-          }
-        ).then((programMemory) => {
+          []
+        ).then(async (programMemory) => {
+          const { artifactMap, sourceRangeMap } =
+            await engineCommandManager.waitForAllCommands()
+
+          setArtifactMap({ artifactMap, sourceRangeMap })
+          engineCommandManager.onHover((id) => {
+            if (!id) {
+              setHighlightRange([0, 0])
+            } else {
+              const sourceRange = sourceRangeMap[id]
+              setHighlightRange(sourceRange)
+            }
+          })
           setProgramMemory(programMemory)
           const geos = programMemory?.return
             ?.map(({ name }: { name: string }) => {
