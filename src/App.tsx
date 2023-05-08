@@ -18,7 +18,7 @@ import { BasePlanes } from './components/BasePlanes'
 import { SketchPlane } from './components/SketchPlane'
 import { Logs } from './components/Logs'
 import { AxisIndicator } from './components/AxisIndicator'
-import { RenderViewerArtifacts2 } from './components/RenderViewerArtifacts'
+import { RenderViewerArtifacts } from './components/RenderViewerArtifacts'
 import { PanelHeader } from './components/PanelHeader'
 import { MemoryPanel } from './components/MemoryPanel'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
@@ -249,7 +249,7 @@ function App() {
                   />
                   <ambientLight />
                   <pointLight position={[10, 10, 10]} />
-                  <RenderViewerArtifacts2 />
+                  <RenderViewerArtifacts />
                   <BasePlanes />
                   <SketchPlane />
                   <AxisIndicator />
