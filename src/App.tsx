@@ -35,7 +35,7 @@ function App() {
     editorView,
     setEditorView,
     setSelectionRanges,
-    selectionRanges: selectionRange,
+    selectionRanges,
     guiMode,
     lastGuiMode,
     addLog,
@@ -51,6 +51,7 @@ function App() {
     engineCommandManager: _engineCommandManager,
     setEngineCommandManager,
     setHighlightRange,
+    setCursor2,
   } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
@@ -72,6 +73,9 @@ function App() {
     engineCommandManager: s.engineCommandManager,
     setEngineCommandManager: s.setEngineCommandManager,
     setHighlightRange: s.setHighlightRange,
+    isShiftDown: s.isShiftDown,
+    setCursor: s.setCursor,
+    setCursor2: s.setCursor2,
   }))
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
@@ -87,11 +91,11 @@ function App() {
     const ranges = viewUpdate.state.selection.ranges
 
     const isChange =
-      ranges.length !== selectionRange.codeBasedSelections.length ||
+      ranges.length !== selectionRanges.codeBasedSelections.length ||
       ranges.some(({ from, to }, i) => {
         return (
-          from !== selectionRange.codeBasedSelections[i].range[0] ||
-          to !== selectionRange.codeBasedSelections[i].range[1]
+          from !== selectionRanges.codeBasedSelections[i].range[0] ||
+          to !== selectionRanges.codeBasedSelections[i].range[1]
         )
       })
 
@@ -185,6 +189,9 @@ function App() {
               const sourceRange = sourceRangeMap[id]
               setHighlightRange(sourceRange)
             }
+          })
+          engineCommandManager.onSelection(({ id, type }) => {
+            setCursor2({ range: sourceRangeMap[id], type })
           })
           setProgramMemory(programMemory)
           const geos = programMemory?.return

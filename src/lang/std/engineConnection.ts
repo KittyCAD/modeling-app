@@ -1,6 +1,7 @@
 import { io } from 'socket.io-client'
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js'
 import { SourceRange } from '../executor'
+import { Selections } from '../../useStore'
 
 const loader = new STLLoader()
 
@@ -98,6 +99,17 @@ export class EngineCommandManager {
   }
   onHover(callback: (id?: string) => void) {
     socket.on('hover', callback)
+  }
+  click(id: string, type: Selection['type'] = 'default') {
+    socket.emit('click', { id, type })
+  }
+  onSelection(
+    callback: (selection: {
+      id: string
+      type: Selections['codeBasedSelections'][number]['type']
+    }) => void
+  ) {
+    socket.on('click', callback)
   }
   sendCommand({
     name,

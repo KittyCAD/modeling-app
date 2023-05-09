@@ -45,7 +45,7 @@ function LineEnd({
   const [isMouseDown, setIsMouseDown] = useState(false)
   const baseColor = useConstraintColors(sourceRange)
 
-  const setCursor = useSetCursor(sourceRange, 'line-end')
+  const setCursor2 = useSetCursor(id, 'line-end')
 
   const { guiMode, ast, updateAst, programMemory, engineCommandManager } =
     useStore((s) => ({
@@ -139,7 +139,7 @@ function LineEnd({
         }}
         onPointerDown={() => {
           inEditMode && setIsMouseDown(true)
-          setCursor()
+          setCursor2()
         }}
       >
         <primitive object={geo} scale={hovered ? 2 : 1} />
@@ -286,7 +286,7 @@ function PathRender({
     engineCommandManager: s.engineCommandManager,
   }))
   const sourceRange = sourceRangeMap[id] || [0, 0]
-  const onClick = useSetCursor(sourceRange, type)
+  const onClick2 = useSetCursor(id, type)
   // This reference will give us direct access to the mesh
   const ref = useRef<BufferGeometry | undefined>() as any
   const [hovered, setHover] = useState(false)
@@ -345,7 +345,7 @@ function PathRender({
         }}
         onClick={() => {
           // _onClick()
-          onClick()
+          onClick2()
         }}
       >
         <primitive object={artifact} />

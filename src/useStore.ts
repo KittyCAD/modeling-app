@@ -99,6 +99,7 @@ export interface StoreState {
   highlightRange: [number, number]
   setHighlightRange: (range: Selection['range']) => void
   setCursor: (selections: Selections) => void
+  setCursor2: (a: Selection) => void
   selectionRanges: Selections
   selectionRangeTypeMap: { [key: number]: Selection['type'] }
   setSelectionRanges: (range: Selections) => void
@@ -175,6 +176,17 @@ export const useStore = create<StoreState>()(
             ),
           })
         })
+      },
+      setCursor2: (codeSelections) => {
+        const currestSelections = get().selectionRanges
+        console.log('yoyo', get().isShiftDown)
+        const selections: Selections = {
+          ...currestSelections,
+          codeBasedSelections: get().isShiftDown
+            ? [...currestSelections.codeBasedSelections, codeSelections]
+            : [codeSelections],
+        }
+        get().setCursor(selections)
       },
       selectionRangeTypeMap: {},
       selectionRanges: {
