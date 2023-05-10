@@ -211,7 +211,7 @@ function LineEnd({
 
 interface idSelections {
   otherSelections: Selections['otherSelections']
-  idBasedSelections: {type: string, id: string}[]
+  idBasedSelections: { type: string; id: string }[]
 }
 
 export function RenderViewerArtifacts() {
@@ -226,7 +226,9 @@ export function RenderViewerArtifacts() {
   })
 
   useEffect(() => {
-    engineCommandManager.onCursorsSelected((selections) => setSelections(selections))
+    engineCommandManager.onCursorsSelected((selections) =>
+      setSelections(selections)
+    )
   }, [engineCommandManager])
 
   return (
@@ -286,7 +288,7 @@ function PathRender({
   artifact,
   type,
   name,
-  selections
+  selections,
 }: {
   id: string
   name: string
@@ -294,15 +296,13 @@ function PathRender({
   type?: 'default' | 'line-end' | 'line-mid'
   selections: idSelections
 }) {
-  const {
-    sourceRangeMap,
-    programMemory,
-    engineCommandManager,
-  } = useStore((s) => ({
-    sourceRangeMap: s.sourceRangeMap,
-    programMemory: s.programMemory,
-    engineCommandManager: s.engineCommandManager,
-  }))
+  const { sourceRangeMap, programMemory, engineCommandManager } = useStore(
+    (s) => ({
+      sourceRangeMap: s.sourceRangeMap,
+      programMemory: s.programMemory,
+      engineCommandManager: s.engineCommandManager,
+    })
+  )
   const sourceRange = sourceRangeMap[id] || [0, 0]
   const onClick2 = useSetCursor(id, type)
   // This reference will give us direct access to the mesh
@@ -322,7 +322,6 @@ function PathRender({
     )
     setEditorCursor(shouldHighlight)
     setEditorLineCursor(shouldHighlightLine)
-
   }, [selections, sourceRange])
 
   const forcer = type === 'line-end' ? editorCursor : editorLineCursor
@@ -428,7 +427,10 @@ function useSetAppModeFromCursorLocation(): IdAndName[] {
           const sourceRange = sourceRangeMap[id]
           const refSourceRange = sourceRangeMap[(path?.__geoMeta as any)?.refId]
           if (
-            isOverlap(sourceRange, selectionRanges.codeBasedSelections?.[0]?.range || [])
+            isOverlap(
+              sourceRange,
+              selectionRanges.codeBasedSelections?.[0]?.range || []
+            )
           ) {
             hasOverlap = path
           }

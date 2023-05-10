@@ -165,7 +165,7 @@ export const useStore = create<StoreState>()(
         const selectionRangeTypeMap: { [key: number]: Selection['type'] } = {}
         set({ selectionRangeTypeMap })
         selections.codeBasedSelections.forEach(({ range, type }) => {
-          if(range?.[1]) {
+          if (range?.[1]) {
             ranges.push(EditorSelection.cursor(range[1]))
             selectionRangeTypeMap[range[1]] = type
           }

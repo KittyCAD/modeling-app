@@ -117,23 +117,27 @@ function App() {
         }
       }
     )
-    const idBasedSelections = codeBasedSelections.map(({type, range}) => {
-      const hasOverlap = Object.entries(sourceRangeMap).filter(([_, sourceRange]) => {
-        return isOverlap(sourceRange, range)
-      })
-      if (hasOverlap.length) {
-        return {
-          type,
-          id: hasOverlap[0][0],
+    const idBasedSelections = codeBasedSelections
+      .map(({ type, range }) => {
+        const hasOverlap = Object.entries(sourceRangeMap).filter(
+          ([_, sourceRange]) => {
+            return isOverlap(sourceRange, range)
+          }
+        )
+        if (hasOverlap.length) {
+          return {
+            type,
+            id: hasOverlap[0][0],
+          }
         }
-      }
-    }).filter(Boolean) as any
+      })
+      .filter(Boolean) as any
 
     _engineCommandManager.cusorsSelected({
       otherSelections: [],
       idBasedSelections,
     })
-    
+
     setSelectionRanges({
       otherSelections: [],
       codeBasedSelections,

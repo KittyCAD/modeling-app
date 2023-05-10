@@ -105,13 +105,13 @@ export class EngineCommandManager {
   }) {
     socket.emit('cursorsSelected', selections)
   }
-  onCursorsSelected(callback: (selections: {
-    otherSelections: Selections['otherSelections']
-    idBasedSelections: {type: string, id: string}[]
-  }) => void) {
-    socket.on('cursorsSelected', 
-      callback
-    )
+  onCursorsSelected(
+    callback: (selections: {
+      otherSelections: Selections['otherSelections']
+      idBasedSelections: { type: string; id: string }[]
+    }) => void
+  ) {
+    socket.on('cursorsSelected', callback)
   }
   sendCommand({
     name,
