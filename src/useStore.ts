@@ -165,8 +165,10 @@ export const useStore = create<StoreState>()(
         const selectionRangeTypeMap: { [key: number]: Selection['type'] } = {}
         set({ selectionRangeTypeMap })
         selections.codeBasedSelections.forEach(({ range, type }) => {
-          ranges.push(EditorSelection.cursor(range[1]))
-          selectionRangeTypeMap[range[1]] = type
+          if(range?.[1]) {
+            ranges.push(EditorSelection.cursor(range[1]))
+            selectionRangeTypeMap[range[1]] = type
+          }
         })
         setTimeout(() => {
           editorView.dispatch({
@@ -179,7 +181,6 @@ export const useStore = create<StoreState>()(
       },
       setCursor2: (codeSelections) => {
         const currestSelections = get().selectionRanges
-        console.log('yoyo', get().isShiftDown)
         const selections: Selections = {
           ...currestSelections,
           codeBasedSelections: get().isShiftDown

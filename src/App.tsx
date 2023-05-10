@@ -12,7 +12,7 @@ import {
   lineHighlightField,
   addLineHighlight,
 } from './editor/highlightextension'
-import { useStore } from './useStore'
+import { Selections, useStore } from './useStore'
 import { Toolbar } from './Toolbar'
 import { BasePlanes } from './components/BasePlanes'
 import { SketchPlane } from './components/SketchPlane'
@@ -25,6 +25,7 @@ import { useHotKeyListener } from './hooks/useHotKeyListener'
 import { Stream } from './components/Stream'
 import ModalContainer from 'react-modal-promise'
 import { EngineCommandManager } from './lang/std/engineConnection'
+import { isOverlap } from './lib/utils'
 
 const OrrthographicCamera = OrthographicCamera as any
 
@@ -52,6 +53,7 @@ function App() {
     setEngineCommandManager,
     setHighlightRange,
     setCursor2,
+    sourceRangeMap,
   } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
@@ -76,6 +78,7 @@ function App() {
     isShiftDown: s.isShiftDown,
     setCursor: s.setCursor,
     setCursor2: s.setCursor2,
+    sourceRangeMap: s.sourceRangeMap,
   }))
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
@@ -100,9 +103,8 @@ function App() {
       })
 
     if (!isChange) return
-    setSelectionRanges({
-      otherSelections: [],
-      codeBasedSelections: ranges.map(({ from, to }, i) => {
+    const codeBasedSelections: Selections['codeBasedSelections'] = ranges.map(
+      ({ from, to }) => {
         if (selectionRangeTypeMap[to]) {
           return {
             type: selectionRangeTypeMap[to],
@@ -113,15 +115,34 @@ function App() {
           type: 'default',
           range: [from, to],
         }
-      }),
+      }
+    )
+    const idBasedSelections = codeBasedSelections.map(({type, range}) => {
+      const hasOverlap = Object.entries(sourceRangeMap).filter(([_, sourceRange]) => {
+        return isOverlap(sourceRange, range)
+      })
+      if (hasOverlap.length) {
+        return {
+          type,
+          id: hasOverlap[0][0],
+        }
+      }
+    }).filter(Boolean) as any
+
+    _engineCommandManager.cusorsSelected({
+      otherSelections: [],
+      idBasedSelections,
+    })
+    
+    setSelectionRanges({
+      otherSelections: [],
+      codeBasedSelections,
     })
   }
-  const [geoArray, setGeoArray] = useState<(ExtrudeGroup | SketchGroup)[]>([])
   useEffect(() => {
     const asyncWrap = async () => {
       try {
         if (!code) {
-          setGeoArray([])
           setAst(null)
           return
         }
@@ -207,8 +228,7 @@ function App() {
             })
             .filter((a) => a) as (ExtrudeGroup | SketchGroup)[]
 
-          setGeoArray(geos)
-          console.log(programMemory)
+          // console.log(programMemory)
           setError()
         })
       } catch (e: any) {

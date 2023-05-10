@@ -13,7 +13,7 @@ import {
   SourceRange,
 } from '../lang/executor'
 import { BufferGeometry } from 'three'
-import { useStore } from '../useStore'
+import { Selections, useStore } from '../useStore'
 import { isOverlap, roundOff } from '../lib/utils'
 import { Vector3, DoubleSide, Quaternion } from 'three'
 import { useSetCursor } from '../hooks/useSetCursor'
@@ -209,11 +209,25 @@ function LineEnd({
   )
 }
 
+interface idSelections {
+  otherSelections: Selections['otherSelections']
+  idBasedSelections: {type: string, id: string}[]
+}
+
 export function RenderViewerArtifacts() {
   const ids = useSetAppModeFromCursorLocation()
-  const { artifactMap } = useStore((s) => ({
+  const { artifactMap, engineCommandManager } = useStore((s) => ({
     artifactMap: s.artifactMap,
+    engineCommandManager: s.engineCommandManager,
   }))
+  const [selections, setSelections] = useState<idSelections>({
+    otherSelections: [],
+    idBasedSelections: [],
+  })
+
+  useEffect(() => {
+    engineCommandManager.onCursorsSelected((selections) => setSelections(selections))
+  }, [engineCommandManager])
 
   return (
     <>
@@ -226,6 +240,7 @@ export function RenderViewerArtifacts() {
           <Fragment key={id}>
             {_artifact.line && (
               <PathRender
+                selections={selections}
                 id={id}
                 name={name}
                 artifact={_artifact.line}
@@ -234,6 +249,7 @@ export function RenderViewerArtifacts() {
             )}
             {_artifact.tip && (
               <PathRender
+                selections={selections}
                 id={id}
                 name={name}
                 artifact={_artifact.tip}
@@ -242,6 +258,7 @@ export function RenderViewerArtifacts() {
             )}
             {_artifact.base && (
               <PathRender
+                selections={selections}
                 id={id}
                 name={name}
                 artifact={_artifact.base}
@@ -250,6 +267,7 @@ export function RenderViewerArtifacts() {
             )}
             {_artifact.geo && (
               <PathRender
+                selections={selections}
                 id={_artifact.originalId}
                 name={name}
                 artifact={_artifact.geo}
@@ -268,20 +286,20 @@ function PathRender({
   artifact,
   type,
   name,
+  selections
 }: {
   id: string
   name: string
   artifact: any
   type?: 'default' | 'line-end' | 'line-mid'
+  selections: idSelections
 }) {
   const {
     sourceRangeMap,
-    selectionRanges,
     programMemory,
     engineCommandManager,
   } = useStore((s) => ({
     sourceRangeMap: s.sourceRangeMap,
-    selectionRanges: s.selectionRanges,
     programMemory: s.programMemory,
     engineCommandManager: s.engineCommandManager,
   }))
@@ -296,15 +314,16 @@ function PathRender({
   const [editorCursor, setEditorCursor] = useState(false)
   const [editorLineCursor, setEditorLineCursor] = useState(false)
   useEffect(() => {
-    const shouldHighlight = selectionRanges.codeBasedSelections.some(
-      ({ range }) => isOverlap(sourceRange, range)
+    const shouldHighlight = selections.idBasedSelections.some(
+      ({ id: _id, type: _type }) => _id === id
     )
-    const shouldHighlightLine = selectionRanges.codeBasedSelections.some(
-      ({ range, type }) => isOverlap(sourceRange, range) && type === 'default'
+    const shouldHighlightLine = selections.idBasedSelections.some(
+      ({ id: _id, type: _type }) => _id === id && type === _type
     )
     setEditorCursor(shouldHighlight)
     setEditorLineCursor(shouldHighlightLine)
-  }, [selectionRanges, sourceRange])
+
+  }, [selections, sourceRange])
 
   const forcer = type === 'line-end' ? editorCursor : editorLineCursor
 
@@ -409,7 +428,7 @@ function useSetAppModeFromCursorLocation(): IdAndName[] {
           const sourceRange = sourceRangeMap[id]
           const refSourceRange = sourceRangeMap[(path?.__geoMeta as any)?.refId]
           if (
-            isOverlap(sourceRange, selectionRanges.codeBasedSelections[0].range)
+            isOverlap(sourceRange, selectionRanges.codeBasedSelections?.[0]?.range || [])
           ) {
             hasOverlap = path
           }
@@ -438,7 +457,7 @@ function useSetAppModeFromCursorLocation(): IdAndName[] {
           if (
             isOverlap(
               meta.sourceRange,
-              selectionRanges.codeBasedSelections[0].range
+              selectionRanges.codeBasedSelections?.[0]?.range || []
             )
           ) {
             artifactsWithinCursorRange.push({
@@ -493,7 +512,7 @@ function useSetAppModeFromCursorLocation(): IdAndName[] {
     ) {
       setGuiMode({ mode: 'default' })
     }
-  }, [programMemory, selectionRanges])
+  }, [programMemory, selectionRanges, sourceRangeMap])
   return ids
 }
 

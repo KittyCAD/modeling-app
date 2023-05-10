@@ -58,7 +58,6 @@ export const Intersect = () => {
       selectionRanges.codeBasedSelections?.[1]?.type !== 'line-end' &&
       previousSegment &&
       previousSegment.isParallelAndConstrained
-    console.log(shouldUsePreviousSegment)
 
     const _forcedSelectionRanges: typeof selectionRanges = {
       ...selectionRanges,

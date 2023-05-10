@@ -46,8 +46,7 @@ export class EngineCommandManager {
   startNewSession() {
     this.artifactMap = {}
     this.sourceRangeMap = {}
-    // socket.on('command', ({id, data}: {id: string, data: any}) => {
-    socket.on('command', ({ id, data, ...yo }: any) => {
+    socket.on('command', ({ id, data }: any) => {
       const command = this.artifactMap[id]
       const geos: any = {}
       if (data.geo) {
@@ -68,17 +67,6 @@ export class EngineCommandManager {
           type: 'result',
           data: geos,
         }
-        // if(geos.originalId) {
-        //   resolve({
-        //     id: geos.originalId,
-        //     geo: geos,
-        //   })
-        // } else {
-        //   resolve({
-        //     id,
-        //     geo: geos,
-        //   })
-        // }
         resolve({
           id,
           geo: geos,
@@ -110,6 +98,20 @@ export class EngineCommandManager {
     }) => void
   ) {
     socket.on('click', callback)
+  }
+  cusorsSelected(selections: {
+    otherSelections: Selections['otherSelections']
+    idBasedSelections: {type: string, id: string}[]
+  }) {
+    socket.emit('cursorsSelected', selections)
+  }
+  onCursorsSelected(callback: (selections: {
+    otherSelections: Selections['otherSelections']
+    idBasedSelections: {type: string, id: string}[]
+  }) => void) {
+    socket.on('cursorsSelected', 
+      callback
+    )
   }
   sendCommand({
     name,

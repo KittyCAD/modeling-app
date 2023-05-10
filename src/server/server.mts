@@ -90,6 +90,9 @@ io.on('connection', (socket) => {
   socket.on('click', (info) => {
     socket.emit('click', info)
   })
+  socket.on('cursorsSelected', (info) => {
+    socket.emit('cursorsSelected', info)
+  })
 })
 
 server.listen(4000, () => {
