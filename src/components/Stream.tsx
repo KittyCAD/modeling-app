@@ -106,6 +106,7 @@ export const Stream = () => {
         cmd_id: '40643541-18b4-46c4-93ec-6f0f23c8e2d3',
         file_id: 'SfHews4YR7Wo',
       })
+      console.log('mouse move', x, y)
     }
     if (videoRef.current) {
       videoRef.current.addEventListener('mousemove', handleMouseMove)
