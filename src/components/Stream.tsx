@@ -11,7 +11,7 @@ export const Stream = () => {
     )
       return
     const url = 'wss://34.121.204.16/ws/modeling/commands'
-    const [pc, socket] = [new RTCPeerConnection(), new WebSocket(url)]
+    const [pc, socket] = [new RTCPeerConnection(), new WebSocket(url, null, null, null, {rejectUnauthorized: false})]
     // Connection opened
     socket.addEventListener('open', (event) => {
       console.log('Connected to websocket, waiting for ICE servers')
