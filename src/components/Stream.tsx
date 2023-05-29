@@ -87,7 +87,24 @@ export const Stream = () => {
       const { left, top } = videoRef.current.getBoundingClientRect()
       const x = clientX - left
       const y = clientY - top
-      debounceSocketSend({ type: 'MouseMove', x: x, y: y })
+      debounceSocketSend({
+        cmd: {
+          AddLine: {
+            from: {
+              x: x,
+              y: y,
+              z: 10,
+            },
+            to: {
+              x: x * 100,
+              y: 10 * y,
+              z: 5,
+            },
+          },
+        },
+        cmd_id: '40643541-18b4-46c4-93ec-6f0f23c8e2d3',
+        file_id: 'SfHews4YR7Wo',
+      })
     }
     if (videoRef.current) {
       videoRef.current.addEventListener('mousemove', handleMouseMove)
