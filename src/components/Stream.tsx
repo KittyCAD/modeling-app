@@ -80,6 +80,7 @@ export const Stream = () => {
     })
 
     const debounceSocketSend = throttle((message) => {
+      console.log(JSON.stringify(message))
       socket.send(JSON.stringify(message))
     }, 100)
     const handleMouseMove = ({ clientX, clientY }: MouseEvent) => {
