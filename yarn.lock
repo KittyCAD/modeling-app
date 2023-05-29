@@ -9425,11 +9425,6 @@ sisteransi@^1.0.4, sisteransi@^1.0.5:
   resolved "https://registry.yarnpkg.com/sisteransi/-/sisteransi-1.0.5.tgz#134d681297756437cc05ca01370d3a7a571075ed"
   integrity sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==
 
-sketch-helpers@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/sketch-helpers/-/sketch-helpers-0.0.2.tgz#7b088303a82d3b7008abfe4e20a476c6da20cc0e"
-  integrity sha512-3VnjIlqg3ORxcIR9vATazvvQt6/4vzPymcorQ30vigjjZEXPHf4xT6Zh7pbZmR58RJBKEU1AtAANhqYar4CRFQ==
-
 slash@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/slash/-/slash-3.0.0.tgz#6539be870c165adbd5240220dbe361f1bc4d4634"

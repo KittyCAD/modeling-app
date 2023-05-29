@@ -91,6 +91,24 @@ export const Stream = () => {
     if (videoRef.current) {
       videoRef.current.addEventListener('mousemove', handleMouseMove)
     }
+    debounceSocketSend({
+      cmd: {
+        AddLine: {
+          from: {
+            x: 27,
+            y: 17,
+            z: 10,
+          },
+          to: {
+            x: 11,
+            y: 10,
+            z: 5,
+          },
+        },
+      },
+      cmd_id: '40643541-18b4-46c4-93ec-6f0f23c8e2d3',
+      file_id: 'SfHews4YR7Wo',
+    })
 
     return () => {
       socket.close()
