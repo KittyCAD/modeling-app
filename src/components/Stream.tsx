@@ -37,6 +37,7 @@ export const Stream = () => {
 
         reader.readAsText(event.data)
       } else {
+        console.log(event.data)
         const message = JSON.parse(event.data)
         if (message.type === 'SDPAnswer') {
           pc.setRemoteDescription(new RTCSessionDescription(message.answer))
