@@ -92,14 +92,14 @@ export const Stream = () => {
         cmd: {
           AddLine: {
             from: {
-              x: x,
-              y: y,
-              z: 10,
+              x: x * 1.0,
+              y: y * 1.0,
+              z: 10.0,
             },
             to: {
-              x: x * 100,
-              y: 10 * y,
-              z: 5,
+              x: x * 100.0,
+              y: 10.0 * y,
+              z: 5.0,
             },
           },
         },
