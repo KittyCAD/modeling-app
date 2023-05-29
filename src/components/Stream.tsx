@@ -10,7 +10,7 @@ export const Stream = () => {
       typeof RTCPeerConnection === 'undefined'
     )
       return
-    const url = 'wss://dev.api.kittycad.io/ws/modeling/commands'
+    const url = 'ws://34.121.204.16/ws/modeling/commands'
     const [pc, socket] = [new RTCPeerConnection(), new WebSocket(url)]
     // Connection opened
     socket.addEventListener('open', (event) => {
