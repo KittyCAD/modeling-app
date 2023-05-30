@@ -91,12 +91,20 @@ export const Stream = () => {
       debounceSocketSend({
         cmd: {
           AddLine: {
-            from: { x: 0.0, y: 0.0, z: 0.0 },
-            to: { x: 1.0, y: 1.0, z: 1.0 },
+            from: {
+              x: x * 1.1,
+              y: y * 1.1,
+              z: 10.1,
+            },
+            to: {
+              x: x * 100.1,
+              y: 10.1 * y,
+              z: 5.1,
+            },
           },
         },
-        cmd_id: '41940db0-a101-4ca9-a8ba-d576dabf5ee3',
-        file_id: '',
+        cmd_id: '40643541-18b4-46c4-93ec-6f0f23c8e2d3',
+        file_id: 'SfHews4YR7Wo',
       })
       console.log('mouse move', x, y)
     }
