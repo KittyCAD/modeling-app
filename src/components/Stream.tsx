@@ -89,6 +89,7 @@ export const Stream = () => {
       const x = clientX - left
       const y = clientY - top
       debounceSocketSend({
+        type: 'ModelingCmdReq',
         cmd: {
           AddLine: {
             from: {
