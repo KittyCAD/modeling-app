@@ -1,5 +1,5 @@
 import { abstractSyntaxTree } from '../abstractSyntaxTree'
-import { executor } from '../executor'
+import { executor } from '../../lib/testHelpers'
 import { lexer } from '../tokeniser'
 import { initPromise } from '../rust'
 

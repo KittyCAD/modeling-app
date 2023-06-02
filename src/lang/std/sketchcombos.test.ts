@@ -10,7 +10,7 @@ import {
 } from './sketchcombos'
 import { initPromise } from '../rust'
 import { Selections, TooTip } from '../../useStore'
-import { executor } from '../../lang/executor'
+import { executor } from '../../lib/testHelpers'
 import { recast } from '../../lang/recast'
 
 beforeAll(() => initPromise)
@@ -381,13 +381,13 @@ const part001 = startSketchAt([0, 0])
   |> line([myVar, 0.01], %) // xRelative
   |> line([0.7, myVar], %) // yRelative
 show(part001)`
-    it('testing for free to horizontal and vertical distance', () => {
-      const expectedHorizontalCode = helperThing(
+    it('testing for free to horizontal and vertical distance', async () => {
+      const expectedHorizontalCode = await helperThing(
         inputScript,
         ['// base selection', '// free'],
         'setHorzDistance'
       )
-      const expectedVerticalCode = helperThing(
+      const expectedVerticalCode = await helperThing(
         inputScript,
         ['// base selection', '// free'],
         'setVertDistance'
@@ -399,8 +399,8 @@ show(part001)`
         `lineTo([1.21, segEndY('seg01', %) + 2.92], %) // free`
       )
     })
-    it('testing for xRelative to vertical distance', () => {
-      const expectedCode = helperThing(
+    it('testing for xRelative to vertical distance', async () => {
+      const expectedCode = await helperThing(
         inputScript,
         ['// base selection', '// xRelative'],
         'setVertDistance'
@@ -410,8 +410,8 @@ show(part001)`
       segEndY('seg01', %) + 2.93
     ], %) // xRelative`)
     })
-    it('testing for yRelative to horizontal distance', () => {
-      const expectedCode = helperThing(
+    it('testing for yRelative to horizontal distance', async () => {
+      const expectedCode = await helperThing(
         inputScript,
         ['// base selection', '// yRelative'],
         'setHorzDistance'

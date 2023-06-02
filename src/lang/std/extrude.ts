@@ -9,9 +9,10 @@ import {
 import { Quaternion, Vector3 } from 'three'
 import { clockwiseSign } from './std'
 import { extrudeGeo } from '../engine'
+import { generateUuidFromHashSeed } from '../../lib/uuid'
 
 export const extrude: InternalFn = (
-  { sourceRange, engineCommandManager },
+  { sourceRange, engineCommandManager, code },
   length: number,
   sketchVal: SketchGroup
 ): ExtrudeGroup => {
@@ -36,9 +37,16 @@ export const extrude: InternalFn = (
         length,
         extrusionDirection,
       }
-      const id =
-        Math.random().toString(36).substring(2) +
-        Math.random().toString(36).substring(2)
+      const id = generateUuidFromHashSeed(
+        JSON.stringify({
+          code,
+          sourceRange,
+          date: {
+            length,
+            sketchVal,
+          },
+        })
+      )
       engineCommandManager.sendCommand({
         name: 'extrudeSeg',
         id,
@@ -112,7 +120,7 @@ export const getExtrudeWallTransform: InternalFn = (
   position: Position
   quaternion: Rotation
 } => {
-  const path = extrudeGroup.value.find((path) => path.name === pathName)
+  const path = extrudeGroup?.value.find((path) => path.name === pathName)
   if (!path) throw new Error(`Could not find path with name ${pathName}`)
   return {
     position: path.position,

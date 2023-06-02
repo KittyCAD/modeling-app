@@ -9,7 +9,7 @@ import { lexer } from '../tokeniser'
 import { abstractSyntaxTree } from '../abstractSyntaxTree'
 import { getNodePathFromSourceRange } from '../queryAst'
 import { recast } from '../recast'
-import { executor } from '../executor'
+import { executor } from '../../lib/testHelpers'
 import { initPromise } from '../rust'
 
 beforeAll(() => initPromise)

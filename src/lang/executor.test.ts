@@ -2,12 +2,13 @@ import fs from 'node:fs'
 
 import { abstractSyntaxTree } from './abstractSyntaxTree'
 import { lexer } from './tokeniser'
-import { executor, ProgramMemory, Path, SketchGroup } from './executor'
+import { ProgramMemory, Path, SketchGroup } from './executor'
 import { initPromise } from './rust'
+import { executor } from '../lib/testHelpers'
 
 beforeAll(() => initPromise)
 
-describe('test', () => {
+describe('test executor', () => {
   it('test assigning two variables, the second summing with the first', async () => {
     const code = `const myVar = 5
 const newVar = myVar + 1`
@@ -62,6 +63,7 @@ log(5, myVar)`
       ].join('\n')
     )
     expect(root.theVar.value).toBe(60)
+    await new Promise((resolve) => setTimeout(resolve))
     expect(root.magicNum.value).toBe(69)
   })
   it('sketch declaration', async () => {
@@ -82,6 +84,7 @@ show(mySketch)
         from: [0, 0],
         __geoMeta: {
           sourceRange: [43, 80],
+          id: '37333036-3033-4432-b530-643030303837',
           pathToNode: [],
           geos: ['line', 'lineEnd'],
         },
@@ -93,6 +96,7 @@ show(mySketch)
         from: [0, 2],
         __geoMeta: {
           sourceRange: [86, 102],
+          id: '32343136-3330-4134-a462-376437386365',
           pathToNode: [],
           geos: ['line', 'lineEnd'],
         },
@@ -103,6 +107,7 @@ show(mySketch)
         from: [2, 3],
         __geoMeta: {
           sourceRange: [108, 151],
+          id: '32306132-6130-4138-b832-636363326330',
           pathToNode: [],
           geos: ['line', 'lineEnd'],
         },
@@ -171,6 +176,7 @@ show(mySketch)
         to: [0, 0],
         from: [0, 0],
         __geoMeta: {
+          id: '37663863-3664-4366-a637-623739336334',
           sourceRange: [14, 34],
           pathToNode: [],
           geos: ['sketchBase'],
@@ -183,6 +189,7 @@ show(mySketch)
           from: [0, 0],
           __geoMeta: {
             sourceRange: [40, 56],
+            id: '34356231-3362-4363-b935-393033353034',
             pathToNode: [],
             geos: ['line', 'lineEnd'],
           },
@@ -193,6 +200,7 @@ show(mySketch)
           from: [1, 1],
           __geoMeta: {
             sourceRange: [62, 100],
+            id: '39623339-3538-4366-b633-356630326639',
             pathToNode: [],
             geos: ['line', 'lineEnd'],
           },
@@ -204,6 +212,7 @@ show(mySketch)
           from: [0, 1],
           __geoMeta: {
             sourceRange: [106, 122],
+            id: '30636135-6232-4335-b665-366562303161',
             pathToNode: [],
             geos: ['line', 'lineEnd'],
           },
@@ -442,13 +451,16 @@ describe('testing math operators', () => {
 
 // helpers
 
-function exe(
+async function exe(
   code: string,
   programMemory: ProgramMemory = { root: {}, _sketch: [] }
 ) {
   const tokens = lexer(code)
   const ast = abstractSyntaxTree(tokens)
-  return executor(ast, programMemory)
+
+  const result = await executor(ast, programMemory)
+  await new Promise((r) => setTimeout(r))
+  return result
 }
 
 function removeGeoFromSketch(sketch: SketchGroup): SketchGroup {

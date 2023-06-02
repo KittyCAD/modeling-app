@@ -2,23 +2,24 @@ import { io } from 'socket.io-client'
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js'
 import { SourceRange } from '../executor'
 import { Selections } from '../../useStore'
+import { BufferGeometry } from 'three'
 
-const loader = new STLLoader()
+const stlLoader = new STLLoader()
 
 export const socket = io('http://localhost:4000')
 
 socket.connect()
 
 socket.on('connect', () => {
-  console.log('connected')
+  // console.log('connected')
 })
 
 socket.on('disconnect', () => {
-  console.log('disconnected')
+  // console.log('disconnected')
 })
 
 socket.on('connect_error', (error) => {
-  console.log('connect_error', error)
+  // console.log('connect_error', error)
 })
 
 interface ResultCommand {
@@ -44,8 +45,8 @@ export class EngineCommandManager {
   constructor() {}
 
   startNewSession() {
-    this.artifactMap = {}
-    this.sourceRangeMap = {}
+    // this.artifactMap = {}
+    // this.sourceRangeMap = {}
     socket.on('command', ({ id, data }: any) => {
       const command = this.artifactMap[id]
       const geos: any = {}
@@ -53,10 +54,17 @@ export class EngineCommandManager {
         geos.position = data.position
         geos.rotation = data.rotation
         geos.originalId = data.originalId
-        geos.geo = loader.parse(data.geo)
+        try {
+          geos.geo = stlLoader.parse(data.geo)
+        } catch (e) {}
       } else {
         Object.entries(data).forEach(([key, val]: [string, any]) => {
-          const bufferGeometry = loader.parse(val)
+          let bufferGeometry = new BufferGeometry()
+          try {
+            bufferGeometry = stlLoader.parse(val)
+          } catch (e) {
+            console.log('val', val)
+          }
           geos[key] = bufferGeometry
         })
       }
@@ -101,7 +109,7 @@ export class EngineCommandManager {
   }
   cusorsSelected(selections: {
     otherSelections: Selections['otherSelections']
-    idBasedSelections: {type: string, id: string}[]
+    idBasedSelections: { type: string; id: string }[]
   }) {
     socket.emit('cursorsSelected', selections)
   }

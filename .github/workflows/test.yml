@@ -15,6 +15,7 @@ jobs:
       - run: yarn install
       - run: yarn build:wasm:ci
       - run: yarn simpleserver:ci
+      - run: yarn socketserver
       - run: yarn test:nowatch
       - run: yarn test:cov
       - run: yarn test:rust

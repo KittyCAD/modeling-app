@@ -1,5 +1,5 @@
 import { abstractSyntaxTree } from '../abstractSyntaxTree'
-import { executor, SketchGroup } from '../executor'
+import { SketchGroup } from '../executor'
 import { lexer } from '../tokeniser'
 import {
   ConstraintType,
@@ -10,6 +10,7 @@ import { recast } from '../recast'
 import { initPromise } from '../rust'
 import { getSketchSegmentFromSourceRange } from './sketchConstraints'
 import { Selection } from '../../useStore'
+import { executor } from '../../lib/testHelpers'
 
 beforeAll(() => initPromise)
 

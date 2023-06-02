@@ -7,7 +7,7 @@ import {
 } from './queryAst'
 import { lexer } from './tokeniser'
 import { initPromise } from './rust'
-import { executor } from './executor'
+import { executor } from '../lib/testHelpers'
 import {
   createArrayExpression,
   createCallExpression,

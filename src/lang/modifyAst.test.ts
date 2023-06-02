@@ -16,7 +16,7 @@ import {
 import { recast } from './recast'
 import { lexer } from './tokeniser'
 import { initPromise } from './rust'
-import { executor } from './executor'
+import { executor } from '../lib/testHelpers'
 
 beforeAll(() => initPromise)
 

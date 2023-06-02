@@ -21,7 +21,7 @@ io.on('connection', (socket) => {
   console.log('a user connected')
 
   socket.on('startNewSession', () => {
-    theMap = {}
+    // theMap = {}
     console.log('starting new session')
   })
 
@@ -29,14 +29,12 @@ io.on('connection', (socket) => {
     console.log('got command!!', name)
     if (name === 'lineGeo') {
       const params = data as any[]
-      console.log('params', params)
       theMap[id] = params[0]
       const result: any = {}
       Object.entries(lineGeo(params[0])).forEach(([key, val]) => {
         const stlString = exporter.parse(new Mesh(val))
         result[key] = stlString
       })
-      console.log('returning result')
       socket.emit('command', {
         id,
         data: result,
