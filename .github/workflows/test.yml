@@ -17,7 +17,7 @@ jobs:
       - run: yarn simpleserver:ci
       # hack fix to get the socket server to run
       - run: npm pkg set type=module
-      - run: yarn socketserver
+      - run: yarn socketserver:ci
       # type: module needs to be removed again for the tests to run
       - run: npm pkg delete type
       - run: yarn test:nowatch

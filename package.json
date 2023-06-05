@@ -54,7 +54,8 @@
     "add-missing-import": "echo \"import util from 'util'; if (typeof window !== 'undefined' && !window.TextEncoder) { window.TextEncoder = util.TextEncoder; window.TextDecoder = util.TextDecoder}\" | cat - ./src/wasm-lib/pkg/wasm_lib.js > temp && mv temp ./src/wasm-lib/pkg/wasm_lib.js",
     "build:wasm:ci": "mkdir src/wasm-lib/pkg; cd src/wasm-lib && wasm-pack build --target web --out-dir pkg && cd ../../ && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn remove-importmeta:ci && yarn add-missing-import && yarn fmt",
     "build:wasm": "mkdir src/wasm-lib/pkg; cd src/wasm-lib && wasm-pack build --target web --out-dir pkg && cd ../../ && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn remove-importmeta && yarn add-missing-import && yarn fmt",
-    "socketserver": "ts-node --esm src/server/server.mts"
+    "socketserver": "ts-node --esm src/server/server.mts",
+    "socketserver:ci": "ts-node --esm src/server/server.mts &" 
   },
   "jest": {
     "transformIgnorePatterns": [
