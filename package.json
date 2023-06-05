@@ -42,7 +42,7 @@
     "build": "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && source \"$HOME/.cargo/env\" && curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh -s -- -y && yarn build:wasm:ci && react-scripts build",
     "build:local": "react-scripts build",
     "test": "react-scripts test",
-    "test:nowatch": "react-scripts test --watchAll=false",
+    "test:nowatch": "react-scripts test --watchAll=false --forceExit",
     "test:rust": "(cd src/wasm-lib && cargo test && cargo clippy)",
     "test:cov": "react-scripts test --watchAll=false --coverage=true",
     "simpleserver:ci": "http-server ./public --cors -p 3000 &",
@@ -103,5 +103,6 @@
     "setimmediate": "^1.0.5",
     "tailwindcss": "^3.2.4",
     "yarn": "^1.22.19"
-  }
+  },
+  "type": "module"
 }
