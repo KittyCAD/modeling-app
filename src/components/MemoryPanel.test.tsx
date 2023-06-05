@@ -39,7 +39,6 @@ describe('processMemory', () => {
         },
       },
       pendingMemory: {},
-      _sketch: [],
     })
     const output = processMemory(programMemory)
     expect(output.myVar).toEqual(5)

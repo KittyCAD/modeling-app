@@ -48,7 +48,6 @@ log(5, myVar)`
     const { root } = await executor(abstractSyntaxTree(lexer(code)), {
       root: programMemoryOverride,
       pendingMemory: {},
-      _sketch: [],
     })
     expect(root.myVar.value).toBe('hello')
     expect(programMemoryOverride.log.value).toHaveBeenCalledWith(5, 'hello')
@@ -453,7 +452,7 @@ describe('testing math operators', () => {
 
 async function exe(
   code: string,
-  programMemory: ProgramMemory = { root: {}, _sketch: [], pendingMemory: {} }
+  programMemory: ProgramMemory = { root: {}, pendingMemory: {} }
 ) {
   const tokens = lexer(code)
   const ast = abstractSyntaxTree(tokens)

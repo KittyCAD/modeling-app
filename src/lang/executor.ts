@@ -123,7 +123,6 @@ export interface ProgramMemory {
   root: Memory
   pendingMemory: Partial<PendingMemory>
   return?: Identifier[]
-  _sketch?: Path[]
 }
 
 const addItemToMemory = (
@@ -171,15 +170,9 @@ const getMemoryItem = async (
   throw new Error(`Memory item ${key} not found`)
 }
 
-export interface ProgramMemory {
-  root: Memory
-  return?: Identifier[]
-  _sketch?: Path[]
-}
-
 export const executor = async (
   node: Program,
-  programMemory: ProgramMemory = { root: {}, _sketch: [], pendingMemory: {} },
+  programMemory: ProgramMemory = { root: {}, pendingMemory: {} },
   options: { bodyType: 'root' | 'sketch' | 'block' } = { bodyType: 'root' },
   previousPathToNode: PathToNode = [],
   // work around while the gemotry is still be stored on the frontend
@@ -208,7 +201,7 @@ export const executor = async (
 
 export const _executor = async (
   node: Program,
-  programMemory: ProgramMemory = { root: {}, _sketch: [], pendingMemory: {} },
+  programMemory: ProgramMemory = { root: {}, pendingMemory: {} },
   engineCommandManager: EngineCommandManager,
   options: { bodyType: 'root' | 'sketch' | 'block' } = { bodyType: 'root' },
   previousPathToNode: PathToNode = []
@@ -220,7 +213,6 @@ export const _executor = async (
     pendingMemory: {
       ...programMemory.pendingMemory,
     },
-    _sketch: [],
     return: programMemory.return,
   }
   const { body } = node
@@ -394,48 +386,51 @@ export const _executor = async (
         } else if (declaration.init.type === 'FunctionExpression') {
           const fnInit = declaration.init
 
-          _programMemory = addItemToMemory(_programMemory, declaration.id.name, {
-            type: 'userVal',
-            value: async (...args: any[]) => {
-              let fnMemory: ProgramMemory = {
-                root: {
-                  ..._programMemory.root,
-                },
-                pendingMemory: {
-                  ..._programMemory.pendingMemory,
-                },
-                _sketch: [],
-              }
-              if (args.length > fnInit.params.length) {
-                throw new Error(
-                  `Too many arguments passed to function ${declaration.id.name}`
-                )
-              } else if (args.length < fnInit.params.length) {
-                throw new Error(
-                  `Too few arguments passed to function ${declaration.id.name}`
-                )
-              }
-              fnInit.params.forEach((param, index) => {
-                fnMemory = addItemToMemory(fnMemory, param.name, {
-                  type: 'userVal',
-                  value: args[index],
-                  __meta,
-                })
-              })
-              const prom = _executor(
-                fnInit.body,
-                fnMemory,
-                engineCommandManager,
-                {
-                  bodyType: 'block',
+          _programMemory = addItemToMemory(
+            _programMemory,
+            declaration.id.name,
+            {
+              type: 'userVal',
+              value: async (...args: any[]) => {
+                let fnMemory: ProgramMemory = {
+                  root: {
+                    ..._programMemory.root,
+                  },
+                  pendingMemory: {
+                    ..._programMemory.pendingMemory,
+                  },
                 }
-              )
-              proms.push(prom)
-              const result = (await prom).return
-              return result
-            },
-            __meta,
-          })
+                if (args.length > fnInit.params.length) {
+                  throw new Error(
+                    `Too many arguments passed to function ${declaration.id.name}`
+                  )
+                } else if (args.length < fnInit.params.length) {
+                  throw new Error(
+                    `Too few arguments passed to function ${declaration.id.name}`
+                  )
+                }
+                fnInit.params.forEach((param, index) => {
+                  fnMemory = addItemToMemory(fnMemory, param.name, {
+                    type: 'userVal',
+                    value: args[index],
+                    __meta,
+                  })
+                })
+                const prom = _executor(
+                  fnInit.body,
+                  fnMemory,
+                  engineCommandManager,
+                  {
+                    bodyType: 'block',
+                  }
+                )
+                proms.push(prom)
+                const result = (await prom).return
+                return result
+              },
+              __meta,
+            }
+          )
         } else if (declaration.init.type === 'MemberExpression') {
           await Promise.all([...proms]) // TODO wait for previous promises, does that makes sense?
           const prom = getMemberExpressionResult(

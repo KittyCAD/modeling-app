@@ -198,7 +198,6 @@ function App() {
               },
             },
             pendingMemory: {},
-            _sketch: [],
           },
           engineCommandManager,
           { bodyType: 'root' },

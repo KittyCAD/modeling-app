@@ -4,7 +4,7 @@ import { EngineCommandManager } from '../lang/std/engineConnection'
 
 export async function executor(
   ast: Program,
-  pm: ProgramMemory = { root: {}, _sketch: [], pendingMemory: {} }
+  pm: ProgramMemory = { root: {}, pendingMemory: {} }
 ): Promise<ProgramMemory> {
   const engineCommandManager = new EngineCommandManager()
   engineCommandManager.startNewSession()

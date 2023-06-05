@@ -270,7 +270,7 @@ export const useStore = create<StoreState>()(
       setError: (error = '') => {
         set({ errorState: { isError: !!error, error } })
       },
-      programMemory: { root: {}, _sketch: [], pendingMemory: {} },
+      programMemory: { root: {}, pendingMemory: {} },
       setProgramMemory: (programMemory) => set({ programMemory }),
       isShiftDown: false,
       setIsShiftDown: (isShiftDown) => set({ isShiftDown }),
