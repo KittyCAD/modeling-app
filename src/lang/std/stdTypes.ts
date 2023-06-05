@@ -9,6 +9,7 @@ export interface InternalFirstArg {
   name?: string
   sourceRange: SourceRange
   engineCommandManager: EngineCommandManager
+  code: string
 }
 
 export interface PathReturn {

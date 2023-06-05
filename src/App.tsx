@@ -197,6 +197,7 @@ function App() {
                 __meta: [],
               },
             },
+            pendingMemory: {},
             _sketch: [],
           },
           engineCommandManager,

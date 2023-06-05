@@ -47,6 +47,7 @@ log(5, myVar)`
     }
     const { root } = await executor(abstractSyntaxTree(lexer(code)), {
       root: programMemoryOverride,
+      pendingMemory: {},
       _sketch: [],
     })
     expect(root.myVar.value).toBe('hello')
@@ -63,7 +64,6 @@ log(5, myVar)`
       ].join('\n')
     )
     expect(root.theVar.value).toBe(60)
-    await new Promise((resolve) => setTimeout(resolve))
     expect(root.magicNum.value).toBe(69)
   })
   it('sketch declaration', async () => {
@@ -453,13 +453,12 @@ describe('testing math operators', () => {
 
 async function exe(
   code: string,
-  programMemory: ProgramMemory = { root: {}, _sketch: [] }
+  programMemory: ProgramMemory = { root: {}, _sketch: [], pendingMemory: {} }
 ) {
   const tokens = lexer(code)
   const ast = abstractSyntaxTree(tokens)
 
   const result = await executor(ast, programMemory)
-  await new Promise((r) => setTimeout(r))
   return result
 }
 

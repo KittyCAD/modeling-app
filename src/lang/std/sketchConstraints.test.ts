@@ -362,14 +362,14 @@ describe('testing swaping out sketch calls with xLine/xLineTo while keeping vari
     expect(originalRange[0]).toBe(newCode.indexOf(expectedLine))
   })
 
-  it('trying to convert angledLineToY to xLineTo should not work because of the variable', () => {
+  it('trying to convert angledLineToY to xLineTo should not work because of the variable', async () => {
     const illegalConvert = () =>
       testingSwapSketchFnCall({
         inputCode: varExample,
         callToSwap: 'angledLineToY([217, angledLineToYy], %)',
         constraintType: 'horizontal',
       })
-    expect(illegalConvert).toThrowError()
+    await expect(illegalConvert).rejects.toThrowError('no callback helper')
   })
 })
 

@@ -45,8 +45,8 @@ export class EngineCommandManager {
   constructor() {}
 
   startNewSession() {
-    // this.artifactMap = {}
-    // this.sourceRangeMap = {}
+    this.artifactMap = {}
+    this.sourceRangeMap = {}
     socket.on('command', ({ id, data }: any) => {
       const command = this.artifactMap[id]
       const geos: any = {}

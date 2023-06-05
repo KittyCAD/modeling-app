@@ -38,6 +38,7 @@ describe('processMemory', () => {
           __meta: [],
         },
       },
+      pendingMemory: {},
       _sketch: [],
     })
     const output = processMemory(programMemory)

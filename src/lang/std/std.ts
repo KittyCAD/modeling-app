@@ -38,15 +38,15 @@ const transform: InternalFn = <T extends SketchGroup | ExtrudeGroup>(
   },
   sketch: T
 ): T => {
-  const quaternionToApply = new Quaternion(...transformInfo.quaternion)
+  const quaternionToApply = new Quaternion(...transformInfo?.quaternion)
   const newQuaternion = new Quaternion(...sketch.rotation).multiply(
     quaternionToApply.invert()
   )
 
-  const oldPosition = new Vector3(...sketch.position)
+  const oldPosition = new Vector3(...sketch?.position)
   const newPosition = oldPosition
     .applyQuaternion(quaternionToApply)
-    .add(new Vector3(...transformInfo.position))
+    .add(new Vector3(...transformInfo?.position))
   return {
     ...sketch,
     position: newPosition.toArray(),

@@ -110,8 +110,65 @@ export interface UserVal {
   __meta: Metadata[]
 }
 
+type MemoryItem = UserVal | SketchGroup | ExtrudeGroup
+
 interface Memory {
-  [key: string]: UserVal | SketchGroup | ExtrudeGroup // | Memory
+  [key: string]: MemoryItem
+}
+interface PendingMemory {
+  [key: string]: Promise<MemoryItem>
+}
+
+export interface ProgramMemory {
+  root: Memory
+  pendingMemory: Partial<PendingMemory>
+  return?: Identifier[]
+  _sketch?: Path[]
+}
+
+const addItemToMemory = (
+  programMemory: ProgramMemory,
+  key: string,
+  value: MemoryItem | Promise<MemoryItem>
+) => {
+  const _programMemory = programMemory
+  if (_programMemory.root[key] || _programMemory.pendingMemory[key]) {
+    throw new Error(`Memory item ${key} already exists`)
+  }
+  if (value instanceof Promise) {
+    _programMemory.pendingMemory[key] = value
+    value.then((resolvedValue) => {
+      _programMemory.root[key] = resolvedValue
+      delete _programMemory.pendingMemory[key]
+    })
+  } else {
+    _programMemory.root[key] = value
+  }
+  return _programMemory
+}
+
+const promisifyMemoryItem = async (obj: MemoryItem) => {
+  if (obj.value instanceof Promise) {
+    const resolvedGuy = await obj.value
+    return {
+      ...obj,
+      value: resolvedGuy,
+    }
+  }
+  return obj
+}
+
+const getMemoryItem = async (
+  programMemory: ProgramMemory,
+  key: string
+): Promise<MemoryItem> => {
+  if (programMemory.root[key]) {
+    return programMemory.root[key]
+  }
+  if (programMemory.pendingMemory[key]) {
+    return programMemory.pendingMemory[key] as Promise<MemoryItem>
+  }
+  throw new Error(`Memory item ${key} not found`)
 }
 
 export interface ProgramMemory {
@@ -122,7 +179,7 @@ export interface ProgramMemory {
 
 export const executor = async (
   node: Program,
-  programMemory: ProgramMemory = { root: {}, _sketch: [] },
+  programMemory: ProgramMemory = { root: {}, _sketch: [], pendingMemory: {} },
   options: { bodyType: 'root' | 'sketch' | 'block' } = { bodyType: 'root' },
   previousPathToNode: PathToNode = [],
   // work around while the gemotry is still be stored on the frontend
@@ -151,14 +208,17 @@ export const executor = async (
 
 export const _executor = async (
   node: Program,
-  programMemory: ProgramMemory = { root: {}, _sketch: [] },
+  programMemory: ProgramMemory = { root: {}, _sketch: [], pendingMemory: {} },
   engineCommandManager: EngineCommandManager,
   options: { bodyType: 'root' | 'sketch' | 'block' } = { bodyType: 'root' },
   previousPathToNode: PathToNode = []
 ): Promise<ProgramMemory> => {
-  const _programMemory: ProgramMemory = {
+  let _programMemory: ProgramMemory = {
     root: {
       ...programMemory.root,
+    },
+    pendingMemory: {
+      ...programMemory.pendingMemory,
     },
     _sketch: [],
     return: programMemory.return,
@@ -198,26 +258,30 @@ export const _executor = async (
           proms.push(prom)
           const value = await prom
           if (value?.type === 'sketchGroup' || value?.type === 'extrudeGroup') {
-            _programMemory.root[variableName] = value
+            _programMemory = addItemToMemory(
+              _programMemory,
+              variableName,
+              value
+            )
           } else {
-            _programMemory.root[variableName] = {
+            _programMemory = addItemToMemory(_programMemory, variableName, {
               type: 'userVal',
               value,
               __meta,
-            }
+            })
           }
         } else if (declaration.init.type === 'Identifier') {
-          _programMemory.root[variableName] = {
+          _programMemory = addItemToMemory(_programMemory, variableName, {
             type: 'userVal',
             value: _programMemory.root[declaration.init.name].value,
             __meta,
-          }
+          })
         } else if (declaration.init.type === 'Literal') {
-          _programMemory.root[variableName] = {
+          _programMemory = addItemToMemory(_programMemory, variableName, {
             type: 'userVal',
             value: declaration.init.value,
             __meta,
-          }
+          })
         } else if (declaration.init.type === 'BinaryExpression') {
           const prom = getBinaryExpressionResult(
             declaration.init,
@@ -225,11 +289,15 @@ export const _executor = async (
             engineCommandManager
           )
           proms.push(prom)
-          _programMemory.root[variableName] = {
-            type: 'userVal',
-            value: await prom,
-            __meta,
-          }
+          _programMemory = addItemToMemory(
+            _programMemory,
+            variableName,
+            promisifyMemoryItem({
+              type: 'userVal',
+              value: prom,
+              __meta,
+            })
+          )
         } else if (declaration.init.type === 'UnaryExpression') {
           const prom = getUnaryExpressionResult(
             declaration.init,
@@ -237,11 +305,15 @@ export const _executor = async (
             engineCommandManager
           )
           proms.push(prom)
-          _programMemory.root[variableName] = {
-            type: 'userVal',
-            value: await prom,
-            __meta,
-          }
+          _programMemory = addItemToMemory(
+            _programMemory,
+            variableName,
+            promisifyMemoryItem({
+              type: 'userVal',
+              value: prom,
+              __meta,
+            })
+          )
         } else if (declaration.init.type === 'ArrayExpression') {
           const valueInfo: Promise<{ value: any; __meta?: Metadata }>[] =
             declaration.init.elements.map(
@@ -272,7 +344,7 @@ export const _executor = async (
                     value: await prom,
                   }
                 } else if (element.type === 'Identifier') {
-                  const node = _programMemory.root[element.name]
+                  const node = await getMemoryItem(_programMemory, element.name)
                   return {
                     value: node.value,
                     __meta: node.__meta[node.__meta.length - 1],
@@ -298,11 +370,11 @@ export const _executor = async (
           const meta = awaitedValueInfo
             .filter(({ __meta }) => __meta)
             .map(({ __meta }) => __meta) as Metadata[]
-          _programMemory.root[variableName] = {
+          _programMemory = addItemToMemory(_programMemory, variableName, {
             type: 'userVal',
             value: awaitedValueInfo.map(({ value }) => value),
             __meta: [...__meta, ...meta],
-          }
+          })
         } else if (declaration.init.type === 'ObjectExpression') {
           const prom = executeObjectExpression(
             _programMemory,
@@ -310,20 +382,27 @@ export const _executor = async (
             engineCommandManager
           )
           proms.push(prom)
-          _programMemory.root[variableName] = {
-            type: 'userVal',
-            value: await prom,
-            __meta,
-          }
+          _programMemory = addItemToMemory(
+            _programMemory,
+            variableName,
+            promisifyMemoryItem({
+              type: 'userVal',
+              value: prom,
+              __meta,
+            })
+          )
         } else if (declaration.init.type === 'FunctionExpression') {
           const fnInit = declaration.init
 
-          _programMemory.root[declaration.id.name] = {
+          _programMemory = addItemToMemory(_programMemory, declaration.id.name, {
             type: 'userVal',
             value: async (...args: any[]) => {
-              const fnMemory: ProgramMemory = {
+              let fnMemory: ProgramMemory = {
                 root: {
                   ..._programMemory.root,
+                },
+                pendingMemory: {
+                  ..._programMemory.pendingMemory,
                 },
                 _sketch: [],
               }
@@ -337,11 +416,11 @@ export const _executor = async (
                 )
               }
               fnInit.params.forEach((param, index) => {
-                fnMemory.root[param.name] = {
+                fnMemory = addItemToMemory(fnMemory, param.name, {
                   type: 'userVal',
                   value: args[index],
                   __meta,
-                }
+                })
               })
               const prom = _executor(
                 fnInit.body,
@@ -356,7 +435,7 @@ export const _executor = async (
               return result
             },
             __meta,
-          }
+          })
         } else if (declaration.init.type === 'MemberExpression') {
           await Promise.all([...proms]) // TODO wait for previous promises, does that makes sense?
           const prom = getMemberExpressionResult(
@@ -364,13 +443,16 @@ export const _executor = async (
             _programMemory
           )
           proms.push(prom)
-          _programMemory.root[variableName] = {
-            type: 'userVal',
-            value: await prom,
-            __meta,
-          }
+          _programMemory = addItemToMemory(
+            _programMemory,
+            variableName,
+            promisifyMemoryItem({
+              type: 'userVal',
+              value: prom,
+              __meta,
+            })
+          )
         } else if (declaration.init.type === 'CallExpression') {
-          await Promise.all([...proms]) // TODO wait for previous promises, does that makes sense?
           const prom = executeCallExpression(
             _programMemory,
             declaration.init,
@@ -378,15 +460,19 @@ export const _executor = async (
             previousPathToNode
           )
           proms.push(prom)
-          const result = await prom
-          _programMemory.root[variableName] =
-            result?.type === 'sketchGroup' || result?.type === 'extrudeGroup'
-              ? result
-              : {
-                  type: 'userVal',
-                  value: result,
-                  __meta,
-                }
+          _programMemory = addItemToMemory(
+            _programMemory,
+            variableName,
+            prom.then((a) => {
+              return a?.type === 'sketchGroup' || a?.type === 'extrudeGroup'
+                ? a
+                : {
+                    type: 'userVal',
+                    value: a,
+                    __meta,
+                  }
+            })
+          )
         } else {
           throw new Error(
             'Unsupported declaration type: ' + declaration.init.type
@@ -664,7 +750,9 @@ async function executeObjectExpression(
         proms.push(prom)
         obj[property.key.name] = await prom
       } else if (property.value.type === 'Identifier') {
-        obj[property.key.name] = _programMemory.root[property.value.name].value
+        obj[property.key.name] = (
+          await getMemoryItem(_programMemory, property.value.name)
+        ).value
       } else if (property.value.type === 'ObjectExpression') {
         const prom = executeObjectExpression(
           _programMemory,
@@ -811,11 +899,8 @@ async function executeCallExpression(
       if (arg.type === 'Literal') {
         return arg.value
       } else if (arg.type === 'Identifier') {
-        // console.log('arg', arg.name, programMemory.root)
-        console.log('arg', arg.name, programMemory.root, programMemory)
-        await new Promise((r) => setTimeout(r, 10))
-        const temp = programMemory.root[arg.name]
-        console.log('arg2', arg.name, programMemory.root, programMemory)
+        await new Promise((r) => setTimeout(r)) // push into next even loop, but also probably should fix this
+        const temp = await getMemoryItem(programMemory, arg.name)
         return temp?.type === 'userVal' ? temp.value : temp
       } else if (arg.type === 'PipeSubstitution') {
         return previousResults[expressionIndex - 1]
@@ -860,13 +945,8 @@ async function executeCallExpression(
       throw new Error('Invalid argument type in function call')
     })
   )
-  console.log('functionName', functionName)
   if (functionName in internalFns) {
     const fnNameWithSketchOrExtrude = functionName as InternalFnNames
-    if (fnNameWithSketchOrExtrude === 'transform') {
-      console.log('bing', fnNameWithSketchOrExtrude, fnArgs[0])
-    }
-    // await new Promise(r => setTimeout(r, 500))
     const result = await internalFns[fnNameWithSketchOrExtrude](
       {
         programMemory,
@@ -878,10 +958,6 @@ async function executeCallExpression(
       fnArgs[1],
       fnArgs[2]
     )
-    if (fnNameWithSketchOrExtrude === 'getExtrudeWallTransform') {
-      console.log('bing', fnNameWithSketchOrExtrude)
-      await new Promise((r) => setTimeout(r, 1000))
-    }
     return isInPipe
       ? await executePipeBody(
           body,
