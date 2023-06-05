@@ -44,7 +44,7 @@
     "test": "react-scripts test",
     "test:nowatch": "react-scripts test --watchAll=false --forceExit",
     "test:rust": "(cd src/wasm-lib && cargo test && cargo clippy)",
-    "test:cov": "react-scripts test --watchAll=false --coverage=true",
+    "test:cov": "react-scripts test --watchAll=false --coverage=true --forceExit",
     "simpleserver:ci": "http-server ./public --cors -p 3000 &",
     "simpleserver": "http-server ./public --cors -p 3000",
     "eject": "react-scripts eject",
