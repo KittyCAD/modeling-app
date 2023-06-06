@@ -41,7 +41,7 @@
     "start": "react-scripts start",
     "build": "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && source \"$HOME/.cargo/env\" && curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh -s -- -y && yarn build:wasm:ci && react-scripts build",
     "build:local": "react-scripts build",
-    "build:both": "yarn build",
+    "build:both": "react-scripts build",
     "build:both:local": "yarn build:wasm && react-scripts build",
     "test": "react-scripts test",
     "test:nowatch": "react-scripts test --watchAll=false --forceExit",
@@ -50,7 +50,7 @@
     "simpleserver:ci": "http-server ./public --cors -p 3000 &",
     "simpleserver": "http-server ./public --cors -p 3000",
     "eject": "react-scripts eject",
-    "fmt": "prettier --write './src/**/*.{ts,tsx,js,mts}'",
+    "fmt": "prettier --write ./src/**/*.{ts,tsx,js,mts}",
     "remove-importmeta": "sed -i '' 's/import.meta.url//g' \"./src/wasm-lib/pkg/wasm_lib.js\"",
     "remove-importmeta:ci": "sed -i 's/import.meta.url//g' \"./src/wasm-lib/pkg/wasm_lib.js\"",
     "add-missing-import": "echo \"import util from 'util'; if (typeof window !== 'undefined' && !window.TextEncoder) { window.TextEncoder = util.TextEncoder; window.TextDecoder = util.TextDecoder}\" | cat - ./src/wasm-lib/pkg/wasm_lib.js > temp && mv temp ./src/wasm-lib/pkg/wasm_lib.js",
@@ -106,6 +106,5 @@
     "setimmediate": "^1.0.5",
     "tailwindcss": "^3.2.4",
     "yarn": "^1.22.19"
-  },
-  "type": "module"
+  }
 }
