@@ -72,4 +72,4 @@ jobs:
           releaseDraft: true
           prerelease: false
           command: release
-          args: --skip-sign
+          args: -- --skip-sign
