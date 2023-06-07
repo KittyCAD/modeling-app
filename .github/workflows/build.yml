@@ -11,8 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
-        # os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v2
       - name: install ubuntu system dependencies
@@ -60,8 +59,6 @@ jobs:
       #   with:
       #     name: tauri-app
       #     path: src-tauri/target/release/bundle
-
-      
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
 
@@ -74,34 +71,3 @@ jobs:
           releaseBody: 'See the assets to download and install this version.'
           releaseDraft: true
           prerelease: false
-          # command: release
-          # args: -- --skip-sign
-
-      # - name: Build Tauri app
-      #   run: yarn tauri build
-      #   env: 
-      #     CI: false
-
-      # - name: Create Release
-      #   uses: actions/create-release@v1
-      #   id: create_release
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     tag_name: ${{ github.ref }}
-      #     release_name: Release ${{ github.ref }}
-      #     body: |
-      #       Release ${{ github.ref }}
-      #     draft: false
-      #     prerelease: false
-      
-      # - name: debug
-      #   run: cd src-tauri/target/release/bundle && ls -la
-
-      # - name: Upload Release Asset
-      #   if: matrix.os == 'macos-latest'
-      #   uses: actions/upload-release-asset@v1
-      #   with:
-      #     asset-path: src-tauri/target/release/bundle/dmg/untitled-app_0.1.0_aarch64.dmg
-      #     release-id: ${{ steps.create_release.outputs.id }}
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
