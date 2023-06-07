@@ -59,17 +59,43 @@ jobs:
       #   with:
       #     name: tauri-app
       #     path: src-tauri/target/release/bundle
-      - name: Build the app
-        uses: tauri-apps/tauri-action@v0
+      # - name: Build the app
+      #   uses: tauri-apps/tauri-action@v0
 
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     CI: false
+      #   with:
+      #     tagName: ${{ github.ref_name }} # This only works if your workflow triggers on new tags.
+      #     releaseName: 'App Name v__VERSION__' # tauri-action replaces \_\_VERSION\_\_ with the app version.
+      #     releaseBody: 'See the assets to download and install this version.'
+      #     releaseDraft: true
+      #     prerelease: false
+      #     command: release
+      #     args: -- --skip-sign
+
+      - name: Build Tauri app
+        run: yarn tauri build
+
+      - name: Release with Tauri
+        run: yarn tauri bundle
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        id: create_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CI: false
         with:
-          tagName: ${{ github.ref_name }} # This only works if your workflow triggers on new tags.
-          releaseName: 'App Name v__VERSION__' # tauri-action replaces \_\_VERSION\_\_ with the app version.
-          releaseBody: 'See the assets to download and install this version.'
-          releaseDraft: true
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Release ${{ github.ref }}
+          draft: false
           prerelease: false
-          command: release
-          args: -- --skip-sign
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        with:
+          asset-path: ./path/to/your/app.zip
+          release-id: ${{ steps.create_release.outputs.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
