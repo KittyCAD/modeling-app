@@ -76,9 +76,8 @@ jobs:
 
       - name: Build Tauri app
         run: yarn tauri build
-
-      - name: Release with Tauri
-        run: yarn tauri bundle
+        env: 
+          CI: false
 
       - name: Create Release
         uses: actions/create-release@v1
@@ -92,10 +91,14 @@ jobs:
             Release ${{ github.ref }}
           draft: false
           prerelease: false
+      
+      - name: debug
+        run: cd src-tauri/target/release/bundle && ls -la
 
       - name: Upload Release Asset
+        if: matrix.os == 'macos-latest'
         uses: actions/upload-release-asset@v1
         with:
-          asset-path: ./path/to/your/app.zip
+          asset-path: src-tauri/target/release/bundle/dmg/untitled-app_0.1.0_aarch64.dmg
           release-id: ${{ steps.create_release.outputs.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
