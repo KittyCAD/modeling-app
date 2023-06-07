@@ -51,8 +51,7 @@
       "csp": null
     },
     "updater": {
-      "active": false,
-      "signature": false
+      "active": false
     },
     "windows": [
       {
