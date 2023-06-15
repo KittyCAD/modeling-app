@@ -47,7 +47,12 @@ export const Stream = () => {
             iceServers: message.ice_servers,
           })
           pc.ontrack = function (event) {
-            if (videoRef.current) {
+            if (
+              videoRef.current &&
+              event &&
+              event.track &&
+              event.track.kind == 'video'
+            ) {
               videoRef.current.srcObject = event.streams[0]
               videoRef.current.autoplay = true
               videoRef.current.muted = true
