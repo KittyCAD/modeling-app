@@ -49,6 +49,7 @@ export const Stream = () => {
             if (videoRef.current) {
               videoRef.current.srcObject = event.streams[0]
               videoRef.current.autoplay = true
+              videoRef.current.muted = true
               videoRef.current.controls = false
             }
           }
