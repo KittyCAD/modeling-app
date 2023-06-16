@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { PanelHeader } from '../components/PanelHeader'
+import { v4 as uuidv4 } from 'uuid'
 
 export const Stream = () => {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -10,8 +11,11 @@ export const Stream = () => {
       typeof RTCPeerConnection === 'undefined'
     )
       return
-    const url = 'ws://34.133.147.156/ws/modeling/commands'
+      const url = 'ws://jess-testing.hawk-dinosaur.ts.net:8080/ws/modeling/commands'
     const [pc, socket] = [new RTCPeerConnection(), new WebSocket(url)]
+    const file_id = uuidv4()
+    let currentCmdId: null | string = null
+
     // Connection opened
     socket.addEventListener('open', (event) => {
       console.log('Connected to websocket, waiting for ICE servers')
@@ -93,29 +97,75 @@ export const Stream = () => {
       const { left, top } = videoRef.current.getBoundingClientRect()
       const x = clientX - left
       const y = clientY - top
-      debounceSocketSend({
-        type: 'ModelingCmdReq',
-        cmd: {
-          AddLine: {
-            from: {
-              x: x * 1.1,
-              y: y * 1.1,
-              z: 10.1,
-            },
-            to: {
-              x: x * 100.1,
-              y: 10.1 * y,
-              z: 5.1,
+    }
+
+    const handleClick = ({ clientX, clientY }: MouseEvent) => {
+      if (!videoRef.current) return
+      const { left, top, right, bottom } = videoRef.current.getBoundingClientRect()
+        // We need to get the origin.
+      const x = clientX - left
+      const y = clientY - top
+
+      console.log('clicked at', x, y)
+
+      // If we have not started a line start it here.
+      if (currentCmdId == null) {
+        currentCmdId = uuidv4()
+        debounceSocketSend({
+          type: 'ModelingCmdReq',
+          cmd: {
+            StartPath: {},
+          },
+          cmd_id: currentCmdId,
+          file_id: file_id,
+        })
+        // Let's move the path pen.
+        debounceSocketSend({
+          type: 'ModelingCmdReq',
+          cmd: {
+            MovePathPen: {
+              path: currentCmdId,
+              to: {
+                x: 0,
+                y: 0,
+                z: 0,
+              },
             },
           },
-        },
-        cmd_id: '40643541-18b4-46c4-93ec-6f0f23c8e2d3',
-        file_id: 'SfHews4YR7Wo',
-      })
-      console.log('mouse move', x, y)
+          cmd_id: uuidv4(),
+          file_id: file_id,
+        })
+      } else {
+        // End the line.
+        // Let's extend the line from where the path pen was.
+        debounceSocketSend({
+          type: 'ModelingCmdReq',
+          cmd: {
+            ExtendPath: {
+              path: currentCmdId,
+              segment: {
+                Line: {
+                  end: {
+                    x: 1,
+                    y: 1,
+                    z: 0,
+                  },
+                },
+              },
+            },
+          },
+          cmd_id: uuidv4(),
+          file_id: file_id,
+        })
+
+        // We ended the line, so let's null it out again.
+        currentCmdId = null
+      }
     }
+
     if (videoRef.current) {
       videoRef.current.addEventListener('mousemove', handleMouseMove)
+      videoRef.current.addEventListener('click', handleClick)
     }
 
     return () => {
@@ -123,6 +173,7 @@ export const Stream = () => {
       pc.close()
       if (!videoRef.current) return
       videoRef.current.removeEventListener('mousemove', handleMouseMove)
+      videoRef.current.removeEventListener('click', handleClick)
     }
   }, [])
 

@@ -8,7 +8,7 @@ export const Auth = () => {
   const isLocalHost =
     typeof window !== 'undefined' && window.location.hostname === 'localhost'
 
-  if (!user && !isLocalHost) {
+  /*if (!user && !isLocalHost) {
     return (
       <>
         <div className=" bg-gray-800 p-1 px-4 rounded-r-lg pointer-events-auto flex items-center">
@@ -25,7 +25,7 @@ export const Auth = () => {
         </div>
       </>
     )
-  }
+  }*/
 
   return <App />
 }
