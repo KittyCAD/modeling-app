@@ -11,7 +11,8 @@ export const Stream = () => {
       typeof RTCPeerConnection === 'undefined'
     )
       return
-      const url = 'ws://jess-testing.hawk-dinosaur.ts.net:8080/ws/modeling/commands'
+    const url =
+      'ws://jess-testing.hawk-dinosaur.ts.net:8080/ws/modeling/commands'
     const [pc, socket] = [new RTCPeerConnection(), new WebSocket(url)]
     const file_id = uuidv4()
     let currentCmdId: null | string = null
@@ -61,6 +62,9 @@ export const Stream = () => {
               videoRef.current.autoplay = true
               videoRef.current.muted = true
               videoRef.current.controls = false
+
+              // Wait for a second then draw a curve.
+              setTimeout(drawCurve, 1000)
             }
           }
           pc.oniceconnectionstatechange = (e) =>
@@ -92,80 +96,176 @@ export const Stream = () => {
       console.log(JSON.stringify(message))
       socket.send(JSON.stringify(message))
     }, 100)
+
+    const handleClick = ({ clientX, clientY }: MouseEvent) => {
+      if (!videoRef.current) return
+      const { left, top } = videoRef.current.getBoundingClientRect()
+      const x = clientX - left
+      const y = clientY - top
+      console.log('click', x, y)
+
+      if (currentCmdId == null) {
+        currentCmdId = uuidv4()
+
+        debounceSocketSend({
+          type: 'ModelingCmdReq',
+          cmd: {
+            CameraDragStart: {
+              interaction: 'rotate',
+              window: {
+                x: x,
+                y: y,
+              },
+            },
+          },
+          cmd_id: uuidv4(),
+          file_id: file_id,
+        })
+      }
+    }
+
+    const handleMouseUp = ({ clientX, clientY }: MouseEvent) => {
+      if (!videoRef.current) return
+      const { left, top } = videoRef.current.getBoundingClientRect()
+      const x = clientX - left
+      const y = clientY - top
+      console.log('click', x, y)
+
+      if (currentCmdId == null) {
+        return
+      }
+
+      debounceSocketSend({
+        type: 'ModelingCmdReq',
+        cmd: {
+          CameraDragEnd: {
+            interaction: 'rotate',
+            window: {
+              x: x,
+              y: y,
+            },
+          },
+        },
+        cmd_id: uuidv4(),
+        file_id: file_id,
+      })
+        currentCmdId   = null
+    }
+
     const handleMouseMove = ({ clientX, clientY }: MouseEvent) => {
       if (!videoRef.current) return
       const { left, top } = videoRef.current.getBoundingClientRect()
       const x = clientX - left
       const y = clientY - top
-    }
 
-    const handleClick = ({ clientX, clientY }: MouseEvent) => {
-      if (!videoRef.current) return
-      const { left, top, right, bottom } = videoRef.current.getBoundingClientRect()
-        // We need to get the origin.
-      const x = clientX - left
-      const y = clientY - top
-
-      console.log('clicked at', x, y)
-
-      // If we have not started a line start it here.
       if (currentCmdId == null) {
-        currentCmdId = uuidv4()
+        return
+      } else {
+      console.log('mouse move', x, y)
         debounceSocketSend({
           type: 'ModelingCmdReq',
           cmd: {
-            StartPath: {},
-          },
-          cmd_id: currentCmdId,
-          file_id: file_id,
-        })
-        // Let's move the path pen.
-        debounceSocketSend({
-          type: 'ModelingCmdReq',
-          cmd: {
-            MovePathPen: {
-              path: currentCmdId,
-              to: {
-                x: 0,
-                y: 0,
-                z: 0,
+            CameraDragMove: {
+              interaction: 'rotate',
+              window: {
+                x: x,
+                y: y,
               },
             },
           },
           cmd_id: uuidv4(),
           file_id: file_id,
         })
-      } else {
-        // End the line.
-        // Let's extend the line from where the path pen was.
-        debounceSocketSend({
-          type: 'ModelingCmdReq',
-          cmd: {
-            ExtendPath: {
-              path: currentCmdId,
-              segment: {
-                Line: {
-                  end: {
-                    x: 1,
-                    y: 1,
-                    z: 0,
-                  },
+      }
+    }
+
+    const drawLine = () => {
+      let cmdId = uuidv4()
+      debounceSocketSend({
+        type: 'ModelingCmdReq',
+        cmd: {
+          StartPath: {},
+        },
+        cmd_id: cmdId,
+        file_id: file_id,
+      })
+      // Let's move the path pen.
+      debounceSocketSend({
+        type: 'ModelingCmdReq',
+        cmd: {
+          MovePathPen: {
+            path: cmdId,
+            to: {
+              x: 0,
+              y: 0,
+              z: 0,
+            },
+          },
+        },
+        cmd_id: uuidv4(),
+        file_id: file_id,
+      })
+      // End the line.
+      // Let's extend the line from where the path pen was.
+      debounceSocketSend({
+        type: 'ModelingCmdReq',
+        cmd: {
+          ExtendPath: {
+            path: currentCmdId,
+            segment: {
+              Line: {
+                end: {
+                  x: 10,
+                  y: 10,
+                  z: 0,
                 },
               },
             },
           },
-          cmd_id: uuidv4(),
-          file_id: file_id,
-        })
+        },
+        cmd_id: uuidv4(),
+        file_id: file_id,
+      })
+    }
 
-        // We ended the line, so let's null it out again.
-        currentCmdId = null
-      }
+    const drawCurve = () => {
+      let cmdId = uuidv4()
+      debounceSocketSend({
+        type: 'ModelingCmdReq',
+        cmd: {
+          StartPath: {},
+        },
+        cmd_id: cmdId,
+        file_id: file_id,
+      })
+      debounceSocketSend({
+        type: 'ModelingCmdReq',
+        cmd: {
+          ExtendPath: {
+            path: cmdId,
+            segment: {
+              Arc: {
+                center: {
+                  x: 0,
+                  y: 0,
+                  z: 0,
+                },
+                radius: 2.0,
+                angle_start: 10.0,
+                angle_end: 3.14,
+              },
+            },
+          },
+        },
+        cmd_id: uuidv4(),
+        file_id: file_id,
+      })
     }
 
     if (videoRef.current) {
       videoRef.current.addEventListener('mousemove', handleMouseMove)
-      videoRef.current.addEventListener('click', handleClick)
+      videoRef.current.addEventListener('mousedown', handleClick)
+      videoRef.current.addEventListener('mouseup', handleMouseUp)
     }
 
     return () => {
@@ -173,7 +273,8 @@ export const Stream = () => {
       pc.close()
       if (!videoRef.current) return
       videoRef.current.removeEventListener('mousemove', handleMouseMove)
-      videoRef.current.removeEventListener('click', handleClick)
+      videoRef.current.removeEventListener('mousedown', handleClick)
+      videoRef.current.removeEventListener('mouseup', handleMouseUp)
     }
   }, [])
 
