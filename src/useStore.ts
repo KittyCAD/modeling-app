@@ -13,6 +13,7 @@ import {
 import { recast } from './lang/recast'
 import { asyncLexer } from './lang/tokeniser'
 import { EditorSelection } from '@codemirror/state'
+import { BaseDirectory } from '@tauri-apps/api/fs'
 
 export type Selection = {
   type: 'default' | 'line-end' | 'line-mid'
@@ -88,6 +89,11 @@ export type GuiModes =
       position: Position
     }
 
+interface DefaultDir {
+  base?: BaseDirectory
+  dir: string
+}
+
 export interface StoreState {
   editorView: EditorView | null
   setEditorView: (editorView: EditorView) => void
@@ -125,6 +131,17 @@ export interface StoreState {
   setProgramMemory: (programMemory: ProgramMemory) => void
   isShiftDown: boolean
   setIsShiftDown: (isShiftDown: boolean) => void
+
+  // tauri specific app settings
+  defaultDir: DefaultDir
+  setDefaultDir: (dir: DefaultDir) => void
+  showHomeMenu: boolean
+  setHomeShowMenu: (showMenu: boolean) => void
+  homeMenuItems: {
+    name: string
+    path: string
+  }[]
+  setHomeMenuItems: (items: { name: string; path: string }[]) => void
 }
 
 let pendingAstUpdates: number[] = []
@@ -248,12 +265,22 @@ export const useStore = create<StoreState>()(
       setProgramMemory: (programMemory) => set({ programMemory }),
       isShiftDown: false,
       setIsShiftDown: (isShiftDown) => set({ isShiftDown }),
+
+      // tauri specific app settings
+      defaultDir: {
+        dir: '',
+      },
+      setDefaultDir: (dir) => set({ defaultDir: dir }),
+      showHomeMenu: true,
+      setHomeShowMenu: (showHomeMenu) => set({ showHomeMenu }),
+      homeMenuItems: [],
+      setHomeMenuItems: (homeMenuItems) => set({ homeMenuItems }),
     }),
     {
       name: 'store',
       partialize: (state) =>
         Object.fromEntries(
-          Object.entries(state).filter(([key]) => ['code'].includes(key))
+          Object.entries(state).filter(([key]) => ['code', 'defaultDir'].includes(key))
         ),
     }
   )
