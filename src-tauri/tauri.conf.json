@@ -7,12 +7,24 @@
     "distDir": "../build"
   },
   "package": {
-    "productName": "untitled-app",
-    "version": "0.1.0"
+    "productName": "paraffin",
+    "version": "0.0.2"
   },
   "tauri": {
     "allowlist": {
-      "all": false
+      "all": false,
+      "dialog": {
+        "all": true,
+        "ask": true,
+        "confirm": true,
+        "message": true,
+        "open": true,
+        "save": true
+      },
+      "fs": {
+        "scope": ["$HOME/**/*"],
+        "all": true
+      }
     },
     "bundle": {
       "active": true,
@@ -56,10 +68,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
+        "height": 1200,
         "resizable": true,
-        "title": "untitled-app",
-        "width": 800
+        "title": "paraffin",
+        "width": 1800
       }
     ]
   }
