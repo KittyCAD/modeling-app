@@ -96,11 +96,14 @@ export function useCalc({
   newVariableInsertIndex: number
   setNewVariableName: (a: string) => void
 } {
-  const { ast, programMemory, selectionRange } = useStore((s) => ({
-    ast: s.ast,
-    programMemory: s.programMemory,
-    selectionRange: s.selectionRanges.codeBasedSelections[0].range,
-  }))
+  const { ast, programMemory, selectionRange, engineCommandManager } = useStore(
+    (s) => ({
+      ast: s.ast,
+      programMemory: s.programMemory,
+      selectionRange: s.selectionRanges.codeBasedSelections[0].range,
+      engineCommandManager: s.engineCommandManager,
+    })
+  )
   const inputRef = useRef<HTMLInputElement>(null)
   const [availableVarInfo, setAvailableVarInfo] = useState<
     ReturnType<typeof findAllPreviousVariables>
@@ -141,6 +144,7 @@ export function useCalc({
   }, [ast, programMemory, selectionRange])
 
   useEffect(() => {
+    if (!engineCommandManager) return
     try {
       const code = `const __result__ = ${value}\nshow(__result__)`
       const ast = abstractSyntaxTree(lexer(code))
@@ -148,7 +152,7 @@ export function useCalc({
       availableVarInfo.variables.forEach(({ key, value }) => {
         _programMem.root[key] = { type: 'userVal', value, __meta: [] }
       })
-      executor(ast, _programMem).then((programMemory) => {
+      executor(ast, _programMem, engineCommandManager).then((programMemory) => {
         const resultDeclaration = ast.body.find(
           (a) =>
             a.type === 'VariableDeclaration' &&

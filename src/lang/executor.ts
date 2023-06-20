@@ -12,7 +12,6 @@ import {
 } from './abstractSyntaxTree'
 import { InternalFnNames } from './std/stdTypes'
 import { internalFns } from './std/std'
-import { BufferGeometry } from 'three'
 import {
   EngineCommandManager,
   ArtifactMap,
@@ -35,7 +34,6 @@ interface BasePath {
   __geoMeta: {
     id: string
     geos: {
-      geo: BufferGeometry
       type: 'line' | 'lineEnd' | 'sketchBase'
     }[]
     sourceRange: SourceRange
@@ -65,7 +63,6 @@ export interface AngledLineTo extends BasePath {
 
 interface GeoMeta {
   __geoMeta: {
-    geo?: BufferGeometry
     id: string
     refId?: string
     sourceRange: SourceRange
@@ -173,6 +170,7 @@ const getMemoryItem = async (
 export const executor = async (
   node: Program,
   programMemory: ProgramMemory = { root: {}, pendingMemory: {} },
+  engineCommandManager: EngineCommandManager,
   options: { bodyType: 'root' | 'sketch' | 'block' } = { bodyType: 'root' },
   previousPathToNode: PathToNode = [],
   // work around while the gemotry is still be stored on the frontend
@@ -182,7 +180,6 @@ export const executor = async (
     sourceRangeMap: SourceRangeMap
   }) => void = () => {}
 ): Promise<ProgramMemory> => {
-  const engineCommandManager = new EngineCommandManager()
   engineCommandManager.startNewSession()
   const _programMemory = await _executor(
     node,

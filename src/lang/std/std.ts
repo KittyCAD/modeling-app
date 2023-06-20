@@ -24,62 +24,61 @@ import {
   lastSegX,
   lastSegY,
 } from './sketchConstraints'
-import { extrude, getExtrudeWallTransform } from './extrude'
-import { Quaternion, Vector3 } from 'three'
+import { getExtrudeWallTransform } from './extrude'
 import { SketchGroup, ExtrudeGroup, Position, Rotation } from '../executor'
 
 import { InternalFn, InternalFnNames, InternalFirstArg } from './stdTypes'
 
-const transform: InternalFn = <T extends SketchGroup | ExtrudeGroup>(
-  { sourceRange }: InternalFirstArg,
-  transformInfo: {
-    position: Position
-    quaternion: Rotation
-  },
-  sketch: T
-): T => {
-  const quaternionToApply = new Quaternion(...transformInfo?.quaternion)
-  const newQuaternion = new Quaternion(...sketch.rotation).multiply(
-    quaternionToApply.invert()
-  )
+// const transform: InternalFn = <T extends SketchGroup | ExtrudeGroup>(
+//   { sourceRange }: InternalFirstArg,
+//   transformInfo: {
+//     position: Position
+//     quaternion: Rotation
+//   },
+//   sketch: T
+// ): T => {
+//   const quaternionToApply = new Quaternion(...transformInfo?.quaternion)
+//   const newQuaternion = new Quaternion(...sketch.rotation).multiply(
+//     quaternionToApply.invert()
+//   )
 
-  const oldPosition = new Vector3(...sketch?.position)
-  const newPosition = oldPosition
-    .applyQuaternion(quaternionToApply)
-    .add(new Vector3(...transformInfo?.position))
-  return {
-    ...sketch,
-    position: newPosition.toArray(),
-    rotation: newQuaternion.toArray(),
-    __meta: [
-      ...sketch.__meta,
-      {
-        sourceRange,
-        pathToNode: [], // TODO
-      },
-    ],
-  }
-}
+//   const oldPosition = new Vector3(...sketch?.position)
+//   const newPosition = oldPosition
+//     .applyQuaternion(quaternionToApply)
+//     .add(new Vector3(...transformInfo?.position))
+//   return {
+//     ...sketch,
+//     position: newPosition.toArray(),
+//     rotation: newQuaternion.toArray(),
+//     __meta: [
+//       ...sketch.__meta,
+//       {
+//         sourceRange,
+//         pathToNode: [], // TODO
+//       },
+//     ],
+//   }
+// }
 
-const translate: InternalFn = <T extends SketchGroup | ExtrudeGroup>(
-  { sourceRange }: InternalFirstArg,
-  vec3: [number, number, number],
-  sketch: T
-): T => {
-  const oldPosition = new Vector3(...sketch.position)
-  const newPosition = oldPosition.add(new Vector3(...vec3))
-  return {
-    ...sketch,
-    position: newPosition.toArray(),
-    __meta: [
-      ...sketch.__meta,
-      {
-        sourceRange,
-        pathToNode: [], // TODO
-      },
-    ],
-  }
-}
+// const translate: InternalFn = <T extends SketchGroup | ExtrudeGroup>(
+//   { sourceRange }: InternalFirstArg,
+//   vec3: [number, number, number],
+//   sketch: T
+// ): T => {
+//   const oldPosition = new Vector3(...sketch.position)
+//   const newPosition = oldPosition.add(new Vector3(...vec3))
+//   return {
+//     ...sketch,
+//     position: newPosition.toArray(),
+//     __meta: [
+//       ...sketch.__meta,
+//       {
+//         sourceRange,
+//         pathToNode: [], // TODO
+//       },
+//     ],
+//   }
+// }
 
 const min: InternalFn = (_, a: number, b: number): number => Math.min(a, b)
 
@@ -95,12 +94,13 @@ const legAngY: InternalFn = (_, hypotenuse: number, leg: number): number =>
   (Math.asin(Math.min(leg, hypotenuse) / hypotenuse) * 180) / Math.PI
 
 export const internalFns: { [key in InternalFnNames]: InternalFn } = {
-  rx: rotateOnAxis([1, 0, 0]),
-  ry: rotateOnAxis([0, 1, 0]),
-  rz: rotateOnAxis([0, 0, 1]),
-  extrude,
-  translate,
-  transform,
+  // TODO - re-enable these
+  // rx: rotateOnAxis([1, 0, 0]),
+  // ry: rotateOnAxis([0, 1, 0]),
+  // rz: rotateOnAxis([0, 0, 1]),
+  // extrude,
+  // translate,
+  // transform,
   getExtrudeWallTransform,
   min,
   legLen,
@@ -130,35 +130,35 @@ export const internalFns: { [key in InternalFnNames]: InternalFn } = {
   close,
 }
 
-function rotateOnAxis<T extends SketchGroup | ExtrudeGroup>(
-  axisMultiplier: [number, number, number]
-): InternalFn {
-  return ({ sourceRange }, rotationD: number, sketch: T): T => {
-    const rotationR = rotationD * (Math.PI / 180)
-    const rotateVec = new Vector3(...axisMultiplier)
-    const quaternion = new Quaternion()
-    quaternion.setFromAxisAngle(rotateVec, rotationR)
+// function rotateOnAxis<T extends SketchGroup | ExtrudeGroup>(
+//   axisMultiplier: [number, number, number]
+// ): InternalFn {
+//   return ({ sourceRange }, rotationD: number, sketch: T): T => {
+//     const rotationR = rotationD * (Math.PI / 180)
+//     const rotateVec = new Vector3(...axisMultiplier)
+//     const quaternion = new Quaternion()
+//     quaternion.setFromAxisAngle(rotateVec, rotationR)
 
-    const position = new Vector3(...sketch.position)
-      .applyQuaternion(quaternion)
-      .toArray()
+//     const position = new Vector3(...sketch.position)
+//       .applyQuaternion(quaternion)
+//       .toArray()
 
-    const existingQuat = new Quaternion(...sketch.rotation)
-    const rotation = quaternion.multiply(existingQuat).toArray()
-    return {
-      ...sketch,
-      rotation,
-      position,
-      __meta: [
-        ...sketch.__meta,
-        {
-          sourceRange,
-          pathToNode: [], // TODO
-        },
-      ],
-    }
-  }
-}
+//     const existingQuat = new Quaternion(...sketch.rotation)
+//     const rotation = quaternion.multiply(existingQuat).toArray()
+//     return {
+//       ...sketch,
+//       rotation,
+//       position,
+//       __meta: [
+//         ...sketch.__meta,
+//         {
+//           sourceRange,
+//           pathToNode: [], // TODO
+//         },
+//       ],
+//     }
+//   }
+// }
 
 export function clockwiseSign(points: [number, number][]): number {
   let sum = 0

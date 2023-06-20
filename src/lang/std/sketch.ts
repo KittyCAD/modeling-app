@@ -19,7 +19,6 @@ import {
   getNodeFromPathCurry,
   getNodePathFromSourceRange,
 } from '../queryAst'
-import { lineGeo, sketchBaseGeo } from '../engine'
 import { GuiModes, toolTips, TooTip } from '../../useStore'
 import { splitPathAtPipeExpression } from '../modifyAst'
 import { generateUuidFromHashSeed } from '../../lib/uuid'
@@ -147,7 +146,6 @@ export const lineTo: SketchLineHelper = {
       params: [lineData, previousSketch],
       range: sourceRange,
     })
-    const geo = lineGeo(lineData)
     const currentPath: Path = {
       type: 'toPoint',
       to,
@@ -159,11 +157,9 @@ export const lineTo: SketchLineHelper = {
         geos: [
           {
             type: 'line',
-            geo: geo.line,
           },
           {
             type: 'lineEnd',
-            geo: geo.tip,
           },
         ],
       },
@@ -281,7 +277,6 @@ export const line: SketchLineHelper = {
       params: [lineData, previousSketch],
       range: sourceRange,
     })
-    const geo = lineGeo(lineData)
     const currentPath: Path = {
       type: 'toPoint',
       to,
@@ -293,11 +288,9 @@ export const line: SketchLineHelper = {
         geos: [
           {
             type: 'line',
-            geo: geo.line,
           },
           {
             type: 'lineEnd',
-            geo: geo.tip,
           },
         ],
       },
@@ -696,7 +689,6 @@ export const angledLine: SketchLineHelper = {
       params: [lineData, previousSketch],
       range: sourceRange,
     })
-    const geo = lineGeo(lineData)
     const currentPath: Path = {
       type: 'toPoint',
       to,
@@ -708,11 +700,9 @@ export const angledLine: SketchLineHelper = {
         geos: [
           {
             type: 'line',
-            geo: geo.line,
           },
           {
             type: 'lineEnd',
-            geo: geo.tip,
           },
         ],
       },
@@ -1589,7 +1579,6 @@ export const close: InternalFn = (
     params: [lineData],
     range: sourceRange,
   })
-  const geo = lineGeo(lineData)
 
   const currentPath: Path = {
     type: 'toPoint',
@@ -1602,11 +1591,9 @@ export const close: InternalFn = (
       geos: [
         {
           type: 'line',
-          geo: geo.line,
         },
         {
           type: 'lineEnd',
-          geo: geo.tip,
         },
       ],
     },
@@ -1651,7 +1638,6 @@ export const startSketchAt: InternalFn = (
     params: [lineData],
     range: sourceRange,
   })
-  const geo = sketchBaseGeo(lineData)
   const currentPath: Path = {
     type: 'base',
     to,
@@ -1663,7 +1649,6 @@ export const startSketchAt: InternalFn = (
       geos: [
         {
           type: 'sketchBase',
-          geo: geo.base,
         },
       ],
     },
