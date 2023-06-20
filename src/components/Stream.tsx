@@ -10,7 +10,7 @@ export const Stream = () => {
       typeof RTCPeerConnection === 'undefined'
     )
       return
-    const url = 'wss://dev.api.kittycad.io/ws/modeling/commands'
+    const url = 'wss://api.dev.kittycad.io/ws/modeling/commands'
     const [pc, socket] = [new RTCPeerConnection(), new WebSocket(url)]
     // Connection opened
     socket.addEventListener('open', (event) => {
@@ -40,16 +40,20 @@ export const Stream = () => {
         const message = JSON.parse(event.data)
         if (message.type === 'SDPAnswer') {
           pc.setRemoteDescription(new RTCSessionDescription(message.answer))
+        } else if (message.type === 'TrickleIce') {
+          console.log("got remote trickle ice");
+          pc.addIceCandidate(message.candidate);
         } else if (message.type === 'IceServerInfo') {
           console.log('received IceServerInfo')
           pc.setConfiguration({
             iceServers: message.ice_servers,
+            iceTransportPolicy: "relay",
           })
           pc.ontrack = function (event) {
             if (videoRef.current) {
               videoRef.current.srcObject = event.streams[0]
-              videoRef.current.autoplay = true
               videoRef.current.muted = true
+              videoRef.current.autoplay = true
               videoRef.current.controls = false
             }
           }
@@ -64,6 +68,15 @@ export const Stream = () => {
                   offer: pc.localDescription,
                 })
               )
+            } else {
+              console.log("sending trickle ice candidate");
+              const {
+                candidate
+              } = event;
+              socket.send(JSON.stringify({
+                type: "TrickleIce",
+                candidate: candidate.toJSON(),
+              }));
             }
           }
 
@@ -73,6 +86,13 @@ export const Stream = () => {
           })
           pc.createOffer()
             .then((d) => pc.setLocalDescription(d))
+            .then(() => {
+              console.log("sent SDPOffer begin");
+              socket.send(JSON.stringify({
+                type: "SDPOffer",
+                offer: pc.localDescription,
+              }));
+            })
             .catch(console.log)
         }
       }
