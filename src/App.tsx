@@ -209,7 +209,7 @@ function App() {
           <MemoryPanel />
           <Logs />
         </Allotment>
-        <Allotment vertical defaultSizes={[400, 1]} minSize={20}>
+        <Allotment vertical defaultSizes={[1, 400]} minSize={20}>
           <div className="h-full">
             <PanelHeader title="Drafting Board" />
             <Toolbar />

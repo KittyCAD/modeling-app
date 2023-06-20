@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { PanelHeader } from '../components/PanelHeader'
+import { v4 as uuidv4 } from 'uuid'
 
 export const Stream = () => {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -11,6 +12,8 @@ export const Stream = () => {
     )
       return
     const url = 'wss://api.dev.kittycad.io/ws/modeling/commands'
+    const file_id = uuidv4()
+    let currentCmdId: null | string = null
     const [pc, socket] = [new RTCPeerConnection(), new WebSocket(url)]
     // Connection opened
     socket.addEventListener('open', (event) => {
@@ -41,13 +44,13 @@ export const Stream = () => {
         if (message.type === 'SDPAnswer') {
           pc.setRemoteDescription(new RTCSessionDescription(message.answer))
         } else if (message.type === 'TrickleIce') {
-          console.log("got remote trickle ice");
-          pc.addIceCandidate(message.candidate);
+          console.log('got remote trickle ice')
+          pc.addIceCandidate(message.candidate)
         } else if (message.type === 'IceServerInfo') {
           console.log('received IceServerInfo')
           pc.setConfiguration({
             iceServers: message.ice_servers,
-            iceTransportPolicy: "relay",
+            iceTransportPolicy: 'relay',
           })
           pc.ontrack = function (event) {
             if (videoRef.current) {
@@ -69,14 +72,14 @@ export const Stream = () => {
                 })
               )
             } else {
-              console.log("sending trickle ice candidate");
-              const {
-                candidate
-              } = event;
-              socket.send(JSON.stringify({
-                type: "TrickleIce",
-                candidate: candidate.toJSON(),
-              }));
+              console.log('sending trickle ice candidate')
+              const { candidate } = event
+              socket.send(
+                JSON.stringify({
+                  type: 'TrickleIce',
+                  candidate: candidate.toJSON(),
+                })
+              )
             }
           }
 
@@ -87,11 +90,13 @@ export const Stream = () => {
           pc.createOffer()
             .then((d) => pc.setLocalDescription(d))
             .then(() => {
-              console.log("sent SDPOffer begin");
-              socket.send(JSON.stringify({
-                type: "SDPOffer",
-                offer: pc.localDescription,
-              }));
+              console.log('sent SDPOffer begin')
+              socket.send(
+                JSON.stringify({
+                  type: 'SDPOffer',
+                  offer: pc.localDescription,
+                })
+              )
             })
             .catch(console.log)
         }
@@ -101,15 +106,89 @@ export const Stream = () => {
     const debounceSocketSend = throttle((message) => {
       socket.send(JSON.stringify(message))
     }, 100)
+    const handleClick = ({ clientX, clientY }: MouseEvent) => {
+      if (!videoRef.current) return
+      const { left, top } = videoRef.current.getBoundingClientRect()
+      const x = clientX - left
+      const y = clientY - top
+      console.log('click', x, y)
+
+      if (currentCmdId == null) {
+        currentCmdId = uuidv4()
+
+        debounceSocketSend({
+          type: 'ModelingCmdReq',
+          cmd: {
+            CameraDragStart: {
+              interaction: 'rotate',
+              window: {
+                x: x,
+                y: y,
+              },
+            },
+          },
+          cmd_id: uuidv4(),
+          file_id: file_id,
+        })
+      }
+    }
+
+    const handleMouseUp = ({ clientX, clientY }: MouseEvent) => {
+      if (!videoRef.current) return
+      const { left, top } = videoRef.current.getBoundingClientRect()
+      const x = clientX - left
+      const y = clientY - top
+      console.log('click', x, y)
+
+      if (currentCmdId == null) {
+        return
+      }
+
+      debounceSocketSend({
+        type: 'ModelingCmdReq',
+        cmd: {
+          CameraDragEnd: {
+            interaction: 'rotate',
+            window: {
+              x: x,
+              y: y,
+            },
+          },
+        },
+        cmd_id: uuidv4(),
+        file_id: file_id,
+      })
+        currentCmdId   = null
+    }
     const handleMouseMove = ({ clientX, clientY }: MouseEvent) => {
       if (!videoRef.current) return
       const { left, top } = videoRef.current.getBoundingClientRect()
       const x = clientX - left
       const y = clientY - top
-      debounceSocketSend({ type: 'MouseMove', x: x, y: y })
+      if (currentCmdId == null) {
+        return
+      } else {
+      console.log('mouse move', x, y)
+        debounceSocketSend({
+          type: 'ModelingCmdReq',
+          cmd: {
+            CameraDragMove: {
+              interaction: 'rotate',
+              window: {
+                x: x,
+                y: y,
+              },
+            },
+          },
+          cmd_id: uuidv4(),
+          file_id: file_id,
+        })
+      }
     }
     if (videoRef.current) {
       videoRef.current.addEventListener('mousemove', handleMouseMove)
+      videoRef.current.addEventListener('mousedown', handleClick)
+      videoRef.current.addEventListener('mouseup', handleMouseUp)
     }
 
     return () => {
@@ -117,6 +196,8 @@ export const Stream = () => {
       pc.close()
       if (!videoRef.current) return
       videoRef.current.removeEventListener('mousemove', handleMouseMove)
+      videoRef.current.removeEventListener('mousedown', handleClick)
+      videoRef.current.removeEventListener('mouseup', handleMouseUp)
     }
   }, [])
 
