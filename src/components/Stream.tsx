@@ -87,7 +87,7 @@ export const Stream = () => {
           pc.createOffer()
             .then((d) => pc.setLocalDescription(d))
             .then(() => {
-              log("sent SDPOffer begin");
+              console.log("sent SDPOffer begin");
               socket.send(JSON.stringify({
                 type: "SDPOffer",
                 offer: pc.localDescription,
