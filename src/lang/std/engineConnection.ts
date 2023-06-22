@@ -28,6 +28,22 @@ interface CursorSelectionsArgs {
   idBasedSelections: { type: string; id: string }[]
 }
 
+// TODO these types should be in the openApi spec, and therefore in @kittycad/lib
+interface EngineCommand {
+  type: 'ModelingCmdReq'
+  cmd: {
+    [key in 'CameraDragMove' | 'CameraDragStart' | 'CameraDragEnd']?: {
+      interaction: 'rotate'
+      window: {
+        x: number
+        y: number
+      }
+    }
+  }
+  cmd_id: string
+  file_id: string
+}
+
 export class EngineCommandManager {
   artifactMap: ArtifactMap = {}
   sourceRangeMap: SourceRangeMap = {}
@@ -35,10 +51,10 @@ export class EngineCommandManager {
   pc?: RTCPeerConnection
   onHoverCallback: (id?: string) => void = () => {}
   onClickCallback: (selection: SelectionsArgs) => void = () => {}
-  onCursorsSelectedCallback: (selections: CursorSelectionsArgs) => void = () => {}
+  onCursorsSelectedCallback: (selections: CursorSelectionsArgs) => void =
+    () => {}
   constructor(setMediaStream: (stream: MediaStream) => void) {
-    const url =
-      'ws://jess-testing.hawk-dinosaur.ts.net:8080/ws/modeling/commands'
+    const url = 'wss://api.dev.kittycad.io/ws/modeling/commands'
     this.socket = new WebSocket(url)
     this.pc = new RTCPeerConnection()
     this.socket.addEventListener('open', (event) => {
@@ -65,22 +81,31 @@ export class EngineCommandManager {
         }
 
         reader.readAsText(event.data)
+      } else if (
+        typeof event.data === 'string' &&
+        event.data.toLocaleLowerCase().startsWith('error')
+      ) {
+        console.warn('something went wrong: ', event.data)
       } else {
         const message = JSON.parse(event.data)
         if (message.type === 'SDPAnswer') {
-          this.pc.setRemoteDescription(new RTCSessionDescription(message.answer))
+          this.pc.setRemoteDescription(
+            new RTCSessionDescription(message.answer)
+          )
         } else if (message.type === 'IceServerInfo') {
           console.log('received IceServerInfo')
           this.pc.setConfiguration({
             iceServers: message.ice_servers,
           })
           this.pc.addEventListener('track', (event) => {
+            console.log('received track', event)
             const mediaStream = event.streams[0]
             setMediaStream(mediaStream)
           })
-          
+
           this.pc.addEventListener('connectionstatechange', (e) =>
-            console.log(this?.pc?.iceConnectionState))
+            console.log(this?.pc?.iceConnectionState)
+          )
           this.pc.addEventListener('icecandidate', (event) => {
             if (!this.pc || !this.socket) return
             if (event.candidate === null) {
@@ -98,14 +123,23 @@ export class EngineCommandManager {
           this.pc.addTransceiver('video', {
             direction: 'sendrecv',
           })
-          this.pc.createOffer()
-            .then((descriptionInit) => this?.pc?.setLocalDescription(descriptionInit))
+          this.pc
+            .createOffer()
+            .then(async (descriptionInit) => {
+              await this?.pc?.setLocalDescription(descriptionInit)
+              console.log('sent SDPOffer begin')
+              const msg = JSON.stringify({
+                type: 'SDPOffer',
+                offer: this.pc?.localDescription,
+              })
+              this.socket?.send(msg)
+            })
             .catch(console.log)
-        } else
+        }
         // TODO talk to the gang about this
         // the following message types are made up
         // and are placeholders
-        if (message.type === 'hover') {
+        else if (message.type === 'hover') {
           this.onHoverCallback(message.id)
         } else if (message.type === 'click') {
           this.onClickCallback(message)
@@ -117,8 +151,6 @@ export class EngineCommandManager {
   startNewSession() {
     this.artifactMap = {}
     this.sourceRangeMap = {}
-    
-
 
     // socket.on('command', ({ id, data }: any) => {
     //   const command = this.artifactMap[id]
@@ -165,15 +197,13 @@ export class EngineCommandManager {
     // socket.off('command')
   }
   onHover(callback: (id?: string) => void) {
-    // It's when the user hovers over a part in the 3d scene, and so the engine should tell the 
+    // It's when the user hovers over a part in the 3d scene, and so the engine should tell the
     // frontend about that (with it's id) so that the FE can highlight code associated with that id
     this.onHoverCallback = callback
   }
-  onClick(
-    callback: (selection: SelectionsArgs) => void
-  ) {
+  onClick(callback: (selection: SelectionsArgs) => void) {
     // TODO talk to the gang about this
-    // It's when the user clicks on a part in the 3d scene, and so the engine should tell the 
+    // It's when the user clicks on a part in the 3d scene, and so the engine should tell the
     // frontend about that (with it's id) so that the FE can put the user's cursor on the right
     // line of code
     this.onClickCallback = callback
@@ -186,26 +216,55 @@ export class EngineCommandManager {
     // Really idBasedSelections is the only part that's relevant to the server, but it's when
     // the user puts their cursor over a line of code, and there is a engine-id associated with
     // it, so we want to tell the engine to change it's color or something
-    this.socket?.send(JSON.stringify({command: 'cursorsSelected', body: selections}))
+    if (this.socket?.readyState === 0) {
+      console.log('socket not open')
+      return
+    }
+    console.log('sending cursorsSelected')
+    this.socket?.send(
+      JSON.stringify({ command: 'cursorsSelected', body: selections })
+    )
   }
-  sendCommand({
+  sendSceneCommand(command: EngineCommand) {
+    if (this.socket?.readyState === 0) {
+      console.log('socket not ready')
+      return
+    }
+    this.socket?.send(JSON.stringify(command))
+  }
+  sendModellingCommand({
     name,
     id,
     params,
     range,
-  }: any ): Promise<any> {
-  // }: {
-  //   name: string
-  //   id: string
-  //   params: any
-  //   range: SourceRange
-  // }): Promise<any> {
+    ...rest
+  }: any): Promise<any> {
+    // }: {
+    //   name: string
+    //   id: string
+    //   params: any
+    //   range: SourceRange
+    //   command: EngineCommand
+    // } ): Promise<any> {
+    if (!this.socket?.OPEN) {
+      console.log('socket not open')
+      return new Promise(() => {})
+    }
     this.sourceRangeMap[id] = range
-    this.socket?.send(JSON.stringify({command: 'command', body: {
+
+    // return early if the socket is still in CONNECTING state
+    if (this.socket?.readyState === 0) {
+      console.log('socket not ready')
+      return new Promise(() => {})
+    }
+    console.log('sending command', {
       id,
       name,
       data: params,
-    }}))
+      rest,
+    })
+    console.trace('wtf')
+    this.socket?.send(JSON.stringify(rest))
     let resolve: (val: any) => void = () => {}
     const promise = new Promise((_resolve, reject) => {
       resolve = _resolve

@@ -6,6 +6,7 @@ import { throttle } from '../lib/utils'
 
 export const Stream = () => {
   const videoRef = useRef<HTMLVideoElement>(null)
+  const cmdId = useRef('')
   const { mediaStream, engineCommandManager } = useStore((s) => ({
     mediaStream: s.mediaStream,
     engineCommandManager: s.engineCommandManager,
@@ -22,20 +23,34 @@ export const Stream = () => {
     videoRef.current.srcObject = mediaStream
   }, [mediaStream, engineCommandManager])
 
-  let currentCmdId = uuidv4()
+  const file_id = uuidv4()
 
   const debounceSocketSend = throttle((message) => {
-    engineCommandManager?.sendCommand(message)
+    engineCommandManager?.sendSceneCommand(message)
   }, 100)
   const handleMouseMove: MouseEventHandler<HTMLVideoElement> = ({
     clientX,
     clientY,
   }) => {
     if (!videoRef.current) return
+    if (!cmdId.current) return
     const { left, top } = videoRef.current.getBoundingClientRect()
     const x = clientX - left
     const y = clientY - top
-    debounceSocketSend({ type: 'MouseMove', x: x, y: y })
+    debounceSocketSend({
+      type: 'ModelingCmdReq',
+      cmd: {
+        CameraDragMove: {
+          interaction: 'rotate',
+          window: {
+            x: x,
+            y: y,
+          },
+        },
+      },
+      cmd_id: uuidv4(),
+      file_id: file_id,
+    })
   }
 
   const handleMouseDown: MouseEventHandler<HTMLVideoElement> = ({
@@ -48,7 +63,10 @@ export const Stream = () => {
     const y = clientY - top
     console.log('click', x, y)
 
-    engineCommandManager?.sendCommand({
+    const newId = uuidv4()
+    cmdId.current = newId
+
+    engineCommandManager?.sendModellingCommand({
       type: 'ModelingCmdReq',
       cmd: {
         CameraDragStart: {
@@ -59,6 +77,8 @@ export const Stream = () => {
           },
         },
       },
+      cmd_id: newId,
+      file_id,
     })
   }
   const handleMouseUp: MouseEventHandler<HTMLVideoElement> = ({
@@ -70,11 +90,11 @@ export const Stream = () => {
     const x = clientX - left
     const y = clientY - top
 
-    if (currentCmdId == null) {
+    if (cmdId.current == null) {
       return
     }
 
-    engineCommandManager?.sendCommand({
+    engineCommandManager?.sendSceneCommand({
       type: 'ModelingCmdReq',
       cmd: {
         CameraDragEnd: {
@@ -85,10 +105,10 @@ export const Stream = () => {
           },
         },
       },
-      // cmd_id: uuidv4(),
-      // file_id: file_id,
+      cmd_id: uuidv4(),
+      file_id: file_id,
     })
-    currentCmdId = ''
+    cmdId.current = ''
   }
 
   return (

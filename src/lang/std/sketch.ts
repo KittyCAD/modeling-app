@@ -140,7 +140,7 @@ export const lineTo: SketchLineHelper = {
       sourceRange,
       data,
     })
-    engineCommandManager.sendCommand({
+    engineCommandManager.sendModellingCommand({
       name: 'lineGeo',
       id,
       params: [lineData, previousSketch],
@@ -271,7 +271,7 @@ export const line: SketchLineHelper = {
       sourceRange,
       data,
     })
-    engineCommandManager.sendCommand({
+    engineCommandManager.sendModellingCommand({
       name: 'lineGeo',
       id,
       params: [lineData, previousSketch],
@@ -683,7 +683,7 @@ export const angledLine: SketchLineHelper = {
       sourceRange,
       data,
     })
-    engineCommandManager.sendCommand({
+    engineCommandManager.sendModellingCommand({
       name: 'lineGeo',
       id,
       params: [lineData, previousSketch],
@@ -1573,7 +1573,7 @@ export const close: InternalFn = (
     sourceRange,
     data: sketchGroup,
   })
-  engineCommandManager.sendCommand({
+  engineCommandManager.sendModellingCommand({
     name: 'lineGeo',
     id,
     params: [lineData],
@@ -1632,7 +1632,7 @@ export const startSketchAt: InternalFn = (
     sourceRange,
     data,
   })
-  engineCommandManager.sendCommand({
+  engineCommandManager.sendModellingCommand({
     name: 'sketchBaseGeo',
     id,
     params: [lineData],
