@@ -29,19 +29,50 @@ interface CursorSelectionsArgs {
 }
 
 // TODO these types should be in the openApi spec, and therefore in @kittycad/lib
+interface MouseStuff {
+  interaction: 'rotate'
+  window: {
+    x: number
+    y: number
+  }
+}
+
+type uuid = string
+interface XYZ {
+  x: number
+  y: number
+  z: number
+}
 interface EngineCommand {
   type: 'ModelingCmdReq'
   cmd: {
-    [key in 'CameraDragMove' | 'CameraDragStart' | 'CameraDragEnd']?: {
-      interaction: 'rotate'
-      window: {
-        x: number
-        y: number
+    StartPath?: {}
+    MovePathPen?: {
+      path: uuid
+      to: XYZ
+    }
+    ExtendPath?: {
+      path: uuid
+      segment: {
+        Line: {
+          end: XYZ
+        }
       }
     }
+    ClosePath?:  {
+      path_id: uuid
+    }
+    Extrude?: {
+      target: uuid
+      distance: number
+      cap: boolean
+    }
+    CameraDragMove?: MouseStuff
+    CameraDragStart?: MouseStuff
+    CameraDragEnd?: MouseStuff
   }
-  cmd_id: string
-  file_id: string
+  cmd_id: uuid
+  file_id: uuid
 }
 
 export class EngineCommandManager {
@@ -143,6 +174,8 @@ export class EngineCommandManager {
           this.onHoverCallback(message.id)
         } else if (message.type === 'click') {
           this.onClickCallback(message)
+        } else {
+          console.log('other message', message)
         }
       }
     })
@@ -193,7 +226,7 @@ export class EngineCommandManager {
     // })
   }
   endSession() {
-    // this.socket2?.close()
+    // this.socket?.close()
     // socket.off('command')
   }
   onHover(callback: (id?: string) => void) {
@@ -233,19 +266,16 @@ export class EngineCommandManager {
     this.socket?.send(JSON.stringify(command))
   }
   sendModellingCommand({
-    name,
     id,
     params,
     range,
-    ...rest
-  }: any): Promise<any> {
-    // }: {
-    //   name: string
-    //   id: string
-    //   params: any
-    //   range: SourceRange
-    //   command: EngineCommand
-    // } ): Promise<any> {
+    command,
+  }: {
+    id: string
+    params: any
+    range: SourceRange
+    command: EngineCommand
+  }): Promise<any> {
     if (!this.socket?.OPEN) {
       console.log('socket not open')
       return new Promise(() => {})
@@ -259,12 +289,10 @@ export class EngineCommandManager {
     }
     console.log('sending command', {
       id,
-      name,
       data: params,
-      rest,
+      command,
     })
-    console.trace('wtf')
-    this.socket?.send(JSON.stringify(rest))
+    this.socket?.send(JSON.stringify(command))
     let resolve: (val: any) => void = () => {}
     const promise = new Promise((_resolve, reject) => {
       resolve = _resolve

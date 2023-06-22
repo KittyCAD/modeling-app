@@ -26,7 +26,7 @@ export type InternalFnNames =
   // | 'rx'
   // | 'ry'
   // | 'rz'
-  // | 'extrude'
+  | 'extrude'
   | 'getExtrudeWallTransform'
   | 'min'
   | 'legLen'

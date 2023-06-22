@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useMemo } from 'react'
 import { Allotment } from 'allotment'
 import { asyncLexer } from './lang/tokeniser'
 import { abstractSyntaxTree } from './lang/abstractSyntaxTree'
@@ -137,6 +137,7 @@ export function App() {
       codeBasedSelections,
     })
   }
+  const engineCommandManager = useMemo(() => new EngineCommandManager(setMediaStream), [])
   useEffect(() => {
     const asyncWrap = async () => {
       try {
@@ -151,7 +152,6 @@ export function App() {
         if (_engineCommandManager) {
           _engineCommandManager.endSession()
         }
-        const engineCommandManager = new EngineCommandManager(setMediaStream)
         engineCommandManager.startNewSession()
         setEngineCommandManager(engineCommandManager)
         _executor(

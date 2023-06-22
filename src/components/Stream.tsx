@@ -66,7 +66,7 @@ export const Stream = () => {
     const newId = uuidv4()
     cmdId.current = newId
 
-    engineCommandManager?.sendModellingCommand({
+    engineCommandManager?.sendSceneCommand({
       type: 'ModelingCmdReq',
       cmd: {
         CameraDragStart: {

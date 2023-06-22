@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid'
 import { InternalFn } from './stdTypes'
 import {
   ExtrudeGroup,
@@ -6,110 +7,71 @@ import {
   Position,
   Rotation,
 } from '../executor'
-// import { Quaternion, Vector3 } from 'three'
 import { clockwiseSign } from './std'
 import { generateUuidFromHashSeed } from '../../lib/uuid'
 
-// export const extrude: InternalFn = (
-//   { sourceRange, engineCommandManager, code },
-//   length: number,
-//   sketchVal: SketchGroup
-// ): ExtrudeGroup => {
-//   const sketch = sketchVal
-//   const { position, rotation } = sketchVal
+export const extrude: InternalFn = (
+  { sourceRange, engineCommandManager, code },
+  length: number,
+  sketchVal: SketchGroup
+): ExtrudeGroup => {
+  const sketch = sketchVal
+  const { position, rotation } = sketchVal
 
-//   const extrudeSurfaces: ExtrudeSurface[] = []
-//   const extrusionDirection = clockwiseSign(sketch.value.map((line) => line.to))
-//   sketch.value.map((line, index) => {
-//     if (line.type === 'toPoint') {
-//       let from: [number, number] = line.from
-//       const to = line.to
+  const id = generateUuidFromHashSeed(
+    JSON.stringify({
+      code,
+      sourceRange,
+      date: {
+        length,
+        sketchVal,
+      },
+    })
+  )
 
-//       const extrudeData: {
-//         from: [number, number, number]
-//         to: [number, number, number]
-//         length: number
-//         extrusionDirection: number
-//       } = {
-//         from: [from[0], from[1], 0],
-//         to: [to[0], to[1], 0],
-//         length,
-//         extrusionDirection,
-//       }
-//       const id = generateUuidFromHashSeed(
-//         JSON.stringify({
-//           code,
-//           sourceRange,
-//           date: {
-//             length,
-//             sketchVal,
-//           },
-//         })
-//       )
-//       engineCommandManager.sendCommand({
-//         name: 'extrudeSeg',
-//         id,
-//         params: [
-//           {
-//             segId: line.__geoMeta.id,
-//             length: extrudeData.length,
-//             extrusionDirection: extrudeData.extrusionDirection,
-//           },
-//         ],
-//         range: sourceRange,
-//       })
-
-//       const {
-//         geo,
-//         position: facePosition,
-//         rotation: faceRotation,
-//       } = extrudeGeo(extrudeData)
-//       const groupQuaternion = new Quaternion(...rotation)
-//       const currentWallQuat = new Quaternion(...faceRotation)
-//       const unifiedQuit = new Quaternion().multiplyQuaternions(
-//         currentWallQuat,
-//         groupQuaternion.clone().invert()
-//       )
-
-//       const facePositionVector = new Vector3(...facePosition)
-//       facePositionVector.applyQuaternion(groupQuaternion.clone())
-//       const unifiedPosition = new Vector3().addVectors(
-//         facePositionVector,
-//         new Vector3(...position)
-//       )
-//       const surface: ExtrudeSurface = {
-//         type: 'extrudePlane',
-//         position: unifiedPosition.toArray() as Position,
-//         rotation: unifiedQuit.toArray() as Rotation,
-//         __geoMeta: {
-//           id,
-//           refId: line.__geoMeta.id,
-//           sourceRange: line.__geoMeta.sourceRange,
-//           pathToNode: line.__geoMeta.pathToNode,
-//         },
-//       }
-//       line.name && (surface.name = line.name)
-//       extrudeSurfaces.push(surface)
-//     }
-//   })
-//   return {
-//     type: 'extrudeGroup',
-//     value: extrudeSurfaces,
-//     height: length,
-//     position,
-//     rotation,
-//     __meta: [
-//       {
-//         sourceRange,
-//         pathToNode: [], // TODO
-//       },
-//       {
-//         sourceRange: sketchVal.__meta[0].sourceRange,
-//         pathToNode: sketchVal.__meta[0].pathToNode,
-//       },
-//     ],
-//   }
-// }
+  const extrudeSurfaces: ExtrudeSurface[] = []
+  const extrusionDirection = clockwiseSign(sketch.value.map((line) => line.to))
+  engineCommandManager.sendModellingCommand({
+    id,
+    params: [
+      {
+        length,
+        extrusionDirection: extrusionDirection,
+      },
+    ],
+    range: sourceRange,
+    command: {
+      type: 'ModelingCmdReq',
+      cmd: {
+        Extrude: {
+          target: sketch.id,
+          distance: length,
+          cap: true,
+        }
+      },
+      cmd_id: id,
+      file_id: uuidv4(),
+    },
+  })
+  
+  return {
+    type: 'extrudeGroup',
+    value: extrudeSurfaces, // TODO, this is just an empty array now, should be deleted.
+    height: length,
+    position,
+    rotation,
+    __meta: [
+      {
+        sourceRange,
+        pathToNode: [], // TODO
+      },
+      {
+        sourceRange: sketchVal.__meta[0].sourceRange,
+        pathToNode: sketchVal.__meta[0].pathToNode,
+      },
+    ],
+  }
+}
 
 export const getExtrudeWallTransform: InternalFn = (
   _,

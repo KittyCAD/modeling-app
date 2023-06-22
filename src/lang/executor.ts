@@ -74,6 +74,7 @@ export type Path = ToPoint | HorizontalLineTo | AngledLineTo | Base
 
 export interface SketchGroup {
   type: 'sketchGroup'
+  id: string
   value: Path[]
   start?: Base
   position: Position

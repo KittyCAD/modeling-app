@@ -24,7 +24,7 @@ import {
   lastSegX,
   lastSegY,
 } from './sketchConstraints'
-import { getExtrudeWallTransform } from './extrude'
+import { getExtrudeWallTransform, extrude } from './extrude'
 import { SketchGroup, ExtrudeGroup, Position, Rotation } from '../executor'
 
 import { InternalFn, InternalFnNames, InternalFirstArg } from './stdTypes'
@@ -98,7 +98,7 @@ export const internalFns: { [key in InternalFnNames]: InternalFn } = {
   // rx: rotateOnAxis([1, 0, 0]),
   // ry: rotateOnAxis([0, 1, 0]),
   // rz: rotateOnAxis([0, 0, 1]),
-  // extrude,
+  extrude,
   // translate,
   // transform,
   getExtrudeWallTransform,
