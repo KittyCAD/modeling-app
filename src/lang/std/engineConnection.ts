@@ -59,7 +59,7 @@ interface EngineCommand {
         }
       }
     }
-    ClosePath?:  {
+    ClosePath?: {
       path_id: uuid
     }
     Extrude?: {
@@ -80,6 +80,7 @@ export class EngineCommandManager {
   sourceRangeMap: SourceRangeMap = {}
   socket?: WebSocket
   pc?: RTCPeerConnection
+  lossyDataChannel?: RTCDataChannel
   onHoverCallback: (id?: string) => void = () => {}
   onClickCallback: (selection: SelectionsArgs) => void = () => {}
   onCursorsSelectedCallback: (selections: CursorSelectionsArgs) => void =
@@ -88,6 +89,9 @@ export class EngineCommandManager {
     const url = 'wss://api.dev.kittycad.io/ws/modeling/commands'
     this.socket = new WebSocket(url)
     this.pc = new RTCPeerConnection()
+    this.pc.createDataChannel('unreliable_modeling_cmds', {
+      ordered: true,
+    })
     this.socket.addEventListener('open', (event) => {
       console.log('Connected to websocket, waiting for ICE servers')
     })
@@ -166,6 +170,23 @@ export class EngineCommandManager {
               this.socket?.send(msg)
             })
             .catch(console.log)
+
+          this.pc.addEventListener('datachannel', (event) => {
+            this.lossyDataChannel = event.channel
+            console.log('accepted lossy data channel', event.channel.label)
+            this.lossyDataChannel.addEventListener('open', (event) => {
+              console.log('lossy data channel opened', event)
+            })
+            this.lossyDataChannel.addEventListener('close', (event) => {
+              console.log('lossy data channel closed')
+            })
+            this.lossyDataChannel.addEventListener('error', (event) => {
+              console.log('lossy data channel error')
+            })
+            this.lossyDataChannel.addEventListener('message', (event) => {
+              console.log('lossy data channel message: ', event)
+            })
+          })
         }
         // TODO talk to the gang about this
         // the following message types are made up
@@ -179,6 +200,13 @@ export class EngineCommandManager {
         }
       }
     })
+  }
+  tearDown() {
+    // close all channels, sockets and WebRTC connections
+    console.log('tearing it all down')
+    this.lossyDataChannel?.close()
+    this.socket?.close()
+    this.pc?.close()
   }
 
   startNewSession() {
@@ -263,6 +291,12 @@ export class EngineCommandManager {
       console.log('socket not ready')
       return
     }
+    if ('CameraDragMove' in command.cmd && this.lossyDataChannel) {
+      console.log('sending lossy command', command, this.lossyDataChannel)
+      this.lossyDataChannel.send(JSON.stringify(command))
+      return
+    }
+    console.log('sending through TCP')
     this.socket?.send(JSON.stringify(command))
   }
   sendModellingCommand({

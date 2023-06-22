@@ -27,7 +27,7 @@ export const Stream = () => {
 
   const debounceSocketSend = throttle((message) => {
     engineCommandManager?.sendSceneCommand(message)
-  }, 100)
+  }, 16)
   const handleMouseMove: MouseEventHandler<HTMLVideoElement> = ({
     clientX,
     clientY,
