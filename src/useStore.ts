@@ -144,8 +144,10 @@ export interface StoreState {
     artifactMap: ArtifactMap
     sourceRangeMap: SourceRangeMap
   }) => void
-  engineCommandManager: EngineCommandManager
+  engineCommandManager?: EngineCommandManager
   setEngineCommandManager: (engineCommandManager: EngineCommandManager) => void
+  mediaStream?: MediaStream
+  setMediaStream: (mediaStream: MediaStream) => void
 
   // tauri specific app settings
   defaultDir: DefaultDir
@@ -295,9 +297,9 @@ export const useStore = create<StoreState>()(
       artifactMap: {},
       sourceRangeMap: {},
       setArtifactNSourceRangeMaps: (maps) => set({ ...maps }),
-      engineCommandManager: new EngineCommandManager(),
       setEngineCommandManager: (engineCommandManager) =>
         set({ engineCommandManager }),
+      setMediaStream: (mediaStream) => set({ mediaStream }),
   
       // tauri specific app settings
       defaultDir: {

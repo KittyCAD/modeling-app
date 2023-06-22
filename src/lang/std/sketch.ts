@@ -19,10 +19,10 @@ import {
   getNodeFromPathCurry,
   getNodePathFromSourceRange,
 } from '../queryAst'
-import { lineGeo, sketchBaseGeo } from '../engine'
 import { GuiModes, toolTips, TooTip } from '../../useStore'
 import { splitPathAtPipeExpression } from '../modifyAst'
 import { generateUuidFromHashSeed } from '../../lib/uuid'
+import { v4 as uuidv4 } from 'uuid'
 
 import {
   SketchLineHelper,
@@ -141,13 +141,11 @@ export const lineTo: SketchLineHelper = {
       sourceRange,
       data,
     })
-    engineCommandManager.sendCommand({
-      name: 'lineGeo',
-      id,
-      params: [lineData, previousSketch],
-      range: sourceRange,
-    })
-    const geo = lineGeo(lineData)
+    // engineCommandManager.sendModellingCommand({
+    //   id,
+    //   params: [lineData, previousSketch],
+    //   range: sourceRange,
+    // })
     const currentPath: Path = {
       type: 'toPoint',
       to,
@@ -159,11 +157,9 @@ export const lineTo: SketchLineHelper = {
         geos: [
           {
             type: 'line',
-            geo: geo.line,
           },
           {
             type: 'lineEnd',
-            geo: geo.tip,
           },
         ],
       },
@@ -275,13 +271,30 @@ export const line: SketchLineHelper = {
       sourceRange,
       data,
     })
-    engineCommandManager.sendCommand({
-      name: 'lineGeo',
+    engineCommandManager.sendModellingCommand({
       id,
       params: [lineData, previousSketch],
       range: sourceRange,
+      command: {
+        type: 'ModelingCmdReq',
+        cmd: {
+          ExtendPath: {
+            path: sketchGroup.id,
+            segment: {
+              Line: {
+                end: {
+                  x: lineData.to[0],
+                  y: lineData.to[1],
+                  z: 0,
+                },
+              },
+            },
+          },
+        },
+        cmd_id: id,
+        file_id: uuidv4(),
+      }
     })
-    const geo = lineGeo(lineData)
     const currentPath: Path = {
       type: 'toPoint',
       to,
@@ -293,11 +306,9 @@ export const line: SketchLineHelper = {
         geos: [
           {
             type: 'line',
-            geo: geo.line,
           },
           {
             type: 'lineEnd',
-            geo: geo.tip,
           },
         ],
       },
@@ -690,13 +701,11 @@ export const angledLine: SketchLineHelper = {
       sourceRange,
       data,
     })
-    engineCommandManager.sendCommand({
-      name: 'lineGeo',
-      id,
-      params: [lineData, previousSketch],
-      range: sourceRange,
-    })
-    const geo = lineGeo(lineData)
+    // engineCommandManager.sendModellingCommand({
+    //   id,
+    //   params: [lineData, previousSketch],
+    //   range: sourceRange,
+    // })
     const currentPath: Path = {
       type: 'toPoint',
       to,
@@ -708,11 +717,9 @@ export const angledLine: SketchLineHelper = {
         geos: [
           {
             type: 'line',
-            geo: geo.line,
           },
           {
             type: 'lineEnd',
-            geo: geo.tip,
           },
         ],
       },
@@ -1583,13 +1590,21 @@ export const close: InternalFn = (
     sourceRange,
     data: sketchGroup,
   })
-  engineCommandManager.sendCommand({
-    name: 'lineGeo',
+  engineCommandManager.sendModellingCommand({
     id,
     params: [lineData],
     range: sourceRange,
+    command: {
+      type: 'ModelingCmdReq',
+      cmd: {
+        ClosePath: {
+          path_id: sketchGroup.id,
+        },
+      },
+      cmd_id: id,
+      file_id: uuidv4(),
+    }
   })
-  const geo = lineGeo(lineData)
 
   const currentPath: Path = {
     type: 'toPoint',
@@ -1602,11 +1617,9 @@ export const close: InternalFn = (
       geos: [
         {
           type: 'line',
-          geo: geo.line,
         },
         {
           type: 'lineEnd',
-          geo: geo.tip,
         },
       ],
     },
@@ -1645,13 +1658,40 @@ export const startSketchAt: InternalFn = (
     sourceRange,
     data,
   })
-  engineCommandManager.sendCommand({
-    name: 'sketchBaseGeo',
-    id,
+  const pathId = makeId({
+    code,
+    sourceRange,
+    data,
+    isPath: true,
+  })
+  engineCommandManager.sendModellingCommand({
+    id: pathId,
     params: [lineData],
     range: sourceRange,
+    command: {
+      type: 'ModelingCmdReq',
+      cmd: {
+        StartPath: {},
+      },
+      cmd_id: pathId,
+      file_id: uuidv4(),
+    },
   })
-  const geo = sketchBaseGeo(lineData)
+  engineCommandManager.sendSceneCommand({
+      type: 'ModelingCmdReq',
+      cmd: {
+        MovePathPen: {
+          path: pathId,
+          to: {
+            x: lineData.to[0],
+            y: lineData.to[1],
+            z: 0,
+          },
+        },
+      },
+      cmd_id: id,
+      file_id: uuidv4(),
+    })
   const currentPath: Path = {
     type: 'base',
     to,
@@ -1663,7 +1703,6 @@ export const startSketchAt: InternalFn = (
       geos: [
         {
           type: 'sketchBase',
-          geo: geo.base,
         },
       ],
     },
@@ -1677,6 +1716,7 @@ export const startSketchAt: InternalFn = (
     value: [],
     position: [0, 0, 0],
     rotation: [0, 0, 0, 1],
+    id: pathId,
     __meta: [
       {
         sourceRange,

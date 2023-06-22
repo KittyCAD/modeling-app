@@ -1,7 +1,5 @@
-import { useRef, useState, useEffect } from 'react'
-import { Canvas } from '@react-three/fiber'
+import { useRef, useEffect, useMemo } from 'react'
 import { Allotment } from 'allotment'
-import { OrbitControls, OrthographicCamera } from '@react-three/drei'
 import { asyncLexer } from './lang/tokeniser'
 import { abstractSyntaxTree } from './lang/abstractSyntaxTree'
 import { _executor, ExtrudeGroup, SketchGroup } from './lang/executor'
@@ -14,11 +12,7 @@ import {
 } from './editor/highlightextension'
 import { Selections, useStore } from './useStore'
 import { Toolbar } from './Toolbar'
-import { BasePlanes } from './components/BasePlanes'
-import { SketchPlane } from './components/SketchPlane'
 import { Logs } from './components/Logs'
-import { AxisIndicator } from './components/AxisIndicator'
-import { RenderViewerArtifacts } from './components/RenderViewerArtifacts'
 import { PanelHeader } from './components/PanelHeader'
 import { MemoryPanel } from './components/MemoryPanel'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
@@ -27,9 +21,7 @@ import ModalContainer from 'react-modal-promise'
 import { EngineCommandManager } from './lang/std/engineConnection'
 import { isOverlap } from './lib/utils'
 
-const OrrthographicCamera = OrthographicCamera as any
-
-function App() {
+export function App() {
   const cam = useRef()
   useHotKeyListener()
   const {
@@ -54,6 +46,7 @@ function App() {
     setHighlightRange,
     setCursor2,
     sourceRangeMap,
+    setMediaStream,
   } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
@@ -79,6 +72,7 @@ function App() {
     setCursor: s.setCursor,
     setCursor2: s.setCursor2,
     sourceRangeMap: s.sourceRangeMap,
+    setMediaStream: s.setMediaStream
   }))
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
@@ -133,7 +127,7 @@ function App() {
       })
       .filter(Boolean) as any
 
-    _engineCommandManager.cusorsSelected({
+    _engineCommandManager?.cusorsSelected({
       otherSelections: [],
       idBasedSelections,
     })
@@ -143,6 +137,7 @@ function App() {
       codeBasedSelections,
     })
   }
+  const engineCommandManager = useMemo(() => new EngineCommandManager(setMediaStream), [])
   useEffect(() => {
     const asyncWrap = async () => {
       try {
@@ -157,7 +152,6 @@ function App() {
         if (_engineCommandManager) {
           _engineCommandManager.endSession()
         }
-        const engineCommandManager = new EngineCommandManager()
         engineCommandManager.startNewSession()
         setEngineCommandManager(engineCommandManager)
         _executor(
@@ -215,7 +209,7 @@ function App() {
               setHighlightRange(sourceRange)
             }
           })
-          engineCommandManager.onSelection(({ id, type }) => {
+          engineCommandManager.onClick(({ id, type }) => {
             setCursor2({ range: sourceRangeMap[id], type })
           })
           setProgramMemory(programMemory)
@@ -274,52 +268,9 @@ function App() {
           <MemoryPanel />
           <Logs />
         </Allotment>
-        <Allotment vertical defaultSizes={[1, 400]} minSize={20}>
-          <div className="h-full">
-            <PanelHeader title="Drafting Board" />
+        <Allotment vertical defaultSizes={[40, 400]} minSize={20}>
+          <div>
             <Toolbar />
-            <div className="border h-full border-gray-300 relative">
-              <div className="absolute inset-0">
-                <Canvas>
-                  <OrbitControls
-                    enableDamping={false}
-                    enablePan
-                    enableRotate={
-                      !(
-                        guiMode.mode === 'canEditSketch' ||
-                        guiMode.mode === 'sketch'
-                      )
-                    }
-                    enableZoom
-                    reverseOrbit={false}
-                  />
-                  <OrrthographicCamera
-                    ref={cam}
-                    makeDefault
-                    position={[0, 0, 1000]}
-                    zoom={100}
-                    rotation={[0, 0, 0]}
-                    far={2000}
-                  />
-                  <ambientLight />
-                  <pointLight position={[10, 10, 10]} />
-                  <RenderViewerArtifacts />
-                  <BasePlanes />
-                  <SketchPlane />
-                  <AxisIndicator />
-                </Canvas>
-              </div>
-              {errorState.isError && (
-                <div className="absolute inset-0 bg-gray-700/20">
-                  <pre>
-                    {'last first: \n\n' +
-                      JSON.stringify(lastGuiMode, null, 2) +
-                      '\n\n' +
-                      JSON.stringify(guiMode)}
-                  </pre>
-                </div>
-              )}
-            </div>
           </div>
           <Stream />
         </Allotment>
@@ -327,5 +278,3 @@ function App() {
     </div>
   )
 }
-
-export default App

@@ -20,9 +20,13 @@ export interface PathReturn {
 export type InternalFn = (internals: InternalFirstArg, ...args: any[]) => any
 
 export type InternalFnNames =
+  // TODO re-enable these
+  // | 'translate'
+  // | 'transform'
+  // | 'rx'
+  // | 'ry'
+  // | 'rz'
   | 'extrude'
-  | 'translate'
-  | 'transform'
   | 'getExtrudeWallTransform'
   | 'min'
   | 'legLen'
@@ -36,9 +40,6 @@ export type InternalFnNames =
   | 'segAng'
   | 'angleToMatchLengthX'
   | 'angleToMatchLengthY'
-  | 'rx'
-  | 'ry'
-  | 'rz'
   | 'lineTo'
   | 'yLineTo'
   | 'xLineTo'
