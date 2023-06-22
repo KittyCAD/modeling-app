@@ -2,11 +2,14 @@ import { ProgramMemory, Path, SourceRange } from '../executor'
 import { Program, Value } from '../abstractSyntaxTree'
 import { TooTip } from '../../useStore'
 import { PathToNode } from '../executor'
+import { EngineCommandManager } from './engineConnection'
 
 export interface InternalFirstArg {
   programMemory: ProgramMemory
   name?: string
   sourceRange: SourceRange
+  engineCommandManager: EngineCommandManager
+  code: string
 }
 
 export interface PathReturn {
@@ -17,9 +20,13 @@ export interface PathReturn {
 export type InternalFn = (internals: InternalFirstArg, ...args: any[]) => any
 
 export type InternalFnNames =
+  // TODO re-enable these
+  // | 'translate'
+  // | 'transform'
+  // | 'rx'
+  // | 'ry'
+  // | 'rz'
   | 'extrude'
-  | 'translate'
-  | 'transform'
   | 'getExtrudeWallTransform'
   | 'min'
   | 'legLen'
@@ -33,9 +40,6 @@ export type InternalFnNames =
   | 'segAng'
   | 'angleToMatchLengthX'
   | 'angleToMatchLengthY'
-  | 'rx'
-  | 'ry'
-  | 'rz'
   | 'lineTo'
   | 'yLineTo'
   | 'xLineTo'
