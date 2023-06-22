@@ -139,6 +139,12 @@ export function App() {
   }
   const engineCommandManager = useMemo(() => new EngineCommandManager(setMediaStream), [])
   useEffect(() => {
+    return () => {
+      engineCommandManager.tearDown()
+    }
+  }, [])
+
+  useEffect(() => {
     const asyncWrap = async () => {
       try {
         if (!code) {

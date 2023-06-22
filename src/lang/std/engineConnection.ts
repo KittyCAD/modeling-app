@@ -81,7 +81,6 @@ export class EngineCommandManager {
   socket?: WebSocket
   pc?: RTCPeerConnection
   lossyDataChannel?: RTCDataChannel
-  lossyDataChannel2?: RTCDataChannel
   onHoverCallback: (id?: string) => void = () => {}
   onClickCallback: (selection: SelectionsArgs) => void = () => {}
   onCursorsSelectedCallback: (selections: CursorSelectionsArgs) => void =
@@ -90,10 +89,9 @@ export class EngineCommandManager {
     const url = 'wss://api.dev.kittycad.io/ws/modeling/commands'
     this.socket = new WebSocket(url)
     this.pc = new RTCPeerConnection()
-    this.lossyDataChannel2 = this.pc.createDataChannel(
-      'unreliable_modeling_cmds',
-      { ordered: false, maxRetransmits: 0 }
-    )
+    this.pc.createDataChannel('unreliable_modeling_cmds', {
+      ordered: true,
+    })
     this.socket.addEventListener('open', (event) => {
       console.log('Connected to websocket, waiting for ICE servers')
     })
@@ -104,19 +102,6 @@ export class EngineCommandManager {
 
     this.socket.addEventListener('error', (event) => {
       console.log('websocket connection error')
-    })
-
-    this.lossyDataChannel2.addEventListener('open', (event) => {
-      console.log('lossy2 data channel opened', event)
-    })
-    this.lossyDataChannel2.addEventListener('close', (event) => {
-      console.log('lossy2 data channel closed')
-    })
-    this.lossyDataChannel2.addEventListener('error', (event) => {
-      console.log('lossy2 data channel error')
-    })
-    this.lossyDataChannel2.addEventListener('message', (event) => {
-      console.log('lossy2 data channel message: ', event)
     })
 
     this?.socket?.addEventListener('message', (event) => {
@@ -216,6 +201,13 @@ export class EngineCommandManager {
       }
     })
   }
+  tearDown() {
+    // close all channels, sockets and WebRTC connections
+    console.log('tearing it all down')
+    this.lossyDataChannel?.close()
+    this.socket?.close()
+    this.pc?.close()
+  }
 
   startNewSession() {
     this.artifactMap = {}
@@ -299,10 +291,9 @@ export class EngineCommandManager {
       console.log('socket not ready')
       return
     }
-    if ('CameraDragMove' in command.cmd) {
+    if ('CameraDragMove' in command.cmd && this.lossyDataChannel) {
       console.log('sending lossy command', command, this.lossyDataChannel)
-      this.lossyDataChannel?.send(JSON.stringify(command))
-      this.lossyDataChannel2?.send(JSON.stringify(command))
+      this.lossyDataChannel.send(JSON.stringify(command))
       return
     }
     console.log('sending through TCP')
