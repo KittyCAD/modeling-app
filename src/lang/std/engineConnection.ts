@@ -59,7 +59,7 @@ interface EngineCommand {
         }
       }
     }
-    ClosePath?:  {
+    ClosePath?: {
       path_id: uuid
     }
     Extrude?: {
@@ -81,6 +81,7 @@ export class EngineCommandManager {
   socket?: WebSocket
   pc?: RTCPeerConnection
   lossyDataChannel?: RTCDataChannel
+  lossyDataChannel2?: RTCDataChannel
   onHoverCallback: (id?: string) => void = () => {}
   onClickCallback: (selection: SelectionsArgs) => void = () => {}
   onCursorsSelectedCallback: (selections: CursorSelectionsArgs) => void =
@@ -89,7 +90,10 @@ export class EngineCommandManager {
     const url = 'wss://api.dev.kittycad.io/ws/modeling/commands'
     this.socket = new WebSocket(url)
     this.pc = new RTCPeerConnection()
-    this.lossyDataChannel = this.pc.createDataChannel('unreliable_modeling_cmds')
+    this.lossyDataChannel2 = this.pc.createDataChannel(
+      'unreliable_modeling_cmds',
+      { ordered: false, maxRetransmits: 0 }
+    )
     this.socket.addEventListener('open', (event) => {
       console.log('Connected to websocket, waiting for ICE servers')
     })
@@ -102,17 +106,17 @@ export class EngineCommandManager {
       console.log('websocket connection error')
     })
 
-    this.lossyDataChannel.addEventListener('open', (event) => {
-      console.log('lossy data channel opened')
+    this.lossyDataChannel2.addEventListener('open', (event) => {
+      console.log('lossy2 data channel opened', event)
     })
-    this.lossyDataChannel.addEventListener('close', (event) => {
-      console.log('lossy data channel closed')
+    this.lossyDataChannel2.addEventListener('close', (event) => {
+      console.log('lossy2 data channel closed')
     })
-    this.lossyDataChannel.addEventListener('error', (event) => {
-      console.log('lossy data channel error')
+    this.lossyDataChannel2.addEventListener('error', (event) => {
+      console.log('lossy2 data channel error')
     })
-    this.lossyDataChannel.addEventListener('message', (event) => {
-      console.log('lossy data channel message: ', event)
+    this.lossyDataChannel2.addEventListener('message', (event) => {
+      console.log('lossy2 data channel message: ', event)
     })
 
     this?.socket?.addEventListener('message', (event) => {
@@ -181,6 +185,23 @@ export class EngineCommandManager {
               this.socket?.send(msg)
             })
             .catch(console.log)
+
+          this.pc.addEventListener('datachannel', (event) => {
+            this.lossyDataChannel = event.channel
+            console.log('accepted lossy data channel', event.channel.label)
+            this.lossyDataChannel.addEventListener('open', (event) => {
+              console.log('lossy data channel opened', event)
+            })
+            this.lossyDataChannel.addEventListener('close', (event) => {
+              console.log('lossy data channel closed')
+            })
+            this.lossyDataChannel.addEventListener('error', (event) => {
+              console.log('lossy data channel error')
+            })
+            this.lossyDataChannel.addEventListener('message', (event) => {
+              console.log('lossy data channel message: ', event)
+            })
+          })
         }
         // TODO talk to the gang about this
         // the following message types are made up
@@ -278,11 +299,13 @@ export class EngineCommandManager {
       console.log('socket not ready')
       return
     }
-    if('CameraDragMove' in command.cmd) {
-      console.log('sending lossy command', command)
+    if ('CameraDragMove' in command.cmd) {
+      console.log('sending lossy command', command, this.lossyDataChannel)
       this.lossyDataChannel?.send(JSON.stringify(command))
+      this.lossyDataChannel2?.send(JSON.stringify(command))
       return
     }
+    console.log('sending through TCP')
     this.socket?.send(JSON.stringify(command))
   }
   sendModellingCommand({
