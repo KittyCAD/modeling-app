@@ -80,6 +80,7 @@ export class EngineCommandManager {
   sourceRangeMap: SourceRangeMap = {}
   socket?: WebSocket
   pc?: RTCPeerConnection
+  lossyDataChannel?: RTCDataChannel
   onHoverCallback: (id?: string) => void = () => {}
   onClickCallback: (selection: SelectionsArgs) => void = () => {}
   onCursorsSelectedCallback: (selections: CursorSelectionsArgs) => void =
@@ -88,6 +89,7 @@ export class EngineCommandManager {
     const url = 'wss://api.dev.kittycad.io/ws/modeling/commands'
     this.socket = new WebSocket(url)
     this.pc = new RTCPeerConnection()
+    this.lossyDataChannel = this.pc.createDataChannel('unreliable_modeling_cmds')
     this.socket.addEventListener('open', (event) => {
       console.log('Connected to websocket, waiting for ICE servers')
     })
@@ -98,6 +100,19 @@ export class EngineCommandManager {
 
     this.socket.addEventListener('error', (event) => {
       console.log('websocket connection error')
+    })
+
+    this.lossyDataChannel.addEventListener('open', (event) => {
+      console.log('lossy data channel opened')
+    })
+    this.lossyDataChannel.addEventListener('close', (event) => {
+      console.log('lossy data channel closed')
+    })
+    this.lossyDataChannel.addEventListener('error', (event) => {
+      console.log('lossy data channel error')
+    })
+    this.lossyDataChannel.addEventListener('message', (event) => {
+      console.log('lossy data channel message: ', event)
     })
 
     this?.socket?.addEventListener('message', (event) => {
@@ -261,6 +276,11 @@ export class EngineCommandManager {
   sendSceneCommand(command: EngineCommand) {
     if (this.socket?.readyState === 0) {
       console.log('socket not ready')
+      return
+    }
+    if('CameraDragMove' in command.cmd) {
+      console.log('sending lossy command', command)
+      this.lossyDataChannel?.send(JSON.stringify(command))
       return
     }
     this.socket?.send(JSON.stringify(command))
