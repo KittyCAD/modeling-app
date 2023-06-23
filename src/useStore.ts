@@ -148,6 +148,8 @@ export interface StoreState {
   setEngineCommandManager: (engineCommandManager: EngineCommandManager) => void
   mediaStream?: MediaStream
   setMediaStream: (mediaStream: MediaStream) => void
+  isStreamReady: boolean
+  setIsStreamReady: (isStreamReady: boolean) => void
 
   // tauri specific app settings
   defaultDir: DefaultDir
@@ -300,6 +302,8 @@ export const useStore = create<StoreState>()(
       setEngineCommandManager: (engineCommandManager) =>
         set({ engineCommandManager }),
       setMediaStream: (mediaStream) => set({ mediaStream }),
+      isStreamReady: false,
+      setIsStreamReady: (isStreamReady) => set({ isStreamReady }),
   
       // tauri specific app settings
       defaultDir: {

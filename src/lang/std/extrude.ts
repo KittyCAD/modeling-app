@@ -47,13 +47,13 @@ export const extrude: InternalFn = (
           target: sketch.id,
           distance: length,
           cap: true,
-        }
+        },
       },
       cmd_id: id,
       file_id: uuidv4(),
     },
   })
-  
+
   return {
     type: 'extrudeGroup',
     value: extrudeSurfaces, // TODO, this is just an empty array now, should be deleted.

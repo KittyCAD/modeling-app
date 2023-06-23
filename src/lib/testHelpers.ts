@@ -6,7 +6,10 @@ export async function executor(
   ast: Program,
   pm: ProgramMemory = { root: {}, pendingMemory: {} }
 ): Promise<ProgramMemory> {
-  const engineCommandManager = new EngineCommandManager(() => {})
+  const engineCommandManager = new EngineCommandManager({
+    setIsStreamReady: () => {},
+    setMediaStream: () => {},
+  })
   engineCommandManager.startNewSession()
   const programMemory = await _executor(ast, pm, engineCommandManager)
   await engineCommandManager.waitForAllCommands()
