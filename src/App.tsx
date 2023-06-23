@@ -29,14 +29,11 @@ export function App() {
     setEditorView,
     setSelectionRanges,
     selectionRanges,
-    guiMode,
-    lastGuiMode,
     addLog,
     code,
     setCode,
     setAst,
     setError,
-    errorState,
     setProgramMemory,
     resetLogs,
     selectionRangeTypeMap,
@@ -47,20 +44,19 @@ export function App() {
     setCursor2,
     sourceRangeMap,
     setMediaStream,
+    setIsStreamReady,
+    isStreamReady,
   } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
     setSelectionRanges: s.setSelectionRanges,
     selectionRanges: s.selectionRanges,
-    guiMode: s.guiMode,
     setGuiMode: s.setGuiMode,
     addLog: s.addLog,
     code: s.code,
     setCode: s.setCode,
     setAst: s.setAst,
-    lastGuiMode: s.lastGuiMode,
     setError: s.setError,
-    errorState: s.errorState,
     setProgramMemory: s.setProgramMemory,
     resetLogs: s.resetLogs,
     selectionRangeTypeMap: s.selectionRangeTypeMap,
@@ -72,7 +68,9 @@ export function App() {
     setCursor: s.setCursor,
     setCursor2: s.setCursor2,
     sourceRangeMap: s.sourceRangeMap,
-    setMediaStream: s.setMediaStream
+    setMediaStream: s.setMediaStream,
+    isStreamReady: s.isStreamReady,
+    setIsStreamReady: s.setIsStreamReady,
   }))
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
@@ -137,7 +135,10 @@ export function App() {
       codeBasedSelections,
     })
   }
-  const engineCommandManager = useMemo(() => new EngineCommandManager(setMediaStream), [])
+  const engineCommandManager = useMemo(() => new EngineCommandManager({
+    setMediaStream,
+    setIsStreamReady,
+  }), [])
   useEffect(() => {
     return () => {
       engineCommandManager.tearDown()
@@ -145,6 +146,7 @@ export function App() {
   }, [])
 
   useEffect(() => {
+    if (!isStreamReady) return
     const asyncWrap = async () => {
       try {
         if (!code) {
@@ -242,7 +244,7 @@ export function App() {
       }
     }
     asyncWrap()
-  }, [code])
+  }, [code, isStreamReady])
   return (
     <div className="h-screen">
       <ModalContainer />

@@ -293,7 +293,7 @@ export const line: SketchLineHelper = {
         },
         cmd_id: id,
         file_id: uuidv4(),
-      }
+      },
     })
     const currentPath: Path = {
       type: 'toPoint',
@@ -1603,7 +1603,7 @@ export const close: InternalFn = (
       },
       cmd_id: id,
       file_id: uuidv4(),
-    }
+    },
   })
 
   const currentPath: Path = {
@@ -1678,20 +1678,20 @@ export const startSketchAt: InternalFn = (
     },
   })
   engineCommandManager.sendSceneCommand({
-      type: 'ModelingCmdReq',
-      cmd: {
-        MovePathPen: {
-          path: pathId,
-          to: {
-            x: lineData.to[0],
-            y: lineData.to[1],
-            z: 0,
-          },
+    type: 'ModelingCmdReq',
+    cmd: {
+      MovePathPen: {
+        path: pathId,
+        to: {
+          x: lineData.to[0],
+          y: lineData.to[1],
+          z: 0,
         },
       },
-      cmd_id: id,
-      file_id: uuidv4(),
-    })
+    },
+    cmd_id: id,
+    file_id: uuidv4(),
+  })
   const currentPath: Path = {
     type: 'base',
     to,

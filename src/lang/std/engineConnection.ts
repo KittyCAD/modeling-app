@@ -90,7 +90,13 @@ export class EngineCommandManager {
   onClickCallback: (selection: SelectionsArgs) => void = () => {}
   onCursorsSelectedCallback: (selections: CursorSelectionsArgs) => void =
     () => {}
-  constructor(setMediaStream: (stream: MediaStream) => void) {
+  constructor({
+    setMediaStream,
+    setIsStreamReady,
+  }: {
+    setMediaStream: (stream: MediaStream) => void
+    setIsStreamReady: (isStreamReady: boolean) => void
+  }) {
     const url = 'wss://api.dev.kittycad.io/ws/modeling/commands'
     this.socket = new WebSocket(url)
     this.pc = new RTCPeerConnection()
@@ -178,6 +184,7 @@ export class EngineCommandManager {
             this.lossyDataChannel = event.channel
             console.log('accepted lossy data channel', event.channel.label)
             this.lossyDataChannel.addEventListener('open', (event) => {
+              setIsStreamReady(true)
               console.log('lossy data channel opened', event)
             })
             this.lossyDataChannel.addEventListener('close', (event) => {
