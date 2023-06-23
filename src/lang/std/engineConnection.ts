@@ -37,6 +37,10 @@ interface MouseStuff {
   }
 }
 
+interface MouseDrag extends MouseStuff {
+  sequence?: number
+}
+
 type uuid = string
 interface XYZ {
   x: number
@@ -67,7 +71,7 @@ interface EngineCommand {
       distance: number
       cap: boolean
     }
-    CameraDragMove?: MouseStuff
+    CameraDragMove?: MouseDrag
     CameraDragStart?: MouseStuff
     CameraDragEnd?: MouseStuff
   }
@@ -78,6 +82,7 @@ interface EngineCommand {
 export class EngineCommandManager {
   artifactMap: ArtifactMap = {}
   sourceRangeMap: SourceRangeMap = {}
+  sequence = 0
   socket?: WebSocket
   pc?: RTCPeerConnection
   lossyDataChannel?: RTCDataChannel
@@ -89,9 +94,7 @@ export class EngineCommandManager {
     const url = 'wss://api.dev.kittycad.io/ws/modeling/commands'
     this.socket = new WebSocket(url)
     this.pc = new RTCPeerConnection()
-    this.pc.createDataChannel('unreliable_modeling_cmds', {
-      ordered: true,
-    })
+    this.pc.createDataChannel('unreliable_modeling_cmds')
     this.socket.addEventListener('open', (event) => {
       console.log('Connected to websocket, waiting for ICE servers')
     })
@@ -291,8 +294,10 @@ export class EngineCommandManager {
       console.log('socket not ready')
       return
     }
-    if ('CameraDragMove' in command.cmd && this.lossyDataChannel) {
+    if (command.cmd.CameraDragMove && this.lossyDataChannel) {
       console.log('sending lossy command', command, this.lossyDataChannel)
+      command.cmd.CameraDragMove.sequence = this.sequence
+      this.sequence++
       this.lossyDataChannel.send(JSON.stringify(command))
       return
     }
