@@ -3,6 +3,10 @@ import { PanelHeader } from '../components/PanelHeader'
 import { v4 as uuidv4 } from 'uuid'
 import { useStore } from '../useStore'
 import { throttle } from '../lib/utils'
+import { create } from 'react-modal-promise'
+import { AppInfoModal } from './AppInfoModal'
+
+const infoModal = create(AppInfoModal)
 
 export const Stream = () => {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -113,7 +117,16 @@ export const Stream = () => {
 
   return (
     <div>
-      <PanelHeader title="Stream" />
+      <PanelHeader title="Stream">
+        <button onClick={async () => {
+          try {
+            await infoModal()
+
+          } catch (e) {
+            console.log('e', e)
+          }
+      }} className='px-1 py-0.5 rounded bg-cyan-50 hover:bg-cyan-100'>ℹ️ App Info</button>
+      </PanelHeader>
       <video
         ref={videoRef}
         muted
