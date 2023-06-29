@@ -122,6 +122,7 @@ export const Stream = () => {
         onMouseMove={handleMouseMove}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
       />
     </div>
   )
