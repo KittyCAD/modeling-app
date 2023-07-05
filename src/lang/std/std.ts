@@ -128,6 +128,7 @@ export const internalFns: { [key in InternalFnNames]: InternalFn } = {
   angledLineThatIntersects: angledLineThatIntersects.fn,
   startSketchAt,
   close,
+  sin: (_, a) => Math.sin(a),
 }
 
 // function rotateOnAxis<T extends SketchGroup | ExtrudeGroup>(

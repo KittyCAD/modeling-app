@@ -11,6 +11,7 @@ import { SetAngleLength } from './components/Toolbar/setAngleLength'
 import { ConvertToVariable } from './components/Toolbar/ConvertVariable'
 import { SetAbsDistance } from './components/Toolbar/SetAbsDistance'
 import { SetAngleBetween } from './components/Toolbar/SetAngleBetween'
+import { WrapInSin } from './components/Toolbar/WrapInSin'
 
 export const Toolbar = () => {
   const {
@@ -184,6 +185,7 @@ export const Toolbar = () => {
       <Intersect />
       <RemoveConstrainingValues />
       <SetAngleBetween />
+      <WrapInSin />
     </div>
   )
 }
