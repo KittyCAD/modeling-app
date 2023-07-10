@@ -2,24 +2,26 @@ import { abstractSyntaxTree } from './abstractSyntaxTree'
 import { lexer } from './tokeniser'
 import { SketchGroup, ExtrudeGroup } from './executor'
 import { initPromise } from './rust'
-import { executor } from '../lib/testHelpers'
+import { enginelessExecutor, executor } from '../lib/testHelpers'
 
 beforeAll(() => initPromise)
 
 describe('testing artifacts', () => {
+  // Enable rotations #152
   test('sketch artifacts', async () => {
     const code = `
 const mySketch001 = startSketchAt([0, 0])
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)
-  |> rx(45, %)
+  // |> rx(45, %) 
 show(mySketch001)`
-    const programMemory = await executor(abstractSyntaxTree(lexer(code)))
-    const geos = programMemory?.return?.map(
+    const programMemory = await enginelessExecutor(
+      abstractSyntaxTree(lexer(code))
+    )
+    const shown = programMemory?.return?.map(
       (a) => programMemory?.root?.[a.name]
     )
-    const artifactsWithoutGeos = removeGeo(geos as any)
-    expect(artifactsWithoutGeos).toEqual([
+    expect(shown).toEqual([
       {
         type: 'sketchGroup',
         start: {
@@ -30,7 +32,6 @@ show(mySketch001)`
             id: '66366561-6465-4734-a463-366330356563',
             sourceRange: [21, 42],
             pathToNode: [],
-            geos: ['sketchBase'],
           },
         },
         value: [
@@ -42,7 +43,6 @@ show(mySketch001)`
               sourceRange: [48, 73],
               id: '30366338-6462-4330-a364-303935626163',
               pathToNode: [],
-              geos: ['line', 'lineEnd'],
             },
           },
           {
@@ -53,276 +53,99 @@ show(mySketch001)`
               sourceRange: [79, 103],
               id: '32653334-6331-4231-b162-663334363535',
               pathToNode: [],
-              geos: ['line', 'lineEnd'],
             },
           },
         ],
         position: [0, 0, 0],
-        rotation: [0.3826834323650898, 0, 0, 0.9238795325112867],
-        __meta: [
-          { sourceRange: [21, 42], pathToNode: [] },
-          { sourceRange: [109, 118], pathToNode: [] },
-        ],
+        rotation: [0, 0, 0, 1],
+        id: '39643164-6130-4734-b432-623638393262',
+        __meta: [{ sourceRange: [21, 42], pathToNode: [] }],
       },
     ])
   })
   test('extrude artifacts', async () => {
+    // Enable rotations #152
     const code = `
 const mySketch001 = startSketchAt([0, 0])
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)
-  |> rx(45, %)
+  // |> rx(45, %)
   |> extrude(2, %)
 show(mySketch001)`
-    const programMemory = await executor(abstractSyntaxTree(lexer(code)))
-    const geos = programMemory?.return?.map(
+    const programMemory = await enginelessExecutor(
+      abstractSyntaxTree(lexer(code))
+    )
+    const shown = programMemory?.return?.map(
       (a) => programMemory?.root?.[a.name]
     )
-    const artifactsWithoutGeos = removeGeo(geos as any)
-    expect(artifactsWithoutGeos).toEqual([
+    expect(shown).toEqual([
       {
         type: 'extrudeGroup',
-        value: [
-          {
-            type: 'extrudePlane',
-            position: [-0.795, -0.5444722215136415, -0.5444722215136416],
-            rotation: [
-              0.35471170441873584, 0.3467252481708758, -0.14361830020955396,
-              0.8563498075401887,
-            ],
-            __geoMeta: {
-              id: expect.anything(),
-              geo: undefined,
-              refId: '30366338-6462-4330-a364-303935626163',
-              sourceRange: [48, 73],
-              pathToNode: [],
-            },
-          },
-          {
-            type: 'extrudePlane',
-            position: [
-              -0.5650000000000001, -2.602152954766495, -2.602152954766495,
-            ],
-            rotation: [
-              0.20394238048109659, 0.7817509623502217, -0.3238118510036805,
-              0.4923604609001174,
-            ],
-            __geoMeta: {
-              id: expect.anything(),
-              geo: undefined,
-              refId: '32653334-6331-4231-b162-663334363535',
-              sourceRange: [79, 103],
-              pathToNode: [],
-            },
-          },
-        ],
+        id: '31616631-3438-4664-a464-393034663561',
+        value: [],
         height: 2,
         position: [0, 0, 0],
-        rotation: [0.3826834323650898, 0, 0, 0.9238795325112867],
+        rotation: [0, 0, 0, 1],
         __meta: [
-          { sourceRange: [124, 137], pathToNode: [] },
+          { sourceRange: [127, 140], pathToNode: [] },
           { sourceRange: [21, 42], pathToNode: [] },
         ],
       },
     ])
   })
   test('sketch extrude and sketch on one of the faces', async () => {
+    // Enable rotations #152
+    // TODO #153 in order for getExtrudeWallTransform to work we need to query the engine for the location of a face.
     const code = `
 const sk1 = startSketchAt([0, 0])
   |> lineTo([-2.5, 0], %)
   |> lineTo({ to: [0, 10], tag: "p" }, %)
   |> lineTo([2.5, 0], %)
-  |> rx(45, %)
-  |> translate([1,0,1], %)
-  |> ry(5, %)
+  // |> rx(45, %)
+  // |> translate([1,0,1], %)
+  // |> ry(5, %)
 const theExtrude = extrude(2, sk1)
-const theTransf = getExtrudeWallTransform('p', theExtrude)
+// const theTransf = getExtrudeWallTransform('p', theExtrude)
 const sk2 = startSketchAt([0, 0])
   |> lineTo([-2.5, 0], %)
   |> lineTo({ to: [0, 3], tag: "p" }, %)
   |> lineTo([2.5, 0], %)
-  |> transform(theTransf, %)
+  // |> transform(theTransf, %)
   |> extrude(2, %)
   
 
 show(theExtrude, sk2)`
-    const programMemory = await executor(abstractSyntaxTree(lexer(code)))
-    const geos = programMemory?.return?.map(
-      (a) => programMemory?.root?.[a.name]
+    const programMemory = await enginelessExecutor(
+      abstractSyntaxTree(lexer(code))
     )
-    const artifactsWithoutGeos = removeGeo(geos as any)
-    expect(artifactsWithoutGeos).toEqual([
+    const geos = programMemory?.return?.map(
+      ({ name }) => programMemory?.root?.[name]
+    )
+    expect(geos).toEqual([
       {
         type: 'extrudeGroup',
-        value: [
-          {
-            type: 'extrudePlane',
-            position: [-0.1618929317752782, 0, 1.01798363377866],
-            rotation: [
-              0.3823192025331841, -0.04029905920751535, -0.016692416874629204,
-              0.9230002039112793,
-            ],
-            __geoMeta: {
-              id: expect.anything(), // todo figure out why isn't deterministic
-              geo: undefined,
-              refId: '36613364-6238-4330-b766-613131633135',
-              sourceRange: [40, 60],
-              pathToNode: [],
-            },
-          },
-          {
-            type: 'extrudePlane',
-            position: [
-              0.14624915180581843, 3.5355339059327373, 4.540063765792454,
-            ],
-            rotation: [
-              -0.24844095888221532, 0.7523143130765927, -0.2910733573455524,
-              -0.5362616571538269,
-            ],
-            __geoMeta: {
-              id: expect.anything(),
-              geo: undefined,
-              refId: '32313832-3531-4933-b839-316634316237',
-              sourceRange: [66, 102],
-              pathToNode: [],
-            },
-            name: 'p',
-          },
-          {
-            type: 'extrudePlane',
-            position: [
-              2.636735897035183, 3.5355339059327386, 4.322174408923308,
-            ],
-            rotation: [
-              0.22212685137378593, 0.7027132469491032, -0.3116187916437232,
-              0.5997895323824204,
-            ],
-            __geoMeta: {
-              id: expect.anything(),
-              geo: undefined,
-              refId: '31356564-3364-4562-a438-653732633238',
-              sourceRange: [108, 127],
-              pathToNode: [],
-            },
-          },
-        ],
+        id: '35623732-3138-4137-a163-626336313834',
+        value: [],
         height: 2,
-        position: [1.083350440839404, 0, 0.9090389553440874],
-        rotation: [
-          0.38231920253318413, 0.04029905920751535, -0.01669241687462921,
-          0.9230002039112792,
-        ],
+        position: [0, 0, 0],
+        rotation: [0, 0, 0, 1],
         __meta: [
-          { sourceRange: [203, 218], pathToNode: [] },
+          { sourceRange: [212, 227], pathToNode: [] },
           { sourceRange: [13, 34], pathToNode: [] },
         ],
       },
       {
         type: 'extrudeGroup',
-        value: [
-          {
-            type: 'extrudePlane',
-            position: [
-              0.5230004643466108, 4.393026831645281, 5.367870706359959,
-            ],
-            rotation: [
-              -0.5548685410139091, 0.7377864971619333, 0.3261466075583827,
-              -0.20351996751370383,
-            ],
-            __geoMeta: {
-              id: expect.anything(),
-              geo: undefined,
-              refId: '31623462-6433-4233-b361-303837663464',
-              sourceRange: [317, 337],
-              pathToNode: [],
-            },
-          },
-          {
-            type: 'extrudePlane',
-            position: [
-              0.43055783927228125, 5.453687003425103, 4.311246666755821,
-            ],
-            rotation: [
-              0.5307054034531232, -0.4972416536396126, 0.3641462373475848,
-              -0.5818075544860157,
-            ],
-            __geoMeta: {
-              id: expect.anything(),
-              geo: undefined,
-              refId: '66363230-3430-4961-b831-646363376538',
-              sourceRange: [343, 378],
-              pathToNode: [],
-            },
-            name: 'p',
-          },
-          {
-            type: 'extrudePlane',
-            position: [
-              -0.3229447858093035, 3.7387011520000146, 2.6556327856208117,
-            ],
-            rotation: [
-              0.06000443169260189, 0.12863059446321826, 0.6408199244764428,
-              -0.7544557394170275,
-            ],
-            __geoMeta: {
-              id: expect.anything(),
-              geo: undefined,
-              refId: '62366564-3261-4061-b533-623433336531',
-              sourceRange: [384, 403],
-              pathToNode: [],
-            },
-          },
-        ],
+        id: '64303137-3930-4039-a334-333164373166',
+        value: [],
         height: 2,
-        position: [0.14624915180581843, 3.5355339059327373, 4.540063765792454],
-        rotation: [
-          0.24844095888221532, -0.7523143130765927, 0.2910733573455524,
-          -0.5362616571538269,
-        ],
+        position: [0, 0, 0],
+        rotation: [0, 0, 0, 1],
         __meta: [
-          { sourceRange: [438, 451], pathToNode: [] },
-          { sourceRange: [290, 311], pathToNode: [] },
+          { sourceRange: [453, 466], pathToNode: [] },
+          { sourceRange: [302, 323], pathToNode: [] },
         ],
       },
     ])
   })
 })
-
-function removeGeo(arts: (SketchGroup | ExtrudeGroup)[]): any {
-  return arts.map((art) => {
-    if (!art) {
-      return {}
-    }
-    if (art?.type === 'extrudeGroup') {
-      return {
-        ...art,
-        value: art.value.map((v) => ({
-          ...v,
-          __geoMeta: {
-            ...v.__geoMeta,
-            geo: (v?.__geoMeta as any)?.geo?.type,
-          },
-        })),
-      }
-    }
-    return {
-      ...art,
-      start: art.start
-        ? {
-            ...art.start,
-            __geoMeta: {
-              ...art.start.__geoMeta,
-              geos: art.start.__geoMeta.geos.map((g) => g.type),
-            },
-          }
-        : {},
-      value: art.value.map((v) => ({
-        ...v,
-        __geoMeta: {
-          ...v.__geoMeta,
-          geos: v.__geoMeta.geos.map((g) => g.type),
-        },
-      })),
-    }
-  })
-}

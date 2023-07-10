@@ -154,14 +154,6 @@ export const lineTo: SketchLineHelper = {
         sourceRange,
         id,
         pathToNode: [], // TODO
-        geos: [
-          {
-            type: 'line',
-          },
-          {
-            type: 'lineEnd',
-          },
-        ],
       },
     }
     if ('tag' in data) {
@@ -303,14 +295,6 @@ export const line: SketchLineHelper = {
         id,
         sourceRange,
         pathToNode: [], // TODO
-        geos: [
-          {
-            type: 'line',
-          },
-          {
-            type: 'lineEnd',
-          },
-        ],
       },
     }
     if (data !== 'default' && 'tag' in data) {
@@ -714,14 +698,6 @@ export const angledLine: SketchLineHelper = {
         id,
         sourceRange,
         pathToNode: [], // TODO
-        geos: [
-          {
-            type: 'line',
-          },
-          {
-            type: 'lineEnd',
-          },
-        ],
       },
     }
     if ('tag' in data) {
@@ -1614,14 +1590,6 @@ export const close: InternalFn = (
       id,
       sourceRange,
       pathToNode: [], // TODO
-      geos: [
-        {
-          type: 'line',
-        },
-        {
-          type: 'lineEnd',
-        },
-      ],
     },
   }
   const newValue = [...sketchGroup.value]
@@ -1700,11 +1668,6 @@ export const startSketchAt: InternalFn = (
       id,
       sourceRange,
       pathToNode: [], // TODO
-      geos: [
-        {
-          type: 'sketchBase',
-        },
-      ],
     },
   }
   if (data !== 'default' && 'tag' in data) {

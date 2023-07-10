@@ -56,6 +56,7 @@ export const extrude: InternalFn = (
 
   return {
     type: 'extrudeGroup',
+    id,
     value: extrudeSurfaces, // TODO, this is just an empty array now, should be deleted.
     height: length,
     position,

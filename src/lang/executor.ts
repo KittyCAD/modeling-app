@@ -33,9 +33,6 @@ interface BasePath {
   name?: string
   __geoMeta: {
     id: string
-    geos: {
-      type: 'line' | 'lineEnd' | 'sketchBase'
-    }[]
     sourceRange: SourceRange
     pathToNode: PathToNode
   }
@@ -94,6 +91,7 @@ export type ExtrudeSurface = GeoMeta &
 
 export interface ExtrudeGroup {
   type: 'extrudeGroup'
+  id: string
   value: ExtrudeSurface[]
   height: number
   position: Position

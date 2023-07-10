@@ -95,7 +95,7 @@ const legAngY: InternalFn = (_, hypotenuse: number, leg: number): number =>
 
 export const internalFns: { [key in InternalFnNames]: InternalFn } = {
   // TODO - re-enable these
-  // rx: rotateOnAxis([1, 0, 0]),
+  // rx: rotateOnAxis([1, 0, 0]), // Enable rotations #152
   // ry: rotateOnAxis([0, 1, 0]),
   // rz: rotateOnAxis([0, 0, 1]),
   extrude,

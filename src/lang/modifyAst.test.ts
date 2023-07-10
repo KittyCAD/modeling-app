@@ -16,7 +16,7 @@ import {
 import { recast } from './recast'
 import { lexer } from './tokeniser'
 import { initPromise } from './rust'
-import { executor } from '../lib/testHelpers'
+import { enginelessExecutor } from '../lib/testHelpers'
 
 beforeAll(() => initPromise)
 
@@ -196,7 +196,7 @@ const yo2 = hmm([identifierGuy + 5])
 show(part001)`
   it('should move a value into a new variable', async () => {
     const ast = abstractSyntaxTree(lexer(code))
-    const programMemory = await executor(ast)
+    const programMemory = await enginelessExecutor(ast)
     const startIndex = code.indexOf('100 + 100') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
@@ -210,7 +210,7 @@ show(part001)`
   })
   it('should move a value into a new variable', async () => {
     const ast = abstractSyntaxTree(lexer(code))
-    const programMemory = await executor(ast)
+    const programMemory = await enginelessExecutor(ast)
     const startIndex = code.indexOf('2.8') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
@@ -224,7 +224,7 @@ show(part001)`
   })
   it('should move a value into a new variable', async () => {
     const ast = abstractSyntaxTree(lexer(code))
-    const programMemory = await executor(ast)
+    const programMemory = await enginelessExecutor(ast)
     const startIndex = code.indexOf('def(')
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
@@ -238,7 +238,7 @@ show(part001)`
   })
   it('should move a value into a new variable', async () => {
     const ast = abstractSyntaxTree(lexer(code))
-    const programMemory = await executor(ast)
+    const programMemory = await enginelessExecutor(ast)
     const startIndex = code.indexOf('jkl(') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
@@ -252,7 +252,7 @@ show(part001)`
   })
   it('should move a value into a new variable', async () => {
     const ast = abstractSyntaxTree(lexer(code))
-    const programMemory = await executor(ast)
+    const programMemory = await enginelessExecutor(ast)
     const startIndex = code.indexOf('identifierGuy +') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,

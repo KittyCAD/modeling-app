@@ -10,7 +10,7 @@ import {
 } from './sketchcombos'
 import { initPromise } from '../rust'
 import { Selections, TooTip } from '../../useStore'
-import { executor } from '../../lib/testHelpers'
+import { enginelessExecutor } from '../../lib/testHelpers'
 import { recast } from '../../lang/recast'
 
 beforeAll(() => initPromise)
@@ -210,7 +210,7 @@ show(part001)`
         }
       })
 
-    const programMemory = await executor(ast)
+    const programMemory = await enginelessExecutor(ast)
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges.slice(1)),
       ast,
@@ -295,7 +295,7 @@ show(part001)`
         }
       })
 
-    const programMemory = await executor(ast)
+    const programMemory = await enginelessExecutor(ast)
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges),
       ast,
@@ -352,7 +352,7 @@ show(part001)`
         }
       })
 
-    const programMemory = await executor(ast)
+    const programMemory = await enginelessExecutor(ast)
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges),
       ast,
@@ -444,7 +444,7 @@ async function helperThing(
       }
     })
 
-  const programMemory = await executor(ast)
+  const programMemory = await enginelessExecutor(ast)
   const transformInfos = getTransformInfos(
     makeSelections(selectionRanges.slice(1)),
     ast,

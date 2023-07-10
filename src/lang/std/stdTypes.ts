@@ -23,7 +23,7 @@ export type InternalFnNames =
   // TODO re-enable these
   // | 'translate'
   // | 'transform'
-  // | 'rx'
+  // | 'rx' // Enable rotations #152
   // | 'ry'
   // | 'rz'
   | 'extrude'
