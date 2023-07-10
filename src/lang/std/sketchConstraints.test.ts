@@ -10,7 +10,7 @@ import { recast } from '../recast'
 import { initPromise } from '../rust'
 import { getSketchSegmentFromSourceRange } from './sketchConstraints'
 import { Selection } from '../../useStore'
-import { executor } from '../../lib/testHelpers'
+import { enginelessExecutor } from '../../lib/testHelpers'
 
 beforeAll(() => initPromise)
 
@@ -34,7 +34,7 @@ async function testingSwapSketchFnCall({
   }
   const tokens = lexer(inputCode)
   const ast = abstractSyntaxTree(tokens)
-  const programMemory = await executor(ast)
+  const programMemory = await enginelessExecutor(ast)
   const selections = {
     codeBasedSelections: [range],
     otherSelections: [],
@@ -273,6 +273,7 @@ describe('testing swaping out sketch calls with xLine/xLineTo', () => {
 })
 
 describe('testing swaping out sketch calls with xLine/xLineTo while keeping variable/identifiers intact', () => {
+  // Enable rotations #152
   const variablesExampleArr = [
     `const lineX = -1`,
     `const lineToX = -1.3`,
@@ -282,7 +283,7 @@ describe('testing swaping out sketch calls with xLine/xLineTo while keeping vari
     `const angledLineToXx = -1.86`,
     `const angledLineToYy = -0.76`,
     `const part001 = startSketchAt([0, 0])`,
-    `  |> rx(90, %)`,
+    // `  |> rx(90, %)`,
     `  |> lineTo([1, 1], %)`,
     `  |> line([lineX, 2.13], %)`,
     `  |> lineTo([lineToX, 2.85], %)`,
@@ -382,7 +383,9 @@ const part001 = startSketchAt([0, 0.04]) // segment-in-start
   |> xLine(3.54, %)
 show(part001)`
   it('normal case works', async () => {
-    const programMemory = await executor(abstractSyntaxTree(lexer(code)))
+    const programMemory = await enginelessExecutor(
+      abstractSyntaxTree(lexer(code))
+    )
     const index = code.indexOf('// normal-segment') - 7
     const { __geoMeta, ...segment } = getSketchSegmentFromSourceRange(
       programMemory.root['part001'] as SketchGroup,
@@ -395,7 +398,9 @@ show(part001)`
     })
   })
   it('verify it works when the segment is in the `start` property', async () => {
-    const programMemory = await executor(abstractSyntaxTree(lexer(code)))
+    const programMemory = await enginelessExecutor(
+      abstractSyntaxTree(lexer(code))
+    )
     const index = code.indexOf('// segment-in-start') - 7
     const { __geoMeta, ...segment } = getSketchSegmentFromSourceRange(
       programMemory.root['part001'] as SketchGroup,

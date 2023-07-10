@@ -86,6 +86,8 @@ export class EngineCommandManager {
   socket?: WebSocket
   pc?: RTCPeerConnection
   lossyDataChannel?: RTCDataChannel
+  waitForReady: Promise<void> = new Promise(() => {})
+  private resolveReady = () => {}
   onHoverCallback: (id?: string) => void = () => {}
   onClickCallback: (selection: SelectionsArgs) => void = () => {}
   onCursorsSelectedCallback: (selections: CursorSelectionsArgs) => void =
@@ -97,12 +99,18 @@ export class EngineCommandManager {
     setMediaStream: (stream: MediaStream) => void
     setIsStreamReady: (isStreamReady: boolean) => void
   }) {
+    this.waitForReady = new Promise((resolve) => {
+      this.resolveReady = resolve
+    })
     const url = 'wss://api.dev.kittycad.io/ws/modeling/commands'
-    this.socket = new WebSocket(url)
+
+    this.socket = new WebSocket(url, [])
     this.pc = new RTCPeerConnection()
     this.pc.createDataChannel('unreliable_modeling_cmds')
     this.socket.addEventListener('open', (event) => {
       console.log('Connected to websocket, waiting for ICE servers')
+      setIsStreamReady(true)
+      this.resolveReady()
     })
 
     this.socket.addEventListener('close', (event) => {
@@ -114,7 +122,7 @@ export class EngineCommandManager {
     })
 
     this?.socket?.addEventListener('message', (event) => {
-      if (!this.pc || !this.socket) return
+      if (!this.socket) return
 
       //console.log('Message from server ', event.data);
       if (event.data instanceof Blob) {
@@ -133,12 +141,12 @@ export class EngineCommandManager {
       } else {
         const message = JSON.parse(event.data)
         if (message.type === 'SDPAnswer') {
-          this.pc.setRemoteDescription(
+          this.pc?.setRemoteDescription(
             new RTCSessionDescription(message.answer)
           )
-        } else if (message.type === 'IceServerInfo') {
+        } else if (message.type === 'IceServerInfo' && this.pc) {
           console.log('received IceServerInfo')
-          this.pc.setConfiguration({
+          this.pc?.setConfiguration({
             iceServers: message.ice_servers,
           })
           this.pc.addEventListener('track', (event) => {
@@ -184,7 +192,6 @@ export class EngineCommandManager {
             this.lossyDataChannel = event.channel
             console.log('accepted lossy data channel', event.channel.label)
             this.lossyDataChannel.addEventListener('open', (event) => {
-              setIsStreamReady(true)
               console.log('lossy data channel opened', event)
             })
             this.lossyDataChannel.addEventListener('close', (event) => {
@@ -197,23 +204,38 @@ export class EngineCommandManager {
               console.log('lossy data channel message: ', event)
             })
           })
-        }
-        // TODO talk to the gang about this
-        // the following message types are made up
-        // and are placeholders
-        else if (message.type === 'hover') {
+        } else if (message.cmd_id) {
+          const id = message.cmd_id
+          const command = this.artifactMap[id]
+          if (command && command.type === 'pending') {
+            const resolve = command.resolve
+            this.artifactMap[id] = {
+              type: 'result',
+              data: message.result,
+            }
+            resolve({
+              id,
+            })
+          } else {
+            this.artifactMap[id] = {
+              type: 'result',
+              data: message.result,
+            }
+          }
+          // TODO talk to the gang about this
+          // the following message types are made up
+          // and are placeholders
+        } else if (message.type === 'hover') {
           this.onHoverCallback(message.id)
         } else if (message.type === 'click') {
           this.onClickCallback(message)
         } else {
-          console.log('other message', message)
         }
       }
     })
   }
   tearDown() {
     // close all channels, sockets and WebRTC connections
-    console.log('tearing it all down')
     this.lossyDataChannel?.close()
     this.socket?.close()
     this.pc?.close()
@@ -222,46 +244,6 @@ export class EngineCommandManager {
   startNewSession() {
     this.artifactMap = {}
     this.sourceRangeMap = {}
-
-    // socket.on('command', ({ id, data }: any) => {
-    //   const command = this.artifactMap[id]
-    //   const geos: any = {}
-    //   if (data.geo) {
-    //     geos.position = data.position
-    //     geos.rotation = data.rotation
-    //     geos.originalId = data.originalId
-    //     try {
-    //       geos.geo = stlLoader.parse(data.geo)
-    //     } catch (e) {}
-    //   } else {
-    //     Object.entries(data).forEach(([key, val]: [string, any]) => {
-    //       let bufferGeometry = new BufferGeometry()
-    //       try {
-    //         bufferGeometry = stlLoader.parse(val)
-    //       } catch (e) {
-    //         console.log('val', val)
-    //       }
-    //       geos[key] = bufferGeometry
-    //     })
-    //   }
-
-    //   if (command && command.type === 'pending') {
-    //     const resolve = command.resolve
-    //     this.artifactMap[id] = {
-    //       type: 'result',
-    //       data: geos,
-    //     }
-    //     resolve({
-    //       id,
-    //       geo: geos,
-    //     })
-    //   } else {
-    //     this.artifactMap[id] = {
-    //       type: 'result',
-    //       data: geos,
-    //     }
-    //   }
-    // })
   }
   endSession() {
     // this.socket?.close()
@@ -308,7 +290,6 @@ export class EngineCommandManager {
       this.lossyDataChannel.send(JSON.stringify(command))
       return
     }
-    console.log('sending through TCP')
     this.socket?.send(JSON.stringify(command))
   }
   sendModellingCommand({
@@ -322,22 +303,12 @@ export class EngineCommandManager {
     range: SourceRange
     command: EngineCommand
   }): Promise<any> {
-    if (!this.socket?.OPEN) {
-      console.log('socket not open')
-      return new Promise(() => {})
-    }
     this.sourceRangeMap[id] = range
 
-    // return early if the socket is still in CONNECTING state
     if (this.socket?.readyState === 0) {
       console.log('socket not ready')
       return new Promise(() => {})
     }
-    console.log('sending command', {
-      id,
-      data: params,
-      command,
-    })
     this.socket?.send(JSON.stringify(command))
     let resolve: (val: any) => void = () => {}
     const promise = new Promise((_resolve, reject) => {

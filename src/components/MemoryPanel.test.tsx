@@ -1,13 +1,14 @@
 import { processMemory } from './MemoryPanel'
 import { lexer } from '../lang/tokeniser'
 import { abstractSyntaxTree } from '../lang/abstractSyntaxTree'
-import { executor } from '../lib/testHelpers'
+import { enginelessExecutor } from '../lib/testHelpers'
 import { initPromise } from '../lang/rust'
 
 beforeAll(() => initPromise)
 
 describe('processMemory', () => {
   it('should grab the values and remove and geo data', async () => {
+    // Enable rotations #152
     const code = `
   const myVar = 5
   const myFn = (a) => {
@@ -24,11 +25,11 @@ describe('processMemory', () => {
     |> lineTo([-3.35, 0.17], %)
     |> lineTo([0.98, 5.16], %)
     |> lineTo([2.15, 4.32], %)
-    |> rx(90, %)
+    // |> rx(90, %)
   show(theExtrude, theSketch)`
     const tokens = lexer(code)
     const ast = abstractSyntaxTree(tokens)
-    const programMemory = await executor(ast, {
+    const programMemory = await enginelessExecutor(ast, {
       root: {
         log: {
           type: 'userVal',
@@ -48,24 +49,7 @@ describe('processMemory', () => {
       myVar: 5,
       myFn: '__function__',
       otherVar: 3,
-      theExtrude: [
-        {
-          type: 'extrudePlane',
-          position: [-1.2, 2.5, 0],
-          rotation: [
-            0.5984837231672995, -0.3765862890544571, 0.3765862890544572,
-            0.5984837231672996,
-          ],
-        },
-        {
-          type: 'extrudePlane',
-          position: [-1.58, 4, 0],
-          rotation: [
-            0.3024567786448806, 0.6391556125481195, -0.6391556125481194,
-            0.30245677864488063,
-          ],
-        },
-      ],
+      theExtrude: [],
       theSketch: [
         { type: 'toPoint', to: [-3.35, 0.17], from: [0, 0] },
         { type: 'toPoint', to: [0.98, 5.16], from: [-3.35, 0.17] },

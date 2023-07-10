@@ -4,7 +4,7 @@ import { abstractSyntaxTree } from './abstractSyntaxTree'
 import { lexer } from './tokeniser'
 import { ProgramMemory, Path, SketchGroup } from './executor'
 import { initPromise } from './rust'
-import { executor } from '../lib/testHelpers'
+import { enginelessExecutor } from '../lib/testHelpers'
 
 beforeAll(() => initPromise)
 
@@ -45,7 +45,7 @@ log(5, myVar)`
         ],
       },
     }
-    const { root } = await executor(abstractSyntaxTree(lexer(code)), {
+    const { root } = await enginelessExecutor(abstractSyntaxTree(lexer(code)), {
       root: programMemoryOverride,
       pendingMemory: {},
     })
@@ -75,7 +75,7 @@ show(mySketch)
 `
     const { root, return: _return } = await exe(code)
     // geo is three js buffer geometry and is very bloated to have in tests
-    const minusGeo = removeGeoFromPaths(root.mySketch.value)
+    const minusGeo = root.mySketch.value
     expect(minusGeo).toEqual([
       {
         type: 'toPoint',
@@ -85,7 +85,6 @@ show(mySketch)
           sourceRange: [43, 80],
           id: '37333036-3033-4432-b530-643030303837',
           pathToNode: [],
-          geos: ['line', 'lineEnd'],
         },
         name: 'myPath',
       },
@@ -97,7 +96,6 @@ show(mySketch)
           sourceRange: [86, 102],
           id: '32343136-3330-4134-a462-376437386365',
           pathToNode: [],
-          geos: ['line', 'lineEnd'],
         },
       },
       {
@@ -108,7 +106,6 @@ show(mySketch)
           sourceRange: [108, 151],
           id: '32306132-6130-4138-b832-636363326330',
           pathToNode: [],
-          geos: ['line', 'lineEnd'],
         },
         name: 'rightPath',
       },
@@ -133,42 +130,43 @@ show(mySketch)
     expect(root.myVar.value).toBe(7)
   })
 
-  it('rotated sketch', async () => {
-    const code = [
-      'const mySk1 = startSketchAt([0,0])',
-      '  |> lineTo([1,1], %)',
-      '  |> lineTo({to: [0, 1], tag: "myPath"}, %)',
-      '  |> lineTo([1, 1], %)',
-      'const rotated = rx(90, mySk1)',
-    ].join('\n')
-    const { root } = await exe(code)
-    expect(root.mySk1.value).toHaveLength(3)
-    expect(root?.rotated?.type).toBe('sketchGroup')
-    if (
-      root?.mySk1?.type !== 'sketchGroup' ||
-      root?.rotated?.type !== 'sketchGroup'
-    )
-      throw new Error('not a sketch group')
-    expect(root.mySk1.rotation).toEqual([0, 0, 0, 1])
-    expect(root.rotated.rotation.map((a) => a.toFixed(4))).toEqual([
-      '0.7071',
-      '0.0000',
-      '0.0000',
-      '0.7071',
-    ])
-  })
+  // Enable rotations #152
+  // it('rotated sketch', async () => {
+  //   const code = [
+  //     'const mySk1 = startSketchAt([0,0])',
+  //     '  |> lineTo([1,1], %)',
+  //     '  |> lineTo({to: [0, 1], tag: "myPath"}, %)',
+  //     '  |> lineTo([1, 1], %)',
+  //     'const rotated = rx(90, mySk1)',
+  //   ].join('\n')
+  //   const { root } = await exe(code)
+  //   expect(root.mySk1.value).toHaveLength(3)
+  //   expect(root?.rotated?.type).toBe('sketchGroup')
+  //   if (
+  //     root?.mySk1?.type !== 'sketchGroup' ||
+  //     root?.rotated?.type !== 'sketchGroup'
+  //   )
+  //     throw new Error('not a sketch group')
+  //   expect(root.mySk1.rotation).toEqual([0, 0, 0, 1])
+  //   expect(root.rotated.rotation.map((a) => a.toFixed(4))).toEqual([
+  //     '0.7071',
+  //     '0.0000',
+  //     '0.0000',
+  //     '0.7071',
+  //   ])
+  // })
 
   it('execute pipe sketch into call expression', async () => {
+    // Enable rotations #152
     const code = [
       'const mySk1 = startSketchAt([0,0])',
       '  |> lineTo([1,1], %)',
       '  |> lineTo({to: [0, 1], tag: "myPath"}, %)',
       '  |> lineTo([1,1], %)',
-      '  |> rx(90, %)',
+      // '  |> rx(90, %)',
     ].join('\n')
     const { root } = await exe(code)
-    const striptVersion = removeGeoFromSketch(root.mySk1 as SketchGroup)
-    expect(striptVersion).toEqual({
+    expect(root.mySk1).toEqual({
       type: 'sketchGroup',
       start: {
         type: 'base',
@@ -178,7 +176,6 @@ show(mySketch)
           id: '37663863-3664-4366-a637-623739336334',
           sourceRange: [14, 34],
           pathToNode: [],
-          geos: ['sketchBase'],
         },
       },
       value: [
@@ -190,7 +187,6 @@ show(mySketch)
             sourceRange: [40, 56],
             id: '34356231-3362-4363-b935-393033353034',
             pathToNode: [],
-            geos: ['line', 'lineEnd'],
           },
         },
         {
@@ -201,7 +197,6 @@ show(mySketch)
             sourceRange: [62, 100],
             id: '39623339-3538-4366-b633-356630326639',
             pathToNode: [],
-            geos: ['line', 'lineEnd'],
           },
           name: 'myPath',
         },
@@ -213,16 +208,13 @@ show(mySketch)
             sourceRange: [106, 122],
             id: '30636135-6232-4335-b665-366562303161',
             pathToNode: [],
-            geos: ['line', 'lineEnd'],
           },
         },
       ],
       position: [0, 0, 0],
-      rotation: [0.7071067811865475, 0, 0, 0.7071067811865476],
-      __meta: [
-        { sourceRange: [14, 34], pathToNode: [] },
-        { sourceRange: [128, 137], pathToNode: [] },
-      ],
+      rotation: [0, 0, 0, 1],
+      id: '30376661-3039-4965-b532-653665313731',
+      __meta: [{ sourceRange: [14, 34], pathToNode: [] }],
     })
   })
   it('execute array expression', async () => {
@@ -408,7 +400,7 @@ describe('testing math operators', () => {
       '|> line([-2.21, -legLen(5, min(3, 999))], %)',
     ].join('\n')
     const { root } = await exe(code)
-    const sketch = removeGeoFromSketch(root.part001 as SketchGroup)
+    const sketch = root.part001
     // result of `-legLen(5, min(3, 999))` should be -4
     const yVal = sketch.value?.[0]?.to?.[1]
     expect(yVal).toBe(-4)
@@ -426,7 +418,7 @@ describe('testing math operators', () => {
       `show(part001)`,
     ].join('\n')
     const { root } = await exe(code)
-    const sketch = removeGeoFromSketch(root.part001 as SketchGroup)
+    const sketch = root.part001
     // expect -legLen(segLen('seg01', %), myVar) to equal -4 setting the y value back to 0
     expect(sketch.value?.[1]?.from).toEqual([3, 4])
     expect(sketch.value?.[1]?.to).toEqual([6, 0])
@@ -435,9 +427,8 @@ describe('testing math operators', () => {
       `legLen(segLen('seg01', %), myVar)`
     )
     const { root: removedUnaryExpRoot } = await exe(removedUnaryExp)
-    const removedUnaryExpRootSketch = removeGeoFromSketch(
-      removedUnaryExpRoot.part001 as SketchGroup
-    )
+    const removedUnaryExpRootSketch = removedUnaryExpRoot.part001
+
     // without the minus sign, the y value should be 8
     expect(removedUnaryExpRootSketch.value?.[1]?.to).toEqual([6, 8])
   })
@@ -457,35 +448,6 @@ async function exe(
   const tokens = lexer(code)
   const ast = abstractSyntaxTree(tokens)
 
-  const result = await executor(ast, programMemory)
+  const result = await enginelessExecutor(ast, programMemory)
   return result
-}
-
-function removeGeoFromSketch(sketch: SketchGroup): SketchGroup {
-  return {
-    ...sketch,
-    start: !sketch.start
-      ? undefined
-      : {
-          ...sketch.start,
-          __geoMeta: {
-            ...sketch.start.__geoMeta,
-            geos: sketch.start.__geoMeta.geos.map((geo) => geo.type as any),
-          },
-        },
-    value: removeGeoFromPaths(sketch.value),
-  }
-}
-
-function removeGeoFromPaths(paths: Path[]): any[] {
-  return paths.map((path: Path) => {
-    const newGeos = path?.__geoMeta?.geos.map((geo) => geo.type)
-    return {
-      ...path,
-      __geoMeta: {
-        ...path.__geoMeta,
-        geos: newGeos,
-      },
-    }
-  })
 }

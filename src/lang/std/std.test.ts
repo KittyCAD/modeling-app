@@ -1,5 +1,5 @@
 import { abstractSyntaxTree } from '../abstractSyntaxTree'
-import { executor } from '../../lib/testHelpers'
+import { enginelessExecutor } from '../../lib/testHelpers'
 import { lexer } from '../tokeniser'
 import { initPromise } from '../rust'
 
@@ -18,9 +18,11 @@ describe('testing angledLineThatIntersects', () => {
 }, %)
 const intersect = segEndX('yo2', part001)
 show(part001)`
-    const { root } = await executor(abstractSyntaxTree(lexer(code('-1'))))
+    const { root } = await enginelessExecutor(
+      abstractSyntaxTree(lexer(code('-1')))
+    )
     expect(root.intersect.value).toBe(1 + Math.sqrt(2))
-    const { root: noOffset } = await executor(
+    const { root: noOffset } = await enginelessExecutor(
       abstractSyntaxTree(lexer(code('0')))
     )
     expect(noOffset.intersect.value).toBeCloseTo(1)

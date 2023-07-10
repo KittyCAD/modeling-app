@@ -7,7 +7,7 @@ import {
 } from './queryAst'
 import { lexer } from './tokeniser'
 import { initPromise } from './rust'
-import { executor } from '../lib/testHelpers'
+import { enginelessExecutor } from '../lib/testHelpers'
 import {
   createArrayExpression,
   createCallExpression,
@@ -38,7 +38,7 @@ const variableBelowShouldNotBeIncluded = 3
 show(part001)`
     const rangeStart = code.indexOf('// selection-range-7ish-before-this') - 7
     const ast = abstractSyntaxTree(lexer(code))
-    const programMemory = await executor(ast)
+    const programMemory = await enginelessExecutor(ast)
 
     const { variables, bodyPath, insertIndex } = findAllPreviousVariables(
       ast,

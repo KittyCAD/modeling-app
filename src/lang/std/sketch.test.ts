@@ -9,7 +9,7 @@ import { lexer } from '../tokeniser'
 import { abstractSyntaxTree } from '../abstractSyntaxTree'
 import { getNodePathFromSourceRange } from '../queryAst'
 import { recast } from '../recast'
-import { executor } from '../../lib/testHelpers'
+import { enginelessExecutor } from '../../lib/testHelpers'
 import { initPromise } from '../rust'
 
 beforeAll(() => initPromise)
@@ -97,16 +97,17 @@ describe('testing changeSketchArguments', () => {
   const lineToChange = 'lineTo([-1.59, -1.54], %)'
   const lineAfterChange = 'lineTo([2, 3], %)'
   test('changeSketchArguments', async () => {
+    // Enable rotations #152
     const genCode = (line: string) => `
 const mySketch001 = startSketchAt([0, 0])
     |> ${line}
     |> lineTo([0.46, -5.82], %)
-    |> rx(45, %)
+    // |> rx(45, %)
 show(mySketch001)`
     const code = genCode(lineToChange)
     const expectedCode = genCode(lineAfterChange)
     const ast = abstractSyntaxTree(lexer(code))
-    const programMemory = await executor(ast)
+    const programMemory = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(lineToChange)
     const { modifiedAst } = changeSketchArguments(
       ast,
@@ -136,14 +137,15 @@ describe('testing addNewSketchLn', () => {
   const lineToChange = 'lineTo([-1.59, -1.54], %)'
   const lineAfterChange = 'lineTo([2, 3], %)'
   test('addNewSketchLn', async () => {
+    // Enable rotations #152
     const code = `
 const mySketch001 = startSketchAt([0, 0])
-  |> rx(45, %)
+  // |> rx(45, %)
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)
 show(mySketch001)`
     const ast = abstractSyntaxTree(lexer(code))
-    const programMemory = await executor(ast)
+    const programMemory = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(lineToChange)
     const { modifiedAst } = addNewSketchLn({
       node: ast,
@@ -158,9 +160,10 @@ show(mySketch001)`
         ['init', 'VariableDeclarator'],
       ],
     })
+    // Enable rotations #152
     const expectedCode = `
 const mySketch001 = startSketchAt([0, 0])
-  |> rx(45, %)
+  // |> rx(45, %)
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)
   |> lineTo([2, 3], %)
@@ -172,15 +175,16 @@ show(mySketch001)`
 describe('testing addTagForSketchOnFace', () => {
   it('needs to be in it', async () => {
     const originalLine = 'lineTo([-1.59, -1.54], %)'
+    // Enable rotations #152
     const genCode = (line: string) => `
   const mySketch001 = startSketchAt([0, 0])
-    |> rx(45, %)
+    // |> rx(45, %)
     |> ${line}
     |> lineTo([0.46, -5.82], %)
   show(mySketch001)`
     const code = genCode(originalLine)
     const ast = abstractSyntaxTree(lexer(code))
-    const programMemory = await executor(ast)
+    const programMemory = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(originalLine)
     const sourceRange: [number, number] = [
       sourceStart,
