@@ -95,9 +95,11 @@ export class EngineCommandManager {
   constructor({
     setMediaStream,
     setIsStreamReady,
+    token,
   }: {
     setMediaStream: (stream: MediaStream) => void
     setIsStreamReady: (isStreamReady: boolean) => void
+    token?: string
   }) {
     this.waitForReady = new Promise((resolve) => {
       this.resolveReady = resolve
@@ -109,8 +111,11 @@ export class EngineCommandManager {
     this.pc.createDataChannel('unreliable_modeling_cmds')
     this.socket.addEventListener('open', (event) => {
       console.log('Connected to websocket, waiting for ICE servers')
-      setIsStreamReady(true)
-      this.resolveReady()
+      if (token) {
+        this.socket?.send(
+          JSON.stringify({ headers: { Authorization: `Bearer ${token}` } })
+        )
+      }
     })
 
     this.socket.addEventListener('close', (event) => {
@@ -122,7 +127,7 @@ export class EngineCommandManager {
     })
 
     this?.socket?.addEventListener('message', (event) => {
-      if (!this.socket) return
+      if (!this.socket || !this.pc) return
 
       //console.log('Message from server ', event.data);
       if (event.data instanceof Blob) {
@@ -192,6 +197,8 @@ export class EngineCommandManager {
             this.lossyDataChannel = event.channel
             console.log('accepted lossy data channel', event.channel.label)
             this.lossyDataChannel.addEventListener('open', (event) => {
+              setIsStreamReady(true)
+              this.resolveReady()
               console.log('lossy data channel opened', event)
             })
             this.lossyDataChannel.addEventListener('close', (event) => {
