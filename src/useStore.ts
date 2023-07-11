@@ -161,6 +161,8 @@ export interface StoreState {
     path: string
   }[]
   setHomeMenuItems: (items: { name: string; path: string }[]) => void
+  token: string
+  setToken: (token: string) => void
 }
 
 let pendingAstUpdates: number[] = []
@@ -314,12 +316,14 @@ export const useStore = create<StoreState>()(
       setHomeShowMenu: (showHomeMenu) => set({ showHomeMenu }),
       homeMenuItems: [],
       setHomeMenuItems: (homeMenuItems) => set({ homeMenuItems }),
+      token: '',
+      setToken: (token) => set({ token }),
     }),
     {
       name: 'store',
       partialize: (state) =>
         Object.fromEntries(
-          Object.entries(state).filter(([key]) => ['code', 'defaultDir'].includes(key))
+          Object.entries(state).filter(([key]) => ['code', 'defaultDir', 'token'].includes(key))
         ),
     }
   )

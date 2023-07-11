@@ -20,6 +20,7 @@ import { Stream } from './components/Stream'
 import ModalContainer from 'react-modal-promise'
 import { EngineCommandManager } from './lang/std/engineConnection'
 import { isOverlap } from './lib/utils'
+import { SetToken } from './components/TokenInput'
 
 export function App() {
   const cam = useRef()
@@ -46,6 +47,7 @@ export function App() {
     setMediaStream,
     setIsStreamReady,
     isStreamReady,
+    token,
   } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
@@ -71,6 +73,7 @@ export function App() {
     setMediaStream: s.setMediaStream,
     isStreamReady: s.isStreamReady,
     setIsStreamReady: s.setIsStreamReady,
+    token: s.token
   }))
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
@@ -135,15 +138,18 @@ export function App() {
       codeBasedSelections,
     })
   }
-  const engineCommandManager = useMemo(() => new EngineCommandManager({
-    setMediaStream,
-    setIsStreamReady,
-  }), [])
+  const engineCommandManager = useMemo(() => {
+    return new EngineCommandManager({
+      setMediaStream,
+      setIsStreamReady,
+      token,
+    })
+  }, [token])
   useEffect(() => {
     return () => {
-      engineCommandManager.tearDown()
+      engineCommandManager?.tearDown()
     }
-  }, [])
+  }, [engineCommandManager])
 
   useEffect(() => {
     if (!isStreamReady) return
@@ -249,7 +255,9 @@ export function App() {
     <div className="h-screen">
       <ModalContainer />
       <Allotment snap={true}>
-        <Allotment vertical defaultSizes={[400, 1, 1]} minSize={20}>
+
+        <Allotment vertical defaultSizes={[5, 400, 1, 1]} minSize={20}>
+          <SetToken />
           <div className="h-full flex flex-col items-start">
             <PanelHeader title="Editor" />
             {/* <button
