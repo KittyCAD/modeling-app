@@ -22,7 +22,7 @@ export const extrude: InternalFn = (
     JSON.stringify({
       code,
       sourceRange,
-      date: {
+      data: {
         length,
         sketchVal,
       },

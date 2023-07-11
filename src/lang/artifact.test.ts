@@ -81,7 +81,7 @@ show(mySketch001)`
     expect(shown).toEqual([
       {
         type: 'extrudeGroup',
-        id: '31616631-3438-4664-a464-393034663561',
+        id: '65383433-3839-4333-b836-343263636638',
         value: [],
         height: 2,
         position: [0, 0, 0],
@@ -124,7 +124,7 @@ show(theExtrude, sk2)`
     expect(geos).toEqual([
       {
         type: 'extrudeGroup',
-        id: '35623732-3138-4137-a163-626336313834',
+        id: '63333330-3631-4230-b664-623132643731',
         value: [],
         height: 2,
         position: [0, 0, 0],
@@ -136,7 +136,7 @@ show(theExtrude, sk2)`
       },
       {
         type: 'extrudeGroup',
-        id: '64303137-3930-4039-a334-333164373166',
+        id: '33316639-3438-4661-a334-663262383737',
         value: [],
         height: 2,
         position: [0, 0, 0],
