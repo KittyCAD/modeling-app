@@ -9,7 +9,7 @@ import {
   CallExpression,
   ArrayExpression,
   UnaryExpression,
-} from './abstractSyntaxTree'
+} from './abstractSyntaxTreeTypes'
 import { InternalFnNames } from './std/stdTypes'
 import { internalFns } from './std/std'
 import {

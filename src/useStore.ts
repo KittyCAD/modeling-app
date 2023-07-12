@@ -1,7 +1,8 @@
 import create from 'zustand'
 import { persist } from 'zustand/middleware'
 import { addLineHighlight, EditorView } from './editor/highlightextension'
-import { Program, abstractSyntaxTree } from './lang/abstractSyntaxTree'
+import { abstractSyntaxTree } from './lang/abstractSyntaxTree'
+import { Program } from './lang/abstractSyntaxTreeTypes'
 import { getNodeFromPath } from './lang/queryAst'
 import {
   ProgramMemory,

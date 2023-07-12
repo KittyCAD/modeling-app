@@ -1,5 +1,5 @@
 import { ProgramMemory, Path, SourceRange } from '../executor'
-import { Program, Value } from '../abstractSyntaxTree'
+import { Program, Value } from '../abstractSyntaxTreeTypes'
 import { TooTip } from '../../useStore'
 import { PathToNode } from '../executor'
 import { EngineCommandManager } from './engineConnection'

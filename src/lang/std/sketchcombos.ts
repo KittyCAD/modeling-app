@@ -6,7 +6,7 @@ import {
   Value,
   BinaryPart,
   VariableDeclarator,
-} from '../abstractSyntaxTree'
+} from '../abstractSyntaxTreeTypes'
 import {
   getNodeFromPath,
   getNodeFromPathCurry,

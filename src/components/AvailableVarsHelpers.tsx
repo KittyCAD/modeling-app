@@ -1,9 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
-import {
-  abstractSyntaxTree,
-  BinaryPart,
-  Value,
-} from '../lang/abstractSyntaxTree'
+import { abstractSyntaxTree } from '../lang/abstractSyntaxTree'
+import { BinaryPart, Value } from '../lang/abstractSyntaxTreeTypes'
 import { executor } from '../lang/executor'
 import {
   createIdentifier,

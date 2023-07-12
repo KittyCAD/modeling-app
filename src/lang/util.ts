@@ -1,5 +1,5 @@
 import { Selections, StoreState } from '../useStore'
-import { Program } from './abstractSyntaxTree'
+import { Program } from './abstractSyntaxTreeTypes'
 import { PathToNode } from './executor'
 import { getNodeFromPath } from './queryAst'
 

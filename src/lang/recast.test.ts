@@ -1,5 +1,6 @@
 import { recast } from './recast'
-import { Program, abstractSyntaxTree } from './abstractSyntaxTree'
+import { abstractSyntaxTree } from './abstractSyntaxTree'
+import { Program } from './abstractSyntaxTreeTypes'
 import { lexer, Token } from './tokeniser'
 import fs from 'node:fs'
 import { initPromise } from './rust'

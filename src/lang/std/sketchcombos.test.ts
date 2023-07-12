@@ -1,4 +1,5 @@
-import { abstractSyntaxTree, Value } from '../abstractSyntaxTree'
+import { abstractSyntaxTree } from '../abstractSyntaxTree'
+import { Value } from '../abstractSyntaxTreeTypes'
 import { lexer } from '../tokeniser'
 import {
   getConstraintType,

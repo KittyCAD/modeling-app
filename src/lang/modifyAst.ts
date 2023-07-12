@@ -14,7 +14,7 @@ import {
   ObjectExpression,
   UnaryExpression,
   BinaryExpression,
-} from './abstractSyntaxTree'
+} from './abstractSyntaxTreeTypes'
 import {
   findAllPreviousVariables,
   getNodeFromPath,

@@ -13,7 +13,7 @@ import {
   Value,
   Literal,
   VariableDeclaration,
-} from '../abstractSyntaxTree'
+} from '../abstractSyntaxTreeTypes'
 import {
   getNodeFromPath,
   getNodeFromPathCurry,

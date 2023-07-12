@@ -4,7 +4,7 @@ import {
   Program,
   VariableDeclarator,
   CallExpression,
-} from '../abstractSyntaxTree'
+} from '../abstractSyntaxTreeTypes'
 import { SketchGroup, SourceRange } from '../executor'
 import { InternalFn } from './stdTypes'
 
