@@ -10,7 +10,7 @@ class WebsocketWrapper {
   constructor(url: string) {
     return new WebSocket(url, {
         headers: {
-            'Autherization': `Bearer ${process.env.KITTYCAD_TOKEN}`,
+            'Autherization': `Bearer ${import.meta.env.KITTYCAD_TOKEN}`,
         }
     })
   }
