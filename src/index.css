@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @import '../node_modules/allotment/dist/style.css';
+@import './colors.css';
 
 body {
   margin: 0;
