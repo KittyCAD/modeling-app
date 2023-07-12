@@ -3,7 +3,10 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom'
-import WebSocket from 'ws';
+import { expect, afterEach } from 'vitest'
+import { cleanup } from '@testing-library/react'
+import matchers from '@testing-library/jest-dom/matchers'
+import WebSocket from 'ws'
 import 'setimmediate'
 
 class WebsocketWrapper {
@@ -52,3 +55,11 @@ class MockRTCPeerConnection {
 global.RTCPeerConnection = MockRTCPeerConnection
 // @ts-ignore
 global.WebSocket = WebsocketWrapper
+
+// extends Vitest's expect method with methods from react-testing-library
+expect.extend(matchers)
+
+// runs a cleanup after each test case (e.g. clearing jsdom)
+afterEach(() => {
+  cleanup()
+})
