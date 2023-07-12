@@ -4,6 +4,24 @@ import withBaseUrl from './lib/withBaseURL'
 import { App } from './App'
 import { SetToken } from './components/TokenInput'
 import { useStore } from './useStore'
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom"
+import { ErrorPage } from './components/ErrorPage'
+import { Settings } from './routes/Settings'
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/settings",
+    element: <Settings />,
+  }
+])
 
 export const Auth = () => {
   const { data: user } = useSWR(withBaseUrl('/user'), fetcher) as any
@@ -37,5 +55,5 @@ export const Auth = () => {
     )
   }
 
-  return <App />
+  return <RouterProvider router={router} />
 }

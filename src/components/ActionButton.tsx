@@ -1,18 +1,36 @@
+import { Link } from "react-router-dom"
 import { ActionIcon, ActionIconProps } from "./ActionIcon"
 
 interface ActionButtonProps extends React.PropsWithChildren {
     icon?: ActionIconProps
     className?: string
     onClick?: () => void
+    to?: string
+    as?: 'button' | 'link'
 }
 
-export const ActionButton = (props: ActionButtonProps) => {
-    return (
-        <button onClick={props.onClick}
-          className={`group mono flex items-center gap-2 text-chalkboard-110 rounded-sm border border-chalkboard-40 hover:border-liquid-40 p-[3px] p${props.icon ? 'r' : 'x'}-2 ${props.className}`}
+export const ActionButton = ({
+    icon,
+    className,
+    onClick,
+    to = '/',
+    as = 'button',
+    children,
+}: ActionButtonProps) => {
+    const classNames = `group mono flex items-center gap-2 text-chalkboard-110 rounded-sm border border-chalkboard-40 hover:border-liquid-40 p-[3px] p${icon ? 'r' : 'x'}-2 ${className}`
+
+    return (as === 'button'
+        ? <button onClick={onClick}
+          className={classNames}
         >
-          {props.icon && <ActionIcon {...props.icon} />}
-          {props.children}
+          {icon && <ActionIcon {...icon} />}
+          {children}
         </button>
+        : <Link to={to}
+          className={classNames}
+        >
+          {icon && <ActionIcon {...icon} />}
+          {children}
+        </Link>
     )
 }
