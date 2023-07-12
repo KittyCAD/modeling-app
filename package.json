@@ -62,18 +62,6 @@
     "semi": false,
     "singleQuote": true
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ],
-    "rules": {
-      "semi": [
-        "error",
-        "never"
-      ]
-    }
-  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -93,11 +81,14 @@
     "@types/ws": "^8.5.5",
     "@vitejs/plugin-react": "^4.0.3",
     "autoprefixer": "^10.4.13",
+    "eslint": "^8.44.0",
+    "eslint-config-react-app": "^7.0.1",
     "postcss": "^8.4.19",
     "prettier": "^2.8.0",
     "setimmediate": "^1.0.5",
     "tailwindcss": "^3.2.4",
     "vite": "^4.4.3",
+    "vite-plugin-eslint": "^1.8.1",
     "vite-tsconfig-paths": "^4.2.0",
     "wrtc": "^0.4.7",
     "ws": "^8.13.0",
