@@ -24,6 +24,9 @@
       "fs": {
         "scope": ["$HOME/**/*"],
         "all": true
+      },
+      "window": {
+        "all": true
       }
     },
     "bundle": {
