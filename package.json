@@ -39,7 +39,7 @@
     "build:both": "vite build",
     "build:both:local": "yarn build:wasm && vite build",
     "test": "vitest",
-    "test:nowatch": "vite test --watchAll=false --forceExit",
+    "test:nowatch": "vitest run",
     "test:rust": "(cd src/wasm-lib && cargo test && cargo clippy)",
     "test:cov": "vite test --watchAll=false --coverage=true --forceExit",
     "simpleserver:ci": "http-server ./public --cors -p 3000 &",
@@ -49,7 +49,8 @@
     "remove-importmeta:ci": "sed -i 's/import.meta.url//g' \"./src/wasm-lib/pkg/wasm_lib.js\"",
     "add-missing-import": "echo \"import util from 'util'; if (typeof window !== 'undefined' && !window.TextEncoder) { window.TextEncoder = util.TextEncoder; window.TextDecoder = util.TextDecoder}\" | cat - ./src/wasm-lib/pkg/wasm_lib.js > temp && mv temp ./src/wasm-lib/pkg/wasm_lib.js",
     "build:wasm:ci": "mkdir src/wasm-lib/pkg; cd src/wasm-lib && wasm-pack build --target web --out-dir pkg && cd ../../ && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn fmt",
-    "build:wasm": "mkdir src/wasm-lib/pkg; cd src/wasm-lib && wasm-pack build --target web --out-dir pkg && cd ../../ && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn fmt"
+    "build:wasm": "mkdir src/wasm-lib/pkg; cd src/wasm-lib && wasm-pack build --target web --out-dir pkg && cd ../../ && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn fmt",
+    "lint": "eslint --fix src"
   },
   "jest": {
     "transformIgnorePatterns": [
@@ -83,6 +84,7 @@
     "autoprefixer": "^10.4.13",
     "eslint": "^8.44.0",
     "eslint-config-react-app": "^7.0.1",
+    "isomorphic-fetch": "^3.0.0",
     "jsdom": "^22.1.0",
     "postcss": "^8.4.19",
     "prettier": "^2.8.0",
@@ -92,7 +94,6 @@
     "vite-plugin-eslint": "^1.8.1",
     "vite-tsconfig-paths": "^4.2.0",
     "vitest": "^0.33.0",
-    "wrtc": "^0.4.7",
     "ws": "^8.13.0",
     "yarn": "^1.22.19"
   }

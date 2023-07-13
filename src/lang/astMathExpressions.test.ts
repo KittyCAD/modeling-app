@@ -53,7 +53,7 @@ describe('parseExpression', () => {
       },
     })
   })
-  it('parses a more complex expression with parentheses with more ', () => {
+  it('parses a more complex expression with parentheses with more', () => {
     const result = parseExpression(lexer('1 * ( 2 + 3 ) / 4'))
     expect(result).toEqual({
       type: 'BinaryExpression',
@@ -78,7 +78,7 @@ describe('parseExpression', () => {
       right: { type: 'Literal', value: 4, raw: '4', start: 16, end: 17 },
     })
   })
-  it('same as last one but with a 1 + at the start ', () => {
+  it('same as last one but with a 1 + at the start', () => {
     const result = parseExpression(lexer('1 + ( 2 + 3 ) / 4'))
     expect(result).toEqual({
       type: 'BinaryExpression',
@@ -103,7 +103,7 @@ describe('parseExpression', () => {
       },
     })
   })
-  it('nested braces ', () => {
+  it('nested braces', () => {
     const result = parseExpression(lexer('1 * (( 2 + 3 ) / 4 + 5 )'))
     expect(result).toEqual({
       type: 'BinaryExpression',
@@ -141,7 +141,7 @@ describe('parseExpression', () => {
       },
     })
   })
-  it('multiple braces around the same thing ', () => {
+  it('multiple braces around the same thing', () => {
     const result = parseExpression(lexer('1 * ((( 2 + 3 )))'))
     expect(result).toEqual({
       type: 'BinaryExpression',

@@ -194,7 +194,7 @@ const part001 = startSketchAt([-1.2, 4.83])
 const yo = 5 + 6
 const yo2 = hmm([identifierGuy + 5])
 show(part001)`
-  it('should move a value into a new variable', async () => {
+  it('should move a binary expression into a new variable', async () => {
     const ast = abstractSyntaxTree(lexer(code))
     const programMemory = await enginelessExecutor(ast)
     const startIndex = code.indexOf('100 + 100') + 1
@@ -222,7 +222,7 @@ show(part001)`
     expect(newCode).toContain(`const newVar = 2.8`)
     expect(newCode).toContain(`line([newVar, 0], %)`)
   })
-  it('should move a value into a new variable', async () => {
+  it('should move a callExpression into a new variable', async () => {
     const ast = abstractSyntaxTree(lexer(code))
     const programMemory = await enginelessExecutor(ast)
     const startIndex = code.indexOf('def(')
@@ -236,7 +236,7 @@ show(part001)`
     expect(newCode).toContain(`const newVar = def('yo')`)
     expect(newCode).toContain(`angledLine([newVar, 3.09], %)`)
   })
-  it('should move a value into a new variable', async () => {
+  it('should move a binary expression with call expression into a new variable', async () => {
     const ast = abstractSyntaxTree(lexer(code))
     const programMemory = await enginelessExecutor(ast)
     const startIndex = code.indexOf('jkl(') + 1
@@ -250,7 +250,7 @@ show(part001)`
     expect(newCode).toContain(`const newVar = jkl('yo') + 2`)
     expect(newCode).toContain(`angledLine([newVar, 3.09], %)`)
   })
-  it('should move a value into a new variable', async () => {
+  it('should move a identifier into a new variable', async () => {
     const ast = abstractSyntaxTree(lexer(code))
     const programMemory = await enginelessExecutor(ast)
     const startIndex = code.indexOf('identifierGuy +') + 1

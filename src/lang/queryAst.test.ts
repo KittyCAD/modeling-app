@@ -173,7 +173,7 @@ show(part001)`
   })
 
   describe('testing isTypeInValue', () => {
-    it('it finds the pipeSubstituion', () => {
+    it('finds the pipeSubstituion', () => {
       const val = createCallExpression('yoyo', [
         createArrayExpression([
           createLiteral(1),
@@ -201,7 +201,7 @@ describe('testing getNodePathFromSourceRange', () => {
   |> line([0.94, 2.61], %)
   |> line([-0.21, -1.4], %)
 show(part001)`
-  it('it finds the second line when cursor is put at the end', () => {
+  it('finds the second line when cursor is put at the end', () => {
     const searchLn = `line([0.94, 2.61], %)`
     const sourceIndex = code.indexOf(searchLn) + searchLn.length
     const ast = abstractSyntaxTree(lexer(code))
@@ -216,7 +216,7 @@ show(part001)`
       [1, 'index'],
     ])
   })
-  it('it finds the last line when cursor is put at the end', () => {
+  it('finds the last line when cursor is put at the end', () => {
     const searchLn = `line([-0.21, -1.4], %)`
     const sourceIndex = code.indexOf(searchLn) + searchLn.length
     const ast = abstractSyntaxTree(lexer(code))

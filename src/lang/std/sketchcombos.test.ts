@@ -49,7 +49,7 @@ describe('testing getConstraintType', () => {
   it('testing xLine', () => {
     expect(helper2(`xLine(5, %)`)).toBe('yRelative')
   })
-  it('testing xLine', () => {
+  it('testing yLine', () => {
     expect(helper2(`yLine(5, %)`)).toBe('xRelative')
   })
   it('testing xLineTo', () => {
@@ -196,7 +196,7 @@ const part001 = startSketchAt([0, 0])
   |> xLine(segLen('seg01', %), %) // ln-xLineTo-free should convert to xLine
   |> yLine(segLen('seg01', %), %) // ln-yLineTo-free should convert to yLine
 show(part001)`
-  it('It should transform the ast', async () => {
+  it('should transform the ast', async () => {
     const ast = abstractSyntaxTree(lexer(inputScript))
     const selectionRanges: Selections['codeBasedSelections'] = inputScript
       .split('\n')
@@ -255,7 +255,7 @@ const part001 = startSketchAt([0, 0])
   |> angledLineToX([333, myVar3], %) // select for horizontal constraint 10
   |> angledLineToY([301, myVar], %) // select for vertical constraint 10
 show(part001)`
-  it('It should transform horizontal lines the ast', async () => {
+  it('should transform horizontal lines the ast', async () => {
     const expectModifiedScript = `const myVar = 2
 const myVar2 = 12
 const myVar3 = -10
@@ -312,7 +312,7 @@ show(part001)`
     const newCode = recast(newAst)
     expect(newCode).toBe(expectModifiedScript)
   })
-  it('It should transform vertical lines the ast', async () => {
+  it('should transform vertical lines the ast', async () => {
     const expectModifiedScript = `const myVar = 2
 const myVar2 = 12
 const myVar3 = -10
