@@ -7,12 +7,19 @@ import { useState } from 'react'
 import { toast } from 'react-hot-toast'
 
 export const Settings = () => {
-  const { defaultDir: originalDir, setDefaultDir: saveDefaultDir } = useStore((s) => ({
+  const {
+    defaultDir: originalDefaultDir,
+    setDefaultDir: saveDefaultDir,
+    defaultProjectName: originalDefaultProjectName,
+    setDefaultProjectName: saveDefaultProjectName,
+  } = useStore((s) => ({
     defaultDir: s.defaultDir,
     setDefaultDir: s.setDefaultDir,
+    defaultProjectName: s.defaultProjectName,
+    setDefaultProjectName: s.setDefaultProjectName,
   }))
-  console.log('originalDir', originalDir.dir)
-  const [defaultDir, setDefaultDir] = useState(originalDir)
+  const [defaultDir, setDefaultDir] = useState(originalDefaultDir)
+  const [defaultProjectName, setDefaultProjectName] = useState(originalDefaultProjectName)
 
   async function handleDirectorySelection() {
     const newDirectory = await open({
@@ -24,11 +31,11 @@ export const Settings = () => {
     if (newDirectory && newDirectory !== null && !Array.isArray(newDirectory)) {
       setDefaultDir({ base: defaultDir.base, dir: newDirectory})
     }
-
   }
 
   const handleSaveClick = () => {
     saveDefaultDir(defaultDir)
+    saveDefaultProjectName(defaultProjectName)
     toast.success('Settings saved!')
   }
 
@@ -49,7 +56,7 @@ export const Settings = () => {
           <SettingsSection title="Default Directory"
             description="Where newly-created projects are saved on your local computer">
             <div className="w-full flex gap-4 p-1 rounded border border-chalkboard-30">
-              <input className="flex-1 px-2 bg-transparent" value={defaultDir.dir} onChange={(e) => setDefaultDir({ base: originalDir.base, dir: e.target.value })} />
+              <input className="flex-1 px-2 bg-transparent" value={defaultDir.dir} onChange={(e) => setDefaultDir({ base: originalDefaultDir.base, dir: e.target.value })} />
               <ActionButton as="button" className='bg-chalkboard-100 hover:bg-chalkboard-90 text-chalkboard-10 border-chalkboard-100 hover:border-chalkboard-70'
                 onClick={handleDirectorySelection}
                 icon={{ 
@@ -62,6 +69,12 @@ export const Settings = () => {
             </div>
           </SettingsSection>
         )}
+        <SettingsSection title="Default Project Name"
+          description="Name template for new projects. Use $n to include an incrementing index">
+            <input className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
+              value={defaultProjectName} onChange={(e) => setDefaultProjectName(e.target.value)}
+            />
+        </SettingsSection>
         <ActionButton className="hover:border-succeed-50" onClick={handleSaveClick}
           icon={{
             icon: faCheck,
@@ -82,10 +95,10 @@ interface SettingsSectionProps extends React.PropsWithChildren {
 
 function SettingsSection({ title, description, children }: SettingsSectionProps) {
   return (
-    <section className="my-8 flex gap-12 items-start">
-      <div className='w-120'>
+    <section className="my-8 first-of-type:mt-16 last-of-type:mb-16 flex gap-12 items-start">
+      <div className='w-80'>
         <h2 className="text-2xl">{title}</h2>
-        <p className="mt-2">{description}</p>
+        <p className="mt-2 text-sm">{description}</p>
       </div>
       {children}
     </section>
