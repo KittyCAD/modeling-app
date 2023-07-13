@@ -24,7 +24,7 @@ export const Settings = () => {
   async function handleDirectorySelection() {
     const newDirectory = await open({
       directory: true,
-      defaultPath: (defaultDir.base || '') + defaultDir.dir,
+      defaultPath: (defaultDir.base || '') + (defaultDir.dir || '/'),
       title: 'Choose a new default directory',
     })
 
