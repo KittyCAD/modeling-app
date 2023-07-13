@@ -4,6 +4,7 @@ import { AppHeader } from '../components/AppHeader'
 import { open } from '@tauri-apps/api/dialog'
 import { useStore } from '../useStore'
 import { useState } from 'react'
+import { toast } from 'react-hot-toast'
 
 export const Settings = () => {
   const { defaultDir: originalDir, setDefaultDir: saveDefaultDir } = useStore((s) => ({
@@ -28,6 +29,7 @@ export const Settings = () => {
 
   const handleSaveClick = () => {
     saveDefaultDir(defaultDir)
+    toast.success('Settings saved!')
   }
 
   return (
