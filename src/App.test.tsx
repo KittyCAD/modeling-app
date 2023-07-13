@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { App } from './App'
+import { BrowserRouter } from 'react-router-dom';
 
 let listener: ((rect: any) => void) | undefined = undefined
 ;(global as any).ResizeObserver = class ResizeObserver {
@@ -12,7 +13,9 @@ let listener: ((rect: any) => void) | undefined = undefined
 }
 
 test('renders learn react link', () => {
-  render(<App />)
+  render(<BrowserRouter>
+    <App />
+  </BrowserRouter>)
   const linkElement = screen.getByText(/Variables/i)
   expect(linkElement).toBeInTheDocument()
 })

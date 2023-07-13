@@ -155,6 +155,8 @@ export interface StoreState {
   // tauri specific app settings
   defaultDir: DefaultDir
   setDefaultDir: (dir: DefaultDir) => void
+  defaultProjectName: string
+  setDefaultProjectName: (defaultProjectName: string) => void
   showHomeMenu: boolean
   setHomeShowMenu: (showMenu: boolean) => void
   homeMenuItems: {
@@ -310,9 +312,11 @@ export const useStore = create<StoreState>()(
   
       // tauri specific app settings
       defaultDir: {
-        dir: '',
+        dir: '~/Documents/',
       },
       setDefaultDir: (dir) => set({ defaultDir: dir }),
+      defaultProjectName: 'new-project-$n',
+      setDefaultProjectName: (defaultProjectName) => set({ defaultProjectName }),
       showHomeMenu: true,
       setHomeShowMenu: (showHomeMenu) => set({ showHomeMenu }),
       homeMenuItems: [],
@@ -324,7 +328,12 @@ export const useStore = create<StoreState>()(
       name: 'store',
       partialize: (state) =>
         Object.fromEntries(
-          Object.entries(state).filter(([key]) => ['code', 'defaultDir', 'token'].includes(key))
+          Object.entries(state).filter(([key]) => [
+            'code',
+            'defaultDir',
+            'defaultProjectName',
+            'token',
+          ].includes(key))
         ),
     }
   )

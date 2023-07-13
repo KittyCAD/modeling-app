@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @import '../node_modules/allotment/dist/style.css';
+@import './colors.css';
 
 body {
   margin: 0;
@@ -11,6 +12,11 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.mono {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
 }
 
 code {

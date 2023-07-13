@@ -21,6 +21,7 @@ import ModalContainer from 'react-modal-promise'
 import { EngineCommandManager } from './lang/std/engineConnection'
 import { isOverlap } from './lib/utils'
 import { SetToken } from './components/TokenInput'
+import { AppHeader } from './components/AppHeader'
 
 export function App() {
   const cam = useRef()
@@ -253,6 +254,7 @@ export function App() {
   }, [code, isStreamReady])
   return (
     <div className="h-screen">
+      <AppHeader />
       <ModalContainer />
       <Allotment snap={true}>
 
@@ -285,9 +287,6 @@ export function App() {
           <Logs />
         </Allotment>
         <Allotment vertical defaultSizes={[40, 400]} minSize={20}>
-          <div>
-            <Toolbar />
-          </div>
           <Stream />
         </Allotment>
       </Allotment>
