@@ -7,7 +7,7 @@
     "distDir": "../build"
   },
   "package": {
-    "productName": "paraffin",
+    "productName": "KittyCAD Modeling",
     "version": "0.0.2"
   },
   "tauri": {
@@ -70,7 +70,7 @@
         "fullscreen": false,
         "height": 1200,
         "resizable": true,
-        "title": "paraffin",
+        "title": "KittyCAD Modeling",
         "width": 1800
       }
     ]
