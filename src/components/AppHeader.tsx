@@ -6,10 +6,7 @@ interface AppHeaderProps extends React.PropsWithChildren {
   showToolbar?: boolean
 }
 
-export const AppHeader = ({
-  showToolbar = true,
-  children,
-}: AppHeaderProps) => {
+export const AppHeader = ({ showToolbar = true, children }: AppHeaderProps) => {
   return (
     <header className="py-1 px-5 bg-chalkboard-10 border-b border-chalkboard-30 flex justify-between items-center">
       <a href="/project-settings">
@@ -21,9 +18,11 @@ export const AppHeader = ({
         <span className="sr-only">KittyCAD App</span>
       </a>
       {/* Toolbar if the context deems it */}
-      {showToolbar && <div className="max-w-4xl">
-        <Toolbar />
-      </div>}
+      {showToolbar && (
+        <div className="max-w-4xl">
+          <Toolbar />
+        </div>
+      )}
       {/* If there are children, show them, otherwise... */}
       {children || (
         // TODO: If signed out, show the token paste field

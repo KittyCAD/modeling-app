@@ -19,7 +19,9 @@ export const Settings = () => {
     setDefaultProjectName: s.setDefaultProjectName,
   }))
   const [defaultDir, setDefaultDir] = useState(originalDefaultDir)
-  const [defaultProjectName, setDefaultProjectName] = useState(originalDefaultProjectName)
+  const [defaultProjectName, setDefaultProjectName] = useState(
+    originalDefaultProjectName
+  )
 
   async function handleDirectorySelection() {
     const newDirectory = await open({
@@ -29,7 +31,7 @@ export const Settings = () => {
     })
 
     if (newDirectory && newDirectory !== null && !Array.isArray(newDirectory)) {
-      setDefaultDir({ base: defaultDir.base, dir: newDirectory})
+      setDefaultDir({ base: defaultDir.base, dir: newDirectory })
     }
   }
 
@@ -42,45 +44,76 @@ export const Settings = () => {
   return (
     <>
       <AppHeader showToolbar={false}>
-        <ActionButton as="link"  to="/" icon={{
+        <ActionButton
+          as="link"
+          to="/"
+          icon={{
             icon: faXmark,
             bgClassName: 'bg-destroy-80',
-            iconClassName: 'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
-        }} className='hover:border-destroy-40'>
+            iconClassName:
+              'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
+          }}
+          className="hover:border-destroy-40"
+        >
           Close
         </ActionButton>
       </AppHeader>
       <div className="mt-24 max-w-5xl mx-auto">
         <h1 className="text-4xl font-bold">User Settings</h1>
         {(window as any).__TAURI__ && (
-          <SettingsSection title="Default Directory"
-            description="Where newly-created projects are saved on your local computer">
+          <SettingsSection
+            title="Default Directory"
+            description="Where newly-created projects are saved on your local computer"
+          >
             <div className="w-full flex gap-4 p-1 rounded border border-chalkboard-30">
-              <input className="flex-1 px-2 bg-transparent" value={defaultDir.dir} onChange={(e) => setDefaultDir({ base: originalDefaultDir.base, dir: e.target.value })} />
-              <ActionButton as="button" className='bg-chalkboard-100 hover:bg-chalkboard-90 text-chalkboard-10 border-chalkboard-100 hover:border-chalkboard-70'
+              <input
+                className="flex-1 px-2 bg-transparent"
+                value={defaultDir.dir}
+                onChange={(e) =>
+                  setDefaultDir({
+                    base: originalDefaultDir.base,
+                    dir: e.target.value,
+                  })
+                }
+              />
+              <ActionButton
+                as="button"
+                className="bg-chalkboard-100 hover:bg-chalkboard-90 text-chalkboard-10 border-chalkboard-100 hover:border-chalkboard-70"
                 onClick={handleDirectorySelection}
-                icon={{ 
+                icon={{
                   icon: faFolder,
-                  bgClassName: 'bg-liquid-20 group-hover:bg-liquid-10 hover:bg-liquid-10',
-                  iconClassName: 'text-liquid-90 group-hover:text-liquid-90 hover:text-liquid-90',
-                }}>
+                  bgClassName:
+                    'bg-liquid-20 group-hover:bg-liquid-10 hover:bg-liquid-10',
+                  iconClassName:
+                    'text-liquid-90 group-hover:text-liquid-90 hover:text-liquid-90',
+                }}
+              >
                 Choose a folder
               </ActionButton>
             </div>
           </SettingsSection>
         )}
-        <SettingsSection title="Default Project Name"
-          description="Name template for new projects. Use $n to include an incrementing index">
-            <input className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
-              value={defaultProjectName} onChange={(e) => setDefaultProjectName(e.target.value)}
-            />
+        <SettingsSection
+          title="Default Project Name"
+          description="Name template for new projects. Use $n to include an incrementing index"
+        >
+          <input
+            className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
+            value={defaultProjectName}
+            onChange={(e) => setDefaultProjectName(e.target.value)}
+          />
         </SettingsSection>
-        <ActionButton className="hover:border-succeed-50" onClick={handleSaveClick}
+        <ActionButton
+          className="hover:border-succeed-50"
+          onClick={handleSaveClick}
           icon={{
             icon: faCheck,
-            bgClassName: 'bg-succeed-80 group-hover:bg-succeed-70 hover:bg-succeed-70',
-            iconClassName: 'text-succeed-20 group-hover:text-succeed-10 hover:text-succeed-10',
-          }}>
+            bgClassName:
+              'bg-succeed-80 group-hover:bg-succeed-70 hover:bg-succeed-70',
+            iconClassName:
+              'text-succeed-20 group-hover:text-succeed-10 hover:text-succeed-10',
+          }}
+        >
           Save Settings
         </ActionButton>
       </div>
@@ -93,10 +126,14 @@ interface SettingsSectionProps extends React.PropsWithChildren {
   description?: string
 }
 
-function SettingsSection({ title, description, children }: SettingsSectionProps) {
+function SettingsSection({
+  title,
+  description,
+  children,
+}: SettingsSectionProps) {
   return (
     <section className="my-8 first-of-type:mt-16 last-of-type:mb-16 flex gap-12 items-start">
-      <div className='w-80'>
+      <div className="w-80">
         <h2 className="text-2xl">{title}</h2>
         <p className="mt-2 text-sm">{description}</p>
       </div>
