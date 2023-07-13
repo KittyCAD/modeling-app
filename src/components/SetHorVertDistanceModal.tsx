@@ -1,6 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
-import { Value } from '../lang/abstractSyntaxTree'
+import { Value } from '../lang/abstractSyntaxTreeTypes'
 import {
   AvailableVars,
   addToInputHelper,

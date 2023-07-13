@@ -1,107 +1,31 @@
 import { Token } from './tokeniser'
 import { parseExpression } from './astMathExpressions'
-
-export type SyntaxType =
-  | 'Program'
-  | 'ExpressionStatement'
-  | 'BinaryExpression'
-  | 'CallExpression'
-  | 'Identifier'
-  | 'BlockStatement'
-  | 'ReturnStatement'
-  | 'VariableDeclaration'
-  | 'VariableDeclarator'
-  | 'MemberExpression'
-  | 'ArrayExpression'
-  | 'ObjectExpression'
-  | 'ObjectProperty'
-  | 'FunctionExpression'
-  | 'PipeExpression'
-  | 'PipeSubstitution'
-  | 'Literal'
-  | 'NoneCodeNode'
-  | 'UnaryExpression'
-// | 'NumberLiteral'
-// | 'StringLiteral'
-// | 'IfStatement'
-// | 'WhileStatement'
-// | 'FunctionDeclaration'
-// | 'AssignmentExpression'
-// | 'Property'
-// | 'LogicalExpression'
-// | 'ConditionalExpression'
-// | 'ForStatement'
-// | 'ForInStatement'
-// | 'ForOfStatement'
-// | 'BreakStatement'
-// | 'ContinueStatement'
-// | 'SwitchStatement'
-// | 'SwitchCase'
-// | 'ThrowStatement'
-// | 'TryStatement'
-// | 'CatchClause'
-// | 'ClassDeclaration'
-// | 'ClassBody'
-// | 'MethodDefinition'
-// | 'NewExpression'
-// | 'ThisExpression'
-// | 'UpdateExpression'
-// | 'YieldExpression'
-// | 'AwaitExpression'
-// | 'ImportDeclaration'
-// | 'ImportSpecifier'
-// | 'ImportDefaultSpecifier'
-// | 'ImportNamespaceSpecifier'
-// | 'ExportNamedDeclaration'
-// | 'ExportDefaultDeclaration'
-// | 'ExportAllDeclaration'
-// | 'ExportSpecifier'
-// | 'TaggedTemplateExpression'
-// | 'TemplateLiteral'
-// | 'TemplateElement'
-// | 'SpreadElement'
-// | 'RestElement'
-// | 'SequenceExpression'
-// | 'DebuggerStatement'
-// | 'LabeledStatement'
-// | 'DoWhileStatement'
-// | 'WithStatement'
-// | 'EmptyStatement'
-// | 'ArrayPattern'
-// | 'ObjectPattern'
-// | 'AssignmentPattern'
-// | 'MetaProperty'
-// | 'Super'
-// | 'Import'
-// | 'RegExpLiteral'
-// | 'BooleanLiteral'
-// | 'NullLiteral'
-// | 'TypeAnnotation'
-
-export interface Program {
-  type: SyntaxType
-  start: number
-  end: number
-  body: BodyItem[]
-  nonCodeMeta: NoneCodeMeta
-}
-interface GeneralStatement {
-  type: SyntaxType
-  start: number
-  end: number
-}
-
-interface NoneCodeNode extends GeneralStatement {
-  type: 'NoneCodeNode'
-  value: string
-}
-
-interface NoneCodeMeta {
-  // Stores the whitespace/comments that go after the statement who's index we're using here
-  [statementIndex: number]: NoneCodeNode
-  // Which is why we also need `start` for and whitespace at the start of the file/block
-  start?: NoneCodeNode
-}
+import {
+  BinaryPart,
+  BodyItem,
+  Identifier,
+  Literal,
+  NoneCodeMeta,
+  NoneCodeNode,
+  ObjectKeyInfo,
+  ObjectProperty,
+  PipeSubstitution,
+  Program,
+  Value,
+  VariableDeclaration,
+  VariableDeclarator,
+  ArrayExpression,
+  BinaryExpression,
+  CallExpression,
+  FunctionExpression,
+  MemberExpression,
+  ObjectExpression,
+  PipeExpression,
+  UnaryExpression,
+  BlockStatement,
+  ExpressionStatement,
+  ReturnStatement,
+} from './abstractSyntaxTreeTypes'
 
 function makeNoneCodeNode(
   tokens: Token[],
@@ -127,11 +51,6 @@ function findEndOfNonCodeNode(tokens: Token[], index: number): number {
     return findEndOfNonCodeNode(tokens, index + 1)
   }
   return index
-}
-
-export interface ExpressionStatement extends GeneralStatement {
-  type: 'ExpressionStatement'
-  expression: Value
 }
 
 function makeExpressionStatement(
@@ -163,13 +82,6 @@ function makeExpressionStatement(
     },
     lastIndex,
   }
-}
-
-export interface CallExpression extends GeneralStatement {
-  type: 'CallExpression'
-  callee: Identifier
-  arguments: Value[]
-  optional: boolean
 }
 
 export function makeCallExpression(
@@ -373,12 +285,6 @@ function makeArguments(
   throw new Error('Expected a previous Argument if statement to match')
 }
 
-export interface VariableDeclaration extends GeneralStatement {
-  type: 'VariableDeclaration'
-  declarations: VariableDeclarator[]
-  kind: 'const' | 'unknown' | 'fn' //| "solid" | "surface" | "face"
-}
-
 function makeVariableDeclaration(
   tokens: Token[],
   index: number
@@ -406,19 +312,6 @@ function makeVariableDeclaration(
     lastIndex,
   }
 }
-
-export type Value =
-  | Literal
-  | Identifier
-  | BinaryExpression
-  | FunctionExpression
-  | CallExpression
-  | PipeExpression
-  | PipeSubstitution
-  | ArrayExpression
-  | ObjectExpression
-  | MemberExpression
-  | UnaryExpression
 
 function makeValue(
   tokens: Token[],
@@ -523,12 +416,6 @@ function makeValue(
   throw new Error('Expected a previous Value if statement to match')
 }
 
-export interface VariableDeclarator extends GeneralStatement {
-  type: 'VariableDeclarator'
-  id: Identifier
-  init: Value
-}
-
 function makeVariableDeclarators(
   tokens: Token[],
   index: number,
@@ -576,29 +463,6 @@ function makeVariableDeclarators(
   }
 }
 
-export type BinaryPart =
-  | Literal
-  | Identifier
-  | BinaryExpression
-  | CallExpression
-  | UnaryExpression
-// | MemberExpression
-// | ArrayExpression
-// | ObjectExpression
-// | LogicalExpression
-// | ConditionalExpression
-
-export interface Literal extends GeneralStatement {
-  type: 'Literal'
-  value: string | number | boolean | null
-  raw: string
-}
-
-export interface Identifier extends GeneralStatement {
-  type: 'Identifier'
-  name: string
-}
-
 function makeIdentifier(token: Token[], index: number): Identifier {
   const currentToken = token[index]
   return {
@@ -607,10 +471,6 @@ function makeIdentifier(token: Token[], index: number): Identifier {
     end: currentToken.end,
     name: currentToken.value,
   }
-}
-
-export interface PipeSubstitution extends GeneralStatement {
-  type: 'PipeSubstitution'
 }
 
 function makeLiteral(tokens: Token[], index: number): Literal {
@@ -624,11 +484,6 @@ function makeLiteral(tokens: Token[], index: number): Literal {
     value,
     raw: token.value,
   }
-}
-
-export interface ArrayExpression extends GeneralStatement {
-  type: 'ArrayExpression'
-  elements: Value[]
 }
 
 function makeArrayElements(
@@ -684,17 +539,6 @@ function makeArrayExpression(
     },
     lastIndex,
   }
-}
-
-export interface ObjectExpression extends GeneralStatement {
-  type: 'ObjectExpression'
-  properties: ObjectProperty[]
-}
-
-interface ObjectProperty extends GeneralStatement {
-  type: 'ObjectProperty'
-  key: Identifier
-  value: Value
 }
 
 function makeObjectExpression(
@@ -765,13 +609,6 @@ function makeObjectProperties(
   ])
 }
 
-export interface MemberExpression extends GeneralStatement {
-  type: 'MemberExpression'
-  object: MemberExpression | Identifier
-  property: Identifier | Literal
-  computed: boolean
-}
-
 function makeMemberExpression(
   tokens: Token[],
   index: number
@@ -806,12 +643,6 @@ function makeMemberExpression(
     expression: memberExpression,
     lastIndex: lastKey.index,
   }
-}
-
-interface ObjectKeyInfo {
-  key: Identifier | Literal
-  index: number
-  computed: boolean
 }
 
 function collectObjectKeys(
@@ -857,13 +688,6 @@ function collectObjectKeys(
       computed,
     },
   ])
-}
-
-export interface BinaryExpression extends GeneralStatement {
-  type: 'BinaryExpression'
-  operator: string
-  left: BinaryPart
-  right: BinaryPart
 }
 
 export function findEndOfBinaryExpression(
@@ -922,12 +746,6 @@ function makeBinaryExpression(
   }
 }
 
-export interface UnaryExpression extends GeneralStatement {
-  type: 'UnaryExpression'
-  operator: '-' | '!'
-  argument: BinaryPart
-}
-
 function makeUnaryExpression(
   tokens: Token[],
   index: number
@@ -948,12 +766,6 @@ function makeUnaryExpression(
     },
     lastIndex: argumentLastIndex,
   }
-}
-
-export interface PipeExpression extends GeneralStatement {
-  type: 'PipeExpression'
-  body: Value[]
-  nonCodeMeta: NoneCodeMeta
 }
 
 function makePipeExpression(
@@ -1017,13 +829,6 @@ function makePipeBody(
   )
 }
 
-export interface FunctionExpression extends GeneralStatement {
-  type: 'FunctionExpression'
-  id: Identifier | null
-  params: Identifier[]
-  body: BlockStatement
-}
-
 function makeFunctionExpression(
   tokens: Token[],
   index: number
@@ -1072,12 +877,6 @@ function makeParams(
   ])
 }
 
-export interface BlockStatement extends GeneralStatement {
-  type: 'BlockStatement'
-  body: BodyItem[]
-  nonCodeMeta: NoneCodeMeta
-}
-
 function makeBlockStatement(
   tokens: Token[],
   index: number
@@ -1100,11 +899,6 @@ function makeBlockStatement(
   }
 }
 
-export interface ReturnStatement extends GeneralStatement {
-  type: 'ReturnStatement'
-  argument: Value
-}
-
 function makeReturnStatement(
   tokens: Token[],
   index: number
@@ -1122,8 +916,6 @@ function makeReturnStatement(
     lastIndex,
   }
 }
-
-export type All = Program | ExpressionStatement[] | BinaryExpression | Literal
 
 function nextMeaningfulToken(
   tokens: Token[],
@@ -1162,8 +954,6 @@ function previousMeaningfulToken(
   }
   return { token, index: newIndex }
 }
-
-type BodyItem = ExpressionStatement | VariableDeclaration | ReturnStatement
 
 function makeBody(
   {

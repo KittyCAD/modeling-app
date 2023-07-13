@@ -11,7 +11,7 @@ import {
   MemberExpression,
   PipeExpression,
   UnaryExpression,
-} from './abstractSyntaxTree'
+} from './abstractSyntaxTreeTypes'
 import { precedence } from './astMathExpressions'
 
 export function recast(

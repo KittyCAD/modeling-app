@@ -1,4 +1,4 @@
-import { Program } from '../lang/abstractSyntaxTree'
+import { Program } from '../lang/abstractSyntaxTreeTypes'
 import { ProgramMemory, _executor } from '../lang/executor'
 import { EngineCommandManager } from '../lang/std/engineConnection'
 

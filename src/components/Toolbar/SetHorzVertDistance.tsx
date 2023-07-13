@@ -5,7 +5,7 @@ import {
   BinaryPart,
   Value,
   VariableDeclarator,
-} from '../../lang/abstractSyntaxTree'
+} from '../../lang/abstractSyntaxTreeTypes'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
