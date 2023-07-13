@@ -17,12 +17,10 @@ export const ActionButton = ({
     as = 'button',
     children,
 }: ActionButtonProps) => {
-    const classNames = `group mono flex items-center gap-2 text-chalkboard-110 rounded-sm border border-chalkboard-40 hover:border-liquid-40 p-[3px] p${icon ? 'r' : 'x'}-2 ${className}`
+    const classNames = `group mono flex items-center gap-2 text-chalkboard-110 rounded-sm border border-chalkboard-40 hover:border-liquid-40 p-[3px] ${icon ? 'pr-2' : 'px-2'} ${className}`
 
     return (as === 'button'
-        ? <button onClick={onClick}
-          className={classNames}
-        >
+        ? <button onClick={onClick} className={classNames}>
           {icon && <ActionIcon {...icon} />}
           {children}
         </button>
