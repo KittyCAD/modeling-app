@@ -25,8 +25,12 @@
         "scope": ["$HOME/**/*"],
         "all": true
       },
-      "window": {
-        "all": true
+      "http": {
+        "request": true,
+        "scope": ["https://dev.kittycad.io/*", "https://kittycad.io/*"]
+      },
+      "shell": {
+        "open": true
       }
     },
     "bundle": {

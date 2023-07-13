@@ -34,9 +34,10 @@ fn read_txt_file(path: &str) -> Result<String, InvokeError> {
 /// The string returned from this method is the access token.
 #[tauri::command]
 async fn login(app: tauri::AppHandle) -> Result<String, InvokeError> {
+    println!("Logging in...");
     // Do an OAuth 2.0 Device Authorization Grant dance to get a token.
-    let host = "https://kittycad.io";
-    let device_auth_url = oauth2::DeviceAuthorizationUrl::new(format!("{host}/oauth2/device/auth"))
+    let host = "https://api.dev.kittycad.io/";
+    let device_auth_url = oauth2::DeviceAuthorizationUrl::new(format!("{host}oauth2/device/auth"))
         .map_err(|e| InvokeError::from_anyhow(e.into()))?;
     // We can hardcode the client ID.
     // This value is safe to be embedded in version control.
@@ -66,20 +67,11 @@ async fn login(app: tauri::AppHandle) -> Result<String, InvokeError> {
         return Err(InvokeError::from("getting the verification uri failed"));
     };
 
-    let auth_url = auth_uri
-        .secret()
-        .parse()
-        .map_err(|e: oauth2::url::ParseError| InvokeError::from_anyhow(e.into()))?;
-
-    // Open the window with the auth_uri.
-    let window = tauri::WindowBuilder::new(&app, "external", tauri::WindowUrl::External(auth_url))
-        .title("Login")
-        .inner_size(500.0, 500.0)
-        .center()
-        .build()?;
-
-    // Show the window.
-    window.show()?;
+    // Open the system browser with the auth_uri.
+    // We do this in the browser and not a seperate window because we want 1password and
+    // other crap to work well.
+    tauri::api::shell::open(&app.shell_scope(), auth_uri.secret(), None)
+        .map_err(|e| InvokeError::from_anyhow(e.into()))?;
 
     // Wait for the user to login.
     let token = auth_client
