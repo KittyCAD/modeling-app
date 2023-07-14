@@ -24,6 +24,13 @@
       "fs": {
         "scope": ["$HOME/**/*"],
         "all": true
+      },
+      "http": {
+        "request": true,
+        "scope": ["https://dev.kittycad.io/*", "https://kittycad.io/*"]
+      },
+      "shell": {
+        "open": true
       }
     },
     "bundle": {
