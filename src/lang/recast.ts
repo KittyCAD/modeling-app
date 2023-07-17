@@ -1,21 +1,10 @@
 import {
   Program,
-  BinaryExpression,
-  BinaryPart,
-  Literal,
-  CallExpression,
   Value,
-  FunctionExpression,
-  ArrayExpression,
-  ObjectExpression,
-  MemberExpression,
-  PipeExpression,
-  UnaryExpression,
   BodyItem,
   VariableDeclarator,
   ObjectProperty,
 } from './abstractSyntaxTreeTypes'
-import { precedence } from './astMathExpressions'
 
 import { recast_js } from '../wasm-lib/pkg/wasm_lib'
 
