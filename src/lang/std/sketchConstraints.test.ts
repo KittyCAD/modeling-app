@@ -6,7 +6,7 @@ import {
   getTransformInfos,
   transformAstSketchLines,
 } from './sketchcombos'
-import { recast } from '../recast'
+import { recast_wasm } from '../recast'
 import { initPromise } from '../rust'
 import { getSketchSegmentFromSourceRange } from './sketchConstraints'
 import { Selection } from '../../useStore'
@@ -50,7 +50,7 @@ async function testingSwapSketchFnCall({
     referenceSegName: '',
   })
   return {
-    newCode: recast(modifiedAst),
+    newCode: recast_wasm(modifiedAst),
     originalRange: range.range,
   }
 }

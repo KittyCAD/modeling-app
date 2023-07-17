@@ -108,7 +108,8 @@ fn recast_array_expression(expression: ArrayExpression, indentation: String) -> 
     if flat_recast.len() > max_array_length {
         let _indentation = indentation.clone() + "  ";
         format!(
-            "[\n  {}\n{}]",
+            "[\n{}{}\n{}]",
+            _indentation,
             expression
                 .elements
                 .iter()
@@ -164,12 +165,7 @@ fn recast_object_expression(
                 })
                 .collect::<Vec<String>>()
                 .join(format!(",\n{}", _indentation).as_str()),
-            if is_in_pipe_expression {
-                log(format!("is_in_pipe_expression: {}", is_in_pipe_expression).as_str());
-                "    "
-            } else {
-                ""
-            }
+            if is_in_pipe_expression { "    " } else { "" }
         )
     } else {
         flat_recast
@@ -345,6 +341,8 @@ pub fn recast(
             if index == 0 {
                 if let Some(start) = ast.non_code_meta.start.clone() {
                     start_string = start.value.clone();
+                } else {
+                    start_string = indentation.clone();
                 }
             }
             if start_string.ends_with("\n") {
@@ -357,17 +355,21 @@ pub fn recast(
             } else {
                 "\n".to_string()
             };
-            let custom_white_space_or_comment = match ast.non_code_meta.none_code_nodes.get(&index)
-            {
-                Some(custom_white_space_or_comment) => custom_white_space_or_comment.value.clone(),
-                None => "".to_string(),
-            };
-            let end_string =
-                if is_legit_custom_whitespace_or_comment(custom_white_space_or_comment.clone()) {
-                    custom_white_space_or_comment
-                } else {
-                    maybe_line_break
+            let mut custom_white_space_or_comment =
+                match ast.non_code_meta.none_code_nodes.get(&index) {
+                    Some(custom_white_space_or_comment) => {
+                        custom_white_space_or_comment.value.clone()
+                    }
+                    None => "".to_string(),
                 };
+            if (!is_legit_custom_whitespace_or_comment(custom_white_space_or_comment.clone())) {
+                custom_white_space_or_comment = "".to_string();
+            }
+            let end_string = if custom_white_space_or_comment.len() > 0 {
+                custom_white_space_or_comment.clone()
+            } else {
+                maybe_line_break.clone()
+            };
 
             format!("{}{}{}", start_string, recast_str, end_string)
         })

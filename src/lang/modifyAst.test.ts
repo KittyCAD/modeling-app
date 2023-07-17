@@ -13,7 +13,7 @@ import {
   giveSketchFnCallTag,
   moveValueIntoNewVariable,
 } from './modifyAst'
-import { recast } from './recast'
+import { recast_wasm } from './recast'
 import { lexer } from './tokeniser'
 import { initPromise } from './rust'
 import { enginelessExecutor } from '../lib/testHelpers'
@@ -112,7 +112,7 @@ describe('Testing addSketchTo', () => {
       },
       'yz'
     )
-    const str = recast(result.modifiedAst)
+    const str = recast_wasm(result.modifiedAst)
     expect(str).toBe(`const part001 = startSketchAt('default')
   |> ry(90, %)
   |> line('default', %)
@@ -131,7 +131,7 @@ function giveSketchFnCallTagTestHelper(
   const start = code.indexOf(searchStr)
   const range: [number, number] = [start, start + searchStr.length]
   const { modifiedAst, tag, isTagExisting } = giveSketchFnCallTag(ast, range)
-  const newCode = recast(modifiedAst)
+  const newCode = recast_wasm(modifiedAst)
   return { tag, newCode, isTagExisting }
 }
 
@@ -204,7 +204,7 @@ show(part001)`
       [startIndex, startIndex],
       'newVar'
     )
-    const newCode = recast(modifiedAst)
+    const newCode = recast_wasm(modifiedAst)
     expect(newCode).toContain(`const newVar = 100 + 100`)
     expect(newCode).toContain(`angledLine([newVar, 3.09], %)`)
   })
@@ -218,7 +218,7 @@ show(part001)`
       [startIndex, startIndex],
       'newVar'
     )
-    const newCode = recast(modifiedAst)
+    const newCode = recast_wasm(modifiedAst)
     expect(newCode).toContain(`const newVar = 2.8`)
     expect(newCode).toContain(`line([newVar, 0], %)`)
   })
@@ -232,7 +232,7 @@ show(part001)`
       [startIndex, startIndex],
       'newVar'
     )
-    const newCode = recast(modifiedAst)
+    const newCode = recast_wasm(modifiedAst)
     expect(newCode).toContain(`const newVar = def('yo')`)
     expect(newCode).toContain(`angledLine([newVar, 3.09], %)`)
   })
@@ -246,7 +246,7 @@ show(part001)`
       [startIndex, startIndex],
       'newVar'
     )
-    const newCode = recast(modifiedAst)
+    const newCode = recast_wasm(modifiedAst)
     expect(newCode).toContain(`const newVar = jkl('yo') + 2`)
     expect(newCode).toContain(`angledLine([newVar, 3.09], %)`)
   })
@@ -260,7 +260,7 @@ show(part001)`
       [startIndex, startIndex],
       'newVar'
     )
-    const newCode = recast(modifiedAst)
+    const newCode = recast_wasm(modifiedAst)
     expect(newCode).toContain(`const newVar = identifierGuy + 5`)
     expect(newCode).toContain(`const yo2 = hmm([newVar])`)
   })

@@ -12,7 +12,7 @@ import {
 import { initPromise } from '../rust'
 import { Selections, TooTip } from '../../useStore'
 import { enginelessExecutor } from '../../lib/testHelpers'
-import { recast } from '../../lang/recast'
+import { recast_wasm } from '../../lang/recast'
 
 beforeAll(() => initPromise)
 
@@ -224,7 +224,7 @@ show(part001)`
       transformInfos,
       programMemory,
     })?.modifiedAst
-    const newCode = recast(newAst)
+    const newCode = recast_wasm(newAst)
     expect(newCode).toBe(expectModifiedScript)
   })
 })
@@ -310,7 +310,7 @@ show(part001)`
       programMemory,
       referenceSegName: '',
     })?.modifiedAst
-    const newCode = recast(newAst)
+    const newCode = recast_wasm(newAst)
     expect(newCode).toBe(expectModifiedScript)
   })
   it('It should transform vertical lines the ast', async () => {
@@ -367,7 +367,7 @@ show(part001)`
       programMemory,
       referenceSegName: '',
     })?.modifiedAst
-    const newCode = recast(newAst)
+    const newCode = recast_wasm(newAst)
     expect(newCode).toBe(expectModifiedScript)
   })
 })
@@ -458,7 +458,7 @@ async function helperThing(
     transformInfos,
     programMemory,
   })?.modifiedAst
-  return recast(newAst)
+  return recast_wasm(newAst)
 }
 
 describe('testing getConstraintLevelFromSourceRange', () => {

@@ -11,7 +11,7 @@ import {
   Rotation,
   SourceRange,
 } from './lang/executor'
-import { recast } from './lang/recast'
+import { recast_wasm } from './lang/recast'
 import { asyncLexer } from './lang/tokeniser'
 import { EditorSelection } from '@codemirror/state'
 import { BaseDirectory } from '@tauri-apps/api/fs'
@@ -245,7 +245,7 @@ export const useStore = create<StoreState>()(
         set({ ast })
       },
       updateAst: async (ast, { focusPath, callBack = () => {} } = {}) => {
-        const newCode = recast(ast)
+        const newCode = recast_wasm(ast)
         const astWithUpdatedSource = abstractSyntaxTree(
           await asyncLexer(newCode)
         )
@@ -287,7 +287,7 @@ export const useStore = create<StoreState>()(
       formatCode: async () => {
         const code = get().code
         const ast = abstractSyntaxTree(await asyncLexer(code))
-        const newCode = recast(ast)
+        const newCode = recast_wasm(ast)
         set({ code: newCode, ast })
       },
       errorState: {
