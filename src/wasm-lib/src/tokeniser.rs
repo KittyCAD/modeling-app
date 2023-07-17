@@ -37,7 +37,12 @@ pub struct Token {
 impl Token {
     #[wasm_bindgen(constructor)]
     pub fn new(token_type: TokenType, value: String, start: usize, end: usize) -> Token {
-        Token { token_type, value, start, end }
+        Token {
+            token_type,
+            value,
+            start,
+            end,
+        }
     }
 
     #[wasm_bindgen(getter)]
@@ -56,10 +61,11 @@ lazy_static! {
     static ref WHITESPACE: Regex = Regex::new(r"\s+").unwrap();
     static ref WORD: Regex = Regex::new(r"^[a-zA-Z_][a-zA-Z0-9_]*").unwrap();
     static ref STRING: Regex = Regex::new(r#"^"([^"\\]|\\.)*"|'([^'\\]|\\.)*'"#).unwrap();
-    static ref OPERATOR: Regex = Regex::new(r"^(>=|<=|==|=>|!= |\|>|\*|\+|-|/|%|=|<|>|\||\^)").unwrap();
+    static ref OPERATOR: Regex =
+        Regex::new(r"^(>=|<=|==|=>|!= |\|>|\*|\+|-|/|%|=|<|>|\||\^)").unwrap();
     static ref BLOCK_START: Regex = Regex::new(r"^\{").unwrap();
     static ref BLOCK_END: Regex = Regex::new(r"^\}").unwrap();
-    static ref PARAN_START: Regex = Regex::new(r"^\(").unwrap();    
+    static ref PARAN_START: Regex = Regex::new(r"^\(").unwrap();
     static ref PARAN_END: Regex = Regex::new(r"^\)").unwrap();
     static ref ARRAY_START: Regex = Regex::new(r"^\[").unwrap();
     static ref ARRAY_END: Regex = Regex::new(r"^\]").unwrap();
@@ -136,7 +142,6 @@ fn make_token(token_type: TokenType, value: &str, start: usize) -> Token {
         end: start + value.len(),
     }
 }
-
 
 fn return_token_at_index(str: &str, start_index: usize) -> Option<Token> {
     let str_from_index = &str[start_index..];
@@ -261,13 +266,17 @@ fn return_token_at_index(str: &str, start_index: usize) -> Option<Token> {
 }
 
 fn lexer(str: &str) -> Vec<Token> {
-    fn recursively_tokenise(str: &str, current_index: usize, previous_tokens: Vec<Token>) -> Vec<Token> {
+    fn recursively_tokenise(
+        str: &str,
+        current_index: usize,
+        previous_tokens: Vec<Token>,
+    ) -> Vec<Token> {
         if current_index >= str.len() {
             return previous_tokens;
         }
         let token = return_token_at_index(str, current_index);
         if token.is_none() {
-            return recursively_tokenise(str, current_index + 1, previous_tokens)
+            return recursively_tokenise(str, current_index + 1, previous_tokens);
         }
         let token = token.unwrap();
         let mut new_tokens = previous_tokens;
@@ -283,10 +292,7 @@ fn lexer(str: &str) -> Vec<Token> {
 #[wasm_bindgen]
 pub fn lexer_js(str: &str) -> JsValue {
     let tokens = lexer(str);
-    JsValue::from_str(
-        &serde_json::to_string(&tokens)
-            .expect("failed to serialize lexer output"),
-    )
+    JsValue::from_str(&serde_json::to_string(&tokens).expect("failed to serialize lexer output"))
 }
 
 #[cfg(test)]
@@ -302,7 +308,6 @@ mod tests {
         assert_eq!(is_number("1.1 abc"), true);
         assert_eq!(is_number("a"), false);
 
-        
         assert_eq!(is_number("1"), true);
         assert_eq!(is_number("5?"), true);
         assert_eq!(is_number("5 + 6"), true);
@@ -314,7 +319,6 @@ mod tests {
         assert_eq!(is_number("a"), false);
         assert_eq!(is_number("?"), false);
         assert_eq!(is_number("?5"), false);
-
     }
 
     #[test]
@@ -482,23 +486,30 @@ mod tests {
 
     #[test]
     fn make_token_test() {
-        assert_eq!(make_token(TokenType::Word, &"const".to_string(), 56), Token {
-            token_type: TokenType::Word,
-            value: "const".to_string(),
-            start: 56,
-            end: 61,
-        });
+        assert_eq!(
+            make_token(TokenType::Word, &"const".to_string(), 56),
+            Token {
+                token_type: TokenType::Word,
+                value: "const".to_string(),
+                start: 56,
+                end: 61,
+            }
+        );
     }
 
     #[test]
     fn return_token_at_index_test() {
-        assert_eq!(return_token_at_index("const", 0), Some(Token {
-            token_type: TokenType::Word,
-            value: "const".to_string(),
-            start: 0,
-            end: 5,
-        }));
-        assert_eq!(return_token_at_index("  4554", 2), 
+        assert_eq!(
+            return_token_at_index("const", 0),
+            Some(Token {
+                token_type: TokenType::Word,
+                value: "const".to_string(),
+                start: 0,
+                end: 5,
+            })
+        );
+        assert_eq!(
+            return_token_at_index("  4554", 2),
             Some(Token {
                 token_type: TokenType::Number,
                 value: "4554".to_string(),
@@ -510,93 +521,99 @@ mod tests {
 
     #[test]
     fn lexer_test() {
-        assert_eq!(lexer("const a=5"), vec![
-            Token {
-                token_type: TokenType::Word,
-                value: "const".to_string(),
-                start: 0,
-                end: 5,
-            },
-            Token {
-                token_type: TokenType::Whitespace,
-                value: " ".to_string(),
-                start: 5,
-                end: 6,
-            },
-            Token {
-                token_type: TokenType::Word,
-                value: "a".to_string(),
-                start: 6,
-                end: 7,
-            },
-            Token {
-                token_type: TokenType::Operator,
-                value: "=".to_string(),
-                start: 7,
-                end: 8,
-            },
-            Token {
-                token_type: TokenType::Number,
-                value: "5".to_string(),
-                start: 8,
-                end: 9,
-            },
-        ]);
-        assert_eq!(lexer("54 + 22500 + 6"), vec![
-            Token {
-                token_type: TokenType::Number,
-                value: "54".to_string(),
-                start: 0,
-                end: 2,
-            },
-            Token {
-                token_type: TokenType::Whitespace,
-                value: " ".to_string(),
-                start: 2,
-                end: 3,
-            },
-            Token {
-                token_type: TokenType::Operator,
-                value: "+".to_string(),
-                start: 3,
-                end: 4,
-            },
-            Token {
-                token_type: TokenType::Whitespace,
-                value: " ".to_string(),
-                start: 4,
-                end: 5,
-            },
-            Token {
-                token_type: TokenType::Number,
-                value: "22500".to_string(),
-                start: 5,
-                end: 10,
-            },
-            Token {
-                token_type: TokenType::Whitespace,
-                value: " ".to_string(),
-                start: 10,
-                end: 11,
-            },
-            Token {
-                token_type: TokenType::Operator,
-                value: "+".to_string(),
-                start: 11,
-                end: 12,
-            },
-            Token {
-                token_type: TokenType::Whitespace,
-                value: " ".to_string(),
-                start: 12,
-                end: 13,
-            },
-            Token {
-                token_type: TokenType::Number,
-                value: "6".to_string(),
-                start: 13,
-                end: 14,
-            },
-        ]);
+        assert_eq!(
+            lexer("const a=5"),
+            vec![
+                Token {
+                    token_type: TokenType::Word,
+                    value: "const".to_string(),
+                    start: 0,
+                    end: 5,
+                },
+                Token {
+                    token_type: TokenType::Whitespace,
+                    value: " ".to_string(),
+                    start: 5,
+                    end: 6,
+                },
+                Token {
+                    token_type: TokenType::Word,
+                    value: "a".to_string(),
+                    start: 6,
+                    end: 7,
+                },
+                Token {
+                    token_type: TokenType::Operator,
+                    value: "=".to_string(),
+                    start: 7,
+                    end: 8,
+                },
+                Token {
+                    token_type: TokenType::Number,
+                    value: "5".to_string(),
+                    start: 8,
+                    end: 9,
+                },
+            ]
+        );
+        assert_eq!(
+            lexer("54 + 22500 + 6"),
+            vec![
+                Token {
+                    token_type: TokenType::Number,
+                    value: "54".to_string(),
+                    start: 0,
+                    end: 2,
+                },
+                Token {
+                    token_type: TokenType::Whitespace,
+                    value: " ".to_string(),
+                    start: 2,
+                    end: 3,
+                },
+                Token {
+                    token_type: TokenType::Operator,
+                    value: "+".to_string(),
+                    start: 3,
+                    end: 4,
+                },
+                Token {
+                    token_type: TokenType::Whitespace,
+                    value: " ".to_string(),
+                    start: 4,
+                    end: 5,
+                },
+                Token {
+                    token_type: TokenType::Number,
+                    value: "22500".to_string(),
+                    start: 5,
+                    end: 10,
+                },
+                Token {
+                    token_type: TokenType::Whitespace,
+                    value: " ".to_string(),
+                    start: 10,
+                    end: 11,
+                },
+                Token {
+                    token_type: TokenType::Operator,
+                    value: "+".to_string(),
+                    start: 11,
+                    end: 12,
+                },
+                Token {
+                    token_type: TokenType::Whitespace,
+                    value: " ".to_string(),
+                    start: 12,
+                    end: 13,
+                },
+                Token {
+                    token_type: TokenType::Number,
+                    value: "6".to_string(),
+                    start: 13,
+                    end: 14,
+                },
+            ]
+        );
     }
 }
