@@ -11,7 +11,7 @@ export const LoginButton = () => {
       const token: string = await invoke('login')
       setToken(token)
     } catch (error) {
-      console.error("login button", error)
+      console.error('login button', error)
     }
   }
   return <button onClick={() => handleClick()}>Login</button>

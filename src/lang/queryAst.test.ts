@@ -14,7 +14,7 @@ import {
   createLiteral,
   createPipeSubstitution,
 } from './modifyAst'
-import { recast_wasm } from './recast'
+import { recast } from './recast'
 
 beforeAll(() => initPromise)
 
@@ -81,7 +81,7 @@ show(part001)`
       JSON.parse(JSON.stringify(ast)),
       'replaceName'
     )
-    const outCode = recast_wasm(modifiedAst)
+    const outCode = recast(modifiedAst)
     expect(outCode).toContain(`angledLine([replaceName, 3.09], %)`)
   })
   it('find a safe Identifier', () => {
@@ -103,7 +103,7 @@ show(part001)`
       JSON.parse(JSON.stringify(ast)),
       'replaceName'
     )
-    const outCode = recast_wasm(modifiedAst)
+    const outCode = recast(modifiedAst)
     expect(outCode).toContain(`angledLine([replaceName, 3.09], %)`)
   })
   it('find an UNsafe CallExpression, as it has a PipeSubstitution', () => {
@@ -136,7 +136,7 @@ show(part001)`
       JSON.parse(JSON.stringify(ast)),
       'replaceName'
     )
-    const outCode = recast_wasm(modifiedAst)
+    const outCode = recast(modifiedAst)
     expect(outCode).toContain(`const yo = replaceName`)
   })
   it('find a safe BinaryExpression that has a CallExpression within', () => {
@@ -152,7 +152,7 @@ show(part001)`
       JSON.parse(JSON.stringify(ast)),
       'replaceName'
     )
-    const outCode = recast_wasm(modifiedAst)
+    const outCode = recast(modifiedAst)
     expect(outCode).toContain(`angledLine([replaceName, 3.09], %)`)
   })
   it('find a safe BinaryExpression within a CallExpression', () => {
@@ -168,7 +168,7 @@ show(part001)`
       JSON.parse(JSON.stringify(ast)),
       'replaceName'
     )
-    const outCode = recast_wasm(modifiedAst)
+    const outCode = recast(modifiedAst)
     expect(outCode).toContain(`const yo2 = hmm([replaceName])`)
   })
 

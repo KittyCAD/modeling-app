@@ -8,7 +8,7 @@ import {
 import { lexer } from '../tokeniser'
 import { abstractSyntaxTree } from '../abstractSyntaxTree'
 import { getNodePathFromSourceRange } from '../queryAst'
-import { recast_wasm } from '../recast'
+import { recast } from '../recast'
 import { enginelessExecutor } from '../../lib/testHelpers'
 import { initPromise } from '../rust'
 
@@ -129,7 +129,7 @@ show(mySketch001)`
       },
       [0, 0]
     )
-    expect(recast_wasm(modifiedAst)).toBe(expectedCode)
+    expect(recast(modifiedAst)).toBe(expectedCode)
   })
 })
 
@@ -168,7 +168,7 @@ const mySketch001 = startSketchAt([0, 0])
   |> lineTo([0.46, -5.82], %)
   |> lineTo([2, 3], %)
 show(mySketch001)`
-    expect(recast_wasm(modifiedAst)).toBe(expectedCode)
+    expect(recast(modifiedAst)).toBe(expectedCode)
   })
 })
 
@@ -202,6 +202,6 @@ describe('testing addTagForSketchOnFace', () => {
     const expectedCode = genCode(
       "lineTo({ to: [-1.59, -1.54], tag: 'seg01' }, %)"
     )
-    expect(recast_wasm(modifiedAst)).toBe(expectedCode)
+    expect(recast(modifiedAst)).toBe(expectedCode)
   })
 })
