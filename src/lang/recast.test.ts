@@ -76,7 +76,6 @@ show(mySketch)
 `
     const { ast } = code2ast(code)
     const recasted = recast_wasm(ast)
-    console.log('recasted', recasted)
     expect(recasted).toBe(code.trim())
   })
   it('sketch piped into callExpression', () => {
@@ -319,7 +318,6 @@ describe('it recasts wrapped object expressions in pipe bodies with correct inde
 show(part001)`
     const { ast } = code2ast(code)
     const recasted = recast_wasm(ast)
-    console.log('recasted!', recasted)
     expect(recasted).toBe(code)
   })
   it('recasts wrapped object expressions NOT in pipe body correctly', () => {

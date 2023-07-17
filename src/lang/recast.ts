@@ -89,8 +89,6 @@ function transformProgram(program: Program): { [key: string]: any } {
     noneCodeNodes: rest,
   }
   transformedProgram.nonCodeMeta = nonCodeMeta
-  console.log('nonCodeMeta', nonCodeMeta)
-
   return transformedProgram
 }
 
