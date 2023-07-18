@@ -2,7 +2,6 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Program {
-    // pub type_: SyntaxType,
     pub start: usize,
     pub end: usize,
     pub body: Vec<BodyItem>,
@@ -208,12 +207,4 @@ pub struct ReturnStatement {
     pub start: usize,
     pub end: usize,
     pub argument: Value,
-}
-
-#[derive(Debug)]
-pub enum All {
-    Program(Program),
-    ExpressionStatement(Vec<ExpressionStatement>),
-    BinaryExpression(BinaryExpression),
-    Literal(Literal),
 }

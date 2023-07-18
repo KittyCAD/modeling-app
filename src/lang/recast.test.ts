@@ -45,7 +45,7 @@ const newVar = myVar + 1`
     const recasted = recast(ast)
     expect(recasted).toBe(code.trim())
   })
-  it('test with function call recast', () => {
+  it('test with function call', () => {
     const code = `
 const myVar = "hello"
 log(5, myVar)`
