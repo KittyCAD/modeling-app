@@ -298,193 +298,193 @@ mod tests {
 
     #[test]
     fn is_number_test() {
-        assert_eq!(is_number("1"), true);
-        assert_eq!(is_number("1 abc"), true);
-        assert_eq!(is_number("1abc"), true);
-        assert_eq!(is_number("1.1"), true);
-        assert_eq!(is_number("1.1 abc"), true);
-        assert_eq!(is_number("a"), false);
+        assert!(is_number("1"));
+        assert!(is_number("1 abc"));
+        assert!(is_number("1abc"));
+        assert!(is_number("1.1"));
+        assert!(is_number("1.1 abc"));
+        assert!(!is_number("a"));
 
-        assert_eq!(is_number("1"), true);
-        assert_eq!(is_number("5?"), true);
-        assert_eq!(is_number("5 + 6"), true);
-        assert_eq!(is_number("5 + a"), true);
-        assert_eq!(is_number("-5"), true);
-        assert_eq!(is_number("5.5"), true);
-        assert_eq!(is_number("-5.5"), true);
+        assert!(is_number("1"));
+        assert!(is_number("5?"));
+        assert!(is_number("5 + 6"));
+        assert!(is_number("5 + a"));
+        assert!(is_number("-5"));
+        assert!(is_number("5.5"));
+        assert!(is_number("-5.5"));
 
-        assert_eq!(is_number("a"), false);
-        assert_eq!(is_number("?"), false);
-        assert_eq!(is_number("?5"), false);
+        assert!(!is_number("a"));
+        assert!(!is_number("?"));
+        assert!(!is_number("?5"));
     }
 
     #[test]
     fn is_whitespace_test() {
-        assert_eq!(is_whitespace(" "), true);
-        assert_eq!(is_whitespace("  "), true);
-        assert_eq!(is_whitespace(" a"), true);
-        assert_eq!(is_whitespace("a "), true);
+        assert!(is_whitespace(" "));
+        assert!(is_whitespace("  "));
+        assert!(is_whitespace(" a"));
+        assert!(is_whitespace("a "));
 
-        assert_eq!(is_whitespace("a"), false);
-        assert_eq!(is_whitespace("?"), false);
+        assert!(!is_whitespace("a"));
+        assert!(!is_whitespace("?"));
     }
 
     #[test]
     fn is_word_test() {
-        assert_eq!(is_word("a"), true);
-        assert_eq!(is_word("a "), true);
-        assert_eq!(is_word("a5"), true);
-        assert_eq!(is_word("a5a"), true);
+        assert!(is_word("a"));
+        assert!(is_word("a "));
+        assert!(is_word("a5"));
+        assert!(is_word("a5a"));
 
-        assert_eq!(is_word("5"), false);
-        assert_eq!(is_word("5a"), false);
-        assert_eq!(is_word("5a5"), false);
+        assert!(!is_word("5"));
+        assert!(!is_word("5a"));
+        assert!(!is_word("5a5"));
     }
 
     #[test]
     fn is_string_test() {
-        assert_eq!(is_string("\"\""), true);
-        assert_eq!(is_string("\"a\""), true);
-        assert_eq!(is_string("\"a\" "), true);
-        assert_eq!(is_string("\"a\"5"), true);
-        assert_eq!(is_string("'a'5"), true);
-        assert_eq!(is_string("\"with escaped \\\" backslash\""), true);
+        assert!(is_string("\"\""));
+        assert!(is_string("\"a\""));
+        assert!(is_string("\"a\" "));
+        assert!(is_string("\"a\"5"));
+        assert!(is_string("'a'5"));
+        assert!(is_string("\"with escaped \\\" backslash\""));
 
-        assert_eq!(is_string("\""), false);
-        assert_eq!(is_string("\"a"), false);
-        assert_eq!(is_string("a\""), false);
-        assert_eq!(is_string(" \"a\""), false);
-        assert_eq!(is_string("5\"a\""), false);
-        assert_eq!(is_string("a + 'str'"), false);
+        assert!(!is_string("\""));
+        assert!(!is_string("\"a"));
+        assert!(!is_string("a\""));
+        assert!(!is_string(" \"a\""));
+        assert!(!is_string("5\"a\""));
+        assert!(!is_string("a + 'str'"));
     }
 
     #[test]
     fn is_operator_test() {
-        assert_eq!(is_operator("+"), true);
-        assert_eq!(is_operator("+ "), true);
-        assert_eq!(is_operator("-"), true);
-        assert_eq!(is_operator("<="), true);
-        assert_eq!(is_operator("<= "), true);
-        assert_eq!(is_operator(">="), true);
-        assert_eq!(is_operator(">= "), true);
-        assert_eq!(is_operator("> "), true);
-        assert_eq!(is_operator("< "), true);
-        assert_eq!(is_operator("| "), true);
-        assert_eq!(is_operator("|> "), true);
-        assert_eq!(is_operator("^ "), true);
-        assert_eq!(is_operator("% "), true);
-        assert_eq!(is_operator("+* "), true);
+        assert!(is_operator("+"));
+        assert!(is_operator("+ "));
+        assert!(is_operator("-"));
+        assert!(is_operator("<="));
+        assert!(is_operator("<= "));
+        assert!(is_operator(">="));
+        assert!(is_operator(">= "));
+        assert!(is_operator("> "));
+        assert!(is_operator("< "));
+        assert!(is_operator("| "));
+        assert!(is_operator("|> "));
+        assert!(is_operator("^ "));
+        assert!(is_operator("% "));
+        assert!(is_operator("+* "));
 
-        assert_eq!(is_operator("5 + 5"), false);
-        assert_eq!(is_operator("a"), false);
-        assert_eq!(is_operator("a+"), false);
-        assert_eq!(is_operator("a+5"), false);
-        assert_eq!(is_operator("5a+5"), false);
-        assert_eq!(is_operator(", newVar"), false);
-        assert_eq!(is_operator(","), false);
+        assert!(!is_operator("5 + 5"));
+        assert!(!is_operator("a"));
+        assert!(!is_operator("a+"));
+        assert!(!is_operator("a+5"));
+        assert!(!is_operator("5a+5"));
+        assert!(!is_operator(", newVar"));
+        assert!(!is_operator(","));
     }
 
     #[test]
     fn is_block_start_test() {
-        assert_eq!(is_block_start("{"), true);
-        assert_eq!(is_block_start("{ "), true);
-        assert_eq!(is_block_start("{5"), true);
-        assert_eq!(is_block_start("{a"), true);
-        assert_eq!(is_block_start("{5 "), true);
+        assert!(is_block_start("{"));
+        assert!(is_block_start("{ "));
+        assert!(is_block_start("{5"));
+        assert!(is_block_start("{a"));
+        assert!(is_block_start("{5 "));
 
-        assert_eq!(is_block_start("5"), false);
-        assert_eq!(is_block_start("5 + 5"), false);
-        assert_eq!(is_block_start("5{ + 5"), false);
-        assert_eq!(is_block_start("a{ + 5"), false);
-        assert_eq!(is_block_start(" { + 5"), false);
+        assert!(!is_block_start("5"));
+        assert!(!is_block_start("5 + 5"));
+        assert!(!is_block_start("5{ + 5"));
+        assert!(!is_block_start("a{ + 5"));
+        assert!(!is_block_start(" { + 5"));
     }
 
     #[test]
     fn is_block_end_test() {
-        assert_eq!(is_block_end("}"), true);
-        assert_eq!(is_block_end("} "), true);
-        assert_eq!(is_block_end("}5"), true);
-        assert_eq!(is_block_end("}5 "), true);
+        assert!(is_block_end("}"));
+        assert!(is_block_end("} "));
+        assert!(is_block_end("}5"));
+        assert!(is_block_end("}5 "));
 
-        assert_eq!(is_block_end("5"), false);
-        assert_eq!(is_block_end("5 + 5"), false);
-        assert_eq!(is_block_end("5} + 5"), false);
-        assert_eq!(is_block_end(" } + 5"), false);
+        assert!(!is_block_end("5"));
+        assert!(!is_block_end("5 + 5"));
+        assert!(!is_block_end("5} + 5"));
+        assert!(!is_block_end(" } + 5"));
     }
 
     #[test]
     fn is_paran_start_test() {
-        assert_eq!(is_paran_start("("), true);
-        assert_eq!(is_paran_start("( "), true);
-        assert_eq!(is_paran_start("(5"), true);
-        assert_eq!(is_paran_start("(5 "), true);
-        assert_eq!(is_paran_start("(5 + 5"), true);
-        assert_eq!(is_paran_start("(5 + 5)"), true);
-        assert_eq!(is_paran_start("(5 + 5) "), true);
+        assert!(is_paran_start("("));
+        assert!(is_paran_start("( "));
+        assert!(is_paran_start("(5"));
+        assert!(is_paran_start("(5 "));
+        assert!(is_paran_start("(5 + 5"));
+        assert!(is_paran_start("(5 + 5)"));
+        assert!(is_paran_start("(5 + 5) "));
 
-        assert_eq!(is_paran_start("5"), false);
-        assert_eq!(is_paran_start("5 + 5"), false);
-        assert_eq!(is_paran_start("5( + 5)"), false);
-        assert_eq!(is_paran_start(" ( + 5)"), false);
+        assert!(!is_paran_start("5"));
+        assert!(!is_paran_start("5 + 5"));
+        assert!(!is_paran_start("5( + 5)"));
+        assert!(!is_paran_start(" ( + 5)"));
     }
 
     #[test]
     fn is_paran_end_test() {
-        assert_eq!(is_paran_end(")"), true);
-        assert_eq!(is_paran_end(") "), true);
-        assert_eq!(is_paran_end(")5"), true);
-        assert_eq!(is_paran_end(")5 "), true);
+        assert!(is_paran_end(")"));
+        assert!(is_paran_end(") "));
+        assert!(is_paran_end(")5"));
+        assert!(is_paran_end(")5 "));
 
-        assert_eq!(is_paran_end("5"), false);
-        assert_eq!(is_paran_end("5 + 5"), false);
-        assert_eq!(is_paran_end("5) + 5"), false);
-        assert_eq!(is_paran_end(" ) + 5"), false);
+        assert!(!is_paran_end("5"));
+        assert!(!is_paran_end("5 + 5"));
+        assert!(!is_paran_end("5) + 5"));
+        assert!(!is_paran_end(" ) + 5"));
     }
 
     #[test]
     fn is_comma_test() {
-        assert_eq!(is_comma(","), true);
-        assert_eq!(is_comma(", "), true);
-        assert_eq!(is_comma(",5"), true);
-        assert_eq!(is_comma(",5 "), true);
+        assert!(is_comma(","));
+        assert!(is_comma(", "));
+        assert!(is_comma(",5"));
+        assert!(is_comma(",5 "));
 
-        assert_eq!(is_comma("5"), false);
-        assert_eq!(is_comma("5 + 5"), false);
-        assert_eq!(is_comma("5, + 5"), false);
-        assert_eq!(is_comma(" , + 5"), false);
+        assert!(!is_comma("5"));
+        assert!(!is_comma("5 + 5"));
+        assert!(!is_comma("5, + 5"));
+        assert!(!is_comma(" , + 5"));
     }
 
     #[test]
     fn is_line_comment_test() {
-        assert_eq!(is_line_comment("//"), true);
-        assert_eq!(is_line_comment("// "), true);
-        assert_eq!(is_line_comment("//5"), true);
-        assert_eq!(is_line_comment("//5 "), true);
+        assert!(is_line_comment("//"));
+        assert!(is_line_comment("// "));
+        assert!(is_line_comment("//5"));
+        assert!(is_line_comment("//5 "));
 
-        assert_eq!(is_line_comment("5"), false);
-        assert_eq!(is_line_comment("5 + 5"), false);
-        assert_eq!(is_line_comment("5// + 5"), false);
-        assert_eq!(is_line_comment(" // + 5"), false);
+        assert!(!is_line_comment("5"));
+        assert!(!is_line_comment("5 + 5"));
+        assert!(!is_line_comment("5// + 5"));
+        assert!(!is_line_comment(" // + 5"));
     }
 
     #[test]
     fn is_block_comment_test() {
-        assert_eq!(is_block_comment("/*  */"), true);
-        assert_eq!(is_block_comment("/***/"), true);
-        assert_eq!(is_block_comment("/*5*/"), true);
-        assert_eq!(is_block_comment("/*5 */"), true);
+        assert!(is_block_comment("/*  */"));
+        assert!(is_block_comment("/***/"));
+        assert!(is_block_comment("/*5*/"));
+        assert!(is_block_comment("/*5 */"));
 
-        assert_eq!(is_block_comment("/*"), false);
-        assert_eq!(is_block_comment("5"), false);
-        assert_eq!(is_block_comment("5 + 5"), false);
-        assert_eq!(is_block_comment("5/* + 5"), false);
-        assert_eq!(is_block_comment(" /* + 5"), false);
+        assert!(!is_block_comment("/*"));
+        assert!(!is_block_comment("5"));
+        assert!(!is_block_comment("5 + 5"));
+        assert!(!is_block_comment("5/* + 5"));
+        assert!(!is_block_comment(" /* + 5"));
     }
 
     #[test]
     fn make_token_test() {
         assert_eq!(
-            make_token(TokenType::Word, &"const".to_string(), 56),
+            make_token(TokenType::Word, "const", 56),
             Token {
                 token_type: TokenType::Word,
                 value: "const".to_string(),

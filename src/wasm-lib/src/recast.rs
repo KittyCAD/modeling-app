@@ -63,20 +63,20 @@ fn recast_binary_expression(expression: BinaryExpression) -> String {
 
 fn recast_binary_part(part: BinaryPart) -> String {
     match part {
-        BinaryPart::Literal(literal) => recast_literal(*literal.clone()),
+        BinaryPart::Literal(literal) => recast_literal(*literal),
         BinaryPart::Identifier(identifier) => identifier.name,
         BinaryPart::BinaryExpression(binary_expression) => {
-            recast_binary_expression(*binary_expression.clone())
+            recast_binary_expression(*binary_expression)
         }
         BinaryPart::CallExpression(call_expression) => {
-            recast_call_expression(*call_expression.clone(), "".to_string(), false)
+            recast_call_expression(*call_expression, "".to_string(), false)
         }
         _ => "".to_string(),
     }
 }
 
 fn recast_value(node: Value, _indentation: String, is_in_pipe_expression: bool) -> String {
-    let indentation = _indentation.clone() + if is_in_pipe_expression { "  " } else { "" };
+    let indentation = _indentation + if is_in_pipe_expression { "  " } else { "" };
     match node {
         Value::BinaryExpression(bin_exp) => recast_binary_expression(*bin_exp),
         Value::ArrayExpression(array_exp) => recast_array_expression(*array_exp, indentation),
@@ -147,7 +147,7 @@ fn recast_object_expression(
     );
     let max_array_length = 40;
     if flat_recast.len() > max_array_length {
-        let _indentation = indentation.clone() + "  ";
+        let _indentation = indentation + "  ";
         format!(
             "{{\n{}{}\n{}}}",
             _indentation,
@@ -214,12 +214,12 @@ fn recast_member_expression(expression: MemberExpression, indentation: String) -
     let key_str = match expression.property {
         MemberProperty::Identifier(identifier) => {
             if expression.computed {
-                format!("[{}]", (*identifier.name).to_string())
+                format!("[{}]", &(*identifier.name))
             } else {
-                format!(".{}", (*identifier.name).to_string())
+                format!(".{}", &(*identifier.name))
             }
         }
-        MemberProperty::Literal(lit) => format!("[{}]", (*lit.raw).to_string()),
+        MemberProperty::Literal(lit) => format!("[{}]", &(*lit.raw)),
     };
 
     match expression.object {
@@ -250,8 +250,8 @@ fn recast_pipe_expression(expression: PipeExpression) -> String {
             }
 
             if index != expression.body.len() - 1 {
-                str += maybe_line_break.clone().as_str();
-                str += indentation.clone().as_str();
+                str += maybe_line_break.as_str();
+                str += indentation.as_str();
                 str += "|> ".to_string().as_str();
             }
             str
@@ -314,7 +314,7 @@ pub fn recast(ast: Program, indentation: String, is_with_block: bool) -> String 
             BodyItem::ReturnStatement(return_statement) => {
                 format!(
                     "return {}",
-                    recast_argument(return_statement.argument.clone(), "".to_string(), false)
+                    recast_argument(return_statement.argument, "".to_string(), false)
                 )
             }
         })
@@ -340,19 +340,19 @@ pub fn recast(ast: Program, indentation: String, is_with_block: bool) -> String 
             };
             // indentation of this line will be covered by the previous if we're using a custom whitespace or comment
             let mut start_string =
-                if is_legit_custom_whitespace_or_comment(last_white_space_or_comment.clone()) {
+                if is_legit_custom_whitespace_or_comment(last_white_space_or_comment) {
                     "".to_string()
                 } else {
                     indentation.clone()
                 };
             if index == 0 {
                 if let Some(start) = ast.non_code_meta.start.clone() {
-                    start_string = start.value.clone();
+                    start_string = start.value;
                 } else {
                     start_string = indentation.clone();
                 }
             }
-            if start_string.ends_with("\n") {
+            if start_string.ends_with('\n') {
                 start_string += indentation.as_str();
             }
 
@@ -372,10 +372,10 @@ pub fn recast(ast: Program, indentation: String, is_with_block: bool) -> String 
             if !is_legit_custom_whitespace_or_comment(custom_white_space_or_comment.clone()) {
                 custom_white_space_or_comment = "".to_string();
             }
-            let end_string = if custom_white_space_or_comment.len() > 0 {
-                custom_white_space_or_comment.clone()
+            let end_string = if !custom_white_space_or_comment.is_empty() {
+                custom_white_space_or_comment
             } else {
-                maybe_line_break.clone()
+                maybe_line_break
             };
 
             format!("{}{}{}", start_string, recast_str, end_string)
