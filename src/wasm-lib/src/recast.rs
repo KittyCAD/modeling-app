@@ -37,7 +37,7 @@ fn recast_binary_expression(expression: BinaryExpression) -> String {
     };
 
     let should_wrap_right = match expression.right.clone() {
-        Value::BinaryExpression(bin_exp) => {
+        BinaryPart::BinaryExpression(bin_exp) => {
             precedence(&expression.operator) > precedence(&bin_exp.operator)
                 || expression.operator == "-"
         }
@@ -45,7 +45,7 @@ fn recast_binary_expression(expression: BinaryExpression) -> String {
     };
 
     let should_wrap_left = match expression.left.clone() {
-        Value::BinaryExpression(bin_exp) => {
+        BinaryPart::BinaryExpression(bin_exp) => {
             precedence(&expression.operator) > precedence(&bin_exp.operator)
         }
         _ => false,
@@ -260,10 +260,19 @@ fn recast_pipe_expression(expression: PipeExpression) -> String {
 }
 
 fn recast_unary_expression(expression: UnaryExpression) -> String {
+    let bin_part_val = match expression.argument {
+        BinaryPart::Literal(literal) => Value::Literal(literal),
+        BinaryPart::Identifier(identifier) => Value::Identifier(identifier),
+        BinaryPart::BinaryExpression(binary_expression) => {
+            Value::BinaryExpression(binary_expression)
+        }
+        BinaryPart::CallExpression(call_expression) => Value::CallExpression(call_expression),
+        BinaryPart::UnaryExpression(unary_expression) => Value::UnaryExpression(unary_expression),
+    };
     format!(
         "{}{}",
         expression.operator,
-        recast_value(expression.argument, "".to_string(), false)
+        recast_value(bin_part_val, "".to_string(), false)
     )
 }
 

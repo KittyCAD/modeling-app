@@ -33,7 +33,15 @@ pub enum Value {
     UnaryExpression(Box<UnaryExpression>),
 }
 
-pub type BinaryPart = Value;
+#[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(tag = "type")]
+pub enum BinaryPart {
+    Literal(Box<Literal>),
+    Identifier(Box<Identifier>),
+    BinaryExpression(Box<BinaryExpression>),
+    CallExpression(Box<CallExpression>),
+    UnaryExpression(Box<UnaryExpression>),
+}
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct NoneCodeNode {
