@@ -1,10 +1,7 @@
-extern crate lazy_static;
-extern crate regex;
-
-use wasm_bindgen::prelude::*;
 use lazy_static::lazy_static;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
+use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 #[derive(Debug, PartialEq, Eq, Copy, Clone, Deserialize, Serialize)]

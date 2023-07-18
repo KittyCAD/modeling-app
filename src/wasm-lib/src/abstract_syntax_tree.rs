@@ -1,11 +1,12 @@
+//! Data types for the AST.
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Program {
     pub start: usize,
     pub end: usize,
     pub body: Vec<BodyItem>,
-    #[serde(rename = "nonCodeMeta")]
     pub non_code_meta: NoneCodeMeta,
 }
 
@@ -51,14 +52,14 @@ pub struct NoneCodeNode {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct NoneCodeMeta {
-    #[serde(rename = "noneCodeNodes")]
     // TODO change to std::collections::HashMap<usize, NoneCodeNode>,
     // the typing in TS of `{ [statementIndex: number]: NoneCodeNode }` gets
     // serialized to `{ [statementIndex: string]: NoneCodeNode }`
     // using string here is the fix, but really it shouldn't be a string
     pub none_code_nodes: std::collections::HashMap<String, NoneCodeNode>,
-    pub start: Option<NoneCodeNode>
+    pub start: Option<NoneCodeNode>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -184,11 +185,11 @@ pub struct UnaryExpression {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct PipeExpression {
     pub start: usize,
     pub end: usize,
     pub body: Vec<Value>,
-    #[serde(rename = "nonCodeMeta")]
     pub non_code_meta: NoneCodeMeta,
 }
 
@@ -202,11 +203,11 @@ pub struct FunctionExpression {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct BlockStatement {
     pub start: usize,
     pub end: usize,
     pub body: Vec<BodyItem>,
-    #[serde(rename = "nonCodeMeta")]
     pub non_code_meta: NoneCodeMeta,
 }
 

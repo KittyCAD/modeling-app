@@ -1,3 +1,5 @@
+//! Generates source code from the AST.
+//! The inverse of parsing (which generates an AST from the source code)
 use wasm_bindgen::prelude::*;
 
 use crate::abstract_syntax_tree::{
@@ -234,10 +236,9 @@ fn recast_pipe_expression(expression: PipeExpression) -> String {
         .iter()
         .enumerate()
         .map(|(index, statement)| {
-            let mut str = "".to_string();
             let mut indentation = "  ".to_string();
             let mut maybe_line_break = "\n".to_string();
-            str = recast_value(statement.clone(), indentation.clone(), true);
+            let mut str = recast_value(statement.clone(), indentation.clone(), true);
             let non_code_meta = expression.non_code_meta.clone();
             if let Some(non_code_meta_value) = non_code_meta.none_code_nodes.get(&index.to_string())
             {
@@ -276,12 +277,7 @@ fn recast_unary_expression(expression: UnaryExpression) -> String {
     )
 }
 
-pub fn recast(
-    ast: Program,
-    previous_written_code: String,
-    indentation: String,
-    is_with_block: bool,
-) -> String {
+pub fn recast(ast: Program, indentation: String, is_with_block: bool) -> String {
     ast.body
         .iter()
         .map(|statement| match statement.clone() {
@@ -321,7 +317,6 @@ pub fn recast(
                     recast_argument(return_statement.argument.clone(), "".to_string(), false)
                 )
             }
-            _ => "Statement".to_string(),
         })
         .enumerate()
         .map(|(index, recast_str)| {
@@ -374,7 +369,7 @@ pub fn recast(
                     }
                     None => "".to_string(),
                 };
-            if (!is_legit_custom_whitespace_or_comment(custom_white_space_or_comment.clone())) {
+            if !is_legit_custom_whitespace_or_comment(custom_white_space_or_comment.clone()) {
                 custom_white_space_or_comment = "".to_string();
             }
             let end_string = if custom_white_space_or_comment.len() > 0 {
@@ -406,7 +401,6 @@ pub fn recast_function(expression: FunctionExpression) -> String {
                 non_code_meta: expression.body.non_code_meta
             },
             "".to_string(),
-            "".to_string(),
             true
         )
     )
@@ -434,5 +428,5 @@ pub fn recast_js(json_str: &str) -> String {
         }
     };
 
-    recast(ast, "".to_string(), "".to_string(), false)
+    recast(ast, "".to_string(), false)
 }
