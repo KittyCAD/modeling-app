@@ -83,7 +83,7 @@ fn recast_value(node: Value, _indentation: String, is_in_pipe_expression: bool) 
         Value::ObjectExpression(obj_exp) => {
             recast_object_expression(*obj_exp, indentation, is_in_pipe_expression)
         }
-        Value::MemberExpression(mem_exp) => recast_member_expression(*mem_exp, indentation),
+        Value::MemberExpression(mem_exp) => recast_member_expression(*mem_exp),
         Value::Literal(literal) => recast_literal(*literal),
         Value::FunctionExpression(func_exp) => recast_function(*func_exp),
         Value::CallExpression(call_exp) => {
@@ -210,7 +210,7 @@ fn recast_argument(argument: Value, indentation: String, is_in_pipe_expression: 
     }
 }
 
-fn recast_member_expression(expression: MemberExpression, indentation: String) -> String {
+fn recast_member_expression(expression: MemberExpression) -> String {
     let key_str = match expression.property {
         MemberProperty::Identifier(identifier) => {
             if expression.computed {
@@ -224,7 +224,7 @@ fn recast_member_expression(expression: MemberExpression, indentation: String) -
 
     match expression.object {
         MemberObject::MemberExpression(member_exp) => {
-            recast_member_expression(*member_exp, indentation) + key_str.as_str()
+            recast_member_expression(*member_exp) + key_str.as_str()
         }
         MemberObject::Identifier(identifier) => identifier.name + key_str.as_str(),
     }
