@@ -239,7 +239,8 @@ fn recast_pipe_expression(expression: PipeExpression) -> String {
             let mut maybe_line_break = "\n".to_string();
             str = recast_value(statement.clone(), indentation.clone(), true);
             let non_code_meta = expression.non_code_meta.clone();
-            if let Some(non_code_meta_value) = non_code_meta.none_code_nodes.get(&index) {
+            if let Some(non_code_meta_value) = non_code_meta.none_code_nodes.get(&index.to_string())
+            {
                 if non_code_meta_value.value != " " {
                     str += non_code_meta_value.value.as_str();
                     indentation = "".to_string();
@@ -320,8 +321,10 @@ pub fn recast(
 
             // determine the value of startString
             let last_white_space_or_comment = if index > 0 {
-                let tmp = if let Some(non_code_node) =
-                    ast.non_code_meta.none_code_nodes.get(&(index - 1))
+                let tmp = if let Some(non_code_node) = ast
+                    .non_code_meta
+                    .none_code_nodes
+                    .get(&(index - 1).to_string())
                 {
                     non_code_node.value.clone()
                 } else {
@@ -356,7 +359,7 @@ pub fn recast(
                 "\n".to_string()
             };
             let mut custom_white_space_or_comment =
-                match ast.non_code_meta.none_code_nodes.get(&index) {
+                match ast.non_code_meta.none_code_nodes.get(&index.to_string()) {
                     Some(custom_white_space_or_comment) => {
                         custom_white_space_or_comment.value.clone()
                     }

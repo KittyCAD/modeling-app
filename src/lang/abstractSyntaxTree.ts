@@ -795,7 +795,7 @@ function makePipeBody(
   tokens: Token[],
   index: number,
   previousValues: Value[] = [],
-  previousNonCodeMeta: NoneCodeMeta = {}
+  previousNonCodeMeta: NoneCodeMeta = { noneCodeNodes: {} }
 ): { body: Value[]; lastIndex: number; nonCodeMeta: NoneCodeMeta } {
   const nonCodeMeta = { ...previousNonCodeMeta }
   const currentToken = tokens[index]
@@ -819,7 +819,8 @@ function makePipeBody(
     }
   }
   if (nextPipeToken.bonusNonCodeNode) {
-    nonCodeMeta[previousValues.length] = nextPipeToken.bonusNonCodeNode
+    nonCodeMeta.noneCodeNodes[previousValues.length] =
+      nextPipeToken.bonusNonCodeNode
   }
   return makePipeBody(
     tokens,
@@ -885,7 +886,11 @@ function makeBlockStatement(
   const nextToken = { token: tokens[index + 1], index: index + 1 }
   const { body, lastIndex, nonCodeMeta } =
     nextToken.token.value === '}'
-      ? { body: [], lastIndex: nextToken.index, nonCodeMeta: {} }
+      ? {
+          body: [],
+          lastIndex: nextToken.index,
+          nonCodeMeta: { noneCodeNodes: {} },
+        }
       : makeBody({ tokens, tokenIndex: nextToken.index })
   return {
     block: {
@@ -964,7 +969,7 @@ function makeBody(
     tokenIndex?: number
   },
   previousBody: BodyItem[] = [],
-  previousNonCodeMeta: NoneCodeMeta = {}
+  previousNonCodeMeta: NoneCodeMeta = { noneCodeNodes: {} }
 ): { body: BodyItem[]; lastIndex: number; nonCodeMeta: NoneCodeMeta } {
   const nonCodeMeta = { ...previousNonCodeMeta }
   if (tokenIndex >= tokens.length) {
@@ -981,7 +986,8 @@ function makeBody(
       if (previousBody.length === 0) {
         nonCodeMeta.start = nextToken.bonusNonCodeNode
       } else {
-        nonCodeMeta[previousBody.length] = nextToken.bonusNonCodeNode
+        nonCodeMeta.noneCodeNodes[previousBody.length] =
+          nextToken.bonusNonCodeNode
       }
     }
     return makeBody(
@@ -992,7 +998,8 @@ function makeBody(
   }
   const nextToken = nextMeaningfulToken(tokens, tokenIndex)
   nextToken.bonusNonCodeNode &&
-    (nonCodeMeta[previousBody.length] = nextToken.bonusNonCodeNode)
+    (nonCodeMeta.noneCodeNodes[previousBody.length] =
+      nextToken.bonusNonCodeNode)
 
   if (
     token.type === 'word' &&
@@ -1004,7 +1011,8 @@ function makeBody(
     )
     const nextThing = nextMeaningfulToken(tokens, lastIndex)
     nextThing.bonusNonCodeNode &&
-      (nonCodeMeta[previousBody.length] = nextThing.bonusNonCodeNode)
+      (nonCodeMeta.noneCodeNodes[previousBody.length] =
+        nextThing.bonusNonCodeNode)
 
     return makeBody(
       { tokens, tokenIndex: nextThing.index },
@@ -1016,7 +1024,8 @@ function makeBody(
     const { statement, lastIndex } = makeReturnStatement(tokens, tokenIndex)
     const nextThing = nextMeaningfulToken(tokens, lastIndex)
     nextThing.bonusNonCodeNode &&
-      (nonCodeMeta[previousBody.length] = nextThing.bonusNonCodeNode)
+      (nonCodeMeta.noneCodeNodes[previousBody.length] =
+        nextThing.bonusNonCodeNode)
 
     return makeBody(
       { tokens, tokenIndex: nextThing.index },
@@ -1035,7 +1044,8 @@ function makeBody(
     )
     const nextThing = nextMeaningfulToken(tokens, lastIndex)
     if (nextThing.bonusNonCodeNode) {
-      nonCodeMeta[previousBody.length] = nextThing.bonusNonCodeNode
+      nonCodeMeta.noneCodeNodes[previousBody.length] =
+        nextThing.bonusNonCodeNode
     }
 
     return makeBody(
@@ -1050,7 +1060,8 @@ function makeBody(
     nextThing.token.type === 'operator'
   ) {
     if (nextThing.bonusNonCodeNode) {
-      nonCodeMeta[previousBody.length] = nextThing.bonusNonCodeNode
+      nonCodeMeta.noneCodeNodes[previousBody.length] =
+        nextThing.bonusNonCodeNode
     }
     const { expression, lastIndex } = makeExpressionStatement(
       tokens,

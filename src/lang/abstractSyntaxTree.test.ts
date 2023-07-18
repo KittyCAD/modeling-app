@@ -1685,15 +1685,17 @@ const key = 'c'`
       value: '\n// this is a comment\n',
     }
     const { nonCodeMeta } = abstractSyntaxTree(lexer(code))
-    expect(nonCodeMeta[0]).toEqual(nonCodeMetaInstance)
+    expect(nonCodeMeta.noneCodeNodes[0]).toEqual(nonCodeMetaInstance)
 
     // extra whitespace won't change it's position (0) or value (NB the start end would have changed though)
     const codeWithExtraStartWhitespace = '\n\n\n' + code
     const { nonCodeMeta: nonCodeMeta2 } = abstractSyntaxTree(
       lexer(codeWithExtraStartWhitespace)
     )
-    expect(nonCodeMeta2[0].value).toBe(nonCodeMetaInstance.value)
-    expect(nonCodeMeta2[0].start).not.toBe(nonCodeMetaInstance.start)
+    expect(nonCodeMeta2.noneCodeNodes[0].value).toBe(nonCodeMetaInstance.value)
+    expect(nonCodeMeta2.noneCodeNodes[0].start).not.toBe(
+      nonCodeMetaInstance.start
+    )
   })
   it('comments nested within a block statement', () => {
     const code = `const mySketch = startSketchAt([0,0])
@@ -1708,6 +1710,7 @@ const key = 'c'`
     const { body } = abstractSyntaxTree(lexer(code))
     const indexOfSecondLineToExpression = 2
     const sketchNonCodeMeta = (body as any)[0].declarations[0].init.nonCodeMeta
+      .noneCodeNodes
     expect(sketchNonCodeMeta[indexOfSecondLineToExpression]).toEqual({
       type: 'NoneCodeNode',
       start: 106,
@@ -1728,6 +1731,7 @@ const key = 'c'`
 
     const { body } = abstractSyntaxTree(lexer(code))
     const sketchNonCodeMeta = (body[0] as any).declarations[0].init.nonCodeMeta
+      .noneCodeNodes
     expect(sketchNonCodeMeta[3]).toEqual({
       type: 'NoneCodeNode',
       start: 125,

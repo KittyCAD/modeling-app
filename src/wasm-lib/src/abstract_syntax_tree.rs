@@ -11,6 +11,7 @@ pub struct Program {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(tag = "type")]
 pub enum BodyItem {
     ExpressionStatement(ExpressionStatement),
     VariableDeclaration(VariableDeclaration),
@@ -18,6 +19,7 @@ pub enum BodyItem {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(tag = "type")]
 pub enum Value {
     Literal(Box<Literal>),
     Identifier(Box<Identifier>),
@@ -44,7 +46,11 @@ pub struct NoneCodeNode {
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct NoneCodeMeta {
     #[serde(rename = "noneCodeNodes")]
-    pub none_code_nodes: std::collections::HashMap<usize, NoneCodeNode>,
+    // TODO change to std::collections::HashMap<usize, NoneCodeNode>,
+    // the typing in TS of `{ [statementIndex: number]: NoneCodeNode }` gets
+    // serialized to `{ [statementIndex: string]: NoneCodeNode }`
+    // using string here is the fix, but really it shouldn't be a string
+    pub none_code_nodes: std::collections::HashMap<String, NoneCodeNode>,
     pub start: Option<NoneCodeNode>
 }
 
@@ -124,12 +130,14 @@ pub struct ObjectProperty {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(tag = "type")]
 pub enum MemberObject {
     MemberExpression(Box<MemberExpression>),
     Identifier(Box<Identifier>),
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
+#[serde(tag = "type")]
 pub enum MemberProperty {
     Identifier(Box<Identifier>),
     Literal(Box<Literal>),
