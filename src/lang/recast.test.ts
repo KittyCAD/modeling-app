@@ -8,7 +8,7 @@ import { initPromise } from './rust'
 beforeAll(() => initPromise)
 
 describe('recast', () => {
-  it('recasts a simple program', async () => {
+  it('recasts a simple program', () => {
     const code = '1 + 2'
     const { ast } = code2ast(code)
     const recasted = recast(ast)
