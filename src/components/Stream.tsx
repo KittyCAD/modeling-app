@@ -31,17 +31,20 @@ export const Stream = () => {
   const handleMouseMove: MouseEventHandler<HTMLVideoElement> = ({
     clientX,
     clientY,
+    ctrlKey,
   }) => {
     if (!videoRef.current) return
     if (!cmdId.current) return
     const { left, top } = videoRef.current.getBoundingClientRect()
     const x = clientX - left
     const y = clientY - top
+    const interaction = ctrlKey ? 'pan' : 'rotate'
+
     debounceSocketSend({
       type: 'ModelingCmdReq',
       cmd: {
         CameraDragMove: {
-          interaction: 'rotate',
+          interaction,
           window: {
             x: x,
             y: y,
@@ -56,6 +59,7 @@ export const Stream = () => {
   const handleMouseDown: MouseEventHandler<HTMLVideoElement> = ({
     clientX,
     clientY,
+    ctrlKey,
   }) => {
     if (!videoRef.current) return
     const { left, top } = videoRef.current.getBoundingClientRect()
@@ -66,11 +70,13 @@ export const Stream = () => {
     const newId = uuidv4()
     cmdId.current = newId
 
+    const interaction = ctrlKey ? 'pan' : 'rotate'
+
     engineCommandManager?.sendSceneCommand({
       type: 'ModelingCmdReq',
       cmd: {
         CameraDragStart: {
-          interaction: 'rotate',
+          interaction,
           window: {
             x: x,
             y: y,
@@ -84,6 +90,7 @@ export const Stream = () => {
   const handleMouseUp: MouseEventHandler<HTMLVideoElement> = ({
     clientX,
     clientY,
+    ctrlKey,
   }) => {
     if (!videoRef.current) return
     const { left, top } = videoRef.current.getBoundingClientRect()
@@ -94,11 +101,13 @@ export const Stream = () => {
       return
     }
 
+    const interaction = ctrlKey ? 'pan' : 'rotate'
+
     engineCommandManager?.sendSceneCommand({
       type: 'ModelingCmdReq',
       cmd: {
         CameraDragEnd: {
-          interaction: 'rotate',
+          interaction,
           window: {
             x: x,
             y: y,
@@ -123,6 +132,8 @@ export const Stream = () => {
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
+        onContextMenu={(e) => e.preventDefault()}
+        onContextMenuCapture={(e) => e.preventDefault()}
       />
     </div>
   )
