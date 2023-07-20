@@ -6,7 +6,7 @@ module.exports = {
     "^.+\\.(js|jsx)$": "babel-jest",
   },
   transformIgnorePatterns: [
-    "//node_modules/(?!(ws|allotment|@tauri-apps/api|wasm-lib)/)",
+    "//node_modules/(?!(allotment|@tauri-apps/api)/)",
   ],
   moduleNameMapper: {
     '^allotment$': 'allotment/dist/legacy',

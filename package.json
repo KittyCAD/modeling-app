@@ -43,7 +43,7 @@
     "build:both": "vite build",
     "build:both:local": "yarn build:wasm && vite build",
     "test": "jest",
-    "test:nowatch": "jest --watchAll=false --coverage=true --forceExit",
+    "test:nowatch": "jest --watchAll=false --forceExit",
     "test:rust": "(cd src/wasm-lib && cargo test && cargo clippy)",
     "test:cov": "jest --watchAll=false --coverage=true --forceExit",
     "simpleserver:ci": "http-server ./public --cors -p 3000 &",
