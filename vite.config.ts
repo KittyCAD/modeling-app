@@ -16,4 +16,7 @@ export default defineConfig({
     viteTsconfigPaths(),
     eslint(),
   ],
+  test: {
+    globals: true,
+  }
 })
