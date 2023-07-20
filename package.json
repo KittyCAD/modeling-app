@@ -25,6 +25,7 @@
     "react-hot-toast": "^2.4.1",
     "react-json-view": "^1.21.3",
     "react-modal-promise": "^1.0.2",
+    "react-router-dom": "^6.14.2",
     "sketch-helpers": "^0.0.3",
     "swr": "^2.0.4",
     "toml": "^3.0.0",
