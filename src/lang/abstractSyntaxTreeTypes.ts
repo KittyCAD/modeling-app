@@ -64,7 +64,7 @@ export interface NoneCodeNode extends GeneralStatement {
 
 export interface NoneCodeMeta {
   // Stores the whitespace/comments that go after the statement who's index we're using here
-  [statementIndex: number]: NoneCodeNode
+  noneCodeNodes: { [statementIndex: number]: NoneCodeNode }
   // Which is why we also need `start` for and whitespace at the start of the file/block
   start?: NoneCodeNode
 }

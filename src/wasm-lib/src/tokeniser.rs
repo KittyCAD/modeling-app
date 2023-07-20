@@ -1,10 +1,7 @@
-extern crate lazy_static;
-extern crate regex;
-
-use wasm_bindgen::prelude::*;
 use lazy_static::lazy_static;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
+use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 #[derive(Debug, PartialEq, Eq, Copy, Clone, Deserialize, Serialize)]
@@ -37,7 +34,12 @@ pub struct Token {
 impl Token {
     #[wasm_bindgen(constructor)]
     pub fn new(token_type: TokenType, value: String, start: usize, end: usize) -> Token {
-        Token { token_type, value, start, end }
+        Token {
+            token_type,
+            value,
+            start,
+            end,
+        }
     }
 
     #[wasm_bindgen(getter)]
@@ -56,10 +58,11 @@ lazy_static! {
     static ref WHITESPACE: Regex = Regex::new(r"\s+").unwrap();
     static ref WORD: Regex = Regex::new(r"^[a-zA-Z_][a-zA-Z0-9_]*").unwrap();
     static ref STRING: Regex = Regex::new(r#"^"([^"\\]|\\.)*"|'([^'\\]|\\.)*'"#).unwrap();
-    static ref OPERATOR: Regex = Regex::new(r"^(>=|<=|==|=>|!= |\|>|\*|\+|-|/|%|=|<|>|\||\^)").unwrap();
+    static ref OPERATOR: Regex =
+        Regex::new(r"^(>=|<=|==|=>|!= |\|>|\*|\+|-|/|%|=|<|>|\||\^)").unwrap();
     static ref BLOCK_START: Regex = Regex::new(r"^\{").unwrap();
     static ref BLOCK_END: Regex = Regex::new(r"^\}").unwrap();
-    static ref PARAN_START: Regex = Regex::new(r"^\(").unwrap();    
+    static ref PARAN_START: Regex = Regex::new(r"^\(").unwrap();
     static ref PARAN_END: Regex = Regex::new(r"^\)").unwrap();
     static ref ARRAY_START: Regex = Regex::new(r"^\[").unwrap();
     static ref ARRAY_END: Regex = Regex::new(r"^\]").unwrap();
@@ -136,7 +139,6 @@ fn make_token(token_type: TokenType, value: &str, start: usize) -> Token {
         end: start + value.len(),
     }
 }
-
 
 fn return_token_at_index(str: &str, start_index: usize) -> Option<Token> {
     let str_from_index = &str[start_index..];
@@ -261,13 +263,17 @@ fn return_token_at_index(str: &str, start_index: usize) -> Option<Token> {
 }
 
 fn lexer(str: &str) -> Vec<Token> {
-    fn recursively_tokenise(str: &str, current_index: usize, previous_tokens: Vec<Token>) -> Vec<Token> {
+    fn recursively_tokenise(
+        str: &str,
+        current_index: usize,
+        previous_tokens: Vec<Token>,
+    ) -> Vec<Token> {
         if current_index >= str.len() {
             return previous_tokens;
         }
         let token = return_token_at_index(str, current_index);
         if token.is_none() {
-            return recursively_tokenise(str, current_index + 1, previous_tokens)
+            return recursively_tokenise(str, current_index + 1, previous_tokens);
         }
         let token = token.unwrap();
         let mut new_tokens = previous_tokens;
@@ -283,10 +289,7 @@ fn lexer(str: &str) -> Vec<Token> {
 #[wasm_bindgen]
 pub fn lexer_js(str: &str) -> JsValue {
     let tokens = lexer(str);
-    JsValue::from_str(
-        &serde_json::to_string(&tokens)
-            .expect("failed to serialize lexer output"),
-    )
+    JsValue::from_str(&serde_json::to_string(&tokens).expect("failed to serialize lexer output"))
 }
 
 #[cfg(test)]
@@ -295,210 +298,215 @@ mod tests {
 
     #[test]
     fn is_number_test() {
-        assert_eq!(is_number("1"), true);
-        assert_eq!(is_number("1 abc"), true);
-        assert_eq!(is_number("1abc"), true);
-        assert_eq!(is_number("1.1"), true);
-        assert_eq!(is_number("1.1 abc"), true);
-        assert_eq!(is_number("a"), false);
+        assert!(is_number("1"));
+        assert!(is_number("1 abc"));
+        assert!(is_number("1abc"));
+        assert!(is_number("1.1"));
+        assert!(is_number("1.1 abc"));
+        assert!(!is_number("a"));
 
-        
-        assert_eq!(is_number("1"), true);
-        assert_eq!(is_number("5?"), true);
-        assert_eq!(is_number("5 + 6"), true);
-        assert_eq!(is_number("5 + a"), true);
-        assert_eq!(is_number("-5"), true);
-        assert_eq!(is_number("5.5"), true);
-        assert_eq!(is_number("-5.5"), true);
+        assert!(is_number("1"));
+        assert!(is_number("5?"));
+        assert!(is_number("5 + 6"));
+        assert!(is_number("5 + a"));
+        assert!(is_number("-5"));
+        assert!(is_number("5.5"));
+        assert!(is_number("-5.5"));
 
-        assert_eq!(is_number("a"), false);
-        assert_eq!(is_number("?"), false);
-        assert_eq!(is_number("?5"), false);
-
+        assert!(!is_number("a"));
+        assert!(!is_number("?"));
+        assert!(!is_number("?5"));
     }
 
     #[test]
     fn is_whitespace_test() {
-        assert_eq!(is_whitespace(" "), true);
-        assert_eq!(is_whitespace("  "), true);
-        assert_eq!(is_whitespace(" a"), true);
-        assert_eq!(is_whitespace("a "), true);
+        assert!(is_whitespace(" "));
+        assert!(is_whitespace("  "));
+        assert!(is_whitespace(" a"));
+        assert!(is_whitespace("a "));
 
-        assert_eq!(is_whitespace("a"), false);
-        assert_eq!(is_whitespace("?"), false);
+        assert!(!is_whitespace("a"));
+        assert!(!is_whitespace("?"));
     }
 
     #[test]
     fn is_word_test() {
-        assert_eq!(is_word("a"), true);
-        assert_eq!(is_word("a "), true);
-        assert_eq!(is_word("a5"), true);
-        assert_eq!(is_word("a5a"), true);
+        assert!(is_word("a"));
+        assert!(is_word("a "));
+        assert!(is_word("a5"));
+        assert!(is_word("a5a"));
 
-        assert_eq!(is_word("5"), false);
-        assert_eq!(is_word("5a"), false);
-        assert_eq!(is_word("5a5"), false);
+        assert!(!is_word("5"));
+        assert!(!is_word("5a"));
+        assert!(!is_word("5a5"));
     }
 
     #[test]
     fn is_string_test() {
-        assert_eq!(is_string("\"\""), true);
-        assert_eq!(is_string("\"a\""), true);
-        assert_eq!(is_string("\"a\" "), true);
-        assert_eq!(is_string("\"a\"5"), true);
-        assert_eq!(is_string("'a'5"), true);
-        assert_eq!(is_string("\"with escaped \\\" backslash\""), true);
+        assert!(is_string("\"\""));
+        assert!(is_string("\"a\""));
+        assert!(is_string("\"a\" "));
+        assert!(is_string("\"a\"5"));
+        assert!(is_string("'a'5"));
+        assert!(is_string("\"with escaped \\\" backslash\""));
 
-        assert_eq!(is_string("\""), false);
-        assert_eq!(is_string("\"a"), false);
-        assert_eq!(is_string("a\""), false);
-        assert_eq!(is_string(" \"a\""), false);
-        assert_eq!(is_string("5\"a\""), false);
-        assert_eq!(is_string("a + 'str'"), false);
+        assert!(!is_string("\""));
+        assert!(!is_string("\"a"));
+        assert!(!is_string("a\""));
+        assert!(!is_string(" \"a\""));
+        assert!(!is_string("5\"a\""));
+        assert!(!is_string("a + 'str'"));
     }
 
     #[test]
     fn is_operator_test() {
-        assert_eq!(is_operator("+"), true);
-        assert_eq!(is_operator("+ "), true);
-        assert_eq!(is_operator("-"), true);
-        assert_eq!(is_operator("<="), true);
-        assert_eq!(is_operator("<= "), true);
-        assert_eq!(is_operator(">="), true);
-        assert_eq!(is_operator(">= "), true);
-        assert_eq!(is_operator("> "), true);
-        assert_eq!(is_operator("< "), true);
-        assert_eq!(is_operator("| "), true);
-        assert_eq!(is_operator("|> "), true);
-        assert_eq!(is_operator("^ "), true);
-        assert_eq!(is_operator("% "), true);
-        assert_eq!(is_operator("+* "), true);
+        assert!(is_operator("+"));
+        assert!(is_operator("+ "));
+        assert!(is_operator("-"));
+        assert!(is_operator("<="));
+        assert!(is_operator("<= "));
+        assert!(is_operator(">="));
+        assert!(is_operator(">= "));
+        assert!(is_operator("> "));
+        assert!(is_operator("< "));
+        assert!(is_operator("| "));
+        assert!(is_operator("|> "));
+        assert!(is_operator("^ "));
+        assert!(is_operator("% "));
+        assert!(is_operator("+* "));
 
-        assert_eq!(is_operator("5 + 5"), false);
-        assert_eq!(is_operator("a"), false);
-        assert_eq!(is_operator("a+"), false);
-        assert_eq!(is_operator("a+5"), false);
-        assert_eq!(is_operator("5a+5"), false);
-        assert_eq!(is_operator(", newVar"), false);
-        assert_eq!(is_operator(","), false);
+        assert!(!is_operator("5 + 5"));
+        assert!(!is_operator("a"));
+        assert!(!is_operator("a+"));
+        assert!(!is_operator("a+5"));
+        assert!(!is_operator("5a+5"));
+        assert!(!is_operator(", newVar"));
+        assert!(!is_operator(","));
     }
 
     #[test]
     fn is_block_start_test() {
-        assert_eq!(is_block_start("{"), true);
-        assert_eq!(is_block_start("{ "), true);
-        assert_eq!(is_block_start("{5"), true);
-        assert_eq!(is_block_start("{a"), true);
-        assert_eq!(is_block_start("{5 "), true);
+        assert!(is_block_start("{"));
+        assert!(is_block_start("{ "));
+        assert!(is_block_start("{5"));
+        assert!(is_block_start("{a"));
+        assert!(is_block_start("{5 "));
 
-        assert_eq!(is_block_start("5"), false);
-        assert_eq!(is_block_start("5 + 5"), false);
-        assert_eq!(is_block_start("5{ + 5"), false);
-        assert_eq!(is_block_start("a{ + 5"), false);
-        assert_eq!(is_block_start(" { + 5"), false);
+        assert!(!is_block_start("5"));
+        assert!(!is_block_start("5 + 5"));
+        assert!(!is_block_start("5{ + 5"));
+        assert!(!is_block_start("a{ + 5"));
+        assert!(!is_block_start(" { + 5"));
     }
 
     #[test]
     fn is_block_end_test() {
-        assert_eq!(is_block_end("}"), true);
-        assert_eq!(is_block_end("} "), true);
-        assert_eq!(is_block_end("}5"), true);
-        assert_eq!(is_block_end("}5 "), true);
+        assert!(is_block_end("}"));
+        assert!(is_block_end("} "));
+        assert!(is_block_end("}5"));
+        assert!(is_block_end("}5 "));
 
-        assert_eq!(is_block_end("5"), false);
-        assert_eq!(is_block_end("5 + 5"), false);
-        assert_eq!(is_block_end("5} + 5"), false);
-        assert_eq!(is_block_end(" } + 5"), false);
+        assert!(!is_block_end("5"));
+        assert!(!is_block_end("5 + 5"));
+        assert!(!is_block_end("5} + 5"));
+        assert!(!is_block_end(" } + 5"));
     }
 
     #[test]
     fn is_paran_start_test() {
-        assert_eq!(is_paran_start("("), true);
-        assert_eq!(is_paran_start("( "), true);
-        assert_eq!(is_paran_start("(5"), true);
-        assert_eq!(is_paran_start("(5 "), true);
-        assert_eq!(is_paran_start("(5 + 5"), true);
-        assert_eq!(is_paran_start("(5 + 5)"), true);
-        assert_eq!(is_paran_start("(5 + 5) "), true);
+        assert!(is_paran_start("("));
+        assert!(is_paran_start("( "));
+        assert!(is_paran_start("(5"));
+        assert!(is_paran_start("(5 "));
+        assert!(is_paran_start("(5 + 5"));
+        assert!(is_paran_start("(5 + 5)"));
+        assert!(is_paran_start("(5 + 5) "));
 
-        assert_eq!(is_paran_start("5"), false);
-        assert_eq!(is_paran_start("5 + 5"), false);
-        assert_eq!(is_paran_start("5( + 5)"), false);
-        assert_eq!(is_paran_start(" ( + 5)"), false);
+        assert!(!is_paran_start("5"));
+        assert!(!is_paran_start("5 + 5"));
+        assert!(!is_paran_start("5( + 5)"));
+        assert!(!is_paran_start(" ( + 5)"));
     }
 
     #[test]
     fn is_paran_end_test() {
-        assert_eq!(is_paran_end(")"), true);
-        assert_eq!(is_paran_end(") "), true);
-        assert_eq!(is_paran_end(")5"), true);
-        assert_eq!(is_paran_end(")5 "), true);
+        assert!(is_paran_end(")"));
+        assert!(is_paran_end(") "));
+        assert!(is_paran_end(")5"));
+        assert!(is_paran_end(")5 "));
 
-        assert_eq!(is_paran_end("5"), false);
-        assert_eq!(is_paran_end("5 + 5"), false);
-        assert_eq!(is_paran_end("5) + 5"), false);
-        assert_eq!(is_paran_end(" ) + 5"), false);
+        assert!(!is_paran_end("5"));
+        assert!(!is_paran_end("5 + 5"));
+        assert!(!is_paran_end("5) + 5"));
+        assert!(!is_paran_end(" ) + 5"));
     }
 
     #[test]
     fn is_comma_test() {
-        assert_eq!(is_comma(","), true);
-        assert_eq!(is_comma(", "), true);
-        assert_eq!(is_comma(",5"), true);
-        assert_eq!(is_comma(",5 "), true);
+        assert!(is_comma(","));
+        assert!(is_comma(", "));
+        assert!(is_comma(",5"));
+        assert!(is_comma(",5 "));
 
-        assert_eq!(is_comma("5"), false);
-        assert_eq!(is_comma("5 + 5"), false);
-        assert_eq!(is_comma("5, + 5"), false);
-        assert_eq!(is_comma(" , + 5"), false);
+        assert!(!is_comma("5"));
+        assert!(!is_comma("5 + 5"));
+        assert!(!is_comma("5, + 5"));
+        assert!(!is_comma(" , + 5"));
     }
 
     #[test]
     fn is_line_comment_test() {
-        assert_eq!(is_line_comment("//"), true);
-        assert_eq!(is_line_comment("// "), true);
-        assert_eq!(is_line_comment("//5"), true);
-        assert_eq!(is_line_comment("//5 "), true);
+        assert!(is_line_comment("//"));
+        assert!(is_line_comment("// "));
+        assert!(is_line_comment("//5"));
+        assert!(is_line_comment("//5 "));
 
-        assert_eq!(is_line_comment("5"), false);
-        assert_eq!(is_line_comment("5 + 5"), false);
-        assert_eq!(is_line_comment("5// + 5"), false);
-        assert_eq!(is_line_comment(" // + 5"), false);
+        assert!(!is_line_comment("5"));
+        assert!(!is_line_comment("5 + 5"));
+        assert!(!is_line_comment("5// + 5"));
+        assert!(!is_line_comment(" // + 5"));
     }
 
     #[test]
     fn is_block_comment_test() {
-        assert_eq!(is_block_comment("/*  */"), true);
-        assert_eq!(is_block_comment("/***/"), true);
-        assert_eq!(is_block_comment("/*5*/"), true);
-        assert_eq!(is_block_comment("/*5 */"), true);
+        assert!(is_block_comment("/*  */"));
+        assert!(is_block_comment("/***/"));
+        assert!(is_block_comment("/*5*/"));
+        assert!(is_block_comment("/*5 */"));
 
-        assert_eq!(is_block_comment("/*"), false);
-        assert_eq!(is_block_comment("5"), false);
-        assert_eq!(is_block_comment("5 + 5"), false);
-        assert_eq!(is_block_comment("5/* + 5"), false);
-        assert_eq!(is_block_comment(" /* + 5"), false);
+        assert!(!is_block_comment("/*"));
+        assert!(!is_block_comment("5"));
+        assert!(!is_block_comment("5 + 5"));
+        assert!(!is_block_comment("5/* + 5"));
+        assert!(!is_block_comment(" /* + 5"));
     }
 
     #[test]
     fn make_token_test() {
-        assert_eq!(make_token(TokenType::Word, &"const".to_string(), 56), Token {
-            token_type: TokenType::Word,
-            value: "const".to_string(),
-            start: 56,
-            end: 61,
-        });
+        assert_eq!(
+            make_token(TokenType::Word, "const", 56),
+            Token {
+                token_type: TokenType::Word,
+                value: "const".to_string(),
+                start: 56,
+                end: 61,
+            }
+        );
     }
 
     #[test]
     fn return_token_at_index_test() {
-        assert_eq!(return_token_at_index("const", 0), Some(Token {
-            token_type: TokenType::Word,
-            value: "const".to_string(),
-            start: 0,
-            end: 5,
-        }));
-        assert_eq!(return_token_at_index("  4554", 2), 
+        assert_eq!(
+            return_token_at_index("const", 0),
+            Some(Token {
+                token_type: TokenType::Word,
+                value: "const".to_string(),
+                start: 0,
+                end: 5,
+            })
+        );
+        assert_eq!(
+            return_token_at_index("  4554", 2),
             Some(Token {
                 token_type: TokenType::Number,
                 value: "4554".to_string(),
@@ -510,93 +518,99 @@ mod tests {
 
     #[test]
     fn lexer_test() {
-        assert_eq!(lexer("const a=5"), vec![
-            Token {
-                token_type: TokenType::Word,
-                value: "const".to_string(),
-                start: 0,
-                end: 5,
-            },
-            Token {
-                token_type: TokenType::Whitespace,
-                value: " ".to_string(),
-                start: 5,
-                end: 6,
-            },
-            Token {
-                token_type: TokenType::Word,
-                value: "a".to_string(),
-                start: 6,
-                end: 7,
-            },
-            Token {
-                token_type: TokenType::Operator,
-                value: "=".to_string(),
-                start: 7,
-                end: 8,
-            },
-            Token {
-                token_type: TokenType::Number,
-                value: "5".to_string(),
-                start: 8,
-                end: 9,
-            },
-        ]);
-        assert_eq!(lexer("54 + 22500 + 6"), vec![
-            Token {
-                token_type: TokenType::Number,
-                value: "54".to_string(),
-                start: 0,
-                end: 2,
-            },
-            Token {
-                token_type: TokenType::Whitespace,
-                value: " ".to_string(),
-                start: 2,
-                end: 3,
-            },
-            Token {
-                token_type: TokenType::Operator,
-                value: "+".to_string(),
-                start: 3,
-                end: 4,
-            },
-            Token {
-                token_type: TokenType::Whitespace,
-                value: " ".to_string(),
-                start: 4,
-                end: 5,
-            },
-            Token {
-                token_type: TokenType::Number,
-                value: "22500".to_string(),
-                start: 5,
-                end: 10,
-            },
-            Token {
-                token_type: TokenType::Whitespace,
-                value: " ".to_string(),
-                start: 10,
-                end: 11,
-            },
-            Token {
-                token_type: TokenType::Operator,
-                value: "+".to_string(),
-                start: 11,
-                end: 12,
-            },
-            Token {
-                token_type: TokenType::Whitespace,
-                value: " ".to_string(),
-                start: 12,
-                end: 13,
-            },
-            Token {
-                token_type: TokenType::Number,
-                value: "6".to_string(),
-                start: 13,
-                end: 14,
-            },
-        ]);
+        assert_eq!(
+            lexer("const a=5"),
+            vec![
+                Token {
+                    token_type: TokenType::Word,
+                    value: "const".to_string(),
+                    start: 0,
+                    end: 5,
+                },
+                Token {
+                    token_type: TokenType::Whitespace,
+                    value: " ".to_string(),
+                    start: 5,
+                    end: 6,
+                },
+                Token {
+                    token_type: TokenType::Word,
+                    value: "a".to_string(),
+                    start: 6,
+                    end: 7,
+                },
+                Token {
+                    token_type: TokenType::Operator,
+                    value: "=".to_string(),
+                    start: 7,
+                    end: 8,
+                },
+                Token {
+                    token_type: TokenType::Number,
+                    value: "5".to_string(),
+                    start: 8,
+                    end: 9,
+                },
+            ]
+        );
+        assert_eq!(
+            lexer("54 + 22500 + 6"),
+            vec![
+                Token {
+                    token_type: TokenType::Number,
+                    value: "54".to_string(),
+                    start: 0,
+                    end: 2,
+                },
+                Token {
+                    token_type: TokenType::Whitespace,
+                    value: " ".to_string(),
+                    start: 2,
+                    end: 3,
+                },
+                Token {
+                    token_type: TokenType::Operator,
+                    value: "+".to_string(),
+                    start: 3,
+                    end: 4,
+                },
+                Token {
+                    token_type: TokenType::Whitespace,
+                    value: " ".to_string(),
+                    start: 4,
+                    end: 5,
+                },
+                Token {
+                    token_type: TokenType::Number,
+                    value: "22500".to_string(),
+                    start: 5,
+                    end: 10,
+                },
+                Token {
+                    token_type: TokenType::Whitespace,
+                    value: " ".to_string(),
+                    start: 10,
+                    end: 11,
+                },
+                Token {
+                    token_type: TokenType::Operator,
+                    value: "+".to_string(),
+                    start: 11,
+                    end: 12,
+                },
+                Token {
+                    token_type: TokenType::Whitespace,
+                    value: " ".to_string(),
+                    start: 12,
+                    end: 13,
+                },
+                Token {
+                    token_type: TokenType::Number,
+                    value: "6".to_string(),
+                    start: 13,
+                    end: 14,
+                },
+            ]
+        );
     }
 }
