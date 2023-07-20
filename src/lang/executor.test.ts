@@ -5,7 +5,6 @@ import { lexer } from './tokeniser'
 import { ProgramMemory, Path, SketchGroup } from './executor'
 import { initPromise } from './rust'
 import { enginelessExecutor } from '../lib/testHelpers'
-import { vi } from 'vitest'
 
 beforeAll(() => initPromise)
 
