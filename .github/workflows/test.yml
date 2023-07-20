@@ -15,7 +15,6 @@ jobs:
       - run: yarn install
       - run: yarn build:wasm
       - run: yarn simpleserver:ci
-      - run: npm pkg delete type
       - run: yarn test:nowatch
       - run: yarn test:cov
       - run: yarn test:rust
