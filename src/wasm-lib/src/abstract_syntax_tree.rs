@@ -51,15 +51,37 @@ pub struct NoneCodeNode {
     pub value: String,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct NoneCodeMeta {
-    // TODO change to std::collections::HashMap<usize, NoneCodeNode>,
-    // the typing in TS of `{ [statementIndex: number]: NoneCodeNode }` gets
-    // serialized to `{ [statementIndex: string]: NoneCodeNode }`
-    // using string here is the fix, but really it shouldn't be a string
-    pub none_code_nodes: std::collections::HashMap<String, NoneCodeNode>,
+    pub none_code_nodes: std::collections::HashMap<usize, NoneCodeNode>,
     pub start: Option<NoneCodeNode>,
+}
+
+// implement Deserialize manually because we to force the keys of none_code_nodes to be usize
+// and by default the ts type { [statementIndex: number]: NoneCodeNode } serializes to a string i.e. "0", "1", etc.
+impl<'de> Deserialize<'de> for NoneCodeMeta {
+    fn deserialize<D>(deserializer: D) -> Result<NoneCodeMeta, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        #[derive(Deserialize)]
+        #[serde(rename_all = "camelCase")]
+        struct NoneCodeMetaHelper {
+            none_code_nodes: std::collections::HashMap<String, NoneCodeNode>,
+            start: Option<NoneCodeNode>,
+        }
+
+        let helper = NoneCodeMetaHelper::deserialize(deserializer)?;
+        let mut none_code_nodes = std::collections::HashMap::new();
+        for (key, value) in helper.none_code_nodes {
+            none_code_nodes.insert(key.parse().unwrap(), value);
+        }
+        Ok(NoneCodeMeta {
+            none_code_nodes,
+            start: helper.start,
+        })
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
