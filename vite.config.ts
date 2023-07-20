@@ -16,9 +16,4 @@ export default defineConfig({
     viteTsconfigPaths(),
     eslint(),
   ],
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./src/setupTests.ts'],
-  }
 })
