@@ -157,6 +157,8 @@ export interface StoreState {
   setDefaultDir: (dir: DefaultDir) => void
   defaultProjectName: string
   setDefaultProjectName: (defaultProjectName: string) => void
+  defaultUnits: 'imperial' | 'metric',
+  setDefaultUnits: (defaultUnits: 'imperial' | 'metric') => void
   showHomeMenu: boolean
   setHomeShowMenu: (showMenu: boolean) => void
   homeMenuItems: {
@@ -317,6 +319,8 @@ export const useStore = create<StoreState>()(
       setDefaultDir: (dir) => set({ defaultDir: dir }),
       defaultProjectName: 'new-project-$n',
       setDefaultProjectName: (defaultProjectName) => set({ defaultProjectName }),
+      defaultUnits: 'imperial',
+      setDefaultUnits: (defaultUnits) => set({ defaultUnits }),
       showHomeMenu: true,
       setHomeShowMenu: (showHomeMenu) => set({ showHomeMenu }),
       homeMenuItems: [],
@@ -332,6 +336,7 @@ export const useStore = create<StoreState>()(
             'code',
             'defaultDir',
             'defaultProjectName',
+            'defaultUnits',
             'token',
           ].includes(key))
         ),

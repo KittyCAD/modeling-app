@@ -5,6 +5,7 @@ import { open } from '@tauri-apps/api/dialog'
 import { useStore } from '../useStore'
 import { useState } from 'react'
 import { toast } from 'react-hot-toast'
+import { Toggle } from '../components/Toggle/Toggle'
 
 export const Settings = () => {
   const {
@@ -12,16 +13,21 @@ export const Settings = () => {
     setDefaultDir: saveDefaultDir,
     defaultProjectName: originalDefaultProjectName,
     setDefaultProjectName: saveDefaultProjectName,
+    defaultUnits: originalDefaultUnits,
+    setDefaultUnits: saveDefaultUnits,
   } = useStore((s) => ({
     defaultDir: s.defaultDir,
     setDefaultDir: s.setDefaultDir,
     defaultProjectName: s.defaultProjectName,
     setDefaultProjectName: s.setDefaultProjectName,
+    defaultUnits: s.defaultUnits,
+    setDefaultUnits: s.setDefaultUnits,
   }))
   const [defaultDir, setDefaultDir] = useState(originalDefaultDir)
   const [defaultProjectName, setDefaultProjectName] = useState(
     originalDefaultProjectName
   )
+  const [defaultUnits, setDefaultUnits] = useState(originalDefaultUnits)
 
   async function handleDirectorySelection() {
     const newDirectory = await open({
@@ -38,6 +44,7 @@ export const Settings = () => {
   const handleSaveClick = () => {
     saveDefaultDir(defaultDir)
     saveDefaultProjectName(defaultProjectName)
+    saveDefaultUnits(defaultUnits)
     toast.success('Settings saved!')
   }
 
@@ -101,6 +108,18 @@ export const Settings = () => {
             className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
             value={defaultProjectName}
             onChange={(e) => setDefaultProjectName(e.target.value)}
+          />
+        </SettingsSection>
+        <SettingsSection
+          title="Units"
+          description="Which unit system to use by default"
+        >
+          <Toggle
+            offLabel="Imperial"
+            onLabel="Metric"
+            name="settings-units"
+            checked={defaultUnits === 'metric'}
+            onChange={(e) => setDefaultUnits(e.target.checked ? 'metric' : 'imperial')}
           />
         </SettingsSection>
         <ActionButton
