@@ -37,7 +37,7 @@ log(5, myVar)`
     const programMemoryOverride: ProgramMemory['root'] = {
       log: {
         type: 'userVal',
-        value: vi.fn(),
+        value: jest.fn(),
         __meta: [
           {
             sourceRange: [0, 0],

@@ -48,6 +48,7 @@ export function App() {
     setIsStreamReady,
     isStreamReady,
     token,
+    formatCode,
   } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
@@ -73,7 +74,8 @@ export function App() {
     setMediaStream: s.setMediaStream,
     isStreamReady: s.isStreamReady,
     setIsStreamReady: s.setIsStreamReady,
-    token: s.token
+    token: s.token,
+    formatCode: s.formatCode,
   }))
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
@@ -260,13 +262,13 @@ export function App() {
           <SetToken />
           <div className="h-full flex flex-col items-start">
             <PanelHeader title="Editor" />
-            {/* <button
-              disabled={!shouldFormat}
+            <button
+              // disabled={!shouldFormat}
               onClick={formatCode}
-              className={`${!shouldFormat && 'text-gray-300'}`}
+              // className={`${!shouldFormat && 'text-gray-300'}`}
             >
               format
-            </button> */}
+            </button>
             <div
               className="bg-red h-full w-full overflow-auto"
               id="code-mirror-override"
