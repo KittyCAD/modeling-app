@@ -28,7 +28,6 @@
     "typescript": "^4.4.2",
     "util": "^0.12.5",
     "uuid": "^9.0.0",
-    "wasm-lib": "file:src/wasm-lib/pkg",
     "wasm-pack": "^0.12.1",
     "web-vitals": "^2.1.0",
     "zustand": "^4.1.4"

@@ -6922,9 +6922,6 @@ walker@^1.0.8:
   dependencies:
     makeerror "1.0.12"
 
-"wasm-lib@file:src/wasm-lib/pkg":
-  version "0.1.0"
-
 wasm-pack@^0.12.1:
   version "0.12.1"
   resolved "https://registry.yarnpkg.com/wasm-pack/-/wasm-pack-0.12.1.tgz#974c1fbbf5b65c9e135e0d1fba3a97de1a21a489"
