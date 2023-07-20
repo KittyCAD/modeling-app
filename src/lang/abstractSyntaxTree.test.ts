@@ -29,7 +29,7 @@ describe('findClosingBrace', () => {
 })
 
 describe('testing AST', () => {
-  test('test 5 + 6', () => {
+  test('5 + 6', () => {
     const tokens = lexer('5 +6')
     const result = abstractSyntaxTree(tokens)
     delete (result as any).nonCodeMeta
@@ -66,7 +66,7 @@ describe('testing AST', () => {
       ],
     })
   })
-  test('test const myVar = 5', () => {
+  test('const myVar = 5', () => {
     const tokens = lexer('const myVar = 5')
     const { body } = abstractSyntaxTree(tokens)
     expect(body).toEqual([
@@ -98,7 +98,7 @@ describe('testing AST', () => {
       },
     ])
   })
-  test('test multi-line', () => {
+  test('multi-line', () => {
     const code = `const myVar = 5
 const newVar = myVar + 1
 `
@@ -171,7 +171,7 @@ const newVar = myVar + 1
       },
     ])
   })
-  test('test using std function "log"', () => {
+  test('using std function "log"', () => {
     const code = `log(5, "hello", aIdentifier)`
     const tokens = lexer(code)
     const { body } = abstractSyntaxTree(tokens)
@@ -1392,7 +1392,7 @@ describe('testing pipe operator special', () => {
 })
 
 describe('nests binary expressions correctly', () => {
-  it('it works with the simple case', () => {
+  it('works with the simple case', () => {
     const code = `const yo = 1 + 2`
     const { body } = abstractSyntaxTree(lexer(code))
     expect(body[0]).toEqual({
@@ -1435,7 +1435,7 @@ describe('nests binary expressions correctly', () => {
       ],
     })
   })
-  it('it should nest according to precedence with multiply first', () => {
+  it('should nest according to precedence with multiply first', () => {
     // should be binExp { binExp { lit-1 * lit-2 } + lit}
     const code = `const yo = 1 * 2 + 3`
     const { body } = abstractSyntaxTree(lexer(code))
@@ -1492,7 +1492,7 @@ describe('nests binary expressions correctly', () => {
       ],
     })
   })
-  it('it should nest according to precedence with sum first', () => {
+  it('should nest according to precedence with sum first', () => {
     // should be binExp { lit-1 + binExp { lit-2 * lit-3 } }
     const code = `const yo = 1 + 2 * 3`
     const { body } = abstractSyntaxTree(lexer(code))
@@ -1549,7 +1549,7 @@ describe('nests binary expressions correctly', () => {
       ],
     })
   })
-  it('it should nest properly with two opperators of equal precedence', () => {
+  it('should nest properly with two opperators of equal precedence', () => {
     const code = `const yo = 1 + 2 - 3`
     const { body } = abstractSyntaxTree(lexer(code))
     expect((body[0] as any).declarations[0].init).toEqual({
@@ -1586,7 +1586,7 @@ describe('nests binary expressions correctly', () => {
       },
     })
   })
-  it('it should nest properly with two opperators of equal (but higher) precedence', () => {
+  it('should nest properly with two opperators of equal (but higher) precedence', () => {
     const code = `const yo = 1 * 2 / 3`
     const { body } = abstractSyntaxTree(lexer(code))
     expect((body[0] as any).declarations[0].init).toEqual({
@@ -1623,7 +1623,7 @@ describe('nests binary expressions correctly', () => {
       },
     })
   })
-  it('it should nest properly with longer example', () => {
+  it('should nest properly with longer example', () => {
     const code = `const yo = 1 + 2 * (3 - 4) / 5 + 6`
     const { body } = abstractSyntaxTree(lexer(code))
     const init = (body[0] as any).declarations[0].init
