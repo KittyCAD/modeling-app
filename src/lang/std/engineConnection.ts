@@ -30,7 +30,7 @@ interface CursorSelectionsArgs {
 
 // TODO these types should be in the openApi spec, and therefore in @kittycad/lib
 interface MouseStuff {
-  interaction: 'rotate'
+  interaction: 'rotate' | 'pan' | 'zoom'
   window: {
     x: number
     y: number
