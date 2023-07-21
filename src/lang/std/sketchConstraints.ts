@@ -1,5 +1,5 @@
 import { getAngle } from '../../lib/utils'
-import { Selection, TooTip, toolTips } from '../../useStore'
+import { TooTip, toolTips } from '../../useStore'
 import {
   Program,
   VariableDeclarator,

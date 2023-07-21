@@ -17,6 +17,8 @@ export const Settings = () => {
     setDefaultUnitSystem: saveDefaultUnitSystem,
     defaultBaseUnit: ogDefaultBaseUnit,
     setDefaultBaseUnit: saveDefaultBaseUnit,
+    saveDebugPanel,
+    originalDebugPanel,
   } = useStore((s) => ({
     defaultDir: s.defaultDir,
     setDefaultDir: s.setDefaultDir,
@@ -26,6 +28,8 @@ export const Settings = () => {
     setDefaultUnitSystem: s.setDefaultUnitSystem,
     defaultBaseUnit: s.defaultBaseUnit,
     setDefaultBaseUnit: s.setDefaultBaseUnit,
+    saveDebugPanel: s.setDebugPanel,
+    originalDebugPanel: s.debugPanel,
   }))
   const [defaultDir, setDefaultDir] = useState(ogDefaultDir)
   const [defaultProjectName, setDefaultProjectName] = useState(
@@ -33,6 +37,7 @@ export const Settings = () => {
   )
   const [defaultUnitSystem, setDefaultUnitSystem] = useState(ogDefaultUnitSystem)
   const [defaultBaseUnit, setDefaultBaseUnit] = useState(ogDefaultBaseUnit)
+  const [debugPanel, setDebugPanel] = useState(originalDebugPanel)
 
   async function handleDirectorySelection() {
     const newDirectory = await open({
@@ -51,6 +56,7 @@ export const Settings = () => {
     saveDefaultProjectName(defaultProjectName)
     saveDefaultUnitSystem(defaultUnitSystem)
     saveDefaultBaseUnit(defaultBaseUnit)
+    saveDebugPanel(debugPanel)
     toast.success('Settings saved!')
   }
 
@@ -139,6 +145,16 @@ export const Settings = () => {
                 <option key={unit} value={unit}>{unit}</option>
               )}
             </select>
+        </SettingsSection>
+        <SettingsSection
+          title="Debug Panel"
+          description="Show the debug panel in the editor"
+        >
+          <input
+            type="checkbox"
+            checked={debugPanel}
+            onChange={(e) => setDebugPanel(e.target.checked)}
+          />
         </SettingsSection>
         <ActionButton
           className="hover:border-succeed-50"

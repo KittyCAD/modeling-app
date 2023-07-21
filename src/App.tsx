@@ -1,5 +1,6 @@
 import { useRef, useEffect, useMemo } from 'react'
 import { Allotment } from 'allotment'
+import { DebugPanel } from './components/DebugPanel'
 import { asyncLexer } from './lang/tokeniser'
 import { abstractSyntaxTree } from './lang/abstractSyntaxTree'
 import { _executor, ExtrudeGroup, SketchGroup } from './lang/executor'
@@ -49,6 +50,8 @@ export function App() {
     setIsStreamReady,
     isStreamReady,
     token,
+    formatCode,
+    debugPanel,
   } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
@@ -74,7 +77,9 @@ export function App() {
     setMediaStream: s.setMediaStream,
     isStreamReady: s.isStreamReady,
     setIsStreamReady: s.setIsStreamReady,
-    token: s.token
+    token: s.token,
+    formatCode: s.formatCode,
+    debugPanel: s.debugPanel,
   }))
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
@@ -262,13 +267,13 @@ export function App() {
           <SetToken />
           <div className="h-full flex flex-col items-start">
             <PanelHeader title="Editor" />
-            {/* <button
-              disabled={!shouldFormat}
+            <button
+              // disabled={!shouldFormat}
               onClick={formatCode}
-              className={`${!shouldFormat && 'text-gray-300'}`}
+              // className={`${!shouldFormat && 'text-gray-300'}`}
             >
               format
-            </button> */}
+            </button>
             <div
               className="bg-red h-full w-full overflow-auto"
               id="code-mirror-override"
@@ -289,6 +294,7 @@ export function App() {
         <Allotment vertical defaultSizes={[40, 400]} minSize={20}>
           <Stream />
         </Allotment>
+        {debugPanel && <DebugPanel />}
       </Allotment>
     </div>
   )

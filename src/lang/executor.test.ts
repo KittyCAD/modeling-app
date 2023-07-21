@@ -316,32 +316,32 @@ show(mySketch)
 })
 
 describe('testing math operators', () => {
-  it('it can sum', async () => {
+  it('can sum', async () => {
     const code = ['const myVar = 1 + 2'].join('\n')
     const { root } = await exe(code)
     expect(root.myVar.value).toBe(3)
   })
-  it('it can subtract', async () => {
+  it('can subtract', async () => {
     const code = ['const myVar = 1 - 2'].join('\n')
     const { root } = await exe(code)
     expect(root.myVar.value).toBe(-1)
   })
-  it('it can multiply', async () => {
+  it('can multiply', async () => {
     const code = ['const myVar = 1 * 2'].join('\n')
     const { root } = await exe(code)
     expect(root.myVar.value).toBe(2)
   })
-  it('it can divide', async () => {
+  it('can divide', async () => {
     const code = ['const myVar = 1 / 2'].join('\n')
     const { root } = await exe(code)
     expect(root.myVar.value).toBe(0.5)
   })
-  it('it can modulus', async () => {
+  it('can modulus', async () => {
     const code = ['const myVar = 5 % 2'].join('\n')
     const { root } = await exe(code)
     expect(root.myVar.value).toBe(1)
   })
-  it('it can do multiple operations', async () => {
+  it('can do multiple operations', async () => {
     const code = ['const myVar = 1 + 2 * 3'].join('\n')
     const { root } = await exe(code)
     expect(root.myVar.value).toBe(7)
@@ -356,7 +356,7 @@ describe('testing math operators', () => {
     const { root } = await exe(code)
     expect(root.myVar.value).toBe(3)
   })
-  it('with identifier', async () => {
+  it('with lots of testing', async () => {
     const code = ['const myVar = 2 * ((2 + 3 ) / 4 + 5)'].join('\n')
     const { root } = await exe(code)
     expect(root.myVar.value).toBe(12.5)

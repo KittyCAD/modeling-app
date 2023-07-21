@@ -318,7 +318,7 @@ const yo = 6`)
       "number       '6'        from 46  to 47",
     ])
   })
-  it('testing tokenising line comments', () => {
+  it('testing tokenising line comments by itself', () => {
     const result = stringSummaryLexer(`log('hi')
 // comment on a line by itself
 const yo=45`)

@@ -30,7 +30,7 @@ interface CursorSelectionsArgs {
 
 // TODO these types should be in the openApi spec, and therefore in @kittycad/lib
 interface MouseStuff {
-  interaction: 'rotate'
+  interaction: 'rotate' | 'pan' | 'zoom'
   window: {
     x: number
     y: number
@@ -47,7 +47,7 @@ interface XYZ {
   y: number
   z: number
 }
-interface EngineCommand {
+export interface EngineCommand {
   type: 'ModelingCmdReq'
   cmd: {
     StartPath?: {}
@@ -74,6 +74,13 @@ interface EngineCommand {
     CameraDragMove?: MouseDrag
     CameraDragStart?: MouseStuff
     CameraDragEnd?: MouseStuff
+    DefaultCameraEnableSketchMode?: {
+      origin: XYZ
+      x_axis: XYZ
+      y_axis: XYZ
+      distance_to_plane: number
+      ortho: boolean
+    }
   }
   cmd_id: uuid
   file_id: uuid

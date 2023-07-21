@@ -1,20 +1,6 @@
-// jest-dom adds custom jest matchers for asserting on DOM nodes.
-// allows you to do things like:
-// expect(element).toHaveTextContent(/react/i)
-// learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom'
-import WebSocket from 'ws';
-import 'setimmediate'
-
-class WebsocketWrapper {
-  constructor(url: string) {
-    return new WebSocket(url, {
-        headers: {
-            'Autherization': `Bearer ${process.env.KITTYCAD_TOKEN}`,
-        }
-    })
-  }
-}
+import util from 'util'
+import fetch from 'isomorphic-fetch'
 
 class MockRTCPeerConnection {
   constructor() {
@@ -51,4 +37,8 @@ class MockRTCPeerConnection {
 // @ts-ignore
 global.RTCPeerConnection = MockRTCPeerConnection
 // @ts-ignore
-global.WebSocket = WebsocketWrapper
+global.fetch = fetch
+
+// @ts-ignore
+global.TextDecoder = util.TextDecoder
+global.TextEncoder = util.TextEncoder
