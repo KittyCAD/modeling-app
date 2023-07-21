@@ -23,6 +23,7 @@ import { EngineCommandManager } from './lang/std/engineConnection'
 import { isOverlap } from './lib/utils'
 import { SetToken } from './components/TokenInput'
 import { AppHeader } from './components/AppHeader'
+import Onboarding from './components/Onboarding/Onboarding'
 
 export function App() {
   const cam = useRef()
@@ -258,44 +259,46 @@ export function App() {
     asyncWrap()
   }, [code, isStreamReady])
   return (
-    <div className="h-screen">
-      <AppHeader />
-      <ModalContainer />
-      <Allotment snap={true}>
+    <Onboarding>
+      <div className="h-screen">
+        <AppHeader />
+        <ModalContainer />
+        <Allotment snap={true}>
 
-        <Allotment vertical defaultSizes={[5, 400, 1, 1]} minSize={20}>
-          <SetToken />
-          <div className="h-full flex flex-col items-start">
-            <PanelHeader title="Editor" />
-            <button
-              // disabled={!shouldFormat}
-              onClick={formatCode}
-              // className={`${!shouldFormat && 'text-gray-300'}`}
-            >
-              format
-            </button>
-            <div
-              className="bg-red h-full w-full overflow-auto"
-              id="code-mirror-override"
-            >
-              <CodeMirror
-                className="h-full"
-                value={code}
-                extensions={[javascript({ jsx: true }), lineHighlightField]}
-                onChange={onChange}
-                onUpdate={onUpdate}
-                onCreateEditor={(_editorView) => setEditorView(_editorView)}
-              />
+          <Allotment vertical defaultSizes={[5, 400, 1, 1]} minSize={20}>
+            <SetToken />
+            <div className="h-full flex flex-col items-start">
+              <PanelHeader title="Editor" />
+              <button
+                // disabled={!shouldFormat}
+                onClick={formatCode}
+                // className={`${!shouldFormat && 'text-gray-300'}`}
+              >
+                format
+              </button>
+              <div
+                className="bg-red h-full w-full overflow-auto"
+                id="code-mirror-override"
+              >
+                <CodeMirror
+                  className="h-full"
+                  value={code}
+                  extensions={[javascript({ jsx: true }), lineHighlightField]}
+                  onChange={onChange}
+                  onUpdate={onUpdate}
+                  onCreateEditor={(_editorView) => setEditorView(_editorView)}
+                />
+              </div>
             </div>
-          </div>
-          <MemoryPanel />
-          <Logs />
+            <MemoryPanel />
+            <Logs />
+          </Allotment>
+          <Allotment vertical defaultSizes={[40, 400]} minSize={20}>
+            <Stream />
+          </Allotment>
+          {debugPanel && <DebugPanel />}
         </Allotment>
-        <Allotment vertical defaultSizes={[40, 400]} minSize={20}>
-          <Stream />
-        </Allotment>
-        {debugPanel && <DebugPanel />}
-      </Allotment>
-    </div>
+      </div>
+    </Onboarding>
   )
 }

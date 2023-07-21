@@ -19,6 +19,8 @@ export const Settings = () => {
     setDefaultBaseUnit: saveDefaultBaseUnit,
     saveDebugPanel,
     originalDebugPanel,
+    onboardingStatus: ogOnboardingStatus,
+    setOnboardingStatus: saveOnboardingStatus,
   } = useStore((s) => ({
     defaultDir: s.defaultDir,
     setDefaultDir: s.setDefaultDir,
@@ -30,6 +32,8 @@ export const Settings = () => {
     setDefaultBaseUnit: s.setDefaultBaseUnit,
     saveDebugPanel: s.setDebugPanel,
     originalDebugPanel: s.debugPanel,
+    onboardingStatus: s.onboardingStatus,
+    setOnboardingStatus: s.setOnboardingStatus,
   }))
   const [defaultDir, setDefaultDir] = useState(ogDefaultDir)
   const [defaultProjectName, setDefaultProjectName] =
@@ -38,6 +42,7 @@ export const Settings = () => {
     useState(ogDefaultUnitSystem)
   const [defaultBaseUnit, setDefaultBaseUnit] = useState(ogDefaultBaseUnit)
   const [debugPanel, setDebugPanel] = useState(originalDebugPanel)
+  const [onboardingStatus, setOnboardingStatus] = useState(ogOnboardingStatus)
 
   async function handleDirectorySelection() {
     const newDirectory = await open({
@@ -57,6 +62,7 @@ export const Settings = () => {
     saveDefaultUnitSystem(defaultUnitSystem)
     saveDefaultBaseUnit(defaultBaseUnit)
     saveDebugPanel(debugPanel)
+    saveOnboardingStatus(onboardingStatus)
     toast.success('Settings saved!')
   }
 
@@ -161,6 +167,16 @@ export const Settings = () => {
             name="settings-debug-panel"
             checked={debugPanel}
             onChange={(e) => setDebugPanel(e.target.checked)}
+          />
+        </SettingsSection>
+        <SettingsSection
+          title="Show Onboarding"
+          description="Show the onboarding process when opening the editor"
+        >
+          <Toggle
+            name="settings-debug-panel"
+            checked={onboardingStatus === 'new'}
+            onChange={(e) => setOnboardingStatus(e.target.checked ? 'new' : 'done')}
           />
         </SettingsSection>
         <ActionButton
