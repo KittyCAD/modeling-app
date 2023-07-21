@@ -16,11 +16,6 @@ import { asyncLexer } from './lang/tokeniser'
 import { EditorSelection } from '@codemirror/state'
 import { BaseDirectory } from '@tauri-apps/api/fs'
 import { ArtifactMap, SourceRangeMap, EngineCommandManager } from './lang/std/engineConnection'
-// import {
-//   ArtifactMap,
-//   SourceRangeMap,
-//   EngineCommandManager,
-// } from './lang/std/engineConnection'
 
 export type Selection = {
   type: 'default' | 'line-end' | 'line-mid'
@@ -166,6 +161,8 @@ export interface StoreState {
   setHomeMenuItems: (items: { name: string; path: string }[]) => void
   token: string
   setToken: (token: string) => void
+  debugPanel: boolean
+  setDebugPanel: (debugPanel: boolean) => void
 }
 
 let pendingAstUpdates: number[] = []
@@ -323,6 +320,8 @@ export const useStore = create<StoreState>()(
       setHomeMenuItems: (homeMenuItems) => set({ homeMenuItems }),
       token: '',
       setToken: (token) => set({ token }),
+      debugPanel: false,
+      setDebugPanel: (debugPanel) => set({ debugPanel }),
     }),
     {
       name: 'store',
@@ -333,6 +332,7 @@ export const useStore = create<StoreState>()(
             'defaultDir',
             'defaultProjectName',
             'token',
+            'debugPanel'
           ].includes(key))
         ),
     }
