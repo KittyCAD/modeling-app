@@ -32,10 +32,10 @@ export const Settings = () => {
     originalDebugPanel: s.debugPanel,
   }))
   const [defaultDir, setDefaultDir] = useState(ogDefaultDir)
-  const [defaultProjectName, setDefaultProjectName] = useState(
-    ogDefaultProjectName
-  )
-  const [defaultUnitSystem, setDefaultUnitSystem] = useState(ogDefaultUnitSystem)
+  const [defaultProjectName, setDefaultProjectName] =
+    useState(ogDefaultProjectName)
+  const [defaultUnitSystem, setDefaultUnitSystem] =
+    useState(ogDefaultUnitSystem)
   const [defaultBaseUnit, setDefaultBaseUnit] = useState(ogDefaultBaseUnit)
   const [debugPanel, setDebugPanel] = useState(originalDebugPanel)
 
@@ -131,27 +131,34 @@ export const Settings = () => {
             onLabel="Metric"
             name="settings-units"
             checked={defaultUnitSystem === 'metric'}
-            onChange={(e) => setDefaultUnitSystem(e.target.checked ? 'metric' : 'imperial')}
+            onChange={(e) =>
+              setDefaultUnitSystem(e.target.checked ? 'metric' : 'imperial')
+            }
           />
         </SettingsSection>
         <SettingsSection
           title="Base Unit"
           description="Which base unit to use in dimensions by default"
         >
-          <select id="base-unit" className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
+          <select
+            id="base-unit"
+            className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
             value={defaultBaseUnit}
-            onChange={(e) => setDefaultBaseUnit(e.target.value)}>
-              {baseUnits[defaultUnitSystem].map((unit) => 
-                <option key={unit} value={unit}>{unit}</option>
-              )}
-            </select>
+            onChange={(e) => setDefaultBaseUnit(e.target.value)}
+          >
+            {baseUnits[defaultUnitSystem].map((unit) => (
+              <option key={unit} value={unit}>
+                {unit}
+              </option>
+            ))}
+          </select>
         </SettingsSection>
         <SettingsSection
           title="Debug Panel"
           description="Show the debug panel in the editor"
         >
-          <input
-            type="checkbox"
+          <Toggle
+            name="settings-debug-panel"
             checked={debugPanel}
             onChange={(e) => setDebugPanel(e.target.checked)}
           />
