@@ -1,5 +1,6 @@
 import { useRef, useEffect, useMemo } from 'react'
 import { Allotment } from 'allotment'
+import { DebugPanel } from './components/DebugPanel'
 import { asyncLexer } from './lang/tokeniser'
 import { abstractSyntaxTree } from './lang/abstractSyntaxTree'
 import { _executor, ExtrudeGroup, SketchGroup } from './lang/executor'
@@ -50,6 +51,7 @@ export function App() {
     isStreamReady,
     token,
     formatCode,
+    debugPanel,
   } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
@@ -77,6 +79,7 @@ export function App() {
     setIsStreamReady: s.setIsStreamReady,
     token: s.token,
     formatCode: s.formatCode,
+    debugPanel: s.debugPanel,
   }))
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
@@ -291,6 +294,7 @@ export function App() {
         <Allotment vertical defaultSizes={[40, 400]} minSize={20}>
           <Stream />
         </Allotment>
+        {debugPanel && <DebugPanel />}
       </Allotment>
     </div>
   )

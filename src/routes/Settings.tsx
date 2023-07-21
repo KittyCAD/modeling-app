@@ -12,16 +12,21 @@ export const Settings = () => {
     setDefaultDir: saveDefaultDir,
     defaultProjectName: originalDefaultProjectName,
     setDefaultProjectName: saveDefaultProjectName,
+    saveDebugPanel,
+    originalDebugPanel,
   } = useStore((s) => ({
     defaultDir: s.defaultDir,
     setDefaultDir: s.setDefaultDir,
     defaultProjectName: s.defaultProjectName,
     setDefaultProjectName: s.setDefaultProjectName,
+    saveDebugPanel: s.setDebugPanel,
+    originalDebugPanel: s.debugPanel,
   }))
   const [defaultDir, setDefaultDir] = useState(originalDefaultDir)
   const [defaultProjectName, setDefaultProjectName] = useState(
     originalDefaultProjectName
   )
+  const [debugPanel, setDebugPanel] = useState(originalDebugPanel)
 
   async function handleDirectorySelection() {
     const newDirectory = await open({
@@ -38,6 +43,7 @@ export const Settings = () => {
   const handleSaveClick = () => {
     saveDefaultDir(defaultDir)
     saveDefaultProjectName(defaultProjectName)
+    saveDebugPanel(debugPanel)
     toast.success('Settings saved!')
   }
 
@@ -101,6 +107,16 @@ export const Settings = () => {
             className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
             value={defaultProjectName}
             onChange={(e) => setDefaultProjectName(e.target.value)}
+          />
+        </SettingsSection>
+        <SettingsSection
+          title="Debug Panel"
+          description="Show the debug panel in the editor"
+        >
+          <input
+            type="checkbox"
+            checked={debugPanel}
+            onChange={(e) => setDebugPanel(e.target.checked)}
           />
         </SettingsSection>
         <ActionButton
