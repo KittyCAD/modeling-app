@@ -2,32 +2,37 @@ import { faCheck, faFolder, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../components/ActionButton'
 import { AppHeader } from '../components/AppHeader'
 import { open } from '@tauri-apps/api/dialog'
-import { useStore } from '../useStore'
+import { baseUnits, useStore } from '../useStore'
 import { useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { Toggle } from '../components/Toggle/Toggle'
 
 export const Settings = () => {
   const {
-    defaultDir: originalDefaultDir,
+    defaultDir: ogDefaultDir,
     setDefaultDir: saveDefaultDir,
-    defaultProjectName: originalDefaultProjectName,
+    defaultProjectName: ogDefaultProjectName,
     setDefaultProjectName: saveDefaultProjectName,
-    defaultUnits: originalDefaultUnits,
-    setDefaultUnits: saveDefaultUnits,
+    defaultUnitSystem: ogDefaultUnitSystem,
+    setDefaultUnitSystem: saveDefaultUnitSystem,
+    defaultBaseUnit: ogDefaultBaseUnit,
+    setDefaultBaseUnit: saveDefaultBaseUnit,
   } = useStore((s) => ({
     defaultDir: s.defaultDir,
     setDefaultDir: s.setDefaultDir,
     defaultProjectName: s.defaultProjectName,
     setDefaultProjectName: s.setDefaultProjectName,
-    defaultUnits: s.defaultUnits,
-    setDefaultUnits: s.setDefaultUnits,
+    defaultUnitSystem: s.defaultUnitSystem,
+    setDefaultUnitSystem: s.setDefaultUnitSystem,
+    defaultBaseUnit: s.defaultBaseUnit,
+    setDefaultBaseUnit: s.setDefaultBaseUnit,
   }))
-  const [defaultDir, setDefaultDir] = useState(originalDefaultDir)
+  const [defaultDir, setDefaultDir] = useState(ogDefaultDir)
   const [defaultProjectName, setDefaultProjectName] = useState(
-    originalDefaultProjectName
+    ogDefaultProjectName
   )
-  const [defaultUnits, setDefaultUnits] = useState(originalDefaultUnits)
+  const [defaultUnitSystem, setDefaultUnitSystem] = useState(ogDefaultUnitSystem)
+  const [defaultBaseUnit, setDefaultBaseUnit] = useState(ogDefaultBaseUnit)
 
   async function handleDirectorySelection() {
     const newDirectory = await open({
@@ -44,7 +49,8 @@ export const Settings = () => {
   const handleSaveClick = () => {
     saveDefaultDir(defaultDir)
     saveDefaultProjectName(defaultProjectName)
-    saveDefaultUnits(defaultUnits)
+    saveDefaultUnitSystem(defaultUnitSystem)
+    saveDefaultBaseUnit(defaultBaseUnit)
     toast.success('Settings saved!')
   }
 
@@ -78,7 +84,7 @@ export const Settings = () => {
                 value={defaultDir.dir}
                 onChange={(e) =>
                   setDefaultDir({
-                    base: originalDefaultDir.base,
+                    base: ogDefaultDir.base,
                     dir: e.target.value,
                   })
                 }
@@ -111,16 +117,28 @@ export const Settings = () => {
           />
         </SettingsSection>
         <SettingsSection
-          title="Units"
+          title="Unit System"
           description="Which unit system to use by default"
         >
           <Toggle
             offLabel="Imperial"
             onLabel="Metric"
             name="settings-units"
-            checked={defaultUnits === 'metric'}
-            onChange={(e) => setDefaultUnits(e.target.checked ? 'metric' : 'imperial')}
+            checked={defaultUnitSystem === 'metric'}
+            onChange={(e) => setDefaultUnitSystem(e.target.checked ? 'metric' : 'imperial')}
           />
+        </SettingsSection>
+        <SettingsSection
+          title="Base Unit"
+          description="Which base unit to use in dimensions by default"
+        >
+          <select id="base-unit" className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
+            value={defaultBaseUnit}
+            onChange={(e) => setDefaultBaseUnit(e.target.value)}>
+              {baseUnits[defaultUnitSystem].map((unit) => 
+                <option key={unit} value={unit}>{unit}</option>
+              )}
+            </select>
         </SettingsSection>
         <ActionButton
           className="hover:border-succeed-50"
@@ -156,7 +174,7 @@ function SettingsSection({
         <h2 className="text-2xl">{title}</h2>
         <p className="mt-2 text-sm">{description}</p>
       </div>
-      {children}
+      <div>{children}</div>
     </section>
   )
 }

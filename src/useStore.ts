@@ -96,6 +96,13 @@ export type GuiModes =
       position: Position
     }
 
+type UnitSystem = 'imperial' | 'metric'
+
+export const baseUnits: Record<UnitSystem, string[]> = {
+  imperial: ['in', 'ft'],
+  metric: ['mm', 'cm', 'm'],
+}
+
 interface DefaultDir {
   base?: BaseDirectory
   dir: string
@@ -157,8 +164,10 @@ export interface StoreState {
   setDefaultDir: (dir: DefaultDir) => void
   defaultProjectName: string
   setDefaultProjectName: (defaultProjectName: string) => void
-  defaultUnits: 'imperial' | 'metric',
-  setDefaultUnits: (defaultUnits: 'imperial' | 'metric') => void
+  defaultUnitSystem: UnitSystem,
+  setDefaultUnitSystem: (defaultUnitSystem: UnitSystem) => void
+  defaultBaseUnit: string,
+  setDefaultBaseUnit: (defaultBaseUnit: string) => void
   showHomeMenu: boolean
   setHomeShowMenu: (showMenu: boolean) => void
   homeMenuItems: {
@@ -319,8 +328,10 @@ export const useStore = create<StoreState>()(
       setDefaultDir: (dir) => set({ defaultDir: dir }),
       defaultProjectName: 'new-project-$n',
       setDefaultProjectName: (defaultProjectName) => set({ defaultProjectName }),
-      defaultUnits: 'imperial',
-      setDefaultUnits: (defaultUnits) => set({ defaultUnits }),
+      defaultUnitSystem: 'imperial',
+      setDefaultUnitSystem: (defaultUnitSystem) => set({ defaultUnitSystem }),
+      defaultBaseUnit: 'in',
+      setDefaultBaseUnit: (defaultBaseUnit) => set({ defaultBaseUnit }),
       showHomeMenu: true,
       setHomeShowMenu: (showHomeMenu) => set({ showHomeMenu }),
       homeMenuItems: [],
@@ -336,7 +347,8 @@ export const useStore = create<StoreState>()(
             'code',
             'defaultDir',
             'defaultProjectName',
-            'defaultUnits',
+            'defaultUnitSystem',
+            'defaultBaseUnit',
             'token',
           ].includes(key))
         ),
