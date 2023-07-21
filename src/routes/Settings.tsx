@@ -2,16 +2,21 @@ import { faCheck, faFolder, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../components/ActionButton'
 import { AppHeader } from '../components/AppHeader'
 import { open } from '@tauri-apps/api/dialog'
-import { useStore } from '../useStore'
+import { baseUnits, useStore } from '../useStore'
 import { useState } from 'react'
 import { toast } from 'react-hot-toast'
+import { Toggle } from '../components/Toggle/Toggle'
 
 export const Settings = () => {
   const {
-    defaultDir: originalDefaultDir,
+    defaultDir: ogDefaultDir,
     setDefaultDir: saveDefaultDir,
-    defaultProjectName: originalDefaultProjectName,
+    defaultProjectName: ogDefaultProjectName,
     setDefaultProjectName: saveDefaultProjectName,
+    defaultUnitSystem: ogDefaultUnitSystem,
+    setDefaultUnitSystem: saveDefaultUnitSystem,
+    defaultBaseUnit: ogDefaultBaseUnit,
+    setDefaultBaseUnit: saveDefaultBaseUnit,
     saveDebugPanel,
     originalDebugPanel,
   } = useStore((s) => ({
@@ -19,13 +24,19 @@ export const Settings = () => {
     setDefaultDir: s.setDefaultDir,
     defaultProjectName: s.defaultProjectName,
     setDefaultProjectName: s.setDefaultProjectName,
+    defaultUnitSystem: s.defaultUnitSystem,
+    setDefaultUnitSystem: s.setDefaultUnitSystem,
+    defaultBaseUnit: s.defaultBaseUnit,
+    setDefaultBaseUnit: s.setDefaultBaseUnit,
     saveDebugPanel: s.setDebugPanel,
     originalDebugPanel: s.debugPanel,
   }))
-  const [defaultDir, setDefaultDir] = useState(originalDefaultDir)
-  const [defaultProjectName, setDefaultProjectName] = useState(
-    originalDefaultProjectName
-  )
+  const [defaultDir, setDefaultDir] = useState(ogDefaultDir)
+  const [defaultProjectName, setDefaultProjectName] =
+    useState(ogDefaultProjectName)
+  const [defaultUnitSystem, setDefaultUnitSystem] =
+    useState(ogDefaultUnitSystem)
+  const [defaultBaseUnit, setDefaultBaseUnit] = useState(ogDefaultBaseUnit)
   const [debugPanel, setDebugPanel] = useState(originalDebugPanel)
 
   async function handleDirectorySelection() {
@@ -43,6 +54,8 @@ export const Settings = () => {
   const handleSaveClick = () => {
     saveDefaultDir(defaultDir)
     saveDefaultProjectName(defaultProjectName)
+    saveDefaultUnitSystem(defaultUnitSystem)
+    saveDefaultBaseUnit(defaultBaseUnit)
     saveDebugPanel(debugPanel)
     toast.success('Settings saved!')
   }
@@ -77,7 +90,7 @@ export const Settings = () => {
                 value={defaultDir.dir}
                 onChange={(e) =>
                   setDefaultDir({
-                    base: originalDefaultDir.base,
+                    base: ogDefaultDir.base,
                     dir: e.target.value,
                   })
                 }
@@ -110,11 +123,42 @@ export const Settings = () => {
           />
         </SettingsSection>
         <SettingsSection
+          title="Unit System"
+          description="Which unit system to use by default"
+        >
+          <Toggle
+            offLabel="Imperial"
+            onLabel="Metric"
+            name="settings-units"
+            checked={defaultUnitSystem === 'metric'}
+            onChange={(e) =>
+              setDefaultUnitSystem(e.target.checked ? 'metric' : 'imperial')
+            }
+          />
+        </SettingsSection>
+        <SettingsSection
+          title="Base Unit"
+          description="Which base unit to use in dimensions by default"
+        >
+          <select
+            id="base-unit"
+            className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
+            value={defaultBaseUnit}
+            onChange={(e) => setDefaultBaseUnit(e.target.value)}
+          >
+            {baseUnits[defaultUnitSystem].map((unit) => (
+              <option key={unit} value={unit}>
+                {unit}
+              </option>
+            ))}
+          </select>
+        </SettingsSection>
+        <SettingsSection
           title="Debug Panel"
           description="Show the debug panel in the editor"
         >
-          <input
-            type="checkbox"
+          <Toggle
+            name="settings-debug-panel"
             checked={debugPanel}
             onChange={(e) => setDebugPanel(e.target.checked)}
           />
@@ -153,7 +197,7 @@ function SettingsSection({
         <h2 className="text-2xl">{title}</h2>
         <p className="mt-2 text-sm">{description}</p>
       </div>
-      {children}
+      <div>{children}</div>
     </section>
   )
 }

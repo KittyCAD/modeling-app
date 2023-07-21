@@ -1,7 +1,11 @@
 {
+    "plugins": [
+      "css-modules"
+    ],
     "extends": [
       "react-app",
-      "react-app/jest"
+      "react-app/jest",
+      "plugin:css-modules/recommended"
     ],
     "rules": {
       "semi": [
