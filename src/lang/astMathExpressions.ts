@@ -10,6 +10,7 @@ import {
   isNotCodeToken,
 } from './abstractSyntaxTree'
 import { Token } from './tokeniser'
+import { KCLSyntaxError } from './errors'
 
 export function reversePolishNotation(
   tokens: Token[],
@@ -82,7 +83,7 @@ export function reversePolishNotation(
   if (isNotCodeToken(currentToken)) {
     return reversePolishNotation(tokens.slice(1), previousPostfix, operators)
   }
-  throw new Error('Unknown token')
+  throw new KCLSyntaxError('Unknown token')
 }
 
 interface ParenthesisToken {
@@ -232,7 +233,7 @@ function _precedence(operator: Token): number {
 }
 
 export function precedence(operator: string): number {
-  // might be useful for refenecne to make it match
+  // might be useful for reference to make it match
   // another commonly used lang https://www.w3schools.com/js/js_precedence.asp
   if (['+', '-'].includes(operator)) {
     return 11
