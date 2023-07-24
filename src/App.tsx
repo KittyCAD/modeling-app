@@ -22,6 +22,7 @@ import { EngineCommandManager } from './lang/std/engineConnection'
 import { isOverlap } from './lib/utils'
 import { SetToken } from './components/TokenInput'
 import { AppHeader } from './components/AppHeader'
+import { KCLError } from './lang/errors'
 
 export function App() {
   const cam = useRef()
@@ -249,9 +250,13 @@ export function App() {
           setError()
         })
       } catch (e: any) {
-        setError('problem')
-        console.log(e)
-        addLog(e)
+        if (e instanceof KCLError) {
+          console.warn(e)
+        } else {
+          setError('problem')
+          console.log(e)
+          addLog(e)
+        }
       }
     }
     asyncWrap()
