@@ -24,6 +24,10 @@ import { SetToken } from './components/TokenInput'
 import { AppHeader } from './components/AppHeader'
 import { KCLError } from './lang/errors'
 
+const handleKCLError = (e: KCLError) => {
+  console.warn(e)
+}
+
 export function App() {
   const cam = useRef()
   useHotKeyListener()
@@ -249,9 +253,18 @@ export function App() {
           // console.log(programMemory)
           setError()
         })
+        .catch(e => {
+          if (e instanceof KCLError) {
+            console.log("KCL error, handling")
+            handleKCLError(e)
+          } else {
+            console.log("non-KCL error, rethrowing")
+            throw e
+          }
+        })
       } catch (e: any) {
         if (e instanceof KCLError) {
-          console.warn(e)
+          handleKCLError(e)
         } else {
           setError('problem')
           console.log(e)

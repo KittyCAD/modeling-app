@@ -130,7 +130,7 @@ function makeArguments(
   }
   const nextBraceOrCommaToken = nextMeaningfulToken(tokens, argumentToken.index)
   if (nextBraceOrCommaToken.token == undefined) {
-    throw new KCLSyntaxError("Expected argument")
+    throw new KCLSyntaxError('Expected argument')
   }
   const isIdentifierOrLiteral =
     nextBraceOrCommaToken.token.type === 'comma' ||
