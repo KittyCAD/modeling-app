@@ -10,7 +10,7 @@ const Introduction = ({ children, ...props }: IntroductionProps) => {
   }))
 
   return (
-    <div className="fixed grid place-content-center inset-0 bg-black bg-opacity-50 z-50">
+    <div className="fixed grid place-content-center inset-0 bg-chalkboard-110/50 z-50">
       <div className="max-w-3xl bg-white p-8 rounded">
         <h1 className="text-2xl font-bold">
           Welcome to the KittyCAD Modeling App

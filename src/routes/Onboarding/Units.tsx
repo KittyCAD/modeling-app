@@ -4,10 +4,12 @@ import { ActionButton } from '../../components/ActionButton'
 import { SettingsSection } from '../Settings'
 import { Toggle } from '../../components/Toggle/Toggle'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 interface IntroductionProps extends React.PropsWithChildren {}
 
 const Units = ({ children, ...props }: IntroductionProps) => {
+  const navigate = useNavigate()
   const {
     setOnboardingStatus,
     defaultUnitSystem: ogDefaultUnitSystem,
@@ -29,10 +31,11 @@ const Units = ({ children, ...props }: IntroductionProps) => {
     setOnboardingStatus('camera')
     saveDefaultUnitSystem(defaultUnitSystem)
     saveDefaultBaseUnit(defaultBaseUnit)
+    navigate('/onboarding/camera')
   }
 
   return (
-    <div className="fixed grid place-content-center inset-0 bg-black bg-opacity-50 z-50">
+    <div className="fixed grid place-content-center inset-0 bg-chalkboard-110/50 z-50">
       <div className="max-w-3xl bg-white p-8 rounded">
         <h1 className="text-2xl font-bold">Set your units</h1>
         <SettingsSection
@@ -81,10 +84,7 @@ const Units = ({ children, ...props }: IntroductionProps) => {
           >
             Dismiss
           </ActionButton>
-          <ActionButton
-            as="link"
-            to="/onboarding/camera"
-            onClick={handleNextClick}
+          <ActionButton onClick={handleNextClick}
             icon={{ icon: faArrowRight }}
           >
             Next: Camera

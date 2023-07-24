@@ -1,4 +1,4 @@
-import { faCheck, faFolder, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRotateBack, faCheck, faFolder, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../components/ActionButton'
 import { AppHeader } from '../components/AppHeader'
 import { open } from '@tauri-apps/api/dialog'
@@ -170,14 +170,14 @@ export const Settings = () => {
           />
         </SettingsSection>
         <SettingsSection
-          title="Show Onboarding"
-          description="Show the onboarding process when opening the editor"
+          title="Onboarding"
+          description="Replay the onboarding process"
         >
-          <Toggle
-            name="settings-debug-panel"
-            checked={onboardingStatus === 'new'}
-            onChange={(e) => setOnboardingStatus(e.target.checked ? 'new' : 'done')}
-          />
+          <ActionButton as="link" to="/onboarding"
+            icon={{icon: faArrowRotateBack}}
+          >
+            Replay Onboarding
+          </ActionButton>
         </SettingsSection>
         <ActionButton
           className="hover:border-succeed-50"
