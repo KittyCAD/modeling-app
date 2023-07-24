@@ -1,6 +1,6 @@
 import { Token } from './tokeniser'
 import { parseExpression } from './astMathExpressions'
-import { KCLSyntaxError, UnimplementedError } from './errors'
+import { KCLSyntaxError, KCLUnimplementedError } from './errors'
 import {
   BinaryPart,
   BodyItem,
@@ -407,7 +407,7 @@ function makeValue(
         lastIndex: arrowFunctionLastIndex,
       }
     } else {
-      throw new UnimplementedError('expression with braces')
+      throw new KCLUnimplementedError('expression with braces')
     }
   }
   if (currentToken.type === 'operator' && currentToken.value === '-') {

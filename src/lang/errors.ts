@@ -26,10 +26,10 @@ export class KCLTypeError extends KCLError {
   }
 }
 
-export class UnimplementedError extends KCLError {
+export class KCLUnimplementedError extends KCLError {
   constructor(msg: string) {
     super('unimplemented feature', msg)
-    Object.setPrototypeOf(this, UnimplementedError.prototype)
+    Object.setPrototypeOf(this, KCLUnimplementedError.prototype)
   }
 }
 
