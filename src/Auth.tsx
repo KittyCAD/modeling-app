@@ -10,6 +10,7 @@ import {
 } from "react-router-dom"
 import { ErrorPage } from './components/ErrorPage'
 import { Settings } from './routes/Settings'
+import Onboarding, { onboardingRoutes } from './routes/Onboarding'
 
 const router = createBrowserRouter([
   {
@@ -20,13 +21,18 @@ const router = createBrowserRouter([
   {
     path: "/settings",
     element: <Settings />,
+  },
+  {
+    path: "/onboarding",
+    element: <Onboarding/>,
+    children: onboardingRoutes,
   }
 ])
 
 export const Auth = () => {
   const { data: user } = useSWR(withBaseUrl('/user'), fetcher) as any
   const  {token} = useStore((s) => ({
-    token: s.token
+    token: s.token,
   }))
 
   const isLocalHost =

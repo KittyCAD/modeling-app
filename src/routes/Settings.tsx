@@ -202,7 +202,7 @@ interface SettingsSectionProps extends React.PropsWithChildren {
   description?: string
 }
 
-function SettingsSection({
+export function SettingsSection({
   title,
   description,
   children,
