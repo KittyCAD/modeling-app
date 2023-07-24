@@ -12,7 +12,7 @@ import {
   addLineHighlight,
 } from './editor/highlightextension'
 import { Selections, useStore } from './useStore'
-import { Logs } from './components/Logs'
+import { Logs, KCLErrors } from './components/Logs'
 import { PanelHeader } from './components/PanelHeader'
 import { MemoryPanel } from './components/MemoryPanel'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
@@ -24,10 +24,6 @@ import { SetToken } from './components/TokenInput'
 import { AppHeader } from './components/AppHeader'
 import { KCLError } from './lang/errors'
 
-const handleKCLError = (e: KCLError) => {
-  console.warn(e)
-}
-
 export function App() {
   const cam = useRef()
   useHotKeyListener()
@@ -37,6 +33,7 @@ export function App() {
     setSelectionRanges,
     selectionRanges,
     addLog,
+    addKCLError,
     code,
     setCode,
     setAst,
@@ -84,6 +81,7 @@ export function App() {
     token: s.token,
     formatCode: s.formatCode,
     debugPanel: s.debugPanel,
+    addKCLError: s.addKCLError,
   }))
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
@@ -256,7 +254,7 @@ export function App() {
         .catch(e => {
           if (e instanceof KCLError) {
             console.log("KCL error, handling")
-            handleKCLError(e)
+            addKCLError(e)
           } else {
             console.log("non-KCL error, rethrowing")
             throw e
@@ -264,7 +262,7 @@ export function App() {
         })
       } catch (e: any) {
         if (e instanceof KCLError) {
-          handleKCLError(e)
+          addKCLError(e)
         } else {
           setError('problem')
           console.log(e)
@@ -306,6 +304,7 @@ export function App() {
           </div>
           <MemoryPanel />
           <Logs />
+          <KCLErrors />
         </Allotment>
         <Allotment vertical defaultSizes={[40, 400]} minSize={20}>
           <Stream />

@@ -210,6 +210,9 @@ export function parseExpression(tokens: Token[]): BinaryExpression {
   )
   const left = treeWithMabyeBadTopLevelStartEnd?.left as any
   const start = left?.startExtended || treeWithMabyeBadTopLevelStartEnd?.start
+  if (left == undefined || left == null) {
+    throw new KCLSyntaxError("syntax")
+  }
   delete left.startExtended
   delete left.endExtended
 
