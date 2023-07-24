@@ -130,7 +130,7 @@ function makeArguments(
   }
   const nextBraceOrCommaToken = nextMeaningfulToken(tokens, argumentToken.index)
   if (nextBraceOrCommaToken.token == undefined) {
-    throw new KCLSyntaxError('Expected argument')
+    throw new KCLSyntaxError('Expected argument', [[argumentToken.token.start, argumentToken.token.end]])
   }
   const isIdentifierOrLiteral =
     nextBraceOrCommaToken.token.type === 'comma' ||
@@ -286,7 +286,7 @@ function makeArguments(
   ) {
     return makeArguments(tokens, argumentToken.index, previousArgs)
   }
-  throw new KCLSyntaxError('Expected a previous Argument if statement to match')
+  throw new KCLSyntaxError('Expected a previous Argument if statement to match', [[argumentToken.token.start, argumentToken.token.end]])
 }
 
 function makeVariableDeclaration(
@@ -309,8 +309,8 @@ function makeVariableDeclaration(
         currentToken.value === 'const'
           ? 'const'
           : currentToken.value === 'fn'
-          ? 'fn'
-          : 'unknown',
+            ? 'fn'
+            : 'unknown',
       declarations,
     },
     lastIndex,
@@ -410,14 +410,14 @@ function makeValue(
         lastIndex: arrowFunctionLastIndex,
       }
     } else {
-      throw new KCLUnimplementedError('expression with braces')
+      throw new KCLUnimplementedError('expression with braces', [[currentToken.start, currentToken.end]])
     }
   }
   if (currentToken.type === 'operator' && currentToken.value === '-') {
     const { expression, lastIndex } = makeUnaryExpression(tokens, index)
     return { value: expression, lastIndex }
   }
-  throw new KCLSyntaxError('Expected a previous Value if statement to match')
+  throw new KCLSyntaxError('Expected a previous Value if statement to match', [[currentToken.start, currentToken.end]])
 }
 
 function makeVariableDeclarators(
@@ -509,7 +509,7 @@ function makeArrayElements(
     nextToken.token.type === 'brace' && nextToken.token.value === ']'
   const isComma = nextToken.token.type === 'comma'
   if (!isClosingBrace && !isComma) {
-    throw new KCLSyntaxError('Expected a comma or closing brace')
+    throw new KCLSyntaxError('Expected a comma or closing brace', [[nextToken.token.start, nextToken.token.end]])
   }
   const nextCallIndex = isClosingBrace
     ? nextToken.index
@@ -604,7 +604,7 @@ function makeObjectProperties(
   )
   const nextKeyIndex =
     commaOrClosingBraceToken.token.type === 'brace' &&
-    commaOrClosingBraceToken.token.value === '}'
+      commaOrClosingBraceToken.token.value === '}'
       ? commaOrClosingBraceToken.index
       : nextKeyToken.index
   return makeObjectProperties(tokens, nextKeyIndex, [
@@ -621,7 +621,7 @@ function makeMemberExpression(
   const keysInfo = collectObjectKeys(tokens, index)
   const lastKey = keysInfo[keysInfo.length - 1]
   const firstKey = keysInfo.shift()
-  if (!firstKey) throw new KCLSyntaxError('Expected a key')
+  if (!firstKey) throw new KCLSyntaxError('Expected a key', [[currentToken.start, currentToken.end]])
   const root = makeIdentifier(tokens, index)
   let memberExpression: MemberExpression = {
     type: 'MemberExpression',
@@ -812,7 +812,8 @@ function makePipeBody(
     lastIndex = val.lastIndex
   } else {
     throw new KCLSyntaxError(
-      'Expected a previous PipeValue if statement to match'
+      'Expected a previous PipeValue if statement to match',
+      [[currentToken.start, currentToken.end]]
     )
   }
 
@@ -893,10 +894,10 @@ function makeBlockStatement(
   const { body, lastIndex, nonCodeMeta } =
     nextToken.token.value === '}'
       ? {
-          body: [],
-          lastIndex: nextToken.index,
-          nonCodeMeta: { noneCodeNodes: {} },
-        }
+        body: [],
+        lastIndex: nextToken.index,
+        nonCodeMeta: { noneCodeNodes: {} },
+      }
       : makeBody({ tokens, tokenIndex: nextToken.index })
   return {
     block: {
@@ -1079,7 +1080,7 @@ function makeBody(
       lastIndex,
     }
   }
-  throw new KCLSyntaxError('Unexpected token')
+  throw new KCLSyntaxError('Unexpected token', [[token.start, token.end]])
 }
 export const abstractSyntaxTree = (tokens: Token[]): Program => {
   const { body, nonCodeMeta } = makeBody({ tokens })
@@ -1234,7 +1235,8 @@ export function findClosingBrace(
     searchOpeningBrace = currentToken.value
     if (!['(', '{', '['].includes(searchOpeningBrace)) {
       throw new KCLSyntaxError(
-        `expected to be started on a opening brace ( { [, instead found '${searchOpeningBrace}'`
+        `expected to be started on a opening brace ( { [, instead found '${searchOpeningBrace}'`,
+        [[currentToken.start, currentToken.end]]
       )
     }
   }
@@ -1246,7 +1248,7 @@ export function findClosingBrace(
         currentToken.value === closingBraceMap[searchOpeningBrace]
       )
     } catch (e: any) {
-      throw new KCLSyntaxError('Missing a closing brace')
+      throw new KCLSyntaxError('Missing a closing brace', [[currentToken.start, currentToken.end]])
     }
   })()
 
