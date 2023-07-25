@@ -53,7 +53,8 @@ export function useDismiss() {
 }
 
 const Onboarding = () => {
-  useHotkeys('esc', useDismiss)
+  const dismiss = useDismiss()
+  useHotkeys('esc', dismiss)
 
   return (
     <>
