@@ -1,4 +1,9 @@
-import { faCheck, faFolder, faXmark } from '@fortawesome/free-solid-svg-icons'
+import {
+  faArrowRotateBack,
+  faCheck,
+  faFolder,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../components/ActionButton'
 import { AppHeader } from '../components/AppHeader'
 import { open } from '@tauri-apps/api/dialog'
@@ -6,8 +11,10 @@ import { baseUnits, useStore } from '../useStore'
 import { useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { Toggle } from '../components/Toggle/Toggle'
+import { useNavigate } from 'react-router-dom'
 
 export const Settings = () => {
+  const navigate = useNavigate()
   const {
     defaultDir: ogDefaultDir,
     setDefaultDir: saveDefaultDir,
@@ -19,6 +26,8 @@ export const Settings = () => {
     setDefaultBaseUnit: saveDefaultBaseUnit,
     saveDebugPanel,
     originalDebugPanel,
+    onboardingStatus: ogOnboardingStatus,
+    setOnboardingStatus: saveOnboardingStatus,
   } = useStore((s) => ({
     defaultDir: s.defaultDir,
     setDefaultDir: s.setDefaultDir,
@@ -30,6 +39,8 @@ export const Settings = () => {
     setDefaultBaseUnit: s.setDefaultBaseUnit,
     saveDebugPanel: s.setDebugPanel,
     originalDebugPanel: s.debugPanel,
+    onboardingStatus: s.onboardingStatus,
+    setOnboardingStatus: s.setOnboardingStatus,
   }))
   const [defaultDir, setDefaultDir] = useState(ogDefaultDir)
   const [defaultProjectName, setDefaultProjectName] =
@@ -38,6 +49,7 @@ export const Settings = () => {
     useState(ogDefaultUnitSystem)
   const [defaultBaseUnit, setDefaultBaseUnit] = useState(ogDefaultBaseUnit)
   const [debugPanel, setDebugPanel] = useState(originalDebugPanel)
+  const [onboardingStatus, setOnboardingStatus] = useState(ogOnboardingStatus)
 
   async function handleDirectorySelection() {
     const newDirectory = await open({
@@ -57,6 +69,7 @@ export const Settings = () => {
     saveDefaultUnitSystem(defaultUnitSystem)
     saveDefaultBaseUnit(defaultBaseUnit)
     saveDebugPanel(debugPanel)
+    saveOnboardingStatus(onboardingStatus)
     toast.success('Settings saved!')
   }
 
@@ -163,6 +176,20 @@ export const Settings = () => {
             onChange={(e) => setDebugPanel(e.target.checked)}
           />
         </SettingsSection>
+        <SettingsSection
+          title="Onboarding"
+          description="Replay the onboarding process"
+        >
+          <ActionButton
+            onClick={() => {
+              saveOnboardingStatus('')
+              navigate('/')
+            }}
+            icon={{ icon: faArrowRotateBack }}
+          >
+            Replay Onboarding
+          </ActionButton>
+        </SettingsSection>
         <ActionButton
           className="hover:border-succeed-50"
           onClick={handleSaveClick}
@@ -186,7 +213,7 @@ interface SettingsSectionProps extends React.PropsWithChildren {
   description?: string
 }
 
-function SettingsSection({
+export function SettingsSection({
   title,
   description,
   children,

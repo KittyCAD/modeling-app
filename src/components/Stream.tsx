@@ -121,7 +121,7 @@ export const Stream = () => {
   }
 
   return (
-    <div>
+    <div id="stream">
       <PanelHeader title="Stream" />
       <video
         ref={videoRef}

@@ -12,7 +12,6 @@ import {
   addLineHighlight,
 } from './editor/highlightextension'
 import { Selections, useStore } from './useStore'
-import { Toolbar } from './Toolbar'
 import { Logs } from './components/Logs'
 import { PanelHeader } from './components/PanelHeader'
 import { MemoryPanel } from './components/MemoryPanel'
@@ -262,7 +261,6 @@ export function App() {
       <AppHeader />
       <ModalContainer />
       <Allotment snap={true}>
-
         <Allotment vertical defaultSizes={[5, 400, 1, 1]} minSize={20}>
           <SetToken />
           <div className="h-full flex flex-col items-start">

@@ -165,6 +165,8 @@ export interface StoreState {
   setDefaultBaseUnit: (defaultBaseUnit: string) => void
   showHomeMenu: boolean
   setHomeShowMenu: (showMenu: boolean) => void
+  onboardingStatus: string
+  setOnboardingStatus: (status: string) => void
   homeMenuItems: {
     name: string
     path: string
@@ -329,6 +331,8 @@ export const useStore = create<StoreState>()(
       setDefaultUnitSystem: (defaultUnitSystem) => set({ defaultUnitSystem }),
       defaultBaseUnit: 'in',
       setDefaultBaseUnit: (defaultBaseUnit) => set({ defaultBaseUnit }),
+      onboardingStatus: 'new',
+      setOnboardingStatus: (onboardingStatus) => set({ onboardingStatus }),
       showHomeMenu: true,
       setHomeShowMenu: (showHomeMenu) => set({ showHomeMenu }),
       homeMenuItems: [],
@@ -349,7 +353,8 @@ export const useStore = create<StoreState>()(
             'defaultUnitSystem',
             'defaultBaseUnit',
             'token',
-            'debugPanel'
+            'debugPanel',
+            'onboardingStatus',
           ].includes(key))
         ),
     }
