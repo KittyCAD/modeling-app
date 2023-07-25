@@ -78,9 +78,7 @@ const Units = () => {
           >
             Dismiss
           </ActionButton>
-          <ActionButton onClick={handleNextClick}
-            icon={{ icon: faArrowRight }}
-          >
+          <ActionButton onClick={handleNextClick} icon={{ icon: faArrowRight }}>
             Next: Camera
           </ActionButton>
         </div>

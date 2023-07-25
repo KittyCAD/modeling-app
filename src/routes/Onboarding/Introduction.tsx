@@ -33,10 +33,7 @@ const Introduction = () => {
           >
             Dismiss
           </ActionButton>
-          <ActionButton
-            onClick={next}
-            icon={{ icon: faArrowRight }}
-          >
+          <ActionButton onClick={next} icon={{ icon: faArrowRight }}>
             Get Started
           </ActionButton>
         </div>

@@ -10,59 +10,57 @@ import Sketching from './Sketching'
 import { useCallback } from 'react'
 
 export const onboardingRoutes = [
-    {
-        path: '',
-        element: <Introduction />,
-    },
-    {
-        path: 'units',
-        element: <Units />,
-    },
-    {
-        path: 'camera',
-        element: <Camera />,
-    },
-    {
-        path: 'sketching',
-        element: <Sketching />,
-    }
+  {
+    path: '',
+    element: <Introduction />,
+  },
+  {
+    path: 'units',
+    element: <Units />,
+  },
+  {
+    path: 'camera',
+    element: <Camera />,
+  },
+  {
+    path: 'sketching',
+    element: <Sketching />,
+  },
 ]
 
 export function useNextClick(newStatus: string) {
-    const {
-        setOnboardingStatus,
-    } = useStore((s) => ({
-        setOnboardingStatus: s.setOnboardingStatus,
-    }))
-    const navigate = useNavigate()
+  const { setOnboardingStatus } = useStore((s) => ({
+    setOnboardingStatus: s.setOnboardingStatus,
+  }))
+  const navigate = useNavigate()
 
-    return useCallback(() => {
-        setOnboardingStatus(newStatus)
-        navigate('/onboarding/' + newStatus)
-    }, [newStatus, setOnboardingStatus, navigate])
+  return useCallback(() => {
+    setOnboardingStatus(newStatus)
+    navigate('/onboarding/' + newStatus)
+  }, [newStatus, setOnboardingStatus, navigate])
 }
 
 export function useDismiss() {
-    const {
-        setOnboardingStatus,
-    } = useStore((s) => ({
-        setOnboardingStatus: s.setOnboardingStatus,
-    }))
-    const navigate = useNavigate()
+  const { setOnboardingStatus } = useStore((s) => ({
+    setOnboardingStatus: s.setOnboardingStatus,
+  }))
+  const navigate = useNavigate()
 
-    return useCallback(() => {
-        setOnboardingStatus('dismissed')
-        navigate('/')
-    }, [setOnboardingStatus, navigate])
+  return useCallback(() => {
+    setOnboardingStatus('dismissed')
+    navigate('/')
+  }, [setOnboardingStatus, navigate])
 }
 
 const Onboarding = () => {
-    useHotkeys('esc', useDismiss)
+  useHotkeys('esc', useDismiss)
 
-    return <>
-        <Outlet />
-        <App />
+  return (
+    <>
+      <Outlet />
+      <App />
     </>
+  )
 }
 
 export default Onboarding

@@ -1,4 +1,9 @@
-import { faArrowRotateBack, faCheck, faFolder, faXmark } from '@fortawesome/free-solid-svg-icons'
+import {
+  faArrowRotateBack,
+  faCheck,
+  faFolder,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../components/ActionButton'
 import { AppHeader } from '../components/AppHeader'
 import { open } from '@tauri-apps/api/dialog'
@@ -175,11 +180,12 @@ export const Settings = () => {
           title="Onboarding"
           description="Replay the onboarding process"
         >
-          <ActionButton onClick={() => {
-            saveOnboardingStatus('')
-            navigate('/')
-          }}
-            icon={{icon: faArrowRotateBack}}
+          <ActionButton
+            onClick={() => {
+              saveOnboardingStatus('')
+              navigate('/')
+            }}
+            icon={{ icon: faArrowRotateBack }}
           >
             Replay Onboarding
           </ActionButton>
