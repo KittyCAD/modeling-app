@@ -6,6 +6,7 @@ import { SetToken } from './components/TokenInput'
 import { useStore } from './useStore'
 import {
   createBrowserRouter,
+  redirect,
   RouterProvider,
 } from "react-router-dom"
 import { ErrorPage } from './components/ErrorPage'
@@ -17,6 +18,18 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />,
     errorElement: <ErrorPage />,
+    loader: () => {
+      const store = localStorage.getItem('store')
+      if (store === null) {
+        return redirect('/onboarding')
+      } else {
+        const status = (JSON.parse(store)).state.onboardingStatus
+        if (status !== 'done' && status !== 'dismissed') {
+          return redirect('/onboarding/' + status)
+        }
+      } 
+      return null
+    }
   },
   {
     path: "/settings",
