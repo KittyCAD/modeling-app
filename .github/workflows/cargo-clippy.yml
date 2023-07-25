@@ -1,0 +1,41 @@
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+      - '**/rust-toolchain.toml'
+      - '**.rs'
+      - .github/workflows/cargo-clippy.yml
+  pull_request:
+    paths:
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+      - '**/rust-toolchain.toml'
+      - '**.rs'
+      - .github/workflows/cargo-build.yml
+name: cargo clippy
+jobs:
+  cargoclippy:
+    name: cargo clippy
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dir: ['src/wasm-lib', 'src-tauri']
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install latest rust
+        uses: actions-rs/toolchain@v1
+        with:
+            toolchain: stable
+            override: true
+            components: clippy
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2.6.1
+
+      - name: Run clippy
+        run: |
+          cd "${{ matrix.dir }}"
+          cargo clippy --all --tests --all-features -- -D warnings

@@ -283,8 +283,7 @@ export function App() {
           setAst(null)
           return
         }
-        const tokens = await asyncLexer(code)
-        const _ast = abstractSyntaxTree(tokens)
+        const _ast = await asyncParser(code)
         setAst(_ast)
         resetLogs()
         resetKCLErrors()

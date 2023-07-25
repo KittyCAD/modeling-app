@@ -262,7 +262,7 @@ fn return_token_at_index(str: &str, start_index: usize) -> Option<Token> {
     None
 }
 
-fn lexer(str: &str) -> Vec<Token> {
+pub fn lexer(str: &str) -> Vec<Token> {
     fn recursively_tokenise(
         str: &str,
         current_index: usize,

@@ -2,9 +2,9 @@
 //! The inverse of parsing (which generates an AST from the source code)
 use wasm_bindgen::prelude::*;
 
-use crate::abstract_syntax_tree::{
+use crate::abstract_syntax_tree_types::{
     ArrayExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression, FunctionExpression,
-    Literal, MemberExpression, MemberObject, MemberProperty, ObjectExpression, PipeExpression,
+    Literal, LiteralIdentifier, MemberExpression, MemberObject, ObjectExpression, PipeExpression,
     Program, UnaryExpression, Value,
 };
 
@@ -212,14 +212,14 @@ fn recast_argument(argument: Value, indentation: String, is_in_pipe_expression: 
 
 fn recast_member_expression(expression: MemberExpression) -> String {
     let key_str = match expression.property {
-        MemberProperty::Identifier(identifier) => {
+        LiteralIdentifier::Identifier(identifier) => {
             if expression.computed {
                 format!("[{}]", &(*identifier.name))
             } else {
                 format!(".{}", &(*identifier.name))
             }
         }
-        MemberProperty::Literal(lit) => format!("[{}]", &(*lit.raw)),
+        LiteralIdentifier::Literal(lit) => format!("[{}]", &(*lit.raw)),
     };
 
     match expression.object {
