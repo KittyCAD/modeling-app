@@ -1,13 +1,10 @@
 import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
-import { useStore } from '../../useStore'
 import { ActionButton } from '../../components/ActionButton'
+import { useDismiss, useNextClick } from '.'
 
-interface IntroductionProps extends React.PropsWithChildren {}
-
-const Introduction = ({ children, ...props }: IntroductionProps) => {
-  const { setOnboardingStatus } = useStore((s) => ({
-    setOnboardingStatus: s.setOnboardingStatus,
-  }))
+const Introduction = () => {
+  const dismiss = useDismiss()
+  const next = useNextClick('units')
 
   return (
     <div className="fixed grid place-content-center inset-0 bg-chalkboard-110/50 z-50">
@@ -25,9 +22,7 @@ const Introduction = ({ children, ...props }: IntroductionProps) => {
         </p>
         <div className="flex justify-between mt-6">
           <ActionButton
-            as="link"
-            to="/"
-            onClick={() => setOnboardingStatus('dismissed')}
+            onClick={dismiss}
             icon={{
               icon: faXmark,
               bgClassName: 'bg-destroy-80',
@@ -39,8 +34,7 @@ const Introduction = ({ children, ...props }: IntroductionProps) => {
             Dismiss
           </ActionButton>
           <ActionButton
-            as="link"
-            to="/onboarding/units"
+            onClick={next}
             icon={{ icon: faArrowRight }}
           >
             Get Started

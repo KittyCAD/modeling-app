@@ -1,27 +1,17 @@
 import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../../components/ActionButton'
-import { createBackdropHighlight } from '../../lib/createBackdropHighlight'
-import { useEffect, useState } from 'react'
-import { useDismiss, useNextClick } from '.'
+import { useDismiss } from '.'
 
-const Units = () => {
+const Sketching = () => {
   const dismiss = useDismiss()
-  const next = useNextClick('sketching')
-  const [clipPath, setClipPath] = useState('')
-
-  useEffect(() => {
-    setClipPath(createBackdropHighlight('stream'))
-  }, [])
 
   return (
-    <div className="fixed grid justify-center items-end inset-0 bg-chalkboard-110/50 z-50"
-      style={{ clipPath }}
-    >
+    <div className="fixed grid justify-center items-end inset-0 bg-chalkboard-110/50 z-50">
       <div className="max-w-2xl flex flex-col justify-center bg-white p-8 rounded"
       >
-        <h1 className="text-2xl font-bold">Camera</h1>
+        <h1 className="text-2xl font-bold">Sketching</h1>
         <p className="mt-6">
-          Moving the camera is easy. Just click and drag anywhere in the scene to rotate the camera, or hold down the <kbd>Ctrl</kbd> key and drag to pan the camera.
+          We still have to implement this step, and the rest of the tutorial!
         </p>
         <div className="flex justify-between mt-6">
           <ActionButton
@@ -37,10 +27,10 @@ const Units = () => {
             Dismiss
           </ActionButton>
           <ActionButton
-            onClick={next}
+            onClick={dismiss}
             icon={{ icon: faArrowRight }}
           >
-            Next: Sketching
+            Finish
           </ActionButton>
         </div>
       </div>
@@ -48,4 +38,4 @@ const Units = () => {
   )
 }
 
-export default Units
+export default Sketching

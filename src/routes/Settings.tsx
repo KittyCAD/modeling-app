@@ -6,8 +6,10 @@ import { baseUnits, useStore } from '../useStore'
 import { useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { Toggle } from '../components/Toggle/Toggle'
+import { useNavigate } from 'react-router-dom'
 
 export const Settings = () => {
+  const navigate = useNavigate()
   const {
     defaultDir: ogDefaultDir,
     setDefaultDir: saveDefaultDir,
@@ -173,7 +175,10 @@ export const Settings = () => {
           title="Onboarding"
           description="Replay the onboarding process"
         >
-          <ActionButton as="link" to="/onboarding"
+          <ActionButton onClick={() => {
+            saveOnboardingStatus('')
+            navigate('/')
+          }}
             icon={{icon: faArrowRotateBack}}
           >
             Replay Onboarding

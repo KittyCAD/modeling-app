@@ -4,20 +4,17 @@ import { ActionButton } from '../../components/ActionButton'
 import { SettingsSection } from '../Settings'
 import { Toggle } from '../../components/Toggle/Toggle'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useDismiss, useNextClick } from '.'
 
-interface IntroductionProps extends React.PropsWithChildren {}
-
-const Units = ({ children, ...props }: IntroductionProps) => {
-  const navigate = useNavigate()
+const Units = () => {
+  const dismiss = useDismiss()
+  const next = useNextClick('camera')
   const {
-    setOnboardingStatus,
     defaultUnitSystem: ogDefaultUnitSystem,
     setDefaultUnitSystem: saveDefaultUnitSystem,
     defaultBaseUnit: ogDefaultBaseUnit,
     setDefaultBaseUnit: saveDefaultBaseUnit,
   } = useStore((s) => ({
-    setOnboardingStatus: s.setOnboardingStatus,
     defaultUnitSystem: s.defaultUnitSystem,
     setDefaultUnitSystem: s.setDefaultUnitSystem,
     defaultBaseUnit: s.defaultBaseUnit,
@@ -28,10 +25,9 @@ const Units = ({ children, ...props }: IntroductionProps) => {
   const [defaultBaseUnit, setDefaultBaseUnit] = useState(ogDefaultBaseUnit)
 
   function handleNextClick() {
-    setOnboardingStatus('camera')
     saveDefaultUnitSystem(defaultUnitSystem)
     saveDefaultBaseUnit(defaultBaseUnit)
-    navigate('/onboarding/camera')
+    next()
   }
 
   return (
@@ -71,9 +67,7 @@ const Units = ({ children, ...props }: IntroductionProps) => {
         </SettingsSection>
         <div className="flex justify-between mt-6">
           <ActionButton
-            as="link"
-            to="/"
-            onClick={() => setOnboardingStatus('dismissed')}
+            onClick={dismiss}
             icon={{
               icon: faXmark,
               bgClassName: 'bg-destroy-80',

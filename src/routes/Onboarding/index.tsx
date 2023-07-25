@@ -6,6 +6,8 @@ import { App } from '../../App'
 import Introduction from './Introduction'
 import Units from './Units'
 import Camera from './Camera'
+import Sketching from './Sketching'
+import { useCallback } from 'react'
 
 export const onboardingRoutes = [
     {
@@ -20,20 +22,42 @@ export const onboardingRoutes = [
         path: 'camera',
         element: <Camera />,
     },
+    {
+        path: 'sketching',
+        element: <Sketching />,
+    }
 ]
 
-const Onboarding = () => {
+export function useNextClick(newStatus: string) {
     const {
         setOnboardingStatus,
     } = useStore((s) => ({
         setOnboardingStatus: s.setOnboardingStatus,
     }))
-
     const navigate = useNavigate()
-    useHotkeys('esc', () => {
+
+    return useCallback(() => {
+        setOnboardingStatus(newStatus)
+        navigate('/onboarding/' + newStatus)
+    }, [newStatus, setOnboardingStatus, navigate])
+}
+
+export function useDismiss() {
+    const {
+        setOnboardingStatus,
+    } = useStore((s) => ({
+        setOnboardingStatus: s.setOnboardingStatus,
+    }))
+    const navigate = useNavigate()
+
+    return useCallback(() => {
         setOnboardingStatus('dismissed')
         navigate('/')
-    })
+    }, [setOnboardingStatus, navigate])
+}
+
+const Onboarding = () => {
+    useHotkeys('esc', useDismiss)
 
     return <>
         <Outlet />
