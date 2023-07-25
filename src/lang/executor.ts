@@ -188,7 +188,7 @@ export const executor = async (
   tempMapCallback: (a: {
     artifactMap: ArtifactMap
     sourceRangeMap: SourceRangeMap
-  }) => void = () => { }
+  }) => void = () => {}
 ): Promise<ProgramMemory> => {
   engineCommandManager.startNewSession()
   const _programMemory = await _executor(

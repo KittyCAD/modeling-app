@@ -253,10 +253,8 @@ export function App() {
         })
         .catch(e => {
           if (e instanceof KCLError) {
-            console.log("KCL error, handling")
             addKCLError(e)
           } else {
-            console.log("non-KCL error, rethrowing")
             throw e
           }
         })
@@ -277,7 +275,7 @@ export function App() {
       <AppHeader />
       <ModalContainer />
       <Allotment snap={true}>
-        <Allotment vertical defaultSizes={[5, 400, 1, 1]} minSize={20}>
+        <Allotment vertical defaultSizes={[5, 400, 1, 1, 200]} minSize={20}>
           <SetToken />
           <div className="h-full flex flex-col items-start">
             <PanelHeader title="Editor" />
