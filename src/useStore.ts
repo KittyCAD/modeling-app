@@ -331,7 +331,7 @@ export const useStore = create<StoreState>()(
       setDefaultUnitSystem: (defaultUnitSystem) => set({ defaultUnitSystem }),
       defaultBaseUnit: 'in',
       setDefaultBaseUnit: (defaultBaseUnit) => set({ defaultBaseUnit }),
-      onboardingStatus: 'new',
+      onboardingStatus: '',
       setOnboardingStatus: (onboardingStatus) => set({ onboardingStatus }),
       showHomeMenu: true,
       setHomeShowMenu: (showHomeMenu) => set({ showHomeMenu }),
