@@ -41,7 +41,7 @@ const SignIn = () => {
         <ActionButton
           as="link"
           to={`https://dev.kittycad.io/signin?callbackUrl=${encodeURIComponent(
-            typeof window !== 'undefined' && window.location.href
+            typeof window !== 'undefined' && window.location.href.replace("signin", "")
           )}`}
           icon={{ icon: faSignInAlt }}
           className="w-fit mt-4"

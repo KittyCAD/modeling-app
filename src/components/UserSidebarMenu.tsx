@@ -1,9 +1,15 @@
 import { Popover } from '@headlessui/react'
-import { User } from '../useStore'
+import { User, useStore } from '../useStore'
 import { ActionButton } from './ActionButton'
-import { faGear } from '@fortawesome/free-solid-svg-icons'
+import { faGear, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+import { useNavigate } from 'react-router-dom'
 
 const UserSidebarMenu = ({ user }: { user: User }) => {
+  const navigate = useNavigate()
+  const { setToken } = useStore((s) => ({
+    setToken: s.setToken,
+  }))
+
   return (
     <Popover className="relative">
       <Popover.Button className="rounded-full border border-chalkboard-70 hover:border-liquid-50 overflow-hidden">
@@ -35,7 +41,7 @@ const UserSidebarMenu = ({ user }: { user: User }) => {
             )}
           </div>
         </div>
-        <div className="p-4">
+        <div className="p-4 flex flex-col gap-2">
           <ActionButton
             as="link"
             icon={{ icon: faGear }}
@@ -43,6 +49,22 @@ const UserSidebarMenu = ({ user }: { user: User }) => {
             className="border-transparent"
           >
             Settings
+          </ActionButton>
+          <ActionButton
+            as="button"
+            onClick={() => {
+              setToken('')
+              navigate('/signin')
+            }}
+            icon={{
+              icon: faSignOutAlt,
+              bgClassName: 'bg-destroy-80',
+              iconClassName:
+                'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
+            }}
+            className="border-transparent hover:border-destroy-40"
+          >
+            Sign out
           </ActionButton>
         </div>
       </Popover.Panel>
