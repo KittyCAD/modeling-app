@@ -3,8 +3,7 @@ import util from 'util'
 import fetch from 'isomorphic-fetch'
 
 class MockRTCPeerConnection {
-  constructor() {
-  }
+  constructor() {}
   createDataChannel() {
     return
   }

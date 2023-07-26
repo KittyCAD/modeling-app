@@ -15,7 +15,11 @@ import { recast } from './lang/recast'
 import { asyncLexer } from './lang/tokeniser'
 import { EditorSelection } from '@codemirror/state'
 import { BaseDirectory } from '@tauri-apps/api/fs'
-import { ArtifactMap, SourceRangeMap, EngineCommandManager } from './lang/std/engineConnection'
+import {
+  ArtifactMap,
+  SourceRangeMap,
+  EngineCommandManager,
+} from './lang/std/engineConnection'
 
 export type Selection = {
   type: 'default' | 'line-end' | 'line-mid'
@@ -159,9 +163,9 @@ export interface StoreState {
   setDefaultDir: (dir: DefaultDir) => void
   defaultProjectName: string
   setDefaultProjectName: (defaultProjectName: string) => void
-  defaultUnitSystem: UnitSystem,
+  defaultUnitSystem: UnitSystem
   setDefaultUnitSystem: (defaultUnitSystem: UnitSystem) => void
-  defaultBaseUnit: string,
+  defaultBaseUnit: string
   setDefaultBaseUnit: (defaultBaseUnit: string) => void
   showHomeMenu: boolean
   setHomeShowMenu: (showMenu: boolean) => void
@@ -319,14 +323,15 @@ export const useStore = create<StoreState>()(
       setMediaStream: (mediaStream) => set({ mediaStream }),
       isStreamReady: false,
       setIsStreamReady: (isStreamReady) => set({ isStreamReady }),
-  
+
       // tauri specific app settings
       defaultDir: {
         dir: '~/Documents/',
       },
       setDefaultDir: (dir) => set({ defaultDir: dir }),
       defaultProjectName: 'new-project-$n',
-      setDefaultProjectName: (defaultProjectName) => set({ defaultProjectName }),
+      setDefaultProjectName: (defaultProjectName) =>
+        set({ defaultProjectName }),
       defaultUnitSystem: 'imperial',
       setDefaultUnitSystem: (defaultUnitSystem) => set({ defaultUnitSystem }),
       defaultBaseUnit: 'in',
@@ -346,16 +351,18 @@ export const useStore = create<StoreState>()(
       name: 'store',
       partialize: (state) =>
         Object.fromEntries(
-          Object.entries(state).filter(([key]) => [
-            'code',
-            'defaultDir',
-            'defaultProjectName',
-            'defaultUnitSystem',
-            'defaultBaseUnit',
-            'token',
-            'debugPanel',
-            'onboardingStatus',
-          ].includes(key))
+          Object.entries(state).filter(([key]) =>
+            [
+              'code',
+              'defaultDir',
+              'defaultProjectName',
+              'defaultUnitSystem',
+              'defaultBaseUnit',
+              'token',
+              'debugPanel',
+              'onboardingStatus',
+            ].includes(key)
+          )
         ),
     }
   )

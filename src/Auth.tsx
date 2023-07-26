@@ -4,18 +4,14 @@ import withBaseUrl from './lib/withBaseURL'
 import { App } from './App'
 import { SetToken } from './components/TokenInput'
 import { useStore } from './useStore'
-import {
-  createBrowserRouter,
-  redirect,
-  RouterProvider,
-} from "react-router-dom"
+import { createBrowserRouter, redirect, RouterProvider } from 'react-router-dom'
 import { ErrorPage } from './components/ErrorPage'
 import { Settings } from './routes/Settings'
 import Onboarding, { onboardingRoutes } from './routes/Onboarding'
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <App />,
     errorElement: <ErrorPage />,
     loader: () => {
@@ -23,28 +19,28 @@ const router = createBrowserRouter([
       if (store === null) {
         return redirect('/onboarding')
       } else {
-        const status = (JSON.parse(store)).state.onboardingStatus
+        const status = JSON.parse(store).state.onboardingStatus
         if (status !== 'done' && status !== 'dismissed') {
           return redirect('/onboarding/' + status)
         }
-      } 
+      }
       return null
-    }
+    },
   },
   {
-    path: "/settings",
+    path: '/settings',
     element: <Settings />,
   },
   {
-    path: "/onboarding",
-    element: <Onboarding/>,
+    path: '/onboarding',
+    element: <Onboarding />,
     children: onboardingRoutes,
-  }
+  },
 ])
 
 export const Auth = () => {
   const { data: user } = useSWR(withBaseUrl('/user'), fetcher) as any
-  const  {token} = useStore((s) => ({
+  const { token } = useStore((s) => ({
     token: s.token,
   }))
 
