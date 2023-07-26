@@ -137,7 +137,7 @@ const addItemToMemory = (
   if (_programMemory.root[key] || _programMemory.pendingMemory[key]) {
     throw new KCLValueAlreadyDefined(
       key,
-      [], // TODO: Pass a sourceRange to this function.
+      [] // TODO: Pass a sourceRange to this function.
     )
   }
   if (value instanceof Promise) {
