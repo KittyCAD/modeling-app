@@ -138,14 +138,20 @@ const addItemToMemory = (
     _programMemory.pendingMemory[key] = value
     value.then((resolvedValue) => {
       if (_programMemory.root[key] || _programMemory.pendingMemory[key]) {
-        throw new KCLValueAlreadyDefined(key, resolvedValue.__meta.map((m) => m.sourceRange))
+        throw new KCLValueAlreadyDefined(
+          key,
+          resolvedValue.__meta.map((m) => m.sourceRange)
+        )
       }
       _programMemory.root[key] = resolvedValue
       delete _programMemory.pendingMemory[key]
     })
   } else {
     if (_programMemory.root[key] || _programMemory.pendingMemory[key]) {
-      throw new KCLValueAlreadyDefined(key, value.__meta.map((m) => m.sourceRange))
+      throw new KCLValueAlreadyDefined(
+        key,
+        value.__meta.map((m) => m.sourceRange)
+      )
     }
     _programMemory.root[key] = value
   }
@@ -343,7 +349,11 @@ export const _executor = async (
                     value: await prom,
                   }
                 } else if (element.type === 'Identifier') {
-                  const node = await getMemoryItem(_programMemory, element.name, [[element.start, element.end]])
+                  const node = await getMemoryItem(
+                    _programMemory,
+                    element.name,
+                    [[element.start, element.end]]
+                  )
                   return {
                     value: node.value,
                     __meta: node.__meta[node.__meta.length - 1],
@@ -363,7 +373,7 @@ export const _executor = async (
                     `Unexpected element type ${element.type} in array expression`,
                     // TODO: Refactor this whole block into a `switch` so that we have a specific
                     // type here and can put a sourceRange.
-                    [],
+                    []
                   )
                 }
               }
@@ -474,10 +484,10 @@ export const _executor = async (
               return a?.type === 'sketchGroup' || a?.type === 'extrudeGroup'
                 ? a
                 : {
-                  type: 'userVal',
-                  value: a,
-                  __meta,
-                }
+                    type: 'userVal',
+                    value: a,
+                    __meta,
+                  }
             })
           )
         } else {
@@ -508,10 +518,9 @@ export const _executor = async (
           _programMemory.return = expression.arguments as any // todo memory redo
         } else {
           if (_programMemory.root[functionName] == undefined) {
-            throw new KCLSemanticError(
-              `No such name ${functionName} defined`,
-              [[statement.start, statement.end]]
-            )
+            throw new KCLSemanticError(`No such name ${functionName} defined`, [
+              [statement.start, statement.end],
+            ])
           }
           _programMemory.root[functionName].value(...args)
         }
@@ -559,11 +568,11 @@ async function getBinaryExpressionResult(
     body: PipeExpression['body']
     sourceRangeOverride?: SourceRange
   } = {
-      isInPipe: false,
-      previousResults: [],
-      expressionIndex: 0,
-      body: [],
-    }
+    isInPipe: false,
+    previousResults: [],
+    expressionIndex: 0,
+    body: [],
+  }
 ) {
   const _pipeInfo = {
     ...pipeInfo,
@@ -599,11 +608,11 @@ async function getBinaryPartResult(
     body: PipeExpression['body']
     sourceRangeOverride?: SourceRange
   } = {
-      isInPipe: false,
-      previousResults: [],
-      expressionIndex: 0,
-      body: [],
-    }
+    isInPipe: false,
+    previousResults: [],
+    expressionIndex: 0,
+    body: [],
+  }
 ): Promise<any> {
   const _pipeInfo = {
     ...pipeInfo,
@@ -645,11 +654,11 @@ async function getUnaryExpressionResult(
     body: PipeExpression['body']
     sourceRangeOverride?: SourceRange
   } = {
-      isInPipe: false,
-      previousResults: [],
-      expressionIndex: 0,
-      body: [],
-    }
+    isInPipe: false,
+    previousResults: [],
+    expressionIndex: 0,
+    body: [],
+  }
 ) {
   return -(await getBinaryPartResult(
     expression.argument,
@@ -719,7 +728,9 @@ async function executePipeBody(
     )
   }
 
-  throw new KCLSyntaxError('Invalid pipe expression', [[expression.start, expression.end]])
+  throw new KCLSyntaxError('Invalid pipe expression', [
+    [expression.start, expression.end],
+  ])
 }
 
 async function executeObjectExpression(
@@ -733,11 +744,11 @@ async function executeObjectExpression(
     body: PipeExpression['body']
     sourceRangeOverride?: SourceRange
   } = {
-      isInPipe: false,
-      previousResults: [],
-      expressionIndex: 0,
-      body: [],
-    }
+    isInPipe: false,
+    previousResults: [],
+    expressionIndex: 0,
+    body: [],
+  }
 ) {
   const _pipeInfo = {
     ...pipeInfo,
@@ -768,7 +779,9 @@ async function executeObjectExpression(
         obj[property.key.name] = await prom
       } else if (property.value.type === 'Identifier') {
         obj[property.key.name] = (
-          await getMemoryItem(_programMemory, property.value.name, [[property.value.start, property.value.end]])
+          await getMemoryItem(_programMemory, property.value.name, [
+            [property.value.start, property.value.end],
+          ])
         ).value
       } else if (property.value.type === 'ObjectExpression') {
         const prom = executeObjectExpression(
@@ -833,11 +846,11 @@ async function executeArrayExpression(
     body: PipeExpression['body']
     sourceRangeOverride?: SourceRange
   } = {
-      isInPipe: false,
-      previousResults: [],
-      expressionIndex: 0,
-      body: [],
-    }
+    isInPipe: false,
+    previousResults: [],
+    expressionIndex: 0,
+    body: [],
+  }
 ) {
   const _pipeInfo = {
     ...pipeInfo,
@@ -895,11 +908,11 @@ async function executeCallExpression(
     body: PipeExpression['body']
     sourceRangeOverride?: SourceRange
   } = {
-      isInPipe: false,
-      previousResults: [],
-      expressionIndex: 0,
-      body: [],
-    }
+    isInPipe: false,
+    previousResults: [],
+    expressionIndex: 0,
+    body: [],
+  }
 ) {
   const {
     isInPipe,
@@ -919,7 +932,9 @@ async function executeCallExpression(
         return arg.value
       } else if (arg.type === 'Identifier') {
         await new Promise((r) => setTimeout(r)) // push into next even loop, but also probably should fix this
-        const temp = await getMemoryItem(programMemory, arg.name, [[arg.start, arg.end]])
+        const temp = await getMemoryItem(programMemory, arg.name, [
+          [arg.start, arg.end],
+        ])
         return temp?.type === 'userVal' ? temp.value : temp
       } else if (arg.type === 'PipeSubstitution') {
         return previousResults[expressionIndex - 1]
@@ -961,7 +976,9 @@ async function executeCallExpression(
           _pipeInfo
         )
       }
-      throw new KCLSyntaxError('Invalid argument type in function call', [[arg.start, arg.end]])
+      throw new KCLSyntaxError('Invalid argument type in function call', [
+        [arg.start, arg.end],
+      ])
     })
   )
   if (functionName in internalFns) {
@@ -979,6 +996,18 @@ async function executeCallExpression(
     )
     return isInPipe
       ? await executePipeBody(
+          body,
+          programMemory,
+          engineCommandManager,
+          previousPathToNode,
+          expressionIndex + 1,
+          [...previousResults, result]
+        )
+      : result
+  }
+  const result = await programMemory.root[functionName].value(...fnArgs)
+  return isInPipe
+    ? await executePipeBody(
         body,
         programMemory,
         engineCommandManager,
@@ -986,17 +1015,5 @@ async function executeCallExpression(
         expressionIndex + 1,
         [...previousResults, result]
       )
-      : result
-  }
-  const result = await programMemory.root[functionName].value(...fnArgs)
-  return isInPipe
-    ? await executePipeBody(
-      body,
-      programMemory,
-      engineCommandManager,
-      previousPathToNode,
-      expressionIndex + 1,
-      [...previousResults, result]
-    )
     : result
 }

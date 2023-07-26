@@ -83,7 +83,9 @@ export function reversePolishNotation(
   if (isNotCodeToken(currentToken)) {
     return reversePolishNotation(tokens.slice(1), previousPostfix, operators)
   }
-  throw new KCLSyntaxError('Unknown token', [[currentToken.start, currentToken.end]])
+  throw new KCLSyntaxError('Unknown token', [
+    [currentToken.start, currentToken.end],
+  ])
 }
 
 interface ParenthesisToken {
@@ -211,7 +213,10 @@ export function parseExpression(tokens: Token[]): BinaryExpression {
   const left = treeWithMaybeBadTopLevelStartEnd?.left as any
   const start = left?.startExtended || treeWithMaybeBadTopLevelStartEnd?.start
   if (left == undefined || left == null) {
-    throw new KCLSyntaxError('syntax', tokens.map((token) => [token.start, token.end])) // Add text
+    throw new KCLSyntaxError(
+      'syntax',
+      tokens.map((token) => [token.start, token.end])
+    ) // Add text
   }
   delete left.startExtended
   delete left.endExtended

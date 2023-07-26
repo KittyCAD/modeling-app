@@ -5,7 +5,7 @@ export class KCLError {
   constructor(
     kind: string | undefined,
     msg: string,
-    sourceRanges: [number, number][],
+    sourceRanges: [number, number][]
   ) {
     this.kind = kind
     this.msg = msg
