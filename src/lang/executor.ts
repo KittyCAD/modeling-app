@@ -131,28 +131,20 @@ export interface ProgramMemory {
 const addItemToMemory = (
   programMemory: ProgramMemory,
   key: string,
+  sourceRange: [[number, number]],
   value: MemoryItem | Promise<MemoryItem>
 ) => {
   const _programMemory = programMemory
+  if (_programMemory.root[key] || _programMemory.pendingMemory[key]) {
+    throw new KCLValueAlreadyDefined(key, sourceRange)
+  }
   if (value instanceof Promise) {
     _programMemory.pendingMemory[key] = value
     value.then((resolvedValue) => {
-      if (_programMemory.root[key] || _programMemory.pendingMemory[key]) {
-        throw new KCLValueAlreadyDefined(
-          key,
-          resolvedValue.__meta.map((m) => m.sourceRange)
-        )
-      }
       _programMemory.root[key] = resolvedValue
       delete _programMemory.pendingMemory[key]
     })
   } else {
-    if (_programMemory.root[key] || _programMemory.pendingMemory[key]) {
-      throw new KCLValueAlreadyDefined(
-        key,
-        value.__meta.map((m) => m.sourceRange)
-      )
-    }
     _programMemory.root[key] = value
   }
   return _programMemory
@@ -266,27 +258,43 @@ export const _executor = async (
             _programMemory = addItemToMemory(
               _programMemory,
               variableName,
+              [sourceRange],
               value
             )
           } else {
-            _programMemory = addItemToMemory(_programMemory, variableName, {
-              type: 'userVal',
-              value,
-              __meta,
-            })
+            _programMemory = addItemToMemory(
+              _programMemory,
+              variableName,
+              [sourceRange],
+              {
+                type: 'userVal',
+                value,
+                __meta,
+              }
+            )
           }
         } else if (declaration.init.type === 'Identifier') {
-          _programMemory = addItemToMemory(_programMemory, variableName, {
-            type: 'userVal',
-            value: _programMemory.root[declaration.init.name].value,
-            __meta,
-          })
+          _programMemory = addItemToMemory(
+            _programMemory,
+            variableName,
+            [sourceRange],
+            {
+              type: 'userVal',
+              value: _programMemory.root[declaration.init.name].value,
+              __meta,
+            }
+          )
         } else if (declaration.init.type === 'Literal') {
-          _programMemory = addItemToMemory(_programMemory, variableName, {
-            type: 'userVal',
-            value: declaration.init.value,
-            __meta,
-          })
+          _programMemory = addItemToMemory(
+            _programMemory,
+            variableName,
+            [sourceRange],
+            {
+              type: 'userVal',
+              value: declaration.init.value,
+              __meta,
+            }
+          )
         } else if (declaration.init.type === 'BinaryExpression') {
           const prom = getBinaryExpressionResult(
             declaration.init,
@@ -297,6 +305,7 @@ export const _executor = async (
           _programMemory = addItemToMemory(
             _programMemory,
             variableName,
+            [sourceRange],
             promisifyMemoryItem({
               type: 'userVal',
               value: prom,
@@ -313,6 +322,7 @@ export const _executor = async (
           _programMemory = addItemToMemory(
             _programMemory,
             variableName,
+            [sourceRange],
             promisifyMemoryItem({
               type: 'userVal',
               value: prom,
@@ -382,11 +392,16 @@ export const _executor = async (
           const meta = awaitedValueInfo
             .filter(({ __meta }) => __meta)
             .map(({ __meta }) => __meta) as Metadata[]
-          _programMemory = addItemToMemory(_programMemory, variableName, {
-            type: 'userVal',
-            value: awaitedValueInfo.map(({ value }) => value),
-            __meta: [...__meta, ...meta],
-          })
+          _programMemory = addItemToMemory(
+            _programMemory,
+            variableName,
+            [sourceRange],
+            {
+              type: 'userVal',
+              value: awaitedValueInfo.map(({ value }) => value),
+              __meta: [...__meta, ...meta],
+            }
+          )
         } else if (declaration.init.type === 'ObjectExpression') {
           const prom = executeObjectExpression(
             _programMemory,
@@ -397,6 +412,7 @@ export const _executor = async (
           _programMemory = addItemToMemory(
             _programMemory,
             variableName,
+            [sourceRange],
             promisifyMemoryItem({
               type: 'userVal',
               value: prom,
@@ -409,6 +425,7 @@ export const _executor = async (
           _programMemory = addItemToMemory(
             _programMemory,
             declaration.id.name,
+            [sourceRange],
             {
               type: 'userVal',
               value: async (...args: any[]) => {
@@ -432,11 +449,16 @@ export const _executor = async (
                   )
                 }
                 fnInit.params.forEach((param, index) => {
-                  fnMemory = addItemToMemory(fnMemory, param.name, {
-                    type: 'userVal',
-                    value: args[index],
-                    __meta,
-                  })
+                  fnMemory = addItemToMemory(
+                    fnMemory,
+                    param.name,
+                    [sourceRange],
+                    {
+                      type: 'userVal',
+                      value: args[index],
+                      __meta,
+                    }
+                  )
                 })
                 const prom = _executor(
                   fnInit.body,
@@ -463,6 +485,7 @@ export const _executor = async (
           _programMemory = addItemToMemory(
             _programMemory,
             variableName,
+            [sourceRange],
             promisifyMemoryItem({
               type: 'userVal',
               value: prom,
@@ -480,6 +503,7 @@ export const _executor = async (
           _programMemory = addItemToMemory(
             _programMemory,
             variableName,
+            [sourceRange],
             prom.then((a) => {
               return a?.type === 'sketchGroup' || a?.type === 'extrudeGroup'
                 ? a
