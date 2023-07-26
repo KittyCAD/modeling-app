@@ -1,0 +1,6 @@
+# Ignore artifacts:
+build
+coverage
+
+# Ignore Rust projects:
+src/wasm-lib

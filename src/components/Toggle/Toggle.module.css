@@ -1,32 +1,32 @@
 .toggle {
-    @apply flex items-center gap-2 w-fit;
-    --toggle-size: 1.25rem;
-    --padding: 0.25rem;
+  @apply flex items-center gap-2 w-fit;
+  --toggle-size: 1.25rem;
+  --padding: 0.25rem;
 }
 
 .toggle:focus-within > span {
-    @apply outline-none ring-2;
+  @apply outline-none ring-2;
 }
 
 .toggle input {
-    @apply sr-only;
+  @apply sr-only;
 }
 
 .toggle > span {
-    @apply relative rounded border border-chalkboard-110;
-    width: calc(2 * (var(--toggle-size) + var(--padding)));
-    height: calc(var(--toggle-size) + var(--padding));
+  @apply relative rounded border border-chalkboard-110;
+  width: calc(2 * (var(--toggle-size) + var(--padding)));
+  height: calc(var(--toggle-size) + var(--padding));
 }
 
 .toggle > span::after {
-    content: '';
-    @apply absolute w-4 h-4 rounded-sm bg-chalkboard-110;
-    top: 50%;
-    left: 50%;
-    translate: calc(-100% - var(--padding)) -50%;
-    transition: translate 0.08s ease-out;
+  content: '';
+  @apply absolute w-4 h-4 rounded-sm bg-chalkboard-110;
+  top: 50%;
+  left: 50%;
+  translate: calc(-100% - var(--padding)) -50%;
+  transition: translate 0.08s ease-out;
 }
 
 .toggle input:checked + span::after {
-    translate: calc(50% - var(--padding)) -50%;
+  translate: calc(50% - var(--padding)) -50%;
 }
