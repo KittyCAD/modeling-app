@@ -28,7 +28,7 @@ export const Auth = ({ children }: React.PropsWithChildren) => {
     return <SetToken />
   }
 
-  if (!user && !isLocalHost) {
+  if (!token && !isLocalHost) {
     navigate('/signin')
   }
 
