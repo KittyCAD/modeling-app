@@ -12,7 +12,7 @@ import {
   addLineHighlight,
 } from './editor/highlightextension'
 import { Selections, useStore } from './useStore'
-import { Logs } from './components/Logs'
+import { Logs, KCLErrors } from './components/Logs'
 import { PanelHeader } from './components/PanelHeader'
 import { MemoryPanel } from './components/MemoryPanel'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
@@ -22,6 +22,7 @@ import { EngineCommandManager } from './lang/std/engineConnection'
 import { isOverlap } from './lib/utils'
 import { SetToken } from './components/TokenInput'
 import { AppHeader } from './components/AppHeader'
+import { KCLError } from './lang/errors'
 
 export function App() {
   const cam = useRef()
@@ -32,6 +33,7 @@ export function App() {
     setSelectionRanges,
     selectionRanges,
     addLog,
+    addKCLError,
     code,
     setCode,
     setAst,
@@ -79,6 +81,7 @@ export function App() {
     token: s.token,
     formatCode: s.formatCode,
     debugPanel: s.debugPanel,
+    addKCLError: s.addKCLError,
   }))
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
@@ -249,9 +252,13 @@ export function App() {
           setError()
         })
       } catch (e: any) {
-        setError('problem')
-        console.log(e)
-        addLog(e)
+        if (e instanceof KCLError) {
+          addKCLError(e)
+        } else {
+          setError('problem')
+          console.log(e)
+          addLog(e)
+        }
       }
     }
     asyncWrap()
@@ -261,7 +268,7 @@ export function App() {
       <AppHeader />
       <ModalContainer />
       <Allotment snap={true}>
-        <Allotment vertical defaultSizes={[5, 400, 1, 1]} minSize={20}>
+        <Allotment vertical defaultSizes={[5, 400, 1, 1, 200]} minSize={20}>
           <SetToken />
           <div className="h-full flex flex-col items-start">
             <PanelHeader title="Editor" />
@@ -288,6 +295,7 @@ export function App() {
           </div>
           <MemoryPanel />
           <Logs />
+          <KCLErrors />
         </Allotment>
         <Allotment vertical defaultSizes={[40, 400]} minSize={20}>
           <Stream />

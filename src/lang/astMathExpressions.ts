@@ -10,6 +10,7 @@ import {
   isNotCodeToken,
 } from './abstractSyntaxTree'
 import { Token } from './tokeniser'
+import { KCLSyntaxError } from './errors'
 
 export function reversePolishNotation(
   tokens: Token[],
@@ -82,7 +83,9 @@ export function reversePolishNotation(
   if (isNotCodeToken(currentToken)) {
     return reversePolishNotation(tokens.slice(1), previousPostfix, operators)
   }
-  throw new Error('Unknown token')
+  throw new KCLSyntaxError('Unknown token', [
+    [currentToken.start, currentToken.end],
+  ])
 }
 
 interface ParenthesisToken {
@@ -204,21 +207,27 @@ const buildTree = (
 }
 
 export function parseExpression(tokens: Token[]): BinaryExpression {
-  const treeWithMabyeBadTopLevelStartEnd = buildTree(
+  const treeWithMaybeBadTopLevelStartEnd = buildTree(
     reversePolishNotation(tokens)
   )
-  const left = treeWithMabyeBadTopLevelStartEnd?.left as any
-  const start = left?.startExtended || treeWithMabyeBadTopLevelStartEnd?.start
+  const left = treeWithMaybeBadTopLevelStartEnd?.left as any
+  const start = left?.startExtended || treeWithMaybeBadTopLevelStartEnd?.start
+  if (left == undefined || left == null) {
+    throw new KCLSyntaxError(
+      'syntax',
+      tokens.map((token) => [token.start, token.end])
+    ) // Add text
+  }
   delete left.startExtended
   delete left.endExtended
 
-  const right = treeWithMabyeBadTopLevelStartEnd?.right as any
-  const end = right?.endExtended || treeWithMabyeBadTopLevelStartEnd?.end
+  const right = treeWithMaybeBadTopLevelStartEnd?.right as any
+  const end = right?.endExtended || treeWithMaybeBadTopLevelStartEnd?.end
   delete right.startExtended
   delete right.endExtended
 
   const tree: BinaryExpression = {
-    ...treeWithMabyeBadTopLevelStartEnd,
+    ...treeWithMaybeBadTopLevelStartEnd,
     start,
     end,
     left,
@@ -232,7 +241,7 @@ function _precedence(operator: Token): number {
 }
 
 export function precedence(operator: string): number {
-  // might be useful for refenecne to make it match
+  // might be useful for reference to make it match
   // another commonly used lang https://www.w3schools.com/js/js_precedence.asp
   if (['+', '-'].includes(operator)) {
     return 11
