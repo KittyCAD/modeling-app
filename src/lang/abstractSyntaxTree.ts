@@ -309,8 +309,8 @@ function makeVariableDeclaration(
         currentToken.value === 'const'
           ? 'const'
           : currentToken.value === 'fn'
-            ? 'fn'
-            : 'unknown',
+          ? 'fn'
+          : 'unknown',
       declarations,
     },
     lastIndex,
@@ -894,10 +894,10 @@ function makeBlockStatement(
   const { body, lastIndex, nonCodeMeta } =
     nextToken.token.value === '}'
       ? {
-        body: [],
-        lastIndex: nextToken.index,
-        nonCodeMeta: { noneCodeNodes: {} },
-      }
+          body: [],
+          lastIndex: nextToken.index,
+          nonCodeMeta: { noneCodeNodes: {} },
+        }
       : makeBody({ tokens, tokenIndex: nextToken.index })
   return {
     block: {

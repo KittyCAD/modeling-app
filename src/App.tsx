@@ -251,13 +251,6 @@ export function App() {
           // console.log(programMemory)
           setError()
         })
-        .catch(e => {
-          if (e instanceof KCLError) {
-            addKCLError(e)
-          } else {
-            throw e
-          }
-        })
       } catch (e: any) {
         if (e instanceof KCLError) {
           addKCLError(e)
