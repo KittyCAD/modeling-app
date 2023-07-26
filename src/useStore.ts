@@ -20,7 +20,7 @@ import {
   SourceRangeMap,
   EngineCommandManager,
 } from './lang/std/engineConnection'
-import { KCLError } from './lang/errors'
+import { KCLError, KCLUndefinedValueError } from './lang/errors'
 
 export type Selection = {
   type: 'default' | 'line-end' | 'line-mid'
