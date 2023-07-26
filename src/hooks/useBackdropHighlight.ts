@@ -31,10 +31,12 @@ export function useBackdropHighlight(target: string): string {
   // initial setup of clip path
   useEffect(() => {
     if (!elem) {
-        const newElem = document.getElementById(target)
-        if (newElem === null) {
-            throw new Error(`Could not find element with id "${target}" to highlight`)
-        }
+      const newElem = document.getElementById(target)
+      if (newElem === null) {
+        throw new Error(
+          `Could not find element with id "${target}" to highlight`
+        )
+      }
       setElem(document.getElementById(target))
       return
     }
