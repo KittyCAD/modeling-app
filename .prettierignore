@@ -3,4 +3,5 @@ build
 coverage
 
 # Ignore Rust projects:
-src/wasm-lib
+*.rs
+target
