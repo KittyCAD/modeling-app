@@ -131,13 +131,14 @@ export interface ProgramMemory {
 const addItemToMemory = (
   programMemory: ProgramMemory,
   key: string,
+  sourceRange: [[number, number]],
   value: MemoryItem | Promise<MemoryItem>
 ) => {
   const _programMemory = programMemory
   if (_programMemory.root[key] || _programMemory.pendingMemory[key]) {
     throw new KCLValueAlreadyDefined(
       key,
-      [] // TODO: Pass a sourceRange to this function.
+      sourceRange,
     )
   }
   if (value instanceof Promise) {
@@ -260,23 +261,28 @@ export const _executor = async (
             _programMemory = addItemToMemory(
               _programMemory,
               variableName,
+              [sourceRange],
               value
             )
           } else {
-            _programMemory = addItemToMemory(_programMemory, variableName, {
+            _programMemory = addItemToMemory(_programMemory, variableName, 
+              [sourceRange],
+              {
               type: 'userVal',
               value,
               __meta,
             })
           }
         } else if (declaration.init.type === 'Identifier') {
-          _programMemory = addItemToMemory(_programMemory, variableName, {
+          _programMemory = addItemToMemory(_programMemory, variableName, 
+            [sourceRange],{
             type: 'userVal',
             value: _programMemory.root[declaration.init.name].value,
             __meta,
           })
         } else if (declaration.init.type === 'Literal') {
-          _programMemory = addItemToMemory(_programMemory, variableName, {
+          _programMemory = addItemToMemory(_programMemory, variableName,
+            [sourceRange], {
             type: 'userVal',
             value: declaration.init.value,
             __meta,
@@ -291,6 +297,7 @@ export const _executor = async (
           _programMemory = addItemToMemory(
             _programMemory,
             variableName,
+            [sourceRange],
             promisifyMemoryItem({
               type: 'userVal',
               value: prom,
@@ -307,6 +314,7 @@ export const _executor = async (
           _programMemory = addItemToMemory(
             _programMemory,
             variableName,
+            [sourceRange],
             promisifyMemoryItem({
               type: 'userVal',
               value: prom,
@@ -376,7 +384,8 @@ export const _executor = async (
           const meta = awaitedValueInfo
             .filter(({ __meta }) => __meta)
             .map(({ __meta }) => __meta) as Metadata[]
-          _programMemory = addItemToMemory(_programMemory, variableName, {
+          _programMemory = addItemToMemory(_programMemory, variableName, 
+            [sourceRange],{
             type: 'userVal',
             value: awaitedValueInfo.map(({ value }) => value),
             __meta: [...__meta, ...meta],
@@ -391,6 +400,7 @@ export const _executor = async (
           _programMemory = addItemToMemory(
             _programMemory,
             variableName,
+            [sourceRange],
             promisifyMemoryItem({
               type: 'userVal',
               value: prom,
@@ -403,6 +413,7 @@ export const _executor = async (
           _programMemory = addItemToMemory(
             _programMemory,
             declaration.id.name,
+            [sourceRange],
             {
               type: 'userVal',
               value: async (...args: any[]) => {
@@ -426,7 +437,8 @@ export const _executor = async (
                   )
                 }
                 fnInit.params.forEach((param, index) => {
-                  fnMemory = addItemToMemory(fnMemory, param.name, {
+                  fnMemory = addItemToMemory(fnMemory, param.name, 
+                    [sourceRange],{
                     type: 'userVal',
                     value: args[index],
                     __meta,
@@ -457,6 +469,7 @@ export const _executor = async (
           _programMemory = addItemToMemory(
             _programMemory,
             variableName,
+            [sourceRange],
             promisifyMemoryItem({
               type: 'userVal',
               value: prom,
@@ -474,6 +487,7 @@ export const _executor = async (
           _programMemory = addItemToMemory(
             _programMemory,
             variableName,
+            [sourceRange],
             prom.then((a) => {
               return a?.type === 'sketchGroup' || a?.type === 'extrudeGroup'
                 ? a
