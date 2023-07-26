@@ -12,6 +12,7 @@ const config: Config = {
     '^allotment$': 'allotment/dist/legacy',
   },
   setupFilesAfterEnv: ['./src/setupTests.ts'],
+  reporters: [['github-actions', { silent: false }], 'summary'],
 }
 
 export default config
