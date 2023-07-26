@@ -123,9 +123,10 @@ export interface StoreState {
   setGuiMode: (guiMode: GuiModes) => void
   logs: string[]
   addLog: (log: string) => void
+  resetLogs: () => void
   kclErrors: KCLError[]
   addKCLError: (err: KCLError) => void
-  resetLogs: () => void
+  resetKCLErrors: () => void
   ast: Program | null
   setAst: (ast: Program | null) => void
   updateAst: (
@@ -254,12 +255,15 @@ export const useStore = create<StoreState>()(
           set((state) => ({ logs: [...state.logs, log] }))
         }
       },
+      resetLogs: () => {
+        set({ logs: [] })
+      },
       kclErrors: [],
       addKCLError: (e) => {
         set((state) => ({ kclErrors: [...state.kclErrors, e] }))
       },
-      resetLogs: () => {
-        set({ logs: [] })
+      resetKCLErrors: () => {
+        set({ kclErrors: []})
       },
       ast: null,
       setAst: (ast) => {

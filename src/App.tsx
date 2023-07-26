@@ -40,6 +40,7 @@ export function App() {
     setError,
     setProgramMemory,
     resetLogs,
+    resetKCLErrors,
     selectionRangeTypeMap,
     setArtifactMap,
     engineCommandManager: _engineCommandManager,
@@ -66,6 +67,7 @@ export function App() {
     setError: s.setError,
     setProgramMemory: s.setProgramMemory,
     resetLogs: s.resetLogs,
+    resetKCLErrors: s.resetKCLErrors,
     selectionRangeTypeMap: s.selectionRangeTypeMap,
     setArtifactMap: s.setArtifactNSourceRangeMaps,
     engineCommandManager: s.engineCommandManager,
@@ -171,6 +173,7 @@ export function App() {
         const _ast = abstractSyntaxTree(tokens)
         setAst(_ast)
         resetLogs()
+        resetKCLErrors()
         if (_engineCommandManager) {
           _engineCommandManager.endSession()
         }
