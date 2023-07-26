@@ -1,7 +1,26 @@
 import { faSignInAlt } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../components/ActionButton'
+import { isTauri } from '../lib/isTauri'
+import { useStore } from '../useStore'
+import { invoke } from '@tauri-apps/api/tauri'
+import { useNavigate } from 'react-router-dom'
 
 const SignIn = () => {
+  const navigate = useNavigate()
+  const { setToken } = useStore((s) => ({
+    setToken: s.setToken,
+  }))
+  const signInTauri = async () => {
+    // We want to invoke our command to login via device auth.
+    try {
+      const token: string = await invoke('login')
+      setToken(token)
+      navigate('/')
+    } catch (error) {
+      console.error('login button', error)
+    }
+  }
+
   return (
     <main className="h-full min-h-screen bg-chalkboard-20 m-0 p-0 pt-24">
       <div className="max-w-2xl mx-auto">
@@ -38,17 +57,27 @@ const SignIn = () => {
           </a>
           .
         </p>
-        <ActionButton
-          as="link"
-          to={`https://dev.kittycad.io/signin?callbackUrl=${encodeURIComponent(
-            typeof window !== 'undefined' &&
-              window.location.href.replace('signin', '')
-          )}`}
-          icon={{ icon: faSignInAlt }}
-          className="w-fit mt-4"
-        >
-          Sign in
-        </ActionButton>
+        {isTauri() ? (
+          <ActionButton
+            onClick={signInTauri}
+            icon={{ icon: faSignInAlt }}
+            className="w-fit mt-4"
+          >
+            Sign in
+          </ActionButton>
+        ) : (
+          <ActionButton
+            as="link"
+            to={`https://dev.kittycad.io/signin?callbackUrl=${encodeURIComponent(
+              typeof window !== 'undefined' &&
+                window.location.href.replace('signin', '')
+            )}`}
+            icon={{ icon: faSignInAlt }}
+            className="w-fit mt-4"
+          >
+            Sign in
+          </ActionButton>
+        )}
       </div>
     </main>
   )

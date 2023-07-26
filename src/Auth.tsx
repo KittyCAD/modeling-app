@@ -2,13 +2,16 @@ import useSWR from 'swr'
 import fetcher from './lib/fetcher'
 import withBaseUrl from './lib/withBaseURL'
 import { SetToken } from './components/TokenInput'
-import { useStore } from './useStore'
+import { User, useStore } from './useStore'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
+import { isTauri } from './lib/isTauri'
 
 // Wrapper around protected routes, used in src/Router.tsx
 export const Auth = ({ children }: React.PropsWithChildren) => {
-  const { data: user } = useSWR(withBaseUrl('/user'), fetcher) as any
+  const { data: user, isLoading } = useSWR<
+    User | Partial<{ error_code: string }>
+  >(withBaseUrl('/user'), fetcher)
   const { token, setUser } = useStore((s) => ({
     token: s.token,
     setUser: s.setUser,
@@ -16,21 +19,15 @@ export const Auth = ({ children }: React.PropsWithChildren) => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (user && !user.error_code) {
+    console.log('user', user)
+    if (user && 'id' in user) {
       setUser(user)
     }
   }, [user, setUser])
 
-  const isLocalHost =
-    typeof window !== 'undefined' && window.location.hostname === 'localhost'
-
-  if ((window as any).__TAURI__ && !token) {
-    return <SetToken />
-  }
-
-  if (!token && !isLocalHost) {
+  if ((isTauri() && !token) || (!isTauri() && !isLoading && !(user && 'id' in user))) {
     navigate('/signin')
   }
 
-  return <>{children}</>
+  return isLoading ? <>Loading...</> : <>{children}</>
 }
