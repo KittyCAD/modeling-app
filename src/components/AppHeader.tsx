@@ -1,15 +1,22 @@
 import { faGear } from '@fortawesome/free-solid-svg-icons'
 import { Toolbar } from '../Toolbar'
 import { ActionButton } from './ActionButton'
+import { useStore } from '../useStore'
+import { useEffect } from 'react'
+import UserSidebarMenu from './UserSidebarMenu'
 
 interface AppHeaderProps extends React.PropsWithChildren {
   showToolbar?: boolean
 }
 
 export const AppHeader = ({ showToolbar = true, children }: AppHeaderProps) => {
+  const { user } = useStore((s) => ({
+    user: s.user,
+  }))
+
   return (
     <header className="py-1 px-5 bg-chalkboard-10 border-b border-chalkboard-30 flex justify-between items-center">
-      <a href="/project-settings">
+      <a href="/">
         <img
           src="/kitt-arcade-winking.svg"
           alt="KittyCAD App"
@@ -28,9 +35,15 @@ export const AppHeader = ({ showToolbar = true, children }: AppHeaderProps) => {
         // TODO: If signed out, show the token paste field
 
         // If signed in, show the account avatar
-        <ActionButton as="link" icon={{ icon: faGear }} to="/settings">
-          Settings
-        </ActionButton>
+        <>
+          {user ? (
+            <UserSidebarMenu user={user} />
+          ) : (
+            <ActionButton as="link" icon={{ icon: faGear }} to="/settings">
+              Settings
+            </ActionButton>
+          )}
+        </>
       )}
     </header>
   )

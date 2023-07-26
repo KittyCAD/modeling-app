@@ -12,6 +12,7 @@ import {
 import { ErrorPage } from './components/ErrorPage'
 import { Settings } from './routes/Settings'
 import Onboarding, { onboardingRoutes } from './routes/Onboarding'
+import { useEffect } from 'react'
 
 const router = createBrowserRouter([
   {
@@ -44,9 +45,14 @@ const router = createBrowserRouter([
 
 export const Auth = () => {
   const { data: user } = useSWR(withBaseUrl('/user'), fetcher) as any
-  const  {token} = useStore((s) => ({
+  const  {token, setUser} = useStore((s) => ({
     token: s.token,
+    setUser: s.setUser,
   }))
+
+  useEffect(() => {
+    if (user && !user.error_code) { setUser(user) }
+  }, [user, setUser])
 
   const isLocalHost =
     typeof window !== 'undefined' && window.location.hostname === 'localhost'

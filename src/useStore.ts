@@ -103,6 +103,20 @@ interface DefaultDir {
   dir: string
 }
 
+// TODO: import real OpenAPI User type from schema
+export interface User {
+  company?: string
+  created_at: string
+  email: string
+  first_name?: string
+  id: string
+  image?: string
+  last_name?: string
+  name?: string
+  phone?: string
+  updated_at: string
+}
+
 export interface StoreState {
   editorView: EditorView | null
   setEditorView: (editorView: EditorView) => void
@@ -174,6 +188,8 @@ export interface StoreState {
   setHomeMenuItems: (items: { name: string; path: string }[]) => void
   token: string
   setToken: (token: string) => void
+  user?: User
+  setUser: (user: User | undefined) => void
   debugPanel: boolean
   setDebugPanel: (debugPanel: boolean) => void
 }
@@ -339,6 +355,8 @@ export const useStore = create<StoreState>()(
       setHomeMenuItems: (homeMenuItems) => set({ homeMenuItems }),
       token: '',
       setToken: (token) => set({ token }),
+      user: undefined,
+      setUser: (user) => set({ user }),
       debugPanel: false,
       setDebugPanel: (debugPanel) => set({ debugPanel }),
     }),
