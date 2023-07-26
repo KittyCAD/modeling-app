@@ -20,6 +20,7 @@ import {
   SourceRangeMap,
   EngineCommandManager,
 } from './lang/std/engineConnection'
+import { KCLError } from './lang/errors'
 
 export type Selection = {
   type: 'default' | 'line-end' | 'line-mid'
@@ -122,6 +123,8 @@ export interface StoreState {
   setGuiMode: (guiMode: GuiModes) => void
   logs: string[]
   addLog: (log: string) => void
+  kclErrors: KCLError[]
+  addKCLError: (err: KCLError) => void
   resetLogs: () => void
   ast: Program | null
   setAst: (ast: Program | null) => void
@@ -250,6 +253,10 @@ export const useStore = create<StoreState>()(
         } else {
           set((state) => ({ logs: [...state.logs, log] }))
         }
+      },
+      kclErrors: [],
+      addKCLError: (e) => {
+        set((state) => ({ kclErrors: [...state.kclErrors, e] }))
       },
       resetLogs: () => {
         set({ logs: [] })

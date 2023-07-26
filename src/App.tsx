@@ -12,7 +12,7 @@ import {
   addLineHighlight,
 } from './editor/highlightextension'
 import { Selections, useStore } from './useStore'
-import { Logs } from './components/Logs'
+import { Logs, KCLErrors } from './components/Logs'
 import { PanelHeader } from './components/PanelHeader'
 import { MemoryPanel } from './components/MemoryPanel'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
@@ -32,6 +32,7 @@ export function App() {
     setSelectionRanges,
     selectionRanges,
     addLog,
+    addKCLError,
     code,
     setCode,
     setAst,
@@ -58,6 +59,7 @@ export function App() {
     selectionRanges: s.selectionRanges,
     setGuiMode: s.setGuiMode,
     addLog: s.addLog,
+    addKCLError: s.addKCLError,
     code: s.code,
     setCode: s.setCode,
     setAst: s.setAst,
@@ -261,7 +263,7 @@ export function App() {
       <AppHeader />
       <ModalContainer />
       <Allotment snap={true}>
-        <Allotment vertical defaultSizes={[5, 400, 1, 1]} minSize={20}>
+        <Allotment vertical defaultSizes={[5, 400, 200, 1, 1]} minSize={20}>
           <SetToken />
           <div className="h-full flex flex-col items-start">
             <PanelHeader title="Editor" />
@@ -286,6 +288,7 @@ export function App() {
               />
             </div>
           </div>
+          <KCLErrors />
           <MemoryPanel />
           <Logs />
         </Allotment>
