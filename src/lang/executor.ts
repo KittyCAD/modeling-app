@@ -13,6 +13,13 @@ import {
 import { InternalFnNames } from './std/stdTypes'
 import { internalFns } from './std/std'
 import {
+  KCLUndefinedValueError,
+  KCLValueAlreadyDefined,
+  KCLSyntaxError,
+  KCLSemanticError,
+  KCLTypeError,
+} from './errors'
+import {
   EngineCommandManager,
   ArtifactMap,
   SourceRangeMap,
@@ -128,7 +135,10 @@ const addItemToMemory = (
 ) => {
   const _programMemory = programMemory
   if (_programMemory.root[key] || _programMemory.pendingMemory[key]) {
-    throw new Error(`Memory item ${key} already exists`)
+    throw new KCLValueAlreadyDefined(
+      key,
+      [], // TODO: Pass a sourceRange to this function.
+    )
   }
   if (value instanceof Promise) {
     _programMemory.pendingMemory[key] = value
@@ -155,7 +165,8 @@ const promisifyMemoryItem = async (obj: MemoryItem) => {
 
 const getMemoryItem = async (
   programMemory: ProgramMemory,
-  key: string
+  key: string,
+  sourceRanges: [number, number][]
 ): Promise<MemoryItem> => {
   if (programMemory.root[key]) {
     return programMemory.root[key]
@@ -163,7 +174,7 @@ const getMemoryItem = async (
   if (programMemory.pendingMemory[key]) {
     return programMemory.pendingMemory[key] as Promise<MemoryItem>
   }
-  throw new Error(`Memory item ${key} not found`)
+  throw new KCLUndefinedValueError(`Memory item ${key} not found`, sourceRanges)
 }
 
 export const executor = async (
@@ -332,7 +343,11 @@ export const _executor = async (
                     value: await prom,
                   }
                 } else if (element.type === 'Identifier') {
-                  const node = await getMemoryItem(_programMemory, element.name)
+                  const node = await getMemoryItem(
+                    _programMemory,
+                    element.name,
+                    [[element.start, element.end]]
+                  )
                   return {
                     value: node.value,
                     __meta: node.__meta[node.__meta.length - 1],
@@ -348,8 +363,11 @@ export const _executor = async (
                     value: await prom,
                   }
                 } else {
-                  throw new Error(
-                    `Unexpected element type ${element.type} in array expression`
+                  throw new KCLSyntaxError(
+                    `Unexpected element type ${element.type} in array expression`,
+                    // TODO: Refactor this whole block into a `switch` so that we have a specific
+                    // type here and can put a sourceRange.
+                    []
                   )
                 }
               }
@@ -397,12 +415,14 @@ export const _executor = async (
                   },
                 }
                 if (args.length > fnInit.params.length) {
-                  throw new Error(
-                    `Too many arguments passed to function ${declaration.id.name}`
+                  throw new KCLSyntaxError(
+                    `Too many arguments passed to function ${declaration.id.name}`,
+                    [[declaration.start, declaration.end]]
                   )
                 } else if (args.length < fnInit.params.length) {
-                  throw new Error(
-                    `Too few arguments passed to function ${declaration.id.name}`
+                  throw new KCLSyntaxError(
+                    `Too few arguments passed to function ${declaration.id.name}`,
+                    [[declaration.start, declaration.end]]
                   )
                 }
                 fnInit.params.forEach((param, index) => {
@@ -465,8 +485,9 @@ export const _executor = async (
             })
           )
         } else {
-          throw new Error(
-            'Unsupported declaration type: ' + declaration.init.type
+          throw new KCLSyntaxError(
+            'Unsupported declaration type: ' + declaration.init.type,
+            [[declaration.start, declaration.end]]
           )
         }
       })
@@ -483,10 +504,18 @@ export const _executor = async (
         })
         if ('show' === functionName) {
           if (options.bodyType !== 'root') {
-            throw new Error(`Cannot call ${functionName} outside of a root`)
+            throw new KCLSemanticError(
+              `Cannot call ${functionName} outside of a root`,
+              [[statement.start, statement.end]]
+            )
           }
           _programMemory.return = expression.arguments as any // todo memory redo
         } else {
+          if (_programMemory.root[functionName] == undefined) {
+            throw new KCLSemanticError(`No such name ${functionName} defined`, [
+              [statement.start, statement.end],
+            ])
+          }
           _programMemory.root[functionName].value(...args)
         }
       }
@@ -693,7 +722,9 @@ async function executePipeBody(
     )
   }
 
-  throw new Error('Invalid pipe expression')
+  throw new KCLSyntaxError('Invalid pipe expression', [
+    [expression.start, expression.end],
+  ])
 }
 
 async function executeObjectExpression(
@@ -742,7 +773,9 @@ async function executeObjectExpression(
         obj[property.key.name] = await prom
       } else if (property.value.type === 'Identifier') {
         obj[property.key.name] = (
-          await getMemoryItem(_programMemory, property.value.name)
+          await getMemoryItem(_programMemory, property.value.name, [
+            [property.value.start, property.value.end],
+          ])
         ).value
       } else if (property.value.type === 'ObjectExpression') {
         const prom = executeObjectExpression(
@@ -780,13 +813,15 @@ async function executeObjectExpression(
         proms.push(prom)
         obj[property.key.name] = await prom
       } else {
-        throw new Error(
-          `Unexpected property type ${property.value.type} in object expression`
+        throw new KCLSyntaxError(
+          `Unexpected property type ${property.value.type} in object expression`,
+          [[property.value.start, property.value.end]]
         )
       }
     } else {
-      throw new Error(
-        `Unexpected property type ${property.type} in object expression`
+      throw new KCLSyntaxError(
+        `Unexpected property type ${property.type} in object expression`,
+        [[property.value.start, property.value.end]]
       )
     }
   })
@@ -850,7 +885,7 @@ async function executeArrayExpression(
           }
         )
       }
-      throw new Error('Invalid argument type')
+      throw new KCLTypeError('Invalid argument type', [[el.start, el.end]])
     })
   )
 }
@@ -891,7 +926,9 @@ async function executeCallExpression(
         return arg.value
       } else if (arg.type === 'Identifier') {
         await new Promise((r) => setTimeout(r)) // push into next even loop, but also probably should fix this
-        const temp = await getMemoryItem(programMemory, arg.name)
+        const temp = await getMemoryItem(programMemory, arg.name, [
+          [arg.start, arg.end],
+        ])
         return temp?.type === 'userVal' ? temp.value : temp
       } else if (arg.type === 'PipeSubstitution') {
         return previousResults[expressionIndex - 1]
@@ -933,7 +970,9 @@ async function executeCallExpression(
           _pipeInfo
         )
       }
-      throw new Error('Invalid argument type in function call')
+      throw new KCLSyntaxError('Invalid argument type in function call', [
+        [arg.start, arg.end],
+      ])
     })
   )
   if (functionName in internalFns) {
