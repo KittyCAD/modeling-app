@@ -263,7 +263,7 @@ export const useStore = create<StoreState>()(
         set((state) => ({ kclErrors: [...state.kclErrors, e] }))
       },
       resetKCLErrors: () => {
-        set({ kclErrors: []})
+        set({ kclErrors: [] })
       },
       ast: null,
       setAst: (ast) => {
