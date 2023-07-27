@@ -1,4 +1,4 @@
-import { useRef, useEffect, useMemo, useState } from 'react'
+import { useRef, useEffect, useMemo } from 'react'
 import { Allotment } from 'allotment'
 import { DebugPanel } from './components/DebugPanel'
 import { asyncLexer } from './lang/tokeniser'
@@ -25,9 +25,6 @@ import { AppHeader } from './components/AppHeader'
 import { KCLError } from './lang/errors'
 
 export function App() {
-  const [theme, setTheme] = useState<'light' | 'dark'>(
-    window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-  )
   const cam = useRef()
   useHotKeyListener()
   const {
@@ -57,6 +54,7 @@ export function App() {
     token,
     formatCode,
     debugPanel,
+    theme,
   } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
@@ -87,6 +85,7 @@ export function App() {
     formatCode: s.formatCode,
     debugPanel: s.debugPanel,
     addKCLError: s.addKCLError,
+    theme: s.theme,
   }))
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
@@ -269,15 +268,6 @@ export function App() {
     }
     asyncWrap()
   }, [code, isStreamReady])
-
-  useEffect(() => {
-    function matchDarkMode(e: MediaQueryListEvent) {
-      setTheme(e.matches ? 'dark' : 'light')
-    }
-    const darkQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    darkQuery.addEventListener('change', matchDarkMode)
-    return darkQuery.removeEventListener('change', matchDarkMode)
-  }, [])
 
   return (
     <div className="h-screen">

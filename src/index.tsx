@@ -3,12 +3,30 @@ import './index.css'
 import { Auth } from './Auth'
 import reportWebVitals from './reportWebVitals'
 import { Toaster } from 'react-hot-toast'
+import { useStore } from './useStore'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
+function setThemeClass(state: Partial<{ theme: string }>) {
+  if (state.theme === 'dark') {
+    document.body.classList.add('dark')
+  } else {
+    document.body.classList.remove('dark')
+  }
+}
+const { theme } = useStore.getState()
+setThemeClass({ theme })
+useStore.subscribe(setThemeClass)
+
 root.render(
   <>
     <Auth />
-    <Toaster position="bottom-center" />
+    <Toaster
+      position="bottom-center"
+      toastOptions={{
+        className:
+          'bg-chalkboard-10 dark:bg-chalkboard-90 text-chalkboard-110 dark:text-chalkboard-10',
+      }}
+    />
   </>
 )
 
