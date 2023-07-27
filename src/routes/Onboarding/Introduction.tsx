@@ -8,7 +8,7 @@ const Introduction = () => {
 
   return (
     <div className="fixed grid place-content-center inset-0 bg-chalkboard-110/50 z-50">
-      <div className="max-w-3xl bg-white p-8 rounded">
+      <div className="max-w-3xl bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded">
         <h1 className="text-2xl font-bold">
           Welcome to the KittyCAD Modeling App
         </h1>

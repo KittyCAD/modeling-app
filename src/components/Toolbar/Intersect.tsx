@@ -187,9 +187,6 @@ export const Intersect = () => {
           })
         }
       }}
-      className={`border m-1 px-1 rounded text-xs ${
-        enable ? 'bg-gray-50 text-gray-800' : 'bg-gray-200 text-gray-400'
-      }`}
       disabled={!enable}
     >
       perpendicularDistance

@@ -7,7 +7,7 @@ const Sketching = () => {
 
   return (
     <div className="fixed grid justify-center items-end inset-0 bg-chalkboard-110/50 z-50">
-      <div className="max-w-2xl flex flex-col justify-center bg-white p-8 rounded">
+      <div className="max-w-2xl flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded">
         <h1 className="text-2xl font-bold">Sketching</h1>
         <p className="mt-6">
           We still have to implement this step, and the rest of the tutorial!

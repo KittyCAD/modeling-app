@@ -13,14 +13,14 @@
 }
 
 .toggle > span {
-  @apply relative rounded border border-chalkboard-110;
+  @apply relative rounded border border-chalkboard-110 dark:border-chalkboard-40;
   width: calc(2 * (var(--toggle-size) + var(--padding)));
   height: calc(var(--toggle-size) + var(--padding));
 }
 
 .toggle > span::after {
   content: '';
-  @apply absolute w-4 h-4 rounded-sm bg-chalkboard-110;
+  @apply absolute w-4 h-4 rounded-sm bg-chalkboard-110 dark:bg-chalkboard-10;
   top: 50%;
   left: 50%;
   translate: calc(-100% - var(--padding)) -50%;

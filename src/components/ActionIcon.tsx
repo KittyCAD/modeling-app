@@ -29,7 +29,7 @@ export const ActionIcon = ({
       className={
         'p-1 w-fit inline-grid place-content-center ' +
         (bgClassName ||
-          'bg-chalkboard-100 group-hover:bg-chalkboard-90 hover:bg-chalkboard-90')
+          'bg-chalkboard-100 group-hover:bg-chalkboard-90 hover:bg-chalkboard-90 dark:bg-liquid-20 dark:group-hover:bg-liquid-10 dark:hover:bg-liquid-10')
       }
     >
       {children || (
@@ -39,7 +39,7 @@ export const ActionIcon = ({
           height={iconSizes[size]}
           className={
             iconClassName ||
-            'text-liquid-20 group-hover:text-liquid-10 hover:text-liquid-10'
+            'text-liquid-20 group-hover:text-liquid-10 hover:text-liquid-10 dark:text-liquid-100 dark:group-hover:text-liquid-100 dark:hover:text-liquid-100'
           }
         />
       )}

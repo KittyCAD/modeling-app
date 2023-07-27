@@ -12,6 +12,17 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  @apply text-chalkboard-110 dark:text-chalkboard-10;
+  @apply bg-chalkboard-10 dark:bg-chalkboard-100;
+}
+
+button {
+  @apply border m-0.5 px-3 rounded text-xs;
+  @apply dark:border-chalkboard-20 dark:hover:border-chalkboard-10 dark:hover:bg-chalkboard-90;
+}
+
+button:disabled {
+  @apply dark:bg-chalkboard-90 dark:text-chalkboard-40 dark:border-chalkboard-70;
 }
 
 .mono {
