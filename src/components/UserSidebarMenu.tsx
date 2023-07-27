@@ -13,8 +13,8 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
 
   return (
     <Popover className="relative">
-      <Popover.Button>
-        {user?.image ? (
+      {user?.image ? (
+        <Popover.Button>
           <div className="rounded-full border border-chalkboard-70 hover:border-liquid-50 overflow-hidden">
             <img
               src={user?.image || ''}
@@ -22,12 +22,16 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
               className="h-8 w-8"
             />
           </div>
-        ) : (
-          <ActionButton icon={{ icon: faBars }} className="border-transparent">
-            Menu
-          </ActionButton>
-        )}
-      </Popover.Button>
+        </Popover.Button>
+      ) : (
+        <ActionButton
+          Element={Popover.Button}
+          icon={{ icon: faBars }}
+          className="border-transparent"
+        >
+          Menu
+        </ActionButton>
+      )}
       <Popover.Overlay className="fixed z-20 inset-0 bg-chalkboard-110/50" />
 
       <Popover.Panel className="fixed inset-0 left-auto z-30 w-64 bg-chalkboard-10 border border-liquid-100 shadow-md rounded-l-lg">
@@ -55,7 +59,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
         )}
         <div className="p-4 flex flex-col gap-2">
           <ActionButton
-            as="link"
+            Element="link"
             icon={{ icon: faGear }}
             to="/settings"
             className="border-transparent"
@@ -63,7 +67,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
             Settings
           </ActionButton>
           <ActionButton
-            as="button"
+            Element="button"
             onClick={() => {
               setToken('')
               navigate('/signin')

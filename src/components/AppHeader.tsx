@@ -1,6 +1,4 @@
-import { faGear } from '@fortawesome/free-solid-svg-icons'
 import { Toolbar } from '../Toolbar'
-import { ActionButton } from './ActionButton'
 import { useStore } from '../useStore'
 import UserSidebarMenu from './UserSidebarMenu'
 

@@ -67,7 +67,7 @@ const SignIn = () => {
           </ActionButton>
         ) : (
           <ActionButton
-            as="link"
+            Element="link"
             to={`https://dev.kittycad.io/signin?callbackUrl=${encodeURIComponent(
               typeof window !== 'undefined' &&
                 window.location.href.replace('signin', '')
