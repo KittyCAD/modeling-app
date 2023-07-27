@@ -17,7 +17,7 @@ export const ActionButton = ({
   as = 'button',
   children,
 }: ActionButtonProps) => {
-  const classNames = `group mono flex items-center gap-2 rounded-sm border border-chalkboard-40 dark:border-chalkboard-60 hover:border-liquid-40 p-[3px] ${
+  const classNames = `group mono text-base flex items-center gap-2 rounded-sm border border-chalkboard-40 dark:border-chalkboard-60 hover:border-liquid-40 p-[3px] ${
     icon ? 'pr-2' : 'px-2'
   } ${className}`
 
