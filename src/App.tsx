@@ -12,7 +12,7 @@ import {
   addLineHighlight,
 } from './editor/highlightextension'
 import { Selections, useStore } from './useStore'
-import { Logs } from './components/Logs'
+import { Logs, KCLErrors } from './components/Logs'
 import { PanelHeader } from './components/PanelHeader'
 import { MemoryPanel } from './components/MemoryPanel'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
@@ -23,6 +23,7 @@ import { isOverlap } from './lib/utils'
 import { SetToken } from './components/TokenInput'
 import { AppHeader } from './components/AppHeader'
 import { isTauri } from './lib/isTauri'
+import { KCLError } from './lang/errors'
 
 export function App() {
   const cam = useRef()
@@ -33,12 +34,14 @@ export function App() {
     setSelectionRanges,
     selectionRanges,
     addLog,
+    addKCLError,
     code,
     setCode,
     setAst,
     setError,
     setProgramMemory,
     resetLogs,
+    resetKCLErrors,
     selectionRangeTypeMap,
     setArtifactMap,
     engineCommandManager: _engineCommandManager,
@@ -65,6 +68,7 @@ export function App() {
     setError: s.setError,
     setProgramMemory: s.setProgramMemory,
     resetLogs: s.resetLogs,
+    resetKCLErrors: s.resetKCLErrors,
     selectionRangeTypeMap: s.selectionRangeTypeMap,
     setArtifactMap: s.setArtifactNSourceRangeMaps,
     engineCommandManager: s.engineCommandManager,
@@ -80,6 +84,7 @@ export function App() {
     token: s.token,
     formatCode: s.formatCode,
     debugPanel: s.debugPanel,
+    addKCLError: s.addKCLError,
   }))
   const showTauriTokenInput = isTauri() && !token
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
@@ -170,6 +175,7 @@ export function App() {
         const _ast = abstractSyntaxTree(tokens)
         setAst(_ast)
         resetLogs()
+        resetKCLErrors()
         if (_engineCommandManager) {
           _engineCommandManager.endSession()
         }
@@ -251,9 +257,13 @@ export function App() {
           setError()
         })
       } catch (e: any) {
-        setError('problem')
-        console.log(e)
-        addLog(e)
+        if (e instanceof KCLError) {
+          addKCLError(e)
+        } else {
+          setError('problem')
+          console.log(e)
+          addLog(e)
+        }
       }
     }
     asyncWrap()
@@ -265,7 +275,7 @@ export function App() {
       <Allotment snap={true}>
         <Allotment
           vertical
-          defaultSizes={[400, 1, 1]}
+          defaultSizes={[400, 1, 1, 200]}
           minSize={20}
         >
           <div className="h-full flex flex-col items-start">
@@ -293,6 +303,7 @@ export function App() {
           </div>
           <MemoryPanel />
           <Logs />
+          <KCLErrors />
         </Allotment>
         <Allotment vertical defaultSizes={[40, 400]} minSize={20}>
           <Stream />

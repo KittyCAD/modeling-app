@@ -1,5 +1,6 @@
 import { Token } from './tokeniser'
 import { parseExpression } from './astMathExpressions'
+import { KCLSyntaxError, KCLUnimplementedError } from './errors'
 import {
   BinaryPart,
   BodyItem,
@@ -128,6 +129,11 @@ function makeArguments(
     }
   }
   const nextBraceOrCommaToken = nextMeaningfulToken(tokens, argumentToken.index)
+  if (nextBraceOrCommaToken.token == undefined) {
+    throw new KCLSyntaxError('Expected argument', [
+      [argumentToken.token.start, argumentToken.token.end],
+    ])
+  }
   const isIdentifierOrLiteral =
     nextBraceOrCommaToken.token.type === 'comma' ||
     nextBraceOrCommaToken.token.type === 'brace'
@@ -282,7 +288,10 @@ function makeArguments(
   ) {
     return makeArguments(tokens, argumentToken.index, previousArgs)
   }
-  throw new Error('Expected a previous Argument if statement to match')
+  throw new KCLSyntaxError(
+    'Expected a previous Argument if statement to match',
+    [[argumentToken.token.start, argumentToken.token.end]]
+  )
 }
 
 function makeVariableDeclaration(
@@ -406,14 +415,18 @@ function makeValue(
         lastIndex: arrowFunctionLastIndex,
       }
     } else {
-      throw new Error('TODO - handle expression with braces')
+      throw new KCLUnimplementedError('expression with braces', [
+        [currentToken.start, currentToken.end],
+      ])
     }
   }
   if (currentToken.type === 'operator' && currentToken.value === '-') {
     const { expression, lastIndex } = makeUnaryExpression(tokens, index)
     return { value: expression, lastIndex }
   }
-  throw new Error('Expected a previous Value if statement to match')
+  throw new KCLSyntaxError('Expected a previous Value if statement to match', [
+    [currentToken.start, currentToken.end],
+  ])
 }
 
 function makeVariableDeclarators(
@@ -505,7 +518,9 @@ function makeArrayElements(
     nextToken.token.type === 'brace' && nextToken.token.value === ']'
   const isComma = nextToken.token.type === 'comma'
   if (!isClosingBrace && !isComma) {
-    throw new Error('Expected a comma or closing brace')
+    throw new KCLSyntaxError('Expected a comma or closing brace', [
+      [nextToken.token.start, nextToken.token.end],
+    ])
   }
   const nextCallIndex = isClosingBrace
     ? nextToken.index
@@ -617,7 +632,10 @@ function makeMemberExpression(
   const keysInfo = collectObjectKeys(tokens, index)
   const lastKey = keysInfo[keysInfo.length - 1]
   const firstKey = keysInfo.shift()
-  if (!firstKey) throw new Error('Expected a key')
+  if (!firstKey)
+    throw new KCLSyntaxError('Expected a key', [
+      [currentToken.start, currentToken.end],
+    ])
   const root = makeIdentifier(tokens, index)
   let memberExpression: MemberExpression = {
     type: 'MemberExpression',
@@ -807,7 +825,10 @@ function makePipeBody(
     value = val.value
     lastIndex = val.lastIndex
   } else {
-    throw new Error('Expected a previous PipeValue if statement to match')
+    throw new KCLSyntaxError(
+      'Expected a previous PipeValue if statement to match',
+      [[currentToken.start, currentToken.end]]
+    )
   }
 
   const nextPipeToken = hasPipeOperator(tokens, index)
@@ -1073,7 +1094,7 @@ function makeBody(
       lastIndex,
     }
   }
-  throw new Error('Unexpected token')
+  throw new KCLSyntaxError('Unexpected token', [[token.start, token.end]])
 }
 export const abstractSyntaxTree = (tokens: Token[]): Program => {
   const { body, nonCodeMeta } = makeBody({ tokens })
@@ -1227,15 +1248,26 @@ export function findClosingBrace(
   if (isFirstCall) {
     searchOpeningBrace = currentToken.value
     if (!['(', '{', '['].includes(searchOpeningBrace)) {
-      throw new Error(
-        `expected to be started on a opening brace ( { [, instead found '${searchOpeningBrace}'`
+      throw new KCLSyntaxError(
+        `expected to be started on a opening brace ( { [, instead found '${searchOpeningBrace}'`,
+        [[currentToken.start, currentToken.end]]
       )
     }
   }
 
-  const foundClosingBrace =
-    _braceCount === 1 &&
-    currentToken.value === closingBraceMap[searchOpeningBrace]
+  const foundClosingBrace = (() => {
+    try {
+      return (
+        _braceCount === 1 &&
+        currentToken.value === closingBraceMap[searchOpeningBrace]
+      )
+    } catch (e: any) {
+      throw new KCLSyntaxError('Missing a closing brace', [
+        [currentToken.start, currentToken.end],
+      ])
+    }
+  })()
+
   const foundAnotherOpeningBrace = currentToken.value === searchOpeningBrace
   const foundAnotherClosingBrace =
     currentToken.value === closingBraceMap[searchOpeningBrace]
