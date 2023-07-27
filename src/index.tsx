@@ -1,13 +1,13 @@
 import ReactDOM from 'react-dom/client'
 import './index.css'
-import { Auth } from './Auth'
 import reportWebVitals from './reportWebVitals'
 import { Toaster } from 'react-hot-toast'
+import { Router } from './Router'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <>
-    <Auth />
+    <Router />
     <Toaster position="bottom-center" />
   </>
 )

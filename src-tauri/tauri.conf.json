@@ -27,7 +27,7 @@
       },
       "http": {
         "request": true,
-        "scope": ["https://dev.kittycad.io/*", "https://kittycad.io/*"]
+        "scope": ["https://dev.kittycad.io/*", "https://kittycad.io/*", "https://api.dev.kittycad.io/*"]
       },
       "shell": {
         "open": true
