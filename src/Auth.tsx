@@ -1,7 +1,6 @@
 import useSWR from 'swr'
 import fetcher from './lib/fetcher'
 import withBaseUrl from './lib/withBaseURL'
-import { SetToken } from './components/TokenInput'
 import { User, useStore } from './useStore'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
@@ -19,10 +18,7 @@ export const Auth = ({ children }: React.PropsWithChildren) => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    console.log('user', user)
-    if (user && 'id' in user) {
-      setUser(user)
-    }
+    if (user && 'id' in user) setUser(user)
   }, [user, setUser])
 
   if ((isTauri() && !token) || (!isTauri() && !isLoading && !(user && 'id' in user))) {

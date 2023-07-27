@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { Toolbar } from '../Toolbar'
 import { useStore } from '../useStore'
 import UserSidebarMenu from './UserSidebarMenu'
@@ -13,14 +14,14 @@ export const AppHeader = ({ showToolbar = true, children }: AppHeaderProps) => {
 
   return (
     <header className="py-1 px-5 bg-chalkboard-10 border-b border-chalkboard-30 flex justify-between items-center">
-      <a href="/">
+      <Link to="/">
         <img
           src="/kitt-arcade-winking.svg"
           alt="KittyCAD App"
           className="h-9 w-auto"
         />
         <span className="sr-only">KittyCAD App</span>
-      </a>
+      </Link>
       {/* Toolbar if the context deems it */}
       {showToolbar && (
         <div className="max-w-4xl">

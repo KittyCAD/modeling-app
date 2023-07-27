@@ -1,3 +1,3 @@
 export function isTauri(): boolean {
-  return (window as any).__TAURI__
+  return '__TAURI__' in window
 }

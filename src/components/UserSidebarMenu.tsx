@@ -20,6 +20,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
               src={user?.image || ''}
               alt={user?.name || ''}
               className="h-8 w-8"
+              referrerPolicy="no-referrer"
             />
           </div>
         </Popover.Button>
@@ -42,6 +43,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                 src={user?.image || ''}
                 alt={user?.name || ''}
                 className="h-8 w-8"
+                referrerPolicy="no-referrer"
               />
             </div>
 
