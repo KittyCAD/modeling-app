@@ -273,11 +273,7 @@ export function App() {
       <AppHeader />
       <ModalContainer />
       <Allotment snap={true}>
-        <Allotment
-          vertical
-          defaultSizes={[400, 1, 1, 200]}
-          minSize={20}
-        >
+        <Allotment vertical defaultSizes={[400, 1, 1, 200]} minSize={20}>
           <div className="h-full flex flex-col items-start">
             <PanelHeader title="Editor" />
             <button

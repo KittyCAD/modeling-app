@@ -21,7 +21,10 @@ export const Auth = ({ children }: React.PropsWithChildren) => {
     if (user && 'id' in user) setUser(user)
   }, [user, setUser])
 
-  if ((isTauri() && !token) || (!isTauri() && !isLoading && !(user && 'id' in user))) {
+  if (
+    (isTauri() && !token) ||
+    (!isTauri() && !isLoading && !(user && 'id' in user))
+  ) {
     navigate('/signin')
   }
 

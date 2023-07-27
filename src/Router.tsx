@@ -1,9 +1,5 @@
 import { App } from './App'
-import {
-  createBrowserRouter,
-  redirect,
-  RouterProvider,
-} from 'react-router-dom'
+import { createBrowserRouter, redirect, RouterProvider } from 'react-router-dom'
 import { ErrorPage } from './components/ErrorPage'
 import { Settings } from './routes/Settings'
 import Onboarding, { onboardingRoutes } from './routes/Onboarding'
@@ -13,7 +9,11 @@ import { Auth } from './Auth'
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Auth><App /></Auth>,
+    element: (
+      <Auth>
+        <App />
+      </Auth>
+    ),
     errorElement: <ErrorPage />,
     loader: () => {
       const store = localStorage.getItem('store')
@@ -30,11 +30,19 @@ const router = createBrowserRouter([
   },
   {
     path: '/settings',
-    element: <Auth><Settings /></Auth>,
+    element: (
+      <Auth>
+        <Settings />
+      </Auth>
+    ),
   },
   {
     path: '/onboarding',
-    element: <Auth><Onboarding /></Auth>,
+    element: (
+      <Auth>
+        <Onboarding />
+      </Auth>
+    ),
     children: onboardingRoutes,
   },
   {
