@@ -1,10 +1,11 @@
 import { Popover } from '@headlessui/react'
 import { User, useStore } from '../useStore'
 import { ActionButton } from './ActionButton'
-import { faGear, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+import { faBars, faGear, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
+import { A } from '@tauri-apps/api/path-c062430b'
 
-const UserSidebarMenu = ({ user }: { user: User }) => {
+const UserSidebarMenu = ({ user }: { user?: User }) => {
   const navigate = useNavigate()
   const { setToken } = useStore((s) => ({
     setToken: s.setToken,
@@ -12,35 +13,46 @@ const UserSidebarMenu = ({ user }: { user: User }) => {
 
   return (
     <Popover className="relative">
-      <Popover.Button className="rounded-full border border-chalkboard-70 hover:border-liquid-50 overflow-hidden">
-        <img
-          src={user?.image || ''}
-          alt={user?.name || ''}
-          className="h-8 w-8"
-        />
-      </Popover.Button>
-      <Popover.Overlay className="fixed z-20 inset-0 bg-chalkboard-110/50" />
-
-      <Popover.Panel className="fixed inset-0 left-auto z-30 w-64 bg-chalkboard-10 border border-liquid-100 shadow-md rounded-l-lg">
-        <div className="flex items-center gap-4 px-4 py-3 bg-liquid-100">
-          <div className="rounded-full shadow-inner overflow-hidden">
+      <Popover.Button>
+        {user?.image ? (
+          <div className="rounded-full border border-chalkboard-70 hover:border-liquid-50 overflow-hidden">
             <img
               src={user?.image || ''}
               alt={user?.name || ''}
               className="h-8 w-8"
             />
           </div>
-          <div>
-            <p className="m-0 text-liquid-10 text-mono">
-              {user.name ||
-                user.first_name + ' ' + user.last_name ||
-                user.email}
-            </p>
-            {(user.name || user.first_name) && (
-              <p className="m-0 text-liquid-40 text-xs">{user.email}</p>
-            )}
+        ) : (
+          <ActionButton icon={{ icon: faBars }} className="border-transparent">
+            Menu
+          </ActionButton>
+        )}
+      </Popover.Button>
+      <Popover.Overlay className="fixed z-20 inset-0 bg-chalkboard-110/50" />
+
+      <Popover.Panel className="fixed inset-0 left-auto z-30 w-64 bg-chalkboard-10 border border-liquid-100 shadow-md rounded-l-lg">
+        {user && (
+          <div className="flex items-center gap-4 px-4 py-3 bg-liquid-100">
+            <div className="rounded-full shadow-inner overflow-hidden">
+              <img
+                src={user?.image || ''}
+                alt={user?.name || ''}
+                className="h-8 w-8"
+              />
+            </div>
+
+            <div>
+              <p className="m-0 text-liquid-10 text-mono">
+                {user.name ||
+                  user.first_name + ' ' + user.last_name ||
+                  user.email}
+              </p>
+              {(user.name || user.first_name) && (
+                <p className="m-0 text-liquid-40 text-xs">{user.email}</p>
+              )}
+            </div>
           </div>
-        </div>
+        )}
         <div className="p-4 flex flex-col gap-2">
           <ActionButton
             as="link"

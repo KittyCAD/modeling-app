@@ -2,7 +2,6 @@ import { faGear } from '@fortawesome/free-solid-svg-icons'
 import { Toolbar } from '../Toolbar'
 import { ActionButton } from './ActionButton'
 import { useStore } from '../useStore'
-import { useEffect } from 'react'
 import UserSidebarMenu from './UserSidebarMenu'
 
 interface AppHeaderProps extends React.PropsWithChildren {
@@ -30,21 +29,8 @@ export const AppHeader = ({ showToolbar = true, children }: AppHeaderProps) => {
           <Toolbar />
         </div>
       )}
-      {/* If there are children, show them, otherwise... */}
-      {children || (
-        // TODO: If signed out, show the token paste field
-
-        // If signed in, show the account avatar
-        <>
-          {user ? (
-            <UserSidebarMenu user={user} />
-          ) : (
-            <ActionButton as="link" icon={{ icon: faGear }} to="/settings">
-              Settings
-            </ActionButton>
-          )}
-        </>
-      )}
+      {/* If there are children, show them, otherwise show User menu */}
+      {children || <UserSidebarMenu user={user} />}
     </header>
   )
 }
