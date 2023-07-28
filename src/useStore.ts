@@ -369,6 +369,7 @@ export const useStore = create<StoreState>()(
       setOnboardingStatus: (onboardingStatus) => set({ onboardingStatus }),
       theme:
         typeof window !== 'undefined' &&
+        'matchMedia' in window &&
         window.matchMedia('(prefers-color-scheme: dark)').matches
           ? 'dark'
           : 'light',

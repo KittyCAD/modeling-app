@@ -116,9 +116,7 @@ export const Toolbar = () => {
       )}
 
       {guiMode.mode === 'sketch' && (
-        <button
-          onClick={() => setGuiMode({ mode: 'default' })}
-        >
+        <button onClick={() => setGuiMode({ mode: 'default' })}>
           Exit sketch
         </button>
       )}
