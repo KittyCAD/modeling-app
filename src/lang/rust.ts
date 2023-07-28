@@ -1,12 +1,11 @@
+import { isTauri } from '../lib/isTauri'
 import init from '../wasm-lib/pkg/wasm_lib'
 
 const url =
   typeof window === 'undefined'
-    ? 'http://127.0.0.1:3000'
-    : window.location.origin.includes('tauri://localhost')
+    ? 'http://localhost:3000'
+    : isTauri()
     ? 'tauri://localhost'
-    : window.location.origin.includes('localhost')
-    ? 'http://127.0.0.1:3000'
-    : window.location.origin
+    : 'http://localhost:3000'
 const fullUrl = url + '/wasm_lib_bg.wasm'
 export const initPromise = init(fullUrl)

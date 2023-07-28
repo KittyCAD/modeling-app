@@ -1,6 +1,12 @@
 import '@testing-library/jest-dom'
 import util from 'util'
 import fetch from 'isomorphic-fetch'
+import dns from 'dns'
+
+// Only needed because we run Node < 17
+// and we want to open `localhost` not `127.0.0.1` on server start
+// reference: https://vitejs.dev/config/server-options.html#server-host
+dns.setDefaultResultOrder('verbatim')
 
 class MockRTCPeerConnection {
   constructor() {}
