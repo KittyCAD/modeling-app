@@ -6,6 +6,8 @@ const url =
     ? 'http://localhost:3000'
     : isTauri()
     ? 'tauri://localhost'
-    : 'http://localhost:3000'
+    : window.location.origin.includes('localhost')
+    ? 'http://localhost:3000'
+    : window.location.origin
 const fullUrl = url + '/wasm_lib_bg.wasm'
 export const initPromise = init(fullUrl)
