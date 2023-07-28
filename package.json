@@ -49,7 +49,7 @@
     "test:nowatch": "jest --watchAll=false --forceExit",
     "test:rust": "(cd src/wasm-lib && cargo test && cargo clippy)",
     "test:cov": "jest --watchAll=false --coverage=true --forceExit",
-    "simpleserver:ci": "http-server ./public --cors -p 3000 -P http://localhost &",
+    "simpleserver:ci": "node -e 'node:dns.setDefaultResultOrder(\"verbatim\")' && http-server ./public --cors -p 3000 -P http://localhost &",
     "simpleserver": "http-server ./public --cors -p 3000 -P http://localhost",
     "fmt":       "prettier --write ./src",
     "fmt-check": "prettier --check ./src",
