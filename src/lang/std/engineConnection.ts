@@ -111,7 +111,7 @@ export class EngineCommandManager {
     this.waitForReady = new Promise((resolve) => {
       this.resolveReady = resolve
     })
-    const url = 'wss://api.dev.kittycad.io/ws/modeling/commands'
+    const url = import.meta.env.VITE_KC_API_WS_MODELING_URL
 
     this.socket = new WebSocket(url, [])
     this.pc = new RTCPeerConnection()
