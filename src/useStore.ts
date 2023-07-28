@@ -265,7 +265,7 @@ export const useStore = create<StoreState>()(
         set((state) => ({ kclErrors: [...state.kclErrors, e] }))
       },
       resetKCLErrors: () => {
-        set({ kclErrors: []})
+        set({ kclErrors: [] })
       },
       ast: null,
       setAst: (ast) => {
@@ -351,7 +351,11 @@ export const useStore = create<StoreState>()(
       setDefaultBaseUnit: (defaultBaseUnit) => set({ defaultBaseUnit }),
       onboardingStatus: '',
       setOnboardingStatus: (onboardingStatus) => set({ onboardingStatus }),
-      theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
+      theme:
+        typeof window !== 'undefined' &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light',
       setTheme: (theme) => set({ theme }),
       showHomeMenu: true,
       setHomeShowMenu: (showHomeMenu) => set({ showHomeMenu }),
