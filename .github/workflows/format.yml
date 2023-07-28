@@ -13,4 +13,4 @@ jobs:
         with:
           node-version: '16.x'
       - run: yarn install
-      - run: yarn prettier --check src jest.config.ts
+      - run: yarn fmt-check

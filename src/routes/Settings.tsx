@@ -79,7 +79,7 @@ export const Settings = () => {
     <>
       <AppHeader showToolbar={false}>
         <ActionButton
-          as="link"
+          Element="link"
           to="/"
           icon={{
             icon: faXmark,
@@ -111,7 +111,7 @@ export const Settings = () => {
                 }
               />
               <ActionButton
-                as="button"
+                Element="button"
                 className="bg-chalkboard-100 hover:bg-chalkboard-90 text-chalkboard-10 border-chalkboard-100 hover:border-chalkboard-70"
                 onClick={handleDirectorySelection}
                 icon={{

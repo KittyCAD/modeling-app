@@ -1,9 +1,9 @@
 import ReactDOM from 'react-dom/client'
 import './index.css'
-import { Auth } from './Auth'
 import reportWebVitals from './reportWebVitals'
 import { Toaster } from 'react-hot-toast'
 import { useStore } from './useStore'
+import { Router } from './Router'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 function setThemeClass(state: Partial<{ theme: string }>) {
@@ -19,7 +19,7 @@ useStore.subscribe(setThemeClass)
 
 root.render(
   <>
-    <Auth />
+    <Router />
     <Toaster
       position="bottom-center"
       toastOptions={{

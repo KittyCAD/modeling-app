@@ -22,6 +22,7 @@ import { EngineCommandManager } from './lang/std/engineConnection'
 import { isOverlap } from './lib/utils'
 import { SetToken } from './components/TokenInput'
 import { AppHeader } from './components/AppHeader'
+import { isTauri } from './lib/isTauri'
 import { KCLError } from './lang/errors'
 
 export function App() {
@@ -87,6 +88,7 @@ export function App() {
     addKCLError: s.addKCLError,
     theme: s.theme,
   }))
+  const showTauriTokenInput = isTauri() && !token
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
     setCode(value)
@@ -274,8 +276,7 @@ export function App() {
       <AppHeader />
       <ModalContainer />
       <Allotment snap={true}>
-        <Allotment vertical defaultSizes={[5, 400, 1, 1, 200]} minSize={20}>
-          <SetToken />
+        <Allotment vertical defaultSizes={[400, 1, 1, 200]} minSize={20}>
           <div className="h-full flex flex-col items-start">
             <PanelHeader title="Editor" />
             <button
