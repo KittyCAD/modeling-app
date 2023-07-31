@@ -13,7 +13,7 @@ export const AppHeader = ({ showToolbar = true, children }: AppHeaderProps) => {
   }))
 
   return (
-    <header className="py-1 px-5 bg-chalkboard-10 border-b border-chalkboard-30 flex justify-between items-center">
+    <header className="py-1 px-5 bg-chalkboard-10 dark:bg-chalkboard-100 border-b dark:border-b-2 border-chalkboard-30 dark:border-chalkboard-70 flex justify-between items-center">
       <Link to="/">
         <img
           src="/kitt-arcade-winking.svg"

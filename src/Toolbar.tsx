@@ -39,7 +39,6 @@ export const Toolbar = () => {
               sketchMode: 'selectFace',
             })
           }}
-          className="border m-1 px-1 rounded text-xs"
         >
           Start Sketch
         </button>
@@ -59,7 +58,6 @@ export const Toolbar = () => {
             )
             updateAst(modifiedAst)
           }}
-          className="border m-1 px-1 rounded text-xs"
         >
           SketchOnFace
         </button>
@@ -75,7 +73,6 @@ export const Toolbar = () => {
               position: guiMode.position,
             })
           }}
-          className="border m-1 px-1 rounded text-xs"
         >
           Edit Sketch
         </button>
@@ -95,7 +92,6 @@ export const Toolbar = () => {
               )
               updateAst(modifiedAst, { focusPath: pathToExtrudeArg })
             }}
-            className="border m-1 px-1 rounded text-xs"
           >
             ExtrudeSketch
           </button>
@@ -113,7 +109,6 @@ export const Toolbar = () => {
               )
               updateAst(modifiedAst, { focusPath: pathToExtrudeArg })
             }}
-            className="border m-1 px-1 rounded text-xs"
           >
             ExtrudeSketch (w/o pipe)
           </button>
@@ -121,10 +116,7 @@ export const Toolbar = () => {
       )}
 
       {guiMode.mode === 'sketch' && (
-        <button
-          onClick={() => setGuiMode({ mode: 'default' })}
-          className="border m-1 px-1 rounded text-xs"
-        >
+        <button onClick={() => setGuiMode({ mode: 'default' })}>
           Exit sketch
         </button>
       )}
@@ -142,9 +134,6 @@ export const Toolbar = () => {
           return (
             <button
               key={sketchFnName}
-              className={`border m-0.5 px-0.5 rounded text-xs ${
-                guiMode.sketchMode === sketchFnName && 'bg-gray-400'
-              }`}
               onClick={() =>
                 setGuiMode({
                   ...guiMode,

@@ -26,8 +26,9 @@ export const Settings = () => {
     setDefaultBaseUnit: saveDefaultBaseUnit,
     saveDebugPanel,
     originalDebugPanel,
-    onboardingStatus: ogOnboardingStatus,
-    setOnboardingStatus: saveOnboardingStatus,
+    setOnboardingStatus,
+    theme: ogTheme,
+    setTheme: saveTheme,
   } = useStore((s) => ({
     defaultDir: s.defaultDir,
     setDefaultDir: s.setDefaultDir,
@@ -39,8 +40,9 @@ export const Settings = () => {
     setDefaultBaseUnit: s.setDefaultBaseUnit,
     saveDebugPanel: s.setDebugPanel,
     originalDebugPanel: s.debugPanel,
-    onboardingStatus: s.onboardingStatus,
     setOnboardingStatus: s.setOnboardingStatus,
+    theme: s.theme,
+    setTheme: s.setTheme,
   }))
   const [defaultDir, setDefaultDir] = useState(ogDefaultDir)
   const [defaultProjectName, setDefaultProjectName] =
@@ -49,7 +51,7 @@ export const Settings = () => {
     useState(ogDefaultUnitSystem)
   const [defaultBaseUnit, setDefaultBaseUnit] = useState(ogDefaultBaseUnit)
   const [debugPanel, setDebugPanel] = useState(originalDebugPanel)
-  const [onboardingStatus, setOnboardingStatus] = useState(ogOnboardingStatus)
+  const [theme, setTheme] = useState(ogTheme)
 
   async function handleDirectorySelection() {
     const newDirectory = await open({
@@ -69,7 +71,7 @@ export const Settings = () => {
     saveDefaultUnitSystem(defaultUnitSystem)
     saveDefaultBaseUnit(defaultBaseUnit)
     saveDebugPanel(debugPanel)
-    saveOnboardingStatus(onboardingStatus)
+    saveTheme(theme)
     toast.success('Settings saved!')
   }
 
@@ -177,12 +179,24 @@ export const Settings = () => {
           />
         </SettingsSection>
         <SettingsSection
+          title="Editor Theme"
+          description="Apply a light or dark theme to the editor"
+        >
+          <Toggle
+            name="settings-theme"
+            offLabel="Dark"
+            onLabel="Light"
+            checked={theme === 'light'}
+            onChange={(e) => setTheme(e.target.checked ? 'light' : 'dark')}
+          />
+        </SettingsSection>
+        <SettingsSection
           title="Onboarding"
           description="Replay the onboarding process"
         >
           <ActionButton
             onClick={() => {
-              saveOnboardingStatus('')
+              setOnboardingStatus('')
               navigate('/')
             }}
             icon={{ icon: faArrowRotateBack }}

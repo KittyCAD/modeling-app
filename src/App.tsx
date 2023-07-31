@@ -55,6 +55,7 @@ export function App() {
     token,
     formatCode,
     debugPanel,
+    theme,
   } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
@@ -85,6 +86,7 @@ export function App() {
     formatCode: s.formatCode,
     debugPanel: s.debugPanel,
     addKCLError: s.addKCLError,
+    theme: s.theme,
   }))
   const showTauriTokenInput = isTauri() && !token
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
@@ -268,6 +270,7 @@ export function App() {
     }
     asyncWrap()
   }, [code, isStreamReady])
+
   return (
     <div className="h-screen">
       <AppHeader />
@@ -293,6 +296,7 @@ export function App() {
                 extensions={[javascript({ jsx: true }), lineHighlightField]}
                 onChange={onChange}
                 onUpdate={onUpdate}
+                theme={theme}
                 onCreateEditor={(_editorView) => setEditorView(_editorView)}
               />
             </div>

@@ -18,6 +18,10 @@
   height: calc(var(--toggle-size) + var(--padding));
 }
 
+:global(.dark) .toggle > span {
+  @apply border-chalkboard-40;
+}
+
 .toggle > span::after {
   content: '';
   @apply absolute w-4 h-4 rounded-sm bg-chalkboard-110;
@@ -25,6 +29,10 @@
   left: 50%;
   translate: calc(-100% - var(--padding)) -50%;
   transition: translate 0.08s ease-out;
+}
+
+:global(.dark) .toggle > span::after {
+  @apply bg-chalkboard-10;
 }
 
 .toggle input:checked + span::after {

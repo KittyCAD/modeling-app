@@ -189,6 +189,8 @@ export interface StoreState {
   setHomeShowMenu: (showMenu: boolean) => void
   onboardingStatus: string
   setOnboardingStatus: (status: string) => void
+  theme: 'light' | 'dark'
+  setTheme: (theme: 'light' | 'dark') => void
   homeMenuItems: {
     name: string
     path: string
@@ -365,6 +367,13 @@ export const useStore = create<StoreState>()(
       setDefaultBaseUnit: (defaultBaseUnit) => set({ defaultBaseUnit }),
       onboardingStatus: '',
       setOnboardingStatus: (onboardingStatus) => set({ onboardingStatus }),
+      theme:
+        typeof window !== 'undefined' &&
+        'matchMedia' in window &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light',
+      setTheme: (theme) => set({ theme }),
       showHomeMenu: true,
       setHomeShowMenu: (showHomeMenu) => set({ showHomeMenu }),
       homeMenuItems: [],
@@ -390,6 +399,7 @@ export const useStore = create<StoreState>()(
               'token',
               'debugPanel',
               'onboardingStatus',
+              'theme',
             ].includes(key)
           )
         ),
