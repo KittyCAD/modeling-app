@@ -22,7 +22,7 @@ const SignIn = () => {
   }
 
   return (
-    <main className="h-full min-h-screen bg-chalkboard-20 m-0 p-0 pt-24">
+    <main className="h-full min-h-screen bg-chalkboard-20 dark:text-chalkboard-100 m-0 p-0 pt-24">
       <div className="max-w-2xl mx-auto">
         <div>
           <img
@@ -73,7 +73,7 @@ const SignIn = () => {
                 window.location.href.replace('signin', '')
             )}`}
             icon={{ icon: faSignInAlt }}
-            className="w-fit mt-4"
+            className="w-fit mt-4 dark:hover:bg-chalkboard-30"
           >
             Sign in
           </ActionButton>

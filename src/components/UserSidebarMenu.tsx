@@ -14,8 +14,8 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   return (
     <Popover className="relative">
       {user?.image ? (
-        <Popover.Button>
-          <div className="rounded-full border border-chalkboard-70 hover:border-liquid-50 overflow-hidden">
+        <Popover.Button className="border-0 rounded-full w-fit p-0">
+          <div className="rounded-full border border-chalkboard-70/50 hover:border-liquid-50 overflow-hidden">
             <img
               src={user?.image || ''}
               alt={user?.name || ''}
@@ -35,7 +35,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
       )}
       <Popover.Overlay className="fixed z-20 inset-0 bg-chalkboard-110/50" />
 
-      <Popover.Panel className="fixed inset-0 left-auto z-30 w-64 bg-chalkboard-10 border border-liquid-100 shadow-md rounded-l-lg">
+      <Popover.Panel className="fixed inset-0 left-auto z-30 w-64 bg-chalkboard-10 dark:bg-chalkboard-100 border border-liquid-100 shadow-md rounded-l-lg">
         {user && (
           <div className="flex items-center gap-4 px-4 py-3 bg-liquid-100">
             <div className="rounded-full shadow-inner overflow-hidden">
@@ -64,7 +64,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
             Element="link"
             icon={{ icon: faGear }}
             to="/settings"
-            className="border-transparent"
+            className="border-transparent dark:border-transparent dark:hover:border-liquid-60"
           >
             Settings
           </ActionButton>
@@ -80,7 +80,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
               iconClassName:
                 'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
             }}
-            className="border-transparent hover:border-destroy-40"
+            className="border-transparent dark:border-transparent hover:border-destroy-40 dark:hover:border-destroy-60"
           >
             Sign out
           </ActionButton>

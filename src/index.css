@@ -20,11 +20,15 @@ body.dark {
 }
 
 button {
-  @apply border m-0.5 px-3 rounded text-xs;
+  @apply border border-chalkboard-100 m-0.5 px-3 rounded text-xs;
 }
 
 .dark button {
   @apply border-chalkboard-20 hover:border-chalkboard-10 hover:bg-chalkboard-90;
+}
+
+button:disabled {
+  @apply bg-chalkboard-20 text-chalkboard-60 border-chalkboard-20;
 }
 
 .dark button:disabled {
