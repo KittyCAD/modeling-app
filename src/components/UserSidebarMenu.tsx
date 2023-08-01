@@ -6,26 +6,27 @@ import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 
 const UserSidebarMenu = ({ user }: { user?: User }) => {
+  const displayedName = getDisplayName(user)
   const [imageLoadFailed, setImageLoadFailed] = useState(false)
   const navigate = useNavigate()
   const { setToken } = useStore((s) => ({
     setToken: s.setToken,
   }))
 
-  // Fallback logic for displaying user's name:
+  // Fallback logic for displaying user's "name":
   // 1. user.name
   // 2. user.first_name + ' ' + user.last_name
   // 3. user.first_name
   // 4. user.email
-  const displayedName = user
-    ? user.name
-      ? user.name
-      : user.first_name
-      ? user.last_name
-        ? user.first_name + ' ' + user.last_name
-        : user.first_name
-      : user.email
-    : ''
+  function getDisplayName(user?: User) {
+    if (!user) return null
+    if (user.name) return user.name
+    if (user.first_name) {
+      if (user.last_name) return user.first_name + ' ' + user.last_name
+      return user.first_name
+    }
+    return user.email
+  }
 
   return (
     <Popover className="relative">
@@ -62,8 +63,8 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
             {user.image && !imageLoadFailed && (
               <div className="rounded-full shadow-inner overflow-hidden">
                 <img
-                  src={user?.image || ''}
-                  alt={user?.name || ''}
+                  src={user.image}
+                  alt={user.name || ''}
                   className="h-8 w-8"
                   referrerPolicy="no-referrer"
                   onError={() => setImageLoadFailed(true)}
@@ -76,7 +77,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                 className="m-0 text-liquid-10 text-mono"
                 data-testid="username"
               >
-                {displayedName}
+                {displayedName || ''}
               </p>
               {displayedName !== user.email && (
                 <p className="m-0 text-liquid-40 text-xs" data-testid="email">
