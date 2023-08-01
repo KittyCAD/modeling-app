@@ -1,4 +1,5 @@
+import { VITE_KC_API_BASE_URL } from '../env'
+
 export default function withBaseUrl(path: string): string {
-  const baseUrl = 'https://api.dev.kittycad.io'
-  return baseUrl + path
+  return VITE_KC_API_BASE_URL + path
 }
