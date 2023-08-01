@@ -1,12 +1,18 @@
 import init from '../wasm-lib/pkg/wasm_lib'
 
-const url =
-  typeof window === 'undefined'
-    ? 'http://127.0.0.1:3000'
-    : window.location.origin.includes('tauri://localhost')
-    ? 'tauri://localhost'
-    : window.location.origin.includes('localhost')
-    ? 'http://127.0.0.1:3000'
-    : window.location.origin
-const fullUrl = url + '/wasm_lib_bg.wasm'
-export const initPromise = init(fullUrl)
+const initialise = async () => {
+  const baseUrl =
+    typeof window === 'undefined'
+      ? 'http://127.0.0.1:3000'
+      : window.location.origin.includes('tauri://localhost')
+      ? 'tauri://localhost'
+      : window.location.origin.includes('localhost')
+      ? 'http://localhost:3000'
+      : window.location.origin
+  const fullUrl = baseUrl + '/wasm_lib_bg.wasm'
+  const input = await fetch(fullUrl)
+  const buffer = await input.arrayBuffer()
+  return init(buffer)
+}
+
+export const initPromise = initialise()

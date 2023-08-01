@@ -1,5 +1,6 @@
 import { SourceRange } from '../executor'
 import { Selections } from '../../useStore'
+import { VITE_KC_API_WS_MODELING_URL } from '../../env'
 
 interface ResultCommand {
   type: 'result'
@@ -111,9 +112,8 @@ export class EngineCommandManager {
     this.waitForReady = new Promise((resolve) => {
       this.resolveReady = resolve
     })
-    const url = import.meta.env.VITE_KC_API_WS_MODELING_URL
 
-    this.socket = new WebSocket(url, [])
+    this.socket = new WebSocket(VITE_KC_API_WS_MODELING_URL, [])
     this.pc = new RTCPeerConnection()
     this.pc.createDataChannel('unreliable_modeling_cmds')
     this.socket.addEventListener('open', (event) => {
