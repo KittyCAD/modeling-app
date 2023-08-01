@@ -102,6 +102,7 @@ export class EngineCommandManager {
       ) {
         console.warn('something went wrong: ', event.data)
       } else {
+        console.log(event.data)
         const message = JSON.parse(event.data)
         if (message.type === 'sdp_answer') {
           this.pc?.setRemoteDescription(
@@ -195,6 +196,7 @@ export class EngineCommandManager {
         } else if (message.type === 'click') {
           this.onClickCallback(message)
         } else {
+          console.log('received message', message)
         }
       }
     })
