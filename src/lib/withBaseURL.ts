@@ -1,4 +1,5 @@
+import { VITE_KC_API_BASE_URL } from '../env'
+
 export default function withBaseUrl(path: string): string {
-  const baseUrl = import.meta.env.VITE_KC_API_BASE_URL
-  return baseUrl + path
+  return VITE_KC_API_BASE_URL + path
 }
