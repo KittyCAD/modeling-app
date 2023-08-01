@@ -130,9 +130,10 @@ function makeArguments(
   }
   const nextBraceOrCommaToken = nextMeaningfulToken(tokens, argumentToken.index)
   if (nextBraceOrCommaToken.token == undefined) {
-    throw new KCLSyntaxError('Expected argument', [
-      [argumentToken.token.start, argumentToken.token.end],
-    ])
+    throw new KCLSyntaxError(
+      'Expected argument',
+      rangeOfToken(argumentToken.token)
+    )
   }
   const isIdentifierOrLiteral =
     nextBraceOrCommaToken.token.type === 'comma' ||
@@ -290,7 +291,7 @@ function makeArguments(
   }
   throw new KCLSyntaxError(
     'Expected a previous Argument if statement to match',
-    [[argumentToken.token.start, argumentToken.token.end]]
+    rangeOfToken(argumentToken.token)
   )
 }
 
@@ -415,18 +416,20 @@ function makeValue(
         lastIndex: arrowFunctionLastIndex,
       }
     } else {
-      throw new KCLUnimplementedError('expression with braces', [
-        [currentToken.start, currentToken.end],
-      ])
+      throw new KCLUnimplementedError(
+        'expression with braces',
+        rangeOfToken(currentToken)
+      )
     }
   }
   if (currentToken.type === 'operator' && currentToken.value === '-') {
     const { expression, lastIndex } = makeUnaryExpression(tokens, index)
     return { value: expression, lastIndex }
   }
-  throw new KCLSyntaxError('Expected a previous Value if statement to match', [
-    [currentToken.start, currentToken.end],
-  ])
+  throw new KCLSyntaxError(
+    'Expected a previous Value if statement to match',
+    rangeOfToken(currentToken)
+  )
 }
 
 function makeVariableDeclarators(
@@ -518,9 +521,10 @@ function makeArrayElements(
     nextToken.token.type === 'brace' && nextToken.token.value === ']'
   const isComma = nextToken.token.type === 'comma'
   if (!isClosingBrace && !isComma) {
-    throw new KCLSyntaxError('Expected a comma or closing brace', [
-      [nextToken.token.start, nextToken.token.end],
-    ])
+    throw new KCLSyntaxError(
+      'Expected a comma or closing brace',
+      rangeOfToken(nextToken.token)
+    )
   }
   const nextCallIndex = isClosingBrace
     ? nextToken.index
@@ -633,9 +637,7 @@ function makeMemberExpression(
   const lastKey = keysInfo[keysInfo.length - 1]
   const firstKey = keysInfo.shift()
   if (!firstKey)
-    throw new KCLSyntaxError('Expected a key', [
-      [currentToken.start, currentToken.end],
-    ])
+    throw new KCLSyntaxError('Expected a key', rangeOfToken(currentToken))
   const root = makeIdentifier(tokens, index)
   let memberExpression: MemberExpression = {
     type: 'MemberExpression',
@@ -827,7 +829,7 @@ function makePipeBody(
   } else {
     throw new KCLSyntaxError(
       'Expected a previous PipeValue if statement to match',
-      [[currentToken.start, currentToken.end]]
+      rangeOfToken(currentToken)
     )
   }
 
@@ -1094,7 +1096,7 @@ function makeBody(
       lastIndex,
     }
   }
-  throw new KCLSyntaxError('Unexpected token', [[token.start, token.end]])
+  throw new KCLSyntaxError('Unexpected token', rangeOfToken(token))
 }
 export const abstractSyntaxTree = (tokens: Token[]): Program => {
   const { body, nonCodeMeta } = makeBody({ tokens })
@@ -1250,7 +1252,7 @@ export function findClosingBrace(
     if (!['(', '{', '['].includes(searchOpeningBrace)) {
       throw new KCLSyntaxError(
         `expected to be started on a opening brace ( { [, instead found '${searchOpeningBrace}'`,
-        [[currentToken.start, currentToken.end]]
+        rangeOfToken(currentToken)
       )
     }
   }
@@ -1262,9 +1264,10 @@ export function findClosingBrace(
         currentToken.value === closingBraceMap[searchOpeningBrace]
       )
     } catch (e: any) {
-      throw new KCLSyntaxError('Missing a closing brace', [
-        [currentToken.start, currentToken.end],
-      ])
+      throw new KCLSyntaxError(
+        'Missing a closing brace',
+        rangeOfToken(currentToken)
+      )
     }
   })()
 
@@ -1350,4 +1353,8 @@ export function isNotCodeToken(token: Token): boolean {
     token?.type === 'linecomment' ||
     token?.type === 'blockcomment'
   )
+}
+
+export function rangeOfToken(token: Token | undefined): [number, number][] {
+  return token === undefined ? [] : [[token.start, token.end]]
 }
