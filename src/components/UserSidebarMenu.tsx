@@ -3,8 +3,10 @@ import { User, useStore } from '../useStore'
 import { ActionButton } from './ActionButton'
 import { faBars, faGear, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
+import { useState } from 'react'
 
 const UserSidebarMenu = ({ user }: { user?: User }) => {
+  const [imageLoadFailed, setImageLoadFailed] = useState(false)
   const navigate = useNavigate()
   const { setToken } = useStore((s) => ({
     setToken: s.setToken,
@@ -27,7 +29,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
 
   return (
     <Popover className="relative">
-      {user?.image ? (
+      {user?.image && !imageLoadFailed ? (
         <Popover.Button
           className="border-0 rounded-full w-fit p-0"
           data-testid="user-sidebar-toggle"
@@ -38,6 +40,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
               alt={user?.name || ''}
               className="h-8 w-8"
               referrerPolicy="no-referrer"
+              onError={() => setImageLoadFailed(true)}
             />
           </div>
         </Popover.Button>
@@ -56,14 +59,17 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
       <Popover.Panel className="fixed inset-0 left-auto z-30 w-64 bg-chalkboard-10 dark:bg-chalkboard-100 border border-liquid-100 shadow-md rounded-l-lg">
         {user && (
           <div className="flex items-center gap-4 px-4 py-3 bg-liquid-100">
-            <div className="rounded-full shadow-inner overflow-hidden">
-              <img
-                src={user?.image || ''}
-                alt={user?.name || ''}
-                className="h-8 w-8"
-                referrerPolicy="no-referrer"
-              />
-            </div>
+            {user.image && !imageLoadFailed && (
+              <div className="rounded-full shadow-inner overflow-hidden">
+                <img
+                  src={user?.image || ''}
+                  alt={user?.name || ''}
+                  className="h-8 w-8"
+                  referrerPolicy="no-referrer"
+                  onError={() => setImageLoadFailed(true)}
+                />
+              </div>
+            )}
 
             <div>
               <p
