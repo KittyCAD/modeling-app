@@ -3,7 +3,6 @@ import { User, useStore } from '../useStore'
 import { ActionButton } from './ActionButton'
 import { faBars, faGear, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
-import { A } from '@tauri-apps/api/path-c062430b'
 
 const UserSidebarMenu = ({ user }: { user?: User }) => {
   const navigate = useNavigate()
@@ -11,10 +10,28 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
     setToken: s.setToken,
   }))
 
+  // Fallback logic for displaying user's name:
+  // 1. user.name
+  // 2. user.first_name + ' ' + user.last_name
+  // 3. user.first_name
+  // 4. user.email
+  const displayedName = user
+    ? user.name
+      ? user.name
+      : user.first_name
+      ? user.last_name
+        ? user.first_name + ' ' + user.last_name
+        : user.first_name
+      : user.email
+    : ''
+
   return (
     <Popover className="relative">
       {user?.image ? (
-        <Popover.Button className="border-0 rounded-full w-fit p-0">
+        <Popover.Button
+          className="border-0 rounded-full w-fit p-0"
+          data-testid="user-sidebar-toggle"
+        >
           <div className="rounded-full border border-chalkboard-70/50 hover:border-liquid-50 overflow-hidden">
             <img
               src={user?.image || ''}
@@ -29,6 +46,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           Element={Popover.Button}
           icon={{ icon: faBars }}
           className="border-transparent"
+          data-testid="user-sidebar-toggle"
         >
           Menu
         </ActionButton>
@@ -48,13 +66,16 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
             </div>
 
             <div>
-              <p className="m-0 text-liquid-10 text-mono">
-                {user.name ||
-                  user.first_name + ' ' + user.last_name ||
-                  user.email}
+              <p
+                className="m-0 text-liquid-10 text-mono"
+                data-testid="username"
+              >
+                {displayedName}
               </p>
-              {(user.name || user.first_name) && (
-                <p className="m-0 text-liquid-40 text-xs">{user.email}</p>
+              {displayedName !== user.email && (
+                <p className="m-0 text-liquid-40 text-xs" data-testid="email">
+                  {user.email}
+                </p>
               )}
             </div>
           </div>
