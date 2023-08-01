@@ -24,6 +24,7 @@ import { SetToken } from './components/TokenInput'
 import { AppHeader } from './components/AppHeader'
 import { isTauri } from './lib/isTauri'
 import { KCLError } from './lang/errors'
+import { faCode } from '@fortawesome/free-solid-svg-icons'
 
 export function App() {
   const cam = useRef()
@@ -88,7 +89,6 @@ export function App() {
     addKCLError: s.addKCLError,
     theme: s.theme,
   }))
-  const showTauriTokenInput = isTauri() && !token
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
     setCode(value)
@@ -272,13 +272,18 @@ export function App() {
   }, [code, isStreamReady])
 
   return (
-    <div className="h-screen">
+    <div className="h-screen relative flex flex-col pb-5">
       <AppHeader />
       <ModalContainer />
-      <Allotment snap={true}>
-        <Allotment vertical defaultSizes={[400, 1, 1, 200]} minSize={20}>
+      <Allotment>
+        <Allotment
+          vertical
+          defaultSizes={[400, 25, 25, 200]}
+          minSize={35}
+          className="mt-5 ml-5 max-w-xl bg-chalkboard-10/50 dark:bg-chalkboard-110/50"
+        >
           <div className="h-full flex flex-col items-start">
-            <PanelHeader title="Editor" />
+            <PanelHeader title="Code" icon={faCode} />
             <button
               // disabled={!shouldFormat}
               onClick={formatCode}
@@ -301,15 +306,13 @@ export function App() {
               />
             </div>
           </div>
-          <MemoryPanel />
-          <Logs />
-          <KCLErrors />
+          <MemoryPanel theme={theme} />
+          <Logs theme={theme} />
+          <KCLErrors theme={theme} />
         </Allotment>
-        <Allotment vertical defaultSizes={[40, 400]} minSize={20}>
-          <Stream />
-        </Allotment>
-        {debugPanel && <DebugPanel />}
       </Allotment>
+      <Stream className="absolute inset-0 -z-10" />
+      {debugPanel && <DebugPanel />}
     </div>
   )
 }

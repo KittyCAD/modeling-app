@@ -4,7 +4,11 @@ import { useStore } from '../useStore'
 import { useMemo } from 'react'
 import { ProgramMemory } from '../lang/executor'
 
-export const MemoryPanel = () => {
+export const MemoryPanel = ({
+  theme = 'light',
+}: {
+  theme?: 'light' | 'dark'
+}) => {
   const { programMemory } = useStore((s) => ({
     programMemory: s.programMemory,
   }))
@@ -13,7 +17,7 @@ export const MemoryPanel = () => {
     [programMemory]
   )
   return (
-    <div className="h-full">
+    <div className="h-full w-full">
       <PanelHeader title="Variables" />
       <div className="h-full relative">
         <div className="absolute inset-0 flex flex-col items-start">
@@ -28,6 +32,7 @@ export const MemoryPanel = () => {
               indentWidth={2}
               quotesOnKeys={false}
               name={false}
+              theme={theme === 'light' ? 'rjv-default' : 'monokai'}
             />
           </div>
         </div>

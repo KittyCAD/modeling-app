@@ -5,7 +5,7 @@ import { PanelHeader } from './PanelHeader'
 
 const ReactJsonTypeHack = ReactJson as any
 
-export const Logs = () => {
+export const Logs = ({ theme = 'light' }: { theme?: 'light' | 'dark' }) => {
   const { logs, resetLogs } = useStore(({ logs, resetLogs }) => ({
     logs,
     resetLogs,
@@ -17,10 +17,10 @@ export const Logs = () => {
     }
   }, [logs])
   return (
-    <div>
+    <div className="w-full h-full">
       <PanelHeader title="Logs" />
-      <div className="h-full relative">
-        <div className="absolute inset-0 flex flex-col items-start">
+      <div className="relative w-full">
+        <div className="absolute inset-0 flex flex-col">
           <ReactJsonTypeHack
             src={logs}
             collapsed={1}
@@ -32,6 +32,7 @@ export const Logs = () => {
             indentWidth={2}
             quotesOnKeys={false}
             name={false}
+            theme={theme === 'light' ? 'rjv-default' : 'monokai'}
           />
         </div>
       </div>
@@ -39,7 +40,11 @@ export const Logs = () => {
   )
 }
 
-export const KCLErrors = () => {
+export const KCLErrors = ({
+  theme = 'light',
+}: {
+  theme?: 'light' | 'dark'
+}) => {
   const { kclErrors } = useStore(({ kclErrors }) => ({
     kclErrors,
   }))
@@ -50,10 +55,10 @@ export const KCLErrors = () => {
     }
   }, [kclErrors])
   return (
-    <div>
+    <div className="h-full w-full">
       <PanelHeader title="KCL Errors" />
       <div className="h-full relative">
-        <div className="absolute inset-0 flex flex-col items-start">
+        <div className="absolute inset-0 flex flex-col">
           <ReactJsonTypeHack
             src={kclErrors}
             collapsed={1}
@@ -65,6 +70,7 @@ export const KCLErrors = () => {
             indentWidth={2}
             quotesOnKeys={false}
             name={false}
+            theme={theme === 'light' ? 'rjv-default' : 'monokai'}
           />
         </div>
       </div>

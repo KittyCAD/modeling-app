@@ -45,6 +45,18 @@ code {
     monospace;
 }
 
+#code-mirror-override .cm-editor {
+  @apply bg-transparent;
+}
+
+#code-mirror-override .cm-gutters {
+  @apply bg-chalkboard-10/50;
+}
+
+.dark #code-mirror-override .cm-gutters {
+  @apply bg-chalkboard-110/50;
+}
+
 #code-mirror-override .cm-focused .cm-cursor {
   width: 0px;
 }

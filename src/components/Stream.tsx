@@ -1,10 +1,9 @@
 import { MouseEventHandler, useEffect, useRef } from 'react'
-import { PanelHeader } from '../components/PanelHeader'
 import { v4 as uuidv4 } from 'uuid'
 import { useStore } from '../useStore'
 import { throttle } from '../lib/utils'
 
-export const Stream = () => {
+export const Stream = ({ className = '' }) => {
   const videoRef = useRef<HTMLVideoElement>(null)
   const cmdId = useRef('')
   const { mediaStream, engineCommandManager } = useStore((s) => ({
@@ -121,8 +120,7 @@ export const Stream = () => {
   }
 
   return (
-    <div id="stream">
-      <PanelHeader title="Stream" />
+    <div id="stream" className={className}>
       <video
         ref={videoRef}
         muted
@@ -134,6 +132,7 @@ export const Stream = () => {
         onMouseLeave={handleMouseUp}
         onContextMenu={(e) => e.preventDefault()}
         onContextMenuCapture={(e) => e.preventDefault()}
+        className="w-full h-full"
       />
     </div>
   )

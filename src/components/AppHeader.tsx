@@ -5,15 +5,25 @@ import UserSidebarMenu from './UserSidebarMenu'
 
 interface AppHeaderProps extends React.PropsWithChildren {
   showToolbar?: boolean
+  className?: string
 }
 
-export const AppHeader = ({ showToolbar = true, children }: AppHeaderProps) => {
+export const AppHeader = ({
+  showToolbar = true,
+  children,
+  className = '',
+}: AppHeaderProps) => {
   const { user } = useStore((s) => ({
     user: s.user,
   }))
 
   return (
-    <header className="py-1 px-5 bg-chalkboard-10 dark:bg-chalkboard-100 border-b dark:border-b-2 border-chalkboard-30 dark:border-chalkboard-70 flex justify-between items-center">
+    <header
+      className={
+        'py-1 px-5 bg-chalkboard-10/50 dark:bg-chalkboard-100/50 border-b dark:border-b-2 border-chalkboard-30 dark:border-chalkboard-70 flex justify-between items-center ' +
+        className
+      }
+    >
       <Link to="/">
         <img
           src="/kitt-arcade-winking.svg"
