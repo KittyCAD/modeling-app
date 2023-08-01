@@ -20,6 +20,7 @@ export const ActionButton = ({
   to = '/',
   Element = 'button',
   children,
+  ...props
 }: ActionButtonProps) => {
   const classNames = `group mono text-base flex items-center gap-2 rounded-sm border border-chalkboard-40 dark:border-chalkboard-60 hover:border-liquid-40 dark:hover:bg-chalkboard-90 p-[3px] ${
     icon ? 'pr-2' : 'px-2'
@@ -27,21 +28,21 @@ export const ActionButton = ({
 
   if (Element === 'button') {
     return (
-      <button onClick={onClick} className={classNames}>
+      <button onClick={onClick} className={classNames} {...props}>
         {icon && <ActionIcon {...icon} />}
         {children}
       </button>
     )
   } else if (Element === 'link') {
     return (
-      <Link to={to} className={classNames}>
+      <Link to={to} className={classNames} {...props}>
         {icon && <ActionIcon {...icon} />}
         {children}
       </Link>
     )
   } else {
     return (
-      <Element onClick={onClick} className={classNames}>
+      <Element onClick={onClick} className={classNames} {...props}>
         {icon && <ActionIcon {...icon} />}
         {children}
       </Element>
