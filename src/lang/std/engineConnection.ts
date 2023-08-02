@@ -267,11 +267,7 @@ export class EngineCommandManager {
       return
     }
     const cmd = command.cmd
-    if (
-      typeof cmd !== 'string' &&
-      cmd.type === 'camera_drag_move' &&
-      this.lossyDataChannel
-    ) {
+    if (cmd.type === 'camera_drag_move' && this.lossyDataChannel) {
       console.log('sending lossy command', command, this.lossyDataChannel)
       cmd.sequence = this.sequence
       this.sequence++
