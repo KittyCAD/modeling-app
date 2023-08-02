@@ -2,6 +2,7 @@ import { SourceRange } from '../executor'
 import { Selections } from '../../useStore'
 import { VITE_KC_API_WS_MODELING_URL } from '../../env'
 import { Models } from '@kittycad/lib'
+import { exportSave } from '../../lib/exportSave'
 
 interface ResultCommand {
   type: 'result'
@@ -96,8 +97,8 @@ export class EngineCommandManager {
         // If the data is an ArrayBuffer, it's  the result of an export command,
         // because in all other cases we send JSON strings. But in the case of
         // export we send a binary blob.
-        const view = new DataView(event.data)
-        console.log(view.getInt32(0))
+        // Pass this to our export function.
+        exportSave(event.data, '')
       } else if (
         typeof event.data === 'string' &&
         event.data.toLocaleLowerCase().startsWith('error')
