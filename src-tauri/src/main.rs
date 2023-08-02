@@ -5,7 +5,6 @@ use std::io::Read;
 
 use anyhow::Result;
 use oauth2::TokenResponse;
-use serde::Deserialize;
 use tauri::{InvokeError, Manager};
 
 /// This command returns the a json string parse from a toml file at the path.
@@ -87,38 +86,6 @@ async fn login(app: tauri::AppHandle) -> Result<String, InvokeError> {
     Ok(token)
 }
 
-/// A file that has been exported from the server.
-#[derive(Debug, Deserialize)]
-pub struct File {
-    pub name: String,
-    pub contents: Vec<u8>,
-}
-
-/// This command saves binary data locally from the websocket `Export` response.
-/// The directory passed here is the directory the user selected to save the file to.
-#[tauri::command]
-fn export_save(dir: &str, data: Vec<u8>) -> Result<(), InvokeError> {
-    let dir = if dir.is_empty() {
-        tauri::api::path::download_dir()
-            .ok_or(InvokeError::from("no download dir defined for user"))?
-    } else {
-        // Use the directory the user selected.
-        std::path::PathBuf::from(dir)
-    };
-
-    // We need to decode the response.
-    let files: Vec<File> =
-        bincode::deserialize(&data).map_err(|e| InvokeError::from_anyhow(e.into()))?;
-
-    for file in files {
-        let path = dir.join(&file.name);
-        println!("Saving file to {:?}", path);
-        std::fs::write(&path, &file.contents).map_err(|e| InvokeError::from_anyhow(e.into()))?;
-    }
-
-    Ok(())
-}
-
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
@@ -131,12 +98,7 @@ fn main() {
             }
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![
-            export_save,
-            login,
-            read_toml,
-            read_txt_file
-        ])
+        .invoke_handler(tauri::generate_handler![login, read_toml, read_txt_file])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
