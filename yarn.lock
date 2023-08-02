@@ -1710,10 +1710,10 @@
   resolved "https://registry.yarnpkg.com/@juggle/resize-observer/-/resize-observer-3.4.0.tgz#08d6c5e20cf7e4cc02fd181c4b0c225cd31dbb60"
   integrity sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==
 
-"@kittycad/lib@^0.0.22":
-  version "0.0.22"
-  resolved "https://registry.yarnpkg.com/@kittycad/lib/-/lib-0.0.22.tgz#3d9b063c6cfe6593cdf7b61d3ffb5c1251262401"
-  integrity sha512-H9AS3/8Ag2fJRZqNNkbOjy/08kEqeOxWEWsmQIzJ/dNGYRD0B7Fm+UM6T8eSEkPP2+KKrIhoHMYEfGd9KjY1uQ==
+"@kittycad/lib@^0.0.23":
+  version "0.0.23"
+  resolved "https://registry.yarnpkg.com/@kittycad/lib/-/lib-0.0.23.tgz#bd4e14dcb4d9236982859c934c848a0edcd599ef"
+  integrity sha512-HrQMYT3WGVUShw5hEe9736QvRMsA22GucWMDdhto/j47KGjDW/rL/WMwXzIeCFR8gVd2rMdSMoj7lQOmqjAo+w==
   dependencies:
     node-fetch "3.3.2"
     openapi-types "^12.0.0"
@@ -2160,6 +2160,11 @@
   version "9.0.2"
   resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-9.0.2.tgz#ede1d1b1e451548d44919dc226253e32a6952c4b"
   integrity sha512-kNnC1GFBLuhImSnV7w4njQkUiJi0ZXUycu1rUaouPqiKlXkh77JKgdRnTAp1x5eBwcIwbtI+3otwzuIDEuDoxQ==
+
+"@types/wicg-file-system-access@^2020.9.6":
+  version "2020.9.6"
+  resolved "https://registry.yarnpkg.com/@types/wicg-file-system-access/-/wicg-file-system-access-2020.9.6.tgz#da34476b1e29451c8b7aa1a6db86b185647cd970"
+  integrity sha512-6hogE75Hl2Ov/jgp8ZhDaGmIF/q3J07GtXf8nCJCwKTHq7971po5+DId7grft09zG7plBwpF6ZU0yx9Du4/e1A==
 
 "@types/ws@^8.5.5":
   version "8.5.5"
