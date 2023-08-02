@@ -47,8 +47,8 @@ export const Stream = () => {
         type: 'camera_drag_move',
         interaction,
         window: {
-          x: x,
-          y: y,
+          x,
+          y,
         },
       },
       cmd_id: uuidv4(),
@@ -78,8 +78,8 @@ export const Stream = () => {
         type: 'camera_drag_start',
         interaction,
         window: {
-          x: x,
-          y: y,
+          x,
+          y,
         },
       },
       cmd_id: newId,
@@ -108,8 +108,8 @@ export const Stream = () => {
         type: 'camera_drag_end',
         interaction,
         window: {
-          x: x,
-          y: y,
+          x,
+          y,
         },
       },
       cmd_id: uuidv4(),
