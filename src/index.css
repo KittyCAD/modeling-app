@@ -71,3 +71,7 @@ code {
     transparent 100%
   );
 }
+
+.react-json-view {
+  @apply bg-transparent !important;
+}

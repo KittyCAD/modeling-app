@@ -20,7 +20,7 @@ export const AppHeader = ({
   return (
     <header
       className={
-        'py-1 px-5 bg-chalkboard-10/50 dark:bg-chalkboard-100/50 border-b dark:border-b-2 border-chalkboard-30 dark:border-chalkboard-70 flex justify-between items-center ' +
+        'py-1 px-5 bg-chalkboard-10/50 dark:bg-chalkboard-100/50 border-b dark:border-b-2 border-chalkboard-30 dark:border-chalkboard-90 flex justify-between items-center ' +
         className
       }
     >

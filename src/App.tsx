@@ -13,7 +13,7 @@ import {
 } from './editor/highlightextension'
 import { Selections, useStore } from './useStore'
 import { Logs, KCLErrors } from './components/Logs'
-import { PanelHeader } from './components/PanelHeader'
+import { CollapsiblePanel, PanelHeader } from './components/CollapsiblePanel'
 import { MemoryPanel } from './components/MemoryPanel'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
 import { Stream } from './components/Stream'
@@ -275,15 +275,13 @@ export function App() {
     <div className="h-screen relative flex flex-col pb-5">
       <AppHeader />
       <ModalContainer />
-      <Allotment>
-        <Allotment
-          vertical
-          defaultSizes={[400, 25, 25, 200]}
-          minSize={35}
-          className="mt-5 ml-5 max-w-xl bg-chalkboard-10/50 dark:bg-chalkboard-110/50"
+      <div className="mt-5 ml-5 max-w-xl h-full flex flex-col resize-x overflow-hidden">
+        <CollapsiblePanel
+          title="Code"
+          icon={faCode}
+          className="overflow-y-auto"
         >
-          <div className="h-full flex flex-col items-start">
-            <PanelHeader title="Code" icon={faCode} />
+          <div className="px-2 py-1">
             <button
               // disabled={!shouldFormat}
               onClick={formatCode}
@@ -291,26 +289,25 @@ export function App() {
             >
               format
             </button>
-            <div
-              className="bg-red h-full w-full overflow-auto"
-              id="code-mirror-override"
-            >
-              <CodeMirror
-                className="h-full"
-                value={code}
-                extensions={[javascript({ jsx: true }), lineHighlightField]}
-                onChange={onChange}
-                onUpdate={onUpdate}
-                theme={theme}
-                onCreateEditor={(_editorView) => setEditorView(_editorView)}
-              />
-            </div>
           </div>
+          <div id="code-mirror-override">
+            <CodeMirror
+              className="h-full"
+              value={code}
+              extensions={[javascript({ jsx: true }), lineHighlightField]}
+              onChange={onChange}
+              onUpdate={onUpdate}
+              theme={theme}
+              onCreateEditor={(_editorView) => setEditorView(_editorView)}
+            />
+          </div>
+        </CollapsiblePanel>
+        <section className="flex flex-col mt-auto">
           <MemoryPanel theme={theme} />
           <Logs theme={theme} />
           <KCLErrors theme={theme} />
-        </Allotment>
-      </Allotment>
+        </section>
+      </div>
       <Stream className="absolute inset-0 -z-10" />
       {debugPanel && <DebugPanel />}
     </div>

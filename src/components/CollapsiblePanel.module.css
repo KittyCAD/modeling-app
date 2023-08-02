@@ -1,0 +1,52 @@
+.panel {
+  @apply relative;
+  @apply bg-chalkboard-20/40;
+}
+
+:global(.dark) .panel {
+  @apply bg-chalkboard-110/50;
+}
+
+.header {
+  @apply sticky top-0 z-10 cursor-pointer;
+  @apply flex items-center gap-2 w-full p-2;
+  @apply font-mono text-xs font-bold select-none text-chalkboard-90;
+  @apply bg-chalkboard-20;
+}
+
+.header:not(:last-of-type) {
+  @apply border-b;
+}
+
+:global(.dark) .header {
+  @apply bg-chalkboard-110 border-b-chalkboard-90 text-chalkboard-30;
+}
+
+:global(.dark) .header:not(:last-of-type) {
+  @apply border-b-2;
+}
+
+.panel:first-of-type .header {
+  @apply rounded-t;
+}
+
+.panel:last-of-type .header {
+  @apply rounded-b;
+}
+
+.panel[open] .header {
+  @apply rounded-t rounded-b-none;
+}
+
+.panel[open] {
+  @apply flex-grow max-h-full h-48 my-1 rounded;
+}
+
+.panel[open] + .panel[open],
+.panel[open]:first-of-type {
+  @apply mt-0;
+}
+
+.panel[open]:last-of-type {
+  @apply mb-0;
+}

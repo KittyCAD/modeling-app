@@ -1,7 +1,8 @@
 import ReactJson from 'react-json-view'
 import { useEffect } from 'react'
 import { useStore } from '../useStore'
-import { PanelHeader } from './PanelHeader'
+import { CollapsiblePanel } from './CollapsiblePanel'
+import { faCodeCommit } from '@fortawesome/free-solid-svg-icons'
 
 const ReactJsonTypeHack = ReactJson as any
 
@@ -17,8 +18,7 @@ export const Logs = ({ theme = 'light' }: { theme?: 'light' | 'dark' }) => {
     }
   }, [logs])
   return (
-    <div className="w-full h-full">
-      <PanelHeader title="Logs" />
+    <CollapsiblePanel title="Logs" icon={faCodeCommit}>
       <div className="relative w-full">
         <div className="absolute inset-0 flex flex-col">
           <ReactJsonTypeHack
@@ -36,7 +36,7 @@ export const Logs = ({ theme = 'light' }: { theme?: 'light' | 'dark' }) => {
           />
         </div>
       </div>
-    </div>
+    </CollapsiblePanel>
   )
 }
 
@@ -55,8 +55,10 @@ export const KCLErrors = ({
     }
   }, [kclErrors])
   return (
-    <div className="h-full w-full">
-      <PanelHeader title="KCL Errors" />
+    <CollapsiblePanel
+      title="KCL Errors"
+      iconClassNames={{ icon: 'group-open:text-destroy-30' }}
+    >
       <div className="h-full relative">
         <div className="absolute inset-0 flex flex-col">
           <ReactJsonTypeHack
@@ -74,6 +76,6 @@ export const KCLErrors = ({
           />
         </div>
       </div>
-    </div>
+    </CollapsiblePanel>
   )
 }
