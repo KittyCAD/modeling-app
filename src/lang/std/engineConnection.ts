@@ -50,10 +50,10 @@ interface XYZ {
   z: number
 }
 
-export type _EngineCommand = Models['ModelingCmdReq_type']
+export type _EngineCommand = Models['modeling_cmd_req_type']
 
 export interface EngineCommand extends _EngineCommand {
-  type: 'ModelingCmdReq'
+  type: 'modeling_cmd_req'
 }
 
 export class EngineCommandManager {
@@ -121,12 +121,12 @@ export class EngineCommandManager {
         console.warn('something went wrong: ', event.data)
       } else {
         const message = JSON.parse(event.data)
-        if (message.type === 'SDPAnswer') {
+        if (message.type === 's_d_p_answer') {
           this.pc?.setRemoteDescription(
             new RTCSessionDescription(message.answer)
           )
-        } else if (message.type === 'IceServerInfo' && this.pc) {
-          console.log('received IceServerInfo')
+        } else if (message.type === 'ice_server_info' && this.pc) {
+          console.log('received ice_server_info')
           this.pc?.setConfiguration({
             iceServers: message.ice_servers,
           })
@@ -142,10 +142,10 @@ export class EngineCommandManager {
           this.pc.addEventListener('icecandidate', (event) => {
             if (!this.pc || !this.socket) return
             if (event.candidate === null) {
-              console.log('sent SDPOffer')
+              console.log('sent s_d_p_offer')
               this.socket.send(
                 JSON.stringify({
-                  type: 'SDPOffer',
+                  type: 's_d_p_offer',
                   offer: this.pc.localDescription,
                 })
               )
@@ -160,9 +160,9 @@ export class EngineCommandManager {
             .createOffer()
             .then(async (descriptionInit) => {
               await this?.pc?.setLocalDescription(descriptionInit)
-              console.log('sent SDPOffer begin')
+              console.log('sent s_d_p_offer begin')
               const msg = JSON.stringify({
-                type: 'SDPOffer',
+                type: 's_d_p_offer',
                 offer: this.pc?.localDescription,
               })
               this.socket?.send(msg)

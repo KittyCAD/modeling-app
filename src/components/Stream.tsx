@@ -41,7 +41,7 @@ export const Stream = () => {
     const interaction = ctrlKey ? 'pan' : 'rotate'
 
     debounceSocketSend({
-      type: 'ModelingCmdReq',
+      type: 'modeling_cmd_req',
       cmd: {
         CameraDragMove: {
           interaction,
@@ -73,7 +73,7 @@ export const Stream = () => {
     const interaction = ctrlKey ? 'pan' : 'rotate'
 
     engineCommandManager?.sendSceneCommand({
-      type: 'ModelingCmdReq',
+      type: 'modeling_cmd_req',
       cmd: {
         type: 'camera_drag_start',
         interaction,
@@ -103,7 +103,7 @@ export const Stream = () => {
     const interaction = ctrlKey ? 'pan' : 'rotate'
 
     engineCommandManager?.sendSceneCommand({
-      type: 'ModelingCmdReq',
+      type: 'modeling_cmd_req',
       cmd: {
         type: 'camera_drag_end',
         interaction,

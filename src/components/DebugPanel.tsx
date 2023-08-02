@@ -60,7 +60,7 @@ export const DebugPanel = () => {
       <ActionButton
         onClick={() => {
           engineCommandManager?.sendSceneCommand({
-            type: 'ModelingCmdReq',
+            type: 'modeling_cmd_req',
             cmd: sketchModeCmd,
             cmd_id: uuidv4(),
             file_id: uuidv4(),

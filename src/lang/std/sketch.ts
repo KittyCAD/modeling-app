@@ -268,7 +268,7 @@ export const line: SketchLineHelper = {
       params: [lineData, previousSketch],
       range: sourceRange,
       command: {
-        type: 'ModelingCmdReq',
+        type: 'modeling_cmd_req',
         cmd: {
           type: 'extend_path',
           path: sketchGroup.id,
@@ -1569,7 +1569,7 @@ export const close: InternalFn = (
     params: [lineData],
     range: sourceRange,
     command: {
-      type: 'ModelingCmdReq',
+      type: 'modeling_cmd_req',
       cmd: {
         type: 'close_path',
         path_id: sketchGroup.id,
@@ -1634,7 +1634,7 @@ export const startSketchAt: InternalFn = (
     params: [lineData],
     range: sourceRange,
     command: {
-      type: 'ModelingCmdReq',
+      type: 'modeling_cmd_req',
       cmd: {
         type: 'start_path',
       },
@@ -1643,7 +1643,7 @@ export const startSketchAt: InternalFn = (
     },
   })
   engineCommandManager.sendSceneCommand({
-    type: 'ModelingCmdReq',
+    type: 'modeling_cmd_req',
     cmd: {
       type: 'move_path_pen',
       path: pathId,

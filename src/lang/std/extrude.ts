@@ -41,7 +41,7 @@ export const extrude: InternalFn = (
     ],
     range: sourceRange,
     command: {
-      type: 'ModelingCmdReq',
+      type: 'modeling_cmd_req',
       cmd: {
         type: 'extrude',
         target: sketch.id,
