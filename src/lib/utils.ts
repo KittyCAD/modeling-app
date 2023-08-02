@@ -28,26 +28,26 @@ export function normaliseAngle(angle: number): number {
   return result > 180 ? result - 360 : result
 }
 
-export function throttle(
-  func: (...args: any[]) => any,
+export function throttle<T>(
+  func: (args: T) => any,
   wait: number
-): (...args: any[]) => any {
+): (args: T) => any {
   let timeout: ReturnType<typeof setTimeout> | null
-  let latestArgs: any[]
+  let latestArgs: T
   let latestTimestamp: number
 
   function later() {
     timeout = null
-    func(...latestArgs)
+    func(latestArgs)
   }
 
-  function throttled(...args: any[]) {
+  function throttled(args: T) {
     const currentTimestamp = Date.now()
     latestArgs = args
 
     if (!latestTimestamp || currentTimestamp - latestTimestamp >= wait) {
       latestTimestamp = currentTimestamp
-      func(...latestArgs)
+      func(latestArgs)
     } else if (!timeout) {
       timeout = setTimeout(later, wait - (currentTimestamp - latestTimestamp))
     }
