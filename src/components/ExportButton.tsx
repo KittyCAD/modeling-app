@@ -60,6 +60,8 @@ export const ExportButton = () => {
         cmd_id: uuidv4(),
         file_id: uuidv4(),
       })
+
+      closeModal()
     },
   })
 
