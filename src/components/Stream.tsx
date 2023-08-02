@@ -43,12 +43,11 @@ export const Stream = () => {
     debounceSocketSend({
       type: 'modeling_cmd_req',
       cmd: {
-        CameraDragMove: {
-          interaction,
-          window: {
-            x: x,
-            y: y,
-          },
+        type: 'camera_drag_move',
+        interaction,
+        window: {
+          x: x,
+          y: y,
         },
       },
       cmd_id: uuidv4(),
