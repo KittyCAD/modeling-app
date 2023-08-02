@@ -1,5 +1,4 @@
-import { useRef, useEffect, useMemo } from 'react'
-import { Allotment } from 'allotment'
+import { useRef, useEffect, useMemo, useState } from 'react'
 import { DebugPanel } from './components/DebugPanel'
 import { asyncLexer } from './lang/tokeniser'
 import { abstractSyntaxTree } from './lang/abstractSyntaxTree'
@@ -13,18 +12,21 @@ import {
 } from './editor/highlightextension'
 import { Selections, useStore } from './useStore'
 import { Logs, KCLErrors } from './components/Logs'
-import { CollapsiblePanel, PanelHeader } from './components/CollapsiblePanel'
+import { CollapsiblePanel } from './components/CollapsiblePanel'
 import { MemoryPanel } from './components/MemoryPanel'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
 import { Stream } from './components/Stream'
 import ModalContainer from 'react-modal-promise'
 import { EngineCommandManager } from './lang/std/engineConnection'
 import { isOverlap } from './lib/utils'
-import { SetToken } from './components/TokenInput'
 import { AppHeader } from './components/AppHeader'
-import { isTauri } from './lib/isTauri'
 import { KCLError } from './lang/errors'
-import { faCode } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCode,
+  faCodeCommit,
+  faSquareRootVariable,
+} from '@fortawesome/free-solid-svg-icons'
+import { useHotkeys } from 'react-hotkeys-hook'
 
 export function App() {
   const cam = useRef()
@@ -89,6 +91,19 @@ export function App() {
     addKCLError: s.addKCLError,
     theme: s.theme,
   }))
+
+  // Pane toggling keyboard shortcuts
+  const [codeOpen, setCodeOpen] = useState(true)
+  const [variablesOpen, setVariablesOpen] = useState(false)
+  const [logsOpen, setLogsOpen] = useState(false)
+  const [kclErrorsOpen, setKCLErrorsOpen] = useState(false)
+  const [debugOpen, setDebugOpen] = useState(true)
+  useHotkeys('c', () => setCodeOpen(!codeOpen))
+  useHotkeys('v', () => setVariablesOpen(!variablesOpen))
+  useHotkeys('l', () => setLogsOpen(!logsOpen))
+  useHotkeys('e', () => setKCLErrorsOpen(!kclErrorsOpen))
+  useHotkeys('d', () => setDebugOpen(!debugOpen))
+
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
     setCode(value)
@@ -279,7 +294,8 @@ export function App() {
         <CollapsiblePanel
           title="Code"
           icon={faCode}
-          className="overflow-y-auto"
+          className="overflow-y-auto open:!mb-2"
+          open={codeOpen}
         >
           <div className="px-2 py-1">
             <button
@@ -303,13 +319,28 @@ export function App() {
           </div>
         </CollapsiblePanel>
         <section className="flex flex-col mt-auto">
-          <MemoryPanel theme={theme} />
-          <Logs theme={theme} />
-          <KCLErrors theme={theme} />
+          <MemoryPanel
+            theme={theme}
+            open={variablesOpen}
+            title="Variables"
+            icon={faSquareRootVariable}
+          />
+          <Logs
+            theme={theme}
+            open={logsOpen}
+            title="Logs"
+            icon={faCodeCommit}
+          />
+          <KCLErrors
+            theme={theme}
+            open={kclErrorsOpen}
+            title="KCL Errors"
+            iconClassNames={{ icon: 'group-open:text-destroy-30' }}
+          />
         </section>
       </div>
       <Stream className="absolute inset-0 -z-10" />
-      {debugPanel && <DebugPanel />}
+      {debugPanel && <DebugPanel title="Debug" open={debugOpen} />}
     </div>
   )
 }

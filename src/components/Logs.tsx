@@ -1,15 +1,17 @@
 import ReactJson from 'react-json-view'
 import { useEffect } from 'react'
 import { useStore } from '../useStore'
-import { CollapsiblePanel } from './CollapsiblePanel'
-import { faCodeCommit } from '@fortawesome/free-solid-svg-icons'
+import { CollapsiblePanel, CollapsiblePanelProps } from './CollapsiblePanel'
 
 const ReactJsonTypeHack = ReactJson as any
 
-export const Logs = ({ theme = 'light' }: { theme?: 'light' | 'dark' }) => {
-  const { logs, resetLogs } = useStore(({ logs, resetLogs }) => ({
+interface LogPanelProps extends CollapsiblePanelProps {
+  theme?: 'light' | 'dark'
+}
+
+export const Logs = ({ theme = 'light', ...props }: LogPanelProps) => {
+  const { logs } = useStore(({ logs }) => ({
     logs,
-    resetLogs,
   }))
   useEffect(() => {
     const element = document.querySelector('.console-tile')
@@ -18,7 +20,7 @@ export const Logs = ({ theme = 'light' }: { theme?: 'light' | 'dark' }) => {
     }
   }, [logs])
   return (
-    <CollapsiblePanel title="Logs" icon={faCodeCommit}>
+    <CollapsiblePanel {...props}>
       <div className="relative w-full">
         <div className="absolute inset-0 flex flex-col">
           <ReactJsonTypeHack
@@ -40,11 +42,7 @@ export const Logs = ({ theme = 'light' }: { theme?: 'light' | 'dark' }) => {
   )
 }
 
-export const KCLErrors = ({
-  theme = 'light',
-}: {
-  theme?: 'light' | 'dark'
-}) => {
+export const KCLErrors = ({ theme = 'light', ...props }: LogPanelProps) => {
   const { kclErrors } = useStore(({ kclErrors }) => ({
     kclErrors,
   }))
@@ -55,10 +53,7 @@ export const KCLErrors = ({
     }
   }, [kclErrors])
   return (
-    <CollapsiblePanel
-      title="KCL Errors"
-      iconClassNames={{ icon: 'group-open:text-destroy-30' }}
-    >
+    <CollapsiblePanel {...props}>
       <div className="h-full relative">
         <div className="absolute inset-0 flex flex-col">
           <ReactJsonTypeHack

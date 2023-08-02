@@ -2,7 +2,7 @@ import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { ActionIcon } from './ActionIcon'
 import styles from './CollapsiblePanel.module.css'
 
-interface CollapsiblePanelProps
+export interface CollapsiblePanelProps
   extends React.PropsWithChildren,
     React.HTMLAttributes<HTMLDetailsElement> {
   title: string

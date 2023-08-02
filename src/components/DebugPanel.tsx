@@ -1,4 +1,4 @@
-import { CollapsiblePanel } from './CollapsiblePanel'
+import { CollapsiblePanel, CollapsiblePanelProps } from './CollapsiblePanel'
 import { useStore } from '../useStore'
 import { v4 as uuidv4 } from 'uuid'
 import { EngineCommand } from '../lang/std/engineConnection'
@@ -8,7 +8,9 @@ import { faCheck } from '@fortawesome/free-solid-svg-icons'
 
 type SketchModeCmd = EngineCommand['cmd']['DefaultCameraEnableSketchMode']
 
-export const DebugPanel = () => {
+interface DebugPanelProps extends CollapsiblePanelProps {}
+
+export const DebugPanel = (props: DebugPanelProps) => {
   const { engineCommandManager } = useStore((s) => ({
     engineCommandManager: s.engineCommandManager,
   }))
@@ -21,11 +23,7 @@ export const DebugPanel = () => {
   })
   if (!sketchModeCmd) return null
   return (
-    <CollapsiblePanel
-      title="Debug"
-      className="!absolute !h-auto bottom-5 right-5"
-      open
-    >
+    <CollapsiblePanel {...props} className="!absolute !h-auto bottom-5 right-5">
       <section className="p-4 flex flex-col gap-4">
         <Xyz
           onChange={setSketchModeCmd}

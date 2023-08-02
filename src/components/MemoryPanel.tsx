@@ -1,15 +1,17 @@
 import ReactJson from 'react-json-view'
-import { CollapsiblePanel } from './CollapsiblePanel'
+import { CollapsiblePanel, CollapsiblePanelProps } from './CollapsiblePanel'
 import { useStore } from '../useStore'
 import { useMemo } from 'react'
 import { ProgramMemory } from '../lang/executor'
-import { faSquareRootVariable } from '@fortawesome/free-solid-svg-icons'
+
+interface MemoryPanelProps extends CollapsiblePanelProps {
+  theme?: 'light' | 'dark'
+}
 
 export const MemoryPanel = ({
   theme = 'light',
-}: {
-  theme?: 'light' | 'dark'
-}) => {
+  ...props
+}: MemoryPanelProps) => {
   const { programMemory } = useStore((s) => ({
     programMemory: s.programMemory,
   }))
@@ -18,7 +20,7 @@ export const MemoryPanel = ({
     [programMemory]
   )
   return (
-    <CollapsiblePanel title="Variables" icon={faSquareRootVariable}>
+    <CollapsiblePanel {...props}>
       <div className="h-full relative">
         <div className="absolute inset-0 flex flex-col items-start">
           <div className=" overflow-auto h-full console-tile w-full">
