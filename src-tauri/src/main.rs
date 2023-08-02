@@ -98,13 +98,23 @@ pub struct File {
 /// The directory passed here is the directory the user selected to save the file to.
 #[tauri::command]
 fn export_save(dir: &str, data: Vec<u8>) -> Result<(), InvokeError> {
-    println!("Saving files to {}", dir);
+    let dir = if dir.is_empty() {
+        tauri::api::path::download_dir()
+            .ok_or(InvokeError::from("no download dir defined for user"))?
+    } else {
+        // Use the directory the user selected.
+        std::path::PathBuf::from(dir)
+    };
 
     // We need to decode the response.
     let files: Vec<File> =
         bincode::deserialize(&data).map_err(|e| InvokeError::from_anyhow(e.into()))?;
 
-    println!("Files: {:?}", files);
+    for file in files {
+        let path = dir.join(&file.name);
+        println!("Saving file to {:?}", path);
+        std::fs::write(&path, &file.contents).map_err(|e| InvokeError::from_anyhow(e.into()))?;
+    }
 
     Ok(())
 }

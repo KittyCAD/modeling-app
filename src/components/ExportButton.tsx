@@ -18,17 +18,8 @@ export const ExportButton = () => {
         entity_ids: [],
         format: {
           // TODO: support other formats.
-          type: 'step',
-          coords: {
-            forward: {
-              axis: 'y',
-              direction: 'negative',
-            },
-            up: {
-              axis: 'z',
-              direction: 'positive',
-            },
-          },
+          type: 'gltf',
+          storage: 'embedded',
         },
       },
       cmd_id: uuidv4(),
