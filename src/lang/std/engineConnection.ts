@@ -98,7 +98,7 @@ export class EngineCommandManager {
         // because in all other cases we send JSON strings. But in the case of
         // export we send a binary blob.
         // Pass this to our export function.
-        exportSave(event.data, '')
+        exportSave(event.data)
       } else if (
         typeof event.data === 'string' &&
         event.data.toLocaleLowerCase().startsWith('error')

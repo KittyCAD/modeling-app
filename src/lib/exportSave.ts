@@ -5,8 +5,7 @@ import { save } from '@tauri-apps/api/dialog'
 import { writeBinaryFile } from '@tauri-apps/api/fs'
 
 // Saves files locally from an export call.
-// The directory passed in is the directory to save the file to.
-export async function exportSave(data: ArrayBuffer, dir = '') {
+export async function exportSave(data: ArrayBuffer) {
   // This converts the ArrayBuffer to a Rust equivalent Vec<u8>.
   let uintArray = new Uint8Array(data)
   try {
