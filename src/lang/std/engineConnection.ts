@@ -114,7 +114,7 @@ export class EngineCommandManager {
           if (message.ice_servers.length > 0) {
             this.pc?.setConfiguration({
               iceServers: message.ice_servers,
-              iceTransportPolicy: "relay",
+              iceTransportPolicy: 'relay',
             })
           } else {
             this.pc?.setConfiguration({})
@@ -139,14 +139,14 @@ export class EngineCommandManager {
                 })
               )
             } else {
-              console.log("sending trickle ice candidate")
-              const {
-                candidate
-              } = event
-              this.socket?.send(JSON.stringify({
-                type: "trickle_ice",
-                candidate: candidate.toJSON(),
-              }))
+              console.log('sending trickle ice candidate')
+              const { candidate } = event
+              this.socket?.send(
+                JSON.stringify({
+                  type: 'trickle_ice',
+                  candidate: candidate.toJSON(),
+                })
+              )
             }
           })
 
