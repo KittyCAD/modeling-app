@@ -107,6 +107,8 @@ export class EngineCommandManager {
           this.pc?.setRemoteDescription(
             new RTCSessionDescription(message.answer)
           )
+        } else if (message.type === 'trickle_ice') {
+          this.pc?.addIceCandidate(message.candidate)
         } else if (message.type === 'ice_server_info' && this.pc) {
           console.log('received ice_server_info')
           this.pc?.setConfiguration({
@@ -131,6 +133,15 @@ export class EngineCommandManager {
                   offer: this.pc.localDescription,
                 })
               )
+            } else {
+              console.log("sending trickle ice candidate")
+              const {
+                candidate
+              } = event
+              this.socket?.send(JSON.stringify({
+                type: "trickle_ice",
+                candidate: candidate.toJSON(),
+              }))
             }
           })
 
