@@ -3,6 +3,7 @@ import { PanelHeader } from '../components/PanelHeader'
 import { v4 as uuidv4 } from 'uuid'
 import { useStore } from '../useStore'
 import { throttle } from '../lib/utils'
+import { EngineCommand } from '../lang/std/engineConnection'
 
 export const Stream = () => {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -25,7 +26,7 @@ export const Stream = () => {
 
   const file_id = uuidv4()
 
-  const debounceSocketSend = throttle((message) => {
+  const debounceSocketSend = throttle<EngineCommand>((message) => {
     engineCommandManager?.sendSceneCommand(message)
   }, 16)
   const handleMouseMove: MouseEventHandler<HTMLVideoElement> = ({
