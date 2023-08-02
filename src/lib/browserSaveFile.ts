@@ -1,3 +1,7 @@
+/// The method below uses the File System Access API when it's supported and
+// else falls back to the classic approach. In both cases the function saves
+// the file, but in case of where the File System Access API is supported, the
+// user will get a file save dialog where they can choose where the file should be saved.
 export const browserSaveFile = async (blob: Blob, suggestedName: string) => {
   // Feature detection. The API needs to be supported
   // and the app not run in an iframe.
