@@ -30,27 +30,7 @@ interface CursorSelectionsArgs {
   idBasedSelections: { type: string; id: string }[]
 }
 
-// TODO these types should be in the openApi spec, and therefore in @kittycad/lib
-interface MouseStuff {
-  interaction: 'rotate' | 'pan' | 'zoom'
-  window: {
-    x: number
-    y: number
-  }
-}
-
-interface MouseDrag extends MouseStuff {
-  sequence?: number
-}
-
-type uuid = string
-interface XYZ {
-  x: number
-  y: number
-  z: number
-}
-
-export type _EngineCommand = Models['ModelingCmdReq_type']
+type _EngineCommand = Models['ModelingCmdReq_type']
 
 // TODO extending this type to add the type property is a work around
 // see https://github.com/KittyCAD/api-deux/issues/1096
