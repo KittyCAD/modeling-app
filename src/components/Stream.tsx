@@ -46,10 +46,7 @@ export const Stream = () => {
       cmd: {
         type: 'camera_drag_move',
         interaction,
-        window: {
-          x,
-          y,
-        },
+        window: { x, y },
       },
       cmd_id: uuidv4(),
       file_id: file_id,
@@ -77,10 +74,7 @@ export const Stream = () => {
       cmd: {
         type: 'camera_drag_start',
         interaction,
-        window: {
-          x,
-          y,
-        },
+        window: { x, y },
       },
       cmd_id: newId,
       file_id,
@@ -107,10 +101,7 @@ export const Stream = () => {
       cmd: {
         type: 'camera_drag_end',
         interaction,
-        window: {
-          x,
-          y,
-        },
+        window: { x, y },
       },
       cmd_id: uuidv4(),
       file_id: file_id,
