@@ -103,7 +103,7 @@ export class EngineCommandManager {
         console.warn('something went wrong: ', event.data)
       } else {
         const message = JSON.parse(event.data)
-        if (message.type === 's_d_p_answer') {
+        if (message.type === 'sdp_answer') {
           this.pc?.setRemoteDescription(
             new RTCSessionDescription(message.answer)
           )
@@ -124,10 +124,10 @@ export class EngineCommandManager {
           this.pc.addEventListener('icecandidate', (event) => {
             if (!this.pc || !this.socket) return
             if (event.candidate === null) {
-              console.log('sent s_d_p_offer')
+              console.log('sent sdp_offer')
               this.socket.send(
                 JSON.stringify({
-                  type: 's_d_p_offer',
+                  type: 'sdp_offer',
                   offer: this.pc.localDescription,
                 })
               )
@@ -142,9 +142,9 @@ export class EngineCommandManager {
             .createOffer()
             .then(async (descriptionInit) => {
               await this?.pc?.setLocalDescription(descriptionInit)
-              console.log('sent s_d_p_offer begin')
+              console.log('sent sdp_offer begin')
               const msg = JSON.stringify({
-                type: 's_d_p_offer',
+                type: 'sdp_offer',
                 offer: this.pc?.localDescription,
               })
               this.socket?.send(msg)
