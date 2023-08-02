@@ -126,11 +126,11 @@ export class EngineCommandManager {
     })
 
     this.socket.addEventListener('close', (event) => {
-      console.log('websocket connection closed')
+      console.log('websocket connection closed', event)
     })
 
     this.socket.addEventListener('error', (event) => {
-      console.log('websocket connection error')
+      console.log('websocket connection error', event)
     })
 
     this?.socket?.addEventListener('message', (event) => {
