@@ -46,6 +46,28 @@ export const ExportButton = () => {
   const formik = useFormik({
     initialValues,
     onSubmit: (values: OutputFormat) => {
+      // Set the default coords.
+      if (
+        values.type === 'obj' ||
+        values.type === 'ply' ||
+        values.type === 'step' ||
+        values.type === 'stl'
+      ) {
+        // Set the default coords.
+        // In the future we can make this configurable.
+        // But for now, its probably best to keep it consistent with the
+        // UI.
+        values.coords = {
+          forward: {
+            axis: 'y',
+            direction: 'negative',
+          },
+          up: {
+            axis: 'z',
+            direction: 'positive',
+          },
+        }
+      }
       engineCommandManager?.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
