@@ -50,7 +50,11 @@ interface XYZ {
   z: number
 }
 
-export type EngineCommand = Models['ModelingCmdReq_type']
+export type _EngineCommand = Models['ModelingCmdReq_type']
+
+export interface EngineCommand extends _EngineCommand {
+  type: 'ModelingCmdReq'
+}
 
 export class EngineCommandManager {
   artifactMap: ArtifactMap = {}
@@ -265,11 +269,11 @@ export class EngineCommandManager {
     const cmd = command.cmd
     if (
       typeof cmd !== 'string' &&
-      'CameraDragMove' in cmd &&
+      cmd.type === 'camera_drag_move' &&
       this.lossyDataChannel
     ) {
       console.log('sending lossy command', command, this.lossyDataChannel)
-      cmd.CameraDragMove.sequence = this.sequence
+      cmd.sequence = this.sequence
       this.sequence++
       this.lossyDataChannel.send(JSON.stringify(command))
       return

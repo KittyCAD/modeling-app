@@ -268,17 +268,16 @@ export const line: SketchLineHelper = {
       params: [lineData, previousSketch],
       range: sourceRange,
       command: {
+        type: 'ModelingCmdReq',
         cmd: {
-          ExtendPath: {
-            path: sketchGroup.id,
-            segment: {
-              Line: {
-                end: {
-                  x: lineData.to[0],
-                  y: lineData.to[1],
-                  z: 0,
-                },
-              },
+          type: 'extend_path',
+          path: sketchGroup.id,
+          segment: {
+            type: 'line',
+            end: {
+              x: lineData.to[0],
+              y: lineData.to[1],
+              z: 0,
             },
           },
         },
@@ -1570,10 +1569,10 @@ export const close: InternalFn = (
     params: [lineData],
     range: sourceRange,
     command: {
+      type: 'ModelingCmdReq',
       cmd: {
-        ClosePath: {
-          path_id: sketchGroup.id,
-        },
+        type: 'close_path',
+        path_id: sketchGroup.id,
       },
       cmd_id: id,
       file_id: uuidv4(),
@@ -1635,20 +1634,23 @@ export const startSketchAt: InternalFn = (
     params: [lineData],
     range: sourceRange,
     command: {
-      cmd: 'StartPath',
+      type: 'ModelingCmdReq',
+      cmd: {
+        type: 'start_path',
+      },
       cmd_id: pathId,
       file_id: uuidv4(),
     },
   })
   engineCommandManager.sendSceneCommand({
+    type: 'ModelingCmdReq',
     cmd: {
-      MovePathPen: {
-        path: pathId,
-        to: {
-          x: lineData.to[0],
-          y: lineData.to[1],
-          z: 0,
-        },
+      type: 'move_path_pen',
+      path: pathId,
+      to: {
+        x: lineData.to[0],
+        y: lineData.to[1],
+        z: 0,
       },
     },
     cmd_id: id,

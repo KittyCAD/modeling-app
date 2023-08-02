@@ -73,13 +73,13 @@ export const Stream = () => {
     const interaction = ctrlKey ? 'pan' : 'rotate'
 
     engineCommandManager?.sendSceneCommand({
+      type: 'ModelingCmdReq',
       cmd: {
-        CameraDragStart: {
-          interaction,
-          window: {
-            x: x,
-            y: y,
-          },
+        type: 'camera_drag_start',
+        interaction,
+        window: {
+          x: x,
+          y: y,
         },
       },
       cmd_id: newId,
@@ -103,13 +103,13 @@ export const Stream = () => {
     const interaction = ctrlKey ? 'pan' : 'rotate'
 
     engineCommandManager?.sendSceneCommand({
+      type: 'ModelingCmdReq',
       cmd: {
-        CameraDragEnd: {
-          interaction,
-          window: {
-            x: x,
-            y: y,
-          },
+        type: 'camera_drag_end',
+        interaction,
+        window: {
+          x: x,
+          y: y,
         },
       },
       cmd_id: uuidv4(),
