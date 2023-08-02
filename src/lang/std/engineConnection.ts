@@ -50,7 +50,7 @@ interface XYZ {
   z: number
 }
 
-export type _EngineCommand = Models['modeling_cmd_req_type']
+export type _EngineCommand = Models['ModelingCmdReq_type']
 
 export interface EngineCommand extends _EngineCommand {
   type: 'modeling_cmd_req'
