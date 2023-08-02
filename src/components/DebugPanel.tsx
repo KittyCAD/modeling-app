@@ -6,7 +6,11 @@ import { useState } from 'react'
 import { ActionButton } from '../components/ActionButton'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 
-type SketchModeCmd = EngineCommand['cmd']['DefaultCameraEnableSketchMode']
+// yes this is ugly, see https://github.com/KittyCAD/kittycad.ts/issues/142
+type SketchModeCmd = Extract<
+  EngineCommand['cmd'],
+  { DefaultCameraEnableSketchMode: any }
+>['DefaultCameraEnableSketchMode']
 
 export const DebugPanel = () => {
   const { engineCommandManager } = useStore((s) => ({
@@ -56,7 +60,6 @@ export const DebugPanel = () => {
       <ActionButton
         onClick={() => {
           engineCommandManager?.sendSceneCommand({
-            type: 'ModelingCmdReq',
             cmd: {
               DefaultCameraEnableSketchMode: sketchModeCmd,
             },

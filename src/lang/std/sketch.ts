@@ -268,7 +268,6 @@ export const line: SketchLineHelper = {
       params: [lineData, previousSketch],
       range: sourceRange,
       command: {
-        type: 'ModelingCmdReq',
         cmd: {
           ExtendPath: {
             path: sketchGroup.id,
@@ -1571,7 +1570,6 @@ export const close: InternalFn = (
     params: [lineData],
     range: sourceRange,
     command: {
-      type: 'ModelingCmdReq',
       cmd: {
         ClosePath: {
           path_id: sketchGroup.id,
@@ -1637,16 +1635,12 @@ export const startSketchAt: InternalFn = (
     params: [lineData],
     range: sourceRange,
     command: {
-      type: 'ModelingCmdReq',
-      cmd: {
-        StartPath: {},
-      },
+      cmd: 'StartPath',
       cmd_id: pathId,
       file_id: uuidv4(),
     },
   })
   engineCommandManager.sendSceneCommand({
-    type: 'ModelingCmdReq',
     cmd: {
       MovePathPen: {
         path: pathId,

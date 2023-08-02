@@ -73,7 +73,6 @@ export const Stream = () => {
     const interaction = ctrlKey ? 'pan' : 'rotate'
 
     engineCommandManager?.sendSceneCommand({
-      type: 'ModelingCmdReq',
       cmd: {
         CameraDragStart: {
           interaction,
@@ -104,7 +103,6 @@ export const Stream = () => {
     const interaction = ctrlKey ? 'pan' : 'rotate'
 
     engineCommandManager?.sendSceneCommand({
-      type: 'ModelingCmdReq',
       cmd: {
         CameraDragEnd: {
           interaction,

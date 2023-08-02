@@ -13,6 +13,7 @@ jobs:
         with:
           node-version-file: '.nvmrc'
       - run: yarn install
+      - run: yarn tsc
       - run: yarn build:wasm
       - run: yarn simpleserver:ci
       - run: yarn test:nowatch

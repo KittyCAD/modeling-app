@@ -20,7 +20,6 @@ import { Stream } from './components/Stream'
 import ModalContainer from 'react-modal-promise'
 import { EngineCommandManager } from './lang/std/engineConnection'
 import { isOverlap } from './lib/utils'
-import { SetToken } from './components/TokenInput'
 import { AppHeader } from './components/AppHeader'
 import { isTauri } from './lib/isTauri'
 import { KCLError } from './lang/errors'
@@ -88,7 +87,6 @@ export function App() {
     addKCLError: s.addKCLError,
     theme: s.theme,
   }))
-  const showTauriTokenInput = isTauri() && !token
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
     setCode(value)

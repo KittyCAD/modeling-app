@@ -1,6 +1,7 @@
 import { SourceRange } from '../executor'
 import { Selections } from '../../useStore'
 import { VITE_KC_API_WS_MODELING_URL } from '../../env'
+import { Models } from '@kittycad/lib'
 
 interface ResultCommand {
   type: 'result'
@@ -48,44 +49,8 @@ interface XYZ {
   y: number
   z: number
 }
-export interface EngineCommand {
-  type: 'ModelingCmdReq'
-  cmd: {
-    StartPath?: {}
-    MovePathPen?: {
-      path: uuid
-      to: XYZ
-    }
-    ExtendPath?: {
-      path: uuid
-      segment: {
-        Line: {
-          end: XYZ
-        }
-      }
-    }
-    ClosePath?: {
-      path_id: uuid
-    }
-    Extrude?: {
-      target: uuid
-      distance: number
-      cap: boolean
-    }
-    CameraDragMove?: MouseDrag
-    CameraDragStart?: MouseStuff
-    CameraDragEnd?: MouseStuff
-    DefaultCameraEnableSketchMode?: {
-      origin: XYZ
-      x_axis: XYZ
-      y_axis: XYZ
-      distance_to_plane: number
-      ortho: boolean
-    }
-  }
-  cmd_id: uuid
-  file_id: uuid
-}
+
+export type EngineCommand = Models['ModelingCmdReq_type']
 
 export class EngineCommandManager {
   artifactMap: ArtifactMap = {}
@@ -297,9 +262,14 @@ export class EngineCommandManager {
       console.log('socket not ready')
       return
     }
-    if (command.cmd.CameraDragMove && this.lossyDataChannel) {
+    const cmd = command.cmd
+    if (
+      typeof cmd !== 'string' &&
+      'CameraDragMove' in cmd &&
+      this.lossyDataChannel
+    ) {
       console.log('sending lossy command', command, this.lossyDataChannel)
-      command.cmd.CameraDragMove.sequence = this.sequence
+      cmd.CameraDragMove.sequence = this.sequence
       this.sequence++
       this.lossyDataChannel.send(JSON.stringify(command))
       return
