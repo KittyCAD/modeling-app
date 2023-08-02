@@ -46,7 +46,6 @@ export const ExportButton = () => {
   const formik = useFormik({
     initialValues,
     onSubmit: (values: OutputFormat) => {
-      console.log(values)
       engineCommandManager?.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {

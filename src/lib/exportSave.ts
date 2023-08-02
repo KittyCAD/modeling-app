@@ -18,7 +18,7 @@ export function exportSave(data: ArrayBuffer, dir: string) {
     try {
       const files = deserialize_files(uintArray)
       // Now we need to download the files to the user's downloads folder.
-      console.log(files)
+      // Or the destination they choose.
       // Iterate over the files.
       files.forEach((file: { contents: number[]; name: string }) => {
         // Create a new blob.
