@@ -12,22 +12,21 @@ export const ExportButton = () => {
 
   const handleClick = async () => {
     engineCommandManager?.sendSceneCommand({
-      type: 'ModelingCmdReq',
+      type: 'modeling_cmd_req',
       cmd: {
-        Export: {
-          scene_id: uuidv4(),
-          format: {
-            // TODO: support other formats.
-            type: 'step',
-            coords: {
-              forward: {
-                axis: 'y',
-                direction: 'negative',
-              },
-              up: {
-                axis: 'z',
-                direction: 'positive',
-              },
+        type: 'export',
+        entity_ids: [],
+        format: {
+          // TODO: support other formats.
+          type: 'step',
+          coords: {
+            forward: {
+              axis: 'y',
+              direction: 'negative',
+            },
+            up: {
+              axis: 'z',
+              direction: 'positive',
             },
           },
         },

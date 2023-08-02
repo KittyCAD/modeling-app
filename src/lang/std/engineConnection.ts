@@ -65,6 +65,10 @@ export class EngineCommandManager {
     })
 
     this.socket = new WebSocket(VITE_KC_API_WS_MODELING_URL, [])
+
+    // Change binary type from "blob" to "arraybuffer"
+    this.socket.binaryType = 'arraybuffer'
+
     this.pc = new RTCPeerConnection()
     this.pc.createDataChannel('unreliable_modeling_cmds')
     this.socket.addEventListener('open', (event) => {
@@ -87,22 +91,19 @@ export class EngineCommandManager {
     this?.socket?.addEventListener('message', (event) => {
       if (!this.socket || !this.pc) return
 
-      //console.log('Message from server ', event.data);
-      if (event.data instanceof Blob) {
-        const reader = new FileReader()
-
-        reader.onload = () => {
-          //console.log("Result: " + reader.result);
-        }
-
-        reader.readAsText(event.data)
+      // console.log('Message from server ', event.data);
+      if (event.data instanceof ArrayBuffer) {
+        // If the data is an ArrayBuffer, it's  the result of an export command,
+        // because in all other cases we send JSON strings. But in the case of
+        // export we send a binary blob.
+        const view = new DataView(event.data)
+        console.log(view.getInt32(0))
       } else if (
         typeof event.data === 'string' &&
         event.data.toLocaleLowerCase().startsWith('error')
       ) {
         console.warn('something went wrong: ', event.data)
       } else {
-        console.log(event.data)
         const message = JSON.parse(event.data)
         if (message.type === 'sdp_answer') {
           this.pc?.setRemoteDescription(
@@ -258,6 +259,7 @@ export class EngineCommandManager {
       this.lossyDataChannel.send(JSON.stringify(command))
       return
     }
+    console.log('sending command', command)
     this.socket?.send(JSON.stringify(command))
   }
   sendModellingCommand({
