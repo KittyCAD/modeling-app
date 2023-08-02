@@ -52,6 +52,8 @@ interface XYZ {
 
 export type _EngineCommand = Models['ModelingCmdReq_type']
 
+// TODO extending this type to add the type property is a work around
+// see https://github.com/KittyCAD/api-deux/issues/1096
 export interface EngineCommand extends _EngineCommand {
   type: 'modeling_cmd_req'
 }
