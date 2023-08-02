@@ -111,9 +111,14 @@ export class EngineCommandManager {
           this.pc?.addIceCandidate(message.candidate)
         } else if (message.type === 'ice_server_info' && this.pc) {
           console.log('received ice_server_info')
-          this.pc?.setConfiguration({
-            iceServers: message.ice_servers,
-          })
+          if (message.ice_servers.length > 0) {
+            this.pc?.setConfiguration({
+              iceServers: message.ice_servers,
+              iceTransportPolicy: "relay",
+            })
+          } else {
+            this.pc?.setConfiguration({})
+          }
           this.pc.addEventListener('track', (event) => {
             console.log('received track', event)
             const mediaStream = event.streams[0]
