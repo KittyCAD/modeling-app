@@ -287,13 +287,11 @@ export class EngineCommandManager {
     }
     const cmd = command.cmd
     if (cmd.type === 'camera_drag_move' && this.lossyDataChannel) {
-      // console.log('sending lossy mouse move command', command, this.lossyDataChannel)
       cmd.sequence = this.sequence
       this.sequence++
       this.lossyDataChannel.send(JSON.stringify(command))
       return
     } else if (cmd.type === 'highlight_set_entity' && this.lossyDataChannel) {
-      // console.log('sending lossy highlight command', command, this.lossyDataChannel)
       // TODO should use loss channel
       this.socket?.send(JSON.stringify(command))
       // this.lossyDataChannel.send(JSON.stringify(command))
