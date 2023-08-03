@@ -41,13 +41,12 @@ export const extrude: InternalFn = (
     ],
     range: sourceRange,
     command: {
-      type: 'ModelingCmdReq',
+      type: 'modeling_cmd_req',
       cmd: {
-        Extrude: {
-          target: sketch.id,
-          distance: length,
-          cap: true,
-        },
+        type: 'extrude',
+        target: sketch.id,
+        distance: length,
+        cap: true,
       },
       cmd_id: id,
       file_id: uuidv4(),

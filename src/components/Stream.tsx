@@ -2,6 +2,7 @@ import { MouseEventHandler, useEffect, useRef } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { useStore } from '../useStore'
 import { throttle } from '../lib/utils'
+import { EngineCommand } from '../lang/std/engineConnection'
 
 export const Stream = ({ className = '' }) => {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -24,7 +25,7 @@ export const Stream = ({ className = '' }) => {
 
   const file_id = uuidv4()
 
-  const debounceSocketSend = throttle((message) => {
+  const debounceSocketSend = throttle<EngineCommand>((message) => {
     engineCommandManager?.sendSceneCommand(message)
   }, 16)
   const handleMouseMove: MouseEventHandler<HTMLVideoElement> = ({
@@ -40,14 +41,13 @@ export const Stream = ({ className = '' }) => {
     const interaction = ctrlKey ? 'pan' : 'rotate'
 
     debounceSocketSend({
-      type: 'ModelingCmdReq',
+      type: 'modeling_cmd_req',
       cmd: {
-        CameraDragMove: {
-          interaction,
-          window: {
-            x: x,
-            y: y,
-          },
+        type: 'camera_drag_move',
+        interaction,
+        window: {
+          x: x,
+          y: y,
         },
       },
       cmd_id: uuidv4(),
@@ -72,14 +72,13 @@ export const Stream = ({ className = '' }) => {
     const interaction = ctrlKey ? 'pan' : 'rotate'
 
     engineCommandManager?.sendSceneCommand({
-      type: 'ModelingCmdReq',
+      type: 'modeling_cmd_req',
       cmd: {
-        CameraDragStart: {
-          interaction,
-          window: {
-            x: x,
-            y: y,
-          },
+        type: 'camera_drag_start',
+        interaction,
+        window: {
+          x: x,
+          y: y,
         },
       },
       cmd_id: newId,
@@ -103,14 +102,13 @@ export const Stream = ({ className = '' }) => {
     const interaction = ctrlKey ? 'pan' : 'rotate'
 
     engineCommandManager?.sendSceneCommand({
-      type: 'ModelingCmdReq',
+      type: 'modeling_cmd_req',
       cmd: {
-        CameraDragEnd: {
-          interaction,
-          window: {
-            x: x,
-            y: y,
-          },
+        type: 'camera_drag_end',
+        interaction,
+        window: {
+          x: x,
+          y: y,
         },
       },
       cmd_id: uuidv4(),

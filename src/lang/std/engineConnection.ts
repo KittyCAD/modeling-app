@@ -1,6 +1,7 @@
 import { SourceRange } from '../executor'
 import { Selections } from '../../useStore'
 import { VITE_KC_API_WS_MODELING_URL } from '../../env'
+import { Models } from '@kittycad/lib'
 
 interface ResultCommand {
   type: 'result'
@@ -29,62 +30,12 @@ interface CursorSelectionsArgs {
   idBasedSelections: { type: string; id: string }[]
 }
 
-// TODO these types should be in the openApi spec, and therefore in @kittycad/lib
-interface MouseStuff {
-  interaction: 'rotate' | 'pan' | 'zoom'
-  window: {
-    x: number
-    y: number
-  }
-}
+type _EngineCommand = Models['ModelingCmdReq_type']
 
-interface MouseDrag extends MouseStuff {
-  sequence?: number
-}
-
-type uuid = string
-interface XYZ {
-  x: number
-  y: number
-  z: number
-}
-export interface EngineCommand {
-  type: 'ModelingCmdReq'
-  cmd: {
-    StartPath?: {}
-    MovePathPen?: {
-      path: uuid
-      to: XYZ
-    }
-    ExtendPath?: {
-      path: uuid
-      segment: {
-        Line: {
-          end: XYZ
-        }
-      }
-    }
-    ClosePath?: {
-      path_id: uuid
-    }
-    Extrude?: {
-      target: uuid
-      distance: number
-      cap: boolean
-    }
-    CameraDragMove?: MouseDrag
-    CameraDragStart?: MouseStuff
-    CameraDragEnd?: MouseStuff
-    DefaultCameraEnableSketchMode?: {
-      origin: XYZ
-      x_axis: XYZ
-      y_axis: XYZ
-      distance_to_plane: number
-      ortho: boolean
-    }
-  }
-  cmd_id: uuid
-  file_id: uuid
+// TODO extending this type to add the type property is a work around
+// see https://github.com/KittyCAD/api-deux/issues/1096
+export interface EngineCommand extends _EngineCommand {
+  type: 'modeling_cmd_req'
 }
 
 export class EngineCommandManager {
@@ -126,11 +77,11 @@ export class EngineCommandManager {
     })
 
     this.socket.addEventListener('close', (event) => {
-      console.log('websocket connection closed')
+      console.log('websocket connection closed', event)
     })
 
     this.socket.addEventListener('error', (event) => {
-      console.log('websocket connection error')
+      console.log('websocket connection error', event)
     })
 
     this?.socket?.addEventListener('message', (event) => {
@@ -152,12 +103,12 @@ export class EngineCommandManager {
         console.warn('something went wrong: ', event.data)
       } else {
         const message = JSON.parse(event.data)
-        if (message.type === 'SDPAnswer') {
+        if (message.type === 'sdp_answer') {
           this.pc?.setRemoteDescription(
             new RTCSessionDescription(message.answer)
           )
-        } else if (message.type === 'IceServerInfo' && this.pc) {
-          console.log('received IceServerInfo')
+        } else if (message.type === 'ice_server_info' && this.pc) {
+          console.log('received ice_server_info')
           this.pc?.setConfiguration({
             iceServers: message.ice_servers,
           })
@@ -173,10 +124,10 @@ export class EngineCommandManager {
           this.pc.addEventListener('icecandidate', (event) => {
             if (!this.pc || !this.socket) return
             if (event.candidate === null) {
-              console.log('sent SDPOffer')
+              console.log('sent sdp_offer')
               this.socket.send(
                 JSON.stringify({
-                  type: 'SDPOffer',
+                  type: 'sdp_offer',
                   offer: this.pc.localDescription,
                 })
               )
@@ -191,9 +142,9 @@ export class EngineCommandManager {
             .createOffer()
             .then(async (descriptionInit) => {
               await this?.pc?.setLocalDescription(descriptionInit)
-              console.log('sent SDPOffer begin')
+              console.log('sent sdp_offer begin')
               const msg = JSON.stringify({
-                type: 'SDPOffer',
+                type: 'sdp_offer',
                 offer: this.pc?.localDescription,
               })
               this.socket?.send(msg)
@@ -297,9 +248,10 @@ export class EngineCommandManager {
       console.log('socket not ready')
       return
     }
-    if (command.cmd.CameraDragMove && this.lossyDataChannel) {
+    const cmd = command.cmd
+    if (cmd.type === 'camera_drag_move' && this.lossyDataChannel) {
       console.log('sending lossy command', command, this.lossyDataChannel)
-      command.cmd.CameraDragMove.sequence = this.sequence
+      cmd.sequence = this.sequence
       this.sequence++
       this.lossyDataChannel.send(JSON.stringify(command))
       return
