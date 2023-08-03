@@ -11,7 +11,7 @@ type SketchModeCmd = Extract<
   { type: 'default_camera_enable_sketch_mode' }
 >
 
-export const DebugPanel = (props: CollapsiblePanelProps) => {
+export const DebugPanel = ({ className, ...props }: CollapsiblePanelProps) => {
   const { engineCommandManager } = useStore((s) => ({
     engineCommandManager: s.engineCommandManager,
   }))
@@ -25,7 +25,10 @@ export const DebugPanel = (props: CollapsiblePanelProps) => {
   })
   if (!sketchModeCmd) return null
   return (
-    <CollapsiblePanel {...props} className="!absolute !h-auto bottom-5 right-5">
+    <CollapsiblePanel
+      {...props}
+      className={'!absolute !h-auto bottom-5 right-5 ' + className}
+    >
       <section className="p-4 flex flex-col gap-4">
         <Xyz
           onChange={setSketchModeCmd}

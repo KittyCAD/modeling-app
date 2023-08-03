@@ -12,10 +12,30 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   @apply text-chalkboard-110 bg-chalkboard-10;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-chalkboard-20) var(--color-chalkboard-40);
 }
 
 body.dark {
+  scrollbar-color: var(--color-chalkboard-70) var(--color-chalkboard-90);
   @apply bg-chalkboard-100 text-chalkboard-10;
+}
+
+::-webkit-scrollbar {
+  @apply w-2 rounded-sm;
+  @apply bg-chalkboard-20;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-chalkboard-40 rounded-sm;
+}
+
+.dark ::-webkit-scrollbar {
+  @apply bg-chalkboard-90;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  @apply bg-chalkboard-70;
 }
 
 button {

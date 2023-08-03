@@ -23,7 +23,7 @@ export const MemoryPanel = ({
     <CollapsiblePanel {...props}>
       <div className="h-full relative">
         <div className="absolute inset-0 flex flex-col items-start">
-          <div className=" overflow-auto h-full console-tile w-full">
+          <div className=" h-full console-tile w-full">
             <ReactJson
               src={ProcessedMemory}
               collapsed={1}

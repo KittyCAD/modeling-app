@@ -1,7 +1,6 @@
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { ActionIcon } from './ActionIcon'
 import styles from './CollapsiblePanel.module.css'
-import { MouseEventHandler, useRef, useState } from 'react'
 
 export interface CollapsiblePanelProps
   extends React.PropsWithChildren,
