@@ -1,4 +1,4 @@
-import { useRef, useEffect, useMemo, useState } from 'react'
+import { useRef, useEffect, useMemo, useState, useCallback } from 'react'
 import { DebugPanel } from './components/DebugPanel'
 import { asyncLexer } from './lang/tokeniser'
 import { abstractSyntaxTree } from './lang/abstractSyntaxTree'
@@ -21,6 +21,7 @@ import { EngineCommandManager } from './lang/std/engineConnection'
 import { isOverlap } from './lib/utils'
 import { AppHeader } from './components/AppHeader'
 import { KCLError } from './lang/errors'
+import { Resizable } from 're-resizable'
 import {
   faCode,
   faCodeCommit,
@@ -103,6 +104,11 @@ export function App() {
   useHotkeys('l', () => setLogsOpen(!logsOpen))
   useHotkeys('e', () => setKCLErrorsOpen(!kclErrorsOpen))
   useHotkeys('d', () => setDebugOpen(!debugOpen))
+
+  const [paneWidth, setPaneWidth] = useState(300)
+  const handlePaneResize = (e: React.MouseEvent<HTMLElement>) => {
+    setPaneWidth(paneWidth + e.movementX)
+  }
 
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
@@ -287,10 +293,24 @@ export function App() {
   }, [code, isStreamReady])
 
   return (
-    <div className="h-screen relative flex flex-col pb-5">
+    <div className="h-screen relative flex flex-col">
       <AppHeader />
       <ModalContainer />
-      <div className="mt-5 ml-5 max-w-xl h-full flex flex-col resize-x overflow-hidden">
+      <Resizable
+        className="my-5 ml-5 pr-1 flex flex-col flex-grow overflow-hidden"
+        defaultSize={{
+          width: '350px',
+          height: 'auto',
+        }}
+        minWidth={200}
+        maxWidth={600}
+        minHeight={'auto'}
+        maxHeight={'auto'}
+        handleClasses={{
+          right:
+            'hover:bg-liquid-30/40 dark:hover:bg-liquid-10/40 bg-transparent transition-colors duration-100 transition-ease-out delay-100',
+        }}
+      >
         <CollapsiblePanel
           title="Code"
           icon={faCode}
@@ -338,7 +358,7 @@ export function App() {
             iconClassNames={{ icon: 'group-open:text-destroy-30' }}
           />
         </section>
-      </div>
+      </Resizable>
       <Stream className="absolute inset-0 -z-10" />
       {debugPanel && <DebugPanel title="Debug" open={debugOpen} />}
     </div>
