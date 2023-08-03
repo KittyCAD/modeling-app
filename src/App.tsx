@@ -293,7 +293,7 @@ export function App() {
   }, [code, isStreamReady])
 
   return (
-    <div className="h-screen relative flex flex-col">
+    <div className="h-screen relative flex flex-col z-10">
       <AppHeader />
       <ModalContainer />
       <Resizable
@@ -359,7 +359,7 @@ export function App() {
           />
         </section>
       </Resizable>
-      <Stream className="absolute inset-0 -z-10" />
+      <Stream className="absolute inset-0 z-0" />
       {debugPanel && <DebugPanel title="Debug" open={debugOpen} />}
     </div>
   )
