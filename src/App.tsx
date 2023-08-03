@@ -236,7 +236,12 @@ export function App() {
               setHighlightRange(sourceRange)
             }
           })
-          engineCommandManager.onClick(({ id, type }) => {
+          engineCommandManager.onClick((selections) => {
+            if (!selections) {
+              setCursor2()
+              return
+            }
+            const { id, type } = selections
             setCursor2({ range: sourceRangeMap[id], type })
           })
           setProgramMemory(programMemory)

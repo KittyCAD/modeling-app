@@ -1,4 +1,4 @@
-import { MouseEventHandler, useEffect, useRef } from 'react'
+import { MouseEventHandler, useEffect, useRef, useState } from 'react'
 import { PanelHeader } from '../components/PanelHeader'
 import { v4 as uuidv4 } from 'uuid'
 import { useStore } from '../useStore'
@@ -12,6 +12,8 @@ export const Stream = () => {
     mediaStream: s.mediaStream,
     engineCommandManager: s.engineCommandManager,
   }))
+  const [isMouseDown, setIsMouseDown] = useState(false)
+  const [didDrag, setDidDrag] = useState(false)
 
   useEffect(() => {
     if (
@@ -35,22 +37,39 @@ export const Stream = () => {
     ctrlKey,
   }) => {
     if (!videoRef.current) return
-    if (!cmdId.current) return
-    const { left, top } = videoRef.current.getBoundingClientRect()
-    const x = clientX - left
-    const y = clientY - top
+
+    if (isMouseDown) {
+      setDidDrag(true)
+    }
+    const { x, y } = getNormalisedCoordinates(
+      clientX,
+      clientY,
+      videoRef.current
+    )
     const interaction = ctrlKey ? 'pan' : 'rotate'
 
-    debounceSocketSend({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'camera_drag_move',
-        interaction,
-        window: { x, y },
-      },
-      cmd_id: uuidv4(),
-      file_id: file_id,
-    })
+    if (cmdId.current) {
+      debounceSocketSend({
+        type: 'modeling_cmd_req',
+        cmd: {
+          type: 'camera_drag_move',
+          interaction,
+          window: { x, y },
+        },
+        cmd_id: uuidv4(),
+        file_id: file_id,
+      })
+    } else {
+      debounceSocketSend({
+        type: 'modeling_cmd_req',
+        cmd: {
+          type: 'highlight_set_entity',
+          selected_at_window: { x, y },
+        },
+        cmd_id: uuidv4(),
+        file_id: file_id,
+      })
+    }
   }
 
   const handleMouseDown: MouseEventHandler<HTMLVideoElement> = ({
@@ -59,10 +78,12 @@ export const Stream = () => {
     ctrlKey,
   }) => {
     if (!videoRef.current) return
-    const { left, top } = videoRef.current.getBoundingClientRect()
-    const x = clientX - left
-    const y = clientY - top
-    console.log('click', x, y)
+    setIsMouseDown(true)
+    const { x, y } = getNormalisedCoordinates(
+      clientX,
+      clientY,
+      videoRef.current
+    )
 
     const newId = uuidv4()
     cmdId.current = newId
@@ -86,13 +107,30 @@ export const Stream = () => {
     ctrlKey,
   }) => {
     if (!videoRef.current) return
-    const { left, top } = videoRef.current.getBoundingClientRect()
-    const x = clientX - left
-    const y = clientY - top
+    setIsMouseDown(false)
+    const { x, y } = getNormalisedCoordinates(
+      clientX,
+      clientY,
+      videoRef.current
+    )
 
     if (cmdId.current == null) {
       return
     }
+
+    if (!didDrag) {
+      engineCommandManager?.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd: {
+          type: 'select_with_point',
+          selection_type: 'add',
+          selected_at_window: { x, y },
+        },
+        cmd_id: uuidv4(),
+        file_id: file_id,
+      })
+    }
+    setDidDrag(false)
 
     const interaction = ctrlKey ? 'pan' : 'rotate'
 
@@ -126,4 +164,22 @@ export const Stream = () => {
       />
     </div>
   )
+}
+
+function getNormalisedCoordinates(
+  clientX: number,
+  clientY: number,
+  el: HTMLVideoElement
+) {
+  // TODO: update this when we have dynamic stream resolution
+  const STREAMWIDTH = 1280
+  const STREAMHEIGHT = 720
+
+  const { left, top, width, height } = el.getBoundingClientRect()
+  const browserX = clientX - left
+  const BrowserY = clientY - top
+  return {
+    x: Math.round((browserX / width) * STREAMWIDTH),
+    y: Math.round((BrowserY / height) * STREAMHEIGHT),
+  }
 }

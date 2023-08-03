@@ -3,6 +3,7 @@ import { Selections } from '../../useStore'
 import { VITE_KC_API_WS_MODELING_URL } from '../../env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from '../../lib/exportSave'
+import { v4 as uuidv4 } from 'uuid'
 
 interface ResultCommand {
   type: 'result'
@@ -49,7 +50,7 @@ export class EngineCommandManager {
   waitForReady: Promise<void> = new Promise(() => {})
   private resolveReady = () => {}
   onHoverCallback: (id?: string) => void = () => {}
-  onClickCallback: (selection: SelectionsArgs) => void = () => {}
+  onClickCallback: (selection?: SelectionsArgs) => void = () => {}
   onCursorsSelectedCallback: (selections: CursorSelectionsArgs) => void =
     () => {}
   constructor({
@@ -191,6 +192,43 @@ export class EngineCommandManager {
         } else if (message.cmd_id) {
           const id = message.cmd_id
           const command = this.artifactMap[id]
+          if (message?.result?.ok) {
+            const result = message.result.ok
+            if (
+              result !== 'empty' &&
+              result?.highlight_set_entity?.uuid !== null
+            ) {
+              console.log('message, ok', result)
+            }
+
+            if (result?.select_with_point?.uuid) {
+              this.onClickCallback({
+                id: result.select_with_point.uuid,
+                type: 'default',
+              })
+              this.sendSceneCommand({
+                type: 'modeling_cmd_req',
+                cmd: {
+                  type: 'select_clear',
+                },
+                cmd_id: uuidv4(),
+                file_id: uuidv4(),
+              })
+              this.sendSceneCommand({
+                type: 'modeling_cmd_req',
+                cmd: {
+                  type: 'select_add',
+                  entities: [result.select_with_point.uuid],
+                },
+                cmd_id: uuidv4(),
+                file_id: uuidv4(),
+              })
+            } else if (result?.select_with_point) {
+              this.onClickCallback()
+            } else if (result?.highlight_set_entity) {
+              this.onHoverCallback(result?.highlight_set_entity?.uuid)
+            }
+          }
           if (command && command.type === 'pending') {
             const resolve = command.resolve
             this.artifactMap[id] = {
@@ -206,15 +244,6 @@ export class EngineCommandManager {
               data: message.result,
             }
           }
-          // TODO talk to the gang about this
-          // the following message types are made up
-          // and are placeholders
-        } else if (message.type === 'hover') {
-          this.onHoverCallback(message.id)
-        } else if (message.type === 'click') {
-          this.onClickCallback(message)
-        } else {
-          console.log('received message', message)
         }
       }
     })
@@ -239,7 +268,7 @@ export class EngineCommandManager {
     // frontend about that (with it's id) so that the FE can highlight code associated with that id
     this.onHoverCallback = callback
   }
-  onClick(callback: (selection: SelectionsArgs) => void) {
+  onClick(callback: (selection?: SelectionsArgs) => void) {
     // TODO talk to the gang about this
     // It's when the user clicks on a part in the 3d scene, and so the engine should tell the
     // frontend about that (with it's id) so that the FE can put the user's cursor on the right
@@ -250,18 +279,27 @@ export class EngineCommandManager {
     otherSelections: Selections['otherSelections']
     idBasedSelections: { type: string; id: string }[]
   }) {
-    // TODO talk to the gang about this
-    // Really idBasedSelections is the only part that's relevant to the server, but it's when
-    // the user puts their cursor over a line of code, and there is a engine-id associated with
-    // it, so we want to tell the engine to change it's color or something
     if (this.socket?.readyState === 0) {
       console.log('socket not open')
       return
     }
-    console.log('sending cursorsSelected')
-    this.socket?.send(
-      JSON.stringify({ command: 'cursorsSelected', body: selections })
-    )
+    this.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'select_clear',
+      },
+      cmd_id: uuidv4(),
+      file_id: uuidv4(),
+    })
+    this.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'select_add',
+        entities: selections.idBasedSelections.map((s) => s.id),
+      },
+      cmd_id: uuidv4(),
+      file_id: uuidv4(),
+    })
   }
   sendSceneCommand(command: EngineCommand) {
     if (this.socket?.readyState === 0) {
