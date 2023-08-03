@@ -5,6 +5,7 @@ import { asyncLexer } from './lang/tokeniser'
 import { abstractSyntaxTree } from './lang/abstractSyntaxTree'
 import { _executor, ExtrudeGroup, SketchGroup } from './lang/executor'
 import CodeMirror from '@uiw/react-codemirror'
+import { linter, lintGutter, Diagnostic } from '@codemirror/lint'
 import { javascript } from '@codemirror/lang-javascript'
 import { ViewUpdate } from '@codemirror/view'
 import {
@@ -22,7 +23,7 @@ import { EngineCommandManager } from './lang/std/engineConnection'
 import { isOverlap } from './lib/utils'
 import { AppHeader } from './components/AppHeader'
 import { isTauri } from './lib/isTauri'
-import { KCLError } from './lang/errors'
+import { KCLError, kclErrToDiagnostic } from './lang/errors'
 
 export function App() {
   const cam = useRef()
@@ -291,7 +292,14 @@ export function App() {
               <CodeMirror
                 className="h-full"
                 value={code}
-                extensions={[javascript({ jsx: true }), lineHighlightField]}
+                extensions={[
+                  javascript({ jsx: true }),
+                  lineHighlightField,
+                  lintGutter(),
+                  linter((_view) => {
+                    return kclErrToDiagnostic(useStore.getState().kclErrors)
+                  }),
+                ]}
                 onChange={onChange}
                 onUpdate={onUpdate}
                 theme={theme}

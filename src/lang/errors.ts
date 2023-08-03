@@ -1,3 +1,5 @@
+import { Diagnostic } from '@codemirror/lint'
+
 export class KCLError {
   kind: string | undefined
   sourceRanges: [number, number][]
@@ -54,4 +56,16 @@ export class KCLUndefinedValueError extends KCLError {
     super('name', `Key ${key} has not been defined`, sourceRanges)
     Object.setPrototypeOf(this, KCLUndefinedValueError.prototype)
   }
+}
+
+/**
+ * Maps the KCL errors to an array of CodeMirror diagnostics.
+ * Currently the diagnostics are all errors, but in the future they could include lints.
+ * */
+export function kclErrToDiagnostic(errors: KCLError[]): Diagnostic[] {
+  return errors.flatMap((err) => {
+    return err.sourceRanges.map(([from, to]) => {
+      return { from, to, message: err.msg, severity: 'error' }
+    })
+  })
 }
