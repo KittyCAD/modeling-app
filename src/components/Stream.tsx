@@ -28,11 +28,7 @@ export const Stream = ({ className = '' }) => {
   const debounceSocketSend = throttle<EngineCommand>((message) => {
     engineCommandManager?.sendSceneCommand(message)
   }, 16)
-  const handleMouseMove: MouseEventHandler<HTMLVideoElement> = ({
-    clientX,
-    clientY,
-    ctrlKey,
-  }) => {
+  const handleMouseMove = ({ clientX, clientY, ctrlKey }: MouseEvent) => {
     if (!videoRef.current) return
     if (!cmdId.current) return
     const { left, top } = videoRef.current.getBoundingClientRect()
@@ -78,7 +74,15 @@ export const Stream = ({ className = '' }) => {
       cmd_id: newId,
       file_id,
     })
+
+    document.addEventListener('mousemove', handleMouseMove)
+    document.addEventListener('mouseleave', handleMouseUp as any)
+    document.styleSheets[0].insertRule(
+      '.overlaid-panes { pointer-events: none; }',
+      0
+    )
   }
+
   const handleMouseUp: MouseEventHandler<HTMLVideoElement> = ({
     clientX,
     clientY,
@@ -106,6 +110,10 @@ export const Stream = ({ className = '' }) => {
       file_id: file_id,
     })
     cmdId.current = ''
+
+    document.removeEventListener('mousemove', handleMouseMove)
+    document.removeEventListener('mouseleave', handleMouseUp as any)
+    document.styleSheets[0].deleteRule(0)
   }
 
   return (
@@ -115,10 +123,8 @@ export const Stream = ({ className = '' }) => {
         muted
         autoPlay
         controls={false}
-        onMouseMove={handleMouseMove}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
         onContextMenu={(e) => e.preventDefault()}
         onContextMenuCapture={(e) => e.preventDefault()}
         className="w-full h-full"

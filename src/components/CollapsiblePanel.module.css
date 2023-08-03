@@ -1,5 +1,5 @@
 .panel {
-  @apply relative;
+  @apply relative overflow-auto;
   @apply bg-chalkboard-20/40;
 }
 

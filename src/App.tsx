@@ -99,16 +99,11 @@ export function App() {
   const [logsOpen, setLogsOpen] = useState(false)
   const [kclErrorsOpen, setKCLErrorsOpen] = useState(false)
   const [debugOpen, setDebugOpen] = useState(true)
-  useHotkeys('c', () => setCodeOpen(!codeOpen))
-  useHotkeys('v', () => setVariablesOpen(!variablesOpen))
-  useHotkeys('l', () => setLogsOpen(!logsOpen))
-  useHotkeys('e', () => setKCLErrorsOpen(!kclErrorsOpen))
-  useHotkeys('d', () => setDebugOpen(!debugOpen))
-
-  const [paneWidth, setPaneWidth] = useState(300)
-  const handlePaneResize = (e: React.MouseEvent<HTMLElement>) => {
-    setPaneWidth(paneWidth + e.movementX)
-  }
+  useHotkeys('shift + c', () => setCodeOpen(!codeOpen))
+  useHotkeys('shift + v', () => setVariablesOpen(!variablesOpen))
+  useHotkeys('shift + l', () => setLogsOpen(!logsOpen))
+  useHotkeys('shift + e', () => setKCLErrorsOpen(!kclErrorsOpen))
+  useHotkeys('shift + d', () => setDebugOpen(!debugOpen))
 
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
@@ -297,9 +292,9 @@ export function App() {
       <AppHeader />
       <ModalContainer />
       <Resizable
-        className="z-10 my-5 ml-5 pr-1 flex flex-col flex-grow overflow-hidden"
+        className="overlaid-panes z-10 my-5 ml-5 pr-1 flex flex-col flex-grow overflow-hidden"
         defaultSize={{
-          width: '350px',
+          width: '400px',
           height: 'auto',
         }}
         minWidth={200}
@@ -360,7 +355,9 @@ export function App() {
         </section>
       </Resizable>
       <Stream className="absolute inset-0 z-0" />
-      {debugPanel && <DebugPanel title="Debug" open={debugOpen} />}
+      {debugPanel && (
+        <DebugPanel title="Debug" className="overlaid-panes" open={debugOpen} />
+      )}
     </div>
   )
 }
