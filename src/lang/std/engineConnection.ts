@@ -2,6 +2,7 @@ import { SourceRange } from '../executor'
 import { Selections } from '../../useStore'
 import { VITE_KC_API_WS_MODELING_URL } from '../../env'
 import { Models } from '@kittycad/lib'
+import { exportSave } from '../../lib/exportSave'
 
 interface ResultCommand {
   type: 'result'
@@ -65,6 +66,10 @@ export class EngineCommandManager {
     })
 
     this.socket = new WebSocket(VITE_KC_API_WS_MODELING_URL, [])
+
+    // Change binary type from "blob" to "arraybuffer"
+    this.socket.binaryType = 'arraybuffer'
+
     this.pc = new RTCPeerConnection()
     this.pc.createDataChannel('unreliable_modeling_cmds')
     this.socket.addEventListener('open', (event) => {
@@ -87,15 +92,13 @@ export class EngineCommandManager {
     this?.socket?.addEventListener('message', (event) => {
       if (!this.socket || !this.pc) return
 
-      //console.log('Message from server ', event.data);
-      if (event.data instanceof Blob) {
-        const reader = new FileReader()
-
-        reader.onload = () => {
-          //console.log("Result: " + reader.result);
-        }
-
-        reader.readAsText(event.data)
+      // console.log('Message from server ', event.data);
+      if (event.data instanceof ArrayBuffer) {
+        // If the data is an ArrayBuffer, it's  the result of an export command,
+        // because in all other cases we send JSON strings. But in the case of
+        // export we send a binary blob.
+        // Pass this to our export function.
+        exportSave(event.data)
       } else if (
         typeof event.data === 'string' &&
         event.data.toLocaleLowerCase().startsWith('error')
@@ -107,11 +110,18 @@ export class EngineCommandManager {
           this.pc?.setRemoteDescription(
             new RTCSessionDescription(message.answer)
           )
+        } else if (message.type === 'trickle_ice') {
+          this.pc?.addIceCandidate(message.candidate)
         } else if (message.type === 'ice_server_info' && this.pc) {
           console.log('received ice_server_info')
-          this.pc?.setConfiguration({
-            iceServers: message.ice_servers,
-          })
+          if (message.ice_servers.length > 0) {
+            this.pc?.setConfiguration({
+              iceServers: message.ice_servers,
+              iceTransportPolicy: 'relay',
+            })
+          } else {
+            this.pc?.setConfiguration({})
+          }
           this.pc.addEventListener('track', (event) => {
             console.log('received track', event)
             const mediaStream = event.streams[0]
@@ -129,6 +139,15 @@ export class EngineCommandManager {
                 JSON.stringify({
                   type: 'sdp_offer',
                   offer: this.pc.localDescription,
+                })
+              )
+            } else {
+              console.log('sending trickle ice candidate')
+              const { candidate } = event
+              this.socket?.send(
+                JSON.stringify({
+                  type: 'trickle_ice',
+                  candidate: candidate.toJSON(),
                 })
               )
             }
@@ -195,6 +214,7 @@ export class EngineCommandManager {
         } else if (message.type === 'click') {
           this.onClickCallback(message)
         } else {
+          console.log('received message', message)
         }
       }
     })
@@ -256,6 +276,7 @@ export class EngineCommandManager {
       this.lossyDataChannel.send(JSON.stringify(command))
       return
     }
+    console.log('sending command', command)
     this.socket?.send(JSON.stringify(command))
   }
   sendModellingCommand({

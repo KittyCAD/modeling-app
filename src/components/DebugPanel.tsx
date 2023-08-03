@@ -11,13 +11,12 @@ type SketchModeCmd = Extract<
   { type: 'default_camera_enable_sketch_mode' }
 >
 
-interface DebugPanelProps extends CollapsiblePanelProps {}
-
 export const DebugPanel = (props: DebugPanelProps) => {
   const { engineCommandManager } = useStore((s) => ({
     engineCommandManager: s.engineCommandManager,
   }))
   const [sketchModeCmd, setSketchModeCmd] = useState<SketchModeCmd>({
+    type: 'default_camera_enable_sketch_mode',
     type: 'default_camera_enable_sketch_mode',
     origin: { x: 0, y: 0, z: 0 },
     x_axis: { x: 1, y: 0, z: 0 },
