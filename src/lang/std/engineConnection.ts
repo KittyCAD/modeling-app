@@ -205,6 +205,7 @@ export class EngineCommandManager {
                 this.onClickCallback()
               }
             } else if (result?.highlight_set_entity) {
+              // TODO should this event come through the lossy data channel?
               this.onHoverCallback(result?.highlight_set_entity?.uuid)
             }
           }
