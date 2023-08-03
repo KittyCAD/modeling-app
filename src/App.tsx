@@ -293,11 +293,11 @@ export function App() {
   }, [code, isStreamReady])
 
   return (
-    <div className="h-screen relative flex flex-col z-10">
+    <div className="h-screen relative flex flex-col">
       <AppHeader />
       <ModalContainer />
       <Resizable
-        className="my-5 ml-5 pr-1 flex flex-col flex-grow overflow-hidden"
+        className="z-10 my-5 ml-5 pr-1 flex flex-col flex-grow overflow-hidden"
         defaultSize={{
           width: '350px',
           height: 'auto',
