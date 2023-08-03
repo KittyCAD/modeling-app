@@ -108,6 +108,8 @@ interface DefaultDir {
   dir: string
 }
 
+export type PaneType = 'code' | 'variables' | 'debug' | 'kclErrors' | 'logs'
+
 // TODO: import real OpenAPI User type from schema
 export interface User {
   company?: string
@@ -191,6 +193,8 @@ export interface StoreState {
   setOnboardingStatus: (status: string) => void
   theme: 'light' | 'dark'
   setTheme: (theme: 'light' | 'dark') => void
+  openPanes: PaneType[]
+  setOpenPanes: (panes: PaneType[]) => void
   homeMenuItems: {
     name: string
     path: string
@@ -374,6 +378,8 @@ export const useStore = create<StoreState>()(
           ? 'dark'
           : 'light',
       setTheme: (theme) => set({ theme }),
+      openPanes: ['code'],
+      setOpenPanes: (openPanes) => set({ openPanes }),
       showHomeMenu: true,
       setHomeShowMenu: (showHomeMenu) => set({ showHomeMenu }),
       homeMenuItems: [],
@@ -400,6 +406,7 @@ export const useStore = create<StoreState>()(
               'debugPanel',
               'onboardingStatus',
               'theme',
+              'openPanes',
             ].includes(key)
           )
         ),

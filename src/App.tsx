@@ -10,7 +10,7 @@ import {
   lineHighlightField,
   addLineHighlight,
 } from './editor/highlightextension'
-import { Selections, useStore } from './useStore'
+import { PaneType, Selections, useStore } from './useStore'
 import { Logs, KCLErrors } from './components/Logs'
 import { CollapsiblePanel } from './components/CollapsiblePanel'
 import { MemoryPanel } from './components/MemoryPanel'
@@ -28,6 +28,7 @@ import {
   faSquareRootVariable,
 } from '@fortawesome/free-solid-svg-icons'
 import { useHotkeys } from 'react-hotkeys-hook'
+import { t } from '@tauri-apps/api/tauri-605fa63e'
 
 export function App() {
   const cam = useRef()
@@ -60,6 +61,8 @@ export function App() {
     formatCode,
     debugPanel,
     theme,
+    openPanes,
+    setOpenPanes,
   } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
@@ -91,19 +94,23 @@ export function App() {
     debugPanel: s.debugPanel,
     addKCLError: s.addKCLError,
     theme: s.theme,
+    openPanes: s.openPanes,
+    setOpenPanes: s.setOpenPanes,
   }))
 
   // Pane toggling keyboard shortcuts
-  const [codeOpen, setCodeOpen] = useState(true)
-  const [variablesOpen, setVariablesOpen] = useState(false)
-  const [logsOpen, setLogsOpen] = useState(false)
-  const [kclErrorsOpen, setKCLErrorsOpen] = useState(false)
-  const [debugOpen, setDebugOpen] = useState(true)
-  useHotkeys('shift + c', () => setCodeOpen(!codeOpen))
-  useHotkeys('shift + v', () => setVariablesOpen(!variablesOpen))
-  useHotkeys('shift + l', () => setLogsOpen(!logsOpen))
-  useHotkeys('shift + e', () => setKCLErrorsOpen(!kclErrorsOpen))
-  useHotkeys('shift + d', () => setDebugOpen(!debugOpen))
+  const togglePane = useCallback(
+    (newPane: PaneType) =>
+      openPanes.includes(newPane)
+        ? setOpenPanes(openPanes.filter((p) => p !== newPane))
+        : setOpenPanes([...openPanes, newPane]),
+    [openPanes, setOpenPanes]
+  )
+  useHotkeys('shift + c', () => togglePane('code'))
+  useHotkeys('shift + v', () => togglePane('variables'))
+  useHotkeys('shift + l', () => togglePane('logs'))
+  useHotkeys('shift + e', () => togglePane('kclErrors'))
+  useHotkeys('shift + d', () => togglePane('debug'))
 
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
@@ -309,8 +316,8 @@ export function App() {
         <CollapsiblePanel
           title="Code"
           icon={faCode}
-          className="overflow-y-auto open:!mb-2"
-          open={codeOpen}
+          className="open:!mb-2"
+          open={openPanes.includes('code')}
         >
           <div className="px-2 py-1">
             <button
@@ -336,19 +343,19 @@ export function App() {
         <section className="flex flex-col mt-auto">
           <MemoryPanel
             theme={theme}
-            open={variablesOpen}
+            open={openPanes.includes('variables')}
             title="Variables"
             icon={faSquareRootVariable}
           />
           <Logs
             theme={theme}
-            open={logsOpen}
+            open={openPanes.includes('logs')}
             title="Logs"
             icon={faCodeCommit}
           />
           <KCLErrors
             theme={theme}
-            open={kclErrorsOpen}
+            open={openPanes.includes('kclErrors')}
             title="KCL Errors"
             iconClassNames={{ icon: 'group-open:text-destroy-30' }}
           />
@@ -356,7 +363,11 @@ export function App() {
       </Resizable>
       <Stream className="absolute inset-0 z-0" />
       {debugPanel && (
-        <DebugPanel title="Debug" className="overlaid-panes" open={debugOpen} />
+        <DebugPanel
+          title="Debug"
+          className="overlaid-panes"
+          open={openPanes.includes('debug')}
+        />
       )}
     </div>
   )
