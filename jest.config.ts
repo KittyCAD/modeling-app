@@ -6,6 +6,7 @@ const config: Config = {
   transform: {
     '^.+\\.(ts|tsx)?$': 'ts-jest',
     '^.+\\.(js|jsx)$': 'babel-jest',
+    '^.+\\.css$': ["jest-transform-css", { modules: true, generateScopedName: "[path]_[name]_[local]" }],
   },
   transformIgnorePatterns: ['//node_modules/(?!(allotment|@tauri-apps/api)/)'],
   moduleNameMapper: {
