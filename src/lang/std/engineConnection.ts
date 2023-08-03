@@ -194,37 +194,16 @@ export class EngineCommandManager {
           const command = this.artifactMap[id]
           if (message?.result?.ok) {
             const result = message.result.ok
-            if (
-              result !== 'empty' &&
-              result?.highlight_set_entity?.uuid !== null
-            ) {
-              console.log('message, ok', result)
-            }
 
-            if (result?.select_with_point?.uuid) {
-              this.onClickCallback({
-                id: result.select_with_point.uuid,
-                type: 'default',
-              })
-              this.sendSceneCommand({
-                type: 'modeling_cmd_req',
-                cmd: {
-                  type: 'select_clear',
-                },
-                cmd_id: uuidv4(),
-                file_id: uuidv4(),
-              })
-              this.sendSceneCommand({
-                type: 'modeling_cmd_req',
-                cmd: {
-                  type: 'select_add',
-                  entities: [result.select_with_point.uuid],
-                },
-                cmd_id: uuidv4(),
-                file_id: uuidv4(),
-              })
-            } else if (result?.select_with_point) {
-              this.onClickCallback()
+            if (result?.select_with_point) {
+              if (result?.select_with_point?.uuid) {
+                this.onClickCallback({
+                  id: result.select_with_point.uuid,
+                  type: 'default',
+                })
+              } else {
+                this.onClickCallback()
+              }
             } else if (result?.highlight_set_entity) {
               this.onHoverCallback(result?.highlight_set_entity?.uuid)
             }
@@ -308,10 +287,16 @@ export class EngineCommandManager {
     }
     const cmd = command.cmd
     if (cmd.type === 'camera_drag_move' && this.lossyDataChannel) {
-      console.log('sending lossy command', command, this.lossyDataChannel)
+      // console.log('sending lossy mouse move command', command, this.lossyDataChannel)
       cmd.sequence = this.sequence
       this.sequence++
       this.lossyDataChannel.send(JSON.stringify(command))
+      return
+    } else if (cmd.type === 'highlight_set_entity' && this.lossyDataChannel) {
+      // console.log('sending lossy highlight command', command, this.lossyDataChannel)
+      // TODO should use loss channel
+      this.socket?.send(JSON.stringify(command))
+      // this.lossyDataChannel.send(JSON.stringify(command))
       return
     }
     console.log('sending command', command)
