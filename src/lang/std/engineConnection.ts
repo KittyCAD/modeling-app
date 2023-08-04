@@ -40,6 +40,8 @@ export interface EngineCommand extends _EngineCommand {
   type: 'modeling_cmd_req'
 }
 
+type WSResponse = Models['OkModelingCmdResponse_type']
+
 export class EngineCommandManager {
   artifactMap: ArtifactMap = {}
   sourceRangeMap: SourceRangeMap = {}
@@ -193,20 +195,19 @@ export class EngineCommandManager {
           const id = message.cmd_id
           const command = this.artifactMap[id]
           if (message?.result?.ok) {
-            const result = message.result.ok
-
-            if (result?.select_with_point) {
-              if (result?.select_with_point?.uuid) {
+            const result: WSResponse = message.result.ok
+            if (result.type === 'select_with_point') {
+              if (result.entity_id) {
                 this.onClickCallback({
-                  id: result.select_with_point.uuid,
+                  id: result.entity_id,
                   type: 'default',
                 })
               } else {
                 this.onClickCallback()
               }
-            } else if (result?.highlight_set_entity) {
+            } else if (result.type === 'highlight_set_entity') {
               // TODO should this event come through the lossy data channel?
-              this.onHoverCallback(result?.highlight_set_entity?.uuid)
+              this.onHoverCallback(result.entity_id)
             }
           }
           if (command && command.type === 'pending') {
