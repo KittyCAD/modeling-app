@@ -1,0 +1,29 @@
+name: update-dev-branch
+
+on:
+  push:
+    branches:
+      - main
+    pull_request:
+      paths:
+        - .github/workflows/update-dev-branch.yml
+
+permissions:
+  contents: write
+
+jobs:
+  update-branch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3.5.0
+      - shell: bash
+        run: |
+          # checkout our branch
+          git checkout dev || git checkout -b dev
+          # fetch origin
+          git fetch origin
+          # reset to main
+          git reset --hard origin/main
+          # force push it
+          git push -f origin dev
