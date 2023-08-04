@@ -11,6 +11,7 @@ import { asyncLexer } from './lang/tokeniser'
 import { abstractSyntaxTree } from './lang/abstractSyntaxTree'
 import { _executor, ExtrudeGroup, SketchGroup } from './lang/executor'
 import CodeMirror from '@uiw/react-codemirror'
+import { linter, lintGutter, Diagnostic } from '@codemirror/lint'
 import { javascript } from '@codemirror/lang-javascript'
 import { ViewUpdate } from '@codemirror/view'
 import {
@@ -30,7 +31,7 @@ import {
 } from './lang/std/engineConnection'
 import { isOverlap, throttle } from './lib/utils'
 import { AppHeader } from './components/AppHeader'
-import { KCLError } from './lang/errors'
+import { KCLError, kclErrToDiagnostic } from './lang/errors'
 import { Resizable } from 're-resizable'
 import {
   faCode,
@@ -38,7 +39,6 @@ import {
   faSquareRootVariable,
 } from '@fortawesome/free-solid-svg-icons'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { t } from '@tauri-apps/api/tauri-605fa63e'
 
 export function App() {
   const cam = useRef()
@@ -386,7 +386,14 @@ export function App() {
             <CodeMirror
               className="h-full"
               value={code}
-              extensions={[javascript({ jsx: true }), lineHighlightField]}
+              extensions={[
+                javascript({ jsx: true }),
+                lineHighlightField,
+                lintGutter(),
+                linter((_view) => {
+                  return kclErrToDiagnostic(useStore.getState().kclErrors)
+                }),
+              ]}
               onChange={onChange}
               onUpdate={onUpdate}
               theme={theme}
@@ -419,10 +426,7 @@ export function App() {
       {debugPanel && (
         <DebugPanel
           title="Debug"
-          className={
-            'overlaid-panes' +
-            (isMouseDownInStream ? ' pointer-events-none' : '')
-          }
+          className={isMouseDownInStream ? 'pointer-events-none' : ''}
           open={openPanes.includes('debug')}
         />
       )}
