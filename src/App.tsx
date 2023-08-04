@@ -77,6 +77,7 @@ export function App() {
     theme,
     openPanes,
     setOpenPanes,
+    onboardingStatus,
   } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
@@ -114,6 +115,7 @@ export function App() {
     theme: s.theme,
     openPanes: s.openPanes,
     setOpenPanes: s.setOpenPanes,
+    onboardingStatus: s.onboardingStatus,
   }))
 
   // Pane toggling keyboard shortcuts
@@ -129,6 +131,8 @@ export function App() {
   useHotkeys('shift + l', () => togglePane('logs'))
   useHotkeys('shift + e', () => togglePane('kclErrors'))
   useHotkeys('shift + d', () => togglePane('debug'))
+
+  const paneOpacity = onboardingStatus === 'camera' ? 'opacity-20' : ''
 
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
@@ -347,12 +351,19 @@ export function App() {
       className="h-screen relative flex flex-col"
       onMouseMove={handleMouseMove}
     >
-      <AppHeader className={isMouseDownInStream ? 'pointer-events-none' : ''} />
+      <AppHeader
+        className={
+          paneOpacity + (isMouseDownInStream ? ' pointer-events-none' : '')
+        }
+      />
       <ModalContainer />
       <Resizable
         className={
           'z-10 my-5 ml-5 pr-1 flex flex-col flex-grow overflow-hidden' +
-          (isMouseDownInStream ? ' pointer-events-none' : '')
+          (isMouseDownInStream || onboardingStatus === 'camera'
+            ? ' pointer-events-none '
+            : ' ') +
+          paneOpacity
         }
         defaultSize={{
           width: '400px',
@@ -426,7 +437,9 @@ export function App() {
       {debugPanel && (
         <DebugPanel
           title="Debug"
-          className={isMouseDownInStream ? 'pointer-events-none' : ''}
+          className={
+            paneOpacity + (isMouseDownInStream ? ' pointer-events-none' : '')
+          }
           open={openPanes.includes('debug')}
         />
       )}
