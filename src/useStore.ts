@@ -177,6 +177,12 @@ export interface StoreState {
   setMediaStream: (mediaStream: MediaStream) => void
   isStreamReady: boolean
   setIsStreamReady: (isStreamReady: boolean) => void
+  isMouseDownInStream: boolean
+  setIsMouseDownInStream: (isMouseDownInStream: boolean) => void
+  cmdId?: string
+  setCmdId: (cmdId: string) => void
+  fileId: string
+  setFileId: (fileId: string) => void
 
   // tauri specific app settings
   defaultDir: DefaultDir
@@ -356,6 +362,15 @@ export const useStore = create<StoreState>()(
       setMediaStream: (mediaStream) => set({ mediaStream }),
       isStreamReady: false,
       setIsStreamReady: (isStreamReady) => set({ isStreamReady }),
+      isMouseDownInStream: false,
+      setIsMouseDownInStream: (isMouseDownInStream) => {
+        set({ isMouseDownInStream })
+      },
+      // For stream event handling
+      cmdId: undefined,
+      setCmdId: (cmdId) => set({ cmdId }),
+      fileId: '',
+      setFileId: (fileId) => set({ fileId }),
 
       // tauri specific app settings
       defaultDir: {

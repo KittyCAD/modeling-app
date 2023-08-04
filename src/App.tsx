@@ -1,5 +1,12 @@
-import { useRef, useEffect, useMemo, useState, useCallback } from 'react'
+import {
+  useRef,
+  useEffect,
+  useMemo,
+  useCallback,
+  MouseEventHandler,
+} from 'react'
 import { DebugPanel } from './components/DebugPanel'
+import { v4 as uuidv4 } from 'uuid'
 import { asyncLexer } from './lang/tokeniser'
 import { abstractSyntaxTree } from './lang/abstractSyntaxTree'
 import { _executor, ExtrudeGroup, SketchGroup } from './lang/executor'
@@ -17,8 +24,11 @@ import { MemoryPanel } from './components/MemoryPanel'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
 import { Stream } from './components/Stream'
 import ModalContainer from 'react-modal-promise'
-import { EngineCommandManager } from './lang/std/engineConnection'
-import { isOverlap } from './lib/utils'
+import {
+  EngineCommand,
+  EngineCommandManager,
+} from './lang/std/engineConnection'
+import { isOverlap, throttle } from './lib/utils'
 import { AppHeader } from './components/AppHeader'
 import { KCLError } from './lang/errors'
 import { Resizable } from 're-resizable'
@@ -57,6 +67,10 @@ export function App() {
     setMediaStream,
     setIsStreamReady,
     isStreamReady,
+    isMouseDownInStream,
+    fileId,
+    cmdId,
+    setCmdId,
     token,
     formatCode,
     debugPanel,
@@ -89,6 +103,10 @@ export function App() {
     setMediaStream: s.setMediaStream,
     isStreamReady: s.isStreamReady,
     setIsStreamReady: s.setIsStreamReady,
+    isMouseDownInStream: s.isMouseDownInStream,
+    fileId: s.fileId,
+    cmdId: s.cmdId,
+    setCmdId: s.setCmdId,
     token: s.token,
     formatCode: s.formatCode,
     debugPanel: s.debugPanel,
@@ -294,12 +312,48 @@ export function App() {
     asyncWrap()
   }, [code, isStreamReady])
 
+  const debounceSocketSend = throttle<EngineCommand>((message) => {
+    engineCommandManager?.sendSceneCommand(message)
+  }, 16)
+  const handleMouseMove = useCallback<MouseEventHandler<HTMLDivElement>>(
+    ({ clientX, clientY, ctrlKey, currentTarget }) => {
+      if (!cmdId) return
+      if (!isMouseDownInStream) return
+
+      const { left, top } = currentTarget.getBoundingClientRect()
+      const x = clientX - left
+      const y = clientY - top
+      const interaction = ctrlKey ? 'pan' : 'rotate'
+
+      const newCmdId = uuidv4()
+      setCmdId(newCmdId)
+
+      debounceSocketSend({
+        type: 'modeling_cmd_req',
+        cmd: {
+          type: 'camera_drag_move',
+          interaction,
+          window: { x, y },
+        },
+        cmd_id: newCmdId,
+        file_id: fileId,
+      })
+    },
+    [debounceSocketSend, isMouseDownInStream, cmdId, fileId, setCmdId]
+  )
+
   return (
-    <div className="h-screen relative flex flex-col">
-      <AppHeader />
+    <div
+      className="h-screen relative flex flex-col"
+      onMouseMove={handleMouseMove}
+    >
+      <AppHeader className={isMouseDownInStream ? 'pointer-events-none' : ''} />
       <ModalContainer />
       <Resizable
-        className="overlaid-panes z-10 my-5 ml-5 pr-1 flex flex-col flex-grow overflow-hidden"
+        className={
+          'z-10 my-5 ml-5 pr-1 flex flex-col flex-grow overflow-hidden' +
+          (isMouseDownInStream ? ' pointer-events-none' : '')
+        }
         defaultSize={{
           width: '400px',
           height: 'auto',
@@ -365,7 +419,10 @@ export function App() {
       {debugPanel && (
         <DebugPanel
           title="Debug"
-          className="overlaid-panes"
+          className={
+            'overlaid-panes' +
+            (isMouseDownInStream ? ' pointer-events-none' : '')
+          }
           open={openPanes.includes('debug')}
         />
       )}

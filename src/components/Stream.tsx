@@ -1,15 +1,24 @@
 import { MouseEventHandler, useEffect, useRef } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { useStore } from '../useStore'
-import { throttle } from '../lib/utils'
-import { EngineCommand } from '../lang/std/engineConnection'
 
 export const Stream = ({ className = '' }) => {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const cmdId = useRef('')
-  const { mediaStream, engineCommandManager } = useStore((s) => ({
+  const {
+    mediaStream,
+    engineCommandManager,
+    setIsMouseDownInStream,
+    fileId,
+    setFileId,
+    setCmdId,
+  } = useStore((s) => ({
     mediaStream: s.mediaStream,
     engineCommandManager: s.engineCommandManager,
+    isMouseDownInStream: s.isMouseDownInStream,
+    setIsMouseDownInStream: s.setIsMouseDownInStream,
+    fileId: s.fileId,
+    setFileId: s.setFileId,
+    setCmdId: s.setCmdId,
   }))
 
   useEffect(() => {
@@ -21,32 +30,8 @@ export const Stream = ({ className = '' }) => {
     if (!videoRef.current) return
     if (!mediaStream) return
     videoRef.current.srcObject = mediaStream
-  }, [mediaStream, engineCommandManager])
-
-  const file_id = uuidv4()
-
-  const debounceSocketSend = throttle<EngineCommand>((message) => {
-    engineCommandManager?.sendSceneCommand(message)
-  }, 16)
-  const handleMouseMove = ({ clientX, clientY, ctrlKey }: MouseEvent) => {
-    if (!videoRef.current) return
-    if (!cmdId.current) return
-    const { left, top } = videoRef.current.getBoundingClientRect()
-    const x = clientX - left
-    const y = clientY - top
-    const interaction = ctrlKey ? 'pan' : 'rotate'
-
-    debounceSocketSend({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'camera_drag_move',
-        interaction,
-        window: { x, y },
-      },
-      cmd_id: uuidv4(),
-      file_id: file_id,
-    })
-  }
+    setFileId(uuidv4())
+  }, [mediaStream, engineCommandManager, setFileId])
 
   const handleMouseDown: MouseEventHandler<HTMLVideoElement> = ({
     clientX,
@@ -60,7 +45,7 @@ export const Stream = ({ className = '' }) => {
     console.log('click', x, y)
 
     const newId = uuidv4()
-    cmdId.current = newId
+    setCmdId(newId)
 
     const interaction = ctrlKey ? 'pan' : 'rotate'
 
@@ -72,15 +57,10 @@ export const Stream = ({ className = '' }) => {
         window: { x, y },
       },
       cmd_id: newId,
-      file_id,
+      file_id: fileId,
     })
 
-    document.addEventListener('mousemove', handleMouseMove)
-    document.addEventListener('mouseleave', handleMouseUp as any)
-    document.styleSheets[0].insertRule(
-      '.overlaid-panes { pointer-events: none; }',
-      0
-    )
+    setIsMouseDownInStream(true)
   }
 
   const handleMouseUp: MouseEventHandler<HTMLVideoElement> = ({
@@ -93,9 +73,8 @@ export const Stream = ({ className = '' }) => {
     const x = clientX - left
     const y = clientY - top
 
-    if (cmdId.current == null) {
-      return
-    }
+    const newCmdId = uuidv4()
+    setCmdId(newCmdId)
 
     const interaction = ctrlKey ? 'pan' : 'rotate'
 
@@ -106,14 +85,13 @@ export const Stream = ({ className = '' }) => {
         interaction,
         window: { x, y },
       },
-      cmd_id: uuidv4(),
-      file_id: file_id,
+      cmd_id: newCmdId,
+      file_id: fileId,
     })
-    cmdId.current = ''
 
-    document.removeEventListener('mousemove', handleMouseMove)
-    document.removeEventListener('mouseleave', handleMouseUp as any)
-    document.styleSheets[0].deleteRule(0)
+    setCmdId('')
+
+    setIsMouseDownInStream(false)
   }
 
   return (
