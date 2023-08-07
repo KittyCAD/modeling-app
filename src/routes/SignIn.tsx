@@ -4,6 +4,7 @@ import { isTauri } from '../lib/isTauri'
 import { useStore } from '../useStore'
 import { invoke } from '@tauri-apps/api/tauri'
 import { useNavigate } from 'react-router-dom'
+import { VITE_KC_API_BASE_URL } from '../env'
 
 const SignIn = () => {
   const navigate = useNavigate()
@@ -68,7 +69,7 @@ const SignIn = () => {
         ) : (
           <ActionButton
             Element="link"
-            to={`https://dev.kittycad.io/signin?callbackUrl=${encodeURIComponent(
+            to={`${VITE_KC_API_BASE_URL}/signin?callbackUrl=${encodeURIComponent(
               typeof window !== 'undefined' &&
                 window.location.href.replace('signin', '')
             )}`}
