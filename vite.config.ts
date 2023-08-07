@@ -18,6 +18,9 @@ const config = defineConfig({
     globals: true,
     setupFiles: 'src/setupTests.ts',
     environment: 'happy-dom',
+    coverage: {
+      provider: 'istanbul' // or 'v8'
+    },
   },
   build: {
     outDir: 'build',
