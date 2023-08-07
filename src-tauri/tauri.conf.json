@@ -48,7 +48,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "untitled-app",
+      "identifier": "KittyCAD-modeling-app",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
