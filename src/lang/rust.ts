@@ -8,7 +8,9 @@ const initialise = async () => {
       ? 'tauri://localhost'
       : window.location.origin.includes('localhost')
       ? 'http://localhost:3000'
-      : window.location.origin
+      : window.location.origin && window.location.origin !== 'null'
+      ? window.location.origin
+      : 'http://localhost:3000'
   const fullUrl = baseUrl + '/wasm_lib_bg.wasm'
   const input = await fetch(fullUrl)
   const buffer = await input.arrayBuffer()

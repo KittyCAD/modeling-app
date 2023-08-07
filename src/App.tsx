@@ -11,8 +11,8 @@ import { asyncLexer } from './lang/tokeniser'
 import { abstractSyntaxTree } from './lang/abstractSyntaxTree'
 import { _executor, ExtrudeGroup, SketchGroup } from './lang/executor'
 import CodeMirror from '@uiw/react-codemirror'
-import { linter, lintGutter, Diagnostic } from '@codemirror/lint'
-import { javascript } from '@codemirror/lang-javascript'
+import { langs } from '@uiw/codemirror-extensions-langs'
+import { linter, lintGutter } from '@codemirror/lint'
 import { ViewUpdate } from '@codemirror/view'
 import {
   lineHighlightField,
@@ -39,6 +39,7 @@ import {
   faSquareRootVariable,
 } from '@fortawesome/free-solid-svg-icons'
 import { useHotkeys } from 'react-hotkeys-hook'
+import { DEV } from './env'
 
 export function App() {
   const cam = useRef()
@@ -351,6 +352,16 @@ export function App() {
     [debounceSocketSend, isMouseDownInStream, cmdId, fileId, setCmdId]
   )
 
+  const extraExtensions = useMemo(() => {
+    if (DEV) return []
+    return [
+      lintGutter(),
+      linter((_view) => {
+        return kclErrToDiagnostic(useStore.getState().kclErrors)
+      }),
+    ]
+  }, [])
+
   return (
     <div
       className="h-screen relative flex flex-col"
@@ -405,12 +416,9 @@ export function App() {
               className="h-full"
               value={code}
               extensions={[
-                javascript({ jsx: true }),
+                langs.javascript({ jsx: true }),
                 lineHighlightField,
-                lintGutter(),
-                linter((_view) => {
-                  return kclErrToDiagnostic(useStore.getState().kclErrors)
-                }),
+                ...extraExtensions,
               ]}
               onChange={onChange}
               onUpdate={onUpdate}

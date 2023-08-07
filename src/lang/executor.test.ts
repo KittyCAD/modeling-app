@@ -5,6 +5,7 @@ import { lexer } from './tokeniser'
 import { ProgramMemory, Path, SketchGroup } from './executor'
 import { initPromise } from './rust'
 import { enginelessExecutor } from '../lib/testHelpers'
+import { vi } from 'vitest'
 
 beforeAll(() => initPromise)
 
@@ -36,7 +37,7 @@ log(5, myVar)`
     const programMemoryOverride: ProgramMemory['root'] = {
       log: {
         type: 'userVal',
-        value: jest.fn(),
+        value: vi.fn(),
         __meta: [
           {
             sourceRange: [0, 0],
