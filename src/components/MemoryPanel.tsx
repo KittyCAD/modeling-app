@@ -1,10 +1,17 @@
 import ReactJson from 'react-json-view'
-import { PanelHeader } from './PanelHeader'
+import { CollapsiblePanel, CollapsiblePanelProps } from './CollapsiblePanel'
 import { useStore } from '../useStore'
 import { useMemo } from 'react'
 import { ProgramMemory } from '../lang/executor'
 
-export const MemoryPanel = () => {
+interface MemoryPanelProps extends CollapsiblePanelProps {
+  theme?: 'light' | 'dark'
+}
+
+export const MemoryPanel = ({
+  theme = 'light',
+  ...props
+}: MemoryPanelProps) => {
   const { programMemory } = useStore((s) => ({
     programMemory: s.programMemory,
   }))
@@ -13,11 +20,10 @@ export const MemoryPanel = () => {
     [programMemory]
   )
   return (
-    <div className="h-full">
-      <PanelHeader title="Variables" />
+    <CollapsiblePanel {...props}>
       <div className="h-full relative">
         <div className="absolute inset-0 flex flex-col items-start">
-          <div className=" overflow-auto h-full console-tile w-full">
+          <div className=" h-full console-tile w-full">
             <ReactJson
               src={ProcessedMemory}
               collapsed={1}
@@ -28,11 +34,12 @@ export const MemoryPanel = () => {
               indentWidth={2}
               quotesOnKeys={false}
               name={false}
+              theme={theme === 'light' ? 'rjv-default' : 'monokai'}
             />
           </div>
         </div>
       </div>
-    </div>
+    </CollapsiblePanel>
   )
 }
 

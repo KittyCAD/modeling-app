@@ -4,6 +4,7 @@ import reportWebVitals from './reportWebVitals'
 import { Toaster } from 'react-hot-toast'
 import { useStore } from './useStore'
 import { Router } from './Router'
+import { HotkeysProvider } from 'react-hotkeys-hook'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 function setThemeClass(state: Partial<{ theme: string }>) {
@@ -18,7 +19,7 @@ setThemeClass({ theme })
 useStore.subscribe(setThemeClass)
 
 root.render(
-  <>
+  <HotkeysProvider>
     <Router />
     <Toaster
       position="bottom-center"
@@ -27,7 +28,7 @@ root.render(
           'bg-chalkboard-10 dark:bg-chalkboard-90 text-chalkboard-110 dark:text-chalkboard-10',
       }}
     />
-  </>
+  </HotkeysProvider>
 )
 
 // If you want to start measuring performance in your app, pass a function

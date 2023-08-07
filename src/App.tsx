@@ -1,6 +1,12 @@
-import { useRef, useEffect, useMemo } from 'react'
-import { Allotment } from 'allotment'
+import {
+  useRef,
+  useEffect,
+  useMemo,
+  useCallback,
+  MouseEventHandler,
+} from 'react'
 import { DebugPanel } from './components/DebugPanel'
+import { v4 as uuidv4 } from 'uuid'
 import { asyncLexer } from './lang/tokeniser'
 import { abstractSyntaxTree } from './lang/abstractSyntaxTree'
 import { _executor, ExtrudeGroup, SketchGroup } from './lang/executor'
@@ -12,18 +18,27 @@ import {
   lineHighlightField,
   addLineHighlight,
 } from './editor/highlightextension'
-import { Selections, useStore } from './useStore'
+import { PaneType, Selections, useStore } from './useStore'
 import { Logs, KCLErrors } from './components/Logs'
-import { PanelHeader } from './components/PanelHeader'
+import { CollapsiblePanel } from './components/CollapsiblePanel'
 import { MemoryPanel } from './components/MemoryPanel'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
 import { Stream } from './components/Stream'
 import ModalContainer from 'react-modal-promise'
-import { EngineCommandManager } from './lang/std/engineConnection'
-import { isOverlap } from './lib/utils'
+import {
+  EngineCommand,
+  EngineCommandManager,
+} from './lang/std/engineConnection'
+import { isOverlap, throttle } from './lib/utils'
 import { AppHeader } from './components/AppHeader'
-import { isTauri } from './lib/isTauri'
 import { KCLError, kclErrToDiagnostic } from './lang/errors'
+import { Resizable } from 're-resizable'
+import {
+  faCode,
+  faCodeCommit,
+  faSquareRootVariable,
+} from '@fortawesome/free-solid-svg-icons'
+import { useHotkeys } from 'react-hotkeys-hook'
 
 export function App() {
   const cam = useRef()
@@ -52,10 +67,17 @@ export function App() {
     setMediaStream,
     setIsStreamReady,
     isStreamReady,
+    isMouseDownInStream,
+    fileId,
+    cmdId,
+    setCmdId,
     token,
     formatCode,
     debugPanel,
     theme,
+    openPanes,
+    setOpenPanes,
+    onboardingStatus,
   } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
@@ -82,12 +104,36 @@ export function App() {
     setMediaStream: s.setMediaStream,
     isStreamReady: s.isStreamReady,
     setIsStreamReady: s.setIsStreamReady,
+    isMouseDownInStream: s.isMouseDownInStream,
+    fileId: s.fileId,
+    cmdId: s.cmdId,
+    setCmdId: s.setCmdId,
     token: s.token,
     formatCode: s.formatCode,
     debugPanel: s.debugPanel,
     addKCLError: s.addKCLError,
     theme: s.theme,
+    openPanes: s.openPanes,
+    setOpenPanes: s.setOpenPanes,
+    onboardingStatus: s.onboardingStatus,
   }))
+
+  // Pane toggling keyboard shortcuts
+  const togglePane = useCallback(
+    (newPane: PaneType) =>
+      openPanes.includes(newPane)
+        ? setOpenPanes(openPanes.filter((p) => p !== newPane))
+        : setOpenPanes([...openPanes, newPane]),
+    [openPanes, setOpenPanes]
+  )
+  useHotkeys('shift + c', () => togglePane('code'))
+  useHotkeys('shift + v', () => togglePane('variables'))
+  useHotkeys('shift + l', () => togglePane('logs'))
+  useHotkeys('shift + e', () => togglePane('kclErrors'))
+  useHotkeys('shift + d', () => togglePane('debug'))
+
+  const paneOpacity = onboardingStatus === 'camera' ? 'opacity-20' : ''
+
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
     setCode(value)
@@ -270,14 +316,75 @@ export function App() {
     asyncWrap()
   }, [code, isStreamReady])
 
+  const debounceSocketSend = throttle<EngineCommand>((message) => {
+    engineCommandManager?.sendSceneCommand(message)
+  }, 16)
+  const handleMouseMove = useCallback<MouseEventHandler<HTMLDivElement>>(
+    ({ clientX, clientY, ctrlKey, currentTarget }) => {
+      if (!cmdId) return
+      if (!isMouseDownInStream) return
+
+      const { left, top } = currentTarget.getBoundingClientRect()
+      const x = clientX - left
+      const y = clientY - top
+      const interaction = ctrlKey ? 'pan' : 'rotate'
+
+      const newCmdId = uuidv4()
+      setCmdId(newCmdId)
+
+      debounceSocketSend({
+        type: 'modeling_cmd_req',
+        cmd: {
+          type: 'camera_drag_move',
+          interaction,
+          window: { x, y },
+        },
+        cmd_id: newCmdId,
+        file_id: fileId,
+      })
+    },
+    [debounceSocketSend, isMouseDownInStream, cmdId, fileId, setCmdId]
+  )
+
   return (
-    <div className="h-screen">
-      <AppHeader />
+    <div
+      className="h-screen relative flex flex-col"
+      onMouseMove={handleMouseMove}
+    >
+      <AppHeader
+        className={
+          paneOpacity + (isMouseDownInStream ? ' pointer-events-none' : '')
+        }
+      />
       <ModalContainer />
-      <Allotment snap={true}>
-        <Allotment vertical defaultSizes={[400, 1, 1, 200]} minSize={20}>
-          <div className="h-full flex flex-col items-start">
-            <PanelHeader title="Editor" />
+      <Resizable
+        className={
+          'z-10 my-5 ml-5 pr-1 flex flex-col flex-grow overflow-hidden' +
+          (isMouseDownInStream || onboardingStatus === 'camera'
+            ? ' pointer-events-none '
+            : ' ') +
+          paneOpacity
+        }
+        defaultSize={{
+          width: '400px',
+          height: 'auto',
+        }}
+        minWidth={200}
+        maxWidth={600}
+        minHeight={'auto'}
+        maxHeight={'auto'}
+        handleClasses={{
+          right:
+            'hover:bg-liquid-30/40 dark:hover:bg-liquid-10/40 bg-transparent transition-colors duration-100 transition-ease-out delay-100',
+        }}
+      >
+        <CollapsiblePanel
+          title="Code"
+          icon={faCode}
+          className="open:!mb-2"
+          open={openPanes.includes('code')}
+        >
+          <div className="px-2 py-1">
             <button
               // disabled={!shouldFormat}
               onClick={formatCode}
@@ -285,37 +392,57 @@ export function App() {
             >
               format
             </button>
-            <div
-              className="bg-red h-full w-full overflow-auto"
-              id="code-mirror-override"
-            >
-              <CodeMirror
-                className="h-full"
-                value={code}
-                extensions={[
-                  javascript({ jsx: true }),
-                  lineHighlightField,
-                  lintGutter(),
-                  linter((_view) => {
-                    return kclErrToDiagnostic(useStore.getState().kclErrors)
-                  }),
-                ]}
-                onChange={onChange}
-                onUpdate={onUpdate}
-                theme={theme}
-                onCreateEditor={(_editorView) => setEditorView(_editorView)}
-              />
-            </div>
           </div>
-          <MemoryPanel />
-          <Logs />
-          <KCLErrors />
-        </Allotment>
-        <Allotment vertical defaultSizes={[40, 400]} minSize={20}>
-          <Stream />
-        </Allotment>
-        {debugPanel && <DebugPanel />}
-      </Allotment>
+          <div id="code-mirror-override">
+            <CodeMirror
+              className="h-full"
+              value={code}
+              extensions={[
+                javascript({ jsx: true }),
+                lineHighlightField,
+                lintGutter(),
+                linter((_view) => {
+                  return kclErrToDiagnostic(useStore.getState().kclErrors)
+                }),
+              ]}
+              onChange={onChange}
+              onUpdate={onUpdate}
+              theme={theme}
+              onCreateEditor={(_editorView) => setEditorView(_editorView)}
+            />
+          </div>
+        </CollapsiblePanel>
+        <section className="flex flex-col mt-auto">
+          <MemoryPanel
+            theme={theme}
+            open={openPanes.includes('variables')}
+            title="Variables"
+            icon={faSquareRootVariable}
+          />
+          <Logs
+            theme={theme}
+            open={openPanes.includes('logs')}
+            title="Logs"
+            icon={faCodeCommit}
+          />
+          <KCLErrors
+            theme={theme}
+            open={openPanes.includes('kclErrors')}
+            title="KCL Errors"
+            iconClassNames={{ icon: 'group-open:text-destroy-30' }}
+          />
+        </section>
+      </Resizable>
+      <Stream className="absolute inset-0 z-0" />
+      {debugPanel && (
+        <DebugPanel
+          title="Debug"
+          className={
+            paneOpacity + (isMouseDownInStream ? ' pointer-events-none' : '')
+          }
+          open={openPanes.includes('debug')}
+        />
+      )}
     </div>
   )
 }

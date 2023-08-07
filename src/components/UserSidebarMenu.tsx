@@ -55,9 +55,9 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           Menu
         </ActionButton>
       )}
-      <Popover.Overlay className="fixed z-20 inset-0 bg-chalkboard-110/50" />
+      <Popover.Overlay className="fixed z-40 inset-0 bg-chalkboard-110/50" />
 
-      <Popover.Panel className="fixed inset-0 left-auto z-30 w-64 bg-chalkboard-10 dark:bg-chalkboard-100 border border-liquid-100 shadow-md rounded-l-lg">
+      <Popover.Panel className="fixed inset-0 left-auto z-50 w-64 bg-chalkboard-10 dark:bg-chalkboard-100 border border-liquid-100 shadow-md rounded-l-lg">
         {user && (
           <div className="flex items-center gap-4 px-4 py-3 bg-liquid-100">
             {user.image && !imageLoadFailed && (

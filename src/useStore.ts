@@ -108,6 +108,8 @@ interface DefaultDir {
   dir: string
 }
 
+export type PaneType = 'code' | 'variables' | 'debug' | 'kclErrors' | 'logs'
+
 // TODO: import real OpenAPI User type from schema
 export interface User {
   company?: string
@@ -175,6 +177,12 @@ export interface StoreState {
   setMediaStream: (mediaStream: MediaStream) => void
   isStreamReady: boolean
   setIsStreamReady: (isStreamReady: boolean) => void
+  isMouseDownInStream: boolean
+  setIsMouseDownInStream: (isMouseDownInStream: boolean) => void
+  cmdId?: string
+  setCmdId: (cmdId: string) => void
+  fileId: string
+  setFileId: (fileId: string) => void
 
   // tauri specific app settings
   defaultDir: DefaultDir
@@ -191,6 +199,8 @@ export interface StoreState {
   setOnboardingStatus: (status: string) => void
   theme: 'light' | 'dark'
   setTheme: (theme: 'light' | 'dark') => void
+  openPanes: PaneType[]
+  setOpenPanes: (panes: PaneType[]) => void
   homeMenuItems: {
     name: string
     path: string
@@ -352,6 +362,15 @@ export const useStore = create<StoreState>()(
       setMediaStream: (mediaStream) => set({ mediaStream }),
       isStreamReady: false,
       setIsStreamReady: (isStreamReady) => set({ isStreamReady }),
+      isMouseDownInStream: false,
+      setIsMouseDownInStream: (isMouseDownInStream) => {
+        set({ isMouseDownInStream })
+      },
+      // For stream event handling
+      cmdId: undefined,
+      setCmdId: (cmdId) => set({ cmdId }),
+      fileId: '',
+      setFileId: (fileId) => set({ fileId }),
 
       // tauri specific app settings
       defaultDir: {
@@ -374,6 +393,8 @@ export const useStore = create<StoreState>()(
           ? 'dark'
           : 'light',
       setTheme: (theme) => set({ theme }),
+      openPanes: ['code'],
+      setOpenPanes: (openPanes) => set({ openPanes }),
       showHomeMenu: true,
       setHomeShowMenu: (showHomeMenu) => set({ showHomeMenu }),
       homeMenuItems: [],
@@ -400,6 +421,7 @@ export const useStore = create<StoreState>()(
               'debugPanel',
               'onboardingStatus',
               'theme',
+              'openPanes',
             ].includes(key)
           )
         ),

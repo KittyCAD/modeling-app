@@ -1,4 +1,3 @@
-@import '../node_modules/allotment/dist/style.css';
 @import './colors.css';
 
 @tailwind base;
@@ -13,10 +12,30 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   @apply text-chalkboard-110 bg-chalkboard-10;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-chalkboard-20) var(--color-chalkboard-40);
 }
 
 body.dark {
+  scrollbar-color: var(--color-chalkboard-70) var(--color-chalkboard-90);
   @apply bg-chalkboard-100 text-chalkboard-10;
+}
+
+::-webkit-scrollbar {
+  @apply w-2 rounded-sm;
+  @apply bg-chalkboard-20;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-chalkboard-40 rounded-sm;
+}
+
+.dark ::-webkit-scrollbar {
+  @apply bg-chalkboard-90;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  @apply bg-chalkboard-70;
 }
 
 button {
@@ -45,6 +64,18 @@ code {
     monospace;
 }
 
+#code-mirror-override .cm-editor {
+  @apply bg-transparent;
+}
+
+#code-mirror-override .cm-gutters {
+  @apply bg-chalkboard-10/50;
+}
+
+.dark #code-mirror-override .cm-gutters {
+  @apply bg-chalkboard-110/50;
+}
+
 #code-mirror-override .cm-focused .cm-cursor {
   width: 0px;
 }
@@ -58,4 +89,8 @@ code {
     #0084e255 5%,
     transparent 100%
   );
+}
+
+.react-json-view {
+  @apply bg-transparent !important;
 }

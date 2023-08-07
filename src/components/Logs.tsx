@@ -1,14 +1,17 @@
 import ReactJson from 'react-json-view'
 import { useEffect } from 'react'
 import { useStore } from '../useStore'
-import { PanelHeader } from './PanelHeader'
+import { CollapsiblePanel, CollapsiblePanelProps } from './CollapsiblePanel'
 
 const ReactJsonTypeHack = ReactJson as any
 
-export const Logs = () => {
-  const { logs, resetLogs } = useStore(({ logs, resetLogs }) => ({
+interface LogPanelProps extends CollapsiblePanelProps {
+  theme?: 'light' | 'dark'
+}
+
+export const Logs = ({ theme = 'light', ...props }: LogPanelProps) => {
+  const { logs } = useStore(({ logs }) => ({
     logs,
-    resetLogs,
   }))
   useEffect(() => {
     const element = document.querySelector('.console-tile')
@@ -17,10 +20,9 @@ export const Logs = () => {
     }
   }, [logs])
   return (
-    <div>
-      <PanelHeader title="Logs" />
-      <div className="h-full relative">
-        <div className="absolute inset-0 flex flex-col items-start">
+    <CollapsiblePanel {...props}>
+      <div className="relative w-full">
+        <div className="absolute inset-0 flex flex-col">
           <ReactJsonTypeHack
             src={logs}
             collapsed={1}
@@ -32,14 +34,15 @@ export const Logs = () => {
             indentWidth={2}
             quotesOnKeys={false}
             name={false}
+            theme={theme === 'light' ? 'rjv-default' : 'monokai'}
           />
         </div>
       </div>
-    </div>
+    </CollapsiblePanel>
   )
 }
 
-export const KCLErrors = () => {
+export const KCLErrors = ({ theme = 'light', ...props }: LogPanelProps) => {
   const { kclErrors } = useStore(({ kclErrors }) => ({
     kclErrors,
   }))
@@ -50,10 +53,9 @@ export const KCLErrors = () => {
     }
   }, [kclErrors])
   return (
-    <div>
-      <PanelHeader title="KCL Errors" />
+    <CollapsiblePanel {...props}>
       <div className="h-full relative">
-        <div className="absolute inset-0 flex flex-col items-start">
+        <div className="absolute inset-0 flex flex-col">
           <ReactJsonTypeHack
             src={kclErrors}
             collapsed={1}
@@ -65,9 +67,10 @@ export const KCLErrors = () => {
             indentWidth={2}
             quotesOnKeys={false}
             name={false}
+            theme={theme === 'light' ? 'rjv-default' : 'monokai'}
           />
         </div>
       </div>
-    </div>
+    </CollapsiblePanel>
   )
 }
