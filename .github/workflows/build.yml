@@ -52,22 +52,22 @@ jobs:
           pwd
           ls -la
           yarn fmt
-      # - name: tauri build
-      #   shell: bash
-      #   run: yarn tauri build
-      # - uses: actions/upload-artifact@v2
-      #   with:
-      #     name: tauri-app
-      #     path: src-tauri/target/release/bundle
-      - name: Build the app
-        uses: tauri-apps/tauri-action@v0
-
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CI: false
+      - name: tauri build
+        shell: bash
+        run: yarn tauri build
+      - uses: actions/upload-artifact@v2
         with:
-          tagName: ${{ github.ref_name }} # This only works if your workflow triggers on new tags.
-          releaseName: 'Paraffin v__VERSION__' # tauri-action replaces \_\_VERSION\_\_ with the app version.
-          releaseBody: 'See the assets to download and install this version.'
-          releaseDraft: true
-          prerelease: false
+          name: tauri-app
+          path: src-tauri/target/release/bundle
+      # - name: Build the app
+      #   uses: tauri-apps/tauri-action@v0
+
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     CI: false
+      #   with:
+      #     tagName: ${{ github.ref_name }} # This only works if your workflow triggers on new tags.
+      #     releaseName: 'Paraffin v__VERSION__' # tauri-action replaces \_\_VERSION\_\_ with the app version.
+      #     releaseBody: 'See the assets to download and install this version.'
+      #     releaseDraft: true
+      #     prerelease: false
