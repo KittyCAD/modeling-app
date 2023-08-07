@@ -1,8 +1,17 @@
-import { MouseEventHandler, useEffect, useRef } from 'react'
+import {
+  MouseEventHandler,
+  WheelEventHandler,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { useStore } from '../useStore'
+import { throttle } from '../lib/utils'
+import { EngineCommand } from '../lang/std/engineConnection'
 
 export const Stream = ({ className = '' }) => {
+  const [zoom, setZoom] = useState(0)
   const videoRef = useRef<HTMLVideoElement>(null)
   const {
     mediaStream,
@@ -31,6 +40,7 @@ export const Stream = ({ className = '' }) => {
     if (!mediaStream) return
     videoRef.current.srcObject = mediaStream
     setFileId(uuidv4())
+    setZoom(videoRef.current.getBoundingClientRect().height / 2)
   }, [mediaStream, engineCommandManager, setFileId])
 
   const handleMouseDown: MouseEventHandler<HTMLVideoElement> = ({
@@ -61,6 +71,26 @@ export const Stream = ({ className = '' }) => {
     })
 
     setIsMouseDownInStream(true)
+  }
+
+  // TODO: consolidate this with the same function in App.tsx
+  const debounceSocketSend = throttle<EngineCommand>((message) => {
+    engineCommandManager?.sendSceneCommand(message)
+  }, 16)
+
+  const handleScroll: WheelEventHandler<HTMLVideoElement> = (e) => {
+    debounceSocketSend({
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'camera_drag_move',
+        interaction: 'zoom',
+        window: { x: 0, y: zoom + e.deltaY },
+      },
+      cmd_id: uuidv4(),
+      file_id: uuidv4(),
+    })
+
+    setZoom(zoom + e.deltaY)
   }
 
   const handleMouseUp: MouseEventHandler<HTMLVideoElement> = ({
@@ -105,6 +135,7 @@ export const Stream = ({ className = '' }) => {
         onMouseUp={handleMouseUp}
         onContextMenu={(e) => e.preventDefault()}
         onContextMenuCapture={(e) => e.preventDefault()}
+        onWheelCapture={handleScroll}
         className="w-full h-full"
       />
     </div>
