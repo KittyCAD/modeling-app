@@ -39,7 +39,7 @@ import {
   faSquareRootVariable,
 } from '@fortawesome/free-solid-svg-icons'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { DEV } from './env'
+import { TEST } from './env'
 
 export function App() {
   const cam = useRef()
@@ -353,7 +353,7 @@ export function App() {
   )
 
   const extraExtensions = useMemo(() => {
-    if (DEV) return []
+    if (TEST) return []
     return [
       lintGutter(),
       linter((_view) => {
