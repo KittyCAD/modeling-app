@@ -132,7 +132,12 @@ export function App() {
   useHotkeys('shift + e', () => togglePane('kclErrors'))
   useHotkeys('shift + d', () => togglePane('debug'))
 
-  const paneOpacity = onboardingStatus === 'camera' ? 'opacity-20' : ''
+  const paneOpacity =
+    onboardingStatus === 'camera'
+      ? 'opacity-20'
+      : isMouseDownInStream
+      ? 'opacity-40'
+      : ''
 
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
@@ -353,13 +358,15 @@ export function App() {
     >
       <AppHeader
         className={
-          paneOpacity + (isMouseDownInStream ? ' pointer-events-none' : '')
+          'transition-opacity transition-duration-75 ' +
+          paneOpacity +
+          (isMouseDownInStream ? ' pointer-events-none' : '')
         }
       />
       <ModalContainer />
       <Resizable
         className={
-          'z-10 my-5 ml-5 pr-1 flex flex-col flex-grow overflow-hidden' +
+          'z-10 my-5 ml-5 pr-1 flex flex-col flex-grow overflow-hidden transition-opacity transition-duration-75 ' +
           (isMouseDownInStream || onboardingStatus === 'camera'
             ? ' pointer-events-none '
             : ' ') +
@@ -438,7 +445,9 @@ export function App() {
         <DebugPanel
           title="Debug"
           className={
-            paneOpacity + (isMouseDownInStream ? ' pointer-events-none' : '')
+            'transition-opacity transition-duration-75 ' +
+            paneOpacity +
+            (isMouseDownInStream ? ' pointer-events-none' : '')
           }
           open={openPanes.includes('debug')}
         />
