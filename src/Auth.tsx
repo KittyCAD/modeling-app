@@ -28,9 +28,7 @@ export const Auth = ({ children }: React.PropsWithChildren) => {
     ) {
       navigate('/signin')
     }
-
   }, [user, token, navigate, isLoading])
-
 
   return isLoading ? <>Loading...</> : <>{children}</>
 }

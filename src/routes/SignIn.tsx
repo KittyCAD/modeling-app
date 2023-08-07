@@ -14,7 +14,9 @@ const SignIn = () => {
   const signInTauri = async () => {
     // We want to invoke our command to login via device auth.
     try {
-      const token: string = await invoke('login', { host: VITE_KC_API_BASE_URL })
+      const token: string = await invoke('login', {
+        host: VITE_KC_API_BASE_URL,
+      })
       setToken(token)
       navigate('/')
     } catch (error) {
@@ -71,7 +73,7 @@ const SignIn = () => {
             Element="link"
             to={`${VITE_KC_SITE_BASE_URL}/signin?callbackUrl=${encodeURIComponent(
               typeof window !== 'undefined' &&
-              window.location.href.replace('signin', '')
+                window.location.href.replace('signin', '')
             )}`}
             icon={{ icon: faSignInAlt }}
             className="w-fit mt-4 dark:hover:bg-chalkboard-30"
