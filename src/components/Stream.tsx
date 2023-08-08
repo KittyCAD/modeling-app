@@ -79,6 +79,7 @@ export const Stream = ({ className = '' }) => {
   }, 16)
 
   const handleScroll: WheelEventHandler<HTMLVideoElement> = (e) => {
+    e.preventDefault()
     debounceSocketSend({
       type: 'modeling_cmd_req',
       cmd: {
