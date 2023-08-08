@@ -33,11 +33,10 @@ fn read_txt_file(path: &str) -> Result<String, InvokeError> {
 /// This command instantiates a new window with auth.
 /// The string returned from this method is the access token.
 #[tauri::command]
-async fn login(app: tauri::AppHandle) -> Result<String, InvokeError> {
+async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError> {
     println!("Logging in...");
     // Do an OAuth 2.0 Device Authorization Grant dance to get a token.
-    let host = "https://api.dev.kittycad.io/";
-    let device_auth_url = oauth2::DeviceAuthorizationUrl::new(format!("{host}oauth2/device/auth"))
+    let device_auth_url = oauth2::DeviceAuthorizationUrl::new(format!("{host}/oauth2/device/auth"))
         .map_err(|e| InvokeError::from_anyhow(e.into()))?;
     // We can hardcode the client ID.
     // This value is safe to be embedded in version control.
@@ -46,10 +45,10 @@ async fn login(app: tauri::AppHandle) -> Result<String, InvokeError> {
     let auth_client = oauth2::basic::BasicClient::new(
         oauth2::ClientId::new(client_id),
         None,
-        oauth2::AuthUrl::new(format!("{host}authorize"))
+        oauth2::AuthUrl::new(format!("{host}/authorize"))
             .map_err(|e| InvokeError::from_anyhow(e.into()))?,
         Some(
-            oauth2::TokenUrl::new(format!("{host}oauth2/device/token"))
+            oauth2::TokenUrl::new(format!("{host}/oauth2/device/token"))
                 .map_err(|e| InvokeError::from_anyhow(e.into()))?,
         ),
     )

@@ -4,7 +4,7 @@ import { isTauri } from '../lib/isTauri'
 import { useStore } from '../useStore'
 import { invoke } from '@tauri-apps/api/tauri'
 import { useNavigate } from 'react-router-dom'
-import { VITE_KC_SITE_BASE_URL } from '../env'
+import { VITE_KC_SITE_BASE_URL, VITE_KC_API_BASE_URL } from '../env'
 
 const SignIn = () => {
   const navigate = useNavigate()
@@ -14,7 +14,9 @@ const SignIn = () => {
   const signInTauri = async () => {
     // We want to invoke our command to login via device auth.
     try {
-      const token: string = await invoke('login')
+      const token: string = await invoke('login', {
+        host: VITE_KC_API_BASE_URL,
+      })
       setToken(token)
       navigate('/')
     } catch (error) {
