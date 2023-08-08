@@ -11,9 +11,11 @@ import { useRef } from 'react'
 import { toast } from 'react-hot-toast'
 import { Toggle } from '../components/Toggle/Toggle'
 import { useNavigate } from 'react-router-dom'
+import { useHotkeys } from 'react-hotkeys-hook'
 
 export const Settings = () => {
   const navigate = useNavigate()
+  useHotkeys('esc', () => navigate('/'))
   const {
     defaultDir,
     setDefaultDir,
