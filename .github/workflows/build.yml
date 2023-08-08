@@ -45,6 +45,9 @@ jobs:
         shell: bash
         run: |
           sed -i 's/import.meta.url//g' "./src/wasm-lib/pkg/wasm_lib.js"
+      - name: yarn wasm build
+        shell: bash
+        run: yarn build:wasm
       - name: tauri build
         shell: bash
         run: yarn tauri build
