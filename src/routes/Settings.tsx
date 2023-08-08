@@ -140,6 +140,7 @@ export const Settings = () => {
             onChange={(e) => {
               const newUnitSystem = e.target.checked ? 'metric' : 'imperial'
               setDefaultUnitSystem(newUnitSystem)
+              setDefaultBaseUnit(baseUnits[newUnitSystem][0])
               toast.success('Unit system set to ' + newUnitSystem)
             }}
           />
