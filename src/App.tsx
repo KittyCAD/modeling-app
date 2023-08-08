@@ -9,7 +9,12 @@ import { DebugPanel } from './components/DebugPanel'
 import { v4 as uuidv4 } from 'uuid'
 import { asyncLexer } from './lang/tokeniser'
 import { abstractSyntaxTree } from './lang/abstractSyntaxTree'
-import { _executor, ExtrudeGroup, SketchGroup } from './lang/executor'
+import {
+  _executor,
+  ProgramMemory,
+  ExtrudeGroup,
+  SketchGroup,
+} from './lang/executor'
 import CodeMirror from '@uiw/react-codemirror'
 import { langs } from '@uiw/codemirror-extensions-langs'
 import { linter, lintGutter } from '@codemirror/lint'
@@ -234,7 +239,7 @@ export function App() {
         }
         engineCommandManager.startNewSession()
         setEngineCommandManager(engineCommandManager)
-        _executor(
+        const programMemory = await _executor(
           _ast,
           {
             root: {
@@ -276,39 +281,28 @@ export function App() {
           engineCommandManager,
           { bodyType: 'root' },
           []
-        ).then(async (programMemory) => {
-          const { artifactMap, sourceRangeMap } =
-            await engineCommandManager.waitForAllCommands()
+        )
 
-          setArtifactMap({ artifactMap, sourceRangeMap })
-          engineCommandManager.onHover((id) => {
-            if (!id) {
-              setHighlightRange([0, 0])
-            } else {
-              const sourceRange = sourceRangeMap[id]
-              setHighlightRange(sourceRange)
-            }
-          })
-          engineCommandManager.onClick(({ id, type }) => {
-            setCursor2({ range: sourceRangeMap[id], type })
-          })
-          setProgramMemory(programMemory)
-          const geos = programMemory?.return
-            ?.map(({ name }: { name: string }) => {
-              const artifact = programMemory?.root?.[name]
-              if (
-                artifact.type === 'extrudeGroup' ||
-                artifact.type === 'sketchGroup'
-              ) {
-                return artifact
-              }
-              return null
-            })
-            .filter((a) => a) as (ExtrudeGroup | SketchGroup)[]
+        const { artifactMap, sourceRangeMap } =
+          await engineCommandManager.waitForAllCommands()
 
-          // console.log(programMemory)
-          setError()
+        setArtifactMap({ artifactMap, sourceRangeMap })
+        engineCommandManager.onHover((id) => {
+          if (!id) {
+            setHighlightRange([0, 0])
+          } else {
+            const sourceRange = sourceRangeMap[id]
+            setHighlightRange(sourceRange)
+          }
         })
+        engineCommandManager.onClick(({ id, type }) => {
+          setCursor2({ range: sourceRangeMap[id], type })
+        })
+        if (programMemory !== undefined) {
+          setProgramMemory(programMemory)
+        }
+
+        setError()
       } catch (e: any) {
         if (e instanceof KCLError) {
           addKCLError(e)
