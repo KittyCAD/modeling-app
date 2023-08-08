@@ -12,6 +12,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   @apply text-chalkboard-110 bg-chalkboard-10;
+  overflow: hidden;
   scrollbar-width: thin;
   scrollbar-color: var(--color-chalkboard-20) var(--color-chalkboard-40);
 }

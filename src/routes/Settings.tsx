@@ -76,7 +76,7 @@ export const Settings = () => {
           Close
         </ActionButton>
       </AppHeader>
-      <div className="mt-16 max-w-3xl mx-auto">
+      <div className="my-24 max-w-5xl mx-auto">
         <h1 className="text-4xl font-bold">User Settings</h1>
         {(window as any).__TAURI__ && (
           <SettingsSection
