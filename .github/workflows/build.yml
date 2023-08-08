@@ -8,13 +8,10 @@ on:
 
 jobs:
   build:
-    # runs-on: ${{ matrix.os }}
-    # strategy:
-    #   matrix:
-    #     os: [macos-latest, ubuntu-latest, windows-latest]
-    runs-on:
-      group: ubuntu-runners
-      labels: ubuntu-20.04-16core
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v2
       - name: install ubuntu system dependencies
@@ -32,7 +29,7 @@ jobs:
       - run: yarn build:wasm
       - name: Rust setup
         uses: dtolnay/rust-toolchain@stable
-      - run: yarn tauri build
+      - run: yarn tauri build --verbose
       - uses: actions/upload-artifact@v2
         with:
           name: tauri-app
