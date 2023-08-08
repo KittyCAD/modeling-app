@@ -6,6 +6,7 @@ import { ProgramMemory, Path, SketchGroup } from './executor'
 import { initPromise } from './rust'
 import { enginelessExecutor } from '../lib/testHelpers'
 import { vi } from 'vitest'
+import { KCLUndefinedValueError } from './errors'
 
 beforeAll(() => initPromise)
 
@@ -437,6 +438,22 @@ describe('testing math operators', () => {
     const code = 'const myVar = 2 + min(100, -1 + legLen(5, 3))'
     const { root } = await exe(code)
     expect(root.myVar.value).toBe(5)
+  })
+})
+
+describe('Testing Errors', () => {
+  it('should throw an error when a variable is not defined', async () => {
+    const code = `const myVar = 5
+const theExtrude = startSketchAt([0, 0])
+  |> line([-2.4, 5], %)
+  |> line([-0.76], myVarZ, %)
+  |> line([5,5], %)
+  |> close(%)
+  |> extrude(4, %)
+show(theExtrude)`
+    await expect(exe(code)).rejects.toEqual(
+      new KCLUndefinedValueError('Memory item myVarZ not found', [[100, 106]])
+    )
   })
 })
 
