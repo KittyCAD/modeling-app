@@ -8,10 +8,13 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+    # runs-on: ${{ matrix.os }}
+    # strategy:
+    #   matrix:
+    #     os: [macos-latest, ubuntu-latest, windows-latest]
+    runs-on:
+      group: ubuntu-runners
+      labels: ubuntu-20.04-16core
     steps:
       - uses: actions/checkout@v2
       - name: install ubuntu system dependencies
