@@ -239,74 +239,67 @@ export function App() {
         }
         engineCommandManager.startNewSession()
         setEngineCommandManager(engineCommandManager)
-        try {
-          const programMemory = await _executor(
-            _ast,
-            {
-              root: {
-                log: {
-                  type: 'userVal',
-                  value: (a: any) => {
-                    addLog(a)
+        const programMemory = await _executor(
+          _ast,
+          {
+            root: {
+              log: {
+                type: 'userVal',
+                value: (a: any) => {
+                  addLog(a)
+                },
+                __meta: [
+                  {
+                    pathToNode: [],
+                    sourceRange: [0, 0],
                   },
-                  __meta: [
-                    {
-                      pathToNode: [],
-                      sourceRange: [0, 0],
-                    },
-                  ],
-                },
-                _0: {
-                  type: 'userVal',
-                  value: 0,
-                  __meta: [],
-                },
-                _90: {
-                  type: 'userVal',
-                  value: 90,
-                  __meta: [],
-                },
-                _180: {
-                  type: 'userVal',
-                  value: 180,
-                  __meta: [],
-                },
-                _270: {
-                  type: 'userVal',
-                  value: 270,
-                  __meta: [],
-                },
+                ],
               },
-              pendingMemory: {},
+              _0: {
+                type: 'userVal',
+                value: 0,
+                __meta: [],
+              },
+              _90: {
+                type: 'userVal',
+                value: 90,
+                __meta: [],
+              },
+              _180: {
+                type: 'userVal',
+                value: 180,
+                __meta: [],
+              },
+              _270: {
+                type: 'userVal',
+                value: 270,
+                __meta: [],
+              },
             },
-            engineCommandManager,
-            { bodyType: 'root' },
-            []
-          ).catch((e) => {
-            console.error("Caught an exception")
-            return undefined
-          })
+            pendingMemory: {},
+          },
+          engineCommandManager,
+          { bodyType: 'root' },
+          []
+        )
 
-          const { artifactMap, sourceRangeMap } =
-            await engineCommandManager.waitForAllCommands()
+        const { artifactMap, sourceRangeMap } =
+          await engineCommandManager.waitForAllCommands()
 
-          setArtifactMap({ artifactMap, sourceRangeMap })
-          engineCommandManager.onHover((id) => {
-            if (!id) {
-              setHighlightRange([0, 0])
-            } else {
-              const sourceRange = sourceRangeMap[id]
-              setHighlightRange(sourceRange)
-            }
-          })
-          engineCommandManager.onClick(({ id, type }) => {
-            setCursor2({ range: sourceRangeMap[id], type })
-          })
-          if (programMemory !== undefined) {
-            setProgramMemory(programMemory)
+        setArtifactMap({ artifactMap, sourceRangeMap })
+        engineCommandManager.onHover((id) => {
+          if (!id) {
+            setHighlightRange([0, 0])
+          } else {
+            const sourceRange = sourceRangeMap[id]
+            setHighlightRange(sourceRange)
           }
-        } catch (e) {
-          console.error(e)
+        })
+        engineCommandManager.onClick(({ id, type }) => {
+          setCursor2({ range: sourceRangeMap[id], type })
+        })
+        if (programMemory !== undefined) {
+          setProgramMemory(programMemory)
         }
 
         setError()
