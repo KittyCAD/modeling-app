@@ -26,31 +26,10 @@ jobs:
           node-version: '18.x'
           cache: 'yarn' # Set this to npm, yarn or pnpm.
       - run: yarn install
+      - run: yarn build:wasm
       - name: Rust setup
         uses: dtolnay/rust-toolchain@stable
-      - name: wasm prep
-        shell: bash
-        run: |
-          mkdir src/wasm-lib/pkg; cd src/wasm-lib
-          npx wasm-pack build --target web --out-dir pkg
-          cd ../../
-          cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
-      - name: macos sed
-        if: matrix.os == 'macos-latest'
-        shell: bash
-        run: |
-          sed -i '' 's/import.meta.url//g' "./src/wasm-lib/pkg/wasm_lib.js"
-      - name: ubuntu and windows sed
-        if: matrix.os != 'macos-latest'
-        shell: bash
-        run: |
-          sed -i 's/import.meta.url//g' "./src/wasm-lib/pkg/wasm_lib.js"
-      - name: yarn wasm build
-        shell: bash
-        run: yarn build:wasm
-      - name: tauri build
-        shell: bash
-        run: yarn tauri build
+      - run: yarn tauri build
       - uses: actions/upload-artifact@v2
         with:
           name: tauri-app
