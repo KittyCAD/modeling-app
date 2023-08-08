@@ -45,13 +45,13 @@ jobs:
         # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
         run: yarn install # Change this to npm, yarn or pnpm.
 
-      - name: Build wasm (unix)
+      - name: Build wasm (unix only)
         if: matrix.platform != 'windows-latest'
         run: yarn build:wasm
 
-      - name: Build wasm (windows)
+      - name: Build wasm (windows only)
         if: matrix.platform == 'windows-latest'
-        run: (cd src/wasm-lib && wasm-pack build --target web --out-dir pkg) && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn fmt && yarn remove-importmeta
+        run: (cd src/wasm-lib && yarn wasm-pack build --target web --out-dir pkg) && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn fmt && yarn remove-importmeta
 
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
