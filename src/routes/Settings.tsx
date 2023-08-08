@@ -7,7 +7,7 @@ import { ActionButton } from '../components/ActionButton'
 import { AppHeader } from '../components/AppHeader'
 import { open } from '@tauri-apps/api/dialog'
 import { baseUnits, useStore } from '../useStore'
-import { useState } from 'react'
+import { useRef } from 'react'
 import { toast } from 'react-hot-toast'
 import { Toggle } from '../components/Toggle/Toggle'
 import { useNavigate } from 'react-router-dom'
@@ -15,19 +15,19 @@ import { useNavigate } from 'react-router-dom'
 export const Settings = () => {
   const navigate = useNavigate()
   const {
-    defaultDir: ogDefaultDir,
-    setDefaultDir: saveDefaultDir,
-    defaultProjectName: ogDefaultProjectName,
-    setDefaultProjectName: saveDefaultProjectName,
-    defaultUnitSystem: ogDefaultUnitSystem,
-    setDefaultUnitSystem: saveDefaultUnitSystem,
-    defaultBaseUnit: ogDefaultBaseUnit,
-    setDefaultBaseUnit: saveDefaultBaseUnit,
-    saveDebugPanel,
-    originalDebugPanel,
+    defaultDir,
+    setDefaultDir,
+    defaultProjectName,
+    setDefaultProjectName,
+    defaultUnitSystem,
+    setDefaultUnitSystem,
+    defaultBaseUnit,
+    setDefaultBaseUnit,
+    setDebugPanel,
+    debugPanel,
     setOnboardingStatus,
-    theme: ogTheme,
-    setTheme: saveTheme,
+    theme,
+    setTheme,
   } = useStore((s) => ({
     defaultDir: s.defaultDir,
     setDefaultDir: s.setDefaultDir,
@@ -37,20 +37,13 @@ export const Settings = () => {
     setDefaultUnitSystem: s.setDefaultUnitSystem,
     defaultBaseUnit: s.defaultBaseUnit,
     setDefaultBaseUnit: s.setDefaultBaseUnit,
-    saveDebugPanel: s.setDebugPanel,
-    originalDebugPanel: s.debugPanel,
+    setDebugPanel: s.setDebugPanel,
+    debugPanel: s.debugPanel,
     setOnboardingStatus: s.setOnboardingStatus,
     theme: s.theme,
     setTheme: s.setTheme,
   }))
-  const [defaultDir, setDefaultDir] = useState(ogDefaultDir)
-  const [defaultProjectName, setDefaultProjectName] =
-    useState(ogDefaultProjectName)
-  const [defaultUnitSystem, setDefaultUnitSystem] =
-    useState(ogDefaultUnitSystem)
-  const [defaultBaseUnit, setDefaultBaseUnit] = useState(ogDefaultBaseUnit)
-  const [debugPanel, setDebugPanel] = useState(originalDebugPanel)
-  const [theme, setTheme] = useState(ogTheme)
+  const ogDefaultProjectName = useRef(defaultProjectName)
 
   async function handleDirectorySelection() {
     const newDirectory = await open({
@@ -97,10 +90,6 @@ export const Settings = () => {
                     base: defaultDir.base,
                     dir: e.target.value,
                   })
-                  saveDefaultDir({
-                    base: defaultDir.base,
-                    dir: e.target.value,
-                  })
                   toast.success('Default directory updated')
                 }}
               />
@@ -132,8 +121,7 @@ export const Settings = () => {
               setDefaultProjectName(e.target.value)
             }}
             onBlur={() => {
-              saveDefaultProjectName(defaultProjectName)
-              ogDefaultProjectName !== defaultProjectName &&
+              ogDefaultProjectName.current !== defaultProjectName &&
                 toast.success('Default project name updated')
             }}
           />
@@ -150,7 +138,6 @@ export const Settings = () => {
             onChange={(e) => {
               const newUnitSystem = e.target.checked ? 'metric' : 'imperial'
               setDefaultUnitSystem(newUnitSystem)
-              saveDefaultUnitSystem(newUnitSystem)
               toast.success('Unit system set to ' + newUnitSystem)
             }}
           />
@@ -165,7 +152,6 @@ export const Settings = () => {
             value={defaultBaseUnit}
             onChange={(e) => {
               setDefaultBaseUnit(e.target.value)
-              saveDefaultBaseUnit(e.target.value)
               toast.success('Base unit changed to ' + e.target.value)
             }}
           >
@@ -185,7 +171,6 @@ export const Settings = () => {
             checked={debugPanel}
             onChange={(e) => {
               setDebugPanel(e.target.checked)
-              saveDebugPanel(e.target.checked)
               toast.success(
                 'Debug panel toggled ' + (e.target.checked ? 'on' : 'off')
               )
@@ -204,7 +189,6 @@ export const Settings = () => {
             onChange={(e) => {
               const newTheme = e.target.checked ? 'light' : 'dark'
               setTheme(newTheme)
-              saveTheme(newTheme)
               toast.success(
                 newTheme.slice(0, 1).toLocaleUpperCase() +
                   newTheme.slice(1) +
