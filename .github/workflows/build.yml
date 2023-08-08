@@ -45,5 +45,8 @@ jobs:
         # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
         run: yarn install # Change this to npm, yarn or pnpm.
 
+      - name: Build wasm
+        run: yarn build:wasm
+
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
