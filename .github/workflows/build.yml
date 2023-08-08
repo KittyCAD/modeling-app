@@ -45,12 +45,7 @@ jobs:
         # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
         run: yarn install # Change this to npm, yarn or pnpm.
 
-      - name: Build wasm (unix only)
-        if: matrix.platform != 'windows-latest'
-        run: yarn build:wasm
-
-      - name: Build wasm (windows only)
-        if: matrix.platform == 'windows-latest'
+      - name: Run build:wasm (minus the clean up)
         shell: bash
         run: |
           mkdir src/wasm-lib/pkg; cd src/wasm-lib
