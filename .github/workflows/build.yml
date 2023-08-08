@@ -50,7 +50,7 @@ jobs:
         run: yarn build:wasm
 
       - name: Build wasm (windows)
-        if: matrix.platform != 'windows-latest'
+        if: matrix.platform == 'windows-latest'
         run: (cd src/wasm-lib && wasm-pack build --target web --out-dir pkg) && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn fmt && yarn remove-importmeta
 
       - name: Build the app
