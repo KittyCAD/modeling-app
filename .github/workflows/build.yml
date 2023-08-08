@@ -50,3 +50,8 @@ jobs:
 
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: tauri-app
+          path: src-tauri/target/release/bundle
