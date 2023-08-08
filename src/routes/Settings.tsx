@@ -76,7 +76,7 @@ export const Settings = () => {
           Close
         </ActionButton>
       </AppHeader>
-      <div className="mt-24 max-w-5xl mx-auto">
+      <div className="mt-16 max-w-3xl mx-auto">
         <h1 className="text-4xl font-bold">User Settings</h1>
         {(window as any).__TAURI__ && (
           <SettingsSection
@@ -229,7 +229,7 @@ export function SettingsSection({
   children,
 }: SettingsSectionProps) {
   return (
-    <section className="my-8 first-of-type:mt-16 last-of-type:mb-16 flex gap-12 items-start">
+    <section className="my-16 last-of-type:mb-24 grid grid-cols-2 gap-12 items-start">
       <div className="w-80">
         <h2 className="text-2xl">{title}</h2>
         <p className="mt-2 text-sm">{description}</p>
