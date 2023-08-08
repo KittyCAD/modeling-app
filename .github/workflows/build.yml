@@ -45,13 +45,6 @@ jobs:
         shell: bash
         run: |
           sed -i 's/import.meta.url//g' "./src/wasm-lib/pkg/wasm_lib.js"
-      - name: add missing import
-        shell: bash
-        run: |
-          yarn add-missing-import
-          pwd
-          ls -la
-          yarn fmt
       - name: tauri build
         shell: bash
         run: yarn tauri build
