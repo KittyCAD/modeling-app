@@ -1,6 +1,5 @@
 import {
   faArrowRotateBack,
-  faCheck,
   faFolder,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons'
@@ -65,16 +64,6 @@ export const Settings = () => {
     }
   }
 
-  const handleSaveClick = () => {
-    saveDefaultDir(defaultDir)
-    saveDefaultProjectName(defaultProjectName)
-    saveDefaultUnitSystem(defaultUnitSystem)
-    saveDefaultBaseUnit(defaultBaseUnit)
-    saveDebugPanel(debugPanel)
-    saveTheme(theme)
-    toast.success('Settings saved!')
-  }
-
   return (
     <>
       <AppHeader showToolbar={false}>
@@ -103,12 +92,17 @@ export const Settings = () => {
               <input
                 className="flex-1 px-2 bg-transparent"
                 value={defaultDir.dir}
-                onChange={(e) =>
+                onChange={(e) => {
                   setDefaultDir({
-                    base: ogDefaultDir.base,
+                    base: defaultDir.base,
                     dir: e.target.value,
                   })
-                }
+                  saveDefaultDir({
+                    base: defaultDir.base,
+                    dir: e.target.value,
+                  })
+                  toast.success('Default directory updated')
+                }}
               />
               <ActionButton
                 Element="button"
@@ -134,7 +128,14 @@ export const Settings = () => {
           <input
             className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
             value={defaultProjectName}
-            onChange={(e) => setDefaultProjectName(e.target.value)}
+            onChange={(e) => {
+              setDefaultProjectName(e.target.value)
+            }}
+            onBlur={() => {
+              saveDefaultProjectName(defaultProjectName)
+              ogDefaultProjectName !== defaultProjectName &&
+                toast.success('Default project name updated')
+            }}
           />
         </SettingsSection>
         <SettingsSection
@@ -146,9 +147,12 @@ export const Settings = () => {
             onLabel="Metric"
             name="settings-units"
             checked={defaultUnitSystem === 'metric'}
-            onChange={(e) =>
-              setDefaultUnitSystem(e.target.checked ? 'metric' : 'imperial')
-            }
+            onChange={(e) => {
+              const newUnitSystem = e.target.checked ? 'metric' : 'imperial'
+              setDefaultUnitSystem(newUnitSystem)
+              saveDefaultUnitSystem(newUnitSystem)
+              toast.success('Unit system set to ' + newUnitSystem)
+            }}
           />
         </SettingsSection>
         <SettingsSection
@@ -159,7 +163,11 @@ export const Settings = () => {
             id="base-unit"
             className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
             value={defaultBaseUnit}
-            onChange={(e) => setDefaultBaseUnit(e.target.value)}
+            onChange={(e) => {
+              setDefaultBaseUnit(e.target.value)
+              saveDefaultBaseUnit(e.target.value)
+              toast.success('Base unit changed to ' + e.target.value)
+            }}
           >
             {baseUnits[defaultUnitSystem].map((unit) => (
               <option key={unit} value={unit}>
@@ -175,7 +183,13 @@ export const Settings = () => {
           <Toggle
             name="settings-debug-panel"
             checked={debugPanel}
-            onChange={(e) => setDebugPanel(e.target.checked)}
+            onChange={(e) => {
+              setDebugPanel(e.target.checked)
+              saveDebugPanel(e.target.checked)
+              toast.success(
+                'Debug panel toggled ' + (e.target.checked ? 'on' : 'off')
+              )
+            }}
           />
         </SettingsSection>
         <SettingsSection
@@ -187,7 +201,16 @@ export const Settings = () => {
             offLabel="Dark"
             onLabel="Light"
             checked={theme === 'light'}
-            onChange={(e) => setTheme(e.target.checked ? 'light' : 'dark')}
+            onChange={(e) => {
+              const newTheme = e.target.checked ? 'light' : 'dark'
+              setTheme(newTheme)
+              saveTheme(newTheme)
+              toast.success(
+                newTheme.slice(0, 1).toLocaleUpperCase() +
+                  newTheme.slice(1) +
+                  ' mode activated'
+              )
+            }}
           />
         </SettingsSection>
         <SettingsSection
@@ -204,19 +227,6 @@ export const Settings = () => {
             Replay Onboarding
           </ActionButton>
         </SettingsSection>
-        <ActionButton
-          className="hover:border-succeed-50"
-          onClick={handleSaveClick}
-          icon={{
-            icon: faCheck,
-            bgClassName:
-              'bg-succeed-80 group-hover:bg-succeed-70 hover:bg-succeed-70',
-            iconClassName:
-              'text-succeed-20 group-hover:text-succeed-10 hover:text-succeed-10',
-          }}
-        >
-          Save Settings
-        </ActionButton>
       </div>
     </>
   )
