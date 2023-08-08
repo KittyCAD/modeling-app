@@ -57,6 +57,7 @@ jobs:
           npx wasm-pack build --target web --out-dir pkg
           cd ../../
           cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
+          yarn fmt
 
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
