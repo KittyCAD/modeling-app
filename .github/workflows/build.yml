@@ -48,7 +48,6 @@ jobs:
       - name: add missing import
         shell: bash
         run: |
-          yarn add-missing-import
           pwd
           ls -la
           yarn fmt
