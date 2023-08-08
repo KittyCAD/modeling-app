@@ -9,12 +9,7 @@ import { DebugPanel } from './components/DebugPanel'
 import { v4 as uuidv4 } from 'uuid'
 import { asyncLexer } from './lang/tokeniser'
 import { abstractSyntaxTree } from './lang/abstractSyntaxTree'
-import {
-  _executor,
-  ProgramMemory,
-  ExtrudeGroup,
-  SketchGroup,
-} from './lang/executor'
+import { _executor } from './lang/executor'
 import CodeMirror from '@uiw/react-codemirror'
 import { langs } from '@uiw/codemirror-extensions-langs'
 import { linter, lintGutter } from '@codemirror/lint'
@@ -358,7 +353,7 @@ export function App() {
 
   return (
     <div
-      className="h-screen relative flex flex-col"
+      className="h-screen overflow-hidden relative flex flex-col"
       onMouseMove={handleMouseMove}
     >
       <AppHeader
@@ -371,7 +366,7 @@ export function App() {
       <ModalContainer />
       <Resizable
         className={
-          'z-10 my-5 ml-5 pr-1 flex flex-col flex-grow overflow-hidden transition-opacity transition-duration-75 ' +
+          'h-full flex flex-col flex-1 z-10 my-5 ml-5 pr-1 transition-opacity transition-duration-75 ' +
           (isMouseDownInStream || onboardingStatus === 'camera'
             ? ' pointer-events-none '
             : ' ') +
@@ -390,57 +385,59 @@ export function App() {
             'hover:bg-liquid-30/40 dark:hover:bg-liquid-10/40 bg-transparent transition-colors duration-100 transition-ease-out delay-100',
         }}
       >
-        <CollapsiblePanel
-          title="Code"
-          icon={faCode}
-          className="open:!mb-2"
-          open={openPanes.includes('code')}
-        >
-          <div className="px-2 py-1">
-            <button
-              // disabled={!shouldFormat}
-              onClick={formatCode}
-              // className={`${!shouldFormat && 'text-gray-300'}`}
-            >
-              format
-            </button>
-          </div>
-          <div id="code-mirror-override">
-            <CodeMirror
-              className="h-full"
-              value={code}
-              extensions={[
-                langs.javascript({ jsx: true }),
-                lineHighlightField,
-                ...extraExtensions,
-              ]}
-              onChange={onChange}
-              onUpdate={onUpdate}
+        <div className="h-full flex flex-col justify-between">
+          <CollapsiblePanel
+            title="Code"
+            icon={faCode}
+            className="open:!mb-2"
+            open={openPanes.includes('code')}
+          >
+            <div className="px-2 py-1">
+              <button
+                // disabled={!shouldFormat}
+                onClick={formatCode}
+                // className={`${!shouldFormat && 'text-gray-300'}`}
+              >
+                format
+              </button>
+            </div>
+            <div id="code-mirror-override">
+              <CodeMirror
+                className="h-full"
+                value={code}
+                extensions={[
+                  langs.javascript({ jsx: true }),
+                  lineHighlightField,
+                  ...extraExtensions,
+                ]}
+                onChange={onChange}
+                onUpdate={onUpdate}
+                theme={theme}
+                onCreateEditor={(_editorView) => setEditorView(_editorView)}
+              />
+            </div>
+          </CollapsiblePanel>
+          <section className="flex flex-col">
+            <MemoryPanel
               theme={theme}
-              onCreateEditor={(_editorView) => setEditorView(_editorView)}
+              open={openPanes.includes('variables')}
+              title="Variables"
+              icon={faSquareRootVariable}
             />
-          </div>
-        </CollapsiblePanel>
-        <section className="flex flex-col mt-auto">
-          <MemoryPanel
-            theme={theme}
-            open={openPanes.includes('variables')}
-            title="Variables"
-            icon={faSquareRootVariable}
-          />
-          <Logs
-            theme={theme}
-            open={openPanes.includes('logs')}
-            title="Logs"
-            icon={faCodeCommit}
-          />
-          <KCLErrors
-            theme={theme}
-            open={openPanes.includes('kclErrors')}
-            title="KCL Errors"
-            iconClassNames={{ icon: 'group-open:text-destroy-30' }}
-          />
-        </section>
+            <Logs
+              theme={theme}
+              open={openPanes.includes('logs')}
+              title="Logs"
+              icon={faCodeCommit}
+            />
+            <KCLErrors
+              theme={theme}
+              open={openPanes.includes('kclErrors')}
+              title="KCL Errors"
+              iconClassNames={{ icon: 'group-open:text-destroy-30' }}
+            />
+          </section>
+        </div>
       </Resizable>
       <Stream className="absolute inset-0 z-0" />
       {debugPanel && (

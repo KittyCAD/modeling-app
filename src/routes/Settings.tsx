@@ -1,6 +1,5 @@
 import {
   faArrowRotateBack,
-  faCheck,
   faFolder,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons'
@@ -8,27 +7,29 @@ import { ActionButton } from '../components/ActionButton'
 import { AppHeader } from '../components/AppHeader'
 import { open } from '@tauri-apps/api/dialog'
 import { baseUnits, useStore } from '../useStore'
-import { useState } from 'react'
+import { useRef } from 'react'
 import { toast } from 'react-hot-toast'
 import { Toggle } from '../components/Toggle/Toggle'
 import { useNavigate } from 'react-router-dom'
+import { useHotkeys } from 'react-hotkeys-hook'
 
 export const Settings = () => {
   const navigate = useNavigate()
+  useHotkeys('esc', () => navigate('/'))
   const {
-    defaultDir: ogDefaultDir,
-    setDefaultDir: saveDefaultDir,
-    defaultProjectName: ogDefaultProjectName,
-    setDefaultProjectName: saveDefaultProjectName,
-    defaultUnitSystem: ogDefaultUnitSystem,
-    setDefaultUnitSystem: saveDefaultUnitSystem,
-    defaultBaseUnit: ogDefaultBaseUnit,
-    setDefaultBaseUnit: saveDefaultBaseUnit,
-    saveDebugPanel,
-    originalDebugPanel,
+    defaultDir,
+    setDefaultDir,
+    defaultProjectName,
+    setDefaultProjectName,
+    defaultUnitSystem,
+    setDefaultUnitSystem,
+    defaultBaseUnit,
+    setDefaultBaseUnit,
+    setDebugPanel,
+    debugPanel,
     setOnboardingStatus,
-    theme: ogTheme,
-    setTheme: saveTheme,
+    theme,
+    setTheme,
   } = useStore((s) => ({
     defaultDir: s.defaultDir,
     setDefaultDir: s.setDefaultDir,
@@ -38,20 +39,13 @@ export const Settings = () => {
     setDefaultUnitSystem: s.setDefaultUnitSystem,
     defaultBaseUnit: s.defaultBaseUnit,
     setDefaultBaseUnit: s.setDefaultBaseUnit,
-    saveDebugPanel: s.setDebugPanel,
-    originalDebugPanel: s.debugPanel,
+    setDebugPanel: s.setDebugPanel,
+    debugPanel: s.debugPanel,
     setOnboardingStatus: s.setOnboardingStatus,
     theme: s.theme,
     setTheme: s.setTheme,
   }))
-  const [defaultDir, setDefaultDir] = useState(ogDefaultDir)
-  const [defaultProjectName, setDefaultProjectName] =
-    useState(ogDefaultProjectName)
-  const [defaultUnitSystem, setDefaultUnitSystem] =
-    useState(ogDefaultUnitSystem)
-  const [defaultBaseUnit, setDefaultBaseUnit] = useState(ogDefaultBaseUnit)
-  const [debugPanel, setDebugPanel] = useState(originalDebugPanel)
-  const [theme, setTheme] = useState(ogTheme)
+  const ogDefaultProjectName = useRef(defaultProjectName)
 
   async function handleDirectorySelection() {
     const newDirectory = await open({
@@ -63,16 +57,6 @@ export const Settings = () => {
     if (newDirectory && newDirectory !== null && !Array.isArray(newDirectory)) {
       setDefaultDir({ base: defaultDir.base, dir: newDirectory })
     }
-  }
-
-  const handleSaveClick = () => {
-    saveDefaultDir(defaultDir)
-    saveDefaultProjectName(defaultProjectName)
-    saveDefaultUnitSystem(defaultUnitSystem)
-    saveDefaultBaseUnit(defaultBaseUnit)
-    saveDebugPanel(debugPanel)
-    saveTheme(theme)
-    toast.success('Settings saved!')
   }
 
   return (
@@ -92,7 +76,7 @@ export const Settings = () => {
           Close
         </ActionButton>
       </AppHeader>
-      <div className="mt-24 max-w-5xl mx-auto">
+      <div className="mt-16 max-w-3xl mx-auto">
         <h1 className="text-4xl font-bold">User Settings</h1>
         {(window as any).__TAURI__ && (
           <SettingsSection
@@ -103,12 +87,13 @@ export const Settings = () => {
               <input
                 className="flex-1 px-2 bg-transparent"
                 value={defaultDir.dir}
-                onChange={(e) =>
+                onChange={(e) => {
                   setDefaultDir({
-                    base: ogDefaultDir.base,
+                    base: defaultDir.base,
                     dir: e.target.value,
                   })
-                }
+                  toast.success('Default directory updated')
+                }}
               />
               <ActionButton
                 Element="button"
@@ -134,7 +119,13 @@ export const Settings = () => {
           <input
             className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
             value={defaultProjectName}
-            onChange={(e) => setDefaultProjectName(e.target.value)}
+            onChange={(e) => {
+              setDefaultProjectName(e.target.value)
+            }}
+            onBlur={() => {
+              ogDefaultProjectName.current !== defaultProjectName &&
+                toast.success('Default project name updated')
+            }}
           />
         </SettingsSection>
         <SettingsSection
@@ -146,9 +137,12 @@ export const Settings = () => {
             onLabel="Metric"
             name="settings-units"
             checked={defaultUnitSystem === 'metric'}
-            onChange={(e) =>
-              setDefaultUnitSystem(e.target.checked ? 'metric' : 'imperial')
-            }
+            onChange={(e) => {
+              const newUnitSystem = e.target.checked ? 'metric' : 'imperial'
+              setDefaultUnitSystem(newUnitSystem)
+              setDefaultBaseUnit(baseUnits[newUnitSystem][0])
+              toast.success('Unit system set to ' + newUnitSystem)
+            }}
           />
         </SettingsSection>
         <SettingsSection
@@ -159,7 +153,10 @@ export const Settings = () => {
             id="base-unit"
             className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
             value={defaultBaseUnit}
-            onChange={(e) => setDefaultBaseUnit(e.target.value)}
+            onChange={(e) => {
+              setDefaultBaseUnit(e.target.value)
+              toast.success('Base unit changed to ' + e.target.value)
+            }}
           >
             {baseUnits[defaultUnitSystem].map((unit) => (
               <option key={unit} value={unit}>
@@ -175,7 +172,12 @@ export const Settings = () => {
           <Toggle
             name="settings-debug-panel"
             checked={debugPanel}
-            onChange={(e) => setDebugPanel(e.target.checked)}
+            onChange={(e) => {
+              setDebugPanel(e.target.checked)
+              toast.success(
+                'Debug panel toggled ' + (e.target.checked ? 'on' : 'off')
+              )
+            }}
           />
         </SettingsSection>
         <SettingsSection
@@ -187,7 +189,15 @@ export const Settings = () => {
             offLabel="Dark"
             onLabel="Light"
             checked={theme === 'light'}
-            onChange={(e) => setTheme(e.target.checked ? 'light' : 'dark')}
+            onChange={(e) => {
+              const newTheme = e.target.checked ? 'light' : 'dark'
+              setTheme(newTheme)
+              toast.success(
+                newTheme.slice(0, 1).toLocaleUpperCase() +
+                  newTheme.slice(1) +
+                  ' mode activated'
+              )
+            }}
           />
         </SettingsSection>
         <SettingsSection
@@ -204,19 +214,6 @@ export const Settings = () => {
             Replay Onboarding
           </ActionButton>
         </SettingsSection>
-        <ActionButton
-          className="hover:border-succeed-50"
-          onClick={handleSaveClick}
-          icon={{
-            icon: faCheck,
-            bgClassName:
-              'bg-succeed-80 group-hover:bg-succeed-70 hover:bg-succeed-70',
-            iconClassName:
-              'text-succeed-20 group-hover:text-succeed-10 hover:text-succeed-10',
-          }}
-        >
-          Save Settings
-        </ActionButton>
       </div>
     </>
   )
@@ -233,7 +230,7 @@ export function SettingsSection({
   children,
 }: SettingsSectionProps) {
   return (
-    <section className="my-8 first-of-type:mt-16 last-of-type:mb-16 flex gap-12 items-start">
+    <section className="my-16 last-of-type:mb-24 grid grid-cols-2 gap-12 items-start">
       <div className="w-80">
         <h2 className="text-2xl">{title}</h2>
         <p className="mt-2 text-sm">{description}</p>
