@@ -125,10 +125,10 @@ fn is_block_comment(character: &str) -> bool {
     BLOCKCOMMENT.is_match(character)
 }
 
-fn match_first(str: &str, regex: &Regex) -> String {
-    let the_match = regex.find(str).unwrap();
-    let the_match_str = &str[the_match.start()..the_match.end()];
-    the_match_str.to_string()
+fn match_first(str: &str, regex: &Regex) -> Option<String> {
+    regex
+        .find(str)
+        .map(|the_match| the_match.as_str().to_string())
 }
 
 fn make_token(token_type: TokenType, value: &str, start: usize) -> Token {
@@ -145,7 +145,7 @@ fn return_token_at_index(str: &str, start_index: usize) -> Option<Token> {
     if is_string(str_from_index) {
         return Some(make_token(
             TokenType::String,
-            &match_first(str_from_index, &STRING),
+            &match_first(str_from_index, &STRING)?,
             start_index,
         ));
     }
@@ -164,98 +164,98 @@ fn return_token_at_index(str: &str, start_index: usize) -> Option<Token> {
                 } else {
                     &BLOCKCOMMENT
                 },
-            ),
+            )?,
             start_index,
         ));
     }
     if is_paran_end(str_from_index) {
         return Some(make_token(
             TokenType::Brace,
-            &match_first(str_from_index, &PARAN_END),
+            &match_first(str_from_index, &PARAN_END)?,
             start_index,
         ));
     }
     if is_paran_start(str_from_index) {
         return Some(make_token(
             TokenType::Brace,
-            &match_first(str_from_index, &PARAN_START),
+            &match_first(str_from_index, &PARAN_START)?,
             start_index,
         ));
     }
     if is_block_start(str_from_index) {
         return Some(make_token(
             TokenType::Brace,
-            &match_first(str_from_index, &BLOCK_START),
+            &match_first(str_from_index, &BLOCK_START)?,
             start_index,
         ));
     }
     if is_block_end(str_from_index) {
         return Some(make_token(
             TokenType::Brace,
-            &match_first(str_from_index, &BLOCK_END),
+            &match_first(str_from_index, &BLOCK_END)?,
             start_index,
         ));
     }
     if is_array_start(str_from_index) {
         return Some(make_token(
             TokenType::Brace,
-            &match_first(str_from_index, &ARRAY_START),
+            &match_first(str_from_index, &ARRAY_START)?,
             start_index,
         ));
     }
     if is_array_end(str_from_index) {
         return Some(make_token(
             TokenType::Brace,
-            &match_first(str_from_index, &ARRAY_END),
+            &match_first(str_from_index, &ARRAY_END)?,
             start_index,
         ));
     }
     if is_comma(str_from_index) {
         return Some(make_token(
             TokenType::Comma,
-            &match_first(str_from_index, &COMMA),
+            &match_first(str_from_index, &COMMA)?,
             start_index,
         ));
     }
     if is_number(str_from_index) {
         return Some(make_token(
             TokenType::Number,
-            &match_first(str_from_index, &NUMBER),
+            &match_first(str_from_index, &NUMBER)?,
             start_index,
         ));
     }
     if is_operator(str_from_index) {
         return Some(make_token(
             TokenType::Operator,
-            &match_first(str_from_index, &OPERATOR),
+            &match_first(str_from_index, &OPERATOR)?,
             start_index,
         ));
     }
     if is_word(str_from_index) {
         return Some(make_token(
             TokenType::Word,
-            &match_first(str_from_index, &WORD),
+            &match_first(str_from_index, &WORD)?,
             start_index,
         ));
     }
     if is_colon(str_from_index) {
         return Some(make_token(
             TokenType::Colon,
-            &match_first(str_from_index, &COLON),
+            &match_first(str_from_index, &COLON)?,
             start_index,
         ));
     }
     if is_period(str_from_index) {
         return Some(make_token(
             TokenType::Period,
-            &match_first(str_from_index, &PERIOD),
+            &match_first(str_from_index, &PERIOD)?,
             start_index,
         ));
     }
     if is_whitespace(str_from_index) {
         return Some(make_token(
             TokenType::Whitespace,
-            &match_first(str_from_index, &WHITESPACE),
+            &match_first(str_from_index, &WHITESPACE)?,
             start_index,
         ));
     }
@@ -272,10 +272,9 @@ fn lexer(str: &str) -> Vec<Token> {
             return previous_tokens;
         }
         let token = return_token_at_index(str, current_index);
-        if token.is_none() {
+        let Some(token) = token else {
             return recursively_tokenise(str, current_index + 1, previous_tokens);
-        }
-        let token = token.unwrap();
+        };
         let mut new_tokens = previous_tokens;
         let token_length = token.value.len();
         new_tokens.push(token);
@@ -287,9 +286,11 @@ fn lexer(str: &str) -> Vec<Token> {
 // wasm_bindgen wrapper for lexer
 // test for this function and by extension lexer are done in javascript land src/lang/tokeniser.test.ts
 #[wasm_bindgen]
-pub fn lexer_js(str: &str) -> JsValue {
+pub fn lexer_js(str: &str) -> Result<JsValue, JsError> {
     let tokens = lexer(str);
-    JsValue::from_str(&serde_json::to_string(&tokens).expect("failed to serialize lexer output"))
+    serde_json::to_string(&tokens)
+        .map_err(JsError::from)
+        .map(|s| JsValue::from_str(&s))
 }
 
 #[cfg(test)]

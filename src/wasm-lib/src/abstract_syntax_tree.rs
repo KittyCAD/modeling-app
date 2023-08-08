@@ -1,4 +1,6 @@
 //! Data types for the AST.
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -54,7 +56,7 @@ pub struct NoneCodeNode {
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct NoneCodeMeta {
-    pub none_code_nodes: std::collections::HashMap<usize, NoneCodeNode>,
+    pub none_code_nodes: HashMap<usize, NoneCodeNode>,
     pub start: Option<NoneCodeNode>,
 }
 
@@ -68,14 +70,14 @@ impl<'de> Deserialize<'de> for NoneCodeMeta {
         #[derive(Deserialize)]
         #[serde(rename_all = "camelCase")]
         struct NoneCodeMetaHelper {
-            none_code_nodes: std::collections::HashMap<String, NoneCodeNode>,
+            none_code_nodes: HashMap<String, NoneCodeNode>,
             start: Option<NoneCodeNode>,
         }
 
         let helper = NoneCodeMetaHelper::deserialize(deserializer)?;
-        let mut none_code_nodes = std::collections::HashMap::new();
+        let mut none_code_nodes = HashMap::new();
         for (key, value) in helper.none_code_nodes {
-            none_code_nodes.insert(key.parse().unwrap(), value);
+            none_code_nodes.insert(key.parse().map_err(serde::de::Error::custom)?, value);
         }
         Ok(NoneCodeMeta {
             none_code_nodes,
