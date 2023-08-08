@@ -222,9 +222,11 @@ export const _executor = async (
   }
   const { body } = node
   const proms: Promise<any>[] = []
-  body.forEach(async (statement, bodyIndex) => {
+  for (let bodyIndex = 0; bodyIndex < body.length; bodyIndex++) {
+    const statement = body[bodyIndex]
     if (statement.type === 'VariableDeclaration') {
-      statement.declarations.forEach(async (declaration, index) => {
+      for (let index = 0; index < statement.declarations.length; index++) {
+        const declaration = statement.declarations[index]
         const variableName = declaration.id.name
         const pathToNode: PathToNode = [
           ...previousPathToNode,
@@ -520,7 +522,7 @@ export const _executor = async (
             [[declaration.start, declaration.end]]
           )
         }
-      })
+      }
     } else if (statement.type === 'ExpressionStatement') {
       const expression = statement.expression
       if (expression.type === 'CallExpression') {
@@ -560,7 +562,7 @@ export const _executor = async (
         _programMemory.return = await prom
       }
     }
-  })
+  }
   await Promise.all(proms)
   return _programMemory
 }
