@@ -9,7 +9,12 @@ import { DebugPanel } from './components/DebugPanel'
 import { v4 as uuidv4 } from 'uuid'
 import { asyncLexer } from './lang/tokeniser'
 import { abstractSyntaxTree } from './lang/abstractSyntaxTree'
-import { _executor, ExtrudeGroup, SketchGroup } from './lang/executor'
+import {
+  _executor,
+  ProgramMemory,
+  ExtrudeGroup,
+  SketchGroup,
+} from './lang/executor'
 import CodeMirror from '@uiw/react-codemirror'
 import { langs } from '@uiw/codemirror-extensions-langs'
 import { linter, lintGutter } from '@codemirror/lint'
@@ -234,49 +239,54 @@ export function App() {
         }
         engineCommandManager.startNewSession()
         setEngineCommandManager(engineCommandManager)
-        _executor(
-          _ast,
-          {
-            root: {
-              log: {
-                type: 'userVal',
-                value: (a: any) => {
-                  addLog(a)
-                },
-                __meta: [
-                  {
-                    pathToNode: [],
-                    sourceRange: [0, 0],
+        try {
+          const programMemory = await _executor(
+            _ast,
+            {
+              root: {
+                log: {
+                  type: 'userVal',
+                  value: (a: any) => {
+                    addLog(a)
                   },
-                ],
+                  __meta: [
+                    {
+                      pathToNode: [],
+                      sourceRange: [0, 0],
+                    },
+                  ],
+                },
+                _0: {
+                  type: 'userVal',
+                  value: 0,
+                  __meta: [],
+                },
+                _90: {
+                  type: 'userVal',
+                  value: 90,
+                  __meta: [],
+                },
+                _180: {
+                  type: 'userVal',
+                  value: 180,
+                  __meta: [],
+                },
+                _270: {
+                  type: 'userVal',
+                  value: 270,
+                  __meta: [],
+                },
               },
-              _0: {
-                type: 'userVal',
-                value: 0,
-                __meta: [],
-              },
-              _90: {
-                type: 'userVal',
-                value: 90,
-                __meta: [],
-              },
-              _180: {
-                type: 'userVal',
-                value: 180,
-                __meta: [],
-              },
-              _270: {
-                type: 'userVal',
-                value: 270,
-                __meta: [],
-              },
+              pendingMemory: {},
             },
-            pendingMemory: {},
-          },
-          engineCommandManager,
-          { bodyType: 'root' },
-          []
-        ).then(async (programMemory) => {
+            engineCommandManager,
+            { bodyType: 'root' },
+            []
+          ).catch((e) => {
+            console.error("Caught an exception")
+            return undefined
+          })
+
           const { artifactMap, sourceRangeMap } =
             await engineCommandManager.waitForAllCommands()
 
@@ -292,23 +302,14 @@ export function App() {
           engineCommandManager.onClick(({ id, type }) => {
             setCursor2({ range: sourceRangeMap[id], type })
           })
-          setProgramMemory(programMemory)
-          const geos = programMemory?.return
-            ?.map(({ name }: { name: string }) => {
-              const artifact = programMemory?.root?.[name]
-              if (
-                artifact.type === 'extrudeGroup' ||
-                artifact.type === 'sketchGroup'
-              ) {
-                return artifact
-              }
-              return null
-            })
-            .filter((a) => a) as (ExtrudeGroup | SketchGroup)[]
+          if (programMemory !== undefined) {
+            setProgramMemory(programMemory)
+          }
+        } catch (e) {
+          console.error(e)
+        }
 
-          // console.log(programMemory)
-          setError()
-        })
+        setError()
       } catch (e: any) {
         if (e instanceof KCLError) {
           addKCLError(e)
