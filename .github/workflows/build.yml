@@ -51,7 +51,12 @@ jobs:
 
       - name: Build wasm (windows only)
         if: matrix.platform == 'windows-latest'
-        run: (cd src/wasm-lib && yarn wasm-pack build --target web --out-dir pkg) && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn fmt && yarn remove-importmeta
+        shell: bash
+        run: |
+          mkdir src/wasm-lib/pkg; cd src/wasm-lib
+          npx wasm-pack build --target web --out-dir pkg
+          cd ../../
+          cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
 
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
