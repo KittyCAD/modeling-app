@@ -9,12 +9,7 @@ import { DebugPanel } from './components/DebugPanel'
 import { v4 as uuidv4 } from 'uuid'
 import { asyncLexer } from './lang/tokeniser'
 import { abstractSyntaxTree } from './lang/abstractSyntaxTree'
-import {
-  _executor,
-  ProgramMemory,
-  ExtrudeGroup,
-  SketchGroup,
-} from './lang/executor'
+import { _executor } from './lang/executor'
 import CodeMirror from '@uiw/react-codemirror'
 import { langs } from '@uiw/codemirror-extensions-langs'
 import { linter, lintGutter } from '@codemirror/lint'
