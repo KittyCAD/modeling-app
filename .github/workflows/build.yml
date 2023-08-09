@@ -64,4 +64,5 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: github.event_name != 'push'
         with:
-          path: src-tauri/target/release/bundle/*
+          path: src-tauri/target/release/bundle
+          name: modeling-app_macos_linux_windows
