@@ -414,7 +414,7 @@ export const useStore = create<StoreState>()(
       setDefaultBaseUnit: (defaultBaseUnit) => set({ defaultBaseUnit }),
       onboardingStatus: '',
       setOnboardingStatus: (onboardingStatus) => set({ onboardingStatus }),
-      theme: 'system',
+      theme: Themes.System,
       setTheme: (theme) => set({ theme }),
       openPanes: ['code'],
       setOpenPanes: (openPanes) => set({ openPanes }),
