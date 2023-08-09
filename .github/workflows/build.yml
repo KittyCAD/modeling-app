@@ -12,9 +12,6 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-20.04, windows-latest]
-    permissions:
-      contents: write
-
     steps:
       - uses: actions/checkout@v3
 
@@ -30,7 +27,9 @@ jobs:
         with:
           node-version: '18.x'
           cache: 'yarn' # Set this to npm, yarn or pnpm.
+
       - run: yarn install
+
       - name: Rust setup
         uses: dtolnay/rust-toolchain@stable
 
@@ -54,5 +53,4 @@ jobs:
       - uses: actions/upload-artifact@v2
         if: github.event_name != 'push'
         with:
-          name: tauri-app
-          path: src-tauri/target/release/bundle
+          path: src-tauri/target/release/bundle/*
