@@ -55,6 +55,9 @@ jobs:
         run: |
           sed -i 's/import.meta.url//g' "./src/wasm-lib/pkg/wasm_lib.js"
 
+      - name: Fix format
+        run: yarn fmt
+
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
 
