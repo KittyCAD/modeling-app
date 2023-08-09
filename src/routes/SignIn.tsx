@@ -1,16 +1,19 @@
 import { faSignInAlt } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../components/ActionButton'
 import { isTauri } from '../lib/isTauri'
-import { useStore } from '../useStore'
+import { Themes, useStore } from '../useStore'
 import { invoke } from '@tauri-apps/api/tauri'
 import { useNavigate } from 'react-router-dom'
 import { VITE_KC_SITE_BASE_URL, VITE_KC_API_BASE_URL } from '../env'
+import { getSystemTheme } from '../lib/getSystemTheme'
 
 const SignIn = () => {
   const navigate = useNavigate()
-  const { setToken } = useStore((s) => ({
+  const { setToken, theme } = useStore((s) => ({
     setToken: s.setToken,
+    theme: s.theme,
   }))
+  const appliedTheme = theme === Themes.System ? getSystemTheme() : theme
   const signInTauri = async () => {
     // We want to invoke our command to login via device auth.
     try {
@@ -25,11 +28,13 @@ const SignIn = () => {
   }
 
   return (
-    <main className="h-full min-h-screen bg-chalkboard-20 dark:text-chalkboard-100 m-0 p-0 pt-24">
+    <main className="body-bg h-full min-h-screen m-0 p-0 pt-24">
       <div className="max-w-2xl mx-auto">
         <div>
           <img
-            src="/kittycad-logomark.svg"
+            src={`/kittycad-logomark${
+              appliedTheme === Themes.Dark ? '-light' : ''
+            }.svg`}
             alt="KittyCAD"
             className="w-48 inline-block"
           />
@@ -37,7 +42,7 @@ const SignIn = () => {
             Modeling App
           </span>
         </div>
-        <h1 className="font-bold text-2xl mt-12 mb-6 text-chalkboard-110">
+        <h1 className="font-bold text-2xl mt-12 mb-6">
           Sign in to get started with the KittyCAD Modeling App
         </h1>
         <p className="py-4">
@@ -51,14 +56,7 @@ const SignIn = () => {
         <p className="py-4">
           KCMA is currently in development. If you would like to be notified
           when KCMA is ready for production, please sign up for our mailing list
-          at{' '}
-          <a
-            href="https://kittycad.io"
-            className="font-bold text-liquid-80 hover:text-liquid-70"
-          >
-            kittycad.io
-          </a>
-          .
+          at <a href="https://kittycad.io">kittycad.io</a>.
         </p>
         {isTauri() ? (
           <ActionButton
@@ -76,7 +74,7 @@ const SignIn = () => {
                 window.location.href.replace('signin', '')
             )}`}
             icon={{ icon: faSignInAlt }}
-            className="w-fit mt-4 dark:hover:bg-chalkboard-30"
+            className="w-fit mt-4"
           >
             Sign in
           </ActionButton>

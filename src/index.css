@@ -55,6 +55,14 @@ button:disabled {
   @apply bg-chalkboard-90 text-chalkboard-40 border-chalkboard-70;
 }
 
+a {
+  @apply text-liquid-80 hover:text-liquid-70;
+}
+
+.dark a {
+  @apply text-liquid-20 hover:text-liquid-10;
+}
+
 .mono {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
