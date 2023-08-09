@@ -5,6 +5,7 @@ import { User, useStore } from './useStore'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { isTauri } from './lib/isTauri'
+import Loading from './components/Loading'
 
 // Wrapper around protected routes, used in src/Router.tsx
 export const Auth = ({ children }: React.PropsWithChildren) => {
@@ -30,5 +31,5 @@ export const Auth = ({ children }: React.PropsWithChildren) => {
     }
   }, [user, token, navigate, isLoading])
 
-  return isLoading ? <>Loading...</> : <>{children}</>
+  return isLoading ? <Loading /> : <>{children}</>
 }
