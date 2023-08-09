@@ -7,26 +7,30 @@ on:
   pull_request:
 
 jobs:
-  release:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-20.04, windows-latest]
     permissions:
       contents: write
-    strategy:
-      fail-fast: false
-      matrix:
-        platform: [macos-latest, ubuntu-20.04, windows-latest]
-    runs-on: ${{ matrix.platform }}
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Install dependencies (ubuntu only)
-        if: matrix.platform == 'ubuntu-20.04'
-        # You can remove libayatana-appindicator3-dev if you don't use the system tray feature.
+      - name: Install ubuntu system dependencies
+        if: matrix.os == 'ubuntu-20.04'
+        # From https://tauri.app/v1/guides/building/cross-platform/#example-workflow
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev
 
+      - name: Sync node version and setup cache
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          cache: 'yarn' # Set this to npm, yarn or pnpm.
+      - run: yarn install
       - name: Rust setup
         uses: dtolnay/rust-toolchain@stable
 
@@ -35,17 +39,7 @@ jobs:
         with:
           workspaces: './src-tauri -> target'
 
-      - name: Sync node version and setup cache
-        uses: actions/setup-node@v3
-        with:
-          node-version: 'lts/*'
-          cache: 'yarn' # Set this to npm, yarn or pnpm.
-
-      - name: Install frontend dependencies
-        # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
-        run: yarn install # Change this to npm, yarn or pnpm.
-
-      - name: Run build:wasm (minus the clean up)
+      - name: Run build:wasm (in a cross-plaftorm way, minus the clean up)
         shell: bash
         run: |
           mkdir src/wasm-lib/pkg; cd src/wasm-lib
