@@ -60,7 +60,7 @@ export const Settings = () => {
   }
 
   return (
-    <>
+    <div className="body-bg fixed inset-0 z-40 overflow-auto">
       <AppHeader showToolbar={false}>
         <ActionButton
           Element="link"
@@ -219,7 +219,7 @@ export const Settings = () => {
           </ActionButton>
         </SettingsSection>
       </div>
-    </>
+    </div>
   )
 }
 

@@ -1,5 +1,10 @@
 import { App } from './App'
-import { createBrowserRouter, redirect, RouterProvider } from 'react-router-dom'
+import {
+  createBrowserRouter,
+  Outlet,
+  redirect,
+  RouterProvider,
+} from 'react-router-dom'
 import { ErrorPage } from './components/ErrorPage'
 import { Settings } from './routes/Settings'
 import Onboarding, { onboardingRoutes } from './routes/Onboarding'
@@ -11,6 +16,7 @@ const router = createBrowserRouter([
     path: '/',
     element: (
       <Auth>
+        <Outlet />
         <App />
       </Auth>
     ),
@@ -27,14 +33,12 @@ const router = createBrowserRouter([
       }
       return null
     },
-  },
-  {
-    path: '/settings',
-    element: (
-      <Auth>
-        <Settings />
-      </Auth>
-    ),
+    children: [
+      {
+        path: 'settings',
+        element: <Settings />,
+      },
+    ],
   },
   {
     path: '/onboarding',
