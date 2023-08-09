@@ -130,7 +130,7 @@ export interface StoreState {
   highlightRange: [number, number]
   setHighlightRange: (range: Selection['range']) => void
   setCursor: (selections: Selections) => void
-  setCursor2: (a: Selection) => void
+  setCursor2: (a?: Selection) => void
   selectionRanges: Selections
   selectionRangeTypeMap: { [key: number]: Selection['type'] }
   setSelectionRanges: (range: Selections) => void
@@ -179,10 +179,17 @@ export interface StoreState {
   setIsStreamReady: (isStreamReady: boolean) => void
   isMouseDownInStream: boolean
   setIsMouseDownInStream: (isMouseDownInStream: boolean) => void
+  didDragInStream: boolean
+  setDidDragInStream: (didDragInStream: boolean) => void
   cmdId?: string
   setCmdId: (cmdId: string) => void
   fileId: string
   setFileId: (fileId: string) => void
+  streamDimensions: { streamWidth: number; streamHeight: number }
+  setStreamDimensions: (dimensions: {
+    streamWidth: number
+    streamHeight: number
+  }) => void
 
   // tauri specific app settings
   defaultDir: DefaultDir
@@ -254,6 +261,16 @@ export const useStore = create<StoreState>()(
       },
       setCursor2: (codeSelections) => {
         const currestSelections = get().selectionRanges
+        const code = get().code
+        if (!codeSelections) {
+          get().setCursor({
+            otherSelections: currestSelections.otherSelections,
+            codeBasedSelections: [
+              { range: [0, code.length - 1], type: 'default' },
+            ],
+          })
+          return
+        }
         const selections: Selections = {
           ...currestSelections,
           codeBasedSelections: get().isShiftDown
@@ -366,11 +383,17 @@ export const useStore = create<StoreState>()(
       setIsMouseDownInStream: (isMouseDownInStream) => {
         set({ isMouseDownInStream })
       },
+      didDragInStream: false,
+      setDidDragInStream: (didDragInStream) => {
+        set({ didDragInStream })
+      },
       // For stream event handling
       cmdId: undefined,
       setCmdId: (cmdId) => set({ cmdId }),
       fileId: '',
       setFileId: (fileId) => set({ fileId }),
+      streamDimensions: { streamWidth: 1280, streamHeight: 720 },
+      setStreamDimensions: (streamDimensions) => set({ streamDimensions }),
 
       // tauri specific app settings
       defaultDir: {
