@@ -97,6 +97,11 @@ export type GuiModes =
     }
 
 type UnitSystem = 'imperial' | 'metric'
+export enum Themes {
+  Light = 'light',
+  Dark = 'dark',
+  System = 'system',
+}
 
 export const baseUnits: Record<UnitSystem, string[]> = {
   imperial: ['in', 'ft'],
@@ -204,8 +209,8 @@ export interface StoreState {
   setHomeShowMenu: (showMenu: boolean) => void
   onboardingStatus: string
   setOnboardingStatus: (status: string) => void
-  theme: 'light' | 'dark'
-  setTheme: (theme: 'light' | 'dark') => void
+  theme: Themes
+  setTheme: (theme: Themes) => void
   openPanes: PaneType[]
   setOpenPanes: (panes: PaneType[]) => void
   homeMenuItems: {
@@ -409,12 +414,7 @@ export const useStore = create<StoreState>()(
       setDefaultBaseUnit: (defaultBaseUnit) => set({ defaultBaseUnit }),
       onboardingStatus: '',
       setOnboardingStatus: (onboardingStatus) => set({ onboardingStatus }),
-      theme:
-        typeof window !== 'undefined' &&
-        'matchMedia' in window &&
-        window.matchMedia('(prefers-color-scheme: dark)').matches
-          ? 'dark'
-          : 'light',
+      theme: 'system',
       setTheme: (theme) => set({ theme }),
       openPanes: ['code'],
       setOpenPanes: (openPanes) => set({ openPanes }),
