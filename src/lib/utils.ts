@@ -55,3 +55,25 @@ export function throttle<T>(
 
   return throttled
 }
+
+export function getNormalisedCoordinates({
+  clientX,
+  clientY,
+  streamWidth,
+  streamHeight,
+  el,
+}: {
+  clientX: number
+  clientY: number
+  streamWidth: number
+  streamHeight: number
+  el: HTMLElement
+}) {
+  const { left, top, width, height } = el?.getBoundingClientRect()
+  const browserX = clientX - left
+  const browserY = clientY - top
+  return {
+    x: Math.round((browserX / width) * streamWidth),
+    y: Math.round((browserY / height) * streamHeight),
+  }
+}

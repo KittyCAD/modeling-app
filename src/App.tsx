@@ -1,6 +1,7 @@
 import {
   useRef,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useCallback,
   MouseEventHandler,
@@ -40,9 +41,10 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { TEST } from './env'
+import { getNormalisedCoordinates } from './lib/utils'
 
 export function App() {
-  const cam = useRef()
+  const streamRef = useRef<HTMLDivElement>(null)
   useHotKeyListener()
   const {
     editorView,
@@ -60,7 +62,7 @@ export function App() {
     resetKCLErrors,
     selectionRangeTypeMap,
     setArtifactMap,
-    engineCommandManager: _engineCommandManager,
+    engineCommandManager,
     setEngineCommandManager,
     setHighlightRange,
     setCursor2,
@@ -79,6 +81,9 @@ export function App() {
     openPanes,
     setOpenPanes,
     onboardingStatus,
+    setDidDragInStream,
+    setStreamDimensions,
+    streamDimensions,
   } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
@@ -117,6 +122,9 @@ export function App() {
     openPanes: s.openPanes,
     setOpenPanes: s.setOpenPanes,
     onboardingStatus: s.onboardingStatus,
+    setDidDragInStream: s.setDidDragInStream,
+    setStreamDimensions: s.setStreamDimensions,
+    streamDimensions: s.streamDimensions,
   }))
 
   // Pane toggling keyboard shortcuts
@@ -193,7 +201,7 @@ export function App() {
       })
       .filter(Boolean) as any
 
-    _engineCommandManager?.cusorsSelected({
+    engineCommandManager?.cusorsSelected({
       otherSelections: [],
       idBasedSelections,
     })
@@ -203,18 +211,33 @@ export function App() {
       codeBasedSelections,
     })
   }
-  const engineCommandManager = useMemo(() => {
-    return new EngineCommandManager({
+  const pixelDensity = window.devicePixelRatio
+  const streamWidth = streamRef?.current?.offsetWidth
+  const streamHeight = streamRef?.current?.offsetHeight
+
+  const width = streamWidth ? streamWidth * pixelDensity : 0
+  const quadWidth = Math.round(width / 4) * 4
+  const height = streamHeight ? streamHeight * pixelDensity : 0
+  const quadHeight = Math.round(height / 4) * 4
+
+  useLayoutEffect(() => {
+    setStreamDimensions({
+      streamWidth: quadWidth,
+      streamHeight: quadHeight,
+    })
+    if (!width || !height) return
+    const eng = new EngineCommandManager({
       setMediaStream,
       setIsStreamReady,
+      width: quadWidth,
+      height: quadHeight,
       token,
     })
-  }, [token])
-  useEffect(() => {
+    setEngineCommandManager(eng)
     return () => {
-      engineCommandManager?.tearDown()
+      eng?.tearDown()
     }
-  }, [engineCommandManager])
+  }, [quadWidth, quadHeight])
 
   useEffect(() => {
     if (!isStreamReady) return
@@ -229,11 +252,11 @@ export function App() {
         setAst(_ast)
         resetLogs()
         resetKCLErrors()
-        if (_engineCommandManager) {
-          _engineCommandManager.endSession()
+        if (engineCommandManager) {
+          engineCommandManager.endSession()
+          engineCommandManager.startNewSession()
         }
-        engineCommandManager.startNewSession()
-        setEngineCommandManager(engineCommandManager)
+        if (!engineCommandManager) return
         const programMemory = await _executor(
           _ast,
           {
@@ -290,7 +313,12 @@ export function App() {
             setHighlightRange(sourceRange)
           }
         })
-        engineCommandManager.onClick(({ id, type }) => {
+        engineCommandManager.onClick((selections) => {
+          if (!selections) {
+            setCursor2()
+            return
+          }
+          const { id, type } = selections
           setCursor2({ range: sourceRangeMap[id], type })
         })
         if (programMemory !== undefined) {
@@ -314,19 +342,29 @@ export function App() {
   const debounceSocketSend = throttle<EngineCommand>((message) => {
     engineCommandManager?.sendSceneCommand(message)
   }, 16)
-  const handleMouseMove = useCallback<MouseEventHandler<HTMLDivElement>>(
-    ({ clientX, clientY, ctrlKey, currentTarget }) => {
-      if (!cmdId) return
-      if (!isMouseDownInStream) return
+  const handleMouseMove: MouseEventHandler<HTMLDivElement> = ({
+    clientX,
+    clientY,
+    ctrlKey,
+    currentTarget,
+  }) => {
+    if (isMouseDownInStream) {
+      setDidDragInStream(true)
+    }
 
-      const { left, top } = currentTarget.getBoundingClientRect()
-      const x = clientX - left
-      const y = clientY - top
-      const interaction = ctrlKey ? 'pan' : 'rotate'
+    const { x, y } = getNormalisedCoordinates({
+      clientX,
+      clientY,
+      el: currentTarget,
+      ...streamDimensions,
+    })
 
-      const newCmdId = uuidv4()
-      setCmdId(newCmdId)
+    const interaction = ctrlKey ? 'pan' : 'rotate'
 
+    const newCmdId = uuidv4()
+    setCmdId(newCmdId)
+
+    if (cmdId && isMouseDownInStream) {
       debounceSocketSend({
         type: 'modeling_cmd_req',
         cmd: {
@@ -337,9 +375,18 @@ export function App() {
         cmd_id: newCmdId,
         file_id: fileId,
       })
-    },
-    [debounceSocketSend, isMouseDownInStream, cmdId, fileId, setCmdId]
-  )
+    } else {
+      debounceSocketSend({
+        type: 'modeling_cmd_req',
+        cmd: {
+          type: 'highlight_set_entity',
+          selected_at_window: { x, y },
+        },
+        cmd_id: newCmdId,
+        file_id: fileId,
+      })
+    }
+  }
 
   const extraExtensions = useMemo(() => {
     if (TEST) return []
@@ -355,6 +402,7 @@ export function App() {
     <div
       className="h-screen overflow-hidden relative flex flex-col"
       onMouseMove={handleMouseMove}
+      ref={streamRef}
     >
       <AppHeader
         className={

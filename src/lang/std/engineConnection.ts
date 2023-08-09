@@ -3,6 +3,7 @@ import { Selections } from '../../useStore'
 import { VITE_KC_API_WS_MODELING_URL } from '../../env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from '../../lib/exportSave'
+import { v4 as uuidv4 } from 'uuid'
 
 interface ResultCommand {
   type: 'result'
@@ -39,33 +40,40 @@ export interface EngineCommand extends _EngineCommand {
   type: 'modeling_cmd_req'
 }
 
+type WSResponse = Models['OkModelingCmdResponse_type']
+
 export class EngineCommandManager {
   artifactMap: ArtifactMap = {}
   sourceRangeMap: SourceRangeMap = {}
-  sequence = 0
+  outSequence = 1
+  inSequence = 1
   socket?: WebSocket
   pc?: RTCPeerConnection
   lossyDataChannel?: RTCDataChannel
   waitForReady: Promise<void> = new Promise(() => {})
   private resolveReady = () => {}
   onHoverCallback: (id?: string) => void = () => {}
-  onClickCallback: (selection: SelectionsArgs) => void = () => {}
+  onClickCallback: (selection?: SelectionsArgs) => void = () => {}
   onCursorsSelectedCallback: (selections: CursorSelectionsArgs) => void =
     () => {}
   constructor({
     setMediaStream,
     setIsStreamReady,
+    width,
+    height,
     token,
   }: {
     setMediaStream: (stream: MediaStream) => void
     setIsStreamReady: (isStreamReady: boolean) => void
+    width: number
+    height: number
     token?: string
   }) {
     this.waitForReady = new Promise((resolve) => {
       this.resolveReady = resolve
     })
-
-    this.socket = new WebSocket(VITE_KC_API_WS_MODELING_URL, [])
+    const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}`
+    this.socket = new WebSocket(url, [])
 
     // Change binary type from "blob" to "arraybuffer"
     this.socket.binaryType = 'arraybuffer'
@@ -185,12 +193,33 @@ export class EngineCommandManager {
               console.log('lossy data channel error')
             })
             this.lossyDataChannel.addEventListener('message', (event) => {
-              console.log('lossy data channel message: ', event)
+              const result: WSResponse = JSON.parse(event.data)
+              if (
+                result.type === 'highlight_set_entity' &&
+                result.sequence &&
+                result.sequence > this.inSequence
+              ) {
+                this.onHoverCallback(result.entity_id)
+                this.inSequence = result.sequence
+              }
             })
           })
         } else if (message.cmd_id) {
           const id = message.cmd_id
           const command = this.artifactMap[id]
+          if (message?.result?.ok) {
+            const result: WSResponse = message.result.ok
+            if (result.type === 'select_with_point') {
+              if (result.entity_id) {
+                this.onClickCallback({
+                  id: result.entity_id,
+                  type: 'default',
+                })
+              } else {
+                this.onClickCallback()
+              }
+            }
+          }
           if (command && command.type === 'pending') {
             const resolve = command.resolve
             this.artifactMap[id] = {
@@ -206,15 +235,6 @@ export class EngineCommandManager {
               data: message.result,
             }
           }
-          // TODO talk to the gang about this
-          // the following message types are made up
-          // and are placeholders
-        } else if (message.type === 'hover') {
-          this.onHoverCallback(message.id)
-        } else if (message.type === 'click') {
-          this.onClickCallback(message)
-        } else {
-          console.log('received message', message)
         }
       }
     })
@@ -239,7 +259,7 @@ export class EngineCommandManager {
     // frontend about that (with it's id) so that the FE can highlight code associated with that id
     this.onHoverCallback = callback
   }
-  onClick(callback: (selection: SelectionsArgs) => void) {
+  onClick(callback: (selection?: SelectionsArgs) => void) {
     // TODO talk to the gang about this
     // It's when the user clicks on a part in the 3d scene, and so the engine should tell the
     // frontend about that (with it's id) so that the FE can put the user's cursor on the right
@@ -250,18 +270,27 @@ export class EngineCommandManager {
     otherSelections: Selections['otherSelections']
     idBasedSelections: { type: string; id: string }[]
   }) {
-    // TODO talk to the gang about this
-    // Really idBasedSelections is the only part that's relevant to the server, but it's when
-    // the user puts their cursor over a line of code, and there is a engine-id associated with
-    // it, so we want to tell the engine to change it's color or something
     if (this.socket?.readyState === 0) {
       console.log('socket not open')
       return
     }
-    console.log('sending cursorsSelected')
-    this.socket?.send(
-      JSON.stringify({ command: 'cursorsSelected', body: selections })
-    )
+    this.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'select_clear',
+      },
+      cmd_id: uuidv4(),
+      file_id: uuidv4(),
+    })
+    this.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'select_add',
+        entities: selections.idBasedSelections.map((s) => s.id),
+      },
+      cmd_id: uuidv4(),
+      file_id: uuidv4(),
+    })
   }
   sendSceneCommand(command: EngineCommand) {
     if (this.socket?.readyState === 0) {
@@ -270,9 +299,13 @@ export class EngineCommandManager {
     }
     const cmd = command.cmd
     if (cmd.type === 'camera_drag_move' && this.lossyDataChannel) {
-      console.log('sending lossy command', command, this.lossyDataChannel)
-      cmd.sequence = this.sequence
-      this.sequence++
+      cmd.sequence = this.outSequence
+      this.outSequence++
+      this.lossyDataChannel.send(JSON.stringify(command))
+      return
+    } else if (cmd.type === 'highlight_set_entity' && this.lossyDataChannel) {
+      cmd.sequence = this.outSequence
+      this.outSequence++
       this.lossyDataChannel.send(JSON.stringify(command))
       return
     }

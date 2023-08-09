@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { useStore } from '../useStore'
 import { throttle } from '../lib/utils'
 import { EngineCommand } from '../lang/std/engineConnection'
+import { getNormalisedCoordinates } from '../lib/utils'
 
 export const Stream = ({ className = '' }) => {
   const [zoom, setZoom] = useState(0)
@@ -20,6 +21,9 @@ export const Stream = ({ className = '' }) => {
     fileId,
     setFileId,
     setCmdId,
+    didDragInStream,
+    setDidDragInStream,
+    streamDimensions,
   } = useStore((s) => ({
     mediaStream: s.mediaStream,
     engineCommandManager: s.engineCommandManager,
@@ -28,6 +32,9 @@ export const Stream = ({ className = '' }) => {
     fileId: s.fileId,
     setFileId: s.setFileId,
     setCmdId: s.setCmdId,
+    didDragInStream: s.didDragInStream,
+    setDidDragInStream: s.setDidDragInStream,
+    streamDimensions: s.streamDimensions,
   }))
 
   useEffect(() => {
@@ -49,9 +56,12 @@ export const Stream = ({ className = '' }) => {
     ctrlKey,
   }) => {
     if (!videoRef.current) return
-    const { left, top } = videoRef.current.getBoundingClientRect()
-    const x = clientX - left
-    const y = clientY - top
+    const { x, y } = getNormalisedCoordinates({
+      clientX,
+      clientY,
+      el: videoRef.current,
+      ...streamDimensions,
+    })
     console.log('click', x, y)
 
     const newId = uuidv4()
@@ -100,13 +110,14 @@ export const Stream = ({ className = '' }) => {
     ctrlKey,
   }) => {
     if (!videoRef.current) return
-    const { left, top } = videoRef.current.getBoundingClientRect()
-    const x = clientX - left
-    const y = clientY - top
+    const { x, y } = getNormalisedCoordinates({
+      clientX,
+      clientY,
+      el: videoRef.current,
+      ...streamDimensions,
+    })
 
     const newCmdId = uuidv4()
-    setCmdId(newCmdId)
-
     const interaction = ctrlKey ? 'pan' : 'rotate'
 
     engineCommandManager?.sendSceneCommand({
@@ -120,9 +131,20 @@ export const Stream = ({ className = '' }) => {
       file_id: fileId,
     })
 
-    setCmdId('')
-
     setIsMouseDownInStream(false)
+    if (!didDragInStream) {
+      engineCommandManager?.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd: {
+          type: 'select_with_point',
+          selection_type: 'add',
+          selected_at_window: { x, y },
+        },
+        cmd_id: uuidv4(),
+        file_id: fileId,
+      })
+    }
+    setDidDragInStream(false)
   }
 
   return (

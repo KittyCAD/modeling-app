@@ -36,6 +36,8 @@ export async function executor(
   const engineCommandManager = new EngineCommandManager({
     setIsStreamReady: () => {},
     setMediaStream: () => {},
+    width: 100,
+    height: 100,
   })
   await engineCommandManager.waitForReady
   engineCommandManager.startNewSession()
