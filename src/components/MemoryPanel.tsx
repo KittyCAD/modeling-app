@@ -1,15 +1,15 @@
 import ReactJson from 'react-json-view'
 import { CollapsiblePanel, CollapsiblePanelProps } from './CollapsiblePanel'
-import { useStore } from '../useStore'
+import { Themes, useStore } from '../useStore'
 import { useMemo } from 'react'
 import { ProgramMemory } from '../lang/executor'
 
 interface MemoryPanelProps extends CollapsiblePanelProps {
-  theme?: 'light' | 'dark'
+  theme?: Exclude<Themes, Themes.System>
 }
 
 export const MemoryPanel = ({
-  theme = 'light',
+  theme = Themes.Light,
   ...props
 }: MemoryPanelProps) => {
   const { programMemory } = useStore((s) => ({

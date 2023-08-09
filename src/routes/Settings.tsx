@@ -6,7 +6,7 @@ import {
 import { ActionButton } from '../components/ActionButton'
 import { AppHeader } from '../components/AppHeader'
 import { open } from '@tauri-apps/api/dialog'
-import { baseUnits, useStore } from '../useStore'
+import { Themes, baseUnits, useStore } from '../useStore'
 import { useRef } from 'react'
 import { toast } from 'react-hot-toast'
 import { Toggle } from '../components/Toggle/Toggle'
@@ -184,21 +184,25 @@ export const Settings = () => {
           title="Editor Theme"
           description="Apply a light or dark theme to the editor"
         >
-          <Toggle
-            name="settings-theme"
-            offLabel="Dark"
-            onLabel="Light"
-            checked={theme === 'light'}
+          <select
+            id="settings-theme"
+            className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
+            value={theme}
             onChange={(e) => {
-              const newTheme = e.target.checked ? 'light' : 'dark'
-              setTheme(newTheme)
+              setTheme(e.target.value as Themes)
               toast.success(
-                newTheme.slice(0, 1).toLocaleUpperCase() +
-                  newTheme.slice(1) +
-                  ' mode activated'
+                'Theme changed to ' +
+                  e.target.value.slice(0, 1).toLocaleUpperCase() +
+                  e.target.value.slice(1)
               )
             }}
-          />
+          >
+            {Object.entries(Themes).map(([label, value]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
         </SettingsSection>
         <SettingsSection
           title="Onboarding"

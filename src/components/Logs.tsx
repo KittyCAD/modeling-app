@@ -1,15 +1,15 @@
 import ReactJson from 'react-json-view'
 import { useEffect } from 'react'
-import { useStore } from '../useStore'
+import { Themes, useStore } from '../useStore'
 import { CollapsiblePanel, CollapsiblePanelProps } from './CollapsiblePanel'
 
 const ReactJsonTypeHack = ReactJson as any
 
 interface LogPanelProps extends CollapsiblePanelProps {
-  theme?: 'light' | 'dark'
+  theme?: Exclude<Themes, Themes.System>
 }
 
-export const Logs = ({ theme = 'light', ...props }: LogPanelProps) => {
+export const Logs = ({ theme = Themes.Light, ...props }: LogPanelProps) => {
   const { logs } = useStore(({ logs }) => ({
     logs,
   }))
@@ -42,7 +42,10 @@ export const Logs = ({ theme = 'light', ...props }: LogPanelProps) => {
   )
 }
 
-export const KCLErrors = ({ theme = 'light', ...props }: LogPanelProps) => {
+export const KCLErrors = ({
+  theme = Themes.Light,
+  ...props
+}: LogPanelProps) => {
   const { kclErrors } = useStore(({ kclErrors }) => ({
     kclErrors,
   }))

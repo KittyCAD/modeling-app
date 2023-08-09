@@ -19,7 +19,7 @@ import {
   lineHighlightField,
   addLineHighlight,
 } from './editor/highlightextension'
-import { PaneType, Selections, useStore } from './useStore'
+import { PaneType, Selections, Themes, useStore } from './useStore'
 import { Logs, KCLErrors } from './components/Logs'
 import { CollapsiblePanel } from './components/CollapsiblePanel'
 import { MemoryPanel } from './components/MemoryPanel'
@@ -42,6 +42,7 @@ import {
 import { useHotkeys } from 'react-hotkeys-hook'
 import { TEST } from './env'
 import { getNormalisedCoordinates } from './lib/utils'
+import { getSystemTheme } from './lib/getSystemTheme'
 
 export function App() {
   const streamRef = useRef<HTMLDivElement>(null)
@@ -126,6 +127,8 @@ export function App() {
     setStreamDimensions: s.setStreamDimensions,
     streamDimensions: s.streamDimensions,
   }))
+
+  const editorTheme = theme === Themes.System ? getSystemTheme() : theme
 
   // Pane toggling keyboard shortcuts
   const togglePane = useCallback(
@@ -460,26 +463,26 @@ export function App() {
                 ]}
                 onChange={onChange}
                 onUpdate={onUpdate}
-                theme={theme}
+                theme={editorTheme}
                 onCreateEditor={(_editorView) => setEditorView(_editorView)}
               />
             </div>
           </CollapsiblePanel>
           <section className="flex flex-col">
             <MemoryPanel
-              theme={theme}
+              theme={editorTheme}
               open={openPanes.includes('variables')}
               title="Variables"
               icon={faSquareRootVariable}
             />
             <Logs
-              theme={theme}
+              theme={editorTheme}
               open={openPanes.includes('logs')}
               title="Logs"
               icon={faCodeCommit}
             />
             <KCLErrors
-              theme={theme}
+              theme={editorTheme}
               open={openPanes.includes('kclErrors')}
               title="KCL Errors"
               iconClassNames={{ icon: 'group-open:text-destroy-30' }}
