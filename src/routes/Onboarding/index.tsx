@@ -7,6 +7,14 @@ import Units from './Units'
 import Camera from './Camera'
 import Sketching from './Sketching'
 import { useCallback } from 'react'
+import { paths } from '../../Router'
+
+export const onboardingPaths = {
+  INDEX: '',
+  UNITS: 'units',
+  CAMERA: 'camera',
+  SKETCHING: 'sketching',
+}
 
 export const onboardingRoutes = [
   {
@@ -14,15 +22,15 @@ export const onboardingRoutes = [
     element: <Introduction />,
   },
   {
-    path: 'units',
+    path: onboardingPaths.UNITS,
     element: <Units />,
   },
   {
-    path: 'camera',
+    path: onboardingPaths.CAMERA,
     element: <Camera />,
   },
   {
-    path: 'sketching',
+    path: onboardingPaths.SKETCHING,
     element: <Sketching />,
   },
 ]
@@ -47,7 +55,7 @@ export function useDismiss() {
 
   return useCallback(() => {
     setOnboardingStatus('dismissed')
-    navigate('/')
+    navigate(paths.INDEX)
   }, [setOnboardingStatus, navigate])
 }
 

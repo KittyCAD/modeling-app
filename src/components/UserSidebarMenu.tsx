@@ -4,6 +4,7 @@ import { ActionButton } from './ActionButton'
 import { faBars, faGear, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import { paths } from '../Router'
 
 const UserSidebarMenu = ({ user }: { user?: User }) => {
   const displayedName = getDisplayName(user)
@@ -100,7 +101,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                   // since /settings is a nested route the sidebar doesn't close
                   // automatically when navigating to it
                   close()
-                  navigate('/settings')
+                  navigate(paths.SETTINGS)
                 }}
               >
                 Settings
@@ -109,7 +110,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                 Element="button"
                 onClick={() => {
                   setToken('')
-                  navigate('/signin')
+                  navigate(paths.SIGN_IN)
                 }}
                 icon={{
                   icon: faSignOutAlt,

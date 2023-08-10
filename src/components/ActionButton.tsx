@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { ActionIcon, ActionIconProps } from './ActionIcon'
 import React from 'react'
+import { paths } from '../Router'
 
 interface ActionButtonProps extends React.PropsWithChildren {
   icon?: ActionIconProps
@@ -17,7 +18,7 @@ export const ActionButton = ({
   icon,
   className,
   onClick,
-  to = '/',
+  to = paths.INDEX,
   Element = 'button',
   children,
   ...props

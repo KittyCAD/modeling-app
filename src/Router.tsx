@@ -7,13 +7,35 @@ import {
 } from 'react-router-dom'
 import { ErrorPage } from './components/ErrorPage'
 import { Settings } from './routes/Settings'
-import Onboarding, { onboardingRoutes } from './routes/Onboarding'
+import Onboarding, {
+  onboardingRoutes,
+  onboardingPaths,
+} from './routes/Onboarding'
 import SignIn from './routes/SignIn'
 import { Auth } from './Auth'
 
+const prependRoutes =
+  (routesObject: Record<string, string>) => (prepend: string) => {
+    return Object.fromEntries(
+      Object.entries(routesObject).map(([constName, path]) => [
+        constName,
+        prepend + path,
+      ])
+    )
+  }
+
+export const paths = {
+  INDEX: '/',
+  SETTINGS: '/settings',
+  SIGN_IN: '/signin',
+  ONBOARDING: prependRoutes(onboardingPaths)(
+    '/onboarding/'
+  ) as typeof onboardingPaths,
+}
+
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: paths.INDEX,
     element: (
       <Auth>
         <Outlet />
@@ -24,11 +46,12 @@ const router = createBrowserRouter([
     loader: ({ request }) => {
       const store = localStorage.getItem('store')
       if (store === null) {
-        return redirect('/onboarding')
+        return redirect(paths.ONBOARDING.INDEX)
       } else {
         const status = JSON.parse(store).state.onboardingStatus || ''
         const notEnRouteToOnboarding =
-          !request.url.includes('/onboarding') && request.method === 'GET'
+          !request.url.includes(paths.ONBOARDING.INDEX) &&
+          request.method === 'GET'
         // '' is the initial state, 'done' and 'dismissed' are the final states
         const hasValidOnboardingStatus =
           (status !== undefined && status.length === 0) ||
@@ -37,25 +60,25 @@ const router = createBrowserRouter([
           notEnRouteToOnboarding && hasValidOnboardingStatus
 
         if (shouldRedirectToOnboarding) {
-          return redirect('/onboarding/' + status)
+          return redirect(paths.ONBOARDING.INDEX + status)
         }
       }
       return null
     },
     children: [
       {
-        path: 'settings',
+        path: paths.SETTINGS,
         element: <Settings />,
       },
       {
-        path: 'onboarding',
+        path: paths.ONBOARDING.INDEX,
         element: <Onboarding />,
         children: onboardingRoutes,
       },
     ],
   },
   {
-    path: '/signin',
+    path: paths.SIGN_IN,
     element: <SignIn />,
   },
 ])

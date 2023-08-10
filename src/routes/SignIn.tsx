@@ -6,6 +6,7 @@ import { invoke } from '@tauri-apps/api/tauri'
 import { useNavigate } from 'react-router-dom'
 import { VITE_KC_SITE_BASE_URL, VITE_KC_API_BASE_URL } from '../env'
 import { getSystemTheme } from '../lib/getSystemTheme'
+import { paths } from '../Router'
 
 const SignIn = () => {
   const navigate = useNavigate()
@@ -21,7 +22,7 @@ const SignIn = () => {
         host: VITE_KC_API_BASE_URL,
       })
       setToken(token)
-      navigate('/')
+      navigate(paths.INDEX)
     } catch (error) {
       console.error('login button', error)
     }
@@ -69,7 +70,9 @@ const SignIn = () => {
         ) : (
           <ActionButton
             Element="link"
-            to={`${VITE_KC_SITE_BASE_URL}/signin?callbackUrl=${encodeURIComponent(
+            to={`${VITE_KC_SITE_BASE_URL}${
+              paths.SIGN_IN
+            }?callbackUrl=${encodeURIComponent(
               typeof window !== 'undefined' &&
                 window.location.href.replace('signin', '')
             )}`}

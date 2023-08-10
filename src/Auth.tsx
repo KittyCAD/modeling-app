@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { isTauri } from './lib/isTauri'
 import Loading from './components/Loading'
+import { paths } from './Router'
 
 // Wrapper around protected routes, used in src/Router.tsx
 export const Auth = ({ children }: React.PropsWithChildren) => {
@@ -27,7 +28,7 @@ export const Auth = ({ children }: React.PropsWithChildren) => {
       (isTauri() && !token) ||
       (!isTauri() && !isLoading && !(user && 'id' in user))
     ) {
-      navigate('/signin')
+      navigate(paths.SIGN_IN)
     }
   }, [user, token, navigate, isLoading])
 

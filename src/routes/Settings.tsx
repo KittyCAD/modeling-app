@@ -12,6 +12,7 @@ import { toast } from 'react-hot-toast'
 import { Toggle } from '../components/Toggle/Toggle'
 import { useNavigate } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
+import { paths } from '../Router'
 
 export const Settings = () => {
   const navigate = useNavigate()
@@ -50,7 +51,7 @@ export const Settings = () => {
   async function handleDirectorySelection() {
     const newDirectory = await open({
       directory: true,
-      defaultPath: (defaultDir.base || '') + (defaultDir.dir || '/'),
+      defaultPath: (defaultDir.base || '') + (defaultDir.dir || paths.INDEX),
       title: 'Choose a new default directory',
     })
 
@@ -211,7 +212,7 @@ export const Settings = () => {
           <ActionButton
             onClick={() => {
               setOnboardingStatus('')
-              navigate('/onboarding')
+              navigate(paths.ONBOARDING.INDEX)
             }}
             icon={{ icon: faArrowRotateBack }}
           >
