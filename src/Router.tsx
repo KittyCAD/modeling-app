@@ -21,13 +21,22 @@ const router = createBrowserRouter([
       </Auth>
     ),
     errorElement: <ErrorPage />,
-    loader: () => {
+    loader: ({ request }) => {
       const store = localStorage.getItem('store')
       if (store === null) {
         return redirect('/onboarding')
       } else {
-        const status = JSON.parse(store).state.onboardingStatus
-        if (status !== 'done' && status !== 'dismissed') {
+        const status = JSON.parse(store).state.onboardingStatus || ''
+        const notEnRouteToOnboarding =
+          !request.url.includes('/onboarding') && request.method === 'GET'
+        // '' is the initial state, 'done' and 'dismissed' are the final states
+        const hasValidOnboardingStatus =
+          (status !== undefined && status.length === 0) ||
+          !(status === 'done' || status === 'dismissed')
+        const shouldRedirectToOnboarding =
+          notEnRouteToOnboarding && hasValidOnboardingStatus
+
+        if (shouldRedirectToOnboarding) {
           return redirect('/onboarding/' + status)
         }
       }
@@ -38,16 +47,12 @@ const router = createBrowserRouter([
         path: 'settings',
         element: <Settings />,
       },
+      {
+        path: 'onboarding',
+        element: <Onboarding />,
+        children: onboardingRoutes,
+      },
     ],
-  },
-  {
-    path: '/onboarding',
-    element: (
-      <Auth>
-        <Onboarding />
-      </Auth>
-    ),
-    children: onboardingRoutes,
   },
   {
     path: '/signin',

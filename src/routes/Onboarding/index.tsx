@@ -1,7 +1,6 @@
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { useStore } from '../../useStore'
-import { App } from '../../App'
 
 import Introduction from './Introduction'
 import Units from './Units'
@@ -11,7 +10,7 @@ import { useCallback } from 'react'
 
 export const onboardingRoutes = [
   {
-    path: '',
+    index: true,
     element: <Introduction />,
   },
   {
@@ -59,7 +58,6 @@ const Onboarding = () => {
   return (
     <>
       <Outlet />
-      <App />
     </>
   )
 }
