@@ -60,7 +60,7 @@ jobs:
       - name: Fix format
         run: yarn fmt
 
-      - name: Build the app for all platforms
+      - name: Build the app for the current platform
         uses: tauri-apps/tauri-action@v0
 
       - uses: actions/upload-artifact@v3
