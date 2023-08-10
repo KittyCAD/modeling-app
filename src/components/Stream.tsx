@@ -10,8 +10,10 @@ import { useStore } from '../useStore'
 import { throttle } from '../lib/utils'
 import { EngineCommand } from '../lang/std/engineConnection'
 import { getNormalisedCoordinates } from '../lib/utils'
+import Loading from './Loading'
 
 export const Stream = ({ className = '' }) => {
+  const [isLoading, setIsLoading] = useState(true)
   const [zoom, setZoom] = useState(0)
   const videoRef = useRef<HTMLVideoElement>(null)
   const {
@@ -159,8 +161,14 @@ export const Stream = ({ className = '' }) => {
         onContextMenu={(e) => e.preventDefault()}
         onContextMenuCapture={(e) => e.preventDefault()}
         onWheelCapture={handleScroll}
+        onPlay={() => setIsLoading(false)}
         className="w-full h-full"
       />
+      {isLoading && (
+        <div className="text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+          <Loading>Loading stream...</Loading>
+        </div>
+      )}
     </div>
   )
 }
