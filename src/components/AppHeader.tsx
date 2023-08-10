@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { Toolbar } from '../Toolbar'
 import { useStore } from '../useStore'
 import UserSidebarMenu from './UserSidebarMenu'
+import { paths } from '../Router'
 
 interface AppHeaderProps extends React.PropsWithChildren {
   showToolbar?: boolean
@@ -24,7 +25,7 @@ export const AppHeader = ({
         className
       }
     >
-      <Link to="/">
+      <Link to={paths.INDEX}>
         <img
           src="/kitt-arcade-winking.svg"
           alt="KittyCAD App"
