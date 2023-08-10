@@ -11,15 +11,24 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  @apply text-chalkboard-110 bg-chalkboard-10;
+  @apply text-chalkboard-110;
   overflow: hidden;
   scrollbar-width: thin;
   scrollbar-color: var(--color-chalkboard-20) var(--color-chalkboard-40);
 }
 
+.body-bg {
+  @apply bg-chalkboard-10;
+}
+
+.body-bg.dark,
+.dark .body-bg {
+  @apply bg-chalkboard-100;
+}
+
 body.dark {
   scrollbar-color: var(--color-chalkboard-70) var(--color-chalkboard-90);
-  @apply bg-chalkboard-100 text-chalkboard-10;
+  @apply text-chalkboard-10;
 }
 
 ::-webkit-scrollbar {

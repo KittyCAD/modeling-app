@@ -1,29 +1,36 @@
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { useStore } from '../../useStore'
-import { App } from '../../App'
 
 import Introduction from './Introduction'
 import Units from './Units'
 import Camera from './Camera'
 import Sketching from './Sketching'
 import { useCallback } from 'react'
+import { paths } from '../../Router'
+
+export const onboardingPaths = {
+  INDEX: '',
+  UNITS: 'units',
+  CAMERA: 'camera',
+  SKETCHING: 'sketching',
+}
 
 export const onboardingRoutes = [
   {
-    path: '',
+    index: true,
     element: <Introduction />,
   },
   {
-    path: 'units',
+    path: onboardingPaths.UNITS,
     element: <Units />,
   },
   {
-    path: 'camera',
+    path: onboardingPaths.CAMERA,
     element: <Camera />,
   },
   {
-    path: 'sketching',
+    path: onboardingPaths.SKETCHING,
     element: <Sketching />,
   },
 ]
@@ -48,7 +55,7 @@ export function useDismiss() {
 
   return useCallback(() => {
     setOnboardingStatus('dismissed')
-    navigate('/')
+    navigate(paths.INDEX)
   }, [setOnboardingStatus, navigate])
 }
 
@@ -59,7 +66,6 @@ const Onboarding = () => {
   return (
     <>
       <Outlet />
-      <App />
     </>
   )
 }

@@ -4,6 +4,7 @@ import { ActionButton } from './ActionButton'
 import { faBars, faGear, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import { paths } from '../Router'
 
 const UserSidebarMenu = ({ user }: { user?: User }) => {
   const displayedName = getDisplayName(user)
@@ -58,61 +59,72 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
       <Popover.Overlay className="fixed z-40 inset-0 bg-chalkboard-110/50" />
 
       <Popover.Panel className="fixed inset-0 left-auto z-50 w-64 bg-chalkboard-10 dark:bg-chalkboard-100 border border-liquid-100 shadow-md rounded-l-lg">
-        {user && (
-          <div className="flex items-center gap-4 px-4 py-3 bg-liquid-100">
-            {user.image && !imageLoadFailed && (
-              <div className="rounded-full shadow-inner overflow-hidden">
-                <img
-                  src={user.image}
-                  alt={user.name || ''}
-                  className="h-8 w-8"
-                  referrerPolicy="no-referrer"
-                  onError={() => setImageLoadFailed(true)}
-                />
+        {({ close }) => (
+          <>
+            {user && (
+              <div className="flex items-center gap-4 px-4 py-3 bg-liquid-100">
+                {user.image && !imageLoadFailed && (
+                  <div className="rounded-full shadow-inner overflow-hidden">
+                    <img
+                      src={user.image}
+                      alt={user.name || ''}
+                      className="h-8 w-8"
+                      referrerPolicy="no-referrer"
+                      onError={() => setImageLoadFailed(true)}
+                    />
+                  </div>
+                )}
+
+                <div>
+                  <p
+                    className="m-0 text-liquid-10 text-mono"
+                    data-testid="username"
+                  >
+                    {displayedName || ''}
+                  </p>
+                  {displayedName !== user.email && (
+                    <p
+                      className="m-0 text-liquid-40 text-xs"
+                      data-testid="email"
+                    >
+                      {user.email}
+                    </p>
+                  )}
+                </div>
               </div>
             )}
-
-            <div>
-              <p
-                className="m-0 text-liquid-10 text-mono"
-                data-testid="username"
+            <div className="p-4 flex flex-col gap-2">
+              <ActionButton
+                icon={{ icon: faGear }}
+                className="border-transparent dark:border-transparent dark:hover:border-liquid-60"
+                onClick={() => {
+                  // since /settings is a nested route the sidebar doesn't close
+                  // automatically when navigating to it
+                  close()
+                  navigate(paths.SETTINGS)
+                }}
               >
-                {displayedName || ''}
-              </p>
-              {displayedName !== user.email && (
-                <p className="m-0 text-liquid-40 text-xs" data-testid="email">
-                  {user.email}
-                </p>
-              )}
+                Settings
+              </ActionButton>
+              <ActionButton
+                Element="button"
+                onClick={() => {
+                  setToken('')
+                  navigate(paths.SIGN_IN)
+                }}
+                icon={{
+                  icon: faSignOutAlt,
+                  bgClassName: 'bg-destroy-80',
+                  iconClassName:
+                    'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
+                }}
+                className="border-transparent dark:border-transparent hover:border-destroy-40 dark:hover:border-destroy-60"
+              >
+                Sign out
+              </ActionButton>
             </div>
-          </div>
+          </>
         )}
-        <div className="p-4 flex flex-col gap-2">
-          <ActionButton
-            Element="link"
-            icon={{ icon: faGear }}
-            to="/settings"
-            className="border-transparent dark:border-transparent dark:hover:border-liquid-60"
-          >
-            Settings
-          </ActionButton>
-          <ActionButton
-            Element="button"
-            onClick={() => {
-              setToken('')
-              navigate('/signin')
-            }}
-            icon={{
-              icon: faSignOutAlt,
-              bgClassName: 'bg-destroy-80',
-              iconClassName:
-                'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
-            }}
-            className="border-transparent dark:border-transparent hover:border-destroy-40 dark:hover:border-destroy-60"
-          >
-            Sign out
-          </ActionButton>
-        </div>
       </Popover.Panel>
     </Popover>
   )

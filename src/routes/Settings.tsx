@@ -12,10 +12,11 @@ import { toast } from 'react-hot-toast'
 import { Toggle } from '../components/Toggle/Toggle'
 import { useNavigate } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
+import { paths } from '../Router'
 
 export const Settings = () => {
   const navigate = useNavigate()
-  useHotkeys('esc', () => navigate('/'))
+  useHotkeys('esc', () => navigate(paths.INDEX))
   const {
     defaultDir,
     setDefaultDir,
@@ -50,7 +51,7 @@ export const Settings = () => {
   async function handleDirectorySelection() {
     const newDirectory = await open({
       directory: true,
-      defaultPath: (defaultDir.base || '') + (defaultDir.dir || '/'),
+      defaultPath: (defaultDir.base || '') + (defaultDir.dir || paths.INDEX),
       title: 'Choose a new default directory',
     })
 
@@ -60,11 +61,11 @@ export const Settings = () => {
   }
 
   return (
-    <>
+    <div className="body-bg fixed inset-0 z-40 overflow-auto">
       <AppHeader showToolbar={false}>
         <ActionButton
           Element="link"
-          to="/"
+          to={paths.INDEX}
           icon={{
             icon: faXmark,
             bgClassName: 'bg-destroy-80',
@@ -211,7 +212,7 @@ export const Settings = () => {
           <ActionButton
             onClick={() => {
               setOnboardingStatus('')
-              navigate('/')
+              navigate(paths.ONBOARDING.INDEX)
             }}
             icon={{ icon: faArrowRotateBack }}
           >
@@ -219,7 +220,7 @@ export const Settings = () => {
           </ActionButton>
         </SettingsSection>
       </div>
-    </>
+    </div>
   )
 }
 
