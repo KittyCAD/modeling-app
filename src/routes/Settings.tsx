@@ -46,6 +46,7 @@ export const Settings = () => {
     theme: s.theme,
     setTheme: s.setTheme,
   }))
+  const ogDefaultDir = useRef(defaultDir)
   const ogDefaultProjectName = useRef(defaultProjectName)
 
   async function handleDirectorySelection() {
@@ -93,7 +94,11 @@ export const Settings = () => {
                     base: defaultDir.base,
                     dir: e.target.value,
                   })
-                  toast.success('Default directory updated')
+                }}
+                onBlur={() => {
+                  ogDefaultDir.current.dir !== defaultDir.dir &&
+                    toast.success('Default directory updated')
+                  ogDefaultDir.current.dir = defaultDir.dir
                 }}
               />
               <ActionButton
@@ -126,6 +131,7 @@ export const Settings = () => {
             onBlur={() => {
               ogDefaultProjectName.current !== defaultProjectName &&
                 toast.success('Default project name updated')
+              ogDefaultProjectName.current = defaultProjectName
             }}
           />
         </SettingsSection>
