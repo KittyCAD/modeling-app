@@ -31,5 +31,9 @@ export const Auth = ({ children }: React.PropsWithChildren) => {
     }
   }, [user, token, navigate, isLoading])
 
-  return isLoading ? <Loading /> : <>{children}</>
+  return isLoading ? (
+    <Loading>Loading KittyCAD Modeling App...</Loading>
+  ) : (
+    <>{children}</>
+  )
 }

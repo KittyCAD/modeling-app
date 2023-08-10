@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-const Loading = () => {
+const Loading = ({ children }: React.PropsWithChildren) => {
   const [hasLongLoadTime, setHasLongLoadTime] = useState(false)
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -23,12 +23,12 @@ const Loading = () => {
           className="animate-spin origin-center"
         />
       </svg>
-      <p className="mt-4 text-liquid-80 dark:text-liquid-20">
-        Loading KittyCAD Modeling App...
+      <p className="text-base mt-4 text-liquid-80 dark:text-liquid-20">
+        {children || 'Loading'}
       </p>
       <p
         className={
-          'mt-4 text-liquid-90 dark:text-liquid-10 transition-opacity duration-500' +
+          'text-sm mt-4 text-liquid-90 dark:text-liquid-10 transition-opacity duration-500' +
           (hasLongLoadTime ? ' opacity-100' : ' opacity-0')
         }
       >
