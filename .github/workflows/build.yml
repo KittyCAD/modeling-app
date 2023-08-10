@@ -37,18 +37,20 @@ jobs:
         with:
           workspaces: './src-tauri -> target'
 
-      - name: Run build:wasm (in a cross-plaftorm way, minus the clean up)
+      - name: wasm prep
         shell: bash
         run: |
           mkdir src/wasm-lib/pkg; cd src/wasm-lib
           npx wasm-pack build --target web --out-dir pkg
           cd ../../
           cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
+
       - name: macos sed
         if: matrix.os == 'macos-latest'
         shell: bash
         run: |
           sed -i '' 's/import.meta.url//g' "./src/wasm-lib/pkg/wasm_lib.js"
+
       - name: ubuntu and windows sed
         if: matrix.os != 'macos-latest'
         shell: bash
@@ -58,7 +60,7 @@ jobs:
       - name: Fix format
         run: yarn fmt
 
-      - name: Build the app
+      - name: Build the app for all platforms
         uses: tauri-apps/tauri-action@v0
 
       - uses: actions/upload-artifact@v3
