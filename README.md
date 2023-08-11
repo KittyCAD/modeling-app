@@ -65,14 +65,15 @@ Note that these became separate apps on Macos, so make sure you open the right o
 
 ## Release a new version
 
-1. Bump the versions in the .json files by creating a new PR, committing the changes from
+1. Bump the versions in the .json files by creating a `Bump to v{x}.{y}.{z}` PR, committing the changes from
 
 ```bash
-VERSION=x.y.z npm run bump-jsons
+VERSION=x.y.z yarn run bump-jsons
 ```
+The PR may serve as a place to discuss the human-readable changelog and extra QA.
 
 2. Merge the PR
 
 3. Create a new release and tag pointing to the bump version commit using semantic versioning `v{x}.{y}.{z}`
 
-A new Action should run, uploading artifacts to the release itself.
+4. A new Action kicks in at https://github.com/KittyCAD/modeling-app/actions, uploading artifacts to the release
