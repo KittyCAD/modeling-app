@@ -1,7 +1,10 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { User } from '../useStore'
 import UserSidebarMenu from './UserSidebarMenu'
 import { BrowserRouter } from 'react-router-dom'
+import { Models } from '@kittycad/lib'
+import { GlobalStateProvider } from '../hooks/useAuthMachine'
+
+type User = Models['User_type']
 
 describe('UserSidebarMenu tests', () => {
   test("Renders user's name and email if available", () => {
@@ -12,12 +15,18 @@ describe('UserSidebarMenu tests', () => {
       image: 'https://placekitten.com/200/200',
       created_at: 'yesteryear',
       updated_at: 'today',
+      company: 'Test Company',
+      discord: 'Test User#1234',
+      github: 'testuser',
+      phone: '555-555-5555',
+      first_name: 'Test',
+      last_name: 'User',
     }
 
     render(
-      <BrowserRouter>
+      <TestWrap>
         <UserSidebarMenu user={userWellFormed} />
-      </BrowserRouter>
+      </TestWrap>
     )
 
     fireEvent.click(screen.getByTestId('user-sidebar-toggle'))
@@ -35,12 +44,19 @@ describe('UserSidebarMenu tests', () => {
       image: 'https://placekitten.com/200/200',
       created_at: 'yesteryear',
       updated_at: 'today',
+      company: 'Test Company',
+      discord: 'Test User#1234',
+      github: 'testuser',
+      phone: '555-555-5555',
+      first_name: '',
+      last_name: '',
+      name: '',
     }
 
     render(
-      <BrowserRouter>
+      <TestWrap>
         <UserSidebarMenu user={userNoName} />
-      </BrowserRouter>
+      </TestWrap>
     )
 
     fireEvent.click(screen.getByTestId('user-sidebar-toggle'))
@@ -55,14 +71,30 @@ describe('UserSidebarMenu tests', () => {
       email: 'kittycad.sidebar.test@example.com',
       created_at: 'yesteryear',
       updated_at: 'today',
+      company: 'Test Company',
+      discord: 'Test User#1234',
+      github: 'testuser',
+      phone: '555-555-5555',
+      first_name: 'Test',
+      last_name: 'User',
+      image: '',
     }
 
     render(
-      <BrowserRouter>
+      <TestWrap>
         <UserSidebarMenu user={userNoAvatar} />
-      </BrowserRouter>
+      </TestWrap>
     )
 
     expect(screen.getByTestId('user-sidebar-toggle')).toHaveTextContent('Menu')
   })
 })
+
+function TestWrap({ children }: { children: React.ReactNode }) {
+  // wrap in router and xState context
+  return (
+    <BrowserRouter>
+      <GlobalStateProvider>{children}</GlobalStateProvider>
+    </BrowserRouter>
+  )
+}

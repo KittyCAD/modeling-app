@@ -136,11 +136,6 @@ export const lineTo: SketchLineHelper = {
       sourceRange,
       data,
     })
-    // engineCommandManager.sendModellingCommand({
-    //   id,
-    //   params: [lineData, previousSketch],
-    //   range: sourceRange,
-    // })
     const currentPath: Path = {
       type: 'toPoint',
       to,
@@ -673,11 +668,6 @@ export const angledLine: SketchLineHelper = {
       sourceRange,
       data,
     })
-    // engineCommandManager.sendModellingCommand({
-    //   id,
-    //   params: [lineData, previousSketch],
-    //   range: sourceRange,
-    // })
     const currentPath: Path = {
       type: 'toPoint',
       to,

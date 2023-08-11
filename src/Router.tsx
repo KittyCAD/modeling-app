@@ -24,6 +24,7 @@ import {
 } from './lib/tauriFS'
 import { metadata, type Metadata } from 'tauri-plugin-fs-extra-api'
 import DownloadAppBanner from './components/DownloadAppBanner'
+import { GlobalStateProvider } from './hooks/useAuthMachine'
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {
@@ -67,11 +68,13 @@ const router = createBrowserRouter([
   {
     path: paths.FILE + '/:id',
     element: (
-      <Auth>
-        <Outlet />
-        <App />
-        {!isTauri() && import.meta.env.PROD && <DownloadAppBanner />}
-      </Auth>
+      <GlobalStateProvider>
+        <Auth>
+          <Outlet />
+          <App />
+          {!isTauri() && import.meta.env.PROD && <DownloadAppBanner />}
+        </Auth>
+      </GlobalStateProvider>
     ),
     errorElement: <ErrorPage />,
     id: paths.FILE,
@@ -173,7 +176,11 @@ const router = createBrowserRouter([
   },
   {
     path: paths.SIGN_IN,
-    element: <SignIn />,
+    element: (
+      <GlobalStateProvider>
+        <SignIn />
+      </GlobalStateProvider>
+    ),
   },
 ])
 

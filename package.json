@@ -19,6 +19,7 @@
     "@types/react-dom": "^18.0.0",
     "@uiw/codemirror-extensions-langs": "^4.21.9",
     "@uiw/react-codemirror": "^4.15.1",
+    "@xstate/react": "^3.2.2",
     "crypto-js": "^4.1.1",
     "formik": "^2.4.3",
     "http-server": "^14.1.1",
@@ -42,6 +43,7 @@
     "wasm-pack": "^0.12.1",
     "web-vitals": "^2.1.0",
     "ws": "^8.13.0",
+    "xstate": "^4.38.2",
     "zustand": "^4.1.4"
   },
   "scripts": {
