@@ -1,6 +1,6 @@
 {
   "name": "untitled-app",
-  "version": "0.1.0",
+  "version": "0.0.2",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.0",
@@ -59,7 +59,8 @@
     "build:wasm": "yarn wasm-prep && (cd src/wasm-lib && wasm-pack build --target web --out-dir pkg) && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn fmt && yarn remove-importmeta",
     "remove-importmeta": "sed -i 's/import.meta.url//g' \"./src/wasm-lib/pkg/wasm_lib.js\"; sed -i '' 's/import.meta.url//g' \"./src/wasm-lib/pkg/wasm_lib.js\" || echo \"sed for both mac and linux\"",
     "wasm-prep": "rm -rf src/wasm-lib/pkg && mkdir src/wasm-lib/pkg",
-    "lint": "eslint --fix src"
+    "lint": "eslint --fix src",
+    "bump-jsons": "echo \"$(jq --arg v \"$VERSION\" '.version=$v' package.json --indent 2)\" > package.json && echo \"$(jq --arg v \"$VERSION\" '.package.version=$v' src-tauri/tauri.conf.json --indent 2)\" > src-tauri/tauri.conf.json"
   },
   "prettier": {
     "trailingComma": "es5",

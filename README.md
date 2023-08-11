@@ -62,3 +62,17 @@ Note that these became separate apps on Macos, so make sure you open the right o
 <img width="1232" alt="image" src="https://user-images.githubusercontent.com/29681384/211947063-46164bb4-7bdd-45cb-9a76-2f40c71a24aa.png">
 
 <img width="1232" alt="image (1)" src="https://user-images.githubusercontent.com/29681384/211947073-e76b4933-bef5-4636-bc4d-e930ac8e290f.png">
+
+## Release a new version
+
+1. Bump the versions in the .json files by creating a new PR, committing the changes from
+
+```bash
+VERSION=x.y.z npm run bump-jsons
+```
+
+2. Merge the PR
+
+3. Create a new release and tag pointing to the bump version commit using semantic versioning `v{x}.{y}.{z}`
+
+A new Action should run, uploading artifacts to the release itself.

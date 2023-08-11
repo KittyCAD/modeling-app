@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "KittyCAD Modeling",
-    "version": "0.3.0"
+    "version": "0.0.2"
   },
   "tauri": {
     "allowlist": {
@@ -22,12 +22,18 @@
         "save": true
       },
       "fs": {
-        "scope": ["$HOME/**/*"],
+        "scope": [
+          "$HOME/**/*"
+        ],
         "all": true
       },
       "http": {
         "request": true,
-        "scope": ["https://dev.kittycad.io/*", "https://kittycad.io/*", "https://api.dev.kittycad.io/*"]
+        "scope": [
+          "https://dev.kittycad.io/*",
+          "https://kittycad.io/*",
+          "https://api.dev.kittycad.io/*"
+        ]
       },
       "shell": {
         "open": true
