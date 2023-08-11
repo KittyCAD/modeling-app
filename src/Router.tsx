@@ -13,6 +13,8 @@ import Onboarding, {
 } from './routes/Onboarding'
 import SignIn from './routes/SignIn'
 import { Auth } from './Auth'
+import { isTauri } from './lib/isTauri'
+import Home from './routes/Home'
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {
@@ -29,6 +31,7 @@ export function makePathRelative(path: string) {
 
 export const paths = {
   INDEX: '/',
+  HOME: '/home',
   FILE: '/file',
   SETTINGS: '/settings',
   SIGN_IN: '/signin',
@@ -40,7 +43,8 @@ export const paths = {
 const router = createBrowserRouter([
   {
     path: paths.INDEX,
-    loader: () => redirect(paths.FILE + '/new'),
+    loader: () =>
+      isTauri() ? redirect(paths.HOME) : redirect(paths.FILE + '/new'),
   },
   {
     path: paths.FILE + '/:id',
@@ -84,6 +88,11 @@ const router = createBrowserRouter([
         children: onboardingRoutes,
       },
     ],
+  },
+  {
+    path: paths.HOME,
+    element: <Home />,
+    loader: () => !isTauri() && redirect(paths.FILE + '/new'),
   },
   {
     path: paths.SIGN_IN,
