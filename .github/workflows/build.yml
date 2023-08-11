@@ -69,8 +69,8 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: github.event_name == 'pull_request'
         with:
-          path: src-tauri/target/release/bundle/*/*
-          # name: modeling-app_macos_linux_windows
+          path: src-tauri/target/release/bundle
+          name: modeling-app_macos_linux_windows
 
       - name: Build the app for the current platform and upload to release
         if: github.event_name == 'release'
