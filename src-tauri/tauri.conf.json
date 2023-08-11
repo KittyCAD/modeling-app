@@ -22,7 +22,7 @@
         "save": true
       },
       "fs": {
-        "scope": ["$HOME/**/*"],
+        "scope": ["$HOME/**/*", "$APPDATA/**/*"],
         "all": true
       },
       "http": {
@@ -31,6 +31,9 @@
       },
       "shell": {
         "open": true
+      },
+      "path": {
+        "all": true
       }
     },
     "bundle": {
