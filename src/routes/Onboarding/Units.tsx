@@ -4,11 +4,11 @@ import { ActionButton } from '../../components/ActionButton'
 import { SettingsSection } from '../Settings'
 import { Toggle } from '../../components/Toggle/Toggle'
 import { useState } from 'react'
-import { useDismiss, useNextClick } from '.'
+import { onboardingPaths, useDismiss, useNextClick } from '.'
 
 const Units = () => {
   const dismiss = useDismiss()
-  const next = useNextClick('camera')
+  const next = useNextClick(onboardingPaths.CAMERA)
   const {
     defaultUnitSystem: ogDefaultUnitSystem,
     setDefaultUnitSystem: saveDefaultUnitSystem,

@@ -1,10 +1,10 @@
 import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../../components/ActionButton'
-import { useDismiss, useNextClick } from '.'
+import { onboardingPaths, useDismiss, useNextClick } from '.'
 
 const Introduction = () => {
   const dismiss = useDismiss()
-  const next = useNextClick('units')
+  const next = useNextClick(onboardingPaths.UNITS)
 
   return (
     <div className="fixed grid place-content-center inset-0 bg-chalkboard-110/50 z-50">

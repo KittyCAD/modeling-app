@@ -23,19 +23,27 @@ const prependRoutes =
       ])
     )
   }
+export function makePathRelative(path: string) {
+  return path.replace(/^\//, '')
+}
 
 export const paths = {
   INDEX: '/',
+  FILE: '/file',
   SETTINGS: '/settings',
   SIGN_IN: '/signin',
   ONBOARDING: prependRoutes(onboardingPaths)(
-    '/onboarding/'
+    '/onboarding'
   ) as typeof onboardingPaths,
 }
 
 const router = createBrowserRouter([
   {
     path: paths.INDEX,
+    loader: () => redirect(paths.FILE + '/new'),
+  },
+  {
+    path: paths.FILE + '/:id',
     element: (
       <Auth>
         <Outlet />
@@ -60,18 +68,18 @@ const router = createBrowserRouter([
           notEnRouteToOnboarding && hasValidOnboardingStatus
 
         if (shouldRedirectToOnboarding) {
-          return redirect(paths.ONBOARDING.INDEX + status)
+          return redirect(makePathRelative(paths.ONBOARDING.INDEX) + status)
         }
       }
       return null
     },
     children: [
       {
-        path: paths.SETTINGS,
+        path: makePathRelative(paths.SETTINGS),
         element: <Settings />,
       },
       {
-        path: paths.ONBOARDING.INDEX,
+        path: makePathRelative(paths.ONBOARDING.INDEX),
         element: <Onboarding />,
         children: onboardingRoutes,
       },

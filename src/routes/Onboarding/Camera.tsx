@@ -1,6 +1,6 @@
 import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../../components/ActionButton'
-import { useDismiss, useNextClick } from '.'
+import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from '../../useStore'
 
 const Units = () => {
@@ -8,7 +8,7 @@ const Units = () => {
     isMouseDownInStream: s.isMouseDownInStream,
   }))
   const dismiss = useDismiss()
-  const next = useNextClick('sketching')
+  const next = useNextClick(onboardingPaths.SKETCHING)
 
   return (
     <div className="fixed grid justify-center items-end inset-0 z-50 pointer-events-none">

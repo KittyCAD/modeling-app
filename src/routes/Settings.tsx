@@ -218,7 +218,7 @@ export const Settings = () => {
           <ActionButton
             onClick={() => {
               setOnboardingStatus('')
-              navigate(paths.ONBOARDING.INDEX)
+              navigate('..' + paths.ONBOARDING.INDEX)
             }}
             icon={{ icon: faArrowRotateBack }}
           >
