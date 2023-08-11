@@ -1,10 +1,12 @@
 name: Build
 
 on:
-  push:
-    tags:
-      - 'v*'
   pull_request:
+  push:
+    branches:
+        - main
+  release:
+    types: [published]
 
 jobs:
   build:
@@ -60,11 +62,20 @@ jobs:
       - name: Fix format
         run: yarn fmt
 
-      - name: Build the app for the current platform
+      - name: Build the app for the current platform (no upload)
+        if: github.event_name == 'pull_request'
         uses: tauri-apps/tauri-action@v0
 
       - uses: actions/upload-artifact@v3
-        if: github.event_name != 'push'
+        if: github.event_name == 'pull_request'
         with:
           path: src-tauri/target/release/bundle
           name: modeling-app_macos_linux_windows
+
+      - name: Build the app for the current platform and upload to release
+        if: github.event_name == 'release'
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          releaseId: ${{ github.event.release.id }}
