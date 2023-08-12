@@ -3,7 +3,7 @@ import { ActionButton } from '../../components/ActionButton'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from '../../useStore'
 
-const Units = () => {
+export default function Units() {
   const { isMouseDownInStream } = useStore((s) => ({
     isMouseDownInStream: s.isMouseDownInStream,
   }))
@@ -45,5 +45,3 @@ const Units = () => {
     </div>
   )
 }
-
-export default Units

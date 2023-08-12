@@ -6,7 +6,7 @@ import { Toggle } from '../../components/Toggle/Toggle'
 import { useState } from 'react'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 
-const Units = () => {
+export default function Units() {
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.CAMERA)
   const {
@@ -86,5 +86,3 @@ const Units = () => {
     </div>
   )
 }
-
-export default Units

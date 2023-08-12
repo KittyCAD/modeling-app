@@ -2,7 +2,7 @@ import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../../components/ActionButton'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 
-const Introduction = () => {
+export default function Introduction() {
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.UNITS)
 
@@ -41,5 +41,3 @@ const Introduction = () => {
     </div>
   )
 }
-
-export default Introduction

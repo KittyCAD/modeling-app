@@ -2,7 +2,7 @@ import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../../components/ActionButton'
 import { useDismiss } from '.'
 
-const Sketching = () => {
+export default function Sketching() {
   const dismiss = useDismiss()
 
   return (
@@ -33,5 +33,3 @@ const Sketching = () => {
     </div>
   )
 }
-
-export default Sketching
