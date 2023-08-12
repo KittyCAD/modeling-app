@@ -4,7 +4,7 @@ import { useStore } from '../useStore'
 import { isTauri } from './isTauri'
 
 const PROJECT_FOLDER = 'projects'
-const FILE_EXT = '.kcl'
+export const FILE_EXT = '.kcl'
 const INDEX_IDENTIFIER = '$n' // $nn.. will pad the number with 0s
 
 // Initializes the project directory and returns the path
