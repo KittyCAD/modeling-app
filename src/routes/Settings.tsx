@@ -16,7 +16,7 @@ import { paths } from '../Router'
 
 export const Settings = () => {
   const navigate = useNavigate()
-  useHotkeys('esc', () => navigate(paths.INDEX))
+  useHotkeys('esc', () => navigate('../'))
   const {
     defaultDir,
     setDefaultDir,
@@ -66,7 +66,7 @@ export const Settings = () => {
       <AppHeader showToolbar={false}>
         <ActionButton
           Element="link"
-          to={paths.INDEX}
+          to={'../'}
           icon={{
             icon: faXmark,
             bgClassName: 'bg-destroy-80',

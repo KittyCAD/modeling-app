@@ -14,6 +14,12 @@ interface ActionButtonProps extends React.PropsWithChildren {
     | React.ComponentType<React.HTMLAttributes<HTMLButtonElement>>
 }
 
+type ActionButtonPropsWithAttr = ActionButtonProps &
+  (
+    | React.ButtonHTMLAttributes<HTMLButtonElement>
+    | React.AnchorHTMLAttributes<HTMLAnchorElement>
+  )
+
 export const ActionButton = ({
   icon,
   className,
@@ -22,7 +28,7 @@ export const ActionButton = ({
   Element = 'button',
   children,
   ...props
-}: ActionButtonProps) => {
+}: ActionButtonPropsWithAttr) => {
   const classNames = `group mono text-base flex items-center gap-2 rounded-sm border border-chalkboard-40 dark:border-chalkboard-60 hover:border-liquid-40 dark:hover:bg-chalkboard-90 p-[3px] text-chalkboard-110 dark:text-chalkboard-10 hover:text-chalkboard-110 hover:dark:text-chalkboard-10 ${
     icon ? 'pr-2' : 'px-2'
   } ${className}`
