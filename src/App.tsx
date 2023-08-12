@@ -43,8 +43,13 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { TEST } from './env'
 import { getNormalisedCoordinates } from './lib/utils'
 import { getSystemTheme } from './lib/getSystemTheme'
+import { isTauri } from './lib/isTauri'
+import { useParams } from 'react-router-dom'
+import { exists, readTextFile, writeTextFile } from '@tauri-apps/api/fs'
+import { FILE_EXT, createNewFile } from './lib/tauriFS'
 
 export function App() {
+  const pathParams = useParams()
   const streamRef = useRef<HTMLDivElement>(null)
   useHotKeyListener()
   const {
@@ -151,9 +156,35 @@ export function App() {
       ? 'opacity-40'
       : ''
 
+  // Load the file from disk
+  // on mount, and overwrite any locally-stored code
+  useEffect(() => {
+    async function initializeCode() {
+      if (!pathParams.id) return
+      const fileExists = await exists(pathParams.id)
+      console.log({ fileExists, id: pathParams.id })
+      if (!fileExists) {
+        await createNewFile(pathParams.id)
+        setCode('')
+      } else {
+        const code = await readTextFile(pathParams.id)
+        setCode(code)
+      }
+    }
+    if (isTauri()) {
+      initializeCode()
+    }
+  }, [pathParams.id, setCode])
+
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
     setCode(value)
+    if (isTauri() && pathParams.id) {
+      // Save the file to disk
+      writeTextFile(pathParams.id, value).catch((err) =>
+        console.error('error saving file', err)
+      )
+    }
     if (editorView) {
       editorView?.dispatch({ effects: addLineHighlight.of([0, 0]) })
     }
@@ -412,6 +443,11 @@ export function App() {
           'transition-opacity transition-duration-75 ' +
           paneOpacity +
           (isMouseDownInStream ? ' pointer-events-none' : '')
+        }
+        filename={
+          pathParams.id
+            ?.slice(pathParams.id.lastIndexOf('/') + 1)
+            .replace(FILE_EXT, '') || ''
         }
       />
       <ModalContainer />
