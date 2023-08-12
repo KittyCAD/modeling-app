@@ -19,7 +19,7 @@ export async function initializeProjectDirectory() {
   if (projectDir && projectDir.dir.length > 0) {
     const dirExists = await exists(projectDir.dir)
     if (!dirExists) {
-      createDir(projectDir.dir, { recursive: true })
+      await createDir(projectDir.dir, { recursive: true })
     }
     return projectDir
   }
