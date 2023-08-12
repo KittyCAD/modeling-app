@@ -1,0 +1,136 @@
+import { FileEntry } from '@tauri-apps/api/fs'
+import { FormEvent, useState } from 'react'
+import { paths } from '../Router'
+import { Link } from 'react-router-dom'
+import { ActionButton } from './ActionButton'
+import { faCheck, faPenAlt, faX } from '@fortawesome/free-solid-svg-icons'
+import { FILE_EXT } from '../lib/tauriFS'
+import { Dialog } from '@headlessui/react'
+
+function FileCard({
+  file,
+  handleRenameFile,
+  handleDeleteFile,
+  ...props
+}: {
+  file: FileEntry
+  handleRenameFile: (
+    e: FormEvent<HTMLFormElement>,
+    f: FileEntry
+  ) => Promise<void>
+  handleDeleteFile: (f: FileEntry) => Promise<void>
+}) {
+  const [isEditing, setIsEditing] = useState(false)
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
+
+  function handleSave(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    handleRenameFile(e, file).then(() => setIsEditing(false))
+  }
+
+  return (
+    <li
+      {...props}
+      className="p-1 rounded-sm border border-chalkboard-20 dark:border-chalkboard-90 hover:border-chalkboard-30 dark:hover:border-chalkboard-80"
+    >
+      {isEditing ? (
+        <form onSubmit={handleSave} className="flex gap-2 items-center">
+          <input
+            className="dark:bg-chalkboard-80 dark:border-chalkboard-40 min-w-0 p-1"
+            type="text"
+            id="newFileName"
+            name="newFileName"
+            autoCorrect="off"
+            autoCapitalize="off"
+            defaultValue={file.name?.replace(FILE_EXT, '')}
+          />
+          <div className="flex gap-1 items-center">
+            <ActionButton
+              type="submit"
+              icon={{ icon: faCheck, size: 'sm' }}
+              className="!p-0"
+            ></ActionButton>
+            <ActionButton
+              icon={{ icon: faX, size: 'sm' }}
+              className="!p-0"
+              onClick={() => setIsEditing(false)}
+            />
+          </div>
+        </form>
+      ) : (
+        <>
+          <div className="group p-1 flex gap-2 items-center">
+            <Link
+              to={`${paths.FILE}/${encodeURIComponent(file.path)}`}
+              className="flex-1"
+            >
+              {file.name?.replace(FILE_EXT, '')}
+            </Link>
+            <div className="flex gap-1 items-center opacity-0 group-hover:opacity-100">
+              <ActionButton
+                icon={{ icon: faPenAlt, size: 'sm' }}
+                onClick={() => setIsEditing(true)}
+                className="!p-0"
+              />
+              <ActionButton
+                icon={{
+                  icon: faX,
+                  size: 'sm',
+                  bgClassName: 'bg-destroy-80 hover:bg-destroy-70',
+                  iconClassName:
+                    'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10 dark:text-destroy-20 dark:group-hover:text-destroy-10 dark:hover:text-destroy-10',
+                }}
+                className="!p-0 hover:border-destroy-40 dark:hover:border-destroy-40"
+                onClick={() => setIsConfirmingDelete(true)}
+              />
+            </div>
+          </div>
+          <Dialog
+            open={isConfirmingDelete}
+            onClose={() => setIsConfirmingDelete(false)}
+            className="relative z-50"
+          >
+            <div className="fixed inset-0 bg-chalkboard-110/80 grid place-content-center">
+              <Dialog.Panel className="rounded p-4 bg-chalkboard-10 dark:bg-chalkboard-100 border border-destroy-80 max-w-2xl">
+                <Dialog.Title as="h2" className="text-2xl font-bold mb-4">
+                  Delete File
+                </Dialog.Title>
+                <Dialog.Description>
+                  This will permanently delete "{file.name || 'this file'}".
+                </Dialog.Description>
+
+                <p className="my-4">
+                  Are you sure you want to delete "{file.name || 'this file'}"?
+                  This action cannot be undone.
+                </p>
+
+                <div className="flex justify-between">
+                  <ActionButton
+                    onClick={async () => {
+                      await handleDeleteFile(file)
+                      setIsConfirmingDelete(false)
+                    }}
+                    icon={{
+                      icon: faX,
+                      bgClassName: 'bg-destroy-80',
+                      iconClassName:
+                        'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10 dark:text-destroy-20 dark:group-hover:text-destroy-10 dark:hover:text-destroy-10',
+                    }}
+                    className="hover:border-destroy-40 dark:hover:border-destroy-40"
+                  >
+                    Delete
+                  </ActionButton>
+                  <ActionButton onClick={() => setIsConfirmingDelete(false)}>
+                    Cancel
+                  </ActionButton>
+                </div>
+              </Dialog.Panel>
+            </div>
+          </Dialog>
+        </>
+      )}
+    </li>
+  )
+}
+
+export default FileCard
