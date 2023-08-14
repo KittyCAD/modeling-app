@@ -1,58 +1,89 @@
-import { Link } from 'react-router-dom'
 import { ActionIcon, ActionIconProps } from './ActionIcon'
 import React from 'react'
 import { paths } from '../Router'
+import { Link } from 'react-router-dom'
+import type { LinkProps } from 'react-router-dom'
 
-interface ActionButtonProps extends React.PropsWithChildren {
+interface BaseActionButtonProps {
   icon?: ActionIconProps
   className?: string
-  onClick?: () => void
-  to?: string
-  Element?:
-    | 'button'
-    | 'link'
-    | React.ComponentType<React.HTMLAttributes<HTMLButtonElement>>
 }
 
-type ActionButtonPropsWithAttr = ActionButtonProps &
-  (
-    | React.ButtonHTMLAttributes<HTMLButtonElement>
-    | React.AnchorHTMLAttributes<HTMLAnchorElement>
-  )
+type ActionButtonAsButton = BaseActionButtonProps &
+  Omit<
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
+    keyof BaseActionButtonProps
+  > & {
+    Element?: 'button'
+  }
 
-export const ActionButton = ({
-  icon,
-  className,
-  onClick,
-  to = paths.INDEX,
-  Element = 'button',
-  children,
-  ...props
-}: ActionButtonPropsWithAttr) => {
+type ActionButtonAsLink = BaseActionButtonProps &
+  Omit<LinkProps, keyof BaseActionButtonProps> & {
+    Element: 'link'
+  }
+
+type ActionButtonAsExternal = BaseActionButtonProps &
+  Omit<
+    React.AnchorHTMLAttributes<HTMLAnchorElement>,
+    keyof BaseActionButtonProps
+  > & {
+    Element: 'externalLink'
+  }
+
+type ActionButtonAsElement = BaseActionButtonProps &
+  Omit<React.HTMLAttributes<HTMLElement>, keyof BaseActionButtonProps> & {
+    Element: React.ComponentType<React.HTMLAttributes<HTMLButtonElement>>
+  }
+
+type ActionButtonProps =
+  | ActionButtonAsButton
+  | ActionButtonAsLink
+  | ActionButtonAsExternal
+  | ActionButtonAsElement
+
+export const ActionButton = (props: ActionButtonProps) => {
   const classNames = `group mono text-base flex items-center gap-2 rounded-sm border border-chalkboard-40 dark:border-chalkboard-60 hover:border-liquid-40 dark:hover:bg-chalkboard-90 p-[3px] text-chalkboard-110 dark:text-chalkboard-10 hover:text-chalkboard-110 hover:dark:text-chalkboard-10 ${
-    icon ? 'pr-2' : 'px-2'
-  } ${className}`
+    props.icon ? 'pr-2' : 'px-2'
+  } ${props.className}`
 
-  if (Element === 'button') {
-    return (
-      <button onClick={onClick} className={classNames} {...props}>
-        {icon && <ActionIcon {...icon} />}
-        {children}
-      </button>
-    )
-  } else if (Element === 'link') {
-    return (
-      <Link to={to} className={classNames} {...props}>
-        {icon && <ActionIcon {...icon} />}
-        {children}
-      </Link>
-    )
-  } else {
-    return (
-      <Element onClick={onClick} className={classNames} {...props}>
-        {icon && <ActionIcon {...icon} />}
-        {children}
-      </Element>
-    )
+  switch (props.Element) {
+    case 'button': {
+      const { icon, children, ...rest } = props
+      return (
+        <button className={classNames} {...rest}>
+          {props.icon && <ActionIcon {...icon} />}
+          {children}
+        </button>
+      )
+    }
+    case 'link': {
+      const { Element, to, icon, children, ...rest } = props
+      return (
+        <Link to={to || paths.INDEX} className={classNames} {...rest}>
+          {icon && <ActionIcon {...icon} />}
+          {children}
+        </Link>
+      )
+    }
+    case 'externalLink': {
+      const { Element, icon, children, ...rest } = props
+      return (
+        <a className={classNames} {...rest}>
+          {icon && <ActionIcon {...icon} />}
+          {children}
+        </a>
+      )
+    }
+    default: {
+      const { Element, icon, children, ...rest } = props
+      if (!Element) throw new Error('Element is required')
+
+      return (
+        <Element className={classNames} {...rest}>
+          {props.icon && <ActionIcon {...props.icon} />}
+          {children}
+        </Element>
+      )
+    }
   }
 }
