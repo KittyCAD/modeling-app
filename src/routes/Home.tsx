@@ -14,6 +14,7 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { useStore } from '../useStore'
 import { toast } from 'react-hot-toast'
 import FileCard from '../components/FileCard'
+import { AppHeader } from '../components/AppHeader'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
@@ -91,31 +92,36 @@ const Home = () => {
   }
 
   return (
-    <div className="my-24 max-w-5xl mx-auto">
-      <h1 className="text-3xl text-bold">Home</h1>
-      {isLoading ? (
-        <Loading>Loading your files...</Loading>
-      ) : (
-        <>
-          {files.length > 0 ? (
-            <ul className="my-4 grid grid-cols-4 gap-4">
-              {files.map((file) => (
-                <FileCard
-                  key={file.name}
-                  file={file}
-                  handleRenameFile={handleRenameFile}
-                  handleDeleteFile={handleDeleteFile}
-                />
-              ))}
-            </ul>
-          ) : (
-            <p>No files found, ready to make your first one?</p>
-          )}
-          <ActionButton onClick={handleNewFile} icon={{ icon: faPlus }}>
-            New file
-          </ActionButton>
-        </>
-      )}
+    <div className="h-screen overflow-hidden relative flex flex-col">
+      <AppHeader showToolbar={false} />
+      <div className="my-24 max-w-5xl w-full mx-auto">
+        <h1 className="text-3xl text-bold">Home</h1>
+        {isLoading ? (
+          <Loading>Loading your files...</Loading>
+        ) : (
+          <>
+            {files.length > 0 ? (
+              <ul className="my-8 w-full grid grid-cols-4 gap-4">
+                {files.map((file) => (
+                  <FileCard
+                    key={file.name}
+                    file={file}
+                    handleRenameFile={handleRenameFile}
+                    handleDeleteFile={handleDeleteFile}
+                  />
+                ))}
+              </ul>
+            ) : (
+              <p className="rounded my-8 border border-dashed border-chalkboard-30 dark:border-chalkboard-70 p-4">
+                No files found, ready to make your first one?
+              </p>
+            )}
+            <ActionButton onClick={handleNewFile} icon={{ icon: faPlus }}>
+              New file
+            </ActionButton>
+          </>
+        )}
+      </div>
     </div>
   )
 }
