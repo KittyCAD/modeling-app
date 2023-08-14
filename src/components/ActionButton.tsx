@@ -3,7 +3,10 @@ import React from 'react'
 import { paths } from '../Router'
 import { Link } from 'react-router-dom'
 import type { LinkProps } from 'react-router-dom'
+import { Link } from 'react-router-dom'
+import type { LinkProps } from 'react-router-dom'
 
+interface BaseActionButtonProps {
 interface BaseActionButtonProps {
   icon?: ActionIconProps
   className?: string
@@ -14,7 +17,7 @@ type ActionButtonAsButton = BaseActionButtonProps &
     React.ButtonHTMLAttributes<HTMLButtonElement>,
     keyof BaseActionButtonProps
   > & {
-    Element?: 'button'
+    Element: 'button'
   }
 
 type ActionButtonAsLink = BaseActionButtonProps &

@@ -116,7 +116,11 @@ const Home = () => {
                 No files found, ready to make your first one?
               </p>
             )}
-            <ActionButton onClick={handleNewFile} icon={{ icon: faPlus }}>
+            <ActionButton
+              Element="button"
+              onClick={handleNewFile}
+              icon={{ icon: faPlus }}
+            >
               New file
             </ActionButton>
           </>

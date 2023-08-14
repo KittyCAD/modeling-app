@@ -51,11 +51,13 @@ function FileCard({
           />
           <div className="flex gap-1 items-center">
             <ActionButton
+              Element="button"
               type="submit"
               icon={{ icon: faCheck, size: 'sm' }}
               className="!p-0"
             ></ActionButton>
             <ActionButton
+              Element="button"
               icon={{ icon: faX, size: 'sm' }}
               className="!p-0"
               onClick={() => setIsEditing(false)}
@@ -73,11 +75,13 @@ function FileCard({
             </Link>
             <div className="absolute bottom-2 right-2 flex gap-1 items-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
               <ActionButton
+                Element="button"
                 icon={{ icon: faPenAlt, size: 'sm' }}
                 onClick={() => setIsEditing(true)}
                 className="!p-0"
               />
               <ActionButton
+                Element="button"
                 icon={{
                   icon: faTrashAlt,
                   size: 'sm',
@@ -111,6 +115,7 @@ function FileCard({
 
                 <div className="flex justify-between">
                   <ActionButton
+                    Element="button"
                     onClick={async () => {
                       await handleDeleteFile(file)
                       setIsConfirmingDelete(false)
@@ -125,7 +130,10 @@ function FileCard({
                   >
                     Delete
                   </ActionButton>
-                  <ActionButton onClick={() => setIsConfirmingDelete(false)}>
+                  <ActionButton
+                    Element="button"
+                    onClick={() => setIsConfirmingDelete(false)}
+                  >
                     Cancel
                   </ActionButton>
                 </div>

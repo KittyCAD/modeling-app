@@ -22,6 +22,7 @@ export default function Introduction() {
         </p>
         <div className="flex justify-between mt-6">
           <ActionButton
+            Element="button"
             onClick={dismiss}
             icon={{
               icon: faXmark,
@@ -33,7 +34,11 @@ export default function Introduction() {
           >
             Dismiss
           </ActionButton>
-          <ActionButton onClick={next} icon={{ icon: faArrowRight }}>
+          <ActionButton
+            Element="button"
+            onClick={next}
+            icon={{ icon: faArrowRight }}
+          >
             Get Started
           </ActionButton>
         </div>

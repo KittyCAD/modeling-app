@@ -14,6 +14,7 @@ export default function Sketching() {
         </p>
         <div className="flex justify-between mt-6">
           <ActionButton
+            Element="button"
             onClick={dismiss}
             icon={{
               icon: faXmark,
@@ -25,7 +26,11 @@ export default function Sketching() {
           >
             Dismiss
           </ActionButton>
-          <ActionButton onClick={dismiss} icon={{ icon: faArrowRight }}>
+          <ActionButton
+            Element="button"
+            onClick={dismiss}
+            icon={{ icon: faArrowRight }}
+          >
             Finish
           </ActionButton>
         </div>

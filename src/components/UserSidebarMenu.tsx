@@ -96,6 +96,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
             )}
             <div className="p-4 flex flex-col gap-2">
               <ActionButton
+                Element="button"
                 icon={{ icon: faGear }}
                 className="border-transparent dark:border-transparent dark:hover:border-liquid-60"
                 onClick={() => {

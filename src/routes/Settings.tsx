@@ -216,6 +216,7 @@ export const Settings = () => {
           description="Replay the onboarding process"
         >
           <ActionButton
+            Element="button"
             onClick={() => {
               setOnboardingStatus('')
               navigate('..' + paths.ONBOARDING.INDEX)
