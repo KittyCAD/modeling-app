@@ -43,9 +43,9 @@ export async function initializeProjectDirectory() {
 
 // Creates a new file in the default directory with the default project name
 // Returns the path to the new file
-export async function createNewFile(path: string): Promise<FileEntry> {
+export async function createNewProject(path: string): Promise<FileEntry> {
   if (!isTauri) {
-    throw new Error('createNewFile() can only be called from a Tauri app')
+    throw new Error('createNewProject() can only be called from a Tauri app')
   }
 
   await writeTextFile(path + FILE_EXT, '').catch((err) =>

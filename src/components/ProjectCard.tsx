@@ -12,25 +12,25 @@ import {
 import { FILE_EXT } from '../lib/tauriFS'
 import { Dialog } from '@headlessui/react'
 
-function FileCard({
-  file,
-  handleRenameFile,
-  handleDeleteFile,
+function ProjectCard({
+  project,
+  handleRenameProject,
+  handleDeleteProject,
   ...props
 }: {
-  file: FileEntry
-  handleRenameFile: (
+  project: FileEntry
+  handleRenameProject: (
     e: FormEvent<HTMLFormElement>,
     f: FileEntry
   ) => Promise<void>
-  handleDeleteFile: (f: FileEntry) => Promise<void>
+  handleDeleteProject: (f: FileEntry) => Promise<void>
 }) {
   const [isEditing, setIsEditing] = useState(false)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
 
   function handleSave(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    handleRenameFile(e, file).then(() => setIsEditing(false))
+    handleRenameProject(e, project).then(() => setIsEditing(false))
   }
 
   return (
@@ -43,11 +43,11 @@ function FileCard({
           <input
             className="dark:bg-chalkboard-80 dark:border-chalkboard-40 min-w-0 p-1"
             type="text"
-            id="newFileName"
-            name="newFileName"
+            id="newProjectName"
+            name="newProjectName"
             autoCorrect="off"
             autoCapitalize="off"
-            defaultValue={file.name?.replace(FILE_EXT, '')}
+            defaultValue={project.name?.replace(FILE_EXT, '')}
           />
           <div className="flex gap-1 items-center">
             <ActionButton
@@ -68,10 +68,10 @@ function FileCard({
         <>
           <div className="p-1 flex gap-2 items-center">
             <Link
-              to={`${paths.FILE}/${encodeURIComponent(file.path)}`}
+              to={`${paths.FILE}/${encodeURIComponent(project.path)}`}
               className="flex-1"
             >
-              {file.name?.replace(FILE_EXT, '')}
+              {project.name?.replace(FILE_EXT, '')}
             </Link>
             <div className="absolute bottom-2 right-2 flex gap-1 items-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
               <ActionButton
@@ -105,19 +105,19 @@ function FileCard({
                   Delete File
                 </Dialog.Title>
                 <Dialog.Description>
-                  This will permanently delete "{file.name || 'this file'}".
+                  This will permanently delete "{project.name || 'this file'}".
                 </Dialog.Description>
 
                 <p className="my-4">
-                  Are you sure you want to delete "{file.name || 'this file'}"?
-                  This action cannot be undone.
+                  Are you sure you want to delete "{project.name || 'this file'}
+                  "? This action cannot be undone.
                 </p>
 
                 <div className="flex justify-between">
                   <ActionButton
                     Element="button"
                     onClick={async () => {
-                      await handleDeleteFile(file)
+                      await handleDeleteProject(project)
                       setIsConfirmingDelete(false)
                     }}
                     icon={{
@@ -146,4 +146,4 @@ function FileCard({
   )
 }
 
-export default FileCard
+export default ProjectCard

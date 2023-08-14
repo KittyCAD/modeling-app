@@ -3,7 +3,7 @@ import Loading from '../components/Loading'
 import { FileEntry, readDir, removeFile, renameFile } from '@tauri-apps/api/fs'
 import {
   FILE_EXT,
-  createNewFile,
+  createNewProject,
   getNextProjectIndex,
   initializeProjectDirectory,
   interpolateProjectNameWithIndex,
@@ -13,14 +13,14 @@ import { ActionButton } from '../components/ActionButton'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { useStore } from '../useStore'
 import { toast } from 'react-hot-toast'
-import FileCard from '../components/FileCard'
 import { AppHeader } from '../components/AppHeader'
+import ProjectCard from '../components/ProjectCard'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
 const Home = () => {
   const [isLoading, setIsLoading] = useState(true)
-  const [files, setFiles] = useState<FileEntry[]>([])
+  const [projects, setProjects] = useState<FileEntry[]>([])
   const { defaultDir, defaultProjectName } = useStore((s) => ({
     defaultDir: s.defaultDir,
     defaultProjectName: s.defaultProjectName,
@@ -28,65 +28,67 @@ const Home = () => {
 
   useEffect(() => {
     initializeProjectDirectory().then(async (projectDir) => {
-      const readFiles = await readDir(projectDir.dir)
-      setFiles(readFiles)
+      const readProjects = await readDir(projectDir.dir)
+      setProjects(readProjects)
       setIsLoading(false)
     })
-  }, [setFiles, setIsLoading])
+  }, [setProjects, setIsLoading])
 
-  async function handleNewFile() {
+  async function handleNewProject() {
     let filename = defaultProjectName
     if (projectNameNeedsInterpolated(filename)) {
-      const nextIndex = await getNextProjectIndex(defaultProjectName, files)
+      const nextIndex = await getNextProjectIndex(defaultProjectName, projects)
       filename = interpolateProjectNameWithIndex(defaultProjectName, nextIndex)
     }
 
-    const newFile = await createNewFile(defaultDir.dir + '/' + filename)
-    setFiles([...files, newFile])
+    const newFile = await createNewProject(defaultDir.dir + '/' + filename)
+    setProjects([...projects, newFile])
   }
 
-  async function handleRenameFile(
+  async function handleRenameProject(
     e: FormEvent<HTMLFormElement>,
-    file: FileEntry
+    project: FileEntry
   ) {
-    const { newFileName } = Object.fromEntries(
+    const { newProjectName } = Object.fromEntries(
       new FormData(e.target as HTMLFormElement)
     )
     if (
-      newFileName &&
-      file.name &&
-      newFileName !== file.name.replace(FILE_EXT, '')
+      newProjectName &&
+      project.name &&
+      newProjectName !== project.name.replace(FILE_EXT, '')
     ) {
-      const dir = file.path?.replace(file.name, '') || ''
-      await renameFile(file.path, dir + newFileName + FILE_EXT).catch((err) => {
-        console.error('Error renaming file:', err)
-        toast.error('Error renaming file')
-      })
+      const dir = project.path?.replace(project.name, '') || ''
+      await renameFile(project.path, dir + newProjectName + FILE_EXT).catch(
+        (err) => {
+          console.error('Error renaming file:', err)
+          toast.error('Error renaming file')
+        }
+      )
 
-      setFiles(
+      setProjects(
         Object.assign([
-          ...files.map((f) =>
-            f.name === file.name
-              ? Object.assign(file, {
-                  name: newFileName + FILE_EXT,
-                  path: dir + newFileName + FILE_EXT,
+          ...projects.map((p) =>
+            p.name === project.name
+              ? Object.assign(project, {
+                  name: newProjectName + FILE_EXT,
+                  path: dir + newProjectName + FILE_EXT,
                 })
-              : f
+              : p
           ),
         ])
       )
-      toast.success('File renamed')
+      toast.success('Project renamed')
     }
   }
 
-  async function handleDeleteFile(file: FileEntry) {
+  async function handleDeleteProject(file: FileEntry) {
     if (file.path) {
       await removeFile(file.path).catch((err) => {
         console.error('Error renaming file:', err)
         toast.error('Error renaming file')
       })
 
-      setFiles([...files.filter((f) => f.name !== file.name)])
+      setProjects([...projects.filter((p) => p.name !== file.name)])
       toast.success('File deleted')
     }
   }
@@ -97,28 +99,28 @@ const Home = () => {
       <div className="my-24 max-w-5xl w-full mx-auto">
         <h1 className="text-3xl text-bold">Home</h1>
         {isLoading ? (
-          <Loading>Loading your files...</Loading>
+          <Loading>Loading your Projects...</Loading>
         ) : (
           <>
-            {files.length > 0 ? (
+            {projects.length > 0 ? (
               <ul className="my-8 w-full grid grid-cols-4 gap-4">
-                {files.map((file) => (
-                  <FileCard
-                    key={file.name}
-                    file={file}
-                    handleRenameFile={handleRenameFile}
-                    handleDeleteFile={handleDeleteFile}
+                {projects.map((project) => (
+                  <ProjectCard
+                    key={project.name}
+                    project={project}
+                    handleRenameProject={handleRenameProject}
+                    handleDeleteProject={handleDeleteProject}
                   />
                 ))}
               </ul>
             ) : (
               <p className="rounded my-8 border border-dashed border-chalkboard-30 dark:border-chalkboard-70 p-4">
-                No files found, ready to make your first one?
+                No Projects found, ready to make your first one?
               </p>
             )}
             <ActionButton
               Element="button"
-              onClick={handleNewFile}
+              onClick={handleNewProject}
               icon={{ icon: faPlus }}
             >
               New file
