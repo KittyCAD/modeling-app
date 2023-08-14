@@ -51,7 +51,7 @@ export const ActionButton = (props: ActionButtonProps) => {
 
   switch (props.Element) {
     case 'button': {
-      const { icon, children, ...rest } = props
+      const { Element, icon, children, ...rest } = props
       return (
         <button className={classNames} {...rest}>
           {props.icon && <ActionIcon {...icon} />}

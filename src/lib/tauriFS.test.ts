@@ -1,4 +1,8 @@
-import { getNextProjectIndex, interpolateProjectNameWithIndex } from './tauriFS'
+import {
+  MAX_PADDING,
+  getNextProjectIndex,
+  interpolateProjectNameWithIndex,
+} from './tauriFS'
 
 describe('Test file utility functions', () => {
   it('interpolates a project name without an index', () => {
@@ -11,6 +15,12 @@ describe('Test file utility functions', () => {
 
   it('interpolates a project name with an index and padding', () => {
     expect(interpolateProjectNameWithIndex('test-$nnn', 12)).toBe('test-012')
+  })
+
+  it('interpolates a project name with an index and max padding', () => {
+    expect(interpolateProjectNameWithIndex('test-$nnnnnnnnnnn', 3)).toBe(
+      `test-${'0'.repeat(MAX_PADDING)}3`
+    )
   })
 
   const testFiles = [

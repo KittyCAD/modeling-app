@@ -48,6 +48,7 @@ import { useLoaderData, useParams } from 'react-router-dom'
 import { writeTextFile } from '@tauri-apps/api/fs'
 import { FILE_EXT } from './lib/tauriFS'
 import { IndexLoaderData } from './Router'
+import { toast } from 'react-hot-toast'
 
 export function App() {
   const { code: loadedCode } = useLoaderData() as IndexLoaderData
@@ -164,6 +165,12 @@ export function App() {
     if (isTauri() && loadedCode !== null) {
       setCode(loadedCode)
     }
+    return () => {
+      // Clear code on unmount if in desktop app
+      if (isTauri()) {
+        setCode('')
+      }
+    }
   }, [loadedCode, setCode])
 
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
@@ -171,9 +178,10 @@ export function App() {
     setCode(value)
     if (isTauri() && pathParams.id) {
       // Save the file to disk
-      writeTextFile(pathParams.id, value).catch((err) =>
+      writeTextFile(pathParams.id, value).catch((err) => {
         console.error('error saving file', err)
-      )
+        toast.error('Error saving file, please check file permissions')
+      })
     }
     if (editorView) {
       editorView?.dispatch({ effects: addLineHighlight.of([0, 0]) })

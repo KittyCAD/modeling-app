@@ -85,7 +85,6 @@ const router = createBrowserRouter([
       if (params.id && params.id !== 'new') {
         const code = await readTextFile(params.id)
 
-        console.log('code', code)
         return {
           code,
         }

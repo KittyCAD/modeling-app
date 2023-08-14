@@ -6,6 +6,7 @@ import { isTauri } from './isTauri'
 const PROJECT_FOLDER = 'projects'
 export const FILE_EXT = '.kcl'
 const INDEX_IDENTIFIER = '$n' // $nn.. will pad the number with 0s
+export const MAX_PADDING = 7
 
 // Initializes the project directory and returns the path
 export async function initializeProjectDirectory() {
@@ -88,7 +89,10 @@ export function interpolateProjectNameWithIndex(
   const regex = getPaddedIdentifierRegExp()
 
   const matches = projectName.match(regex)
-  const padStartLength = matches !== null ? matches[1]?.length || 0 : 0
+  const padStartLength = Math.min(
+    matches !== null ? matches[1]?.length || 0 : 0,
+    MAX_PADDING
+  )
   return projectName.replace(
     regex,
     index.toString().padStart(padStartLength + 1, '0')
