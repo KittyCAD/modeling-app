@@ -15,6 +15,7 @@ import SignIn from './routes/SignIn'
 import { Auth } from './Auth'
 import { isTauri } from './lib/isTauri'
 import Home from './routes/Home'
+import { readTextFile } from '@tauri-apps/api/fs'
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {
@@ -40,6 +41,10 @@ export const paths = {
   ) as typeof onboardingPaths,
 }
 
+export type IndexLoaderData = {
+  code: string | null
+}
+
 const router = createBrowserRouter([
   {
     path: paths.INDEX,
@@ -55,7 +60,7 @@ const router = createBrowserRouter([
       </Auth>
     ),
     errorElement: <ErrorPage />,
-    loader: ({ request }) => {
+    loader: async ({ request, params }): Promise<IndexLoaderData | Response> => {
       const store = localStorage.getItem('store')
       if (store === null) {
         return redirect(paths.ONBOARDING.INDEX)
@@ -75,7 +80,19 @@ const router = createBrowserRouter([
           return redirect(makePathRelative(paths.ONBOARDING.INDEX) + status)
         }
       }
-      return null
+
+      if (params.id && params.id !== 'new') {
+        const code = await readTextFile(params.id)
+
+        console.log('code', code)
+        return {
+          code,
+        }
+      }
+
+      return {
+        code: '',
+      }
     },
     children: [
       {
@@ -91,8 +108,19 @@ const router = createBrowserRouter([
   },
   {
     path: paths.HOME,
-    element: <Home />,
+    element: (
+      <>
+        <Outlet />
+        <Home />
+      </>
+    ),
     loader: () => !isTauri() && redirect(paths.FILE + '/new'),
+    children: [
+      {
+        path: makePathRelative(paths.SETTINGS),
+        element: <Settings />,
+      },
+    ],
   },
   {
     path: paths.SIGN_IN,

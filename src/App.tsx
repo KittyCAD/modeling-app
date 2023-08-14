@@ -44,11 +44,13 @@ import { TEST } from './env'
 import { getNormalisedCoordinates } from './lib/utils'
 import { getSystemTheme } from './lib/getSystemTheme'
 import { isTauri } from './lib/isTauri'
-import { useParams } from 'react-router-dom'
-import { exists, readTextFile, writeTextFile } from '@tauri-apps/api/fs'
-import { FILE_EXT, createNewFile } from './lib/tauriFS'
+import { useLoaderData, useParams } from 'react-router-dom'
+import { writeTextFile } from '@tauri-apps/api/fs'
+import { FILE_EXT } from './lib/tauriFS'
+import { IndexLoaderData } from './Router'
 
 export function App() {
+  const { code: loadedCode } = useLoaderData() as IndexLoaderData
   const pathParams = useParams()
   const streamRef = useRef<HTMLDivElement>(null)
   useHotKeyListener()
@@ -156,25 +158,13 @@ export function App() {
       ? 'opacity-40'
       : ''
 
-  // Load the file from disk
+  // Use file code loaded from disk
   // on mount, and overwrite any locally-stored code
   useEffect(() => {
-    async function initializeCode() {
-      if (!pathParams.id) return
-      const fileExists = await exists(pathParams.id)
-      console.log({ fileExists, id: pathParams.id })
-      if (!fileExists) {
-        await createNewFile(pathParams.id)
-        setCode('')
-      } else {
-        const code = await readTextFile(pathParams.id)
-        setCode(code)
-      }
+    if (isTauri() && loadedCode !== null) {
+      setCode(loadedCode)
     }
-    if (isTauri()) {
-      initializeCode()
-    }
-  }, [pathParams.id, setCode])
+  }, [loadedCode, setCode])
 
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
