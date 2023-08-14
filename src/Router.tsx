@@ -16,6 +16,7 @@ import { Auth } from './Auth'
 import { isTauri } from './lib/isTauri'
 import Home from './routes/Home'
 import { readTextFile } from '@tauri-apps/api/fs'
+import makePathRelative from './lib/makePathRelative'
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {
@@ -26,9 +27,6 @@ const prependRoutes =
       ])
     )
   }
-export function makePathRelative(path: string) {
-  return path.replace(/^\//, '')
-}
 
 export const paths = {
   INDEX: '/',
@@ -60,7 +58,10 @@ const router = createBrowserRouter([
       </Auth>
     ),
     errorElement: <ErrorPage />,
-    loader: async ({ request, params }): Promise<IndexLoaderData | Response> => {
+    loader: async ({
+      request,
+      params,
+    }): Promise<IndexLoaderData | Response> => {
       const store = localStorage.getItem('store')
       if (store === null) {
         return redirect(paths.ONBOARDING.INDEX)

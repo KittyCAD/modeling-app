@@ -7,7 +7,8 @@ import Units from './Units'
 import Camera from './Camera'
 import Sketching from './Sketching'
 import { useCallback } from 'react'
-import { makePathRelative, paths } from '../../Router'
+import { paths } from '../../Router'
+import makePathRelative from '../../lib/makePathRelative'
 
 export const onboardingPaths = {
   INDEX: '/',

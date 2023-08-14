@@ -4,7 +4,8 @@ import { ActionButton } from './ActionButton'
 import { faBars, faGear, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
-import { makePathRelative, paths } from '../Router'
+import { paths } from '../Router'
+import makePathRelative from '../lib/makePathRelative'
 
 const UserSidebarMenu = ({ user }: { user?: User }) => {
   const displayedName = getDisplayName(user)
