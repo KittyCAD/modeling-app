@@ -37,11 +37,9 @@ export const AppHeader = ({
           alt="KittyCAD App"
           className="h-9 w-auto"
         />
-        {filename && (
-          <span className="text-energy-80 dark:text-energy-40 min-w-max">
-            {filename}
-          </span>
-        )}
+        <span className="text-sm text-chalkboard-110 dark:text-chalkboard-20 min-w-max">
+          {isTauri() && filename ? filename : 'KittyCAD Modeling App'}
+        </span>
       </Link>
       {/* Toolbar if the context deems it */}
       {showToolbar && (

@@ -3,7 +3,12 @@ import { FormEvent, useState } from 'react'
 import { paths } from '../Router'
 import { Link } from 'react-router-dom'
 import { ActionButton } from './ActionButton'
-import { faCheck, faPenAlt, faX } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCheck,
+  faPenAlt,
+  faTrashAlt,
+  faX,
+} from '@fortawesome/free-solid-svg-icons'
 import { FILE_EXT } from '../lib/tauriFS'
 import { Dialog } from '@headlessui/react'
 
@@ -31,7 +36,7 @@ function FileCard({
   return (
     <li
       {...props}
-      className="p-1 rounded-sm border border-chalkboard-20 dark:border-chalkboard-90 hover:border-chalkboard-30 dark:hover:border-chalkboard-80"
+      className="group relative min-h-[5em] p-1 rounded-sm border border-chalkboard-20 dark:border-chalkboard-90 hover:border-chalkboard-30 dark:hover:border-chalkboard-80"
     >
       {isEditing ? (
         <form onSubmit={handleSave} className="flex gap-2 items-center">
@@ -59,14 +64,14 @@ function FileCard({
         </form>
       ) : (
         <>
-          <div className="group p-1 flex gap-2 items-center">
+          <div className="p-1 flex gap-2 items-center">
             <Link
               to={`${paths.FILE}/${encodeURIComponent(file.path)}`}
               className="flex-1"
             >
               {file.name?.replace(FILE_EXT, '')}
             </Link>
-            <div className="flex gap-1 items-center opacity-0 group-hover:opacity-100">
+            <div className="absolute bottom-2 right-2 flex gap-1 items-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
               <ActionButton
                 icon={{ icon: faPenAlt, size: 'sm' }}
                 onClick={() => setIsEditing(true)}
@@ -74,7 +79,7 @@ function FileCard({
               />
               <ActionButton
                 icon={{
-                  icon: faX,
+                  icon: faTrashAlt,
                   size: 'sm',
                   bgClassName: 'bg-destroy-80 hover:bg-destroy-70',
                   iconClassName:
@@ -111,7 +116,7 @@ function FileCard({
                       setIsConfirmingDelete(false)
                     }}
                     icon={{
-                      icon: faX,
+                      icon: faTrashAlt,
                       bgClassName: 'bg-destroy-80',
                       iconClassName:
                         'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10 dark:text-destroy-20 dark:group-hover:text-destroy-10 dark:hover:text-destroy-10',
