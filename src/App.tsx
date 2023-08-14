@@ -46,7 +46,7 @@ import { getSystemTheme } from './lib/getSystemTheme'
 import { isTauri } from './lib/isTauri'
 import { useLoaderData, useParams } from 'react-router-dom'
 import { writeTextFile } from '@tauri-apps/api/fs'
-import { FILE_EXT } from './lib/tauriFS'
+import { FILE_EXT, PROJECT_ENTRYPOINT } from './lib/tauriFS'
 import { IndexLoaderData } from './Router'
 import { toast } from 'react-hot-toast'
 
@@ -178,10 +178,13 @@ export function App() {
     setCode(value)
     if (isTauri() && pathParams.id) {
       // Save the file to disk
-      writeTextFile(pathParams.id, value).catch((err) => {
-        console.error('error saving file', err)
-        toast.error('Error saving file, please check file permissions')
-      })
+      // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
+      writeTextFile(pathParams.id + '/' + PROJECT_ENTRYPOINT, value).catch(
+        (err) => {
+          console.error('error saving file', err)
+          toast.error('Error saving file, please check file permissions')
+        }
+      )
     }
     if (editorView) {
       editorView?.dispatch({ effects: addLineHighlight.of([0, 0]) })

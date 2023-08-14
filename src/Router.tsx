@@ -17,6 +17,7 @@ import { isTauri } from './lib/isTauri'
 import Home from './routes/Home'
 import { readTextFile } from '@tauri-apps/api/fs'
 import makePathRelative from './lib/makePathRelative'
+import { PROJECT_ENTRYPOINT } from './lib/tauriFS'
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {
@@ -83,7 +84,8 @@ const router = createBrowserRouter([
       }
 
       if (params.id && params.id !== 'new') {
-        const code = await readTextFile(params.id)
+        // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
+        const code = await readTextFile(params.id + '/' + PROJECT_ENTRYPOINT)
 
         return {
           code,

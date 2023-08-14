@@ -5,6 +5,7 @@ import { isTauri } from './isTauri'
 
 const PROJECT_FOLDER = 'projects'
 export const FILE_EXT = '.kcl'
+export const PROJECT_ENTRYPOINT = 'main' + FILE_EXT
 const INDEX_IDENTIFIER = '$n' // $nn.. will pad the number with 0s
 export const MAX_PADDING = 7
 
@@ -48,14 +49,29 @@ export async function createNewProject(path: string): Promise<FileEntry> {
     throw new Error('createNewProject() can only be called from a Tauri app')
   }
 
-  await writeTextFile(path + FILE_EXT, '').catch((err) =>
+  const dirExists = await exists(path)
+  if (!dirExists) {
+    await createDir(path, { recursive: true }).catch((err) => {
+      console.error('Error creating new directory:', err)
+      throw err
+    })
+  }
+
+  await writeTextFile(path + '/' + PROJECT_ENTRYPOINT, '').catch((err) => {
     console.error('Error creating new file:', err)
-  )
+    throw err
+  })
 
   return {
-    name: path.slice(path.lastIndexOf('/') + 1) + FILE_EXT,
-    path: path + FILE_EXT,
-    children: [],
+    name: path.slice(path.lastIndexOf('/') + 1),
+    path: path,
+    children: [
+      {
+        name: PROJECT_ENTRYPOINT,
+        path: path + '/' + PROJECT_ENTRYPOINT,
+        children: [],
+      },
+    ],
   }
 }
 

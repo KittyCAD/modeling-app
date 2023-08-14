@@ -1,8 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react'
 import Loading from '../components/Loading'
-import { FileEntry, readDir, removeFile, renameFile } from '@tauri-apps/api/fs'
+import { FileEntry, readDir, removeDir, renameFile } from '@tauri-apps/api/fs'
 import {
-  FILE_EXT,
   createNewProject,
   getNextProjectIndex,
   initializeProjectDirectory,
@@ -35,14 +34,19 @@ const Home = () => {
   }, [setProjects, setIsLoading])
 
   async function handleNewProject() {
-    let filename = defaultProjectName
-    if (projectNameNeedsInterpolated(filename)) {
+    let projectName = defaultProjectName
+    if (projectNameNeedsInterpolated(projectName)) {
       const nextIndex = await getNextProjectIndex(defaultProjectName, projects)
-      filename = interpolateProjectNameWithIndex(defaultProjectName, nextIndex)
+      projectName = interpolateProjectNameWithIndex(
+        defaultProjectName,
+        nextIndex
+      )
     }
 
-    const newFile = await createNewProject(defaultDir.dir + '/' + filename)
-    setProjects([...projects, newFile])
+    const newProject = await createNewProject(
+      defaultDir.dir + '/' + projectName
+    )
+    setProjects([...projects, newProject])
   }
 
   async function handleRenameProject(
@@ -52,44 +56,41 @@ const Home = () => {
     const { newProjectName } = Object.fromEntries(
       new FormData(e.target as HTMLFormElement)
     )
-    if (
-      newProjectName &&
-      project.name &&
-      newProjectName !== project.name.replace(FILE_EXT, '')
-    ) {
-      const dir = project.path?.replace(project.name, '') || ''
-      await renameFile(project.path, dir + newProjectName + FILE_EXT).catch(
-        (err) => {
-          console.error('Error renaming file:', err)
-          toast.error('Error renaming file')
-        }
-      )
-
-      setProjects(
-        Object.assign([
-          ...projects.map((p) =>
-            p.name === project.name
-              ? Object.assign(project, {
-                  name: newProjectName + FILE_EXT,
-                  path: dir + newProjectName + FILE_EXT,
-                })
-              : p
-          ),
-        ])
-      )
-      toast.success('Project renamed')
+    if (newProjectName && project.name && newProjectName !== project.name) {
+      const dir = project.path?.slice(0, project.path?.lastIndexOf('/'))
+      renameFile(project.path, dir + '/' + newProjectName)
+        .catch((err) => {
+          console.error('Error renaming project:', err)
+          toast.error('Error renaming project')
+        })
+        .then(() => {
+          setProjects(
+            Object.assign([
+              ...projects.map((p) =>
+                p.name === project.name
+                  ? Object.assign(project, {
+                      name: newProjectName,
+                      path: dir + '/' + newProjectName,
+                      children: [...(project.children || [])],
+                    })
+                  : p
+              ),
+            ])
+          )
+          toast.success('Project renamed')
+        })
     }
   }
 
-  async function handleDeleteProject(file: FileEntry) {
-    if (file.path) {
-      await removeFile(file.path).catch((err) => {
-        console.error('Error renaming file:', err)
-        toast.error('Error renaming file')
+  async function handleDeleteProject(project: FileEntry) {
+    if (project.path) {
+      await removeDir(project.path, { recursive: true }).catch((err) => {
+        console.error('Error deleting project:', err)
+        toast.error('Error deleting project')
       })
 
-      setProjects([...projects.filter((p) => p.name !== file.name)])
-      toast.success('File deleted')
+      setProjects([...projects.filter((p) => p.name !== project.name)])
+      toast.success('Project deleted')
     }
   }
 

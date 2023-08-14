@@ -11,6 +11,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { FILE_EXT } from '../lib/tauriFS'
 import { Dialog } from '@headlessui/react'
+import { useHotkeys } from 'react-hotkeys-hook'
 
 function ProjectCard({
   project,
@@ -25,6 +26,7 @@ function ProjectCard({
   ) => Promise<void>
   handleDeleteProject: (f: FileEntry) => Promise<void>
 }) {
+  useHotkeys('esc', () => setIsEditing(false))
   const [isEditing, setIsEditing] = useState(false)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
 
@@ -47,7 +49,8 @@ function ProjectCard({
             name="newProjectName"
             autoCorrect="off"
             autoCapitalize="off"
-            defaultValue={project.name?.replace(FILE_EXT, '')}
+            defaultValue={project.name}
+            autoFocus={true}
           />
           <div className="flex gap-1 items-center">
             <ActionButton
