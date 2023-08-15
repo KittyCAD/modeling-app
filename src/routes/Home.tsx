@@ -11,6 +11,7 @@ import { ActionButton } from '../components/ActionButton'
 import {
   faArrowDown,
   faArrowUp,
+  faCircleDot,
   faPlus,
 } from '@fortawesome/free-solid-svg-icons'
 import { useStore } from '../useStore'
@@ -23,10 +24,13 @@ import { FileWithMetadata, HomeLoaderData } from '../Router'
 import Loading from '../components/Loading'
 import { metadata } from 'tauri-plugin-fs-extra-api'
 
+const DESC = ':desc'
+
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
 const Home = () => {
   const [searchParams, setSearchParams] = useSearchParams()
+  const sort = searchParams.get('sort_by') ?? 'modified:desc'
   const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
   const [isLoading, setIsLoading] = useState(true)
   const [projects, setProjects] = useState(loadedProjects || [])
@@ -119,22 +123,38 @@ const Home = () => {
     }
   }
 
-  function getSortFunction(sortBy: string | null) {
-    if (sortBy?.includes('name')) {
-      return (a: FileWithMetadata, b: FileWithMetadata) => {
-        if (a.name && b.name) {
-          return sortBy.includes('desc')
-            ? a.name.localeCompare(b.name)
-            : b.name.localeCompare(a.name)
-        }
-        return 0
-      }
+  function getSortIcon(sortBy: string) {
+    if (sort === sortBy) {
+      return faArrowUp
+    } else if (sort === sortBy + DESC) {
+      return faArrowDown
     }
-    return (a: FileWithMetadata, b: FileWithMetadata) => {
+    return faCircleDot
+  }
+
+  function getNextSearchParams(sortBy: string) {
+    if (sort === null || !sort)
+      return { sort_by: sortBy + (sortBy !== 'modified' ? DESC : '') }
+    if (sort.includes(sortBy) && !sort.includes(DESC)) return { sort_by: '' }
+    return {
+      sort_by: sortBy + (sort.includes(DESC) ? '' : DESC),
+    }
+  }
+
+  function getSortFunction(sortBy: string) {
+    const sortByName = (a: FileWithMetadata, b: FileWithMetadata) => {
       if (a.name && b.name) {
-        return b.name.localeCompare(a.name)
+        return sortBy.includes('desc')
+          ? a.name.localeCompare(b.name)
+          : b.name.localeCompare(a.name)
       }
       return 0
+    }
+
+    if (sortBy?.includes('name')) {
+      return sortByName
+    } else {
+      return () => 0
     }
   }
 
@@ -147,21 +167,15 @@ const Home = () => {
           <div className="flex">
             <ActionButton
               Element="button"
-              onClick={() =>
-                setSearchParams({
-                  sort_by:
-                    'name' +
-                    (searchParams.get('sort_by') === 'name' ? ':desc' : ''),
-                })
-              }
+              onClick={() => setSearchParams(getNextSearchParams('name'))}
               icon={{
-                icon:
-                  searchParams.get('sort_by') === 'name'
-                    ? faArrowUp
-                    : faArrowDown,
+                icon: getSortIcon('name'),
+                bgClassName: !sort?.includes('name')
+                  ? 'bg-liquid-30 dark:bg-liquid-70'
+                  : '',
               }}
             >
-              {searchParams.get('sort_by') === 'name' ? 'Z-A' : 'A-Z'}
+              Name
             </ActionButton>
           </div>
         </section>
@@ -179,16 +193,14 @@ const Home = () => {
             <>
               {projects.length > 0 ? (
                 <ul className="my-8 w-full grid grid-cols-4 gap-4">
-                  {projects
-                    .sort(getSortFunction(searchParams.get('sort_by')))
-                    .map((project) => (
-                      <ProjectCard
-                        key={project.name}
-                        project={project}
-                        handleRenameProject={handleRenameProject}
-                        handleDeleteProject={handleDeleteProject}
-                      />
-                    ))}
+                  {projects.sort(getSortFunction(sort)).map((project) => (
+                    <ProjectCard
+                      key={project.name}
+                      project={project}
+                      handleRenameProject={handleRenameProject}
+                      handleDeleteProject={handleDeleteProject}
+                    />
+                  ))}
                 </ul>
               ) : (
                 <p className="rounded my-8 border border-dashed border-chalkboard-30 dark:border-chalkboard-70 p-4">
