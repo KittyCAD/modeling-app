@@ -2,6 +2,7 @@ import { Popover } from '@headlessui/react'
 import { User, useStore } from '../useStore'
 import { ActionButton } from './ActionButton'
 import { faBars, faGear, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { paths } from '../Router'
@@ -105,6 +106,14 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                 }}
               >
                 Settings
+              </ActionButton>
+              <ActionButton
+                Element="link"
+                to="https://github.com/KittyCAD/modeling-app/discussions"
+                icon={{ icon: faGithub }}
+                className="border-transparent dark:border-transparent dark:hover:border-liquid-60"
+              >
+                Request a feature
               </ActionButton>
               <ActionButton
                 Element="button"

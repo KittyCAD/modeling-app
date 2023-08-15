@@ -79,6 +79,18 @@ export const Settings = () => {
       </AppHeader>
       <div className="my-24 max-w-5xl mx-auto">
         <h1 className="text-4xl font-bold">User Settings</h1>
+        <p className="mt-6 max-w-2xl">
+          Don't see the feature you want? Check to see if it's on{' '}
+          <a
+            href="https://github.com/KittyCAD/modeling-app/discussions"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            our roadmap
+          </a>
+          , and start a discussion if you don't see it! Your feedback will help
+          us prioritize what to build next.
+        </p>
         {(window as any).__TAURI__ && (
           <SettingsSection
             title="Default Directory"
