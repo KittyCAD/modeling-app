@@ -151,10 +151,19 @@ const Home = () => {
       return 0
     }
 
+    const sortByModified = (a: FileWithMetadata, b: FileWithMetadata) => {
+      if (a.metadata?.modifiedAt && b.metadata?.modifiedAt) {
+        return !sortBy || sortBy.includes('desc')
+          ? a.metadata.modifiedAt.getTime() - b.metadata.modifiedAt.getTime()
+          : b.metadata.modifiedAt.getTime() - a.metadata.modifiedAt.getTime()
+      }
+      return 0
+    }
+
     if (sortBy?.includes('name')) {
       return sortByName
     } else {
-      return () => 0
+      return sortByModified
     }
   }
 
@@ -177,6 +186,22 @@ const Home = () => {
             >
               Name
             </ActionButton>
+            <ActionButton
+              Element="button"
+              onClick={() => setSearchParams(getNextSearchParams('modified'))}
+              icon={{
+                icon: sort ? getSortIcon('modified') : faArrowDown,
+                bgClassName: !(
+                  sort?.includes('modified') ||
+                  !sort ||
+                  sort === null
+                )
+                  ? 'bg-liquid-30 dark:bg-liquid-70'
+                  : '',
+              }}
+            >
+              Last Modified
+            </ActionButton>
           </div>
         </section>
         <section>
@@ -194,13 +219,13 @@ const Home = () => {
               {projects.length > 0 ? (
                 <ul className="my-8 w-full grid grid-cols-4 gap-4">
                   {projects.sort(getSortFunction(sort)).map((project) => (
-                    <ProjectCard
-                      key={project.name}
-                      project={project}
-                      handleRenameProject={handleRenameProject}
-                      handleDeleteProject={handleDeleteProject}
-                    />
-                  ))}
+                  <ProjectCard
+                    key={project.name}
+                    project={project}
+                    handleRenameProject={handleRenameProject}
+                    handleDeleteProject={handleDeleteProject}
+                  />
+                ))}
                 </ul>
               ) : (
                 <p className="rounded my-8 border border-dashed border-chalkboard-30 dark:border-chalkboard-70 p-4">
