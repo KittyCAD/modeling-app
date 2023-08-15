@@ -15,6 +15,7 @@ import { useStore } from '../useStore'
 import { toast } from 'react-hot-toast'
 import { AppHeader } from '../components/AppHeader'
 import ProjectCard from '../components/ProjectCard'
+import { Link } from 'react-router-dom'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
@@ -105,8 +106,15 @@ const Home = () => {
   return (
     <div className="h-screen overflow-hidden relative flex flex-col">
       <AppHeader showToolbar={false} />
-      <div className="my-24 max-w-5xl w-full mx-auto">
-        <h1 className="text-3xl text-bold">Home</h1>
+      <div className="my-24 overflow-y-auto max-w-5xl w-full mx-auto">
+        <h1 className="text-3xl text-bold">Your Projects</h1>
+        <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
+          Are being saved at{' '}
+          <code className="text-liquid-80 dark:text-liquid-30">
+            {defaultDir.dir}
+          </code>
+          , which you can change in your <Link to="settings">Settings</Link>.
+        </p>
         {isLoading ? (
           <Loading>Loading your Projects...</Loading>
         ) : (

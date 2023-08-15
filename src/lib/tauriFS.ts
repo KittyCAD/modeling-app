@@ -1,9 +1,9 @@
 import { FileEntry, createDir, exists, writeTextFile } from '@tauri-apps/api/fs'
-import { appDataDir } from '@tauri-apps/api/path'
+import { documentDir } from '@tauri-apps/api/path'
 import { useStore } from '../useStore'
 import { isTauri } from './isTauri'
 
-const PROJECT_FOLDER = 'projects'
+const PROJECT_FOLDER = 'kittycad-modeling-projects'
 export const FILE_EXT = '.kcl'
 export const PROJECT_ENTRYPOINT = 'main' + FILE_EXT
 const INDEX_IDENTIFIER = '$n' // $nn.. will pad the number with 0s
@@ -26,7 +26,7 @@ export async function initializeProjectDirectory() {
     return projectDir
   }
 
-  const appData = await appDataDir()
+  const appData = await documentDir()
 
   const INITIAL_DEFAULT_DIR = {
     dir: appData + PROJECT_FOLDER,

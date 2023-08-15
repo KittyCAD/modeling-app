@@ -111,10 +111,10 @@ const router = createBrowserRouter([
   {
     path: paths.HOME,
     element: (
-      <>
+      <Auth>
         <Outlet />
         <Home />
-      </>
+      </Auth>
     ),
     loader: () => !isTauri() && redirect(paths.FILE + '/new'),
     children: [
