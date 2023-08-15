@@ -7,6 +7,7 @@ import {
   initializeProjectDirectory,
   interpolateProjectNameWithIndex,
   doesProjectNameNeedInterpolated,
+  PROJECT_ENTRYPOINT,
 } from '../lib/tauriFS'
 import { ActionButton } from '../components/ActionButton'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
@@ -27,8 +28,17 @@ const Home = () => {
 
   const refreshProjects = useCallback(
     async (projectDir = defaultDir) => {
-      const readProjects = await readDir(projectDir.dir)
-      setProjects(readProjects)
+      const readProjects = await await readDir(projectDir.dir, {
+        recursive: true,
+      })
+      const filteredProjects = readProjects.filter(
+        (fileOrDir) =>
+          fileOrDir.children &&
+          fileOrDir.children.length &&
+          fileOrDir.children.some((child) => child.name === PROJECT_ENTRYPOINT)
+      )
+
+      setProjects(filteredProjects)
     },
     [defaultDir, setProjects]
   )
