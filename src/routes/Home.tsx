@@ -5,6 +5,7 @@ import {
   getNextProjectIndex,
   interpolateProjectNameWithIndex,
   doesProjectNameNeedInterpolated,
+  isProjectDirectory,
   PROJECT_ENTRYPOINT,
 } from '../lib/tauriFS'
 import { ActionButton } from '../components/ActionButton'
@@ -20,7 +21,7 @@ import { AppHeader } from '../components/AppHeader'
 import ProjectCard from '../components/ProjectCard'
 import { useLoaderData, useSearchParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-import { FileWithMetadata, HomeLoaderData } from '../Router'
+import { ProjectWithEntryPointMetadata, HomeLoaderData } from '../Router'
 import Loading from '../components/Loading'
 import { metadata } from 'tauri-plugin-fs-extra-api'
 
@@ -41,26 +42,22 @@ const Home = () => {
 
   const refreshProjects = useCallback(
     async (projectDir = defaultDir) => {
-      const readProjects = await await readDir(projectDir.dir, {
-        recursive: true,
-      })
-      const filteredProjects = await Promise.all(
-        readProjects
-          .filter(
-            (fileOrDir) =>
-              fileOrDir.children &&
-              fileOrDir.children.length &&
-              fileOrDir.children.some(
-                (child) => child.name === PROJECT_ENTRYPOINT
-              )
-          )
-          .map(async (p) => ({
-            metadata: await metadata(p.path),
-            ...p,
-          }))
+      const readProjects = (
+        await readDir(projectDir.dir, {
+          recursive: true,
+        })
+      ).filter(isProjectDirectory)
+
+      const projectsWithMetadata = await Promise.all(
+        readProjects.map(async (p) => ({
+          entrypoint_metadata: await metadata(
+            p.path + '/' + PROJECT_ENTRYPOINT
+          ),
+          ...p,
+        }))
       )
 
-      setProjects(filteredProjects)
+      setProjects(projectsWithMetadata)
     },
     [defaultDir, setProjects]
   )
@@ -92,7 +89,7 @@ const Home = () => {
 
   async function handleRenameProject(
     e: FormEvent<HTMLFormElement>,
-    project: FileWithMetadata
+    project: ProjectWithEntryPointMetadata
   ) {
     const { newProjectName } = Object.fromEntries(
       new FormData(e.target as HTMLFormElement)
@@ -111,7 +108,7 @@ const Home = () => {
     }
   }
 
-  async function handleDeleteProject(project: FileWithMetadata) {
+  async function handleDeleteProject(project: ProjectWithEntryPointMetadata) {
     if (project.path) {
       await removeDir(project.path, { recursive: true }).catch((err) => {
         console.error('Error deleting project:', err)
@@ -142,7 +139,10 @@ const Home = () => {
   }
 
   function getSortFunction(sortBy: string) {
-    const sortByName = (a: FileWithMetadata, b: FileWithMetadata) => {
+    const sortByName = (
+      a: ProjectWithEntryPointMetadata,
+      b: ProjectWithEntryPointMetadata
+    ) => {
       if (a.name && b.name) {
         return sortBy.includes('desc')
           ? a.name.localeCompare(b.name)
@@ -151,11 +151,19 @@ const Home = () => {
       return 0
     }
 
-    const sortByModified = (a: FileWithMetadata, b: FileWithMetadata) => {
-      if (a.metadata?.modifiedAt && b.metadata?.modifiedAt) {
+    const sortByModified = (
+      a: ProjectWithEntryPointMetadata,
+      b: ProjectWithEntryPointMetadata
+    ) => {
+      if (
+        a.entrypoint_metadata?.modifiedAt &&
+        b.entrypoint_metadata?.modifiedAt
+      ) {
         return !sortBy || sortBy.includes('desc')
-          ? a.metadata.modifiedAt.getTime() - b.metadata.modifiedAt.getTime()
-          : b.metadata.modifiedAt.getTime() - a.metadata.modifiedAt.getTime()
+          ? b.entrypoint_metadata.modifiedAt.getTime() -
+              a.entrypoint_metadata.modifiedAt.getTime()
+          : a.entrypoint_metadata.modifiedAt.getTime() -
+              b.entrypoint_metadata.modifiedAt.getTime()
       }
       return 0
     }
@@ -219,13 +227,13 @@ const Home = () => {
               {projects.length > 0 ? (
                 <ul className="my-8 w-full grid grid-cols-4 gap-4">
                   {projects.sort(getSortFunction(sort)).map((project) => (
-                  <ProjectCard
-                    key={project.name}
-                    project={project}
-                    handleRenameProject={handleRenameProject}
-                    handleDeleteProject={handleDeleteProject}
-                  />
-                ))}
+                    <ProjectCard
+                      key={project.name}
+                      project={project}
+                      handleRenameProject={handleRenameProject}
+                      handleDeleteProject={handleDeleteProject}
+                    />
+                  ))}
                 </ul>
               ) : (
                 <p className="rounded my-8 border border-dashed border-chalkboard-30 dark:border-chalkboard-70 p-4">

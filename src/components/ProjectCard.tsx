@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react'
-import { type FileWithMetadata, paths } from '../Router'
+import { type ProjectWithEntryPointMetadata, paths } from '../Router'
 import { Link } from 'react-router-dom'
 import { ActionButton } from './ActionButton'
 import {
@@ -18,12 +18,12 @@ function ProjectCard({
   handleDeleteProject,
   ...props
 }: {
-  project: FileWithMetadata
+  project: ProjectWithEntryPointMetadata
   handleRenameProject: (
     e: FormEvent<HTMLFormElement>,
-    f: FileWithMetadata
+    f: ProjectWithEntryPointMetadata
   ) => Promise<void>
-  handleDeleteProject: (f: FileWithMetadata) => Promise<void>
+  handleDeleteProject: (f: ProjectWithEntryPointMetadata) => Promise<void>
 }) {
   useHotkeys('esc', () => setIsEditing(false))
   const [isEditing, setIsEditing] = useState(false)
