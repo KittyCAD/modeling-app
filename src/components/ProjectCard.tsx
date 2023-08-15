@@ -34,6 +34,14 @@ function ProjectCard({
     handleRenameProject(e, project).then(() => setIsEditing(false))
   }
 
+  function getDisplayedTime(date: Date) {
+    const startOfToday = new Date()
+    startOfToday.setHours(0, 0, 0, 0)
+    return date.getTime() < startOfToday.getTime()
+      ? date.toLocaleDateString()
+      : date.toLocaleTimeString()
+  }
+
   return (
     <li
       {...props}
@@ -76,8 +84,7 @@ function ProjectCard({
               {project.name?.replace(FILE_EXT, '')}
             </Link>
             <span className="text-chalkboard-40 dark:text-chalkboard-60 text-xs">
-              Edited {project.metadata.modifiedAt.toLocaleTimeString()}{' '}
-              {project.metadata.modifiedAt.toLocaleDateString()}
+              Edited {getDisplayedTime(project.entrypoint_metadata.modifiedAt)}
             </span>
             <div className="absolute bottom-2 right-2 flex gap-1 items-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
               <ActionButton
