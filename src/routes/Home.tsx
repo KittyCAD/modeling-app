@@ -1,27 +1,40 @@
 import { FormEvent, useCallback, useEffect, useState } from 'react'
-import Loading from '../components/Loading'
-import { FileEntry, readDir, removeDir, renameFile } from '@tauri-apps/api/fs'
+import { readDir, removeDir, renameFile } from '@tauri-apps/api/fs'
 import {
   createNewProject,
   getNextProjectIndex,
-  initializeProjectDirectory,
   interpolateProjectNameWithIndex,
   doesProjectNameNeedInterpolated,
+  isProjectDirectory,
   PROJECT_ENTRYPOINT,
 } from '../lib/tauriFS'
 import { ActionButton } from '../components/ActionButton'
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import {
+  faArrowDown,
+  faArrowUp,
+  faCircleDot,
+  faPlus,
+} from '@fortawesome/free-solid-svg-icons'
 import { useStore } from '../useStore'
 import { toast } from 'react-hot-toast'
 import { AppHeader } from '../components/AppHeader'
 import ProjectCard from '../components/ProjectCard'
+import { useLoaderData, useSearchParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
+import { ProjectWithEntryPointMetadata, HomeLoaderData } from '../Router'
+import Loading from '../components/Loading'
+import { metadata } from 'tauri-plugin-fs-extra-api'
+
+const DESC = ':desc'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
 const Home = () => {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const sort = searchParams.get('sort_by') ?? 'modified:desc'
+  const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
   const [isLoading, setIsLoading] = useState(true)
-  const [projects, setProjects] = useState<FileEntry[]>([])
+  const [projects, setProjects] = useState(loadedProjects || [])
   const { defaultDir, defaultProjectName } = useStore((s) => ({
     defaultDir: s.defaultDir,
     defaultProjectName: s.defaultProjectName,
@@ -29,27 +42,31 @@ const Home = () => {
 
   const refreshProjects = useCallback(
     async (projectDir = defaultDir) => {
-      const readProjects = await await readDir(projectDir.dir, {
-        recursive: true,
-      })
-      const filteredProjects = readProjects.filter(
-        (fileOrDir) =>
-          fileOrDir.children &&
-          fileOrDir.children.length &&
-          fileOrDir.children.some((child) => child.name === PROJECT_ENTRYPOINT)
+      const readProjects = (
+        await readDir(projectDir.dir, {
+          recursive: true,
+        })
+      ).filter(isProjectDirectory)
+
+      const projectsWithMetadata = await Promise.all(
+        readProjects.map(async (p) => ({
+          entrypoint_metadata: await metadata(
+            p.path + '/' + PROJECT_ENTRYPOINT
+          ),
+          ...p,
+        }))
       )
 
-      setProjects(filteredProjects)
+      setProjects(projectsWithMetadata)
     },
     [defaultDir, setProjects]
   )
 
   useEffect(() => {
-    initializeProjectDirectory().then(async (projectDir) => {
-      await refreshProjects(projectDir)
+    refreshProjects(defaultDir).then(() => {
       setIsLoading(false)
     })
-  }, [setIsLoading, refreshProjects])
+  }, [setIsLoading, refreshProjects, defaultDir])
 
   async function handleNewProject() {
     let projectName = defaultProjectName
@@ -72,7 +89,7 @@ const Home = () => {
 
   async function handleRenameProject(
     e: FormEvent<HTMLFormElement>,
-    project: FileEntry
+    project: ProjectWithEntryPointMetadata
   ) {
     const { newProjectName } = Object.fromEntries(
       new FormData(e.target as HTMLFormElement)
@@ -91,7 +108,7 @@ const Home = () => {
     }
   }
 
-  async function handleDeleteProject(project: FileEntry) {
+  async function handleDeleteProject(project: ProjectWithEntryPointMetadata) {
     if (project.path) {
       await removeDir(project.path, { recursive: true }).catch((err) => {
         console.error('Error deleting project:', err)
@@ -103,47 +120,136 @@ const Home = () => {
     }
   }
 
+  function getSortIcon(sortBy: string) {
+    if (sort === sortBy) {
+      return faArrowUp
+    } else if (sort === sortBy + DESC) {
+      return faArrowDown
+    }
+    return faCircleDot
+  }
+
+  function getNextSearchParams(sortBy: string) {
+    if (sort === null || !sort)
+      return { sort_by: sortBy + (sortBy !== 'modified' ? DESC : '') }
+    if (sort.includes(sortBy) && !sort.includes(DESC)) return { sort_by: '' }
+    return {
+      sort_by: sortBy + (sort.includes(DESC) ? '' : DESC),
+    }
+  }
+
+  function getSortFunction(sortBy: string) {
+    const sortByName = (
+      a: ProjectWithEntryPointMetadata,
+      b: ProjectWithEntryPointMetadata
+    ) => {
+      if (a.name && b.name) {
+        return sortBy.includes('desc')
+          ? a.name.localeCompare(b.name)
+          : b.name.localeCompare(a.name)
+      }
+      return 0
+    }
+
+    const sortByModified = (
+      a: ProjectWithEntryPointMetadata,
+      b: ProjectWithEntryPointMetadata
+    ) => {
+      if (
+        a.entrypoint_metadata?.modifiedAt &&
+        b.entrypoint_metadata?.modifiedAt
+      ) {
+        return !sortBy || sortBy.includes('desc')
+          ? b.entrypoint_metadata.modifiedAt.getTime() -
+              a.entrypoint_metadata.modifiedAt.getTime()
+          : a.entrypoint_metadata.modifiedAt.getTime() -
+              b.entrypoint_metadata.modifiedAt.getTime()
+      }
+      return 0
+    }
+
+    if (sortBy?.includes('name')) {
+      return sortByName
+    } else {
+      return sortByModified
+    }
+  }
+
   return (
     <div className="h-screen overflow-hidden relative flex flex-col">
       <AppHeader showToolbar={false} />
       <div className="my-24 overflow-y-auto max-w-5xl w-full mx-auto">
-        <h1 className="text-3xl text-bold">Your Projects</h1>
-        <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
-          Are being saved at{' '}
-          <code className="text-liquid-80 dark:text-liquid-30">
-            {defaultDir.dir}
-          </code>
-          , which you can change in your <Link to="settings">Settings</Link>.
-        </p>
-        {isLoading ? (
-          <Loading>Loading your Projects...</Loading>
-        ) : (
-          <>
-            {projects.length > 0 ? (
-              <ul className="my-8 w-full grid grid-cols-4 gap-4">
-                {projects.map((project) => (
-                  <ProjectCard
-                    key={project.name}
-                    project={project}
-                    handleRenameProject={handleRenameProject}
-                    handleDeleteProject={handleDeleteProject}
-                  />
-                ))}
-              </ul>
-            ) : (
-              <p className="rounded my-8 border border-dashed border-chalkboard-30 dark:border-chalkboard-70 p-4">
-                No Projects found, ready to make your first one?
-              </p>
-            )}
+        <section className="flex justify-between">
+          <h1 className="text-3xl text-bold">Your Projects</h1>
+          <div className="flex">
             <ActionButton
               Element="button"
-              onClick={handleNewProject}
-              icon={{ icon: faPlus }}
+              onClick={() => setSearchParams(getNextSearchParams('name'))}
+              icon={{
+                icon: getSortIcon('name'),
+                bgClassName: !sort?.includes('name')
+                  ? 'bg-liquid-30 dark:bg-liquid-70'
+                  : '',
+              }}
             >
-              New file
+              Name
             </ActionButton>
-          </>
-        )}
+            <ActionButton
+              Element="button"
+              onClick={() => setSearchParams(getNextSearchParams('modified'))}
+              icon={{
+                icon: sort ? getSortIcon('modified') : faArrowDown,
+                bgClassName: !(
+                  sort?.includes('modified') ||
+                  !sort ||
+                  sort === null
+                )
+                  ? 'bg-liquid-30 dark:bg-liquid-70'
+                  : '',
+              }}
+            >
+              Last Modified
+            </ActionButton>
+          </div>
+        </section>
+        <section>
+          <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
+            Are being saved at{' '}
+            <code className="text-liquid-80 dark:text-liquid-30">
+              {defaultDir.dir}
+            </code>
+            , which you can change in your <Link to="settings">Settings</Link>.
+          </p>
+          {isLoading ? (
+            <Loading>Loading your Projects...</Loading>
+          ) : (
+            <>
+              {projects.length > 0 ? (
+                <ul className="my-8 w-full grid grid-cols-4 gap-4">
+                  {projects.sort(getSortFunction(sort)).map((project) => (
+                    <ProjectCard
+                      key={project.name}
+                      project={project}
+                      handleRenameProject={handleRenameProject}
+                      handleDeleteProject={handleDeleteProject}
+                    />
+                  ))}
+                </ul>
+              ) : (
+                <p className="rounded my-8 border border-dashed border-chalkboard-30 dark:border-chalkboard-70 p-4">
+                  No Projects found, ready to make your first one?
+                </p>
+              )}
+              <ActionButton
+                Element="button"
+                onClick={handleNewProject}
+                icon={{ icon: faPlus }}
+              >
+                New file
+              </ActionButton>
+            </>
+          )}
+        </section>
       </div>
     </div>
   )

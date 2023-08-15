@@ -15,9 +15,14 @@ import SignIn from './routes/SignIn'
 import { Auth } from './Auth'
 import { isTauri } from './lib/isTauri'
 import Home from './routes/Home'
-import { readTextFile } from '@tauri-apps/api/fs'
+import { FileEntry, readDir, readTextFile } from '@tauri-apps/api/fs'
 import makeUrlPathRelative from './lib/makeUrlPathRelative'
-import { PROJECT_ENTRYPOINT } from './lib/tauriFS'
+import {
+  initializeProjectDirectory,
+  isProjectDirectory,
+  PROJECT_ENTRYPOINT,
+} from './lib/tauriFS'
+import { metadata, type Metadata } from 'tauri-plugin-fs-extra-api'
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {
@@ -42,6 +47,13 @@ export const paths = {
 
 export type IndexLoaderData = {
   code: string | null
+}
+
+export type ProjectWithEntryPointMetadata = FileEntry & {
+  entrypoint_metadata: Metadata
+}
+export type HomeLoaderData = {
+  projects: ProjectWithEntryPointMetadata[]
 }
 
 const router = createBrowserRouter([
@@ -116,7 +128,28 @@ const router = createBrowserRouter([
         <Home />
       </Auth>
     ),
-    loader: () => !isTauri() && redirect(paths.FILE + '/new'),
+    loader: async () => {
+      if (!isTauri()) {
+        return redirect(paths.FILE + '/new')
+      }
+
+      const projectDir = await initializeProjectDirectory()
+      const projectsNoMeta = (await readDir(projectDir.dir)).filter(
+        isProjectDirectory
+      )
+      const projects = await Promise.all(
+        projectsNoMeta.map(async (p) => ({
+          entrypoint_metadata: await metadata(
+            p.path + '/' + PROJECT_ENTRYPOINT
+          ),
+          ...p,
+        }))
+      )
+
+      return {
+        projects,
+      }
+    },
     children: [
       {
         path: makeUrlPathRelative(paths.SETTINGS),
