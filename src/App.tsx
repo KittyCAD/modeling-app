@@ -181,6 +181,7 @@ export function App() {
       // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
       writeTextFile(pathParams.id + '/' + PROJECT_ENTRYPOINT, value).catch(
         (err) => {
+          // TODO: add Sentry per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
           console.error('error saving file', err)
           toast.error('Error saving file, please check file permissions')
         }
