@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react'
+import { FormEvent, useCallback, useEffect, useState } from 'react'
 import Loading from '../components/Loading'
 import { FileEntry, readDir, removeDir, renameFile } from '@tauri-apps/api/fs'
 import {
@@ -25,13 +25,20 @@ const Home = () => {
     defaultProjectName: s.defaultProjectName,
   }))
 
-  useEffect(() => {
-    initializeProjectDirectory().then(async (projectDir) => {
+  const refreshProjects = useCallback(
+    async (projectDir = defaultDir) => {
       const readProjects = await readDir(projectDir.dir)
       setProjects(readProjects)
+    },
+    [defaultDir, setProjects]
+  )
+
+  useEffect(() => {
+    initializeProjectDirectory().then(async (projectDir) => {
+      await refreshProjects(projectDir)
       setIsLoading(false)
     })
-  }, [setProjects, setIsLoading])
+  }, [setIsLoading, refreshProjects])
 
   async function handleNewProject() {
     let projectName = defaultProjectName
@@ -43,10 +50,13 @@ const Home = () => {
       )
     }
 
-    const newProject = await createNewProject(
-      defaultDir.dir + '/' + projectName
-    )
-    setProjects([...projects, newProject])
+    await createNewProject(defaultDir.dir + '/' + projectName).catch((err) => {
+      console.error('Error creating project:', err)
+      toast.error('Error creating project')
+    })
+
+    await refreshProjects()
+    toast.success('Project created')
   }
 
   async function handleRenameProject(
@@ -58,27 +68,15 @@ const Home = () => {
     )
     if (newProjectName && project.name && newProjectName !== project.name) {
       const dir = project.path?.slice(0, project.path?.lastIndexOf('/'))
-      renameFile(project.path, dir + '/' + newProjectName)
-        .catch((err) => {
+      await renameFile(project.path, dir + '/' + newProjectName).catch(
+        (err) => {
           console.error('Error renaming project:', err)
           toast.error('Error renaming project')
-        })
-        .then(() => {
-          setProjects(
-            Object.assign([
-              ...projects.map((p) =>
-                p.name === project.name
-                  ? Object.assign(project, {
-                      name: newProjectName,
-                      path: dir + '/' + newProjectName,
-                      children: [...(project.children || [])],
-                    })
-                  : p
-              ),
-            ])
-          )
-          toast.success('Project renamed')
-        })
+        }
+      )
+
+      await refreshProjects()
+      toast.success('Project renamed')
     }
   }
 
@@ -89,7 +87,7 @@ const Home = () => {
         toast.error('Error deleting project')
       })
 
-      setProjects([...projects.filter((p) => p.name !== project.name)])
+      await refreshProjects()
       toast.success('Project deleted')
     }
   }
