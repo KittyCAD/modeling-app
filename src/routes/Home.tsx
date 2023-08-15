@@ -1,10 +1,8 @@
 import { FormEvent, useCallback, useEffect, useState } from 'react'
-import Loading from '../components/Loading'
 import { FileEntry, readDir, removeDir, renameFile } from '@tauri-apps/api/fs'
 import {
   createNewProject,
   getNextProjectIndex,
-  initializeProjectDirectory,
   interpolateProjectNameWithIndex,
   doesProjectNameNeedInterpolated,
   PROJECT_ENTRYPOINT,
@@ -19,15 +17,18 @@ import { useStore } from '../useStore'
 import { toast } from 'react-hot-toast'
 import { AppHeader } from '../components/AppHeader'
 import ProjectCard from '../components/ProjectCard'
-import { useSearchParams } from 'react-router-dom'
+import { useLoaderData, useSearchParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
+import { HomeLoaderData } from '../Router'
+import Loading from '../components/Loading'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
 const Home = () => {
   const [searchParams, setSearchParams] = useSearchParams()
+  const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
   const [isLoading, setIsLoading] = useState(true)
-  const [projects, setProjects] = useState<FileEntry[]>([])
+  const [projects, setProjects] = useState(loadedProjects || [])
   const { defaultDir, defaultProjectName } = useStore((s) => ({
     defaultDir: s.defaultDir,
     defaultProjectName: s.defaultProjectName,
@@ -51,11 +52,10 @@ const Home = () => {
   )
 
   useEffect(() => {
-    initializeProjectDirectory().then(async (projectDir) => {
-      await refreshProjects(projectDir)
+    refreshProjects(defaultDir).then(() => {
       setIsLoading(false)
     })
-  }, [setIsLoading, refreshProjects])
+  }, [setIsLoading, refreshProjects, defaultDir])
 
   async function handleNewProject() {
     let projectName = defaultProjectName
@@ -157,13 +157,13 @@ const Home = () => {
         </section>
         <section>
           <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
-          Are being saved at{' '}
-          <code className="text-liquid-80 dark:text-liquid-30">
-            {defaultDir.dir}
-          </code>
-          , which you can change in your <Link to="settings">Settings</Link>.
-        </p>
-        {isLoading ? (
+            Are being saved at{' '}
+            <code className="text-liquid-80 dark:text-liquid-30">
+              {defaultDir.dir}
+            </code>
+            , which you can change in your <Link to="settings">Settings</Link>.
+          </p>
+          {isLoading ? (
             <Loading>Loading your Projects...</Loading>
           ) : (
             <>

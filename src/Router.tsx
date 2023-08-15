@@ -15,9 +15,9 @@ import SignIn from './routes/SignIn'
 import { Auth } from './Auth'
 import { isTauri } from './lib/isTauri'
 import Home from './routes/Home'
-import { readTextFile } from '@tauri-apps/api/fs'
+import { FileEntry, readDir, readTextFile } from '@tauri-apps/api/fs'
 import makeUrlPathRelative from './lib/makeUrlPathRelative'
-import { PROJECT_ENTRYPOINT } from './lib/tauriFS'
+import { initializeProjectDirectory, PROJECT_ENTRYPOINT } from './lib/tauriFS'
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {
@@ -42,6 +42,10 @@ export const paths = {
 
 export type IndexLoaderData = {
   code: string | null
+}
+
+export type HomeLoaderData = {
+  projects: FileEntry[]
 }
 
 const router = createBrowserRouter([
@@ -116,7 +120,18 @@ const router = createBrowserRouter([
         <Home />
       </Auth>
     ),
-    loader: () => !isTauri() && redirect(paths.FILE + '/new'),
+    loader: async () => {
+      if (!isTauri()) {
+        return redirect(paths.FILE + '/new')
+      }
+
+      const projectDir = await initializeProjectDirectory()
+      const projects = await readDir(projectDir.dir)
+
+      return {
+        projects,
+      }
+    },
     children: [
       {
         path: makeUrlPathRelative(paths.SETTINGS),
