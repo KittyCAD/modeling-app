@@ -6,7 +6,7 @@ import {
   getNextProjectIndex,
   initializeProjectDirectory,
   interpolateProjectNameWithIndex,
-  projectNameNeedsInterpolated,
+  doesProjectNameNeedInterpolated,
 } from '../lib/tauriFS'
 import { ActionButton } from '../components/ActionButton'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
@@ -35,7 +35,7 @@ const Home = () => {
 
   async function handleNewProject() {
     let projectName = defaultProjectName
-    if (projectNameNeedsInterpolated(projectName)) {
+    if (doesProjectNameNeedInterpolated(projectName)) {
       const nextIndex = await getNextProjectIndex(defaultProjectName, projects)
       projectName = interpolateProjectNameWithIndex(
         defaultProjectName,

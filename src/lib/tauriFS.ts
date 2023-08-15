@@ -115,7 +115,7 @@ export function interpolateProjectNameWithIndex(
   )
 }
 
-export function projectNameNeedsInterpolated(projectName: string) {
+export function doesProjectNameNeedInterpolated(projectName: string) {
   return projectName.includes(INDEX_IDENTIFIER)
 }
 

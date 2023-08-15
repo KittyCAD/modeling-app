@@ -8,7 +8,7 @@ import Camera from './Camera'
 import Sketching from './Sketching'
 import { useCallback } from 'react'
 import { paths } from '../../Router'
-import makePathRelative from '../../lib/makePathRelative'
+import makeUrlPathRelative from '../../lib/makeUrlPathRelative'
 
 export const onboardingPaths = {
   INDEX: '/',
@@ -23,15 +23,15 @@ export const onboardingRoutes = [
     element: <Introduction />,
   },
   {
-    path: makePathRelative(onboardingPaths.UNITS),
+    path: makeUrlPathRelative(onboardingPaths.UNITS),
     element: <Units />,
   },
   {
-    path: makePathRelative(onboardingPaths.CAMERA),
+    path: makeUrlPathRelative(onboardingPaths.CAMERA),
     element: <Camera />,
   },
   {
-    path: makePathRelative(onboardingPaths.SKETCHING),
+    path: makeUrlPathRelative(onboardingPaths.SKETCHING),
     element: <Sketching />,
   },
 ]

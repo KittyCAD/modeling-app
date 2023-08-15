@@ -5,7 +5,7 @@ import { faBars, faGear, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { paths } from '../Router'
-import makePathRelative from '../lib/makePathRelative'
+import makeUrlPathRelative from '../lib/makeUrlPathRelative'
 
 const UserSidebarMenu = ({ user }: { user?: User }) => {
   const displayedName = getDisplayName(user)
@@ -103,7 +103,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                   // since /settings is a nested route the sidebar doesn't close
                   // automatically when navigating to it
                   close()
-                  navigate(makePathRelative(paths.SETTINGS))
+                  navigate(makeUrlPathRelative(paths.SETTINGS))
                 }}
               >
                 Settings

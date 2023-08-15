@@ -16,7 +16,7 @@ import { Auth } from './Auth'
 import { isTauri } from './lib/isTauri'
 import Home from './routes/Home'
 import { readTextFile } from '@tauri-apps/api/fs'
-import makePathRelative from './lib/makePathRelative'
+import makeUrlPathRelative from './lib/makeUrlPathRelative'
 import { PROJECT_ENTRYPOINT } from './lib/tauriFS'
 
 const prependRoutes =
@@ -79,7 +79,7 @@ const router = createBrowserRouter([
           notEnRouteToOnboarding && hasValidOnboardingStatus
 
         if (shouldRedirectToOnboarding) {
-          return redirect(makePathRelative(paths.ONBOARDING.INDEX) + status)
+          return redirect(makeUrlPathRelative(paths.ONBOARDING.INDEX) + status)
         }
       }
 
@@ -98,11 +98,11 @@ const router = createBrowserRouter([
     },
     children: [
       {
-        path: makePathRelative(paths.SETTINGS),
+        path: makeUrlPathRelative(paths.SETTINGS),
         element: <Settings />,
       },
       {
-        path: makePathRelative(paths.ONBOARDING.INDEX),
+        path: makeUrlPathRelative(paths.ONBOARDING.INDEX),
         element: <Onboarding />,
         children: onboardingRoutes,
       },
@@ -119,7 +119,7 @@ const router = createBrowserRouter([
     loader: () => !isTauri() && redirect(paths.FILE + '/new'),
     children: [
       {
-        path: makePathRelative(paths.SETTINGS),
+        path: makeUrlPathRelative(paths.SETTINGS),
         element: <Settings />,
       },
     ],

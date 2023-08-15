@@ -1,7 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { User } from '../useStore'
 import UserSidebarMenu from './UserSidebarMenu'
-import { describe, test } from 'vitest'
 import { BrowserRouter } from 'react-router-dom'
 
 describe('UserSidebarMenu tests', () => {
