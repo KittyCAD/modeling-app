@@ -10,16 +10,22 @@ import {
   PROJECT_ENTRYPOINT,
 } from '../lib/tauriFS'
 import { ActionButton } from '../components/ActionButton'
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import {
+  faArrowDown,
+  faArrowUp,
+  faPlus,
+} from '@fortawesome/free-solid-svg-icons'
 import { useStore } from '../useStore'
 import { toast } from 'react-hot-toast'
 import { AppHeader } from '../components/AppHeader'
 import ProjectCard from '../components/ProjectCard'
+import { useSearchParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
 const Home = () => {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [isLoading, setIsLoading] = useState(true)
   const [projects, setProjects] = useState<FileEntry[]>([])
   const { defaultDir, defaultProjectName } = useStore((s) => ({
@@ -103,12 +109,54 @@ const Home = () => {
     }
   }
 
+  function getSortFunction(sortBy: string | null) {
+    if (sortBy?.includes('name')) {
+      return (a: FileEntry, b: FileEntry) => {
+        if (a.name && b.name) {
+          return sortBy.includes('desc')
+            ? a.name.localeCompare(b.name)
+            : b.name.localeCompare(a.name)
+        }
+        return 0
+      }
+    }
+    return (a: FileEntry, b: FileEntry) => {
+      if (a.name && b.name) {
+        return b.name.localeCompare(a.name)
+      }
+      return 0
+    }
+  }
+
   return (
     <div className="h-screen overflow-hidden relative flex flex-col">
       <AppHeader showToolbar={false} />
       <div className="my-24 overflow-y-auto max-w-5xl w-full mx-auto">
-        <h1 className="text-3xl text-bold">Your Projects</h1>
-        <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
+        <section className="flex justify-between">
+          <h1 className="text-3xl text-bold">Your Projects</h1>
+          <div className="flex">
+            <ActionButton
+              Element="button"
+              onClick={() =>
+                setSearchParams({
+                  sort_by:
+                    'name' +
+                    (searchParams.get('sort_by') === 'name' ? ':desc' : ''),
+                })
+              }
+              icon={{
+                icon:
+                  searchParams.get('sort_by') === 'name'
+                    ? faArrowUp
+                    : faArrowDown,
+              }}
+            >
+              {searchParams.get('sort_by') === 'name' ? 'Z-A' : 'A-Z'}
+            </ActionButton>
+          </div>
+        </section>
+        <section>
+          <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
           Are being saved at{' '}
           <code className="text-liquid-80 dark:text-liquid-30">
             {defaultDir.dir}
@@ -116,34 +164,37 @@ const Home = () => {
           , which you can change in your <Link to="settings">Settings</Link>.
         </p>
         {isLoading ? (
-          <Loading>Loading your Projects...</Loading>
-        ) : (
-          <>
-            {projects.length > 0 ? (
-              <ul className="my-8 w-full grid grid-cols-4 gap-4">
-                {projects.map((project) => (
-                  <ProjectCard
-                    key={project.name}
-                    project={project}
-                    handleRenameProject={handleRenameProject}
-                    handleDeleteProject={handleDeleteProject}
-                  />
-                ))}
-              </ul>
-            ) : (
-              <p className="rounded my-8 border border-dashed border-chalkboard-30 dark:border-chalkboard-70 p-4">
-                No Projects found, ready to make your first one?
-              </p>
-            )}
-            <ActionButton
-              Element="button"
-              onClick={handleNewProject}
-              icon={{ icon: faPlus }}
-            >
-              New file
-            </ActionButton>
-          </>
-        )}
+            <Loading>Loading your Projects...</Loading>
+          ) : (
+            <>
+              {projects.length > 0 ? (
+                <ul className="my-8 w-full grid grid-cols-4 gap-4">
+                  {projects
+                    .sort(getSortFunction(searchParams.get('sort_by')))
+                    .map((project) => (
+                      <ProjectCard
+                        key={project.name}
+                        project={project}
+                        handleRenameProject={handleRenameProject}
+                        handleDeleteProject={handleDeleteProject}
+                      />
+                    ))}
+                </ul>
+              ) : (
+                <p className="rounded my-8 border border-dashed border-chalkboard-30 dark:border-chalkboard-70 p-4">
+                  No Projects found, ready to make your first one?
+                </p>
+              )}
+              <ActionButton
+                Element="button"
+                onClick={handleNewProject}
+                icon={{ icon: faPlus }}
+              >
+                New file
+              </ActionButton>
+            </>
+          )}
+        </section>
       </div>
     </div>
   )
