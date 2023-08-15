@@ -2,6 +2,8 @@ import { FileEntry, createDir, exists, writeTextFile } from '@tauri-apps/api/fs'
 import { documentDir } from '@tauri-apps/api/path'
 import { useStore } from '../useStore'
 import { isTauri } from './isTauri'
+import { FileWithMetadata } from '../Router'
+import { metadata } from 'tauri-plugin-fs-extra-api'
 
 const PROJECT_FOLDER = 'kittycad-modeling-projects'
 export const FILE_EXT = '.kcl'
@@ -44,7 +46,9 @@ export async function initializeProjectDirectory() {
 
 // Creates a new file in the default directory with the default project name
 // Returns the path to the new file
-export async function createNewProject(path: string): Promise<FileEntry> {
+export async function createNewProject(
+  path: string
+): Promise<FileWithMetadata> {
   if (!isTauri) {
     throw new Error('createNewProject() can only be called from a Tauri app')
   }
@@ -62,9 +66,12 @@ export async function createNewProject(path: string): Promise<FileEntry> {
     throw err
   })
 
+  const m = await metadata(path)
+
   return {
     name: path.slice(path.lastIndexOf('/') + 1),
     path: path,
+    metadata: m,
     children: [
       {
         name: PROJECT_ENTRYPOINT,

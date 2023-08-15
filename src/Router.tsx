@@ -18,6 +18,7 @@ import Home from './routes/Home'
 import { FileEntry, readDir, readTextFile } from '@tauri-apps/api/fs'
 import makeUrlPathRelative from './lib/makeUrlPathRelative'
 import { initializeProjectDirectory, PROJECT_ENTRYPOINT } from './lib/tauriFS'
+import { metadata, type Metadata } from 'tauri-plugin-fs-extra-api'
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {
@@ -44,8 +45,9 @@ export type IndexLoaderData = {
   code: string | null
 }
 
+export type FileWithMetadata = FileEntry & { metadata: Metadata }
 export type HomeLoaderData = {
-  projects: FileEntry[]
+  projects: FileWithMetadata[]
 }
 
 const router = createBrowserRouter([
@@ -126,7 +128,13 @@ const router = createBrowserRouter([
       }
 
       const projectDir = await initializeProjectDirectory()
-      const projects = await readDir(projectDir.dir)
+      const projectsNoMeta = await readDir(projectDir.dir)
+      const projects = await Promise.all(
+        projectsNoMeta.map(async (p) => ({
+          metadata: await metadata(p.path),
+          ...p,
+        }))
+      )
 
       return {
         projects,

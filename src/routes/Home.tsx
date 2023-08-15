@@ -1,5 +1,5 @@
 import { FormEvent, useCallback, useEffect, useState } from 'react'
-import { FileEntry, readDir, removeDir, renameFile } from '@tauri-apps/api/fs'
+import { readDir, removeDir, renameFile } from '@tauri-apps/api/fs'
 import {
   createNewProject,
   getNextProjectIndex,
@@ -19,8 +19,9 @@ import { AppHeader } from '../components/AppHeader'
 import ProjectCard from '../components/ProjectCard'
 import { useLoaderData, useSearchParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-import { HomeLoaderData } from '../Router'
+import { FileWithMetadata, HomeLoaderData } from '../Router'
 import Loading from '../components/Loading'
+import { metadata } from 'tauri-plugin-fs-extra-api'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
@@ -39,11 +40,20 @@ const Home = () => {
       const readProjects = await await readDir(projectDir.dir, {
         recursive: true,
       })
-      const filteredProjects = readProjects.filter(
-        (fileOrDir) =>
-          fileOrDir.children &&
-          fileOrDir.children.length &&
-          fileOrDir.children.some((child) => child.name === PROJECT_ENTRYPOINT)
+      const filteredProjects = await Promise.all(
+        readProjects
+          .filter(
+            (fileOrDir) =>
+              fileOrDir.children &&
+              fileOrDir.children.length &&
+              fileOrDir.children.some(
+                (child) => child.name === PROJECT_ENTRYPOINT
+              )
+          )
+          .map(async (p) => ({
+            metadata: await metadata(p.path),
+            ...p,
+          }))
       )
 
       setProjects(filteredProjects)
@@ -78,7 +88,7 @@ const Home = () => {
 
   async function handleRenameProject(
     e: FormEvent<HTMLFormElement>,
-    project: FileEntry
+    project: FileWithMetadata
   ) {
     const { newProjectName } = Object.fromEntries(
       new FormData(e.target as HTMLFormElement)
@@ -97,7 +107,7 @@ const Home = () => {
     }
   }
 
-  async function handleDeleteProject(project: FileEntry) {
+  async function handleDeleteProject(project: FileWithMetadata) {
     if (project.path) {
       await removeDir(project.path, { recursive: true }).catch((err) => {
         console.error('Error deleting project:', err)
@@ -111,7 +121,7 @@ const Home = () => {
 
   function getSortFunction(sortBy: string | null) {
     if (sortBy?.includes('name')) {
-      return (a: FileEntry, b: FileEntry) => {
+      return (a: FileWithMetadata, b: FileWithMetadata) => {
         if (a.name && b.name) {
           return sortBy.includes('desc')
             ? a.name.localeCompare(b.name)
@@ -120,7 +130,7 @@ const Home = () => {
         return 0
       }
     }
-    return (a: FileEntry, b: FileEntry) => {
+    return (a: FileWithMetadata, b: FileWithMetadata) => {
       if (a.name && b.name) {
         return b.name.localeCompare(a.name)
       }

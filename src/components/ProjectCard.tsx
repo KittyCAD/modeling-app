@@ -1,6 +1,5 @@
-import { FileEntry } from '@tauri-apps/api/fs'
 import { FormEvent, useState } from 'react'
-import { paths } from '../Router'
+import { type FileWithMetadata, paths } from '../Router'
 import { Link } from 'react-router-dom'
 import { ActionButton } from './ActionButton'
 import {
@@ -19,12 +18,12 @@ function ProjectCard({
   handleDeleteProject,
   ...props
 }: {
-  project: FileEntry
+  project: FileWithMetadata
   handleRenameProject: (
     e: FormEvent<HTMLFormElement>,
-    f: FileEntry
+    f: FileWithMetadata
   ) => Promise<void>
-  handleDeleteProject: (f: FileEntry) => Promise<void>
+  handleDeleteProject: (f: FileWithMetadata) => Promise<void>
 }) {
   useHotkeys('esc', () => setIsEditing(false))
   const [isEditing, setIsEditing] = useState(false)
@@ -69,13 +68,17 @@ function ProjectCard({
         </form>
       ) : (
         <>
-          <div className="p-1 flex gap-2 items-center">
+          <div className="p-1 flex flex-col gap-2">
             <Link
               to={`${paths.FILE}/${encodeURIComponent(project.path)}`}
               className="flex-1"
             >
               {project.name?.replace(FILE_EXT, '')}
             </Link>
+            <span className="text-chalkboard-40 dark:text-chalkboard-60 text-xs">
+              Edited {project.metadata.modifiedAt.toLocaleTimeString()}{' '}
+              {project.metadata.modifiedAt.toLocaleDateString()}
+            </span>
             <div className="absolute bottom-2 right-2 flex gap-1 items-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
               <ActionButton
                 Element="button"
