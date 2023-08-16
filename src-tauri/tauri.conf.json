@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "KittyCAD Modeling",
-    "version": "0.0.3"
+    "version": "0.0.4"
   },
   "tauri": {
     "allowlist": {
@@ -78,7 +78,7 @@
     "updater": {
       "active": true,
       "endpoints": [
-        "https://releases.myapp.com/{{target}}/{{arch}}/{{current_version}}"
+        "http://localhost:8000/{{target}}/{{arch}}/{{current_version}}"
       ],
       "dialog": true,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEUzNzA4MjBEQjFBRTY4NzYKUldSMmFLNnhEWUp3NCtsT21Jd05wQktOaGVkOVp6MUFma0hNTDRDSnI2RkJJTEZOWG1ncFhqcU8K"
