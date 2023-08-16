@@ -166,7 +166,6 @@ export const ExportButton = () => {
           </form>
           <div className="flex justify-between mt-6">
             <ActionButton
-              Element="button"
               onClick={closeModal}
               icon={{
                 icon: faXmark,

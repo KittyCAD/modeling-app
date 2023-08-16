@@ -16,7 +16,7 @@ import { paths } from '../Router'
 
 export const Settings = () => {
   const navigate = useNavigate()
-  useHotkeys('esc', () => navigate('../'))
+  useHotkeys('esc', () => navigate(paths.INDEX))
   const {
     defaultDir,
     setDefaultDir,
@@ -46,7 +46,6 @@ export const Settings = () => {
     theme: s.theme,
     setTheme: s.setTheme,
   }))
-  const ogDefaultDir = useRef(defaultDir)
   const ogDefaultProjectName = useRef(defaultProjectName)
 
   async function handleDirectorySelection() {
@@ -66,7 +65,7 @@ export const Settings = () => {
       <AppHeader showToolbar={false}>
         <ActionButton
           Element="link"
-          to={'../'}
+          to={paths.INDEX}
           icon={{
             icon: faXmark,
             bgClassName: 'bg-destroy-80',
@@ -106,11 +105,7 @@ export const Settings = () => {
                     base: defaultDir.base,
                     dir: e.target.value,
                   })
-                }}
-                onBlur={() => {
-                  ogDefaultDir.current.dir !== defaultDir.dir &&
-                    toast.success('Default directory updated')
-                  ogDefaultDir.current.dir = defaultDir.dir
+                  toast.success('Default directory updated')
                 }}
               />
               <ActionButton
@@ -143,7 +138,6 @@ export const Settings = () => {
             onBlur={() => {
               ogDefaultProjectName.current !== defaultProjectName &&
                 toast.success('Default project name updated')
-              ogDefaultProjectName.current = defaultProjectName
             }}
           />
         </SettingsSection>
@@ -228,10 +222,9 @@ export const Settings = () => {
           description="Replay the onboarding process"
         >
           <ActionButton
-            Element="button"
             onClick={() => {
               setOnboardingStatus('')
-              navigate('..' + paths.ONBOARDING.INDEX)
+              navigate(paths.ONBOARDING.INDEX)
             }}
             icon={{ icon: faArrowRotateBack }}
           >

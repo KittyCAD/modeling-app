@@ -73,7 +73,6 @@ export const DebugPanel = ({ className, ...props }: CollapsiblePanelProps) => {
           />
         </div>
         <ActionButton
-          Element="button"
           onClick={() => {
             engineCommandManager?.sendSceneCommand({
               type: 'modeling_cmd_req',

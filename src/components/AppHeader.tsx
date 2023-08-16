@@ -3,17 +3,14 @@ import { Toolbar } from '../Toolbar'
 import { useStore } from '../useStore'
 import UserSidebarMenu from './UserSidebarMenu'
 import { paths } from '../Router'
-import { isTauri } from '../lib/isTauri'
 
 interface AppHeaderProps extends React.PropsWithChildren {
   showToolbar?: boolean
-  filename?: string
   className?: string
 }
 
 export const AppHeader = ({
   showToolbar = true,
-  filename = '',
   children,
   className = '',
 }: AppHeaderProps) => {
@@ -28,18 +25,13 @@ export const AppHeader = ({
         className
       }
     >
-      <Link
-        to={isTauri() ? paths.HOME : paths.INDEX}
-        className="flex items-center gap-4"
-      >
+      <Link to={paths.INDEX}>
         <img
           src="/kitt-arcade-winking.svg"
           alt="KittyCAD App"
           className="h-9 w-auto"
         />
-        <span className="text-sm text-chalkboard-110 dark:text-chalkboard-20 min-w-max">
-          {isTauri() && filename ? filename : 'KittyCAD Modeling App'}
-        </span>
+        <span className="sr-only">KittyCAD App</span>
       </Link>
       {/* Toolbar if the context deems it */}
       {showToolbar && (

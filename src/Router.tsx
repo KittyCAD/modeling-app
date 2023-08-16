@@ -13,16 +13,6 @@ import Onboarding, {
 } from './routes/Onboarding'
 import SignIn from './routes/SignIn'
 import { Auth } from './Auth'
-import { isTauri } from './lib/isTauri'
-import Home from './routes/Home'
-import { FileEntry, readDir, readTextFile } from '@tauri-apps/api/fs'
-import makeUrlPathRelative from './lib/makeUrlPathRelative'
-import {
-  initializeProjectDirectory,
-  isProjectDirectory,
-  PROJECT_ENTRYPOINT,
-} from './lib/tauriFS'
-import { metadata, type Metadata } from 'tauri-plugin-fs-extra-api'
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {
@@ -36,34 +26,16 @@ const prependRoutes =
 
 export const paths = {
   INDEX: '/',
-  HOME: '/home',
-  FILE: '/file',
   SETTINGS: '/settings',
   SIGN_IN: '/signin',
   ONBOARDING: prependRoutes(onboardingPaths)(
-    '/onboarding'
+    '/onboarding/'
   ) as typeof onboardingPaths,
-}
-
-export type IndexLoaderData = {
-  code: string | null
-}
-
-export type ProjectWithEntryPointMetadata = FileEntry & {
-  entrypoint_metadata: Metadata
-}
-export type HomeLoaderData = {
-  projects: ProjectWithEntryPointMetadata[]
 }
 
 const router = createBrowserRouter([
   {
     path: paths.INDEX,
-    loader: () =>
-      isTauri() ? redirect(paths.HOME) : redirect(paths.FILE + '/new'),
-  },
-  {
-    path: paths.FILE + '/:id',
     element: (
       <Auth>
         <Outlet />
@@ -71,10 +43,7 @@ const router = createBrowserRouter([
       </Auth>
     ),
     errorElement: <ErrorPage />,
-    loader: async ({
-      request,
-      params,
-    }): Promise<IndexLoaderData | Response> => {
+    loader: ({ request }) => {
       const store = localStorage.getItem('store')
       if (store === null) {
         return redirect(paths.ONBOARDING.INDEX)
@@ -91,69 +60,20 @@ const router = createBrowserRouter([
           notEnRouteToOnboarding && hasValidOnboardingStatus
 
         if (shouldRedirectToOnboarding) {
-          return redirect(makeUrlPathRelative(paths.ONBOARDING.INDEX) + status)
+          return redirect(paths.ONBOARDING.INDEX + status)
         }
       }
-
-      if (params.id && params.id !== 'new') {
-        // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
-        const code = await readTextFile(params.id + '/' + PROJECT_ENTRYPOINT)
-
-        return {
-          code,
-        }
-      }
-
-      return {
-        code: '',
-      }
+      return null
     },
     children: [
       {
-        path: makeUrlPathRelative(paths.SETTINGS),
+        path: paths.SETTINGS,
         element: <Settings />,
       },
       {
-        path: makeUrlPathRelative(paths.ONBOARDING.INDEX),
+        path: paths.ONBOARDING.INDEX,
         element: <Onboarding />,
         children: onboardingRoutes,
-      },
-    ],
-  },
-  {
-    path: paths.HOME,
-    element: (
-      <Auth>
-        <Outlet />
-        <Home />
-      </Auth>
-    ),
-    loader: async () => {
-      if (!isTauri()) {
-        return redirect(paths.FILE + '/new')
-      }
-
-      const projectDir = await initializeProjectDirectory()
-      const projectsNoMeta = (await readDir(projectDir.dir)).filter(
-        isProjectDirectory
-      )
-      const projects = await Promise.all(
-        projectsNoMeta.map(async (p) => ({
-          entrypoint_metadata: await metadata(
-            p.path + '/' + PROJECT_ENTRYPOINT
-          ),
-          ...p,
-        }))
-      )
-
-      return {
-        projects,
-      }
-    },
-    children: [
-      {
-        path: makeUrlPathRelative(paths.SETTINGS),
-        element: <Settings />,
       },
     ],
   },

@@ -2,7 +2,7 @@ import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../../components/ActionButton'
 import { useDismiss } from '.'
 
-export default function Sketching() {
+const Sketching = () => {
   const dismiss = useDismiss()
 
   return (
@@ -14,7 +14,6 @@ export default function Sketching() {
         </p>
         <div className="flex justify-between mt-6">
           <ActionButton
-            Element="button"
             onClick={dismiss}
             icon={{
               icon: faXmark,
@@ -26,11 +25,7 @@ export default function Sketching() {
           >
             Dismiss
           </ActionButton>
-          <ActionButton
-            Element="button"
-            onClick={dismiss}
-            icon={{ icon: faArrowRight }}
-          >
+          <ActionButton onClick={dismiss} icon={{ icon: faArrowRight }}>
             Finish
           </ActionButton>
         </div>
@@ -38,3 +33,5 @@ export default function Sketching() {
     </div>
   )
 }
+
+export default Sketching

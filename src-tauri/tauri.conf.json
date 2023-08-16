@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "KittyCAD Modeling",
-    "version": "0.0.4"
+    "version": "0.0.3"
   },
   "tauri": {
     "allowlist": {
@@ -38,9 +38,6 @@
       },
       "shell": {
         "open": true
-      },
-      "path": {
-        "all": true
       }
     },
     "bundle": {

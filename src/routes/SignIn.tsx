@@ -61,7 +61,6 @@ const SignIn = () => {
         </p>
         {isTauri() ? (
           <ActionButton
-            Element="button"
             onClick={signInTauri}
             icon={{ icon: faSignInAlt }}
             className="w-fit mt-4"

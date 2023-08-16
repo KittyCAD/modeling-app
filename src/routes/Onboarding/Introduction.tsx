@@ -1,10 +1,10 @@
 import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../../components/ActionButton'
-import { onboardingPaths, useDismiss, useNextClick } from '.'
+import { useDismiss, useNextClick } from '.'
 
-export default function Introduction() {
+const Introduction = () => {
   const dismiss = useDismiss()
-  const next = useNextClick(onboardingPaths.UNITS)
+  const next = useNextClick('units')
 
   return (
     <div className="fixed grid place-content-center inset-0 bg-chalkboard-110/50 z-50">
@@ -22,7 +22,6 @@ export default function Introduction() {
         </p>
         <div className="flex justify-between mt-6">
           <ActionButton
-            Element="button"
             onClick={dismiss}
             icon={{
               icon: faXmark,
@@ -34,11 +33,7 @@ export default function Introduction() {
           >
             Dismiss
           </ActionButton>
-          <ActionButton
-            Element="button"
-            onClick={next}
-            icon={{ icon: faArrowRight }}
-          >
+          <ActionButton onClick={next} icon={{ icon: faArrowRight }}>
             Get Started
           </ActionButton>
         </div>
@@ -46,3 +41,5 @@ export default function Introduction() {
     </div>
   )
 }
+
+export default Introduction

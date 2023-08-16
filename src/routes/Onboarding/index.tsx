@@ -8,13 +8,12 @@ import Camera from './Camera'
 import Sketching from './Sketching'
 import { useCallback } from 'react'
 import { paths } from '../../Router'
-import makeUrlPathRelative from '../../lib/makeUrlPathRelative'
 
 export const onboardingPaths = {
-  INDEX: '/',
-  UNITS: '/units',
-  CAMERA: '/camera',
-  SKETCHING: '/sketching',
+  INDEX: '',
+  UNITS: 'units',
+  CAMERA: 'camera',
+  SKETCHING: 'sketching',
 }
 
 export const onboardingRoutes = [
@@ -23,15 +22,15 @@ export const onboardingRoutes = [
     element: <Introduction />,
   },
   {
-    path: makeUrlPathRelative(onboardingPaths.UNITS),
+    path: onboardingPaths.UNITS,
     element: <Units />,
   },
   {
-    path: makeUrlPathRelative(onboardingPaths.CAMERA),
+    path: onboardingPaths.CAMERA,
     element: <Camera />,
   },
   {
-    path: makeUrlPathRelative(onboardingPaths.SKETCHING),
+    path: onboardingPaths.SKETCHING,
     element: <Sketching />,
   },
 ]
@@ -44,7 +43,7 @@ export function useNextClick(newStatus: string) {
 
   return useCallback(() => {
     setOnboardingStatus(newStatus)
-    navigate((newStatus !== onboardingPaths.UNITS ? '..' : '.') + newStatus)
+    navigate('/onboarding/' + newStatus)
   }, [newStatus, setOnboardingStatus, navigate])
 }
 

@@ -1,14 +1,14 @@
 import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../../components/ActionButton'
-import { onboardingPaths, useDismiss, useNextClick } from '.'
+import { useDismiss, useNextClick } from '.'
 import { useStore } from '../../useStore'
 
-export default function Units() {
+const Units = () => {
   const { isMouseDownInStream } = useStore((s) => ({
     isMouseDownInStream: s.isMouseDownInStream,
   }))
   const dismiss = useDismiss()
-  const next = useNextClick(onboardingPaths.SKETCHING)
+  const next = useNextClick('sketching')
 
   return (
     <div className="fixed grid justify-center items-end inset-0 z-50 pointer-events-none">
@@ -26,7 +26,6 @@ export default function Units() {
         </p>
         <div className="flex justify-between mt-6">
           <ActionButton
-            Element="button"
             onClick={dismiss}
             icon={{
               icon: faXmark,
@@ -38,11 +37,7 @@ export default function Units() {
           >
             Dismiss
           </ActionButton>
-          <ActionButton
-            Element="button"
-            onClick={next}
-            icon={{ icon: faArrowRight }}
-          >
+          <ActionButton onClick={next} icon={{ icon: faArrowRight }}>
             Next: Sketching
           </ActionButton>
         </div>
@@ -50,3 +45,5 @@ export default function Units() {
     </div>
   )
 }
+
+export default Units
