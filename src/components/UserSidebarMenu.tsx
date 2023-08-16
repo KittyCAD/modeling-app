@@ -2,9 +2,11 @@ import { Popover } from '@headlessui/react'
 import { User, useStore } from '../useStore'
 import { ActionButton } from './ActionButton'
 import { faBars, faGear, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { paths } from '../Router'
+import makeUrlPathRelative from '../lib/makeUrlPathRelative'
 
 const UserSidebarMenu = ({ user }: { user?: User }) => {
   const displayedName = getDisplayName(user)
@@ -95,16 +97,25 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
             )}
             <div className="p-4 flex flex-col gap-2">
               <ActionButton
+                Element="button"
                 icon={{ icon: faGear }}
                 className="border-transparent dark:border-transparent dark:hover:border-liquid-60"
                 onClick={() => {
                   // since /settings is a nested route the sidebar doesn't close
                   // automatically when navigating to it
                   close()
-                  navigate(paths.SETTINGS)
+                  navigate(makeUrlPathRelative(paths.SETTINGS))
                 }}
               >
                 Settings
+              </ActionButton>
+              <ActionButton
+                Element="link"
+                to="https://github.com/KittyCAD/modeling-app/discussions"
+                icon={{ icon: faGithub }}
+                className="border-transparent dark:border-transparent dark:hover:border-liquid-60"
+              >
+                Request a feature
               </ActionButton>
               <ActionButton
                 Element="button"

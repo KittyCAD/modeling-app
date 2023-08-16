@@ -98,6 +98,7 @@ fn main() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![login, read_toml, read_txt_file])
+        .plugin(tauri_plugin_fs_extra::init())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

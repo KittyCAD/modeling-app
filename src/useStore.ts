@@ -402,10 +402,10 @@ export const useStore = create<StoreState>()(
 
       // tauri specific app settings
       defaultDir: {
-        dir: '~/Documents/',
+        dir: '',
       },
       setDefaultDir: (dir) => set({ defaultDir: dir }),
-      defaultProjectName: 'new-project-$n',
+      defaultProjectName: 'new-project-$nnn',
       setDefaultProjectName: (defaultProjectName) =>
         set({ defaultProjectName }),
       defaultUnitSystem: 'imperial',

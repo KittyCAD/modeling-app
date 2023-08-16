@@ -43,8 +43,16 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { TEST } from './env'
 import { getNormalisedCoordinates } from './lib/utils'
 import { getSystemTheme } from './lib/getSystemTheme'
+import { isTauri } from './lib/isTauri'
+import { useLoaderData, useParams } from 'react-router-dom'
+import { writeTextFile } from '@tauri-apps/api/fs'
+import { FILE_EXT, PROJECT_ENTRYPOINT } from './lib/tauriFS'
+import { IndexLoaderData } from './Router'
+import { toast } from 'react-hot-toast'
 
 export function App() {
+  const { code: loadedCode } = useLoaderData() as IndexLoaderData
+  const pathParams = useParams()
   const streamRef = useRef<HTMLDivElement>(null)
   useHotKeyListener()
   const {
@@ -151,9 +159,34 @@ export function App() {
       ? 'opacity-40'
       : ''
 
+  // Use file code loaded from disk
+  // on mount, and overwrite any locally-stored code
+  useEffect(() => {
+    if (isTauri() && loadedCode !== null) {
+      setCode(loadedCode)
+    }
+    return () => {
+      // Clear code on unmount if in desktop app
+      if (isTauri()) {
+        setCode('')
+      }
+    }
+  }, [loadedCode, setCode])
+
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
     setCode(value)
+    if (isTauri() && pathParams.id) {
+      // Save the file to disk
+      // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
+      writeTextFile(pathParams.id + '/' + PROJECT_ENTRYPOINT, value).catch(
+        (err) => {
+          // TODO: add Sentry per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
+          console.error('error saving file', err)
+          toast.error('Error saving file, please check file permissions')
+        }
+      )
+    }
     if (editorView) {
       editorView?.dispatch({ effects: addLineHighlight.of([0, 0]) })
     }
@@ -412,6 +445,11 @@ export function App() {
           'transition-opacity transition-duration-75 ' +
           paneOpacity +
           (isMouseDownInStream ? ' pointer-events-none' : '')
+        }
+        filename={
+          pathParams.id
+            ?.slice(pathParams.id.lastIndexOf('/') + 1)
+            .replace(FILE_EXT, '') || ''
         }
       />
       <ModalContainer />

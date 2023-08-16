@@ -4,11 +4,11 @@ import { ActionButton } from '../../components/ActionButton'
 import { SettingsSection } from '../Settings'
 import { Toggle } from '../../components/Toggle/Toggle'
 import { useState } from 'react'
-import { useDismiss, useNextClick } from '.'
+import { onboardingPaths, useDismiss, useNextClick } from '.'
 
-const Units = () => {
+export default function Units() {
   const dismiss = useDismiss()
-  const next = useNextClick('camera')
+  const next = useNextClick(onboardingPaths.CAMERA)
   const {
     defaultUnitSystem: ogDefaultUnitSystem,
     setDefaultUnitSystem: saveDefaultUnitSystem,
@@ -67,6 +67,7 @@ const Units = () => {
         </SettingsSection>
         <div className="flex justify-between mt-6">
           <ActionButton
+            Element="button"
             onClick={dismiss}
             icon={{
               icon: faXmark,
@@ -78,7 +79,11 @@ const Units = () => {
           >
             Dismiss
           </ActionButton>
-          <ActionButton onClick={handleNextClick} icon={{ icon: faArrowRight }}>
+          <ActionButton
+            Element="button"
+            onClick={handleNextClick}
+            icon={{ icon: faArrowRight }}
+          >
             Next: Camera
           </ActionButton>
         </div>
@@ -86,5 +91,3 @@ const Units = () => {
     </div>
   )
 }
-
-export default Units
