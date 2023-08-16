@@ -115,7 +115,7 @@ export const Settings = () => {
               />
               <ActionButton
                 Element="button"
-                className="bg-chalkboard-100 hover:bg-chalkboard-90 text-chalkboard-10 border-chalkboard-100 hover:border-chalkboard-70"
+                className="bg-chalkboard-100 dark:bg-chalkboard-90 hover:bg-chalkboard-90 dark:hover:bg-chalkboard-80 !text-chalkboard-10 border-chalkboard-100 hover:border-chalkboard-70"
                 onClick={handleDirectorySelection}
                 icon={{
                   icon: faFolder,
