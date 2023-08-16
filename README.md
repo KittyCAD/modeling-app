@@ -43,6 +43,15 @@ If you want to edit the rust files, you can cd into `src/wasm-lib` and then use 
 
 Worth noting that the integration of the WASM into this project is very hacky because I'm really pushing create-react-app further than what's practical, but focusing on features atm rather than the setup.
 
+## Developing in Chrome
+
+Chrome is in the process of rolling out a new default which
+[blocks Third-Party Cookies](https://developer.chrome.com/en/docs/privacy-sandbox/third-party-cookie-phase-out/).
+If you're having trouble logging into the `modeling-app`, you may need to
+enable third-party cookies. You can enable third-party cookies by clicking on
+the eye with a slash through it in the URL bar, and clicking on "Enable
+Third-Party Cookies".
+
 ## Tauri
 
 To spin up up tauri dev, `yarn install` and `yarn build:wasm` need to have been done before hand then
