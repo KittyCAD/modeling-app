@@ -1,6 +1,6 @@
 {
   "name": "untitled-app",
-  "version": "0.0.4",
+  "version": "0.0.3",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
