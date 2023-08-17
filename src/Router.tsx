@@ -47,6 +47,7 @@ export const paths = {
 
 export type IndexLoaderData = {
   code: string | null
+  project?: ProjectWithEntryPointMetadata
 }
 
 export type ProjectWithEntryPointMetadata = FileEntry & {
@@ -71,6 +72,7 @@ const router = createBrowserRouter([
       </Auth>
     ),
     errorElement: <ErrorPage />,
+    id: paths.FILE,
     loader: async ({
       request,
       params,
@@ -98,9 +100,19 @@ const router = createBrowserRouter([
       if (params.id && params.id !== 'new') {
         // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
         const code = await readTextFile(params.id + '/' + PROJECT_ENTRYPOINT)
+        const entrypoint_metadata = await metadata(
+          params.id + '/' + PROJECT_ENTRYPOINT
+        )
+        const children = await readDir(params.id)
 
         return {
           code,
+          project: {
+            name: params.id.slice(params.id.lastIndexOf('/') + 1),
+            path: params.id,
+            children,
+            entrypoint_metadata,
+          },
         }
       }
 
