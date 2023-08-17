@@ -53,7 +53,7 @@ describe('ProjectSidebarMenu tests', () => {
     )
   })
 
-  test("Renders app name if given no project", () => {
+  test('Renders app name if given no project', () => {
     render(
       <BrowserRouter>
         <ProjectSidebarMenu />
@@ -62,10 +62,12 @@ describe('ProjectSidebarMenu tests', () => {
 
     fireEvent.click(screen.getByTestId('project-sidebar-toggle'))
 
-    expect(screen.getByTestId('projectName')).toHaveTextContent('KittyCAD Modeling App')
+    expect(screen.getByTestId('projectName')).toHaveTextContent(
+      'KittyCAD Modeling App'
+    )
   })
 
-  test("Renders as a link if set to do so", () => {
+  test('Renders as a link if set to do so', () => {
     render(
       <BrowserRouter>
         <ProjectSidebarMenu project={projectWellFormed} renderAsLink={true} />
@@ -73,6 +75,8 @@ describe('ProjectSidebarMenu tests', () => {
     )
 
     expect(screen.getByTestId('project-sidebar-link')).toBeInTheDocument()
-    expect(screen.getByTestId('project-sidebar-link-name')).toHaveTextContent(projectWellFormed.name)
+    expect(screen.getByTestId('project-sidebar-link-name')).toHaveTextContent(
+      projectWellFormed.name
+    )
   })
 })
