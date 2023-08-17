@@ -1,3 +1,6 @@
+use std::collections::HashMap;
+use std::panic::{self};
+
 use crate::abstract_syntax_tree_types::{
     ArrayExpression, BinaryExpression, BinaryPart, BlockStatement, BodyItem, CallExpression,
     ExpressionStatement, FunctionExpression, Identifier, Literal, LiteralIdentifier,
@@ -5,13 +8,12 @@ use crate::abstract_syntax_tree_types::{
     ObjectProperty, PipeExpression, PipeSubstitution, Program, ReturnStatement, UnaryExpression,
     Value, VariableDeclaration, VariableDeclarator,
 };
+use crate::errors::KclError;
 use crate::math_parser::parse_expression;
 use crate::tokeniser::lexer;
 use crate::tokeniser::{Token, TokenType};
-use std::collections::HashMap;
-use std::panic::{self};
+
 use wasm_bindgen::prelude::*;
-extern crate console_error_panic_hook;
 
 fn make_identifier(tokens: &[Token], index: usize) -> Identifier {
     let current_token = &tokens[index];
@@ -447,7 +449,7 @@ struct ValueReturn {
     last_index: usize,
 }
 
-fn make_value(tokens: &Vec<Token>, index: usize) -> Option<ValueReturn> {
+fn make_value(tokens: &Vec<Token>, index: usize) -> Result<ValueReturn, KclError> {
     let current_token = &tokens[index];
     let next = next_meaningful_token(tokens, index, None);
     if next.token.is_some() {
@@ -460,15 +462,15 @@ fn make_value(tokens: &Vec<Token>, index: usize) -> Option<ValueReturn> {
                 if token_after_call_expression_token.token_type == TokenType::Operator
                     && token_after_call_expression_token.value != "|>"
                 {
-                    let binary_expression = make_binary_expression(tokens, index);
-                    return Some(ValueReturn {
+                    let binary_expression = make_binary_expression(tokens, index)?;
+                    return Ok(ValueReturn {
                         value: Value::BinaryExpression(Box::new(binary_expression.expression)),
                         last_index: binary_expression.last_index,
                     });
                 }
             }
-            let call_expression = make_call_expression(tokens, index);
-            return Some(ValueReturn {
+            let call_expression = make_call_expression(tokens, index)?;
+            return Ok(ValueReturn {
                 value: Value::CallExpression(Box::new(call_expression.expression)),
                 last_index: call_expression.last_index,
             });
@@ -481,8 +483,8 @@ fn make_value(tokens: &Vec<Token>, index: usize) -> Option<ValueReturn> {
     {
         let next_token = next.token.clone().unwrap();
         if next_token.token_type == TokenType::Operator {
-            let binary_expression = make_binary_expression(tokens, index);
-            return Some(ValueReturn {
+            let binary_expression = make_binary_expression(tokens, index)?;
+            return Ok(ValueReturn {
                 value: Value::BinaryExpression(Box::new(binary_expression.expression)),
                 last_index: binary_expression.last_index,
             });
@@ -490,14 +492,14 @@ fn make_value(tokens: &Vec<Token>, index: usize) -> Option<ValueReturn> {
     }
     if current_token.token_type == TokenType::Brace && current_token.value == "{" {
         let object_expression = make_object_expression(tokens, index);
-        return Some(ValueReturn {
+        return Ok(ValueReturn {
             value: Value::ObjectExpression(Box::new(object_expression.expression)),
             last_index: object_expression.last_index,
         });
     }
     if current_token.token_type == TokenType::Brace && current_token.value == "[" {
         let array_expression = make_array_expression(tokens, index);
-        return Some(ValueReturn {
+        return Ok(ValueReturn {
             value: Value::ArrayExpression(Box::new(array_expression.expression)),
             last_index: array_expression.last_index,
         });
@@ -510,7 +512,7 @@ fn make_value(tokens: &Vec<Token>, index: usize) -> Option<ValueReturn> {
                 || (next_token.token_type == TokenType::Brace && next_token.value == "["))
         {
             let member_expression = make_member_expression(tokens, index);
-            return Some(ValueReturn {
+            return Ok(ValueReturn {
                 value: Value::MemberExpression(Box::new(member_expression.expression)),
                 last_index: member_expression.last_index,
             });
@@ -518,7 +520,7 @@ fn make_value(tokens: &Vec<Token>, index: usize) -> Option<ValueReturn> {
     }
     if current_token.token_type == TokenType::Word {
         let identifier = make_identifier(tokens, index);
-        return Some(ValueReturn {
+        return Ok(ValueReturn {
             value: Value::Identifier(Box::new(identifier)),
             last_index: index,
         });
@@ -527,7 +529,7 @@ fn make_value(tokens: &Vec<Token>, index: usize) -> Option<ValueReturn> {
         || current_token.token_type == TokenType::String
     {
         let literal = make_literal(tokens, index);
-        return Some(ValueReturn {
+        return Ok(ValueReturn {
             value: Value::Literal(Box::new(literal)),
             last_index: index,
         });
@@ -539,8 +541,8 @@ fn make_value(tokens: &Vec<Token>, index: usize) -> Option<ValueReturn> {
             .token
             .unwrap();
         if arrow_token.token_type == TokenType::Operator && arrow_token.value == "=>" {
-            let function_expression = make_function_expression(tokens, index);
-            return Some(ValueReturn {
+            let function_expression = make_function_expression(tokens, index)?;
+            return Ok(ValueReturn {
                 value: Value::FunctionExpression(Box::new(function_expression.expression)),
                 last_index: function_expression.last_index,
             });
@@ -551,12 +553,13 @@ fn make_value(tokens: &Vec<Token>, index: usize) -> Option<ValueReturn> {
 
     if current_token.token_type == TokenType::Operator && current_token.value == "-" {
         let unary_expression = make_unary_expression(tokens, index);
-        return Some(ValueReturn {
+        return Ok(ValueReturn {
             value: Value::UnaryExpression(Box::new(unary_expression.expression)),
             last_index: unary_expression.last_index,
         });
     }
-    None
+
+    panic!("TODO - handle value")
 }
 
 struct ArrayElementsReturn {
@@ -626,7 +629,7 @@ fn make_pipe_body(
     index: usize,
     previous_values: Vec<Value>,
     previous_non_code_meta: Option<NoneCodeMeta>,
-) -> PipeBodyReturn {
+) -> Result<PipeBodyReturn, KclError> {
     let non_code_meta = match previous_non_code_meta {
         Some(meta) => meta,
         None => NoneCodeMeta {
@@ -639,17 +642,9 @@ fn make_pipe_body(
     let value: Value;
     let last_index: usize;
     if current_token.token_type == TokenType::Operator {
-        let val = make_value(tokens, expression_start.index);
-        match val {
-            Some(ValueReturn {
-                value: v,
-                last_index: l,
-            }) => {
-                value = v;
-                last_index = l;
-            }
-            _ => panic!("Expected a value"),
-        }
+        let val = make_value(tokens, expression_start.index)?;
+        value = val.value;
+        last_index = val.last_index;
     } else {
         panic!("Expected a previous PipeValue if statement to match");
     }
@@ -657,11 +652,11 @@ fn make_pipe_body(
     if next_pipe.token.is_none() {
         let mut _previous_values = previous_values;
         _previous_values.push(value);
-        return PipeBodyReturn {
+        return Ok(PipeBodyReturn {
             body: _previous_values,
             last_index,
             non_code_meta,
-        };
+        });
     }
     let mut _non_code_meta: NoneCodeMeta;
     if next_pipe.non_code_node.is_some() {
@@ -687,13 +682,16 @@ struct BinaryExpressionReturn {
     last_index: usize,
 }
 
-fn make_binary_expression(tokens: &Vec<Token>, index: usize) -> BinaryExpressionReturn {
+fn make_binary_expression(
+    tokens: &Vec<Token>,
+    index: usize,
+) -> Result<BinaryExpressionReturn, KclError> {
     let end_index = find_end_of_binary_expression(tokens, index);
-    let expression = parse_expression(tokens[index..end_index + 1].to_vec());
-    BinaryExpressionReturn {
+    let expression = parse_expression(tokens[index..end_index + 1].to_vec())?;
+    Ok(BinaryExpressionReturn {
         expression,
         last_index: end_index,
-    }
+    })
 }
 
 struct ArgumentsReturn {
@@ -701,15 +699,19 @@ struct ArgumentsReturn {
     last_index: usize,
 }
 
-fn make_arguments(tokens: &Vec<Token>, index: usize, previous_args: Vec<Value>) -> ArgumentsReturn {
+fn make_arguments(
+    tokens: &Vec<Token>,
+    index: usize,
+    previous_args: Vec<Value>,
+) -> Result<ArgumentsReturn, KclError> {
     let brace_or_comma_token = &tokens[index];
     let should_finish_recursion =
         brace_or_comma_token.token_type == TokenType::Brace && brace_or_comma_token.value == ")";
     if should_finish_recursion {
-        return ArgumentsReturn {
+        return Ok(ArgumentsReturn {
             arguments: previous_args,
             last_index: index,
-        };
+        });
     }
     let argument_token = next_meaningful_token(tokens, index, None);
     let argument_token_token = argument_token.token.unwrap();
@@ -752,7 +754,7 @@ fn make_arguments(tokens: &Vec<Token>, index: usize, previous_args: Vec<Value>) 
         || argument_token_token.token_type == TokenType::String)
         && next_brace_or_comma_token.token_type == TokenType::Operator
     {
-        let binary_expression = make_binary_expression(tokens, argument_token.index);
+        let binary_expression = make_binary_expression(tokens, argument_token.index)?;
         let next_comma_or_brace_token_index =
             next_meaningful_token(tokens, binary_expression.last_index, None).index;
         let mut _previous_args = previous_args;
@@ -763,7 +765,7 @@ fn make_arguments(tokens: &Vec<Token>, index: usize, previous_args: Vec<Value>) 
     }
 
     if !is_identifier_or_literal {
-        let binary_expression = make_binary_expression(tokens, next_brace_or_comma.index);
+        let binary_expression = make_binary_expression(tokens, next_brace_or_comma.index)?;
         let mut _previous_args = previous_args;
         _previous_args.push(Value::BinaryExpression(Box::new(
             binary_expression.expression,
@@ -791,7 +793,7 @@ fn make_arguments(tokens: &Vec<Token>, index: usize, previous_args: Vec<Value>) 
         if token_after_closing_brace.token_type == TokenType::Operator
             && token_after_closing_brace.value != "|>"
         {
-            let binary_expression = make_binary_expression(tokens, argument_token.index);
+            let binary_expression = make_binary_expression(tokens, argument_token.index)?;
             let next_comma_or_brace_token_index =
                 next_meaningful_token(tokens, binary_expression.last_index, None).index;
             let mut _previous_args = previous_args;
@@ -800,7 +802,7 @@ fn make_arguments(tokens: &Vec<Token>, index: usize, previous_args: Vec<Value>) 
             )));
             return make_arguments(tokens, next_comma_or_brace_token_index, _previous_args);
         }
-        let call_expression = make_call_expression(tokens, argument_token.index);
+        let call_expression = make_call_expression(tokens, argument_token.index)?;
         let next_comma_or_brace_token_index =
             next_meaningful_token(tokens, call_expression.last_index, None).index;
         let mut _previous_args = previous_args;
@@ -833,13 +835,16 @@ pub struct CallExpressionResult {
     last_index: usize,
 }
 
-pub fn make_call_expression(tokens: &Vec<Token>, index: usize) -> CallExpressionResult {
+pub fn make_call_expression(
+    tokens: &Vec<Token>,
+    index: usize,
+) -> Result<CallExpressionResult, KclError> {
     let current_token = tokens[index].clone();
     let brace_token = next_meaningful_token(tokens, index, None);
     let callee = make_identifier(tokens, index);
-    let args = make_arguments(tokens, brace_token.index, vec![]);
+    let args = make_arguments(tokens, brace_token.index, vec![])?;
     let closing_brace_token = tokens[args.last_index].clone();
-    CallExpressionResult {
+    Ok(CallExpressionResult {
         expression: CallExpression {
             start: current_token.start,
             end: closing_brace_token.end,
@@ -848,7 +853,7 @@ pub fn make_call_expression(tokens: &Vec<Token>, index: usize) -> CallExpression
             optional: false,
         },
         last_index: args.last_index,
-    }
+    })
 }
 
 struct PipeExpressionResult {
@@ -856,11 +861,14 @@ struct PipeExpressionResult {
     last_index: usize,
 }
 
-fn make_pipe_expression(tokens: &Vec<Token>, index: usize) -> PipeExpressionResult {
+fn make_pipe_expression(
+    tokens: &Vec<Token>,
+    index: usize,
+) -> Result<PipeExpressionResult, KclError> {
     let current_token = tokens[index].clone();
-    let pipe_body_result = make_pipe_body(tokens, index, vec![], None);
+    let pipe_body_result = make_pipe_body(tokens, index, vec![], None)?;
     let end_token = tokens[pipe_body_result.last_index].clone();
-    PipeExpressionResult {
+    Ok(PipeExpressionResult {
         expression: PipeExpression {
             start: current_token.start,
             end: end_token.end,
@@ -868,7 +876,7 @@ fn make_pipe_expression(tokens: &Vec<Token>, index: usize) -> PipeExpressionResu
             non_code_meta: pipe_body_result.non_code_meta,
         },
         last_index: pipe_body_result.last_index,
-    }
+    })
 }
 
 struct VariableDeclaratorsReturn {
@@ -880,7 +888,7 @@ fn make_variable_declarators(
     tokens: &Vec<Token>,
     index: usize,
     previous_declarators: Vec<VariableDeclarator>,
-) -> VariableDeclaratorsReturn {
+) -> Result<VariableDeclaratorsReturn, KclError> {
     let current_token = tokens[index].clone();
     let assignment = next_meaningful_token(tokens, index, None);
     let assignment_token = assignment.token.unwrap();
@@ -893,7 +901,7 @@ fn make_variable_declarators(
     let next_pipe_operator = has_pipe_operator(tokens, pipe_start_index, None);
     let init: Value;
     let last_index = if next_pipe_operator.token.is_some() {
-        let pipe_expression_result = make_pipe_expression(tokens, assignment.index);
+        let pipe_expression_result = make_pipe_expression(tokens, assignment.index)?;
         init = Value::PipeExpression(Box::new(pipe_expression_result.expression));
         pipe_expression_result.last_index
     } else {
@@ -909,10 +917,10 @@ fn make_variable_declarators(
     };
     let mut declarations = previous_declarators;
     declarations.push(current_declarator);
-    VariableDeclaratorsReturn {
+    Ok(VariableDeclaratorsReturn {
         declarations,
         last_index,
-    }
+    })
 }
 
 struct VariableDeclarationResult {
@@ -920,12 +928,15 @@ struct VariableDeclarationResult {
     last_index: usize,
 }
 
-fn make_variable_declaration(tokens: &Vec<Token>, index: usize) -> VariableDeclarationResult {
+fn make_variable_declaration(
+    tokens: &Vec<Token>,
+    index: usize,
+) -> Result<VariableDeclarationResult, KclError> {
     let current_token = tokens[index].clone();
     let declaration_start_token = next_meaningful_token(tokens, index, None);
     let variable_declarators_result =
-        make_variable_declarators(tokens, declaration_start_token.index, vec![]);
-    VariableDeclarationResult {
+        make_variable_declarators(tokens, declaration_start_token.index, vec![])?;
+    Ok(VariableDeclarationResult {
         declaration: VariableDeclaration {
             start: current_token.start,
             end: variable_declarators_result.declarations
@@ -941,7 +952,7 @@ fn make_variable_declaration(tokens: &Vec<Token>, index: usize) -> VariableDecla
             declarations: variable_declarators_result.declarations,
         },
         last_index: variable_declarators_result.last_index,
-    }
+    })
 }
 
 pub struct ParamsResult {
@@ -1020,14 +1031,17 @@ struct ExpressionStatementResult {
     last_index: usize,
 }
 
-fn make_expression_statement(tokens: &Vec<Token>, index: usize) -> ExpressionStatementResult {
+fn make_expression_statement(
+    tokens: &Vec<Token>,
+    index: usize,
+) -> Result<ExpressionStatementResult, KclError> {
     let current_token = &tokens[index];
     let next = next_meaningful_token(tokens, index, None);
     let next_token = &next.token.unwrap();
     if next_token.token_type == TokenType::Brace && next_token.value == "(" {
-        let call_expression = make_call_expression(tokens, index);
+        let call_expression = make_call_expression(tokens, index)?;
         let end = tokens[call_expression.last_index].end;
-        return ExpressionStatementResult {
+        return Ok(ExpressionStatementResult {
             expression: ExpressionStatement {
                 start: current_token.start,
                 // end: call_expression.last_index,
@@ -1035,17 +1049,17 @@ fn make_expression_statement(tokens: &Vec<Token>, index: usize) -> ExpressionSta
                 expression: Value::CallExpression(Box::new(call_expression.expression)),
             },
             last_index: call_expression.last_index,
-        };
+        });
     }
-    let binary_expression = make_binary_expression(tokens, index);
-    ExpressionStatementResult {
+    let binary_expression = make_binary_expression(tokens, index)?;
+    Ok(ExpressionStatementResult {
         expression: ExpressionStatement {
             start: current_token.start,
             end: binary_expression.expression.end,
             expression: Value::BinaryExpression(Box::new(binary_expression.expression)),
         },
         last_index: binary_expression.last_index,
-    }
+    })
 }
 
 struct ObjectPropertiesResult {
@@ -1154,22 +1168,22 @@ fn make_body(
     token_index: usize,
     previous_body: Vec<BodyItem>,
     previous_non_code_meta: NoneCodeMeta,
-) -> BodyResult {
+) -> Result<BodyResult, KclError> {
     let mut non_code_meta = previous_non_code_meta;
     if token_index >= tokens.len() - 1 {
-        return BodyResult {
+        return Ok(BodyResult {
             body: previous_body,
             last_index: token_index,
             non_code_meta,
-        };
+        });
     }
     let token = &tokens[token_index];
     if token.token_type == TokenType::Brace && token.value == "}" {
-        return BodyResult {
+        return Ok(BodyResult {
             body: previous_body,
             last_index: token_index,
             non_code_meta,
-        };
+        });
     }
     if is_not_code_token(token) {
         let next_token = next_meaningful_token(tokens, token_index, Some(0));
@@ -1193,7 +1207,7 @@ fn make_body(
     }
 
     if token.token_type == TokenType::Word && (token.value == *"const" || token.value == "fn") {
-        let declaration = make_variable_declaration(tokens, token_index);
+        let declaration = make_variable_declaration(tokens, token_index)?;
         let next_thing = next_meaningful_token(tokens, declaration.last_index, None);
         if next_thing.non_code_node.is_some() {
             non_code_meta
@@ -1207,12 +1221,12 @@ fn make_body(
             kind: declaration.declaration.kind,
             declarations: declaration.declaration.declarations,
         }));
-        let body = make_body(tokens, next_thing.index, _previous_body, non_code_meta);
-        return BodyResult {
+        let body = make_body(tokens, next_thing.index, _previous_body, non_code_meta)?;
+        return Ok(BodyResult {
             body: body.body,
             last_index: body.last_index,
             non_code_meta: body.non_code_meta,
-        };
+        });
     }
 
     if token.token_type == TokenType::Word && token.value == "return" {
@@ -1229,12 +1243,12 @@ fn make_body(
             end: statement.statement.end,
             argument: statement.statement.argument,
         }));
-        let body = make_body(tokens, next_thing.index, _previous_body, non_code_meta);
-        return BodyResult {
+        let body = make_body(tokens, next_thing.index, _previous_body, non_code_meta)?;
+        return Ok(BodyResult {
             body: body.body,
             last_index: body.last_index,
             non_code_meta: body.non_code_meta,
-        };
+        });
     }
 
     let next_token = next.token.unwrap();
@@ -1242,7 +1256,7 @@ fn make_body(
         && next_token.token_type == TokenType::Brace
         && next_token.value == "("
     {
-        let expression = make_expression_statement(tokens, token_index);
+        let expression = make_expression_statement(tokens, token_index)?;
         let next_thing = next_meaningful_token(tokens, expression.last_index, None);
         if next_thing.non_code_node.is_some() {
             non_code_meta
@@ -1255,12 +1269,12 @@ fn make_body(
             end: expression.expression.end,
             expression: expression.expression.expression,
         }));
-        let body = make_body(tokens, next_thing.index, _previous_body, non_code_meta);
-        return BodyResult {
+        let body = make_body(tokens, next_thing.index, _previous_body, non_code_meta)?;
+        return Ok(BodyResult {
             body: body.body,
             last_index: body.last_index,
             non_code_meta: body.non_code_meta,
-        };
+        });
     }
 
     let next_thing = next_meaningful_token(tokens, token_index, None);
@@ -1273,18 +1287,18 @@ fn make_body(
                 .none_code_nodes
                 .insert(previous_body.len(), next_thing.non_code_node.unwrap());
         }
-        let expression = make_expression_statement(tokens, token_index);
+        let expression = make_expression_statement(tokens, token_index)?;
         let mut _previous_body = previous_body;
         _previous_body.push(BodyItem::ExpressionStatement(ExpressionStatement {
             start: expression.expression.start,
             end: expression.expression.end,
             expression: expression.expression.expression,
         }));
-        return BodyResult {
+        return Ok(BodyResult {
             body: _previous_body,
             last_index: expression.last_index,
             non_code_meta,
-        };
+        });
     }
 
     panic!("Not implemented");
@@ -1295,7 +1309,10 @@ struct BlockStatementResult {
     last_index: usize,
 }
 
-fn make_block_statement(tokens: &Vec<Token>, index: usize) -> BlockStatementResult {
+fn make_block_statement(
+    tokens: &Vec<Token>,
+    index: usize,
+) -> Result<BlockStatementResult, KclError> {
     let opening_curly = tokens[index].clone();
     let next_token = &tokens[index + 1];
     let next_token_index = index + 1;
@@ -1317,9 +1334,9 @@ fn make_block_statement(tokens: &Vec<Token>, index: usize) -> BlockStatementResu
                 none_code_nodes: HashMap::new(),
                 start: None,
             },
-        )
+        )?
     };
-    BlockStatementResult {
+    Ok(BlockStatementResult {
         block: BlockStatement {
             start: opening_curly.start,
             end: tokens[body.last_index].end,
@@ -1327,7 +1344,7 @@ fn make_block_statement(tokens: &Vec<Token>, index: usize) -> BlockStatementResu
             non_code_meta: body.non_code_meta,
         },
         last_index: body.last_index,
-    }
+    })
 }
 
 struct FunctionExpressionResult {
@@ -1335,14 +1352,17 @@ struct FunctionExpressionResult {
     last_index: usize,
 }
 
-fn make_function_expression(tokens: &Vec<Token>, index: usize) -> FunctionExpressionResult {
+fn make_function_expression(
+    tokens: &Vec<Token>,
+    index: usize,
+) -> Result<FunctionExpressionResult, KclError> {
     let current_token = &tokens[index];
     let closing_brace_index = find_closing_brace(tokens, index, 0, "");
     let arrow_token = next_meaningful_token(tokens, closing_brace_index, None);
     let body_start_token = next_meaningful_token(tokens, arrow_token.index, None);
     let params = make_params(tokens, index, vec![]);
-    let block = make_block_statement(tokens, body_start_token.index);
-    FunctionExpressionResult {
+    let block = make_block_statement(tokens, body_start_token.index)?;
+    Ok(FunctionExpressionResult {
         expression: FunctionExpression {
             start: current_token.start,
             end: tokens[block.last_index].end,
@@ -1351,10 +1371,10 @@ fn make_function_expression(tokens: &Vec<Token>, index: usize) -> FunctionExpres
             body: block.block,
         },
         last_index: block.last_index,
-    }
+    })
 }
 
-pub fn abstract_syntax_tree(tokens: &Vec<Token>) -> Program {
+pub fn abstract_syntax_tree(tokens: &Vec<Token>) -> Result<Program, KclError> {
     let body = make_body(
         tokens,
         0,
@@ -1363,17 +1383,17 @@ pub fn abstract_syntax_tree(tokens: &Vec<Token>) -> Program {
             none_code_nodes: HashMap::new(),
             start: None,
         },
-    );
+    )?;
     let end = match tokens.get(body.last_index) {
         Some(token) => token.end,
         None => tokens[tokens.len() - 1].end,
     };
-    Program {
+    Ok(Program {
         start: 0,
         end,
         body: body.body,
         non_code_meta: body.non_code_meta,
-    }
+    })
 }
 
 #[wasm_bindgen]

@@ -1,9 +1,12 @@
+use anyhow::Result;
+use serde::{Deserialize, Serialize};
+
 use crate::abstract_syntax_tree_types::{
     BinaryExpression, BinaryPart, CallExpression, Identifier, Literal,
 };
+use crate::errors::KclError;
 use crate::parser::{find_closing_brace, is_not_code_token, make_call_expression};
 use crate::tokeniser::{Token, TokenType};
-use serde::{Deserialize, Serialize};
 
 pub fn precedence(operator: &str) -> u8 {
     // might be useful for reference to make it match
@@ -29,21 +32,21 @@ pub fn reverse_polish_notation(
     }
     let current_token = &tokens[0];
     let next = tokens.get(1);
-    if current_token.token_type == TokenType::Word
-        && next.is_some()
-        && next.unwrap().token_type == TokenType::Brace
-        && next.unwrap().value == "("
-    {
-        let closing_brace = find_closing_brace(tokens, 1, 0, "");
-        return reverse_polish_notation(
-            &tokens[closing_brace + 1..].to_vec(),
-            &previous_postfix
-                .iter()
-                .cloned()
-                .chain(tokens[0..closing_brace + 1].iter().cloned())
-                .collect::<Vec<Token>>(),
-            operators,
-        );
+    if current_token.token_type == TokenType::Word {
+        if let Some(next) = next {
+            if next.token_type == TokenType::Brace && next.value == "(" {
+                let closing_brace = find_closing_brace(tokens, 1, 0, "");
+                return reverse_polish_notation(
+                    &tokens[closing_brace + 1..].to_vec(),
+                    &previous_postfix
+                        .iter()
+                        .cloned()
+                        .chain(tokens[0..closing_brace + 1].iter().cloned())
+                        .collect::<Vec<Token>>(),
+                    operators,
+                );
+            }
+        }
     } else if current_token.token_type == TokenType::Number
         || current_token.token_type == TokenType::Word
         || current_token.token_type == TokenType::String
@@ -187,23 +190,23 @@ pub enum MathExpression {
 fn build_tree(
     reverse_polish_notation_tokens: Vec<Token>,
     stack: Vec<MathExpression>,
-) -> BinaryExpression {
+) -> Result<BinaryExpression, KclError> {
     if reverse_polish_notation_tokens.is_empty() {
         return match &stack[0] {
-            MathExpression::ExtendedBinaryExpression(bin_exp) => BinaryExpression {
+            MathExpression::ExtendedBinaryExpression(bin_exp) => Ok(BinaryExpression {
                 operator: bin_exp.operator.clone(),
                 start: bin_exp.start,
                 end: bin_exp.end,
                 left: bin_exp.left.clone(),
                 right: bin_exp.right.clone(),
-            },
-            MathExpression::BinaryExpression(bin_exp) => BinaryExpression {
+            }),
+            MathExpression::BinaryExpression(bin_exp) => Ok(BinaryExpression {
                 operator: bin_exp.operator.clone(),
                 start: bin_exp.start,
                 end: bin_exp.end,
                 left: bin_exp.left.clone(),
                 right: bin_exp.right.clone(),
-            },
+            }),
 
             a => panic!("Invalid expression {:?}", a),
         };
@@ -238,7 +241,7 @@ fn build_tree(
             let closing_brace = find_closing_brace(&reverse_polish_notation_tokens, 1, 0, "");
             let mut new_stack = stack;
             new_stack.push(MathExpression::CallExpression(Box::new(
-                make_call_expression(&reverse_polish_notation_tokens, 0).expression,
+                make_call_expression(&reverse_polish_notation_tokens, 0)?.expression,
             )));
             return build_tree(
                 reverse_polish_notation_tokens[closing_brace + 1..].to_vec(),
@@ -421,12 +424,13 @@ fn build_tree(
     };
     let mut new_stack = stack[0..stack.len() - 2].to_vec();
     new_stack.push(MathExpression::BinaryExpression(Box::new(tree)));
+
     build_tree(reverse_polish_notation_tokens[1..].to_vec(), new_stack)
 }
 
-pub fn parse_expression(tokens: Vec<Token>) -> BinaryExpression {
+pub fn parse_expression(tokens: Vec<Token>) -> Result<BinaryExpression, KclError> {
     let rpn = reverse_polish_notation(&tokens, &vec![], &vec![]);
-    let tree_with_maybe_bad_top_level_start_end = build_tree(rpn, vec![]);
+    let tree_with_maybe_bad_top_level_start_end = build_tree(rpn, vec![])?;
     let left_start = match tree_with_maybe_bad_top_level_start_end.clone().left {
         BinaryPart::BinaryExpression(bin_exp) => bin_exp.start,
         BinaryPart::Literal(lit) => lit.start,
@@ -451,13 +455,13 @@ pub fn parse_expression(tokens: Vec<Token>) -> BinaryExpression {
     } else {
         tree_with_maybe_bad_top_level_start_end.end
     };
-    BinaryExpression {
+    Ok(BinaryExpression {
         left: tree_with_maybe_bad_top_level_start_end.left,
         right: tree_with_maybe_bad_top_level_start_end.right,
         start: min_start,
         end: max_end,
         operator: tree_with_maybe_bad_top_level_start_end.operator,
-    }
+    })
 }
 
 #[cfg(test)]
@@ -468,7 +472,7 @@ mod test {
     #[test]
     fn test_parse_expression() {
         let tokens = crate::tokeniser::lexer("1 + 2");
-        let result = parse_expression(tokens);
+        let result = parse_expression(tokens).unwrap();
         assert_eq!(
             result,
             BinaryExpression {
@@ -494,7 +498,7 @@ mod test {
     #[test]
     fn test_parse_expression_plus_followed_by_star() {
         let tokens = crate::tokeniser::lexer("1 + 2 * 3");
-        let result = parse_expression(tokens);
+        let result = parse_expression(tokens).unwrap();
         assert_eq!(
             result,
             BinaryExpression {
@@ -531,7 +535,7 @@ mod test {
     #[test]
     fn test_parse_expression_with_parentheses() {
         let tokens = crate::tokeniser::lexer("1 * ( 2 + 3 )");
-        let result = parse_expression(tokens);
+        let result = parse_expression(tokens).unwrap();
         assert_eq!(
             result,
             BinaryExpression {
@@ -568,7 +572,7 @@ mod test {
     #[test]
     fn test_parse_expression_parens_in_middle() {
         let tokens = crate::tokeniser::lexer("1 * ( 2 + 3 ) / 4");
-        let result = parse_expression(tokens);
+        let result = parse_expression(tokens).unwrap();
         assert_eq!(
             result,
             BinaryExpression {
@@ -616,7 +620,7 @@ mod test {
     #[test]
     fn test_parse_expression_parans_and_predence() {
         let tokens = crate::tokeniser::lexer("1 + ( 2 + 3 ) / 4");
-        let result = parse_expression(tokens);
+        let result = parse_expression(tokens).unwrap();
         assert_eq!(
             result,
             BinaryExpression {
@@ -663,7 +667,7 @@ mod test {
     #[test]
     fn test_parse_expression_nested() {
         let tokens = crate::tokeniser::lexer("1 * (( 2 + 3 ) / 4 + 5 )");
-        let result = parse_expression(tokens);
+        let result = parse_expression(tokens).unwrap();
         assert_eq!(
             result,
             BinaryExpression {
@@ -721,7 +725,7 @@ mod test {
     #[test]
     fn test_parse_expression_redundant_braces() {
         let tokens = crate::tokeniser::lexer("1 * ((( 2 + 3 )))");
-        let result = parse_expression(tokens);
+        let result = parse_expression(tokens).unwrap();
         assert_eq!(
             result,
             BinaryExpression {
@@ -881,7 +885,7 @@ mod test {
     fn test_parse_expression_redundant_braces_around_literal() {
         let code = "2 + (((3)))";
         let tokens = crate::tokeniser::lexer(code);
-        let result = parse_expression(tokens);
+        let result = parse_expression(tokens).unwrap();
         assert_eq!(
             result,
             BinaryExpression {
@@ -966,7 +970,7 @@ mod test {
                 })),
             })),
         };
-        let output = build_tree(input_tokens, vec![]);
+        let output = build_tree(input_tokens, vec![]).unwrap();
         assert_eq!(output, expected_output);
     }
 }
