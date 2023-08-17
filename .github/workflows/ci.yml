@@ -67,21 +67,32 @@ jobs:
   # TODO: add test-web
 
   build-apps-development:
-    if: github.event_name == 'release'
+    if: github.event_name == 'pull_request'
     needs: build-web
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [macos-latest, ubuntu-20.04, windows-latest]
     steps:
-      - name: Build the app for the current platform and upload to release
+
+      - name: Build the app for the current platform (no upload)
         uses: tauri-apps/tauri-action@v0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+
+
+  publish-apps-development:
+    runs-on: 'ubuntu-20.04'
+    if: github.event_name == 'pull_request'
+    needs: [build-web, build-apps-development]
+    steps:
+
+      - uses: actions/upload-artifact@v3
         with:
-          releaseId: ${{ github.event.release.id }}
+          path: src-tauri/target/release/bundle
+          name: modeling-app_macos_linux_windows
+
 
   build-apps-release:
     if: github.event_name == 'release'
@@ -92,33 +103,32 @@ jobs:
         os: [macos-latest, ubuntu-20.04, windows-latest]
     steps:
 
-      - name: Build the app for the current platform (no upload)
-        if: github.event_name == 'pull_request'
+      - name: Build the app for the current platform and upload to release
         uses: tauri-apps/tauri-action@v0
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
-
-      - uses: actions/upload-artifact@v3
-        if: github.event_name == 'pull_request'
         with:
-          path: src-tauri/target/release/bundle
-          name: modeling-app_macos_linux_windows
+          releaseId: ${{ github.event.release.id }}
 
+
+  publish-apps-release:
+    runs-on: 'ubuntu-20.04'
+    if: github.event_name == 'release'
+    needs: [build-web, build-apps-release]
+    steps:
       - name: Authenticate to Google Cloud
-        if: github.event_name == 'release'
         uses: 'google-github-actions/auth@v1.1.1'
         with:
           credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
 
       - name: Set up Google Cloud SDK
-        if: github.event_name == 'release'
         uses: google-github-actions/setup-gcloud@v1.1.1
         with:
           project_id: kittycadapi
       
       - name: Upload release files to public bucket
-        if: github.event_name == 'release'
         uses: google-github-actions/upload-cloud-storage@v1.0.3
         with:
           path: src-tauri/target/release/bundle/*/*
