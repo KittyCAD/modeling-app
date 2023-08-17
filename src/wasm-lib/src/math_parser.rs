@@ -547,7 +547,7 @@ fn build_tree(
 
 #[test]
 fn test_build_tree() {
-    let inputTokens = vec![
+    let input_tokens = vec![
         Token {
             token_type: TokenType::Number,
             start: 0,
@@ -607,7 +607,7 @@ fn test_build_tree() {
             })),
         })),
     };
-    let output = build_tree(inputTokens, vec![]);
+    let output = build_tree(input_tokens, vec![]);
     assert_eq!(output, expected_output);
 }
 
