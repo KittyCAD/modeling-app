@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { paths } from '../Router'
 import makeUrlPathRelative from '../lib/makeUrlPathRelative'
+import { ExportButton } from './ExportButton'
 
 const UserSidebarMenu = ({ user }: { user?: User }) => {
   const displayedName = getDisplayName(user)
@@ -58,9 +59,9 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           Menu
         </ActionButton>
       )}
-      <Popover.Overlay className="fixed z-40 inset-0 bg-chalkboard-110/50" />
+      <Popover.Overlay className="fixed z-20 inset-0 bg-chalkboard-110/50" />
 
-      <Popover.Panel className="fixed inset-0 left-auto z-50 w-64 bg-chalkboard-10 dark:bg-chalkboard-100 border border-liquid-100 shadow-md rounded-l-lg">
+      <Popover.Panel className="fixed inset-0 left-auto z-30 w-64 bg-chalkboard-10 dark:bg-chalkboard-100 border border-liquid-100 shadow-md rounded-l-lg">
         {({ close }) => (
           <>
             {user && (
@@ -96,6 +97,14 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
               </div>
             )}
             <div className="p-4 flex flex-col gap-2">
+              <ExportButton
+                className={{
+                  button:
+                    'border-transparent dark:border-transparent dark:hover:border-liquid-60',
+                }}
+              >
+                Export File
+              </ExportButton>
               <ActionButton
                 Element="button"
                 icon={{ icon: faGear }}
