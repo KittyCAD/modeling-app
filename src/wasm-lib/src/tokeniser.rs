@@ -296,6 +296,7 @@ pub fn lexer_js(str: &str) -> Result<JsValue, JsError> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn is_number_test() {

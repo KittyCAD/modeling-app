@@ -22,80 +22,6 @@ fn make_identifier(tokens: &[Token], index: usize) -> Identifier {
     }
 }
 
-#[test]
-fn test_make_identifier() {
-    let tokens = lexer("a");
-    let identifier = make_identifier(&tokens, 0);
-    assert_eq!(
-        Identifier {
-            start: 0,
-            end: 1,
-            name: "a".to_string()
-        },
-        identifier
-    );
-}
-
-#[test]
-fn test_make_identifier_with_const_myvar_equals_5_and_index_2() {
-    let tokens = lexer("const myVar = 5");
-    let identifier = make_identifier(&tokens, 2);
-    assert_eq!(
-        Identifier {
-            start: 6,
-            end: 11,
-            name: "myVar".to_string()
-        },
-        identifier
-    );
-}
-
-#[test]
-fn test_make_identifier_multiline() {
-    let tokens = lexer("const myVar = 5\nconst newVar = myVar + 1");
-    let identifier = make_identifier(&tokens, 2);
-    assert_eq!(
-        Identifier {
-            start: 6,
-            end: 11,
-            name: "myVar".to_string()
-        },
-        identifier
-    );
-    let identifier = make_identifier(&tokens, 10);
-    assert_eq!(
-        Identifier {
-            start: 22,
-            end: 28,
-            name: "newVar".to_string()
-        },
-        identifier
-    );
-}
-
-#[test]
-fn test_make_identifier_call_expression() {
-    let tokens = lexer("log(5, \"hello\", aIdentifier)");
-    let identifier = make_identifier(&tokens, 0);
-    assert_eq!(
-        Identifier {
-            start: 0,
-            end: 3,
-            name: "log".to_string()
-        },
-        identifier
-    );
-    let identifier = make_identifier(&tokens, 8);
-    assert_eq!(
-        Identifier {
-            start: 16,
-            end: 27,
-            name: "aIdentifier".to_string()
-        },
-        identifier
-    );
-}
-
 pub fn make_literal(tokens: &[Token], index: usize) -> Literal {
     let token = &tokens[index];
     let value = if token.token_type == TokenType::Number {
@@ -114,99 +40,10 @@ pub fn make_literal(tokens: &[Token], index: usize) -> Literal {
     }
 }
 
-#[test]
-fn test_make_literal_call_expression() {
-    let tokens = lexer("log(5, \"hello\", aIdentifier)");
-    let literal = make_literal(&tokens, 2);
-    assert_eq!(
-        Literal {
-            start: 4,
-            end: 5,
-            value: serde_json::Value::Number(5.into()),
-            raw: "5".to_string()
-        },
-        literal
-    );
-    let literal = make_literal(&tokens, 5);
-    assert_eq!(
-        Literal {
-            start: 7,
-            end: 14,
-            value: serde_json::Value::String("hello".to_string()),
-            raw: "\"hello\"".to_string()
-        },
-        literal
-    );
-}
-
 pub fn is_not_code_token(token: &Token) -> bool {
     token.token_type == TokenType::Whitespace
         || token.token_type == TokenType::LineComment
         || token.token_type == TokenType::BlockComment
-}
-
-#[test]
-fn test_is_not_code_token() {
-    assert!(!is_not_code_token(&Token {
-        token_type: TokenType::Word,
-        start: 0,
-        end: 3,
-        value: "log".to_string(),
-    }));
-    assert!(!is_not_code_token(&Token {
-        token_type: TokenType::Brace,
-        start: 3,
-        end: 4,
-        value: "(".to_string(),
-    }));
-    assert!(!is_not_code_token(&Token {
-        token_type: TokenType::Number,
-        start: 4,
-        end: 5,
-        value: "5".to_string(),
-    }));
-    assert!(!is_not_code_token(&Token {
-        token_type: TokenType::Comma,
-        start: 5,
-        end: 6,
-        value: ",".to_string(),
-    }));
-    assert!(is_not_code_token(&Token {
-        token_type: TokenType::Whitespace,
-        start: 6,
-        end: 7,
-        value: " ".to_string(),
-    }));
-    assert!(!is_not_code_token(&Token {
-        token_type: TokenType::String,
-        start: 7,
-        end: 14,
-        value: "\"hello\"".to_string(),
-    }));
-    assert!(!is_not_code_token(&Token {
-        token_type: TokenType::Word,
-        start: 16,
-        end: 27,
-        value: "aIdentifier".to_string(),
-    }));
-    assert!(!is_not_code_token(&Token {
-        token_type: TokenType::Brace,
-        start: 27,
-        end: 28,
-        value: ")".to_string(),
-    }));
-    assert!(is_not_code_token(&Token {
-        token_type: TokenType::BlockComment,
-        start: 28,
-        end: 30,
-        value: "/* abte */".to_string(),
-    }));
-    assert!(is_not_code_token(&Token {
-        token_type: TokenType::LineComment,
-        start: 30,
-        end: 33,
-        value: "// yoyo a line".to_string(),
-    }));
 }
 
 fn find_end_of_non_code_node(tokens: &Vec<Token>, index: usize) -> usize {
@@ -239,100 +76,6 @@ fn make_none_code_node(tokens: &Vec<Token>, index: usize) -> (Option<NoneCodeNod
         value,
     };
     (Some(node), end_index - 1)
-}
-
-#[test]
-fn test_make_none_code_node() {
-    let tokens = lexer("log(5, \"hello\", aIdentifier)");
-    let index = 4;
-    let expected_output = (
-        Some(NoneCodeNode {
-            start: 6,
-            end: 7,
-            value: " ".to_string(),
-        }),
-        4,
-    );
-    assert_eq!(make_none_code_node(&tokens, index), expected_output);
-
-    let index = 7;
-    let expected_output = (
-        Some(NoneCodeNode {
-            start: 15,
-            end: 16,
-            value: " ".to_string(),
-        }),
-        7,
-    );
-    assert_eq!(make_none_code_node(&tokens, index), expected_output);
-    let tokens = lexer(
-        r#"
-const yo = { a: { b: { c: '123' } } }
-// this is a comment
-const key = 'c'"#,
-    );
-    let index = 0;
-    let expected_output = (
-        Some(NoneCodeNode {
-            start: 0,
-            end: 1,
-            value: "\n".to_string(),
-        }),
-        0,
-    );
-    assert_eq!(make_none_code_node(&tokens, index), expected_output);
-
-    let index = 2;
-    let expected_output = (
-        Some(NoneCodeNode {
-            start: 6,
-            end: 7,
-            value: " ".to_string(),
-        }),
-        2,
-    );
-    assert_eq!(make_none_code_node(&tokens, index), expected_output);
-
-    let index = 2;
-    let expected_output = (
-        Some(NoneCodeNode {
-            start: 6,
-            end: 7,
-            value: " ".to_string(),
-        }),
-        2,
-    );
-    assert_eq!(make_none_code_node(&tokens, index), expected_output);
-
-    let index = 29;
-    let expected_output = (
-        Some(NoneCodeNode {
-            start: 38,
-            end: 60,
-            value: "\n// this is a comment\n".to_string(),
-        }),
-        31,
-    );
-    assert_eq!(make_none_code_node(&tokens, index), expected_output);
-    let tokens = lexer(
-        r#"const mySketch = startSketchAt([0,0])
-  |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
-  |> lineTo([1, 1], %) /* this is
-      a comment
-      spanning a few lines */
-  |> lineTo({ to: [1,0], tag: "rightPath" }, %)
-  |> close(%)"#,
-    );
-    let index = 57;
-    let expected_output = (
-        Some(NoneCodeNode {
-            start: 106,
-            end: 168,
-            value: " /* this is \n      a comment \n      spanning a few lines */\n  ".to_string(),
-        }),
-        59,
-    );
-    assert_eq!(make_none_code_node(&tokens, index), expected_output);
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -385,392 +128,6 @@ fn next_meaningful_token(
     }
 }
 
-#[test]
-fn test_next_meaningful_token() {
-    let _offset = 1;
-    let tokens = lexer(
-        r#"const mySketch = startSketchAt([0,0])
-  |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
-  |> lineTo([1, 1], %) /* this is
-      a comment
-      spanning a few lines */
-  |> lineTo({ to: [1,0], tag: "rightPath" }, %)
-  |> close(%)"#,
-    );
-    let index = 17;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Brace,
-            start: 49,
-            end: 50,
-            value: "(".to_string(),
-        }),
-        index: 18,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 18;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Brace,
-            start: 50,
-            end: 51,
-            value: "{".to_string(),
-        }),
-        index: 19,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 21;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Colon,
-            start: 54,
-            end: 55,
-            value: ":".to_string(),
-        }),
-        index: 22,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 24;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Number,
-            start: 57,
-            end: 58,
-            value: "0".to_string(),
-        }),
-        index: 25,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 25;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Comma,
-            start: 58,
-            end: 59,
-            value: ",".to_string(),
-        }),
-        index: 26,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 28;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Brace,
-            start: 61,
-            end: 62,
-            value: "]".to_string(),
-        }),
-        index: 29,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 29;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Comma,
-            start: 62,
-            end: 63,
-            value: ",".to_string(),
-        }),
-        index: 30,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 32;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Colon,
-            start: 67,
-            end: 68,
-            value: ":".to_string(),
-        }),
-        index: 33,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 37;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Comma,
-            start: 79,
-            end: 80,
-            value: ",".to_string(),
-        }),
-        index: 38,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 40;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Brace,
-            start: 82,
-            end: 83,
-            value: ")".to_string(),
-        }),
-        index: 41,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 45;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Brace,
-            start: 95,
-            end: 96,
-            value: "(".to_string(),
-        }),
-        index: 46,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 46;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Brace,
-            start: 96,
-            end: 97,
-            value: "[".to_string(),
-        }),
-        index: 47,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 47;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Number,
-            start: 97,
-            end: 98,
-            value: "1".to_string(),
-        }),
-        index: 48,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 48;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Comma,
-            start: 98,
-            end: 99,
-            value: ",".to_string(),
-        }),
-        index: 49,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 51;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Brace,
-            start: 101,
-            end: 102,
-            value: "]".to_string(),
-        }),
-        index: 52,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 52;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Comma,
-            start: 102,
-            end: 103,
-            value: ",".to_string(),
-        }),
-        index: 53,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 55;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Brace,
-            start: 105,
-            end: 106,
-            value: ")".to_string(),
-        }),
-        index: 56,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 62;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Brace,
-            start: 177,
-            end: 178,
-            value: "(".to_string(),
-        }),
-        index: 63,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 63;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Brace,
-            start: 178,
-            end: 179,
-            value: "{".to_string(),
-        }),
-        index: 64,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 66;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Colon,
-            start: 182,
-            end: 183,
-            value: ":".to_string(),
-        }),
-        index: 67,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 69;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Number,
-            start: 185,
-            end: 186,
-            value: "1".to_string(),
-        }),
-        index: 70,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 70;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Comma,
-            start: 186,
-            end: 187,
-            value: ",".to_string(),
-        }),
-        index: 71,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 71;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Number,
-            start: 187,
-            end: 188,
-            value: "0".to_string(),
-        }),
-        index: 72,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 72;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Brace,
-            start: 188,
-            end: 189,
-            value: "]".to_string(),
-        }),
-        index: 73,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 73;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Comma,
-            start: 189,
-            end: 190,
-            value: ",".to_string(),
-        }),
-        index: 74,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 76;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Colon,
-            start: 194,
-            end: 195,
-            value: ":".to_string(),
-        }),
-        index: 77,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 81;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Comma,
-            start: 209,
-            end: 210,
-            value: ",".to_string(),
-        }),
-        index: 82,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 84;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Brace,
-            start: 212,
-            end: 213,
-            value: ")".to_string(),
-        }),
-        index: 85,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 89;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Brace,
-            start: 224,
-            end: 225,
-            value: "(".to_string(),
-        }),
-        index: 90,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 90;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Operator,
-            start: 225,
-            end: 226,
-            value: "%".to_string(),
-        }),
-        index: 91,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-    let index = 91;
-    let expected_output = TokenReturnWithNonCode {
-        token: Some(Token {
-            token_type: TokenType::Brace,
-            start: 226,
-            end: 227,
-            value: ")".to_string(),
-        }),
-        index: 92,
-        non_code_node: None,
-    };
-    assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
-}
-
 pub fn find_closing_brace(
     tokens: &[Token],
     index: usize,
@@ -811,42 +168,6 @@ pub fn find_closing_brace(
     find_closing_brace(tokens, index + 1, brace_count, search_opening_brace)
 }
 
-#[test]
-fn test_find_closing_brace() {
-    let tokens = lexer(
-        r#"const mySketch = startSketchAt([0,0])
-|> lineTo({ to: [0, 1], tag: 'myPath' }, %)
-|> lineTo([1, 1], %) /* this is
-  a comment
-  spanning a few lines */
-|> lineTo({ to: [1,0], tag: "rightPath" }, %)
-|> close(%)"#,
-    );
-    assert_eq!(find_closing_brace(&tokens, 7, 0, ""), 13);
-    assert_eq!(find_closing_brace(&tokens, 18, 0, ""), 41);
-    assert_eq!(find_closing_brace(&tokens, 46, 0, ""), 56);
-    assert_eq!(find_closing_brace(&tokens, 63, 0, ""), 85);
-    assert_eq!(find_closing_brace(&tokens, 90, 0, ""), 92);
-
-    let basic = "( hey )";
-    assert_eq!(find_closing_brace(&lexer(basic), 0, 0, ""), 4);
-
-    let handles_non_zero_index = "(indexForBracketToRightOfThisIsTwo(shouldBeFour)AndNotThisSix)";
-    assert_eq!(
-        find_closing_brace(&lexer(handles_non_zero_index), 2, 0, ""),
-        4
-    );
-    assert_eq!(
-        find_closing_brace(&lexer(handles_non_zero_index), 0, 0, ""),
-        6
-    );
-
-    let handles_nested = "{a{b{c(}d]}eathou athoeu tah u} thatOneToTheLeftIsLast }";
-    assert_eq!(find_closing_brace(&lexer(handles_nested), 0, 0, ""), 18);
-
-    // TODO expect error when not started on a brace
-}
-
 fn is_call_expression(tokens: &[Token], index: usize) -> Option<usize> {
     if index + 1 >= tokens.len() {
         return None;
@@ -860,26 +181,6 @@ fn is_call_expression(tokens: &[Token], index: usize) -> Option<usize> {
         return Some(find_closing_brace(tokens, index + 1, 0, ""));
     }
     None
-}
-
-#[test]
-fn test_is_call_expression() {
-    let tokens = lexer(
-        r#"const mySketch = startSketchAt([0,0])
-|> lineTo({ to: [0, 1], tag: 'myPath' }, %)
-|> lineTo([1, 1], %) /* this is
-  a comment
-  spanning a few lines */
-|> lineTo({ to: [1,0], tag: "rightPath" }, %)
-|> close(%)"#,
-    );
-
-    assert_eq!(is_call_expression(&tokens, 4), None);
-    assert_eq!(is_call_expression(&tokens, 6), Some(13));
-    assert_eq!(is_call_expression(&tokens, 15), None);
-    assert_eq!(is_call_expression(&tokens, 43), None);
-    assert_eq!(is_call_expression(&tokens, 60), None);
-    assert_eq!(is_call_expression(&tokens, 87), None);
 }
 
 fn find_next_declaration_keyword(tokens: &Vec<Token>, index: usize) -> TokenReturn {
@@ -919,51 +220,6 @@ fn find_next_declaration_keyword(tokens: &Vec<Token>, index: usize) -> TokenRetu
         }
     }
     find_next_declaration_keyword(tokens, next_token.index)
-}
-
-#[test]
-fn test_find_next_declaration_keyword() {
-    let tokens = lexer(
-        r#"const mySketch = startSketchAt([0,0])
-|> lineTo({ to: [0, 1], tag: 'myPath' }, %)
-|> lineTo([1, 1], %) /* this is
-  a comment
-  spanning a few lines */
-|> lineTo({ to: [1,0], tag: "rightPath" }, %)
-|> close(%)"#,
-    );
-    assert_eq!(
-        find_next_declaration_keyword(&tokens, 4),
-        TokenReturn {
-            token: None,
-            index: 92,
-        }
-    );
-
-    let tokens = lexer(
-        r#"const myVar = 5
-const newVar = myVar + 1
-"#,
-    );
-    assert_eq!(
-        find_next_declaration_keyword(&tokens, 6),
-        TokenReturn {
-            token: Some(Token {
-                token_type: TokenType::Word,
-                start: 16,
-                end: 21,
-                value: "const".to_string(),
-            }),
-            index: 8,
-        }
-    );
-    assert_eq!(
-        find_next_declaration_keyword(&tokens, 14),
-        TokenReturn {
-            token: None,
-            index: 19,
-        }
-    );
 }
 
 fn has_pipe_operator(
@@ -1042,137 +298,6 @@ fn has_pipe_operator(
         }
     }
     has_pipe_operator(tokens, next_token.index, limit_index)
-}
-
-#[test]
-fn test_has_pipe_operator() {
-    let code = r#"sketch mySketch {
-  lineTo(2, 3)
-} |> rx(45, %)
-"#;
-    let tokens = lexer(code);
-    assert_eq!(
-        has_pipe_operator(&tokens, 0, None),
-        TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Operator,
-                start: 35,
-                end: 37,
-                value: "|>".to_string(),
-            }),
-            index: 16,
-            non_code_node: Some(NoneCodeNode {
-                start: 34,
-                end: 35,
-                value: " ".to_string()
-            }),
-        }
-    );
-    let code = r#"sketch mySketch {
-  lineTo(2, 3)
-} |> rx(45, %) |> rx(45, %)
-"#;
-    let tokens = lexer(code);
-    assert_eq!(
-        has_pipe_operator(&tokens, 0, None),
-        TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Operator,
-                start: 35,
-                end: 37,
-                value: "|>".to_string(),
-            }),
-            index: 16,
-            non_code_node: Some(NoneCodeNode {
-                start: 34,
-                end: 35,
-                value: " ".to_string()
-            }),
-        }
-    );
-
-    let code = r#"sketch mySketch {
-  lineTo(2, 3)
-}
-const yo = myFunc(9()
-  |> rx(45, %)
-"#;
-    let tokens = lexer(code);
-    assert_eq!(
-        has_pipe_operator(&tokens, 0, None),
-        TokenReturnWithNonCode {
-            token: None,
-            index: 16,
-            non_code_node: None,
-        }
-    );
-
-    let code = "const myVar2 = 5 + 1 |> myFn(%)";
-    let tokens = lexer(code);
-    assert_eq!(
-        has_pipe_operator(&tokens, 1, None),
-        TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Operator,
-                start: 21,
-                end: 23,
-                value: "|>".to_string(),
-            }),
-            index: 12,
-            non_code_node: Some(NoneCodeNode {
-                start: 20,
-                end: 21,
-                value: " ".to_string()
-            }),
-        }
-    );
-
-    let code = r#"sketch mySk1 {
-  lineTo(1,1)
-  path myPath = lineTo(0, 1)
-  lineTo(1,1)
-} |> rx(90, %)
-show(mySk1)"#;
-    let tokens = lexer(code);
-    let token_with_my_path_index = tokens
-        .iter()
-        .position(|token| token.value == "myPath")
-        .unwrap();
-    // loop through getting the token and it's index
-    let token_with_line_to_index_for_var_dec_index = tokens
-        .iter()
-        .enumerate()
-        .find(|(index, token)| token.value == "lineTo" && index > &token_with_my_path_index)
-        .unwrap()
-        .0;
-    // expect to return None,
-    assert_eq!(
-        has_pipe_operator(&tokens, token_with_line_to_index_for_var_dec_index, None),
-        TokenReturnWithNonCode {
-            token: None,
-            index: 27,
-            non_code_node: None,
-        }
-    );
-
-    let brace_token_index = tokens.iter().position(|token| token.value == "{").unwrap();
-    assert_eq!(
-        has_pipe_operator(&tokens, brace_token_index, None),
-        TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Operator,
-                start: 74,
-                end: 76,
-                value: "|>".to_string(),
-            }),
-            index: 36,
-            non_code_node: Some(NoneCodeNode {
-                start: 73,
-                end: 74,
-                value: " ".to_string()
-            }),
-        }
-    );
 }
 
 fn collect_object_keys(
@@ -1269,46 +394,6 @@ fn make_member_expression(tokens: &Vec<Token>, index: usize) -> MemberExpression
     }
 }
 
-#[test]
-fn test_make_member_expression() {
-    let tokens = lexer("const prop = yo.one[\"two\"]");
-    let member_expression_return = make_member_expression(&tokens, 6);
-    let member_expression = member_expression_return.expression;
-    let last_index = member_expression_return.last_index;
-    assert_eq!(member_expression.start, 13);
-    assert_eq!(member_expression.end, 26);
-    let member_object = match member_expression.object {
-        MemberObject::MemberExpression(member_expression) => member_expression,
-        _ => panic!("Expected member expression"),
-    };
-    assert_eq!(member_object.start, 13);
-    assert_eq!(member_object.end, 19);
-    let member_object_object = match member_object.object {
-        MemberObject::Identifier(identifier) => identifier,
-        _ => panic!("Expected identifier"),
-    };
-    assert_eq!(member_object_object.start, 13);
-    assert_eq!(member_object_object.end, 15);
-    assert_eq!(member_object_object.name, "yo");
-    let member_object_property = match member_object.property {
-        LiteralIdentifier::Identifier(identifier) => identifier,
-        _ => panic!("Expected identifier"),
-    };
-    assert_eq!(member_object_property.start, 16);
-    assert_eq!(member_object_property.end, 19);
-    assert_eq!(member_object_property.name, "one");
-    assert!(!member_object.computed);
-    let member_expression_property = match member_expression.property {
-        LiteralIdentifier::Literal(literal) => literal,
-        _ => panic!("Expected literal"),
-    };
-    assert_eq!(member_expression_property.start, 20);
-    assert_eq!(member_expression_property.end, 25);
-    assert_eq!(member_expression_property.value, "two");
-    assert!(!member_expression.computed);
-    assert_eq!(last_index, 11);
-}
-
 fn find_end_of_binary_expression(tokens: &Vec<Token>, index: usize) -> usize {
     let current_token = tokens[index].clone();
     if current_token.token_type == TokenType::Brace && current_token.value == "(" {
@@ -1355,56 +440,6 @@ fn find_end_of_binary_expression(tokens: &Vec<Token>, index: usize) -> usize {
     }
     let next_right = next_meaningful_token(tokens, maybe_operator.index, None);
     find_end_of_binary_expression(tokens, next_right.index)
-}
-
-#[test]
-fn test_find_end_of_binary_expression() {
-    let code = "1 + 2 * 3\nconst yo = 5";
-    let tokens = lexer(code);
-    let end = find_end_of_binary_expression(&tokens, 0);
-    assert_eq!(tokens[end].value, "3");
-
-    let code = "(1 + 25) / 5 - 3\nconst yo = 5";
-    let tokens = lexer(code);
-    let end = find_end_of_binary_expression(&tokens, 0);
-    assert_eq!(tokens[end].value, "3");
-    let index_of_5 = code.find('5').unwrap();
-    let end_starting_at_the_5 = find_end_of_binary_expression(&tokens, index_of_5);
-    assert_eq!(end_starting_at_the_5, end);
-    // whole thing wraped
-    let code = "((1 + 2) / 5 - 3)\nconst yo = 5";
-    let tokens = lexer(code);
-    let end = find_end_of_binary_expression(&tokens, 0);
-    assert_eq!(tokens[end].end, code.find("3)").unwrap() + 2);
-    // whole thing wraped but given index after the first brace
-    let code = "((1 + 2) / 5 - 3)\nconst yo = 5";
-    let tokens = lexer(code);
-    let end = find_end_of_binary_expression(&tokens, 1);
-    assert_eq!(tokens[end].value, "3");
-    // given the index of a small wrapped section i.e. `1 + 2` in ((1 + 2) / 5 - 3)'
-    let code = "((1 + 2) / 5 - 3)\nconst yo = 5";
-    let tokens = lexer(code);
-    let end = find_end_of_binary_expression(&tokens, 2);
-    assert_eq!(tokens[end].value, "2");
-    // lots of silly nesting
-    let code = "(1 + 2) / (5 - (3))\nconst yo = 5";
-    let tokens = lexer(code);
-    let end = find_end_of_binary_expression(&tokens, 0);
-    assert_eq!(tokens[end].end, code.find("))").unwrap() + 2);
-    // with pipe operator at the end
-    let code = "(1 + 2) / (5 - (3))\n  |> fn(%)";
-    let tokens = lexer(code);
-    let end = find_end_of_binary_expression(&tokens, 0);
-    assert_eq!(tokens[end].end, code.find("))").unwrap() + 2);
-    // with call expression at the start of binary expression
-    let code = "yo(2) + 3\n  |> fn(%)";
-    let tokens = lexer(code);
-    let end = find_end_of_binary_expression(&tokens, 0);
-    assert_eq!(tokens[end].value, "3");
-    // with call expression at the end of binary expression
-    let code = "3 + yo(2)\n  |> fn(%)";
-    let tokens = lexer(code);
-    let _end = find_end_of_binary_expression(&tokens, 0);
 }
 
 struct ValueReturn {
@@ -1577,45 +612,6 @@ fn make_array_expression(tokens: &Vec<Token>, index: usize) -> ArrayReturn {
             elements: array_elements.elements,
         },
         last_index: array_elements.last_index,
-    }
-}
-
-#[test]
-fn test_make_array_expression() {
-    // input_index: 6, output_index: 14, output: {"type":"ArrayExpression","start":11,"end":26,"elements":[{"type":"Literal","start":12,"end":15,"value":"1","raw":"\"1\""},{"type":"Literal","start":17,"end":18,"value":2,"raw":"2"},{"type":"Identifier","start":20,"end":25,"name":"three"}]}
-    let tokens = lexer("const yo = [\"1\", 2, three]");
-    let array_expression = make_array_expression(&tokens, 6);
-    let expression = array_expression.expression;
-    assert_eq!(array_expression.last_index, 14);
-    assert_eq!(expression.start, 11);
-    assert_eq!(expression.end, 26);
-    let elements = expression.elements;
-    assert_eq!(elements.len(), 3);
-    match &elements[0] {
-        Value::Literal(literal) => {
-            assert_eq!(literal.start, 12);
-            assert_eq!(literal.end, 15);
-            assert_eq!(literal.value, serde_json::Value::String("1".to_string()));
-            assert_eq!(literal.raw, "\"1\"".to_string());
-        }
-        _ => panic!("Expected literal"),
-    }
-    match &elements[1] {
-        Value::Literal(literal) => {
-            assert_eq!(literal.start, 17);
-            assert_eq!(literal.end, 18);
-            assert_eq!(literal.value, serde_json::Value::Number(2.into()));
-            assert_eq!(literal.raw, "2".to_string());
-        }
-        _ => panic!("Expected literal"),
-    }
-    match &elements[2] {
-        Value::Identifier(identifier) => {
-            assert_eq!(identifier.start, 20);
-            assert_eq!(identifier.end, 25);
-            assert_eq!(identifier.name, "three".to_string());
-        }
-        _ => panic!("Expected identifier"),
     }
 }
 
@@ -1855,39 +851,6 @@ pub fn make_call_expression(tokens: &Vec<Token>, index: usize) -> CallExpression
     }
 }
 
-#[test]
-fn test_make_call_expression() {
-    let tokens = lexer("foo(\"a\", a, 3)");
-    let result = make_call_expression(&tokens, 0);
-    assert_eq!(result.last_index, 9);
-    assert_eq!(result.expression.start, 0);
-    assert_eq!(result.expression.end, 14);
-    assert_eq!(result.expression.callee.name, "foo");
-    assert_eq!(result.expression.arguments.len(), 3);
-    assert!(!result.expression.optional);
-    let arguments = result.expression.arguments;
-    match arguments[0] {
-        Value::Literal(ref literal) => {
-            assert_eq!(literal.value, "a");
-            assert_eq!(literal.raw, "\"a\"");
-        }
-        _ => panic!("Expected literal"),
-    }
-    match arguments[1] {
-        Value::Identifier(ref identifier) => {
-            assert_eq!(identifier.name, "a");
-        }
-        _ => panic!("Expected identifier"),
-    }
-    match arguments[2] {
-        Value::Literal(ref literal) => {
-            assert_eq!(literal.value, 3);
-            assert_eq!(literal.raw, "3");
-        }
-        _ => panic!("Expected literal"),
-    }
-}
-
 struct PipeExpressionResult {
     expression: PipeExpression,
     last_index: usize,
@@ -1979,75 +942,6 @@ fn make_variable_declaration(tokens: &Vec<Token>, index: usize) -> VariableDecla
         },
         last_index: variable_declarators_result.last_index,
     }
-}
-
-#[test]
-fn test_make_variable_declaration() {
-    let tokens = lexer(
-        r#"const yo = startSketch([0, 0])
-  |> lineTo([1, myVar], %)
-  |> foo(myVar2, %)
-  |> close(%)"#,
-    );
-    let result = make_variable_declaration(&tokens, 0);
-    assert_eq!(result.declaration.kind, "const");
-    assert_eq!(result.declaration.declarations.len(), 1);
-    assert_eq!(result.declaration.declarations[0].id.name, "yo");
-    let declaration = result.declaration.declarations[0].clone();
-    let body = match declaration.init {
-        Value::PipeExpression(body) => body,
-        _ => panic!("expected pipe expression"),
-    };
-    assert_eq!(body.body.len(), 4);
-    let first_call_expression = match &body.body[0] {
-        Value::CallExpression(call_expression) => call_expression,
-        _ => panic!("expected call expression"),
-    };
-    assert_eq!(first_call_expression.callee.name, "startSketch");
-    assert_eq!(first_call_expression.arguments.len(), 1);
-    let first_argument = &first_call_expression.arguments[0];
-    let first_argument_array_expression = match first_argument {
-        Value::ArrayExpression(array_expression) => array_expression,
-        _ => panic!("expected array expression"),
-    };
-    assert_eq!(first_argument_array_expression.elements.len(), 2);
-    let second_call_expression = match &body.body[1] {
-        Value::CallExpression(call_expression) => call_expression,
-        _ => panic!("expected call expression"),
-    };
-    assert_eq!(second_call_expression.callee.name, "lineTo");
-    assert_eq!(second_call_expression.arguments.len(), 2);
-    let first_argument = &second_call_expression.arguments[0];
-    let first_argument_array_expression = match first_argument {
-        Value::ArrayExpression(array_expression) => array_expression,
-        _ => panic!("expected array expression"),
-    };
-    assert_eq!(first_argument_array_expression.elements.len(), 2);
-    let second_argument = &second_call_expression.arguments[1];
-    let second_argument_pipe_substitution = match second_argument {
-        Value::PipeSubstitution(pipe_substitution) => pipe_substitution,
-        _ => panic!("expected pipe substitution"),
-    };
-    assert_eq!(second_argument_pipe_substitution.start, 55);
-    let third_call_expression = match &body.body[2] {
-        Value::CallExpression(call_expression) => call_expression,
-        _ => panic!("expected call expression"),
-    };
-    assert_eq!(third_call_expression.callee.name, "foo");
-    assert_eq!(third_call_expression.arguments.len(), 2);
-    let first_argument = &third_call_expression.arguments[0];
-    let first_argument_identifier = match first_argument {
-        Value::Identifier(identifier) => identifier,
-        _ => panic!("expected identifier"),
-    };
-    assert_eq!(first_argument_identifier.name, "myVar2");
-
-    let fourth_call_expression = match &body.body[3] {
-        Value::CallExpression(call_expression) => call_expression,
-        _ => panic!("expected call expression"),
-    };
-    assert_eq!(fourth_call_expression.callee.name, "close");
-    assert_eq!(fourth_call_expression.arguments.len(), 1);
 }
 
 pub struct ParamsResult {
@@ -2396,21 +1290,6 @@ fn make_body(
     panic!("Not implemented");
 }
 
-#[test]
-fn test_make_body() {
-    let tokens = lexer("const myVar = 5");
-    let body = make_body(
-        &tokens,
-        0,
-        vec![],
-        NoneCodeMeta {
-            none_code_nodes: HashMap::new(),
-            start: None,
-        },
-    );
-    assert_eq!(body.body.len(), 1);
-}
-
 struct BlockStatementResult {
     block: BlockStatement,
     last_index: usize,
@@ -2497,50 +1376,6 @@ pub fn abstract_syntax_tree(tokens: &Vec<Token>) -> Program {
     }
 }
 
-#[test]
-fn test_abstract_syntax_tree() {
-    let code = "5 +6";
-    let result = abstract_syntax_tree(&lexer(code));
-    let expected_result = Program {
-        start: 0,
-        end: 4,
-        body: vec![BodyItem::ExpressionStatement(ExpressionStatement {
-            start: 0,
-            end: 4,
-            expression: Value::BinaryExpression(Box::new(BinaryExpression {
-                start: 0,
-                end: 4,
-                left: BinaryPart::Literal(Box::new(Literal {
-                    start: 0,
-                    end: 1,
-                    value: serde_json::Value::Number(serde_json::Number::from(5)),
-                    raw: "5".to_string(),
-                })),
-                operator: "+".to_string(),
-                right: BinaryPart::Literal(Box::new(Literal {
-                    start: 3,
-                    end: 4,
-                    value: serde_json::Value::Number(serde_json::Number::from(6)),
-                    raw: "6".to_string(),
-                })),
-            })),
-        })],
-        non_code_meta: NoneCodeMeta {
-            none_code_nodes: HashMap::from_iter(vec![(
-                0,
-                NoneCodeNode {
-                    start: 1,
-                    end: 2,
-                    value: " ".to_string(),
-                },
-            )]),
-            start: None,
-        },
-    };
-
-    assert_eq!(result, expected_result);
-}
-
 #[wasm_bindgen]
 extern "C" {
     // Use `js_namespace` here to bind `console.log(..)` instead of just
@@ -2568,11 +1403,181 @@ pub fn parse_js(js: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn test_make_identifier() {
+        let tokens = lexer("a");
+        let identifier = make_identifier(&tokens, 0);
+        assert_eq!(
+            Identifier {
+                start: 0,
+                end: 1,
+                name: "a".to_string()
+            },
+            identifier
+        );
+    }
+
+    #[test]
+    fn test_make_identifier_with_const_myvar_equals_5_and_index_2() {
+        let tokens = lexer("const myVar = 5");
+        let identifier = make_identifier(&tokens, 2);
+        assert_eq!(
+            Identifier {
+                start: 6,
+                end: 11,
+                name: "myVar".to_string()
+            },
+            identifier
+        );
+    }
+
+    #[test]
+    fn test_make_identifier_multiline() {
+        let tokens = lexer("const myVar = 5\nconst newVar = myVar + 1");
+        let identifier = make_identifier(&tokens, 2);
+        assert_eq!(
+            Identifier {
+                start: 6,
+                end: 11,
+                name: "myVar".to_string()
+            },
+            identifier
+        );
+        let identifier = make_identifier(&tokens, 10);
+        assert_eq!(
+            Identifier {
+                start: 22,
+                end: 28,
+                name: "newVar".to_string()
+            },
+            identifier
+        );
+    }
+
+    #[test]
+    fn test_make_identifier_call_expression() {
+        let tokens = lexer("log(5, \"hello\", aIdentifier)");
+        let identifier = make_identifier(&tokens, 0);
+        assert_eq!(
+            Identifier {
+                start: 0,
+                end: 3,
+                name: "log".to_string()
+            },
+            identifier
+        );
+        let identifier = make_identifier(&tokens, 8);
+        assert_eq!(
+            Identifier {
+                start: 16,
+                end: 27,
+                name: "aIdentifier".to_string()
+            },
+            identifier
+        );
+    }
+    #[test]
+    fn test_make_none_code_node() {
+        let tokens = lexer("log(5, \"hello\", aIdentifier)");
+        let index = 4;
+        let expected_output = (
+            Some(NoneCodeNode {
+                start: 6,
+                end: 7,
+                value: " ".to_string(),
+            }),
+            4,
+        );
+        assert_eq!(make_none_code_node(&tokens, index), expected_output);
+
+        let index = 7;
+        let expected_output = (
+            Some(NoneCodeNode {
+                start: 15,
+                end: 16,
+                value: " ".to_string(),
+            }),
+            7,
+        );
+        assert_eq!(make_none_code_node(&tokens, index), expected_output);
+        let tokens = lexer(
+            r#"
+const yo = { a: { b: { c: '123' } } }
+// this is a comment
+const key = 'c'"#,
+        );
+        let index = 0;
+        let expected_output = (
+            Some(NoneCodeNode {
+                start: 0,
+                end: 1,
+                value: "\n".to_string(),
+            }),
+            0,
+        );
+        assert_eq!(make_none_code_node(&tokens, index), expected_output);
+
+        let index = 2;
+        let expected_output = (
+            Some(NoneCodeNode {
+                start: 6,
+                end: 7,
+                value: " ".to_string(),
+            }),
+            2,
+        );
+        assert_eq!(make_none_code_node(&tokens, index), expected_output);
+
+        let index = 2;
+        let expected_output = (
+            Some(NoneCodeNode {
+                start: 6,
+                end: 7,
+                value: " ".to_string(),
+            }),
+            2,
+        );
+        assert_eq!(make_none_code_node(&tokens, index), expected_output);
+
+        let index = 29;
+        let expected_output = (
+            Some(NoneCodeNode {
+                start: 38,
+                end: 60,
+                value: "\n// this is a comment\n".to_string(),
+            }),
+            31,
+        );
+        assert_eq!(make_none_code_node(&tokens, index), expected_output);
+        let tokens = lexer(
+            r#"const mySketch = startSketchAt([0,0])
+  |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
+  |> lineTo([1, 1], %) /* this is
+      a comment
+      spanning a few lines */
+  |> lineTo({ to: [1,0], tag: "rightPath" }, %)
+  |> close(%)"#,
+        );
+        let index = 57;
+        let expected_output = (
+            Some(NoneCodeNode {
+                start: 106,
+                end: 166,
+                value: " /* this is\n      a comment\n      spanning a few lines */\n  "
+                    .to_string(),
+            }),
+            59,
+        );
+        assert_eq!(make_none_code_node(&tokens, index), expected_output);
+    }
+
     #[test]
     fn test_collect_object_keys() {
         let tokens = lexer("const prop = yo.one[\"two\"]");
         let keys_info = collect_object_keys(&tokens, 6, None);
-        assert_eq!(keys_info.len(), 3);
+        assert_eq!(keys_info.len(), 2);
         let first_key = match keys_info[0].key.clone() {
             LiteralIdentifier::Identifier(identifier) => format!("identifier-{}", identifier.name),
             _ => panic!("Expected first key to be an identifier"),
@@ -2591,5 +1596,1003 @@ mod tests {
         };
         assert_eq!(third_key, "identifier-three");
         assert!(keys_info[0].computed);
+    }
+
+    #[test]
+    fn test_make_literal_call_expression() {
+        let tokens = lexer("log(5, \"hello\", aIdentifier)");
+        let literal = make_literal(&tokens, 2);
+        assert_eq!(
+            Literal {
+                start: 4,
+                end: 5,
+                value: serde_json::Value::Number(5.into()),
+                raw: "5".to_string()
+            },
+            literal
+        );
+        let literal = make_literal(&tokens, 5);
+        assert_eq!(
+            Literal {
+                start: 7,
+                end: 14,
+                value: serde_json::Value::String("hello".to_string()),
+                raw: "\"hello\"".to_string()
+            },
+            literal
+        );
+    }
+
+    #[test]
+    fn test_is_not_code_token() {
+        assert!(!is_not_code_token(&Token {
+            token_type: TokenType::Word,
+            start: 0,
+            end: 3,
+            value: "log".to_string(),
+        }));
+        assert!(!is_not_code_token(&Token {
+            token_type: TokenType::Brace,
+            start: 3,
+            end: 4,
+            value: "(".to_string(),
+        }));
+        assert!(!is_not_code_token(&Token {
+            token_type: TokenType::Number,
+            start: 4,
+            end: 5,
+            value: "5".to_string(),
+        }));
+        assert!(!is_not_code_token(&Token {
+            token_type: TokenType::Comma,
+            start: 5,
+            end: 6,
+            value: ",".to_string(),
+        }));
+        assert!(is_not_code_token(&Token {
+            token_type: TokenType::Whitespace,
+            start: 6,
+            end: 7,
+            value: " ".to_string(),
+        }));
+        assert!(!is_not_code_token(&Token {
+            token_type: TokenType::String,
+            start: 7,
+            end: 14,
+            value: "\"hello\"".to_string(),
+        }));
+        assert!(!is_not_code_token(&Token {
+            token_type: TokenType::Word,
+            start: 16,
+            end: 27,
+            value: "aIdentifier".to_string(),
+        }));
+        assert!(!is_not_code_token(&Token {
+            token_type: TokenType::Brace,
+            start: 27,
+            end: 28,
+            value: ")".to_string(),
+        }));
+        assert!(is_not_code_token(&Token {
+            token_type: TokenType::BlockComment,
+            start: 28,
+            end: 30,
+            value: "/* abte */".to_string(),
+        }));
+        assert!(is_not_code_token(&Token {
+            token_type: TokenType::LineComment,
+            start: 30,
+            end: 33,
+            value: "// yoyo a line".to_string(),
+        }));
+    }
+
+    #[test]
+    fn test_next_meaningful_token() {
+        let _offset = 1;
+        let tokens = lexer(
+            r#"const mySketch = startSketchAt([0,0])
+  |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
+  |> lineTo([1, 1], %) /* this is
+      a comment
+      spanning a few lines */
+  |> lineTo({ to: [1,0], tag: "rightPath" }, %)
+  |> close(%)"#,
+        );
+        let index = 17;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Brace,
+                start: 49,
+                end: 50,
+                value: "(".to_string(),
+            }),
+            index: 18,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 18;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Brace,
+                start: 50,
+                end: 51,
+                value: "{".to_string(),
+            }),
+            index: 19,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 21;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Colon,
+                start: 54,
+                end: 55,
+                value: ":".to_string(),
+            }),
+            index: 22,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 24;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Number,
+                start: 57,
+                end: 58,
+                value: "0".to_string(),
+            }),
+            index: 25,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 25;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Comma,
+                start: 58,
+                end: 59,
+                value: ",".to_string(),
+            }),
+            index: 26,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 28;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Brace,
+                start: 61,
+                end: 62,
+                value: "]".to_string(),
+            }),
+            index: 29,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 29;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Comma,
+                start: 62,
+                end: 63,
+                value: ",".to_string(),
+            }),
+            index: 30,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 32;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Colon,
+                start: 67,
+                end: 68,
+                value: ":".to_string(),
+            }),
+            index: 33,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 37;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Comma,
+                start: 79,
+                end: 80,
+                value: ",".to_string(),
+            }),
+            index: 38,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 40;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Brace,
+                start: 82,
+                end: 83,
+                value: ")".to_string(),
+            }),
+            index: 41,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 45;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Brace,
+                start: 95,
+                end: 96,
+                value: "(".to_string(),
+            }),
+            index: 46,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 46;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Brace,
+                start: 96,
+                end: 97,
+                value: "[".to_string(),
+            }),
+            index: 47,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 47;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Number,
+                start: 97,
+                end: 98,
+                value: "1".to_string(),
+            }),
+            index: 48,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 48;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Comma,
+                start: 98,
+                end: 99,
+                value: ",".to_string(),
+            }),
+            index: 49,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 51;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Brace,
+                start: 101,
+                end: 102,
+                value: "]".to_string(),
+            }),
+            index: 52,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 52;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Comma,
+                start: 102,
+                end: 103,
+                value: ",".to_string(),
+            }),
+            index: 53,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 55;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Brace,
+                start: 105,
+                end: 106,
+                value: ")".to_string(),
+            }),
+            index: 56,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 62;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Brace,
+                start: 175,
+                end: 176,
+                value: "(".to_string(),
+            }),
+            index: 63,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 63;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Brace,
+                start: 176,
+                end: 177,
+                value: "{".to_string(),
+            }),
+            index: 64,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 66;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Colon,
+                start: 180,
+                end: 181,
+                value: ":".to_string(),
+            }),
+            index: 67,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 69;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Number,
+                start: 185,
+                end: 186,
+                value: "1".to_string(),
+            }),
+            index: 70,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 70;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Comma,
+                start: 186,
+                end: 187,
+                value: ",".to_string(),
+            }),
+            index: 71,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 71;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Number,
+                start: 187,
+                end: 188,
+                value: "0".to_string(),
+            }),
+            index: 72,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 72;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Brace,
+                start: 188,
+                end: 189,
+                value: "]".to_string(),
+            }),
+            index: 73,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 73;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Comma,
+                start: 189,
+                end: 190,
+                value: ",".to_string(),
+            }),
+            index: 74,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 76;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Colon,
+                start: 194,
+                end: 195,
+                value: ":".to_string(),
+            }),
+            index: 77,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 81;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Comma,
+                start: 209,
+                end: 210,
+                value: ",".to_string(),
+            }),
+            index: 82,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 84;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Brace,
+                start: 212,
+                end: 213,
+                value: ")".to_string(),
+            }),
+            index: 85,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 89;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Brace,
+                start: 224,
+                end: 225,
+                value: "(".to_string(),
+            }),
+            index: 90,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 90;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Operator,
+                start: 225,
+                end: 226,
+                value: "%".to_string(),
+            }),
+            index: 91,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+        let index = 91;
+        let expected_output = TokenReturnWithNonCode {
+            token: Some(Token {
+                token_type: TokenType::Brace,
+                start: 226,
+                end: 227,
+                value: ")".to_string(),
+            }),
+            index: 92,
+            non_code_node: None,
+        };
+        assert_eq!(next_meaningful_token(&tokens, index, None), expected_output);
+    }
+
+    #[test]
+    fn test_find_closing_brace() {
+        let tokens = lexer(
+            r#"const mySketch = startSketchAt([0,0])
+|> lineTo({ to: [0, 1], tag: 'myPath' }, %)
+|> lineTo([1, 1], %) /* this is
+  a comment
+  spanning a few lines */
+|> lineTo({ to: [1,0], tag: "rightPath" }, %)
+|> close(%)"#,
+        );
+        assert_eq!(find_closing_brace(&tokens, 7, 0, ""), 13);
+        assert_eq!(find_closing_brace(&tokens, 18, 0, ""), 41);
+        assert_eq!(find_closing_brace(&tokens, 46, 0, ""), 56);
+        assert_eq!(find_closing_brace(&tokens, 63, 0, ""), 85);
+        assert_eq!(find_closing_brace(&tokens, 90, 0, ""), 92);
+
+        let basic = "( hey )";
+        assert_eq!(find_closing_brace(&lexer(basic), 0, 0, ""), 4);
+
+        let handles_non_zero_index =
+            "(indexForBracketToRightOfThisIsTwo(shouldBeFour)AndNotThisSix)";
+        assert_eq!(
+            find_closing_brace(&lexer(handles_non_zero_index), 2, 0, ""),
+            4
+        );
+        assert_eq!(
+            find_closing_brace(&lexer(handles_non_zero_index), 0, 0, ""),
+            6
+        );
+
+        let handles_nested = "{a{b{c(}d]}eathou athoeu tah u} thatOneToTheLeftIsLast }";
+        assert_eq!(find_closing_brace(&lexer(handles_nested), 0, 0, ""), 18);
+
+        // TODO expect error when not started on a brace
+    }
+
+    #[test]
+    fn test_is_call_expression() {
+        let tokens = lexer(
+            r#"const mySketch = startSketchAt([0,0])
+|> lineTo({ to: [0, 1], tag: 'myPath' }, %)
+|> lineTo([1, 1], %) /* this is
+  a comment
+  spanning a few lines */
+|> lineTo({ to: [1,0], tag: "rightPath" }, %)
+|> close(%)"#,
+        );
+
+        assert_eq!(is_call_expression(&tokens, 4), None);
+        assert_eq!(is_call_expression(&tokens, 6), Some(13));
+        assert_eq!(is_call_expression(&tokens, 15), None);
+        assert_eq!(is_call_expression(&tokens, 43), None);
+        assert_eq!(is_call_expression(&tokens, 60), None);
+        assert_eq!(is_call_expression(&tokens, 87), None);
+    }
+
+    #[test]
+    fn test_find_next_declaration_keyword() {
+        let tokens = lexer(
+            r#"const mySketch = startSketchAt([0,0])
+|> lineTo({ to: [0, 1], tag: 'myPath' }, %)
+|> lineTo([1, 1], %) /* this is
+  a comment
+  spanning a few lines */
+|> lineTo({ to: [1,0], tag: "rightPath" }, %)
+|> close(%)"#,
+        );
+        assert_eq!(
+            find_next_declaration_keyword(&tokens, 4),
+            TokenReturn {
+                token: None,
+                index: 92,
+            }
+        );
+
+        let tokens = lexer(
+            r#"const myVar = 5
+const newVar = myVar + 1
+"#,
+        );
+        assert_eq!(
+            find_next_declaration_keyword(&tokens, 6),
+            TokenReturn {
+                token: Some(Token {
+                    token_type: TokenType::Word,
+                    start: 16,
+                    end: 21,
+                    value: "const".to_string(),
+                }),
+                index: 8,
+            }
+        );
+        assert_eq!(
+            find_next_declaration_keyword(&tokens, 14),
+            TokenReturn {
+                token: None,
+                index: 19,
+            }
+        );
+    }
+
+    #[test]
+    fn test_has_pipe_operator() {
+        let code = r#"sketch mySketch {
+  lineTo(2, 3)
+} |> rx(45, %)
+"#;
+        let tokens = lexer(code);
+        assert_eq!(
+            has_pipe_operator(&tokens, 0, None),
+            TokenReturnWithNonCode {
+                token: Some(Token {
+                    token_type: TokenType::Operator,
+                    start: 35,
+                    end: 37,
+                    value: "|>".to_string(),
+                }),
+                index: 16,
+                non_code_node: Some(NoneCodeNode {
+                    start: 34,
+                    end: 35,
+                    value: " ".to_string()
+                }),
+            }
+        );
+        let code = r#"sketch mySketch {
+  lineTo(2, 3)
+} |> rx(45, %) |> rx(45, %)
+"#;
+        let tokens = lexer(code);
+        assert_eq!(
+            has_pipe_operator(&tokens, 0, None),
+            TokenReturnWithNonCode {
+                token: Some(Token {
+                    token_type: TokenType::Operator,
+                    start: 35,
+                    end: 37,
+                    value: "|>".to_string(),
+                }),
+                index: 16,
+                non_code_node: Some(NoneCodeNode {
+                    start: 34,
+                    end: 35,
+                    value: " ".to_string()
+                }),
+            }
+        );
+
+        let code = r#"sketch mySketch {
+  lineTo(2, 3)
+}
+const yo = myFunc(9()
+  |> rx(45, %)
+"#;
+        let tokens = lexer(code);
+        assert_eq!(
+            has_pipe_operator(&tokens, 0, None),
+            TokenReturnWithNonCode {
+                token: None,
+                index: 16,
+                non_code_node: None,
+            }
+        );
+
+        let code = "const myVar2 = 5 + 1 |> myFn(%)";
+        let tokens = lexer(code);
+        assert_eq!(
+            has_pipe_operator(&tokens, 1, None),
+            TokenReturnWithNonCode {
+                token: Some(Token {
+                    token_type: TokenType::Operator,
+                    start: 21,
+                    end: 23,
+                    value: "|>".to_string(),
+                }),
+                index: 12,
+                non_code_node: Some(NoneCodeNode {
+                    start: 20,
+                    end: 21,
+                    value: " ".to_string()
+                }),
+            }
+        );
+
+        let code = r#"sketch mySk1 {
+  lineTo(1,1)
+  path myPath = lineTo(0, 1)
+  lineTo(1,1)
+} |> rx(90, %)
+show(mySk1)"#;
+        let tokens = lexer(code);
+        let token_with_my_path_index = tokens
+            .iter()
+            .position(|token| token.value == "myPath")
+            .unwrap();
+        // loop through getting the token and it's index
+        let token_with_line_to_index_for_var_dec_index = tokens
+            .iter()
+            .enumerate()
+            .find(|(index, token)| token.value == "lineTo" && index > &token_with_my_path_index)
+            .unwrap()
+            .0;
+        // expect to return None,
+        assert_eq!(
+            has_pipe_operator(&tokens, token_with_line_to_index_for_var_dec_index, None),
+            TokenReturnWithNonCode {
+                token: None,
+                index: 27,
+                non_code_node: None,
+            }
+        );
+
+        let brace_token_index = tokens.iter().position(|token| token.value == "{").unwrap();
+        assert_eq!(
+            has_pipe_operator(&tokens, brace_token_index, None),
+            TokenReturnWithNonCode {
+                token: Some(Token {
+                    token_type: TokenType::Operator,
+                    start: 74,
+                    end: 76,
+                    value: "|>".to_string(),
+                }),
+                index: 36,
+                non_code_node: Some(NoneCodeNode {
+                    start: 73,
+                    end: 74,
+                    value: " ".to_string()
+                }),
+            }
+        );
+    }
+
+    #[test]
+    fn test_make_member_expression() {
+        let tokens = lexer("const prop = yo.one[\"two\"]");
+        let member_expression_return = make_member_expression(&tokens, 6);
+        let member_expression = member_expression_return.expression;
+        let last_index = member_expression_return.last_index;
+        assert_eq!(member_expression.start, 13);
+        assert_eq!(member_expression.end, 26);
+        let member_object = match member_expression.object {
+            MemberObject::MemberExpression(member_expression) => member_expression,
+            _ => panic!("Expected member expression"),
+        };
+        assert_eq!(member_object.start, 13);
+        assert_eq!(member_object.end, 19);
+        let member_object_object = match member_object.object {
+            MemberObject::Identifier(identifier) => identifier,
+            _ => panic!("Expected identifier"),
+        };
+        assert_eq!(member_object_object.start, 13);
+        assert_eq!(member_object_object.end, 15);
+        assert_eq!(member_object_object.name, "yo");
+        let member_object_property = match member_object.property {
+            LiteralIdentifier::Identifier(identifier) => identifier,
+            _ => panic!("Expected identifier"),
+        };
+        assert_eq!(member_object_property.start, 16);
+        assert_eq!(member_object_property.end, 19);
+        assert_eq!(member_object_property.name, "one");
+        assert!(!member_object.computed);
+        let member_expression_property = match member_expression.property {
+            LiteralIdentifier::Literal(literal) => literal,
+            _ => panic!("Expected literal"),
+        };
+        assert_eq!(member_expression_property.start, 20);
+        assert_eq!(member_expression_property.end, 25);
+        assert_eq!(member_expression_property.value, "two");
+        assert!(!member_expression.computed);
+        assert_eq!(last_index, 11);
+    }
+
+    #[test]
+    fn test_find_end_of_binary_expression() {
+        let code = "1 + 2 * 3\nconst yo = 5";
+        let tokens = lexer(code);
+        let end = find_end_of_binary_expression(&tokens, 0);
+        assert_eq!(tokens[end].value, "3");
+
+        let code = "(1 + 25) / 5 - 3\nconst yo = 5";
+        let tokens = lexer(code);
+        let end = find_end_of_binary_expression(&tokens, 0);
+        assert_eq!(tokens[end].value, "3");
+        let index_of_5 = code.find('5').unwrap();
+        let end_starting_at_the_5 = find_end_of_binary_expression(&tokens, index_of_5);
+        assert_eq!(end_starting_at_the_5, end);
+        // whole thing wraped
+        let code = "((1 + 2) / 5 - 3)\nconst yo = 5";
+        let tokens = lexer(code);
+        let end = find_end_of_binary_expression(&tokens, 0);
+        assert_eq!(tokens[end].end, code.find("3)").unwrap() + 2);
+        // whole thing wraped but given index after the first brace
+        let code = "((1 + 2) / 5 - 3)\nconst yo = 5";
+        let tokens = lexer(code);
+        let end = find_end_of_binary_expression(&tokens, 1);
+        assert_eq!(tokens[end].value, "3");
+        // given the index of a small wrapped section i.e. `1 + 2` in ((1 + 2) / 5 - 3)'
+        let code = "((1 + 2) / 5 - 3)\nconst yo = 5";
+        let tokens = lexer(code);
+        let end = find_end_of_binary_expression(&tokens, 2);
+        assert_eq!(tokens[end].value, "2");
+        // lots of silly nesting
+        let code = "(1 + 2) / (5 - (3))\nconst yo = 5";
+        let tokens = lexer(code);
+        let end = find_end_of_binary_expression(&tokens, 0);
+        assert_eq!(tokens[end].end, code.find("))").unwrap() + 2);
+        // with pipe operator at the end
+        let code = "(1 + 2) / (5 - (3))\n  |> fn(%)";
+        let tokens = lexer(code);
+        let end = find_end_of_binary_expression(&tokens, 0);
+        assert_eq!(tokens[end].end, code.find("))").unwrap() + 2);
+        // with call expression at the start of binary expression
+        let code = "yo(2) + 3\n  |> fn(%)";
+        let tokens = lexer(code);
+        let end = find_end_of_binary_expression(&tokens, 0);
+        assert_eq!(tokens[end].value, "3");
+        // with call expression at the end of binary expression
+        let code = "3 + yo(2)\n  |> fn(%)";
+        let tokens = lexer(code);
+        let _end = find_end_of_binary_expression(&tokens, 0);
+    }
+
+    #[test]
+    fn test_make_array_expression() {
+        // input_index: 6, output_index: 14, output: {"type":"ArrayExpression","start":11,"end":26,"elements":[{"type":"Literal","start":12,"end":15,"value":"1","raw":"\"1\""},{"type":"Literal","start":17,"end":18,"value":2,"raw":"2"},{"type":"Identifier","start":20,"end":25,"name":"three"}]}
+        let tokens = lexer("const yo = [\"1\", 2, three]");
+        let array_expression = make_array_expression(&tokens, 6);
+        let expression = array_expression.expression;
+        assert_eq!(array_expression.last_index, 14);
+        assert_eq!(expression.start, 11);
+        assert_eq!(expression.end, 26);
+        let elements = expression.elements;
+        assert_eq!(elements.len(), 3);
+        match &elements[0] {
+            Value::Literal(literal) => {
+                assert_eq!(literal.start, 12);
+                assert_eq!(literal.end, 15);
+                assert_eq!(literal.value, serde_json::Value::String("1".to_string()));
+                assert_eq!(literal.raw, "\"1\"".to_string());
+            }
+            _ => panic!("Expected literal"),
+        }
+        match &elements[1] {
+            Value::Literal(literal) => {
+                assert_eq!(literal.start, 17);
+                assert_eq!(literal.end, 18);
+                assert_eq!(literal.value, serde_json::Value::Number(2.into()));
+                assert_eq!(literal.raw, "2".to_string());
+            }
+            _ => panic!("Expected literal"),
+        }
+        match &elements[2] {
+            Value::Identifier(identifier) => {
+                assert_eq!(identifier.start, 20);
+                assert_eq!(identifier.end, 25);
+                assert_eq!(identifier.name, "three".to_string());
+            }
+            _ => panic!("Expected identifier"),
+        }
+    }
+
+    #[test]
+    fn test_make_call_expression() {
+        let tokens = lexer("foo(\"a\", a, 3)");
+        let result = make_call_expression(&tokens, 0);
+        assert_eq!(result.last_index, 9);
+        assert_eq!(result.expression.start, 0);
+        assert_eq!(result.expression.end, 14);
+        assert_eq!(result.expression.callee.name, "foo");
+        assert_eq!(result.expression.arguments.len(), 3);
+        assert!(!result.expression.optional);
+        let arguments = result.expression.arguments;
+        match arguments[0] {
+            Value::Literal(ref literal) => {
+                assert_eq!(literal.value, "a");
+                assert_eq!(literal.raw, "\"a\"");
+            }
+            _ => panic!("Expected literal"),
+        }
+        match arguments[1] {
+            Value::Identifier(ref identifier) => {
+                assert_eq!(identifier.name, "a");
+            }
+            _ => panic!("Expected identifier"),
+        }
+        match arguments[2] {
+            Value::Literal(ref literal) => {
+                assert_eq!(literal.value, 3);
+                assert_eq!(literal.raw, "3");
+            }
+            _ => panic!("Expected literal"),
+        }
+    }
+
+    #[test]
+    fn test_make_variable_declaration() {
+        let tokens = lexer(
+            r#"const yo = startSketch([0, 0])
+  |> lineTo([1, myVar], %)
+  |> foo(myVar2, %)
+  |> close(%)"#,
+        );
+        let result = make_variable_declaration(&tokens, 0);
+        assert_eq!(result.declaration.kind, "const");
+        assert_eq!(result.declaration.declarations.len(), 1);
+        assert_eq!(result.declaration.declarations[0].id.name, "yo");
+        let declaration = result.declaration.declarations[0].clone();
+        let body = match declaration.init {
+            Value::PipeExpression(body) => body,
+            _ => panic!("expected pipe expression"),
+        };
+        assert_eq!(body.body.len(), 4);
+        let first_call_expression = match &body.body[0] {
+            Value::CallExpression(call_expression) => call_expression,
+            _ => panic!("expected call expression"),
+        };
+        assert_eq!(first_call_expression.callee.name, "startSketch");
+        assert_eq!(first_call_expression.arguments.len(), 1);
+        let first_argument = &first_call_expression.arguments[0];
+        let first_argument_array_expression = match first_argument {
+            Value::ArrayExpression(array_expression) => array_expression,
+            _ => panic!("expected array expression"),
+        };
+        assert_eq!(first_argument_array_expression.elements.len(), 2);
+        let second_call_expression = match &body.body[1] {
+            Value::CallExpression(call_expression) => call_expression,
+            _ => panic!("expected call expression"),
+        };
+        assert_eq!(second_call_expression.callee.name, "lineTo");
+        assert_eq!(second_call_expression.arguments.len(), 2);
+        let first_argument = &second_call_expression.arguments[0];
+        let first_argument_array_expression = match first_argument {
+            Value::ArrayExpression(array_expression) => array_expression,
+            _ => panic!("expected array expression"),
+        };
+        assert_eq!(first_argument_array_expression.elements.len(), 2);
+        let second_argument = &second_call_expression.arguments[1];
+        let second_argument_pipe_substitution = match second_argument {
+            Value::PipeSubstitution(pipe_substitution) => pipe_substitution,
+            _ => panic!("expected pipe substitution"),
+        };
+        assert_eq!(second_argument_pipe_substitution.start, 55);
+        let third_call_expression = match &body.body[2] {
+            Value::CallExpression(call_expression) => call_expression,
+            _ => panic!("expected call expression"),
+        };
+        assert_eq!(third_call_expression.callee.name, "foo");
+        assert_eq!(third_call_expression.arguments.len(), 2);
+        let first_argument = &third_call_expression.arguments[0];
+        let first_argument_identifier = match first_argument {
+            Value::Identifier(identifier) => identifier,
+            _ => panic!("expected identifier"),
+        };
+        assert_eq!(first_argument_identifier.name, "myVar2");
+
+        let fourth_call_expression = match &body.body[3] {
+            Value::CallExpression(call_expression) => call_expression,
+            _ => panic!("expected call expression"),
+        };
+        assert_eq!(fourth_call_expression.callee.name, "close");
+        assert_eq!(fourth_call_expression.arguments.len(), 1);
+    }
+
+    #[test]
+    fn test_make_body() {
+        let tokens = lexer("const myVar = 5");
+        let body = make_body(
+            &tokens,
+            0,
+            vec![],
+            NoneCodeMeta {
+                none_code_nodes: HashMap::new(),
+                start: None,
+            },
+        );
+        assert_eq!(body.body.len(), 1);
+    }
+
+    #[test]
+    fn test_abstract_syntax_tree() {
+        let code = "5 +6";
+        let result = abstract_syntax_tree(&lexer(code));
+        let expected_result = Program {
+            start: 0,
+            end: 4,
+            body: vec![BodyItem::ExpressionStatement(ExpressionStatement {
+                start: 0,
+                end: 4,
+                expression: Value::BinaryExpression(Box::new(BinaryExpression {
+                    start: 0,
+                    end: 4,
+                    left: BinaryPart::Literal(Box::new(Literal {
+                        start: 0,
+                        end: 1,
+                        value: serde_json::Value::Number(serde_json::Number::from(5)),
+                        raw: "5".to_string(),
+                    })),
+                    operator: "+".to_string(),
+                    right: BinaryPart::Literal(Box::new(Literal {
+                        start: 3,
+                        end: 4,
+                        value: serde_json::Value::Number(serde_json::Number::from(6)),
+                        raw: "6".to_string(),
+                    })),
+                })),
+            })],
+            non_code_meta: NoneCodeMeta {
+                none_code_nodes: HashMap::from_iter(vec![(
+                    0,
+                    NoneCodeNode {
+                        start: 1,
+                        end: 2,
+                        value: " ".to_string(),
+                    },
+                )]),
+                start: None,
+            },
+        };
+
+        assert_eq!(result, expected_result);
     }
 }

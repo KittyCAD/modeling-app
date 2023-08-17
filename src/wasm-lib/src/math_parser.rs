@@ -125,127 +125,6 @@ pub fn reverse_polish_notation(
     panic!("Unknown token");
 }
 
-#[test]
-fn test_reverse_polish_notation_simple() {
-    let result = reverse_polish_notation(&crate::tokeniser::lexer("1 + 2"), &vec![], &vec![]);
-    assert_eq!(
-        result,
-        vec![
-            Token {
-                token_type: TokenType::Number,
-                value: "1".to_string(),
-                start: 0,
-                end: 1
-            },
-            Token {
-                token_type: TokenType::Number,
-                value: "2".to_string(),
-                start: 4,
-                end: 5
-            },
-            Token {
-                token_type: TokenType::Operator,
-                value: "+".to_string(),
-                start: 2,
-                end: 3
-            }
-        ]
-    );
-}
-
-#[test]
-fn test_reverse_polish_notation_complex() {
-    let result = reverse_polish_notation(&crate::tokeniser::lexer("1 + 2 * 3"), &vec![], &vec![]);
-    assert_eq!(
-        result,
-        vec![
-            Token {
-                token_type: TokenType::Number,
-                value: "1".to_string(),
-                start: 0,
-                end: 1
-            },
-            Token {
-                token_type: TokenType::Number,
-                value: "2".to_string(),
-                start: 4,
-                end: 5
-            },
-            Token {
-                token_type: TokenType::Number,
-                value: "3".to_string(),
-                start: 8,
-                end: 9
-            },
-            Token {
-                token_type: TokenType::Operator,
-                value: "*".to_string(),
-                start: 6,
-                end: 7
-            },
-            Token {
-                token_type: TokenType::Operator,
-                value: "+".to_string(),
-                start: 2,
-                end: 3
-            }
-        ]
-    );
-}
-
-#[test]
-fn test_reverse_polish_notation_complex_with_parentheses() {
-    let result =
-        reverse_polish_notation(&crate::tokeniser::lexer("1 * ( 2 + 3 )"), &vec![], &vec![]);
-    assert_eq!(
-        result,
-        vec![
-            Token {
-                token_type: TokenType::Number,
-                value: "1".to_string(),
-                start: 0,
-                end: 1
-            },
-            Token {
-                token_type: TokenType::Brace,
-                value: "(".to_string(),
-                start: 4,
-                end: 5
-            },
-            Token {
-                token_type: TokenType::Number,
-                value: "2".to_string(),
-                start: 6,
-                end: 7
-            },
-            Token {
-                token_type: TokenType::Number,
-                value: "3".to_string(),
-                start: 10,
-                end: 11
-            },
-            Token {
-                token_type: TokenType::Operator,
-                value: "+".to_string(),
-                start: 8,
-                end: 9
-            },
-            Token {
-                token_type: TokenType::Brace,
-                value: ")".to_string(),
-                start: 12,
-                end: 13
-            },
-            Token {
-                token_type: TokenType::Operator,
-                value: "*".to_string(),
-                start: 2,
-                end: 3
-            }
-        ]
-    );
-}
-
 #[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Clone)]
 pub enum MathTokenType {
     Number,
@@ -545,72 +424,6 @@ fn build_tree(
     build_tree(reverse_polish_notation_tokens[1..].to_vec(), new_stack)
 }
 
-#[test]
-fn test_build_tree() {
-    let input_tokens = vec![
-        Token {
-            token_type: TokenType::Number,
-            start: 0,
-            end: 1,
-            value: "1".to_string(),
-        },
-        Token {
-            token_type: TokenType::Number,
-            start: 4,
-            end: 5,
-            value: "2".to_string(),
-        },
-        Token {
-            token_type: TokenType::Number,
-            start: 8,
-            end: 9,
-            value: "3".to_string(),
-        },
-        Token {
-            token_type: TokenType::Operator,
-            start: 6,
-            end: 7,
-            value: "*".to_string(),
-        },
-        Token {
-            token_type: TokenType::Operator,
-            start: 2,
-            end: 3,
-            value: "+".to_string(),
-        },
-    ];
-    let expected_output = BinaryExpression {
-        operator: "+".to_string(),
-        start: 0,
-        end: 9,
-        left: BinaryPart::Literal(Box::new(Literal {
-            value: serde_json::Value::Number(serde_json::Number::from(1)),
-            raw: "1".to_string(),
-            start: 0,
-            end: 1,
-        })),
-        right: BinaryPart::BinaryExpression(Box::new(BinaryExpression {
-            operator: "*".to_string(),
-            start: 4,
-            end: 9,
-            left: BinaryPart::Literal(Box::new(Literal {
-                value: serde_json::Value::Number(serde_json::Number::from(2)),
-                raw: "2".to_string(),
-                start: 4,
-                end: 5,
-            })),
-            right: BinaryPart::Literal(Box::new(Literal {
-                value: serde_json::Value::Number(serde_json::Number::from(3)),
-                raw: "3".to_string(),
-                start: 8,
-                end: 9,
-            })),
-        })),
-    };
-    let output = build_tree(input_tokens, vec![]);
-    assert_eq!(output, expected_output);
-}
-
 pub fn parse_expression(tokens: Vec<Token>) -> BinaryExpression {
     let rpn = reverse_polish_notation(&tokens, &vec![], &vec![]);
     let tree_with_maybe_bad_top_level_start_end = build_tree(rpn, vec![]);
@@ -647,114 +460,81 @@ pub fn parse_expression(tokens: Vec<Token>) -> BinaryExpression {
     }
 }
 
-#[test]
-fn test_parse_expression() {
-    let tokens = crate::tokeniser::lexer("1 + 2");
-    let result = parse_expression(tokens);
-    assert_eq!(
-        result,
-        BinaryExpression {
-            operator: "+".to_string(),
-            start: 0,
-            end: 5,
-            left: BinaryPart::Literal(Box::new(Literal {
-                value: serde_json::Value::Number(serde_json::Number::from(1)),
-                raw: "1".to_string(),
+#[cfg(test)]
+mod test {
+    use super::*;
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn test_parse_expression() {
+        let tokens = crate::tokeniser::lexer("1 + 2");
+        let result = parse_expression(tokens);
+        assert_eq!(
+            result,
+            BinaryExpression {
+                operator: "+".to_string(),
                 start: 0,
-                end: 1,
-            })),
-            right: BinaryPart::Literal(Box::new(Literal {
-                value: serde_json::Value::Number(serde_json::Number::from(2)),
-                raw: "2".to_string(),
-                start: 4,
                 end: 5,
-            })),
-        }
-    );
-}
-#[test]
-fn test_parse_expression_plus_followed_by_star() {
-    let tokens = crate::tokeniser::lexer("1 + 2 * 3");
-    let result = parse_expression(tokens);
-    assert_eq!(
-        result,
-        BinaryExpression {
-            operator: "+".to_string(),
-            start: 0,
-            end: 9,
-            left: BinaryPart::Literal(Box::new(Literal {
-                value: serde_json::Value::Number(serde_json::Number::from(1)),
-                raw: "1".to_string(),
-                start: 0,
-                end: 1,
-            })),
-            right: BinaryPart::BinaryExpression(Box::new(BinaryExpression {
-                operator: "*".to_string(),
-                start: 4,
-                end: 9,
                 left: BinaryPart::Literal(Box::new(Literal {
+                    value: serde_json::Value::Number(serde_json::Number::from(1)),
+                    raw: "1".to_string(),
+                    start: 0,
+                    end: 1,
+                })),
+                right: BinaryPart::Literal(Box::new(Literal {
                     value: serde_json::Value::Number(serde_json::Number::from(2)),
                     raw: "2".to_string(),
                     start: 4,
                     end: 5,
                 })),
-                right: BinaryPart::Literal(Box::new(Literal {
-                    value: serde_json::Value::Number(serde_json::Number::from(3)),
-                    raw: "3".to_string(),
-                    start: 8,
-                    end: 9,
-                })),
-            })),
-        }
-    );
-}
-#[test]
-fn test_parse_expression_with_parentheses() {
-    let tokens = crate::tokeniser::lexer("1 * ( 2 + 3 )");
-    let result = parse_expression(tokens);
-    assert_eq!(
-        result,
-        BinaryExpression {
-            operator: "*".to_string(),
-            start: 0,
-            end: 13,
-            left: BinaryPart::Literal(Box::new(Literal {
-                value: serde_json::Value::Number(serde_json::Number::from(1)),
-                raw: "1".to_string(),
-                start: 0,
-                end: 1,
-            })),
-            right: BinaryPart::BinaryExpression(Box::new(BinaryExpression {
+            }
+        );
+    }
+
+    #[test]
+    fn test_parse_expression_plus_followed_by_star() {
+        let tokens = crate::tokeniser::lexer("1 + 2 * 3");
+        let result = parse_expression(tokens);
+        assert_eq!(
+            result,
+            BinaryExpression {
                 operator: "+".to_string(),
-                start: 6,
-                end: 11,
+                start: 0,
+                end: 9,
                 left: BinaryPart::Literal(Box::new(Literal {
-                    value: serde_json::Value::Number(serde_json::Number::from(2)),
-                    raw: "2".to_string(),
-                    start: 6,
-                    end: 7,
+                    value: serde_json::Value::Number(serde_json::Number::from(1)),
+                    raw: "1".to_string(),
+                    start: 0,
+                    end: 1,
                 })),
-                right: BinaryPart::Literal(Box::new(Literal {
-                    value: serde_json::Value::Number(serde_json::Number::from(3)),
-                    raw: "3".to_string(),
-                    start: 10,
-                    end: 11,
+                right: BinaryPart::BinaryExpression(Box::new(BinaryExpression {
+                    operator: "*".to_string(),
+                    start: 4,
+                    end: 9,
+                    left: BinaryPart::Literal(Box::new(Literal {
+                        value: serde_json::Value::Number(serde_json::Number::from(2)),
+                        raw: "2".to_string(),
+                        start: 4,
+                        end: 5,
+                    })),
+                    right: BinaryPart::Literal(Box::new(Literal {
+                        value: serde_json::Value::Number(serde_json::Number::from(3)),
+                        raw: "3".to_string(),
+                        start: 8,
+                        end: 9,
+                    })),
                 })),
-            })),
-        }
-    );
-}
-#[test]
-fn test_parse_expression_parens_in_middle() {
-    let tokens = crate::tokeniser::lexer("1 * ( 2 + 3 ) / 4");
-    let result = parse_expression(tokens);
-    assert_eq!(
-        result,
-        BinaryExpression {
-            operator: "/".to_string(),
-            start: 0,
-            end: 17,
-            left: BinaryPart::BinaryExpression(Box::new(BinaryExpression {
+            }
+        );
+    }
+
+    #[test]
+    fn test_parse_expression_with_parentheses() {
+        let tokens = crate::tokeniser::lexer("1 * ( 2 + 3 )");
+        let result = parse_expression(tokens);
+        assert_eq!(
+            result,
+            BinaryExpression {
                 operator: "*".to_string(),
                 start: 0,
                 end: 13,
@@ -781,51 +561,46 @@ fn test_parse_expression_parens_in_middle() {
                         end: 11,
                     })),
                 })),
-            })),
-            right: BinaryPart::Literal(Box::new(Literal {
-                value: serde_json::Value::Number(serde_json::Number::from(4)),
-                raw: "4".to_string(),
-                start: 16,
-                end: 17,
-            })),
-        }
-    )
-}
-#[test]
-fn test_parse_expression_parans_and_predence() {
-    let tokens = crate::tokeniser::lexer("1 + ( 2 + 3 ) / 4");
-    let result = parse_expression(tokens);
-    assert_eq!(
-        result,
-        BinaryExpression {
-            operator: "+".to_string(),
-            start: 0,
-            end: 17,
-            left: BinaryPart::Literal(Box::new(Literal {
-                value: serde_json::Value::Number(serde_json::Number::from(1)),
-                raw: "1".to_string(),
-                start: 0,
-                end: 1,
-            })),
-            right: BinaryPart::BinaryExpression(Box::new(BinaryExpression {
+            }
+        );
+    }
+
+    #[test]
+    fn test_parse_expression_parens_in_middle() {
+        let tokens = crate::tokeniser::lexer("1 * ( 2 + 3 ) / 4");
+        let result = parse_expression(tokens);
+        assert_eq!(
+            result,
+            BinaryExpression {
                 operator: "/".to_string(),
-                start: 4,
+                start: 0,
                 end: 17,
                 left: BinaryPart::BinaryExpression(Box::new(BinaryExpression {
-                    operator: "+".to_string(),
-                    start: 6,
-                    end: 11,
+                    operator: "*".to_string(),
+                    start: 0,
+                    end: 13,
                     left: BinaryPart::Literal(Box::new(Literal {
-                        value: serde_json::Value::Number(serde_json::Number::from(2)),
-                        raw: "2".to_string(),
-                        start: 6,
-                        end: 7,
+                        value: serde_json::Value::Number(serde_json::Number::from(1)),
+                        raw: "1".to_string(),
+                        start: 0,
+                        end: 1,
                     })),
-                    right: BinaryPart::Literal(Box::new(Literal {
-                        value: serde_json::Value::Number(serde_json::Number::from(3)),
-                        raw: "3".to_string(),
-                        start: 10,
+                    right: BinaryPart::BinaryExpression(Box::new(BinaryExpression {
+                        operator: "+".to_string(),
+                        start: 6,
                         end: 11,
+                        left: BinaryPart::Literal(Box::new(Literal {
+                            value: serde_json::Value::Number(serde_json::Number::from(2)),
+                            raw: "2".to_string(),
+                            start: 6,
+                            end: 7,
+                        })),
+                        right: BinaryPart::Literal(Box::new(Literal {
+                            value: serde_json::Value::Number(serde_json::Number::from(3)),
+                            raw: "3".to_string(),
+                            start: 10,
+                            end: 11,
+                        })),
                     })),
                 })),
                 right: BinaryPart::Literal(Box::new(Literal {
@@ -834,78 +609,339 @@ fn test_parse_expression_parans_and_predence() {
                     start: 16,
                     end: 17,
                 })),
-            })),
-        }
-    )
-}
-#[test]
-fn test_parse_expression_nested() {
-    let tokens = crate::tokeniser::lexer("1 * (( 2 + 3 ) / 4 + 5 )");
-    let result = parse_expression(tokens);
-    assert_eq!(
-        result,
-        BinaryExpression {
-            operator: "*".to_string(),
-            start: 0,
-            end: 24,
-            left: BinaryPart::Literal(Box::new(Literal {
-                value: serde_json::Value::Number(serde_json::Number::from(1)),
-                raw: "1".to_string(),
-                start: 0,
-                end: 1,
-            })),
-            right: BinaryPart::BinaryExpression(Box::new(BinaryExpression {
+            }
+        )
+    }
+
+    #[test]
+    fn test_parse_expression_parans_and_predence() {
+        let tokens = crate::tokeniser::lexer("1 + ( 2 + 3 ) / 4");
+        let result = parse_expression(tokens);
+        assert_eq!(
+            result,
+            BinaryExpression {
                 operator: "+".to_string(),
-                start: 5,
-                end: 22,
-                left: BinaryPart::BinaryExpression(Box::new(BinaryExpression {
+                start: 0,
+                end: 17,
+                left: BinaryPart::Literal(Box::new(Literal {
+                    value: serde_json::Value::Number(serde_json::Number::from(1)),
+                    raw: "1".to_string(),
+                    start: 0,
+                    end: 1,
+                })),
+                right: BinaryPart::BinaryExpression(Box::new(BinaryExpression {
                     operator: "/".to_string(),
-                    start: 5,
-                    end: 18,
+                    start: 4,
+                    end: 17,
                     left: BinaryPart::BinaryExpression(Box::new(BinaryExpression {
                         operator: "+".to_string(),
-                        start: 7,
-                        end: 12,
+                        start: 6,
+                        end: 11,
                         left: BinaryPart::Literal(Box::new(Literal {
                             value: serde_json::Value::Number(serde_json::Number::from(2)),
                             raw: "2".to_string(),
-                            start: 7,
-                            end: 8,
+                            start: 6,
+                            end: 7,
                         })),
                         right: BinaryPart::Literal(Box::new(Literal {
                             value: serde_json::Value::Number(serde_json::Number::from(3)),
                             raw: "3".to_string(),
-                            start: 11,
-                            end: 12,
+                            start: 10,
+                            end: 11,
                         })),
                     })),
                     right: BinaryPart::Literal(Box::new(Literal {
                         value: serde_json::Value::Number(serde_json::Number::from(4)),
                         raw: "4".to_string(),
-                        start: 17,
-                        end: 18,
+                        start: 16,
+                        end: 17,
                     })),
                 })),
-                right: BinaryPart::Literal(Box::new(Literal {
-                    value: serde_json::Value::Number(serde_json::Number::from(5)),
-                    raw: "5".to_string(),
-                    start: 21,
-                    end: 22,
+            }
+        )
+    }
+    #[test]
+    fn test_parse_expression_nested() {
+        let tokens = crate::tokeniser::lexer("1 * (( 2 + 3 ) / 4 + 5 )");
+        let result = parse_expression(tokens);
+        assert_eq!(
+            result,
+            BinaryExpression {
+                operator: "*".to_string(),
+                start: 0,
+                end: 24,
+                left: BinaryPart::Literal(Box::new(Literal {
+                    value: serde_json::Value::Number(serde_json::Number::from(1)),
+                    raw: "1".to_string(),
+                    start: 0,
+                    end: 1,
                 })),
-            })),
-        }
-    )
-}
-#[test]
-fn test_parse_expression_redundant_braces() {
-    let tokens = crate::tokeniser::lexer("1 * ((( 2 + 3 )))");
-    let result = parse_expression(tokens);
-    assert_eq!(
-        result,
-        BinaryExpression {
-            operator: "*".to_string(),
+                right: BinaryPart::BinaryExpression(Box::new(BinaryExpression {
+                    operator: "+".to_string(),
+                    start: 5,
+                    end: 22,
+                    left: BinaryPart::BinaryExpression(Box::new(BinaryExpression {
+                        operator: "/".to_string(),
+                        start: 5,
+                        end: 18,
+                        left: BinaryPart::BinaryExpression(Box::new(BinaryExpression {
+                            operator: "+".to_string(),
+                            start: 7,
+                            end: 12,
+                            left: BinaryPart::Literal(Box::new(Literal {
+                                value: serde_json::Value::Number(serde_json::Number::from(2)),
+                                raw: "2".to_string(),
+                                start: 7,
+                                end: 8,
+                            })),
+                            right: BinaryPart::Literal(Box::new(Literal {
+                                value: serde_json::Value::Number(serde_json::Number::from(3)),
+                                raw: "3".to_string(),
+                                start: 11,
+                                end: 12,
+                            })),
+                        })),
+                        right: BinaryPart::Literal(Box::new(Literal {
+                            value: serde_json::Value::Number(serde_json::Number::from(4)),
+                            raw: "4".to_string(),
+                            start: 17,
+                            end: 18,
+                        })),
+                    })),
+                    right: BinaryPart::Literal(Box::new(Literal {
+                        value: serde_json::Value::Number(serde_json::Number::from(5)),
+                        raw: "5".to_string(),
+                        start: 21,
+                        end: 22,
+                    })),
+                })),
+            }
+        )
+    }
+    #[test]
+    fn test_parse_expression_redundant_braces() {
+        let tokens = crate::tokeniser::lexer("1 * ((( 2 + 3 )))");
+        let result = parse_expression(tokens);
+        assert_eq!(
+            result,
+            BinaryExpression {
+                operator: "*".to_string(),
+                start: 0,
+                end: 17,
+                left: BinaryPart::Literal(Box::new(Literal {
+                    value: serde_json::Value::Number(serde_json::Number::from(1)),
+                    raw: "1".to_string(),
+                    start: 0,
+                    end: 1,
+                })),
+                right: BinaryPart::BinaryExpression(Box::new(BinaryExpression {
+                    operator: "+".to_string(),
+                    start: 8,
+                    end: 13,
+                    left: BinaryPart::Literal(Box::new(Literal {
+                        value: serde_json::Value::Number(serde_json::Number::from(2)),
+                        raw: "2".to_string(),
+                        start: 8,
+                        end: 9,
+                    })),
+                    right: BinaryPart::Literal(Box::new(Literal {
+                        value: serde_json::Value::Number(serde_json::Number::from(3)),
+                        raw: "3".to_string(),
+                        start: 12,
+                        end: 13,
+                    })),
+                })),
+            }
+        )
+    }
+
+    #[test]
+    fn test_reverse_polish_notation_simple() {
+        let result = reverse_polish_notation(&crate::tokeniser::lexer("1 + 2"), &vec![], &vec![]);
+        assert_eq!(
+            result,
+            vec![
+                Token {
+                    token_type: TokenType::Number,
+                    value: "1".to_string(),
+                    start: 0,
+                    end: 1
+                },
+                Token {
+                    token_type: TokenType::Number,
+                    value: "2".to_string(),
+                    start: 4,
+                    end: 5
+                },
+                Token {
+                    token_type: TokenType::Operator,
+                    value: "+".to_string(),
+                    start: 2,
+                    end: 3
+                }
+            ]
+        );
+    }
+
+    #[test]
+    fn test_reverse_polish_notation_complex() {
+        let result =
+            reverse_polish_notation(&crate::tokeniser::lexer("1 + 2 * 3"), &vec![], &vec![]);
+        assert_eq!(
+            result,
+            vec![
+                Token {
+                    token_type: TokenType::Number,
+                    value: "1".to_string(),
+                    start: 0,
+                    end: 1
+                },
+                Token {
+                    token_type: TokenType::Number,
+                    value: "2".to_string(),
+                    start: 4,
+                    end: 5
+                },
+                Token {
+                    token_type: TokenType::Number,
+                    value: "3".to_string(),
+                    start: 8,
+                    end: 9
+                },
+                Token {
+                    token_type: TokenType::Operator,
+                    value: "*".to_string(),
+                    start: 6,
+                    end: 7
+                },
+                Token {
+                    token_type: TokenType::Operator,
+                    value: "+".to_string(),
+                    start: 2,
+                    end: 3
+                }
+            ]
+        );
+    }
+
+    #[test]
+    fn test_reverse_polish_notation_complex_with_parentheses() {
+        let result =
+            reverse_polish_notation(&crate::tokeniser::lexer("1 * ( 2 + 3 )"), &vec![], &vec![]);
+        assert_eq!(
+            result,
+            vec![
+                Token {
+                    token_type: TokenType::Number,
+                    value: "1".to_string(),
+                    start: 0,
+                    end: 1
+                },
+                Token {
+                    token_type: TokenType::Brace,
+                    value: "(".to_string(),
+                    start: 4,
+                    end: 5
+                },
+                Token {
+                    token_type: TokenType::Number,
+                    value: "2".to_string(),
+                    start: 6,
+                    end: 7
+                },
+                Token {
+                    token_type: TokenType::Number,
+                    value: "3".to_string(),
+                    start: 10,
+                    end: 11
+                },
+                Token {
+                    token_type: TokenType::Operator,
+                    value: "+".to_string(),
+                    start: 8,
+                    end: 9
+                },
+                Token {
+                    token_type: TokenType::Brace,
+                    value: ")".to_string(),
+                    start: 12,
+                    end: 13
+                },
+                Token {
+                    token_type: TokenType::Operator,
+                    value: "*".to_string(),
+                    start: 2,
+                    end: 3
+                }
+            ]
+        );
+    }
+
+    #[test]
+    fn test_parse_expression_redundant_braces_around_literal() {
+        let code = "2 + (((3)))";
+        let tokens = crate::tokeniser::lexer(code);
+        let result = parse_expression(tokens);
+        assert_eq!(
+            result,
+            BinaryExpression {
+                operator: "+".to_string(),
+                start: 0,
+                end: code.find(")))").unwrap() + 3,
+                left: BinaryPart::Literal(Box::new(Literal {
+                    value: serde_json::Value::Number(serde_json::Number::from(2)),
+                    raw: "2".to_string(),
+                    start: 0,
+                    end: 1,
+                })),
+                right: BinaryPart::Literal(Box::new(Literal {
+                    value: serde_json::Value::Number(serde_json::Number::from(3)),
+                    raw: "3".to_string(),
+                    start: 7,
+                    end: 8,
+                })),
+            }
+        )
+    }
+
+    #[test]
+    fn test_build_tree() {
+        let input_tokens = vec![
+            Token {
+                token_type: TokenType::Number,
+                start: 0,
+                end: 1,
+                value: "1".to_string(),
+            },
+            Token {
+                token_type: TokenType::Number,
+                start: 4,
+                end: 5,
+                value: "2".to_string(),
+            },
+            Token {
+                token_type: TokenType::Number,
+                start: 8,
+                end: 9,
+                value: "3".to_string(),
+            },
+            Token {
+                token_type: TokenType::Operator,
+                start: 6,
+                end: 7,
+                value: "*".to_string(),
+            },
+            Token {
+                token_type: TokenType::Operator,
+                start: 2,
+                end: 3,
+                value: "+".to_string(),
+            },
+        ];
+        let expected_output = BinaryExpression {
+            operator: "+".to_string(),
             start: 0,
-            end: 17,
+            end: 9,
             left: BinaryPart::Literal(Box::new(Literal {
                 value: serde_json::Value::Number(serde_json::Number::from(1)),
                 raw: "1".to_string(),
@@ -913,48 +949,24 @@ fn test_parse_expression_redundant_braces() {
                 end: 1,
             })),
             right: BinaryPart::BinaryExpression(Box::new(BinaryExpression {
-                operator: "+".to_string(),
-                start: 8,
-                end: 13,
+                operator: "*".to_string(),
+                start: 4,
+                end: 9,
                 left: BinaryPart::Literal(Box::new(Literal {
                     value: serde_json::Value::Number(serde_json::Number::from(2)),
                     raw: "2".to_string(),
-                    start: 8,
-                    end: 9,
+                    start: 4,
+                    end: 5,
                 })),
                 right: BinaryPart::Literal(Box::new(Literal {
                     value: serde_json::Value::Number(serde_json::Number::from(3)),
                     raw: "3".to_string(),
-                    start: 12,
-                    end: 13,
+                    start: 8,
+                    end: 9,
                 })),
             })),
-        }
-    )
-}
-#[test]
-fn test_parse_expression_redundant_braces_around_literal() {
-    let code = "2 + (((3)))";
-    let tokens = crate::tokeniser::lexer(code);
-    let result = parse_expression(tokens);
-    assert_eq!(
-        result,
-        BinaryExpression {
-            operator: "+".to_string(),
-            start: 0,
-            end: code.find(")))").unwrap() + 3,
-            left: BinaryPart::Literal(Box::new(Literal {
-                value: serde_json::Value::Number(serde_json::Number::from(2)),
-                raw: "2".to_string(),
-                start: 0,
-                end: 1,
-            })),
-            right: BinaryPart::Literal(Box::new(Literal {
-                value: serde_json::Value::Number(serde_json::Number::from(3)),
-                raw: "3".to_string(),
-                start: 7,
-                end: 8,
-            })),
-        }
-    )
+        };
+        let output = build_tree(input_tokens, vec![]);
+        assert_eq!(output, expected_output);
+    }
 }

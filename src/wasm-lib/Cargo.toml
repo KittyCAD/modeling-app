@@ -21,3 +21,6 @@ wasm-bindgen = "0.2.78"
 [profile.release]
 panic = "abort"
 debug = true
+
+[dev-dependencies]
+pretty_assertions = "1.4.0"
