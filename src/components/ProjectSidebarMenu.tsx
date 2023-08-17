@@ -4,6 +4,7 @@ import { faHome } from '@fortawesome/free-solid-svg-icons'
 import { ProjectWithEntryPointMetadata, paths } from '../Router'
 import { isTauri } from '../lib/isTauri'
 import { Link } from 'react-router-dom'
+import { ExportButton } from './ExportButton'
 
 const ProjectSidebarMenu = ({
   project,
@@ -61,6 +62,14 @@ const ProjectSidebarMenu = ({
           </div>
         </div>
         <div className="p-4 flex flex-col gap-2">
+          <ExportButton
+            className={{
+              button:
+                'border-transparent dark:border-transparent dark:hover:border-energy-60',
+            }}
+          >
+            Export Model
+          </ExportButton>
           {isTauri() && (
             <ActionButton
               Element="link"

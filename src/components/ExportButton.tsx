@@ -179,7 +179,7 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
               type="submit"
               icon={{ icon: faFileExport }}
             >
-              Submit
+              Export
             </ActionButton>
           </div>
         </form>
