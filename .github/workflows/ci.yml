@@ -25,8 +25,29 @@ jobs:
       - run: yarn fmt-check
 
 
-  build-web:
-    needs: check-format 
+  build-test-web:
+    runs-on: ubuntu-20.04
+    steps:
+
+      - uses: actions/checkout@v3
+
+      - run: yarn install
+
+      - run: yarn build:wasm
+
+      - run: yarn tsc
+
+      - run: yarn simpleserver:ci
+
+      - run: yarn test:nowatch
+
+      - run: yarn test:cov
+
+      - run: yarn test:rust
+
+
+  build-apps:
+    needs: [check-format, build-test-web]
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -92,31 +113,9 @@ jobs:
           # name: modeling-app_macos_linux_windows
 
 
-  test-web:
-    needs: [check-format, build-web]
-    runs-on: ubuntu-20.04
-    steps:
-
-      - uses: actions/checkout@v3
-
-      - run: yarn install
-
-      - run: yarn build:wasm
-
-      - run: yarn tsc
-
-      - run: yarn simpleserver:ci
-
-      - run: yarn test:nowatch
-
-      - run: yarn test:cov
-
-      - run: yarn test:rust
-
-
   list-artifacts:
     runs-on: ubuntu-20.04
-    needs: [check-format, build-web, test-web]
+    needs: [build-apps]
     steps:
 
       - uses: actions/download-artifact@v3
@@ -127,7 +126,7 @@ jobs:
   publish-apps-release:
     runs-on: ubuntu-20.04
     if: github.event_name == 'release'
-    needs: [check-format, build-web, test-web]
+    needs: [build-apps]
     steps:
 
       - uses: actions/download-artifact@v3
