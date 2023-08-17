@@ -1,4 +1,4 @@
-name: Build
+name: CI 
 
 on:
   pull_request:
@@ -9,7 +9,9 @@ on:
     types: [published]
 
 jobs:
-  build:
+  # TODO: add check-format
+
+  build-web:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -62,6 +64,34 @@ jobs:
       - name: Fix format
         run: yarn fmt
 
+  # TODO: add test-web
+
+  build-apps-development:
+    if: github.event_name == 'release'
+    needs: build-web
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-20.04, windows-latest]
+    steps:
+      - name: Build the app for the current platform and upload to release
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+        with:
+          releaseId: ${{ github.event.release.id }}
+
+  build-apps-release:
+    if: github.event_name == 'release'
+    needs: build-web
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-20.04, windows-latest]
+    steps:
+
       - name: Build the app for the current platform (no upload)
         if: github.event_name == 'pull_request'
         uses: tauri-apps/tauri-action@v0
@@ -74,17 +104,6 @@ jobs:
         with:
           path: src-tauri/target/release/bundle
           name: modeling-app_macos_linux_windows
-
-      # TODO: add a top-level job at least for the release stuff (and later check format & test)
-      - name: Build the app for the current platform and upload to release
-        if: github.event_name == 'release'
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
-        with:
-          releaseId: ${{ github.event.release.id }}
 
       - name: Authenticate to Google Cloud
         if: github.event_name == 'release'
