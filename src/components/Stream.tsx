@@ -85,27 +85,6 @@ export const Stream = ({ className = '' }) => {
     setIsMouseDownInStream(true)
   }
 
-  // TODO: consolidate this with the same function in App.tsx
-  const debounceSocketSend = throttle<EngineCommand>((message) => {
-    engineCommandManager?.sendSceneCommand(message)
-  }, 16)
-
-  const handleScroll: WheelEventHandler<HTMLVideoElement> = (e) => {
-    e.preventDefault()
-    debounceSocketSend({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'camera_drag_move',
-        interaction: 'zoom',
-        window: { x: 0, y: zoom + e.deltaY },
-      },
-      cmd_id: uuidv4(),
-      file_id: uuidv4(),
-    })
-
-    setZoom(zoom + e.deltaY)
-  }
-
   const handleMouseUp: MouseEventHandler<HTMLVideoElement> = ({
     clientX,
     clientY,
@@ -160,7 +139,6 @@ export const Stream = ({ className = '' }) => {
         onMouseUp={handleMouseUp}
         onContextMenu={(e) => e.preventDefault()}
         onContextMenuCapture={(e) => e.preventDefault()}
-        onWheelCapture={handleScroll}
         onPlay={() => setIsLoading(false)}
         className="w-full h-full"
       />

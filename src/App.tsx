@@ -382,6 +382,7 @@ export function App() {
     clientX,
     clientY,
     ctrlKey,
+    shiftKey,
     currentTarget,
   }) => {
     if (isMouseDownInStream) {
@@ -395,7 +396,7 @@ export function App() {
       ...streamDimensions,
     })
 
-    const interaction = ctrlKey ? 'pan' : 'rotate'
+    const interaction = ctrlKey ? 'zoom' : shiftKey ? 'pan' : 'rotate'
 
     const newCmdId = uuidv4()
     setCmdId(newCmdId)
