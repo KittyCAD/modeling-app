@@ -23,6 +23,7 @@ import {
   PROJECT_ENTRYPOINT,
 } from './lib/tauriFS'
 import { metadata, type Metadata } from 'tauri-plugin-fs-extra-api'
+import ActionBar from './components/ActionBar'
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {
@@ -126,6 +127,7 @@ const router = createBrowserRouter([
       <Auth>
         <Outlet />
         <Home />
+        <ActionBar />
       </Auth>
     ),
     loader: async () => {

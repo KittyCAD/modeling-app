@@ -42,6 +42,7 @@
     "wasm-pack": "^0.12.1",
     "web-vitals": "^2.1.0",
     "ws": "^8.13.0",
+    "xstate": "^4.38.2",
     "zustand": "^4.1.4"
   },
   "scripts": {
