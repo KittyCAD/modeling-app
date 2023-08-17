@@ -1,0 +1,19 @@
+{
+  "version": "v$VERSION",
+  "notes": "$VERSION_NOTES",
+  "pub_date": "$DATE",
+  "platforms": {
+    "darwin-x86_64": {
+      "signature": "$DARWIN_AMD64_SIG",
+      "url": "https://dl.kittycad.io/releases/modeling-app/v$VERSION/app-x64.app.tar.gz"
+    },
+    "linux-x86_64": {
+      "signature": "$LINUX_AMD64_SIG",
+      "url": "https://dl.kittycad.io/releases/modeling-app/v$VERSION/app-amd64.AppImage.tar.gz"
+    },
+    "windows-x86_64": {
+      "signature": "$WINDOWS_AMD64_SIG",
+      "url": "https://dl.kittycad.io/releases/modeling-app/v$VERSION/app-x64-setup.nsis.zip"
+    }
+  }
+}
