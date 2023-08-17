@@ -23,6 +23,7 @@ import {
   PROJECT_ENTRYPOINT,
 } from './lib/tauriFS'
 import { metadata, type Metadata } from 'tauri-plugin-fs-extra-api'
+import DownloadAppBanner from './components/DownloadAppBanner'
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {
@@ -69,6 +70,7 @@ const router = createBrowserRouter([
       <Auth>
         <Outlet />
         <App />
+        {!isTauri() && import.meta.env.PROD && <DownloadAppBanner />}
       </Auth>
     ),
     errorElement: <ErrorPage />,
