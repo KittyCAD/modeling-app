@@ -46,12 +46,12 @@ import { getSystemTheme } from './lib/getSystemTheme'
 import { isTauri } from './lib/isTauri'
 import { useLoaderData, useParams } from 'react-router-dom'
 import { writeTextFile } from '@tauri-apps/api/fs'
-import { FILE_EXT, PROJECT_ENTRYPOINT } from './lib/tauriFS'
+import { PROJECT_ENTRYPOINT } from './lib/tauriFS'
 import { IndexLoaderData } from './Router'
 import { toast } from 'react-hot-toast'
 
 export function App() {
-  const { code: loadedCode } = useLoaderData() as IndexLoaderData
+  const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
   const pathParams = useParams()
   const streamRef = useRef<HTMLDivElement>(null)
   useHotKeyListener()
@@ -446,11 +446,8 @@ export function App() {
           paneOpacity +
           (isMouseDownInStream ? ' pointer-events-none' : '')
         }
-        filename={
-          pathParams.id
-            ?.slice(pathParams.id.lastIndexOf('/') + 1)
-            .replace(FILE_EXT, '') || ''
-        }
+        project={project}
+        enableMenu={true}
       />
       <ModalContainer />
       <Resizable

@@ -10,11 +10,12 @@ import { Themes, baseUnits, useStore } from '../useStore'
 import { useRef } from 'react'
 import { toast } from 'react-hot-toast'
 import { Toggle } from '../components/Toggle/Toggle'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { paths } from '../Router'
+import { IndexLoaderData, paths } from '../Router'
 
 export const Settings = () => {
+  const loaderData = useRouteLoaderData(paths.FILE) as IndexLoaderData
   const navigate = useNavigate()
   useHotkeys('esc', () => navigate('../'))
   const {
@@ -63,7 +64,7 @@ export const Settings = () => {
 
   return (
     <div className="body-bg fixed inset-0 z-40 overflow-auto">
-      <AppHeader showToolbar={false}>
+      <AppHeader showToolbar={false} project={loaderData?.project}>
         <ActionButton
           Element="link"
           to={'../'}
