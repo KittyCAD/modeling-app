@@ -21,6 +21,7 @@
     "@uiw/react-codemirror": "^4.15.1",
     "crypto-js": "^4.1.1",
     "formik": "^2.4.3",
+    "fuse.js": "^6.6.2",
     "http-server": "^14.1.1",
     "re-resizable": "^6.9.9",
     "react": "^18.2.0",
