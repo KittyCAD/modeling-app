@@ -124,7 +124,7 @@ jobs:
 
       - uses: actions/download-artifact@v3
       
-      - run: ls -la
+      - run: ls -la artifact
 
 
   publish-apps-release:
