@@ -14,7 +14,11 @@ const ProjectSidebarMenu = ({
   project?: Partial<ProjectWithEntryPointMetadata>
 }) => {
   return renderAsLink ? (
-    <Link to={'../'} className="flex items-center gap-4 my-2" data-testid="project-sidebar-link">
+    <Link
+      to={'../'}
+      className="flex items-center gap-4 my-2"
+      data-testid="project-sidebar-link"
+    >
       <img
         src="/kitt-arcade-winking.svg"
         alt="KittyCAD App"
@@ -44,7 +48,7 @@ const ProjectSidebarMenu = ({
       </Popover.Button>
       <Popover.Overlay className="fixed z-20 inset-0 bg-chalkboard-110/50" />
 
-      <Popover.Panel className="fixed inset-0 right-auto z-30 w-64 bg-chalkboard-10 dark:bg-chalkboard-100 border border-energy-100 shadow-md rounded-l-lg">
+      <Popover.Panel className="fixed inset-0 right-auto z-30 w-64 bg-chalkboard-10 dark:bg-chalkboard-100 border border-energy-100 shadow-md rounded-r-lg overflow-hidden">
         <div className="flex items-center gap-4 px-4 py-3 bg-energy-100">
           <img
             src="/kitt-arcade-winking.svg"
@@ -53,7 +57,10 @@ const ProjectSidebarMenu = ({
           />
 
           <div>
-            <p className="m-0 text-energy-10 text-mono" data-testid="projectName">
+            <p
+              className="m-0 text-energy-10 text-mono"
+              data-testid="projectName"
+            >
               {project?.name ? project.name : 'KittyCAD Modeling App'}
             </p>
             {project?.entrypoint_metadata && (

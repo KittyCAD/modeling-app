@@ -61,7 +61,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
       )}
       <Popover.Overlay className="fixed z-20 inset-0 bg-chalkboard-110/50" />
 
-      <Popover.Panel className="fixed inset-0 left-auto z-30 w-64 bg-chalkboard-10 dark:bg-chalkboard-100 border border-liquid-100 shadow-md rounded-l-lg">
+      <Popover.Panel className="fixed inset-0 left-auto z-30 w-64 bg-chalkboard-10 dark:bg-chalkboard-100 border border-liquid-100 shadow-md rounded-l-lg overflow-hidden">
         {({ close }) => (
           <>
             {user && (
