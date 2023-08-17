@@ -75,6 +75,7 @@ jobs:
           path: src-tauri/target/release/bundle
           name: modeling-app_macos_linux_windows
 
+      # TODO: add a top-level job at least for the release stuff (and later check format & test)
       - name: Build the app for the current platform and upload to release
         if: github.event_name == 'release'
         uses: tauri-apps/tauri-action@v0
@@ -84,3 +85,22 @@ jobs:
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
           releaseId: ${{ github.event.release.id }}
+
+      - name: Authenticate to Google Cloud
+        if: github.event_name == 'release'
+        uses: 'google-github-actions/auth@v1.1.1'
+        with:
+          credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
+
+      - name: Set up Google Cloud SDK
+        if: github.event_name == 'release'
+        uses: google-github-actions/setup-gcloud@v1.1.1
+        with:
+          project_id: kittycadapi
+      
+      - name: Upload release files to public bucket
+        if: github.event_name == 'release'
+        uses: google-github-actions/upload-cloud-storage@v1.0.3
+        with:
+          path: src-tauri/target/release/bundle/*/*
+          destination: dl.kittycad.io/releases/modeling-app
