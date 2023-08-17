@@ -9,14 +9,30 @@ on:
     types: [published]
 
 jobs:
-  # TODO: add check-format
+
+  check-format:
+    runs-on: 'ubuntu-20.04'
+    steps:
+
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+
+      - run: yarn install
+
+      - run: yarn fmt-check
+
 
   build-web:
+    needs: check-format 
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [macos-latest, ubuntu-20.04, windows-latest]
     steps:
+
       - uses: actions/checkout@v3
 
       - name: install ubuntu system dependencies
@@ -64,60 +80,60 @@ jobs:
       - name: Fix format
         run: yarn fmt
 
-  # TODO: add test-web
-
-  build-apps-development:
-    if: github.event_name == 'pull_request'
-    needs: build-web
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-20.04, windows-latest]
-    steps:
-
       - name: Build the app for the current platform (no upload)
         uses: tauri-apps/tauri-action@v0
         env:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
 
-
-  publish-apps-development:
-    runs-on: 'ubuntu-20.04'
-    if: github.event_name == 'pull_request'
-    needs: [build-web, build-apps-development]
-    steps:
-
       - uses: actions/upload-artifact@v3
         with:
-          path: src-tauri/target/release/bundle
-          name: modeling-app_macos_linux_windows
+          path: src-tauri/target/release/bundle/*/*
+          # name: modeling-app_macos_linux_windows
 
 
-  build-apps-release:
-    if: github.event_name == 'release'
-    needs: build-web
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-20.04, windows-latest]
+  test-web:
+    needs: [check-format, build-web]
+    runs-on: ubuntu-20.04
     steps:
 
-      - name: Build the app for the current platform and upload to release
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
-        with:
-          releaseId: ${{ github.event.release.id }}
+      - uses: actions/checkout@v3
+
+      - run: yarn install
+
+      - run: yarn build:wasm
+
+      - run: yarn tsc
+
+      - run: yarn simpleserver:ci
+
+      - run: yarn test:nowatch
+
+      - run: yarn test:cov
+
+      - run: yarn test:rust
+
+
+  list-artifacts:
+    runs-on: ubuntu-20.04
+    needs: [check-format, build-web, test-web]
+    steps:
+
+      - uses: actions/download-artifact@v3
+      
+      - run: ls -la
 
 
   publish-apps-release:
-    runs-on: 'ubuntu-20.04'
+    runs-on: ubuntu-20.04
     if: github.event_name == 'release'
-    needs: [build-web, build-apps-release]
+    needs: [check-format, build-web, test-web]
     steps:
+
+      - uses: actions/download-artifact@v3
+
+      # TODO: add upload to release
+
       - name: Authenticate to Google Cloud
         uses: 'google-github-actions/auth@v1.1.1'
         with:
