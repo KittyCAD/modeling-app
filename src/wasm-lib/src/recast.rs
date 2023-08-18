@@ -414,16 +414,10 @@ extern "C" {
 // wasm_bindgen wrapper for recast
 // test for this function and by extension the recaster are done in javascript land src/lang/recast.test.ts
 #[wasm_bindgen]
-pub fn recast_js(json_str: &str) -> String {
+pub fn recast_js(json_str: &str) -> Result<JsValue, JsError> {
     // deserialize the ast from a stringified json
-    let result: Result<Program, _> = serde_json::from_str(json_str);
-    let ast = match result {
-        Ok(ast) => ast,
-        Err(e) => {
-            log(e.to_string().as_str());
-            panic!("error: {}", e)
-        }
-    };
+    let program: Program = serde_json::from_str(json_str).map_err(JsError::from)?;
 
-    recast(ast, "".to_string(), false)
+    let result = recast(program, "".to_string(), false);
+    Ok(serde_wasm_bindgen::to_value(&result)?)
 }
