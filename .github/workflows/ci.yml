@@ -110,6 +110,41 @@ jobs:
         env:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+      
+      # TODO: move to publish-apps-release and add real variables
+      - name: Generate the update static endpoint
+        env:
+          VERSION: v0.0.4
+          CURRENT_VERSION: v0.0.3
+          TARGET: macos
+          ARCH: amd64
+        run: |
+          jq --null-input \
+            --arg version "$VERSION" \
+            --arg darwin_sig "DARWINSIG" \
+            --arg darwin_url "https://dl.kittycad.io/releases/modeling-app/$VERSION/kittycad-modeling-app.app.tar.gz" \
+            --arg linux_sig "LINUXSIG" \
+            --arg linux_url "https://dl.kittycad.io/releases/modeling-app/v$VERSION/kittycad-modeling-app.AppImage.tar.gz" \
+            --arg windows_sig "WINDOWSSIG" \
+            --arg windows_url "https://dl.kittycad.io/releases/modeling-app/v$VERSION/kittycad-modeling-app-x64-setup.nsis.zip" \
+            '{
+              "version": $version,
+              "platforms": {
+                "darwin-x86_64": {
+                  "signature": $darwin_sig,
+                  "url": $darwin_url
+                },
+                "linux-x86_64": {
+                  "signature": $linux_sig,
+                  "url": $linux_url
+                },
+                "windows-x86_64": {
+                  "signature": $windows_sig,
+                  "url": $windows_url
+                },
+              }
+            }' > endpoint_$TARGET_$ARCH_${CURRENT_VERSION}.json
+            cat endpoint_$TARGET_$ARCH_${CURRENT_VERSION}.json
 
       - uses: actions/upload-artifact@v3
         with:
@@ -141,7 +176,5 @@ jobs:
         with:
           path: artifact/*/*
           destination: dl.kittycad.io/releases/modeling-app/${{ github.ref_name }}
-      
-      # TODO: add generation of the json endpoint
       
       # TODO: upload endpoint to bucket
