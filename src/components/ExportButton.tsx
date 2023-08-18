@@ -76,7 +76,6 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
           format: values,
         },
         cmd_id: uuidv4(),
-        file_id: uuidv4(),
       })
 
       closeModal()

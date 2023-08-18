@@ -7,7 +7,7 @@ import { ActionButton } from '../components/ActionButton'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 
 type SketchModeCmd = Extract<
-  EngineCommand['cmd'],
+  Extract<EngineCommand, { type: 'modeling_cmd_req' }>['cmd'],
   { type: 'default_camera_enable_sketch_mode' }
 >
 
@@ -22,6 +22,7 @@ export const DebugPanel = ({ className, ...props }: CollapsiblePanelProps) => {
     y_axis: { x: 0, y: 1, z: 0 },
     distance_to_plane: 100,
     ortho: true,
+    animated: true, // TODO #273 get prefers reduced motion from CSS
   })
   if (!sketchModeCmd) return null
   return (
@@ -79,7 +80,6 @@ export const DebugPanel = ({ className, ...props }: CollapsiblePanelProps) => {
               type: 'modeling_cmd_req',
               cmd: sketchModeCmd,
               cmd_id: uuidv4(),
-              file_id: uuidv4(),
             })
           }}
           className="hover:border-succeed-50"
