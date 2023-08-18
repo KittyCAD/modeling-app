@@ -133,6 +133,7 @@ jobs:
       - name: Generate the update static endpoint
         run: |
           ls -l artifact
+          ls -l artifact/*
           DARWIN_SIG=`cat artifact/macos/*.app.tar.gz.sig`
           LINUX_SIG=`cat artifact/appimage/*.AppImage.tar.gz.sig`
           WINDOWS_SIG=`cat artifact/nsis/*.nsis.zip.sig`
@@ -177,7 +178,15 @@ jobs:
       - name: Upload release files to public bucket
         uses: google-github-actions/upload-cloud-storage@v1.0.3
         with:
-          path: artifact/*/*
+          path: artifact
+          glob: '**/*.gz'
+          destination: dl.kittycad.io/releases/modeling-app/test/v${{ env.VERSION_NO_V }} 
+      
+      - name: Upload release files to public bucket
+        uses: google-github-actions/upload-cloud-storage@v1.0.3
+        with:
+          path: artifact
+          glob: '**/*.zip'
           destination: dl.kittycad.io/releases/modeling-app/test/v${{ env.VERSION_NO_V }} 
       
       - name: Upload update endpoint to public bucket
