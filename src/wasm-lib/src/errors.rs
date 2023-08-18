@@ -27,9 +27,3 @@ pub struct KclErrorDetails {
     #[serde(rename = "msg")]
     pub message: String,
 }
-
-impl From<KclError> for String {
-    fn from(error: KclError) -> Self {
-        serde_json::to_string(&error).unwrap()
-    }
-}
