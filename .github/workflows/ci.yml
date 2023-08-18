@@ -27,6 +27,8 @@ jobs:
 
   build-test-web:
     runs-on: ubuntu-20.04
+    outputs:
+      version: $${{ steps.export_version.outputs.version }}
     steps:
 
       - uses: actions/checkout@v3
@@ -48,6 +50,9 @@ jobs:
       - run: yarn test:cov
 
       - run: yarn test:rust
+      
+      - id: export_version
+        run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
 
 
   build-apps:
@@ -118,28 +123,29 @@ jobs:
 
   publish-apps-release-pre:
     runs-on: ubuntu-20.04
-    needs: [build-apps]
+    needs: [build-test-web, build-apps]
+    env:
+      VERSION: ${{ needs.build-test-web.outputs.version }}
     steps:
 
       - uses: actions/download-artifact@v3
 
       - name: Generate the update static endpoint
-        env:
-          VERSION: v0.0.3
         run: |
+          ls -l artifact
           DARWIN_SIG=`cat artifact/macos/*.app.tar.gz.sig`
           LINUX_SIG=`cat artifact/appimage/*.AppImage.tar.gz.sig`
           WINDOWS_SIG=`cat artifact/nsis/*.nsis.zip.sig`
           jq --null-input \
             --arg version "$VERSION" \
             --arg darwin_sig "$DARWIN_SIG" \
-            --arg darwin_url "https://dl.kittycad.io/releases/modeling-app/$VERSION/kittycad-modeling-app.app.tar.gz" \
+            --arg darwin_url "https://dl.kittycad.io/releases/modeling-app/v$VERSION/kittycad-modeling-app.app.tar.gz" \
             --arg linux_sig "$LINUX_SIG" \
-            --arg linux_url "https://dl.kittycad.io/releases/modeling-app/$VERSION/kittycad-modeling-app.AppImage.tar.gz" \
+            --arg linux_url "https://dl.kittycad.io/releases/modeling-app/v$VERSION/kittycad-modeling-app_$VERSION_amd64.AppImage.tar.gz" \
             --arg windows_sig "$WINDOWS_SIG" \
-            --arg windows_url "https://dl.kittycad.io/releases/modeling-app/$VERSION/kittycad-modeling-app-x64-setup.nsis.zip" \
+            --arg windows_url "https://dl.kittycad.io/releases/modeling-app/v$VERSION/kittycad-modeling-app_$VERSION_x64-setup.nsis.zip" \
             '{
-              "version": $version,
+              "version": v$version,
               "platforms": {
                 "darwin-x86_64": {
                   "signature": $darwin_sig,
@@ -157,10 +163,6 @@ jobs:
             }' > last_update.json
             cat last_update.json
 
-      - uses: actions/upload-artifact@v3
-        with:
-          path: last_update.json
-
       - name: Authenticate to Google Cloud
         uses: 'google-github-actions/auth@v1.1.1'
         with:
@@ -170,14 +172,17 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1.1.1
         with:
           project_id: kittycadapi
-
-      - name: Create test file
-        run: echo 'please delete' > to_delete.txt
       
-      - name: Upload test file to public bucket
+      - name: Upload release files to public bucket
         uses: google-github-actions/upload-cloud-storage@v1.0.3
         with:
-          path: to_delete.txt
+          path: artifact/*/*
+          destination: dl.kittycad.io/releases/modeling-app/test/v${{ env.VERSION }} 
+      
+      - name: Upload update endpoint to public bucket
+        uses: google-github-actions/upload-cloud-storage@v1.0.3
+        with:
+          path: last_update.json
           destination: dl.kittycad.io/releases/modeling-app/test
 
 
@@ -188,11 +193,6 @@ jobs:
     steps:
 
       - uses: actions/download-artifact@v3
-
-      - uses: shogo82148/actions-upload-release-asset@v1
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: artifact/*/*
 
       - name: Authenticate to Google Cloud
         uses: 'google-github-actions/auth@v1.1.1'
@@ -215,3 +215,8 @@ jobs:
         with:
           path: last_update.json
           destination: dl.kittycad.io/releases/modeling-app
+
+      - uses: shogo82148/actions-upload-release-asset@v1
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: artifact/*/*
