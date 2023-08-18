@@ -141,11 +141,11 @@ jobs:
           jq --null-input \
             --arg version "v${VERSION_NO_V}" \
             --arg darwin_sig "$DARWIN_SIG" \
-            --arg darwin_url "$RELEASE_DIR/kittycad-modeling-app.app.tar.gz" \
+            --arg darwin_url "$RELEASE_DIR/macos/kittycad-modeling-app.app.tar.gz" \
             --arg linux_sig "$LINUX_SIG" \
-            --arg linux_url "$RELEASE_DIR/kittycad-modeling-app_${VERSION_NO_V}_amd64.AppImage.tar.gz" \
+            --arg linux_url "$RELEASE_DIR/appimage/kittycad-modeling-app_${VERSION_NO_V}_amd64.AppImage.tar.gz" \
             --arg windows_sig "$WINDOWS_SIG" \
-            --arg windows_url "$RELEASE_DIR/kittycad-modeling-app_${VERSION_NO_V}_x64-setup.nsis.zip" \
+            --arg windows_url "$RELEASE_DIR/nsis/kittycad-modeling-app_${VERSION_NO_V}_x64-setup.nsis.zip" \
             '{
               "version": $version,
               "platforms": {
@@ -179,31 +179,7 @@ jobs:
         uses: google-github-actions/upload-cloud-storage@v1.0.3
         with:
           path: artifact
-          glob: '**/*.gz'
-          parent: false
-          destination: dl.kittycad.io/releases/modeling-app/test/v${{ env.VERSION_NO_V }} 
-      
-      - name: Upload macos release files to public bucket
-        uses: google-github-actions/upload-cloud-storage@v1.0.3
-        with:
-          path: artifact
-          glob: 'macos/kittycad-modeling-app*'
-          parent: false
-          destination: dl.kittycad.io/releases/modeling-app/test/v${{ env.VERSION_NO_V }} 
-      
-      - name: Upload linux release files to public bucket
-        uses: google-github-actions/upload-cloud-storage@v1.0.3
-        with:
-          path: artifact
-          glob: 'appimage/kittycad-modeling-app*'
-          parent: false
-          destination: dl.kittycad.io/releases/modeling-app/test/v${{ env.VERSION_NO_V }} 
-      
-      - name: Upload windows release files to public bucket
-        uses: google-github-actions/upload-cloud-storage@v1.0.3
-        with:
-          path: artifact
-          glob: 'nsis/kittycad-modeling-app*'
+          glob: '*/kittycad-modeling-app*'
           parent: false
           destination: dl.kittycad.io/releases/modeling-app/test/v${{ env.VERSION_NO_V }} 
       
