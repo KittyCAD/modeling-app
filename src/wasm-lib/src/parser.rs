@@ -1348,7 +1348,13 @@ fn make_body(
         });
     }
 
-    panic!("Not implemented");
+    return Err(KclError::Unimplemented(KclErrorDetails {
+        source_ranges: vec![[next_thing_token.start as i32, next_thing_token.end as i32]],
+        message: format!(
+            "make_body: unimplemented token type {:?} with value {}",
+            token.token_type, token.value
+        ),
+    }));
 }
 
 struct BlockStatementResult {
