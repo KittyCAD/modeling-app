@@ -1580,10 +1580,11 @@ extern "C" {
 }
 
 #[wasm_bindgen]
-pub fn parse_js(js: &str) -> Result<JsValue, String> {
+pub fn parse_js(js: &str) -> Result<String, String> {
     let tokens = lexer(js);
     let program = abstract_syntax_tree(&tokens).map_err(String::from)?;
-    serde_wasm_bindgen::to_value(&program).map_err(|e| e.to_string())
+    //serde_wasm_bindgen::to_value(&program).map_err(|e| e.to_string())
+    serde_json::to_string(&program).map_err(|e| e.to_string())
 }
 
 #[cfg(test)]

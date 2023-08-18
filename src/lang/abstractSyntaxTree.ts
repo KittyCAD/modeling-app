@@ -6,7 +6,8 @@ import { KCLError } from './errors'
 
 export const parser_wasm = (code: string): Program => {
   try {
-    const program: Program = parse_js(code)
+    const json = parse_js(code)
+    const program: Program = JSON.parse(json)
     return program
   } catch (e: any) {
     const parsed: {
@@ -28,7 +29,8 @@ export const parser_wasm = (code: string): Program => {
 export async function asyncParser(code: string): Promise<Program> {
   await initPromise
   try {
-    const program: Program = parse_js(code)
+    const json = parse_js(code)
+    const program: Program = JSON.parse(json)
     return program
   } catch (e: any) {
     const parsed: {
