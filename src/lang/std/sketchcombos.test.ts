@@ -1,6 +1,5 @@
-import { abstractSyntaxTree } from '../abstractSyntaxTree'
+import { parser_wasm } from '../abstractSyntaxTree'
 import { Value } from '../abstractSyntaxTreeTypes'
-import { lexer } from '../tokeniser'
 import {
   getConstraintType,
   getTransformInfos,
@@ -64,7 +63,7 @@ describe('testing getConstraintType', () => {
 function getConstraintTypeFromSourceHelper(
   code: string
 ): ReturnType<typeof getConstraintType> {
-  const ast = abstractSyntaxTree(lexer(code))
+  const ast = parser_wasm(code)
   const args = (ast.body[0] as any).expression.arguments[0].elements as [
     Value,
     Value
@@ -75,7 +74,7 @@ function getConstraintTypeFromSourceHelper(
 function getConstraintTypeFromSourceHelper2(
   code: string
 ): ReturnType<typeof getConstraintType> {
-  const ast = abstractSyntaxTree(lexer(code))
+  const ast = parser_wasm(code)
   const arg = (ast.body[0] as any).expression.arguments[0] as Value
   const fnName = (ast.body[0] as any).expression.callee.name as TooTip
   return getConstraintType(arg, fnName)
@@ -198,7 +197,7 @@ const part001 = startSketchAt([0, 0])
   |> yLine(segLen('seg01', %), %) // ln-yLineTo-free should convert to yLine
 show(part001)`
   it('should transform the ast', async () => {
-    const ast = abstractSyntaxTree(lexer(inputScript))
+    const ast = parser_wasm(inputScript)
     const selectionRanges: Selections['codeBasedSelections'] = inputScript
       .split('\n')
       .filter((ln) => ln.includes('//'))
@@ -283,7 +282,7 @@ const part001 = startSketchAt([0, 0])
   |> xLineTo(myVar3, %) // select for horizontal constraint 10
   |> angledLineToY([301, myVar], %) // select for vertical constraint 10
 show(part001)`
-    const ast = abstractSyntaxTree(lexer(inputScript))
+    const ast = parser_wasm(inputScript)
     const selectionRanges: Selections['codeBasedSelections'] = inputScript
       .split('\n')
       .filter((ln) => ln.includes('// select for horizontal constraint'))
@@ -340,7 +339,7 @@ const part001 = startSketchAt([0, 0])
   |> angledLineToX([333, myVar3], %) // select for horizontal constraint 10
   |> yLineTo(myVar, %) // select for vertical constraint 10
 show(part001)`
-    const ast = abstractSyntaxTree(lexer(inputScript))
+    const ast = parser_wasm(inputScript)
     const selectionRanges: Selections['codeBasedSelections'] = inputScript
       .split('\n')
       .filter((ln) => ln.includes('// select for vertical constraint'))
@@ -430,7 +429,7 @@ async function helperThing(
   linesOfInterest: string[],
   constraint: ConstraintType
 ): Promise<string> {
-  const ast = abstractSyntaxTree(lexer(inputScript))
+  const ast = parser_wasm(inputScript)
   const selectionRanges: Selections['codeBasedSelections'] = inputScript
     .split('\n')
     .filter((ln) =>
@@ -493,7 +492,7 @@ const part001 = startSketchAt([-0.01, -0.05])
   |> xLine(-3.43 + 0, %) // full
   |> angledLineOfXLength([243 + 0, 1.2 + 0], %) // full
 show(part001)`
-    const ast = abstractSyntaxTree(lexer(code))
+    const ast = parser_wasm(code)
     const constraintLevels: ReturnType<
       typeof getConstraintLevelFromSourceRange
     >[] = ['full', 'partial', 'free']

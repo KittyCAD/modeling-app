@@ -1,0 +1,45 @@
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+      - '**/rust-toolchain.toml'
+      - '**.rs'
+      - .github/workflows/cargo-fmt.yml
+  pull_request:
+    paths:
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+      - '**/rust-toolchain.toml'
+      - '**.rs'
+      - .github/workflows/cargo-fmt.yml
+permissions:
+  packages: read
+  contents: read
+name: cargo fmt
+jobs:
+  cargofmt:
+    name: cargo fmt
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dir: ['src/wasm-lib', 'src-tauri']
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install latest rust
+        uses: actions-rs/toolchain@v1
+        with:
+            toolchain: stable
+            override: true
+            components: rustfmt
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2.6.1
+
+      - name: Run cargo fmt
+        run: |
+          cd "${{ matrix.dir }}"
+          cargo fmt -- --check
+        shell: bash

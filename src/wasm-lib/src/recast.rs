@@ -2,9 +2,9 @@
 //! The inverse of parsing (which generates an AST from the source code)
 use wasm_bindgen::prelude::*;
 
-use crate::abstract_syntax_tree::{
+use crate::abstract_syntax_tree_types::{
     ArrayExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression, FunctionExpression,
-    Literal, MemberExpression, MemberObject, MemberProperty, ObjectExpression, PipeExpression,
+    Literal, LiteralIdentifier, MemberExpression, MemberObject, ObjectExpression, PipeExpression,
     Program, UnaryExpression, Value,
 };
 
@@ -212,14 +212,14 @@ fn recast_argument(argument: Value, indentation: String, is_in_pipe_expression: 
 
 fn recast_member_expression(expression: MemberExpression) -> String {
     let key_str = match expression.property {
-        MemberProperty::Identifier(identifier) => {
+        LiteralIdentifier::Identifier(identifier) => {
             if expression.computed {
                 format!("[{}]", &(*identifier.name))
             } else {
                 format!(".{}", &(*identifier.name))
             }
         }
-        MemberProperty::Literal(lit) => format!("[{}]", &(*lit.raw)),
+        LiteralIdentifier::Literal(lit) => format!("[{}]", &(*lit.raw)),
     };
 
     match expression.object {
@@ -414,16 +414,10 @@ extern "C" {
 // wasm_bindgen wrapper for recast
 // test for this function and by extension the recaster are done in javascript land src/lang/recast.test.ts
 #[wasm_bindgen]
-pub fn recast_js(json_str: &str) -> String {
+pub fn recast_js(json_str: &str) -> Result<JsValue, JsError> {
     // deserialize the ast from a stringified json
-    let result: Result<Program, _> = serde_json::from_str(json_str);
-    let ast = match result {
-        Ok(ast) => ast,
-        Err(e) => {
-            log(e.to_string().as_str());
-            panic!("error: {}", e)
-        }
-    };
+    let program: Program = serde_json::from_str(json_str).map_err(JsError::from)?;
 
-    recast(ast, "".to_string(), false)
+    let result = recast(program, "".to_string(), false);
+    Ok(serde_wasm_bindgen::to_value(&result)?)
 }

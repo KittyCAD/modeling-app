@@ -8,8 +8,7 @@ import {
 } from 'react'
 import { DebugPanel } from './components/DebugPanel'
 import { v4 as uuidv4 } from 'uuid'
-import { asyncLexer } from './lang/tokeniser'
-import { abstractSyntaxTree } from './lang/abstractSyntaxTree'
+import { asyncParser } from './lang/abstractSyntaxTree'
 import { _executor } from './lang/executor'
 import CodeMirror from '@uiw/react-codemirror'
 import { langs } from '@uiw/codemirror-extensions-langs'
@@ -283,8 +282,7 @@ export function App() {
           setAst(null)
           return
         }
-        const tokens = await asyncLexer(code)
-        const _ast = abstractSyntaxTree(tokens)
+        const _ast = await asyncParser(code)
         setAst(_ast)
         resetLogs()
         resetKCLErrors()
