@@ -288,9 +288,7 @@ pub fn lexer(str: &str) -> Vec<Token> {
 #[wasm_bindgen]
 pub fn lexer_js(str: &str) -> Result<JsValue, JsError> {
     let tokens = lexer(str);
-    serde_json::to_string(&tokens)
-        .map_err(JsError::from)
-        .map(|s| JsValue::from_str(&s))
+    Ok(serde_wasm_bindgen::to_value(&tokens)?)
 }
 
 #[cfg(test)]

@@ -1407,9 +1407,7 @@ extern "C" {
 pub fn parse_js(js: &str) -> Result<JsValue, JsError> {
     let tokens = lexer(js);
     let program = abstract_syntax_tree(&tokens).map_err(JsError::from)?;
-    serde_json::to_string(&program)
-        .map_err(JsError::from)
-        .map(|s| JsValue::from_str(&s))
+    Ok(serde_wasm_bindgen::to_value(&program)?)
 }
 
 #[cfg(test)]

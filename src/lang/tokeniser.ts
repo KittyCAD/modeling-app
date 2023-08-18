@@ -21,9 +21,11 @@ export interface Token {
 
 export async function asyncLexer(str: string): Promise<Token[]> {
   await initPromise
-  return JSON.parse(lexer_js(str)) as Token[]
+  const tokens: Token[] = lexer_js(str)
+  return tokens
 }
 
 export function lexer(str: string): Token[] {
-  return JSON.parse(lexer_js(str)) as Token[]
+  const tokens: Token[] = lexer_js(str)
+  return tokens
 }
