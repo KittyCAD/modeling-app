@@ -1,6 +1,5 @@
 import { processMemory } from './MemoryPanel'
-import { lexer } from '../lang/tokeniser'
-import { abstractSyntaxTree } from '../lang/abstractSyntaxTree'
+import { parser_wasm } from '../lang/abstractSyntaxTree'
 import { enginelessExecutor } from '../lib/testHelpers'
 import { initPromise } from '../lang/rust'
 
@@ -27,8 +26,7 @@ describe('processMemory', () => {
     |> lineTo([2.15, 4.32], %)
     // |> rx(90, %)
   show(theExtrude, theSketch)`
-    const tokens = lexer(code)
-    const ast = abstractSyntaxTree(tokens)
+    const ast = parser_wasm(code)
     const programMemory = await enginelessExecutor(ast, {
       root: {
         log: {

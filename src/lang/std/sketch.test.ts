@@ -5,8 +5,7 @@ import {
   getYComponent,
   getXComponent,
 } from './sketch'
-import { lexer } from '../tokeniser'
-import { abstractSyntaxTree } from '../abstractSyntaxTree'
+import { parser_wasm } from '../abstractSyntaxTree'
 import { getNodePathFromSourceRange } from '../queryAst'
 import { recast } from '../recast'
 import { enginelessExecutor } from '../../lib/testHelpers'
@@ -106,7 +105,7 @@ const mySketch001 = startSketchAt([0, 0])
 show(mySketch001)`
     const code = genCode(lineToChange)
     const expectedCode = genCode(lineAfterChange)
-    const ast = abstractSyntaxTree(lexer(code))
+    const ast = parser_wasm(code)
     const programMemory = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(lineToChange)
     const { modifiedAst } = changeSketchArguments(
@@ -144,7 +143,7 @@ const mySketch001 = startSketchAt([0, 0])
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)
 show(mySketch001)`
-    const ast = abstractSyntaxTree(lexer(code))
+    const ast = parser_wasm(code)
     const programMemory = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(lineToChange)
     const { modifiedAst } = addNewSketchLn({
@@ -183,7 +182,7 @@ describe('testing addTagForSketchOnFace', () => {
     |> lineTo([0.46, -5.82], %)
   show(mySketch001)`
     const code = genCode(originalLine)
-    const ast = abstractSyntaxTree(lexer(code))
+    const ast = parser_wasm(code)
     const programMemory = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(originalLine)
     const sourceRange: [number, number] = [

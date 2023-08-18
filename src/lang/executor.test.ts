@@ -1,8 +1,7 @@
 import fs from 'node:fs'
 
-import { abstractSyntaxTree } from './abstractSyntaxTree'
-import { lexer } from './tokeniser'
-import { ProgramMemory, Path, SketchGroup } from './executor'
+import { parser_wasm } from './abstractSyntaxTree'
+import { ProgramMemory } from './executor'
 import { initPromise } from './rust'
 import { enginelessExecutor } from '../lib/testHelpers'
 import { vi } from 'vitest'
@@ -47,7 +46,7 @@ log(5, myVar)`
         ],
       },
     }
-    const { root } = await enginelessExecutor(abstractSyntaxTree(lexer(code)), {
+    const { root } = await enginelessExecutor(parser_wasm(code), {
       root: programMemoryOverride,
       pendingMemory: {},
     })
@@ -463,8 +462,7 @@ async function exe(
   code: string,
   programMemory: ProgramMemory = { root: {}, pendingMemory: {} }
 ) {
-  const tokens = lexer(code)
-  const ast = abstractSyntaxTree(tokens)
+  const ast = parser_wasm(code)
 
   const result = await enginelessExecutor(ast, programMemory)
   return result

@@ -1,6 +1,5 @@
-import { abstractSyntaxTree } from '../abstractSyntaxTree'
+import { parser_wasm } from '../abstractSyntaxTree'
 import { SketchGroup } from '../executor'
-import { lexer } from '../tokeniser'
 import {
   ConstraintType,
   getTransformInfos,
@@ -32,8 +31,7 @@ async function testingSwapSketchFnCall({
     type: 'default',
     range: [startIndex, startIndex + callToSwap.length],
   }
-  const tokens = lexer(inputCode)
-  const ast = abstractSyntaxTree(tokens)
+  const ast = parser_wasm(inputCode)
   const programMemory = await enginelessExecutor(ast)
   const selections = {
     codeBasedSelections: [range],
@@ -383,9 +381,7 @@ const part001 = startSketchAt([0, 0.04]) // segment-in-start
   |> xLine(3.54, %)
 show(part001)`
   it('normal case works', async () => {
-    const programMemory = await enginelessExecutor(
-      abstractSyntaxTree(lexer(code))
-    )
+    const programMemory = await enginelessExecutor(parser_wasm(code))
     const index = code.indexOf('// normal-segment') - 7
     const { __geoMeta, ...segment } = getSketchSegmentFromSourceRange(
       programMemory.root['part001'] as SketchGroup,
@@ -398,9 +394,7 @@ show(part001)`
     })
   })
   it('verify it works when the segment is in the `start` property', async () => {
-    const programMemory = await enginelessExecutor(
-      abstractSyntaxTree(lexer(code))
-    )
+    const programMemory = await enginelessExecutor(parser_wasm(code))
     const index = code.indexOf('// segment-in-start') - 7
     const { __geoMeta, ...segment } = getSketchSegmentFromSourceRange(
       programMemory.root['part001'] as SketchGroup,

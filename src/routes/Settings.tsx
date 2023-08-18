@@ -10,11 +10,12 @@ import { Themes, baseUnits, useStore } from '../useStore'
 import { useRef } from 'react'
 import { toast } from 'react-hot-toast'
 import { Toggle } from '../components/Toggle/Toggle'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { paths } from '../Router'
+import { IndexLoaderData, paths } from '../Router'
 
 export const Settings = () => {
+  const loaderData = useRouteLoaderData(paths.FILE) as IndexLoaderData
   const navigate = useNavigate()
   useHotkeys('esc', () => navigate('../'))
   const {
@@ -63,7 +64,7 @@ export const Settings = () => {
 
   return (
     <div className="body-bg fixed inset-0 z-40 overflow-auto">
-      <AppHeader showToolbar={false}>
+      <AppHeader showToolbar={false} project={loaderData?.project}>
         <ActionButton
           Element="link"
           to={'../'}
@@ -93,60 +94,62 @@ export const Settings = () => {
           us prioritize what to build next.
         </p>
         {(window as any).__TAURI__ && (
-          <SettingsSection
-            title="Default Directory"
-            description="Where newly-created projects are saved on your local computer"
-          >
-            <div className="w-full flex gap-4 p-1 rounded border border-chalkboard-30">
+          <>
+            <SettingsSection
+              title="Default Directory"
+              description="Where newly-created projects are saved on your local computer"
+            >
+              <div className="w-full flex gap-4 p-1 rounded border border-chalkboard-30">
+                <input
+                  className="flex-1 px-2 bg-transparent"
+                  value={defaultDir.dir}
+                  onChange={(e) => {
+                    setDefaultDir({
+                      base: defaultDir.base,
+                      dir: e.target.value,
+                    })
+                  }}
+                  onBlur={() => {
+                    ogDefaultDir.current.dir !== defaultDir.dir &&
+                      toast.success('Default directory updated')
+                    ogDefaultDir.current.dir = defaultDir.dir
+                  }}
+                />
+                <ActionButton
+                  Element="button"
+                  className="bg-chalkboard-100 dark:bg-chalkboard-90 hover:bg-chalkboard-90 dark:hover:bg-chalkboard-80 !text-chalkboard-10 border-chalkboard-100 hover:border-chalkboard-70"
+                  onClick={handleDirectorySelection}
+                  icon={{
+                    icon: faFolder,
+                    bgClassName:
+                      'bg-liquid-20 group-hover:bg-liquid-10 hover:bg-liquid-10',
+                    iconClassName:
+                      'text-liquid-90 group-hover:text-liquid-90 hover:text-liquid-90',
+                  }}
+                >
+                  Choose a folder
+                </ActionButton>
+              </div>
+            </SettingsSection>
+            <SettingsSection
+              title="Default Project Name"
+              description="Name template for new projects. Use $n to include an incrementing index"
+            >
               <input
-                className="flex-1 px-2 bg-transparent"
-                value={defaultDir.dir}
+                className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
+                value={defaultProjectName}
                 onChange={(e) => {
-                  setDefaultDir({
-                    base: defaultDir.base,
-                    dir: e.target.value,
-                  })
+                  setDefaultProjectName(e.target.value)
                 }}
                 onBlur={() => {
-                  ogDefaultDir.current.dir !== defaultDir.dir &&
-                    toast.success('Default directory updated')
-                  ogDefaultDir.current.dir = defaultDir.dir
+                  ogDefaultProjectName.current !== defaultProjectName &&
+                    toast.success('Default project name updated')
+                  ogDefaultProjectName.current = defaultProjectName
                 }}
               />
-              <ActionButton
-                Element="button"
-                className="bg-chalkboard-100 hover:bg-chalkboard-90 text-chalkboard-10 border-chalkboard-100 hover:border-chalkboard-70"
-                onClick={handleDirectorySelection}
-                icon={{
-                  icon: faFolder,
-                  bgClassName:
-                    'bg-liquid-20 group-hover:bg-liquid-10 hover:bg-liquid-10',
-                  iconClassName:
-                    'text-liquid-90 group-hover:text-liquid-90 hover:text-liquid-90',
-                }}
-              >
-                Choose a folder
-              </ActionButton>
-            </div>
-          </SettingsSection>
+            </SettingsSection>
+          </>
         )}
-        <SettingsSection
-          title="Default Project Name"
-          description="Name template for new projects. Use $n to include an incrementing index"
-        >
-          <input
-            className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
-            value={defaultProjectName}
-            onChange={(e) => {
-              setDefaultProjectName(e.target.value)
-            }}
-            onBlur={() => {
-              ogDefaultProjectName.current !== defaultProjectName &&
-                toast.success('Default project name updated')
-              ogDefaultProjectName.current = defaultProjectName
-            }}
-          />
-        </SettingsSection>
         <SettingsSection
           title="Unit System"
           description="Which unit system to use by default"

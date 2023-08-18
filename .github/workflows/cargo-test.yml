@@ -1,0 +1,48 @@
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**.rs'
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+      - '**/rust-toolchain.toml'
+      - .github/workflows/cargo-test.yml
+  pull_request:
+    paths:
+      - '**.rs'
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+      - '**/rust-toolchain.toml'
+      - .github/workflows/cargo-test.yml
+  workflow_dispatch:
+permissions: read-all
+name: cargo test
+jobs:
+  cargotest:
+    name: cargo test
+    runs-on: ubuntu-latest-8-cores
+    strategy:
+      matrix:
+        dir: ['src/wasm-lib', 'src-tauri']
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install latest rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - name: install dependencies
+        if: matrix.dir ==  'src-tauri'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+      - uses: taiki-e/install-action@cargo-llvm-cov
+      - uses: taiki-e/install-action@nextest
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2.6.1
+      - name: cargo test
+        shell: bash
+        run: |-
+          cd "${{ matrix.dir }}"
+          cargo llvm-cov nextest --lcov --output-path lcov.info --test-threads=1 --no-fail-fast

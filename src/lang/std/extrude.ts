@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid'
 import { InternalFn } from './stdTypes'
 import {
   ExtrudeGroup,
@@ -49,7 +48,6 @@ export const extrude: InternalFn = (
         cap: true,
       },
       cmd_id: id,
-      file_id: uuidv4(),
     },
   })
 

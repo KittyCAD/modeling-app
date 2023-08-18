@@ -13,13 +13,13 @@
 }
 
 .toggle > span {
-  @apply relative rounded border border-chalkboard-110;
+  @apply relative rounded border border-chalkboard-110 hover:border-chalkboard-100 cursor-pointer;
   width: calc(2 * (var(--toggle-size) + var(--padding)));
   height: calc(var(--toggle-size) + var(--padding));
 }
 
 :global(.dark) .toggle > span {
-  @apply border-chalkboard-40;
+  @apply border-chalkboard-40 hover:border-chalkboard-30;
 }
 
 .toggle > span::after {

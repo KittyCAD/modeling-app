@@ -23,7 +23,7 @@ export default function Introduction() {
         <div className="flex justify-between mt-6">
           <ActionButton
             Element="button"
-            onClick={dismiss}
+            onClick={() => dismiss('../')}
             icon={{
               icon: faXmark,
               bgClassName: 'bg-destroy-80',

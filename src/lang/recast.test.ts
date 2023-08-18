@@ -1,7 +1,6 @@
 import { recast } from './recast'
-import { abstractSyntaxTree } from './abstractSyntaxTree'
+import { parser_wasm } from './abstractSyntaxTree'
 import { Program } from './abstractSyntaxTreeTypes'
-import { lexer, Token } from './tokeniser'
 import fs from 'node:fs'
 import { initPromise } from './rust'
 
@@ -342,11 +341,7 @@ describe('it recasts binary expression using brackets where needed', () => {
 
 // helpers
 
-function code2ast(code: string): { ast: Program; tokens: Token[] } {
-  const tokens = lexer(code)
-  const ast = abstractSyntaxTree(tokens)
-  return {
-    ast,
-    tokens,
-  }
+function code2ast(code: string): { ast: Program } {
+  const ast = parser_wasm(code)
+  return { ast }
 }

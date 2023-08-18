@@ -79,7 +79,6 @@ export const Stream = ({ className = '' }) => {
         window: { x, y },
       },
       cmd_id: newId,
-      file_id: fileId,
     })
 
     setIsMouseDownInStream(true)
@@ -100,7 +99,6 @@ export const Stream = ({ className = '' }) => {
         window: { x: 0, y: zoom + e.deltaY },
       },
       cmd_id: uuidv4(),
-      file_id: uuidv4(),
     })
 
     setZoom(zoom + e.deltaY)
@@ -130,7 +128,6 @@ export const Stream = ({ className = '' }) => {
         window: { x, y },
       },
       cmd_id: newCmdId,
-      file_id: fileId,
     })
 
     setIsMouseDownInStream(false)
@@ -143,7 +140,6 @@ export const Stream = ({ className = '' }) => {
           selected_at_window: { x, y },
         },
         cmd_id: uuidv4(),
-        file_id: fileId,
       })
     }
     setDidDragInStream(false)

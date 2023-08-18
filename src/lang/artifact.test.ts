@@ -1,6 +1,4 @@
-import { abstractSyntaxTree } from './abstractSyntaxTree'
-import { lexer } from './tokeniser'
-import { SketchGroup, ExtrudeGroup } from './executor'
+import { parser_wasm } from './abstractSyntaxTree'
 import { initPromise } from './rust'
 import { enginelessExecutor, executor } from '../lib/testHelpers'
 
@@ -15,9 +13,7 @@ const mySketch001 = startSketchAt([0, 0])
   |> lineTo([0.46, -5.82], %)
   // |> rx(45, %) 
 show(mySketch001)`
-    const programMemory = await enginelessExecutor(
-      abstractSyntaxTree(lexer(code))
-    )
+    const programMemory = await enginelessExecutor(parser_wasm(code))
     const shown = programMemory?.return?.map(
       (a) => programMemory?.root?.[a.name]
     )
@@ -72,9 +68,7 @@ const mySketch001 = startSketchAt([0, 0])
   // |> rx(45, %)
   |> extrude(2, %)
 show(mySketch001)`
-    const programMemory = await enginelessExecutor(
-      abstractSyntaxTree(lexer(code))
-    )
+    const programMemory = await enginelessExecutor(parser_wasm(code))
     const shown = programMemory?.return?.map(
       (a) => programMemory?.root?.[a.name]
     )
@@ -115,9 +109,7 @@ const sk2 = startSketchAt([0, 0])
   
 
 show(theExtrude, sk2)`
-    const programMemory = await enginelessExecutor(
-      abstractSyntaxTree(lexer(code))
-    )
+    const programMemory = await enginelessExecutor(parser_wasm(code))
     const geos = programMemory?.return?.map(
       ({ name }) => programMemory?.root?.[name]
     )

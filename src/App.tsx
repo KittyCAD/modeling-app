@@ -8,8 +8,7 @@ import {
 } from 'react'
 import { DebugPanel } from './components/DebugPanel'
 import { v4 as uuidv4 } from 'uuid'
-import { asyncLexer } from './lang/tokeniser'
-import { abstractSyntaxTree } from './lang/abstractSyntaxTree'
+import { asyncParser } from './lang/abstractSyntaxTree'
 import { _executor } from './lang/executor'
 import CodeMirror from '@uiw/react-codemirror'
 import { langs } from '@uiw/codemirror-extensions-langs'
@@ -46,12 +45,12 @@ import { getSystemTheme } from './lib/getSystemTheme'
 import { isTauri } from './lib/isTauri'
 import { useLoaderData, useParams } from 'react-router-dom'
 import { writeTextFile } from '@tauri-apps/api/fs'
-import { FILE_EXT, PROJECT_ENTRYPOINT } from './lib/tauriFS'
+import { PROJECT_ENTRYPOINT } from './lib/tauriFS'
 import { IndexLoaderData } from './Router'
 import { toast } from 'react-hot-toast'
 
 export function App() {
-  const { code: loadedCode } = useLoaderData() as IndexLoaderData
+  const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
   const pathParams = useParams()
   const streamRef = useRef<HTMLDivElement>(null)
   useHotKeyListener()
@@ -90,6 +89,7 @@ export function App() {
     openPanes,
     setOpenPanes,
     onboardingStatus,
+    didDragInStream,
     setDidDragInStream,
     setStreamDimensions,
     streamDimensions,
@@ -131,6 +131,7 @@ export function App() {
     openPanes: s.openPanes,
     setOpenPanes: s.setOpenPanes,
     onboardingStatus: s.onboardingStatus,
+    didDragInStream: s.didDragInStream,
     setDidDragInStream: s.setDidDragInStream,
     setStreamDimensions: s.setStreamDimensions,
     streamDimensions: s.streamDimensions,
@@ -155,7 +156,7 @@ export function App() {
   const paneOpacity =
     onboardingStatus === 'camera'
       ? 'opacity-20'
-      : isMouseDownInStream
+      : didDragInStream
       ? 'opacity-40'
       : ''
 
@@ -283,8 +284,7 @@ export function App() {
           setAst(null)
           return
         }
-        const tokens = await asyncLexer(code)
-        const _ast = abstractSyntaxTree(tokens)
+        const _ast = await asyncParser(code)
         setAst(_ast)
         resetLogs()
         resetKCLErrors()
@@ -409,7 +409,6 @@ export function App() {
           window: { x, y },
         },
         cmd_id: newCmdId,
-        file_id: fileId,
       })
     } else {
       debounceSocketSend({
@@ -419,7 +418,6 @@ export function App() {
           selected_at_window: { x, y },
         },
         cmd_id: newCmdId,
-        file_id: fileId,
       })
     }
   }
@@ -446,11 +444,8 @@ export function App() {
           paneOpacity +
           (isMouseDownInStream ? ' pointer-events-none' : '')
         }
-        filename={
-          pathParams.id
-            ?.slice(pathParams.id.lastIndexOf('/') + 1)
-            .replace(FILE_EXT, '') || ''
-        }
+        project={project}
+        enableMenu={true}
       />
       <ModalContainer />
       <Resizable

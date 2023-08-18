@@ -1,18 +1,17 @@
 //! Functions for exported files from the server.
 
-use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
-
-/// A file that has been exported from the server.
-#[derive(Debug, Deserialize, Serialize)]
-pub struct File {
-    pub name: String,
-    pub contents: Vec<u8>,
-}
 
 #[wasm_bindgen]
 pub fn deserialize_files(data: Vec<u8>) -> Result<JsValue, JsError> {
-    let files: Vec<File> = bincode::deserialize(&data)?;
+    let ws_resp: kittycad::types::WebSocketResponses = bincode::deserialize(&data)?;
 
-    Ok(serde_wasm_bindgen::to_value(&files)?)
+    if let kittycad::types::WebSocketResponses::Export { files } = ws_resp {
+        return Ok(serde_wasm_bindgen::to_value(&files)?);
+    }
+
+    Err(JsError::new(&format!(
+        "Invalid response type, got: {:?}",
+        ws_resp
+    )))
 }

@@ -1,6 +1,5 @@
 import { getNodePathFromSourceRange, getNodeFromPath } from './queryAst'
-import { lexer } from './tokeniser'
-import { abstractSyntaxTree } from './abstractSyntaxTree'
+import { parser_wasm } from './abstractSyntaxTree'
 import { initPromise } from './rust'
 
 beforeAll(() => initPromise)
@@ -21,7 +20,7 @@ const sk3 = startSketchAt([0, 0])
       lineToSubstringIndex + subStr.length,
     ]
 
-    const ast = abstractSyntaxTree(lexer(code))
+    const ast = parser_wasm(code)
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
     const { node } = getNodeFromPath<any>(ast, nodePath)
 
