@@ -469,8 +469,7 @@ struct ValueReturn {
 fn make_value(tokens: &Vec<Token>, index: usize) -> Result<ValueReturn, KclError> {
     let current_token = &tokens[index];
     let next = next_meaningful_token(tokens, index, None);
-    if next.token.is_some() {
-        let next_token = next.token.clone().unwrap();
+    if let Some(next_token) = &next.token {
         if next_token.token_type == TokenType::Brace && next_token.value == "(" {
             let end_index = find_closing_brace(tokens, next.index, 0, "")?;
             let token_after_call_expression = next_meaningful_token(tokens, end_index, None);
