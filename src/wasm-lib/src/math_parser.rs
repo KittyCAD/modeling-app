@@ -126,10 +126,10 @@ pub fn reverse_polish_notation(
         return reverse_polish_notation(&tokens[1..].to_vec(), previous_postfix, operators);
     }
 
-    return Err(KclError::Syntax(KclErrorDetails {
+    Err(KclError::Syntax(KclErrorDetails {
         source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
         message: format!("Unexpected token: {}", current_token.value),
-    }));
+    }))
 }
 
 #[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Clone)]

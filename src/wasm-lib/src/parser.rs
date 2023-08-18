@@ -380,7 +380,7 @@ fn collect_object_keys(
             });
             collect_object_keys(tokens, key_token.index, Some(new_previous_keys))
         } else {
-            return Err(KclError::Unimplemented(KclErrorDetails {
+            Err(KclError::Unimplemented(KclErrorDetails {
                 source_ranges: vec![[
                     period_or_opening_bracket_token.start as i32,
                     period_or_opening_bracket_token.end as i32,
@@ -389,7 +389,7 @@ fn collect_object_keys(
                     "expression with token type {:?}",
                     period_or_opening_bracket_token.token_type
                 ),
-            }));
+            }))
         }
     } else {
         Ok(previous_keys)
@@ -478,7 +478,7 @@ fn find_end_of_binary_expression(tokens: &Vec<Token>, index: usize) -> Result<us
         let next_right = next_meaningful_token(tokens, maybe_operator.index, None);
         find_end_of_binary_expression(tokens, next_right.index)
     } else {
-        return Ok(index);
+        Ok(index)
     }
 }
 
@@ -611,10 +611,10 @@ fn make_value(tokens: &Vec<Token>, index: usize) -> Result<ValueReturn, KclError
         });
     }
 
-    return Err(KclError::Unimplemented(KclErrorDetails {
+    Err(KclError::Unimplemented(KclErrorDetails {
         source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
         message: format!("expression with token type {:?}", current_token.token_type),
-    }));
+    }))
 }
 
 struct ArrayElementsReturn {
@@ -658,13 +658,13 @@ fn make_array_elements(
         _previous_elements.push(current_element.value);
         make_array_elements(tokens, next_call_index, _previous_elements)
     } else {
-        return Err(KclError::Unimplemented(KclErrorDetails {
+        Err(KclError::Unimplemented(KclErrorDetails {
             source_ranges: vec![[
                 first_element_token.start as i32,
                 first_element_token.end as i32,
             ]],
             message: "no next token".to_string(),
-        }));
+        }))
     }
 }
 
@@ -928,30 +928,30 @@ fn make_arguments(
                 return make_arguments(tokens, argument_token.index, previous_args);
             }
 
-            return Err(KclError::Unimplemented(KclErrorDetails {
+            Err(KclError::Unimplemented(KclErrorDetails {
                 source_ranges: vec![[
                     argument_token_token.start as i32,
                     argument_token_token.end as i32,
                 ]],
                 message: format!("Unexpected token {} ", argument_token_token.value),
-            }));
+            }))
         } else {
-            return Err(KclError::Unimplemented(KclErrorDetails {
+            Err(KclError::Unimplemented(KclErrorDetails {
                 source_ranges: vec![[
                     brace_or_comma_token.start as i32,
                     brace_or_comma_token.end as i32,
                 ]],
                 message: format!("Unexpected token {} ", brace_or_comma_token.value),
-            }));
+            }))
         }
     } else {
-        return Err(KclError::Unimplemented(KclErrorDetails {
+        Err(KclError::Unimplemented(KclErrorDetails {
             source_ranges: vec![[
                 brace_or_comma_token.start as i32,
                 brace_or_comma_token.end as i32,
             ]],
             message: format!("Unexpected token {} ", brace_or_comma_token.value),
-        }));
+        }))
     }
 }
 
@@ -1047,10 +1047,10 @@ fn make_variable_declarators(
             last_index,
         })
     } else {
-        return Err(KclError::Unimplemented(KclErrorDetails {
+        Err(KclError::Unimplemented(KclErrorDetails {
             source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
             message: format!("Unexpected token {} ", current_token.value),
-        }));
+        }))
     }
 }
 
@@ -1115,13 +1115,13 @@ fn make_params(
         _previous_params.push(identifier);
         make_params(tokens, next_brace_or_comma_token.index, _previous_params)
     } else {
-        return Err(KclError::Unimplemented(KclErrorDetails {
+        Err(KclError::Unimplemented(KclErrorDetails {
             source_ranges: vec![[
                 brace_or_comma_token.start as i32,
                 brace_or_comma_token.end as i32,
             ]],
             message: format!("Unexpected token {} ", brace_or_comma_token.value),
-        }));
+        }))
     }
 }
 
@@ -1162,7 +1162,7 @@ fn make_unary_expression(
                 _ => {
                     return Err(KclError::Syntax(KclErrorDetails {
                         source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
-                        message: format!("Invalid argument for unary expression"),
+                        message: "Invalid argument for unary expression".to_string(),
                     }));
                 }
             },
@@ -1207,10 +1207,10 @@ fn make_expression_statement(
             last_index: binary_expression.last_index,
         })
     } else {
-        return Err(KclError::Unimplemented(KclErrorDetails {
+        Err(KclError::Unimplemented(KclErrorDetails {
             source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
             message: "make_expression_statement".to_string(),
-        }));
+        }))
     }
 }
 
@@ -1268,13 +1268,13 @@ fn make_object_properties(
         _previous_properties.push(object_property);
         make_object_properties(tokens, next_key_index, _previous_properties)
     } else {
-        return Err(KclError::Unimplemented(KclErrorDetails {
+        Err(KclError::Unimplemented(KclErrorDetails {
             source_ranges: vec![[
                 property_key_token.start as i32,
                 property_key_token.end as i32,
             ]],
             message: "make_object_properties".to_string(),
-        }));
+        }))
     }
 }
 
@@ -1470,10 +1470,10 @@ fn make_body(
         }
     }
 
-    return Err(KclError::Syntax(KclErrorDetails {
+    Err(KclError::Syntax(KclErrorDetails {
         source_ranges: vec![[token.start as i32, token.end as i32]],
         message: "unexpected token".to_string(),
-    }));
+    }))
 }
 
 struct BlockStatementResult {
