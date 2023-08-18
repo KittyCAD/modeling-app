@@ -365,20 +365,32 @@ fn collect_object_keys(
         } else {
             key_token.index
         };
-        let key_token_token = key_token.token.unwrap();
-        let key = if key_token_token.token_type == TokenType::Word {
-            LiteralIdentifier::Identifier(Box::new(make_identifier(tokens, key_token.index)))
+        if let Some(key_token_token) = key_token.token {
+            let key = if key_token_token.token_type == TokenType::Word {
+                LiteralIdentifier::Identifier(Box::new(make_identifier(tokens, key_token.index)))
+            } else {
+                LiteralIdentifier::Literal(Box::new(make_literal(tokens, key_token.index)?))
+            };
+            let computed = is_braced && key_token_token.token_type == TokenType::Word;
+            let mut new_previous_keys = previous_keys;
+            new_previous_keys.push(ObjectKeyInfo {
+                key,
+                index: end_index,
+                computed,
+            });
+            collect_object_keys(tokens, key_token.index, Some(new_previous_keys))
         } else {
-            LiteralIdentifier::Literal(Box::new(make_literal(tokens, key_token.index)?))
-        };
-        let computed = is_braced && key_token_token.token_type == TokenType::Word;
-        let mut new_previous_keys = previous_keys;
-        new_previous_keys.push(ObjectKeyInfo {
-            key,
-            index: end_index,
-            computed,
-        });
-        collect_object_keys(tokens, key_token.index, Some(new_previous_keys))
+            return Err(KclError::Unimplemented(KclErrorDetails {
+                source_ranges: vec![[
+                    period_or_opening_bracket_token.start as i32,
+                    period_or_opening_bracket_token.end as i32,
+                ]],
+                message: format!(
+                    "expression with token type {:?}",
+                    period_or_opening_bracket_token.token_type
+                ),
+            }));
+        }
     } else {
         Ok(previous_keys)
     }
@@ -483,15 +495,24 @@ fn make_value(tokens: &Vec<Token>, index: usize) -> Result<ValueReturn, KclError
             let end_index = find_closing_brace(tokens, next.index, 0, "")?;
             let token_after_call_expression = next_meaningful_token(tokens, end_index, None);
             if token_after_call_expression.token.is_some() {
-                let token_after_call_expression_token = token_after_call_expression.token.unwrap();
-                if token_after_call_expression_token.token_type == TokenType::Operator
-                    && token_after_call_expression_token.value != "|>"
-                {
-                    let binary_expression = make_binary_expression(tokens, index)?;
-                    return Ok(ValueReturn {
-                        value: Value::BinaryExpression(Box::new(binary_expression.expression)),
-                        last_index: binary_expression.last_index,
-                    });
+                if let Some(token_after_call_expression_token) = token_after_call_expression.token {
+                    if token_after_call_expression_token.token_type == TokenType::Operator
+                        && token_after_call_expression_token.value != "|>"
+                    {
+                        let binary_expression = make_binary_expression(tokens, index)?;
+                        return Ok(ValueReturn {
+                            value: Value::BinaryExpression(Box::new(binary_expression.expression)),
+                            last_index: binary_expression.last_index,
+                        });
+                    }
+                } else {
+                    return Err(KclError::Unimplemented(KclErrorDetails {
+                        source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
+                        message: format!(
+                            "expression with token type {:?}",
+                            current_token.token_type
+                        ),
+                    }));
                 }
             }
             let call_expression = make_call_expression(tokens, index)?;
@@ -561,15 +582,19 @@ fn make_value(tokens: &Vec<Token>, index: usize) -> Result<ValueReturn, KclError
 
     if current_token.token_type == TokenType::Brace && current_token.value == "(" {
         let closing_brace_index = find_closing_brace(tokens, index, 0, "")?;
-        let arrow_token = next_meaningful_token(tokens, closing_brace_index, None)
-            .token
-            .unwrap();
-        if arrow_token.token_type == TokenType::Operator && arrow_token.value == "=>" {
-            let function_expression = make_function_expression(tokens, index)?;
-            return Ok(ValueReturn {
-                value: Value::FunctionExpression(Box::new(function_expression.expression)),
-                last_index: function_expression.last_index,
-            });
+        if let Some(arrow_token) = next_meaningful_token(tokens, closing_brace_index, None).token {
+            if arrow_token.token_type == TokenType::Operator && arrow_token.value == "=>" {
+                let function_expression = make_function_expression(tokens, index)?;
+                return Ok(ValueReturn {
+                    value: Value::FunctionExpression(Box::new(function_expression.expression)),
+                    last_index: function_expression.last_index,
+                });
+            } else {
+                return Err(KclError::Unimplemented(KclErrorDetails {
+                    source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
+                    message: "expression with braces".to_string(),
+                }));
+            }
         } else {
             return Err(KclError::Unimplemented(KclErrorDetails {
                 source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
@@ -611,27 +636,36 @@ fn make_array_elements(
     }
     let current_element = make_value(tokens, index)?;
     let next_token = next_meaningful_token(tokens, current_element.last_index, None);
-    let next_token_token = next_token.token.unwrap();
-    let is_closing_brace =
-        next_token_token.token_type == TokenType::Brace && next_token_token.value == "]";
-    let is_comma = next_token_token.token_type == TokenType::Comma;
-    if !is_closing_brace && !is_comma {
-        return Err(KclError::Syntax(KclErrorDetails {
-            source_ranges: vec![[next_token_token.start as i32, next_token_token.end as i32]],
-            message: format!(
-                "Expected a comma or closing brace, found {:?}",
-                next_token_token.value
-            ),
+    if let Some(next_token_token) = next_token.token {
+        let is_closing_brace =
+            next_token_token.token_type == TokenType::Brace && next_token_token.value == "]";
+        let is_comma = next_token_token.token_type == TokenType::Comma;
+        if !is_closing_brace && !is_comma {
+            return Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![[next_token_token.start as i32, next_token_token.end as i32]],
+                message: format!(
+                    "Expected a comma or closing brace, found {:?}",
+                    next_token_token.value
+                ),
+            }));
+        }
+        let next_call_index = if is_closing_brace {
+            next_token.index
+        } else {
+            next_meaningful_token(tokens, next_token.index, None).index
+        };
+        let mut _previous_elements = previous_elements;
+        _previous_elements.push(current_element.value);
+        make_array_elements(tokens, next_call_index, _previous_elements)
+    } else {
+        return Err(KclError::Unimplemented(KclErrorDetails {
+            source_ranges: vec![[
+                first_element_token.start as i32,
+                first_element_token.end as i32,
+            ]],
+            message: "no next token".to_string(),
         }));
     }
-    let next_call_index = if is_closing_brace {
-        next_token.index
-    } else {
-        next_meaningful_token(tokens, next_token.index, None).index
-    };
-    let mut _previous_elements = previous_elements;
-    _previous_elements.push(current_element.value);
-    make_array_elements(tokens, next_call_index, _previous_elements)
 }
 
 #[derive(Debug, Clone)]
@@ -701,11 +735,11 @@ fn make_pipe_body(
         });
     }
     let mut _non_code_meta: NoneCodeMeta;
-    if next_pipe.non_code_node.is_some() {
+    if let Some(node) = next_pipe.non_code_node {
         _non_code_meta = non_code_meta;
         _non_code_meta
             .none_code_nodes
-            .insert(previous_values.len(), next_pipe.non_code_node.unwrap());
+            .insert(previous_values.len(), node);
     } else {
         _non_code_meta = non_code_meta;
     }
@@ -756,127 +790,169 @@ fn make_arguments(
         });
     }
     let argument_token = next_meaningful_token(tokens, index, None);
-    let argument_token_token = argument_token.token.unwrap();
-    let next_brace_or_comma = next_meaningful_token(tokens, argument_token.index, None);
-    let next_brace_or_comma_token = next_brace_or_comma.token.unwrap();
-    let is_identifier_or_literal = next_brace_or_comma_token.token_type == TokenType::Comma
-        || next_brace_or_comma_token.token_type == TokenType::Brace;
-    if argument_token_token.token_type == TokenType::Brace && argument_token_token.value == "[" {
-        let array_expression = make_array_expression(tokens, argument_token.index)?;
-        let next_comma_or_brace_token_index =
-            next_meaningful_token(tokens, array_expression.last_index, None).index;
-        let mut _previous_args = previous_args;
-        _previous_args.push(Value::ArrayExpression(Box::new(
-            array_expression.expression,
-        )));
-        return make_arguments(tokens, next_comma_or_brace_token_index, _previous_args);
-    }
-    if argument_token_token.token_type == TokenType::Operator && argument_token_token.value == "-" {
-        let unary_expression = make_unary_expression(tokens, argument_token.index)?;
-        let next_comma_or_brace_token_index =
-            next_meaningful_token(tokens, unary_expression.last_index, None).index;
-        let mut _previous_args = previous_args;
-        _previous_args.push(Value::UnaryExpression(Box::new(
-            unary_expression.expression,
-        )));
-        return make_arguments(tokens, next_comma_or_brace_token_index, _previous_args);
-    }
-    if argument_token_token.token_type == TokenType::Brace && argument_token_token.value == "{" {
-        let object_expression = make_object_expression(tokens, argument_token.index)?;
-        let next_comma_or_brace_token_index =
-            next_meaningful_token(tokens, object_expression.last_index, None).index;
-        let mut _previous_args = previous_args;
-        _previous_args.push(Value::ObjectExpression(Box::new(
-            object_expression.expression,
-        )));
-        return make_arguments(tokens, next_comma_or_brace_token_index, _previous_args);
-    }
-    if (argument_token_token.token_type == TokenType::Word
-        || argument_token_token.token_type == TokenType::Number
-        || argument_token_token.token_type == TokenType::String)
-        && next_brace_or_comma_token.token_type == TokenType::Operator
-    {
-        let binary_expression = make_binary_expression(tokens, argument_token.index)?;
-        let next_comma_or_brace_token_index =
-            next_meaningful_token(tokens, binary_expression.last_index, None).index;
-        let mut _previous_args = previous_args;
-        _previous_args.push(Value::BinaryExpression(Box::new(
-            binary_expression.expression,
-        )));
-        return make_arguments(tokens, next_comma_or_brace_token_index, _previous_args);
-    }
+    if let Some(argument_token_token) = argument_token.token {
+        let next_brace_or_comma = next_meaningful_token(tokens, argument_token.index, None);
+        if let Some(next_brace_or_comma_token) = next_brace_or_comma.token {
+            let is_identifier_or_literal = next_brace_or_comma_token.token_type == TokenType::Comma
+                || next_brace_or_comma_token.token_type == TokenType::Brace;
+            if argument_token_token.token_type == TokenType::Brace
+                && argument_token_token.value == "["
+            {
+                let array_expression = make_array_expression(tokens, argument_token.index)?;
+                let next_comma_or_brace_token_index =
+                    next_meaningful_token(tokens, array_expression.last_index, None).index;
+                let mut _previous_args = previous_args;
+                _previous_args.push(Value::ArrayExpression(Box::new(
+                    array_expression.expression,
+                )));
+                return make_arguments(tokens, next_comma_or_brace_token_index, _previous_args);
+            }
+            if argument_token_token.token_type == TokenType::Operator
+                && argument_token_token.value == "-"
+            {
+                let unary_expression = make_unary_expression(tokens, argument_token.index)?;
+                let next_comma_or_brace_token_index =
+                    next_meaningful_token(tokens, unary_expression.last_index, None).index;
+                let mut _previous_args = previous_args;
+                _previous_args.push(Value::UnaryExpression(Box::new(
+                    unary_expression.expression,
+                )));
+                return make_arguments(tokens, next_comma_or_brace_token_index, _previous_args);
+            }
+            if argument_token_token.token_type == TokenType::Brace
+                && argument_token_token.value == "{"
+            {
+                let object_expression = make_object_expression(tokens, argument_token.index)?;
+                let next_comma_or_brace_token_index =
+                    next_meaningful_token(tokens, object_expression.last_index, None).index;
+                let mut _previous_args = previous_args;
+                _previous_args.push(Value::ObjectExpression(Box::new(
+                    object_expression.expression,
+                )));
+                return make_arguments(tokens, next_comma_or_brace_token_index, _previous_args);
+            }
+            if (argument_token_token.token_type == TokenType::Word
+                || argument_token_token.token_type == TokenType::Number
+                || argument_token_token.token_type == TokenType::String)
+                && next_brace_or_comma_token.token_type == TokenType::Operator
+            {
+                let binary_expression = make_binary_expression(tokens, argument_token.index)?;
+                let next_comma_or_brace_token_index =
+                    next_meaningful_token(tokens, binary_expression.last_index, None).index;
+                let mut _previous_args = previous_args;
+                _previous_args.push(Value::BinaryExpression(Box::new(
+                    binary_expression.expression,
+                )));
+                return make_arguments(tokens, next_comma_or_brace_token_index, _previous_args);
+            }
 
-    if !is_identifier_or_literal {
-        let binary_expression = make_binary_expression(tokens, next_brace_or_comma.index)?;
-        let mut _previous_args = previous_args;
-        _previous_args.push(Value::BinaryExpression(Box::new(
-            binary_expression.expression,
-        )));
-        return make_arguments(tokens, binary_expression.last_index, _previous_args);
-    }
-    if argument_token_token.token_type == TokenType::Operator && argument_token_token.value == "%" {
-        let value = Value::PipeSubstitution(Box::new(PipeSubstitution {
-            start: argument_token_token.start,
-            end: argument_token_token.end,
-        }));
+            if !is_identifier_or_literal {
+                let binary_expression = make_binary_expression(tokens, next_brace_or_comma.index)?;
+                let mut _previous_args = previous_args;
+                _previous_args.push(Value::BinaryExpression(Box::new(
+                    binary_expression.expression,
+                )));
+                return make_arguments(tokens, binary_expression.last_index, _previous_args);
+            }
+            if argument_token_token.token_type == TokenType::Operator
+                && argument_token_token.value == "%"
+            {
+                let value = Value::PipeSubstitution(Box::new(PipeSubstitution {
+                    start: argument_token_token.start,
+                    end: argument_token_token.end,
+                }));
 
-        let mut _previous_args = previous_args;
-        _previous_args.push(value);
-        return make_arguments(tokens, next_brace_or_comma.index, _previous_args);
-    }
-    if argument_token_token.token_type == TokenType::Word
-        && next_brace_or_comma_token.token_type == TokenType::Brace
-        && next_brace_or_comma_token.value == "("
-    {
-        let closing_brace = find_closing_brace(tokens, next_brace_or_comma.index, 0, "")?;
-        let token_after_closing_brace = next_meaningful_token(tokens, closing_brace, None)
-            .token
-            .unwrap();
-        if token_after_closing_brace.token_type == TokenType::Operator
-            && token_after_closing_brace.value != "|>"
-        {
-            let binary_expression = make_binary_expression(tokens, argument_token.index)?;
-            let next_comma_or_brace_token_index =
-                next_meaningful_token(tokens, binary_expression.last_index, None).index;
-            let mut _previous_args = previous_args;
-            _previous_args.push(Value::BinaryExpression(Box::new(
-                binary_expression.expression,
-            )));
-            return make_arguments(tokens, next_comma_or_brace_token_index, _previous_args);
+                let mut _previous_args = previous_args;
+                _previous_args.push(value);
+                return make_arguments(tokens, next_brace_or_comma.index, _previous_args);
+            }
+            if argument_token_token.token_type == TokenType::Word
+                && next_brace_or_comma_token.token_type == TokenType::Brace
+                && next_brace_or_comma_token.value == "("
+            {
+                let closing_brace = find_closing_brace(tokens, next_brace_or_comma.index, 0, "")?;
+                if let Some(token_after_closing_brace) =
+                    next_meaningful_token(tokens, closing_brace, None).token
+                {
+                    if token_after_closing_brace.token_type == TokenType::Operator
+                        && token_after_closing_brace.value != "|>"
+                    {
+                        let binary_expression =
+                            make_binary_expression(tokens, argument_token.index)?;
+                        let next_comma_or_brace_token_index =
+                            next_meaningful_token(tokens, binary_expression.last_index, None).index;
+                        let mut _previous_args = previous_args;
+                        _previous_args.push(Value::BinaryExpression(Box::new(
+                            binary_expression.expression,
+                        )));
+                        return make_arguments(
+                            tokens,
+                            next_comma_or_brace_token_index,
+                            _previous_args,
+                        );
+                    }
+                    let call_expression = make_call_expression(tokens, argument_token.index)?;
+                    let next_comma_or_brace_token_index =
+                        next_meaningful_token(tokens, call_expression.last_index, None).index;
+                    let mut _previous_args = previous_args;
+                    _previous_args
+                        .push(Value::CallExpression(Box::new(call_expression.expression)));
+                    return make_arguments(tokens, next_comma_or_brace_token_index, _previous_args);
+                } else {
+                    return Err(KclError::Unimplemented(KclErrorDetails {
+                        source_ranges: vec![[
+                            argument_token_token.start as i32,
+                            argument_token_token.end as i32,
+                        ]],
+                        message: format!("Unexpected token {} ", argument_token_token.value),
+                    }));
+                }
+            }
+
+            if argument_token_token.token_type == TokenType::Word {
+                let identifier =
+                    Value::Identifier(Box::new(make_identifier(tokens, argument_token.index)));
+                let mut _previous_args = previous_args;
+                _previous_args.push(identifier);
+                return make_arguments(tokens, next_brace_or_comma.index, _previous_args);
+            } else if argument_token_token.token_type == TokenType::Number
+                || argument_token_token.token_type == TokenType::String
+            {
+                let literal = Value::Literal(Box::new(make_literal(tokens, argument_token.index)?));
+                let mut _previous_args = previous_args;
+                _previous_args.push(literal);
+                return make_arguments(tokens, next_brace_or_comma.index, _previous_args);
+            } else if argument_token_token.token_type == TokenType::Brace
+                && argument_token_token.value == ")"
+            {
+                return make_arguments(tokens, argument_token.index, previous_args);
+            }
+
+            return Err(KclError::Unimplemented(KclErrorDetails {
+                source_ranges: vec![[
+                    argument_token_token.start as i32,
+                    argument_token_token.end as i32,
+                ]],
+                message: format!("Unexpected token {} ", argument_token_token.value),
+            }));
+        } else {
+            return Err(KclError::Unimplemented(KclErrorDetails {
+                source_ranges: vec![[
+                    brace_or_comma_token.start as i32,
+                    brace_or_comma_token.end as i32,
+                ]],
+                message: format!("Unexpected token {} ", brace_or_comma_token.value),
+            }));
         }
-        let call_expression = make_call_expression(tokens, argument_token.index)?;
-        let next_comma_or_brace_token_index =
-            next_meaningful_token(tokens, call_expression.last_index, None).index;
-        let mut _previous_args = previous_args;
-        _previous_args.push(Value::CallExpression(Box::new(call_expression.expression)));
-        return make_arguments(tokens, next_comma_or_brace_token_index, _previous_args);
+    } else {
+        return Err(KclError::Unimplemented(KclErrorDetails {
+            source_ranges: vec![[
+                brace_or_comma_token.start as i32,
+                brace_or_comma_token.end as i32,
+            ]],
+            message: format!("Unexpected token {} ", brace_or_comma_token.value),
+        }));
     }
-
-    if argument_token_token.token_type == TokenType::Word {
-        let identifier = Value::Identifier(Box::new(make_identifier(tokens, argument_token.index)));
-        let mut _previous_args = previous_args;
-        _previous_args.push(identifier);
-        return make_arguments(tokens, next_brace_or_comma.index, _previous_args);
-    } else if argument_token_token.token_type == TokenType::Number
-        || argument_token_token.token_type == TokenType::String
-    {
-        let literal = Value::Literal(Box::new(make_literal(tokens, argument_token.index)?));
-        let mut _previous_args = previous_args;
-        _previous_args.push(literal);
-        return make_arguments(tokens, next_brace_or_comma.index, _previous_args);
-    } else if argument_token_token.token_type == TokenType::Brace
-        && argument_token_token.value == ")"
-    {
-        return make_arguments(tokens, argument_token.index, previous_args);
-    }
-
-    return Err(KclError::Unimplemented(KclErrorDetails {
-        source_ranges: vec![[
-            argument_token_token.start as i32,
-            argument_token_token.end as i32,
-        ]],
-        message: format!("Unexpected token {} ", argument_token_token.value),
-    }));
 }
 
 pub struct CallExpressionResult {
@@ -940,36 +1016,42 @@ fn make_variable_declarators(
 ) -> Result<VariableDeclaratorsReturn, KclError> {
     let current_token = tokens[index].clone();
     let assignment = next_meaningful_token(tokens, index, None);
-    let assignment_token = assignment.token.unwrap();
-    let contents_start_token = next_meaningful_token(tokens, assignment.index, None);
-    let pipe_start_index = if assignment_token.token_type == TokenType::Operator {
-        contents_start_token.index
+    if let Some(assignment_token) = assignment.token {
+        let contents_start_token = next_meaningful_token(tokens, assignment.index, None);
+        let pipe_start_index = if assignment_token.token_type == TokenType::Operator {
+            contents_start_token.index
+        } else {
+            assignment.index
+        };
+        let next_pipe_operator = has_pipe_operator(tokens, pipe_start_index, None)?;
+        let init: Value;
+        let last_index = if next_pipe_operator.token.is_some() {
+            let pipe_expression_result = make_pipe_expression(tokens, assignment.index)?;
+            init = Value::PipeExpression(Box::new(pipe_expression_result.expression));
+            pipe_expression_result.last_index
+        } else {
+            let value_result = make_value(tokens, contents_start_token.index)?;
+            init = value_result.value;
+            value_result.last_index
+        };
+        let current_declarator = VariableDeclarator {
+            start: current_token.start,
+            end: tokens[last_index].end,
+            id: make_identifier(tokens, index),
+            init,
+        };
+        let mut declarations = previous_declarators;
+        declarations.push(current_declarator);
+        Ok(VariableDeclaratorsReturn {
+            declarations,
+            last_index,
+        })
     } else {
-        assignment.index
-    };
-    let next_pipe_operator = has_pipe_operator(tokens, pipe_start_index, None)?;
-    let init: Value;
-    let last_index = if next_pipe_operator.token.is_some() {
-        let pipe_expression_result = make_pipe_expression(tokens, assignment.index)?;
-        init = Value::PipeExpression(Box::new(pipe_expression_result.expression));
-        pipe_expression_result.last_index
-    } else {
-        let value_result = make_value(tokens, contents_start_token.index)?;
-        init = value_result.value;
-        value_result.last_index
-    };
-    let current_declarator = VariableDeclarator {
-        start: current_token.start,
-        end: tokens[last_index].end,
-        id: make_identifier(tokens, index),
-        init,
-    };
-    let mut declarations = previous_declarators;
-    declarations.push(current_declarator);
-    Ok(VariableDeclaratorsReturn {
-        declarations,
-        last_index,
-    })
+        return Err(KclError::Unimplemented(KclErrorDetails {
+            source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
+            message: format!("Unexpected token {} ", current_token.value),
+        }));
+    }
 }
 
 struct VariableDeclarationResult {
@@ -1013,25 +1095,34 @@ fn make_params(
     tokens: &Vec<Token>,
     index: usize,
     previous_params: Vec<Identifier>,
-) -> ParamsResult {
+) -> Result<ParamsResult, KclError> {
     let brace_or_comma_token = &tokens[index];
     let argument = next_meaningful_token(tokens, index, None);
-    let argument_token = argument.token.unwrap();
-    let should_finish_recursion = (argument_token.token_type == TokenType::Brace
-        && argument_token.value == ")")
-        || (brace_or_comma_token.token_type == TokenType::Brace
-            && brace_or_comma_token.value == ")");
-    if should_finish_recursion {
-        return ParamsResult {
-            params: previous_params,
-            last_index: index,
-        };
+    if let Some(argument_token) = argument.token {
+        let should_finish_recursion = (argument_token.token_type == TokenType::Brace
+            && argument_token.value == ")")
+            || (brace_or_comma_token.token_type == TokenType::Brace
+                && brace_or_comma_token.value == ")");
+        if should_finish_recursion {
+            return Ok(ParamsResult {
+                params: previous_params,
+                last_index: index,
+            });
+        }
+        let next_brace_or_comma_token = next_meaningful_token(tokens, argument.index, None);
+        let identifier = make_identifier(tokens, argument.index);
+        let mut _previous_params = previous_params;
+        _previous_params.push(identifier);
+        make_params(tokens, next_brace_or_comma_token.index, _previous_params)
+    } else {
+        return Err(KclError::Unimplemented(KclErrorDetails {
+            source_ranges: vec![[
+                brace_or_comma_token.start as i32,
+                brace_or_comma_token.end as i32,
+            ]],
+            message: format!("Unexpected token {} ", brace_or_comma_token.value),
+        }));
     }
-    let next_brace_or_comma_token = next_meaningful_token(tokens, argument.index, None);
-    let identifier = make_identifier(tokens, argument.index);
-    let mut _previous_params = previous_params;
-    _previous_params.push(identifier);
-    make_params(tokens, next_brace_or_comma_token.index, _previous_params)
 }
 
 struct UnaryExpressionResult {
@@ -1092,29 +1183,35 @@ fn make_expression_statement(
 ) -> Result<ExpressionStatementResult, KclError> {
     let current_token = &tokens[index];
     let next = next_meaningful_token(tokens, index, None);
-    let next_token = &next.token.unwrap();
-    if next_token.token_type == TokenType::Brace && next_token.value == "(" {
-        let call_expression = make_call_expression(tokens, index)?;
-        let end = tokens[call_expression.last_index].end;
-        return Ok(ExpressionStatementResult {
+    if let Some(next_token) = &next.token {
+        if next_token.token_type == TokenType::Brace && next_token.value == "(" {
+            let call_expression = make_call_expression(tokens, index)?;
+            let end = tokens[call_expression.last_index].end;
+            return Ok(ExpressionStatementResult {
+                expression: ExpressionStatement {
+                    start: current_token.start,
+                    // end: call_expression.last_index,
+                    end,
+                    expression: Value::CallExpression(Box::new(call_expression.expression)),
+                },
+                last_index: call_expression.last_index,
+            });
+        }
+        let binary_expression = make_binary_expression(tokens, index)?;
+        Ok(ExpressionStatementResult {
             expression: ExpressionStatement {
                 start: current_token.start,
-                // end: call_expression.last_index,
-                end,
-                expression: Value::CallExpression(Box::new(call_expression.expression)),
+                end: binary_expression.expression.end,
+                expression: Value::BinaryExpression(Box::new(binary_expression.expression)),
             },
-            last_index: call_expression.last_index,
-        });
+            last_index: binary_expression.last_index,
+        })
+    } else {
+        return Err(KclError::Unimplemented(KclErrorDetails {
+            source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
+            message: "make_expression_statement".to_string(),
+        }));
     }
-    let binary_expression = make_binary_expression(tokens, index)?;
-    Ok(ExpressionStatementResult {
-        expression: ExpressionStatement {
-            start: current_token.start,
-            end: binary_expression.expression.end,
-            expression: Value::BinaryExpression(Box::new(binary_expression.expression)),
-        },
-        last_index: binary_expression.last_index,
-    })
 }
 
 struct ObjectPropertiesResult {
@@ -1159,17 +1256,26 @@ fn make_object_properties(
         value,
     };
     let next_key_token = next_meaningful_token(tokens, comma_or_closing_brace_token.index, None);
-    let comma_or_closing_brace_token_token = &comma_or_closing_brace_token.token.unwrap();
-    let next_key_index = if comma_or_closing_brace_token_token.token_type == TokenType::Brace
-        && comma_or_closing_brace_token_token.value == "}"
-    {
-        comma_or_closing_brace_token.index
+    if let Some(comma_or_closing_brace_token_token) = &comma_or_closing_brace_token.token {
+        let next_key_index = if comma_or_closing_brace_token_token.token_type == TokenType::Brace
+            && comma_or_closing_brace_token_token.value == "}"
+        {
+            comma_or_closing_brace_token.index
+        } else {
+            next_key_token.index
+        };
+        let mut _previous_properties = previous_properties;
+        _previous_properties.push(object_property);
+        make_object_properties(tokens, next_key_index, _previous_properties)
     } else {
-        next_key_token.index
-    };
-    let mut _previous_properties = previous_properties;
-    _previous_properties.push(object_property);
-    make_object_properties(tokens, next_key_index, _previous_properties)
+        return Err(KclError::Unimplemented(KclErrorDetails {
+            source_ranges: vec![[
+                property_key_token.start as i32,
+                property_key_token.end as i32,
+            ]],
+            message: "make_object_properties".to_string(),
+        }));
+    }
 }
 
 struct ObjectExpressionResult {
@@ -1248,32 +1354,32 @@ fn make_body(
     }
     if is_not_code_token(token) {
         let next_token = next_meaningful_token(tokens, token_index, Some(0));
-        if next_token.non_code_node.is_some() {
+        if let Some(node) = &next_token.non_code_node {
             if previous_body.is_empty() {
                 non_code_meta.start = next_token.non_code_node;
             } else {
                 non_code_meta
                     .none_code_nodes
-                    .insert(previous_body.len(), next_token.non_code_node.unwrap());
+                    .insert(previous_body.len(), node.clone());
             }
         }
         return make_body(tokens, next_token.index, previous_body, non_code_meta);
     }
 
     let next = next_meaningful_token(tokens, token_index, None);
-    if next.non_code_node.is_some() {
+    if let Some(node) = &next.non_code_node {
         non_code_meta
             .none_code_nodes
-            .insert(previous_body.len(), next.non_code_node.unwrap());
+            .insert(previous_body.len(), node.clone());
     }
 
     if token.token_type == TokenType::Word && (token.value == *"const" || token.value == "fn") {
         let declaration = make_variable_declaration(tokens, token_index)?;
         let next_thing = next_meaningful_token(tokens, declaration.last_index, None);
-        if next_thing.non_code_node.is_some() {
+        if let Some(node) = &next_thing.non_code_node {
             non_code_meta
                 .none_code_nodes
-                .insert(previous_body.len(), next_thing.non_code_node.unwrap());
+                .insert(previous_body.len(), node.clone());
         }
         let mut _previous_body = previous_body;
         _previous_body.push(BodyItem::VariableDeclaration(VariableDeclaration {
@@ -1291,12 +1397,12 @@ fn make_body(
     }
 
     if token.token_type == TokenType::Word && token.value == "return" {
-        let statement = make_return_statement(tokens, token_index).unwrap();
+        let statement = make_return_statement(tokens, token_index)?;
         let next_thing = next_meaningful_token(tokens, statement.last_index, None);
-        if next_thing.non_code_node.is_some() {
+        if let Some(node) = &next_thing.non_code_node {
             non_code_meta
                 .none_code_nodes
-                .insert(previous_body.len(), next_thing.non_code_node.unwrap());
+                .insert(previous_body.len(), node.clone());
         }
         let mut _previous_body = previous_body;
         _previous_body.push(BodyItem::ReturnStatement(ReturnStatement {
@@ -1312,62 +1418,61 @@ fn make_body(
         });
     }
 
-    let next_token = next.token.unwrap();
-    if token.token_type == TokenType::Word
-        && next_token.token_type == TokenType::Brace
-        && next_token.value == "("
-    {
-        let expression = make_expression_statement(tokens, token_index)?;
-        let next_thing = next_meaningful_token(tokens, expression.last_index, None);
-        if next_thing.non_code_node.is_some() {
-            non_code_meta
-                .none_code_nodes
-                .insert(previous_body.len(), next_thing.non_code_node.unwrap());
+    if let Some(next_token) = next.token {
+        if token.token_type == TokenType::Word
+            && next_token.token_type == TokenType::Brace
+            && next_token.value == "("
+        {
+            let expression = make_expression_statement(tokens, token_index)?;
+            let next_thing = next_meaningful_token(tokens, expression.last_index, None);
+            if let Some(node) = &next_thing.non_code_node {
+                non_code_meta
+                    .none_code_nodes
+                    .insert(previous_body.len(), node.clone());
+            }
+            let mut _previous_body = previous_body;
+            _previous_body.push(BodyItem::ExpressionStatement(ExpressionStatement {
+                start: expression.expression.start,
+                end: expression.expression.end,
+                expression: expression.expression.expression,
+            }));
+            let body = make_body(tokens, next_thing.index, _previous_body, non_code_meta)?;
+            return Ok(BodyResult {
+                body: body.body,
+                last_index: body.last_index,
+                non_code_meta: body.non_code_meta,
+            });
         }
-        let mut _previous_body = previous_body;
-        _previous_body.push(BodyItem::ExpressionStatement(ExpressionStatement {
-            start: expression.expression.start,
-            end: expression.expression.end,
-            expression: expression.expression.expression,
-        }));
-        let body = make_body(tokens, next_thing.index, _previous_body, non_code_meta)?;
-        return Ok(BodyResult {
-            body: body.body,
-            last_index: body.last_index,
-            non_code_meta: body.non_code_meta,
-        });
     }
 
     let next_thing = next_meaningful_token(tokens, token_index, None);
-    let next_thing_token = next_thing.token.unwrap();
-    if (token.token_type == TokenType::Number || token.token_type == TokenType::Word)
-        && next_thing_token.token_type == TokenType::Operator
-    {
-        if next_thing.non_code_node.is_some() {
-            non_code_meta
-                .none_code_nodes
-                .insert(previous_body.len(), next_thing.non_code_node.unwrap());
+    if let Some(next_thing_token) = next_thing.token {
+        if (token.token_type == TokenType::Number || token.token_type == TokenType::Word)
+            && next_thing_token.token_type == TokenType::Operator
+        {
+            if let Some(node) = &next_thing.non_code_node {
+                non_code_meta
+                    .none_code_nodes
+                    .insert(previous_body.len(), node.clone());
+            }
+            let expression = make_expression_statement(tokens, token_index)?;
+            let mut _previous_body = previous_body;
+            _previous_body.push(BodyItem::ExpressionStatement(ExpressionStatement {
+                start: expression.expression.start,
+                end: expression.expression.end,
+                expression: expression.expression.expression,
+            }));
+            return Ok(BodyResult {
+                body: _previous_body,
+                last_index: expression.last_index,
+                non_code_meta,
+            });
         }
-        let expression = make_expression_statement(tokens, token_index)?;
-        let mut _previous_body = previous_body;
-        _previous_body.push(BodyItem::ExpressionStatement(ExpressionStatement {
-            start: expression.expression.start,
-            end: expression.expression.end,
-            expression: expression.expression.expression,
-        }));
-        return Ok(BodyResult {
-            body: _previous_body,
-            last_index: expression.last_index,
-            non_code_meta,
-        });
     }
 
-    return Err(KclError::Unimplemented(KclErrorDetails {
-        source_ranges: vec![[next_thing_token.start as i32, next_thing_token.end as i32]],
-        message: format!(
-            "make_body: unimplemented token type {:?} with value {}",
-            token.token_type, token.value
-        ),
+    return Err(KclError::Syntax(KclErrorDetails {
+        source_ranges: vec![[token.start as i32, token.end as i32]],
+        message: "unexpected token".to_string(),
     }));
 }
 
@@ -1427,7 +1532,7 @@ fn make_function_expression(
     let closing_brace_index = find_closing_brace(tokens, index, 0, "")?;
     let arrow_token = next_meaningful_token(tokens, closing_brace_index, None);
     let body_start_token = next_meaningful_token(tokens, arrow_token.index, None);
-    let params = make_params(tokens, index, vec![]);
+    let params = make_params(tokens, index, vec![])?;
     let block = make_block_statement(tokens, body_start_token.index)?;
     Ok(FunctionExpressionResult {
         expression: FunctionExpression {
@@ -1472,7 +1577,7 @@ extern "C" {
 }
 
 #[wasm_bindgen]
-pub fn parse_js(js: &str) -> Result<JsValue, JsValue> {
+pub fn parse_js(js: &str) -> Result<JsValue, JsError> {
     let tokens = lexer(js);
     let program = abstract_syntax_tree(&tokens).map_err(JsError::from)?;
     Ok(serde_wasm_bindgen::to_value(&program)?)

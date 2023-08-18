@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 #[derive(Error, Debug, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case")]
 pub enum KclError {
     #[error("syntax: {0:?}")]
     Syntax(KclErrorDetails),
@@ -21,7 +22,6 @@ pub enum KclError {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct KclErrorDetails {
-    #[serde(rename = "sourceRanges")]
     pub source_ranges: Vec<[i32; 2]>,
     pub message: String,
 }
