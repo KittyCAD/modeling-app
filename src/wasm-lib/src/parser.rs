@@ -1575,7 +1575,7 @@ extern "C" {
 #[wasm_bindgen]
 pub fn parse_js(js: &str) -> Result<JsValue, String> {
     let tokens = lexer(js);
-    let program = abstract_syntax_tree(&tokens).map_err(String::from)?;
+    let program = abstract_syntax_tree(&tokens).map_err(|e| e.to_string())?;
     // The  serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
     JsValue::from_serde(&program).map_err(|e| e.to_string())
