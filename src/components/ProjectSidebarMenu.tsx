@@ -20,7 +20,7 @@ const ProjectSidebarMenu = ({
       data-testid="project-sidebar-link"
     >
       <img
-        src="/kitt-arcade-winking.svg"
+        src="/kitt-8bit-winking.svg"
         alt="KittyCAD App"
         className="h-9 w-auto"
       />
@@ -38,7 +38,7 @@ const ProjectSidebarMenu = ({
         data-testid="project-sidebar-toggle"
       >
         <img
-          src="/kitt-arcade-winking.svg"
+          src="/kitt-8bit-winking.svg"
           alt="KittyCAD App"
           className="h-9 w-auto"
         />
@@ -51,7 +51,7 @@ const ProjectSidebarMenu = ({
       <Popover.Panel className="fixed inset-0 right-auto z-30 w-64 bg-chalkboard-10 dark:bg-chalkboard-100 border border-energy-100 shadow-md rounded-r-lg overflow-hidden">
         <div className="flex items-center gap-4 px-4 py-3 bg-energy-100">
           <img
-            src="/kitt-arcade-winking.svg"
+            src="/kitt-8bit-winking.svg"
             alt="KittyCAD App"
             className="h-9 w-auto"
           />
