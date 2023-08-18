@@ -125,7 +125,7 @@ jobs:
     runs-on: ubuntu-20.04
     needs: [build-test-web, build-apps]
     env:
-      VERSION: ${{ needs.build-test-web.outputs.version }}
+      VERSION_NO_V: ${{ needs.build-test-web.outputs.version }}
     steps:
 
       - uses: actions/download-artifact@v3
@@ -136,15 +136,15 @@ jobs:
           DARWIN_SIG=`cat artifact/macos/*.app.tar.gz.sig`
           LINUX_SIG=`cat artifact/appimage/*.AppImage.tar.gz.sig`
           WINDOWS_SIG=`cat artifact/nsis/*.nsis.zip.sig`
-          RELEASE_DIR=https://dl.kittycad.io/releases/modeling-app/test/$VERSION
+          RELEASE_DIR=https://dl.kittycad.io/releases/modeling-app/test/v${VERSION_NO_V}
           jq --null-input \
-            --arg version "v$VERSION" \
+            --arg version "v${VERSION_NO_V}" \
             --arg darwin_sig "$DARWIN_SIG" \
             --arg darwin_url "$RELEASE_DIR/kittycad-modeling-app.app.tar.gz" \
             --arg linux_sig "$LINUX_SIG" \
-            --arg linux_url "$RELEASE_DIR/kittycad-modeling-app_$VERSION_amd64.AppImage.tar.gz" \
+            --arg linux_url "$RELEASE_DIR/kittycad-modeling-app_${VERSION_NO_V}_amd64.AppImage.tar.gz" \
             --arg windows_sig "$WINDOWS_SIG" \
-            --arg windows_url "$RELEASE_DIR/kittycad-modeling-app_$VERSION_x64-setup.nsis.zip" \
+            --arg windows_url "$RELEASE_DIR/kittycad-modeling-app_${VERSION_NO_V}_x64-setup.nsis.zip" \
             '{
               "version": $version,
               "platforms": {
