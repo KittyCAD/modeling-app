@@ -137,7 +137,7 @@ jobs:
           LINUX_SIG=`cat artifact/appimage/*.AppImage.tar.gz.sig`
           WINDOWS_SIG=`cat artifact/nsis/*.nsis.zip.sig`
           jq --null-input \
-            --arg version "$VERSION" \
+            --arg version "v$VERSION" \
             --arg darwin_sig "$DARWIN_SIG" \
             --arg darwin_url "https://dl.kittycad.io/releases/modeling-app/v$VERSION/kittycad-modeling-app.app.tar.gz" \
             --arg linux_sig "$LINUX_SIG" \
@@ -145,7 +145,7 @@ jobs:
             --arg windows_sig "$WINDOWS_SIG" \
             --arg windows_url "https://dl.kittycad.io/releases/modeling-app/v$VERSION/kittycad-modeling-app_$VERSION_x64-setup.nsis.zip" \
             '{
-              "version": v$version,
+              "version": $version,
               "platforms": {
                 "darwin-x86_64": {
                   "signature": $darwin_sig,
