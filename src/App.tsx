@@ -384,7 +384,9 @@ export function App() {
     ctrlKey,
     shiftKey,
     currentTarget,
+    nativeEvent,
   }) => {
+    nativeEvent.preventDefault()
     if (isMouseDownInStream) {
       setDidDragInStream(true)
     }
@@ -437,7 +439,7 @@ export function App() {
 
   return (
     <div
-      className="h-screen overflow-hidden relative flex flex-col"
+      className="h-screen overflow-hidden relative flex flex-col cursor-pointer select-none"
       onMouseMove={handleMouseMove}
       ref={streamRef}
     >

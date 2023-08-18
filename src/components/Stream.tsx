@@ -7,14 +7,11 @@ import {
 } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { useStore } from '../useStore'
-import { throttle } from '../lib/utils'
-import { EngineCommand } from '../lang/std/engineConnection'
 import { getNormalisedCoordinates } from '../lib/utils'
 import Loading from './Loading'
 
 export const Stream = ({ className = '' }) => {
   const [isLoading, setIsLoading] = useState(true)
-  const [zoom, setZoom] = useState(0)
   const videoRef = useRef<HTMLVideoElement>(null)
   const {
     mediaStream,
@@ -49,7 +46,6 @@ export const Stream = ({ className = '' }) => {
     if (!mediaStream) return
     videoRef.current.srcObject = mediaStream
     setFileId(uuidv4())
-    setZoom(videoRef.current.getBoundingClientRect().height / 2)
   }, [mediaStream, engineCommandManager, setFileId])
 
   const handleMouseDown: MouseEventHandler<HTMLVideoElement> = ({
@@ -83,6 +79,19 @@ export const Stream = ({ className = '' }) => {
     })
 
     setIsMouseDownInStream(true)
+  }
+
+  const handleScroll: WheelEventHandler<HTMLVideoElement> = (e) => {
+    e.preventDefault()
+    engineCommandManager?.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'default_camera_zoom',
+        magnitude: e.deltaY * 0.4,
+      } as any,
+      cmd_id: uuidv4(),
+      file_id: uuidv4(),
+    })
   }
 
   const handleMouseUp: MouseEventHandler<HTMLVideoElement> = ({
@@ -139,6 +148,7 @@ export const Stream = ({ className = '' }) => {
         onMouseUp={handleMouseUp}
         onContextMenu={(e) => e.preventDefault()}
         onContextMenuCapture={(e) => e.preventDefault()}
+        onWheel={handleScroll}
         onPlay={() => setIsLoading(false)}
         className="w-full h-full"
       />
