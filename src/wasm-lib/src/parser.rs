@@ -106,14 +106,15 @@ fn next_meaningful_token(
 ) -> TokenReturnWithNonCode {
     let new_index = index + offset.unwrap_or(1);
     let _token = tokens.get(new_index);
-    if _token.is_none() {
+    let token = if let Some(token) = _token {
+        token
+    } else {
         return TokenReturnWithNonCode {
             token: Some(tokens[tokens.len() - 1].clone()),
             index: tokens.len() - 1,
             non_code_node: None,
         };
-    }
-    let token = _token.unwrap();
+    };
     if is_not_code_token(token) {
         let non_code_node = make_none_code_node(tokens, new_index);
         let new_new_index = non_code_node.1 + 1;
@@ -141,7 +142,7 @@ pub fn find_closing_brace(
     index: usize,
     brace_count: usize,
     search_opening_brace: &str,
-) -> usize {
+) -> Result<usize, KclError> {
     let closing_brace_map: HashMap<&str, &str> = [("(", ")"), ("{", "}"), ("[", "]")]
         .iter()
         .cloned()
@@ -164,7 +165,7 @@ pub fn find_closing_brace(
     let found_another_closing_brace =
         current_token.value == closing_brace_map[search_opening_brace];
     if found_closing_brace {
-        return index;
+        return Ok(index);
     }
     if found_another_opening_brace {
         return find_closing_brace(tokens, index + 1, brace_count + 1, search_opening_brace);
@@ -176,9 +177,9 @@ pub fn find_closing_brace(
     find_closing_brace(tokens, index + 1, brace_count, search_opening_brace)
 }
 
-fn is_call_expression(tokens: &[Token], index: usize) -> Option<usize> {
+fn is_call_expression(tokens: &[Token], index: usize) -> Result<Option<usize>, KclError> {
     if index + 1 >= tokens.len() {
-        return None;
+        return Ok(None);
     }
     let current_token = &tokens[index];
     let very_next_token = &tokens[index + 1];
@@ -186,44 +187,47 @@ fn is_call_expression(tokens: &[Token], index: usize) -> Option<usize> {
         && very_next_token.token_type == TokenType::Brace
         && very_next_token.value == "("
     {
-        return Some(find_closing_brace(tokens, index + 1, 0, ""));
+        return Ok(Some(find_closing_brace(tokens, index + 1, 0, "")?));
     }
-    None
+    Ok(None)
 }
 
-fn find_next_declaration_keyword(tokens: &Vec<Token>, index: usize) -> TokenReturn {
+fn find_next_declaration_keyword(
+    tokens: &Vec<Token>,
+    index: usize,
+) -> Result<TokenReturn, KclError> {
     if index >= tokens.len() - 1 {
-        return TokenReturn {
+        return Ok(TokenReturn {
             token: None,
             index: tokens.len() - 1,
-        };
+        });
     }
     let next_token = next_meaningful_token(tokens, index, None);
 
     if next_token.index >= tokens.len() - 1 {
-        return TokenReturn {
+        return Ok(TokenReturn {
             token: None,
             index: tokens.len() - 1,
-        };
+        });
     }
     let token_val = next_token.token.unwrap();
     if token_val.token_type == TokenType::Word
         && (token_val.value == "const" || token_val.value == "fn")
     {
-        return TokenReturn {
+        return Ok(TokenReturn {
             token: Some(token_val),
             index: next_token.index,
-        };
+        });
     }
     if token_val.token_type == TokenType::Brace && token_val.value == "(" {
-        let closing_brace_index = find_closing_brace(tokens, next_token.index, 0, "");
+        let closing_brace_index = find_closing_brace(tokens, next_token.index, 0, "")?;
         let arrow_token = next_meaningful_token(tokens, closing_brace_index, None).token;
         if let Some(arrow_token) = arrow_token {
             if arrow_token.token_type == TokenType::Operator && arrow_token.value == "=>" {
-                return TokenReturn {
+                return Ok(TokenReturn {
                     token: Some(token_val),
                     index: next_token.index,
-                };
+                });
             }
         }
     }
@@ -234,10 +238,10 @@ fn has_pipe_operator(
     tokens: &Vec<Token>,
     index: usize,
     _limit_index: Option<usize>,
-) -> TokenReturnWithNonCode {
+) -> Result<TokenReturnWithNonCode, KclError> {
     let mut limit_index = _limit_index;
     if _limit_index.is_none() {
-        let call_expression = is_call_expression(tokens, index);
+        let call_expression = is_call_expression(tokens, index)?;
         if let Some(ce) = call_expression {
             let token_after_call_expression = next_meaningful_token(tokens, ce, None);
 
@@ -246,23 +250,23 @@ fn has_pipe_operator(
                 if token_after_call_expression_val.token_type == TokenType::Operator
                     && token_after_call_expression_val.value == "|>"
                 {
-                    return TokenReturnWithNonCode {
+                    return Ok(TokenReturnWithNonCode {
                         token: Some(token_after_call_expression_val),
                         index: token_after_call_expression.index,
                         // non_code_node: None,
                         non_code_node: token_after_call_expression.non_code_node,
-                    };
+                    });
                 }
-                return TokenReturnWithNonCode {
+                return Ok(TokenReturnWithNonCode {
                     token: None,
                     index: token_after_call_expression.index,
                     non_code_node: None,
-                };
+                });
             }
         }
         let current_token = &tokens[index];
         if current_token.token_type == TokenType::Brace && current_token.value == "{" {
-            let closing_brace_index = find_closing_brace(tokens, index, 0, "");
+            let closing_brace_index = find_closing_brace(tokens, index, 0, "")?;
             let token_after_closing_brace =
                 next_meaningful_token(tokens, closing_brace_index, None);
             if token_after_closing_brace.token.is_some() {
@@ -270,39 +274,39 @@ fn has_pipe_operator(
                 if token_after_closing_brace_val.token_type == TokenType::Operator
                     && token_after_closing_brace_val.value == "|>"
                 {
-                    return TokenReturnWithNonCode {
+                    return Ok(TokenReturnWithNonCode {
                         token: Some(token_after_closing_brace_val),
                         index: token_after_closing_brace.index,
                         non_code_node: token_after_closing_brace.non_code_node,
-                    };
+                    });
                 }
-                return TokenReturnWithNonCode {
+                return Ok(TokenReturnWithNonCode {
                     token: None,
                     index: token_after_closing_brace.index,
                     non_code_node: None,
-                };
+                });
             }
         }
 
-        let next_declaration = find_next_declaration_keyword(tokens, index);
+        let next_declaration = find_next_declaration_keyword(tokens, index)?;
         limit_index = Some(next_declaration.index);
     }
     let next_token = next_meaningful_token(tokens, index, None);
     if next_token.index >= limit_index.unwrap() {
-        return TokenReturnWithNonCode {
+        return Ok(TokenReturnWithNonCode {
             token: None,
             index: next_token.index,
             non_code_node: None,
-        };
+        });
     }
     if next_token.token.is_some() {
         let next_token_val = next_token.token.unwrap();
         if next_token_val.token_type == TokenType::Operator && next_token_val.value == "|>" {
-            return TokenReturnWithNonCode {
+            return Ok(TokenReturnWithNonCode {
                 token: Some(next_token_val),
                 index: next_token.index,
                 non_code_node: next_token.non_code_node,
-            };
+            });
         }
     }
     has_pipe_operator(tokens, next_token.index, limit_index)
@@ -405,19 +409,19 @@ fn make_member_expression(
     })
 }
 
-fn find_end_of_binary_expression(tokens: &Vec<Token>, index: usize) -> usize {
+fn find_end_of_binary_expression(tokens: &Vec<Token>, index: usize) -> Result<usize, KclError> {
     let current_token = tokens[index].clone();
     if current_token.token_type == TokenType::Brace && current_token.value == "(" {
-        let closing_parenthesis = find_closing_brace(tokens, index, 0, "");
+        let closing_parenthesis = find_closing_brace(tokens, index, 0, "")?;
         let maybe_another_operator = next_meaningful_token(tokens, closing_parenthesis, None);
         if maybe_another_operator.token.is_none() {
-            return closing_parenthesis;
+            return Ok(closing_parenthesis);
         }
         let maybe_another_operator_token = maybe_another_operator.token.unwrap();
         if maybe_another_operator_token.token_type != TokenType::Operator
             || maybe_another_operator_token.value == "|>"
         {
-            return closing_parenthesis;
+            return Ok(closing_parenthesis);
         }
         let next_right = next_meaningful_token(tokens, maybe_another_operator.index, None);
         return find_end_of_binary_expression(tokens, next_right.index);
@@ -426,28 +430,28 @@ fn find_end_of_binary_expression(tokens: &Vec<Token>, index: usize) -> usize {
         && tokens.get(index + 1).unwrap().token_type == TokenType::Brace
         && tokens[index + 1].value == "("
     {
-        let closing_parenthesis = find_closing_brace(tokens, index + 1, 0, "");
+        let closing_parenthesis = find_closing_brace(tokens, index + 1, 0, "")?;
         let maybe_another_operator = next_meaningful_token(tokens, closing_parenthesis, None);
         if maybe_another_operator.token.is_none() {
-            return closing_parenthesis;
+            return Ok(closing_parenthesis);
         }
         let maybe_another_operator_token = maybe_another_operator.token.unwrap();
         if maybe_another_operator_token.token_type != TokenType::Operator
             || maybe_another_operator_token.value == "|>"
         {
-            return closing_parenthesis;
+            return Ok(closing_parenthesis);
         }
         let next_right = next_meaningful_token(tokens, maybe_another_operator.index, None);
         return find_end_of_binary_expression(tokens, next_right.index);
     }
     let maybe_operator = next_meaningful_token(tokens, index, None);
     if maybe_operator.token.is_none() {
-        return index;
+        return Ok(index);
     }
     let maybe_operator_token = maybe_operator.token.unwrap();
     if maybe_operator_token.token_type != TokenType::Operator || maybe_operator_token.value == "|>"
     {
-        return index;
+        return Ok(index);
     }
     let next_right = next_meaningful_token(tokens, maybe_operator.index, None);
     find_end_of_binary_expression(tokens, next_right.index)
@@ -464,7 +468,7 @@ fn make_value(tokens: &Vec<Token>, index: usize) -> Result<ValueReturn, KclError
     if next.token.is_some() {
         let next_token = next.token.clone().unwrap();
         if next_token.token_type == TokenType::Brace && next_token.value == "(" {
-            let end_index = find_closing_brace(tokens, next.index, 0, "");
+            let end_index = find_closing_brace(tokens, next.index, 0, "")?;
             let token_after_call_expression = next_meaningful_token(tokens, end_index, None);
             if token_after_call_expression.token.is_some() {
                 let token_after_call_expression_token = token_after_call_expression.token.unwrap();
@@ -545,7 +549,7 @@ fn make_value(tokens: &Vec<Token>, index: usize) -> Result<ValueReturn, KclError
     }
 
     if current_token.token_type == TokenType::Brace && current_token.value == "(" {
-        let closing_brace_index = find_closing_brace(tokens, index, 0, "");
+        let closing_brace_index = find_closing_brace(tokens, index, 0, "")?;
         let arrow_token = next_meaningful_token(tokens, closing_brace_index, None)
             .token
             .unwrap();
@@ -657,7 +661,7 @@ fn make_pipe_body(
     } else {
         panic!("Expected a previous PipeValue if statement to match");
     }
-    let next_pipe = has_pipe_operator(tokens, index, None);
+    let next_pipe = has_pipe_operator(tokens, index, None)?;
     if next_pipe.token.is_none() {
         let mut _previous_values = previous_values;
         _previous_values.push(value);
@@ -695,7 +699,7 @@ fn make_binary_expression(
     tokens: &Vec<Token>,
     index: usize,
 ) -> Result<BinaryExpressionReturn, KclError> {
-    let end_index = find_end_of_binary_expression(tokens, index);
+    let end_index = find_end_of_binary_expression(tokens, index)?;
     let expression = parse_expression(tokens[index..end_index + 1].to_vec())?;
     Ok(BinaryExpressionReturn {
         expression,
@@ -795,7 +799,7 @@ fn make_arguments(
         && next_brace_or_comma_token.token_type == TokenType::Brace
         && next_brace_or_comma_token.value == "("
     {
-        let closing_brace = find_closing_brace(tokens, next_brace_or_comma.index, 0, "");
+        let closing_brace = find_closing_brace(tokens, next_brace_or_comma.index, 0, "")?;
         let token_after_closing_brace = next_meaningful_token(tokens, closing_brace, None)
             .token
             .unwrap();
@@ -907,7 +911,7 @@ fn make_variable_declarators(
     } else {
         assignment.index
     };
-    let next_pipe_operator = has_pipe_operator(tokens, pipe_start_index, None);
+    let next_pipe_operator = has_pipe_operator(tokens, pipe_start_index, None)?;
     let init: Value;
     let last_index = if next_pipe_operator.token.is_some() {
         let pipe_expression_result = make_pipe_expression(tokens, assignment.index)?;
@@ -1366,7 +1370,7 @@ fn make_function_expression(
     index: usize,
 ) -> Result<FunctionExpressionResult, KclError> {
     let current_token = &tokens[index];
-    let closing_brace_index = find_closing_brace(tokens, index, 0, "");
+    let closing_brace_index = find_closing_brace(tokens, index, 0, "")?;
     let arrow_token = next_meaningful_token(tokens, closing_brace_index, None);
     let body_start_token = next_meaningful_token(tokens, arrow_token.index, None);
     let params = make_params(tokens, index, vec![]);
@@ -2104,28 +2108,31 @@ const key = 'c'"#,
 |> lineTo({ to: [1,0], tag: "rightPath" }, %)
 |> close(%)"#,
         );
-        assert_eq!(find_closing_brace(&tokens, 7, 0, ""), 13);
-        assert_eq!(find_closing_brace(&tokens, 18, 0, ""), 41);
-        assert_eq!(find_closing_brace(&tokens, 46, 0, ""), 56);
-        assert_eq!(find_closing_brace(&tokens, 63, 0, ""), 85);
-        assert_eq!(find_closing_brace(&tokens, 90, 0, ""), 92);
+        assert_eq!(find_closing_brace(&tokens, 7, 0, "").unwrap(), 13);
+        assert_eq!(find_closing_brace(&tokens, 18, 0, "").unwrap(), 41);
+        assert_eq!(find_closing_brace(&tokens, 46, 0, "").unwrap(), 56);
+        assert_eq!(find_closing_brace(&tokens, 63, 0, "").unwrap(), 85);
+        assert_eq!(find_closing_brace(&tokens, 90, 0, "").unwrap(), 92);
 
         let basic = "( hey )";
-        assert_eq!(find_closing_brace(&lexer(basic), 0, 0, ""), 4);
+        assert_eq!(find_closing_brace(&lexer(basic), 0, 0, "").unwrap(), 4);
 
         let handles_non_zero_index =
             "(indexForBracketToRightOfThisIsTwo(shouldBeFour)AndNotThisSix)";
         assert_eq!(
-            find_closing_brace(&lexer(handles_non_zero_index), 2, 0, ""),
+            find_closing_brace(&lexer(handles_non_zero_index), 2, 0, "").unwrap(),
             4
         );
         assert_eq!(
-            find_closing_brace(&lexer(handles_non_zero_index), 0, 0, ""),
+            find_closing_brace(&lexer(handles_non_zero_index), 0, 0, "").unwrap(),
             6
         );
 
         let handles_nested = "{a{b{c(}d]}eathou athoeu tah u} thatOneToTheLeftIsLast }";
-        assert_eq!(find_closing_brace(&lexer(handles_nested), 0, 0, ""), 18);
+        assert_eq!(
+            find_closing_brace(&lexer(handles_nested), 0, 0, "").unwrap(),
+            18
+        );
 
         // TODO expect error when not started on a brace
     }
@@ -2142,12 +2149,12 @@ const key = 'c'"#,
 |> close(%)"#,
         );
 
-        assert_eq!(is_call_expression(&tokens, 4), None);
-        assert_eq!(is_call_expression(&tokens, 6), Some(13));
-        assert_eq!(is_call_expression(&tokens, 15), None);
-        assert_eq!(is_call_expression(&tokens, 43), None);
-        assert_eq!(is_call_expression(&tokens, 60), None);
-        assert_eq!(is_call_expression(&tokens, 87), None);
+        assert_eq!(is_call_expression(&tokens, 4).unwrap(), None);
+        assert_eq!(is_call_expression(&tokens, 6).unwrap(), Some(13));
+        assert_eq!(is_call_expression(&tokens, 15).unwrap(), None);
+        assert_eq!(is_call_expression(&tokens, 43).unwrap(), None);
+        assert_eq!(is_call_expression(&tokens, 60).unwrap(), None);
+        assert_eq!(is_call_expression(&tokens, 87).unwrap(), None);
     }
 
     #[test]
@@ -2162,7 +2169,7 @@ const key = 'c'"#,
 |> close(%)"#,
         );
         assert_eq!(
-            find_next_declaration_keyword(&tokens, 4),
+            find_next_declaration_keyword(&tokens, 4).unwrap(),
             TokenReturn {
                 token: None,
                 index: 92,
@@ -2175,7 +2182,7 @@ const newVar = myVar + 1
 "#,
         );
         assert_eq!(
-            find_next_declaration_keyword(&tokens, 6),
+            find_next_declaration_keyword(&tokens, 6).unwrap(),
             TokenReturn {
                 token: Some(Token {
                     token_type: TokenType::Word,
@@ -2187,7 +2194,7 @@ const newVar = myVar + 1
             }
         );
         assert_eq!(
-            find_next_declaration_keyword(&tokens, 14),
+            find_next_declaration_keyword(&tokens, 14).unwrap(),
             TokenReturn {
                 token: None,
                 index: 19,
@@ -2203,7 +2210,7 @@ const newVar = myVar + 1
 "#;
         let tokens = lexer(code);
         assert_eq!(
-            has_pipe_operator(&tokens, 0, None),
+            has_pipe_operator(&tokens, 0, None).unwrap(),
             TokenReturnWithNonCode {
                 token: Some(Token {
                     token_type: TokenType::Operator,
@@ -2225,7 +2232,7 @@ const newVar = myVar + 1
 "#;
         let tokens = lexer(code);
         assert_eq!(
-            has_pipe_operator(&tokens, 0, None),
+            has_pipe_operator(&tokens, 0, None).unwrap(),
             TokenReturnWithNonCode {
                 token: Some(Token {
                     token_type: TokenType::Operator,
@@ -2250,7 +2257,7 @@ const yo = myFunc(9()
 "#;
         let tokens = lexer(code);
         assert_eq!(
-            has_pipe_operator(&tokens, 0, None),
+            has_pipe_operator(&tokens, 0, None).unwrap(),
             TokenReturnWithNonCode {
                 token: None,
                 index: 16,
@@ -2261,7 +2268,7 @@ const yo = myFunc(9()
         let code = "const myVar2 = 5 + 1 |> myFn(%)";
         let tokens = lexer(code);
         assert_eq!(
-            has_pipe_operator(&tokens, 1, None),
+            has_pipe_operator(&tokens, 1, None).unwrap(),
             TokenReturnWithNonCode {
                 token: Some(Token {
                     token_type: TokenType::Operator,
@@ -2298,7 +2305,7 @@ show(mySk1)"#;
             .0;
         // expect to return None,
         assert_eq!(
-            has_pipe_operator(&tokens, token_with_line_to_index_for_var_dec_index, None),
+            has_pipe_operator(&tokens, token_with_line_to_index_for_var_dec_index, None).unwrap(),
             TokenReturnWithNonCode {
                 token: None,
                 index: 27,
@@ -2308,7 +2315,7 @@ show(mySk1)"#;
 
         let brace_token_index = tokens.iter().position(|token| token.value == "{").unwrap();
         assert_eq!(
-            has_pipe_operator(&tokens, brace_token_index, None),
+            has_pipe_operator(&tokens, brace_token_index, None).unwrap(),
             TokenReturnWithNonCode {
                 token: Some(Token {
                     token_type: TokenType::Operator,
@@ -2370,50 +2377,50 @@ show(mySk1)"#;
     fn test_find_end_of_binary_expression() {
         let code = "1 + 2 * 3\nconst yo = 5";
         let tokens = lexer(code);
-        let end = find_end_of_binary_expression(&tokens, 0);
+        let end = find_end_of_binary_expression(&tokens, 0).unwrap();
         assert_eq!(tokens[end].value, "3");
 
         let code = "(1 + 25) / 5 - 3\nconst yo = 5";
         let tokens = lexer(code);
-        let end = find_end_of_binary_expression(&tokens, 0);
+        let end = find_end_of_binary_expression(&tokens, 0).unwrap();
         assert_eq!(tokens[end].value, "3");
         let index_of_5 = code.find('5').unwrap();
-        let end_starting_at_the_5 = find_end_of_binary_expression(&tokens, index_of_5);
+        let end_starting_at_the_5 = find_end_of_binary_expression(&tokens, index_of_5).unwrap();
         assert_eq!(end_starting_at_the_5, end);
         // whole thing wraped
         let code = "((1 + 2) / 5 - 3)\nconst yo = 5";
         let tokens = lexer(code);
-        let end = find_end_of_binary_expression(&tokens, 0);
+        let end = find_end_of_binary_expression(&tokens, 0).unwrap();
         assert_eq!(tokens[end].end, code.find("3)").unwrap() + 2);
         // whole thing wraped but given index after the first brace
         let code = "((1 + 2) / 5 - 3)\nconst yo = 5";
         let tokens = lexer(code);
-        let end = find_end_of_binary_expression(&tokens, 1);
+        let end = find_end_of_binary_expression(&tokens, 1).unwrap();
         assert_eq!(tokens[end].value, "3");
         // given the index of a small wrapped section i.e. `1 + 2` in ((1 + 2) / 5 - 3)'
         let code = "((1 + 2) / 5 - 3)\nconst yo = 5";
         let tokens = lexer(code);
-        let end = find_end_of_binary_expression(&tokens, 2);
+        let end = find_end_of_binary_expression(&tokens, 2).unwrap();
         assert_eq!(tokens[end].value, "2");
         // lots of silly nesting
         let code = "(1 + 2) / (5 - (3))\nconst yo = 5";
         let tokens = lexer(code);
-        let end = find_end_of_binary_expression(&tokens, 0);
+        let end = find_end_of_binary_expression(&tokens, 0).unwrap();
         assert_eq!(tokens[end].end, code.find("))").unwrap() + 2);
         // with pipe operator at the end
         let code = "(1 + 2) / (5 - (3))\n  |> fn(%)";
         let tokens = lexer(code);
-        let end = find_end_of_binary_expression(&tokens, 0);
+        let end = find_end_of_binary_expression(&tokens, 0).unwrap();
         assert_eq!(tokens[end].end, code.find("))").unwrap() + 2);
         // with call expression at the start of binary expression
         let code = "yo(2) + 3\n  |> fn(%)";
         let tokens = lexer(code);
-        let end = find_end_of_binary_expression(&tokens, 0);
+        let end = find_end_of_binary_expression(&tokens, 0).unwrap();
         assert_eq!(tokens[end].value, "3");
         // with call expression at the end of binary expression
         let code = "3 + yo(2)\n  |> fn(%)";
         let tokens = lexer(code);
-        let _end = find_end_of_binary_expression(&tokens, 0);
+        let _end = find_end_of_binary_expression(&tokens, 0).unwrap();
     }
 
     #[test]
