@@ -28,6 +28,15 @@ pub fn make_literal(tokens: &[Token], index: usize) -> Result<Literal, KclError>
     let value = if token.token_type == TokenType::Number {
         if let Ok(value) = token.value.parse::<i64>() {
             serde_json::Value::Number(value.into())
+        } else if let Ok(value) = token.value.parse::<f64>() {
+            if let Some(n) = serde_json::Number::from_f64(value) {
+                serde_json::Value::Number(n)
+            } else {
+                return Err(KclError::Syntax(KclErrorDetails {
+                    source_ranges: vec![[token.start as i32, token.end as i32]],
+                    message: format!("Invalid float: {}", token.value),
+                }));
+            }
         } else {
             return Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: vec![[token.start as i32, token.end as i32]],

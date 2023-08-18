@@ -227,6 +227,18 @@ fn build_tree(
                 value: if current_token.token_type == TokenType::Number {
                     if let Ok(value) = current_token.value.parse::<i64>() {
                         serde_json::Value::Number(value.into())
+                    } else if let Ok(value) = current_token.value.parse::<f64>() {
+                        if let Some(n) = serde_json::Number::from_f64(value) {
+                            serde_json::Value::Number(n)
+                        } else {
+                            return Err(KclError::Syntax(KclErrorDetails {
+                                source_ranges: vec![[
+                                    current_token.start as i32,
+                                    current_token.end as i32,
+                                ]],
+                                message: format!("Invalid float: {}", current_token.value),
+                            }));
+                        }
                     } else {
                         return Err(KclError::Syntax(KclErrorDetails {
                             source_ranges: vec![[
