@@ -45,7 +45,27 @@ pub fn reverse_polish_notation(
                         .collect::<Vec<Token>>(),
                     operators,
                 );
+            } else {
+                return reverse_polish_notation(
+                    &tokens[1..].to_vec(),
+                    &previous_postfix
+                        .iter()
+                        .cloned()
+                        .chain(vec![current_token.clone()])
+                        .collect::<Vec<Token>>(),
+                    operators,
+                );
             }
+        } else {
+            return reverse_polish_notation(
+                &tokens[1..].to_vec(),
+                &previous_postfix
+                    .iter()
+                    .cloned()
+                    .chain(vec![current_token.clone()])
+                    .collect::<Vec<Token>>(),
+                operators,
+            );
         }
     } else if current_token.token_type == TokenType::Number
         || current_token.token_type == TokenType::Word
@@ -128,7 +148,10 @@ pub fn reverse_polish_notation(
 
     Err(KclError::Syntax(KclErrorDetails {
         source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
-        message: format!("Unexpected token: {}", current_token.value),
+        message: format!(
+            "Unexpected token: {} {:?}",
+            current_token.value, current_token.token_type
+        ),
     }))
 }
 
