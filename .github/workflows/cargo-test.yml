@@ -45,4 +45,4 @@ jobs:
         shell: bash
         run: |-
           cd "${{ matrix.dir }}"
-          cargo llvm-cov nextest --all-features --lcov --output-path lcov.info --test-threads=1 --no-fail-fast
+          cargo llvm-cov nextest --lcov --output-path lcov.info --test-threads=1 --no-fail-fast
