@@ -157,6 +157,10 @@ jobs:
             }' > last_update.json
             cat last_update.json
 
+      - uses: actions/upload-artifact@v3
+        with:
+          path: last_update.json
+
       - name: Authenticate to Google Cloud
         uses: 'google-github-actions/auth@v1.1.1'
         with:
@@ -173,7 +177,7 @@ jobs:
       - name: Upload test file to public bucket
         uses: google-github-actions/upload-cloud-storage@v1.0.3
         with:
-          path: to_delete
+          path: to_delete.txt
           destination: dl.kittycad.io/releases/modeling-app/test
 
 
