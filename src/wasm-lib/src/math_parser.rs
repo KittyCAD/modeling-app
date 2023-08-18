@@ -474,7 +474,7 @@ fn build_tree(
 }
 
 pub fn parse_expression(tokens: &[Token]) -> Result<BinaryExpression, KclError> {
-    let rpn = reverse_polish_notation(&tokens, &[], &[])?;
+    let rpn = reverse_polish_notation(tokens, &[], &[])?;
     let tree_with_maybe_bad_top_level_start_end = build_tree(&rpn, vec![])?;
     let left_start = match tree_with_maybe_bad_top_level_start_end.clone().left {
         BinaryPart::BinaryExpression(bin_exp) => bin_exp.start,

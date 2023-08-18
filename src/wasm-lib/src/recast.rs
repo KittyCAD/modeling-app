@@ -69,7 +69,7 @@ fn recast_binary_part(part: BinaryPart) -> String {
             recast_binary_expression(*binary_expression)
         }
         BinaryPart::CallExpression(call_expression) => {
-            recast_call_expression(&call_expression, String::new(), false)
+            recast_call_expression(&call_expression, "", false)
         }
         _ => String::new(),
     }
@@ -81,16 +81,16 @@ fn recast_value(node: Value, _indentation: String, is_in_pipe_expression: bool) 
         Value::BinaryExpression(bin_exp) => recast_binary_expression(*bin_exp),
         Value::ArrayExpression(array_exp) => recast_array_expression(&array_exp, &indentation),
         Value::ObjectExpression(ref obj_exp) => {
-            recast_object_expression(obj_exp, indentation, is_in_pipe_expression)
+            recast_object_expression(obj_exp, &indentation, is_in_pipe_expression)
         }
         Value::MemberExpression(mem_exp) => recast_member_expression(*mem_exp),
         Value::Literal(literal) => recast_literal(*literal),
         Value::FunctionExpression(func_exp) => recast_function(*func_exp),
         Value::CallExpression(call_exp) => {
-            recast_call_expression(&call_exp, indentation, is_in_pipe_expression)
+            recast_call_expression(&call_exp, &indentation, is_in_pipe_expression)
         }
         Value::Identifier(ident) => ident.name,
-        Value::PipeExpression(pipe_exp) => recast_pipe_expression(*pipe_exp),
+        Value::PipeExpression(pipe_exp) => recast_pipe_expression(&pipe_exp),
         Value::UnaryExpression(unary_exp) => recast_unary_expression(*unary_exp),
         _ => String::new(),
     }
@@ -127,7 +127,7 @@ fn recast_array_expression(expression: &ArrayExpression, indentation: &str) -> S
 
 fn recast_object_expression(
     expression: &ObjectExpression,
-    indentation: String,
+    indentation: &str,
     is_in_pipe_expression: bool,
 ) -> String {
     let flat_recast = format!(
@@ -147,7 +147,7 @@ fn recast_object_expression(
     );
     let max_array_length = 40;
     if flat_recast.len() > max_array_length {
-        let _indentation = indentation + "  ";
+        let _indentation = indentation.to_owned() + "  ";
         format!(
             "{{\n{}{}\n{}}}",
             _indentation,
@@ -176,7 +176,7 @@ fn recast_object_expression(
 
 fn recast_call_expression(
     expression: &CallExpression,
-    indentation: String,
+    indentation: &str,
     is_in_pipe_expression: bool,
 ) -> String {
     format!(
@@ -185,18 +185,18 @@ fn recast_call_expression(
         expression
             .arguments
             .iter()
-            .map(|arg| recast_argument(arg.clone(), indentation.clone(), is_in_pipe_expression))
+            .map(|arg| recast_argument(arg.clone(), indentation, is_in_pipe_expression))
             .collect::<Vec<String>>()
             .join(", ")
     )
 }
 
-fn recast_argument(argument: Value, indentation: String, is_in_pipe_expression: bool) -> String {
+fn recast_argument(argument: Value, indentation: &str, is_in_pipe_expression: bool) -> String {
     match argument {
         Value::Literal(literal) => recast_literal(*literal),
         Value::Identifier(identifier) => identifier.name,
         Value::BinaryExpression(binary_exp) => recast_binary_expression(*binary_exp),
-        Value::ArrayExpression(array_exp) => recast_array_expression(&array_exp, &indentation),
+        Value::ArrayExpression(array_exp) => recast_array_expression(&array_exp, indentation),
         Value::ObjectExpression(object_exp) => {
             recast_object_expression(&object_exp, indentation, is_in_pipe_expression)
         }
@@ -230,7 +230,7 @@ fn recast_member_expression(expression: MemberExpression) -> String {
     }
 }
 
-fn recast_pipe_expression(expression: PipeExpression) -> String {
+fn recast_pipe_expression(expression: &PipeExpression) -> String {
     expression
         .body
         .iter()
@@ -275,7 +275,7 @@ fn recast_unary_expression(expression: UnaryExpression) -> String {
     )
 }
 
-pub fn recast(ast: Program, indentation: String, is_with_block: bool) -> String {
+pub fn recast(ast: &Program, indentation: &str, is_with_block: bool) -> String {
     ast.body
         .iter()
         .map(|statement| match statement.clone() {
@@ -288,10 +288,10 @@ pub fn recast(ast: Program, indentation: String, is_with_block: bool) -> String 
                         recast_array_expression(&array_expression, "")
                     }
                     Value::ObjectExpression(object_expression) => {
-                        recast_object_expression(&object_expression, String::new(), false)
+                        recast_object_expression(&object_expression, "", false)
                     }
                     Value::CallExpression(call_expression) => {
-                        recast_call_expression(&call_expression, String::new(), false)
+                        recast_call_expression(&call_expression, "", false)
                     }
                     _ => "Expression".to_string(),
                 }
@@ -311,7 +311,7 @@ pub fn recast(ast: Program, indentation: String, is_with_block: bool) -> String 
             BodyItem::ReturnStatement(return_statement) => {
                 format!(
                     "return {}",
-                    recast_argument(return_statement.argument, String::new(), false)
+                    recast_argument(return_statement.argument, "", false)
                 )
             }
         })
@@ -338,17 +338,17 @@ pub fn recast(ast: Program, indentation: String, is_with_block: bool) -> String 
                 if is_legit_custom_whitespace_or_comment(last_white_space_or_comment) {
                     String::new()
                 } else {
-                    indentation.clone()
+                    indentation.to_owned()
                 };
             if index == 0 {
                 if let Some(start) = ast.non_code_meta.start.clone() {
                     start_string = start.value;
                 } else {
-                    start_string = indentation.clone();
+                    start_string = indentation.to_owned();
                 }
             }
             if start_string.ends_with('\n') {
-                start_string += indentation.as_str();
+                start_string += indentation;
             }
 
             // determine the value of endString
@@ -388,13 +388,13 @@ pub fn recast_function(expression: FunctionExpression) -> String {
             .collect::<Vec<String>>()
             .join(", "),
         recast(
-            Program {
+            &Program {
                 start: expression.body.start,
                 end: expression.body.start,
                 body: expression.body.body,
                 non_code_meta: expression.body.non_code_meta
             },
-            String::new(),
+            "",
             true
         )
     )
@@ -415,6 +415,6 @@ pub fn recast_js(json_str: &str) -> Result<JsValue, JsError> {
     // deserialize the ast from a stringified json
     let program: Program = serde_json::from_str(json_str).map_err(JsError::from)?;
 
-    let result = recast(program, String::new(), false);
+    let result = recast(&program, "", false);
     Ok(serde_wasm_bindgen::to_value(&result)?)
 }
