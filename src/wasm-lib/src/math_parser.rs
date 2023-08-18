@@ -27,7 +27,7 @@ pub fn reverse_polish_notation(
         return Ok(previous_postfix
             .iter()
             .cloned()
-            .chain(operators.iter().cloned())
+            .chain(operators.iter().cloned().rev())
             .collect());
     }
     let current_token = &tokens[0];
