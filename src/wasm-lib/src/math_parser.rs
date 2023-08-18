@@ -33,10 +33,10 @@ pub fn reverse_polish_notation(
     let current_token = &tokens[0];
     let next = tokens.get(1);
     if current_token.token_type == TokenType::Word {
-        if let Some(next) = next {
+        return if let Some(next) = next {
             if next.token_type == TokenType::Brace && next.value == "(" {
                 let closing_brace = find_closing_brace(tokens, 1, 0, "")?;
-                return reverse_polish_notation(
+                reverse_polish_notation(
                     &tokens[closing_brace + 1..].to_vec(),
                     &previous_postfix
                         .iter()
@@ -44,9 +44,9 @@ pub fn reverse_polish_notation(
                         .chain(tokens[0..closing_brace + 1].iter().cloned())
                         .collect::<Vec<Token>>(),
                     operators,
-                );
+                )
             } else {
-                return reverse_polish_notation(
+                reverse_polish_notation(
                     &tokens[1..].to_vec(),
                     &previous_postfix
                         .iter()
@@ -54,10 +54,10 @@ pub fn reverse_polish_notation(
                         .chain(vec![current_token.clone()])
                         .collect::<Vec<Token>>(),
                     operators,
-                );
+                )
             }
         } else {
-            return reverse_polish_notation(
+            reverse_polish_notation(
                 &tokens[1..].to_vec(),
                 &previous_postfix
                     .iter()
@@ -65,8 +65,8 @@ pub fn reverse_polish_notation(
                     .chain(vec![current_token.clone()])
                     .collect::<Vec<Token>>(),
                 operators,
-            );
-        }
+            )
+        };
     } else if current_token.token_type == TokenType::Number
         || current_token.token_type == TokenType::Word
         || current_token.token_type == TokenType::String
