@@ -69,7 +69,7 @@ fn recast_binary_part(part: BinaryPart) -> String {
             recast_binary_expression(*binary_expression)
         }
         BinaryPart::CallExpression(call_expression) => {
-            recast_call_expression(*call_expression, String::new(), false)
+            recast_call_expression(&call_expression, String::new(), false)
         }
         _ => String::new(),
     }
@@ -79,15 +79,15 @@ fn recast_value(node: Value, _indentation: String, is_in_pipe_expression: bool) 
     let indentation = _indentation + if is_in_pipe_expression { "  " } else { "" };
     match node {
         Value::BinaryExpression(bin_exp) => recast_binary_expression(*bin_exp),
-        Value::ArrayExpression(array_exp) => recast_array_expression(*array_exp, indentation),
-        Value::ObjectExpression(obj_exp) => {
-            recast_object_expression(*obj_exp, indentation, is_in_pipe_expression)
+        Value::ArrayExpression(array_exp) => recast_array_expression(&array_exp, &indentation),
+        Value::ObjectExpression(ref obj_exp) => {
+            recast_object_expression(obj_exp, indentation, is_in_pipe_expression)
         }
         Value::MemberExpression(mem_exp) => recast_member_expression(*mem_exp),
         Value::Literal(literal) => recast_literal(*literal),
         Value::FunctionExpression(func_exp) => recast_function(*func_exp),
         Value::CallExpression(call_exp) => {
-            recast_call_expression(*call_exp, indentation, is_in_pipe_expression)
+            recast_call_expression(&call_exp, indentation, is_in_pipe_expression)
         }
         Value::Identifier(ident) => ident.name,
         Value::PipeExpression(pipe_exp) => recast_pipe_expression(*pipe_exp),
@@ -96,7 +96,7 @@ fn recast_value(node: Value, _indentation: String, is_in_pipe_expression: bool) 
     }
 }
 
-fn recast_array_expression(expression: ArrayExpression, indentation: String) -> String {
+fn recast_array_expression(expression: &ArrayExpression, indentation: &str) -> String {
     let flat_recast = format!(
         "[{}]",
         expression
@@ -108,7 +108,7 @@ fn recast_array_expression(expression: ArrayExpression, indentation: String) -> 
     );
     let max_array_length = 40;
     if flat_recast.len() > max_array_length {
-        let _indentation = indentation.clone() + "  ";
+        let _indentation = indentation.to_string() + "  ";
         format!(
             "[\n{}{}\n{}]",
             _indentation,
@@ -126,7 +126,7 @@ fn recast_array_expression(expression: ArrayExpression, indentation: String) -> 
 }
 
 fn recast_object_expression(
-    expression: ObjectExpression,
+    expression: &ObjectExpression,
     indentation: String,
     is_in_pipe_expression: bool,
 ) -> String {
@@ -175,7 +175,7 @@ fn recast_object_expression(
 }
 
 fn recast_call_expression(
-    expression: CallExpression,
+    expression: &CallExpression,
     indentation: String,
     is_in_pipe_expression: bool,
 ) -> String {
@@ -196,12 +196,12 @@ fn recast_argument(argument: Value, indentation: String, is_in_pipe_expression: 
         Value::Literal(literal) => recast_literal(*literal),
         Value::Identifier(identifier) => identifier.name,
         Value::BinaryExpression(binary_exp) => recast_binary_expression(*binary_exp),
-        Value::ArrayExpression(array_exp) => recast_array_expression(*array_exp, indentation),
+        Value::ArrayExpression(array_exp) => recast_array_expression(&array_exp, &indentation),
         Value::ObjectExpression(object_exp) => {
-            recast_object_expression(*object_exp, indentation, is_in_pipe_expression)
+            recast_object_expression(&object_exp, indentation, is_in_pipe_expression)
         }
         Value::CallExpression(call_exp) => {
-            recast_call_expression(*call_exp, indentation, is_in_pipe_expression)
+            recast_call_expression(&call_exp, indentation, is_in_pipe_expression)
         }
         Value::FunctionExpression(function_exp) => recast_function(*function_exp),
         Value::PipeSubstitution(_) => "%".to_string(),
@@ -285,13 +285,13 @@ pub fn recast(ast: Program, indentation: String, is_with_block: bool) -> String 
                         recast_binary_expression(*binary_expression)
                     }
                     Value::ArrayExpression(array_expression) => {
-                        recast_array_expression(*array_expression, String::new())
+                        recast_array_expression(&array_expression, "")
                     }
                     Value::ObjectExpression(object_expression) => {
-                        recast_object_expression(*object_expression, String::new(), false)
+                        recast_object_expression(&object_expression, String::new(), false)
                     }
                     Value::CallExpression(call_expression) => {
-                        recast_call_expression(*call_expression, String::new(), false)
+                        recast_call_expression(&call_expression, String::new(), false)
                     }
                     _ => "Expression".to_string(),
                 }

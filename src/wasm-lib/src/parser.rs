@@ -64,7 +64,7 @@ pub fn is_not_code_token(token: &Token) -> bool {
         || token.token_type == TokenType::BlockComment
 }
 
-fn find_end_of_non_code_node(tokens: &Vec<Token>, index: usize) -> usize {
+fn find_end_of_non_code_node(tokens: &[Token], index: usize) -> usize {
     if index == tokens.len() {
         return index;
     }
@@ -75,7 +75,7 @@ fn find_end_of_non_code_node(tokens: &Vec<Token>, index: usize) -> usize {
     index
 }
 
-fn make_none_code_node(tokens: &Vec<Token>, index: usize) -> (Option<NoneCodeNode>, usize) {
+fn make_none_code_node(tokens: &[Token], index: usize) -> (Option<NoneCodeNode>, usize) {
     let current_token = &tokens[index];
     let end_index = if index == tokens.len() {
         index
@@ -110,7 +110,7 @@ struct TokenReturnWithNonCode {
 }
 
 fn next_meaningful_token(
-    tokens: &Vec<Token>,
+    tokens: &[Token],
     index: usize,
     offset: Option<usize>,
 ) -> TokenReturnWithNonCode {
@@ -206,10 +206,7 @@ fn is_call_expression(tokens: &[Token], index: usize) -> Result<Option<usize>, K
     Ok(None)
 }
 
-fn find_next_declaration_keyword(
-    tokens: &Vec<Token>,
-    index: usize,
-) -> Result<TokenReturn, KclError> {
+fn find_next_declaration_keyword(tokens: &[Token], index: usize) -> Result<TokenReturn, KclError> {
     if index >= tokens.len() - 1 {
         return Ok(TokenReturn {
             token: None,
@@ -250,7 +247,7 @@ fn find_next_declaration_keyword(
 }
 
 fn has_pipe_operator(
-    tokens: &Vec<Token>,
+    tokens: &[Token],
     index: usize,
     _limit_index: Option<usize>,
 ) -> Result<TokenReturnWithNonCode, KclError> {
@@ -327,7 +324,7 @@ fn has_pipe_operator(
 }
 
 fn collect_object_keys(
-    tokens: &Vec<Token>,
+    tokens: &[Token],
     index: usize,
     _previous_keys: Option<Vec<ObjectKeyInfo>>,
 ) -> Result<Vec<ObjectKeyInfo>, KclError> {
@@ -404,7 +401,7 @@ pub struct MemberExpressionReturn {
 }
 
 fn make_member_expression(
-    tokens: &Vec<Token>,
+    tokens: &[Token],
     index: usize,
 ) -> Result<MemberExpressionReturn, KclError> {
     let current_token = tokens[index].clone();
@@ -435,7 +432,7 @@ fn make_member_expression(
     })
 }
 
-fn find_end_of_binary_expression(tokens: &Vec<Token>, index: usize) -> Result<usize, KclError> {
+fn find_end_of_binary_expression(tokens: &[Token], index: usize) -> Result<usize, KclError> {
     let current_token = tokens[index].clone();
     if current_token.token_type == TokenType::Brace && current_token.value == "(" {
         let closing_parenthesis = find_closing_brace(tokens, index, 0, "")?;
@@ -491,7 +488,7 @@ struct ValueReturn {
     last_index: usize,
 }
 
-fn make_value(tokens: &Vec<Token>, index: usize) -> Result<ValueReturn, KclError> {
+fn make_value(tokens: &[Token], index: usize) -> Result<ValueReturn, KclError> {
     let current_token = &tokens[index];
     let next = next_meaningful_token(tokens, index, None);
     if let Some(next_token) = &next.token {
@@ -629,7 +626,7 @@ struct ArrayElementsReturn {
 }
 
 fn make_array_elements(
-    tokens: &Vec<Token>,
+    tokens: &[Token],
     index: usize,
     previous_elements: Vec<Value>,
 ) -> Result<ArrayElementsReturn, KclError> {
@@ -680,7 +677,7 @@ struct ArrayReturn {
     last_index: usize,
 }
 
-fn make_array_expression(tokens: &Vec<Token>, index: usize) -> Result<ArrayReturn, KclError> {
+fn make_array_expression(tokens: &[Token], index: usize) -> Result<ArrayReturn, KclError> {
     let opening_brace_token = &tokens[index];
     let first_element_token = next_meaningful_token(tokens, index, None);
     let array_elements = make_array_elements(tokens, first_element_token.index, Vec::new())?;
@@ -701,7 +698,7 @@ struct PipeBodyReturn {
 }
 
 fn make_pipe_body(
-    tokens: &Vec<Token>,
+    tokens: &[Token],
     index: usize,
     previous_values: Vec<Value>,
     previous_non_code_meta: Option<NoneCodeMeta>,
@@ -765,7 +762,7 @@ struct BinaryExpressionReturn {
 }
 
 fn make_binary_expression(
-    tokens: &Vec<Token>,
+    tokens: &[Token],
     index: usize,
 ) -> Result<BinaryExpressionReturn, KclError> {
     let end_index = find_end_of_binary_expression(tokens, index)?;
@@ -782,7 +779,7 @@ struct ArgumentsReturn {
 }
 
 fn make_arguments(
-    tokens: &Vec<Token>,
+    tokens: &[Token],
     index: usize,
     previous_args: Vec<Value>,
 ) -> Result<ArgumentsReturn, KclError> {
@@ -964,7 +961,7 @@ pub struct CallExpressionResult {
 }
 
 pub fn make_call_expression(
-    tokens: &Vec<Token>,
+    tokens: &[Token],
     index: usize,
 ) -> Result<CallExpressionResult, KclError> {
     let current_token = tokens[index].clone();
@@ -989,10 +986,7 @@ struct PipeExpressionResult {
     last_index: usize,
 }
 
-fn make_pipe_expression(
-    tokens: &Vec<Token>,
-    index: usize,
-) -> Result<PipeExpressionResult, KclError> {
+fn make_pipe_expression(tokens: &[Token], index: usize) -> Result<PipeExpressionResult, KclError> {
     let current_token = tokens[index].clone();
     let pipe_body_result = make_pipe_body(tokens, index, vec![], None)?;
     let end_token = tokens[pipe_body_result.last_index].clone();
@@ -1013,7 +1007,7 @@ struct VariableDeclaratorsReturn {
 }
 
 fn make_variable_declarators(
-    tokens: &Vec<Token>,
+    tokens: &[Token],
     index: usize,
     previous_declarators: Vec<VariableDeclarator>,
 ) -> Result<VariableDeclaratorsReturn, KclError> {
@@ -1063,7 +1057,7 @@ struct VariableDeclarationResult {
 }
 
 fn make_variable_declaration(
-    tokens: &Vec<Token>,
+    tokens: &[Token],
     index: usize,
 ) -> Result<VariableDeclarationResult, KclError> {
     let current_token = tokens[index].clone();
@@ -1095,7 +1089,7 @@ pub struct ParamsResult {
 }
 
 fn make_params(
-    tokens: &Vec<Token>,
+    tokens: &[Token],
     index: usize,
     previous_params: Vec<Identifier>,
 ) -> Result<ParamsResult, KclError> {
@@ -1134,7 +1128,7 @@ struct UnaryExpressionResult {
 }
 
 fn make_unary_expression(
-    tokens: &Vec<Token>,
+    tokens: &[Token],
     index: usize,
 ) -> Result<UnaryExpressionResult, KclError> {
     let current_token = &tokens[index];
@@ -1181,7 +1175,7 @@ struct ExpressionStatementResult {
 }
 
 fn make_expression_statement(
-    tokens: &Vec<Token>,
+    tokens: &[Token],
     index: usize,
 ) -> Result<ExpressionStatementResult, KclError> {
     let current_token = &tokens[index];
@@ -1223,7 +1217,7 @@ struct ObjectPropertiesResult {
 }
 
 fn make_object_properties(
-    tokens: &Vec<Token>,
+    tokens: &[Token],
     index: usize,
     previous_properties: Vec<ObjectProperty>,
 ) -> Result<ObjectPropertiesResult, KclError> {
@@ -1287,7 +1281,7 @@ struct ObjectExpressionResult {
 }
 
 fn make_object_expression(
-    tokens: &Vec<Token>,
+    tokens: &[Token],
     index: usize,
 ) -> Result<ObjectExpressionResult, KclError> {
     let opening_brace_token = &tokens[index];
@@ -1309,7 +1303,7 @@ struct ReturnStatementResult {
 }
 
 fn make_return_statement(
-    tokens: &Vec<Token>,
+    tokens: &[Token],
     index: usize,
 ) -> Result<ReturnStatementResult, KclError> {
     let current_token = &tokens[index];
@@ -1334,7 +1328,7 @@ struct BodyResult {
 }
 
 fn make_body(
-    tokens: &Vec<Token>,
+    tokens: &[Token],
     token_index: usize,
     previous_body: Vec<BodyItem>,
     previous_non_code_meta: NoneCodeMeta,
@@ -1486,10 +1480,7 @@ struct BlockStatementResult {
     last_index: usize,
 }
 
-fn make_block_statement(
-    tokens: &Vec<Token>,
-    index: usize,
-) -> Result<BlockStatementResult, KclError> {
+fn make_block_statement(tokens: &[Token], index: usize) -> Result<BlockStatementResult, KclError> {
     let opening_curly = tokens[index].clone();
     let next_token = &tokens[index + 1];
     let next_token_index = index + 1;
@@ -1530,7 +1521,7 @@ struct FunctionExpressionResult {
 }
 
 fn make_function_expression(
-    tokens: &Vec<Token>,
+    tokens: &[Token],
     index: usize,
 ) -> Result<FunctionExpressionResult, KclError> {
     let current_token = &tokens[index];
@@ -1551,7 +1542,7 @@ fn make_function_expression(
     })
 }
 
-pub fn abstract_syntax_tree(tokens: &Vec<Token>) -> Result<Program, KclError> {
+pub fn abstract_syntax_tree(tokens: &[Token]) -> Result<Program, KclError> {
     let body = make_body(
         tokens,
         0,

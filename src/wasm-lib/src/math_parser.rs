@@ -19,9 +19,9 @@ pub fn precedence(operator: &str) -> u8 {
 }
 
 pub fn reverse_polish_notation(
-    tokens: &Vec<Token>,
-    previous_postfix: &Vec<Token>,
-    operators: &Vec<Token>,
+    tokens: &[Token],
+    previous_postfix: &[Token],
+    operators: &[Token],
 ) -> Result<Vec<Token>, KclError> {
     if tokens.is_empty() {
         return Ok(previous_postfix
@@ -37,7 +37,7 @@ pub fn reverse_polish_notation(
             if next.token_type == TokenType::Brace && next.value == "(" {
                 let closing_brace = find_closing_brace(tokens, 1, 0, "")?;
                 reverse_polish_notation(
-                    &tokens[closing_brace + 1..].to_vec(),
+                    &tokens[closing_brace + 1..],
                     &previous_postfix
                         .iter()
                         .cloned()
@@ -47,7 +47,7 @@ pub fn reverse_polish_notation(
                 )
             } else {
                 reverse_polish_notation(
-                    &tokens[1..].to_vec(),
+                    &tokens[1..],
                     &previous_postfix
                         .iter()
                         .cloned()
@@ -58,7 +58,7 @@ pub fn reverse_polish_notation(
             }
         } else {
             reverse_polish_notation(
-                &tokens[1..].to_vec(),
+                &tokens[1..],
                 &previous_postfix
                     .iter()
                     .cloned()
@@ -72,7 +72,7 @@ pub fn reverse_polish_notation(
         || current_token.token_type == TokenType::String
     {
         return reverse_polish_notation(
-            &tokens[1..].to_vec(),
+            &tokens[1..],
             &previous_postfix
                 .iter()
                 .cloned()
@@ -91,11 +91,11 @@ pub fn reverse_polish_notation(
                     .cloned()
                     .chain(vec![operators[operators.len() - 1].clone()])
                     .collect::<Vec<Token>>(),
-                &operators[0..operators.len() - 1].to_vec(),
+                &operators[0..operators.len() - 1],
             );
         }
         return reverse_polish_notation(
-            &tokens[1..].to_vec(),
+            &tokens[1..],
             previous_postfix,
             &operators
                 .iter()
@@ -107,7 +107,7 @@ pub fn reverse_polish_notation(
         // push current token to both stacks as it is a legitimate operator
         // but later we'll need to pop other operators off the stack until we find the matching ')'
         return reverse_polish_notation(
-            &tokens[1..].to_vec(),
+            &tokens[1..],
             &previous_postfix
                 .iter()
                 .cloned()
@@ -129,21 +129,21 @@ pub fn reverse_polish_notation(
                     .cloned()
                     .chain(vec![operators[operators.len() - 1].clone()])
                     .collect::<Vec<Token>>(),
-                &operators[0..operators.len() - 1].to_vec(),
+                &operators[0..operators.len() - 1],
             );
         }
         return reverse_polish_notation(
-            &tokens[1..].to_vec(),
+            &tokens[1..],
             &previous_postfix
                 .iter()
                 .cloned()
                 .chain(vec![current_token.clone()])
                 .collect::<Vec<Token>>(),
-            &operators[0..operators.len() - 1].to_vec(),
+            &operators[0..operators.len() - 1],
         );
     }
     if is_not_code_token(current_token) {
-        return reverse_polish_notation(&tokens[1..].to_vec(), previous_postfix, operators);
+        return reverse_polish_notation(&tokens[1..], previous_postfix, operators);
     }
 
     Err(KclError::Syntax(KclErrorDetails {
@@ -215,7 +215,7 @@ pub enum MathExpression {
 }
 
 fn build_tree(
-    reverse_polish_notation_tokens: Vec<Token>,
+    reverse_polish_notation_tokens: &[Token],
     stack: Vec<MathExpression>,
 ) -> Result<BinaryExpression, KclError> {
     if reverse_polish_notation_tokens.is_empty() {
@@ -284,18 +284,18 @@ fn build_tree(
                 start_extended: None,
             },
         )));
-        return build_tree(reverse_polish_notation_tokens[1..].to_vec(), new_stack);
+        return build_tree(&reverse_polish_notation_tokens[1..], new_stack);
     } else if current_token.token_type == TokenType::Word {
         if reverse_polish_notation_tokens[1].token_type == TokenType::Brace
             && reverse_polish_notation_tokens[1].value == "("
         {
-            let closing_brace = find_closing_brace(&reverse_polish_notation_tokens, 1, 0, "")?;
+            let closing_brace = find_closing_brace(reverse_polish_notation_tokens, 1, 0, "")?;
             let mut new_stack = stack;
             new_stack.push(MathExpression::CallExpression(Box::new(
-                make_call_expression(&reverse_polish_notation_tokens, 0)?.expression,
+                make_call_expression(reverse_polish_notation_tokens, 0)?.expression,
             )));
             return build_tree(
-                reverse_polish_notation_tokens[closing_brace + 1..].to_vec(),
+                &reverse_polish_notation_tokens[closing_brace + 1..],
                 new_stack,
             );
         }
@@ -305,7 +305,7 @@ fn build_tree(
             start: current_token.start,
             end: current_token.end,
         })));
-        return build_tree(reverse_polish_notation_tokens[1..].to_vec(), new_stack);
+        return build_tree(&reverse_polish_notation_tokens[1..], new_stack);
     } else if current_token.token_type == TokenType::Brace && current_token.value == "(" {
         let mut new_stack = stack;
         new_stack.push(MathExpression::ParenthesisToken(Box::new(
@@ -316,7 +316,7 @@ fn build_tree(
                 token_type: MathTokenType::Parenthesis,
             },
         )));
-        return build_tree(reverse_polish_notation_tokens[1..].to_vec(), new_stack);
+        return build_tree(&reverse_polish_notation_tokens[1..], new_stack);
     } else if current_token.token_type == TokenType::Brace && current_token.value == ")" {
         let inner_node: MathExpression = match &stack[stack.len() - 1] {
             MathExpression::ExtendedBinaryExpression(bin_exp) => {
@@ -387,7 +387,7 @@ fn build_tree(
         };
         let mut new_stack = stack[0..stack.len() - 2].to_vec();
         new_stack.push(expression);
-        return build_tree(reverse_polish_notation_tokens[1..].to_vec(), new_stack);
+        return build_tree(&reverse_polish_notation_tokens[1..], new_stack);
     }
     let left: (BinaryPart, usize) = match &stack[stack.len() - 2] {
         MathExpression::ExtendedBinaryExpression(bin_exp) => (
@@ -470,12 +470,12 @@ fn build_tree(
     let mut new_stack = stack[0..stack.len() - 2].to_vec();
     new_stack.push(MathExpression::BinaryExpression(Box::new(tree)));
 
-    build_tree(reverse_polish_notation_tokens[1..].to_vec(), new_stack)
+    build_tree(&reverse_polish_notation_tokens[1..], new_stack)
 }
 
 pub fn parse_expression(tokens: Vec<Token>) -> Result<BinaryExpression, KclError> {
-    let rpn = reverse_polish_notation(&tokens, &vec![], &vec![])?;
-    let tree_with_maybe_bad_top_level_start_end = build_tree(rpn, vec![])?;
+    let rpn = reverse_polish_notation(&tokens, &[], &[])?;
+    let tree_with_maybe_bad_top_level_start_end = build_tree(&rpn, vec![])?;
     let left_start = match tree_with_maybe_bad_top_level_start_end.clone().left {
         BinaryPart::BinaryExpression(bin_exp) => bin_exp.start,
         BinaryPart::Literal(lit) => lit.start,
@@ -806,8 +806,7 @@ mod test {
 
     #[test]
     fn test_reverse_polish_notation_simple() {
-        let result =
-            reverse_polish_notation(&crate::tokeniser::lexer("1 + 2"), &vec![], &vec![]).unwrap();
+        let result = reverse_polish_notation(&crate::tokeniser::lexer("1 + 2"), &[], &[]).unwrap();
         assert_eq!(
             result,
             vec![
@@ -836,8 +835,7 @@ mod test {
     #[test]
     fn test_reverse_polish_notation_complex() {
         let result =
-            reverse_polish_notation(&crate::tokeniser::lexer("1 + 2 * 3"), &vec![], &vec![])
-                .unwrap();
+            reverse_polish_notation(&crate::tokeniser::lexer("1 + 2 * 3"), &[], &[]).unwrap();
         assert_eq!(
             result,
             vec![
@@ -878,8 +876,7 @@ mod test {
     #[test]
     fn test_reverse_polish_notation_complex_with_parentheses() {
         let result =
-            reverse_polish_notation(&crate::tokeniser::lexer("1 * ( 2 + 3 )"), &vec![], &vec![])
-                .unwrap();
+            reverse_polish_notation(&crate::tokeniser::lexer("1 * ( 2 + 3 )"), &[], &[]).unwrap();
         assert_eq!(
             result,
             vec![
@@ -1018,7 +1015,7 @@ mod test {
                 })),
             })),
         };
-        let output = build_tree(input_tokens, vec![]).unwrap();
+        let output = build_tree(&input_tokens, vec![]).unwrap();
         assert_eq!(output, expected_output);
     }
 }
