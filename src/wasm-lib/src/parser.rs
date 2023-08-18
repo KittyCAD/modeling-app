@@ -12,6 +12,7 @@ use crate::math_parser::parse_expression;
 use crate::tokeniser::lexer;
 use crate::tokeniser::{Token, TokenType};
 
+use gloo_utils::format::JsValueSerdeExt;
 use wasm_bindgen::prelude::*;
 
 fn make_identifier(tokens: &[Token], index: usize) -> Identifier {
@@ -1580,10 +1581,12 @@ extern "C" {
 }
 
 #[wasm_bindgen]
-pub fn parse_js(js: &str) -> Result<String, String> {
+pub fn parse_js(js: &str) -> Result<JsValue, String> {
     let tokens = lexer(js);
     let program = abstract_syntax_tree(&tokens).map_err(String::from)?;
-    serde_json::to_string(&program).map_err(|e| e.to_string())
+    // The  serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
+    // gloo-serialize crate instead.
+    JsValue::from_serde(&program).map_err(|e| e.to_string())
 }
 
 #[cfg(test)]
