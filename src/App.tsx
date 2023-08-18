@@ -89,6 +89,7 @@ export function App() {
     openPanes,
     setOpenPanes,
     onboardingStatus,
+    didDragInStream,
     setDidDragInStream,
     setStreamDimensions,
     streamDimensions,
@@ -130,6 +131,7 @@ export function App() {
     openPanes: s.openPanes,
     setOpenPanes: s.setOpenPanes,
     onboardingStatus: s.onboardingStatus,
+    didDragInStream: s.didDragInStream,
     setDidDragInStream: s.setDidDragInStream,
     setStreamDimensions: s.setStreamDimensions,
     streamDimensions: s.streamDimensions,
@@ -154,7 +156,7 @@ export function App() {
   const paneOpacity =
     onboardingStatus === 'camera'
       ? 'opacity-20'
-      : isMouseDownInStream
+      : didDragInStream
       ? 'opacity-40'
       : ''
 
