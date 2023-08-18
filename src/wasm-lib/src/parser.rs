@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::panic::{self};
 
 use crate::abstract_syntax_tree_types::{
     ArrayExpression, BinaryExpression, BinaryPart, BlockStatement, BodyItem, CallExpression,
@@ -1405,19 +1404,12 @@ extern "C" {
 }
 
 #[wasm_bindgen]
-pub fn parse_js(js: &str) -> String {
-    panic::set_hook(Box::new(console_error_panic_hook::hook));
+pub fn parse_js(js: &str) -> Result<JsValue, JsError> {
     let tokens = lexer(js);
-    let program = abstract_syntax_tree(&tokens);
-    let ast = serde_json::to_string(&program);
-    let ast_string = match ast {
-        Ok(ast) => ast,
-        Err(e) => {
-            log(e.to_string().as_str());
-            format!("Error: {}", e)
-        }
-    };
-    ast_string
+    let program = abstract_syntax_tree(&tokens).map_err(JsError::from)?;
+    serde_json::to_string(&program)
+        .map_err(JsError::from)
+        .map(|s| JsValue::from_str(&s))
 }
 
 #[cfg(test)]
@@ -2458,7 +2450,7 @@ show(mySk1)"#;
     #[test]
     fn test_make_call_expression() {
         let tokens = lexer("foo(\"a\", a, 3)");
-        let result = make_call_expression(&tokens, 0);
+        let result = make_call_expression(&tokens, 0).unwrap();
         assert_eq!(result.last_index, 9);
         assert_eq!(result.expression.start, 0);
         assert_eq!(result.expression.end, 14);
@@ -2496,7 +2488,7 @@ show(mySk1)"#;
   |> foo(myVar2, %)
   |> close(%)"#,
         );
-        let result = make_variable_declaration(&tokens, 0);
+        let result = make_variable_declaration(&tokens, 0).unwrap();
         assert_eq!(result.declaration.kind, "const");
         assert_eq!(result.declaration.declarations.len(), 1);
         assert_eq!(result.declaration.declarations[0].id.name, "yo");
@@ -2568,14 +2560,15 @@ show(mySk1)"#;
                 none_code_nodes: HashMap::new(),
                 start: None,
             },
-        );
+        )
+        .unwrap();
         assert_eq!(body.body.len(), 1);
     }
 
     #[test]
     fn test_abstract_syntax_tree() {
         let code = "5 +6";
-        let result = abstract_syntax_tree(&lexer(code));
+        let result = abstract_syntax_tree(&lexer(code)).unwrap();
         let expected_result = Program {
             start: 0,
             end: 4,
