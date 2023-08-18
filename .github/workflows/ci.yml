@@ -180,6 +180,7 @@ jobs:
         with:
           path: artifact
           glob: '**/*.gz'
+          parent: false
           destination: dl.kittycad.io/releases/modeling-app/test/v${{ env.VERSION_NO_V }} 
       
       - name: Upload release files to public bucket
@@ -187,6 +188,7 @@ jobs:
         with:
           path: artifact
           glob: '**/*.zip'
+          parent: false
           destination: dl.kittycad.io/releases/modeling-app/test/v${{ env.VERSION_NO_V }} 
       
       - name: Upload update endpoint to public bucket
