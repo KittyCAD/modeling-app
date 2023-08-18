@@ -153,10 +153,13 @@ pub fn find_closing_brace(
     if is_first_call {
         search_opening_brace = &current_token.value;
         if !["(", "{", "["].contains(&search_opening_brace) {
-            panic!(
-                "expected to be started on a opening brace ( {{ [, instead found '{}'",
-                search_opening_brace
-            );
+            return Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
+                message: format!(
+                    "expected to be started on a opening brace ( {{ [, instead found '{}'",
+                    search_opening_brace
+                ),
+            }));
         }
     }
     let found_closing_brace =
@@ -511,7 +514,7 @@ fn make_value(tokens: &Vec<Token>, index: usize) -> Result<ValueReturn, KclError
         });
     }
     if current_token.token_type == TokenType::Brace && current_token.value == "[" {
-        let array_expression = make_array_expression(tokens, index);
+        let array_expression = make_array_expression(tokens, index)?;
         return Ok(ValueReturn {
             value: Value::ArrayExpression(Box::new(array_expression.expression)),
             last_index: array_expression.last_index,
@@ -560,7 +563,10 @@ fn make_value(tokens: &Vec<Token>, index: usize) -> Result<ValueReturn, KclError
                 last_index: function_expression.last_index,
             });
         } else {
-            panic!("TODO - handle expression with braces");
+            return Err(KclError::Unimplemented(KclErrorDetails {
+                source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
+                message: "expression with braces".to_string(),
+            }));
         }
     }
 
@@ -572,7 +578,10 @@ fn make_value(tokens: &Vec<Token>, index: usize) -> Result<ValueReturn, KclError
         });
     }
 
-    panic!("TODO - handle value")
+    return Err(KclError::Unimplemented(KclErrorDetails {
+        source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
+        message: format!("expression with token type {:?}", current_token.token_type),
+    }));
 }
 
 struct ArrayElementsReturn {
@@ -584,13 +593,13 @@ fn make_array_elements(
     tokens: &Vec<Token>,
     index: usize,
     previous_elements: Vec<Value>,
-) -> ArrayElementsReturn {
+) -> Result<ArrayElementsReturn, KclError> {
     let first_element_token = &tokens[index];
     if first_element_token.token_type == TokenType::Brace && first_element_token.value == "]" {
-        return ArrayElementsReturn {
+        return Ok(ArrayElementsReturn {
             elements: previous_elements,
             last_index: index,
-        };
+        });
     }
     let current_element = make_value(tokens, index).unwrap();
     let next_token = next_meaningful_token(tokens, current_element.last_index, None);
@@ -599,7 +608,13 @@ fn make_array_elements(
         next_token_token.token_type == TokenType::Brace && next_token_token.value == "]";
     let is_comma = next_token_token.token_type == TokenType::Comma;
     if !is_closing_brace && !is_comma {
-        panic!("Expected a comma or closing brace");
+        return Err(KclError::Syntax(KclErrorDetails {
+            source_ranges: vec![[next_token_token.start as i32, next_token_token.end as i32]],
+            message: format!(
+                "Expected a comma or closing brace, found {:?}",
+                next_token_token.value
+            ),
+        }));
     }
     let next_call_index = if is_closing_brace {
         next_token.index
@@ -617,18 +632,18 @@ struct ArrayReturn {
     last_index: usize,
 }
 
-fn make_array_expression(tokens: &Vec<Token>, index: usize) -> ArrayReturn {
+fn make_array_expression(tokens: &Vec<Token>, index: usize) -> Result<ArrayReturn, KclError> {
     let opening_brace_token = &tokens[index];
     let first_element_token = next_meaningful_token(tokens, index, None);
-    let array_elements = make_array_elements(tokens, first_element_token.index, Vec::new());
-    ArrayReturn {
+    let array_elements = make_array_elements(tokens, first_element_token.index, Vec::new())?;
+    Ok(ArrayReturn {
         expression: ArrayExpression {
             start: opening_brace_token.start,
             end: tokens[array_elements.last_index].end,
             elements: array_elements.elements,
         },
         last_index: array_elements.last_index,
-    }
+    })
 }
 
 struct PipeBodyReturn {
@@ -733,7 +748,7 @@ fn make_arguments(
     let is_identifier_or_literal = next_brace_or_comma_token.token_type == TokenType::Comma
         || next_brace_or_comma_token.token_type == TokenType::Brace;
     if argument_token_token.token_type == TokenType::Brace && argument_token_token.value == "[" {
-        let array_expression = make_array_expression(tokens, argument_token.index);
+        let array_expression = make_array_expression(tokens, argument_token.index)?;
         let next_comma_or_brace_token_index =
             next_meaningful_token(tokens, array_expression.last_index, None).index;
         let mut _previous_args = previous_args;
@@ -2427,7 +2442,7 @@ show(mySk1)"#;
     fn test_make_array_expression() {
         // input_index: 6, output_index: 14, output: {"type":"ArrayExpression","start":11,"end":26,"elements":[{"type":"Literal","start":12,"end":15,"value":"1","raw":"\"1\""},{"type":"Literal","start":17,"end":18,"value":2,"raw":"2"},{"type":"Identifier","start":20,"end":25,"name":"three"}]}
         let tokens = lexer("const yo = [\"1\", 2, three]");
-        let array_expression = make_array_expression(&tokens, 6);
+        let array_expression = make_array_expression(&tokens, 6).unwrap();
         let expression = array_expression.expression;
         assert_eq!(array_expression.last_index, 14);
         assert_eq!(expression.start, 11);
