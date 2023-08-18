@@ -213,24 +213,25 @@ fn find_next_declaration_keyword(
             index: tokens.len() - 1,
         });
     }
-    let token_val = next_token.token.unwrap();
-    if token_val.token_type == TokenType::Word
-        && (token_val.value == "const" || token_val.value == "fn")
-    {
-        return Ok(TokenReturn {
-            token: Some(token_val),
-            index: next_token.index,
-        });
-    }
-    if token_val.token_type == TokenType::Brace && token_val.value == "(" {
-        let closing_brace_index = find_closing_brace(tokens, next_token.index, 0, "")?;
-        let arrow_token = next_meaningful_token(tokens, closing_brace_index, None).token;
-        if let Some(arrow_token) = arrow_token {
-            if arrow_token.token_type == TokenType::Operator && arrow_token.value == "=>" {
-                return Ok(TokenReturn {
-                    token: Some(token_val),
-                    index: next_token.index,
-                });
+    if let Some(token_val) = next_token.token {
+        if token_val.token_type == TokenType::Word
+            && (token_val.value == "const" || token_val.value == "fn")
+        {
+            return Ok(TokenReturn {
+                token: Some(token_val),
+                index: next_token.index,
+            });
+        }
+        if token_val.token_type == TokenType::Brace && token_val.value == "(" {
+            let closing_brace_index = find_closing_brace(tokens, next_token.index, 0, "")?;
+            let arrow_token = next_meaningful_token(tokens, closing_brace_index, None).token;
+            if let Some(arrow_token) = arrow_token {
+                if arrow_token.token_type == TokenType::Operator && arrow_token.value == "=>" {
+                    return Ok(TokenReturn {
+                        token: Some(token_val),
+                        index: next_token.index,
+                    });
+                }
             }
         }
     }
@@ -248,8 +249,7 @@ fn has_pipe_operator(
         if let Some(ce) = call_expression {
             let token_after_call_expression = next_meaningful_token(tokens, ce, None);
 
-            if token_after_call_expression.token.is_some() {
-                let token_after_call_expression_val = token_after_call_expression.token.unwrap();
+            if let Some(token_after_call_expression_val) = token_after_call_expression.token {
                 if token_after_call_expression_val.token_type == TokenType::Operator
                     && token_after_call_expression_val.value == "|>"
                 {
