@@ -32,15 +32,11 @@ interface CursorSelectionsArgs {
   idBasedSelections: { type: string; id: string }[]
 }
 
-type _EngineCommand = Models['ModelingCmdReq_type']
+export type EngineCommand = Models['WebSocketMessages_type']
 
-// TODO extending this type to add the type property is a work around
-// see https://github.com/KittyCAD/api-deux/issues/1096
-export interface EngineCommand extends _EngineCommand {
-  type: 'modeling_cmd_req'
-}
+type OkResponse = Models['OkModelingCmdResponse_type']
 
-type WSResponse = Models['OkModelingCmdResponse_type']
+type WebSocketResponse = Models['WebSocketResponses_type']
 
 export class EngineCommandManager {
   artifactMap: ArtifactMap = {}
@@ -113,13 +109,19 @@ export class EngineCommandManager {
       ) {
         console.warn('something went wrong: ', event.data)
       } else {
-        const message = JSON.parse(event.data)
-        if (message.type === 'sdp_answer') {
+        const message: WebSocketResponse = JSON.parse(event.data)
+        if (
+          message.type === 'sdp_answer' &&
+          message.answer.type !== 'unspecified'
+        ) {
           this.pc?.setRemoteDescription(
-            new RTCSessionDescription(message.answer)
+            new RTCSessionDescription({
+              type: message.answer.type,
+              sdp: message.answer.sdp,
+            })
           )
         } else if (message.type === 'trickle_ice') {
-          this.pc?.addIceCandidate(message.candidate)
+          this.pc?.addIceCandidate(message.candidate as RTCIceCandidateInit)
         } else if (message.type === 'ice_server_info' && this.pc) {
           console.log('received ice_server_info')
           if (message.ice_servers.length > 0) {
@@ -193,7 +195,7 @@ export class EngineCommandManager {
               console.log('lossy data channel error')
             })
             this.lossyDataChannel.addEventListener('message', (event) => {
-              const result: WSResponse = JSON.parse(event.data)
+              const result: OkResponse = JSON.parse(event.data)
               if (
                 result.type === 'highlight_set_entity' &&
                 result.sequence &&
@@ -204,11 +206,11 @@ export class EngineCommandManager {
               }
             })
           })
-        } else if (message.cmd_id) {
+        } else if (message.type === 'modeling') {
           const id = message.cmd_id
           const command = this.artifactMap[id]
-          if (message?.result?.ok) {
-            const result: WSResponse = message.result.ok
+          if ('ok' in message.result) {
+            const result: OkResponse = message.result.ok
             if (result.type === 'select_with_point') {
               if (result.entity_id) {
                 this.onClickCallback({
@@ -280,7 +282,6 @@ export class EngineCommandManager {
         type: 'select_clear',
       },
       cmd_id: uuidv4(),
-      file_id: uuidv4(),
     })
     this.sendSceneCommand({
       type: 'modeling_cmd_req',
@@ -289,7 +290,6 @@ export class EngineCommandManager {
         entities: selections.idBasedSelections.map((s) => s.id),
       },
       cmd_id: uuidv4(),
-      file_id: uuidv4(),
     })
   }
   sendSceneCommand(command: EngineCommand) {
@@ -297,6 +297,7 @@ export class EngineCommandManager {
       console.log('socket not ready')
       return
     }
+    if (command.type !== 'modeling_cmd_req') return
     const cmd = command.cmd
     if (cmd.type === 'camera_drag_move' && this.lossyDataChannel) {
       cmd.sequence = this.outSequence

@@ -79,7 +79,6 @@ export const ExportButton = () => {
           format: values,
         },
         cmd_id: uuidv4(),
-        file_id: uuidv4(),
       })
 
       closeModal()

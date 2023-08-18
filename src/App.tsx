@@ -407,7 +407,6 @@ export function App() {
           window: { x, y },
         },
         cmd_id: newCmdId,
-        file_id: fileId,
       })
     } else {
       debounceSocketSend({
@@ -417,7 +416,6 @@ export function App() {
           selected_at_window: { x, y },
         },
         cmd_id: newCmdId,
-        file_id: fileId,
       })
     }
   }

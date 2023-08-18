@@ -22,7 +22,6 @@ import {
 import { GuiModes, toolTips, TooTip } from '../../useStore'
 import { splitPathAtPipeExpression } from '../modifyAst'
 import { generateUuidFromHashSeed } from '../../lib/uuid'
-import { v4 as uuidv4 } from 'uuid'
 
 import {
   SketchLineHelper,
@@ -282,7 +281,6 @@ export const line: SketchLineHelper = {
           },
         },
         cmd_id: id,
-        file_id: uuidv4(),
       },
     })
     const currentPath: Path = {
@@ -1575,7 +1573,6 @@ export const close: InternalFn = (
         path_id: sketchGroup.id,
       },
       cmd_id: id,
-      file_id: uuidv4(),
     },
   })
 
@@ -1639,7 +1636,6 @@ export const startSketchAt: InternalFn = (
         type: 'start_path',
       },
       cmd_id: pathId,
-      file_id: uuidv4(),
     },
   })
   engineCommandManager.sendSceneCommand({
@@ -1654,7 +1650,6 @@ export const startSketchAt: InternalFn = (
       },
     },
     cmd_id: id,
-    file_id: uuidv4(),
   })
   const currentPath: Path = {
     type: 'base',
