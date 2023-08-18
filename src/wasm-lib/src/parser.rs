@@ -571,7 +571,7 @@ fn make_value(tokens: &Vec<Token>, index: usize) -> Result<ValueReturn, KclError
     }
 
     if current_token.token_type == TokenType::Operator && current_token.value == "-" {
-        let unary_expression = make_unary_expression(tokens, index);
+        let unary_expression = make_unary_expression(tokens, index)?;
         return Ok(ValueReturn {
             value: Value::UnaryExpression(Box::new(unary_expression.expression)),
             last_index: unary_expression.last_index,
@@ -764,7 +764,7 @@ fn make_arguments(
         return make_arguments(tokens, next_comma_or_brace_token_index, _previous_args);
     }
     if argument_token_token.token_type == TokenType::Operator && argument_token_token.value == "-" {
-        let unary_expression = make_unary_expression(tokens, argument_token.index);
+        let unary_expression = make_unary_expression(tokens, argument_token.index)?;
         let next_comma_or_brace_token_index =
             next_meaningful_token(tokens, unary_expression.last_index, None).index;
         let mut _previous_args = previous_args;
@@ -861,7 +861,14 @@ fn make_arguments(
     {
         return make_arguments(tokens, argument_token.index, previous_args);
     }
-    panic!("make_arguments not implemented");
+
+    return Err(KclError::Unimplemented(KclErrorDetails {
+        source_ranges: vec![[
+            argument_token_token.start as i32,
+            argument_token_token.end as i32,
+        ]],
+        message: format!("Unexpected token {} ", argument_token_token.value),
+    }));
 }
 
 pub struct CallExpressionResult {
@@ -1024,12 +1031,15 @@ struct UnaryExpressionResult {
     last_index: usize,
 }
 
-fn make_unary_expression(tokens: &Vec<Token>, index: usize) -> UnaryExpressionResult {
+fn make_unary_expression(
+    tokens: &Vec<Token>,
+    index: usize,
+) -> Result<UnaryExpressionResult, KclError> {
     let current_token = &tokens[index];
     let next_token = next_meaningful_token(tokens, index, None);
     let argument = make_value(tokens, next_token.index).unwrap();
     let argument_token = &tokens[argument.last_index];
-    UnaryExpressionResult {
+    Ok(UnaryExpressionResult {
         expression: UnaryExpression {
             operator: if current_token.value == "!" {
                 "!".to_string()
@@ -1050,13 +1060,16 @@ fn make_unary_expression(tokens: &Vec<Token>, index: usize) -> UnaryExpressionRe
                 Value::CallExpression(call_expression) => {
                     BinaryPart::CallExpression(call_expression)
                 }
-                _ => panic!(
-                    "expected binary expression, identifier, literal, Call or unary expression"
-                ),
+                _ => {
+                    return Err(KclError::Syntax(KclErrorDetails {
+                        source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
+                        message: format!("Invalid argument for unary expression"),
+                    }));
+                }
             },
         },
         last_index: argument.last_index,
-    }
+    })
 }
 
 #[derive(Debug)]
