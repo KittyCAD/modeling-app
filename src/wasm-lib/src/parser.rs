@@ -674,7 +674,13 @@ fn make_pipe_body(
         value = val.value;
         last_index = val.last_index;
     } else {
-        panic!("Expected a previous PipeValue if statement to match");
+        return Err(KclError::Syntax(KclErrorDetails {
+            source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
+            message: format!(
+                "Expected a pipe value, found {:?}",
+                current_token.token_type
+            ),
+        }));
     }
     let next_pipe = has_pipe_operator(tokens, index, None)?;
     if next_pipe.token.is_none() {
