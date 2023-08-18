@@ -22,6 +22,14 @@ pub enum KclError {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct KclErrorDetails {
+    #[serde(rename = "sourceRanges")]
     pub source_ranges: Vec<[i32; 2]>,
+    #[serde(rename = "msg")]
     pub message: String,
+}
+
+impl From<KclError> for String {
+    fn from(error: KclError) -> Self {
+        serde_json::to_string(&error).unwrap()
+    }
 }

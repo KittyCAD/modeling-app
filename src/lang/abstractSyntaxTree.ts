@@ -1,5 +1,5 @@
 import { Program } from './abstractSyntaxTreeTypes'
-import { parse_js, KclError } from '../wasm-lib/pkg/wasm_lib'
+import { parse_js } from '../wasm-lib/pkg/wasm_lib'
 import { initPromise } from './rust'
 import { Token } from './tokeniser'
 import { KCLError } from './errors'
@@ -9,11 +9,19 @@ export const parser_wasm = (code: string): Program => {
     const program: Program = parse_js(code)
     return program
   } catch (e: any) {
-    const rustError = e as KclError
-    console.log('rust error', rustError)
-    // TODO: do something real with the error.
-    console.log('abs tree', e)
-    throw e
+    const parsed: {
+      kind: string
+      msg: string
+      sourceRanges: [number, number][]
+    } = JSON.parse(e.toString())
+    const kclError: KCLError = new KCLError(
+      parsed.kind,
+      parsed.msg,
+      parsed.sourceRanges
+    )
+
+    console.log(kclError)
+    throw kclError
   }
 }
 
@@ -23,11 +31,19 @@ export async function asyncParser(code: string): Promise<Program> {
     const program: Program = parse_js(code)
     return program
   } catch (e: any) {
-    const rustError = e as KclError
-    console.log('rust error', rustError)
-    // TODO: do something real with the error.
-    console.log('abs tree', e)
-    throw e
+    const parsed: {
+      kind: string
+      msg: string
+      sourceRanges: [number, number][]
+    } = JSON.parse(e.toString())
+    const kclError: KCLError = new KCLError(
+      parsed.kind,
+      parsed.msg,
+      parsed.sourceRanges
+    )
+
+    console.log(kclError)
+    throw kclError
   }
 }
 
