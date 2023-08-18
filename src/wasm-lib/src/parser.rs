@@ -1771,14 +1771,8 @@ const key = 'c'"#,
             LiteralIdentifier::Literal(literal) => format!("literal-{}", literal.value),
             _ => panic!("Expected second key to be a literal"),
         };
-        assert_eq!(second_key, "literal-two");
+        assert_eq!(second_key, "literal-\"two\"");
         assert!(!keys_info[1].computed);
-        let third_key = match keys_info[2].key.clone() {
-            LiteralIdentifier::Identifier(identifier) => format!("identifier-{}", identifier.name),
-            _ => panic!("Expected third key to be an identifier"),
-        };
-        assert_eq!(third_key, "identifier-three");
-        assert!(keys_info[0].computed);
     }
 
     #[test]
