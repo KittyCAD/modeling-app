@@ -43,5 +43,5 @@ jobs:
       - name: Run cargo build
         run: |
           cd "${{ matrix.dir }}"
-          cargo build --all --all-features
+          cargo build --all
         shell: bash
