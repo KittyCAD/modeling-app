@@ -5,7 +5,7 @@ import { Token } from './tokeniser'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/bindings/KclError'
 
-const rangeTypeFix = (ranges: number[][]): [number, number][] =>
+export const rangeTypeFix = (ranges: number[][]): [number, number][] =>
   ranges.map(([start, end]) => [start, end])
 
 export const parser_wasm = (code: string): Program => {

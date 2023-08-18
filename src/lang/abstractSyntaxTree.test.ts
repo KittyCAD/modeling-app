@@ -214,7 +214,6 @@ describe('testing function declaration', () => {
               id: null,
               params: [],
               body: {
-                type: 'BlockStatement',
                 start: 17,
                 end: 19,
                 body: [],
@@ -267,7 +266,6 @@ describe('testing function declaration', () => {
                 },
               ],
               body: {
-                type: 'BlockStatement',
                 start: 21,
                 end: 39,
                 body: [
@@ -344,7 +342,6 @@ const myVar = funcN(1, 2)`
                 },
               ],
               body: {
-                type: 'BlockStatement',
                 start: 21,
                 end: 37,
                 body: [
@@ -1571,8 +1568,8 @@ const key = 'c'`
   it('comments nested within a block statement', () => {
     const code = `const mySketch = startSketchAt([0,0])
   |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
-  |> lineTo([1, 1], %) /* this is 
-      a comment 
+  |> lineTo([1, 1], %) /* this is
+      a comment
       spanning a few lines */
   |> lineTo({ to: [1,0], tag: "rightPath" }, %)
   |> close(%)
@@ -1585,9 +1582,8 @@ const key = 'c'`
     expect(sketchNonCodeMeta[indexOfSecondLineToExpression]).toEqual({
       type: 'NoneCodeNode',
       start: 106,
-      end: 168,
-      value:
-        ' /* this is \n      a comment \n      spanning a few lines */\n  ',
+      end: 166,
+      value: ' /* this is\n      a comment\n      spanning a few lines */\n  ',
     })
   })
   it('comments in a pipe expression', () => {

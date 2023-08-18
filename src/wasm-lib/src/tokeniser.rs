@@ -1,3 +1,4 @@
+use gloo_utils::format::JsValueSerdeExt;
 use lazy_static::lazy_static;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -28,6 +29,18 @@ pub struct Token {
     pub start: usize,
     pub end: usize,
     pub value: String,
+}
+
+impl From<Token> for crate::executor::SourceRange {
+    fn from(token: Token) -> Self {
+        Self([token.start, token.end])
+    }
+}
+
+impl From<&Token> for crate::executor::SourceRange {
+    fn from(token: &Token) -> Self {
+        Self([token.start, token.end])
+    }
 }
 
 lazy_static! {
@@ -265,7 +278,7 @@ pub fn lexer(str: &str) -> Vec<Token> {
 #[wasm_bindgen]
 pub fn lexer_js(str: &str) -> Result<JsValue, JsError> {
     let tokens = lexer(str);
-    Ok(serde_wasm_bindgen::to_value(&tokens)?)
+    Ok(JsValue::from_serde(&tokens)?)
 }
 
 #[cfg(test)]

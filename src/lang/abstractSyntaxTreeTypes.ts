@@ -22,7 +22,6 @@ export type SyntaxType =
   | 'BinaryExpression'
   | 'CallExpression'
   | 'Identifier'
-  | 'BlockStatement'
   | 'ReturnStatement'
   | 'VariableDeclaration'
   | 'VariableDeclarator'

@@ -147,7 +147,7 @@ pub fn reverse_polish_notation(
     }
 
     Err(KclError::Syntax(KclErrorDetails {
-        source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
+        source_ranges: vec![current_token.into()],
         message: format!(
             "Unexpected token: {} {:?}",
             current_token.value, current_token.token_type
@@ -260,19 +260,13 @@ fn build_tree(
                             serde_json::Value::Number(n)
                         } else {
                             return Err(KclError::Syntax(KclErrorDetails {
-                                source_ranges: vec![[
-                                    current_token.start as i32,
-                                    current_token.end as i32,
-                                ]],
+                                source_ranges: vec![current_token.into()],
                                 message: format!("Invalid float: {}", current_token.value),
                             }));
                         }
                     } else {
                         return Err(KclError::Syntax(KclErrorDetails {
-                            source_ranges: vec![[
-                                current_token.start as i32,
-                                current_token.end as i32,
-                            ]],
+                            source_ranges: vec![current_token.into()],
                             message: format!("Invalid integer: {}", current_token.value),
                         }));
                     }

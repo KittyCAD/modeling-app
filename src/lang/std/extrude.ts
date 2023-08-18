@@ -55,11 +55,9 @@ export const extrude: InternalFn = (
     __meta: [
       {
         sourceRange,
-        pathToNode: [], // TODO
       },
       {
         sourceRange: sketchVal.__meta[0].sourceRange,
-        pathToNode: sketchVal.__meta[0].pathToNode,
       },
     ],
   }
