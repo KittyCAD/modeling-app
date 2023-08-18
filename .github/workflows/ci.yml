@@ -183,11 +183,27 @@ jobs:
           parent: false
           destination: dl.kittycad.io/releases/modeling-app/test/v${{ env.VERSION_NO_V }} 
       
-      - name: Upload release files to public bucket
+      - name: Upload macos release files to public bucket
         uses: google-github-actions/upload-cloud-storage@v1.0.3
         with:
           path: artifact
-          glob: '**/*.zip'
+          glob: 'macos/kittycad-modeling-app*'
+          parent: false
+          destination: dl.kittycad.io/releases/modeling-app/test/v${{ env.VERSION_NO_V }} 
+      
+      - name: Upload linux release files to public bucket
+        uses: google-github-actions/upload-cloud-storage@v1.0.3
+        with:
+          path: artifact
+          glob: 'appimage/kittycad-modeling-app*'
+          parent: false
+          destination: dl.kittycad.io/releases/modeling-app/test/v${{ env.VERSION_NO_V }} 
+      
+      - name: Upload windows release files to public bucket
+        uses: google-github-actions/upload-cloud-storage@v1.0.3
+        with:
+          path: artifact
+          glob: 'nsis/kittycad-modeling-app*'
           parent: false
           destination: dl.kittycad.io/releases/modeling-app/test/v${{ env.VERSION_NO_V }} 
       
