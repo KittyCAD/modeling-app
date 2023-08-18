@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import { abstractSyntaxTree } from '../lang/abstractSyntaxTree'
+import { parser_wasm } from '../lang/abstractSyntaxTree'
 import { BinaryPart, Value } from '../lang/abstractSyntaxTreeTypes'
 import { executor } from '../lang/executor'
 import {
@@ -144,7 +144,7 @@ export function useCalc({
     if (!engineCommandManager) return
     try {
       const code = `const __result__ = ${value}\nshow(__result__)`
-      const ast = abstractSyntaxTree(lexer(code))
+      const ast = parser_wasm(code)
       const _programMem: any = { root: {} }
       availableVarInfo.variables.forEach(({ key, value }) => {
         _programMem.root[key] = { type: 'userVal', value, __meta: [] }

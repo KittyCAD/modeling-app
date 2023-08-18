@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { addLineHighlight, EditorView } from './editor/highlightextension'
-import { abstractSyntaxTree } from './lang/abstractSyntaxTree'
+import { parser_wasm } from './lang/abstractSyntaxTree'
 import { Program } from './lang/abstractSyntaxTreeTypes'
 import { getNodeFromPath } from './lang/queryAst'
 import {
@@ -321,9 +321,7 @@ export const useStore = create<StoreState>()(
       },
       updateAst: async (ast, { focusPath, callBack = () => {} } = {}) => {
         const newCode = recast(ast)
-        const astWithUpdatedSource = abstractSyntaxTree(
-          await asyncLexer(newCode)
-        )
+        const astWithUpdatedSource = parser_wasm(newCode)
         callBack(astWithUpdatedSource)
 
         set({ ast: astWithUpdatedSource, code: newCode })
@@ -361,7 +359,7 @@ export const useStore = create<StoreState>()(
       },
       formatCode: async () => {
         const code = get().code
-        const ast = abstractSyntaxTree(await asyncLexer(code))
+        const ast = parser_wasm(code)
         const newCode = recast(ast)
         set({ code: newCode, ast })
       },
