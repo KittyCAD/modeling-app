@@ -158,7 +158,7 @@ jobs:
                 "windows-x86_64": {
                   "signature": $windows_sig,
                   "url": $windows_url
-                },
+                }
               }
             }' > last_update.json
             cat last_update.json
@@ -173,11 +173,11 @@ jobs:
         with:
           project_id: kittycadapi
       
-      - name: Upload release files to public bucket
-        uses: google-github-actions/upload-cloud-storage@v1.0.3
-        with:
-          path: artifact/*/*
-          destination: dl.kittycad.io/releases/modeling-app/test/v${{ env.VERSION }} 
+      # - name: Upload release files to public bucket
+      #   uses: google-github-actions/upload-cloud-storage@v1.0.3
+      #   with:
+      #     path: artifact/*/*
+      #     destination: dl.kittycad.io/releases/modeling-app/test/v${{ env.VERSION }} 
       
       - name: Upload update endpoint to public bucket
         uses: google-github-actions/upload-cloud-storage@v1.0.3
