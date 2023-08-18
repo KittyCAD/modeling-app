@@ -15,6 +15,8 @@ pub enum KclError {
     ValueAlreadyDefined(KclErrorDetails),
     #[error("undefined value: {0:?}")]
     UndefinedValue(KclErrorDetails),
+    #[error("invalid expression: {0:?}")]
+    InvalidExpression(crate::math_parser::MathExpression),
 }
 
 #[derive(Debug, Serialize, Deserialize)]

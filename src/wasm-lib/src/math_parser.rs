@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use crate::abstract_syntax_tree_types::{
     BinaryExpression, BinaryPart, CallExpression, Identifier, Literal,
 };
-use crate::errors::KclError;
+use crate::errors::{KclError, KclErrorDetails};
 use crate::parser::{find_closing_brace, is_not_code_token, make_call_expression};
 use crate::tokeniser::{Token, TokenType};
 
@@ -125,7 +125,11 @@ pub fn reverse_polish_notation(
     if is_not_code_token(current_token) {
         return reverse_polish_notation(&tokens[1..].to_vec(), previous_postfix, operators);
     }
-    panic!("Unknown token");
+
+    return Err(KclError::Syntax(KclErrorDetails {
+        source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
+        message: format!("Unexpected token: {}", current_token.value),
+    }));
 }
 
 #[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Clone)]
@@ -208,7 +212,9 @@ fn build_tree(
                 right: bin_exp.right.clone(),
             }),
 
-            a => panic!("Invalid expression {:?}", a),
+            a => {
+                return Err(KclError::InvalidExpression(a.clone()));
+            }
         };
     }
     let current_token = &reverse_polish_notation_tokens[0];
@@ -219,7 +225,17 @@ fn build_tree(
         new_stack.push(MathExpression::ExntendedLiteral(Box::new(
             ExntendedLiteral {
                 value: if current_token.token_type == TokenType::Number {
-                    serde_json::Value::Number(current_token.value.parse().unwrap())
+                    if let Ok(value) = current_token.value.parse::<i64>() {
+                        serde_json::Value::Number(value.into())
+                    } else {
+                        return Err(KclError::Syntax(KclErrorDetails {
+                            source_ranges: vec![[
+                                current_token.start as i32,
+                                current_token.end as i32,
+                            ]],
+                            message: format!("Invalid integer: {}", current_token.value),
+                        }));
+                    }
                 } else {
                     let mut str_val = current_token.value.clone();
                     str_val.remove(0);
@@ -293,14 +309,11 @@ fn build_tree(
             MathExpression::ExntendedLiteral(literal) => {
                 MathExpression::ExntendedLiteral(literal.clone())
             }
-            a => panic!(
-                "Invalid expression, expected ExtendedBinaryExpression, got {:?}",
-                a
-            ),
+            a => return Err(KclError::InvalidExpression(a.clone())),
         };
         let paran = match &stack[stack.len() - 2] {
             MathExpression::ParenthesisToken(paran) => paran.clone(),
-            _ => panic!("Invalid expression"),
+            a => return Err(KclError::InvalidExpression(a.clone())),
         };
         let expression = match inner_node {
             MathExpression::ExtendedBinaryExpression(bin_exp) => {
@@ -335,10 +348,7 @@ fn build_tree(
                     start_extended: Some(paran.start),
                 }))
             }
-            a => panic!(
-                "Invalid expression, expected ExtendedBinaryExpression, got {:?}",
-                a
-            ),
+            a => return Err(KclError::InvalidExpression(a.clone())),
         };
         let mut new_stack = stack[0..stack.len() - 2].to_vec();
         new_stack.push(expression);
@@ -371,7 +381,7 @@ fn build_tree(
         MathExpression::BinaryExpression(bin_exp) => {
             (BinaryPart::BinaryExpression(bin_exp.clone()), bin_exp.start)
         }
-        _ => panic!("Invalid expression"),
+        a => return Err(KclError::InvalidExpression(a.clone())),
     };
     let right = match &stack[stack.len() - 1] {
         MathExpression::ExtendedBinaryExpression(bin_exp) => (
@@ -400,7 +410,7 @@ fn build_tree(
         MathExpression::BinaryExpression(bin_exp) => {
             (BinaryPart::BinaryExpression(bin_exp.clone()), bin_exp.end)
         }
-        _ => panic!("Invalid expression"),
+        a => return Err(KclError::InvalidExpression(a.clone())),
     };
 
     let right_end = match right.0.clone() {

@@ -492,18 +492,18 @@ fn make_value(tokens: &Vec<Token>, index: usize) -> Result<ValueReturn, KclError
             });
         }
     }
-    if (current_token.token_type == TokenType::Word
+    if current_token.token_type == TokenType::Word
         || current_token.token_type == TokenType::Number
-        || current_token.token_type == TokenType::String)
-        && next.token.is_some()
+        || current_token.token_type == TokenType::String
     {
-        let next_token = next.token.clone().unwrap();
-        if next_token.token_type == TokenType::Operator {
-            let binary_expression = make_binary_expression(tokens, index)?;
-            return Ok(ValueReturn {
-                value: Value::BinaryExpression(Box::new(binary_expression.expression)),
-                last_index: binary_expression.last_index,
-            });
+        if let Some(next_token) = &next.token {
+            if next_token.token_type == TokenType::Operator {
+                let binary_expression = make_binary_expression(tokens, index)?;
+                return Ok(ValueReturn {
+                    value: Value::BinaryExpression(Box::new(binary_expression.expression)),
+                    last_index: binary_expression.last_index,
+                });
+            }
         }
     }
     if current_token.token_type == TokenType::Brace && current_token.value == "{" {
@@ -521,8 +521,7 @@ fn make_value(tokens: &Vec<Token>, index: usize) -> Result<ValueReturn, KclError
         });
     }
 
-    if next.token.is_some() {
-        let next_token = next.token.unwrap();
+    if let Some(next_token) = next.token {
         if current_token.token_type == TokenType::Word
             && (next_token.token_type == TokenType::Period
                 || (next_token.token_type == TokenType::Brace && next_token.value == "["))
