@@ -124,6 +124,7 @@ fn next_meaningful_token(
             non_code_node: None,
         };
     };
+
     if is_not_code_token(token) {
         let non_code_node = make_none_code_node(tokens, new_index);
         let new_new_index = non_code_node.1 + 1;
@@ -1344,6 +1345,7 @@ fn make_body(
             non_code_meta,
         });
     }
+
     let token = &tokens[token_index];
     if token.token_type == TokenType::Brace && token.value == "}" {
         return Ok(BodyResult {
@@ -1352,6 +1354,7 @@ fn make_body(
             non_code_meta,
         });
     }
+
     if is_not_code_token(token) {
         let next_token = next_meaningful_token(tokens, token_index, Some(0));
         if let Some(node) = &next_token.non_code_node {
