@@ -211,6 +211,8 @@ export interface StoreState {
   setOnboardingStatus: (status: string) => void
   theme: Themes
   setTheme: (theme: Themes) => void
+  isBannerDismissed: boolean
+  setBannerDismissed: (isBannerDismissed: boolean) => void
   openPanes: PaneType[]
   setOpenPanes: (panes: PaneType[]) => void
   homeMenuItems: {
@@ -414,6 +416,8 @@ export const useStore = create<StoreState>()(
       setOnboardingStatus: (onboardingStatus) => set({ onboardingStatus }),
       theme: Themes.System,
       setTheme: (theme) => set({ theme }),
+      isBannerDismissed: false,
+      setBannerDismissed: (isBannerDismissed) => set({ isBannerDismissed }),
       openPanes: ['code'],
       setOpenPanes: (openPanes) => set({ openPanes }),
       showHomeMenu: true,
