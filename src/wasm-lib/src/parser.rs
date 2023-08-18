@@ -7,7 +7,7 @@ use crate::abstract_syntax_tree_types::{
     ObjectProperty, PipeExpression, PipeSubstitution, Program, ReturnStatement, UnaryExpression,
     Value, VariableDeclaration, VariableDeclarator,
 };
-use crate::errors::KclError;
+use crate::errors::{KclError, KclErrorDetails};
 use crate::math_parser::parse_expression;
 use crate::tokeniser::lexer;
 use crate::tokeniser::{Token, TokenType};
@@ -23,22 +23,29 @@ fn make_identifier(tokens: &[Token], index: usize) -> Identifier {
     }
 }
 
-pub fn make_literal(tokens: &[Token], index: usize) -> Literal {
+pub fn make_literal(tokens: &[Token], index: usize) -> Result<Literal, KclError> {
     let token = &tokens[index];
     let value = if token.token_type == TokenType::Number {
-        serde_json::Value::Number(token.value.parse().unwrap())
+        if let Ok(value) = token.value.parse::<i64>() {
+            serde_json::Value::Number(value.into())
+        } else {
+            return Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![[token.start as i32, token.end as i32]],
+                message: format!("Invalid integer: {}", token.value),
+            }));
+        }
     } else {
         let mut str_val = token.value.clone();
         str_val.remove(0);
         str_val.pop();
         serde_json::Value::String(str_val)
     };
-    Literal {
+    Ok(Literal {
         start: token.start,
         end: token.end,
         value,
         raw: token.value.clone(),
-    }
+    })
 }
 
 pub fn is_not_code_token(token: &Token) -> bool {
@@ -305,12 +312,12 @@ fn collect_object_keys(
     tokens: &Vec<Token>,
     index: usize,
     _previous_keys: Option<Vec<ObjectKeyInfo>>,
-) -> Vec<ObjectKeyInfo> {
+) -> Result<Vec<ObjectKeyInfo>, KclError> {
     let previous_keys = _previous_keys.unwrap_or(vec![]);
     let next_token = next_meaningful_token(tokens, index, None);
     let _next_token = next_token.clone();
     if _next_token.index == tokens.len() - 1 {
-        return previous_keys;
+        return Ok(previous_keys);
     }
     let period_or_opening_bracket = match next_token.token {
         Some(next_token_val) => {
@@ -323,13 +330,13 @@ fn collect_object_keys(
         None => _next_token,
     };
     if period_or_opening_bracket.token.is_none() {
-        return previous_keys;
+        return Ok(previous_keys);
     }
     let period_or_opening_bracket_token = period_or_opening_bracket.token.unwrap();
     if period_or_opening_bracket_token.token_type != TokenType::Period
         && period_or_opening_bracket_token.token_type != TokenType::Brace
     {
-        return previous_keys;
+        return Ok(previous_keys);
     }
     let key_token = next_meaningful_token(tokens, period_or_opening_bracket.index, None);
     let next_period_or_opening_bracket = next_meaningful_token(tokens, key_token.index, None);
@@ -349,7 +356,7 @@ fn collect_object_keys(
     let key = if key_token_token.token_type == TokenType::Word {
         LiteralIdentifier::Identifier(Box::new(make_identifier(tokens, key_token.index)))
     } else {
-        LiteralIdentifier::Literal(Box::new(make_literal(tokens, key_token.index)))
+        LiteralIdentifier::Literal(Box::new(make_literal(tokens, key_token.index)?))
     };
     let computed = is_braced && key_token_token.token_type == TokenType::Word;
     let mut new_previous_keys = previous_keys;
@@ -366,9 +373,12 @@ pub struct MemberExpressionReturn {
     pub last_index: usize,
 }
 
-fn make_member_expression(tokens: &Vec<Token>, index: usize) -> MemberExpressionReturn {
+fn make_member_expression(
+    tokens: &Vec<Token>,
+    index: usize,
+) -> Result<MemberExpressionReturn, KclError> {
     let current_token = tokens[index].clone();
-    let mut keys_info = collect_object_keys(tokens, index, None);
+    let mut keys_info = collect_object_keys(tokens, index, None)?;
     let last_key = keys_info[keys_info.len() - 1].clone();
     let first_key = keys_info.remove(0);
     let root = make_identifier(tokens, index);
@@ -389,10 +399,10 @@ fn make_member_expression(tokens: &Vec<Token>, index: usize) -> MemberExpression
             computed: key_info_1.computed,
         };
     }
-    MemberExpressionReturn {
+    Ok(MemberExpressionReturn {
         expression: member_expression,
         last_index: last_key.index,
-    }
+    })
 }
 
 fn find_end_of_binary_expression(tokens: &Vec<Token>, index: usize) -> usize {
@@ -510,7 +520,7 @@ fn make_value(tokens: &Vec<Token>, index: usize) -> Result<ValueReturn, KclError
             && (next_token.token_type == TokenType::Period
                 || (next_token.token_type == TokenType::Brace && next_token.value == "["))
         {
-            let member_expression = make_member_expression(tokens, index);
+            let member_expression = make_member_expression(tokens, index)?;
             return Ok(ValueReturn {
                 value: Value::MemberExpression(Box::new(member_expression.expression)),
                 last_index: member_expression.last_index,
@@ -527,7 +537,7 @@ fn make_value(tokens: &Vec<Token>, index: usize) -> Result<ValueReturn, KclError
     if current_token.token_type == TokenType::Number
         || current_token.token_type == TokenType::String
     {
-        let literal = make_literal(tokens, index);
+        let literal = make_literal(tokens, index)?;
         return Ok(ValueReturn {
             value: Value::Literal(Box::new(literal)),
             last_index: index,
@@ -817,7 +827,7 @@ fn make_arguments(
     } else if argument_token_token.token_type == TokenType::Number
         || argument_token_token.token_type == TokenType::String
     {
-        let literal = Value::Literal(Box::new(make_literal(tokens, argument_token.index)));
+        let literal = Value::Literal(Box::new(make_literal(tokens, argument_token.index)?));
         let mut _previous_args = previous_args;
         _previous_args.push(literal);
         return make_arguments(tokens, next_brace_or_comma.index, _previous_args);
@@ -1586,7 +1596,7 @@ const key = 'c'"#,
     #[test]
     fn test_collect_object_keys() {
         let tokens = lexer("const prop = yo.one[\"two\"]");
-        let keys_info = collect_object_keys(&tokens, 6, None);
+        let keys_info = collect_object_keys(&tokens, 6, None).unwrap();
         assert_eq!(keys_info.len(), 2);
         let first_key = match keys_info[0].key.clone() {
             LiteralIdentifier::Identifier(identifier) => format!("identifier-{}", identifier.name),
@@ -1611,7 +1621,7 @@ const key = 'c'"#,
     #[test]
     fn test_make_literal_call_expression() {
         let tokens = lexer("log(5, \"hello\", aIdentifier)");
-        let literal = make_literal(&tokens, 2);
+        let literal = make_literal(&tokens, 2).unwrap();
         assert_eq!(
             Literal {
                 start: 4,
@@ -1621,7 +1631,7 @@ const key = 'c'"#,
             },
             literal
         );
-        let literal = make_literal(&tokens, 5);
+        let literal = make_literal(&tokens, 5).unwrap();
         assert_eq!(
             Literal {
                 start: 7,
@@ -2319,7 +2329,7 @@ show(mySk1)"#;
     #[test]
     fn test_make_member_expression() {
         let tokens = lexer("const prop = yo.one[\"two\"]");
-        let member_expression_return = make_member_expression(&tokens, 6);
+        let member_expression_return = make_member_expression(&tokens, 6).unwrap();
         let member_expression = member_expression_return.expression;
         let last_index = member_expression_return.last_index;
         assert_eq!(member_expression.start, 13);
