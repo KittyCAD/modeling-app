@@ -7,7 +7,6 @@ import Units from './Units'
 import Camera from './Camera'
 import Sketching from './Sketching'
 import { useCallback } from 'react'
-import { paths } from '../../Router'
 import makeUrlPathRelative from '../../lib/makeUrlPathRelative'
 
 export const onboardingPaths = {

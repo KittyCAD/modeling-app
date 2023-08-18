@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { paths } from '../Router'
 import makeUrlPathRelative from '../lib/makeUrlPathRelative'
-import { ExportButton } from './ExportButton'
 
 const UserSidebarMenu = ({ user }: { user?: User }) => {
   const displayedName = getDisplayName(user)

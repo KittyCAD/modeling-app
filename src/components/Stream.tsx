@@ -20,8 +20,6 @@ export const Stream = ({ className = '' }) => {
     mediaStream,
     engineCommandManager,
     setIsMouseDownInStream,
-    fileId,
-    setFileId,
     setCmdId,
     didDragInStream,
     setDidDragInStream,
@@ -32,7 +30,6 @@ export const Stream = ({ className = '' }) => {
     isMouseDownInStream: s.isMouseDownInStream,
     setIsMouseDownInStream: s.setIsMouseDownInStream,
     fileId: s.fileId,
-    setFileId: s.setFileId,
     setCmdId: s.setCmdId,
     didDragInStream: s.didDragInStream,
     setDidDragInStream: s.setDidDragInStream,
@@ -48,9 +45,8 @@ export const Stream = ({ className = '' }) => {
     if (!videoRef.current) return
     if (!mediaStream) return
     videoRef.current.srcObject = mediaStream
-    setFileId(uuidv4())
     setZoom(videoRef.current.getBoundingClientRect().height / 2)
-  }, [mediaStream, engineCommandManager, setFileId])
+  }, [mediaStream, engineCommandManager])
 
   const handleMouseDown: MouseEventHandler<HTMLVideoElement> = ({
     clientX,
