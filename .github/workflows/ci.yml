@@ -28,7 +28,7 @@ jobs:
   build-test-web:
     runs-on: ubuntu-20.04
     outputs:
-      version: $${{ steps.export_version.outputs.version }}
+      version: ${{ steps.export_version.outputs.version }}
     steps:
 
       - uses: actions/checkout@v3
