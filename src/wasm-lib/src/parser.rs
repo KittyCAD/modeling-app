@@ -766,7 +766,7 @@ fn make_binary_expression(
     index: usize,
 ) -> Result<BinaryExpressionReturn, KclError> {
     let end_index = find_end_of_binary_expression(tokens, index)?;
-    let expression = parse_expression(tokens[index..end_index + 1].to_vec())?;
+    let expression = parse_expression(&tokens[index..end_index + 1])?;
     Ok(BinaryExpressionReturn {
         expression,
         last_index: end_index,

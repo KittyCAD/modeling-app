@@ -473,7 +473,7 @@ fn build_tree(
     build_tree(&reverse_polish_notation_tokens[1..], new_stack)
 }
 
-pub fn parse_expression(tokens: Vec<Token>) -> Result<BinaryExpression, KclError> {
+pub fn parse_expression(tokens: &[Token]) -> Result<BinaryExpression, KclError> {
     let rpn = reverse_polish_notation(&tokens, &[], &[])?;
     let tree_with_maybe_bad_top_level_start_end = build_tree(&rpn, vec![])?;
     let left_start = match tree_with_maybe_bad_top_level_start_end.clone().left {
@@ -517,7 +517,7 @@ mod test {
     #[test]
     fn test_parse_expression() {
         let tokens = crate::tokeniser::lexer("1 + 2");
-        let result = parse_expression(tokens).unwrap();
+        let result = parse_expression(&tokens).unwrap();
         assert_eq!(
             result,
             BinaryExpression {
@@ -543,7 +543,7 @@ mod test {
     #[test]
     fn test_parse_expression_plus_followed_by_star() {
         let tokens = crate::tokeniser::lexer("1 + 2 * 3");
-        let result = parse_expression(tokens).unwrap();
+        let result = parse_expression(&tokens).unwrap();
         assert_eq!(
             result,
             BinaryExpression {
@@ -580,7 +580,7 @@ mod test {
     #[test]
     fn test_parse_expression_with_parentheses() {
         let tokens = crate::tokeniser::lexer("1 * ( 2 + 3 )");
-        let result = parse_expression(tokens).unwrap();
+        let result = parse_expression(&tokens).unwrap();
         assert_eq!(
             result,
             BinaryExpression {
@@ -617,7 +617,7 @@ mod test {
     #[test]
     fn test_parse_expression_parens_in_middle() {
         let tokens = crate::tokeniser::lexer("1 * ( 2 + 3 ) / 4");
-        let result = parse_expression(tokens).unwrap();
+        let result = parse_expression(&tokens).unwrap();
         assert_eq!(
             result,
             BinaryExpression {
@@ -665,7 +665,7 @@ mod test {
     #[test]
     fn test_parse_expression_parans_and_predence() {
         let tokens = crate::tokeniser::lexer("1 + ( 2 + 3 ) / 4");
-        let result = parse_expression(tokens).unwrap();
+        let result = parse_expression(&tokens).unwrap();
         assert_eq!(
             result,
             BinaryExpression {
@@ -712,7 +712,7 @@ mod test {
     #[test]
     fn test_parse_expression_nested() {
         let tokens = crate::tokeniser::lexer("1 * (( 2 + 3 ) / 4 + 5 )");
-        let result = parse_expression(tokens).unwrap();
+        let result = parse_expression(&tokens).unwrap();
         assert_eq!(
             result,
             BinaryExpression {
@@ -770,7 +770,7 @@ mod test {
     #[test]
     fn test_parse_expression_redundant_braces() {
         let tokens = crate::tokeniser::lexer("1 * ((( 2 + 3 )))");
-        let result = parse_expression(tokens).unwrap();
+        let result = parse_expression(&tokens).unwrap();
         assert_eq!(
             result,
             BinaryExpression {
@@ -930,7 +930,7 @@ mod test {
     fn test_parse_expression_redundant_braces_around_literal() {
         let code = "2 + (((3)))";
         let tokens = crate::tokeniser::lexer(code);
-        let result = parse_expression(tokens).unwrap();
+        let result = parse_expression(&tokens).unwrap();
         assert_eq!(
             result,
             BinaryExpression {
