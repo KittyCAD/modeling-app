@@ -1,74 +1,42 @@
-import {
-  abstractSyntaxTree,
-  findClosingBrace,
-  hasPipeOperator,
-  findEndOfBinaryExpression,
-} from './abstractSyntaxTree'
-import { lexer } from './tokeniser'
+import { parser_wasm } from './abstractSyntaxTree'
 import { initPromise } from './rust'
 
 beforeAll(() => initPromise)
 
-describe('findClosingBrace', () => {
-  test('finds the closing brace', () => {
-    const basic = '( hey )'
-    expect(findClosingBrace(lexer(basic), 0)).toBe(4)
-
-    const handlesNonZeroIndex =
-      '(indexForBracketToRightOfThisIsTwo(shouldBeFour)AndNotThisSix)'
-    expect(findClosingBrace(lexer(handlesNonZeroIndex), 2)).toBe(4)
-    expect(findClosingBrace(lexer(handlesNonZeroIndex), 0)).toBe(6)
-
-    const handlesNested =
-      '{a{b{c(}d]}eathou athoeu tah u} thatOneToTheLeftIsLast }'
-    expect(findClosingBrace(lexer(handlesNested), 0)).toBe(18)
-
-    // throws when not started on a brace
-    expect(() => findClosingBrace(lexer(handlesNested), 1)).toThrow()
-  })
-})
-
 describe('testing AST', () => {
   test('5 + 6', () => {
-    const tokens = lexer('5 +6')
-    const result = abstractSyntaxTree(tokens)
+    const result = parser_wasm('5 +6')
     delete (result as any).nonCodeMeta
-    expect(result).toEqual({
-      type: 'Program',
-      start: 0,
-      end: 4,
-      body: [
-        {
-          type: 'ExpressionStatement',
+    expect(result.body).toEqual([
+      {
+        type: 'ExpressionStatement',
+        start: 0,
+        end: 4,
+        expression: {
+          type: 'BinaryExpression',
           start: 0,
           end: 4,
-          expression: {
-            type: 'BinaryExpression',
+          left: {
+            type: 'Literal',
             start: 0,
+            end: 1,
+            value: 5,
+            raw: '5',
+          },
+          operator: '+',
+          right: {
+            type: 'Literal',
+            start: 3,
             end: 4,
-            left: {
-              type: 'Literal',
-              start: 0,
-              end: 1,
-              value: 5,
-              raw: '5',
-            },
-            operator: '+',
-            right: {
-              type: 'Literal',
-              start: 3,
-              end: 4,
-              value: 6,
-              raw: '6',
-            },
+            value: 6,
+            raw: '6',
           },
         },
-      ],
-    })
+      },
+    ])
   })
   test('const myVar = 5', () => {
-    const tokens = lexer('const myVar = 5')
-    const { body } = abstractSyntaxTree(tokens)
+    const { body } = parser_wasm('const myVar = 5')
     expect(body).toEqual([
       {
         type: 'VariableDeclaration',
@@ -102,8 +70,7 @@ describe('testing AST', () => {
     const code = `const myVar = 5
 const newVar = myVar + 1
 `
-    const tokens = lexer(code)
-    const { body } = abstractSyntaxTree(tokens)
+    const { body } = parser_wasm(code)
     expect(body).toEqual([
       {
         type: 'VariableDeclaration',
@@ -173,8 +140,7 @@ const newVar = myVar + 1
   })
   test('using std function "log"', () => {
     const code = `log(5, "hello", aIdentifier)`
-    const tokens = lexer(code)
-    const { body } = abstractSyntaxTree(tokens)
+    const { body } = parser_wasm(code)
     expect(body).toEqual([
       {
         type: 'ExpressionStatement',
@@ -221,8 +187,7 @@ const newVar = myVar + 1
 
 describe('testing function declaration', () => {
   test('fn funcN = () => {}', () => {
-    const tokens = lexer('fn funcN = () => {}')
-    const { body } = abstractSyntaxTree(tokens)
+    const { body } = parser_wasm('fn funcN = () => {}')
     delete (body[0] as any).declarations[0].init.body.nonCodeMeta
     expect(body).toEqual([
       {
@@ -260,10 +225,9 @@ describe('testing function declaration', () => {
     ])
   })
   test('fn funcN = (a, b) => {return a + b}', () => {
-    const tokens = lexer(
+    const { body } = parser_wasm(
       ['fn funcN = (a, b) => {', '  return a + b', '}'].join('\n')
     )
-    const { body } = abstractSyntaxTree(tokens)
     delete (body[0] as any).declarations[0].init.body.nonCodeMeta
     expect(body).toEqual([
       {
@@ -338,11 +302,9 @@ describe('testing function declaration', () => {
     ])
   })
   test('call expression assignment', () => {
-    const tokens = lexer(
-      `fn funcN = (a, b) => { return a + b }
+    const code = `fn funcN = (a, b) => { return a + b }
 const myVar = funcN(1, 2)`
-    )
-    const { body } = abstractSyntaxTree(tokens)
+    const { body } = parser_wasm(code)
     delete (body[0] as any).declarations[0].init.body.nonCodeMeta
     expect(body).toEqual([
       {
@@ -465,99 +427,15 @@ const myVar = funcN(1, 2)`
   })
 })
 
-describe('testing hasPipeOperator', () => {
-  test('hasPipeOperator is true', () => {
-    let code = `sketch mySketch {
-  lineTo(2, 3)
-} |> rx(45, %)
-`
-
-    const tokens = lexer(code)
-    const result = hasPipeOperator(tokens, 0)
-    delete (result as any).bonusNonCodeNode
-    expect(result).toEqual({
-      index: 16,
-      token: { end: 37, start: 35, type: 'operator', value: '|>' },
-    })
-  })
-  test('matches the first pipe', () => {
-    let code = `sketch mySketch {
-  lineTo(2, 3)
-} |> rx(45, %) |> rx(45, %)
-`
-    const tokens = lexer(code)
-    const result = hasPipeOperator(tokens, 0)
-    delete (result as any).bonusNonCodeNode
-    expect(result).toEqual({
-      index: 16,
-      token: { end: 37, start: 35, type: 'operator', value: '|>' },
-    })
-    if (!result) throw new Error('should not happen')
-    expect(code.slice(result.token.start, result.token.end)).toEqual('|>')
-  })
-  test('hasPipeOperator is false when the pipe operator is after a new variable declaration', () => {
-    let code = `sketch mySketch {
-  lineTo(2, 3)
-}
-const yo = myFunc(9()
-  |> rx(45, %)
-`
-    const tokens = lexer(code)
-    expect(hasPipeOperator(tokens, 0)).toEqual(false)
-  })
-  test('hasPipeOperator with binary expression', () => {
-    let code = `const myVar2 = 5 + 1 |> myFn(%)`
-    const tokens = lexer(code)
-    const result = hasPipeOperator(tokens, 1)
-    delete (result as any).bonusNonCodeNode
-    expect(result).toEqual({
-      index: 12,
-      token: { end: 23, start: 21, type: 'operator', value: '|>' },
-    })
-    if (!result) throw new Error('should not happen')
-    expect(code.slice(result.token.start, result.token.end)).toEqual('|>')
-  })
-  test('hasPipeOperator of called mid sketchExpression on a callExpression, and called at the start of the sketchExpression at "{"', () => {
-    const code = [
-      'sketch mySk1 {',
-      '  lineTo(1,1)',
-      '  path myPath = lineTo(0, 1)',
-      '  lineTo(1,1)',
-      '} |> rx(90, %)',
-      'show(mySk1)',
-    ].join('\n')
-    const tokens = lexer(code)
-    const tokenWithMyPathIndex = tokens.findIndex(
-      ({ value }) => value === 'myPath'
-    )
-    const tokenWithLineToIndexForVarDecIndex = tokens.findIndex(
-      ({ value }, index) => value === 'lineTo' && index > tokenWithMyPathIndex
-    )
-    const result = hasPipeOperator(tokens, tokenWithLineToIndexForVarDecIndex)
-    expect(result).toBe(false)
-
-    const braceTokenIndex = tokens.findIndex(({ value }) => value === '{')
-    const result2 = hasPipeOperator(tokens, braceTokenIndex)
-    delete (result2 as any).bonusNonCodeNode
-    expect(result2).toEqual({
-      index: 36,
-      token: { end: 76, start: 74, type: 'operator', value: '|>' },
-    })
-    if (!result2) throw new Error('should not happen')
-    expect(code.slice(result2?.token?.start, result2?.token?.end)).toEqual('|>')
-  })
-})
-
 describe('testing pipe operator special', () => {
   test('pipe operator with sketch', () => {
     let code = `const mySketch = startSketchAt([0, 0])
   |> lineTo([2, 3], %)
   |> lineTo({ to: [0, 1], tag: "myPath" }, %)
   |> lineTo([1, 1], %)
-} |> rx(45, %)
+  |> rx(45, %)
 `
-    const tokens = lexer(code)
-    const { body } = abstractSyntaxTree(tokens)
+    const { body } = parser_wasm(code)
     delete (body[0] as any).declarations[0].init.nonCodeMeta
     expect(body).toEqual([
       {
@@ -786,8 +664,7 @@ describe('testing pipe operator special', () => {
   })
   test('pipe operator with binary expression', () => {
     let code = `const myVar = 5 + 6 |> myFunc(45, %)`
-    const tokens = lexer(code)
-    const { body } = abstractSyntaxTree(tokens)
+    const { body } = parser_wasm(code)
     delete (body as any)[0].declarations[0].init.nonCodeMeta
     expect(body).toEqual([
       {
@@ -866,8 +743,7 @@ describe('testing pipe operator special', () => {
   })
   test('array expression', () => {
     let code = `const yo = [1, '2', three, 4 + 5]`
-    const tokens = lexer(code)
-    const { body } = abstractSyntaxTree(tokens)
+    const { body } = parser_wasm(code)
     expect(body).toEqual([
       {
         type: 'VariableDeclaration',
@@ -942,8 +818,7 @@ describe('testing pipe operator special', () => {
       'const three = 3',
       "const yo = {aStr: 'str', anum: 2, identifier: three, binExp: 4 + 5}",
     ].join('\n')
-    const tokens = lexer(code)
-    const { body } = abstractSyntaxTree(tokens)
+    const { body } = parser_wasm(code)
     expect(body).toEqual([
       {
         type: 'VariableDeclaration',
@@ -1087,8 +962,7 @@ describe('testing pipe operator special', () => {
     const code = `const yo = {key: {
   key2: 'value'
 }}`
-    const tokens = lexer(code)
-    const { body } = abstractSyntaxTree(tokens)
+    const { body } = parser_wasm(code)
     expect(body).toEqual([
       {
         type: 'VariableDeclaration',
@@ -1156,8 +1030,7 @@ describe('testing pipe operator special', () => {
   })
   test('object expression with array ast', () => {
     const code = `const yo = {key: [1, '2']}`
-    const tokens = lexer(code)
-    const { body } = abstractSyntaxTree(tokens)
+    const { body } = parser_wasm(code)
     expect(body).toEqual([
       {
         type: 'VariableDeclaration',
@@ -1221,8 +1094,7 @@ describe('testing pipe operator special', () => {
   })
   test('object memberExpression simple', () => {
     const code = `const prop = yo.one.two`
-    const tokens = lexer(code)
-    const { body } = abstractSyntaxTree(tokens)
+    const { body } = parser_wasm(code)
     expect(body).toEqual([
       {
         type: 'VariableDeclaration',
@@ -1277,8 +1149,7 @@ describe('testing pipe operator special', () => {
   })
   test('object memberExpression with square braces', () => {
     const code = `const prop = yo.one["two"]`
-    const tokens = lexer(code)
-    const { body } = abstractSyntaxTree(tokens)
+    const { body } = parser_wasm(code)
     expect(body).toEqual([
       {
         type: 'VariableDeclaration',
@@ -1334,8 +1205,7 @@ describe('testing pipe operator special', () => {
   })
   test('object memberExpression with two square braces literal and identifier', () => {
     const code = `const prop = yo["one"][two]`
-    const tokens = lexer(code)
-    const { body } = abstractSyntaxTree(tokens)
+    const { body } = parser_wasm(code)
     expect(body).toEqual([
       {
         type: 'VariableDeclaration',
@@ -1394,7 +1264,7 @@ describe('testing pipe operator special', () => {
 describe('nests binary expressions correctly', () => {
   it('works with the simple case', () => {
     const code = `const yo = 1 + 2`
-    const { body } = abstractSyntaxTree(lexer(code))
+    const { body } = parser_wasm(code)
     expect(body[0]).toEqual({
       type: 'VariableDeclaration',
       start: 0,
@@ -1438,7 +1308,7 @@ describe('nests binary expressions correctly', () => {
   it('should nest according to precedence with multiply first', () => {
     // should be binExp { binExp { lit-1 * lit-2 } + lit}
     const code = `const yo = 1 * 2 + 3`
-    const { body } = abstractSyntaxTree(lexer(code))
+    const { body } = parser_wasm(code)
     expect(body[0]).toEqual({
       type: 'VariableDeclaration',
       start: 0,
@@ -1495,7 +1365,7 @@ describe('nests binary expressions correctly', () => {
   it('should nest according to precedence with sum first', () => {
     // should be binExp { lit-1 + binExp { lit-2 * lit-3 } }
     const code = `const yo = 1 + 2 * 3`
-    const { body } = abstractSyntaxTree(lexer(code))
+    const { body } = parser_wasm(code)
     expect(body[0]).toEqual({
       type: 'VariableDeclaration',
       start: 0,
@@ -1551,7 +1421,7 @@ describe('nests binary expressions correctly', () => {
   })
   it('should nest properly with two opperators of equal precedence', () => {
     const code = `const yo = 1 + 2 - 3`
-    const { body } = abstractSyntaxTree(lexer(code))
+    const { body } = parser_wasm(code)
     expect((body[0] as any).declarations[0].init).toEqual({
       type: 'BinaryExpression',
       start: 11,
@@ -1588,7 +1458,7 @@ describe('nests binary expressions correctly', () => {
   })
   it('should nest properly with two opperators of equal (but higher) precedence', () => {
     const code = `const yo = 1 * 2 / 3`
-    const { body } = abstractSyntaxTree(lexer(code))
+    const { body } = parser_wasm(code)
     expect((body[0] as any).declarations[0].init).toEqual({
       type: 'BinaryExpression',
       start: 11,
@@ -1625,7 +1495,7 @@ describe('nests binary expressions correctly', () => {
   })
   it('should nest properly with longer example', () => {
     const code = `const yo = 1 + 2 * (3 - 4) / 5 + 6`
-    const { body } = abstractSyntaxTree(lexer(code))
+    const { body } = parser_wasm(code)
     const init = (body[0] as any).declarations[0].init
     expect(init).toEqual({
       type: 'BinaryExpression',
@@ -1684,13 +1554,13 @@ const key = 'c'`
       end: code.indexOf('const key'),
       value: '\n// this is a comment\n',
     }
-    const { nonCodeMeta } = abstractSyntaxTree(lexer(code))
+    const { nonCodeMeta } = parser_wasm(code)
     expect(nonCodeMeta.noneCodeNodes[0]).toEqual(nonCodeMetaInstance)
 
     // extra whitespace won't change it's position (0) or value (NB the start end would have changed though)
     const codeWithExtraStartWhitespace = '\n\n\n' + code
-    const { nonCodeMeta: nonCodeMeta2 } = abstractSyntaxTree(
-      lexer(codeWithExtraStartWhitespace)
+    const { nonCodeMeta: nonCodeMeta2 } = parser_wasm(
+      codeWithExtraStartWhitespace
     )
     expect(nonCodeMeta2.noneCodeNodes[0].value).toBe(nonCodeMetaInstance.value)
     expect(nonCodeMeta2.noneCodeNodes[0].start).not.toBe(
@@ -1707,7 +1577,7 @@ const key = 'c'`
   |> close(%)
 `
 
-    const { body } = abstractSyntaxTree(lexer(code))
+    const { body } = parser_wasm(code)
     const indexOfSecondLineToExpression = 2
     const sketchNonCodeMeta = (body as any)[0].declarations[0].init.nonCodeMeta
       .noneCodeNodes
@@ -1729,7 +1599,7 @@ const key = 'c'`
       '  |> rx(90, %)',
     ].join('\n')
 
-    const { body } = abstractSyntaxTree(lexer(code))
+    const { body } = parser_wasm(code)
     const sketchNonCodeMeta = (body[0] as any).declarations[0].init.nonCodeMeta
       .noneCodeNodes
     expect(sketchNonCodeMeta[3]).toEqual({
@@ -1741,72 +1611,10 @@ const key = 'c'`
   })
 })
 
-describe('testing findEndofBinaryExpression', () => {
-  it('1 + 2 * 3', () => {
-    const code = `1 + 2 * 3\nconst yo = 5`
-    const tokens = lexer(code)
-    const end = findEndOfBinaryExpression(tokens, 0)
-    expect(tokens[end].value).toBe('3')
-  })
-  it('(1 + 2) / 5 - 3', () => {
-    const code = `(1 + 25) / 5 - 3\nconst yo = 5`
-    const tokens = lexer(code)
-    const end = findEndOfBinaryExpression(tokens, 0)
-    expect(tokens[end].value).toBe('3')
-
-    // expect to have the same end if started later in the string at a legitimate place
-    const indexOf5 = code.indexOf('5')
-    const endStartingAtThe5 = findEndOfBinaryExpression(tokens, indexOf5)
-    expect(endStartingAtThe5).toBe(end)
-  })
-  it('whole thing wraped: ((1 + 2) / 5 - 3)', () => {
-    const code = '((1 + 2) / 5 - 3)\nconst yo = 5'
-    const tokens = lexer(code)
-    const end = findEndOfBinaryExpression(tokens, 0)
-    expect(tokens[end].end).toBe(code.indexOf('3)') + 2)
-  })
-  it('whole thing wraped but given index after the first brace: ((1 + 2) / 5 - 3)', () => {
-    const code = '((1 + 2) / 5 - 3)\nconst yo = 5'
-    const tokens = lexer(code)
-    const end = findEndOfBinaryExpression(tokens, 1)
-    expect(tokens[end].value).toBe('3')
-  })
-  it('given the index of a small wrapped section i.e. `1 + 2` in ((1 + 2) / 5 - 3)', () => {
-    const code = '((1 + 2) / 5 - 3)\nconst yo = 5'
-    const tokens = lexer(code)
-    const end = findEndOfBinaryExpression(tokens, 2)
-    expect(tokens[end].value).toBe('2')
-  })
-  it('lots of silly nesting: (1 + 2) / (5 - (3))', () => {
-    const code = '(1 + 2) / (5 - (3))\nconst yo = 5'
-    const tokens = lexer(code)
-    const end = findEndOfBinaryExpression(tokens, 0)
-    expect(tokens[end].end).toBe(code.indexOf('))') + 2)
-  })
-  it('with pipe operator at the end', () => {
-    const code = '(1 + 2) / (5 - (3))\n  |> fn(%)'
-    const tokens = lexer(code)
-    const end = findEndOfBinaryExpression(tokens, 0)
-    expect(tokens[end].end).toBe(code.indexOf('))') + 2)
-  })
-  it('with call expression at the start of binary expression', () => {
-    const code = 'yo(2) + 3\n  |> fn(%)'
-    const tokens = lexer(code)
-    const end = findEndOfBinaryExpression(tokens, 0)
-    expect(tokens[end].value).toBe('3')
-  })
-  it('with call expression at the end of binary expression', () => {
-    const code = '3 + yo(2)\n  |> fn(%)'
-    const tokens = lexer(code)
-    const end = findEndOfBinaryExpression(tokens, 0)
-    expect(tokens[end].value).toBe(')')
-  })
-})
-
 describe('test UnaryExpression', () => {
   it('should parse a unary expression in simple var dec situation', () => {
     const code = `const myVar = -min(4, 100)`
-    const { body } = abstractSyntaxTree(lexer(code))
+    const { body } = parser_wasm(code)
     const myVarInit = (body?.[0] as any).declarations[0]?.init
     expect(myVarInit).toEqual({
       type: 'UnaryExpression',
@@ -1831,7 +1639,7 @@ describe('test UnaryExpression', () => {
 describe('testing nested call expressions', () => {
   it('callExp in a binExp in a callExp', () => {
     const code = 'const myVar = min(100, 1 + legLen(5, 3))'
-    const { body } = abstractSyntaxTree(lexer(code))
+    const { body } = parser_wasm(code)
     const myVarInit = (body?.[0] as any).declarations[0]?.init
     expect(myVarInit).toEqual({
       type: 'CallExpression',
@@ -1867,8 +1675,7 @@ describe('testing nested call expressions', () => {
 describe('should recognise callExpresions in binaryExpressions', () => {
   const code = "xLineTo(segEndX('seg02', %) + 1, %)"
   it('should recognise the callExp', () => {
-    const tokens = lexer(code)
-    const { body } = abstractSyntaxTree(tokens)
+    const { body } = parser_wasm(code)
     const callExpArgs = (body?.[0] as any).expression?.arguments
     expect(callExpArgs).toEqual([
       {
