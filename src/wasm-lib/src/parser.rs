@@ -507,7 +507,7 @@ fn make_value(tokens: &Vec<Token>, index: usize) -> Result<ValueReturn, KclError
         }
     }
     if current_token.token_type == TokenType::Brace && current_token.value == "{" {
-        let object_expression = make_object_expression(tokens, index);
+        let object_expression = make_object_expression(tokens, index)?;
         return Ok(ValueReturn {
             value: Value::ObjectExpression(Box::new(object_expression.expression)),
             last_index: object_expression.last_index,
@@ -600,7 +600,7 @@ fn make_array_elements(
             last_index: index,
         });
     }
-    let current_element = make_value(tokens, index).unwrap();
+    let current_element = make_value(tokens, index)?;
     let next_token = next_meaningful_token(tokens, current_element.last_index, None);
     let next_token_token = next_token.token.unwrap();
     let is_closing_brace =
@@ -773,7 +773,7 @@ fn make_arguments(
         return make_arguments(tokens, next_comma_or_brace_token_index, _previous_args);
     }
     if argument_token_token.token_type == TokenType::Brace && argument_token_token.value == "{" {
-        let object_expression = make_object_expression(tokens, argument_token.index);
+        let object_expression = make_object_expression(tokens, argument_token.index)?;
         let next_comma_or_brace_token_index =
             next_meaningful_token(tokens, object_expression.last_index, None).index;
         let mut _previous_args = previous_args;
@@ -945,7 +945,7 @@ fn make_variable_declarators(
         init = Value::PipeExpression(Box::new(pipe_expression_result.expression));
         pipe_expression_result.last_index
     } else {
-        let value_result = make_value(tokens, contents_start_token.index).unwrap();
+        let value_result = make_value(tokens, contents_start_token.index)?;
         init = value_result.value;
         value_result.last_index
     };
@@ -1036,7 +1036,7 @@ fn make_unary_expression(
 ) -> Result<UnaryExpressionResult, KclError> {
     let current_token = &tokens[index];
     let next_token = next_meaningful_token(tokens, index, None);
-    let argument = make_value(tokens, next_token.index).unwrap();
+    let argument = make_value(tokens, next_token.index)?;
     let argument_token = &tokens[argument.last_index];
     Ok(UnaryExpressionResult {
         expression: UnaryExpression {
@@ -1117,17 +1117,17 @@ fn make_object_properties(
     tokens: &Vec<Token>,
     index: usize,
     previous_properties: Vec<ObjectProperty>,
-) -> ObjectPropertiesResult {
+) -> Result<ObjectPropertiesResult, KclError> {
     let property_key_token = &tokens[index];
     if property_key_token.token_type == TokenType::Brace && property_key_token.value == "}" {
-        return ObjectPropertiesResult {
+        return Ok(ObjectPropertiesResult {
             properties: previous_properties,
             last_index: index,
-        };
+        });
     }
     let colon_token = next_meaningful_token(tokens, index, None);
     let value_start_token = next_meaningful_token(tokens, colon_token.index, None);
-    let val = make_value(tokens, value_start_token.index).unwrap();
+    let val = make_value(tokens, value_start_token.index)?;
     let value = val.value;
     let value_last_index = val.last_index;
     let comma_or_closing_brace_token = next_meaningful_token(tokens, value_last_index, None);
@@ -1168,18 +1168,21 @@ struct ObjectExpressionResult {
     last_index: usize,
 }
 
-fn make_object_expression(tokens: &Vec<Token>, index: usize) -> ObjectExpressionResult {
+fn make_object_expression(
+    tokens: &Vec<Token>,
+    index: usize,
+) -> Result<ObjectExpressionResult, KclError> {
     let opening_brace_token = &tokens[index];
     let first_property_token = next_meaningful_token(tokens, index, None);
-    let object_properties = make_object_properties(tokens, first_property_token.index, vec![]);
-    ObjectExpressionResult {
+    let object_properties = make_object_properties(tokens, first_property_token.index, vec![])?;
+    Ok(ObjectExpressionResult {
         expression: ObjectExpression {
             start: opening_brace_token.start,
             end: tokens[object_properties.last_index].end,
             properties: object_properties.properties,
         },
         last_index: object_properties.last_index,
-    }
+    })
 }
 
 struct ReturnStatementResult {
@@ -1187,20 +1190,23 @@ struct ReturnStatementResult {
     last_index: usize,
 }
 
-fn make_return_statement(tokens: &Vec<Token>, index: usize) -> ReturnStatementResult {
+fn make_return_statement(
+    tokens: &Vec<Token>,
+    index: usize,
+) -> Result<ReturnStatementResult, KclError> {
     let current_token = &tokens[index];
     let next_token = next_meaningful_token(tokens, index, None);
-    let val = make_value(tokens, next_token.index).unwrap();
+    let val = make_value(tokens, next_token.index)?;
     let value = val.value;
     let last_index = val.last_index;
-    ReturnStatementResult {
+    Ok(ReturnStatementResult {
         statement: ReturnStatement {
             start: current_token.start,
             end: tokens[last_index].end,
             argument: value,
         },
         last_index,
-    }
+    })
 }
 
 struct BodyResult {
@@ -1276,7 +1282,7 @@ fn make_body(
     }
 
     if token.token_type == TokenType::Word && token.value == "return" {
-        let statement = make_return_statement(tokens, token_index);
+        let statement = make_return_statement(tokens, token_index).unwrap();
         let next_thing = next_meaningful_token(tokens, statement.last_index, None);
         if next_thing.non_code_node.is_some() {
             non_code_meta
@@ -1457,7 +1463,8 @@ extern "C" {
 }
 
 #[wasm_bindgen]
-pub fn parse_js(js: &str) -> Result<JsValue, JsError> {
+pub fn parse_js(js: &str) -> Result<JsValue, JsValue> {
+    std::panic::set_hook(Box::new(console_error_panic_hook::hook));
     let tokens = lexer(js);
     let program = abstract_syntax_tree(&tokens).map_err(JsError::from)?;
     Ok(serde_wasm_bindgen::to_value(&program)?)
