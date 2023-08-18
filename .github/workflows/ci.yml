@@ -124,19 +124,20 @@ jobs:
       - uses: actions/download-artifact@v3
 
       - name: Generate the update static endpoint
+        env:
+          VERSION: v0.0.3
         run: |
-          VERSION=`cat package.json | jq -r '.version'`
-          DARWIN_SIG=`cat artifact/macos/kittycad-modeling-app.app.tar.gz.sig`
-          LINUX_SIG=`cat artifact/appimage/kittycad-modeling-app_v$VERSION_amd64.AppImage.tar.gz.sig`
-          WINDOWS_SIG=`cat artifact/nsis/kittycad-modeling-app_v$VERSION_x64-setup.nsis.zip.sig`
+          DARWIN_SIG=`cat artifact/macos/*.app.tar.gz.sig`
+          LINUX_SIG=`cat artifact/appimage/*.AppImage.tar.gz.sig`
+          WINDOWS_SIG=`cat artifact/nsis/*.nsis.zip.sig`
           jq --null-input \
             --arg version "$VERSION" \
             --arg darwin_sig "$DARWIN_SIG" \
-            --arg darwin_url "https://dl.kittycad.io/releases/modeling-app/v$VERSION/kittycad-modeling-app.app.tar.gz" \
+            --arg darwin_url "https://dl.kittycad.io/releases/modeling-app/$VERSION/kittycad-modeling-app.app.tar.gz" \
             --arg linux_sig "$LINUX_SIG" \
-            --arg linux_url "https://dl.kittycad.io/releases/modeling-app/v$VERSION/kittycad-modeling-app.AppImage.tar.gz" \
+            --arg linux_url "https://dl.kittycad.io/releases/modeling-app/$VERSION/kittycad-modeling-app.AppImage.tar.gz" \
             --arg windows_sig "$WINDOWS_SIG" \
-            --arg windows_url "https://dl.kittycad.io/releases/modeling-app/v$VERSION/kittycad-modeling-app-x64-setup.nsis.zip" \
+            --arg windows_url "https://dl.kittycad.io/releases/modeling-app/$VERSION/kittycad-modeling-app-x64-setup.nsis.zip" \
             '{
               "version": $version,
               "platforms": {
