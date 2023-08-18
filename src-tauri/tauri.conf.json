@@ -7,7 +7,7 @@
     "distDir": "../build"
   },
   "package": {
-    "productName": "KittyCAD Modeling",
+    "productName": "kittycad-modeling-app",
     "version": "0.0.3"
   },
   "tauri": {
@@ -58,7 +58,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "KittyCAD-modeling-app",
+      "identifier": "io.kittycad.modeling-app",
       "longDescription": "",
       "macOS": {
         "entitlements": null,

@@ -140,4 +140,8 @@ jobs:
         uses: google-github-actions/upload-cloud-storage@v1.0.3
         with:
           path: artifact/*/*
-          destination: dl.kittycad.io/releases/modeling-app
+          destination: dl.kittycad.io/releases/modeling-app/${{ github.ref_name }}
+      
+      # TODO: add generation of the json endpoint
+      
+      # TODO: upload endpoint to bucket
