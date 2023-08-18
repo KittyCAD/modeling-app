@@ -243,67 +243,67 @@ fn has_pipe_operator(
     index: usize,
     _limit_index: Option<usize>,
 ) -> Result<TokenReturnWithNonCode, KclError> {
-    let mut limit_index = _limit_index;
-    if _limit_index.is_none() {
-        let call_expression = is_call_expression(tokens, index)?;
-        if let Some(ce) = call_expression {
-            let token_after_call_expression = next_meaningful_token(tokens, ce, None);
+    let limit_index = match _limit_index {
+        Some(i) => i,
+        None => {
+            let call_expression = is_call_expression(tokens, index)?;
+            if let Some(ce) = call_expression {
+                let token_after_call_expression = next_meaningful_token(tokens, ce, None);
 
-            if let Some(token_after_call_expression_val) = token_after_call_expression.token {
-                if token_after_call_expression_val.token_type == TokenType::Operator
-                    && token_after_call_expression_val.value == "|>"
-                {
+                if let Some(token_after_call_expression_val) = token_after_call_expression.token {
+                    if token_after_call_expression_val.token_type == TokenType::Operator
+                        && token_after_call_expression_val.value == "|>"
+                    {
+                        return Ok(TokenReturnWithNonCode {
+                            token: Some(token_after_call_expression_val),
+                            index: token_after_call_expression.index,
+                            // non_code_node: None,
+                            non_code_node: token_after_call_expression.non_code_node,
+                        });
+                    }
                     return Ok(TokenReturnWithNonCode {
-                        token: Some(token_after_call_expression_val),
+                        token: None,
                         index: token_after_call_expression.index,
-                        // non_code_node: None,
-                        non_code_node: token_after_call_expression.non_code_node,
+                        non_code_node: None,
                     });
                 }
-                return Ok(TokenReturnWithNonCode {
-                    token: None,
-                    index: token_after_call_expression.index,
-                    non_code_node: None,
-                });
             }
-        }
-        let current_token = &tokens[index];
-        if current_token.token_type == TokenType::Brace && current_token.value == "{" {
-            let closing_brace_index = find_closing_brace(tokens, index, 0, "")?;
-            let token_after_closing_brace =
-                next_meaningful_token(tokens, closing_brace_index, None);
-            if token_after_closing_brace.token.is_some() {
-                let token_after_closing_brace_val = token_after_closing_brace.token.unwrap();
-                if token_after_closing_brace_val.token_type == TokenType::Operator
-                    && token_after_closing_brace_val.value == "|>"
-                {
+            let current_token = &tokens[index];
+            if current_token.token_type == TokenType::Brace && current_token.value == "{" {
+                let closing_brace_index = find_closing_brace(tokens, index, 0, "")?;
+                let token_after_closing_brace =
+                    next_meaningful_token(tokens, closing_brace_index, None);
+                if let Some(token_after_closing_brace_val) = token_after_closing_brace.token {
+                    if token_after_closing_brace_val.token_type == TokenType::Operator
+                        && token_after_closing_brace_val.value == "|>"
+                    {
+                        return Ok(TokenReturnWithNonCode {
+                            token: Some(token_after_closing_brace_val),
+                            index: token_after_closing_brace.index,
+                            non_code_node: token_after_closing_brace.non_code_node,
+                        });
+                    }
                     return Ok(TokenReturnWithNonCode {
-                        token: Some(token_after_closing_brace_val),
+                        token: None,
                         index: token_after_closing_brace.index,
-                        non_code_node: token_after_closing_brace.non_code_node,
+                        non_code_node: None,
                     });
                 }
-                return Ok(TokenReturnWithNonCode {
-                    token: None,
-                    index: token_after_closing_brace.index,
-                    non_code_node: None,
-                });
             }
-        }
 
-        let next_declaration = find_next_declaration_keyword(tokens, index)?;
-        limit_index = Some(next_declaration.index);
-    }
+            let next_declaration = find_next_declaration_keyword(tokens, index)?;
+            next_declaration.index
+        }
+    };
     let next_token = next_meaningful_token(tokens, index, None);
-    if next_token.index >= limit_index.unwrap() {
+    if next_token.index >= limit_index {
         return Ok(TokenReturnWithNonCode {
             token: None,
             index: next_token.index,
             non_code_node: None,
         });
     }
-    if next_token.token.is_some() {
-        let next_token_val = next_token.token.unwrap();
+    if let Some(next_token_val) = next_token.token {
         if next_token_val.token_type == TokenType::Operator && next_token_val.value == "|>" {
             return Ok(TokenReturnWithNonCode {
                 token: Some(next_token_val),
@@ -312,7 +312,7 @@ fn has_pipe_operator(
             });
         }
     }
-    has_pipe_operator(tokens, next_token.index, limit_index)
+    has_pipe_operator(tokens, next_token.index, Some(limit_index))
 }
 
 fn collect_object_keys(
@@ -336,43 +336,43 @@ fn collect_object_keys(
         }
         None => _next_token,
     };
-    if period_or_opening_bracket.token.is_none() {
-        return Ok(previous_keys);
-    }
-    let period_or_opening_bracket_token = period_or_opening_bracket.token.unwrap();
-    if period_or_opening_bracket_token.token_type != TokenType::Period
-        && period_or_opening_bracket_token.token_type != TokenType::Brace
-    {
-        return Ok(previous_keys);
-    }
-    let key_token = next_meaningful_token(tokens, period_or_opening_bracket.index, None);
-    let next_period_or_opening_bracket = next_meaningful_token(tokens, key_token.index, None);
-    let is_braced = match next_period_or_opening_bracket.token {
-        Some(next_period_or_opening_bracket_val) => {
-            next_period_or_opening_bracket_val.token_type == TokenType::Brace
-                && next_period_or_opening_bracket_val.value == "]"
+    if let Some(period_or_opening_bracket_token) = period_or_opening_bracket.token {
+        if period_or_opening_bracket_token.token_type != TokenType::Period
+            && period_or_opening_bracket_token.token_type != TokenType::Brace
+        {
+            return Ok(previous_keys);
         }
-        None => false,
-    };
-    let end_index = if is_braced {
-        next_period_or_opening_bracket.index
+        let key_token = next_meaningful_token(tokens, period_or_opening_bracket.index, None);
+        let next_period_or_opening_bracket = next_meaningful_token(tokens, key_token.index, None);
+        let is_braced = match next_period_or_opening_bracket.token {
+            Some(next_period_or_opening_bracket_val) => {
+                next_period_or_opening_bracket_val.token_type == TokenType::Brace
+                    && next_period_or_opening_bracket_val.value == "]"
+            }
+            None => false,
+        };
+        let end_index = if is_braced {
+            next_period_or_opening_bracket.index
+        } else {
+            key_token.index
+        };
+        let key_token_token = key_token.token.unwrap();
+        let key = if key_token_token.token_type == TokenType::Word {
+            LiteralIdentifier::Identifier(Box::new(make_identifier(tokens, key_token.index)))
+        } else {
+            LiteralIdentifier::Literal(Box::new(make_literal(tokens, key_token.index)?))
+        };
+        let computed = is_braced && key_token_token.token_type == TokenType::Word;
+        let mut new_previous_keys = previous_keys;
+        new_previous_keys.push(ObjectKeyInfo {
+            key,
+            index: end_index,
+            computed,
+        });
+        collect_object_keys(tokens, key_token.index, Some(new_previous_keys))
     } else {
-        key_token.index
-    };
-    let key_token_token = key_token.token.unwrap();
-    let key = if key_token_token.token_type == TokenType::Word {
-        LiteralIdentifier::Identifier(Box::new(make_identifier(tokens, key_token.index)))
-    } else {
-        LiteralIdentifier::Literal(Box::new(make_literal(tokens, key_token.index)?))
-    };
-    let computed = is_braced && key_token_token.token_type == TokenType::Word;
-    let mut new_previous_keys = previous_keys;
-    new_previous_keys.push(ObjectKeyInfo {
-        key,
-        index: end_index,
-        computed,
-    });
-    collect_object_keys(tokens, key_token.index, Some(new_previous_keys))
+        Ok(previous_keys)
+    }
 }
 
 pub struct MemberExpressionReturn {
@@ -417,17 +417,17 @@ fn find_end_of_binary_expression(tokens: &Vec<Token>, index: usize) -> Result<us
     if current_token.token_type == TokenType::Brace && current_token.value == "(" {
         let closing_parenthesis = find_closing_brace(tokens, index, 0, "")?;
         let maybe_another_operator = next_meaningful_token(tokens, closing_parenthesis, None);
-        if maybe_another_operator.token.is_none() {
+        if let Some(maybe_another_operator_token) = maybe_another_operator.token {
+            if maybe_another_operator_token.token_type != TokenType::Operator
+                || maybe_another_operator_token.value == "|>"
+            {
+                return Ok(closing_parenthesis);
+            }
+            let next_right = next_meaningful_token(tokens, maybe_another_operator.index, None);
+            return find_end_of_binary_expression(tokens, next_right.index);
+        } else {
             return Ok(closing_parenthesis);
         }
-        let maybe_another_operator_token = maybe_another_operator.token.unwrap();
-        if maybe_another_operator_token.token_type != TokenType::Operator
-            || maybe_another_operator_token.value == "|>"
-        {
-            return Ok(closing_parenthesis);
-        }
-        let next_right = next_meaningful_token(tokens, maybe_another_operator.index, None);
-        return find_end_of_binary_expression(tokens, next_right.index);
     }
     if current_token.token_type == TokenType::Word
         && tokens.get(index + 1).unwrap().token_type == TokenType::Brace
@@ -435,29 +435,30 @@ fn find_end_of_binary_expression(tokens: &Vec<Token>, index: usize) -> Result<us
     {
         let closing_parenthesis = find_closing_brace(tokens, index + 1, 0, "")?;
         let maybe_another_operator = next_meaningful_token(tokens, closing_parenthesis, None);
-        if maybe_another_operator.token.is_none() {
+        if let Some(maybe_another_operator_token) = maybe_another_operator.token {
+            if maybe_another_operator_token.token_type != TokenType::Operator
+                || maybe_another_operator_token.value == "|>"
+            {
+                return Ok(closing_parenthesis);
+            }
+            let next_right = next_meaningful_token(tokens, maybe_another_operator.index, None);
+            return find_end_of_binary_expression(tokens, next_right.index);
+        } else {
             return Ok(closing_parenthesis);
         }
-        let maybe_another_operator_token = maybe_another_operator.token.unwrap();
-        if maybe_another_operator_token.token_type != TokenType::Operator
-            || maybe_another_operator_token.value == "|>"
-        {
-            return Ok(closing_parenthesis);
-        }
-        let next_right = next_meaningful_token(tokens, maybe_another_operator.index, None);
-        return find_end_of_binary_expression(tokens, next_right.index);
     }
     let maybe_operator = next_meaningful_token(tokens, index, None);
-    if maybe_operator.token.is_none() {
+    if let Some(maybe_operator_token) = maybe_operator.token {
+        if maybe_operator_token.token_type != TokenType::Operator
+            || maybe_operator_token.value == "|>"
+        {
+            return Ok(index);
+        }
+        let next_right = next_meaningful_token(tokens, maybe_operator.index, None);
+        find_end_of_binary_expression(tokens, next_right.index)
+    } else {
         return Ok(index);
     }
-    let maybe_operator_token = maybe_operator.token.unwrap();
-    if maybe_operator_token.token_type != TokenType::Operator || maybe_operator_token.value == "|>"
-    {
-        return Ok(index);
-    }
-    let next_right = next_meaningful_token(tokens, maybe_operator.index, None);
-    find_end_of_binary_expression(tokens, next_right.index)
 }
 
 struct ValueReturn {
