@@ -174,11 +174,11 @@ jobs:
         with:
           project_id: kittycadapi
       
-      # - name: Upload release files to public bucket
-      #   uses: google-github-actions/upload-cloud-storage@v1.0.3
-      #   with:
-      #     path: artifact/*/*
-      #     destination: dl.kittycad.io/releases/modeling-app/test/v${{ env.VERSION }} 
+      - name: Upload release files to public bucket
+        uses: google-github-actions/upload-cloud-storage@v1.0.3
+        with:
+          path: artifact/*/*
+          destination: dl.kittycad.io/releases/modeling-app/test/v${{ env.VERSION_NO_V }} 
       
       - name: Upload update endpoint to public bucket
         uses: google-github-actions/upload-cloud-storage@v1.0.3
