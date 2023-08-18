@@ -12,7 +12,6 @@ import {
   SourceRange,
 } from './lang/executor'
 import { recast } from './lang/recast'
-import { asyncLexer } from './lang/tokeniser'
 import { EditorSelection } from '@codemirror/state'
 import { BaseDirectory } from '@tauri-apps/api/fs'
 import {
@@ -20,7 +19,7 @@ import {
   SourceRangeMap,
   EngineCommandManager,
 } from './lang/std/engineConnection'
-import { KCLError, KCLUndefinedValueError } from './lang/errors'
+import { KCLError } from './lang/errors'
 
 export type Selection = {
   type: 'default' | 'line-end' | 'line-mid'

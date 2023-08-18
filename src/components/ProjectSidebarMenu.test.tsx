@@ -1,5 +1,4 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { User } from '../useStore'
 import { BrowserRouter } from 'react-router-dom'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
 import { ProjectWithEntryPointMetadata } from '../Router'
