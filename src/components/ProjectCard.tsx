@@ -79,11 +79,11 @@ function ProjectCard({
           <div className="p-1 flex flex-col gap-2">
             <Link
               to={`${paths.FILE}/${encodeURIComponent(project.path)}`}
-              className="flex-1"
+              className="flex-1 text-liquid-100"
             >
               {project.name?.replace(FILE_EXT, '')}
             </Link>
-            <span className="text-chalkboard-40 dark:text-chalkboard-60 text-xs">
+            <span className="text-chalkboard-60 text-xs">
               Edited {getDisplayedTime(project.entrypoint_metadata.modifiedAt)}
             </span>
             <div className="absolute bottom-2 right-2 flex gap-1 items-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">

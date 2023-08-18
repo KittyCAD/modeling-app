@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import { useStore } from '../useStore'
-import { faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faFileExport, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from './ActionButton'
 import Modal from 'react-modal'
 import React from 'react'
@@ -9,7 +9,15 @@ import { Models } from '@kittycad/lib'
 
 type OutputFormat = Models['OutputFormat_type']
 
-export const ExportButton = () => {
+interface ExportButtonProps extends React.PropsWithChildren {
+  className?: {
+    button?: string
+    // If we wanted more classname configuration of sub-elements,
+    // put them here
+  }
+}
+
+export const ExportButton = ({ children, className }: ExportButtonProps) => {
   const { engineCommandManager } = useStore((s) => ({
     engineCommandManager: s.engineCommandManager,
   }))
@@ -18,17 +26,6 @@ export const ExportButton = () => {
 
   const defaultType = 'gltf'
   const [type, setType] = React.useState(defaultType)
-
-  const customModalStyles = {
-    content: {
-      top: '50%',
-      left: '50%',
-      right: 'auto',
-      bottom: 'auto',
-      marginRight: '-50%',
-      transform: 'translate(-50%, -50%)',
-    },
-  }
 
   function openModal() {
     setIsOpen(true)
@@ -88,20 +85,26 @@ export const ExportButton = () => {
 
   return (
     <>
-      <button onClick={openModal}>Export</button>
+      <ActionButton
+        onClick={openModal}
+        Element="button"
+        icon={{ icon: faFileExport }}
+        className={className?.button}
+      >
+        {children || 'Export'}
+      </ActionButton>
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
         contentLabel="Export"
-        style={customModalStyles}
+        overlayClassName="z-40 fixed inset-0 grid place-items-center"
+        className="rounded p-4 bg-chalkboard-10 dark:bg-chalkboard-100 border max-w-xl w-full"
       >
-        <div className="text-black">
-          <h1 className="text-2xl font-bold">Export your design</h1>
-          <form onSubmit={formik.handleSubmit}>
-            <p>
-              <label htmlFor="type">Type</label>
-            </p>
-            <p>
+        <h1 className="text-2xl font-bold">Export your design</h1>
+        <form onSubmit={formik.handleSubmit}>
+          <div className="flex flex-wrap justify-between gap-8 items-center w-full my-8">
+            <label htmlFor="type" className="flex-1">
+              <p className="mb-2">Type</p>
               <select
                 id="type"
                 name="type"
@@ -109,6 +112,7 @@ export const ExportButton = () => {
                   setType(e.target.value)
                   formik.handleChange(e)
                 }}
+                className="bg-chalkboard-20 dark:bg-chalkboard-90 w-full"
               >
                 <option value="gltf">gltf</option>
                 <option value="obj">obj</option>
@@ -116,54 +120,46 @@ export const ExportButton = () => {
                 <option value="step">step</option>
                 <option value="stl">stl</option>
               </select>
-            </p>
-
+            </label>
             {(type === 'gltf' || type === 'ply' || type === 'stl') && (
-              <>
-                <p>
-                  {' '}
-                  <label htmlFor="storage">Storage</label>
-                </p>
-                <p>
-                  <select
-                    id="storage"
-                    name="storage"
-                    onChange={formik.handleChange}
-                    value={formik.values.storage}
-                  >
-                    {type === 'gltf' && (
-                      <>
-                        <option value="embedded">embedded</option>
-                        <option value="binary">binary</option>
-                        <option value="standard">standard</option>
-                      </>
-                    )}
-                    {type === 'ply' && (
-                      <>
-                        <option value="ascii">ascii</option>
-                        <option value="binary">binary</option>
-                      </>
-                    )}
-                    {type === 'stl' && (
-                      <>
-                        <option value="ascii">ascii</option>
-                        <option value="binary_little_endian">
-                          binary_little_endian
-                        </option>
-                        <option value="binary_big_endian">
-                          binary_big_endian
-                        </option>
-                      </>
-                    )}
-                  </select>
-                </p>
-              </>
+              <label htmlFor="storage" className="flex-1">
+                <p className="mb-2">Storage</p>
+                <select
+                  id="storage"
+                  name="storage"
+                  onChange={formik.handleChange}
+                  value={formik.values.storage}
+                  className="bg-chalkboard-20 dark:bg-chalkboard-90 w-full"
+                >
+                  {type === 'gltf' && (
+                    <>
+                      <option value="embedded">embedded</option>
+                      <option value="binary">binary</option>
+                      <option value="standard">standard</option>
+                    </>
+                  )}
+                  {type === 'ply' && (
+                    <>
+                      <option value="ascii">ascii</option>
+                      <option value="binary">binary</option>
+                    </>
+                  )}
+                  {type === 'stl' && (
+                    <>
+                      <option value="ascii">ascii</option>
+                      <option value="binary_little_endian">
+                        binary_little_endian
+                      </option>
+                      <option value="binary_big_endian">
+                        binary_big_endian
+                      </option>
+                    </>
+                  )}
+                </select>
+              </label>
             )}
+          </div>
 
-            <div className="flex justify-between mt-6">
-              <button type="submit">Submit</button>
-            </div>
-          </form>
           <div className="flex justify-between mt-6">
             <ActionButton
               Element="button"
@@ -178,8 +174,15 @@ export const ExportButton = () => {
             >
               Close
             </ActionButton>
+            <ActionButton
+              Element="button"
+              type="submit"
+              icon={{ icon: faFileExport }}
+            >
+              Export
+            </ActionButton>
           </div>
-        </div>
+        </form>
       </Modal>
     </>
   )

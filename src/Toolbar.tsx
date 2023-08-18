@@ -32,7 +32,6 @@ export const Toolbar = () => {
 
   return (
     <div>
-      <ExportButton />
       {guiMode.mode === 'default' && (
         <button
           onClick={() => {

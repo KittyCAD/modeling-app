@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { paths } from '../Router'
 import makeUrlPathRelative from '../lib/makeUrlPathRelative'
+import { ExportButton } from './ExportButton'
 
 const UserSidebarMenu = ({ user }: { user?: User }) => {
   const displayedName = getDisplayName(user)
@@ -35,10 +36,10 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
     <Popover className="relative">
       {user?.image && !imageLoadFailed ? (
         <Popover.Button
-          className="border-0 rounded-full w-fit p-0"
+          className="border-0 rounded-full w-fit p-0 focus:outline-none group"
           data-testid="user-sidebar-toggle"
         >
-          <div className="rounded-full border border-chalkboard-70/50 hover:border-liquid-50 overflow-hidden">
+          <div className="rounded-full border border-chalkboard-70/50 hover:border-liquid-50 group-focus:border-liquid-50 overflow-hidden">
             <img
               src={user?.image || ''}
               alt={user?.name || ''}
@@ -58,9 +59,9 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           Menu
         </ActionButton>
       )}
-      <Popover.Overlay className="fixed z-40 inset-0 bg-chalkboard-110/50" />
+      <Popover.Overlay className="fixed z-20 inset-0 bg-chalkboard-110/50" />
 
-      <Popover.Panel className="fixed inset-0 left-auto z-50 w-64 bg-chalkboard-10 dark:bg-chalkboard-100 border border-liquid-100 shadow-md rounded-l-lg">
+      <Popover.Panel className="fixed inset-0 left-auto z-30 w-64 bg-chalkboard-10 dark:bg-chalkboard-100 border border-liquid-100 shadow-md rounded-l-lg overflow-hidden">
         {({ close }) => (
           <>
             {user && (
