@@ -110,22 +110,32 @@ jobs:
         env:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
-      
-      # TODO: move to publish-apps-release and add real variables
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: src-tauri/target/release/bundle/*/*
+
+
+  publish-apps-release-pre:
+    runs-on: ubuntu-20.04
+    needs: [build-apps]
+    steps:
+
+      - uses: actions/download-artifact@v3
+
       - name: Generate the update static endpoint
-        env:
-          VERSION: v0.0.4
-          CURRENT_VERSION: v0.0.3
-          TARGET: macos
-          ARCH: amd64
         run: |
+          VERSION=`cat package.json | jq -r '.version'`
+          DARWIN_SIG=`cat artifact/macos/kittycad-modeling-app.app.tar.gz.sig`
+          LINUX_SIG=`cat artifact/appimage/kittycad-modeling-app_v$VERSION_amd64.AppImage.tar.gz.sig`
+          WINDOWS_SIG=`cat artifact/nsis/kittycad-modeling-app_v$VERSION_x64-setup.nsis.zip.sig`
           jq --null-input \
             --arg version "$VERSION" \
-            --arg darwin_sig "DARWINSIG" \
-            --arg darwin_url "https://dl.kittycad.io/releases/modeling-app/$VERSION/kittycad-modeling-app.app.tar.gz" \
-            --arg linux_sig "LINUXSIG" \
+            --arg darwin_sig "$DARWIN_SIG" \
+            --arg darwin_url "https://dl.kittycad.io/releases/modeling-app/v$VERSION/kittycad-modeling-app.app.tar.gz" \
+            --arg linux_sig "$LINUX_SIG" \
             --arg linux_url "https://dl.kittycad.io/releases/modeling-app/v$VERSION/kittycad-modeling-app.AppImage.tar.gz" \
-            --arg windows_sig "WINDOWSSIG" \
+            --arg windows_sig "$WINDOWS_SIG" \
             --arg windows_url "https://dl.kittycad.io/releases/modeling-app/v$VERSION/kittycad-modeling-app-x64-setup.nsis.zip" \
             '{
               "version": $version,
@@ -143,12 +153,8 @@ jobs:
                   "url": $windows_url
                 },
               }
-            }' > endpoint_$TARGET_$ARCH_${CURRENT_VERSION}.json
-            cat endpoint_$TARGET_$ARCH_${CURRENT_VERSION}.json
-
-      - uses: actions/upload-artifact@v3
-        with:
-          path: src-tauri/target/release/bundle/*/*
+            }' > endpoint.json
+            cat endpoint.json
 
 
   publish-apps-release:
