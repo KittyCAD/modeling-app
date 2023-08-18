@@ -1464,7 +1464,6 @@ extern "C" {
 
 #[wasm_bindgen]
 pub fn parse_js(js: &str) -> Result<JsValue, JsValue> {
-    std::panic::set_hook(Box::new(console_error_panic_hook::hook));
     let tokens = lexer(js);
     let program = abstract_syntax_tree(&tokens).map_err(JsError::from)?;
     Ok(serde_wasm_bindgen::to_value(&program)?)
