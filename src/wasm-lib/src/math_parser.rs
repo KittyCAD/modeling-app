@@ -524,7 +524,7 @@ mod test {
         assert_eq!(
             result,
             BinaryExpression {
-                operator: "+".to_string(),
+                operator: "*".to_string(),
                 start: 0,
                 end: 9,
                 left: BinaryPart::Literal(Box::new(Literal {
@@ -534,7 +534,7 @@ mod test {
                     end: 1,
                 })),
                 right: BinaryPart::BinaryExpression(Box::new(BinaryExpression {
-                    operator: "*".to_string(),
+                    operator: "+".to_string(),
                     start: 4,
                     end: 9,
                     left: BinaryPart::Literal(Box::new(Literal {
@@ -646,7 +646,7 @@ mod test {
         assert_eq!(
             result,
             BinaryExpression {
-                operator: "+".to_string(),
+                operator: "/".to_string(),
                 start: 0,
                 end: 17,
                 left: BinaryPart::Literal(Box::new(Literal {
@@ -656,7 +656,7 @@ mod test {
                     end: 1,
                 })),
                 right: BinaryPart::BinaryExpression(Box::new(BinaryExpression {
-                    operator: "/".to_string(),
+                    operator: "+".to_string(),
                     start: 4,
                     end: 17,
                     left: BinaryPart::BinaryExpression(Box::new(BinaryExpression {
