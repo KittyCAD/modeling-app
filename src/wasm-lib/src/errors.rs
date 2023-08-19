@@ -27,3 +27,11 @@ pub struct KclErrorDetails {
     #[serde(rename = "msg")]
     pub message: String,
 }
+
+/// This is different than to_string() in that it will serialize the Error
+/// the struct as JSON so we can deserialize it on the js side.
+impl From<KclError> for String {
+    fn from(error: KclError) -> Self {
+        serde_json::to_string(&error).unwrap()
+    }
+}
