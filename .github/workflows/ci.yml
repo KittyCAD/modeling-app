@@ -121,8 +121,9 @@ jobs:
           path: src-tauri/target/release/bundle/*/*
 
 
-  publish-apps-release-pre:
+  publish-apps-release:
     runs-on: ubuntu-20.04
+    if: github.event_name == 'release'
     needs: [build-test-web, build-apps]
     env:
       VERSION_NO_V: ${{ needs.build-test-web.outputs.version }}
@@ -137,7 +138,7 @@ jobs:
           DARWIN_SIG=`cat artifact/macos/*.app.tar.gz.sig`
           LINUX_SIG=`cat artifact/appimage/*.AppImage.tar.gz.sig`
           WINDOWS_SIG=`cat artifact/nsis/*.nsis.zip.sig`
-          RELEASE_DIR=https://dl.kittycad.io/releases/modeling-app/test/v${VERSION_NO_V}
+          RELEASE_DIR=https://dl.kittycad.io/releases/modeling-app/v${VERSION_NO_V}
           jq --null-input \
             --arg version "v${VERSION_NO_V}" \
             --arg darwin_sig "$DARWIN_SIG" \
@@ -181,38 +182,7 @@ jobs:
           path: artifact
           glob: '*/kittycad-modeling-app*'
           parent: false
-          destination: dl.kittycad.io/releases/modeling-app/test/v${{ env.VERSION_NO_V }} 
-      
-      - name: Upload update endpoint to public bucket
-        uses: google-github-actions/upload-cloud-storage@v1.0.3
-        with:
-          path: last_update.json
-          destination: dl.kittycad.io/releases/modeling-app/test
-
-
-  publish-apps-release:
-    runs-on: ubuntu-20.04
-    if: github.event_name == 'release'
-    needs: [build-apps]
-    steps:
-
-      - uses: actions/download-artifact@v3
-
-      - name: Authenticate to Google Cloud
-        uses: 'google-github-actions/auth@v1.1.1'
-        with:
-          credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
-
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1.1.1
-        with:
-          project_id: kittycadapi
-      
-      - name: Upload release files to public bucket
-        uses: google-github-actions/upload-cloud-storage@v1.0.3
-        with:
-          path: artifact/*/*
-          destination: dl.kittycad.io/releases/modeling-app/${{ github.ref_name }}
+          destination: dl.kittycad.io/releases/modeling-app/v${{ env.VERSION_NO_V }} 
       
       - name: Upload update endpoint to public bucket
         uses: google-github-actions/upload-cloud-storage@v1.0.3
@@ -223,4 +193,4 @@ jobs:
       - uses: shogo82148/actions-upload-release-asset@v1
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: artifact/*/*
+          asset_path: 'artifact/*/kittycad-modeling-app*'

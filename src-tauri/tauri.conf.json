@@ -82,7 +82,7 @@
     "updater": {
       "active": true,
       "endpoints": [
-        "https://dl.kittycad.io/releases/modeling-app/test/last_update.json"
+        "https://dl.kittycad.io/releases/modeling-app/last_update.json"
       ],
       "dialog": true,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEUzNzA4MjBEQjFBRTY4NzYKUldSMmFLNnhEWUp3NCtsT21Jd05wQktOaGVkOVp6MUFma0hNTDRDSnI2RkJJTEZOWG1ncFhqcU8K"
