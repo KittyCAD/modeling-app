@@ -1,7 +1,8 @@
 import { lexer_js } from '../wasm-lib/pkg/wasm_lib'
 import { initPromise } from './rust'
-export type { Token } from '../wasm-lib/bindings/Token'
 import { Token } from '../wasm-lib/bindings/Token'
+
+export type { Token } from '../wasm-lib/bindings/Token'
 
 export async function asyncLexer(str: string): Promise<Token[]> {
   await initPromise

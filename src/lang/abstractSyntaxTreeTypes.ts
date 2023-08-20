@@ -1,3 +1,6 @@
+export type { NoneCodeMeta } from '../wasm-lib/bindings/NoneCodeMeta'
+import { NoneCodeMeta } from '../wasm-lib/bindings/NoneCodeMeta'
+
 export type SyntaxType =
   | 'Program'
   | 'ExpressionStatement'
@@ -56,18 +59,6 @@ export type BinaryPart =
   | BinaryExpression
   | CallExpression
   | UnaryExpression
-
-export interface NoneCodeNode extends GeneralStatement {
-  type: 'NoneCodeNode'
-  value: string
-}
-
-export interface NoneCodeMeta {
-  // Stores the whitespace/comments that go after the statement who's index we're using here
-  noneCodeNodes: { [statementIndex: number]: NoneCodeNode }
-  // Which is why we also need `start` for and whitespace at the start of the file/block
-  start?: NoneCodeNode
-}
 
 export interface ExpressionStatement extends GeneralStatement {
   type: 'ExpressionStatement'
