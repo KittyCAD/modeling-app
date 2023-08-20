@@ -3,6 +3,12 @@
 version = 3
 
 [[package]]
+name = "Inflector"
+version = "0.11.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fe438c63458706e03479442743baae6c88256498e6431708f6dfc520a26515d3"
+
+[[package]]
 name = "addr2line"
 version = "0.20.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -46,7 +52,7 @@ checksum = "bc00ceb34980c03614e35a3a4e218276a0a824e911d07651cd0d858a51e8c0f0"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.26",
+ "syn 2.0.29",
 ]
 
 [[package]]
@@ -278,7 +284,7 @@ checksum = "89ca545a94061b6365f2c7355b4b32bd20df3ff95f02da9329b34ccc3bd6ee72"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.26",
+ "syn 2.0.29",
 ]
 
 [[package]]
@@ -694,7 +700,7 @@ dependencies = [
  "regex",
  "regex-syntax 0.7.4",
  "structmeta",
- "syn 2.0.26",
+ "syn 2.0.29",
 ]
 
 [[package]]
@@ -1126,7 +1132,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "structmeta-derive",
- "syn 2.0.26",
+ "syn 2.0.29",
 ]
 
 [[package]]
@@ -1137,7 +1143,7 @@ checksum = "a60bcaff7397072dca0017d1db428e30d5002e00b6847703e2e42005c95fbe00"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.26",
+ "syn 2.0.29",
 ]
 
 [[package]]
@@ -1153,13 +1159,22 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "2.0.26"
+version = "2.0.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "45c3457aacde3c65315de5031ec191ce46604304d2446e803d71ade03308d970"
+checksum = "c324c494eba9d92503e6f1ef2e6df781e78f6a7705a0202d9801b198807d518a"
 dependencies = [
  "proc-macro2",
  "quote",
  "unicode-ident",
+]
+
+[[package]]
+name = "termcolor"
+version = "1.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "be55cf8942feac5c765c2c993422806843c9a9a45d4d5c407ad6dd2ea95eb9b6"
+dependencies = [
+ "winapi-util",
 ]
 
 [[package]]
@@ -1179,7 +1194,7 @@ checksum = "6bb623b56e39ab7dcd4b1b98bb6c8f8d907ed255b18de254088016b27a8ee19b"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.26",
+ "syn 2.0.29",
 ]
 
 [[package]]
@@ -1262,7 +1277,7 @@ checksum = "5f4f31f56159e98206da9efd823404b79b6ef3143b4a7ab76e67b1751b25a4ab"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.26",
+ "syn 2.0.29",
 ]
 
 [[package]]
@@ -1279,6 +1294,29 @@ name = "try-lock"
 version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3528ecfd12c466c6f163363caf2d02a71161dd5e1cc6ae7b34207ea2d42d81ed"
+
+[[package]]
+name = "ts-rs"
+version = "7.0.0"
+source = "git+https://github.com/kittycad/ts-rs.git?branch=serde_json#94e2a19c41194e47009fafc7b5a2c28ae544a6e8"
+dependencies = [
+ "serde_json",
+ "thiserror",
+ "ts-rs-macros",
+ "uuid",
+]
+
+[[package]]
+name = "ts-rs-macros"
+version = "7.0.0"
+source = "git+https://github.com/kittycad/ts-rs.git?branch=serde_json#94e2a19c41194e47009fafc7b5a2c28ae544a6e8"
+dependencies = [
+ "Inflector",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.29",
+ "termcolor",
+]
 
 [[package]]
 name = "unicase"
@@ -1387,7 +1425,7 @@ dependencies = [
  "once_cell",
  "proc-macro2",
  "quote",
- "syn 2.0.26",
+ "syn 2.0.29",
  "wasm-bindgen-shared",
 ]
 
@@ -1421,7 +1459,7 @@ checksum = "54681b18a46765f095758388f2d0cf16eb8d4169b639ab575a8f5693af210c7b"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.26",
+ "syn 2.0.29",
  "wasm-bindgen-backend",
  "wasm-bindgen-shared",
 ]
@@ -1448,6 +1486,7 @@ dependencies = [
  "serde-wasm-bindgen",
  "serde_json",
  "thiserror",
+ "ts-rs",
  "wasm-bindgen",
 ]
 
@@ -1495,6 +1534,15 @@ name = "winapi-i686-pc-windows-gnu"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ac3b87c63620426dd9b991e5ce0329eff545bccbbb34f3be09ff6fb6ab51b7b6"
+
+[[package]]
+name = "winapi-util"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "70ec6ce85bb158151cae5e5c87f95a8e97d2c0c4b001223f33a334e3ce5de178"
+dependencies = [
+ "winapi",
+]
 
 [[package]]
 name = "winapi-x86_64-pc-windows-gnu"

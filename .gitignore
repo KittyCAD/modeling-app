@@ -24,5 +24,6 @@ yarn-error.log*
 
 # rust
 src/wasm-lib/target
+src/wasm-lib/bindings
 public/wasm_lib_bg.wasm
 src/wasm-lib/lcov.info
