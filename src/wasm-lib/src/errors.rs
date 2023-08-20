@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
-#[derive(Error, Debug, Serialize, Deserialize)]
+#[derive(Error, Debug, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum KclError {
     #[error("syntax: {0:?}")]
@@ -20,7 +21,8 @@ pub enum KclError {
     InvalidExpression(crate::math_parser::MathExpression),
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
 pub struct KclErrorDetails {
     #[serde(rename = "sourceRanges")]
     pub source_ranges: Vec<[i32; 2]>,
