@@ -155,7 +155,8 @@ pub fn reverse_polish_notation(
     }))
 }
 
-#[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Clone)]
+#[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Clone, ts_rs::TS)]
+#[ts(export)]
 pub enum MathTokenType {
     Number,
     Word,
@@ -171,7 +172,8 @@ pub enum MathTokenType {
     Parenthesis,
 }
 
-#[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Clone)]
+#[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Clone, ts_rs::TS)]
+#[ts(export)]
 #[serde(tag = "type")]
 pub struct ParenthesisToken {
     pub token_type: MathTokenType,
@@ -180,7 +182,8 @@ pub struct ParenthesisToken {
     pub end: usize,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
 #[serde(tag = "type")]
 pub struct ExtendedBinaryExpression {
     pub start: usize,
@@ -192,7 +195,8 @@ pub struct ExtendedBinaryExpression {
     pub end_extended: Option<usize>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
 #[serde(tag = "type")]
 pub struct ExntendedLiteral {
     pub start: usize,
@@ -203,7 +207,8 @@ pub struct ExntendedLiteral {
     pub end_extended: Option<usize>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
 #[serde(tag = "type")]
 pub enum MathExpression {
     ExntendedLiteral(Box<ExntendedLiteral>),
