@@ -137,6 +137,7 @@ jobs:
           chmod a+x $TOOL
           gpg -K
           ./$TOOL --sign kittycad-modeling-app.AppDir $APPIMAGE
+          ls -l
           chmod a+x $APPIMAGE
           ./$APPIMAGE --appimage-signature
           popd
