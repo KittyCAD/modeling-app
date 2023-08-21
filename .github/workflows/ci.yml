@@ -115,7 +115,7 @@ jobs:
           TAURI_CONF: src-tauri/tauri.conf.json
         run: |
           echo "$(jq '.tauri.updater.active=true' $TAURI_CONF --indent 2)" > $TAURI_CONF
-          cat $TAURI_CONF
+          echo "$(jq '.tauri.updater.active=true' $TAURI_CONF --indent 2)"
 
       - name: Build the app for the current platform (no upload)
         uses: tauri-apps/tauri-action@v0
