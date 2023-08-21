@@ -115,6 +115,24 @@ jobs:
         env:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+                
+      - name: Import AppImage GPG key
+        if: matrix.os == 'ubuntu-20.04'
+        uses: crazy-max/ghaction-import-gpg@v5
+        with:
+          gpg_private_key: ${{ secrets.APPIMAGE_GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.APPIMAGE_GPG_PRIVATE_KEY_PASSPHRASE }}
+
+      - name: Generate signed AppImage
+        if: matrix.os == 'ubuntu-20.04'
+        env:
+          APPIMAGETOOL_SIGN_PASSPHRASE: ${{ secrets.APPIMAGE_GPG_PRIVATE_KEY_PASSPHRASE }}
+        run: |
+          gpg -K
+          wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+          chmod a+x appimagetool-x86_64.AppImage
+          ./appimagetool-x86_64.AppImage --sign src-tauri/target/release/bundle/appimage/kittycad-modeling-app.AppDir/
+          ls -l
 
       - uses: actions/upload-artifact@v3
         with:
