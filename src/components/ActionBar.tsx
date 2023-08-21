@@ -1,24 +1,33 @@
 import { Combobox, Dialog } from '@headlessui/react'
-import { useState } from 'react'
+import {
+  Dispatch,
+  SetStateAction,
+  createContext,
+  useContext,
+  useState,
+} from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { type BaseActionObject } from 'xstate'
 import { ActionIcon } from './ActionIcon'
-import { faSearch } from '@fortawesome/free-solid-svg-icons'
+import { IconDefinition, faSearch } from '@fortawesome/free-solid-svg-icons'
 import Fuse from 'fuse.js'
 
-const defaultActions = '_'
-  .repeat(13)
-  .split('')
-  .map((_, i) => ({ type: `action-${i}` }))
+export type Action = {
+  type: string
+  icon?: IconDefinition
+  description: string
+  callback: () => void | Promise<void>
+}
 
-const ActionBar = ({
-  actions = defaultActions,
-}: {
-  actions?: BaseActionObject[]
-}) => {
+export const ActionsContext = createContext(
+  {} as { actions: Action[]; setActions: Dispatch<SetStateAction<Action[]>> }
+)
+
+const ActionBar = () => {
+  const { actions } = useContext(ActionsContext)
   const [isOpen, setIsOpen] = useState(false)
   useHotkeys('meta+k', () => setIsOpen(!isOpen))
-  const [selectedAction, setSelectedAction] = useState()
+  const [selectedAction, setSelectedAction] = useState<{ item: Action }>()
   const [query, setQuery] = useState('')
 
   const fuse = new Fuse(actions, { keys: ['type'] })
@@ -36,7 +45,13 @@ const ActionBar = ({
       <Dialog.Backdrop className="fixed inset-0 bg-chalkboard-10/70 dark:bg-chalkboard-110/50" />
       <div className="fixed inset-0 flex items-center justify-center">
         <Dialog.Panel className="rounded-sm relative p-2 bg-chalkboard-10 dark:bg-chalkboard-100 border dark:border-chalkboard-70 max-w-xl w-full shadow-lg">
-          <Combobox value={selectedAction} onChange={setSelectedAction}>
+          <Combobox
+            value={selectedAction}
+            onChange={(action: { item: Action }) => {
+              setSelectedAction(action)
+              action?.item.callback()
+            }}
+          >
             <div className="flex gap-2 items-center">
               <ActionIcon icon={faSearch} size="xl" />
               <Combobox.Input

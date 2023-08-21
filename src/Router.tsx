@@ -159,8 +159,7 @@ const router = createBrowserRouter(
         <Auth>
           <Outlet />
           <Home />
-          <ActionBar />
-      </Auth>
+        </Auth>
       ),
       loader: async () => {
         if (!isTauri()) {

@@ -29,7 +29,9 @@ export const ActionIcon = ({
   return (
     <div
       className={
-        `p-${size === 'xl' ? '2' : '1'} w-fit inline-grid place-content-center ` +
+        `p-${
+          size === 'xl' ? '2' : '1'
+        } w-fit inline-grid place-content-center ` +
         (bgClassName ||
           'bg-chalkboard-100 group-hover:bg-chalkboard-90 hover:bg-chalkboard-90 dark:bg-liquid-20 dark:group-hover:bg-liquid-10 dark:hover:bg-liquid-10')
       }

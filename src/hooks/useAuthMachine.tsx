@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { paths } from '../Router'
 import { authMachine, TOKEN_PERSIST_KEY } from '../lib/authMachine'
 import withBaseUrl from '../lib/withBaseURL'
+import { useState } from 'react'
+import ActionBar, { Action, ActionsContext } from '../components/ActionBar'
 
 export const AuthMachineContext = createActorContext(authMachine)
 
@@ -11,6 +13,7 @@ export const GlobalStateProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  const [actions, setActions] = useState([] as Action[])
   const navigate = useNavigate()
   return (
     <AuthMachineContext.Provider
@@ -26,7 +29,10 @@ export const GlobalStateProvider = ({
         })
       }
     >
-      {children}
+      <ActionsContext.Provider value={{ actions, setActions }}>
+        {children}
+        <ActionBar />
+      </ActionsContext.Provider>
     </AuthMachineContext.Provider>
   )
 }

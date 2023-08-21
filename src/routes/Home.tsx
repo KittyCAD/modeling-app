@@ -1,4 +1,4 @@
-import { FormEvent, useCallback, useEffect, useState } from 'react'
+import { FormEvent, useCallback, useContext, useEffect, useState } from 'react'
 import { readDir, removeDir, renameFile } from '@tauri-apps/api/fs'
 import {
   createNewProject,
@@ -12,6 +12,7 @@ import { ActionButton } from '../components/ActionButton'
 import {
   faArrowDown,
   faArrowUp,
+  faBoxOpen,
   faCircleDot,
   faPlus,
 } from '@fortawesome/free-solid-svg-icons'
@@ -19,26 +20,71 @@ import { useStore } from '../useStore'
 import { toast } from 'react-hot-toast'
 import { AppHeader } from '../components/AppHeader'
 import ProjectCard from '../components/ProjectCard'
-import { useLoaderData, useSearchParams } from 'react-router-dom'
+import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import { ProjectWithEntryPointMetadata, HomeLoaderData } from '../Router'
 import Loading from '../components/Loading'
 import { metadata } from 'tauri-plugin-fs-extra-api'
+import { Action, ActionsContext } from '../components/ActionBar'
 
 const DESC = ':desc'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
 const Home = () => {
+  const { actions, setActions } = useContext(ActionsContext)
   const [searchParams, setSearchParams] = useSearchParams()
   const sort = searchParams.get('sort_by') ?? 'modified:desc'
   const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
   const [isLoading, setIsLoading] = useState(true)
   const [projects, setProjects] = useState(loadedProjects || [])
+  const navigate = useNavigate()
+  const homeActions = [
+    {
+      type: 'New Project',
+      icon: faPlus,
+      description: 'Create a new project',
+      callback: handleNewProject,
+    },
+    {
+      type: 'Open Project',
+      icon: faBoxOpen,
+      description: 'Open a project',
+      callback: () => {
+        const actionsCopy = [...actions]
+        setActions(
+          projects.map((p) => ({
+            type: p.name || '',
+            description: 'Open ' + (p.name || ''),
+            callback: () => {
+              if (p.path) {
+                setActions(actionsCopy)
+                navigate(`/file/${p.path}`)
+              }
+            },
+          }))
+        )
+      },
+    },
+  ] satisfies Action[]
   const { defaultDir, defaultProjectName } = useStore((s) => ({
     defaultDir: s.defaultDir,
     defaultProjectName: s.defaultProjectName,
   }))
+
+  // Add Home-related Actions to the ActionBar,
+  // and clean up the actions from the ActionBar
+  // when the component unmounts.
+  useEffect(() => {
+    setActions([...(actions || []), ...homeActions])
+    return () => {
+      setActions([
+        ...(actions.filter(
+          (a) => !homeActions.some((b) => b.type === a.type)
+        ) || []),
+      ])
+    }
+  }, [])
 
   const modifiedSelected = sort?.includes('modified') || !sort || sort === null
 
