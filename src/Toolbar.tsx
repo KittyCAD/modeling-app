@@ -11,7 +11,6 @@ import { SetAngleLength } from './components/Toolbar/setAngleLength'
 import { ConvertToVariable } from './components/Toolbar/ConvertVariable'
 import { SetAbsDistance } from './components/Toolbar/SetAbsDistance'
 import { SetAngleBetween } from './components/Toolbar/SetAngleBetween'
-import { ExportButton } from './components/ExportButton'
 
 export const Toolbar = () => {
   const {

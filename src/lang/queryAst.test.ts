@@ -5,7 +5,6 @@ import {
   isTypeInValue,
   getNodePathFromSourceRange,
 } from './queryAst'
-import { lexer } from './tokeniser'
 import { initPromise } from './rust'
 import { enginelessExecutor } from '../lib/testHelpers'
 import {

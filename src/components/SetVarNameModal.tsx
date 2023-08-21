@@ -1,5 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { Fragment, useState } from 'react'
+import { Fragment } from 'react'
 import { useCalc, CreateNewVariable } from './AvailableVarsHelpers'
 
 export const SetVarNameModal = ({

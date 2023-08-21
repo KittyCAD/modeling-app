@@ -116,7 +116,7 @@ function makeId(seed: string | any) {
 
 export const lineTo: SketchLineHelper = {
   fn: (
-    { sourceRange, engineCommandManager, code },
+    { sourceRange, code },
     data:
       | [number, number]
       | {
@@ -131,10 +131,6 @@ export const lineTo: SketchLineHelper = {
     const from = getCoordsFromPaths(sketchGroup, sketchGroup.value.length - 1)
     const to = 'to' in data ? data.to : data
 
-    const lineData: LineData = {
-      from: [...from, 0],
-      to: [...to, 0],
-    }
     const id = makeId({
       code,
       sourceRange,
@@ -672,10 +668,6 @@ export const angledLine: SketchLineHelper = {
       from[0] + length * Math.cos((angle * Math.PI) / 180),
       from[1] + length * Math.sin((angle * Math.PI) / 180),
     ]
-    const lineData: LineData = {
-      from: [...from, 0],
-      to: [...to, 0],
-    }
     const id = makeId({
       code,
       sourceRange,

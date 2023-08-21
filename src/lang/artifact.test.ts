@@ -1,6 +1,6 @@
 import { parser_wasm } from './abstractSyntaxTree'
 import { initPromise } from './rust'
-import { enginelessExecutor, executor } from '../lib/testHelpers'
+import { enginelessExecutor } from '../lib/testHelpers'
 
 beforeAll(() => initPromise)
 

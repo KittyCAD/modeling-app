@@ -134,7 +134,6 @@ show(mySketch001)`
 
 describe('testing addNewSketchLn', () => {
   const lineToChange = 'lineTo([-1.59, -1.54], %)'
-  const lineAfterChange = 'lineTo([2, 3], %)'
   test('addNewSketchLn', async () => {
     // Enable rotations #152
     const code = `
@@ -146,6 +145,7 @@ show(mySketch001)`
     const ast = parser_wasm(code)
     const programMemory = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(lineToChange)
+    expect(sourceStart).toBe(66)
     const { modifiedAst } = addNewSketchLn({
       node: ast,
       programMemory,

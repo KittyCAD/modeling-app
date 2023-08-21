@@ -3,8 +3,8 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
-#[wasm_bindgen]
-#[derive(Debug, PartialEq, Eq, Copy, Clone, Deserialize, Serialize)]
+#[derive(Debug, PartialEq, Eq, Copy, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
 #[serde(rename_all = "lowercase")]
 pub enum TokenType {
     Number,
@@ -20,37 +20,14 @@ pub enum TokenType {
     BlockComment,
 }
 
-#[wasm_bindgen]
-#[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Clone)]
+#[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Clone, ts_rs::TS)]
+#[ts(export)]
 pub struct Token {
     #[serde(rename = "type")]
     pub token_type: TokenType,
     pub start: usize,
     pub end: usize,
-    #[wasm_bindgen(skip)]
     pub value: String,
-}
-#[wasm_bindgen]
-impl Token {
-    #[wasm_bindgen(constructor)]
-    pub fn new(token_type: TokenType, value: String, start: usize, end: usize) -> Token {
-        Token {
-            token_type,
-            value,
-            start,
-            end,
-        }
-    }
-
-    #[wasm_bindgen(getter)]
-    pub fn value(&self) -> String {
-        self.value.clone()
-    }
-
-    #[wasm_bindgen(setter)]
-    pub fn set_value(&mut self, value: String) {
-        self.value = value;
-    }
 }
 
 lazy_static! {

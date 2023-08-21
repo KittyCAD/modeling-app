@@ -79,7 +79,6 @@ export function App() {
     setIsStreamReady,
     isStreamReady,
     isMouseDownInStream,
-    fileId,
     cmdId,
     setCmdId,
     token,
@@ -120,7 +119,6 @@ export function App() {
     isStreamReady: s.isStreamReady,
     setIsStreamReady: s.setIsStreamReady,
     isMouseDownInStream: s.isMouseDownInStream,
-    fileId: s.fileId,
     cmdId: s.cmdId,
     setCmdId: s.setCmdId,
     token: s.token,
@@ -382,8 +380,11 @@ export function App() {
     clientX,
     clientY,
     ctrlKey,
+    shiftKey,
     currentTarget,
+    nativeEvent,
   }) => {
+    nativeEvent.preventDefault()
     if (isMouseDownInStream) {
       setDidDragInStream(true)
     }
@@ -395,7 +396,7 @@ export function App() {
       ...streamDimensions,
     })
 
-    const interaction = ctrlKey ? 'pan' : 'rotate'
+    const interaction = ctrlKey ? 'zoom' : shiftKey ? 'pan' : 'rotate'
 
     const newCmdId = uuidv4()
     setCmdId(newCmdId)
@@ -434,7 +435,7 @@ export function App() {
 
   return (
     <div
-      className="h-screen overflow-hidden relative flex flex-col"
+      className="h-screen overflow-hidden relative flex flex-col cursor-pointer select-none"
       onMouseMove={handleMouseMove}
       ref={streamRef}
     >

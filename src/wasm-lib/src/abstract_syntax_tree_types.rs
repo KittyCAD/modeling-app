@@ -1,9 +1,11 @@
 //! Data types for the AST.
+
 use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Program {
     pub start: usize,
@@ -12,7 +14,8 @@ pub struct Program {
     pub non_code_meta: NoneCodeMeta,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
 #[serde(tag = "type")]
 pub enum BodyItem {
     ExpressionStatement(ExpressionStatement),
@@ -20,7 +23,8 @@ pub enum BodyItem {
     ReturnStatement(ReturnStatement),
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
 #[serde(tag = "type")]
 pub enum Value {
     Literal(Box<Literal>),
@@ -36,7 +40,8 @@ pub enum Value {
     UnaryExpression(Box<UnaryExpression>),
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
 #[serde(tag = "type")]
 pub enum BinaryPart {
     Literal(Box<Literal>),
@@ -46,7 +51,8 @@ pub enum BinaryPart {
     UnaryExpression(Box<UnaryExpression>),
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
 #[serde(tag = "type")]
 pub struct NoneCodeNode {
     pub start: usize,
@@ -54,7 +60,8 @@ pub struct NoneCodeNode {
     pub value: String,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct NoneCodeMeta {
     pub none_code_nodes: HashMap<usize, NoneCodeNode>,
@@ -87,14 +94,18 @@ impl<'de> Deserialize<'de> for NoneCodeMeta {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
 pub struct ExpressionStatement {
     pub start: usize,
     pub end: usize,
     pub expression: Value,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
 pub struct CallExpression {
     pub start: usize,
     pub end: usize,
@@ -103,7 +114,9 @@ pub struct CallExpression {
     pub optional: bool,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
 pub struct VariableDeclaration {
     pub start: usize,
     pub end: usize,
@@ -111,7 +124,8 @@ pub struct VariableDeclaration {
     pub kind: String, // Change to enum if there are specific values
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
 #[serde(tag = "type")]
 pub struct VariableDeclarator {
     pub start: usize,
@@ -120,7 +134,9 @@ pub struct VariableDeclarator {
     pub init: Value,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
 pub struct Literal {
     pub start: usize,
     pub end: usize,
@@ -128,7 +144,8 @@ pub struct Literal {
     pub raw: String,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
 #[serde(tag = "type")]
 pub struct Identifier {
     pub start: usize,
@@ -136,27 +153,34 @@ pub struct Identifier {
     pub name: String,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
 pub struct PipeSubstitution {
     pub start: usize,
     pub end: usize,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
 pub struct ArrayExpression {
     pub start: usize,
     pub end: usize,
     pub elements: Vec<Value>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
 pub struct ObjectExpression {
     pub start: usize,
     pub end: usize,
     pub properties: Vec<ObjectProperty>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
 #[serde(tag = "type")]
 pub struct ObjectProperty {
     pub start: usize,
@@ -165,21 +189,25 @@ pub struct ObjectProperty {
     pub value: Value,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
 #[serde(tag = "type")]
 pub enum MemberObject {
     MemberExpression(Box<MemberExpression>),
     Identifier(Box<Identifier>),
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
 #[serde(tag = "type")]
 pub enum LiteralIdentifier {
     Identifier(Box<Identifier>),
     Literal(Box<Literal>),
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
 pub struct MemberExpression {
     pub start: usize,
     pub end: usize,
@@ -188,14 +216,17 @@ pub struct MemberExpression {
     pub computed: bool,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
 pub struct ObjectKeyInfo {
     pub key: LiteralIdentifier,
     pub index: usize,
     pub computed: bool,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
 pub struct BinaryExpression {
     pub start: usize,
     pub end: usize,
@@ -204,7 +235,9 @@ pub struct BinaryExpression {
     pub right: BinaryPart,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
 pub struct UnaryExpression {
     pub start: usize,
     pub end: usize,
@@ -212,8 +245,9 @@ pub struct UnaryExpression {
     pub argument: BinaryPart,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase", tag = "type")]
 pub struct PipeExpression {
     pub start: usize,
     pub end: usize,
@@ -221,8 +255,9 @@ pub struct PipeExpression {
     pub non_code_meta: NoneCodeMeta,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
-
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
 pub struct FunctionExpression {
     pub start: usize,
     pub end: usize,
@@ -231,7 +266,8 @@ pub struct FunctionExpression {
     pub body: BlockStatement,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct BlockStatement {
     pub start: usize,
@@ -240,7 +276,9 @@ pub struct BlockStatement {
     pub non_code_meta: NoneCodeMeta,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
 pub struct ReturnStatement {
     pub start: usize,
     pub end: usize,

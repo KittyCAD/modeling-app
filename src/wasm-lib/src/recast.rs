@@ -69,9 +69,9 @@ fn recast_binary_part(part: BinaryPart) -> String {
             recast_binary_expression(*binary_expression)
         }
         BinaryPart::CallExpression(call_expression) => {
-            recast_call_expression(*call_expression, "".to_string(), false)
+            recast_call_expression(&call_expression, "", false)
         }
-        _ => "".to_string(),
+        _ => String::new(),
     }
 }
 
@@ -79,36 +79,36 @@ fn recast_value(node: Value, _indentation: String, is_in_pipe_expression: bool) 
     let indentation = _indentation + if is_in_pipe_expression { "  " } else { "" };
     match node {
         Value::BinaryExpression(bin_exp) => recast_binary_expression(*bin_exp),
-        Value::ArrayExpression(array_exp) => recast_array_expression(*array_exp, indentation),
-        Value::ObjectExpression(obj_exp) => {
-            recast_object_expression(*obj_exp, indentation, is_in_pipe_expression)
+        Value::ArrayExpression(array_exp) => recast_array_expression(&array_exp, &indentation),
+        Value::ObjectExpression(ref obj_exp) => {
+            recast_object_expression(obj_exp, &indentation, is_in_pipe_expression)
         }
         Value::MemberExpression(mem_exp) => recast_member_expression(*mem_exp),
         Value::Literal(literal) => recast_literal(*literal),
         Value::FunctionExpression(func_exp) => recast_function(*func_exp),
         Value::CallExpression(call_exp) => {
-            recast_call_expression(*call_exp, indentation, is_in_pipe_expression)
+            recast_call_expression(&call_exp, &indentation, is_in_pipe_expression)
         }
         Value::Identifier(ident) => ident.name,
-        Value::PipeExpression(pipe_exp) => recast_pipe_expression(*pipe_exp),
+        Value::PipeExpression(pipe_exp) => recast_pipe_expression(&pipe_exp),
         Value::UnaryExpression(unary_exp) => recast_unary_expression(*unary_exp),
-        _ => "".to_string(),
+        _ => String::new(),
     }
 }
 
-fn recast_array_expression(expression: ArrayExpression, indentation: String) -> String {
+fn recast_array_expression(expression: &ArrayExpression, indentation: &str) -> String {
     let flat_recast = format!(
         "[{}]",
         expression
             .elements
             .iter()
-            .map(|el| recast_value(el.clone(), "".to_string(), false))
+            .map(|el| recast_value(el.clone(), String::new(), false))
             .collect::<Vec<String>>()
             .join(", ")
     );
     let max_array_length = 40;
     if flat_recast.len() > max_array_length {
-        let _indentation = indentation.clone() + "  ";
+        let _indentation = indentation.to_string() + "  ";
         format!(
             "[\n{}{}\n{}]",
             _indentation,
@@ -126,8 +126,8 @@ fn recast_array_expression(expression: ArrayExpression, indentation: String) -> 
 }
 
 fn recast_object_expression(
-    expression: ObjectExpression,
-    indentation: String,
+    expression: &ObjectExpression,
+    indentation: &str,
     is_in_pipe_expression: bool,
 ) -> String {
     let flat_recast = format!(
@@ -139,7 +139,7 @@ fn recast_object_expression(
                 format!(
                     "{}: {}",
                     prop.key.name,
-                    recast_value(prop.value.clone(), "".to_string(), false)
+                    recast_value(prop.value.clone(), String::new(), false)
                 )
             })
             .collect::<Vec<String>>()
@@ -147,7 +147,7 @@ fn recast_object_expression(
     );
     let max_array_length = 40;
     if flat_recast.len() > max_array_length {
-        let _indentation = indentation + "  ";
+        let _indentation = indentation.to_owned() + "  ";
         format!(
             "{{\n{}{}\n{}}}",
             _indentation,
@@ -175,8 +175,8 @@ fn recast_object_expression(
 }
 
 fn recast_call_expression(
-    expression: CallExpression,
-    indentation: String,
+    expression: &CallExpression,
+    indentation: &str,
     is_in_pipe_expression: bool,
 ) -> String {
     format!(
@@ -185,28 +185,28 @@ fn recast_call_expression(
         expression
             .arguments
             .iter()
-            .map(|arg| recast_argument(arg.clone(), indentation.clone(), is_in_pipe_expression))
+            .map(|arg| recast_argument(arg.clone(), indentation, is_in_pipe_expression))
             .collect::<Vec<String>>()
             .join(", ")
     )
 }
 
-fn recast_argument(argument: Value, indentation: String, is_in_pipe_expression: bool) -> String {
+fn recast_argument(argument: Value, indentation: &str, is_in_pipe_expression: bool) -> String {
     match argument {
         Value::Literal(literal) => recast_literal(*literal),
         Value::Identifier(identifier) => identifier.name,
         Value::BinaryExpression(binary_exp) => recast_binary_expression(*binary_exp),
-        Value::ArrayExpression(array_exp) => recast_array_expression(*array_exp, indentation),
+        Value::ArrayExpression(array_exp) => recast_array_expression(&array_exp, indentation),
         Value::ObjectExpression(object_exp) => {
-            recast_object_expression(*object_exp, indentation, is_in_pipe_expression)
+            recast_object_expression(&object_exp, indentation, is_in_pipe_expression)
         }
         Value::CallExpression(call_exp) => {
-            recast_call_expression(*call_exp, indentation, is_in_pipe_expression)
+            recast_call_expression(&call_exp, indentation, is_in_pipe_expression)
         }
         Value::FunctionExpression(function_exp) => recast_function(*function_exp),
         Value::PipeSubstitution(_) => "%".to_string(),
         Value::UnaryExpression(unary_exp) => recast_unary_expression(*unary_exp),
-        _ => "".to_string(),
+        _ => String::new(),
     }
 }
 
@@ -230,7 +230,7 @@ fn recast_member_expression(expression: MemberExpression) -> String {
     }
 }
 
-fn recast_pipe_expression(expression: PipeExpression) -> String {
+fn recast_pipe_expression(expression: &PipeExpression) -> String {
     expression
         .body
         .iter()
@@ -243,8 +243,8 @@ fn recast_pipe_expression(expression: PipeExpression) -> String {
             if let Some(non_code_meta_value) = non_code_meta.none_code_nodes.get(&index) {
                 if non_code_meta_value.value != " " {
                     str += non_code_meta_value.value.as_str();
-                    indentation = "".to_string();
-                    maybe_line_break = "".to_string();
+                    indentation = String::new();
+                    maybe_line_break = String::new();
                 }
             }
 
@@ -255,8 +255,7 @@ fn recast_pipe_expression(expression: PipeExpression) -> String {
             }
             str
         })
-        .collect::<Vec<String>>()
-        .join("")
+        .collect::<String>()
 }
 
 fn recast_unary_expression(expression: UnaryExpression) -> String {
@@ -272,11 +271,11 @@ fn recast_unary_expression(expression: UnaryExpression) -> String {
     format!(
         "{}{}",
         expression.operator,
-        recast_value(bin_part_val, "".to_string(), false)
+        recast_value(bin_part_val, String::new(), false)
     )
 }
 
-pub fn recast(ast: Program, indentation: String, is_with_block: bool) -> String {
+pub fn recast(ast: &Program, indentation: &str, is_with_block: bool) -> String {
     ast.body
         .iter()
         .map(|statement| match statement.clone() {
@@ -286,13 +285,13 @@ pub fn recast(ast: Program, indentation: String, is_with_block: bool) -> String 
                         recast_binary_expression(*binary_expression)
                     }
                     Value::ArrayExpression(array_expression) => {
-                        recast_array_expression(*array_expression, "".to_string())
+                        recast_array_expression(&array_expression, "")
                     }
                     Value::ObjectExpression(object_expression) => {
-                        recast_object_expression(*object_expression, "".to_string(), false)
+                        recast_object_expression(&object_expression, "", false)
                     }
                     Value::CallExpression(call_expression) => {
-                        recast_call_expression(*call_expression, "".to_string(), false)
+                        recast_call_expression(&call_expression, "", false)
                     }
                     _ => "Expression".to_string(),
                 }
@@ -305,15 +304,14 @@ pub fn recast(ast: Program, indentation: String, is_with_block: bool) -> String 
                         "{} {} = {}",
                         variable_declaration.kind,
                         declaration.id.name,
-                        recast_value(declaration.init.clone(), "".to_string(), false)
+                        recast_value(declaration.init.clone(), String::new(), false)
                     )
                 })
-                .collect::<Vec<String>>()
-                .join(""),
+                .collect::<String>(),
             BodyItem::ReturnStatement(return_statement) => {
                 format!(
                     "return {}",
-                    recast_argument(return_statement.argument, "".to_string(), false)
+                    recast_argument(return_statement.argument, "", false)
                 )
             }
         })
@@ -338,24 +336,24 @@ pub fn recast(ast: Program, indentation: String, is_with_block: bool) -> String 
             // indentation of this line will be covered by the previous if we're using a custom whitespace or comment
             let mut start_string =
                 if is_legit_custom_whitespace_or_comment(last_white_space_or_comment) {
-                    "".to_string()
+                    String::new()
                 } else {
-                    indentation.clone()
+                    indentation.to_owned()
                 };
             if index == 0 {
                 if let Some(start) = ast.non_code_meta.start.clone() {
                     start_string = start.value;
                 } else {
-                    start_string = indentation.clone();
+                    start_string = indentation.to_owned();
                 }
             }
             if start_string.ends_with('\n') {
-                start_string += indentation.as_str();
+                start_string += indentation;
             }
 
             // determine the value of endString
             let maybe_line_break: String = if index == ast.body.len() - 1 && !is_with_block {
-                "".to_string()
+                String::new()
             } else {
                 "\n".to_string()
             };
@@ -364,21 +362,20 @@ pub fn recast(ast: Program, indentation: String, is_with_block: bool) -> String 
                     Some(custom_white_space_or_comment) => {
                         custom_white_space_or_comment.value.clone()
                     }
-                    None => "".to_string(),
+                    None => String::new(),
                 };
             if !is_legit_custom_whitespace_or_comment(custom_white_space_or_comment.clone()) {
-                custom_white_space_or_comment = "".to_string();
+                custom_white_space_or_comment = String::new();
             }
-            let end_string = if !custom_white_space_or_comment.is_empty() {
-                custom_white_space_or_comment
-            } else {
+            let end_string = if custom_white_space_or_comment.is_empty() {
                 maybe_line_break
+            } else {
+                custom_white_space_or_comment
             };
 
             format!("{}{}{}", start_string, recast_str, end_string)
         })
-        .collect::<Vec<String>>()
-        .join("")
+        .collect::<String>()
 }
 
 pub fn recast_function(expression: FunctionExpression) -> String {
@@ -391,24 +388,16 @@ pub fn recast_function(expression: FunctionExpression) -> String {
             .collect::<Vec<String>>()
             .join(", "),
         recast(
-            Program {
+            &Program {
                 start: expression.body.start,
                 end: expression.body.start,
                 body: expression.body.body,
                 non_code_meta: expression.body.non_code_meta
             },
-            "".to_string(),
+            "",
             true
         )
     )
-}
-
-#[wasm_bindgen]
-extern "C" {
-    // Use `js_namespace` here to bind `console.log(..)` instead of just
-    // `log(..)`
-    #[wasm_bindgen(js_namespace = console)]
-    fn log(s: &str);
 }
 
 // wasm_bindgen wrapper for recast
@@ -418,6 +407,6 @@ pub fn recast_js(json_str: &str) -> Result<JsValue, JsError> {
     // deserialize the ast from a stringified json
     let program: Program = serde_json::from_str(json_str).map_err(JsError::from)?;
 
-    let result = recast(program, "".to_string(), false);
+    let result = recast(&program, "", false);
     Ok(serde_wasm_bindgen::to_value(&result)?)
 }

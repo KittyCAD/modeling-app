@@ -543,7 +543,7 @@ export const _executor = async (
           }
           _programMemory.return = expression.arguments as any // todo memory redo
         } else {
-          if (_programMemory.root[functionName] == undefined) {
+          if (_programMemory.root[functionName] === undefined) {
             throw new KCLSemanticError(`No such name ${functionName} defined`, [
               [statement.start, statement.end],
             ])
