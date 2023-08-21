@@ -7,7 +7,6 @@ import Units from './Units'
 import Camera from './Camera'
 import Sketching from './Sketching'
 import { useCallback } from 'react'
-import { paths } from '../../Router'
 import makeUrlPathRelative from '../../lib/makeUrlPathRelative'
 
 export const onboardingPaths = {
@@ -54,15 +53,18 @@ export function useDismiss() {
   }))
   const navigate = useNavigate()
 
-  return useCallback(() => {
-    setOnboardingStatus('dismissed')
-    navigate(paths.INDEX)
-  }, [setOnboardingStatus, navigate])
+  return useCallback(
+    (path: string) => {
+      setOnboardingStatus('dismissed')
+      navigate(path)
+    },
+    [setOnboardingStatus, navigate]
+  )
 }
 
 const Onboarding = () => {
   const dismiss = useDismiss()
-  useHotkeys('esc', dismiss)
+  useHotkeys('esc', () => dismiss('../'))
 
   return (
     <>

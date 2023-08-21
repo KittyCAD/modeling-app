@@ -22,7 +22,6 @@ import {
 import { GuiModes, toolTips, TooTip } from '../../useStore'
 import { splitPathAtPipeExpression } from '../modifyAst'
 import { generateUuidFromHashSeed } from '../../lib/uuid'
-import { v4 as uuidv4 } from 'uuid'
 
 import {
   SketchLineHelper,
@@ -117,7 +116,7 @@ function makeId(seed: string | any) {
 
 export const lineTo: SketchLineHelper = {
   fn: (
-    { sourceRange, engineCommandManager, code },
+    { sourceRange, code },
     data:
       | [number, number]
       | {
@@ -132,10 +131,6 @@ export const lineTo: SketchLineHelper = {
     const from = getCoordsFromPaths(sketchGroup, sketchGroup.value.length - 1)
     const to = 'to' in data ? data.to : data
 
-    const lineData: LineData = {
-      from: [...from, 0],
-      to: [...to, 0],
-    }
     const id = makeId({
       code,
       sourceRange,
@@ -282,7 +277,6 @@ export const line: SketchLineHelper = {
           },
         },
         cmd_id: id,
-        file_id: uuidv4(),
       },
     })
     const currentPath: Path = {
@@ -674,10 +668,6 @@ export const angledLine: SketchLineHelper = {
       from[0] + length * Math.cos((angle * Math.PI) / 180),
       from[1] + length * Math.sin((angle * Math.PI) / 180),
     ]
-    const lineData: LineData = {
-      from: [...from, 0],
-      to: [...to, 0],
-    }
     const id = makeId({
       code,
       sourceRange,
@@ -1575,7 +1565,6 @@ export const close: InternalFn = (
         path_id: sketchGroup.id,
       },
       cmd_id: id,
-      file_id: uuidv4(),
     },
   })
 
@@ -1639,7 +1628,6 @@ export const startSketchAt: InternalFn = (
         type: 'start_path',
       },
       cmd_id: pathId,
-      file_id: uuidv4(),
     },
   })
   engineCommandManager.sendSceneCommand({
@@ -1654,7 +1642,6 @@ export const startSketchAt: InternalFn = (
       },
     },
     cmd_id: id,
-    file_id: uuidv4(),
   })
   const currentPath: Path = {
     type: 'base',

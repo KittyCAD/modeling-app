@@ -2,7 +2,6 @@ import '@testing-library/jest-dom'
 import { WebSocket } from 'ws'
 
 class MockRTCPeerConnection {
-  constructor() {}
   createDataChannel() {
     return
   }

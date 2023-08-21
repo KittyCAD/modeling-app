@@ -40,6 +40,8 @@ const Home = () => {
     defaultProjectName: s.defaultProjectName,
   }))
 
+  const modifiedSelected = sort?.includes('modified') || !sort || sort === null
+
   const refreshProjects = useCallback(
     async (projectDir = defaultDir) => {
       const readProjects = (
@@ -184,11 +186,19 @@ const Home = () => {
           <div className="flex">
             <ActionButton
               Element="button"
+              className={
+                !sort.includes('name')
+                  ? 'text-chalkboard-80 dark:text-chalkboard-40'
+                  : ''
+              }
               onClick={() => setSearchParams(getNextSearchParams('name'))}
               icon={{
                 icon: getSortIcon('name'),
                 bgClassName: !sort?.includes('name')
-                  ? 'bg-liquid-30 dark:bg-liquid-70'
+                  ? 'bg-liquid-50 dark:bg-liquid-70'
+                  : '',
+                iconClassName: !sort?.includes('name')
+                  ? 'text-liquid-80 dark:text-liquid-30'
                   : '',
               }}
             >
@@ -196,15 +206,19 @@ const Home = () => {
             </ActionButton>
             <ActionButton
               Element="button"
+              className={
+                !modifiedSelected
+                  ? 'text-chalkboard-80 dark:text-chalkboard-40'
+                  : ''
+              }
               onClick={() => setSearchParams(getNextSearchParams('modified'))}
               icon={{
                 icon: sort ? getSortIcon('modified') : faArrowDown,
-                bgClassName: !(
-                  sort?.includes('modified') ||
-                  !sort ||
-                  sort === null
-                )
-                  ? 'bg-liquid-30 dark:bg-liquid-70'
+                bgClassName: !modifiedSelected
+                  ? 'bg-liquid-50 dark:bg-liquid-70'
+                  : '',
+                iconClassName: !modifiedSelected
+                  ? 'text-liquid-80 dark:text-liquid-30'
                   : '',
               }}
             >

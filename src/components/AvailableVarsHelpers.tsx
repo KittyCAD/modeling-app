@@ -9,7 +9,6 @@ import {
   findUniqueName,
 } from '../lang/modifyAst'
 import { findAllPreviousVariables, PrevVariable } from '../lang/queryAst'
-import { lexer } from '../lang/tokeniser'
 import { useStore } from '../useStore'
 
 export const AvailableVars = ({

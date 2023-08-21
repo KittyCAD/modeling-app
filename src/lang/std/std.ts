@@ -25,9 +25,8 @@ import {
   lastSegY,
 } from './sketchConstraints'
 import { getExtrudeWallTransform, extrude } from './extrude'
-import { SketchGroup, ExtrudeGroup, Position, Rotation } from '../executor'
 
-import { InternalFn, InternalFnNames, InternalFirstArg } from './stdTypes'
+import { InternalFn, InternalFnNames } from './stdTypes'
 
 // const transform: InternalFn = <T extends SketchGroup | ExtrudeGroup>(
 //   { sourceRange }: InternalFirstArg,

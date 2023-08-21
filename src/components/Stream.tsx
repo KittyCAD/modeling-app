@@ -17,8 +17,6 @@ export const Stream = ({ className = '' }) => {
     mediaStream,
     engineCommandManager,
     setIsMouseDownInStream,
-    fileId,
-    setFileId,
     setCmdId,
     didDragInStream,
     setDidDragInStream,
@@ -29,7 +27,6 @@ export const Stream = ({ className = '' }) => {
     isMouseDownInStream: s.isMouseDownInStream,
     setIsMouseDownInStream: s.setIsMouseDownInStream,
     fileId: s.fileId,
-    setFileId: s.setFileId,
     setCmdId: s.setCmdId,
     didDragInStream: s.didDragInStream,
     setDidDragInStream: s.setDidDragInStream,
@@ -45,8 +42,7 @@ export const Stream = ({ className = '' }) => {
     if (!videoRef.current) return
     if (!mediaStream) return
     videoRef.current.srcObject = mediaStream
-    setFileId(uuidv4())
-  }, [mediaStream, engineCommandManager, setFileId])
+  }, [mediaStream, engineCommandManager])
 
   const handleMouseDown: MouseEventHandler<HTMLVideoElement> = ({
     clientX,
@@ -75,7 +71,6 @@ export const Stream = ({ className = '' }) => {
         window: { x, y },
       },
       cmd_id: newId,
-      file_id: fileId,
     })
 
     setIsMouseDownInStream(true)
@@ -90,7 +85,6 @@ export const Stream = ({ className = '' }) => {
         magnitude: e.deltaY * 0.4,
       } as any, // TODO: remove 'any' once lib is updated to include this type
       cmd_id: uuidv4(),
-      file_id: uuidv4(),
     })
   }
 
@@ -118,7 +112,6 @@ export const Stream = ({ className = '' }) => {
         window: { x, y },
       },
       cmd_id: newCmdId,
-      file_id: fileId,
     })
 
     setIsMouseDownInStream(false)
@@ -131,7 +124,6 @@ export const Stream = ({ className = '' }) => {
           selected_at_window: { x, y },
         },
         cmd_id: uuidv4(),
-        file_id: fileId,
       })
     }
     setDidDragInStream(false)
