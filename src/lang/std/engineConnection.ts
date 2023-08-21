@@ -363,7 +363,6 @@ export class EngineCommandManager {
     this.onHoverCallback = callback
   }
   onClick(callback: (selection?: SelectionsArgs) => void) {
-    // TODO talk to the gang about this
     // It's when the user clicks on a part in the 3d scene, and so the engine should tell the
     // frontend about that (with it's id) so that the FE can put the user's cursor on the right
     // line of code
