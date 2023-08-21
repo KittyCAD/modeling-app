@@ -111,8 +111,9 @@ jobs:
         run: yarn fmt
 
       - name: Set tauri.updater.active to true
+        env:
+          TAURI_CONF: src-tauri/tauri.conf.json
         run: |
-          TAURI_CONF=src-tauri/tauri.conf.json
           echo "$(jq '.tauri.updater.active=true' $TAURI_CONF --indent 2)" > $TAURI_CONF
           cat $TAURI_CONF
 
