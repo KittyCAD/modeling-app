@@ -140,10 +140,12 @@ const router = createBrowserRouter([
   {
     path: paths.HOME,
     element: (
-      <Auth>
-        <Outlet />
-        <Home />
-      </Auth>
+      <GlobalStateProvider>
+        <Auth>
+          <Outlet />
+          <Home />
+        </Auth>
+      </GlobalStateProvider>
     ),
     loader: async () => {
       if (!isTauri()) {
