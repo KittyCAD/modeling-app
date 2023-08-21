@@ -83,7 +83,7 @@ export const Stream = ({ className = '' }) => {
       cmd: {
         type: 'default_camera_zoom',
         magnitude: e.deltaY * 0.4,
-      } as any, // TODO: remove 'any' once lib is updated to include this type
+      },
       cmd_id: uuidv4(),
     })
   }
