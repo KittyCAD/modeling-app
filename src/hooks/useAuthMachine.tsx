@@ -37,7 +37,7 @@ export function useAuthMachine<T>(
   ) => T = () => null as T
 ): [T, ReturnType<typeof AuthMachineContext.useActor>[1]] {
   // useActor api normally `[state, send] = useActor`
-  // we're only interested in stend because of the selector
+  // we're only interested in send because of the selector
   const send = AuthMachineContext.useActor()[1]
 
   const selection = AuthMachineContext.useSelector(selector)
