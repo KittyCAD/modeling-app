@@ -80,7 +80,7 @@
       "csp": null
     },
     "updater": {
-      "active": true,
+      "active": false,
       "endpoints": [
         "https://dl.kittycad.io/releases/modeling-app/last_update.json"
       ],

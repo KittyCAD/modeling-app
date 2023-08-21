@@ -110,6 +110,9 @@ jobs:
       - name: Fix format
         run: yarn fmt
 
+      - name: Set tauri.updater.active to true
+        run: echo "$(jq '.tauri.updater.active=true' src-tauri/tauri.conf.json --indent 2)" > src-tauri/tauri.conf.json
+
       - name: Build the app for the current platform (no upload)
         uses: tauri-apps/tauri-action@v0
         env:
