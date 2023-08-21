@@ -22,16 +22,16 @@ const persistedToken = localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
 export const authMachine = createMachine<UserContext, Events>(
   {
     id: 'Auth',
-    initial: 'checkIfLogedIn',
+    initial: 'checkIfLoggedIn',
     states: {
-      checkIfLogedIn: {
-        id: 'check-if-loged-in',
+      checkIfLoggedIn: {
+        id: 'check-if-logged-in',
         invoke: {
           src: 'getUser',
-          id: 'check-loged-in',
+          id: 'check-logged-in',
           onDone: [
             {
-              target: 'logedIn',
+              target: 'loggedIn',
               actions: assign({
                 user: (context, event) => event.data,
               }),
@@ -39,7 +39,7 @@ export const authMachine = createMachine<UserContext, Events>(
           ],
           onError: [
             {
-              target: 'logedOut',
+              target: 'loggedOut',
               actions: assign({
                 user: () => undefined,
               }),
@@ -47,19 +47,19 @@ export const authMachine = createMachine<UserContext, Events>(
           ],
         },
       },
-      logedIn: {
+      loggedIn: {
         entry: ['goToIndexPage'],
         on: {
           logout: {
-            target: 'logedOut',
+            target: 'loggedOut',
           },
         },
       },
-      logedOut: {
+      loggedOut: {
         entry: ['goToSignInPage'],
         on: {
           tryLogin: {
-            target: 'checkIfLogedIn',
+            target: 'checkIfLoggedIn',
             actions: assign({
               token: (context, event) => {
                 const token = event.token || ''
