@@ -43,19 +43,18 @@ type OkResponse = Models['OkModelingCmdResponse_type']
 
 type WebSocketResponse = Models['WebSocketResponses_type']
 
+enum EngineConnectionEvents {
+  ConnectionStarted = 'connectionStarted',
+  WebsocketOpen = 'websocketOpen',
+  NewTrack = 'newTrack',
+  DataChannelOpen = 'dataChannelOpen',
+  Open = 'open',
+  Close = 'close',
+}
+
 // EngineConnection encapsulates the connection(s) to the Engine
 // for the EngineCommandManager; namely, the underlying WebSocket
 // and WebRTC connections.
-//
-//
-// Events:
-//  - connectionStarted: connection has been initiated, and is in progress
-//  - websocketOpen:
-//  - newTrack:
-//  - dataChannelOpen:
-//  - close:
-//
-//
 export class EngineConnection extends EventTarget {
   websocket?: WebSocket
   pc?: RTCPeerConnection
@@ -72,15 +71,15 @@ export class EngineConnection extends EventTarget {
     this.token = token
     this.ready = false
 
-    this.addEventListener('open', () => {
+    this.addEventListener(EngineConnectionEvents.Open, () => {
       this.ready = true
     })
-    this.addEventListener('close', () => {
+    this.addEventListener(EngineConnectionEvents.Close, () => {
       this.ready = false
     })
 
     // TODO(paultag): This ought to be tweakable.
-    const pingInterval = 10000
+    const pingIntervalMs = 10000
 
     setInterval(() => {
       if (this.isReady()) {
@@ -90,7 +89,7 @@ export class EngineConnection extends EventTarget {
         // timeout condition.
         this.send({ type: 'ping' })
       }
-    }, pingInterval)
+    }, pingIntervalMs)
   }
   // isReady will return true only when the WebRTC *and* WebSocket connection
   // are connected. During setup, the WebSocket connection comes online first,
@@ -122,7 +121,7 @@ export class EngineConnection extends EventTarget {
 
     this.websocket.addEventListener('open', (event) => {
       this.dispatchEvent(
-        new CustomEvent('websocketOpen', {
+        new CustomEvent(EngineConnectionEvents.WebsocketOpen, {
           detail: this,
         })
       )
@@ -151,7 +150,7 @@ export class EngineConnection extends EventTarget {
       }
 
       if (event.data.toLocaleLowerCase().startsWith('error')) {
-        console.warn('something went wrong: ', event.data)
+        console.error('something went wrong: ', event.data)
         return
       }
 
@@ -244,7 +243,7 @@ export class EngineConnection extends EventTarget {
       // TODO(paultag): This ought to be both controllable, as well as something
       // like exponential backoff to have some grace on the backend, as well as
       // fix responsiveness for clients that had a weird network hiccup.
-      const connectionTimeout = 5000
+      const connectionTimeoutMs = 5000
 
       setTimeout(() => {
         if (this.isReady()) {
@@ -253,14 +252,14 @@ export class EngineConnection extends EventTarget {
         console.log('engine connection timeout on connection, retrying')
         this.close()
         this.connect()
-      }, connectionTimeout)
+      }, connectionTimeoutMs)
     })
 
     this.pc.addEventListener('track', (event) => {
       console.log('received track', event)
       const mediaStream = event.streams[0]
       this.dispatchEvent(
-        new CustomEvent('newTrack', {
+        new CustomEvent(EngineConnectionEvents.NewTrack, {
           detail: {
             conn: this,
             mediaStream: mediaStream,
@@ -277,13 +276,13 @@ export class EngineConnection extends EventTarget {
         console.log('lossy data channel opened', event)
 
         this.dispatchEvent(
-          new CustomEvent('dataChannelOpen', {
+          new CustomEvent(EngineConnectionEvents.DataChannelOpen, {
             detail: this,
           })
         )
 
         this.dispatchEvent(
-          new CustomEvent('open', {
+          new CustomEvent(EngineConnectionEvents.Open, {
             detail: this,
           })
         )
@@ -301,7 +300,7 @@ export class EngineConnection extends EventTarget {
     })
 
     this.dispatchEvent(
-      new CustomEvent('connectionStarted', {
+      new CustomEvent(EngineConnectionEvents.ConnectionStarted, {
         detail: this,
       })
     )
@@ -317,7 +316,7 @@ export class EngineConnection extends EventTarget {
     this.lossyDataChannel?.close()
 
     this.dispatchEvent(
-      new CustomEvent('close', {
+      new CustomEvent(EngineConnectionEvents.Close, {
         detail: this,
       })
     )
@@ -358,17 +357,23 @@ export class EngineCommandManager {
       token,
     })
 
-    this.engineConnection.addEventListener('open', (event) => {
-      this.resolveReady()
-      setIsStreamReady(true)
-    })
-
-    this.engineConnection.addEventListener('close', (event) => {
-      setIsStreamReady(false)
-    })
+    this.engineConnection.addEventListener(
+      EngineConnectionEvents.Open,
+      (event) => {
+        this.resolveReady()
+        setIsStreamReady(true)
+      }
+    )
 
     this.engineConnection.addEventListener(
-      'connectionStarted',
+      EngineConnectionEvents.Close,
+      (event) => {
+        setIsStreamReady(false)
+      }
+    )
+
+    this.engineConnection.addEventListener(
+      EngineConnectionEvents.ConnectionStarted,
       (event: Event) => {
         let customEvent = <CustomEvent<EngineConnection>>event
         let conn = customEvent.detail
@@ -413,13 +418,16 @@ export class EngineCommandManager {
         })
       }
     )
-    this.engineConnection.addEventListener('newTrack', (event: Event) => {
-      let customEvent = <CustomEvent<NewTrackArgs>>event
+    this.engineConnection.addEventListener(
+      EngineConnectionEvents.NewTrack,
+      (event: Event) => {
+        let customEvent = <CustomEvent<NewTrackArgs>>event
 
-      let mediaStream = customEvent.detail.mediaStream
-      console.log('received track', mediaStream)
-      setMediaStream(mediaStream)
-    })
+        let mediaStream = customEvent.detail.mediaStream
+        console.log('received track', mediaStream)
+        setMediaStream(mediaStream)
+      }
+    )
     this.engineConnection?.connect()
   }
   handleModelingCommand(message: WebSocketResponse) {
