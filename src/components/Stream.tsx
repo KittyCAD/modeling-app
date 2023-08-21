@@ -7,14 +7,11 @@ import {
 } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { useStore } from '../useStore'
-import { throttle } from '../lib/utils'
-import { EngineCommand } from '../lang/std/engineConnection'
 import { getNormalisedCoordinates } from '../lib/utils'
 import Loading from './Loading'
 
 export const Stream = ({ className = '' }) => {
   const [isLoading, setIsLoading] = useState(true)
-  const [zoom, setZoom] = useState(0)
   const videoRef = useRef<HTMLVideoElement>(null)
   const {
     mediaStream,
@@ -45,7 +42,6 @@ export const Stream = ({ className = '' }) => {
     if (!videoRef.current) return
     if (!mediaStream) return
     videoRef.current.srcObject = mediaStream
-    setZoom(videoRef.current.getBoundingClientRect().height / 2)
   }, [mediaStream, engineCommandManager])
 
   const handleMouseDown: MouseEventHandler<HTMLVideoElement> = ({
@@ -80,24 +76,16 @@ export const Stream = ({ className = '' }) => {
     setIsMouseDownInStream(true)
   }
 
-  // TODO: consolidate this with the same function in App.tsx
-  const debounceSocketSend = throttle<EngineCommand>((message) => {
-    engineCommandManager?.sendSceneCommand(message)
-  }, 16)
-
   const handleScroll: WheelEventHandler<HTMLVideoElement> = (e) => {
     e.preventDefault()
-    debounceSocketSend({
+    engineCommandManager?.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd: {
-        type: 'camera_drag_move',
-        interaction: 'zoom',
-        window: { x: 0, y: zoom + e.deltaY },
+        type: 'default_camera_zoom',
+        magnitude: e.deltaY * 0.4,
       },
       cmd_id: uuidv4(),
     })
-
-    setZoom(zoom + e.deltaY)
   }
 
   const handleMouseUp: MouseEventHandler<HTMLVideoElement> = ({
@@ -152,7 +140,7 @@ export const Stream = ({ className = '' }) => {
         onMouseUp={handleMouseUp}
         onContextMenu={(e) => e.preventDefault()}
         onContextMenuCapture={(e) => e.preventDefault()}
-        onWheelCapture={handleScroll}
+        onWheel={handleScroll}
         onPlay={() => setIsLoading(false)}
         className="w-full h-full"
       />
