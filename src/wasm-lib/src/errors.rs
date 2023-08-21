@@ -13,6 +13,8 @@ pub enum KclError {
     Type(KclErrorDetails),
     #[error("unimplemented: {0:?}")]
     Unimplemented(KclErrorDetails),
+    #[error("unexpected: {0:?}")]
+    Unexpected(KclErrorDetails),
     #[error("value already defined: {0:?}")]
     ValueAlreadyDefined(KclErrorDetails),
     #[error("undefined value: {0:?}")]

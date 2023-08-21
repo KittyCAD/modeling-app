@@ -1,4 +1,5 @@
 import { parser_wasm } from './abstractSyntaxTree'
+import { KCLUnexpectedError } from './errors'
 import { initPromise } from './rust'
 
 beforeAll(() => initPromise)
@@ -1704,5 +1705,21 @@ describe('should recognise callExpresions in binaryExpressions', () => {
       },
       { type: 'PipeSubstitution', start: 33, end: 34 },
     ])
+  })
+})
+
+describe('parsing errors', () => {
+  it('should return an error when there is a unexpected closed curly brace', async () => {
+    const code = `const myVar = startSketchAt([}], %)`
+
+    let _theError
+    try {
+      const result = expect(parser_wasm(code))
+      console.log('result', result)
+    } catch (e) {
+      _theError = e
+    }
+    const theError = _theError as any
+    expect(theError).toEqual(new KCLUnexpectedError('Brace', [[29, 30]]))
   })
 })
