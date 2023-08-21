@@ -123,16 +123,20 @@ jobs:
           gpg_private_key: ${{ secrets.APPIMAGE_GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.APPIMAGE_GPG_PRIVATE_KEY_PASSPHRASE }}
 
-      - name: Generate signed AppImage
+      - name: Generate signed AppImage over existing one
         if: matrix.os == 'ubuntu-20.04'
         env:
           APPIMAGETOOL_SIGN_PASSPHRASE: ${{ secrets.APPIMAGE_GPG_PRIVATE_KEY_PASSPHRASE }}
+          VERSION_NO_V: ${{ needs.build-test-web.outputs.version }}
         run: |
           gpg -K
-          wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
-          chmod a+x appimagetool-x86_64.AppImage
-          ./appimagetool-x86_64.AppImage --sign src-tauri/target/release/bundle/appimage/kittycad-modeling-app.AppDir/
+          APPIMAGE_TOOL=appimagetool-x86_64.AppImage
+          wget https://github.com/AppImage/AppImageKit/releases/download/continuous/$APPIMAGE_TOOL
+          chmod a+x $APPIMAGE_TOOL
+          pushd src-tauri/target/release/bundle/appimage
+          ./$APPIMAGE_TOOL --sign kittycad-modeling-app.AppDir kittycad-modeling-app_${VERSION_NO_V}_amd64.AppImage
           ls -l
+          popd
 
       - uses: actions/upload-artifact@v3
         with:
