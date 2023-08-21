@@ -1,0 +1,191 @@
+name: CI 
+
+on:
+  pull_request:
+  push:
+    branches:
+        - main
+  release:
+    types: [published]
+
+jobs:
+
+  check-format:
+    runs-on: 'ubuntu-20.04'
+    steps:
+
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+
+      - run: yarn install
+
+      - run: yarn fmt-check
+
+
+  build-test-web:
+    runs-on: ubuntu-20.04
+    outputs:
+      version: ${{ steps.export_version.outputs.version }}
+    steps:
+
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+
+      - run: yarn install
+
+      - run: yarn build:wasm
+
+      - run: yarn tsc
+
+      - run: yarn simpleserver:ci
+
+      - run: yarn test:nowatch
+
+      - run: yarn test:cov
+
+      - run: yarn test:rust
+      
+      - id: export_version
+        run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
+
+
+  build-apps:
+    needs: [check-format, build-test-web]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-20.04, windows-latest]
+    steps:
+
+      - uses: actions/checkout@v3
+
+      - name: install ubuntu system dependencies
+        if: matrix.os == 'ubuntu-20.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev
+
+      - name: Sync node version and setup cache
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn' # Set this to npm, yarn or pnpm.
+
+      - run: yarn install
+
+      - name: Rust setup
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: wasm prep
+        shell: bash
+        run: |
+          mkdir src/wasm-lib/pkg; cd src/wasm-lib
+          npx wasm-pack build --target web --out-dir pkg
+          cd ../../
+          cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
+
+      - name: macos sed
+        if: matrix.os == 'macos-latest'
+        shell: bash
+        run: |
+          sed -i '' 's/import.meta.url//g' "./src/wasm-lib/pkg/wasm_lib.js"
+
+      - name: ubuntu and windows sed
+        if: matrix.os != 'macos-latest'
+        shell: bash
+        run: |
+          sed -i 's/import.meta.url//g' "./src/wasm-lib/pkg/wasm_lib.js"
+
+      - name: Fix format
+        run: yarn fmt
+
+      - name: Build the app for the current platform (no upload)
+        uses: tauri-apps/tauri-action@v0
+        env:
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: src-tauri/target/release/bundle/*/*
+
+
+  publish-apps-release:
+    runs-on: ubuntu-20.04
+    if: github.event_name == 'release'
+    needs: [build-test-web, build-apps]
+    env:
+      VERSION_NO_V: ${{ needs.build-test-web.outputs.version }}
+    steps:
+
+      - uses: actions/download-artifact@v3
+
+      - name: Generate the update static endpoint
+        run: |
+          ls -l artifact
+          ls -l artifact/*
+          DARWIN_SIG=`cat artifact/macos/*.app.tar.gz.sig`
+          LINUX_SIG=`cat artifact/appimage/*.AppImage.tar.gz.sig`
+          WINDOWS_SIG=`cat artifact/nsis/*.nsis.zip.sig`
+          RELEASE_DIR=https://dl.kittycad.io/releases/modeling-app/v${VERSION_NO_V}
+          jq --null-input \
+            --arg version "v${VERSION_NO_V}" \
+            --arg darwin_sig "$DARWIN_SIG" \
+            --arg darwin_url "$RELEASE_DIR/macos/kittycad-modeling-app.app.tar.gz" \
+            --arg linux_sig "$LINUX_SIG" \
+            --arg linux_url "$RELEASE_DIR/appimage/kittycad-modeling-app_${VERSION_NO_V}_amd64.AppImage.tar.gz" \
+            --arg windows_sig "$WINDOWS_SIG" \
+            --arg windows_url "$RELEASE_DIR/nsis/kittycad-modeling-app_${VERSION_NO_V}_x64-setup.nsis.zip" \
+            '{
+              "version": $version,
+              "platforms": {
+                "darwin-x86_64": {
+                  "signature": $darwin_sig,
+                  "url": $darwin_url
+                },
+                "linux-x86_64": {
+                  "signature": $linux_sig,
+                  "url": $linux_url
+                },
+                "windows-x86_64": {
+                  "signature": $windows_sig,
+                  "url": $windows_url
+                }
+              }
+            }' > last_update.json
+            cat last_update.json
+
+      - name: Authenticate to Google Cloud
+        uses: 'google-github-actions/auth@v1.1.1'
+        with:
+          credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1.1.1
+        with:
+          project_id: kittycadapi
+      
+      - name: Upload release files to public bucket
+        uses: google-github-actions/upload-cloud-storage@v1.0.3
+        with:
+          path: artifact
+          glob: '*/kittycad-modeling-app*'
+          parent: false
+          destination: dl.kittycad.io/releases/modeling-app/v${{ env.VERSION_NO_V }} 
+      
+      - name: Upload update endpoint to public bucket
+        uses: google-github-actions/upload-cloud-storage@v1.0.3
+        with:
+          path: last_update.json
+          destination: dl.kittycad.io/releases/modeling-app

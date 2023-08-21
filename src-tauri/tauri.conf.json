@@ -7,7 +7,7 @@
     "distDir": "../build"
   },
   "package": {
-    "productName": "KittyCAD Modeling",
+    "productName": "kittycad-modeling-app",
     "version": "0.0.3"
   },
   "tauri": {
@@ -22,7 +22,10 @@
         "save": true
       },
       "fs": {
-        "scope": ["$HOME/**/*", "$APPDATA/**/*"],
+        "scope": [
+          "$HOME/**/*",
+          "$APPDATA/**/*"
+        ],
         "all": true
       },
       "http": {
@@ -55,7 +58,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "KittyCAD-modeling-app",
+      "identifier": "io.kittycad.modeling-app",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -77,7 +80,12 @@
       "csp": null
     },
     "updater": {
-      "active": false
+      "active": true,
+      "endpoints": [
+        "https://dl.kittycad.io/releases/modeling-app/last_update.json"
+      ],
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEUzNzA4MjBEQjFBRTY4NzYKUldSMmFLNnhEWUp3NCtsT21Jd05wQktOaGVkOVp6MUFma0hNTDRDSnI2RkJJTEZOWG1ncFhqcU8K"
     },
     "windows": [
       {
