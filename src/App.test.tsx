@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import { App } from './App'
 import { describe, test, vi } from 'vitest'
 import { BrowserRouter } from 'react-router-dom'
+import { GlobalStateProvider } from './hooks/useAuthMachine'
 
 let listener: ((rect: any) => void) | undefined = undefined
 ;(global as any).ResizeObserver = class ResizeObserver {
@@ -27,9 +28,9 @@ describe('App tests', () => {
       }
     })
     render(
-      <BrowserRouter>
+      <TestWrap>
         <App />
-      </BrowserRouter>
+      </TestWrap>
     )
     const linkElement = screen.getByText(/Variables/i)
     expect(linkElement).toBeInTheDocument()
@@ -37,3 +38,12 @@ describe('App tests', () => {
     vi.restoreAllMocks()
   })
 })
+
+function TestWrap({ children }: { children: React.ReactNode }) {
+  // wrap in router and xState context
+  return (
+    <BrowserRouter>
+      <GlobalStateProvider>{children}</GlobalStateProvider>
+    </BrowserRouter>
+  )
+}

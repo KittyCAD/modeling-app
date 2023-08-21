@@ -1,8 +1,8 @@
 import { Toolbar } from '../Toolbar'
-import { useStore } from '../useStore'
 import UserSidebarMenu from './UserSidebarMenu'
 import { ProjectWithEntryPointMetadata } from '../Router'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
+import { useAuthMachine } from '../hooks/useAuthMachine'
 
 interface AppHeaderProps extends React.PropsWithChildren {
   showToolbar?: boolean
@@ -18,9 +18,7 @@ export const AppHeader = ({
   className = '',
   enableMenu = false,
 }: AppHeaderProps) => {
-  const { user } = useStore((s) => ({
-    user: s.user,
-  }))
+  const [user] = useAuthMachine((s) => s?.context?.user)
 
   return (
     <header

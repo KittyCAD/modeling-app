@@ -1,6 +1,6 @@
 {
   "name": "untitled-app",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
@@ -20,6 +20,7 @@
     "@types/react-dom": "^18.0.0",
     "@uiw/codemirror-extensions-langs": "^4.21.9",
     "@uiw/react-codemirror": "^4.15.1",
+    "@xstate/react": "^3.2.2",
     "crypto-js": "^4.1.1",
     "formik": "^2.4.3",
     "fuse.js": "^6.6.2",

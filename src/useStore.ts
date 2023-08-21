@@ -114,20 +114,6 @@ interface DefaultDir {
 
 export type PaneType = 'code' | 'variables' | 'debug' | 'kclErrors' | 'logs'
 
-// TODO: import real OpenAPI User type from schema
-export interface User {
-  company?: string
-  created_at: string
-  email: string
-  first_name?: string
-  id: string
-  image?: string
-  last_name?: string
-  name?: string
-  phone?: string
-  updated_at: string
-}
-
 export interface StoreState {
   editorView: EditorView | null
   setEditorView: (editorView: EditorView) => void
@@ -219,10 +205,6 @@ export interface StoreState {
     path: string
   }[]
   setHomeMenuItems: (items: { name: string; path: string }[]) => void
-  token: string
-  setToken: (token: string) => void
-  user?: User
-  setUser: (user: User | undefined) => void
   debugPanel: boolean
   setDebugPanel: (debugPanel: boolean) => void
 }
@@ -423,10 +405,6 @@ export const useStore = create<StoreState>()(
       setHomeShowMenu: (showHomeMenu) => set({ showHomeMenu }),
       homeMenuItems: [],
       setHomeMenuItems: (homeMenuItems) => set({ homeMenuItems }),
-      token: '',
-      setToken: (token) => set({ token }),
-      user: undefined,
-      setUser: (user) => set({ user }),
       debugPanel: false,
       setDebugPanel: (debugPanel) => set({ debugPanel }),
     }),
@@ -441,7 +419,6 @@ export const useStore = create<StoreState>()(
               'defaultProjectName',
               'defaultUnitSystem',
               'defaultBaseUnit',
-              'token',
               'debugPanel',
               'onboardingStatus',
               'theme',
