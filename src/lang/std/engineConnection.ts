@@ -206,11 +206,11 @@ export class EngineConnection extends EventTarget {
         this.pc.addEventListener('icecandidate', (event) => {
           if (!this.pc || !this.websocket) return
           if (event.candidate === null) {
-            console.log('sent sdp_offer')
-            this.send({
-              type: 'sdp_offer',
-              offer: this.pc.localDescription,
-            })
+            // console.log('sent sdp_offer')
+            // this.send({
+            //   type: 'sdp_offer',
+            //   offer: this.pc.localDescription,
+            // })
           } else {
             console.log('sending trickle ice candidate')
             const { candidate } = event
@@ -243,7 +243,7 @@ export class EngineConnection extends EventTarget {
       // TODO(paultag): This ought to be both controllable, as well as something
       // like exponential backoff to have some grace on the backend, as well as
       // fix responsiveness for clients that had a weird network hiccup.
-      const connectionTimeoutMs = 5000
+      const connectionTimeoutMs = 3000
 
       setTimeout(() => {
         if (this.isReady()) {
@@ -425,6 +425,13 @@ export class EngineCommandManager {
 
         let mediaStream = customEvent.detail.mediaStream
         console.log('received track', mediaStream)
+
+        mediaStream.getVideoTracks()[0].addEventListener('mute', () => {
+          console.log('peer is not sending video to us')
+          this.engineConnection?.close()
+          this.engineConnection?.connect()
+        })
+
         setMediaStream(mediaStream)
       }
     )
