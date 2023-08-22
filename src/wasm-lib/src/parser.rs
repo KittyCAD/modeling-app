@@ -614,9 +614,9 @@ fn make_value(tokens: &[Token], index: usize) -> Result<ValueReturn, KclError> {
         });
     }
 
-    Err(KclError::Unimplemented(KclErrorDetails {
+    Err(KclError::Unexpected(KclErrorDetails {
         source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
-        message: format!("expression with token type {:?}", current_token.token_type),
+        message: format!("{:?}", current_token.token_type),
     }))
 }
 
