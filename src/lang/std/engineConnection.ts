@@ -314,6 +314,9 @@ export class EngineConnection extends EventTarget {
     this.websocket?.close()
     this.pc?.close()
     this.lossyDataChannel?.close()
+    this.websocket = undefined
+    this.pc = undefined
+    this.lossyDataChannel = undefined
 
     this.dispatchEvent(
       new CustomEvent(EngineConnectionEvents.Close, {
@@ -375,7 +378,7 @@ export class EngineCommandManager {
     this.engineConnection.addEventListener(
       EngineConnectionEvents.ConnectionStarted,
       (event: Event) => {
-        let customEvent = <CustomEvent<EngineConnection>>event
+        let customEvent = event as CustomEvent<EngineConnection>
         let conn = customEvent.detail
 
         this.engineConnection?.pc?.addEventListener('datachannel', (event) => {
@@ -421,7 +424,7 @@ export class EngineCommandManager {
     this.engineConnection.addEventListener(
       EngineConnectionEvents.NewTrack,
       (event: Event) => {
-        let customEvent = <CustomEvent<NewTrackArgs>>event
+        let customEvent = event as CustomEvent<NewTrackArgs>
 
         let mediaStream = customEvent.detail.mediaStream
         console.log('received track', mediaStream)
