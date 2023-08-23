@@ -268,6 +268,10 @@ export class EngineConnection extends EventTarget {
       )
     })
 
+    // During startup, we'll track the time from `connect` being called
+    // until the 'done' event fires.
+    let connectionStarted = new Date()
+
     this.pc.addEventListener('datachannel', (event) => {
       this.lossyDataChannel = event.channel
 
@@ -281,6 +285,8 @@ export class EngineConnection extends EventTarget {
           })
         )
 
+        let timeToConnectMs = new Date().getTime() - connectionStarted.getTime()
+        console.log(`engine connection time to connect: ${timeToConnectMs}ms`)
         this.dispatchEvent(
           new CustomEvent(EngineConnectionEvents.Open, {
             detail: this,
