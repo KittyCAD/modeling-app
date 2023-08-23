@@ -1,6 +1,9 @@
 import { SourceRange } from '../executor'
 import { Selections } from '../../useStore'
-import { VITE_KC_API_WS_MODELING_URL } from '../../env'
+import {
+  VITE_KC_API_WS_MODELING_URL,
+  VITE_KC_CONNECTION_TIMEOUT_MS,
+} from '../../env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from '../../lib/exportSave'
 import { v4 as uuidv4 } from 'uuid'
@@ -243,7 +246,7 @@ export class EngineConnection extends EventTarget {
       // TODO(paultag): This ought to be both controllable, as well as something
       // like exponential backoff to have some grace on the backend, as well as
       // fix responsiveness for clients that had a weird network hiccup.
-      const connectionTimeoutMs = 3000
+      const connectionTimeoutMs = VITE_KC_CONNECTION_TIMEOUT_MS
 
       setTimeout(() => {
         if (this.isReady()) {
