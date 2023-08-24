@@ -17,15 +17,6 @@ impl EngineConnection {
         Ok(EngineConnection {})
     }
 
-    pub fn send_lossy_cmd(
-        &mut self,
-        _id: uuid::Uuid,
-        _source_range: crate::executor::SourceRange,
-        _cmd: kittycad::types::ModelingCmd,
-    ) -> Result<(), KclError> {
-        Ok(())
-    }
-
     pub fn send_modeling_cmd(
         &mut self,
         _id: uuid::Uuid,

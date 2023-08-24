@@ -31,6 +31,17 @@ pub struct EngineManager {
 
 #[wasm_bindgen]
 impl EngineManager {
+    #[cfg(feature = "web")]
+    #[cfg(not(test))]
+    #[wasm_bindgen(constructor)]
+    pub async fn new(manager: conn_web::EngineCommandManager) -> EngineManager {
+        EngineManager {
+            // This unwrap is safe because the connection is always created.
+            connection: EngineConnection::new(manager).await.unwrap(),
+        }
+    }
+
+    #[cfg(not(feature = "web"))]
     #[wasm_bindgen(constructor)]
     pub async fn new(conn_str: &str, auth_token: &str, origin: &str) -> EngineManager {
         EngineManager {
@@ -41,42 +52,12 @@ impl EngineManager {
         }
     }
 
-    pub fn send_scene_cmd(&mut self, id_str: &str, cmd_str: &str) -> Result<(), String> {
-        let id = uuid::Uuid::parse_str(id_str).map_err(|e| e.to_string())?;
-        let cmd = serde_json::from_str(cmd_str).map_err(|e| e.to_string())?;
-        match cmd {
-            kittycad::types::ModelingCmd::HighlightSetEntity { .. }
-            | kittycad::types::ModelingCmd::CameraDragMove { .. } => {
-                self.connection
-                    .send_lossy_cmd(id, SourceRange::default(), cmd)
-                    .map_err(String::from)?;
-            }
-            _ => {
-                self.connection
-                    .send_modeling_cmd(id, SourceRange::default(), cmd)
-                    .map_err(String::from)?;
-            }
-        }
-
-        Ok(())
-    }
-
     pub fn send_modeling_cmd(&mut self, id_str: &str, cmd_str: &str) -> Result<(), String> {
         let id = uuid::Uuid::parse_str(id_str).map_err(|e| e.to_string())?;
         let cmd = serde_json::from_str(cmd_str).map_err(|e| e.to_string())?;
-        match cmd {
-            kittycad::types::ModelingCmd::HighlightSetEntity { .. }
-            | kittycad::types::ModelingCmd::CameraDragMove { .. } => {
-                self.connection
-                    .send_lossy_cmd(id, SourceRange::default(), cmd)
-                    .map_err(String::from)?;
-            }
-            _ => {
-                self.connection
-                    .send_modeling_cmd(id, SourceRange::default(), cmd)
-                    .map_err(String::from)?;
-            }
-        }
+        self.connection
+            .send_modeling_cmd(id, SourceRange::default(), cmd)
+            .map_err(String::from)?;
 
         Ok(())
     }

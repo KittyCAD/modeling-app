@@ -1,11 +1,8 @@
-import { SourceRange } from '../executor'
-import { Selections } from '../../useStore'
-import {
-  VITE_KC_API_WS_MODELING_URL,
-  VITE_KC_CONNECTION_TIMEOUT_MS,
-} from '../../env'
+import { SourceRange } from 'lang/executor'
+import { Selections } from 'useStore'
+import { VITE_KC_API_WS_MODELING_URL, VITE_KC_CONNECTION_TIMEOUT_MS } from 'env'
 import { Models } from '@kittycad/lib'
-import { exportSave } from '../../lib/exportSave'
+import { exportSave } from 'lib/exportSave'
 import { v4 as uuidv4 } from 'uuid'
 
 interface ResultCommand {
@@ -556,6 +553,20 @@ export class EngineCommandManager {
       resolve,
     }
     return promise
+  }
+  sendModelingCommandFromWasm({
+    id,
+    rangeStr,
+    commandStr,
+  }: {
+    id: string
+    rangeStr: string
+    commandStr: string
+  }): Promise<any> {
+    const command: EngineCommand = JSON.parse(commandStr)
+    const range: SourceRange = JSON.parse(rangeStr)
+
+    return this.sendModelingCommand({ id, range, command })
   }
   commandResult(id: string): Promise<any> {
     const command = this.artifactMap[id]

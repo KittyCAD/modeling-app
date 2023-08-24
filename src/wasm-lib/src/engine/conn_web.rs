@@ -1,14 +1,59 @@
 //! Functions for setting up our WebSocket and WebRTC connections for communications with the
 //! engine.
 
+use anyhow::Result;
+use kittycad::types::WebSocketMessages;
 use wasm_bindgen::prelude::*;
 
-#[wasm_bindgen(module = "/lang/std/engineConnection.ts")]
+use crate::errors::{KclError, KclErrorDetails};
+
+#[wasm_bindgen(module = "/../lang/std/engineConnection.ts")]
 extern "C" {
-    type EngineCommandManager;
+    #[derive(Debug, Clone)]
+    pub type EngineCommandManager;
 
     #[wasm_bindgen(method)]
-    fn sendModellingCommand(this: &EngineCommandManager, id: &str, range: &str, cmd: &str);
+    fn sendModelingCommandFromWasm(
+        this: &EngineCommandManager,
+        id: &str,
+        rangeStr: &str,
+        cmdStr: &str,
+    );
+}
+
+#[derive(Debug, Clone)]
+pub struct EngineConnection {
+    manager: EngineCommandManager,
+}
+
+impl EngineConnection {
+    pub async fn new(manager: EngineCommandManager) -> Result<EngineConnection, JsValue> {
+        Ok(EngineConnection { manager })
+    }
+
+    pub fn send_modeling_cmd(
+        &mut self,
+        id: uuid::Uuid,
+        source_range: crate::executor::SourceRange,
+        cmd: kittycad::types::ModelingCmd,
+    ) -> Result<(), KclError> {
+        let source_range_str = serde_json::to_string(&source_range).map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: format!("Failed to serialize source range: {:?}", e),
+                source_ranges: vec![source_range],
+            })
+        })?;
+        let ws_msg = WebSocketMessages::ModelingCmdReq { cmd, cmd_id: id };
+        let cmd_str = serde_json::to_string(&ws_msg).map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: format!("Failed to serialize modeling command: {:?}", e),
+                source_ranges: vec![source_range],
+            })
+        })?;
+        self.manager
+            .sendModelingCommandFromWasm(&id.to_string(), &source_range_str, &cmd_str);
+        Ok(())
+    }
 }
 
 /*use anyhow::Result;

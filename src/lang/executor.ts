@@ -138,7 +138,8 @@ export const _executor = async (
   try {
     const memory: ProgramMemory = await execute_wasm(
       JSON.stringify(node),
-      JSON.stringify(programMemory)
+      JSON.stringify(programMemory),
+      engineCommandManager
     )
     return memory
   } catch (e: any) {
