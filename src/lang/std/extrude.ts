@@ -30,14 +30,8 @@ export const extrude: InternalFn = (
 
   const extrudeSurfaces: ExtrudeSurface[] = []
   const extrusionDirection = clockwiseSign(sketch.value.map((line) => line.to))
-  engineCommandManager.sendModellingCommand({
+  engineCommandManager.sendModelingCommand({
     id,
-    params: [
-      {
-        length,
-        extrusionDirection: extrusionDirection,
-      },
-    ],
     range: sourceRange,
     command: {
       type: 'modeling_cmd_req',

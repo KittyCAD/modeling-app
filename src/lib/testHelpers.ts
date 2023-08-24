@@ -10,7 +10,7 @@ class MockEngineCommandManager {
   startNewSession() {}
   waitForAllCommands() {}
   waitForReady = new Promise<void>((resolve) => resolve())
-  sendModellingCommand() {}
+  sendModelingCommand() {}
   sendSceneCommand() {}
 }
 
