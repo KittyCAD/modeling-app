@@ -295,18 +295,6 @@ export function App() {
           _ast,
           {
             root: {
-              log: {
-                type: 'userVal',
-                value: (a: any) => {
-                  addLog(a)
-                },
-                __meta: [
-                  {
-                    pathToNode: [],
-                    sourceRange: [0, 0],
-                  },
-                ],
-              },
               _0: {
                 type: 'userVal',
                 value: 0,
@@ -328,11 +316,8 @@ export function App() {
                 __meta: [],
               },
             },
-            pendingMemory: {},
           },
-          engineCommandManager,
-          { bodyType: 'root' },
-          []
+          engineCommandManager
         )
 
         const { artifactMap, sourceRangeMap } =

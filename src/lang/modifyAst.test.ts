@@ -182,14 +182,14 @@ describe('Testing moveValueIntoNewVariable', () => {
   const code = `${fn('def')}${fn('ghi')}${fn('jkl')}${fn('hmm')}
 const abc = 3
 const identifierGuy = 5
+const yo = 5 + 6
 const part001 = startSketchAt([-1.2, 4.83])
 |> line([2.8, 0], %)
 |> angledLine([100 + 100, 3.09], %)
 |> angledLine([abc, 3.09], %)
-|> angledLine([def('yo'), 3.09], %)
+|> angledLine([def(yo), 3.09], %)
 |> angledLine([ghi(%), 3.09], %)
-|> angledLine([jkl('yo') + 2, 3.09], %)
-const yo = 5 + 6
+|> angledLine([jkl(yo) + 2, 3.09], %)
 const yo2 = hmm([identifierGuy + 5])
 show(part001)`
   it('should move a binary expression into a new variable', async () => {
@@ -231,7 +231,7 @@ show(part001)`
       'newVar'
     )
     const newCode = recast(modifiedAst)
-    expect(newCode).toContain(`const newVar = def('yo')`)
+    expect(newCode).toContain(`const newVar = def(yo)`)
     expect(newCode).toContain(`angledLine([newVar, 3.09], %)`)
   })
   it('should move a binary expression with call expression into a new variable', async () => {
@@ -245,7 +245,7 @@ show(part001)`
       'newVar'
     )
     const newCode = recast(modifiedAst)
-    expect(newCode).toContain(`const newVar = jkl('yo') + 2`)
+    expect(newCode).toContain(`const newVar = jkl(yo) + 2`)
     expect(newCode).toContain(`angledLine([newVar, 3.09], %)`)
   })
   it('should move a identifier into a new variable', async () => {

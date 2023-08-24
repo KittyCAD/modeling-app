@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": "src",
     "types": ["vite/client", "@types/wicg-file-system-access"],
     "target": "esnext",
     "lib": [

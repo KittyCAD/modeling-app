@@ -5,7 +5,7 @@ import { ProgramMemory } from './executor'
 import { initPromise } from './rust'
 import { enginelessExecutor } from '../lib/testHelpers'
 import { vi } from 'vitest'
-import { KCLUndefinedValueError } from './errors'
+import { KCLError } from './errors'
 
 beforeAll(() => initPromise)
 
@@ -29,29 +29,6 @@ const newVar = myVar + 1`
     )
     const { root } = await exe(code)
     expect(root.myVar.value).toBe('a str another str')
-  })
-  it('test with function call', async () => {
-    const code = `
-const myVar = "hello"
-log(5, myVar)`
-    const programMemoryOverride: ProgramMemory['root'] = {
-      log: {
-        type: 'userVal',
-        value: vi.fn(),
-        __meta: [
-          {
-            sourceRange: [0, 0],
-            pathToNode: [],
-          },
-        ],
-      },
-    }
-    const { root } = await enginelessExecutor(parser_wasm(code), {
-      root: programMemoryOverride,
-      pendingMemory: {},
-    })
-    expect(root.myVar.value).toBe('hello')
-    expect(programMemoryOverride.log.value).toHaveBeenCalledWith(5, 'hello')
   })
   it('fn funcN = () => {} execute', async () => {
     const { root } = await exe(
@@ -84,8 +61,7 @@ show(mySketch)
         from: [0, 0],
         __geoMeta: {
           sourceRange: [43, 80],
-          id: '37333036-3033-4432-b530-643030303837',
-          pathToNode: [],
+          id: expect.any(String),
         },
         name: 'myPath',
       },
@@ -93,10 +69,10 @@ show(mySketch)
         type: 'toPoint',
         to: [2, 3],
         from: [0, 2],
+        name: '',
         __geoMeta: {
           sourceRange: [86, 102],
-          id: '32343136-3330-4134-a462-376437386365',
-          pathToNode: [],
+          id: expect.any(String),
         },
       },
       {
@@ -105,8 +81,7 @@ show(mySketch)
         from: [2, 3],
         __geoMeta: {
           sourceRange: [108, 151],
-          id: '32306132-6130-4138-b832-636363326330',
-          pathToNode: [],
+          id: expect.any(String),
         },
         name: 'rightPath',
       },
@@ -170,13 +145,12 @@ show(mySketch)
     expect(root.mySk1).toEqual({
       type: 'sketchGroup',
       start: {
-        type: 'base',
         to: [0, 0],
         from: [0, 0],
+        name: '',
         __geoMeta: {
-          id: '37663863-3664-4366-a637-623739336334',
+          id: expect.any(String),
           sourceRange: [14, 34],
-          pathToNode: [],
         },
       },
       value: [
@@ -184,10 +158,10 @@ show(mySketch)
           type: 'toPoint',
           to: [1, 1],
           from: [0, 0],
+          name: '',
           __geoMeta: {
             sourceRange: [40, 56],
-            id: '34356231-3362-4363-b935-393033353034',
-            pathToNode: [],
+            id: expect.any(String),
           },
         },
         {
@@ -196,8 +170,7 @@ show(mySketch)
           from: [1, 1],
           __geoMeta: {
             sourceRange: [62, 100],
-            id: '39623339-3538-4366-b633-356630326639',
-            pathToNode: [],
+            id: expect.any(String),
           },
           name: 'myPath',
         },
@@ -205,17 +178,17 @@ show(mySketch)
           type: 'toPoint',
           to: [1, 1],
           from: [0, 1],
+          name: '',
           __geoMeta: {
             sourceRange: [106, 122],
-            id: '30636135-6232-4335-b665-366562303161',
-            pathToNode: [],
+            id: expect.any(String),
           },
         },
       ],
       position: [0, 0, 0],
       rotation: [0, 0, 0, 1],
-      id: '30376661-3039-4965-b532-653665313731',
-      __meta: [{ sourceRange: [14, 34], pathToNode: [] }],
+      id: expect.any(String),
+      __meta: [{ sourceRange: [14, 34] }],
     })
   })
   it('execute array expression', async () => {
@@ -230,13 +203,6 @@ show(mySketch)
         value: 3,
         __meta: [
           {
-            pathToNode: [
-              ['body', ''],
-              [0, 'index'],
-              ['declarations', 'VariableDeclaration'],
-              [0, 'index'],
-              ['init', 'VariableDeclaration'],
-            ],
             sourceRange: [14, 15],
           },
         ],
@@ -246,24 +212,7 @@ show(mySketch)
         value: [1, '2', 3, 9],
         __meta: [
           {
-            pathToNode: [
-              ['body', ''],
-              [1, 'index'],
-              ['declarations', 'VariableDeclaration'],
-              [0, 'index'],
-              ['init', 'VariableDeclaration'],
-            ],
             sourceRange: [27, 49],
-          },
-          {
-            pathToNode: [
-              ['body', ''],
-              [0, 'index'],
-              ['declarations', 'VariableDeclaration'],
-              [0, 'index'],
-              ['init', 'VariableDeclaration'],
-            ],
-            sourceRange: [14, 15],
           },
         ],
       },
@@ -280,13 +229,6 @@ show(mySketch)
       value: { aStr: 'str', anum: 2, identifier: 3, binExp: 9 },
       __meta: [
         {
-          pathToNode: [
-            ['body', ''],
-            [1, 'index'],
-            ['declarations', 'VariableDeclaration'],
-            [0, 'index'],
-            ['init', 'VariableDeclaration'],
-          ],
           sourceRange: [27, 83],
         },
       ],
@@ -302,13 +244,6 @@ show(mySketch)
       value: '123',
       __meta: [
         {
-          pathToNode: [
-            ['body', ''],
-            [1, 'index'],
-            ['declarations', 'VariableDeclaration'],
-            [0, 'index'],
-            ['init', 'VariableDeclaration'],
-          ],
           sourceRange: [41, 50],
         },
       ],
@@ -451,17 +386,18 @@ const theExtrude = startSketchAt([0, 0])
   |> extrude(4, %)
 show(theExtrude)`
     await expect(exe(code)).rejects.toEqual(
-      new KCLUndefinedValueError('Memory item myVarZ not found', [[100, 106]])
+      new KCLError(
+        'undefined_value',
+        'memory item key `myVarZ` is not defined',
+        [[100, 106]]
+      )
     )
   })
 })
 
 // helpers
 
-async function exe(
-  code: string,
-  programMemory: ProgramMemory = { root: {}, pendingMemory: {} }
-) {
+async function exe(code: string, programMemory: ProgramMemory = { root: {} }) {
   const ast = parser_wasm(code)
 
   const result = await enginelessExecutor(ast, programMemory)

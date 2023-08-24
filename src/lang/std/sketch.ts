@@ -143,7 +143,6 @@ export const lineTo: SketchLineHelper = {
       __geoMeta: {
         sourceRange,
         id,
-        pathToNode: [], // TODO
       },
     }
     if ('tag' in data) {
@@ -280,7 +279,6 @@ export const line: SketchLineHelper = {
       __geoMeta: {
         id,
         sourceRange,
-        pathToNode: [], // TODO
       },
     }
     if (data !== 'default' && 'tag' in data) {
@@ -674,7 +672,6 @@ export const angledLine: SketchLineHelper = {
       __geoMeta: {
         id,
         sourceRange,
-        pathToNode: [], // TODO
       },
     }
     if ('tag' in data) {
@@ -1559,7 +1556,6 @@ export const close: InternalFn = (
     __geoMeta: {
       id,
       sourceRange,
-      pathToNode: [], // TODO
     },
   }
   const newValue = [...sketchGroup.value]
@@ -1633,7 +1629,6 @@ export const startSketchAt: InternalFn = (
     __geoMeta: {
       id,
       sourceRange,
-      pathToNode: [], // TODO
     },
   }
   if (data !== 'default' && 'tag' in data) {
@@ -1649,7 +1644,6 @@ export const startSketchAt: InternalFn = (
     __meta: [
       {
         sourceRange,
-        pathToNode: [], // TODO
       },
     ],
   }
