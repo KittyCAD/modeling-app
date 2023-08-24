@@ -1,4 +1,5 @@
 mod abstract_syntax_tree_types;
+mod docs;
 mod engine;
 mod errors;
 mod executor;

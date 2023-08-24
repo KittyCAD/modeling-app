@@ -42,3 +42,8 @@ tokio = { version = "1.32.0", features = ["rt-multi-thread", "macros", "time"] }
 default = ["web"]
 web = ["dep:gloo-file", "dep:js-sys"]
 noweb = ["dep:futures", "dep:httparse", "dep:tokio", "dep:tokio-tungstenite"]
+
+[workspace]
+members = [
+	"derive-docs"
+]
