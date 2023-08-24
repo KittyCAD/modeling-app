@@ -2,6 +2,7 @@
 
 use derive_docs::stdlib;
 use kittycad::types::{ModelingCmd, Point3D};
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -15,7 +16,7 @@ use crate::{
 
 use anyhow::Result;
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum LineToData {
@@ -69,7 +70,7 @@ fn inner_line_to(
     Ok(new_sketch_group)
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum AxisLineToData {
@@ -111,7 +112,7 @@ pub fn y_line_to(args: &mut Args) -> Result<MemoryItem, KclError> {
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum LineData {
@@ -120,7 +121,7 @@ pub enum LineData {
     Default(String),
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum PointOrDefault {
@@ -203,7 +204,7 @@ fn inner_line(
     Ok(new_sketch_group)
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum AxisLineData {
@@ -243,7 +244,7 @@ pub fn y_line(args: &mut Args) -> Result<MemoryItem, KclError> {
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum AngledLineData {
@@ -323,7 +324,7 @@ pub fn angled_line_of_x_length(args: &mut Args) -> Result<MemoryItem, KclError> 
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum AngledLineToData {
@@ -418,7 +419,7 @@ pub fn angled_line_to_y(args: &mut Args) -> Result<MemoryItem, KclError> {
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 // TODO: make sure the docs on the args below are correct.

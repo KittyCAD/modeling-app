@@ -2,6 +2,7 @@
 
 use std::collections::HashMap;
 
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Map;
 
@@ -11,7 +12,7 @@ use crate::{
     executor::{MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange},
 };
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Program {
@@ -21,7 +22,7 @@ pub struct Program {
     pub non_code_meta: NoneCodeMeta,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum BodyItem {
@@ -30,7 +31,7 @@ pub enum BodyItem {
     ReturnStatement(ReturnStatement),
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Value {
@@ -131,7 +132,7 @@ impl From<&Value> for crate::executor::SourceRange {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum BinaryPart {
@@ -207,7 +208,7 @@ impl BinaryPart {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct NoneCodeNode {
@@ -216,7 +217,7 @@ pub struct NoneCodeNode {
     pub value: String,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct NoneCodeMeta {
@@ -250,7 +251,7 @@ impl<'de> Deserialize<'de> for NoneCodeMeta {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ExpressionStatement {
@@ -261,7 +262,7 @@ pub struct ExpressionStatement {
 
 impl_value_meta!(ExpressionStatement);
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct CallExpression {
@@ -400,7 +401,7 @@ impl CallExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct VariableDeclaration {
@@ -412,7 +413,7 @@ pub struct VariableDeclaration {
 
 impl_value_meta!(VariableDeclaration);
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct VariableDeclarator {
@@ -424,7 +425,7 @@ pub struct VariableDeclarator {
 
 impl_value_meta!(VariableDeclarator);
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Literal {
@@ -458,7 +459,7 @@ impl From<&Box<Literal>> for MemoryItem {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Identifier {
@@ -469,7 +470,7 @@ pub struct Identifier {
 
 impl_value_meta!(Identifier);
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct PipeSubstitution {
@@ -479,7 +480,7 @@ pub struct PipeSubstitution {
 
 impl_value_meta!(PipeSubstitution);
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ArrayExpression {
@@ -567,7 +568,7 @@ impl ArrayExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ObjectExpression {
@@ -653,7 +654,7 @@ impl ObjectExpression {
 
 impl_value_meta!(ObjectExpression);
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ObjectProperty {
@@ -665,7 +666,7 @@ pub struct ObjectProperty {
 
 impl_value_meta!(ObjectProperty);
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum MemberObject {
@@ -673,7 +674,7 @@ pub enum MemberObject {
     Identifier(Box<Identifier>),
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum LiteralIdentifier {
@@ -681,7 +682,7 @@ pub enum LiteralIdentifier {
     Literal(Box<Literal>),
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct MemberExpression {
@@ -747,7 +748,7 @@ impl MemberExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct ObjectKeyInfo {
     pub key: LiteralIdentifier,
@@ -755,7 +756,7 @@ pub struct ObjectKeyInfo {
     pub computed: bool,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct BinaryExpression {
@@ -856,7 +857,7 @@ pub fn parse_json_value_as_string(j: &serde_json::Value) -> Option<String> {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct UnaryExpression {
@@ -893,7 +894,7 @@ impl UnaryExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct PipeExpression {
@@ -969,7 +970,7 @@ fn execute_pipe_body(
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct FunctionExpression {
@@ -982,7 +983,7 @@ pub struct FunctionExpression {
 
 impl_value_meta!(FunctionExpression);
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ReturnStatement {

@@ -7,6 +7,10 @@ pub struct StdLibFnArg {
     pub type_: String,
     /// The description of the argument.
     pub description: String,
+    /// The schema of the argument.
+    pub schema: schemars::schema::Schema,
+    /// If the argument is required.
+    pub required: bool,
 }
 
 /// This trait defines functions called upon stdlib functions to generate

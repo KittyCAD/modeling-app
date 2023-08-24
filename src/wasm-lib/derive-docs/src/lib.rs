@@ -14,7 +14,6 @@ use serde::Deserialize;
 use serde_tokenstream::{from_tokenstream, Error};
 use syn::{
     parse::{Parse, ParseStream},
-    spanned::Spanned,
     Attribute, Signature, Visibility,
 };
 
@@ -187,28 +186,34 @@ fn do_stdlib_inner(
         match arg {
             syn::FnArg::Receiver(pat) => {
                 let ty = pat.ty.as_ref().into_token_stream();
-                let ty_string = ty.to_string().replace('&', "");
+                let ty_string = ty.to_string().replace('&', "").replace("mut", "");
                 let ty_string = ty_string.trim().to_string();
+                let ty_ident = format_ident!("{}", ty_string);
 
                 if ty_string != "Args" {
                     arg_types.push(quote! {
                         #docs_crate::StdLibFnArg {
                             type_: #ty_string.to_string(),
                             description: "".to_string(),
+                            schema: #ty_ident::json_schema(&mut generator),
+                            required: true,
                         }
                     });
                 }
             }
             syn::FnArg::Typed(pat) => {
                 let ty = pat.ty.as_ref().into_token_stream();
-                let ty_string = ty.to_string().replace('&', "");
+                let ty_string = ty.to_string().replace('&', "").replace("mut", "");
                 let ty_string = ty_string.trim().to_string();
+                let ty_ident = format_ident!("{}", ty_string);
 
                 if ty_string != "Args" {
                     arg_types.push(quote! {
                         #docs_crate::StdLibFnArg {
                             type_: #ty_string.to_string(),
                             description: "".to_string(),
+                            schema: #ty_ident::json_schema(&mut generator),
+                            required: true,
                         }
                     });
                 }
@@ -224,10 +229,13 @@ fn do_stdlib_inner(
         .replace("Result < ", "")
         .replace(", KclError >", "");
     let ret_ty_string = ret_ty_string.trim().to_string();
+    let ret_ty_ident = format_ident!("{}", ret_ty_string);
     let return_type = quote! {
         #docs_crate::StdLibFnArg {
             type_: #ret_ty_string.to_string(),
             description: "".to_string(),
+            schema: #ret_ty_ident::json_schema(&mut generator),
+            required: true,
         }
     };
 
@@ -272,10 +280,16 @@ fn do_stdlib_inner(
             }
 
             fn args(&self) -> Vec<#docs_crate::StdLibFnArg> {
+                let settings = schemars::gen::SchemaSettings::openapi3();
+                let mut generator = schemars::gen::SchemaGenerator::new(settings);
+
                 vec![#(#arg_types),*]
             }
 
             fn return_value(&self) -> #docs_crate::StdLibFnArg {
+                let settings = schemars::gen::SchemaSettings::openapi3();
+                let mut generator = schemars::gen::SchemaGenerator::new(settings);
+
                 #return_type
             }
 
