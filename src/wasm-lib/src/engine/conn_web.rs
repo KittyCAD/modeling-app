@@ -18,7 +18,7 @@ extern "C" {
         id: String,
         rangeStr: String,
         cmdStr: String,
-    );
+    ) -> js_sys::Promise;
 }
 
 #[derive(Debug, Clone)]
@@ -50,7 +50,8 @@ impl EngineConnection {
                 source_ranges: vec![source_range],
             })
         })?;
-        self.manager
+        let _ = self
+            .manager
             .sendModelingCommandFromWasm(id.to_string(), source_range_str, cmd_str);
         Ok(())
     }

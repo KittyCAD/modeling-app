@@ -554,15 +554,11 @@ export class EngineCommandManager {
     }
     return promise
   }
-  sendModelingCommandFromWasm({
-    id,
-    rangeStr,
-    commandStr,
-  }: {
-    id: string
-    rangeStr: string
+  sendModelingCommandFromWasm(
+    id: string,
+    rangeStr: string,
     commandStr: string
-  }): Promise<any> {
+  ): Promise<any> {
     if (id === undefined) {
       throw new Error('id is undefined')
     }
