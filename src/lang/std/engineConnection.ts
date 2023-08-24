@@ -46,15 +46,6 @@ type OkResponse = Models['OkModelingCmdResponse_type']
 
 type WebSocketResponse = Models['WebSocketResponses_type']
 
-enum EngineConnectionEvents {
-  ConnectionStarted = 'connectionStarted',
-  WebsocketOpen = 'websocketOpen',
-  NewTrack = 'newTrack',
-  DataChannelOpen = 'dataChannelOpen',
-  Open = 'open',
-  Close = 'close',
-}
-
 // EngineConnection encapsulates the connection(s) to the Engine
 // for the EngineCommandManager; namely, the underlying WebSocket
 // and WebRTC connections.
@@ -67,19 +58,42 @@ export class EngineConnection extends EventTarget {
 
   readonly url: string
   private readonly token?: string
+  private onWebsocketOpen: (engineConnection: EngineConnection) => void
+  private onDataChannelOpen: (engineConnection: EngineConnection) => void
+  private onEngineConnectionOpen: (engineConnection: EngineConnection) => void
+  private onConnectionStarted: (engineConnection: EngineConnection) => void
+  private onClose: (engineConnection: EngineConnection) => void
+  private onNewTrack: (track: NewTrackArgs) => void
 
-  constructor({ url, token }: { url: string; token?: string }) {
+  constructor({
+    url,
+    token,
+    onWebsocketOpen = () => {},
+    onNewTrack = () => {},
+    onEngineConnectionOpen = () => {},
+    onConnectionStarted = () => {},
+    onClose = () => {},
+    onDataChannelOpen = () => {},
+  }: {
+    url: string
+    token?: string
+    onWebsocketOpen?: (engineConnection: EngineConnection) => void
+    onDataChannelOpen?: (engineConnection: EngineConnection) => void
+    onEngineConnectionOpen?: (engineConnection: EngineConnection) => void
+    onConnectionStarted?: (engineConnection: EngineConnection) => void
+    onClose?: (engineConnection: EngineConnection) => void
+    onNewTrack?: (track: NewTrackArgs) => void
+  }) {
     super()
     this.url = url
     this.token = token
     this.ready = false
-
-    this.addEventListener(EngineConnectionEvents.Open, () => {
-      this.ready = true
-    })
-    this.addEventListener(EngineConnectionEvents.Close, () => {
-      this.ready = false
-    })
+    this.onWebsocketOpen = onWebsocketOpen
+    this.onDataChannelOpen = onDataChannelOpen
+    this.onEngineConnectionOpen = onEngineConnectionOpen
+    this.onConnectionStarted = onConnectionStarted
+    this.onClose = onClose
+    this.onNewTrack = onNewTrack
 
     // TODO(paultag): This ought to be tweakable.
     const pingIntervalMs = 10000
@@ -123,11 +137,7 @@ export class EngineConnection extends EventTarget {
     })
 
     this.websocket.addEventListener('open', (event) => {
-      this.dispatchEvent(
-        new CustomEvent(EngineConnectionEvents.WebsocketOpen, {
-          detail: this,
-        })
-      )
+      this.onWebsocketOpen(this)
     })
 
     this.websocket.addEventListener('close', (event) => {
@@ -161,7 +171,8 @@ export class EngineConnection extends EventTarget {
 
       if (
         message.type === 'sdp_answer' &&
-        message.answer.type !== 'unspecified'
+        message?.answer &&
+        message?.answer?.type !== 'unspecified'
       ) {
         if (this.pc?.signalingState !== 'stable') {
           // If the connection is stable, we shouldn't bother updating the
@@ -180,7 +191,7 @@ export class EngineConnection extends EventTarget {
       } else if (message.type === 'ice_server_info' && this.pc) {
         console.log('received ice_server_info')
 
-        if (message.ice_servers.length > 0) {
+        if (message?.ice_servers?.length > 0) {
           // When we set the Configuration, we want to always force
           // iceTransportPolicy to 'relay', since we know the topology
           // of the ICE/STUN/TUN server and the engine. We don't wish to
@@ -261,14 +272,10 @@ export class EngineConnection extends EventTarget {
     this.pc.addEventListener('track', (event) => {
       console.log('received track', event)
       const mediaStream = event.streams[0]
-      this.dispatchEvent(
-        new CustomEvent(EngineConnectionEvents.NewTrack, {
-          detail: {
-            conn: this,
-            mediaStream: mediaStream,
-          },
-        })
-      )
+      this.onNewTrack({
+        conn: this,
+        mediaStream: mediaStream,
+      })
     })
 
     // During startup, we'll track the time from `connect` being called
@@ -282,19 +289,12 @@ export class EngineConnection extends EventTarget {
       this.lossyDataChannel.addEventListener('open', (event) => {
         console.log('lossy data channel opened', event)
 
-        this.dispatchEvent(
-          new CustomEvent(EngineConnectionEvents.DataChannelOpen, {
-            detail: this,
-          })
-        )
+        this.onDataChannelOpen(this)
 
         let timeToConnectMs = new Date().getTime() - connectionStarted.getTime()
         console.log(`engine connection time to connect: ${timeToConnectMs}ms`)
-        this.dispatchEvent(
-          new CustomEvent(EngineConnectionEvents.Open, {
-            detail: this,
-          })
-        )
+        this.onEngineConnectionOpen(this)
+        this.ready = true
       })
 
       this.lossyDataChannel.addEventListener('close', (event) => {
@@ -308,11 +308,7 @@ export class EngineConnection extends EventTarget {
       })
     })
 
-    this.dispatchEvent(
-      new CustomEvent(EngineConnectionEvents.ConnectionStarted, {
-        detail: this,
-      })
-    )
+    this.onConnectionStarted(this)
   }
   send(message: object) {
     // TODO(paultag): Add in logic to determine the connection state and
@@ -327,11 +323,8 @@ export class EngineConnection extends EventTarget {
     this.pc = undefined
     this.lossyDataChannel = undefined
 
-    this.dispatchEvent(
-      new CustomEvent(EngineConnectionEvents.Close, {
-        detail: this,
-      })
-    )
+    this.onClose(this)
+    this.ready = false
   }
 }
 
@@ -367,30 +360,15 @@ export class EngineCommandManager {
     this.engineConnection = new EngineConnection({
       url,
       token,
-    })
-
-    this.engineConnection.addEventListener(
-      EngineConnectionEvents.Open,
-      (event) => {
+      onEngineConnectionOpen: () => {
         this.resolveReady()
         setIsStreamReady(true)
-      }
-    )
-
-    this.engineConnection.addEventListener(
-      EngineConnectionEvents.Close,
-      (event) => {
+      },
+      onClose: () => {
         setIsStreamReady(false)
-      }
-    )
-
-    this.engineConnection.addEventListener(
-      EngineConnectionEvents.ConnectionStarted,
-      (event: Event) => {
-        let customEvent = event as CustomEvent<EngineConnection>
-        let conn = customEvent.detail
-
-        this.engineConnection?.pc?.addEventListener('datachannel', (event) => {
+      },
+      onConnectionStarted: (engineConnection) => {
+        engineConnection?.pc?.addEventListener('datachannel', (event) => {
           let lossyDataChannel = event.channel
 
           lossyDataChannel.addEventListener('message', (event) => {
@@ -408,7 +386,7 @@ export class EngineCommandManager {
 
         // When the EngineConnection starts a connection, we want to register
         // callbacks into the WebSocket/PeerConnection.
-        conn.websocket?.addEventListener('message', (event) => {
+        engineConnection.websocket?.addEventListener('message', (event) => {
           if (event.data instanceof ArrayBuffer) {
             // If the data is an ArrayBuffer, it's  the result of an export command,
             // because in all other cases we send JSON strings. But in the case of
@@ -428,14 +406,8 @@ export class EngineCommandManager {
             }
           }
         })
-      }
-    )
-    this.engineConnection.addEventListener(
-      EngineConnectionEvents.NewTrack,
-      (event: Event) => {
-        let customEvent = event as CustomEvent<NewTrackArgs>
-
-        let mediaStream = customEvent.detail.mediaStream
+      },
+      onNewTrack: ({ mediaStream }) => {
         console.log('received track', mediaStream)
 
         mediaStream.getVideoTracks()[0].addEventListener('mute', () => {
@@ -445,8 +417,9 @@ export class EngineCommandManager {
         })
 
         setMediaStream(mediaStream)
-      }
-    )
+      },
+    })
+
     this.engineConnection?.connect()
   }
   handleModelingCommand(message: WebSocketResponse) {
