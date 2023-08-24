@@ -71,7 +71,7 @@ fn do_output(
 
 fn do_stdlib_inner(
     metadata: StdlibMetadata,
-    attr: proc_macro2::TokenStream,
+    _attr: proc_macro2::TokenStream,
     item: proc_macro2::TokenStream,
 ) -> Result<(proc_macro2::TokenStream, Vec<Error>), Error> {
     let ast: ItemFnForSignature = syn::parse2(item.clone())?;
@@ -122,7 +122,7 @@ fn do_stdlib_inner(
     let name_str = name.to_string();
 
     let fn_name = &ast.sig.ident;
-    let fn_name_str = fn_name.to_string();
+    let _fn_name_str = fn_name.to_string();
     let visibility = &ast.vis;
 
     let (summary_text, description_text) = extract_doc_from_attrs(&ast.attrs);
@@ -187,7 +187,7 @@ fn do_stdlib_inner(
         match arg {
             syn::FnArg::Receiver(pat) => {
                 let ty = pat.ty.as_ref().into_token_stream();
-                let ty_string = ty.to_string().replace("&", "");
+                let ty_string = ty.to_string().replace('&', "");
                 let ty_string = ty_string.trim().to_string();
 
                 if ty_string != "Args" {
@@ -201,7 +201,7 @@ fn do_stdlib_inner(
             }
             syn::FnArg::Typed(pat) => {
                 let ty = pat.ty.as_ref().into_token_stream();
-                let ty_string = ty.to_string().replace("&", "");
+                let ty_string = ty.to_string().replace('&', "");
                 let ty_string = ty_string.trim().to_string();
 
                 if ty_string != "Args" {
@@ -418,7 +418,7 @@ impl Parse for ItemFnForSignature {
 
 #[cfg(test)]
 mod tests {
-    use pretty_assertions::assert_eq;
+    
     use quote::quote;
 
     use super::*;
@@ -440,7 +440,7 @@ mod tests {
             },
         )
         .unwrap();
-        let expected = quote! {};
+        let _expected = quote! {};
 
         assert!(errors.is_empty());
         expectorate::assert_contents(
