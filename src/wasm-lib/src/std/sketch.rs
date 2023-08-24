@@ -145,6 +145,10 @@ pub fn line(args: &mut Args) -> Result<MemoryItem, KclError> {
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
+/// Draw a line.
+#[stdlib {
+    name = "line",
+}]
 fn inner_line(
     data: LineData,
     sketch_group: SketchGroup,

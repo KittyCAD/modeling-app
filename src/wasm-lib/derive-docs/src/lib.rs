@@ -418,7 +418,7 @@ impl Parse for ItemFnForSignature {
 
 #[cfg(test)]
 mod tests {
-    
+
     use quote::quote;
 
     use super::*;
