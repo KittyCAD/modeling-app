@@ -43,5 +43,7 @@ jobs:
       - name: Run cargo build
         run: |
           cd "${{ matrix.dir }}"
+          cargo build --all --no-default-features --features noweb
+          cargo build --all --no-default-features --features web
           cargo build --all
         shell: bash

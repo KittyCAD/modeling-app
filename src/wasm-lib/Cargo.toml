@@ -30,7 +30,6 @@ ts-rs = { git = "https://github.com/kittycad/ts-rs.git", branch = "serde_json", 
 uuid = { version = "1.4.1", features = ["v4", "js", "serde"] }
 wasm-bindgen = "0.2.87"
 wasm-bindgen-futures = "0.4.37"
-webrtc = { version = "0.8.0", optional = true }
 
 [dependencies.web-sys]
 version = "0.3.64"
@@ -69,4 +68,4 @@ tokio = { version = "1.32.0", features = ["rt-multi-thread", "macros", "time"] }
 [features]
 default = ["web"]
 web = ["dep:gloo-file", "dep:js-sys", "dep:web-sys"]
-noweb = ["dep:async-mutex", "dep:futures", "dep:httparse", "dep:tokio", "dep:tokio-tungstenite", "dep:webrtc"]
+noweb = ["dep:async-mutex", "dep:futures", "dep:httparse", "dep:tokio", "dep:tokio-tungstenite"]

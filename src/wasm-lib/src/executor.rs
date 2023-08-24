@@ -4,7 +4,6 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
-#[cfg(feature = "web")]
 #[cfg(not(test))]
 use wasm_bindgen::prelude::*;
 
@@ -626,6 +625,8 @@ pub async fn execute_wasm(
     memory_str: &str,
     manager: crate::engine::conn_web::EngineCommandManager,
 ) -> Result<JsValue, String> {
+    use gloo_utils::format::JsValueSerdeExt;
+
     // deserialize the ast from a stringified json
     let program: crate::abstract_syntax_tree_types::Program =
         serde_json::from_str(program_str).map_err(|e| e.to_string())?;
