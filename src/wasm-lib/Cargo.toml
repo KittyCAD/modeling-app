@@ -11,6 +11,7 @@ crate-type = ["cdylib"]
 anyhow = "1.0.75"
 backtrace = "0.3"
 bincode = "1.3.3"
+derive-docs = { path = "derive-docs" }
 futures = { version = "0.3.28", optional = true }
 gloo-file = { version = "0.3.0", optional = true }
 gloo-utils = "0.2.0"

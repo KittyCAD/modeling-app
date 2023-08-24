@@ -32,10 +32,6 @@ impl crate::docs::StdLibFn for LineTo {
                 type_: "SketchGroup".to_string(),
                 description: "".to_string(),
             },
-            crate::docs::StdLibFnArg {
-                type_: " Args".to_string(),
-                description: "".to_string(),
-            },
         ]
     }
 

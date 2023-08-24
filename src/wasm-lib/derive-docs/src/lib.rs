@@ -188,24 +188,30 @@ fn do_stdlib_inner(
             syn::FnArg::Receiver(pat) => {
                 let ty = pat.ty.as_ref().into_token_stream();
                 let ty_string = ty.to_string().replace("&", "");
+                let ty_string = ty_string.trim().to_string();
 
-                arg_types.push(quote! {
-                    #docs_crate::StdLibFnArg {
-                        type_: #ty_string.to_string(),
-                        description: "".to_string(),
-                    }
-                });
+                if ty_string != "Args" {
+                    arg_types.push(quote! {
+                        #docs_crate::StdLibFnArg {
+                            type_: #ty_string.to_string(),
+                            description: "".to_string(),
+                        }
+                    });
+                }
             }
             syn::FnArg::Typed(pat) => {
                 let ty = pat.ty.as_ref().into_token_stream();
                 let ty_string = ty.to_string().replace("&", "");
+                let ty_string = ty_string.trim().to_string();
 
-                arg_types.push(quote! {
-                    #docs_crate::StdLibFnArg {
-                        type_: #ty_string.to_string(),
-                        description: "".to_string(),
-                    }
-                });
+                if ty_string != "Args" {
+                    arg_types.push(quote! {
+                        #docs_crate::StdLibFnArg {
+                            type_: #ty_string.to_string(),
+                            description: "".to_string(),
+                        }
+                    });
+                }
             }
         }
     }
@@ -281,6 +287,8 @@ fn do_stdlib_inner(
                 #deprecated
             }
         }
+
+        #item
     };
 
     // Prepend the usage message if any errors were detected.

@@ -2438,6 +2438,7 @@ dependencies = [
  "anyhow",
  "backtrace",
  "bincode",
+ "derive-docs",
  "futures",
  "gloo-file",
  "gloo-utils",

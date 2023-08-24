@@ -1,5 +1,6 @@
 //! Functions related to sketching.
 
+use derive_docs::stdlib;
 use kittycad::types::{ModelingCmd, Point3D};
 use serde::{Deserialize, Serialize};
 
@@ -31,6 +32,9 @@ pub fn line_to(args: &mut Args) -> Result<MemoryItem, KclError> {
 }
 
 /// Draw a line to a point.
+#[stdlib {
+    name = "lineTo",
+}]
 fn inner_line_to(
     data: LineToData,
     sketch_group: SketchGroup,
