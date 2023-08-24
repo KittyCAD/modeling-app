@@ -15,9 +15,9 @@ extern "C" {
     #[wasm_bindgen(method)]
     fn sendModelingCommandFromWasm(
         this: &EngineCommandManager,
-        id: &str,
-        rangeStr: &str,
-        cmdStr: &str,
+        id: String,
+        rangeStr: String,
+        cmdStr: String,
     );
 }
 
@@ -51,7 +51,7 @@ impl EngineConnection {
             })
         })?;
         self.manager
-            .sendModelingCommandFromWasm(&id.to_string(), &source_range_str, &cmd_str);
+            .sendModelingCommandFromWasm(id.to_string(), source_range_str, cmd_str);
         Ok(())
     }
 }
