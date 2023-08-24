@@ -49,7 +49,7 @@ type WebSocketResponse = Models['WebSocketResponses_type']
 // EngineConnection encapsulates the connection(s) to the Engine
 // for the EngineCommandManager; namely, the underlying WebSocket
 // and WebRTC connections.
-export class EngineConnection extends EventTarget {
+export class EngineConnection {
   websocket?: WebSocket
   pc?: RTCPeerConnection
   lossyDataChannel?: RTCDataChannel
@@ -84,7 +84,6 @@ export class EngineConnection extends EventTarget {
     onClose?: (engineConnection: EngineConnection) => void
     onNewTrack?: (track: NewTrackArgs) => void
   }) {
-    super()
     this.url = url
     this.token = token
     this.ready = false
