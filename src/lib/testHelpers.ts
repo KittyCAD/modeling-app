@@ -11,6 +11,7 @@ class MockEngineCommandManager {
   waitForAllCommands() {}
   waitForReady = new Promise<void>((resolve) => resolve())
   sendModelingCommand() {}
+  sendModelingCommandFromWasm() {}
   sendSceneCommand() {}
 }
 
