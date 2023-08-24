@@ -530,14 +530,12 @@ export class EngineCommandManager {
     console.log('sending command', command)
     this.engineConnection?.send(command)
   }
-  sendModellingCommand({
+  sendModelingCommand({
     id,
-    params,
     range,
     command,
   }: {
     id: string
-    params: any
     range: SourceRange
     command: EngineCommand
   }): Promise<any> {

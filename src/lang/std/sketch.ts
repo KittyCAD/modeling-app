@@ -253,9 +253,8 @@ export const line: SketchLineHelper = {
       sourceRange,
       data,
     })
-    engineCommandManager.sendModellingCommand({
+    engineCommandManager.sendModelingCommand({
       id,
-      params: [lineData, previousSketch],
       range: sourceRange,
       command: {
         type: 'modeling_cmd_req',
@@ -1535,18 +1534,13 @@ export const close: InternalFn = (
     ? sketchGroup.start.from
     : getCoordsFromPaths(sketchGroup, 0)
 
-  const lineData: LineData = {
-    from: [...from, 0],
-    to: [...to, 0],
-  }
   const id = makeId({
     code,
     sourceRange,
     data: sketchGroup,
   })
-  engineCommandManager.sendModellingCommand({
+  engineCommandManager.sendModelingCommand({
     id,
-    params: [lineData],
     range: sourceRange,
     command: {
       type: 'modeling_cmd_req',
@@ -1608,9 +1602,8 @@ export const startSketchAt: InternalFn = (
     data,
     isPath: true,
   })
-  engineCommandManager.sendModellingCommand({
+  engineCommandManager.sendModelingCommand({
     id: pathId,
-    params: [lineData],
     range: sourceRange,
     command: {
       type: 'modeling_cmd_req',
