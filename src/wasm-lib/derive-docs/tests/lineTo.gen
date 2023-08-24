@@ -1,0 +1,56 @@
+#[allow(non_camel_case_types, missing_docs)]
+#[doc = "Std lib function: lineTo"]
+struct LineTo {}
+
+#[allow(non_upper_case_globals, missing_docs)]
+#[doc = "Std lib function: lineTo"]
+const LineTo: LineTo = LineTo {};
+impl crate::docs::StdLibFn for LineTo {
+    fn name(&self) -> String {
+        "lineTo".to_string()
+    }
+
+    fn summary(&self) -> String {
+        "".to_string()
+    }
+
+    fn description(&self) -> String {
+        "".to_string()
+    }
+
+    fn tags(&self) -> Vec<String> {
+        vec![]
+    }
+
+    fn args(&self) -> Vec<crate::docs::StdLibFnArg> {
+        vec![
+            crate::docs::StdLibFnArg {
+                type_: "LineToData".to_string(),
+                description: "".to_string(),
+            },
+            crate::docs::StdLibFnArg {
+                type_: "SketchGroup".to_string(),
+                description: "".to_string(),
+            },
+            crate::docs::StdLibFnArg {
+                type_: " Args".to_string(),
+                description: "".to_string(),
+            },
+        ]
+    }
+
+    fn return_value(&self) -> crate::docs::StdLibFnArg {
+        crate::docs::StdLibFnArg {
+            type_: "SketchGroup".to_string(),
+            description: "".to_string(),
+        }
+    }
+
+    fn unpublished(&self) -> bool {
+        false
+    }
+
+    fn deprecated(&self) -> bool {
+        false
+    }
+}

@@ -8,13 +8,10 @@
 // automated enforcement.
 #![allow(clippy::style)]
 
-use quote::format_ident;
-use quote::quote;
-use quote::{quote_spanned, ToTokens};
+use convert_case::Casing;
+use quote::{format_ident, quote, quote_spanned, ToTokens};
 use serde::Deserialize;
-use serde_tokenstream::from_tokenstream;
-use serde_tokenstream::Error;
-use std::ops::DerefMut;
+use serde_tokenstream::{from_tokenstream, Error};
 use syn::{
     parse::{Parse, ParseStream},
     spanned::Spanned,
@@ -120,14 +117,18 @@ fn do_stdlib_inner(
         errors.push(Error::new_spanned(&ast.sig.variadic, "no language C here"));
     }
 
-    let name = &ast.sig.ident;
+    let name = metadata.name;
+    let name_ident = format_ident!("{}", name.to_case(convert_case::Case::UpperCamel));
     let name_str = name.to_string();
+
+    let fn_name = &ast.sig.ident;
+    let fn_name_str = fn_name.to_string();
     let visibility = &ast.vis;
 
     let (summary_text, description_text) = extract_doc_from_attrs(&ast.attrs);
     let comment_text = {
         let mut buf = String::new();
-        buf.push_str("API Endpoint: ");
+        buf.push_str("Std lib function: ");
         buf.push_str(&name_str);
         if let Some(s) = &summary_text {
             buf.push_str("\n");
@@ -143,18 +144,22 @@ fn do_stdlib_inner(
         #[doc = #comment_text]
     };
 
-    let summary = summary_text.map(|summary| {
-        quote! { .summary(#summary) }
-    });
-    let description = description_text.map(|description| {
-        quote! { .description(#description) }
-    });
+    let summary = if let Some(summary) = summary_text {
+        quote! { #summary }
+    } else {
+        quote! { "" }
+    };
+    let description = if let Some(description) = description_text {
+        quote! { #description }
+    } else {
+        quote! { "" }
+    };
 
     let tags = metadata
         .tags
         .iter()
         .map(|tag| {
-            quote! { .tag(#tag) }
+            quote! { #tag.to_string() }
         })
         .collect::<Vec<_>>();
 
@@ -164,7 +169,7 @@ fn do_stdlib_inner(
         quote! { false }
     };
 
-    let unpublished = metadata.unpublished {
+    let unpublished = if metadata.unpublished {
         quote! { true }
     } else {
         quote! { false }
@@ -178,34 +183,47 @@ fn do_stdlib_inner(
     // of the various parameters. We do this by calling dummy functions that
     // require a type that satisfies SharedExtractor or ExclusiveExtractor.
     let mut arg_types = Vec::new();
-    let mut arg_is_receiver = false;
-    ast.sig.inputs.iter().map(|arg| {
+    for arg in ast.sig.inputs.iter() {
         match arg {
-            syn::FnArg::Receiver(_) => {
-                // The compiler failure here is already comprehensible.
-                arg_is_receiver = true;
+            syn::FnArg::Receiver(pat) => {
+                let ty = pat.ty.as_ref().into_token_stream();
+                let ty_string = ty.to_string().replace("&", "");
+
+                arg_types.push(quote! {
+                    #docs_crate::StdLibFnArg {
+                        type_: #ty_string.to_string(),
+                        description: "".to_string(),
+                    }
+                });
             }
             syn::FnArg::Typed(pat) => {
-                let span = pat.ty.span();
                 let ty = pat.ty.as_ref().into_token_stream();
-                arg_types.push(ty.clone());
+                let ty_string = ty.to_string().replace("&", "");
+
+                arg_types.push(quote! {
+                    #docs_crate::StdLibFnArg {
+                        type_: #ty_string.to_string(),
+                        description: "".to_string(),
+                    }
+                });
             }
         }
-    });
+    }
 
-    println!("arg_types: {:?}", arg_types);
-
-    let arg_names = (0..arg_types.len())
-        .map(|i| {
-            let argname = format_ident!("arg{}", i);
-            quote! { #argname }
-        })
-        .collect::<Vec<_>>();
-
-    println!("arg_names: {:?}", arg_names);
-
-    let ret_ty = ast.sig.output;
-    println!("ret_ty: {:?}", ret_ty);
+    let ret_ty = ast.sig.output.clone();
+    let ret_ty_string = ret_ty
+        .into_token_stream()
+        .to_string()
+        .replace("-> ", "")
+        .replace("Result < ", "")
+        .replace(", KclError >", "");
+    let ret_ty_string = ret_ty_string.trim().to_string();
+    let return_type = quote! {
+        #docs_crate::StdLibFnArg {
+            type_: #ret_ty_string.to_string(),
+            description: "".to_string(),
+        }
+    };
 
     // For reasons that are not well understood unused constants that use the
     // (default) call_site() Span do not trigger the dead_code lint. Because
@@ -214,55 +232,37 @@ fn do_stdlib_inner(
     // the span from the name of the function to which this macro was applied.
     let span = ast.sig.ident.span();
     let const_struct = quote_spanned! {span=>
-        #visibility const #name: #name = #name {};
-    };
-
-    let construct = if errors.is_empty() {
-        quote! {
-            #docs_crate::ApiEndpoint::new(
-                #name_str.to_string(),
-                #name,
-            )
-            #summary
-            #description
-            #(#tags)*
-            #visible
-            #deprecated
-        }
-    } else {
-        quote! {
-            unreachable!()
-        }
+        #visibility const #name_ident: #name_ident = #name_ident {};
     };
 
     // The final TokenStream returned will have a few components that reference
-    // `#name`, the name of the function to which this macro was applied...
+    // `#name_ident`, the name of the function to which this macro was applied...
     let stream = quote! {
-        // ... a struct type called `#name` that has no members
+        // ... a struct type called `#name_ident` that has no members
         #[allow(non_camel_case_types, missing_docs)]
         #description_doc_comment
-        #visibility struct #name {}
-        // ... a constant of type `#name` whose identifier is also #name
+        #visibility struct #name_ident {}
+        // ... a constant of type `#name` whose identifier is also #name_ident
         #[allow(non_upper_case_globals, missing_docs)]
         #description_doc_comment
         #const_struct
 
-        impl #docs_crate::StdLibFn for #name
+        impl #docs_crate::StdLibFn for #name_ident
         {
             fn name(&self) -> String {
                 #name_str.to_string()
             }
 
             fn summary(&self) -> String {
-                #summary_text.to_string()
+                #summary.to_string()
             }
 
             fn description(&self) -> String {
-                #description_text.to_string()
+                #description.to_string()
             }
 
             fn tags(&self) -> Vec<String> {
-                #tags
+                vec![#(#tags),*]
             }
 
             fn args(&self) -> Vec<#docs_crate::StdLibFnArg> {
@@ -270,7 +270,7 @@ fn do_stdlib_inner(
             }
 
             fn return_value(&self) -> #docs_crate::StdLibFnArg {
-                #ret_ty
+                #return_type
             }
 
             fn unpublished(&self) -> bool {
@@ -303,7 +303,7 @@ fn get_crate(var: Option<String>) -> proc_macro2::TokenStream {
             return ts;
         }
     }
-    syn::Ident::new("crate::docs", proc_macro2::Span::call_site()).to_token_stream()
+    quote!(crate::docs)
 }
 
 fn extract_doc_from_attrs(attrs: &[syn::Attribute]) -> (Option<String>, Option<String>) {
@@ -410,927 +410,34 @@ impl Parse for ItemFnForSignature {
 
 #[cfg(test)]
 mod tests {
+    use pretty_assertions::assert_eq;
     use quote::quote;
-    use syn::{Signature, Visibility};
 
     use super::*;
-
-    #[test]
-    fn test_busted_function() {
-        let f = quote! {
-            fn foo(parameter: u32) -> u32 {
-                (void) printf("%s", "no language C here!");
-                return (0);
-            }
-        };
-        let ast: ItemFnForSignature = syn::parse2(f).unwrap();
-
-        let sig: Signature = syn::parse2(quote! {
-            fn foo(parameter: u32) -> u32
-        })
-        .unwrap();
-
-        assert!(ast.attrs.is_empty());
-        assert_eq!(ast.vis, Visibility::Inherited);
-        assert_eq!(ast.sig, sig);
-    }
 
     #[test]
     fn test_stdlib_basic() {
         let (item, errors) = do_stdlib(
             quote! {
-                method = GET,
-                path = "/a/b/c"
+                name = "lineTo",
             },
             quote! {
-                pub async fn handler_xyz(
-                    _rqctx: RequestContext<()>,
-                ) -> Result<HttpResponseOk<()>, HttpError> {
+                fn inner_line_to(
+                    data: LineToData,
+                    sketch_group: SketchGroup,
+                    args: &Args,
+                ) -> Result<SketchGroup, KclError> {
                     Ok(())
                 }
             },
         )
         .unwrap();
-        let expected = quote! {
-            const _: fn() = || {
-                struct NeedRequestContext(<RequestContext<()> as dropshot::RequestContextArgument>::Context) ;
-            };
-            const _: fn() = || {
-                trait ResultTrait {
-                    type T;
-                    type E;
-                }
-                impl<TT, EE> ResultTrait for Result<TT, EE>
-                where
-                    TT: dropshot::HttpResponse,
-                {
-                    type T = TT;
-                    type E = EE;
-                }
-                struct NeedHttpResponse(
-                    <Result<HttpResponseOk<()>, HttpError> as ResultTrait>::T,
-                );
-                trait TypeEq {
-                    type This: ?Sized;
-                }
-                impl<T: ?Sized> TypeEq for T {
-                    type This = Self;
-                }
-                fn validate_result_error_type<T>()
-                where
-                    T: ?Sized + TypeEq<This = dropshot::HttpError>,
-                {
-                }
-                validate_result_error_type::<
-                    <Result<HttpResponseOk<()>, HttpError> as ResultTrait>::E,
-                >();
-            };
-
-            #[allow(non_camel_case_types, missing_docs)]
-            #[doc = "API Endpoint: handler_xyz"]
-            pub struct handler_xyz {}
-
-            #[allow(non_upper_case_globals, missing_docs)]
-            #[doc = "API Endpoint: handler_xyz"]
-            pub const handler_xyz: handler_xyz = handler_xyz {};
-
-            impl From<handler_xyz>
-                for dropshot::ApiEndpoint<
-                    <RequestContext<()>
-                as dropshot::RequestContextArgument>::Context>
-            {
-                fn from(_: handler_xyz) -> Self {
-                    #[allow(clippy::unused_async)]
-                    pub async fn handler_xyz(
-                        _rqctx: RequestContext<()>,
-                    ) -> Result<HttpResponseOk<()>, HttpError> {
-                        Ok(())
-                    }
-
-                    const _: fn() = || {
-                        fn future_stdlib_must_be_send<T: ::std::marker::Send>(_t: T) {}
-                        fn check_future_bounds(arg0: RequestContext<()>) {
-                            future_stdlib_must_be_send(handler_xyz(arg0));
-                        }
-                    };
-
-                    dropshot::ApiEndpoint::new(
-                        "handler_xyz".to_string(),
-                        handler_xyz,
-                        dropshot::Method::GET,
-                        "application/json",
-                        "/a/b/c",
-                    )
-                }
-            }
-        };
+        let expected = quote! {};
 
         assert!(errors.is_empty());
-        assert_eq!(expected.to_string(), item.to_string());
-    }
-
-    #[test]
-    fn test_stdlib_context_fully_qualified_names() {
-        let (item, errors) = do_stdlib(
-            quote! {
-                method = GET,
-                path = "/a/b/c"
-            },
-            quote! {
-                pub async fn handler_xyz(_rqctx: dropshot::RequestContext<()>) ->
-                std::Result<dropshot::HttpResponseOk<()>, dropshot::HttpError>
-                {
-                    Ok(())
-                }
-            },
-        )
-        .unwrap();
-        let expected = quote! {
-            const _: fn() = || {
-                struct NeedRequestContext(<dropshot::RequestContext<()> as dropshot::RequestContextArgument>::Context) ;
-            };
-            const _: fn() = || {
-                trait ResultTrait {
-                    type T;
-                    type E;
-                }
-                impl<TT, EE> ResultTrait for Result<TT, EE>
-                where
-                    TT: dropshot::HttpResponse,
-                {
-                    type T = TT;
-                    type E = EE;
-                }
-                struct NeedHttpResponse(
-                    <std::Result<dropshot::HttpResponseOk<()>, dropshot::HttpError> as ResultTrait>::T,
-                );
-                trait TypeEq {
-                    type This: ?Sized;
-                }
-                impl<T: ?Sized> TypeEq for T {
-                    type This = Self;
-                }
-                fn validate_result_error_type<T>()
-                where
-                    T: ?Sized + TypeEq<This = dropshot::HttpError>,
-                {
-                }
-                validate_result_error_type::<
-                    <std::Result<dropshot::HttpResponseOk<()>, dropshot::HttpError> as ResultTrait>::E,
-                >();
-            };
-
-            #[allow(non_camel_case_types, missing_docs)]
-            #[doc = "API Endpoint: handler_xyz"]
-            pub struct handler_xyz {}
-
-            #[allow(non_upper_case_globals, missing_docs)]
-            #[doc = "API Endpoint: handler_xyz"]
-            pub const handler_xyz: handler_xyz = handler_xyz {};
-
-            impl From<handler_xyz> for dropshot::ApiEndpoint< <dropshot::RequestContext<()> as dropshot::RequestContextArgument>::Context> {
-                fn from(_: handler_xyz) -> Self {
-                    #[allow(clippy::unused_async)]
-                    pub async fn handler_xyz(_rqctx: dropshot::RequestContext<()>) ->
-                        std::Result<dropshot::HttpResponseOk<()>, dropshot::HttpError>
-                    {
-                        Ok(())
-                    }
-
-                    const _: fn() = || {
-                        fn future_stdlib_must_be_send<T: ::std::marker::Send>(_t: T) {}
-                        fn check_future_bounds(arg0: dropshot::RequestContext<()>) {
-                            future_stdlib_must_be_send(handler_xyz(arg0));
-                        }
-                    };
-
-                    dropshot::ApiEndpoint::new(
-                        "handler_xyz".to_string(),
-                        handler_xyz,
-                        dropshot::Method::GET,
-                        "application/json",
-                        "/a/b/c",
-                    )
-                }
-            }
-        };
-
-        assert!(errors.is_empty());
-        assert_eq!(expected.to_string(), item.to_string());
-    }
-
-    #[test]
-    fn test_stdlib_with_query() {
-        let (item, errors) = do_stdlib(
-            quote! {
-                method = GET,
-                path = "/a/b/c"
-            },
-            quote! {
-                async fn handler_xyz(
-                    _rqctx: RequestContext<std::i32>,
-                    q: Query<Q>,
-                ) -> Result<HttpResponseOk<()>, HttpError>
-                {
-                    Ok(())
-                }
-            },
-        )
-        .unwrap();
-        let expected = quote! {
-            const _: fn() = || {
-                struct NeedRequestContext(<RequestContext<std::i32> as dropshot::RequestContextArgument>::Context) ;
-            };
-            const _: fn() = || {
-                fn need_exclusive_extractor<T>()
-                where
-                    T: ?Sized + dropshot::ExclusiveExtractor,
-                {
-                }
-                need_exclusive_extractor::<Query<Q> >();
-            };
-            const _: fn() = || {
-                trait ResultTrait {
-                    type T;
-                    type E;
-                }
-                impl<TT, EE> ResultTrait for Result<TT, EE>
-                where
-                    TT: dropshot::HttpResponse,
-                {
-                    type T = TT;
-                    type E = EE;
-                }
-                struct NeedHttpResponse(
-                    <Result<HttpResponseOk<()>, HttpError> as ResultTrait>::T,
-                );
-                trait TypeEq {
-                    type This: ?Sized;
-                }
-                impl<T: ?Sized> TypeEq for T {
-                    type This = Self;
-                }
-                fn validate_result_error_type<T>()
-                where
-                    T: ?Sized + TypeEq<This = dropshot::HttpError>,
-                {
-                }
-                validate_result_error_type::<
-                    <Result<HttpResponseOk<()>, HttpError> as ResultTrait>::E,
-                >();
-            };
-
-            #[allow(non_camel_case_types, missing_docs)]
-            #[doc = "API Endpoint: handler_xyz"]
-            struct handler_xyz {}
-
-            #[allow(non_upper_case_globals, missing_docs)]
-            #[doc = "API Endpoint: handler_xyz"]
-            const handler_xyz: handler_xyz = handler_xyz {};
-
-            impl From<handler_xyz>
-                for dropshot::ApiEndpoint<
-                    <RequestContext<std::i32> as dropshot::RequestContextArgument>::Context
-                >
-            {
-                fn from(_: handler_xyz) -> Self {
-                    #[allow(clippy::unused_async)]
-                    async fn handler_xyz(
-                        _rqctx: RequestContext<std::i32>,
-                        q: Query<Q>,
-                    ) ->
-                        Result<HttpResponseOk<()>, HttpError>
-                    {
-                        Ok(())
-                    }
-
-                    const _: fn() = || {
-                        fn future_stdlib_must_be_send<T: ::std::marker::Send>(_t: T) {}
-                        fn check_future_bounds(arg0: RequestContext<std::i32>, arg1: Query<Q>) {
-                            future_stdlib_must_be_send(handler_xyz(arg0, arg1));
-                        }
-                    };
-
-                    dropshot::ApiEndpoint::new(
-                        "handler_xyz".to_string(),
-                        handler_xyz,
-                        dropshot::Method::GET,
-                        "application/json",
-                        "/a/b/c",
-                    )
-                }
-            }
-        };
-
-        assert!(errors.is_empty());
-        assert_eq!(expected.to_string(), item.to_string());
-    }
-
-    #[test]
-    fn test_stdlib_pub_crate() {
-        let (item, errors) = do_stdlib(
-            quote! {
-                method = GET,
-                path = "/a/b/c"
-            },
-            quote! {
-                pub(crate) async fn handler_xyz(
-                    _rqctx: RequestContext<()>,
-                    q: Query<Q>,
-                ) -> Result<HttpResponseOk<()>, HttpError>
-                {
-                    Ok(())
-                }
-            },
-        )
-        .unwrap();
-        let expected = quote! {
-            const _: fn() = || {
-                struct NeedRequestContext(<RequestContext<()> as dropshot::RequestContextArgument>::Context) ;
-            };
-            const _: fn() = || {
-                fn need_exclusive_extractor<T>()
-                where
-                    T: ?Sized + dropshot::ExclusiveExtractor,
-                {
-                }
-                need_exclusive_extractor::<Query<Q> >();
-            };
-            const _: fn() = || {
-                trait ResultTrait {
-                    type T;
-                    type E;
-                }
-                impl<TT, EE> ResultTrait for Result<TT, EE>
-                where
-                    TT: dropshot::HttpResponse,
-                {
-                    type T = TT;
-                    type E = EE;
-                }
-                struct NeedHttpResponse(
-                    <Result<HttpResponseOk<()>, HttpError> as ResultTrait>::T,
-                );
-                trait TypeEq {
-                    type This: ?Sized;
-                }
-                impl<T: ?Sized> TypeEq for T {
-                    type This = Self;
-                }
-                fn validate_result_error_type<T>()
-                where
-                    T: ?Sized + TypeEq<This = dropshot::HttpError>,
-                {
-                }
-                validate_result_error_type::<
-                    <Result<HttpResponseOk<()>, HttpError> as ResultTrait>::E,
-                >();
-            };
-
-            #[allow(non_camel_case_types, missing_docs)]
-            #[doc = "API Endpoint: handler_xyz"]
-            pub(crate) struct handler_xyz {}
-
-            #[allow(non_upper_case_globals, missing_docs)]
-            #[doc = "API Endpoint: handler_xyz"]
-            pub(crate) const handler_xyz: handler_xyz = handler_xyz {};
-
-            impl From<handler_xyz>
-                for dropshot::ApiEndpoint<
-                    <RequestContext<()> as dropshot::RequestContextArgument>::Context
-                >
-            {
-                fn from(_: handler_xyz) -> Self {
-                    #[allow(clippy::unused_async)]
-                    pub(crate) async fn handler_xyz(
-                        _rqctx: RequestContext<()>,
-                        q: Query<Q>,
-                    ) ->
-                        Result<HttpResponseOk<()>, HttpError>
-                    {
-                        Ok(())
-                    }
-
-                    const _: fn() = || {
-                        fn future_stdlib_must_be_send<T: ::std::marker::Send>(_t: T) {}
-                        fn check_future_bounds(arg0: RequestContext<()>, arg1: Query<Q>) {
-                            future_stdlib_must_be_send(handler_xyz(arg0, arg1));
-                        }
-                    };
-
-                    dropshot::ApiEndpoint::new(
-                        "handler_xyz".to_string(),
-                        handler_xyz,
-                        dropshot::Method::GET,
-                        "application/json",
-                        "/a/b/c",
-                    )
-                }
-            }
-        };
-
-        assert!(errors.is_empty());
-        assert_eq!(expected.to_string(), item.to_string());
-    }
-
-    #[test]
-    fn test_stdlib_with_tags() {
-        let (item, errors) = do_stdlib(
-            quote! {
-                method = GET,
-                path = "/a/b/c",
-                tags = ["stuff", "things"],
-            },
-            quote! {
-                async fn handler_xyz(
-                    _rqctx: RequestContext<()>,
-                ) -> Result<HttpResponseOk<()>, HttpError> {
-                    Ok(())
-                }
-            },
-        )
-        .unwrap();
-        let expected = quote! {
-            const _: fn() = || {
-                struct NeedRequestContext(<RequestContext<()> as dropshot::RequestContextArgument>::Context) ;
-            };
-            const _: fn() = || {
-                trait ResultTrait {
-                    type T;
-                    type E;
-                }
-                impl<TT, EE> ResultTrait for Result<TT, EE>
-                where
-                    TT: dropshot::HttpResponse,
-                {
-                    type T = TT;
-                    type E = EE;
-                }
-                struct NeedHttpResponse(
-                    <Result<HttpResponseOk<()>, HttpError> as ResultTrait>::T,
-                );
-                trait TypeEq {
-                    type This: ?Sized;
-                }
-                impl<T: ?Sized> TypeEq for T {
-                    type This = Self;
-                }
-                fn validate_result_error_type<T>()
-                where
-                    T: ?Sized + TypeEq<This = dropshot::HttpError>,
-                {
-                }
-                validate_result_error_type::<
-                    <Result<HttpResponseOk<()>, HttpError> as ResultTrait>::E,
-                >();
-            };
-
-            #[allow(non_camel_case_types, missing_docs)]
-            #[doc = "API Endpoint: handler_xyz"]
-            struct handler_xyz {}
-
-            #[allow(non_upper_case_globals, missing_docs)]
-            #[doc = "API Endpoint: handler_xyz"]
-            const handler_xyz: handler_xyz = handler_xyz {};
-
-            impl From<handler_xyz>
-                for dropshot::ApiEndpoint<
-                    <RequestContext<()>
-                as dropshot::RequestContextArgument>::Context>
-            {
-                fn from(_: handler_xyz) -> Self {
-                    #[allow(clippy::unused_async)]
-                    async fn handler_xyz(
-                        _rqctx: RequestContext<()>,
-                    ) -> Result<HttpResponseOk<()>, HttpError> {
-                        Ok(())
-                    }
-
-                    const _: fn() = || {
-                        fn future_stdlib_must_be_send<T: ::std::marker::Send>(_t: T) {}
-                        fn check_future_bounds(arg0: RequestContext<()>) {
-                            future_stdlib_must_be_send(handler_xyz(arg0));
-                        }
-                    };
-
-                    dropshot::ApiEndpoint::new(
-                        "handler_xyz".to_string(),
-                        handler_xyz,
-                        dropshot::Method::GET,
-                        "application/json",
-                        "/a/b/c",
-                    )
-                    .tag("stuff")
-                    .tag("things")
-                }
-            }
-        };
-
-        assert!(errors.is_empty());
-        assert_eq!(expected.to_string(), item.to_string());
-    }
-
-    #[test]
-    fn test_stdlib_with_doc() {
-        let (item, errors) = do_stdlib(
-            quote! {
-                method = GET,
-                path = "/a/b/c"
-            },
-            quote! {
-                /** handle "xyz" requests */
-                async fn handler_xyz(
-                    _rqctx: RequestContext<()>,
-                ) -> Result<HttpResponseOk<()>, HttpError> {
-                    Ok(())
-                }
-            },
-        )
-        .unwrap();
-        let expected = quote! {
-            const _: fn() = || {
-                struct NeedRequestContext(<RequestContext<()> as dropshot::RequestContextArgument>::Context) ;
-            };
-            const _: fn() = || {
-                trait ResultTrait {
-                    type T;
-                    type E;
-                }
-                impl<TT, EE> ResultTrait for Result<TT, EE>
-                where
-                    TT: dropshot::HttpResponse,
-                {
-                    type T = TT;
-                    type E = EE;
-                }
-                struct NeedHttpResponse(
-                    <Result<HttpResponseOk<()>, HttpError> as ResultTrait>::T,
-                );
-                trait TypeEq {
-                    type This: ?Sized;
-                }
-                impl<T: ?Sized> TypeEq for T {
-                    type This = Self;
-                }
-                fn validate_result_error_type<T>()
-                where
-                    T: ?Sized + TypeEq<This = dropshot::HttpError>,
-                {
-                }
-                validate_result_error_type::<
-                    <Result<HttpResponseOk<()>, HttpError> as ResultTrait>::E,
-                >();
-            };
-
-            #[allow(non_camel_case_types, missing_docs)]
-            #[doc = "API Endpoint: handler_xyz\nhandle \"xyz\" requests"]
-            struct handler_xyz {}
-
-            #[allow(non_upper_case_globals, missing_docs)]
-            #[doc = "API Endpoint: handler_xyz\nhandle \"xyz\" requests"]
-            const handler_xyz: handler_xyz = handler_xyz {};
-
-            impl From<handler_xyz>
-                for dropshot::ApiEndpoint<
-                    <RequestContext<()>
-                as dropshot::RequestContextArgument>::Context>
-            {
-                fn from(_: handler_xyz) -> Self {
-                    #[allow(clippy::unused_async)]
-                    #[doc = r#" handle "xyz" requests "#]
-                    async fn handler_xyz(
-                        _rqctx: RequestContext<()>,
-                    ) -> Result<HttpResponseOk<()>, HttpError> {
-                        Ok(())
-                    }
-
-                    const _: fn() = || {
-                        fn future_stdlib_must_be_send<T: ::std::marker::Send>(_t: T) {}
-                        fn check_future_bounds(arg0: RequestContext<()>) {
-                            future_stdlib_must_be_send(handler_xyz(arg0));
-                        }
-                    };
-
-                    dropshot::ApiEndpoint::new(
-                        "handler_xyz".to_string(),
-                        handler_xyz,
-                        dropshot::Method::GET,
-                        "application/json",
-                        "/a/b/c",
-                    )
-                    .summary("handle \"xyz\" requests")
-                }
-            }
-        };
-
-        assert!(errors.is_empty());
-        assert_eq!(expected.to_string(), item.to_string());
-    }
-
-    #[test]
-    fn test_stdlib_invalid_item() {
-        let ret = do_stdlib(
-            quote! {
-                method = GET,
-                path = "/a/b/c"
-            },
-            quote! {
-                const POTATO = "potato";
-            },
-        );
-
-        let msg = format!("{}", ret.err().unwrap());
-        assert_eq!("expected `fn`", msg);
-    }
-
-    #[test]
-    fn test_stdlib_bad_string() {
-        let ret = do_stdlib(
-            quote! {
-                method = GET,
-                path = /a/b/c
-            },
-            quote! {
-                const POTATO = "potato";
-            },
-        );
-
-        let msg = format!("{}", ret.err().unwrap());
-        assert_eq!("expected a string, but found `/`", msg);
-    }
-
-    #[test]
-    fn test_stdlib_bad_metadata() {
-        let ret = do_stdlib(
-            quote! {
-                methud = GET,
-                path = "/a/b/c"
-            },
-            quote! {
-                const POTATO = "potato";
-            },
-        );
-
-        let msg = format!("{}", ret.err().unwrap());
-        assert_eq!("extraneous member `methud`", msg);
-    }
-
-    #[test]
-    fn test_stdlib_not_async() {
-        let (_, errors) = do_stdlib(
-            quote! {
-                method = GET,
-                path = "/a/b/c",
-            },
-            quote! {
-                fn handler_xyz(_rqctx: RequestContext) {}
-            },
-        )
-        .unwrap();
-
-        assert!(!errors.is_empty());
-        assert_eq!(
-            errors.get(1).map(ToString::to_string),
-            Some("endpoint handler functions must be async".to_string())
-        );
-    }
-
-    #[test]
-    fn test_stdlib_bad_context_receiver() {
-        let (_, errors) = do_stdlib(
-            quote! {
-                method = GET,
-                path = "/a/b/c",
-            },
-            quote! {
-                async fn handler_xyz(&self) {}
-            },
-        )
-        .unwrap();
-
-        assert!(!errors.is_empty());
-        assert_eq!(
-            errors.get(1).map(ToString::to_string),
-            Some("Expected a non-receiver argument".to_string())
-        );
-    }
-
-    #[test]
-    fn test_stdlib_no_arguments() {
-        let (_, errors) = do_stdlib(
-            quote! {
-                method = GET,
-                path = "/a/b/c",
-            },
-            quote! {
-                async fn handler_xyz() {}
-            },
-        )
-        .unwrap();
-
-        assert!(!errors.is_empty());
-        assert_eq!(
-            errors.get(1).map(ToString::to_string),
-            Some("Endpoint requires arguments".to_string())
-        );
-    }
-
-    #[test]
-    fn test_stdlib_content_type() {
-        let (item, errors) = do_stdlib(
-            quote! {
-                method = POST,
-                path = "/a/b/c",
-                content_type = "application/x-www-form-urlencoded"
-            },
-            quote! {
-                pub async fn handler_xyz(
-                    _rqctx: RequestContext<()>,
-                ) -> Result<HttpResponseOk<()>, HttpError> {
-                    Ok(())
-                }
-            },
-        )
-        .unwrap();
-
-        let expected = quote! {
-            const _: fn() = || {
-                struct NeedRequestContext(<RequestContext<()> as dropshot::RequestContextArgument>::Context) ;
-            };
-            const _: fn() = || {
-                trait ResultTrait {
-                    type T;
-                    type E;
-                }
-                impl<TT, EE> ResultTrait for Result<TT, EE>
-                where
-                    TT: dropshot::HttpResponse,
-                {
-                    type T = TT;
-                    type E = EE;
-                }
-                struct NeedHttpResponse(
-                    <Result<HttpResponseOk<()>, HttpError> as ResultTrait>::T,
-                );
-                trait TypeEq {
-                    type This: ?Sized;
-                }
-                impl<T: ?Sized> TypeEq for T {
-                    type This = Self;
-                }
-                fn validate_result_error_type<T>()
-                where
-                    T: ?Sized + TypeEq<This = dropshot::HttpError>,
-                {
-                }
-                validate_result_error_type::<
-                    <Result<HttpResponseOk<()>, HttpError> as ResultTrait>::E,
-                >();
-            };
-
-            #[allow(non_camel_case_types, missing_docs)]
-            #[doc = "API Endpoint: handler_xyz"]
-            pub struct handler_xyz {}
-
-            #[allow(non_upper_case_globals, missing_docs)]
-            #[doc = "API Endpoint: handler_xyz"]
-            pub const handler_xyz: handler_xyz = handler_xyz {};
-
-            impl From<handler_xyz>
-                for dropshot::ApiEndpoint<
-                    <RequestContext<()>
-                as dropshot::RequestContextArgument>::Context>
-            {
-                fn from(_: handler_xyz) -> Self {
-                    #[allow(clippy::unused_async)]
-                    pub async fn handler_xyz(
-                        _rqctx: RequestContext<()>,
-                    ) -> Result<HttpResponseOk<()>, HttpError> {
-                        Ok(())
-                    }
-
-                    const _: fn() = || {
-                        fn future_stdlib_must_be_send<T: ::std::marker::Send>(_t: T) {}
-                        fn check_future_bounds(arg0: RequestContext<()>) {
-                            future_stdlib_must_be_send(handler_xyz(arg0));
-                        }
-                    };
-
-                    dropshot::ApiEndpoint::new(
-                        "handler_xyz".to_string(),
-                        handler_xyz,
-                        dropshot::Method::POST,
-                        "application/x-www-form-urlencoded",
-                        "/a/b/c",
-                    )
-                }
-            }
-        };
-
-        assert!(errors.is_empty());
-        assert_eq!(expected.to_string(), item.to_string());
-    }
-
-    #[test]
-    fn test_extract_summary_description() {
-        /// Javadoc summary
-        /// Maybe there's another name for these...
-        /// ... but Java is the first place I saw these types of comments.
-        #[derive(Schema)]
-        struct JavadocComments;
-        assert_eq!(
-            extract_doc_from_attrs(&JavadocComments::schema().attrs),
-            (
-                Some("Javadoc summary".to_string()),
-                Some(
-                    "Maybe there's another name for these... ... but Java \
-                    is the first place I saw these types of comments."
-                        .to_string()
-                )
-            )
-        );
-
-        /// Javadoc summary
-        ///
-        /// Skip that blank.
-        #[derive(Schema)]
-        struct JavadocCommentsWithABlank;
-        assert_eq!(
-            extract_doc_from_attrs(&JavadocCommentsWithABlank::schema().attrs),
-            (
-                Some("Javadoc summary".to_string()),
-                Some("Skip that blank.".to_string())
-            )
-        );
-
-        /// Terse Javadoc summary
-        #[derive(Schema)]
-        struct JavadocCommentsTerse;
-        assert_eq!(
-            extract_doc_from_attrs(&JavadocCommentsTerse::schema().attrs),
-            (Some("Terse Javadoc summary".to_string()), None)
-        );
-
-        /// Rustdoc summary
-        /// Did other folks do this or what this an invention I can right-
-        /// fully ascribe to Rust?
-        #[derive(Schema)]
-        struct RustdocComments;
-        assert_eq!(
-            extract_doc_from_attrs(&RustdocComments::schema().attrs),
-            (
-                Some("Rustdoc summary".to_string()),
-                Some(
-                    "Did other folks do this or what this an invention \
-                    I can right-fully ascribe to Rust?"
-                        .to_string()
-                )
-            )
-        );
-
-        /// Rustdoc summary
-        ///
-        /// Skip that blank.
-        #[derive(Schema)]
-        struct RustdocCommentsWithABlank;
-        assert_eq!(
-            extract_doc_from_attrs(&RustdocCommentsWithABlank::schema().attrs),
-            (
-                Some("Rustdoc summary".to_string()),
-                Some("Skip that blank.".to_string())
-            )
-        );
-
-        /// Just a Rustdoc summary
-        #[derive(Schema)]
-        struct JustTheRustdocSummary;
-        assert_eq!(
-            extract_doc_from_attrs(&JustTheRustdocSummary::schema().attrs),
-            (Some("Just a Rustdoc summary".to_string()), None)
-        );
-
-        /// Just a Javadoc summary
-        #[derive(Schema)]
-        struct JustTheJavadocSummary;
-        assert_eq!(
-            extract_doc_from_attrs(&JustTheJavadocSummary::schema().attrs),
-            (Some("Just a Javadoc summary".to_string()), None)
-        );
-
-        /// Summary
-        /// Text
-        /// More
-        ///
-        /// Even
-        /// More
-        #[derive(Schema)]
-        struct SummaryDescriptionBreak;
-        assert_eq!(
-            extract_doc_from_attrs(&SummaryDescriptionBreak::schema().attrs),
-            (
-                Some("Summary".to_string()),
-                Some("Text More\nEven More".to_string())
-            )
+        expectorate::assert_contents(
+            "tests/lineTo.gen",
+            &openapitor::types::get_text_fmt(&item).unwrap(),
         );
     }
 }
