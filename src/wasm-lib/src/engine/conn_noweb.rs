@@ -1,14 +1,10 @@
 //! Functions for setting up our WebSocket and WebRTC connections for communications with the
 //! engine.
 
-use std::sync::Arc;
-
 use anyhow::Result;
-use async_mutex::Mutex;
 use futures::{SinkExt, StreamExt};
 use kittycad::types::{WebSocketMessages, WebSocketResponses};
 use tokio_tungstenite::tungstenite::Message as WsMsg;
-use webrtc::ice_transport::ice_server::RTCIceServer;
 
 use crate::errors::{KclError, KclErrorDetails};
 
@@ -69,6 +65,25 @@ impl EngineConnection {
         let (tcp_write, tcp_read) = ws_stream.split();
 
         let mut tcp_read = TcpRead { stream: tcp_read };
+
+        let tcp_read_handle = tokio::spawn(async move {
+            // Get Websocket messages from API server
+            while let Ok(msg) = tcp_read.read().await {
+                match msg {
+                    WebSocketResponses::IceServerInfo { ice_servers } => {
+                        println!("got ice server info: {:?}", ice_servers);
+                    }
+                    WebSocketResponses::SdpAnswer { answer } => {
+                        println!("got sdp answer: {:?}", answer);
+                    }
+                    WebSocketResponses::TrickleIce { candidate } => {
+                        println!("got trickle ice: {:?}", candidate);
+                    }
+                    WebSocketResponses::Modeling { .. } => {}
+                    WebSocketResponses::Export { .. } => {}
+                }
+            }
+        });
 
         Ok(EngineConnection {
             tcp_write,
