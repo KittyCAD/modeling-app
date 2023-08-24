@@ -23,7 +23,7 @@ import {
   PROJECT_ENTRYPOINT,
 } from './lib/tauriFS'
 import { metadata, type Metadata } from 'tauri-plugin-fs-extra-api'
-import ActionBar from './components/ActionBar'
+import ActionBar from './components/CommandBar'
 import DownloadAppBanner from './components/DownloadAppBanner'
 import { GlobalStateProvider } from './hooks/useAuthMachine'
 

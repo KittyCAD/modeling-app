@@ -1,21 +1,14 @@
-import { FormEvent, useCallback, useContext, useEffect, useState } from 'react'
-import { readDir, removeDir, renameFile } from '@tauri-apps/api/fs'
+import { FormEvent, useCallback, useContext, useEffect } from 'react'
+import { removeDir, renameFile } from '@tauri-apps/api/fs'
 import {
   createNewProject,
   getNextProjectIndex,
   interpolateProjectNameWithIndex,
   doesProjectNameNeedInterpolated,
-  isProjectDirectory,
-  PROJECT_ENTRYPOINT,
+  getProjectsInDir,
 } from '../lib/tauriFS'
 import { ActionButton } from '../components/ActionButton'
-import {
-  faArrowDown,
-  faArrowUp,
-  faBoxOpen,
-  faCircleDot,
-  faPlus,
-} from '@fortawesome/free-solid-svg-icons'
+import { faArrowDown, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { useStore } from '../useStore'
 import { toast } from 'react-hot-toast'
 import { AppHeader } from '../components/AppHeader'
@@ -24,116 +17,159 @@ import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import { ProjectWithEntryPointMetadata, HomeLoaderData } from '../Router'
 import Loading from '../components/Loading'
-import { metadata } from 'tauri-plugin-fs-extra-api'
-import { Action, ActionsContext } from '../components/ActionBar'
-
-const DESC = ':desc'
+import { useMachine } from '@xstate/react'
+import { commandbarMeta, homeMachine } from '../lib/homeMachine'
+import { ContextFrom, EventFrom } from 'xstate'
+import { paths } from '../Router'
+import {
+  getNextSearchParams,
+  getSortFunction,
+  getSortIcon,
+} from '../lib/sorting'
+import { Command, CommandsContext } from '../components/CommandBar'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
 const Home = () => {
-  const { actions, setActions } = useContext(ActionsContext)
-  const [searchParams, setSearchParams] = useSearchParams()
-  const sort = searchParams.get('sort_by') ?? 'modified:desc'
-  const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
-  const [isLoading, setIsLoading] = useState(true)
-  const [projects, setProjects] = useState(loadedProjects || [])
+  const { setCommands, setCommandBarOpen } = useContext(CommandsContext)
   const navigate = useNavigate()
-  const homeActions = [
-    {
-      type: 'New Project',
-      icon: faPlus,
-      description: 'Create a new project',
-      callback: handleNewProject,
-    },
-    {
-      type: 'Open Project',
-      icon: faBoxOpen,
-      description: 'Open a project',
-      callback: () => {
-        const actionsCopy = [...actions]
-        setActions(
-          projects.map((p) => ({
-            type: p.name || '',
-            description: 'Open ' + (p.name || ''),
-            callback: () => {
-              if (p.path) {
-                setActions(actionsCopy)
-                navigate(`/file/${p.path}`)
-              }
-            },
-          }))
-        )
-      },
-    },
-  ] satisfies Action[]
+  const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
   const { defaultDir, defaultProjectName } = useStore((s) => ({
     defaultDir: s.defaultDir,
     defaultProjectName: s.defaultProjectName,
   }))
 
-  // Add Home-related Actions to the ActionBar,
-  // and clean up the actions from the ActionBar
-  // when the component unmounts.
-  useEffect(() => {
-    setActions([...(actions || []), ...homeActions])
-    return () => {
-      setActions([
-        ...(actions.filter(
-          (a) => !homeActions.some((b) => b.type === a.type)
-        ) || []),
-      ])
-    }
-  }, [])
-
-  const modifiedSelected = sort?.includes('modified') || !sort || sort === null
-
-  const refreshProjects = useCallback(
-    async (projectDir = defaultDir) => {
-      const readProjects = (
-        await readDir(projectDir.dir, {
-          recursive: true,
-        })
-      ).filter(isProjectDirectory)
-
-      const projectsWithMetadata = await Promise.all(
-        readProjects.map(async (p) => ({
-          entrypoint_metadata: await metadata(
-            p.path + '/' + PROJECT_ENTRYPOINT
-          ),
-          ...p,
-        }))
-      )
-
-      setProjects(projectsWithMetadata)
+  const [state, send] = useMachine(homeMachine, {
+    context: {
+      projects: loadedProjects,
+      defaultDir: defaultDir.dir,
+      defaultProjectName,
     },
-    [defaultDir, setProjects]
+    actions: {
+      navigateToProject: (
+        context: ContextFrom<typeof homeMachine>,
+        event: EventFrom<typeof homeMachine>
+      ) => {
+        const { defaultDir } = context
+        if (event.data && 'name' in event.data) {
+          setCommandBarOpen(false)
+          navigate(
+            `${paths.FILE}/${encodeURIComponent(
+              defaultDir + '/' + event.data.name
+            )}`
+          )
+        }
+      },
+      toastSuccess: (_, event) => toast.success((event.data || '') + ''),
+      toastError: (_, event) => toast.error((event.data || '') + ''),
+    },
+    services: {
+      readProjects: async (context: ContextFrom<typeof homeMachine>) =>
+        getProjectsInDir(context.defaultDir),
+      createProject: async (
+        context: ContextFrom<typeof homeMachine>,
+        event: EventFrom<typeof homeMachine, 'Create project'>
+      ) => {
+        const { defaultDir, defaultProjectName } = context
+        let name =
+          event.data && 'name' in event.data
+            ? event.data.name
+            : defaultProjectName
+        if (doesProjectNameNeedInterpolated(name)) {
+          const nextIndex = await getNextProjectIndex(name, projects)
+          name = interpolateProjectNameWithIndex(name, nextIndex)
+        }
+
+        await createNewProject(defaultDir + '/' + name)
+        return `Successfully created "${name}"`
+      },
+      renameProject: async (
+        context: ContextFrom<typeof homeMachine>,
+        event: EventFrom<typeof homeMachine, 'Rename project'>
+      ) => {
+        const { defaultDir } = context
+        const { oldName, newName } = event.data
+        let name = newName ? newName : defaultProjectName
+        if (doesProjectNameNeedInterpolated(name)) {
+          const nextIndex = await getNextProjectIndex(name, projects)
+          name = interpolateProjectNameWithIndex(name, nextIndex)
+        }
+
+        await renameFile(defaultDir + '/' + oldName, defaultDir + '/' + name)
+        return `Successfully renamed "${oldName}" to "${name}"`
+      },
+      deleteProject: async (
+        context: ContextFrom<typeof homeMachine>,
+        event: EventFrom<typeof homeMachine, 'Delete project'>
+      ) => {
+        const { defaultDir } = context
+        await removeDir(defaultDir + '/' + event.data.name, { recursive: true })
+        return `Successfully deleted "${event.data.name}"`
+      },
+    },
+    guards: {
+      'Has at least 1 project': (_, event: EventFrom<typeof homeMachine>) => {
+        if (event.type !== 'done.invoke.read-projects') return false
+        return event?.data?.length ? event.data?.length >= 1 : false
+      },
+    },
+  })
+  const { projects } = state.context
+  const [searchParams, setSearchParams] = useSearchParams()
+  const sort = searchParams.get('sort_by') ?? 'modified:desc'
+
+  const isSortByModified = sort?.includes('modified') || !sort || sort === null
+
+  const createCommand = useCallback(
+    (type: EventFrom<typeof homeMachine>['type']) => {
+      const lookedUpMeta = commandbarMeta[type as keyof typeof commandbarMeta]
+      let replacedArgs
+
+      if (lookedUpMeta) {
+        replacedArgs = lookedUpMeta.args.map((arg) => {
+          const optionsFromContext =
+            state.context[arg.options as keyof typeof state.context]
+
+          const options =
+            !optionsFromContext || typeof optionsFromContext === 'string'
+              ? [{ name: optionsFromContext }]
+              : optionsFromContext.map((o) => ({ name: o.name || '' }))
+
+          return {
+            ...arg,
+            options,
+          }
+        }) as any[]
+      }
+
+      // We have to recreate this object every time,
+      // otherwise we'll have stale state in the CommandBar
+      // after completing our first action
+      const meta = lookedUpMeta
+        ? {
+            ...lookedUpMeta,
+            args: replacedArgs,
+          }
+        : undefined
+
+      return {
+        name: type,
+        callback: (data: EventFrom<typeof homeMachine, typeof type>) => {
+          send(type, { data })
+        },
+        meta: meta as any,
+      } satisfies Command
+    },
+    [state]
   )
 
   useEffect(() => {
-    refreshProjects(defaultDir).then(() => {
-      setIsLoading(false)
-    })
-  }, [setIsLoading, refreshProjects, defaultDir])
+    const newCommands = state.nextEvents
+      .filter((e) => !['done.', 'error.'].some((n) => e.includes(n)))
+      .map(createCommand) as Command[]
 
-  async function handleNewProject() {
-    let projectName = defaultProjectName
-    if (doesProjectNameNeedInterpolated(projectName)) {
-      const nextIndex = await getNextProjectIndex(defaultProjectName, projects)
-      projectName = interpolateProjectNameWithIndex(
-        defaultProjectName,
-        nextIndex
-      )
-    }
-
-    await createNewProject(defaultDir.dir + '/' + projectName).catch((err) => {
-      console.error('Error creating project:', err)
-      toast.error('Error creating project')
-    })
-
-    await refreshProjects()
-    toast.success('Project created')
-  }
+    setCommands(newCommands)
+  }, [state])
 
   async function handleRenameProject(
     e: FormEvent<HTMLFormElement>,
@@ -142,85 +178,14 @@ const Home = () => {
     const { newProjectName } = Object.fromEntries(
       new FormData(e.target as HTMLFormElement)
     )
-    if (newProjectName && project.name && newProjectName !== project.name) {
-      const dir = project.path?.slice(0, project.path?.lastIndexOf('/'))
-      await renameFile(project.path, dir + '/' + newProjectName).catch(
-        (err) => {
-          console.error('Error renaming project:', err)
-          toast.error('Error renaming project')
-        }
-      )
 
-      await refreshProjects()
-      toast.success('Project renamed')
-    }
+    send('Rename project', {
+      data: { oldName: project.name, newName: newProjectName },
+    })
   }
 
   async function handleDeleteProject(project: ProjectWithEntryPointMetadata) {
-    if (project.path) {
-      await removeDir(project.path, { recursive: true }).catch((err) => {
-        console.error('Error deleting project:', err)
-        toast.error('Error deleting project')
-      })
-
-      await refreshProjects()
-      toast.success('Project deleted')
-    }
-  }
-
-  function getSortIcon(sortBy: string) {
-    if (sort === sortBy) {
-      return faArrowUp
-    } else if (sort === sortBy + DESC) {
-      return faArrowDown
-    }
-    return faCircleDot
-  }
-
-  function getNextSearchParams(sortBy: string) {
-    if (sort === null || !sort)
-      return { sort_by: sortBy + (sortBy !== 'modified' ? DESC : '') }
-    if (sort.includes(sortBy) && !sort.includes(DESC)) return { sort_by: '' }
-    return {
-      sort_by: sortBy + (sort.includes(DESC) ? '' : DESC),
-    }
-  }
-
-  function getSortFunction(sortBy: string) {
-    const sortByName = (
-      a: ProjectWithEntryPointMetadata,
-      b: ProjectWithEntryPointMetadata
-    ) => {
-      if (a.name && b.name) {
-        return sortBy.includes('desc')
-          ? a.name.localeCompare(b.name)
-          : b.name.localeCompare(a.name)
-      }
-      return 0
-    }
-
-    const sortByModified = (
-      a: ProjectWithEntryPointMetadata,
-      b: ProjectWithEntryPointMetadata
-    ) => {
-      if (
-        a.entrypoint_metadata?.modifiedAt &&
-        b.entrypoint_metadata?.modifiedAt
-      ) {
-        return !sortBy || sortBy.includes('desc')
-          ? b.entrypoint_metadata.modifiedAt.getTime() -
-              a.entrypoint_metadata.modifiedAt.getTime()
-          : a.entrypoint_metadata.modifiedAt.getTime() -
-              b.entrypoint_metadata.modifiedAt.getTime()
-      }
-      return 0
-    }
-
-    if (sortBy?.includes('name')) {
-      return sortByName
-    } else {
-      return sortByModified
-    }
+    send('Delete project', { data: { name: project.name || '' } })
   }
 
   return (
@@ -237,9 +202,9 @@ const Home = () => {
                   ? 'text-chalkboard-80 dark:text-chalkboard-40'
                   : ''
               }
-              onClick={() => setSearchParams(getNextSearchParams('name'))}
+              onClick={() => setSearchParams(getNextSearchParams(sort, 'name'))}
               icon={{
-                icon: getSortIcon('name'),
+                icon: getSortIcon(sort, 'name'),
                 bgClassName: !sort?.includes('name')
                   ? 'bg-liquid-50 dark:bg-liquid-70'
                   : '',
@@ -253,17 +218,19 @@ const Home = () => {
             <ActionButton
               Element="button"
               className={
-                !modifiedSelected
+                !isSortByModified
                   ? 'text-chalkboard-80 dark:text-chalkboard-40'
                   : ''
               }
-              onClick={() => setSearchParams(getNextSearchParams('modified'))}
+              onClick={() =>
+                setSearchParams(getNextSearchParams(sort, 'modified'))
+              }
               icon={{
-                icon: sort ? getSortIcon('modified') : faArrowDown,
-                bgClassName: !modifiedSelected
+                icon: sort ? getSortIcon(sort, 'modified') : faArrowDown,
+                bgClassName: !isSortByModified
                   ? 'bg-liquid-50 dark:bg-liquid-70'
                   : '',
-                iconClassName: !modifiedSelected
+                iconClassName: !isSortByModified
                   ? 'text-liquid-80 dark:text-liquid-30'
                   : '',
               }}
@@ -280,7 +247,7 @@ const Home = () => {
             </code>
             , which you can change in your <Link to="settings">Settings</Link>.
           </p>
-          {isLoading ? (
+          {state.matches('Reading projects') ? (
             <Loading>Loading your Projects...</Loading>
           ) : (
             <>
@@ -302,7 +269,7 @@ const Home = () => {
               )}
               <ActionButton
                 Element="button"
-                onClick={handleNewProject}
+                onClick={() => send('Create project')}
                 icon={{ icon: faPlus }}
               >
                 New file

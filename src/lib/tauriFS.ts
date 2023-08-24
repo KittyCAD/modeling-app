@@ -1,4 +1,10 @@
-import { FileEntry, createDir, exists, writeTextFile } from '@tauri-apps/api/fs'
+import {
+  FileEntry,
+  createDir,
+  exists,
+  readDir,
+  writeTextFile,
+} from '@tauri-apps/api/fs'
 import { documentDir } from '@tauri-apps/api/path'
 import { useStore } from '../useStore'
 import { isTauri } from './isTauri'
@@ -49,6 +55,25 @@ export function isProjectDirectory(fileOrDir: Partial<FileEntry>) {
     fileOrDir.children?.length &&
     fileOrDir.children.some((child) => child.name === PROJECT_ENTRYPOINT)
   )
+}
+
+// Read the contents of a directory
+// and return the valid projects
+export async function getProjectsInDir(projectDir: string) {
+  const readProjects = (
+    await readDir(projectDir, {
+      recursive: true,
+    })
+  ).filter(isProjectDirectory)
+
+  const projectsWithMetadata = await Promise.all(
+    readProjects.map(async (p) => ({
+      entrypoint_metadata: await metadata(p.path + '/' + PROJECT_ENTRYPOINT),
+      ...p,
+    }))
+  )
+
+  return projectsWithMetadata
 }
 
 // Creates a new file in the default directory with the default project name
