@@ -1,7 +1,17 @@
 //! Functions for setting up our WebSocket and WebRTC connections for communications with the
 //! engine.
 
-use anyhow::Result;
+use wasm_bindgen::prelude::*;
+
+#[wasm_bindgen(module = "/lang/std/engineConnection.ts")]
+extern "C" {
+    type EngineCommandManager;
+
+    #[wasm_bindgen(method)]
+    fn sendModellingCommand(this: &EngineCommandManager, id: &str, range: &str, cmd: &str);
+}
+
+/*use anyhow::Result;
 use kittycad::types::{WebSocketMessages, WebSocketResponses};
 use wasm_bindgen::prelude::*;
 use web_sys::{CloseEvent, ErrorEvent, MessageEvent, RtcDataChannel, RtcPeerConnection, WebSocket};
@@ -339,4 +349,4 @@ fn parse_message(msg: MessageEvent) -> Result<WebSocketResponses> {
         console_log!("message event, received Unknown: {:?}", msg.data());
         anyhow::bail!("message event, received Unknown: {:?}", msg.data());
     }
-}
+}*/
