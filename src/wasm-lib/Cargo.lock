@@ -891,6 +891,38 @@ dependencies = [
 ]
 
 [[package]]
+name = "kcl"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "backtrace",
+ "bincode",
+ "derive-docs",
+ "expectorate",
+ "futures",
+ "gloo-file",
+ "gloo-utils",
+ "http",
+ "httparse",
+ "js-sys",
+ "kittycad",
+ "lazy_static",
+ "parse-display",
+ "pretty_assertions",
+ "regex",
+ "schemars",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tokio",
+ "tokio-tungstenite",
+ "ts-rs",
+ "uuid",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+]
+
+[[package]]
 name = "kittycad"
 version = "0.2.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2502,14 +2534,12 @@ dependencies = [
  "anyhow",
  "backtrace",
  "bincode",
- "derive-docs",
  "expectorate",
- "futures",
  "gloo-file",
  "gloo-utils",
  "http",
- "httparse",
  "js-sys",
+ "kcl",
  "kittycad",
  "lazy_static",
  "parse-display",
@@ -2520,7 +2550,6 @@ dependencies = [
  "serde_json",
  "thiserror",
  "tokio",
- "tokio-tungstenite",
  "ts-rs",
  "uuid",
  "wasm-bindgen",

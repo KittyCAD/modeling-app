@@ -663,7 +663,7 @@ mod tests {
             buf.push_str(&fn_docs);
         }
 
-        expectorate::assert_contents("../../docs/kcl.md", &buf);
+        expectorate::assert_contents("../../../docs/kcl.md", &buf);
     }
 
     #[test]
@@ -677,7 +677,7 @@ mod tests {
         }
 
         expectorate::assert_contents(
-            "../../docs/kcl.json",
+            "../../../docs/kcl.json",
             &serde_json::to_string_pretty(&json_data).unwrap(),
         );
     }

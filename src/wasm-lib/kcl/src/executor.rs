@@ -5,7 +5,6 @@ use std::collections::HashMap;
 use anyhow::Result;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use wasm_bindgen::prelude::*;
 
 use crate::{
     abstract_syntax_tree_types::{BodyItem, FunctionExpression, Value},
@@ -677,52 +676,6 @@ pub fn execute(
     }
 
     Ok(memory.clone())
-}
-
-// wasm_bindgen wrapper for execute
-#[cfg(target_arch = "wasm32")]
-#[wasm_bindgen]
-pub async fn execute_wasm(
-    program_str: &str,
-    memory_str: &str,
-    manager: crate::engine::conn_wasm::EngineCommandManager,
-) -> Result<JsValue, String> {
-    use gloo_utils::format::JsValueSerdeExt;
-
-    // deserialize the ast from a stringified json
-    let program: crate::abstract_syntax_tree_types::Program =
-        serde_json::from_str(program_str).map_err(|e| e.to_string())?;
-    let mut mem: ProgramMemory = serde_json::from_str(memory_str).map_err(|e| e.to_string())?;
-
-    let mut engine = EngineConnection::new(manager)
-        .await
-        .map_err(|e| format!("{:?}", e))?;
-
-    let memory = execute(program, &mut mem, BodyType::Root, &mut engine).map_err(String::from)?;
-    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
-    // gloo-serialize crate instead.
-    JsValue::from_serde(&memory).map_err(|e| e.to_string())
-}
-
-// wasm_bindgen wrapper for execute
-#[cfg(not(target_arch = "wasm32"))]
-#[wasm_bindgen]
-pub async fn execute_wasm(program_str: &str, memory_str: &str) -> Result<JsValue, String> {
-    use gloo_utils::format::JsValueSerdeExt;
-
-    // deserialize the ast from a stringified json
-    let program: crate::abstract_syntax_tree_types::Program =
-        serde_json::from_str(program_str).map_err(|e| e.to_string())?;
-    let mut mem: ProgramMemory = serde_json::from_str(memory_str).map_err(|e| e.to_string())?;
-
-    let mut engine = EngineConnection::new("dev.kittycad.io", "some-token", "", "/tmp/")
-        .await
-        .map_err(|e| format!("{:?}", e))?;
-
-    let memory = execute(program, &mut mem, BodyType::Root, &mut engine).map_err(String::from)?;
-    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
-    // gloo-serialize crate instead.
-    JsValue::from_serde(&memory).map_err(|e| e.to_string())
 }
 
 #[cfg(test)]
