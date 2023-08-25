@@ -37,11 +37,7 @@ interface NewTrackArgs {
   mediaStream: MediaStream
 }
 
-export type EngineCommand = Models['WebSocketMessages_type']
-
-type OkResponse = Models['OkModelingCmdResponse_type']
-
-type WebSocketResponse = Models['WebSocketResponses_type']
+type WebSocketResponse = Models['OkWebSocketResponseData_type']
 
 // EngineConnection encapsulates the connection(s) to the Engine
 // for the EngineCommandManager; namely, the underlying WebSocket
@@ -158,7 +154,7 @@ export class EngineConnection {
         return
       }
 
-      const message: WebSocketResponse = JSON.parse(event.data)
+      const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
 
       if (!message.success) {
         if (message.request_id) {
@@ -180,7 +176,7 @@ export class EngineConnection {
 
       if (resp.type === 'sdp_answer') {
         let answer = resp.data?.answer
-        if (!answer) {
+        if (!answer || answer.type === 'unspecified') {
           return
         }
 
@@ -334,6 +330,8 @@ export class EngineConnection {
   }
 }
 
+export type EngineCommand = Models['WebSocketRequest_type']
+
 export class EngineCommandManager {
   artifactMap: ArtifactMap = {}
   sourceRangeMap: SourceRangeMap = {}
@@ -378,14 +376,14 @@ export class EngineCommandManager {
           let lossyDataChannel = event.channel
 
           lossyDataChannel.addEventListener('message', (event) => {
-            const result: OkResponse = JSON.parse(event.data)
+            const result: Models['OkModelingCmdResponse_type'] = JSON.parse(event.data)
             if (
               result.type === 'highlight_set_entity' &&
-              result.sequence &&
-              result.sequence > this.inSequence
+              result?.data?.sequence &&
+              result.data.sequence > this.inSequence
             ) {
-              this.onHoverCallback(result.entity_id)
-              this.inSequence = result.sequence
+              this.onHoverCallback(result.data.entity_id)
+              this.inSequence = result.data.sequence
             }
           })
         })
@@ -400,9 +398,9 @@ export class EngineCommandManager {
             // Pass this to our export function.
             exportSave(event.data)
           } else {
-            const message: WebSocketResponse = JSON.parse(event.data)
-            if (message.resp?.type === 'modeling') {
-              this.handleModelingCommand(message)
+            const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
+            if (message.success && message.resp.type === 'modeling' && message.request_id) {
+              this.handleModelingCommand(message.resp, message.request_id)
             }
           }
         })
@@ -422,34 +420,28 @@ export class EngineCommandManager {
 
     this.engineConnection?.connect()
   }
-  handleModelingCommand(message: WebSocketResponse) {
-    // TODO(paultag): This is broken due to the latest round of JSON
-    // schema changes.
-
+  handleModelingCommand(message: WebSocketResponse, id: string) {
     if (message.type !== 'modeling') {
       return
     }
+    const modelingResponse = message.data.modeling_response
 
-    const id = message.cmd_id
     const command = this.artifactMap[id]
-    if ('ok' in message.result) {
-      const result: OkResponse = message.result.ok
-      if (result.type === 'select_with_point') {
-        if (result.entity_id) {
-          this.onClickCallback({
-            id: result.entity_id,
-            type: 'default',
-          })
-        } else {
-          this.onClickCallback()
-        }
+    if (modelingResponse.type === 'select_with_point') {
+      if (modelingResponse?.data?.entity_id) {
+        this.onClickCallback({
+          id: modelingResponse?.data?.entity_id,
+          type: 'default',
+        })
+      } else {
+        this.onClickCallback()
       }
     }
     if (command && command.type === 'pending') {
       const resolve = command.resolve
       this.artifactMap[id] = {
         type: 'result',
-        data: message.result,
+        data: modelingResponse,
       }
       resolve({
         id,
@@ -457,7 +449,7 @@ export class EngineCommandManager {
     } else {
       this.artifactMap[id] = {
         type: 'result',
-        data: message.result,
+        data: modelingResponse,
       }
     }
   }
