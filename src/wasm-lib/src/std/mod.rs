@@ -644,7 +644,7 @@ mod tests {
                     return (fn_docs, true);
                 }
 
-                if let Some(schemars::schema::SingleOrVec::Single(_String)) = &o.instance_type {
+                if let Some(schemars::schema::SingleOrVec::Single(_string)) = &o.instance_type {
                     return (Primitive::String.to_string(), false);
                 }
 
