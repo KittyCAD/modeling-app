@@ -1,6 +1,8 @@
 //! Functions for setting up our WebSocket and WebRTC connections for communications with the
 //! engine.
 
+use std::sync::Arc;
+
 use anyhow::Result;
 use futures::{SinkExt, StreamExt};
 use kittycad::types::{OkWebSocketResponseData, WebSocketRequest, WebSocketResponse};
@@ -17,6 +19,7 @@ pub struct EngineConnection {
         WsMsg,
     >,
     tcp_read_handle: tokio::task::JoinHandle<Result<()>>,
+    export_notifier: Arc<tokio::sync::Notify>,
 }
 
 impl Drop for EngineConnection {
@@ -72,7 +75,6 @@ impl EngineConnection {
 
         let token = format!("Bearer {}", auth_token);
         let mut headers = websocket_headers(&token, &key, origin);
-        println!("headers: {:?}", headers);
 
         // Establish a websocket connection.
         let (ws_stream, _) = tokio_tungstenite::connect_async(httparse::Request {
@@ -86,6 +88,9 @@ impl EngineConnection {
         let (tcp_write, tcp_read) = ws_stream.split();
 
         let mut tcp_read = TcpRead { stream: tcp_read };
+
+        let export_notifier = Arc::new(tokio::sync::Notify::new());
+        let export_notifier_clone = export_notifier.clone();
 
         let tcp_read_handle = tokio::spawn(async move {
             // Get Websocket messages from API server
@@ -114,6 +119,9 @@ impl EngineConnection {
                                 let path = export_dir.join(file.name);
                                 std::fs::write(path, file.contents)?;
                             }
+
+                            // Tell the export notifier that we have new files.
+                            export_notifier.notify_waiters();
                         }
                     }
                 }
@@ -125,7 +133,12 @@ impl EngineConnection {
         Ok(EngineConnection {
             tcp_write,
             tcp_read_handle,
+            export_notifier: export_notifier_clone,
         })
+    }
+
+    pub async fn wait_for_files(&self) {
+        self.export_notifier.notified().await;
     }
 
     pub async fn tcp_send(&mut self, msg: WebSocketRequest) -> Result<()> {
@@ -219,19 +232,7 @@ mod tests {
             },
         )?;
 
-        // Wait for the file to show up or fail after 2 minutes of waiting.
-        let export_dir = std::path::Path::new(export_dir_str);
-        let export_file = export_dir.join("part001.gltf");
-        let mut timeout = 120;
-        while !export_file.exists() {
-            if timeout == 0 {
-                return Err(anyhow::anyhow!(
-                    "Timeout waiting for export file to be created"
-                ));
-            }
-            timeout -= 1;
-            tokio::time::sleep(std::time::Duration::from_secs(1)).await;
-        }
+        engine.wait_for_files().await;
 
         Ok(())
     }
