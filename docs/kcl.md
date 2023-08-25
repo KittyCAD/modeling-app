@@ -133,7 +133,7 @@ Extrudes by a given amount.
 #### Arguments
 
 * `length`: `number`
-* `sketch_group`
+* `sketch_group`:
 ```
 {
 	"id": uuid,
@@ -149,20 +149,23 @@ Extrudes by a given amount.
 	"name": string,
 	"to": [number],
 	"type": string,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
 	"y": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
@@ -190,7 +193,7 @@ Returns the extrude wall transform.
 #### Arguments
 
 * `surface_name`: `string`
-* `extrude_group`
+* `extrude_group`:
 ```
 {
 	"height": number,
@@ -227,7 +230,7 @@ Returns the segment end of x.
 #### Arguments
 
 * `segment_name`: `string`
-* `sketch_group`
+* `sketch_group`:
 ```
 {
 	"id": uuid,
@@ -243,20 +246,23 @@ Returns the segment end of x.
 	"name": string,
 	"to": [number],
 	"type": string,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
 	"y": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
@@ -284,7 +290,7 @@ Returns the segment end of y.
 #### Arguments
 
 * `segment_name`: `string`
-* `sketch_group`
+* `sketch_group`:
 ```
 {
 	"id": uuid,
@@ -300,20 +306,23 @@ Returns the segment end of y.
 	"name": string,
 	"to": [number],
 	"type": string,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
 	"y": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
@@ -340,7 +349,7 @@ Returns the last segment of x.
 
 #### Arguments
 
-* `sketch_group`
+* `sketch_group`:
 ```
 {
 	"id": uuid,
@@ -356,20 +365,23 @@ Returns the last segment of x.
 	"name": string,
 	"to": [number],
 	"type": string,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
 	"y": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
@@ -396,7 +408,7 @@ Returns the last segment of y.
 
 #### Arguments
 
-* `sketch_group`
+* `sketch_group`:
 ```
 {
 	"id": uuid,
@@ -412,20 +424,23 @@ Returns the last segment of y.
 	"name": string,
 	"to": [number],
 	"type": string,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
 	"y": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
@@ -453,7 +468,7 @@ Returns the length of the segment.
 #### Arguments
 
 * `segment_name`: `string`
-* `sketch_group`
+* `sketch_group`:
 ```
 {
 	"id": uuid,
@@ -469,20 +484,23 @@ Returns the length of the segment.
 	"name": string,
 	"to": [number],
 	"type": string,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
 	"y": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
@@ -510,7 +528,7 @@ Returns the angle of the segment.
 #### Arguments
 
 * `segment_name`: `string`
-* `sketch_group`
+* `sketch_group`:
 ```
 {
 	"id": uuid,
@@ -526,20 +544,23 @@ Returns the angle of the segment.
 	"name": string,
 	"to": [number],
 	"type": string,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
 	"y": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
@@ -568,7 +589,7 @@ Returns the angle to match the given length for x.
 
 * `segment_name`: `string`
 * `to`: `number`
-* `sketch_group`
+* `sketch_group`:
 ```
 {
 	"id": uuid,
@@ -584,20 +605,23 @@ Returns the angle to match the given length for x.
 	"name": string,
 	"to": [number],
 	"type": string,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
 	"y": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
@@ -626,7 +650,7 @@ Returns the angle to match the given length for y.
 
 * `segment_name`: `string`
 * `to`: `number`
-* `sketch_group`
+* `sketch_group`:
 ```
 {
 	"id": uuid,
@@ -642,20 +666,23 @@ Returns the angle to match the given length for y.
 	"name": string,
 	"to": [number],
 	"type": string,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
 	"y": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
@@ -682,14 +709,15 @@ Draw a line to a point.
 
 #### Arguments
 
-* `data`
+* `data`:
 ```
 {
 	"tag": string,
 	"to": [number],
-} | [number]
+} |
+[number]
 ```
-* `sketch_group`
+* `sketch_group`:
 ```
 {
 	"id": uuid,
@@ -705,20 +733,23 @@ Draw a line to a point.
 	"name": string,
 	"to": [number],
 	"type": string,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
 	"y": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
@@ -745,14 +776,17 @@ Draw a line.
 
 #### Arguments
 
-* `data`
+* `data`:
 ```
 {
 	"tag": string,
-	"to": [number] | string,
-} | [number] | string
+	"to": [number] |
+string,
+} |
+[number] |
+string
 ```
-* `sketch_group`
+* `sketch_group`:
 ```
 {
 	"id": uuid,
@@ -768,20 +802,23 @@ Draw a line.
 	"name": string,
 	"to": [number],
 	"type": string,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
 	"y": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
@@ -808,14 +845,15 @@ Draw a line to a point on the x-axis.
 
 #### Arguments
 
-* `data`
+* `data`:
 ```
 {
 	"tag": string,
 	"to": number,
-} | number
+} |
+number
 ```
-* `sketch_group`
+* `sketch_group`:
 ```
 {
 	"id": uuid,
@@ -831,20 +869,23 @@ Draw a line to a point on the x-axis.
 	"name": string,
 	"to": [number],
 	"type": string,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
 	"y": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
@@ -871,14 +912,15 @@ Draw a line on the x-axis.
 
 #### Arguments
 
-* `data`
+* `data`:
 ```
 {
 	"length": number,
 	"tag": string,
-} | number
+} |
+number
 ```
-* `sketch_group`
+* `sketch_group`:
 ```
 {
 	"id": uuid,
@@ -894,20 +936,23 @@ Draw a line on the x-axis.
 	"name": string,
 	"to": [number],
 	"type": string,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
 	"y": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
@@ -934,14 +979,15 @@ Draw a line to a point on the y-axis.
 
 #### Arguments
 
-* `data`
+* `data`:
 ```
 {
 	"tag": string,
 	"to": number,
-} | number
+} |
+number
 ```
-* `sketch_group`
+* `sketch_group`:
 ```
 {
 	"id": uuid,
@@ -957,20 +1003,23 @@ Draw a line to a point on the y-axis.
 	"name": string,
 	"to": [number],
 	"type": string,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
 	"y": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
@@ -997,14 +1046,15 @@ Draw a line on the y-axis.
 
 #### Arguments
 
-* `data`
+* `data`:
 ```
 {
 	"length": number,
 	"tag": string,
-} | number
+} |
+number
 ```
-* `sketch_group`
+* `sketch_group`:
 ```
 {
 	"id": uuid,
@@ -1020,20 +1070,23 @@ Draw a line on the y-axis.
 	"name": string,
 	"to": [number],
 	"type": string,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
 	"y": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
@@ -1060,15 +1113,16 @@ Draw an angled line to a given x coordinate.
 
 #### Arguments
 
-* `data`
+* `data`:
 ```
 {
 	"angle": number,
 	"tag": string,
 	"to": number,
-} | [number]
+} |
+[number]
 ```
-* `sketch_group`
+* `sketch_group`:
 ```
 {
 	"id": uuid,
@@ -1084,20 +1138,23 @@ Draw an angled line to a given x coordinate.
 	"name": string,
 	"to": [number],
 	"type": string,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
 	"y": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
@@ -1124,15 +1181,16 @@ Draw an angled line to a given y coordinate.
 
 #### Arguments
 
-* `data`
+* `data`:
 ```
 {
 	"angle": number,
 	"tag": string,
 	"to": number,
-} | [number]
+} |
+[number]
 ```
-* `sketch_group`
+* `sketch_group`:
 ```
 {
 	"id": uuid,
@@ -1148,20 +1206,23 @@ Draw an angled line to a given y coordinate.
 	"name": string,
 	"to": [number],
 	"type": string,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
 	"y": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
@@ -1188,15 +1249,16 @@ Draw an angled line.
 
 #### Arguments
 
-* `data`
+* `data`:
 ```
 {
 	"angle": number,
 	"length": number,
 	"tag": string,
-} | [number]
+} |
+[number]
 ```
-* `sketch_group`
+* `sketch_group`:
 ```
 {
 	"id": uuid,
@@ -1212,20 +1274,23 @@ Draw an angled line.
 	"name": string,
 	"to": [number],
 	"type": string,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
 	"y": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
@@ -1252,15 +1317,16 @@ Draw an angled line of a given x length.
 
 #### Arguments
 
-* `data`
+* `data`:
 ```
 {
 	"angle": number,
 	"length": number,
 	"tag": string,
-} | [number]
+} |
+[number]
 ```
-* `sketch_group`
+* `sketch_group`:
 ```
 {
 	"id": uuid,
@@ -1276,20 +1342,23 @@ Draw an angled line of a given x length.
 	"name": string,
 	"to": [number],
 	"type": string,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
 	"y": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
@@ -1316,15 +1385,16 @@ Draw an angled line of a given y length.
 
 #### Arguments
 
-* `data`
+* `data`:
 ```
 {
 	"angle": number,
 	"length": number,
 	"tag": string,
-} | [number]
+} |
+[number]
 ```
-* `sketch_group`
+* `sketch_group`:
 ```
 {
 	"id": uuid,
@@ -1340,20 +1410,23 @@ Draw an angled line of a given y length.
 	"name": string,
 	"to": [number],
 	"type": string,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
 	"y": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
@@ -1380,7 +1453,7 @@ Draw an angled line that intersects with a given line.
 
 #### Arguments
 
-* `data`
+* `data`:
 ```
 {
 	"angle": number,
@@ -1389,7 +1462,7 @@ Draw an angled line that intersects with a given line.
 	"tag": string,
 }
 ```
-* `sketch_group`
+* `sketch_group`:
 ```
 {
 	"id": uuid,
@@ -1405,20 +1478,23 @@ Draw an angled line that intersects with a given line.
 	"name": string,
 	"to": [number],
 	"type": string,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
 	"y": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
@@ -1445,12 +1521,15 @@ Start a sketch at a given point.
 
 #### Arguments
 
-* `data`
+* `data`:
 ```
 {
 	"tag": string,
-	"to": [number] | string,
-} | [number] | string
+	"to": [number] |
+string,
+} |
+[number] |
+string
 ```
 
 #### Returns
@@ -1471,7 +1550,7 @@ Close the current sketch.
 
 #### Arguments
 
-* `sketch_group`
+* `sketch_group`:
 ```
 {
 	"id": uuid,
@@ -1487,20 +1566,23 @@ Close the current sketch.
 	"name": string,
 	"to": [number],
 	"type": string,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],
 	"type": string,
 	"x": number,
 	"y": number,
-} | {
+} |
+{
 	"from": [number],
 	"name": string,
 	"to": [number],

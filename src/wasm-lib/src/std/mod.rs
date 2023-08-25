@@ -626,7 +626,7 @@ mod tests {
                             // Let's print out the object's properties.
                             fn_docs.push_str(&get_type_name_from_schema(item).0.to_string());
                             if i < items.len() - 1 {
-                                fn_docs.push_str(" | ");
+                                fn_docs.push_str(" |\n");
                             }
                         }
                     } else if let Some(items) = &subschemas.any_of {
@@ -634,7 +634,7 @@ mod tests {
                             // Let's print out the object's properties.
                             fn_docs.push_str(&get_type_name_from_schema(item).0.to_string());
                             if i < items.len() - 1 {
-                                fn_docs.push_str(" | ");
+                                fn_docs.push_str(" |\n");
                             }
                         }
                     } else {
@@ -716,7 +716,7 @@ mod tests {
             for arg in internal_fn.args() {
                 let (_format, should_be_indented) = get_type_name_from_schema(&arg.schema);
                 if should_be_indented {
-                    fn_docs.push_str(&format!("* `{}`\n", arg.name,));
+                    fn_docs.push_str(&format!("* `{}`:\n", arg.name,));
 
                     fn_docs.push_str(&format!(
                         "```\n{}\n```\n",
