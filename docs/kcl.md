@@ -39,13 +39,13 @@
 
 ### min
 
-```
-min(args: Vec<number>) -> number
-```
-
 Returns the minimum of the given arguments.
 
 
+
+```
+min(args: Vec<number>) -> number
+```
 
 #### Arguments
 
@@ -59,13 +59,13 @@ Returns the minimum of the given arguments.
 
 ### legLen
 
-```
-legLen(hypotenuse: number, leg: number) -> number
-```
-
 Returns the length of the given leg.
 
 
+
+```
+legLen(hypotenuse: number, leg: number) -> number
+```
 
 #### Arguments
 
@@ -80,13 +80,13 @@ Returns the length of the given leg.
 
 ### legAngX
 
-```
-legAngX(hypotenuse: number, leg: number) -> number
-```
-
 Returns the angle of the given leg for x.
 
 
+
+```
+legAngX(hypotenuse: number, leg: number) -> number
+```
 
 #### Arguments
 
@@ -101,13 +101,13 @@ Returns the angle of the given leg for x.
 
 ### legAngY
 
-```
-legAngY(hypotenuse: number, leg: number) -> number
-```
-
 Returns the angle of the given leg for y.
 
 
+
+```
+legAngY(hypotenuse: number, leg: number) -> number
+```
 
 #### Arguments
 
@@ -122,13 +122,13 @@ Returns the angle of the given leg for y.
 
 ### extrude
 
-```
-extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
-```
-
 Extrudes by a given amount.
 
 
+
+```
+extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
+```
 
 #### Arguments
 
@@ -231,13 +231,13 @@ Extrudes by a given amount.
 
 ### getExtrudeWallTransform
 
-```
-getExtrudeWallTransform(surface_name: string, extrude_group: ExtrudeGroup) -> ExtrudeTransform
-```
-
 Returns the extrude wall transform.
 
 
+
+```
+getExtrudeWallTransform(surface_name: string, extrude_group: ExtrudeGroup) -> ExtrudeTransform
+```
 
 #### Arguments
 
@@ -284,13 +284,13 @@ Returns the extrude wall transform.
 
 ### segEndX
 
-```
-segEndX(segment_name: string, sketch_group: SketchGroup) -> number
-```
-
 Returns the segment end of x.
 
 
+
+```
+segEndX(segment_name: string, sketch_group: SketchGroup) -> number
+```
 
 #### Arguments
 
@@ -367,13 +367,13 @@ Returns the segment end of x.
 
 ### segEndY
 
-```
-segEndY(segment_name: string, sketch_group: SketchGroup) -> number
-```
-
 Returns the segment end of y.
 
 
+
+```
+segEndY(segment_name: string, sketch_group: SketchGroup) -> number
+```
 
 #### Arguments
 
@@ -450,13 +450,13 @@ Returns the segment end of y.
 
 ### lastSegX
 
-```
-lastSegX(sketch_group: SketchGroup) -> number
-```
-
 Returns the last segment of x.
 
 
+
+```
+lastSegX(sketch_group: SketchGroup) -> number
+```
 
 #### Arguments
 
@@ -532,13 +532,13 @@ Returns the last segment of x.
 
 ### lastSegY
 
-```
-lastSegY(sketch_group: SketchGroup) -> number
-```
-
 Returns the last segment of y.
 
 
+
+```
+lastSegY(sketch_group: SketchGroup) -> number
+```
 
 #### Arguments
 
@@ -614,13 +614,13 @@ Returns the last segment of y.
 
 ### segLen
 
-```
-segLen(segment_name: string, sketch_group: SketchGroup) -> number
-```
-
 Returns the length of the segment.
 
 
+
+```
+segLen(segment_name: string, sketch_group: SketchGroup) -> number
+```
 
 #### Arguments
 
@@ -697,13 +697,13 @@ Returns the length of the segment.
 
 ### segAng
 
-```
-segAng(segment_name: string, sketch_group: SketchGroup) -> number
-```
-
 Returns the angle of the segment.
 
 
+
+```
+segAng(segment_name: string, sketch_group: SketchGroup) -> number
+```
 
 #### Arguments
 
@@ -780,13 +780,13 @@ Returns the angle of the segment.
 
 ### angleToMatchLengthX
 
-```
-angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup) -> number
-```
-
 Returns the angle to match the given length for x.
 
 
+
+```
+angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup) -> number
+```
 
 #### Arguments
 
@@ -864,13 +864,13 @@ Returns the angle to match the given length for x.
 
 ### angleToMatchLengthY
 
-```
-angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup) -> number
-```
-
 Returns the angle to match the given length for y.
 
 
+
+```
+angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup) -> number
+```
 
 #### Arguments
 
@@ -948,13 +948,13 @@ Returns the angle to match the given length for y.
 
 ### lineTo
 
-```
-lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
-```
-
 Draw a line to a point.
 
 
+
+```
+lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
+```
 
 #### Arguments
 
@@ -1102,13 +1102,13 @@ Draw a line to a point.
 
 ### line
 
-```
-line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
-```
-
 Draw a line.
 
 
+
+```
+line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
+```
 
 #### Arguments
 
@@ -1258,13 +1258,13 @@ string
 
 ### xLineTo
 
-```
-xLineTo(data: AxisLineToData, sketch_group: SketchGroup) -> SketchGroup
-```
-
 Draw a line to a point on the x-axis.
 
 
+
+```
+xLineTo(data: AxisLineToData, sketch_group: SketchGroup) -> SketchGroup
+```
 
 #### Arguments
 
@@ -1412,13 +1412,13 @@ number
 
 ### xLine
 
-```
-xLine(data: AxisLineData, sketch_group: SketchGroup) -> SketchGroup
-```
-
 Draw a line on the x-axis.
 
 
+
+```
+xLine(data: AxisLineData, sketch_group: SketchGroup) -> SketchGroup
+```
 
 #### Arguments
 
@@ -1566,13 +1566,13 @@ number
 
 ### yLineTo
 
-```
-yLineTo(data: AxisLineToData, sketch_group: SketchGroup) -> SketchGroup
-```
-
 Draw a line to a point on the y-axis.
 
 
+
+```
+yLineTo(data: AxisLineToData, sketch_group: SketchGroup) -> SketchGroup
+```
 
 #### Arguments
 
@@ -1720,13 +1720,13 @@ number
 
 ### yLine
 
-```
-yLine(data: AxisLineData, sketch_group: SketchGroup) -> SketchGroup
-```
-
 Draw a line on the y-axis.
 
 
+
+```
+yLine(data: AxisLineData, sketch_group: SketchGroup) -> SketchGroup
+```
 
 #### Arguments
 
@@ -1874,13 +1874,13 @@ number
 
 ### angledLineToX
 
-```
-angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
-```
-
 Draw an angled line to a given x coordinate.
 
 
+
+```
+angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
+```
 
 #### Arguments
 
@@ -2030,13 +2030,13 @@ Draw an angled line to a given x coordinate.
 
 ### angledLineToY
 
-```
-angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
-```
-
 Draw an angled line to a given y coordinate.
 
 
+
+```
+angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
+```
 
 #### Arguments
 
@@ -2186,13 +2186,13 @@ Draw an angled line to a given y coordinate.
 
 ### angledLine
 
-```
-angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
-```
-
 Draw an angled line.
 
 
+
+```
+angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
+```
 
 #### Arguments
 
@@ -2342,13 +2342,13 @@ Draw an angled line.
 
 ### angledLineOfXLength
 
-```
-angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
-```
-
 Draw an angled line of a given x length.
 
 
+
+```
+angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
+```
 
 #### Arguments
 
@@ -2498,13 +2498,13 @@ Draw an angled line of a given x length.
 
 ### angledLineOfYLength
 
-```
-angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
-```
-
 Draw an angled line of a given y length.
 
 
+
+```
+angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
+```
 
 #### Arguments
 
@@ -2654,13 +2654,13 @@ Draw an angled line of a given y length.
 
 ### angledLineThatIntersects
 
-```
-angledLineThatIntersects(data: AngeledLineThatIntersectsData, sketch_group: SketchGroup) -> SketchGroup
-```
-
 Draw an angled line that intersects with a given line.
 
 
+
+```
+angledLineThatIntersects(data: AngeledLineThatIntersectsData, sketch_group: SketchGroup) -> SketchGroup
+```
 
 #### Arguments
 
@@ -2811,13 +2811,13 @@ Draw an angled line that intersects with a given line.
 
 ### startSketchAt
 
-```
-startSketchAt(data: LineData) -> SketchGroup
-```
-
 Start a sketch at a given point.
 
 
+
+```
+startSketchAt(data: LineData) -> SketchGroup
+```
 
 #### Arguments
 
@@ -2904,13 +2904,13 @@ string
 
 ### close
 
-```
-close(sketch_group: SketchGroup) -> SketchGroup
-```
-
 Close the current sketch.
 
 
+
+```
+close(sketch_group: SketchGroup) -> SketchGroup
+```
 
 #### Arguments
 

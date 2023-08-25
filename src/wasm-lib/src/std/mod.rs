@@ -607,11 +607,14 @@ mod tests {
 
             let mut fn_docs = String::new();
 
-            fn_docs.push_str(&format!("### {}\n\n", internal_fn.name()));
-
             if internal_fn.deprecated() {
-                fn_docs.push_str("## DEPRECATED\n\n");
+                fn_docs.push_str(&format!("### {} DEPRECATED\n\n", internal_fn.name()));
+            } else {
+                fn_docs.push_str(&format!("### {}\n\n", internal_fn.name()));
             }
+
+            fn_docs.push_str(&format!("{}\n\n", internal_fn.summary()));
+            fn_docs.push_str(&format!("{}\n\n", internal_fn.description()));
 
             fn_docs.push_str("```\n");
             fn_docs.push_str(&format!("{}(", internal_fn.name()));
@@ -624,9 +627,6 @@ mod tests {
             fn_docs.push_str(") -> ");
             fn_docs.push_str(&internal_fn.return_value().type_);
             fn_docs.push_str("\n```\n\n");
-
-            fn_docs.push_str(&format!("{}\n\n", internal_fn.summary()));
-            fn_docs.push_str(&format!("{}\n\n", internal_fn.description()));
 
             fn_docs.push_str("#### Arguments\n\n");
             for arg in internal_fn.args() {
