@@ -20,7 +20,7 @@ thiserror = "1.0.47"
 ts-rs = { git = "https://github.com/kittycad/ts-rs.git", branch = "serde_json", features = ["serde-json-impl", "uuid-impl"] }
 uuid = { version = "1.4.1", features = ["v4", "js", "serde"] }
 wasm-bindgen = "0.2.87"
-wasm-bindgen-futures = "g 0.4.37"
+wasm-bindgen-futures = "0.4.37"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 js-sys = { version = "0.3.64" }
