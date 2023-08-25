@@ -2,6 +2,7 @@
 
 use std::collections::HashMap;
 
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Map;
 
@@ -11,7 +12,7 @@ use crate::{
     executor::{MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange},
 };
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Program {
@@ -21,7 +22,7 @@ pub struct Program {
     pub non_code_meta: NoneCodeMeta,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum BodyItem {
@@ -30,7 +31,7 @@ pub enum BodyItem {
     ReturnStatement(ReturnStatement),
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Value {
@@ -131,7 +132,7 @@ impl From<&Value> for crate::executor::SourceRange {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum BinaryPart {
@@ -178,6 +179,7 @@ impl BinaryPart {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
+        stdlib: &crate::std::StdLib,
         engine: &mut EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         pipe_info.is_in_pipe = false;
@@ -188,10 +190,10 @@ impl BinaryPart {
                 Ok(value.clone())
             }
             BinaryPart::BinaryExpression(binary_expression) => {
-                binary_expression.get_result(memory, pipe_info, engine)
+                binary_expression.get_result(memory, pipe_info, stdlib, engine)
             }
             BinaryPart::CallExpression(call_expression) => {
-                call_expression.execute(memory, pipe_info, engine)
+                call_expression.execute(memory, pipe_info, stdlib, engine)
             }
             BinaryPart::UnaryExpression(unary_expression) => {
                 // Return an error this should not happen.
@@ -207,7 +209,7 @@ impl BinaryPart {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct NoneCodeNode {
@@ -216,7 +218,7 @@ pub struct NoneCodeNode {
     pub value: String,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct NoneCodeMeta {
@@ -250,7 +252,7 @@ impl<'de> Deserialize<'de> for NoneCodeMeta {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ExpressionStatement {
@@ -261,7 +263,7 @@ pub struct ExpressionStatement {
 
 impl_value_meta!(ExpressionStatement);
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct CallExpression {
@@ -279,6 +281,7 @@ impl CallExpression {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
+        stdlib: &crate::std::StdLib,
         engine: &mut EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         let fn_name = self.callee.name.clone();
@@ -293,20 +296,20 @@ impl CallExpression {
                     value.clone()
                 }
                 Value::BinaryExpression(binary_expression) => {
-                    binary_expression.get_result(memory, pipe_info, engine)?
+                    binary_expression.get_result(memory, pipe_info, stdlib, engine)?
                 }
                 Value::CallExpression(call_expression) => {
                     pipe_info.is_in_pipe = false;
-                    call_expression.execute(memory, pipe_info, engine)?
+                    call_expression.execute(memory, pipe_info, stdlib, engine)?
                 }
                 Value::UnaryExpression(unary_expression) => {
-                    unary_expression.get_result(memory, pipe_info, engine)?
+                    unary_expression.get_result(memory, pipe_info, stdlib, engine)?
                 }
                 Value::ObjectExpression(object_expression) => {
-                    object_expression.execute(memory, pipe_info, engine)?
+                    object_expression.execute(memory, pipe_info, stdlib, engine)?
                 }
                 Value::ArrayExpression(array_expression) => {
-                    array_expression.execute(memory, pipe_info, engine)?
+                    array_expression.execute(memory, pipe_info, stdlib, engine)?
                 }
                 Value::PipeExpression(pipe_expression) => {
                     return Err(KclError::Semantic(KclErrorDetails {
@@ -353,7 +356,7 @@ impl CallExpression {
             fn_args.push(result);
         }
 
-        if let Some(func) = crate::std::INTERNAL_FNS.get(&fn_name) {
+        if let Some(func) = stdlib.fns.get(&fn_name) {
             // Attempt to call the function.
             let mut args = crate::std::Args::new(fn_args, self.into(), engine);
             let result = func(&mut args)?;
@@ -365,6 +368,7 @@ impl CallExpression {
                     &pipe_info.body.clone(),
                     pipe_info,
                     self.into(),
+                    stdlib,
                     engine,
                 )
             } else {
@@ -391,6 +395,7 @@ impl CallExpression {
                     &pipe_info.body.clone(),
                     pipe_info,
                     self.into(),
+                    stdlib,
                     engine,
                 )
             } else {
@@ -400,7 +405,7 @@ impl CallExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct VariableDeclaration {
@@ -412,7 +417,7 @@ pub struct VariableDeclaration {
 
 impl_value_meta!(VariableDeclaration);
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct VariableDeclarator {
@@ -424,7 +429,7 @@ pub struct VariableDeclarator {
 
 impl_value_meta!(VariableDeclarator);
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Literal {
@@ -458,7 +463,7 @@ impl From<&Box<Literal>> for MemoryItem {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Identifier {
@@ -469,7 +474,7 @@ pub struct Identifier {
 
 impl_value_meta!(Identifier);
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct PipeSubstitution {
@@ -479,7 +484,7 @@ pub struct PipeSubstitution {
 
 impl_value_meta!(PipeSubstitution);
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ArrayExpression {
@@ -495,6 +500,7 @@ impl ArrayExpression {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
+        stdlib: &crate::std::StdLib,
         engine: &mut EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         let mut results = Vec::with_capacity(self.elements.len());
@@ -507,23 +513,23 @@ impl ArrayExpression {
                     value.clone()
                 }
                 Value::BinaryExpression(binary_expression) => {
-                    binary_expression.get_result(memory, pipe_info, engine)?
+                    binary_expression.get_result(memory, pipe_info, stdlib, engine)?
                 }
                 Value::CallExpression(call_expression) => {
                     pipe_info.is_in_pipe = false;
-                    call_expression.execute(memory, pipe_info, engine)?
+                    call_expression.execute(memory, pipe_info, stdlib, engine)?
                 }
                 Value::UnaryExpression(unary_expression) => {
-                    unary_expression.get_result(memory, pipe_info, engine)?
+                    unary_expression.get_result(memory, pipe_info, stdlib, engine)?
                 }
                 Value::ObjectExpression(object_expression) => {
-                    object_expression.execute(memory, pipe_info, engine)?
+                    object_expression.execute(memory, pipe_info, stdlib, engine)?
                 }
                 Value::ArrayExpression(array_expression) => {
-                    array_expression.execute(memory, pipe_info, engine)?
+                    array_expression.execute(memory, pipe_info, stdlib, engine)?
                 }
                 Value::PipeExpression(pipe_expression) => {
-                    pipe_expression.get_result(memory, pipe_info, engine)?
+                    pipe_expression.get_result(memory, pipe_info, stdlib, engine)?
                 }
                 Value::PipeSubstitution(pipe_substitution) => {
                     return Err(KclError::Semantic(KclErrorDetails {
@@ -567,7 +573,7 @@ impl ArrayExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ObjectExpression {
@@ -581,6 +587,7 @@ impl ObjectExpression {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
+        stdlib: &crate::std::StdLib,
         engine: &mut EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         let mut object = Map::new();
@@ -592,23 +599,23 @@ impl ObjectExpression {
                     value.clone()
                 }
                 Value::BinaryExpression(binary_expression) => {
-                    binary_expression.get_result(memory, pipe_info, engine)?
+                    binary_expression.get_result(memory, pipe_info, stdlib, engine)?
                 }
                 Value::CallExpression(call_expression) => {
                     pipe_info.is_in_pipe = false;
-                    call_expression.execute(memory, pipe_info, engine)?
+                    call_expression.execute(memory, pipe_info, stdlib, engine)?
                 }
                 Value::UnaryExpression(unary_expression) => {
-                    unary_expression.get_result(memory, pipe_info, engine)?
+                    unary_expression.get_result(memory, pipe_info, stdlib, engine)?
                 }
                 Value::ObjectExpression(object_expression) => {
-                    object_expression.execute(memory, pipe_info, engine)?
+                    object_expression.execute(memory, pipe_info, stdlib, engine)?
                 }
                 Value::ArrayExpression(array_expression) => {
-                    array_expression.execute(memory, pipe_info, engine)?
+                    array_expression.execute(memory, pipe_info, stdlib, engine)?
                 }
                 Value::PipeExpression(pipe_expression) => {
-                    pipe_expression.get_result(memory, pipe_info, engine)?
+                    pipe_expression.get_result(memory, pipe_info, stdlib, engine)?
                 }
                 Value::PipeSubstitution(pipe_substitution) => {
                     return Err(KclError::Semantic(KclErrorDetails {
@@ -653,7 +660,7 @@ impl ObjectExpression {
 
 impl_value_meta!(ObjectExpression);
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ObjectProperty {
@@ -665,7 +672,7 @@ pub struct ObjectProperty {
 
 impl_value_meta!(ObjectProperty);
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum MemberObject {
@@ -673,7 +680,7 @@ pub enum MemberObject {
     Identifier(Box<Identifier>),
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum LiteralIdentifier {
@@ -681,7 +688,7 @@ pub enum LiteralIdentifier {
     Literal(Box<Literal>),
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct MemberExpression {
@@ -747,7 +754,7 @@ impl MemberExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct ObjectKeyInfo {
     pub key: LiteralIdentifier,
@@ -755,7 +762,7 @@ pub struct ObjectKeyInfo {
     pub computed: bool,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct BinaryExpression {
@@ -774,17 +781,18 @@ impl BinaryExpression {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
+        stdlib: &crate::std::StdLib,
         engine: &mut EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         pipe_info.is_in_pipe = false;
 
         let left_json_value = self
             .left
-            .get_result(memory, pipe_info, engine)?
+            .get_result(memory, pipe_info, stdlib, engine)?
             .get_json_value()?;
         let right_json_value = self
             .right
-            .get_result(memory, pipe_info, engine)?
+            .get_result(memory, pipe_info, stdlib, engine)?
             .get_json_value()?;
 
         // First check if we are doing string concatenation.
@@ -856,7 +864,7 @@ pub fn parse_json_value_as_string(j: &serde_json::Value) -> Option<String> {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct UnaryExpression {
@@ -873,6 +881,7 @@ impl UnaryExpression {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
+        stdlib: &crate::std::StdLib,
         engine: &mut EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         pipe_info.is_in_pipe = false;
@@ -880,7 +889,7 @@ impl UnaryExpression {
         let num = parse_json_number_as_f64(
             &self
                 .argument
-                .get_result(memory, pipe_info, engine)?
+                .get_result(memory, pipe_info, stdlib, engine)?
                 .get_json_value()?,
             self.into(),
         )?;
@@ -893,7 +902,7 @@ impl UnaryExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct PipeExpression {
@@ -910,12 +919,13 @@ impl PipeExpression {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
+        stdlib: &crate::std::StdLib,
         engine: &mut EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         // Reset the previous results.
         pipe_info.previous_results = vec![];
         pipe_info.index = 0;
-        execute_pipe_body(memory, &self.body, pipe_info, self.into(), engine)
+        execute_pipe_body(memory, &self.body, pipe_info, self.into(), stdlib, engine)
     }
 }
 
@@ -924,6 +934,7 @@ fn execute_pipe_body(
     body: &[Value],
     pipe_info: &mut PipeInfo,
     source_range: SourceRange,
+    stdlib: &crate::std::StdLib,
     engine: &mut EngineConnection,
 ) -> Result<MemoryItem, KclError> {
     if pipe_info.index == body.len() {
@@ -949,15 +960,15 @@ fn execute_pipe_body(
 
     match expression {
         Value::BinaryExpression(binary_expression) => {
-            let result = binary_expression.get_result(memory, pipe_info, engine)?;
+            let result = binary_expression.get_result(memory, pipe_info, stdlib, engine)?;
             pipe_info.previous_results.push(result);
             pipe_info.index += 1;
-            execute_pipe_body(memory, body, pipe_info, source_range, engine)
+            execute_pipe_body(memory, body, pipe_info, source_range, stdlib, engine)
         }
         Value::CallExpression(call_expression) => {
             pipe_info.is_in_pipe = true;
             pipe_info.body = body.to_vec();
-            call_expression.execute(memory, pipe_info, engine)
+            call_expression.execute(memory, pipe_info, stdlib, engine)
         }
         _ => {
             // Return an error this should not happen.
@@ -969,7 +980,7 @@ fn execute_pipe_body(
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct FunctionExpression {
@@ -982,7 +993,7 @@ pub struct FunctionExpression {
 
 impl_value_meta!(FunctionExpression);
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ReturnStatement {

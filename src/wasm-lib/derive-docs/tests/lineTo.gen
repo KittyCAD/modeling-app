@@ -1,0 +1,76 @@
+#[allow(non_camel_case_types, missing_docs)]
+#[doc = "Std lib function: lineTo"]
+pub(crate) struct LineTo {}
+
+#[allow(non_upper_case_globals, missing_docs)]
+#[doc = "Std lib function: lineTo"]
+pub(crate) const LineTo: LineTo = LineTo {};
+impl crate::docs::StdLibFn for LineTo {
+    fn name(&self) -> String {
+        "lineTo".to_string()
+    }
+
+    fn summary(&self) -> String {
+        "".to_string()
+    }
+
+    fn description(&self) -> String {
+        "".to_string()
+    }
+
+    fn tags(&self) -> Vec<String> {
+        vec![]
+    }
+
+    fn args(&self) -> Vec<crate::docs::StdLibFnArg> {
+        let mut settings = schemars::gen::SchemaSettings::openapi3();
+        settings.inline_subschemas = true;
+        let mut generator = schemars::gen::SchemaGenerator::new(settings);
+        vec![
+            crate::docs::StdLibFnArg {
+                name: "data".to_string(),
+                type_: "LineToData".to_string(),
+                schema: LineToData::json_schema(&mut generator),
+                required: true,
+            },
+            crate::docs::StdLibFnArg {
+                name: "sketch_group".to_string(),
+                type_: "SketchGroup".to_string(),
+                schema: SketchGroup::json_schema(&mut generator),
+                required: true,
+            },
+        ]
+    }
+
+    fn return_value(&self) -> crate::docs::StdLibFnArg {
+        let mut settings = schemars::gen::SchemaSettings::openapi3();
+        settings.inline_subschemas = true;
+        let mut generator = schemars::gen::SchemaGenerator::new(settings);
+        crate::docs::StdLibFnArg {
+            name: "".to_string(),
+            type_: "SketchGroup".to_string(),
+            schema: SketchGroup::json_schema(&mut generator),
+            required: true,
+        }
+    }
+
+    fn unpublished(&self) -> bool {
+        false
+    }
+
+    fn deprecated(&self) -> bool {
+        false
+    }
+
+    fn std_lib_fn(&self) -> crate::std::StdFn {
+        line_to
+    }
+}
+
+fn inner_line_to(
+    data: LineToData,
+    sketch_group: SketchGroup,
+    args: &Args,
+) -> Result<SketchGroup, KclError> {
+    Ok(())
+}

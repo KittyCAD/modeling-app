@@ -10,69 +10,81 @@ mod utils;
 
 use std::collections::HashMap;
 
+use anyhow::Result;
+use derive_docs::stdlib;
+use parse_display::{Display, FromStr};
+use schemars::JsonSchema;
+use serde::{Deserialize, Serialize};
+
 use crate::{
     abstract_syntax_tree_types::parse_json_number_as_f64,
     engine::EngineConnection,
     errors::{KclError, KclErrorDetails},
     executor::{ExtrudeGroup, MemoryItem, Metadata, SketchGroup, SourceRange},
-    std::extrude::{extrude, get_extrude_wall_transform},
-    std::segment::{
-        angle_to_match_length_x, angle_to_match_length_y, last_segment_x, last_segment_y,
-        segment_angle, segment_end_x, segment_end_y, segment_length,
-    },
-    std::sketch::{
-        angled_line, angled_line_of_x_length, angled_line_of_y_length, angled_line_that_intersects,
-        angled_line_to_x, angled_line_to_y, close, line, line_to, start_sketch_at, x_line,
-        x_line_to, y_line, y_line_to,
-    },
 };
-
-use anyhow::Result;
-use lazy_static::lazy_static;
 
 pub type FnMap = HashMap<String, StdFn>;
 pub type StdFn = fn(&mut Args) -> Result<MemoryItem, KclError>;
 
-lazy_static! {
-   pub static ref INTERNAL_FNS: FnMap =
-        {
-            HashMap::from([
-                // Extrude functions.
-                ("extrude".to_string(), extrude as StdFn),
-                ("getExtrudeWallTransform".to_string(), get_extrude_wall_transform as StdFn),
+pub struct StdLib {
+    #[allow(dead_code)]
+    internal_fn_names: Vec<Box<(dyn crate::docs::StdLibFn)>>,
 
-                ("min".to_string(), min as StdFn),
-                ("legLen".to_string(), leg_length as StdFn),
-                ("legAngX".to_string(),leg_angle_x as StdFn),
-                ("legAngY".to_string(), leg_angle_y as StdFn),
-                // Sketch segment functions.
-                ("segEndX".to_string(), segment_end_x as StdFn),
-                ("segEndY".to_string(), segment_end_y as StdFn),
-                ("lastSegX".to_string(), last_segment_x as StdFn),
-                ("lastSegY".to_string(), last_segment_y as StdFn),
-                ("segLen".to_string(), segment_length as StdFn),
-                ("segAng".to_string(), segment_angle as StdFn),
-                ("angleToMatchLengthX".to_string(), angle_to_match_length_x as StdFn),
-                ("angleToMatchLengthY".to_string(), angle_to_match_length_y as StdFn),
+    pub fns: FnMap,
+}
 
-                // Sketch functions.
-                ("lineTo".to_string(), line_to as StdFn),
-                ("xLineTo".to_string(), x_line_to as StdFn),
-                ("yLineTo".to_string(), y_line_to as StdFn),
-                ("line".to_string(), line as StdFn),
-                ("xLine".to_string(), x_line as StdFn),
-                ("yLine".to_string(), y_line as StdFn),
-                ("angledLine".to_string(), angled_line as StdFn),
-                ("angledLineOfXLength".to_string(), angled_line_of_x_length as StdFn),
-                ("angledLineToX".to_string(), angled_line_to_x as StdFn),
-                ("angledLineOfYLength".to_string(), angled_line_of_y_length as StdFn),
-                ("angledLineToY".to_string(), angled_line_to_y as StdFn),
-                ("angledLineThatIntersects".to_string(), angled_line_that_intersects as StdFn),
-                ("startSketchAt".to_string(), start_sketch_at as StdFn),
-                ("close".to_string(), close as StdFn),
-            ])
+impl StdLib {
+    pub fn new() -> Self {
+        let internal_fn_names: Vec<Box<(dyn crate::docs::StdLibFn)>> = vec![
+            Box::new(Min),
+            Box::new(LegLen),
+            Box::new(LegAngX),
+            Box::new(LegAngY),
+            Box::new(crate::std::extrude::Extrude),
+            Box::new(crate::std::extrude::GetExtrudeWallTransform),
+            Box::new(crate::std::segment::SegEndX),
+            Box::new(crate::std::segment::SegEndY),
+            Box::new(crate::std::segment::LastSegX),
+            Box::new(crate::std::segment::LastSegY),
+            Box::new(crate::std::segment::SegLen),
+            Box::new(crate::std::segment::SegAng),
+            Box::new(crate::std::segment::AngleToMatchLengthX),
+            Box::new(crate::std::segment::AngleToMatchLengthY),
+            Box::new(crate::std::sketch::LineTo),
+            Box::new(crate::std::sketch::Line),
+            Box::new(crate::std::sketch::XLineTo),
+            Box::new(crate::std::sketch::XLine),
+            Box::new(crate::std::sketch::YLineTo),
+            Box::new(crate::std::sketch::YLine),
+            Box::new(crate::std::sketch::AngledLineToX),
+            Box::new(crate::std::sketch::AngledLineToY),
+            Box::new(crate::std::sketch::AngledLine),
+            Box::new(crate::std::sketch::AngledLineOfXLength),
+            Box::new(crate::std::sketch::AngledLineOfYLength),
+            Box::new(crate::std::sketch::AngledLineThatIntersects),
+            Box::new(crate::std::sketch::StartSketchAt),
+            Box::new(crate::std::sketch::Close),
+        ];
 
-        };
+        let mut fns = HashMap::new();
+        for internal_fn_name in &internal_fn_names {
+            fns.insert(
+                internal_fn_name.name().to_string(),
+                internal_fn_name.std_lib_fn(),
+            );
+        }
+
+        Self {
+            internal_fn_names,
+            fns,
+        }
+    }
+}
+
+impl Default for StdLib {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 #[derive(Debug)]
@@ -471,34 +483,202 @@ impl<'a> Args<'a> {
 }
 
 /// Returns the minimum of the given arguments.
+/// TODO fix min
 pub fn min(args: &mut Args) -> Result<MemoryItem, KclError> {
+    let nums = args.get_number_array()?;
+    let result = inner_min(nums);
+
+    args.make_user_val_from_f64(result)
+}
+
+/// Returns the minimum of the given arguments.
+#[stdlib {
+    name = "min",
+}]
+fn inner_min(args: Vec<f64>) -> f64 {
     let mut min = std::f64::MAX;
-    for arg in args.get_number_array()? {
-        if arg < min {
-            min = arg;
+    for arg in args.iter() {
+        if *arg < min {
+            min = *arg;
         }
     }
 
-    args.make_user_val_from_f64(min)
+    min
 }
 
 /// Returns the length of the given leg.
 pub fn leg_length(args: &mut Args) -> Result<MemoryItem, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
-    let result = (hypotenuse.powi(2) - f64::min(hypotenuse.abs(), leg.abs()).powi(2)).sqrt();
+    let result = inner_leg_length(hypotenuse, leg);
     args.make_user_val_from_f64(result)
+}
+
+/// Returns the length of the given leg.
+#[stdlib {
+    name = "legLen",
+}]
+fn inner_leg_length(hypotenuse: f64, leg: f64) -> f64 {
+    (hypotenuse.powi(2) - f64::min(hypotenuse.abs(), leg.abs()).powi(2)).sqrt()
 }
 
 /// Returns the angle of the given leg for x.
 pub fn leg_angle_x(args: &mut Args) -> Result<MemoryItem, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
-    let result = (leg.min(hypotenuse) / hypotenuse).acos() * 180.0 / std::f64::consts::PI;
+    let result = inner_leg_angle_x(hypotenuse, leg);
     args.make_user_val_from_f64(result)
+}
+
+/// Returns the angle of the given leg for x.
+#[stdlib {
+    name = "legAngX",
+}]
+fn inner_leg_angle_x(hypotenuse: f64, leg: f64) -> f64 {
+    (leg.min(hypotenuse) / hypotenuse).acos() * 180.0 / std::f64::consts::PI
 }
 
 /// Returns the angle of the given leg for y.
 pub fn leg_angle_y(args: &mut Args) -> Result<MemoryItem, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
-    let result = (leg.min(hypotenuse) / hypotenuse).asin() * 180.0 / std::f64::consts::PI;
+    let result = inner_leg_angle_y(hypotenuse, leg);
     args.make_user_val_from_f64(result)
+}
+
+/// Returns the angle of the given leg for y.
+#[stdlib {
+    name = "legAngY",
+}]
+fn inner_leg_angle_y(hypotenuse: f64, leg: f64) -> f64 {
+    (leg.min(hypotenuse) / hypotenuse).asin() * 180.0 / std::f64::consts::PI
+}
+
+/// The primitive types that can be used in a KCL file.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema, Display, FromStr)]
+#[serde(rename_all = "lowercase")]
+#[display(style = "lowercase")]
+pub enum Primitive {
+    /// A boolean value.
+    Bool,
+    /// A number value.
+    Number,
+    /// A string value.
+    String,
+    /// A uuid value.
+    Uuid,
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::std::StdLib;
+
+    #[test]
+    fn test_generate_stdlib_markdown_docs() {
+        let stdlib = StdLib::new();
+        let mut buf = String::new();
+
+        buf.push_str("<!--- DO NOT EDIT THIS FILE. IT IS AUTOMATICALLY GENERATED. -->\n\n");
+
+        buf.push_str("# KCL Standard Library\n\n");
+
+        // Generate a table of contents.
+        buf.push_str("## Table of Contents\n\n");
+
+        buf.push_str("* [Functions](#functions)\n");
+
+        for internal_fn in &stdlib.internal_fn_names {
+            if internal_fn.unpublished() || internal_fn.deprecated() {
+                continue;
+            }
+
+            buf.push_str(&format!(
+                "\t* [`{}`](#{})\n",
+                internal_fn.name(),
+                internal_fn.name()
+            ));
+        }
+
+        buf.push_str("\n\n");
+
+        buf.push_str("## Functions\n\n");
+
+        for internal_fn in &stdlib.internal_fn_names {
+            if internal_fn.unpublished() {
+                continue;
+            }
+
+            let mut fn_docs = String::new();
+
+            if internal_fn.deprecated() {
+                fn_docs.push_str(&format!("### {} DEPRECATED\n\n", internal_fn.name()));
+            } else {
+                fn_docs.push_str(&format!("### {}\n\n", internal_fn.name()));
+            }
+
+            fn_docs.push_str(&format!("{}\n\n", internal_fn.summary()));
+            fn_docs.push_str(&format!("{}\n\n", internal_fn.description()));
+
+            fn_docs.push_str("```\n");
+            fn_docs.push_str(&format!("{}(", internal_fn.name()));
+            for (i, arg) in internal_fn.args().iter().enumerate() {
+                if i > 0 {
+                    fn_docs.push_str(", ");
+                }
+                fn_docs.push_str(&format!("{}: {}", arg.name, arg.type_));
+            }
+            fn_docs.push_str(") -> ");
+            fn_docs.push_str(&internal_fn.return_value().type_);
+            fn_docs.push_str("\n```\n\n");
+
+            fn_docs.push_str("#### Arguments\n\n");
+            for arg in internal_fn.args() {
+                let (format, should_be_indented) = arg.get_type_string().unwrap();
+                if let Some(description) = arg.description() {
+                    fn_docs.push_str(&format!(
+                        "* `{}`: `{}` - {}\n",
+                        arg.name, arg.type_, description
+                    ));
+                } else {
+                    fn_docs.push_str(&format!("* `{}`: `{}`\n", arg.name, arg.type_));
+                }
+
+                if should_be_indented {
+                    fn_docs.push_str(&format!("```\n{}\n```\n", format));
+                }
+            }
+
+            fn_docs.push_str("\n#### Returns\n\n");
+            let return_type = internal_fn.return_value();
+            if let Some(description) = return_type.description() {
+                fn_docs.push_str(&format!("* `{}` - {}\n", return_type.type_, description));
+            } else {
+                fn_docs.push_str(&format!("* `{}`\n", return_type.type_));
+            }
+
+            let (format, should_be_indented) = return_type.get_type_string().unwrap();
+            if should_be_indented {
+                fn_docs.push_str(&format!("```\n{}\n```\n", format));
+            }
+
+            fn_docs.push_str("\n\n\n");
+
+            buf.push_str(&fn_docs);
+        }
+
+        expectorate::assert_contents("../../docs/kcl.md", &buf);
+    }
+
+    #[test]
+    fn test_generate_stdlib_json_schema() {
+        let stdlib = StdLib::new();
+
+        let mut json_data = vec![];
+
+        for internal_fn in &stdlib.internal_fn_names {
+            json_data.push(internal_fn.to_json().unwrap());
+        }
+
+        expectorate::assert_contents(
+            "../../docs/kcl.json",
+            &serde_json::to_string_pretty(&json_data).unwrap(),
+        );
+    }
 }

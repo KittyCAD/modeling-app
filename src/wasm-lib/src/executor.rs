@@ -3,7 +3,9 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+
 #[cfg(not(test))]
 use wasm_bindgen::prelude::*;
 
@@ -13,7 +15,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
 };
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ProgramMemory {
@@ -66,7 +68,7 @@ impl Default for ProgramMemory {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum ProgramReturn {
@@ -101,7 +103,7 @@ impl ProgramReturn {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum MemoryItem {
@@ -112,12 +114,7 @@ pub enum MemoryItem {
     },
     SketchGroup(SketchGroup),
     ExtrudeGroup(ExtrudeGroup),
-    ExtrudeTransform {
-        position: Position,
-        rotation: Rotation,
-        #[serde(rename = "__meta")]
-        meta: Vec<Metadata>,
-    },
+    ExtrudeTransform(ExtrudeTransform),
     Function {
         #[serde(skip)]
         func: Option<MemoryFunction>,
@@ -125,6 +122,16 @@ pub enum MemoryItem {
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct ExtrudeTransform {
+    pub position: Position,
+    pub rotation: Rotation,
+    #[serde(rename = "__meta")]
+    pub meta: Vec<Metadata>,
 }
 
 pub type MemoryFunction = fn(
@@ -141,9 +148,7 @@ impl From<MemoryItem> for Vec<SourceRange> {
             MemoryItem::UserVal { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::SketchGroup(s) => s.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::ExtrudeGroup(e) => e.meta.iter().map(|m| m.source_range).collect(),
-            MemoryItem::ExtrudeTransform { meta, .. } => {
-                meta.iter().map(|m| m.source_range).collect()
-            }
+            MemoryItem::ExtrudeTransform(e) => e.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::Function { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
         }
     }
@@ -190,15 +195,22 @@ impl MemoryItem {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+/// A sketch group is a collection of paths.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct SketchGroup {
+    /// The id of the sketch group.
     pub id: uuid::Uuid,
+    /// The paths in the sketch group.
     pub value: Vec<Path>,
+    /// The starting path.
     pub start: BasePath,
+    /// The position of the sketch group.
     pub position: Position,
+    /// The rotation of the sketch group.
     pub rotation: Rotation,
+    /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
@@ -238,15 +250,22 @@ impl SketchGroup {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+/// An extrude group is a collection of extrude surfaces.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ExtrudeGroup {
+    /// The id of the extrude group.
     pub id: uuid::Uuid,
+    /// The extrude surfaces.
     pub value: Vec<ExtrudeSurface>,
+    /// The height of the extrude group.
     pub height: f64,
+    /// The position of the extrude group.
     pub position: Position,
+    /// The rotation of the extrude group.
     pub rotation: Rotation,
+    /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
@@ -261,7 +280,7 @@ impl ExtrudeGroup {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub enum BodyType {
@@ -270,19 +289,19 @@ pub enum BodyType {
     Block,
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct Position(pub [f64; 3]);
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct Rotation(pub [f64; 4]);
 
-#[derive(Debug, Default, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS)]
+#[derive(Debug, Default, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct SourceRange(pub [usize; 2]);
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, ts_rs::TS)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct Point2d {
     pub x: f64,
@@ -301,7 +320,7 @@ impl From<Point2d> for [f64; 2] {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, ts_rs::TS)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct Point3d {
     pub x: f64,
@@ -309,10 +328,12 @@ pub struct Point3d {
     pub z: f64,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+/// Metadata.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Metadata {
+    /// The source range.
     pub source_range: SourceRange,
 }
 
@@ -322,45 +343,61 @@ impl From<SourceRange> for Metadata {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+/// A base path.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct BasePath {
+    /// The from point.
     pub from: [f64; 2],
+    /// The to point.
     pub to: [f64; 2],
+    /// The name of the path.
     pub name: String,
+    /// Metadata.
     #[serde(rename = "__geoMeta")]
     pub geo_meta: GeoMeta,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+/// Geometry metadata.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct GeoMeta {
+    /// The id of the geometry.
     pub id: uuid::Uuid,
+    /// Metadata.
     #[serde(flatten)]
     pub metadata: Metadata,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+/// A path.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum Path {
+    /// A path that goes to a point.
     ToPoint {
         #[serde(flatten)]
         base: BasePath,
     },
+    /// A path that is horizontal.
     Horizontal {
         #[serde(flatten)]
         base: BasePath,
+        /// The x coordinate.
         x: f64,
     },
+    /// An angled line to.
     AngledLineTo {
         #[serde(flatten)]
         base: BasePath,
+        /// The x coordinate.
         x: Option<f64>,
+        /// The y coordinate.
         y: Option<f64>,
     },
+    /// A base path.
     Base {
         #[serde(flatten)]
         base: BasePath,
@@ -396,14 +433,20 @@ impl Path {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+/// An extrude surface.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum ExtrudeSurface {
+    /// An extrude plane.
     ExtrudePlane {
+        /// The position.
         position: Position,
+        /// The rotation.
         rotation: Rotation,
+        /// The name.
         name: String,
+        /// Metadata.
         #[serde(flatten)]
         geo_meta: GeoMeta,
     },
@@ -435,7 +478,7 @@ impl ExtrudeSurface {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct PipeInfo {
@@ -470,6 +513,7 @@ fn execute(
     engine: &mut EngineConnection,
 ) -> Result<ProgramMemory, KclError> {
     let mut pipe_info = PipeInfo::default();
+    let stdlib = crate::std::StdLib::new();
 
     // Iterate over the body of the program.
     for statement in &program.body {
@@ -525,8 +569,12 @@ fn execute(
                             memory.add(&var_name, value.clone(), source_range)?;
                         }
                         Value::BinaryExpression(binary_expression) => {
-                            let result =
-                                binary_expression.get_result(memory, &mut pipe_info, engine)?;
+                            let result = binary_expression.get_result(
+                                memory,
+                                &mut pipe_info,
+                                &stdlib,
+                                engine,
+                            )?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::FunctionExpression(function_expression) => {
@@ -563,12 +611,17 @@ fn execute(
                             )?;
                         }
                         Value::CallExpression(call_expression) => {
-                            let result = call_expression.execute(memory, &mut pipe_info, engine)?;
+                            let result =
+                                call_expression.execute(memory, &mut pipe_info, &stdlib, engine)?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::PipeExpression(pipe_expression) => {
-                            let result =
-                                pipe_expression.get_result(memory, &mut pipe_info, engine)?;
+                            let result = pipe_expression.get_result(
+                                memory,
+                                &mut pipe_info,
+                                &stdlib,
+                                engine,
+                            )?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::PipeSubstitution(pipe_substitution) => {
@@ -578,13 +631,21 @@ fn execute(
                             }));
                         }
                         Value::ArrayExpression(array_expression) => {
-                            let result =
-                                array_expression.execute(memory, &mut pipe_info, engine)?;
+                            let result = array_expression.execute(
+                                memory,
+                                &mut pipe_info,
+                                &stdlib,
+                                engine,
+                            )?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::ObjectExpression(object_expression) => {
-                            let result =
-                                object_expression.execute(memory, &mut pipe_info, engine)?;
+                            let result = object_expression.execute(
+                                memory,
+                                &mut pipe_info,
+                                &stdlib,
+                                engine,
+                            )?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::MemberExpression(member_expression) => {
@@ -592,8 +653,12 @@ fn execute(
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::UnaryExpression(unary_expression) => {
-                            let result =
-                                unary_expression.get_result(memory, &mut pipe_info, engine)?;
+                            let result = unary_expression.get_result(
+                                memory,
+                                &mut pipe_info,
+                                &stdlib,
+                                engine,
+                            )?;
                             memory.add(&var_name, result, source_range)?;
                         }
                     }
@@ -601,7 +666,7 @@ fn execute(
             }
             BodyItem::ReturnStatement(return_statement) => match &return_statement.argument {
                 Value::BinaryExpression(bin_expr) => {
-                    let result = bin_expr.get_result(memory, &mut pipe_info, engine)?;
+                    let result = bin_expr.get_result(memory, &mut pipe_info, &stdlib, engine)?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::Identifier(identifier) => {
@@ -671,7 +736,6 @@ mod tests {
     pub async fn parse_execute(code: &str) -> Result<ProgramMemory> {
         let tokens = crate::tokeniser::lexer(code);
         let program = crate::parser::abstract_syntax_tree(&tokens)?;
-        println!("{:#?}", program);
         let mut mem: ProgramMemory = Default::default();
         let mut engine = EngineConnection::new("dev.kittycad.io", "some-token", "").await?;
         let memory = execute(program, &mut mem, BodyType::Root, &mut engine)?;
