@@ -49,7 +49,7 @@ Returns the minimum of the given arguments.
 
 #### Arguments
 
-* `args`: `[number]`
+* `args`: `Vec<number>`
 
 #### Returns
 
@@ -133,7 +133,7 @@ Extrudes by a given amount.
 #### Arguments
 
 * `length`: `number`
-* `sketch_group`:
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -176,7 +176,7 @@ Extrudes by a given amount.
 
 #### Returns
 
-* `ExtrudeGroup`
+* `ExtrudeGroup` - An extrude group is a collection of extrude surfaces.
 ```
 {
 	"height": number,
@@ -209,7 +209,7 @@ Returns the extrude wall transform.
 #### Arguments
 
 * `surface_name`: `string`
-* `extrude_group`:
+* `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces.
 ```
 {
 	"height": number,
@@ -252,7 +252,7 @@ Returns the segment end of x.
 #### Arguments
 
 * `segment_name`: `string`
-* `sketch_group`:
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -312,7 +312,7 @@ Returns the segment end of y.
 #### Arguments
 
 * `segment_name`: `string`
-* `sketch_group`:
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -371,7 +371,7 @@ Returns the last segment of x.
 
 #### Arguments
 
-* `sketch_group`:
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -430,7 +430,7 @@ Returns the last segment of y.
 
 #### Arguments
 
-* `sketch_group`:
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -490,7 +490,7 @@ Returns the length of the segment.
 #### Arguments
 
 * `segment_name`: `string`
-* `sketch_group`:
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -550,7 +550,7 @@ Returns the angle of the segment.
 #### Arguments
 
 * `segment_name`: `string`
-* `sketch_group`:
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -611,7 +611,7 @@ Returns the angle to match the given length for x.
 
 * `segment_name`: `string`
 * `to`: `number`
-* `sketch_group`:
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -672,7 +672,7 @@ Returns the angle to match the given length for y.
 
 * `segment_name`: `string`
 * `to`: `number`
-* `sketch_group`:
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -731,7 +731,7 @@ Draw a line to a point.
 
 #### Arguments
 
-* `data`:
+* `data`: `LineToData` - Data to draw a line to a point.
 ```
 {
 	"tag": string,
@@ -739,7 +739,7 @@ Draw a line to a point.
 } |
 [number]
 ```
-* `sketch_group`:
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -782,7 +782,7 @@ Draw a line to a point.
 
 #### Returns
 
-* `SketchGroup`
+* `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -837,7 +837,7 @@ Draw a line.
 
 #### Arguments
 
-* `data`:
+* `data`: `LineData` - Data to draw a line.
 ```
 {
 	"tag": string,
@@ -847,7 +847,7 @@ string,
 [number] |
 string
 ```
-* `sketch_group`:
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -890,7 +890,7 @@ string
 
 #### Returns
 
-* `SketchGroup`
+* `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -945,7 +945,7 @@ Draw a line to a point on the x-axis.
 
 #### Arguments
 
-* `data`:
+* `data`: `AxisLineToData` - Data to draw a line to a point on an axis.
 ```
 {
 	"tag": string,
@@ -953,7 +953,7 @@ Draw a line to a point on the x-axis.
 } |
 number
 ```
-* `sketch_group`:
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -996,7 +996,7 @@ number
 
 #### Returns
 
-* `SketchGroup`
+* `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -1051,7 +1051,7 @@ Draw a line on the x-axis.
 
 #### Arguments
 
-* `data`:
+* `data`: `AxisLineData` - Data to draw a line on an axis.
 ```
 {
 	"length": number,
@@ -1059,7 +1059,7 @@ Draw a line on the x-axis.
 } |
 number
 ```
-* `sketch_group`:
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -1102,7 +1102,7 @@ number
 
 #### Returns
 
-* `SketchGroup`
+* `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -1157,7 +1157,7 @@ Draw a line to a point on the y-axis.
 
 #### Arguments
 
-* `data`:
+* `data`: `AxisLineToData` - Data to draw a line to a point on an axis.
 ```
 {
 	"tag": string,
@@ -1165,7 +1165,7 @@ Draw a line to a point on the y-axis.
 } |
 number
 ```
-* `sketch_group`:
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -1208,7 +1208,7 @@ number
 
 #### Returns
 
-* `SketchGroup`
+* `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -1263,7 +1263,7 @@ Draw a line on the y-axis.
 
 #### Arguments
 
-* `data`:
+* `data`: `AxisLineData` - Data to draw a line on an axis.
 ```
 {
 	"length": number,
@@ -1271,7 +1271,7 @@ Draw a line on the y-axis.
 } |
 number
 ```
-* `sketch_group`:
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -1314,7 +1314,7 @@ number
 
 #### Returns
 
-* `SketchGroup`
+* `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -1369,7 +1369,7 @@ Draw an angled line to a given x coordinate.
 
 #### Arguments
 
-* `data`:
+* `data`: `AngledLineToData` - Data to draw an angled line to a point.
 ```
 {
 	"angle": number,
@@ -1378,7 +1378,7 @@ Draw an angled line to a given x coordinate.
 } |
 [number]
 ```
-* `sketch_group`:
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -1421,7 +1421,7 @@ Draw an angled line to a given x coordinate.
 
 #### Returns
 
-* `SketchGroup`
+* `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -1476,7 +1476,7 @@ Draw an angled line to a given y coordinate.
 
 #### Arguments
 
-* `data`:
+* `data`: `AngledLineToData` - Data to draw an angled line to a point.
 ```
 {
 	"angle": number,
@@ -1485,7 +1485,7 @@ Draw an angled line to a given y coordinate.
 } |
 [number]
 ```
-* `sketch_group`:
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -1528,7 +1528,7 @@ Draw an angled line to a given y coordinate.
 
 #### Returns
 
-* `SketchGroup`
+* `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -1583,7 +1583,7 @@ Draw an angled line.
 
 #### Arguments
 
-* `data`:
+* `data`: `AngledLineData` - Data to draw an angled line.
 ```
 {
 	"angle": number,
@@ -1592,7 +1592,7 @@ Draw an angled line.
 } |
 [number]
 ```
-* `sketch_group`:
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -1635,7 +1635,7 @@ Draw an angled line.
 
 #### Returns
 
-* `SketchGroup`
+* `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -1690,7 +1690,7 @@ Draw an angled line of a given x length.
 
 #### Arguments
 
-* `data`:
+* `data`: `AngledLineData` - Data to draw an angled line.
 ```
 {
 	"angle": number,
@@ -1699,7 +1699,7 @@ Draw an angled line of a given x length.
 } |
 [number]
 ```
-* `sketch_group`:
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -1742,7 +1742,7 @@ Draw an angled line of a given x length.
 
 #### Returns
 
-* `SketchGroup`
+* `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -1797,7 +1797,7 @@ Draw an angled line of a given y length.
 
 #### Arguments
 
-* `data`:
+* `data`: `AngledLineData` - Data to draw an angled line.
 ```
 {
 	"angle": number,
@@ -1806,7 +1806,7 @@ Draw an angled line of a given y length.
 } |
 [number]
 ```
-* `sketch_group`:
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -1849,7 +1849,7 @@ Draw an angled line of a given y length.
 
 #### Returns
 
-* `SketchGroup`
+* `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -1904,7 +1904,7 @@ Draw an angled line that intersects with a given line.
 
 #### Arguments
 
-* `data`:
+* `data`: `AngeledLineThatIntersectsData` - Data for drawing an angled line that intersects with a given line.
 ```
 {
 	"angle": number,
@@ -1913,7 +1913,7 @@ Draw an angled line that intersects with a given line.
 	"tag": string,
 }
 ```
-* `sketch_group`:
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -1956,7 +1956,7 @@ Draw an angled line that intersects with a given line.
 
 #### Returns
 
-* `SketchGroup`
+* `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -2011,7 +2011,7 @@ Start a sketch at a given point.
 
 #### Arguments
 
-* `data`:
+* `data`: `LineData` - Data to draw a line.
 ```
 {
 	"tag": string,
@@ -2024,7 +2024,7 @@ string
 
 #### Returns
 
-* `SketchGroup`
+* `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -2079,7 +2079,7 @@ Close the current sketch.
 
 #### Arguments
 
-* `sketch_group`:
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,
@@ -2122,7 +2122,7 @@ Close the current sketch.
 
 #### Returns
 
-* `SketchGroup`
+* `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	"id": uuid,

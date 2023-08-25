@@ -16,11 +16,19 @@ use crate::{
 
 use anyhow::Result;
 
+/// Data to draw a line to a point.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum LineToData {
-    PointWithTag { to: [f64; 2], tag: String },
+    /// A point with a tag.
+    PointWithTag {
+        /// The to point.
+        to: [f64; 2],
+        /// The tag.
+        tag: String,
+    },
+    /// A point.
     Point([f64; 2]),
 }
 
@@ -70,11 +78,19 @@ fn inner_line_to(
     Ok(new_sketch_group)
 }
 
+/// Data to draw a line to a point on an axis.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum AxisLineToData {
-    PointWithTag { to: f64, tag: String },
+    /// A point with a tag.
+    PointWithTag {
+        /// The to point.
+        to: f64,
+        /// The tag.
+        tag: String,
+    },
+    /// A point.
     Point(f64),
 }
 
@@ -141,20 +157,32 @@ fn inner_y_line_to(
     Ok(new_sketch_group)
 }
 
+/// Data to draw a line.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum LineData {
-    PointWithTag { to: PointOrDefault, tag: String },
+    /// A point with a tag.
+    PointWithTag {
+        /// The to point.
+        to: PointOrDefault,
+        /// The tag.
+        tag: String,
+    },
+    /// A point.
     Point([f64; 2]),
+    /// A string like `default`.
     Default(String),
 }
 
+/// A point or a default value.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum PointOrDefault {
+    /// A point.
     Point([f64; 2]),
+    /// A string like `default`.
     Default(String),
 }
 
@@ -233,12 +261,20 @@ fn inner_line(
     Ok(new_sketch_group)
 }
 
+/// Data to draw a line on an axis.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum AxisLineData {
-    PointWithTag { length: f64, tag: String },
-    Point(f64),
+    /// The length with a tag.
+    LengthWithTag {
+        /// The length of the line.
+        length: f64,
+        /// The tag.
+        tag: String,
+    },
+    /// The length.
+    Length(f64),
 }
 
 /// Draw a line on the x-axis.
@@ -259,11 +295,11 @@ fn inner_x_line(
     args: &mut Args,
 ) -> Result<SketchGroup, KclError> {
     let line_data = match data {
-        AxisLineData::PointWithTag { length, tag } => LineData::PointWithTag {
+        AxisLineData::LengthWithTag { length, tag } => LineData::PointWithTag {
             to: PointOrDefault::Point([length, 0.0]),
             tag,
         },
-        AxisLineData::Point(length) => LineData::Point([length, 0.0]),
+        AxisLineData::Length(length) => LineData::Point([length, 0.0]),
     };
 
     let new_sketch_group = inner_line(line_data, sketch_group, args)?;
@@ -288,26 +324,32 @@ fn inner_y_line(
     args: &mut Args,
 ) -> Result<SketchGroup, KclError> {
     let line_data = match data {
-        AxisLineData::PointWithTag { length, tag } => LineData::PointWithTag {
+        AxisLineData::LengthWithTag { length, tag } => LineData::PointWithTag {
             to: PointOrDefault::Point([0.0, length]),
             tag,
         },
-        AxisLineData::Point(length) => LineData::Point([0.0, length]),
+        AxisLineData::Length(length) => LineData::Point([0.0, length]),
     };
 
     let new_sketch_group = inner_line(line_data, sketch_group, args)?;
     Ok(new_sketch_group)
 }
 
+/// Data to draw an angled line.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum AngledLineData {
+    /// An angle and length with a tag.
     AngleWithTag {
+        /// The angle of the line.
         angle: f64,
+        /// The length of the line.
         length: f64,
+        /// The tag.
         tag: String,
     },
+    /// An angle and length.
     AngleAndLength([f64; 2]),
 }
 
@@ -405,11 +447,21 @@ fn inner_angled_line_of_x_length(
     Ok(new_sketch_group)
 }
 
+/// Data to draw an angled line to a point.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum AngledLineToData {
-    AngleWithTag { angle: f64, to: f64, tag: String },
+    /// An angle and point with a tag.
+    AngleWithTag {
+        /// The angle of the line.
+        angle: f64,
+        /// The point to draw to.
+        to: f64,
+        /// The tag.
+        tag: String,
+    },
+    /// An angle and point to draw to.
     AngleAndPoint([f64; 2]),
 }
 
@@ -540,6 +592,7 @@ fn inner_angled_line_to_y(
     Ok(new_sketch_group)
 }
 
+/// Data for drawing an angled line that intersects with a given line.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]

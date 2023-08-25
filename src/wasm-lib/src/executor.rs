@@ -195,15 +195,22 @@ impl MemoryItem {
     }
 }
 
+/// A sketch group is a collection of paths.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct SketchGroup {
+    /// The id of the sketch group.
     pub id: uuid::Uuid,
+    /// The paths in the sketch group.
     pub value: Vec<Path>,
+    /// The starting path.
     pub start: BasePath,
+    /// The position of the sketch group.
     pub position: Position,
+    /// The rotation of the sketch group.
     pub rotation: Rotation,
+    /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
@@ -243,15 +250,22 @@ impl SketchGroup {
     }
 }
 
+/// An extrude group is a collection of extrude surfaces.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ExtrudeGroup {
+    /// The id of the extrude group.
     pub id: uuid::Uuid,
+    /// The extrude surfaces.
     pub value: Vec<ExtrudeSurface>,
+    /// The height of the extrude group.
     pub height: f64,
+    /// The position of the extrude group.
     pub position: Position,
+    /// The rotation of the extrude group.
     pub rotation: Rotation,
+    /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
@@ -314,10 +328,12 @@ pub struct Point3d {
     pub z: f64,
 }
 
+/// Metadata.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Metadata {
+    /// The source range.
     pub source_range: SourceRange,
 }
 
@@ -327,45 +343,61 @@ impl From<SourceRange> for Metadata {
     }
 }
 
+/// A base path.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct BasePath {
+    /// The from point.
     pub from: [f64; 2],
+    /// The to point.
     pub to: [f64; 2],
+    /// The name of the path.
     pub name: String,
+    /// Metadata.
     #[serde(rename = "__geoMeta")]
     pub geo_meta: GeoMeta,
 }
 
+/// Geometry metadata.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct GeoMeta {
+    /// The id of the geometry.
     pub id: uuid::Uuid,
+    /// Metadata.
     #[serde(flatten)]
     pub metadata: Metadata,
 }
 
+/// A path.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum Path {
+    /// A path that goes to a point.
     ToPoint {
         #[serde(flatten)]
         base: BasePath,
     },
+    /// A path that is horizontal.
     Horizontal {
         #[serde(flatten)]
         base: BasePath,
+        /// The x coordinate.
         x: f64,
     },
+    /// An angled line to.
     AngledLineTo {
         #[serde(flatten)]
         base: BasePath,
+        /// The x coordinate.
         x: Option<f64>,
+        /// The y coordinate.
         y: Option<f64>,
     },
+    /// A base path.
     Base {
         #[serde(flatten)]
         base: BasePath,
@@ -401,14 +433,20 @@ impl Path {
     }
 }
 
+/// An extrude surface.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum ExtrudeSurface {
+    /// An extrude plane.
     ExtrudePlane {
+        /// The position.
         position: Position,
+        /// The rotation.
         rotation: Rotation,
+        /// The name.
         name: String,
+        /// Metadata.
         #[serde(flatten)]
         geo_meta: GeoMeta,
     },

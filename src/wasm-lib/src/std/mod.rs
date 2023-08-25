@@ -631,24 +631,26 @@ mod tests {
             fn_docs.push_str("#### Arguments\n\n");
             for arg in internal_fn.args() {
                 let (format, should_be_indented) = arg.get_type_string().unwrap();
-                if should_be_indented {
-                    fn_docs.push_str(&format!("* `{}`:\n", arg.name,));
-
-                    fn_docs.push_str(&format!("```\n{}\n```\n", format));
+                if let Some(description) = arg.description() {
+                    fn_docs.push_str(&format!(
+                        "* `{}`: `{}` - {}\n",
+                        arg.name, arg.type_, description
+                    ));
                 } else {
-                    fn_docs.push_str(&format!("* `{}`: `{}`\n", arg.name, format));
+                    fn_docs.push_str(&format!("* `{}`: `{}`\n", arg.name, arg.type_));
+                }
+
+                if should_be_indented {
+                    fn_docs.push_str(&format!("```\n{}\n```\n", format));
                 }
             }
 
             fn_docs.push_str("\n#### Returns\n\n");
             let return_type = internal_fn.return_value();
-            if return_type.description.is_empty() {
-                fn_docs.push_str(&format!("* `{}`\n", return_type.type_));
+            if let Some(description) = return_type.description() {
+                fn_docs.push_str(&format!("* `{}` - {}\n", return_type.type_, description));
             } else {
-                fn_docs.push_str(&format!(
-                    "* `{}` - {}\n",
-                    return_type.type_, return_type.description
-                ));
+                fn_docs.push_str(&format!("* `{}`\n", return_type.type_));
             }
 
             let (format, should_be_indented) = return_type.get_type_string().unwrap();

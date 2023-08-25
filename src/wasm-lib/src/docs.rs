@@ -25,13 +25,6 @@ pub struct StdLibFnData {
     pub deprecated: bool,
 }
 
-impl StdLibFnArg {
-    #[allow(dead_code)]
-    pub fn get_type_string(&self) -> Result<(String, bool)> {
-        get_type_string_from_schema(&self.schema)
-    }
-}
-
 /// This struct defines a single argument to a stdlib function.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
 pub struct StdLibFnArg {
@@ -45,6 +38,22 @@ pub struct StdLibFnArg {
     pub schema: schemars::schema::Schema,
     /// If the argument is required.
     pub required: bool,
+}
+
+impl StdLibFnArg {
+    #[allow(dead_code)]
+    pub fn get_type_string(&self) -> Result<(String, bool)> {
+        get_type_string_from_schema(&self.schema)
+    }
+
+    #[allow(dead_code)]
+    pub fn description(&self) -> Option<String> {
+        if self.description.is_empty() {
+            get_description_string_from_schema(&self.schema)
+        } else {
+            Some(self.description.clone())
+        }
+    }
 }
 
 /// This trait defines functions called upon stdlib functions to generate
@@ -90,6 +99,18 @@ pub trait StdLibFn {
             deprecated: self.deprecated(),
         })
     }
+}
+
+fn get_description_string_from_schema(schema: &schemars::schema::Schema) -> Option<String> {
+    if let schemars::schema::Schema::Object(o) = schema {
+        if let Some(metadata) = &o.metadata {
+            if let Some(description) = &metadata.description {
+                return Some(description.to_string());
+            }
+        }
+    }
+
+    None
 }
 
 fn get_type_string_from_schema(schema: &schemars::schema::Schema) -> Result<(String, bool)> {
