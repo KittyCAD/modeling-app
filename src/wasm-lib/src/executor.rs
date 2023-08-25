@@ -114,12 +114,7 @@ pub enum MemoryItem {
     },
     SketchGroup(SketchGroup),
     ExtrudeGroup(ExtrudeGroup),
-    ExtrudeTransform {
-        position: Position,
-        rotation: Rotation,
-        #[serde(rename = "__meta")]
-        meta: Vec<Metadata>,
-    },
+    ExtrudeTransform(ExtrudeTransform),
     Function {
         #[serde(skip)]
         func: Option<MemoryFunction>,
@@ -127,6 +122,16 @@ pub enum MemoryItem {
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct ExtrudeTransform {
+    pub position: Position,
+    pub rotation: Rotation,
+    #[serde(rename = "__meta")]
+    pub meta: Vec<Metadata>,
 }
 
 pub type MemoryFunction = fn(
@@ -143,9 +148,7 @@ impl From<MemoryItem> for Vec<SourceRange> {
             MemoryItem::UserVal { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::SketchGroup(s) => s.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::ExtrudeGroup(e) => e.meta.iter().map(|m| m.source_range).collect(),
-            MemoryItem::ExtrudeTransform { meta, .. } => {
-                meta.iter().map(|m| m.source_range).collect()
-            }
+            MemoryItem::ExtrudeTransform(e) => e.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::Function { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
         }
     }

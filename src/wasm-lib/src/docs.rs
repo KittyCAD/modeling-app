@@ -3,6 +3,8 @@
 /// This struct defines a single argument to a stdlib function.
 #[allow(dead_code)]
 pub struct StdLibFnArg {
+    /// The name of the argument.
+    pub name: String,
     /// The type of the argument.
     pub type_: String,
     /// The description of the argument.

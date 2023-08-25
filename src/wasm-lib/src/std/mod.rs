@@ -573,7 +573,7 @@ mod tests {
             }
 
             buf.push_str(&format!(
-                "\t* [{}](#{})\n",
+                "\t* [`{}`](#{})\n",
                 internal_fn.name(),
                 internal_fn.name()
             ));
@@ -602,6 +602,13 @@ mod tests {
             fn_docs.push_str("#### Arguments\n\n");
             for arg in internal_fn.args() {
                 fn_docs.push_str(&format!("* `{}` - {}\n", arg.type_, arg.description));
+                if let schemars::schema::Schema::Object(obj) = &arg.schema {
+                    if let Some(obj_val) = &obj.object {
+                        println!("obj: {:#?}", obj_val);
+                    } else {
+                        println!("arg: {:#?}", obj);
+                    }
+                }
             }
 
             fn_docs.push_str("\n#### Returns\n\n");

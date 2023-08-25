@@ -220,6 +220,7 @@ fn do_stdlib_inner(
             };
             arg_types.push(quote! {
                 #docs_crate::StdLibFnArg {
+                    name: "".to_string(),
                     type_: #ty_string.to_string(),
                     description: "".to_string(),
                     schema: #schema,
@@ -240,6 +241,7 @@ fn do_stdlib_inner(
     let ret_ty_ident = format_ident!("{}", ret_ty_string);
     let return_type = quote! {
         #docs_crate::StdLibFnArg {
+            name: "".to_string(),
             type_: #ret_ty_string.to_string(),
             description: "".to_string(),
             schema: #ret_ty_ident::json_schema(&mut generator),

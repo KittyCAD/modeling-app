@@ -2,7 +2,7 @@
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, MemoryItem, SketchGroup},
+    executor::{ExtrudeGroup, ExtrudeTransform, MemoryItem, SketchGroup},
     std::Args,
 };
 
@@ -53,7 +53,7 @@ fn inner_extrude(
 pub fn get_extrude_wall_transform(args: &mut Args) -> Result<MemoryItem, KclError> {
     let (surface_name, extrude_group) = args.get_path_name_extrude_group()?;
     let result = inner_get_extrude_wall_transform(&surface_name, extrude_group, args)?;
-    Ok(result)
+    Ok(MemoryItem::ExtrudeTransform(result))
 }
 
 /// Returns the extrude wall transform.
@@ -64,7 +64,7 @@ fn inner_get_extrude_wall_transform(
     surface_name: &str,
     extrude_group: ExtrudeGroup,
     args: &mut Args,
-) -> Result<MemoryItem, KclError> {
+) -> Result<ExtrudeTransform, KclError> {
     let surface = extrude_group
         .get_path_by_name(surface_name)
         .ok_or_else(|| {
@@ -77,7 +77,7 @@ fn inner_get_extrude_wall_transform(
             })
         })?;
 
-    Ok(MemoryItem::ExtrudeTransform {
+    Ok(ExtrudeTransform {
         position: surface.get_position(),
         rotation: surface.get_rotation(),
         meta: extrude_group.meta,
