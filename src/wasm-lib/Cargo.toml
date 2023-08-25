@@ -23,7 +23,7 @@ lazy_static = "1.4.0"
 parse-display = "0.8.2"
 regex = "1.7.1"
 schemars = { version = "0.8", features = ["url", "uuid1"] }
-serde = {version = "1.0.152", features = ["derive"] }
+serde = {version = "1.0.187", features = ["derive"] }
 serde_json = "1.0.93"
 thiserror = "1.0.47"
 tokio = { version = "1.32.0", features = ["full"], optional = true }
