@@ -5,6 +5,7 @@ import {
   useMemo,
   useCallback,
   MouseEventHandler,
+  useContext,
 } from 'react'
 import { DebugPanel } from './components/DebugPanel'
 import { v4 as uuidv4 } from 'uuid'
@@ -49,6 +50,7 @@ import { PROJECT_ENTRYPOINT } from './lib/tauriFS'
 import { IndexLoaderData } from './Router'
 import { toast } from 'react-hot-toast'
 import { useAuthMachine } from './hooks/useAuthMachine'
+import { SettingsContext } from 'components/SettingsCommandProvider'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
@@ -83,11 +85,8 @@ export function App() {
     cmdId,
     setCmdId,
     formatCode,
-    debugPanel,
-    theme,
     openPanes,
     setOpenPanes,
-    onboardingStatus,
     didDragInStream,
     setDidDragInStream,
     setStreamDimensions,
@@ -122,17 +121,17 @@ export function App() {
     cmdId: s.cmdId,
     setCmdId: s.setCmdId,
     formatCode: s.formatCode,
-    debugPanel: s.debugPanel,
     addKCLError: s.addKCLError,
-    theme: s.theme,
     openPanes: s.openPanes,
     setOpenPanes: s.setOpenPanes,
-    onboardingStatus: s.onboardingStatus,
     didDragInStream: s.didDragInStream,
     setDidDragInStream: s.setDidDragInStream,
     setStreamDimensions: s.setStreamDimensions,
     streamDimensions: s.streamDimensions,
   }))
+  const { showDebugPanel, theme, onboardingStatus } =
+    useContext(SettingsContext)
+
   const [token] = useAuthMachine((s) => s?.context?.token)
 
   const editorTheme = theme === Themes.System ? getSystemTheme() : theme
@@ -510,7 +509,7 @@ export function App() {
         </div>
       </Resizable>
       <Stream className="absolute inset-0 z-0" />
-      {debugPanel && (
+      {showDebugPanel && (
         <DebugPanel
           title="Debug"
           className={
