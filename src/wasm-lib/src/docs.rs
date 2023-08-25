@@ -32,8 +32,6 @@ pub struct StdLibFnArg {
     pub name: String,
     /// The type of the argument.
     pub type_: String,
-    /// The description of the argument.
-    pub description: String,
     /// The schema of the argument.
     pub schema: schemars::schema::Schema,
     /// If the argument is required.
@@ -48,11 +46,7 @@ impl StdLibFnArg {
 
     #[allow(dead_code)]
     pub fn description(&self) -> Option<String> {
-        if self.description.is_empty() {
-            get_description_string_from_schema(&self.schema)
-        } else {
-            Some(self.description.clone())
-        }
+        get_description_string_from_schema(&self.schema)
     }
 }
 

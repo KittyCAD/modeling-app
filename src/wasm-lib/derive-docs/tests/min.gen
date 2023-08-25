@@ -29,7 +29,6 @@ impl crate::docs::StdLibFn for Min {
         vec![crate::docs::StdLibFnArg {
             name: "args".to_string(),
             type_: "Vec<number>".to_string(),
-            description: "".to_string(),
             schema: <Vec<f64>>::json_schema(&mut generator),
             required: true,
         }]
@@ -42,7 +41,6 @@ impl crate::docs::StdLibFn for Min {
         crate::docs::StdLibFnArg {
             name: "".to_string(),
             type_: "number".to_string(),
-            description: "".to_string(),
             schema: f64::json_schema(&mut generator),
             required: true,
         }

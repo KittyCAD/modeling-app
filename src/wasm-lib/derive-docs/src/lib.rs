@@ -242,7 +242,6 @@ fn do_stdlib_inner(
                 #docs_crate::StdLibFnArg {
                     name: #arg_name.to_string(),
                     type_: #ty_string.to_string(),
-                    description: "".to_string(),
                     schema: #schema,
                     required: true,
                 }
@@ -264,7 +263,6 @@ fn do_stdlib_inner(
         #docs_crate::StdLibFnArg {
             name: "".to_string(),
             type_: #ret_ty_string.to_string(),
-            description: "".to_string(),
             schema: #ret_ty_ident::json_schema(&mut generator),
             required: true,
         }
