@@ -158,18 +158,32 @@ export class EngineConnection {
         return
       }
 
-      if (event.data.toLocaleLowerCase().startsWith('error')) {
-        console.error('something went wrong: ', event.data)
+      const message: WebSocketResponse = JSON.parse(event.data)
+
+      if (!message.success) {
+        if (message.request_id) {
+          console.error(`Error in response to request ${message.request_id}:`)
+        } else {
+          console.error(`Error from server:`)
+        }
+        message.errors.forEach((error) => {
+          console.error(` - ${error.error_code}: ${error.message}`)
+        })
         return
       }
 
-      const message: WebSocketResponse = JSON.parse(event.data)
+      let resp = message.resp
+      if (!resp) {
+        // If there's no body to the response, we can bail here.
+        return
+      }
 
-      if (
-        message.type === 'sdp_answer' &&
-        message?.answer &&
-        message?.answer?.type !== 'unspecified'
-      ) {
+      if (resp.type === 'sdp_answer') {
+        let answer = resp.data?.answer
+        if (!answer) {
+          return
+        }
+
         if (this.pc?.signalingState !== 'stable') {
           // If the connection is stable, we shouldn't bother updating the
           // SDP, since we have a stable connection to the backend. If we
@@ -177,24 +191,26 @@ export class EngineConnection {
           // tore down.
           this.pc?.setRemoteDescription(
             new RTCSessionDescription({
-              type: message.answer.type,
-              sdp: message.answer.sdp,
+              type: answer.type,
+              sdp: answer.sdp,
             })
           )
         }
-      } else if (message.type === 'trickle_ice') {
-        this.pc?.addIceCandidate(message.candidate as RTCIceCandidateInit)
-      } else if (message.type === 'ice_server_info' && this.pc) {
+      } else if (resp.type === 'trickle_ice') {
+        let candidate = resp.data?.candidate
+        this.pc?.addIceCandidate(candidate as RTCIceCandidateInit)
+      } else if (resp.type === 'ice_server_info' && this.pc) {
         console.log('received ice_server_info')
+        let ice_servers = resp.data?.ice_servers
 
-        if (message?.ice_servers?.length > 0) {
+        if (ice_servers?.length > 0) {
           // When we set the Configuration, we want to always force
           // iceTransportPolicy to 'relay', since we know the topology
           // of the ICE/STUN/TUN server and the engine. We don't wish to
           // talk to the engine in any configuration /other/ than relay
           // from a infra POV.
           this.pc.setConfiguration({
-            iceServers: message.ice_servers,
+            iceServers: ice_servers,
             iceTransportPolicy: 'relay',
           })
         } else {
@@ -215,13 +231,7 @@ export class EngineConnection {
 
         this.pc.addEventListener('icecandidate', (event) => {
           if (!this.pc || !this.websocket) return
-          if (event.candidate === null) {
-            // console.log('sent sdp_offer')
-            // this.send({
-            //   type: 'sdp_offer',
-            //   offer: this.pc.localDescription,
-            // })
-          } else {
+          if (event.candidate !== null) {
             console.log('sending trickle ice candidate')
             const { candidate } = event
             this.send({
@@ -390,14 +400,8 @@ export class EngineCommandManager {
             // Pass this to our export function.
             exportSave(event.data)
           } else {
-            if (event.data.toLocaleLowerCase().startsWith('error')) {
-              // Errors are not JSON encoded; if we have an error we can bail
-              // here; debugging the error to the console happens in the core
-              // engine code.
-              return
-            }
             const message: WebSocketResponse = JSON.parse(event.data)
-            if (message.type === 'modeling') {
+            if (message.resp?.type === 'modeling') {
               this.handleModelingCommand(message)
             }
           }
@@ -419,6 +423,9 @@ export class EngineCommandManager {
     this.engineConnection?.connect()
   }
   handleModelingCommand(message: WebSocketResponse) {
+    // TODO(paultag): This is broken due to the latest round of JSON
+    // schema changes.
+
     if (message.type !== 'modeling') {
       return
     }
