@@ -2,474 +2,509 @@
 
 # KCL Standard Library
 
-## min
+## Table of Contents
+
+* [Functions](#functions)
+	* [min](#min)
+	* [legLen](#legLen)
+	* [legAngX](#legAngX)
+	* [legAngY](#legAngY)
+	* [extrude](#extrude)
+	* [getExtrudeWallTransform](#getExtrudeWallTransform)
+	* [segEndX](#segEndX)
+	* [segEndY](#segEndY)
+	* [lastSegX](#lastSegX)
+	* [lastSegY](#lastSegY)
+	* [segLen](#segLen)
+	* [segAng](#segAng)
+	* [angleToMatchLengthX](#angleToMatchLengthX)
+	* [angleToMatchLengthY](#angleToMatchLengthY)
+	* [lineTo](#lineTo)
+	* [line](#line)
+	* [xLineTo](#xLineTo)
+	* [xLine](#xLine)
+	* [yLineTo](#yLineTo)
+	* [yLine](#yLine)
+	* [angledLineToX](#angledLineToX)
+	* [angledLineToY](#angledLineToY)
+	* [angledLine](#angledLine)
+	* [angledLineOfXLength](#angledLineOfXLength)
+	* [angledLineOfYLength](#angledLineOfYLength)
+	* [angledLineThatIntersects](#angledLineThatIntersects)
+	* [startSketchAt](#startSketchAt)
+	* [close](#close)
+
+
+## Functions
+
+### min
 
 Returns the minimum of the given arguments.
 
 
 
-### Arguments
+#### Arguments
 
 * `Vec<f64>` - 
 
-### Returns
+#### Returns
 
 * `f64` - 
 
 
 
-## legLen
+### legLen
 
 Returns the length of the given leg.
 
 
 
-### Arguments
+#### Arguments
 
 * `f64` - 
 * `f64` - 
 
-### Returns
+#### Returns
 
 * `f64` - 
 
 
 
-## legAngX
+### legAngX
 
 Returns the angle of the given leg for x.
 
 
 
-### Arguments
+#### Arguments
 
 * `f64` - 
 * `f64` - 
 
-### Returns
+#### Returns
 
 * `f64` - 
 
 
 
-## legAngY
+### legAngY
 
 Returns the angle of the given leg for y.
 
 
 
-### Arguments
+#### Arguments
 
 * `f64` - 
 * `f64` - 
 
-### Returns
+#### Returns
 
 * `f64` - 
 
 
 
-## extrude
+### extrude
 
 Extrudes by a given amount.
 
 
 
-### Arguments
+#### Arguments
 
 * `f64` - 
 * `SketchGroup` - 
 
-### Returns
+#### Returns
 
 * `ExtrudeGroup` - 
 
 
 
-## getExtrudeWallTransform
+### getExtrudeWallTransform
 
 Returns the extrude wall transform.
 
 
 
-### Arguments
+#### Arguments
 
 * `str` - 
 * `ExtrudeGroup` - 
 
-### Returns
+#### Returns
 
 * `MemoryItem` - 
 
 
 
-## segEndX
+### segEndX
 
 Returns the segment end of x.
 
 
 
-### Arguments
+#### Arguments
 
 * `str` - 
 * `SketchGroup` - 
 
-### Returns
+#### Returns
 
 * `f64` - 
 
 
 
-## segEndY
+### segEndY
 
 Returns the segment end of y.
 
 
 
-### Arguments
+#### Arguments
 
 * `str` - 
 * `SketchGroup` - 
 
-### Returns
+#### Returns
 
 * `f64` - 
 
 
 
-## lastSegX
+### lastSegX
 
 Returns the last segment of x.
 
 
 
-### Arguments
+#### Arguments
 
 * `SketchGroup` - 
 
-### Returns
+#### Returns
 
 * `f64` - 
 
 
 
-## lastSegY
+### lastSegY
 
 Returns the last segment of y.
 
 
 
-### Arguments
+#### Arguments
 
 * `SketchGroup` - 
 
-### Returns
+#### Returns
 
 * `f64` - 
 
 
 
-## segLen
+### segLen
 
 Returns the length of the segment.
 
 
 
-### Arguments
+#### Arguments
 
 * `str` - 
 * `SketchGroup` - 
 
-### Returns
+#### Returns
 
 * `f64` - 
 
 
 
-## segAng
+### segAng
 
 Returns the angle of the segment.
 
 
 
-### Arguments
+#### Arguments
 
 * `str` - 
 * `SketchGroup` - 
 
-### Returns
+#### Returns
 
 * `f64` - 
 
 
 
-## angleToMatchLengthX
+### angleToMatchLengthX
 
 Returns the angle to match the given length for x.
 
 
 
-### Arguments
+#### Arguments
 
 * `str` - 
 * `f64` - 
 * `SketchGroup` - 
 
-### Returns
+#### Returns
 
 * `f64` - 
 
 
 
-## angleToMatchLengthY
+### angleToMatchLengthY
 
 Returns the angle to match the given length for y.
 
 
 
-### Arguments
+#### Arguments
 
 * `str` - 
 * `f64` - 
 * `SketchGroup` - 
 
-### Returns
+#### Returns
 
 * `f64` - 
 
 
 
-## lineTo
+### lineTo
 
 Draw a line to a point.
 
 
 
-### Arguments
+#### Arguments
 
 * `LineToData` - 
 * `SketchGroup` - 
 
-### Returns
+#### Returns
 
 * `SketchGroup` - 
 
 
 
-## line
+### line
 
 Draw a line.
 
 
 
-### Arguments
+#### Arguments
 
 * `LineData` - 
 * `SketchGroup` - 
 
-### Returns
+#### Returns
 
 * `SketchGroup` - 
 
 
 
-## xLineTo
+### xLineTo
 
 Draw a line to a point on the x-axis.
 
 
 
-### Arguments
+#### Arguments
 
 * `AxisLineToData` - 
 * `SketchGroup` - 
 
-### Returns
+#### Returns
 
 * `SketchGroup` - 
 
 
 
-## xLine
+### xLine
 
 Draw a line on the x-axis.
 
 
 
-### Arguments
+#### Arguments
 
 * `AxisLineData` - 
 * `SketchGroup` - 
 
-### Returns
+#### Returns
 
 * `SketchGroup` - 
 
 
 
-## yLineTo
+### yLineTo
 
 Draw a line to a point on the y-axis.
 
 
 
-### Arguments
+#### Arguments
 
 * `AxisLineToData` - 
 * `SketchGroup` - 
 
-### Returns
+#### Returns
 
 * `SketchGroup` - 
 
 
 
-## yLine
+### yLine
 
 Draw a line on the y-axis.
 
 
 
-### Arguments
+#### Arguments
 
 * `AxisLineData` - 
 * `SketchGroup` - 
 
-### Returns
+#### Returns
 
 * `SketchGroup` - 
 
 
 
-## angledLineToX
+### angledLineToX
 
 Draw an angled line to a given x coordinate.
 
 
 
-### Arguments
+#### Arguments
 
 * `AngledLineToData` - 
 * `SketchGroup` - 
 
-### Returns
+#### Returns
 
 * `SketchGroup` - 
 
 
 
-## angledLineToY
+### angledLineToY
 
 Draw an angled line to a given y coordinate.
 
 
 
-### Arguments
+#### Arguments
 
 * `AngledLineToData` - 
 * `SketchGroup` - 
 
-### Returns
+#### Returns
 
 * `SketchGroup` - 
 
 
 
-## angledLine
+### angledLine
 
 Draw an angled line.
 
 
 
-### Arguments
+#### Arguments
 
 * `AngledLineData` - 
 * `SketchGroup` - 
 
-### Returns
+#### Returns
 
 * `SketchGroup` - 
 
 
 
-## angledLineOfXLength
+### angledLineOfXLength
 
 Draw an angled line of a given x length.
 
 
 
-### Arguments
+#### Arguments
 
 * `AngledLineData` - 
 * `SketchGroup` - 
 
-### Returns
+#### Returns
 
 * `SketchGroup` - 
 
 
 
-## angledLineOfYLength
+### angledLineOfYLength
 
 Draw an angled line of a given y length.
 
 
 
-### Arguments
+#### Arguments
 
 * `AngledLineData` - 
 * `SketchGroup` - 
 
-### Returns
+#### Returns
 
 * `SketchGroup` - 
 
 
 
-## angledLineThatIntersects
+### angledLineThatIntersects
 
 Draw an angled line that intersects with a given line.
 
 
 
-### Arguments
+#### Arguments
 
 * `AngeledLineThatIntersectsData` - 
 * `SketchGroup` - 
 
-### Returns
+#### Returns
 
 * `SketchGroup` - 
 
 
 
-## startSketchAt
+### startSketchAt
 
 Start a sketch at a given point.
 
 
 
-### Arguments
+#### Arguments
 
 * `LineData` - 
 
-### Returns
+#### Returns
 
 * `SketchGroup` - 
 
 
 
-## close
+### close
 
 Close the current sketch.
 
 
 
-### Arguments
+#### Arguments
 
 * `SketchGroup` - 
 
-### Returns
+#### Returns
 
 * `SketchGroup` - 
 

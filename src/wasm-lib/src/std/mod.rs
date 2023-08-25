@@ -562,14 +562,35 @@ mod tests {
 
         buf.push_str("# KCL Standard Library\n\n");
 
-        for internal_fn in stdlib.internal_fn_names {
+        // Generate a table of contents.
+        buf.push_str("## Table of Contents\n\n");
+
+        buf.push_str("* [Functions](#functions)\n");
+
+        for internal_fn in &stdlib.internal_fn_names {
+            if internal_fn.unpublished() {
+                continue;
+            }
+
+            buf.push_str(&format!(
+                "\t* [{}](#{})\n",
+                internal_fn.name(),
+                internal_fn.name()
+            ));
+        }
+
+        buf.push_str("\n\n");
+
+        buf.push_str("## Functions\n\n");
+
+        for internal_fn in &stdlib.internal_fn_names {
             if internal_fn.unpublished() {
                 continue;
             }
 
             let mut fn_docs = String::new();
 
-            fn_docs.push_str(&format!("## {}", internal_fn.name()));
+            fn_docs.push_str(&format!("### {}", internal_fn.name()));
             if internal_fn.deprecated() {
                 fn_docs.push_str(" (deprecated)");
             }
@@ -578,12 +599,12 @@ mod tests {
             fn_docs.push_str(&format!("{}\n\n", internal_fn.summary()));
             fn_docs.push_str(&format!("{}\n\n", internal_fn.description()));
 
-            fn_docs.push_str("### Arguments\n\n");
+            fn_docs.push_str("#### Arguments\n\n");
             for arg in internal_fn.args() {
                 fn_docs.push_str(&format!("* `{}` - {}\n", arg.type_, arg.description));
             }
 
-            fn_docs.push_str("\n### Returns\n\n");
+            fn_docs.push_str("\n#### Returns\n\n");
             let return_type = internal_fn.return_value();
             fn_docs.push_str(&format!(
                 "* `{}` - {}\n",
