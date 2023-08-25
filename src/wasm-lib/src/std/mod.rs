@@ -574,7 +574,7 @@ mod tests {
 
     fn get_type_name_from_format(format: &str) -> (String, bool) {
         if format == "uuid" {
-            return (Primitive::Uuid.to_string(), false);
+            (Primitive::Uuid.to_string(), false)
         } else if format == "double" || format == "uint" {
             return (Primitive::Number.to_string(), false);
         } else {
@@ -586,7 +586,7 @@ mod tests {
         match schema {
             schemars::schema::Schema::Object(o) => {
                 if let Some(format) = &o.format {
-                    return get_type_name_from_format(&format);
+                    return get_type_name_from_format(format);
                 }
 
                 if let Some(obj_val) = &o.object {
@@ -601,11 +601,11 @@ mod tests {
                         fn_docs.push_str(&format!(
                             "\t\"{}\": {},\n",
                             prop_name,
-                            get_type_name_from_schema(&prop).0,
+                            get_type_name_from_schema(prop).0,
                         ));
                     }
 
-                    fn_docs.push_str("}");
+                    fn_docs.push('}');
 
                     return (fn_docs, true);
                 }
@@ -613,9 +613,9 @@ mod tests {
                 if let Some(array_val) = &o.array {
                     if let Some(schemars::schema::SingleOrVec::Single(items)) = &array_val.items {
                         // Let's print out the object's properties.
-                        return (format!("[{}]", get_type_name_from_schema(&items).0), false);
+                        return (format!("[{}]", get_type_name_from_schema(items).0), false);
                     } else if let Some(items) = &array_val.contains {
-                        return (format!("[{}]", get_type_name_from_schema(&items).0), false);
+                        return (format!("[{}]", get_type_name_from_schema(items).0), false);
                     }
                 }
 
@@ -624,7 +624,7 @@ mod tests {
                     if let Some(items) = &subschemas.one_of {
                         for (i, item) in items.iter().enumerate() {
                             // Let's print out the object's properties.
-                            fn_docs.push_str(&format!("{}", get_type_name_from_schema(&item).0));
+                            fn_docs.push_str(&get_type_name_from_schema(item).0.to_string());
                             if i < items.len() - 1 {
                                 fn_docs.push_str(" | ");
                             }
@@ -632,7 +632,7 @@ mod tests {
                     } else if let Some(items) = &subschemas.any_of {
                         for (i, item) in items.iter().enumerate() {
                             // Let's print out the object's properties.
-                            fn_docs.push_str(&format!("{}", get_type_name_from_schema(&item).0));
+                            fn_docs.push_str(&get_type_name_from_schema(item).0.to_string());
                             if i < items.len() - 1 {
                                 fn_docs.push_str(" | ");
                             }
@@ -644,7 +644,7 @@ mod tests {
                     return (fn_docs, true);
                 }
 
-                if let Some(schemars::schema::SingleOrVec::Single(String)) = &o.instance_type {
+                if let Some(schemars::schema::SingleOrVec::Single(_String)) = &o.instance_type {
                     return (Primitive::String.to_string(), false);
                 }
 
@@ -714,7 +714,7 @@ mod tests {
 
             fn_docs.push_str("#### Arguments\n\n");
             for arg in internal_fn.args() {
-                let (format, should_be_indented) = get_type_name_from_schema(&arg.schema);
+                let (_format, should_be_indented) = get_type_name_from_schema(&arg.schema);
                 if should_be_indented {
                     fn_docs.push_str(&format!("* `{}`\n", arg.name,));
 
@@ -733,10 +733,14 @@ mod tests {
 
             fn_docs.push_str("\n#### Returns\n\n");
             let return_type = internal_fn.return_value();
-            fn_docs.push_str(&format!(
-                "* `{}` - {}\n",
-                return_type.type_, return_type.description
-            ));
+            if return_type.description.is_empty() {
+                fn_docs.push_str(&format!("* `{}`\n", return_type.type_));
+            } else {
+                fn_docs.push_str(&format!(
+                    "* `{}` - {}\n",
+                    return_type.type_, return_type.description
+                ));
+            }
 
             fn_docs.push_str("\n\n\n");
 

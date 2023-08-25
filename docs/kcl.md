@@ -53,7 +53,7 @@ Returns the minimum of the given arguments.
 
 #### Returns
 
-* `f64` - 
+* `f64`
 
 
 
@@ -74,7 +74,7 @@ Returns the length of the given leg.
 
 #### Returns
 
-* `f64` - 
+* `f64`
 
 
 
@@ -95,7 +95,7 @@ Returns the angle of the given leg for x.
 
 #### Returns
 
-* `f64` - 
+* `f64`
 
 
 
@@ -116,7 +116,7 @@ Returns the angle of the given leg for y.
 
 #### Returns
 
-* `f64` - 
+* `f64`
 
 
 
@@ -173,7 +173,7 @@ Extrudes by a given amount.
 
 #### Returns
 
-* `ExtrudeGroup` - 
+* `ExtrudeGroup`
 
 
 
@@ -210,7 +210,7 @@ Returns the extrude wall transform.
 
 #### Returns
 
-* `ExtrudeTransform` - 
+* `ExtrudeTransform`
 
 
 
@@ -267,7 +267,7 @@ Returns the segment end of x.
 
 #### Returns
 
-* `f64` - 
+* `f64`
 
 
 
@@ -324,7 +324,7 @@ Returns the segment end of y.
 
 #### Returns
 
-* `f64` - 
+* `f64`
 
 
 
@@ -380,7 +380,7 @@ Returns the last segment of x.
 
 #### Returns
 
-* `f64` - 
+* `f64`
 
 
 
@@ -436,7 +436,7 @@ Returns the last segment of y.
 
 #### Returns
 
-* `f64` - 
+* `f64`
 
 
 
@@ -493,7 +493,7 @@ Returns the length of the segment.
 
 #### Returns
 
-* `f64` - 
+* `f64`
 
 
 
@@ -550,7 +550,7 @@ Returns the angle of the segment.
 
 #### Returns
 
-* `f64` - 
+* `f64`
 
 
 
@@ -608,7 +608,7 @@ Returns the angle to match the given length for x.
 
 #### Returns
 
-* `f64` - 
+* `f64`
 
 
 
@@ -666,7 +666,7 @@ Returns the angle to match the given length for y.
 
 #### Returns
 
-* `f64` - 
+* `f64`
 
 
 
@@ -729,7 +729,7 @@ Draw a line to a point.
 
 #### Returns
 
-* `SketchGroup` - 
+* `SketchGroup`
 
 
 
@@ -792,7 +792,7 @@ Draw a line.
 
 #### Returns
 
-* `SketchGroup` - 
+* `SketchGroup`
 
 
 
@@ -855,7 +855,7 @@ Draw a line to a point on the x-axis.
 
 #### Returns
 
-* `SketchGroup` - 
+* `SketchGroup`
 
 
 
@@ -918,7 +918,7 @@ Draw a line on the x-axis.
 
 #### Returns
 
-* `SketchGroup` - 
+* `SketchGroup`
 
 
 
@@ -981,7 +981,7 @@ Draw a line to a point on the y-axis.
 
 #### Returns
 
-* `SketchGroup` - 
+* `SketchGroup`
 
 
 
@@ -1044,7 +1044,7 @@ Draw a line on the y-axis.
 
 #### Returns
 
-* `SketchGroup` - 
+* `SketchGroup`
 
 
 
@@ -1108,7 +1108,7 @@ Draw an angled line to a given x coordinate.
 
 #### Returns
 
-* `SketchGroup` - 
+* `SketchGroup`
 
 
 
@@ -1172,7 +1172,7 @@ Draw an angled line to a given y coordinate.
 
 #### Returns
 
-* `SketchGroup` - 
+* `SketchGroup`
 
 
 
@@ -1236,7 +1236,7 @@ Draw an angled line.
 
 #### Returns
 
-* `SketchGroup` - 
+* `SketchGroup`
 
 
 
@@ -1300,7 +1300,7 @@ Draw an angled line of a given x length.
 
 #### Returns
 
-* `SketchGroup` - 
+* `SketchGroup`
 
 
 
@@ -1364,7 +1364,7 @@ Draw an angled line of a given y length.
 
 #### Returns
 
-* `SketchGroup` - 
+* `SketchGroup`
 
 
 
@@ -1429,7 +1429,7 @@ Draw an angled line that intersects with a given line.
 
 #### Returns
 
-* `SketchGroup` - 
+* `SketchGroup`
 
 
 
@@ -1455,7 +1455,7 @@ Start a sketch at a given point.
 
 #### Returns
 
-* `SketchGroup` - 
+* `SketchGroup`
 
 
 
@@ -1511,7 +1511,7 @@ Close the current sketch.
 
 #### Returns
 
-* `SketchGroup` - 
+* `SketchGroup`
 
 
 
