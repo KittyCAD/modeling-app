@@ -1,9 +1,9 @@
 //! Functions implemented for language execution.
 
-mod extrude;
-mod segment;
-mod sketch;
-mod utils;
+pub mod extrude;
+pub mod segment;
+pub mod sketch;
+pub mod utils;
 
 // TODO: Something that would be nice is if we could generate docs for Kcl based on the
 // actual stdlib functions below.
