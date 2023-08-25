@@ -1,11 +1,13 @@
 import { Diagnostic } from '@codemirror/lint'
+import { KclError as RustKclError } from '../wasm-lib/bindings/KclError'
 
+type ExtractKind<T> = T extends { kind: infer K } ? K : never
 export class KCLError {
-  kind: string | undefined
+  kind: ExtractKind<RustKclError> | 'name'
   sourceRanges: [number, number][]
   msg: string
   constructor(
-    kind: string | undefined,
+    kind: ExtractKind<RustKclError> | 'name',
     msg: string,
     sourceRanges: [number, number][]
   ) {
@@ -39,8 +41,15 @@ export class KCLTypeError extends KCLError {
 
 export class KCLUnimplementedError extends KCLError {
   constructor(msg: string, sourceRanges: [number, number][]) {
-    super('unimplemented feature', msg, sourceRanges)
+    super('unimplemented', msg, sourceRanges)
     Object.setPrototypeOf(this, KCLUnimplementedError.prototype)
+  }
+}
+
+export class KCLUnexpectedError extends KCLError {
+  constructor(msg: string, sourceRanges: [number, number][]) {
+    super('unexpected', msg, sourceRanges)
+    Object.setPrototypeOf(this, KCLUnexpectedError.prototype)
   }
 }
 

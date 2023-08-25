@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dir: ['src/wasm-lib', 'src-tauri']
+        dir: ['src/wasm-lib']
     steps:
       - uses: actions/checkout@v3
 
@@ -43,5 +43,7 @@ jobs:
       - name: Run cargo build
         run: |
           cd "${{ matrix.dir }}"
+          cargo build --all --no-default-features --features noweb
+          cargo build --all --no-default-features --features web
           cargo build --all
         shell: bash

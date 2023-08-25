@@ -39,6 +39,7 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
   const initialValues: OutputFormat = {
     type: defaultType,
     storage: 'embedded',
+    presentation: 'compact',
   }
   const formik = useFormik({
     initialValues,
@@ -81,6 +82,8 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
       closeModal()
     },
   })
+
+  const yo = formik.values
 
   return (
     <>
@@ -127,7 +130,9 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
                   id="storage"
                   name="storage"
                   onChange={formik.handleChange}
-                  value={formik.values.storage}
+                  value={
+                    'storage' in formik.values ? formik.values.storage : ''
+                  }
                   className="bg-chalkboard-20 dark:bg-chalkboard-90 w-full"
                 >
                   {type === 'gltf' && (

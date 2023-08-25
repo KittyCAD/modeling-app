@@ -1,7 +1,11 @@
 mod abstract_syntax_tree_types;
+mod docs;
+mod engine;
 mod errors;
+mod executor;
 mod export;
 mod math_parser;
 mod parser;
 mod recast;
+mod std;
 mod tokeniser;

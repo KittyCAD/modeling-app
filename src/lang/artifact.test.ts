@@ -11,51 +11,52 @@ describe('testing artifacts', () => {
 const mySketch001 = startSketchAt([0, 0])
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)
-  // |> rx(45, %) 
+  // |> rx(45, %)
 show(mySketch001)`
     const programMemory = await enginelessExecutor(parser_wasm(code))
+    // @ts-ignore
     const shown = programMemory?.return?.map(
+      // @ts-ignore
       (a) => programMemory?.root?.[a.name]
     )
     expect(shown).toEqual([
       {
         type: 'sketchGroup',
         start: {
-          type: 'base',
           to: [0, 0],
           from: [0, 0],
+          name: '',
           __geoMeta: {
-            id: '66366561-6465-4734-a463-366330356563',
+            id: expect.any(String),
             sourceRange: [21, 42],
-            pathToNode: [],
           },
         },
         value: [
           {
             type: 'toPoint',
+            name: '',
             to: [-1.59, -1.54],
             from: [0, 0],
             __geoMeta: {
               sourceRange: [48, 73],
-              id: '30366338-6462-4330-a364-303935626163',
-              pathToNode: [],
+              id: expect.any(String),
             },
           },
           {
             type: 'toPoint',
             to: [0.46, -5.82],
             from: [-1.59, -1.54],
+            name: '',
             __geoMeta: {
               sourceRange: [79, 103],
-              id: '32653334-6331-4231-b162-663334363535',
-              pathToNode: [],
+              id: expect.any(String),
             },
           },
         ],
         position: [0, 0, 0],
         rotation: [0, 0, 0, 1],
-        id: '39643164-6130-4734-b432-623638393262',
-        __meta: [{ sourceRange: [21, 42], pathToNode: [] }],
+        id: expect.any(String),
+        __meta: [{ sourceRange: [21, 42] }],
       },
     ])
   })
@@ -69,21 +70,20 @@ const mySketch001 = startSketchAt([0, 0])
   |> extrude(2, %)
 show(mySketch001)`
     const programMemory = await enginelessExecutor(parser_wasm(code))
+    // @ts-ignore
     const shown = programMemory?.return?.map(
+      // @ts-ignore
       (a) => programMemory?.root?.[a.name]
     )
     expect(shown).toEqual([
       {
         type: 'extrudeGroup',
-        id: '65383433-3839-4333-b836-343263636638',
+        id: expect.any(String),
         value: [],
         height: 2,
         position: [0, 0, 0],
         rotation: [0, 0, 0, 1],
-        __meta: [
-          { sourceRange: [127, 140], pathToNode: [] },
-          { sourceRange: [21, 42], pathToNode: [] },
-        ],
+        __meta: [{ sourceRange: [21, 42] }],
       },
     ])
   })
@@ -106,37 +106,33 @@ const sk2 = startSketchAt([0, 0])
   |> lineTo([2.5, 0], %)
   // |> transform(theTransf, %)
   |> extrude(2, %)
-  
+
 
 show(theExtrude, sk2)`
     const programMemory = await enginelessExecutor(parser_wasm(code))
+    // @ts-ignore
     const geos = programMemory?.return?.map(
+      // @ts-ignore
       ({ name }) => programMemory?.root?.[name]
     )
     expect(geos).toEqual([
       {
         type: 'extrudeGroup',
-        id: '63333330-3631-4230-b664-623132643731',
+        id: expect.any(String),
         value: [],
         height: 2,
         position: [0, 0, 0],
         rotation: [0, 0, 0, 1],
-        __meta: [
-          { sourceRange: [212, 227], pathToNode: [] },
-          { sourceRange: [13, 34], pathToNode: [] },
-        ],
+        __meta: [{ sourceRange: [13, 34] }],
       },
       {
         type: 'extrudeGroup',
-        id: '33316639-3438-4661-a334-663262383737',
+        id: expect.any(String),
         value: [],
         height: 2,
         position: [0, 0, 0],
         rotation: [0, 0, 0, 1],
-        __meta: [
-          { sourceRange: [453, 466], pathToNode: [] },
-          { sourceRange: [302, 323], pathToNode: [] },
-        ],
+        __meta: [{ sourceRange: [302, 323] }],
       },
     ])
   })

@@ -11,20 +11,43 @@ crate-type = ["cdylib"]
 anyhow = "1.0.75"
 backtrace = "0.3"
 bincode = "1.3.3"
+derive-docs = { path = "derive-docs" }
+futures = { version = "0.3.28", optional = true }
+gloo-file = { version = "0.3.0", optional = true }
 gloo-utils = "0.2.0"
+http = "0.2.9"
+httparse = { version = "1.8.0", optional = true }
+js-sys = { version = "0.3.64", optional = true }
 kittycad = { version = "0.2.15", default-features = false, features = ["js"] }
 lazy_static = "1.4.0"
+parse-display = "0.8.2"
 regex = "1.7.1"
+schemars = { version = "0.8", features = ["url", "uuid1"] }
 serde = {version = "1.0.152", features = ["derive"] }
-serde-wasm-bindgen = "0.3.0"
 serde_json = "1.0.93"
 thiserror = "1.0.47"
+tokio = { version = "1.32.0", features = ["full"], optional = true }
+tokio-tungstenite = { version = "0.20.0", optional = true }
 ts-rs = { git = "https://github.com/kittycad/ts-rs.git", branch = "serde_json", features = ["serde-json-impl", "uuid-impl"] }
+uuid = { version = "1.4.1", features = ["v4", "js", "serde"] }
 wasm-bindgen = "0.2.87"
+wasm-bindgen-futures = "0.4.37"
 
 [profile.release]
 panic = "abort"
 debug = true
 
 [dev-dependencies]
+expectorate = "1.0.7"
 pretty_assertions = "1.4.0"
+tokio = { version = "1.32.0", features = ["rt-multi-thread", "macros", "time"] }
+
+[features]
+default = ["web"]
+web = ["dep:gloo-file", "dep:js-sys"]
+noweb = ["dep:futures", "dep:httparse", "dep:tokio", "dep:tokio-tungstenite"]
+
+[workspace]
+members = [
+	"derive-docs"
+]

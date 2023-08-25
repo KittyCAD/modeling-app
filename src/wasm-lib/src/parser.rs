@@ -1,11 +1,11 @@
 use std::collections::HashMap;
 
 use crate::abstract_syntax_tree_types::{
-    ArrayExpression, BinaryExpression, BinaryPart, BlockStatement, BodyItem, CallExpression,
-    ExpressionStatement, FunctionExpression, Identifier, Literal, LiteralIdentifier,
-    MemberExpression, MemberObject, NoneCodeMeta, NoneCodeNode, ObjectExpression, ObjectKeyInfo,
-    ObjectProperty, PipeExpression, PipeSubstitution, Program, ReturnStatement, UnaryExpression,
-    Value, VariableDeclaration, VariableDeclarator,
+    ArrayExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression, ExpressionStatement,
+    FunctionExpression, Identifier, Literal, LiteralIdentifier, MemberExpression, MemberObject,
+    NoneCodeMeta, NoneCodeNode, ObjectExpression, ObjectKeyInfo, ObjectProperty, PipeExpression,
+    PipeSubstitution, Program, ReturnStatement, UnaryExpression, Value, VariableDeclaration,
+    VariableDeclarator,
 };
 use crate::errors::{KclError, KclErrorDetails};
 use crate::math_parser::parse_expression;
@@ -34,13 +34,13 @@ pub fn make_literal(tokens: &[Token], index: usize) -> Result<Literal, KclError>
                 serde_json::Value::Number(n)
             } else {
                 return Err(KclError::Syntax(KclErrorDetails {
-                    source_ranges: vec![[token.start as i32, token.end as i32]],
+                    source_ranges: vec![token.into()],
                     message: format!("Invalid float: {}", token.value),
                 }));
             }
         } else {
             return Err(KclError::Syntax(KclErrorDetails {
-                source_ranges: vec![[token.start as i32, token.end as i32]],
+                source_ranges: vec![token.into()],
                 message: format!("Invalid integer: {}", token.value),
             }));
         }
@@ -165,7 +165,7 @@ pub fn find_closing_brace(
         search_opening_brace = &current_token.value;
         if !["(", "{", "["].contains(&search_opening_brace) {
             return Err(KclError::Syntax(KclErrorDetails {
-                source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
+                source_ranges: vec![current_token.into()],
                 message: format!(
                     "expected to be started on a opening brace ( {{ [, instead found '{}'",
                     search_opening_brace
@@ -380,10 +380,7 @@ fn collect_object_keys(
             collect_object_keys(tokens, key_token.index, Some(new_previous_keys))
         } else {
             Err(KclError::Unimplemented(KclErrorDetails {
-                source_ranges: vec![[
-                    period_or_opening_bracket_token.start as i32,
-                    period_or_opening_bracket_token.end as i32,
-                ]],
+                source_ranges: vec![period_or_opening_bracket_token.clone().into()],
                 message: format!(
                     "expression with token type {:?}",
                     period_or_opening_bracket_token.token_type
@@ -508,7 +505,7 @@ fn make_value(tokens: &[Token], index: usize) -> Result<ValueReturn, KclError> {
                     }
                 } else {
                     return Err(KclError::Unimplemented(KclErrorDetails {
-                        source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
+                        source_ranges: vec![current_token.into()],
                         message: format!(
                             "expression with token type {:?}",
                             current_token.token_type
@@ -593,16 +590,16 @@ fn make_value(tokens: &[Token], index: usize) -> Result<ValueReturn, KclError> {
                     last_index: function_expression.last_index,
                 })
             } else {
-                Err(KclError::Unimplemented(KclErrorDetails {
-                    source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
+                return Err(KclError::Unimplemented(KclErrorDetails {
+                    source_ranges: vec![current_token.into()],
                     message: "expression with braces".to_string(),
-                }))
+                }));
             }
         } else {
-            Err(KclError::Unimplemented(KclErrorDetails {
-                source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
+            return Err(KclError::Unimplemented(KclErrorDetails {
+                source_ranges: vec![current_token.into()],
                 message: "expression with braces".to_string(),
-            }))
+            }));
         };
     }
 
@@ -614,9 +611,9 @@ fn make_value(tokens: &[Token], index: usize) -> Result<ValueReturn, KclError> {
         });
     }
 
-    Err(KclError::Unimplemented(KclErrorDetails {
-        source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
-        message: format!("expression with token type {:?}", current_token.token_type),
+    Err(KclError::Unexpected(KclErrorDetails {
+        source_ranges: vec![current_token.into()],
+        message: format!("{:?}", current_token.token_type),
     }))
 }
 
@@ -645,7 +642,7 @@ fn make_array_elements(
         let is_comma = next_token_token.token_type == TokenType::Comma;
         if !is_closing_brace && !is_comma {
             return Err(KclError::Syntax(KclErrorDetails {
-                source_ranges: vec![[next_token_token.start as i32, next_token_token.end as i32]],
+                source_ranges: vec![next_token_token.clone().into()],
                 message: format!(
                     "Expected a comma or closing brace, found {:?}",
                     next_token_token.value
@@ -662,10 +659,7 @@ fn make_array_elements(
         make_array_elements(tokens, next_call_index, _previous_elements)
     } else {
         Err(KclError::Unimplemented(KclErrorDetails {
-            source_ranges: vec![[
-                first_element_token.start as i32,
-                first_element_token.end as i32,
-            ]],
+            source_ranges: vec![first_element_token.into()],
             message: "no next token".to_string(),
         }))
     }
@@ -720,7 +714,7 @@ fn make_pipe_body(
         last_index = val.last_index;
     } else {
         return Err(KclError::Syntax(KclErrorDetails {
-            source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
+            source_ranges: vec![current_token.into()],
             message: format!(
                 "Expected a pipe value, found {:?}",
                 current_token.token_type
@@ -899,13 +893,10 @@ fn make_arguments(
                         make_arguments(tokens, next_comma_or_brace_token_index, _previous_args)
                     }
                 } else {
-                    Err(KclError::Unimplemented(KclErrorDetails {
-                        source_ranges: vec![[
-                            argument_token_token.start as i32,
-                            argument_token_token.end as i32,
-                        ]],
+                    return Err(KclError::Unimplemented(KclErrorDetails {
+                        source_ranges: vec![argument_token_token.clone().into()],
                         message: format!("Unexpected token {} ", argument_token_token.value),
-                    }))
+                    }));
                 };
             }
 
@@ -929,27 +920,18 @@ fn make_arguments(
             }
 
             Err(KclError::Unimplemented(KclErrorDetails {
-                source_ranges: vec![[
-                    argument_token_token.start as i32,
-                    argument_token_token.end as i32,
-                ]],
+                source_ranges: vec![argument_token_token.clone().into()],
                 message: format!("Unexpected token {} ", argument_token_token.value),
             }))
         } else {
             Err(KclError::Unimplemented(KclErrorDetails {
-                source_ranges: vec![[
-                    brace_or_comma_token.start as i32,
-                    brace_or_comma_token.end as i32,
-                ]],
+                source_ranges: vec![brace_or_comma_token.into()],
                 message: format!("Unexpected token {} ", brace_or_comma_token.value),
             }))
         }
     } else {
         Err(KclError::Unimplemented(KclErrorDetails {
-            source_ranges: vec![[
-                brace_or_comma_token.start as i32,
-                brace_or_comma_token.end as i32,
-            ]],
+            source_ranges: vec![brace_or_comma_token.into()],
             message: format!("Unexpected token {} ", brace_or_comma_token.value),
         }))
     }
@@ -1045,7 +1027,7 @@ fn make_variable_declarators(
         })
     } else {
         Err(KclError::Unimplemented(KclErrorDetails {
-            source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
+            source_ranges: vec![current_token.clone().into()],
             message: format!("Unexpected token {} ", current_token.value),
         }))
     }
@@ -1113,10 +1095,7 @@ fn make_params(
         make_params(tokens, next_brace_or_comma_token.index, _previous_params)
     } else {
         Err(KclError::Unimplemented(KclErrorDetails {
-            source_ranges: vec![[
-                brace_or_comma_token.start as i32,
-                brace_or_comma_token.end as i32,
-            ]],
+            source_ranges: vec![brace_or_comma_token.into()],
             message: format!("Unexpected token {} ", brace_or_comma_token.value),
         }))
     }
@@ -1158,7 +1137,7 @@ fn make_unary_expression(
                 }
                 _ => {
                     return Err(KclError::Syntax(KclErrorDetails {
-                        source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
+                        source_ranges: vec![current_token.into()],
                         message: "Invalid argument for unary expression".to_string(),
                     }));
                 }
@@ -1205,7 +1184,7 @@ fn make_expression_statement(
         })
     } else {
         Err(KclError::Unimplemented(KclErrorDetails {
-            source_ranges: vec![[current_token.start as i32, current_token.end as i32]],
+            source_ranges: vec![current_token.into()],
             message: "make_expression_statement".to_string(),
         }))
     }
@@ -1266,10 +1245,7 @@ fn make_object_properties(
         make_object_properties(tokens, next_key_index, _previous_properties)
     } else {
         Err(KclError::Unimplemented(KclErrorDetails {
-            source_ranges: vec![[
-                property_key_token.start as i32,
-                property_key_token.end as i32,
-            ]],
+            source_ranges: vec![property_key_token.into()],
             message: "make_object_properties".to_string(),
         }))
     }
@@ -1470,13 +1446,13 @@ fn make_body(
     }
 
     Err(KclError::Syntax(KclErrorDetails {
-        source_ranges: vec![[token.start as i32, token.end as i32]],
+        source_ranges: vec![token.into()],
         message: "unexpected token".to_string(),
     }))
 }
 
 struct BlockStatementResult {
-    block: BlockStatement,
+    block: Program,
     last_index: usize,
 }
 
@@ -1505,7 +1481,7 @@ fn make_block_statement(tokens: &[Token], index: usize) -> Result<BlockStatement
         )?
     };
     Ok(BlockStatementResult {
-        block: BlockStatement {
+        block: Program {
             start: opening_curly.start,
             end: tokens[body.last_index].end,
             body: body.body,
@@ -1565,18 +1541,10 @@ pub fn abstract_syntax_tree(tokens: &[Token]) -> Result<Program, KclError> {
 }
 
 #[wasm_bindgen]
-extern "C" {
-    // Use `js_namespace` here to bind `console.log(..)` instead of just
-    // `log(..)`
-    #[wasm_bindgen(js_namespace = console)]
-    fn log(s: &str);
-}
-
-#[wasm_bindgen]
 pub fn parse_js(js: &str) -> Result<JsValue, String> {
     let tokens = lexer(js);
     let program = abstract_syntax_tree(&tokens).map_err(String::from)?;
-    // The  serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
+    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
     JsValue::from_serde(&program).map_err(|e| e.to_string())
 }

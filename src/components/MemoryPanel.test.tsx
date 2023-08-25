@@ -14,12 +14,12 @@ describe('processMemory', () => {
     return a - 2
   }
   const otherVar = myFn(5)
-  
-  const theExtrude = startSketchAt([0, 0]) 
+
+  const theExtrude = startSketchAt([0, 0])
     |> lineTo([-2.4, myVar], %)
     |> lineTo([-0.76, otherVar], %)
     |> extrude(4, %)
-  
+
   const theSketch = startSketchAt([0, 0])
     |> lineTo([-3.35, 0.17], %)
     |> lineTo([0.98, 5.16], %)
@@ -28,30 +28,20 @@ describe('processMemory', () => {
   show(theExtrude, theSketch)`
     const ast = parser_wasm(code)
     const programMemory = await enginelessExecutor(ast, {
-      root: {
-        log: {
-          type: 'userVal',
-          value: (a: any) => {
-            console.log('raw log', a)
-          },
-          __meta: [],
-        },
-      },
-      pendingMemory: {},
+      root: {},
     })
     const output = processMemory(programMemory)
     expect(output.myVar).toEqual(5)
-    expect(output.myFn).toEqual('__function__')
     expect(output.otherVar).toEqual(3)
     expect(output).toEqual({
       myVar: 5,
-      myFn: '__function__',
+      myFn: undefined,
       otherVar: 3,
       theExtrude: [],
       theSketch: [
-        { type: 'toPoint', to: [-3.35, 0.17], from: [0, 0] },
-        { type: 'toPoint', to: [0.98, 5.16], from: [-3.35, 0.17] },
-        { type: 'toPoint', to: [2.15, 4.32], from: [0.98, 5.16] },
+        { type: 'toPoint', to: [-3.35, 0.17], from: [0, 0], name: '' },
+        { type: 'toPoint', to: [0.98, 5.16], from: [-3.35, 0.17], name: '' },
+        { type: 'toPoint', to: [2.15, 4.32], from: [0.98, 5.16], name: '' },
       ],
     })
   })
