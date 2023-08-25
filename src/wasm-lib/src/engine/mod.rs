@@ -3,8 +3,10 @@
 use wasm_bindgen::prelude::*;
 
 #[cfg(feature = "noweb")]
+#[cfg(not(test))]
 pub mod conn_noweb;
 #[cfg(feature = "noweb")]
+#[cfg(not(test))]
 pub use conn_noweb::EngineConnection;
 
 #[cfg(feature = "web")]
@@ -14,10 +16,10 @@ pub mod conn_web;
 #[cfg(not(test))]
 pub use conn_web::EngineConnection;
 
-//#[cfg(test)]
-//pub mod conn_mock;
-//#[cfg(test)]
-//pub use conn_mock::EngineConnection;
+#[cfg(test)]
+pub mod conn_mock;
+#[cfg(test)]
+pub use conn_mock::EngineConnection;
 
 use crate::executor::SourceRange;
 
