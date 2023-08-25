@@ -12,12 +12,8 @@ use crate::errors::{KclError, KclErrorDetails};
 
 #[derive(Debug)]
 pub struct EngineConnection {
-    tcp_write: futures::stream::SplitSink<
-        tokio_tungstenite::WebSocketStream<
-            tokio_tungstenite::MaybeTlsStream<tokio::net::TcpStream>,
-        >,
-        WsMsg,
-    >,
+    tcp_write:
+        futures::stream::SplitSink<tokio_tungstenite::WebSocketStream<reqwest::Upgraded>, WsMsg>,
     tcp_read_handle: tokio::task::JoinHandle<Result<()>>,
     export_notifier: Arc<tokio::sync::Notify>,
 }
@@ -30,11 +26,7 @@ impl Drop for EngineConnection {
 }
 
 pub struct TcpRead {
-    stream: futures::stream::SplitStream<
-        tokio_tungstenite::WebSocketStream<
-            tokio_tungstenite::MaybeTlsStream<tokio::net::TcpStream>,
-        >,
-    >,
+    stream: futures::stream::SplitStream<tokio_tungstenite::WebSocketStream<reqwest::Upgraded>>,
 }
 
 impl TcpRead {
@@ -51,12 +43,7 @@ impl TcpRead {
 }
 
 impl EngineConnection {
-    pub async fn new(
-        conn_str: &str,
-        auth_token: &str,
-        origin: &str,
-        export_dir: &str,
-    ) -> Result<EngineConnection> {
+    pub async fn new(ws: reqwest::Upgraded, export_dir: &str) -> Result<EngineConnection> {
         // Make sure the export directory exists and that it is a directory.
         let export_dir = std::path::Path::new(export_dir).to_owned();
         if !export_dir.exists() {
@@ -70,20 +57,12 @@ impl EngineConnection {
             );
         }
 
-        let method = http::Method::GET.to_string();
-        let key = tokio_tungstenite::tungstenite::handshake::client::generate_key();
-
-        let token = format!("Bearer {}", auth_token);
-        let mut headers = websocket_headers(&token, &key, origin);
-
-        // Establish a websocket connection.
-        let (ws_stream, _) = tokio_tungstenite::connect_async(httparse::Request {
-            method: Some(&method),
-            path: Some(conn_str),
-            headers: &mut headers,
-            version: Some(1), // HTTP/1.1
-        })
-        .await?;
+        let ws_stream = tokio_tungstenite::WebSocketStream::from_raw_socket(
+            ws,
+            tokio_tungstenite::tungstenite::protocol::Role::Client,
+            None,
+        )
+        .await;
 
         let (tcp_write, tcp_read) = ws_stream.split();
 
@@ -165,40 +144,6 @@ impl EngineConnection {
         })?;
         Ok(())
     }
-}
-
-/// Headers for starting a websocket session with api-deux.
-fn websocket_headers<'a>(
-    token: &'a str,
-    key: &'a str,
-    origin: &'a str,
-) -> [httparse::Header<'a>; 6] {
-    [
-        httparse::Header {
-            name: "Authorization",
-            value: token.as_bytes(),
-        },
-        httparse::Header {
-            name: "Connection",
-            value: b"Upgrade",
-        },
-        httparse::Header {
-            name: "Upgrade",
-            value: b"websocket",
-        },
-        httparse::Header {
-            name: "Sec-WebSocket-Version",
-            value: b"13",
-        },
-        httparse::Header {
-            name: "Sec-WebSocket-Key",
-            value: key.as_bytes(),
-        },
-        httparse::Header {
-            name: "Host",
-            value: origin.as_bytes(),
-        },
-    ]
 }
 
 #[cfg(test)]

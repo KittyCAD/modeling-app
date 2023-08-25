@@ -687,13 +687,7 @@ mod tests {
         let tokens = crate::tokeniser::lexer(code);
         let program = crate::parser::abstract_syntax_tree(&tokens)?;
         let mut mem: ProgramMemory = Default::default();
-        let mut engine = EngineConnection::new(
-            "wss://api.dev.kittycad.io/ws/modeling/commands?webrtc=false",
-            std::env::var("KITTYCAD_API_TOKEN").unwrap().as_str(),
-            "modeling-app-tests",
-            "/tmp/",
-        )
-        .await?;
+        let mut engine = EngineConnection::new().await?;
         let memory = execute(program, &mut mem, BodyType::Root, &mut engine)?;
 
         Ok(memory)

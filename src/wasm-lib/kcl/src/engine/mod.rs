@@ -41,22 +41,6 @@ impl EngineManager {
         }
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
-    #[wasm_bindgen(constructor)]
-    pub async fn new(
-        conn_str: &str,
-        auth_token: &str,
-        origin: &str,
-        export_dir: &str,
-    ) -> EngineManager {
-        EngineManager {
-            // TODO: fix unwrap.
-            connection: EngineConnection::new(conn_str, auth_token, origin, export_dir)
-                .await
-                .unwrap(),
-        }
-    }
-
     pub fn send_modeling_cmd(&mut self, id_str: &str, cmd_str: &str) -> Result<(), String> {
         let id = uuid::Uuid::parse_str(id_str).map_err(|e| e.to_string())?;
         let cmd = serde_json::from_str(cmd_str).map_err(|e| e.to_string())?;
