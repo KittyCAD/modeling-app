@@ -81,7 +81,7 @@ const CommandBar = () => {
     // If we have subcommands and have not yet gathered all the
     // data required from them, set the selected command to the
     // current command and increment the subcommand index
-    if (selectedCommand === null) {
+    if (selectedCommand === null && 'meta' in entry.item && entry.item.meta) {
       setSelectedCommand(entry)
       setSubCommandIndex(0)
       setQuery('')
@@ -90,11 +90,10 @@ const CommandBar = () => {
 
     const { item } = entry
     // If we have just selected a command with no subcommands, run it
-    if (
-      'callback' in item &&
-      item.callback !== undefined &&
-      !('meta' in item)
-    ) {
+    const isCommandWithoutSubcommands =
+      'callback' in item && !('meta' in item && item.meta)
+    if (isCommandWithoutSubcommands) {
+      if (item.callback === undefined) return
       item.callback()
       clearState()
       return

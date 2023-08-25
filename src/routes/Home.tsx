@@ -1,4 +1,4 @@
-import { FormEvent, useCallback, useContext, useEffect } from 'react'
+import { FormEvent, useContext } from 'react'
 import { removeDir, renameFile } from '@tauri-apps/api/fs'
 import {
   createNewProject,
@@ -18,10 +18,7 @@ import { Link } from 'react-router-dom'
 import { ProjectWithEntryPointMetadata, HomeLoaderData } from '../Router'
 import Loading from '../components/Loading'
 import { useMachine } from '@xstate/react'
-import {
-  homeCommandMeta,
-  homeMachine,
-} from '../lib/homeMachine'
+import { homeCommandMeta, homeMachine } from '../lib/homeMachine'
 import { ContextFrom, EventFrom } from 'xstate'
 import { paths } from '../Router'
 import {
@@ -30,7 +27,7 @@ import {
   getSortIcon,
 } from '../lib/sorting'
 import { CommandsContext } from '../components/CommandBar'
-import { createCommand, Command } from '../lib/commands'
+import useStateMachineCommands from '../hooks/useStateMachineCommands'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
@@ -125,31 +122,14 @@ const Home = () => {
 
   const isSortByModified = sort?.includes('modified') || !sort || sort === null
 
-  const createHomeCommand = useCallback(
-    (type: EventFrom<typeof homeMachine>['type']) => {
-      return createCommand<typeof homeMachine>({
-        type,
-        state,
-        send,
-        commandBarMeta: homeCommandMeta,
-      })
-    },
-    [state, send]
-  )
-
-  useEffect(() => {
-    const newCommands = state.nextEvents
-      .filter((e) => !['done.', 'error.'].some((n) => e.includes(n)))
-      .map(createHomeCommand) as Command[]
-
-    console.log('newCommands', newCommands)
-
-    setCommands(newCommands)
-
-    return () => {
-      setCommands(commands.filter((c) => c.owner !== 'home'))
-    }
-  }, [state])
+  useStateMachineCommands<typeof homeMachine>({
+    commands,
+    setCommands,
+    send,
+    state,
+    commandBarMeta: homeCommandMeta,
+    owner: 'home',
+  })
 
   async function handleRenameProject(
     e: FormEvent<HTMLFormElement>,

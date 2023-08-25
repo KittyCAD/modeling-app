@@ -1,4 +1,3 @@
-import { S } from '@tauri-apps/api/dialog-20ff401c'
 import { AnyStateMachine, EventFrom, StateFrom } from 'xstate'
 
 type InitialCommandBarMetaArg = {
@@ -35,17 +34,19 @@ export type SubCommand = {
 interface CommandBarArgs<T extends AnyStateMachine> {
   type: EventFrom<T>['type']
   state: StateFrom<T>
-  commandBarMeta: CommandBarMeta
+  commandBarMeta?: CommandBarMeta
   send: Function
+  owner: string
 }
 
-export function createCommand<T extends AnyStateMachine>({
+export function createMachineCommand<T extends AnyStateMachine>({
   type,
   state,
   commandBarMeta,
   send,
+  owner,
 }: CommandBarArgs<T>): Command {
-  const lookedUpMeta = commandBarMeta[type]
+  const lookedUpMeta = commandBarMeta && commandBarMeta[type]
   let replacedArgs
 
   if (lookedUpMeta) {
@@ -86,9 +87,13 @@ export function createCommand<T extends AnyStateMachine>({
 
   return {
     name: type,
-    owner: 'home',
+    owner,
     callback: (data: EventFrom<T, typeof type>) => {
-      send(type, { data })
+      if (data !== undefined && data !== null) {
+        send(type, { data })
+      } else {
+        send(type)
+      }
     },
     meta: meta as any,
   }
