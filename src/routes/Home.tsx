@@ -31,7 +31,8 @@ import { Command, CommandsContext } from '../components/CommandBar'
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
 const Home = () => {
-  const { setCommands, setCommandBarOpen } = useContext(CommandsContext)
+  const { commands, setCommands, setCommandBarOpen } =
+    useContext(CommandsContext)
   const navigate = useNavigate()
   const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
   const { defaultDir, defaultProjectName } = useStore((s) => ({
@@ -132,8 +133,16 @@ const Home = () => {
 
           const options =
             !optionsFromContext || typeof optionsFromContext === 'string'
-              ? [{ name: optionsFromContext }]
-              : optionsFromContext.map((o) => ({ name: o.name || '' }))
+              ? [
+                  {
+                    name: optionsFromContext,
+                    description: arg.description || '',
+                  },
+                ]
+              : optionsFromContext.map((o) => ({
+                  name: o.name || '',
+                  description: arg.description || '',
+                }))
 
           return {
             ...arg,
@@ -154,6 +163,7 @@ const Home = () => {
 
       return {
         name: type,
+        owner: 'home',
         callback: (data: EventFrom<typeof homeMachine, typeof type>) => {
           send(type, { data })
         },
@@ -168,7 +178,13 @@ const Home = () => {
       .filter((e) => !['done.', 'error.'].some((n) => e.includes(n)))
       .map(createCommand) as Command[]
 
+    console.log('newCommands', newCommands)
+
     setCommands(newCommands)
+
+    return () => {
+      setCommands(commands.filter((c) => c.owner !== 'home'))
+    }
   }, [state])
 
   async function handleRenameProject(

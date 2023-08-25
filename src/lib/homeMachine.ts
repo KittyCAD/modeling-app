@@ -1,13 +1,28 @@
 import { assign, createMachine } from 'xstate'
 import { ProjectWithEntryPointMetadata } from '../Router'
 
-export const commandbarMeta = {
+type InitialCommandBarMetaArg = {
+  name: string
+  type: 'string' | 'select'
+  description?: string
+  options: string
+}
+
+type CommandBarMeta = {
+  [key: string]: {
+    displayValue: (args: string[]) => string
+    args: InitialCommandBarMetaArg[]
+  }
+}
+
+export const commandbarMeta: CommandBarMeta = {
   'Create project': {
     displayValue: (args: string[]) => `Create project "${args[0]}"`,
     args: [
       {
         name: 'name',
         type: 'string',
+        description: '(default)',
         options: 'defaultProjectName',
       },
     ],
@@ -44,6 +59,7 @@ export const commandbarMeta = {
       {
         name: 'newName',
         type: 'string',
+        description: '(default)',
         options: 'defaultProjectName',
       },
     ],

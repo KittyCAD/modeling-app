@@ -12,6 +12,7 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons'
 import Fuse from 'fuse.js'
 
 export type Command = {
+  owner: string
   name: string
   callback: Function
   meta?: {
@@ -28,7 +29,7 @@ export type SubCommand = {
 }
 
 export type SortedCommand = {
-  item: Partial<Command> & { name: string }
+  item: Partial<Command | SubCommand> & { name: string }
 }
 
 export const CommandsContext = createContext(
@@ -57,11 +58,13 @@ const CommandBar = () => {
   // if the subcommand index is null, we're not in a subcommand
   const inSubCommand =
     selectedCommand &&
+    'meta' in selectedCommand.item &&
     selectedCommand.item.meta?.args !== undefined &&
     subCommandIndex !== undefined
-  const currentSubCommand = inSubCommand
-    ? selectedCommand.item.meta?.args[subCommandIndex]
-    : undefined
+  const currentSubCommand =
+    inSubCommand && 'meta' in selectedCommand.item
+      ? selectedCommand.item.meta?.args[subCommandIndex]
+      : undefined
 
   const [query, setQuery] = useState('')
 
@@ -74,7 +77,9 @@ const CommandBar = () => {
         : currentSubCommand.options
       : commands
 
-  const fuse = new Fuse(availableCommands || [], { keys: ['name'] })
+  const fuse = new Fuse(availableCommands || [], {
+    keys: ['name', 'description'],
+  })
 
   const filteredCommands = query
     ? fuse.search(query)
@@ -101,7 +106,11 @@ const CommandBar = () => {
 
     const { item } = entry
     // If we have just selected a command with no subcommands, run it
-    if (item.callback && !item.meta) {
+    if (
+      'callback' in item &&
+      item.callback !== undefined &&
+      !('meta' in item)
+    ) {
       item.callback()
       clearState()
       return
@@ -110,7 +119,11 @@ const CommandBar = () => {
     // If we have subcommands and have not yet gathered all the
     // data required from them, set the selected command to the
     // current command and increment the subcommand index
-    if (selectedCommand && subCommandIndex !== undefined) {
+    if (
+      selectedCommand &&
+      subCommandIndex !== undefined &&
+      'meta' in selectedCommand.item
+    ) {
       const subCommand = selectedCommand.item.meta?.args[subCommandIndex]
 
       if (subCommand) {
@@ -140,7 +153,11 @@ const CommandBar = () => {
 
   return (
     <Dialog
-      open={commandBarOpen}
+      open={
+        commandBarOpen &&
+        availableCommands?.length !== undefined &&
+        availableCommands.length > 0
+      }
       onClose={() => {
         setCommandBarOpen(false)
         clearState()
@@ -156,11 +173,12 @@ const CommandBar = () => {
               <div>
                 {inSubCommand && (
                   <p className="text-liquid-70 dark:text-liquid-30">
-                    {selectedCommand?.item.meta?.displayValue(
-                      selectedCommand.item?.meta?.args?.map(
-                        (c) => subCommandData[c.name] ?? `<${c.name}>`
-                      )
-                    )}
+                    {'meta' in selectedCommand?.item &&
+                      selectedCommand.item.meta?.displayValue(
+                        selectedCommand.item?.meta?.args?.map(
+                          (c) => subCommandData[c.name] ?? `<${c.name}>`
+                        )
+                      )}
                   </p>
                 )}
                 <Combobox.Input
@@ -201,7 +219,12 @@ const CommandBar = () => {
                   value={commandResult}
                   className="first:mt-4 ui-active:bg-liquid-10 dark:ui-active:bg-liquid-90 py-1 px-2"
                 >
-                  {commandResult.item.name}{' '}
+                  <p>{commandResult.item.name}</p>
+                  {(commandResult.item as SubCommand).description && (
+                    <p className="mt-0.5 text-liquid-70 dark:text-liquid-30 text-sm">
+                      {(commandResult.item as SubCommand).description}
+                    </p>
+                  )}
                 </Combobox.Option>
               ))}
             </Combobox.Options>
