@@ -25,7 +25,9 @@ pub type FnMap = HashMap<String, StdFn>;
 pub type StdFn = fn(&mut Args) -> Result<MemoryItem, KclError>;
 
 pub struct StdLib {
+    #[allow(dead_code)]
     internal_fn_names: Vec<Box<(dyn crate::docs::StdLibFn)>>,
+
     pub fns: FnMap,
 }
 

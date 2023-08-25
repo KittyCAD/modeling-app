@@ -52,7 +52,7 @@ fn inner_extrude(
 /// Returns the extrude wall transform.
 pub fn get_extrude_wall_transform(args: &mut Args) -> Result<MemoryItem, KclError> {
     let (surface_name, extrude_group) = args.get_path_name_extrude_group()?;
-    let result = inner_get_extrude_wall_transform(surface_name, extrude_group, args)?;
+    let result = inner_get_extrude_wall_transform(&surface_name, extrude_group, args)?;
     Ok(result)
 }
 
@@ -61,12 +61,12 @@ pub fn get_extrude_wall_transform(args: &mut Args) -> Result<MemoryItem, KclErro
     name = "getExtrudeWallTransform"
 }]
 fn inner_get_extrude_wall_transform(
-    surface_name: String,
+    surface_name: &str,
     extrude_group: ExtrudeGroup,
     args: &mut Args,
 ) -> Result<MemoryItem, KclError> {
     let surface = extrude_group
-        .get_path_by_name(&surface_name)
+        .get_path_by_name(surface_name)
         .ok_or_else(|| {
             KclError::Type(KclErrorDetails {
                 message: format!(
