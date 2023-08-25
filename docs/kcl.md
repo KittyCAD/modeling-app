@@ -177,6 +177,22 @@ Extrudes by a given amount.
 #### Returns
 
 * `ExtrudeGroup`
+```
+{
+	"height": number,
+	"id": uuid,
+	"position": [number],
+	"rotation": [number],
+	"value": [{
+	"id": uuid,
+	"name": string,
+	"position": [number],
+	"rotation": [number],
+	"sourceRange": [number],
+	"type": string,
+}],
+}
+```
 
 
 
@@ -214,6 +230,12 @@ Returns the extrude wall transform.
 #### Returns
 
 * `ExtrudeTransform`
+```
+{
+	"position": [number],
+	"rotation": [number],
+}
+```
 
 
 
@@ -761,6 +783,45 @@ Draw a line to a point.
 #### Returns
 
 * `SketchGroup`
+```
+{
+	"id": uuid,
+	"position": [number],
+	"rotation": [number],
+	"start": {
+	"from": [number],
+	"name": string,
+	"to": [number],
+},
+	"value": [{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+	"y": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+}],
+}
+```
 
 
 
@@ -830,6 +891,45 @@ string
 #### Returns
 
 * `SketchGroup`
+```
+{
+	"id": uuid,
+	"position": [number],
+	"rotation": [number],
+	"start": {
+	"from": [number],
+	"name": string,
+	"to": [number],
+},
+	"value": [{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+	"y": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+}],
+}
+```
 
 
 
@@ -897,6 +997,45 @@ number
 #### Returns
 
 * `SketchGroup`
+```
+{
+	"id": uuid,
+	"position": [number],
+	"rotation": [number],
+	"start": {
+	"from": [number],
+	"name": string,
+	"to": [number],
+},
+	"value": [{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+	"y": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+}],
+}
+```
 
 
 
@@ -964,6 +1103,45 @@ number
 #### Returns
 
 * `SketchGroup`
+```
+{
+	"id": uuid,
+	"position": [number],
+	"rotation": [number],
+	"start": {
+	"from": [number],
+	"name": string,
+	"to": [number],
+},
+	"value": [{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+	"y": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+}],
+}
+```
 
 
 
@@ -1031,6 +1209,45 @@ number
 #### Returns
 
 * `SketchGroup`
+```
+{
+	"id": uuid,
+	"position": [number],
+	"rotation": [number],
+	"start": {
+	"from": [number],
+	"name": string,
+	"to": [number],
+},
+	"value": [{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+	"y": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+}],
+}
+```
 
 
 
@@ -1098,6 +1315,45 @@ number
 #### Returns
 
 * `SketchGroup`
+```
+{
+	"id": uuid,
+	"position": [number],
+	"rotation": [number],
+	"start": {
+	"from": [number],
+	"name": string,
+	"to": [number],
+},
+	"value": [{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+	"y": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+}],
+}
+```
 
 
 
@@ -1166,6 +1422,45 @@ Draw an angled line to a given x coordinate.
 #### Returns
 
 * `SketchGroup`
+```
+{
+	"id": uuid,
+	"position": [number],
+	"rotation": [number],
+	"start": {
+	"from": [number],
+	"name": string,
+	"to": [number],
+},
+	"value": [{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+	"y": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+}],
+}
+```
 
 
 
@@ -1234,6 +1529,45 @@ Draw an angled line to a given y coordinate.
 #### Returns
 
 * `SketchGroup`
+```
+{
+	"id": uuid,
+	"position": [number],
+	"rotation": [number],
+	"start": {
+	"from": [number],
+	"name": string,
+	"to": [number],
+},
+	"value": [{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+	"y": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+}],
+}
+```
 
 
 
@@ -1302,6 +1636,45 @@ Draw an angled line.
 #### Returns
 
 * `SketchGroup`
+```
+{
+	"id": uuid,
+	"position": [number],
+	"rotation": [number],
+	"start": {
+	"from": [number],
+	"name": string,
+	"to": [number],
+},
+	"value": [{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+	"y": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+}],
+}
+```
 
 
 
@@ -1370,6 +1743,45 @@ Draw an angled line of a given x length.
 #### Returns
 
 * `SketchGroup`
+```
+{
+	"id": uuid,
+	"position": [number],
+	"rotation": [number],
+	"start": {
+	"from": [number],
+	"name": string,
+	"to": [number],
+},
+	"value": [{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+	"y": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+}],
+}
+```
 
 
 
@@ -1438,6 +1850,45 @@ Draw an angled line of a given y length.
 #### Returns
 
 * `SketchGroup`
+```
+{
+	"id": uuid,
+	"position": [number],
+	"rotation": [number],
+	"start": {
+	"from": [number],
+	"name": string,
+	"to": [number],
+},
+	"value": [{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+	"y": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+}],
+}
+```
 
 
 
@@ -1506,6 +1957,45 @@ Draw an angled line that intersects with a given line.
 #### Returns
 
 * `SketchGroup`
+```
+{
+	"id": uuid,
+	"position": [number],
+	"rotation": [number],
+	"start": {
+	"from": [number],
+	"name": string,
+	"to": [number],
+},
+	"value": [{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+	"y": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+}],
+}
+```
 
 
 
@@ -1535,6 +2025,45 @@ string
 #### Returns
 
 * `SketchGroup`
+```
+{
+	"id": uuid,
+	"position": [number],
+	"rotation": [number],
+	"start": {
+	"from": [number],
+	"name": string,
+	"to": [number],
+},
+	"value": [{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+	"y": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+}],
+}
+```
 
 
 
@@ -1594,6 +2123,45 @@ Close the current sketch.
 #### Returns
 
 * `SketchGroup`
+```
+{
+	"id": uuid,
+	"position": [number],
+	"rotation": [number],
+	"start": {
+	"from": [number],
+	"name": string,
+	"to": [number],
+},
+	"value": [{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+	"x": number,
+	"y": number,
+} |
+{
+	"from": [number],
+	"name": string,
+	"to": [number],
+	"type": string,
+}],
+}
+```
 
 
 

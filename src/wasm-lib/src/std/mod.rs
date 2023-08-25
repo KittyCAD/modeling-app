@@ -714,14 +714,11 @@ mod tests {
 
             fn_docs.push_str("#### Arguments\n\n");
             for arg in internal_fn.args() {
-                let (_format, should_be_indented) = get_type_name_from_schema(&arg.schema);
+                let (format, should_be_indented) = get_type_name_from_schema(&arg.schema);
                 if should_be_indented {
                     fn_docs.push_str(&format!("* `{}`:\n", arg.name,));
 
-                    fn_docs.push_str(&format!(
-                        "```\n{}\n```\n",
-                        get_type_name_from_schema(&arg.schema).0
-                    ));
+                    fn_docs.push_str(&format!("```\n{}\n```\n", format));
                 } else {
                     fn_docs.push_str(&format!(
                         "* `{}`: `{}`\n",
@@ -740,6 +737,11 @@ mod tests {
                     "* `{}` - {}\n",
                     return_type.type_, return_type.description
                 ));
+            }
+
+            let (format, should_be_indented) = get_type_name_from_schema(&return_type.schema);
+            if should_be_indented {
+                fn_docs.push_str(&format!("```\n{}\n```\n", format));
             }
 
             fn_docs.push_str("\n\n\n");
