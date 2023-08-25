@@ -36,7 +36,8 @@ export default function useStateMachineCommands<T extends AnyStateMachine>({
     const filteredExistingCommands = commands.filter((c) => c.owner !== owner)
     const newCommands = state.nextEvents
       .filter((e) => !['done.', 'error.'].some((n) => e.includes(n)))
-      .map(createNewMachineCommand) as Command[]
+      .map(createNewMachineCommand)
+      .filter((c) => c !== null) as Command[]
 
     setCommands([...newCommands, ...filteredExistingCommands])
 

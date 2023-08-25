@@ -1,6 +1,7 @@
 import { createMachine, assign } from 'xstate'
 import { Models } from '@kittycad/lib'
 import withBaseURL from '../lib/withBaseURL'
+import { CommandBarMeta } from './commands'
 
 export interface UserContext {
   user?: Models['User_type']
@@ -9,15 +10,21 @@ export interface UserContext {
 
 export type Events =
   | {
-      type: 'logout'
+      type: 'Log out'
     }
   | {
-      type: 'tryLogin'
+      type: 'Log in'
       token?: string
     }
 
 export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
 const persistedToken = localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
+
+export const authCommandBarMeta: CommandBarMeta = {
+  'Log in': {
+    hide: true,
+  },
+}
 
 export const authMachine = createMachine<UserContext, Events>(
   {
@@ -50,7 +57,7 @@ export const authMachine = createMachine<UserContext, Events>(
       loggedIn: {
         entry: ['goToIndexPage'],
         on: {
-          logout: {
+          'Log out': {
             target: 'loggedOut',
           },
         },
@@ -58,10 +65,10 @@ export const authMachine = createMachine<UserContext, Events>(
       loggedOut: {
         entry: ['goToSignInPage'],
         on: {
-          tryLogin: {
+          'Log in': {
             target: 'checkIfLoggedIn',
             actions: assign({
-              token: (context, event) => {
+              token: (_, event) => {
                 const token = event.token || ''
                 localStorage.setItem(TOKEN_PERSIST_KEY, token)
                 return token
@@ -71,7 +78,7 @@ export const authMachine = createMachine<UserContext, Events>(
         },
       },
     },
-    schema: { events: {} as { type: 'logout' } | { type: 'tryLogin' } },
+    schema: { events: {} as { type: 'Log out' } | { type: 'Log in' } },
     predictableActionArguments: true,
     preserveActionOrder: true,
     context: { token: persistedToken },

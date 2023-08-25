@@ -1,11 +1,16 @@
 import { createActorContext } from '@xstate/react'
 import { useNavigate } from 'react-router-dom'
 import { paths } from '../Router'
-import { authMachine, TOKEN_PERSIST_KEY } from '../lib/authMachine'
+import {
+  authCommandBarMeta,
+  authMachine,
+  TOKEN_PERSIST_KEY,
+} from '../lib/authMachine'
 import withBaseUrl from '../lib/withBaseURL'
-import { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import CommandBar, { CommandsContext } from '../components/CommandBar'
 import { Command } from '../lib/commands'
+import useStateMachineCommands from './useStateMachineCommands'
 
 export const AuthMachineContext = createActorContext(authMachine)
 
@@ -17,6 +22,7 @@ export const GlobalStateProvider = ({
   const [commands, setCommands] = useState([] as Command[])
   const [commandBarOpen, setCommandBarOpen] = useState(false)
   const navigate = useNavigate()
+
   return (
     <AuthMachineContext.Provider
       machine={() =>
@@ -61,4 +67,20 @@ export function logout() {
     method: 'POST',
     credentials: 'include',
   })
+}
+
+export function AuthMachineCommandProvider(props: React.PropsWithChildren<{}>) {
+  const [state, send] = AuthMachineContext.useActor()
+  const { commands, setCommands } = useContext(CommandsContext)
+
+  useStateMachineCommands({
+    state,
+    send,
+    commands,
+    setCommands,
+    commandBarMeta: authCommandBarMeta,
+    owner: 'auth',
+  })
+
+  return <>{props.children}</>
 }

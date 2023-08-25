@@ -8,10 +8,14 @@ type InitialCommandBarMetaArg = {
 }
 
 export type CommandBarMeta = {
-  [key: string]: {
-    displayValue: (args: string[]) => string
-    args: InitialCommandBarMetaArg[]
-  }
+  [key: string]:
+    | {
+        displayValue: (args: string[]) => string
+        args: InitialCommandBarMetaArg[]
+      }
+    | {
+        hide?: true
+      }
 }
 
 export type Command = {
@@ -45,11 +49,12 @@ export function createMachineCommand<T extends AnyStateMachine>({
   commandBarMeta,
   send,
   owner,
-}: CommandBarArgs<T>): Command {
+}: CommandBarArgs<T>): Command | null {
   const lookedUpMeta = commandBarMeta && commandBarMeta[type]
+  if (lookedUpMeta && 'hide' in lookedUpMeta) return null
   let replacedArgs
 
-  if (lookedUpMeta) {
+  if (lookedUpMeta && 'args' in lookedUpMeta) {
     replacedArgs = lookedUpMeta.args.map((arg) => {
       const optionsFromContext = state.context[
         arg.options as keyof typeof state.context

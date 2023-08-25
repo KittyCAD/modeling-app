@@ -23,9 +23,11 @@ import {
   PROJECT_ENTRYPOINT,
 } from './lib/tauriFS'
 import { metadata, type Metadata } from 'tauri-plugin-fs-extra-api'
-import ActionBar from './components/CommandBar'
 import DownloadAppBanner from './components/DownloadAppBanner'
-import { GlobalStateProvider } from './hooks/useAuthMachine'
+import {
+  AuthMachineCommandProvider,
+  GlobalStateProvider,
+} from './hooks/useAuthMachine'
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {
@@ -69,7 +71,13 @@ const addGlobalContextToElements = (
     'element' in route
       ? {
           ...route,
-          element: <GlobalStateProvider>{route.element}</GlobalStateProvider>,
+          element: (
+            <GlobalStateProvider>
+              <AuthMachineCommandProvider>
+                {route.element}
+              </AuthMachineCommandProvider>
+            </GlobalStateProvider>
+          ),
         }
       : route
   )

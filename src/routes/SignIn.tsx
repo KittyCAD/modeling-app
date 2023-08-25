@@ -22,7 +22,7 @@ const SignIn = () => {
       const token: string = await invoke('login', {
         host: VITE_KC_API_BASE_URL,
       })
-      send({ type: 'tryLogin', token })
+      send({ type: 'Log in', token })
     } catch (error) {
       console.error('login button', error)
     }

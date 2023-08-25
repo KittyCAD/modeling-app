@@ -28,7 +28,10 @@ export const CommandsContext = createContext(
 const CommandBar = () => {
   const { commands, commandBarOpen, setCommandBarOpen } =
     useContext(CommandsContext)
-  useHotkeys('meta+k', () => setCommandBarOpen(!commandBarOpen))
+  useHotkeys('meta+k', () => {
+    if (commands.length === 0) return
+    setCommandBarOpen(!commandBarOpen)
+  })
 
   const [selectedCommand, setSelectedCommand] = useState<SortedCommand | null>(
     null
