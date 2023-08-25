@@ -114,25 +114,18 @@ const router = createBrowserRouter(
           ContextFrom<typeof settingsMachine>
         >
 
-        if (!('onboardingStatus' in persistedSettings)) {
-          return redirect(makeUrlPathRelative(paths.ONBOARDING.INDEX))
-        } else {
-          const status = persistedSettings.onboardingStatus || ''
-          const notEnRouteToOnboarding =
-            !request.url.includes(paths.ONBOARDING.INDEX) &&
-            request.method === 'GET'
-          // '' is the initial state, 'done' and 'dismissed' are the final states
-          const hasValidOnboardingStatus =
-            (status !== undefined && status.length === 0) ||
-            !(status === 'done' || status === 'dismissed')
-          const shouldRedirectToOnboarding =
-            notEnRouteToOnboarding && hasValidOnboardingStatus
+        const status = persistedSettings.onboardingStatus || ''
+        const notEnRouteToOnboarding = !request.url.includes(
+          paths.ONBOARDING.INDEX
+        )
+        // '' is the initial state, 'done' and 'dismissed' are the final states
+        const hasValidOnboardingStatus =
+          status.length === 0 || !(status === 'done' || status === 'dismissed')
+        const shouldRedirectToOnboarding =
+          notEnRouteToOnboarding && hasValidOnboardingStatus
 
-          if (shouldRedirectToOnboarding) {
-            return redirect(
-              makeUrlPathRelative(paths.ONBOARDING.INDEX) + status
-            )
-          }
+        if (shouldRedirectToOnboarding) {
+          return redirect(makeUrlPathRelative(paths.ONBOARDING.INDEX) + status)
         }
 
         if (params.id && params.id !== 'new') {
