@@ -16,7 +16,7 @@ pub struct EngineConnection {
         >,
         WsMsg,
     >,
-    tcp_read_handle: tokio::task::JoinHandle<()>,
+    tcp_read_handle: tokio::task::JoinHandle<Result<()>>,
 }
 
 impl Drop for EngineConnection {
@@ -48,16 +48,37 @@ impl TcpRead {
 }
 
 impl EngineConnection {
-    pub async fn new(conn_str: &str, auth_token: &str, origin: &str) -> Result<EngineConnection> {
+    pub async fn new(
+        conn_str: &str,
+        auth_token: &str,
+        origin: &str,
+        export_dir: &str,
+    ) -> Result<EngineConnection> {
+        // Make sure the export directory exists and that it is a directory.
+        let export_dir = std::path::Path::new(export_dir).to_owned();
+        if !export_dir.exists() {
+            anyhow::bail!("Export directory does not exist: {}", export_dir.display());
+        }
+        // Make sure it is a directory.
+        if !export_dir.is_dir() {
+            anyhow::bail!(
+                "Export directory is not a directory: {}",
+                export_dir.display()
+            );
+        }
+
         let method = http::Method::GET.to_string();
         let key = tokio_tungstenite::tungstenite::handshake::client::generate_key();
+
+        let token = format!("Bearer {}", auth_token);
+        let mut headers = websocket_headers(&token, &key, origin);
+        println!("headers: {:?}", headers);
 
         // Establish a websocket connection.
         let (ws_stream, _) = tokio_tungstenite::connect_async(httparse::Request {
             method: Some(&method),
             path: Some(conn_str),
-            // TODO pass in the origin from elsewhere.
-            headers: &mut websocket_headers(auth_token, &key, origin),
+            headers: &mut headers,
             version: Some(1), // HTTP/1.1
         })
         .await?;
@@ -74,6 +95,7 @@ impl EngineConnection {
                     continue;
                 }
 
+                println!("got ws resp: {:?}", ws_resp.resp);
                 if let Some(msg) = ws_resp.resp {
                     match msg {
                         OkWebSocketResponseData::IceServerInfo { ice_servers } => {
@@ -86,10 +108,18 @@ impl EngineConnection {
                             println!("got trickle ice: {:?}", candidate);
                         }
                         OkWebSocketResponseData::Modeling { .. } => {}
-                        OkWebSocketResponseData::Export { .. } => {}
+                        OkWebSocketResponseData::Export { files } => {
+                            // Save the files to our export directory.
+                            for file in files {
+                                let path = export_dir.join(file.name);
+                                std::fs::write(path, file.contents)?;
+                            }
+                        }
                     }
                 }
             }
+
+            Ok::<(), anyhow::Error>(())
         });
 
         Ok(EngineConnection {
@@ -156,4 +186,73 @@ fn websocket_headers<'a>(
             value: origin.as_bytes(),
         },
     ]
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::executor::{execute, BodyType, ProgramMemory, SourceRange};
+
+    pub async fn parse_execute_export(code: &str) -> Result<()> {
+        let tokens = crate::tokeniser::lexer(code);
+        let export_dir_str = "/tmp/";
+        let program = crate::parser::abstract_syntax_tree(&tokens)?;
+        let mut mem: ProgramMemory = Default::default();
+        let mut engine = EngineConnection::new(
+            "wss://api.dev.kittycad.io/ws/modeling/commands?webrtc=false",
+            std::env::var("KITTYCAD_API_TOKEN").unwrap().as_str(),
+            "modeling-app-tests",
+            export_dir_str,
+        )
+        .await?;
+        let _ = execute(program, &mut mem, BodyType::Root, &mut engine)?;
+        // Send an export request to the engine.
+        engine.send_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            SourceRange::default(),
+            kittycad::types::ModelingCmd::Export {
+                entity_ids: vec![],
+                format: kittycad::types::OutputFormat::Gltf {
+                    presentation: kittycad::types::Presentation::Pretty,
+                    storage: kittycad::types::Storage::Embedded,
+                },
+            },
+        )?;
+
+        // Wait for the file to show up or fail after 2 minutes of waiting.
+        let export_dir = std::path::Path::new(export_dir_str);
+        let export_file = export_dir.join("part001.gltf");
+        let mut timeout = 120;
+        while !export_file.exists() {
+            if timeout == 0 {
+                return Err(anyhow::anyhow!(
+                    "Timeout waiting for export file to be created"
+                ));
+            }
+            timeout -= 1;
+            tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+        }
+
+        Ok(())
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_export_file() {
+        let ast = r#"const part001 = startSketchAt([-0.01, -0.06])
+  |> line([0, 20], %)
+  |> line([5, 0], %)
+  |> line([-10, 5], %)
+  |> close(%)
+  |> extrude(4, %)
+
+show(part001)"#;
+        parse_execute_export(ast).await.unwrap();
+
+        // Ensure we have a file called "part001.gltf" in the export directory.
+        let export_dir = std::path::Path::new("/tmp/");
+        let export_file = export_dir.join("part001.gltf");
+        assert!(export_file.exists());
+        // Make sure the file is not empty.
+        assert!(export_file.metadata().unwrap().len() != 0);
+    }
 }

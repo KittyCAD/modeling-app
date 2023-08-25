@@ -13,6 +13,7 @@ impl EngineConnection {
         _conn_str: &str,
         _auth_token: &str,
         _origin: &str,
+        _export_dir: &str,
     ) -> Result<EngineConnection> {
         Ok(EngineConnection {})
     }

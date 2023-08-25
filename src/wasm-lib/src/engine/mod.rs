@@ -3,10 +3,8 @@
 use wasm_bindgen::prelude::*;
 
 #[cfg(feature = "noweb")]
-#[cfg(not(test))]
 pub mod conn_noweb;
 #[cfg(feature = "noweb")]
-#[cfg(not(test))]
 pub use conn_noweb::EngineConnection;
 
 #[cfg(feature = "web")]
@@ -16,10 +14,10 @@ pub mod conn_web;
 #[cfg(not(test))]
 pub use conn_web::EngineConnection;
 
-#[cfg(test)]
-pub mod conn_mock;
-#[cfg(test)]
-pub use conn_mock::EngineConnection;
+//#[cfg(test)]
+//pub mod conn_mock;
+//#[cfg(test)]
+//pub use conn_mock::EngineConnection;
 
 use crate::executor::SourceRange;
 
@@ -43,10 +41,15 @@ impl EngineManager {
 
     #[cfg(not(feature = "web"))]
     #[wasm_bindgen(constructor)]
-    pub async fn new(conn_str: &str, auth_token: &str, origin: &str) -> EngineManager {
+    pub async fn new(
+        conn_str: &str,
+        auth_token: &str,
+        origin: &str,
+        export_dir: &str,
+    ) -> EngineManager {
         EngineManager {
             // TODO: fix unwrap.
-            connection: EngineConnection::new(conn_str, auth_token, origin)
+            connection: EngineConnection::new(conn_str, auth_token, origin, export_dir)
                 .await
                 .unwrap(),
         }
