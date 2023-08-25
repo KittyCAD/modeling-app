@@ -469,7 +469,7 @@ fn clean_type(t: &str) -> String {
     let mut t = t.to_string();
     // Turn vecs into arrays.
     if t.starts_with("Vec<") {
-        t = t.replace("Vec<", "[").replace(">", "]");
+        t = t.replace("Vec<", "[").replace('>', "]");
     }
 
     if t == "f64" {
