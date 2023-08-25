@@ -572,60 +572,70 @@ mod tests {
 
     use super::Primitive;
 
+    fn get_type_name_from_format(format: &str) -> String {
+        if format == "uuid" {
+            return Primitive::Uuid.to_string();
+        } else if format == "double" || format == "uint" {
+            return Primitive::Number.to_string();
+        } else {
+            panic!("Unknown format: {}", format);
+        }
+    }
+
     fn get_type_name_from_schema(schema: &schemars::schema::Schema) -> String {
         match schema {
             schemars::schema::Schema::Object(o) => {
                 if let Some(format) = &o.format {
-                    if format == "uuid" {
-                        return Primitive::Uuid.to_string();
-                    } else if format == "double" {
-                        return Primitive::Number.to_string();
-                    } else {
-                        panic!("Unknown format: {}", format);
-                    }
+                    return get_type_name_from_format(&format);
                 }
 
                 if let Some(obj_val) = &o.object {
                     let mut fn_docs = String::new();
+                    fn_docs.push_str("{ ");
                     // Let's print out the object's properties.
                     for (prop_name, prop) in obj_val.properties.iter() {
+                        if prop_name.starts_with('_') {
+                            continue;
+                        }
+
                         fn_docs.push_str(&format!(
-                            "* `{}`: `{}`\n",
+                            "\"{}\": {}, ",
                             prop_name,
                             get_type_name_from_schema(&prop),
                         ));
                     }
+
+                    fn_docs.push_str("}");
+
                     return fn_docs;
                 }
 
                 if let Some(array_val) = &o.array {
-                    println!("array_val: {:#?}", array_val);
-                    let mut fn_docs = String::new();
-                    if let Some(item) = &array_val.contains {
+                    if let Some(schemars::schema::SingleOrVec::Single(items)) = &array_val.items {
                         // Let's print out the object's properties.
-                        fn_docs.push_str(&format!(
-                            "* `array<{}>`\n",
-                            get_type_name_from_schema(&item),
-                        ));
+                        return format!("[{}]", get_type_name_from_schema(&items));
+                    } else if let Some(item) = &array_val.contains {
+                        return format!("[{}]", get_type_name_from_schema(&item));
                     }
-                    return fn_docs;
                 }
 
                 if let Some(subschemas) = &o.subschemas {
                     let mut fn_docs = String::new();
                     if let Some(items) = &subschemas.one_of {
-                        fn_docs.push_str("One of:\n");
-                        for item in items {
+                        for (i, item) in items.iter().enumerate() {
                             // Let's print out the object's properties.
-                            fn_docs
-                                .push_str(&format!("* `{}`\n", get_type_name_from_schema(&item),));
+                            fn_docs.push_str(&format!("{}", get_type_name_from_schema(&item),));
+                            if i < items.len() - 1 {
+                                fn_docs.push_str(" | ");
+                            }
                         }
                     } else if let Some(items) = &subschemas.any_of {
-                        fn_docs.push_str("Any of:\n");
-                        for item in items {
+                        for (i, item) in items.iter().enumerate() {
                             // Let's print out the object's properties.
-                            fn_docs
-                                .push_str(&format!("* `{}`\n", get_type_name_from_schema(&item),));
+                            fn_docs.push_str(&format!("{}", get_type_name_from_schema(&item),));
+                            if i < items.len() - 1 {
+                                fn_docs.push_str(" | ");
+                            }
                         }
                     } else {
                         panic!("unknown subschemas: {:#?}", subschemas)
