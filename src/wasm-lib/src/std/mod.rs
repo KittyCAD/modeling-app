@@ -542,3 +542,13 @@ pub fn leg_angle_y(args: &mut Args) -> Result<MemoryItem, KclError> {
 fn inner_leg_angle_y(hypotenuse: f64, leg: f64) -> f64 {
     (leg.min(hypotenuse) / hypotenuse).asin() * 180.0 / std::f64::consts::PI
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::std::StdLib;
+
+    #[test]
+    fn test_generate_stdlib_docs() {
+        let stdlib = StdLib::new();
+    }
+}

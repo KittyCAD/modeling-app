@@ -2439,6 +2439,7 @@ dependencies = [
  "backtrace",
  "bincode",
  "derive-docs",
+ "expectorate",
  "futures",
  "gloo-file",
  "gloo-utils",
