@@ -617,28 +617,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6fb8d784f27acf97159b40fc4db5ecd8aa23b9ad5ef69cdd136d3bc80665f0c0"
 
 [[package]]
-name = "gloo-events"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "27c26fb45f7c385ba980f5fa87ac677e363949e065a083722697ef1b2cc91e41"
-dependencies = [
- "wasm-bindgen",
- "web-sys",
-]
-
-[[package]]
-name = "gloo-file"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "97563d71863fb2824b2e974e754a81d19c4a7ec47b09ced8a0e6656b6d54bd1f"
-dependencies = [
- "gloo-events",
- "js-sys",
- "wasm-bindgen",
- "web-sys",
-]
-
-[[package]]
 name = "gloo-utils"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -895,13 +873,10 @@ name = "kcl"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "backtrace",
  "bincode",
  "derive-docs",
  "expectorate",
  "futures",
- "gloo-file",
- "gloo-utils",
  "http",
  "httparse",
  "js-sys",
@@ -919,7 +894,6 @@ dependencies = [
  "ts-rs",
  "uuid",
  "wasm-bindgen",
- "wasm-bindgen-futures",
 ]
 
 [[package]]
@@ -2531,27 +2505,11 @@ checksum = "ca6ad05a4870b2bf5fe995117d3728437bd27d7cd5f06f13c17443ef369775a1"
 name = "wasm-lib"
 version = "0.1.0"
 dependencies = [
- "anyhow",
- "backtrace",
  "bincode",
- "expectorate",
- "gloo-file",
  "gloo-utils",
- "http",
- "js-sys",
  "kcl",
  "kittycad",
- "lazy_static",
- "parse-display",
- "pretty_assertions",
- "regex",
- "schemars",
- "serde",
  "serde_json",
- "thiserror",
- "tokio",
- "ts-rs",
- "uuid",
  "wasm-bindgen",
  "wasm-bindgen-futures",
 ]
