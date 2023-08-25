@@ -4,7 +4,8 @@ import { paths } from '../Router'
 import { authMachine, TOKEN_PERSIST_KEY } from '../lib/authMachine'
 import withBaseUrl from '../lib/withBaseURL'
 import { useState } from 'react'
-import CommandBar, { Command, CommandsContext } from '../components/CommandBar'
+import CommandBar, { CommandsContext } from '../components/CommandBar'
+import { Command } from '../lib/commands'
 
 export const AuthMachineContext = createActorContext(authMachine)
 

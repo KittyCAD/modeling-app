@@ -10,23 +10,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { ActionIcon } from './ActionIcon'
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
 import Fuse from 'fuse.js'
-
-export type Command = {
-  owner: string
-  name: string
-  callback: Function
-  meta?: {
-    displayValue(args: string[]): string | string
-    args: SubCommand[]
-  }
-}
-
-export type SubCommand = {
-  name: string
-  type: 'select' | 'string'
-  description?: string
-  options?: Partial<{ name: string }>[]
-}
+import { Command, SubCommand } from '../lib/commands'
 
 export type SortedCommand = {
   item: Partial<Command | SubCommand> & { name: string }
@@ -151,6 +135,16 @@ const CommandBar = () => {
     }
   }
 
+  function getDisplayValue(command: Command) {
+    if (command.meta?.displayValue === undefined || !command.meta.args)
+      return command.name
+    return command.meta?.displayValue(
+      command.meta.args.map((c) =>
+        subCommandData[c.name] ? subCommandData[c.name] : `<${c.name}>`
+      )
+    )
+  }
+
   return (
     <Dialog
       open={
@@ -173,12 +167,8 @@ const CommandBar = () => {
               <div>
                 {inSubCommand && (
                   <p className="text-liquid-70 dark:text-liquid-30">
-                    {'meta' in selectedCommand?.item &&
-                      selectedCommand.item.meta?.displayValue(
-                        selectedCommand.item?.meta?.args?.map(
-                          (c) => subCommandData[c.name] ?? `<${c.name}>`
-                        )
-                      )}
+                    {selectedCommand.item &&
+                      getDisplayValue(selectedCommand.item as Command)}
                   </p>
                 )}
                 <Combobox.Input

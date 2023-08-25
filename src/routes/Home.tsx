@@ -18,7 +18,10 @@ import { Link } from 'react-router-dom'
 import { ProjectWithEntryPointMetadata, HomeLoaderData } from '../Router'
 import Loading from '../components/Loading'
 import { useMachine } from '@xstate/react'
-import { commandbarMeta, homeMachine } from '../lib/homeMachine'
+import {
+  homeCommandMeta,
+  homeMachine,
+} from '../lib/homeMachine'
 import { ContextFrom, EventFrom } from 'xstate'
 import { paths } from '../Router'
 import {
@@ -26,7 +29,8 @@ import {
   getSortFunction,
   getSortIcon,
 } from '../lib/sorting'
-import { Command, CommandsContext } from '../components/CommandBar'
+import { CommandsContext } from '../components/CommandBar'
+import { createCommand, Command } from '../lib/commands'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
@@ -121,62 +125,22 @@ const Home = () => {
 
   const isSortByModified = sort?.includes('modified') || !sort || sort === null
 
-  const createCommand = useCallback(
+  const createHomeCommand = useCallback(
     (type: EventFrom<typeof homeMachine>['type']) => {
-      const lookedUpMeta = commandbarMeta[type as keyof typeof commandbarMeta]
-      let replacedArgs
-
-      if (lookedUpMeta) {
-        replacedArgs = lookedUpMeta.args.map((arg) => {
-          const optionsFromContext =
-            state.context[arg.options as keyof typeof state.context]
-
-          const options =
-            !optionsFromContext || typeof optionsFromContext === 'string'
-              ? [
-                  {
-                    name: optionsFromContext,
-                    description: arg.description || '',
-                  },
-                ]
-              : optionsFromContext.map((o) => ({
-                  name: o.name || '',
-                  description: arg.description || '',
-                }))
-
-          return {
-            ...arg,
-            options,
-          }
-        }) as any[]
-      }
-
-      // We have to recreate this object every time,
-      // otherwise we'll have stale state in the CommandBar
-      // after completing our first action
-      const meta = lookedUpMeta
-        ? {
-            ...lookedUpMeta,
-            args: replacedArgs,
-          }
-        : undefined
-
-      return {
-        name: type,
-        owner: 'home',
-        callback: (data: EventFrom<typeof homeMachine, typeof type>) => {
-          send(type, { data })
-        },
-        meta: meta as any,
-      } satisfies Command
+      return createCommand<typeof homeMachine>({
+        type,
+        state,
+        send,
+        commandBarMeta: homeCommandMeta,
+      })
     },
-    [state]
+    [state, send]
   )
 
   useEffect(() => {
     const newCommands = state.nextEvents
       .filter((e) => !['done.', 'error.'].some((n) => e.includes(n)))
-      .map(createCommand) as Command[]
+      .map(createHomeCommand) as Command[]
 
     console.log('newCommands', newCommands)
 
