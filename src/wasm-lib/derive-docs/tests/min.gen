@@ -41,7 +41,7 @@ impl crate::docs::StdLibFn for Min {
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
         crate::docs::StdLibFnArg {
             name: "".to_string(),
-            type_: "f64".to_string(),
+            type_: "number".to_string(),
             description: "".to_string(),
             schema: f64::json_schema(&mut generator),
             required: true,

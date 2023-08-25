@@ -226,6 +226,8 @@ fn do_stdlib_inner(
             }
         };
 
+        let ty_string = clean_type(&ty_string);
+
         if ty_string != "Args" {
             let schema = if ty_string.starts_with("Vec<") {
                 quote! {
@@ -257,6 +259,7 @@ fn do_stdlib_inner(
         .replace(", KclError >", "");
     let ret_ty_string = ret_ty_string.trim().to_string();
     let ret_ty_ident = format_ident!("{}", ret_ty_string);
+    let ret_ty_string = clean_type(&ret_ty_string);
     let return_type = quote! {
         #docs_crate::StdLibFnArg {
             name: "".to_string(),
@@ -461,6 +464,16 @@ impl Parse for ItemFnForSignature {
             sig,
             _block: block,
         })
+    }
+}
+
+fn clean_type(t: &str) -> String {
+    if t == "f64" {
+        return "number".to_string();
+    } else if t == "str" {
+        return "string".to_string();
+    } else {
+        return t.to_string();
     }
 }
 

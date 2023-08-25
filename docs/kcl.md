@@ -40,7 +40,7 @@
 ### min
 
 ```
-min(args: Vec<f64>) -> f64
+min(args: Vec<f64>) -> number
 ```
 
 Returns the minimum of the given arguments.
@@ -53,14 +53,14 @@ Returns the minimum of the given arguments.
 
 #### Returns
 
-* `f64`
+* `number`
 
 
 
 ### legLen
 
 ```
-legLen(hypotenuse: f64, leg: f64) -> f64
+legLen(hypotenuse: number, leg: number) -> number
 ```
 
 Returns the length of the given leg.
@@ -74,14 +74,14 @@ Returns the length of the given leg.
 
 #### Returns
 
-* `f64`
+* `number`
 
 
 
 ### legAngX
 
 ```
-legAngX(hypotenuse: f64, leg: f64) -> f64
+legAngX(hypotenuse: number, leg: number) -> number
 ```
 
 Returns the angle of the given leg for x.
@@ -95,14 +95,14 @@ Returns the angle of the given leg for x.
 
 #### Returns
 
-* `f64`
+* `number`
 
 
 
 ### legAngY
 
 ```
-legAngY(hypotenuse: f64, leg: f64) -> f64
+legAngY(hypotenuse: number, leg: number) -> number
 ```
 
 Returns the angle of the given leg for y.
@@ -116,14 +116,14 @@ Returns the angle of the given leg for y.
 
 #### Returns
 
-* `f64`
+* `number`
 
 
 
 ### extrude
 
 ```
-extrude(length: f64, sketch_group: SketchGroup) -> ExtrudeGroup
+extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 ```
 
 Extrudes by a given amount.
@@ -199,7 +199,7 @@ Extrudes by a given amount.
 ### getExtrudeWallTransform
 
 ```
-getExtrudeWallTransform(surface_name: str, extrude_group: ExtrudeGroup) -> ExtrudeTransform
+getExtrudeWallTransform(surface_name: string, extrude_group: ExtrudeGroup) -> ExtrudeTransform
 ```
 
 Returns the extrude wall transform.
@@ -242,7 +242,7 @@ Returns the extrude wall transform.
 ### segEndX
 
 ```
-segEndX(segment_name: str, sketch_group: SketchGroup) -> f64
+segEndX(segment_name: string, sketch_group: SketchGroup) -> number
 ```
 
 Returns the segment end of x.
@@ -295,14 +295,14 @@ Returns the segment end of x.
 
 #### Returns
 
-* `f64`
+* `number`
 
 
 
 ### segEndY
 
 ```
-segEndY(segment_name: str, sketch_group: SketchGroup) -> f64
+segEndY(segment_name: string, sketch_group: SketchGroup) -> number
 ```
 
 Returns the segment end of y.
@@ -355,14 +355,14 @@ Returns the segment end of y.
 
 #### Returns
 
-* `f64`
+* `number`
 
 
 
 ### lastSegX
 
 ```
-lastSegX(sketch_group: SketchGroup) -> f64
+lastSegX(sketch_group: SketchGroup) -> number
 ```
 
 Returns the last segment of x.
@@ -414,14 +414,14 @@ Returns the last segment of x.
 
 #### Returns
 
-* `f64`
+* `number`
 
 
 
 ### lastSegY
 
 ```
-lastSegY(sketch_group: SketchGroup) -> f64
+lastSegY(sketch_group: SketchGroup) -> number
 ```
 
 Returns the last segment of y.
@@ -473,14 +473,14 @@ Returns the last segment of y.
 
 #### Returns
 
-* `f64`
+* `number`
 
 
 
 ### segLen
 
 ```
-segLen(segment_name: str, sketch_group: SketchGroup) -> f64
+segLen(segment_name: string, sketch_group: SketchGroup) -> number
 ```
 
 Returns the length of the segment.
@@ -533,14 +533,14 @@ Returns the length of the segment.
 
 #### Returns
 
-* `f64`
+* `number`
 
 
 
 ### segAng
 
 ```
-segAng(segment_name: str, sketch_group: SketchGroup) -> f64
+segAng(segment_name: string, sketch_group: SketchGroup) -> number
 ```
 
 Returns the angle of the segment.
@@ -593,14 +593,14 @@ Returns the angle of the segment.
 
 #### Returns
 
-* `f64`
+* `number`
 
 
 
 ### angleToMatchLengthX
 
 ```
-angleToMatchLengthX(segment_name: str, to: f64, sketch_group: SketchGroup) -> f64
+angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup) -> number
 ```
 
 Returns the angle to match the given length for x.
@@ -654,14 +654,14 @@ Returns the angle to match the given length for x.
 
 #### Returns
 
-* `f64`
+* `number`
 
 
 
 ### angleToMatchLengthY
 
 ```
-angleToMatchLengthY(segment_name: str, to: f64, sketch_group: SketchGroup) -> f64
+angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup) -> number
 ```
 
 Returns the angle to match the given length for y.
@@ -715,7 +715,7 @@ Returns the angle to match the given length for y.
 
 #### Returns
 
-* `f64`
+* `number`
 
 
 
