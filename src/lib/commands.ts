@@ -58,7 +58,7 @@ export function createMachineCommand<T extends AnyStateMachine>({
     replacedArgs = lookedUpMeta.args.map((arg) => {
       const optionsFromContext = state.context[
         arg.options as keyof typeof state.context
-      ] as { name: string }[]
+      ] as { name: string }[] | string | undefined
 
       const options =
         arg.options instanceof Array

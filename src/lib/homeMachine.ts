@@ -19,7 +19,7 @@ export const homeCommandMeta: CommandBarMeta = {
     args: [
       {
         name: 'name',
-        type: 'string',
+        type: 'select',
         options: 'projects',
       },
     ],
@@ -51,6 +51,9 @@ export const homeCommandMeta: CommandBarMeta = {
       },
     ],
   },
+  assign: {
+    hide: true,
+  },
 }
 
 export const homeMachine = createMachine(
@@ -62,8 +65,7 @@ export const homeMachine = createMachine(
 
     context: {
       projects: [] as ProjectWithEntryPointMetadata[],
-      defaultDir: '' as string,
-      defaultProjectName: 'project-$nnn' as string,
+      defaultProjectName: '',
     },
 
     states: {
