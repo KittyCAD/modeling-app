@@ -23,7 +23,8 @@ impl crate::docs::StdLibFn for Min {
     }
 
     fn args(&self) -> Vec<crate::docs::StdLibFnArg> {
-        let settings = schemars::gen::SchemaSettings::openapi3();
+        let mut settings = schemars::gen::SchemaSettings::openapi3();
+        settings.inline_subschemas = true;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
         vec![crate::docs::StdLibFnArg {
             name: "args".to_string(),
@@ -35,7 +36,8 @@ impl crate::docs::StdLibFn for Min {
     }
 
     fn return_value(&self) -> crate::docs::StdLibFnArg {
-        let settings = schemars::gen::SchemaSettings::openapi3();
+        let mut settings = schemars::gen::SchemaSettings::openapi3();
+        settings.inline_subschemas = true;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
         crate::docs::StdLibFnArg {
             name: "".to_string(),

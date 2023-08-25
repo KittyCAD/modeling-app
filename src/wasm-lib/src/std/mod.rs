@@ -12,7 +12,9 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use derive_docs::stdlib;
+use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
+use serde::{Deserialize, Serialize};
 
 use crate::{
     abstract_syntax_tree_types::parse_json_number_as_f64,
@@ -549,9 +551,98 @@ fn inner_leg_angle_y(hypotenuse: f64, leg: f64) -> f64 {
     (leg.min(hypotenuse) / hypotenuse).asin() * 180.0 / std::f64::consts::PI
 }
 
+/// The primitive types that can be used in a KCL file.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema, Display, FromStr)]
+#[serde(rename_all = "lowercase")]
+#[display(style = "lowercase")]
+pub enum Primitive {
+    /// A boolean value.
+    Bool,
+    /// A number value.
+    Number,
+    /// A string value.
+    String,
+    /// A uuid value.
+    Uuid,
+}
+
 #[cfg(test)]
 mod tests {
     use crate::std::StdLib;
+
+    use super::Primitive;
+
+    fn get_type_name_from_schema(schema: &schemars::schema::Schema) -> String {
+        match schema {
+            schemars::schema::Schema::Object(o) => {
+                if let Some(format) = &o.format {
+                    if format == "uuid" {
+                        return Primitive::Uuid.to_string();
+                    } else if format == "double" {
+                        return Primitive::Number.to_string();
+                    } else {
+                        panic!("Unknown format: {}", format);
+                    }
+                }
+
+                if let Some(obj_val) = &o.object {
+                    let mut fn_docs = String::new();
+                    // Let's print out the object's properties.
+                    for (prop_name, prop) in obj_val.properties.iter() {
+                        fn_docs.push_str(&format!(
+                            "* `{}`: `{}`\n",
+                            prop_name,
+                            get_type_name_from_schema(&prop),
+                        ));
+                    }
+                    return fn_docs;
+                }
+
+                if let Some(array_val) = &o.array {
+                    println!("array_val: {:#?}", array_val);
+                    let mut fn_docs = String::new();
+                    if let Some(item) = &array_val.contains {
+                        // Let's print out the object's properties.
+                        fn_docs.push_str(&format!(
+                            "* `array<{}>`\n",
+                            get_type_name_from_schema(&item),
+                        ));
+                    }
+                    return fn_docs;
+                }
+
+                if let Some(subschemas) = &o.subschemas {
+                    let mut fn_docs = String::new();
+                    if let Some(items) = &subschemas.one_of {
+                        fn_docs.push_str("One of:\n");
+                        for item in items {
+                            // Let's print out the object's properties.
+                            fn_docs
+                                .push_str(&format!("* `{}`\n", get_type_name_from_schema(&item),));
+                        }
+                    } else if let Some(items) = &subschemas.any_of {
+                        fn_docs.push_str("Any of:\n");
+                        for item in items {
+                            // Let's print out the object's properties.
+                            fn_docs
+                                .push_str(&format!("* `{}`\n", get_type_name_from_schema(&item),));
+                        }
+                    } else {
+                        panic!("unknown subschemas: {:#?}", subschemas)
+                    }
+
+                    return fn_docs;
+                }
+
+                if let Some(schemars::schema::SingleOrVec::Single(String)) = &o.instance_type {
+                    return Primitive::String.to_string();
+                }
+
+                panic!("unknown type: {:#?}", o)
+            }
+            schemars::schema::Schema::Bool(_) => Primitive::Bool.to_string(),
+        }
+    }
 
     #[test]
     fn test_generate_stdlib_docs() {
@@ -613,14 +704,11 @@ mod tests {
 
             fn_docs.push_str("#### Arguments\n\n");
             for arg in internal_fn.args() {
-                fn_docs.push_str(&format!("* `{}`: `{}`\n", arg.name, arg.type_));
-                if let schemars::schema::Schema::Object(obj) = &arg.schema {
-                    if let Some(obj_val) = &obj.object {
-                        //println!("obj: {:#?}", obj_val);
-                    } else {
-                        //println!("arg: {:#?}", obj);
-                    }
-                }
+                fn_docs.push_str(&format!(
+                    "* `{}`: `{}`\n",
+                    arg.name,
+                    get_type_name_from_schema(&arg.schema)
+                ));
             }
 
             fn_docs.push_str("\n#### Returns\n\n");

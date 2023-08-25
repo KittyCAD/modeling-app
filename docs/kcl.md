@@ -49,7 +49,7 @@ Returns the minimum of the given arguments.
 
 #### Arguments
 
-* `args`: `Vec<f64>`
+* `args`: ``
 
 #### Returns
 
@@ -69,8 +69,8 @@ Returns the length of the given leg.
 
 #### Arguments
 
-* `hypotenuse`: `f64`
-* `leg`: `f64`
+* `hypotenuse`: `number`
+* `leg`: `number`
 
 #### Returns
 
@@ -90,8 +90,8 @@ Returns the angle of the given leg for x.
 
 #### Arguments
 
-* `hypotenuse`: `f64`
-* `leg`: `f64`
+* `hypotenuse`: `number`
+* `leg`: `number`
 
 #### Returns
 
@@ -111,8 +111,8 @@ Returns the angle of the given leg for y.
 
 #### Arguments
 
-* `hypotenuse`: `f64`
-* `leg`: `f64`
+* `hypotenuse`: `number`
+* `leg`: `number`
 
 #### Returns
 
@@ -132,8 +132,20 @@ Extrudes by a given amount.
 
 #### Arguments
 
-* `length`: `f64`
-* `sketch_group`: `SketchGroup`
+* `length`: `number`
+* `sketch_group`: `* `__meta`: ``
+* `id`: `uuid`
+* `position`: ``
+* `rotation`: ``
+* `start`: `* `__geoMeta`: `* `id`: `uuid`
+* `sourceRange`: ``
+`
+* `from`: ``
+* `name`: `string`
+* `to`: ``
+`
+* `value`: ``
+`
 
 #### Returns
 
@@ -153,8 +165,14 @@ Returns the extrude wall transform.
 
 #### Arguments
 
-* `surface_name`: `str`
-* `extrude_group`: `ExtrudeGroup`
+* `surface_name`: `string`
+* `extrude_group`: `* `__meta`: ``
+* `height`: `number`
+* `id`: `uuid`
+* `position`: ``
+* `rotation`: ``
+* `value`: ``
+`
 
 #### Returns
 
@@ -174,8 +192,20 @@ Returns the segment end of x.
 
 #### Arguments
 
-* `segment_name`: `str`
-* `sketch_group`: `SketchGroup`
+* `segment_name`: `string`
+* `sketch_group`: `* `__meta`: ``
+* `id`: `uuid`
+* `position`: ``
+* `rotation`: ``
+* `start`: `* `__geoMeta`: `* `id`: `uuid`
+* `sourceRange`: ``
+`
+* `from`: ``
+* `name`: `string`
+* `to`: ``
+`
+* `value`: ``
+`
 
 #### Returns
 
@@ -195,8 +225,20 @@ Returns the segment end of y.
 
 #### Arguments
 
-* `segment_name`: `str`
-* `sketch_group`: `SketchGroup`
+* `segment_name`: `string`
+* `sketch_group`: `* `__meta`: ``
+* `id`: `uuid`
+* `position`: ``
+* `rotation`: ``
+* `start`: `* `__geoMeta`: `* `id`: `uuid`
+* `sourceRange`: ``
+`
+* `from`: ``
+* `name`: `string`
+* `to`: ``
+`
+* `value`: ``
+`
 
 #### Returns
 
@@ -216,7 +258,19 @@ Returns the last segment of x.
 
 #### Arguments
 
-* `sketch_group`: `SketchGroup`
+* `sketch_group`: `* `__meta`: ``
+* `id`: `uuid`
+* `position`: ``
+* `rotation`: ``
+* `start`: `* `__geoMeta`: `* `id`: `uuid`
+* `sourceRange`: ``
+`
+* `from`: ``
+* `name`: `string`
+* `to`: ``
+`
+* `value`: ``
+`
 
 #### Returns
 
@@ -236,7 +290,19 @@ Returns the last segment of y.
 
 #### Arguments
 
-* `sketch_group`: `SketchGroup`
+* `sketch_group`: `* `__meta`: ``
+* `id`: `uuid`
+* `position`: ``
+* `rotation`: ``
+* `start`: `* `__geoMeta`: `* `id`: `uuid`
+* `sourceRange`: ``
+`
+* `from`: ``
+* `name`: `string`
+* `to`: ``
+`
+* `value`: ``
+`
 
 #### Returns
 
@@ -256,8 +322,20 @@ Returns the length of the segment.
 
 #### Arguments
 
-* `segment_name`: `str`
-* `sketch_group`: `SketchGroup`
+* `segment_name`: `string`
+* `sketch_group`: `* `__meta`: ``
+* `id`: `uuid`
+* `position`: ``
+* `rotation`: ``
+* `start`: `* `__geoMeta`: `* `id`: `uuid`
+* `sourceRange`: ``
+`
+* `from`: ``
+* `name`: `string`
+* `to`: ``
+`
+* `value`: ``
+`
 
 #### Returns
 
@@ -277,8 +355,20 @@ Returns the angle of the segment.
 
 #### Arguments
 
-* `segment_name`: `str`
-* `sketch_group`: `SketchGroup`
+* `segment_name`: `string`
+* `sketch_group`: `* `__meta`: ``
+* `id`: `uuid`
+* `position`: ``
+* `rotation`: ``
+* `start`: `* `__geoMeta`: `* `id`: `uuid`
+* `sourceRange`: ``
+`
+* `from`: ``
+* `name`: `string`
+* `to`: ``
+`
+* `value`: ``
+`
 
 #### Returns
 
@@ -298,9 +388,21 @@ Returns the angle to match the given length for x.
 
 #### Arguments
 
-* `segment_name`: `str`
-* `to`: `f64`
-* `sketch_group`: `SketchGroup`
+* `segment_name`: `string`
+* `to`: `number`
+* `sketch_group`: `* `__meta`: ``
+* `id`: `uuid`
+* `position`: ``
+* `rotation`: ``
+* `start`: `* `__geoMeta`: `* `id`: `uuid`
+* `sourceRange`: ``
+`
+* `from`: ``
+* `name`: `string`
+* `to`: ``
+`
+* `value`: ``
+`
 
 #### Returns
 
@@ -320,9 +422,21 @@ Returns the angle to match the given length for y.
 
 #### Arguments
 
-* `segment_name`: `str`
-* `to`: `f64`
-* `sketch_group`: `SketchGroup`
+* `segment_name`: `string`
+* `to`: `number`
+* `sketch_group`: `* `__meta`: ``
+* `id`: `uuid`
+* `position`: ``
+* `rotation`: ``
+* `start`: `* `__geoMeta`: `* `id`: `uuid`
+* `sourceRange`: ``
+`
+* `from`: ``
+* `name`: `string`
+* `to`: ``
+`
+* `value`: ``
+`
 
 #### Returns
 
@@ -342,8 +456,25 @@ Draw a line to a point.
 
 #### Arguments
 
-* `data`: `LineToData`
-* `sketch_group`: `SketchGroup`
+* `data`: `Any of:
+* `* `tag`: `string`
+* `to`: ``
+`
+* ``
+`
+* `sketch_group`: `* `__meta`: ``
+* `id`: `uuid`
+* `position`: ``
+* `rotation`: ``
+* `start`: `* `__geoMeta`: `* `id`: `uuid`
+* `sourceRange`: ``
+`
+* `from`: ``
+* `name`: `string`
+* `to`: ``
+`
+* `value`: ``
+`
 
 #### Returns
 
@@ -363,8 +494,29 @@ Draw a line.
 
 #### Arguments
 
-* `data`: `LineData`
-* `sketch_group`: `SketchGroup`
+* `data`: `Any of:
+* `* `tag`: `string`
+* `to`: `Any of:
+* ``
+* `string`
+`
+`
+* ``
+* `string`
+`
+* `sketch_group`: `* `__meta`: ``
+* `id`: `uuid`
+* `position`: ``
+* `rotation`: ``
+* `start`: `* `__geoMeta`: `* `id`: `uuid`
+* `sourceRange`: ``
+`
+* `from`: ``
+* `name`: `string`
+* `to`: ``
+`
+* `value`: ``
+`
 
 #### Returns
 
@@ -384,8 +536,25 @@ Draw a line to a point on the x-axis.
 
 #### Arguments
 
-* `data`: `AxisLineToData`
-* `sketch_group`: `SketchGroup`
+* `data`: `Any of:
+* `* `tag`: `string`
+* `to`: `number`
+`
+* `number`
+`
+* `sketch_group`: `* `__meta`: ``
+* `id`: `uuid`
+* `position`: ``
+* `rotation`: ``
+* `start`: `* `__geoMeta`: `* `id`: `uuid`
+* `sourceRange`: ``
+`
+* `from`: ``
+* `name`: `string`
+* `to`: ``
+`
+* `value`: ``
+`
 
 #### Returns
 
@@ -405,8 +574,25 @@ Draw a line on the x-axis.
 
 #### Arguments
 
-* `data`: `AxisLineData`
-* `sketch_group`: `SketchGroup`
+* `data`: `Any of:
+* `* `length`: `number`
+* `tag`: `string`
+`
+* `number`
+`
+* `sketch_group`: `* `__meta`: ``
+* `id`: `uuid`
+* `position`: ``
+* `rotation`: ``
+* `start`: `* `__geoMeta`: `* `id`: `uuid`
+* `sourceRange`: ``
+`
+* `from`: ``
+* `name`: `string`
+* `to`: ``
+`
+* `value`: ``
+`
 
 #### Returns
 
@@ -426,8 +612,25 @@ Draw a line to a point on the y-axis.
 
 #### Arguments
 
-* `data`: `AxisLineToData`
-* `sketch_group`: `SketchGroup`
+* `data`: `Any of:
+* `* `tag`: `string`
+* `to`: `number`
+`
+* `number`
+`
+* `sketch_group`: `* `__meta`: ``
+* `id`: `uuid`
+* `position`: ``
+* `rotation`: ``
+* `start`: `* `__geoMeta`: `* `id`: `uuid`
+* `sourceRange`: ``
+`
+* `from`: ``
+* `name`: `string`
+* `to`: ``
+`
+* `value`: ``
+`
 
 #### Returns
 
@@ -447,8 +650,25 @@ Draw a line on the y-axis.
 
 #### Arguments
 
-* `data`: `AxisLineData`
-* `sketch_group`: `SketchGroup`
+* `data`: `Any of:
+* `* `length`: `number`
+* `tag`: `string`
+`
+* `number`
+`
+* `sketch_group`: `* `__meta`: ``
+* `id`: `uuid`
+* `position`: ``
+* `rotation`: ``
+* `start`: `* `__geoMeta`: `* `id`: `uuid`
+* `sourceRange`: ``
+`
+* `from`: ``
+* `name`: `string`
+* `to`: ``
+`
+* `value`: ``
+`
 
 #### Returns
 
@@ -468,8 +688,26 @@ Draw an angled line to a given x coordinate.
 
 #### Arguments
 
-* `data`: `AngledLineToData`
-* `sketch_group`: `SketchGroup`
+* `data`: `Any of:
+* `* `angle`: `number`
+* `tag`: `string`
+* `to`: `number`
+`
+* ``
+`
+* `sketch_group`: `* `__meta`: ``
+* `id`: `uuid`
+* `position`: ``
+* `rotation`: ``
+* `start`: `* `__geoMeta`: `* `id`: `uuid`
+* `sourceRange`: ``
+`
+* `from`: ``
+* `name`: `string`
+* `to`: ``
+`
+* `value`: ``
+`
 
 #### Returns
 
@@ -489,8 +727,26 @@ Draw an angled line to a given y coordinate.
 
 #### Arguments
 
-* `data`: `AngledLineToData`
-* `sketch_group`: `SketchGroup`
+* `data`: `Any of:
+* `* `angle`: `number`
+* `tag`: `string`
+* `to`: `number`
+`
+* ``
+`
+* `sketch_group`: `* `__meta`: ``
+* `id`: `uuid`
+* `position`: ``
+* `rotation`: ``
+* `start`: `* `__geoMeta`: `* `id`: `uuid`
+* `sourceRange`: ``
+`
+* `from`: ``
+* `name`: `string`
+* `to`: ``
+`
+* `value`: ``
+`
 
 #### Returns
 
@@ -510,8 +766,26 @@ Draw an angled line.
 
 #### Arguments
 
-* `data`: `AngledLineData`
-* `sketch_group`: `SketchGroup`
+* `data`: `Any of:
+* `* `angle`: `number`
+* `length`: `number`
+* `tag`: `string`
+`
+* ``
+`
+* `sketch_group`: `* `__meta`: ``
+* `id`: `uuid`
+* `position`: ``
+* `rotation`: ``
+* `start`: `* `__geoMeta`: `* `id`: `uuid`
+* `sourceRange`: ``
+`
+* `from`: ``
+* `name`: `string`
+* `to`: ``
+`
+* `value`: ``
+`
 
 #### Returns
 
@@ -531,8 +805,26 @@ Draw an angled line of a given x length.
 
 #### Arguments
 
-* `data`: `AngledLineData`
-* `sketch_group`: `SketchGroup`
+* `data`: `Any of:
+* `* `angle`: `number`
+* `length`: `number`
+* `tag`: `string`
+`
+* ``
+`
+* `sketch_group`: `* `__meta`: ``
+* `id`: `uuid`
+* `position`: ``
+* `rotation`: ``
+* `start`: `* `__geoMeta`: `* `id`: `uuid`
+* `sourceRange`: ``
+`
+* `from`: ``
+* `name`: `string`
+* `to`: ``
+`
+* `value`: ``
+`
 
 #### Returns
 
@@ -552,8 +844,26 @@ Draw an angled line of a given y length.
 
 #### Arguments
 
-* `data`: `AngledLineData`
-* `sketch_group`: `SketchGroup`
+* `data`: `Any of:
+* `* `angle`: `number`
+* `length`: `number`
+* `tag`: `string`
+`
+* ``
+`
+* `sketch_group`: `* `__meta`: ``
+* `id`: `uuid`
+* `position`: ``
+* `rotation`: ``
+* `start`: `* `__geoMeta`: `* `id`: `uuid`
+* `sourceRange`: ``
+`
+* `from`: ``
+* `name`: `string`
+* `to`: ``
+`
+* `value`: ``
+`
 
 #### Returns
 
@@ -573,8 +883,24 @@ Draw an angled line that intersects with a given line.
 
 #### Arguments
 
-* `data`: `AngeledLineThatIntersectsData`
-* `sketch_group`: `SketchGroup`
+* `data`: `* `angle`: `number`
+* `intersectTag`: `string`
+* `offset`: `number`
+* `tag`: `string`
+`
+* `sketch_group`: `* `__meta`: ``
+* `id`: `uuid`
+* `position`: ``
+* `rotation`: ``
+* `start`: `* `__geoMeta`: `* `id`: `uuid`
+* `sourceRange`: ``
+`
+* `from`: ``
+* `name`: `string`
+* `to`: ``
+`
+* `value`: ``
+`
 
 #### Returns
 
@@ -594,7 +920,16 @@ Start a sketch at a given point.
 
 #### Arguments
 
-* `data`: `LineData`
+* `data`: `Any of:
+* `* `tag`: `string`
+* `to`: `Any of:
+* ``
+* `string`
+`
+`
+* ``
+* `string`
+`
 
 #### Returns
 
@@ -614,7 +949,19 @@ Close the current sketch.
 
 #### Arguments
 
-* `sketch_group`: `SketchGroup`
+* `sketch_group`: `* `__meta`: ``
+* `id`: `uuid`
+* `position`: ``
+* `rotation`: ``
+* `start`: `* `__geoMeta`: `* `id`: `uuid`
+* `sourceRange`: ``
+`
+* `from`: ``
+* `name`: `string`
+* `to`: ``
+`
+* `value`: ``
+`
 
 #### Returns
 

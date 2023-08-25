@@ -2448,6 +2448,7 @@ dependencies = [
  "js-sys",
  "kittycad",
  "lazy_static",
+ "parse-display",
  "pretty_assertions",
  "regex",
  "schemars",
