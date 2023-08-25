@@ -570,90 +570,6 @@ pub enum Primitive {
 mod tests {
     use crate::std::StdLib;
 
-    use super::Primitive;
-
-    fn get_type_name_from_format(format: &str) -> (String, bool) {
-        if format == "uuid" {
-            (Primitive::Uuid.to_string(), false)
-        } else if format == "double" || format == "uint" {
-            return (Primitive::Number.to_string(), false);
-        } else {
-            panic!("Unknown format: {}", format);
-        }
-    }
-
-    fn get_type_name_from_schema(schema: &schemars::schema::Schema) -> (String, bool) {
-        match schema {
-            schemars::schema::Schema::Object(o) => {
-                if let Some(format) = &o.format {
-                    return get_type_name_from_format(format);
-                }
-
-                if let Some(obj_val) = &o.object {
-                    let mut fn_docs = String::new();
-                    fn_docs.push_str("{\n");
-                    // Let's print out the object's properties.
-                    for (prop_name, prop) in obj_val.properties.iter() {
-                        if prop_name.starts_with('_') {
-                            continue;
-                        }
-
-                        fn_docs.push_str(&format!(
-                            "\t\"{}\": {},\n",
-                            prop_name,
-                            get_type_name_from_schema(prop).0,
-                        ));
-                    }
-
-                    fn_docs.push('}');
-
-                    return (fn_docs, true);
-                }
-
-                if let Some(array_val) = &o.array {
-                    if let Some(schemars::schema::SingleOrVec::Single(items)) = &array_val.items {
-                        // Let's print out the object's properties.
-                        return (format!("[{}]", get_type_name_from_schema(items).0), false);
-                    } else if let Some(items) = &array_val.contains {
-                        return (format!("[{}]", get_type_name_from_schema(items).0), false);
-                    }
-                }
-
-                if let Some(subschemas) = &o.subschemas {
-                    let mut fn_docs = String::new();
-                    if let Some(items) = &subschemas.one_of {
-                        for (i, item) in items.iter().enumerate() {
-                            // Let's print out the object's properties.
-                            fn_docs.push_str(&get_type_name_from_schema(item).0.to_string());
-                            if i < items.len() - 1 {
-                                fn_docs.push_str(" |\n");
-                            }
-                        }
-                    } else if let Some(items) = &subschemas.any_of {
-                        for (i, item) in items.iter().enumerate() {
-                            // Let's print out the object's properties.
-                            fn_docs.push_str(&get_type_name_from_schema(item).0.to_string());
-                            if i < items.len() - 1 {
-                                fn_docs.push_str(" |\n");
-                            }
-                        }
-                    } else {
-                        panic!("unknown subschemas: {:#?}", subschemas)
-                    }
-
-                    return (fn_docs, true);
-                }
-
-                if let Some(schemars::schema::SingleOrVec::Single(_string)) = &o.instance_type {
-                    return (Primitive::String.to_string(), false);
-                }
-
-                panic!("unknown type: {:#?}", o)
-            }
-            schemars::schema::Schema::Bool(_) => (Primitive::Bool.to_string(), false),
-        }
-    }
-
     #[test]
     fn test_generate_stdlib_markdown_docs() {
         let stdlib = StdLib::new();
@@ -714,17 +630,13 @@ mod tests {
 
             fn_docs.push_str("#### Arguments\n\n");
             for arg in internal_fn.args() {
-                let (format, should_be_indented) = get_type_name_from_schema(&arg.schema);
+                let (format, should_be_indented) = arg.get_type_string().unwrap();
                 if should_be_indented {
                     fn_docs.push_str(&format!("* `{}`:\n", arg.name,));
 
                     fn_docs.push_str(&format!("```\n{}\n```\n", format));
                 } else {
-                    fn_docs.push_str(&format!(
-                        "* `{}`: `{}`\n",
-                        arg.name,
-                        get_type_name_from_schema(&arg.schema).0
-                    ));
+                    fn_docs.push_str(&format!("* `{}`: `{}`\n", arg.name, format));
                 }
             }
 
@@ -739,7 +651,7 @@ mod tests {
                 ));
             }
 
-            let (format, should_be_indented) = get_type_name_from_schema(&return_type.schema);
+            let (format, should_be_indented) = return_type.get_type_string().unwrap();
             if should_be_indented {
                 fn_docs.push_str(&format!("```\n{}\n```\n", format));
             }
