@@ -53,3 +53,32 @@ pub fn deserialize_files(data: &[u8]) -> Result<JsValue, JsError> {
         ws_resp
     )))
 }
+
+// wasm_bindgen wrapper for lexer
+// test for this function and by extension lexer are done in javascript land src/lang/tokeniser.test.ts
+#[wasm_bindgen]
+pub fn lexer_js(js: &str) -> Result<JsValue, JsError> {
+    let tokens = kcl::tokeniser::lexer(js);
+    Ok(JsValue::from_serde(&tokens)?)
+}
+
+#[wasm_bindgen]
+pub fn parse_js(js: &str) -> Result<JsValue, String> {
+    let tokens = kcl::tokeniser::lexer(js);
+    let program = kcl::parser::abstract_syntax_tree(&tokens).map_err(String::from)?;
+    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
+    // gloo-serialize crate instead.
+    JsValue::from_serde(&program).map_err(|e| e.to_string())
+}
+
+// wasm_bindgen wrapper for recast
+// test for this function and by extension the recaster are done in javascript land src/lang/recast.test.ts
+#[wasm_bindgen]
+pub fn recast_wasm(json_str: &str) -> Result<JsValue, JsError> {
+    // deserialize the ast from a stringified json
+    let program: kcl::abstract_syntax_tree_types::Program =
+        serde_json::from_str(json_str).map_err(JsError::from)?;
+
+    let result = kcl::recast::recast(&program, "", false);
+    Ok(JsValue::from_serde(&result)?)
+}

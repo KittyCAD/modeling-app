@@ -1,5 +1,5 @@
 import { Diagnostic } from '@codemirror/lint'
-import { KclError as RustKclError } from '../wasm-lib/bindings/KclError'
+import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
 
 type ExtractKind<T> = T extends { kind: infer K } ? K : never
 export class KCLError {

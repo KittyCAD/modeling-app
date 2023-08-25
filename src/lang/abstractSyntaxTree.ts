@@ -3,7 +3,7 @@ import { parse_js } from '../wasm-lib/pkg/wasm_lib'
 import { initPromise } from './rust'
 import { Token } from './tokeniser'
 import { KCLError } from './errors'
-import { KclError as RustKclError } from '../wasm-lib/bindings/KclError'
+import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
 
 export const rangeTypeFix = (ranges: number[][]): [number, number][] =>
   ranges.map(([start, end]) => [start, end])

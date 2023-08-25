@@ -7,7 +7,7 @@ use wasm_bindgen::prelude::*;
 
 use crate::errors::{KclError, KclErrorDetails};
 
-#[wasm_bindgen(module = "/../lang/std/engineConnection.ts")]
+#[wasm_bindgen(module = "/../../lang/std/engineConnection.ts")]
 extern "C" {
     #[derive(Debug, Clone)]
     pub type EngineCommandManager;
