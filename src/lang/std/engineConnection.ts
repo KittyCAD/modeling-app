@@ -575,7 +575,6 @@ export class EngineCommandManager {
     if (commandStr === undefined) {
       throw new Error('commandStr is undefined')
     }
-    console.log('sendModelingCommandFromWasm', id, rangeStr, commandStr)
     const command: EngineCommand = JSON.parse(commandStr)
     const range: SourceRange = JSON.parse(rangeStr)
 
