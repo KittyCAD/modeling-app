@@ -32,8 +32,7 @@ import useStateMachineCommands from '../hooks/useStateMachineCommands'
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
 const Home = () => {
-  const { commands, setCommands, setCommandBarOpen } =
-    useContext(CommandsContext)
+  const { commands, setCommandBarOpen } = useContext(CommandsContext)
   const navigate = useNavigate()
   const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
   const { defaultDir, defaultProjectName } = useStore((s) => ({
@@ -124,7 +123,6 @@ const Home = () => {
 
   useStateMachineCommands<typeof homeMachine>({
     commands,
-    setCommands,
     send,
     state,
     commandBarMeta: homeCommandMeta,

@@ -28,6 +28,7 @@ import {
   AuthMachineCommandProvider,
   GlobalStateProvider,
 } from './hooks/useAuthMachine'
+import SettingsCommandProvider from './components/SettingsCommandProvider'
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {
@@ -74,7 +75,9 @@ const addGlobalContextToElements = (
           element: (
             <GlobalStateProvider>
               <AuthMachineCommandProvider>
-                {route.element}
+                <SettingsCommandProvider>
+                  {route.element}
+                </SettingsCommandProvider>
               </AuthMachineCommandProvider>
             </GlobalStateProvider>
           ),

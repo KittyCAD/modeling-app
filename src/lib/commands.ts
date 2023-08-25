@@ -4,7 +4,7 @@ type InitialCommandBarMetaArg = {
   name: string
   type: 'string' | 'select'
   description?: string
-  options: string
+  options: string | Array<{ name: string }>
 }
 
 export type CommandBarMeta = {
@@ -61,7 +61,9 @@ export function createMachineCommand<T extends AnyStateMachine>({
       ] as { name: string }[]
 
       const options =
-        !optionsFromContext || typeof optionsFromContext === 'string'
+        arg.options instanceof Array
+          ? arg.options
+          : !optionsFromContext || typeof optionsFromContext === 'string'
           ? [
               {
                 name: optionsFromContext,

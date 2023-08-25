@@ -19,7 +19,8 @@ export type SortedCommand = {
 export const CommandsContext = createContext(
   {} as {
     commands: Command[]
-    setCommands: Dispatch<SetStateAction<Command[]>>
+    addCommands: (commands: Command[]) => void
+    removeCommands: (commands: Command[]) => void
     commandBarOpen: boolean
     setCommandBarOpen: Dispatch<SetStateAction<boolean>>
   }

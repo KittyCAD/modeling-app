@@ -4,14 +4,8 @@ import reportWebVitals from './reportWebVitals'
 import { Toaster } from 'react-hot-toast'
 import { Router } from './Router'
 import { HotkeysProvider } from 'react-hotkeys-hook'
-import { setThemeClass } from './lib/theme'
-import { useStore } from './useStore'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
-
-const { theme } = useStore.getState()
-setThemeClass(theme)
-useStore.subscribe(({ theme }) => setThemeClass(theme))
 
 root.render(
   <HotkeysProvider>

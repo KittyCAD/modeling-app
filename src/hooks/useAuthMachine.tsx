@@ -19,9 +19,18 @@ export const GlobalStateProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const [commands, setCommands] = useState([] as Command[])
+  const [commands, internalSetCommands] = useState([] as Command[])
   const [commandBarOpen, setCommandBarOpen] = useState(false)
   const navigate = useNavigate()
+
+  const addCommands = (newCommands: Command[]) => {
+    internalSetCommands((prevCommands) => [...newCommands, ...prevCommands])
+  }
+  const removeCommands = (newCommands: Command[]) => {
+    internalSetCommands((prevCommands) =>
+      prevCommands.filter((command) => !newCommands.includes(command))
+    )
+  }
 
   return (
     <AuthMachineContext.Provider
@@ -38,7 +47,13 @@ export const GlobalStateProvider = ({
       }
     >
       <CommandsContext.Provider
-        value={{ commands, setCommands, commandBarOpen, setCommandBarOpen }}
+        value={{
+          commands,
+          addCommands,
+          removeCommands,
+          commandBarOpen,
+          setCommandBarOpen,
+        }}
       >
         {children}
         <CommandBar />
@@ -71,13 +86,12 @@ export function logout() {
 
 export function AuthMachineCommandProvider(props: React.PropsWithChildren<{}>) {
   const [state, send] = AuthMachineContext.useActor()
-  const { commands, setCommands } = useContext(CommandsContext)
+  const { commands } = useContext(CommandsContext)
 
   useStateMachineCommands({
     state,
     send,
     commands,
-    setCommands,
     commandBarMeta: authCommandBarMeta,
     owner: 'auth',
   })
