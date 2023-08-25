@@ -6,60 +6,45 @@ import {
 import { ActionButton } from '../components/ActionButton'
 import { AppHeader } from '../components/AppHeader'
 import { open } from '@tauri-apps/api/dialog'
-import { baseUnits, useStore } from '../useStore'
-import { useRef } from 'react'
+import { BaseUnit, baseUnits } from '../useStore'
+import { useContext, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { Toggle } from '../components/Toggle/Toggle'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { IndexLoaderData, paths } from '../Router'
 import { Themes } from '../lib/theme'
+import { SettingsContext } from '../components/SettingsCommandProvider'
 
 export const Settings = () => {
   const loaderData = useRouteLoaderData(paths.FILE) as IndexLoaderData
   const navigate = useNavigate()
   useHotkeys('esc', () => navigate('../'))
   const {
-    defaultDir,
-    setDefaultDir,
     defaultProjectName,
-    setDefaultProjectName,
-    defaultUnitSystem,
-    setDefaultUnitSystem,
-    defaultBaseUnit,
-    setDefaultBaseUnit,
-    setDebugPanel,
-    debugPanel,
-    setOnboardingStatus,
+    showDebugPanel,
+    defaultDirectory,
+    unitSystem,
+    baseUnit,
     theme,
-    setTheme,
-  } = useStore((s) => ({
-    defaultDir: s.defaultDir,
-    setDefaultDir: s.setDefaultDir,
-    defaultProjectName: s.defaultProjectName,
-    setDefaultProjectName: s.setDefaultProjectName,
-    defaultUnitSystem: s.defaultUnitSystem,
-    setDefaultUnitSystem: s.setDefaultUnitSystem,
-    defaultBaseUnit: s.defaultBaseUnit,
-    setDefaultBaseUnit: s.setDefaultBaseUnit,
-    setDebugPanel: s.setDebugPanel,
-    debugPanel: s.debugPanel,
-    setOnboardingStatus: s.setOnboardingStatus,
-    theme: s.theme,
-    setTheme: s.setTheme,
-  }))
-  const ogDefaultDir = useRef(defaultDir)
+    send,
+  } = useContext(SettingsContext)
+  const [tempDefaultDirectory, setTempDefaultDirectory] =
+    useState(defaultDirectory)
   const ogDefaultProjectName = useRef(defaultProjectName)
 
   async function handleDirectorySelection() {
     const newDirectory = await open({
       directory: true,
-      defaultPath: (defaultDir.base || '') + (defaultDir.dir || paths.INDEX),
+      defaultPath: defaultDirectory || paths.INDEX,
       title: 'Choose a new default directory',
     })
 
     if (newDirectory && newDirectory !== null && !Array.isArray(newDirectory)) {
-      setDefaultDir({ base: defaultDir.base, dir: newDirectory })
+      send({
+        type: 'Set Default Directory',
+        data: { defaultDirectory: defaultDirectory + newDirectory },
+      })
     }
   }
 
@@ -103,17 +88,14 @@ export const Settings = () => {
               <div className="w-full flex gap-4 p-1 rounded border border-chalkboard-30">
                 <input
                   className="flex-1 px-2 bg-transparent"
-                  value={defaultDir.dir}
+                  value={tempDefaultDirectory}
                   onChange={(e) => {
-                    setDefaultDir({
-                      base: defaultDir.base,
-                      dir: e.target.value,
-                    })
+                    setTempDefaultDirectory(defaultDirectory + e.target.value)
                   }}
                   onBlur={() => {
-                    ogDefaultDir.current.dir !== defaultDir.dir &&
+                    tempDefaultDirectory !== defaultDirectory &&
                       toast.success('Default directory updated')
-                    ogDefaultDir.current.dir = defaultDir.dir
+                    setTempDefaultDirectory(defaultDirectory)
                   }}
                 />
                 <ActionButton
@@ -140,13 +122,18 @@ export const Settings = () => {
                 className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
                 value={defaultProjectName}
                 onChange={(e) => {
-                  setDefaultProjectName(e.target.value)
+                  send({
+                    type: 'Set Default Project Name',
+                    data: { defaultProjectName: e.target.value },
+                  })
                 }}
                 onBlur={() => {
                   ogDefaultProjectName.current !== defaultProjectName &&
                     toast.success('Default project name updated')
                   ogDefaultProjectName.current = defaultProjectName
                 }}
+                autoCapitalize="off"
+                autoComplete="off"
               />
             </SettingsSection>
           </>
@@ -159,11 +146,18 @@ export const Settings = () => {
             offLabel="Imperial"
             onLabel="Metric"
             name="settings-units"
-            checked={defaultUnitSystem === 'metric'}
+            checked={unitSystem === 'metric'}
             onChange={(e) => {
               const newUnitSystem = e.target.checked ? 'metric' : 'imperial'
-              setDefaultUnitSystem(newUnitSystem)
-              setDefaultBaseUnit(baseUnits[newUnitSystem][0])
+              send({
+                type: 'Set Unit System',
+                data: { unitSystem: newUnitSystem },
+              })
+              send({
+                type: 'Set Base Unit',
+                data: { baseUnit: baseUnits[newUnitSystem][0] },
+              })
+
               toast.success('Unit system set to ' + newUnitSystem)
             }}
           />
@@ -175,13 +169,16 @@ export const Settings = () => {
           <select
             id="base-unit"
             className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
-            value={defaultBaseUnit}
+            value={baseUnit}
             onChange={(e) => {
-              setDefaultBaseUnit(e.target.value)
+              send({
+                type: 'Set Base Unit',
+                data: { baseUnit: e.target.value as BaseUnit },
+              })
               toast.success('Base unit changed to ' + e.target.value)
             }}
           >
-            {baseUnits[defaultUnitSystem].map((unit) => (
+            {baseUnits[unitSystem as keyof typeof baseUnits].map((unit) => (
               <option key={unit} value={unit}>
                 {unit}
               </option>
@@ -194,9 +191,8 @@ export const Settings = () => {
         >
           <Toggle
             name="settings-debug-panel"
-            checked={debugPanel}
+            checked={showDebugPanel}
             onChange={(e) => {
-              setDebugPanel(e.target.checked)
               toast.success(
                 'Debug panel toggled ' + (e.target.checked ? 'on' : 'off')
               )
@@ -212,7 +208,10 @@ export const Settings = () => {
             className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
             value={theme}
             onChange={(e) => {
-              setTheme(e.target.value as Themes)
+              send({
+                type: 'Set Theme',
+                data: { theme: e.target.value as Themes },
+              })
               toast.success(
                 'Theme changed to ' +
                   e.target.value.slice(0, 1).toLocaleUpperCase() +
@@ -234,7 +233,10 @@ export const Settings = () => {
           <ActionButton
             Element="button"
             onClick={() => {
-              setOnboardingStatus('')
+              send({
+                type: 'Set Onboarding Status',
+                data: { onboardingStatus: '' },
+              })
               navigate('..' + paths.ONBOARDING.INDEX)
             }}
             icon={{ icon: faArrowRotateBack }}

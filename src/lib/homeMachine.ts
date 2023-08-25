@@ -68,6 +68,13 @@ export const homeMachine = createMachine(
       defaultProjectName: '',
     },
 
+    on: {
+      assign: {
+        actions: assign((_, event) => ({
+          ...event.data,
+        })),
+      },
+    },
     states: {
       'Has no projects': {
         on: {
@@ -191,7 +198,8 @@ export const homeMachine = createMachine(
         | {
             type: 'done.invoke.read-projects'
             data: ProjectWithEntryPointMetadata[]
-          },
+          }
+        | { type: 'assign'; data: { [key: string]: any } },
     },
 
     predictableActionArguments: true,

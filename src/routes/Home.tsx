@@ -1,4 +1,4 @@
-import { FormEvent, useContext } from 'react'
+import { FormEvent, useContext, useEffect } from 'react'
 import { removeDir, renameFile } from '@tauri-apps/api/fs'
 import {
   createNewProject,
@@ -9,7 +9,6 @@ import {
 } from '../lib/tauriFS'
 import { ActionButton } from '../components/ActionButton'
 import { faArrowDown, faPlus } from '@fortawesome/free-solid-svg-icons'
-import { useStore } from '../useStore'
 import { toast } from 'react-hot-toast'
 import { AppHeader } from '../components/AppHeader'
 import ProjectCard from '../components/ProjectCard'
@@ -28,6 +27,7 @@ import {
 } from '../lib/sorting'
 import { CommandsContext } from '../components/CommandBar'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
+import { SettingsContext } from '../components/SettingsCommandProvider'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
@@ -35,15 +35,11 @@ const Home = () => {
   const { commands, setCommandBarOpen } = useContext(CommandsContext)
   const navigate = useNavigate()
   const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
-  const { defaultDir, defaultProjectName } = useStore((s) => ({
-    defaultDir: s.defaultDir,
-    defaultProjectName: s.defaultProjectName,
-  }))
+  const { defaultDirectory, defaultProjectName } = useContext(SettingsContext)
 
   const [state, send] = useMachine(homeMachine, {
     context: {
       projects: loadedProjects,
-      defaultDir: defaultDir.dir,
       defaultProjectName,
     },
     actions: {
@@ -51,12 +47,11 @@ const Home = () => {
         context: ContextFrom<typeof homeMachine>,
         event: EventFrom<typeof homeMachine>
       ) => {
-        const { defaultDir } = context
         if (event.data && 'name' in event.data) {
           setCommandBarOpen(false)
           navigate(
             `${paths.FILE}/${encodeURIComponent(
-              defaultDir + '/' + event.data.name
+              defaultDirectory + '/' + event.data.name
             )}`
           )
         }
@@ -66,12 +61,11 @@ const Home = () => {
     },
     services: {
       readProjects: async (context: ContextFrom<typeof homeMachine>) =>
-        getProjectsInDir(context.defaultDir),
+        getProjectsInDir(defaultDirectory),
       createProject: async (
         context: ContextFrom<typeof homeMachine>,
         event: EventFrom<typeof homeMachine, 'Create project'>
       ) => {
-        const { defaultDir, defaultProjectName } = context
         let name =
           event.data && 'name' in event.data
             ? event.data.name
@@ -81,14 +75,13 @@ const Home = () => {
           name = interpolateProjectNameWithIndex(name, nextIndex)
         }
 
-        await createNewProject(defaultDir + '/' + name)
+        await createNewProject(defaultDirectory + '/' + name)
         return `Successfully created "${name}"`
       },
       renameProject: async (
         context: ContextFrom<typeof homeMachine>,
         event: EventFrom<typeof homeMachine, 'Rename project'>
       ) => {
-        const { defaultDir } = context
         const { oldName, newName } = event.data
         let name = newName ? newName : defaultProjectName
         if (doesProjectNameNeedInterpolated(name)) {
@@ -96,15 +89,19 @@ const Home = () => {
           name = interpolateProjectNameWithIndex(name, nextIndex)
         }
 
-        await renameFile(defaultDir + '/' + oldName, defaultDir + '/' + name)
+        await renameFile(
+          defaultDirectory + '/' + oldName,
+          defaultDirectory + '/' + name
+        )
         return `Successfully renamed "${oldName}" to "${name}"`
       },
       deleteProject: async (
         context: ContextFrom<typeof homeMachine>,
         event: EventFrom<typeof homeMachine, 'Delete project'>
       ) => {
-        const { defaultDir } = context
-        await removeDir(defaultDir + '/' + event.data.name, { recursive: true })
+        await removeDir(defaultDirectory + '/' + event.data.name, {
+          recursive: true,
+        })
         return `Successfully deleted "${event.data.name}"`
       },
     },
@@ -128,6 +125,10 @@ const Home = () => {
     commandBarMeta: homeCommandMeta,
     owner: 'home',
   })
+
+  useEffect(() => {
+    send({ type: 'assign', data: { defaultProjectName, defaultDirectory } })
+  }, [defaultDirectory, defaultProjectName, send])
 
   async function handleRenameProject(
     e: FormEvent<HTMLFormElement>,
@@ -201,7 +202,7 @@ const Home = () => {
           <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
             Are being saved at{' '}
             <code className="text-liquid-80 dark:text-liquid-30">
-              {defaultDir.dir}
+              {defaultDirectory}
             </code>
             , which you can change in your <Link to="settings">Settings</Link>.
           </p>

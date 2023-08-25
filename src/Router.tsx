@@ -29,6 +29,8 @@ import {
   GlobalStateProvider,
 } from './hooks/useAuthMachine'
 import SettingsCommandProvider from './components/SettingsCommandProvider'
+import { SETTINGS_PERSIST_KEY, settingsMachine } from './lib/settingsMachine'
+import { ContextFrom } from 'xstate'
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {
@@ -107,11 +109,15 @@ const router = createBrowserRouter(
         request,
         params,
       }): Promise<IndexLoaderData | Response> => {
-        const store = localStorage.getItem('store')
-        if (store === null) {
-          return redirect(paths.ONBOARDING.INDEX)
+        const fetchedStorage = localStorage?.getItem(SETTINGS_PERSIST_KEY)
+        const persistedSettings = JSON.parse(fetchedStorage || '{}') as Partial<
+          ContextFrom<typeof settingsMachine>
+        >
+
+        if (!('onboardingStatus' in persistedSettings)) {
+          return redirect(makeUrlPathRelative(paths.ONBOARDING.INDEX))
         } else {
-          const status = JSON.parse(store).state.onboardingStatus || ''
+          const status = persistedSettings.onboardingStatus || ''
           const notEnRouteToOnboarding =
             !request.url.includes(paths.ONBOARDING.INDEX) &&
             request.method === 'GET'
@@ -176,9 +182,23 @@ const router = createBrowserRouter(
         if (!isTauri()) {
           return redirect(paths.FILE + '/new')
         }
-
-        const projectDir = await initializeProjectDirectory()
-        const projectsNoMeta = (await readDir(projectDir.dir)).filter(
+        const fetchedStorage = localStorage?.getItem(SETTINGS_PERSIST_KEY)
+        const persistedSettings = JSON.parse(fetchedStorage || '{}') as Partial<
+          ContextFrom<typeof settingsMachine>
+        >
+        const projectDir = await initializeProjectDirectory(
+          persistedSettings.defaultDirectory || ''
+        )
+        if (projectDir !== persistedSettings.defaultDirectory) {
+          localStorage.setItem(
+            SETTINGS_PERSIST_KEY,
+            JSON.stringify({
+              ...persistedSettings,
+              defaultDirectory: projectDir,
+            })
+          )
+        }
+        const projectsNoMeta = (await readDir(projectDir)).filter(
           isProjectDirectory
         )
         const projects = await Promise.all(

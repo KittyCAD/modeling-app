@@ -6,7 +6,6 @@ import {
   writeTextFile,
 } from '@tauri-apps/api/fs'
 import { documentDir } from '@tauri-apps/api/path'
-import { useStore } from '../useStore'
 import { isTauri } from './isTauri'
 import { ProjectWithEntryPointMetadata } from '../Router'
 import { metadata } from 'tauri-plugin-fs-extra-api'
@@ -18,35 +17,31 @@ const INDEX_IDENTIFIER = '$n' // $nn.. will pad the number with 0s
 export const MAX_PADDING = 7
 
 // Initializes the project directory and returns the path
-export async function initializeProjectDirectory() {
+export async function initializeProjectDirectory(directory: string) {
   if (!isTauri()) {
     throw new Error(
       'initializeProjectDirectory() can only be called from a Tauri app'
     )
   }
-  const { defaultDir: projectDir, setDefaultDir } = useStore.getState()
 
-  if (projectDir && projectDir.dir.length > 0) {
-    const dirExists = await exists(projectDir.dir)
+  if (directory) {
+    const dirExists = await exists(directory)
     if (!dirExists) {
-      await createDir(projectDir.dir, { recursive: true })
+      await createDir(directory, { recursive: true })
     }
-    return projectDir
+    return directory
   }
 
   const appData = await documentDir()
 
-  const INITIAL_DEFAULT_DIR = {
-    dir: appData + PROJECT_FOLDER,
-  }
+  const INITIAL_DEFAULT_DIR = appData + PROJECT_FOLDER
 
-  const defaultDirExists = await exists(INITIAL_DEFAULT_DIR.dir)
+  const defaultDirExists = await exists(INITIAL_DEFAULT_DIR)
 
   if (!defaultDirExists) {
-    await createDir(INITIAL_DEFAULT_DIR.dir, { recursive: true })
+    await createDir(INITIAL_DEFAULT_DIR, { recursive: true })
   }
 
-  setDefaultDir(INITIAL_DEFAULT_DIR)
   return INITIAL_DEFAULT_DIR
 }
 

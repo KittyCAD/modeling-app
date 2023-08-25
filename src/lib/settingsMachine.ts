@@ -1,5 +1,5 @@
 import { assign, createMachine } from 'xstate'
-import { baseUnitsUnion } from '../useStore'
+import { BaseUnit, baseUnitsUnion } from '../useStore'
 import { CommandBarMeta } from './commands'
 import { Themes } from './theme'
 
@@ -22,7 +22,7 @@ export const settingsCommandBarMeta: CommandBarMeta = {
     displayValue: (args: string[]) => 'Set a new default project name',
     args: [
       {
-        name: 'name',
+        name: 'defaultProjectName',
         type: 'string',
         options: 'defaultProjectName',
       },
@@ -64,8 +64,8 @@ export const settingsMachine = createMachine(
     context: {
       theme: Themes.System,
       defaultProjectName: '',
-      unitSystem: 'imperial',
-      baseUnit: 'in',
+      unitSystem: 'imperial' as 'imperial' | 'metric',
+      baseUnit: 'in' as BaseUnit,
       defaultDirectory: '',
       showDebugPanel: false,
       onboardingStatus: '',
@@ -77,10 +77,7 @@ export const settingsMachine = createMachine(
           'Set Theme': {
             actions: [
               assign({
-                theme: (_, event) => {
-                  console.log('setting theme', event.data.theme)
-                  return event.data.theme
-                },
+                theme: (_, event) => event.data.theme,
               }),
               'persistSettings',
             ],
@@ -163,7 +160,7 @@ export const settingsMachine = createMachine(
             type: 'Set Unit System'
             data: { unitSystem: 'imperial' | 'metric' }
           }
-        | { type: 'Set Base Unit'; data: { baseUnit: typeof baseUnitsUnion } }
+        | { type: 'Set Base Unit'; data: { baseUnit: BaseUnit } }
         | { type: 'Set Onboarding Status'; data: { onboardingStatus: string } }
         | { type: 'Toggle Debug Panel' },
     },
@@ -172,7 +169,6 @@ export const settingsMachine = createMachine(
     actions: {
       persistSettings: (context) => {
         try {
-          console.log('persisting settings')
           localStorage.setItem(SETTINGS_PERSIST_KEY, JSON.stringify(context))
         } catch (e) {
           console.error(e)
