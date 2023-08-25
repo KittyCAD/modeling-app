@@ -584,6 +584,8 @@ mod tests {
                 return_type.type_, return_type.description
             ));
 
+            fn_docs.push_str("\n\n\n");
+
             buf.push_str(&fn_docs);
         }
 

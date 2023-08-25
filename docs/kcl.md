@@ -11,6 +11,9 @@ Returns the minimum of the given arguments.
 ### Returns
 
 * `f64` - 
+
+
+
 ## legLen
 
 Returns the length of the given leg.
@@ -25,6 +28,9 @@ Returns the length of the given leg.
 ### Returns
 
 * `f64` - 
+
+
+
 ## legAngX
 
 Returns the angle of the given leg for x.
@@ -39,6 +45,9 @@ Returns the angle of the given leg for x.
 ### Returns
 
 * `f64` - 
+
+
+
 ## legAngY
 
 Returns the angle of the given leg for y.
@@ -53,6 +62,9 @@ Returns the angle of the given leg for y.
 ### Returns
 
 * `f64` - 
+
+
+
 ## extrude
 
 Extrudes by a given amount.
@@ -67,6 +79,9 @@ Extrudes by a given amount.
 ### Returns
 
 * `ExtrudeGroup` - 
+
+
+
 ## getExtrudeWallTransform
 
 Returns the extrude wall transform.
@@ -81,6 +96,9 @@ Returns the extrude wall transform.
 ### Returns
 
 * `MemoryItem` - 
+
+
+
 ## segEndX
 
 Returns the segment end of x.
@@ -95,6 +113,9 @@ Returns the segment end of x.
 ### Returns
 
 * `f64` - 
+
+
+
 ## segEndY
 
 Returns the segment end of y.
@@ -109,6 +130,9 @@ Returns the segment end of y.
 ### Returns
 
 * `f64` - 
+
+
+
 ## lastSegX
 
 Returns the last segment of x.
@@ -122,6 +146,9 @@ Returns the last segment of x.
 ### Returns
 
 * `f64` - 
+
+
+
 ## lastSegY
 
 Returns the last segment of y.
@@ -135,6 +162,9 @@ Returns the last segment of y.
 ### Returns
 
 * `f64` - 
+
+
+
 ## segLen
 
 Returns the length of the segment.
@@ -149,6 +179,9 @@ Returns the length of the segment.
 ### Returns
 
 * `f64` - 
+
+
+
 ## segAng
 
 Returns the angle of the segment.
@@ -163,6 +196,9 @@ Returns the angle of the segment.
 ### Returns
 
 * `f64` - 
+
+
+
 ## angleToMatchLengthX
 
 Returns the angle to match the given length for x.
@@ -178,6 +214,9 @@ Returns the angle to match the given length for x.
 ### Returns
 
 * `f64` - 
+
+
+
 ## angleToMatchLengthY
 
 Returns the angle to match the given length for y.
@@ -193,6 +232,9 @@ Returns the angle to match the given length for y.
 ### Returns
 
 * `f64` - 
+
+
+
 ## lineTo
 
 Draw a line to a point.
@@ -207,6 +249,9 @@ Draw a line to a point.
 ### Returns
 
 * `SketchGroup` - 
+
+
+
 ## line
 
 Draw a line.
@@ -221,6 +266,9 @@ Draw a line.
 ### Returns
 
 * `SketchGroup` - 
+
+
+
 ## xLineTo
 
 Draw a line to a point on the x-axis.
@@ -235,6 +283,9 @@ Draw a line to a point on the x-axis.
 ### Returns
 
 * `SketchGroup` - 
+
+
+
 ## xLine
 
 Draw a line on the x-axis.
@@ -249,6 +300,9 @@ Draw a line on the x-axis.
 ### Returns
 
 * `SketchGroup` - 
+
+
+
 ## yLineTo
 
 Draw a line to a point on the y-axis.
@@ -263,6 +317,9 @@ Draw a line to a point on the y-axis.
 ### Returns
 
 * `SketchGroup` - 
+
+
+
 ## yLine
 
 Draw a line on the y-axis.
@@ -277,6 +334,9 @@ Draw a line on the y-axis.
 ### Returns
 
 * `SketchGroup` - 
+
+
+
 ## angledLineToX
 
 Draw an angled line to a given x coordinate.
@@ -291,6 +351,9 @@ Draw an angled line to a given x coordinate.
 ### Returns
 
 * `SketchGroup` - 
+
+
+
 ## angledLineToY
 
 Draw an angled line to a given y coordinate.
@@ -305,6 +368,9 @@ Draw an angled line to a given y coordinate.
 ### Returns
 
 * `SketchGroup` - 
+
+
+
 ## angledLine
 
 Draw an angled line.
@@ -319,6 +385,9 @@ Draw an angled line.
 ### Returns
 
 * `SketchGroup` - 
+
+
+
 ## angledLineOfXLength
 
 Draw an angled line of a given x length.
@@ -333,6 +402,9 @@ Draw an angled line of a given x length.
 ### Returns
 
 * `SketchGroup` - 
+
+
+
 ## angledLineOfYLength
 
 Draw an angled line of a given y length.
@@ -347,6 +419,9 @@ Draw an angled line of a given y length.
 ### Returns
 
 * `SketchGroup` - 
+
+
+
 ## angledLineThatIntersects
 
 Draw an angled line that intersects with a given line.
@@ -361,6 +436,9 @@ Draw an angled line that intersects with a given line.
 ### Returns
 
 * `SketchGroup` - 
+
+
+
 ## startSketchAt
 
 Start a sketch at a given point.
@@ -374,6 +452,9 @@ Start a sketch at a given point.
 ### Returns
 
 * `SketchGroup` - 
+
+
+
 ## close
 
 Close the current sketch.
@@ -387,3 +468,6 @@ Close the current sketch.
 ### Returns
 
 * `SketchGroup` - 
+
+
+
