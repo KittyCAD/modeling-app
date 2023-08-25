@@ -41,7 +41,11 @@ export const GlobalStateProvider = ({
               navigate(paths.SIGN_IN)
               logout()
             },
-            goToIndexPage: () => navigate(paths.INDEX),
+            goToIndexPage: () => {
+              if (window.location.pathname.includes(paths.SIGN_IN)) {
+                navigate(paths.INDEX)
+              }
+            },
           },
         })
       }
