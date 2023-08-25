@@ -90,7 +90,7 @@ Returns the extrude wall transform.
 
 ### Arguments
 
-* `String` - 
+* `str` - 
 * `ExtrudeGroup` - 
 
 ### Returns
