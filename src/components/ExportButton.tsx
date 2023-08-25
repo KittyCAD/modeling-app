@@ -130,7 +130,9 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
                   id="storage"
                   name="storage"
                   onChange={formik.handleChange}
-                  value={'storage' in formik.values ? formik.values.storage : ''}
+                  value={
+                    'storage' in formik.values ? formik.values.storage : ''
+                  }
                   className="bg-chalkboard-20 dark:bg-chalkboard-90 w-full"
                 >
                   {type === 'gltf' && (
