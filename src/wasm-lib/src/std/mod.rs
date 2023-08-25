@@ -10,6 +10,11 @@ mod utils;
 
 use std::collections::HashMap;
 
+use anyhow::Result;
+use derive_docs::stdlib;
+use lazy_static::lazy_static;
+use schemars::JsonSchema;
+
 use crate::{
     abstract_syntax_tree_types::parse_json_number_as_f64,
     engine::EngineConnection,
@@ -27,9 +32,6 @@ use crate::{
     },
 };
 
-use anyhow::Result;
-use lazy_static::lazy_static;
-
 pub type FnMap = HashMap<String, StdFn>;
 pub type StdFn = fn(&mut Args) -> Result<MemoryItem, KclError>;
 
@@ -45,6 +47,7 @@ lazy_static! {
                 ("legLen".to_string(), leg_length as StdFn),
                 ("legAngX".to_string(),leg_angle_x as StdFn),
                 ("legAngY".to_string(), leg_angle_y as StdFn),
+
                 // Sketch segment functions.
                 ("segEndX".to_string(), segment_end_x as StdFn),
                 ("segEndY".to_string(), segment_end_y as StdFn),
@@ -485,20 +488,44 @@ pub fn min(args: &mut Args) -> Result<MemoryItem, KclError> {
 /// Returns the length of the given leg.
 pub fn leg_length(args: &mut Args) -> Result<MemoryItem, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
-    let result = (hypotenuse.powi(2) - f64::min(hypotenuse.abs(), leg.abs()).powi(2)).sqrt();
+    let result = inner_leg_length(hypotenuse, leg);
     args.make_user_val_from_f64(result)
+}
+
+/// Returns the length of the given leg.
+#[stdlib {
+    name = "legLen",
+}]
+fn inner_leg_length(hypotenuse: f64, leg: f64) -> f64 {
+    (hypotenuse.powi(2) - f64::min(hypotenuse.abs(), leg.abs()).powi(2)).sqrt()
 }
 
 /// Returns the angle of the given leg for x.
 pub fn leg_angle_x(args: &mut Args) -> Result<MemoryItem, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
-    let result = (leg.min(hypotenuse) / hypotenuse).acos() * 180.0 / std::f64::consts::PI;
+    let result = inner_leg_angle_x(hypotenuse, leg);
     args.make_user_val_from_f64(result)
+}
+
+/// Returns the angle of the given leg for x.
+#[stdlib {
+    name = "legAngX",
+}]
+fn inner_leg_angle_x(hypotenuse: f64, leg: f64) -> f64 {
+    (leg.min(hypotenuse) / hypotenuse).acos() * 180.0 / std::f64::consts::PI
 }
 
 /// Returns the angle of the given leg for y.
 pub fn leg_angle_y(args: &mut Args) -> Result<MemoryItem, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
-    let result = (leg.min(hypotenuse) / hypotenuse).asin() * 180.0 / std::f64::consts::PI;
+    let result = inner_leg_angle_y(hypotenuse, leg);
     args.make_user_val_from_f64(result)
+}
+
+/// Returns the angle of the given leg for y.
+#[stdlib {
+    name = "legAngY",
+}]
+fn inner_leg_angle_y(hypotenuse: f64, leg: f64) -> f64 {
+    (leg.min(hypotenuse) / hypotenuse).asin() * 180.0 / std::f64::consts::PI
 }

@@ -81,6 +81,20 @@ pub enum AxisLineToData {
 /// Draw a line to a point on the x-axis.
 pub fn x_line_to(args: &mut Args) -> Result<MemoryItem, KclError> {
     let (data, sketch_group): (AxisLineToData, SketchGroup) = args.get_data_and_sketch_group()?;
+
+    let new_sketch_group = inner_x_line_to(data, sketch_group, args)?;
+    Ok(MemoryItem::SketchGroup(new_sketch_group))
+}
+
+/// Draw a line to a point on the x-axis.
+#[stdlib {
+    name = "xLineTo",
+}]
+fn inner_x_line_to(
+    data: AxisLineToData,
+    sketch_group: SketchGroup,
+    args: &Args,
+) -> Result<SketchGroup, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
 
     let line_to_data = match data {
@@ -92,12 +106,27 @@ pub fn x_line_to(args: &mut Args) -> Result<MemoryItem, KclError> {
     };
 
     let new_sketch_group = inner_line_to(line_to_data, sketch_group, args)?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+
+    Ok(new_sketch_group)
 }
 
 /// Draw a line to a point on the y-axis.
 pub fn y_line_to(args: &mut Args) -> Result<MemoryItem, KclError> {
     let (data, sketch_group): (AxisLineToData, SketchGroup) = args.get_data_and_sketch_group()?;
+
+    let new_sketch_group = inner_y_line_to(data, sketch_group, args)?;
+    Ok(MemoryItem::SketchGroup(new_sketch_group))
+}
+
+/// Draw a line to a point on the y-axis.
+#[stdlib {
+    name = "yLineTo",
+}]
+fn inner_y_line_to(
+    data: AxisLineToData,
+    sketch_group: SketchGroup,
+    args: &Args,
+) -> Result<SketchGroup, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
 
     let line_to_data = match data {
@@ -109,7 +138,7 @@ pub fn y_line_to(args: &mut Args) -> Result<MemoryItem, KclError> {
     };
 
     let new_sketch_group = inner_line_to(line_to_data, sketch_group, args)?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+    Ok(new_sketch_group)
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -216,6 +245,19 @@ pub enum AxisLineData {
 pub fn x_line(args: &mut Args) -> Result<MemoryItem, KclError> {
     let (data, sketch_group): (AxisLineData, SketchGroup) = args.get_data_and_sketch_group()?;
 
+    let new_sketch_group = inner_x_line(data, sketch_group, args)?;
+    Ok(MemoryItem::SketchGroup(new_sketch_group))
+}
+
+/// Draw a line on the x-axis.
+#[stdlib {
+    name = "xLine",
+}]
+fn inner_x_line(
+    data: AxisLineData,
+    sketch_group: SketchGroup,
+    args: &mut Args,
+) -> Result<SketchGroup, KclError> {
     let line_data = match data {
         AxisLineData::PointWithTag { length, tag } => LineData::PointWithTag {
             to: PointOrDefault::Point([length, 0.0]),
@@ -225,13 +267,26 @@ pub fn x_line(args: &mut Args) -> Result<MemoryItem, KclError> {
     };
 
     let new_sketch_group = inner_line(line_data, sketch_group, args)?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+    Ok(new_sketch_group)
 }
 
 /// Draw a line on the y-axis.
 pub fn y_line(args: &mut Args) -> Result<MemoryItem, KclError> {
     let (data, sketch_group): (AxisLineData, SketchGroup) = args.get_data_and_sketch_group()?;
 
+    let new_sketch_group = inner_x_line(data, sketch_group, args)?;
+    Ok(MemoryItem::SketchGroup(new_sketch_group))
+}
+
+/// Draw a line on the y-axis.
+#[stdlib {
+    name = "yLine",
+}]
+fn inner_y_line(
+    data: AxisLineData,
+    sketch_group: SketchGroup,
+    args: &mut Args,
+) -> Result<SketchGroup, KclError> {
     let line_data = match data {
         AxisLineData::PointWithTag { length, tag } => LineData::PointWithTag {
             to: PointOrDefault::Point([0.0, length]),
@@ -241,7 +296,7 @@ pub fn y_line(args: &mut Args) -> Result<MemoryItem, KclError> {
     };
 
     let new_sketch_group = inner_line(line_data, sketch_group, args)?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+    Ok(new_sketch_group)
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -260,6 +315,19 @@ pub enum AngledLineData {
 pub fn angled_line(args: &mut Args) -> Result<MemoryItem, KclError> {
     let (data, sketch_group): (AngledLineData, SketchGroup) = args.get_data_and_sketch_group()?;
 
+    let new_sketch_group = inner_angled_line(data, sketch_group, args)?;
+    Ok(MemoryItem::SketchGroup(new_sketch_group))
+}
+
+/// Draw an angled line.
+#[stdlib {
+    name = "angledLine",
+}]
+fn inner_angled_line(
+    data: AngledLineData,
+    sketch_group: SketchGroup,
+    args: &mut Args,
+) -> Result<SketchGroup, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
     let (angle, length) = match &data {
         AngledLineData::AngleWithTag { angle, length, .. } => (*angle, *length),
@@ -292,13 +360,26 @@ pub fn angled_line(args: &mut Args) -> Result<MemoryItem, KclError> {
 
     let mut new_sketch_group = sketch_group.clone();
     new_sketch_group.value.push(current_path);
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+    Ok(new_sketch_group)
 }
 
 /// Draw an angled line of a given x length.
 pub fn angled_line_of_x_length(args: &mut Args) -> Result<MemoryItem, KclError> {
     let (data, sketch_group): (AngledLineData, SketchGroup) = args.get_data_and_sketch_group()?;
 
+    let new_sketch_group = inner_angled_line_of_x_length(data, sketch_group, args)?;
+    Ok(MemoryItem::SketchGroup(new_sketch_group))
+}
+
+/// Draw an angled line of a given x length.
+#[stdlib {
+    name = "angledLineOfXLength",
+}]
+fn inner_angled_line_of_x_length(
+    data: AngledLineData,
+    sketch_group: SketchGroup,
+    args: &mut Args,
+) -> Result<SketchGroup, KclError> {
     let (angle, length) = match &data {
         AngledLineData::AngleWithTag { angle, length, .. } => (*angle, *length),
         AngledLineData::AngleAndLength(angle_and_length) => {
@@ -321,7 +402,7 @@ pub fn angled_line_of_x_length(args: &mut Args) -> Result<MemoryItem, KclError> 
         args,
     )?;
 
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+    Ok(new_sketch_group)
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
