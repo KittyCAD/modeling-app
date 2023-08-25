@@ -680,13 +680,12 @@ pub fn execute(
 }
 
 // wasm_bindgen wrapper for execute
-#[cfg(feature = "web")]
-#[cfg(not(test))]
+#[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 pub async fn execute_wasm(
     program_str: &str,
     memory_str: &str,
-    manager: crate::engine::conn_web::EngineCommandManager,
+    manager: crate::engine::conn_wasm::EngineCommandManager,
 ) -> Result<JsValue, String> {
     use gloo_utils::format::JsValueSerdeExt;
 
@@ -706,7 +705,7 @@ pub async fn execute_wasm(
 }
 
 // wasm_bindgen wrapper for execute
-#[cfg(not(feature = "web"))]
+#[cfg(not(target_arch = "wasm32"))]
 #[wasm_bindgen]
 pub async fn execute_wasm(program_str: &str, memory_str: &str) -> Result<JsValue, String> {
     use gloo_utils::format::JsValueSerdeExt;

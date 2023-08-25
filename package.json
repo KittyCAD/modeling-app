@@ -60,7 +60,7 @@
     "simpleserver": "http-server ./public --cors -p 3000",
     "fmt": "prettier --write ./src",
     "fmt-check": "prettier --check ./src",
-    "build:wasm": "yarn wasm-prep && (cd src/wasm-lib && wasm-pack build --target web --out-dir pkg --no-default-features --features web && cargo test --all) && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn fmt && yarn remove-importmeta",
+    "build:wasm": "yarn wasm-prep && (cd src/wasm-lib && wasm-pack build --target web --out-dir pkg && cargo test --all) && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn fmt && yarn remove-importmeta",
     "remove-importmeta": "sed -i 's/import.meta.url//g' \"./src/wasm-lib/pkg/wasm_lib.js\"; sed -i '' 's/import.meta.url//g' \"./src/wasm-lib/pkg/wasm_lib.js\" || echo \"sed for both mac and linux\"",
     "wasm-prep": "rm -rf src/wasm-lib/pkg && mkdir src/wasm-lib/pkg && rm -rf src/wasm-lib/bindings",
     "lint": "eslint --fix src",
