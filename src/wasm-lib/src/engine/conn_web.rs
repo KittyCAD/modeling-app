@@ -2,7 +2,7 @@
 //! engine.
 
 use anyhow::Result;
-use kittycad::types::WebSocketMessages;
+use kittycad::types::WebSocketRequest;
 use wasm_bindgen::prelude::*;
 
 use crate::errors::{KclError, KclErrorDetails};
@@ -43,7 +43,7 @@ impl EngineConnection {
                 source_ranges: vec![source_range],
             })
         })?;
-        let ws_msg = WebSocketMessages::ModelingCmdReq { cmd, cmd_id: id };
+        let ws_msg = WebSocketRequest::ModelingCmdReq { cmd, cmd_id: id };
         let cmd_str = serde_json::to_string(&ws_msg).map_err(|e| {
             KclError::Engine(KclErrorDetails {
                 message: format!("Failed to serialize modeling command: {:?}", e),

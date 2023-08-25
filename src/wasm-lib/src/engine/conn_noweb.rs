@@ -3,7 +3,7 @@
 
 use anyhow::Result;
 use futures::{SinkExt, StreamExt};
-use kittycad::types::{WebSocketMessages, WebSocketResponses};
+use kittycad::types::{OkWebSocketResponseData, WebSocketRequest, WebSocketResponse};
 use tokio_tungstenite::tungstenite::Message as WsMsg;
 
 use crate::errors::{KclError, KclErrorDetails};
@@ -35,14 +35,14 @@ pub struct TcpRead {
 }
 
 impl TcpRead {
-    pub async fn read(&mut self) -> Result<WebSocketResponses> {
+    pub async fn read(&mut self) -> Result<WebSocketResponse> {
         let msg = self.stream.next().await.unwrap()?;
         let msg = match msg {
             WsMsg::Text(text) => text,
             WsMsg::Binary(bin) => bincode::deserialize(&bin)?,
             other => anyhow::bail!("Unexpected websocket message from server: {}", other),
         };
-        let msg = serde_json::from_str::<WebSocketResponses>(&msg)?;
+        let msg = serde_json::from_str::<WebSocketResponse>(&msg)?;
         Ok(msg)
     }
 }
@@ -68,19 +68,26 @@ impl EngineConnection {
 
         let tcp_read_handle = tokio::spawn(async move {
             // Get Websocket messages from API server
-            while let Ok(msg) = tcp_read.read().await {
-                match msg {
-                    WebSocketResponses::IceServerInfo { ice_servers } => {
-                        println!("got ice server info: {:?}", ice_servers);
+            while let Ok(ws_resp) = tcp_read.read().await {
+                if !ws_resp.success {
+                    println!("got ws errors: {:?}", ws_resp.errors);
+                    continue;
+                }
+
+                if let Some(msg) = ws_resp.resp {
+                    match msg {
+                        OkWebSocketResponseData::IceServerInfo { ice_servers } => {
+                            println!("got ice server info: {:?}", ice_servers);
+                        }
+                        OkWebSocketResponseData::SdpAnswer { answer } => {
+                            println!("got sdp answer: {:?}", answer);
+                        }
+                        OkWebSocketResponseData::TrickleIce { candidate } => {
+                            println!("got trickle ice: {:?}", candidate);
+                        }
+                        OkWebSocketResponseData::Modeling { .. } => {}
+                        OkWebSocketResponseData::Export { .. } => {}
                     }
-                    WebSocketResponses::SdpAnswer { answer } => {
-                        println!("got sdp answer: {:?}", answer);
-                    }
-                    WebSocketResponses::TrickleIce { candidate } => {
-                        println!("got trickle ice: {:?}", candidate);
-                    }
-                    WebSocketResponses::Modeling { .. } => {}
-                    WebSocketResponses::Export { .. } => {}
                 }
             }
         });
@@ -91,7 +98,7 @@ impl EngineConnection {
         })
     }
 
-    pub async fn tcp_send(&mut self, msg: WebSocketMessages) -> Result<()> {
+    pub async fn tcp_send(&mut self, msg: WebSocketRequest) -> Result<()> {
         let msg = serde_json::to_string(&msg)?;
         self.tcp_write.send(WsMsg::Text(msg)).await?;
 
@@ -105,7 +112,7 @@ impl EngineConnection {
         cmd: kittycad::types::ModelingCmd,
     ) -> Result<(), KclError> {
         futures::executor::block_on(
-            self.tcp_send(WebSocketMessages::ModelingCmdReq { cmd, cmd_id: id }),
+            self.tcp_send(WebSocketRequest::ModelingCmdReq { cmd, cmd_id: id }),
         )
         .map_err(|e| {
             KclError::Engine(KclErrorDetails {
