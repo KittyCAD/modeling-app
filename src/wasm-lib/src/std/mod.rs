@@ -25,6 +25,7 @@ pub type FnMap = HashMap<String, StdFn>;
 pub type StdFn = fn(&mut Args) -> Result<MemoryItem, KclError>;
 
 pub struct StdLib {
+    internal_fn_names: Vec<Box<(dyn crate::docs::StdLibFn)>>,
     pub fns: FnMap,
 }
 
@@ -62,14 +63,17 @@ impl StdLib {
         ];
 
         let mut fns = HashMap::new();
-        for internal_fn_name in internal_fn_names {
+        for internal_fn_name in &internal_fn_names {
             fns.insert(
                 internal_fn_name.name().to_string(),
                 internal_fn_name.std_lib_fn(),
             );
         }
 
-        Self { fns }
+        Self {
+            internal_fn_names,
+            fns,
+        }
     }
 }
 
@@ -550,5 +554,39 @@ mod tests {
     #[test]
     fn test_generate_stdlib_docs() {
         let stdlib = StdLib::new();
+        let mut buf = String::new();
+
+        for internal_fn in stdlib.internal_fn_names {
+            if internal_fn.unpublished() {
+                continue;
+            }
+
+            let mut fn_docs = String::new();
+
+            fn_docs.push_str(&format!("## {}", internal_fn.name()));
+            if internal_fn.deprecated() {
+                fn_docs.push_str(" (deprecated)");
+            }
+            fn_docs.push_str("\n\n");
+
+            fn_docs.push_str(&format!("{}\n\n", internal_fn.summary()));
+            fn_docs.push_str(&format!("{}\n\n", internal_fn.description()));
+
+            fn_docs.push_str("### Arguments\n\n");
+            for arg in internal_fn.args() {
+                fn_docs.push_str(&format!("* `{}` - {}\n", arg.type_, arg.description));
+            }
+
+            fn_docs.push_str("\n### Returns\n\n");
+            let return_type = internal_fn.return_value();
+            fn_docs.push_str(&format!(
+                "* `{}` - {}\n",
+                return_type.type_, return_type.description
+            ));
+
+            buf.push_str(&fn_docs);
+        }
+
+        expectorate::assert_contents("../../docs/kcl.md", &buf);
     }
 }

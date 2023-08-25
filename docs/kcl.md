@@ -1,0 +1,389 @@
+## min
+
+Returns the minimum of the given arguments.
+
+
+
+### Arguments
+
+* `Vec<f64>` - 
+
+### Returns
+
+* `f64` - 
+## legLen
+
+Returns the length of the given leg.
+
+
+
+### Arguments
+
+* `f64` - 
+* `f64` - 
+
+### Returns
+
+* `f64` - 
+## legAngX
+
+Returns the angle of the given leg for x.
+
+
+
+### Arguments
+
+* `f64` - 
+* `f64` - 
+
+### Returns
+
+* `f64` - 
+## legAngY
+
+Returns the angle of the given leg for y.
+
+
+
+### Arguments
+
+* `f64` - 
+* `f64` - 
+
+### Returns
+
+* `f64` - 
+## extrude
+
+Extrudes by a given amount.
+
+
+
+### Arguments
+
+* `f64` - 
+* `SketchGroup` - 
+
+### Returns
+
+* `ExtrudeGroup` - 
+## getExtrudeWallTransform
+
+Returns the extrude wall transform.
+
+
+
+### Arguments
+
+* `String` - 
+* `ExtrudeGroup` - 
+
+### Returns
+
+* `MemoryItem` - 
+## segEndX
+
+Returns the segment end of x.
+
+
+
+### Arguments
+
+* `str` - 
+* `SketchGroup` - 
+
+### Returns
+
+* `f64` - 
+## segEndY
+
+Returns the segment end of y.
+
+
+
+### Arguments
+
+* `str` - 
+* `SketchGroup` - 
+
+### Returns
+
+* `f64` - 
+## lastSegX
+
+Returns the last segment of x.
+
+
+
+### Arguments
+
+* `SketchGroup` - 
+
+### Returns
+
+* `f64` - 
+## lastSegY
+
+Returns the last segment of y.
+
+
+
+### Arguments
+
+* `SketchGroup` - 
+
+### Returns
+
+* `f64` - 
+## segLen
+
+Returns the length of the segment.
+
+
+
+### Arguments
+
+* `str` - 
+* `SketchGroup` - 
+
+### Returns
+
+* `f64` - 
+## segAng
+
+Returns the angle of the segment.
+
+
+
+### Arguments
+
+* `str` - 
+* `SketchGroup` - 
+
+### Returns
+
+* `f64` - 
+## angleToMatchLengthX
+
+Returns the angle to match the given length for x.
+
+
+
+### Arguments
+
+* `str` - 
+* `f64` - 
+* `SketchGroup` - 
+
+### Returns
+
+* `f64` - 
+## angleToMatchLengthY
+
+Returns the angle to match the given length for y.
+
+
+
+### Arguments
+
+* `str` - 
+* `f64` - 
+* `SketchGroup` - 
+
+### Returns
+
+* `f64` - 
+## lineTo
+
+Draw a line to a point.
+
+
+
+### Arguments
+
+* `LineToData` - 
+* `SketchGroup` - 
+
+### Returns
+
+* `SketchGroup` - 
+## line
+
+Draw a line.
+
+
+
+### Arguments
+
+* `LineData` - 
+* `SketchGroup` - 
+
+### Returns
+
+* `SketchGroup` - 
+## xLineTo
+
+Draw a line to a point on the x-axis.
+
+
+
+### Arguments
+
+* `AxisLineToData` - 
+* `SketchGroup` - 
+
+### Returns
+
+* `SketchGroup` - 
+## xLine
+
+Draw a line on the x-axis.
+
+
+
+### Arguments
+
+* `AxisLineData` - 
+* `SketchGroup` - 
+
+### Returns
+
+* `SketchGroup` - 
+## yLineTo
+
+Draw a line to a point on the y-axis.
+
+
+
+### Arguments
+
+* `AxisLineToData` - 
+* `SketchGroup` - 
+
+### Returns
+
+* `SketchGroup` - 
+## yLine
+
+Draw a line on the y-axis.
+
+
+
+### Arguments
+
+* `AxisLineData` - 
+* `SketchGroup` - 
+
+### Returns
+
+* `SketchGroup` - 
+## angledLineToX
+
+Draw an angled line to a given x coordinate.
+
+
+
+### Arguments
+
+* `AngledLineToData` - 
+* `SketchGroup` - 
+
+### Returns
+
+* `SketchGroup` - 
+## angledLineToY
+
+Draw an angled line to a given y coordinate.
+
+
+
+### Arguments
+
+* `AngledLineToData` - 
+* `SketchGroup` - 
+
+### Returns
+
+* `SketchGroup` - 
+## angledLine
+
+Draw an angled line.
+
+
+
+### Arguments
+
+* `AngledLineData` - 
+* `SketchGroup` - 
+
+### Returns
+
+* `SketchGroup` - 
+## angledLineOfXLength
+
+Draw an angled line of a given x length.
+
+
+
+### Arguments
+
+* `AngledLineData` - 
+* `SketchGroup` - 
+
+### Returns
+
+* `SketchGroup` - 
+## angledLineOfYLength
+
+Draw an angled line of a given y length.
+
+
+
+### Arguments
+
+* `AngledLineData` - 
+* `SketchGroup` - 
+
+### Returns
+
+* `SketchGroup` - 
+## angledLineThatIntersects
+
+Draw an angled line that intersects with a given line.
+
+
+
+### Arguments
+
+* `AngeledLineThatIntersectsData` - 
+* `SketchGroup` - 
+
+### Returns
+
+* `SketchGroup` - 
+## startSketchAt
+
+Start a sketch at a given point.
+
+
+
+### Arguments
+
+* `LineData` - 
+
+### Returns
+
+* `SketchGroup` - 
+## close
+
+Close the current sketch.
+
+
+
+### Arguments
+
+* `SketchGroup` - 
+
+### Returns
+
+* `SketchGroup` - 
