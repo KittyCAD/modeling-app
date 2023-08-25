@@ -1,7 +1,30 @@
 //! Functions for generating docs for our stdlib functions.
 
+use anyhow::Result;
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+pub struct StdLibFnData {
+    /// The name of the function.
+    pub name: String,
+    /// The summary of the function.
+    pub summary: String,
+    /// The description of the function.
+    pub description: String,
+    /// The tags of the function.
+    pub tags: Vec<String>,
+    /// The args of the function.
+    pub args: Vec<StdLibFnArg>,
+    /// The return value of the function.
+    pub return_value: StdLibFnArg,
+    /// If the function is unpublished.
+    pub unpublished: bool,
+    /// If the function is deprecated.
+    pub deprecated: bool,
+}
+
 /// This struct defines a single argument to a stdlib function.
-#[allow(dead_code)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
 pub struct StdLibFnArg {
     /// The name of the argument.
     pub name: String,
@@ -44,4 +67,18 @@ pub trait StdLibFn {
 
     /// The function itself.
     fn std_lib_fn(&self) -> crate::std::StdFn;
+
+    /// Return a JSON struct representing the function.
+    fn to_json(&self) -> Result<StdLibFnData> {
+        Ok(StdLibFnData {
+            name: self.name(),
+            summary: self.summary(),
+            description: self.description(),
+            tags: self.tags(),
+            args: self.args(),
+            return_value: self.return_value(),
+            unpublished: self.unpublished(),
+            deprecated: self.deprecated(),
+        })
+    }
 }

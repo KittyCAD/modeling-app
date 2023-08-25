@@ -28,7 +28,7 @@ impl crate::docs::StdLibFn for Min {
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
         vec![crate::docs::StdLibFnArg {
             name: "args".to_string(),
-            type_: "Vec<f64>".to_string(),
+            type_: "Vec<number>".to_string(),
             description: "".to_string(),
             schema: <Vec<f64>>::json_schema(&mut generator),
             required: true,

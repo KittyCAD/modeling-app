@@ -40,7 +40,7 @@
 ### min
 
 ```
-min(args: Vec<f64>) -> number
+min(args: Vec<number>) -> number
 ```
 
 Returns the minimum of the given arguments.

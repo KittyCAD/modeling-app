@@ -473,7 +473,7 @@ fn clean_type(t: &str) -> String {
     } else if t == "str" {
         return "string".to_string();
     } else {
-        return t.to_string();
+        return t.replace("f64", "number").to_string();
     }
 }
 
