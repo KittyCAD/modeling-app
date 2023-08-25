@@ -23,22 +23,32 @@ impl crate::docs::StdLibFn for LineTo {
     }
 
     fn args(&self) -> Vec<crate::docs::StdLibFnArg> {
+        let settings = schemars::gen::SchemaSettings::openapi3();
+        let mut generator = schemars::gen::SchemaGenerator::new(settings);
         vec![
             crate::docs::StdLibFnArg {
                 type_: "LineToData".to_string(),
                 description: "".to_string(),
+                schema: LineToData::json_schema(&mut generator),
+                required: true,
             },
             crate::docs::StdLibFnArg {
                 type_: "SketchGroup".to_string(),
                 description: "".to_string(),
+                schema: SketchGroup::json_schema(&mut generator),
+                required: true,
             },
         ]
     }
 
     fn return_value(&self) -> crate::docs::StdLibFnArg {
+        let settings = schemars::gen::SchemaSettings::openapi3();
+        let mut generator = schemars::gen::SchemaGenerator::new(settings);
         crate::docs::StdLibFnArg {
             type_: "SketchGroup".to_string(),
             description: "".to_string(),
+            schema: SketchGroup::json_schema(&mut generator),
+            required: true,
         }
     }
 
@@ -49,4 +59,12 @@ impl crate::docs::StdLibFn for LineTo {
     fn deprecated(&self) -> bool {
         false
     }
+}
+
+fn inner_line_to(
+    data: LineToData,
+    sketch_group: SketchGroup,
+    args: &Args,
+) -> Result<SketchGroup, KclError> {
+    Ok(())
 }

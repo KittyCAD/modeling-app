@@ -186,20 +186,57 @@ pub fn segment_angle(args: &mut Args) -> Result<MemoryItem, KclError> {
     args.make_user_val_from_f64(result)
 }
 
+/// Returns the angle of the segment.
+#[stdlib {
+    name = "segAng",
+}]
+fn inner_segment_angle(
+    segment_name: &str,
+    sketch_group: SketchGroup,
+    args: &mut Args,
+) -> Result<f64, KclError> {
+    let path = sketch_group.get_path_by_name(segment_name).ok_or_else(|| {
+        KclError::Type(KclErrorDetails {
+            message: format!(
+                "Expected a segment name that exists in the given SketchGroup, found `{}`",
+                segment_name
+            ),
+            source_ranges: vec![args.source_range],
+        })
+    })?;
+    let line = path.get_base();
+
+    let result = get_angle(&line.from, &line.to);
+
+    Ok(result)
+}
+
 /// Returns the angle to match the given length for x.
 pub fn angle_to_match_length_x(args: &mut Args) -> Result<MemoryItem, KclError> {
     let (segment_name, to, sketch_group) = args.get_segment_name_to_number_sketch_group()?;
-    let path = sketch_group
-        .get_path_by_name(&segment_name)
-        .ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a segment name that exists in the given SketchGroup, found `{}`",
-                    segment_name
-                ),
-                source_ranges: vec![args.source_range],
-            })
-        })?;
+    let result = inner_angle_to_match_length_x(&segment_name, to, sketch_group, args)?;
+    args.make_user_val_from_f64(result)
+}
+
+/// Returns the angle to match the given length for x.
+#[stdlib {
+    name = "angleToMatchLengthX",
+}]
+fn inner_angle_to_match_length_x(
+    segment_name: &str,
+    to: f64,
+    sketch_group: SketchGroup,
+    args: &mut Args,
+) -> Result<f64, KclError> {
+    let path = sketch_group.get_path_by_name(segment_name).ok_or_else(|| {
+        KclError::Type(KclErrorDetails {
+            message: format!(
+                "Expected a segment name that exists in the given SketchGroup, found `{}`",
+                segment_name
+            ),
+            source_ranges: vec![args.source_range],
+        })
+    })?;
     let line = path.get_base();
 
     let length = ((line.from[1] - line.to[1]).powi(2) + (line.from[0] - line.to[0]).powi(2)).sqrt();
@@ -223,26 +260,38 @@ pub fn angle_to_match_length_x(args: &mut Args) -> Result<MemoryItem, KclError> 
     let angle_r = diff / length.acos();
 
     if diff > length {
-        args.make_user_val_from_f64(0.0)
+        Ok(0.0)
     } else {
-        args.make_user_val_from_f64(angle_r * 180.0 / std::f64::consts::PI)
+        Ok(angle_r * 180.0 / std::f64::consts::PI)
     }
 }
 
 /// Returns the angle to match the given length for y.
 pub fn angle_to_match_length_y(args: &mut Args) -> Result<MemoryItem, KclError> {
     let (segment_name, to, sketch_group) = args.get_segment_name_to_number_sketch_group()?;
-    let path = sketch_group
-        .get_path_by_name(&segment_name)
-        .ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a segment name that exists in the given SketchGroup, found `{}`",
-                    segment_name
-                ),
-                source_ranges: vec![args.source_range],
-            })
-        })?;
+    let result = inner_angle_to_match_length_y(&segment_name, to, sketch_group, args)?;
+    args.make_user_val_from_f64(result)
+}
+
+/// Returns the angle to match the given length for y.
+#[stdlib {
+    name = "angleToMatchLengthY",
+}]
+fn inner_angle_to_match_length_y(
+    segment_name: &str,
+    to: f64,
+    sketch_group: SketchGroup,
+    args: &mut Args,
+) -> Result<f64, KclError> {
+    let path = sketch_group.get_path_by_name(segment_name).ok_or_else(|| {
+        KclError::Type(KclErrorDetails {
+            message: format!(
+                "Expected a segment name that exists in the given SketchGroup, found `{}`",
+                segment_name
+            ),
+            source_ranges: vec![args.source_range],
+        })
+    })?;
     let line = path.get_base();
 
     let length = ((line.from[1] - line.to[1]).powi(2) + (line.from[0] - line.to[0]).powi(2)).sqrt();
@@ -266,8 +315,8 @@ pub fn angle_to_match_length_y(args: &mut Args) -> Result<MemoryItem, KclError> 
     let angle_r = diff / length.asin();
 
     if diff > length {
-        args.make_user_val_from_f64(0.0)
+        Ok(0.0)
     } else {
-        args.make_user_val_from_f64(angle_r * 180.0 / std::f64::consts::PI)
+        Ok(angle_r * 180.0 / std::f64::consts::PI)
     }
 }
