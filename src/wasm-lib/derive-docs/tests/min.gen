@@ -26,6 +26,7 @@ impl crate::docs::StdLibFn for Min {
         let settings = schemars::gen::SchemaSettings::openapi3();
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
         vec![crate::docs::StdLibFnArg {
+            name: "args".to_string(),
             type_: "Vec<f64>".to_string(),
             description: "".to_string(),
             schema: <Vec<f64>>::json_schema(&mut generator),
@@ -37,6 +38,7 @@ impl crate::docs::StdLibFn for Min {
         let settings = schemars::gen::SchemaSettings::openapi3();
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
         crate::docs::StdLibFnArg {
+            name: "".to_string(),
             type_: "f64".to_string(),
             description: "".to_string(),
             schema: f64::json_schema(&mut generator),
@@ -57,7 +59,7 @@ impl crate::docs::StdLibFn for Min {
     }
 }
 
-fn inner_min(args: Vec<f64>) -> f64 {
+fn inner_min(#[doc = r" The args to do shit to."] args: Vec<f64>) -> f64 {
     let mut min = std::f64::MAX;
     for arg in args.iter() {
         if *arg < min {

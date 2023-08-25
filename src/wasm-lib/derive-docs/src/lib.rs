@@ -184,6 +184,24 @@ fn do_stdlib_inner(
     // require a type that satisfies SharedExtractor or ExclusiveExtractor.
     let mut arg_types = Vec::new();
     for arg in ast.sig.inputs.iter() {
+        // Get the name of the argument.
+        let arg_name = match arg {
+            syn::FnArg::Receiver(pat) => {
+                let span = pat.self_token.span.unwrap();
+                span.source_text().unwrap().to_string()
+            }
+            syn::FnArg::Typed(pat) => match &*pat.pat {
+                syn::Pat::Ident(ident) => ident.ident.to_string(),
+                _ => {
+                    errors.push(Error::new_spanned(
+                        &pat.pat,
+                        "stdlib functions may not use destructuring patterns",
+                    ));
+                    continue;
+                }
+            },
+        };
+
         let ty = match arg {
             syn::FnArg::Receiver(pat) => pat.ty.as_ref().into_token_stream(),
             syn::FnArg::Typed(pat) => pat.ty.as_ref().into_token_stream(),
@@ -220,7 +238,7 @@ fn do_stdlib_inner(
             };
             arg_types.push(quote! {
                 #docs_crate::StdLibFnArg {
-                    name: "".to_string(),
+                    name: #arg_name.to_string(),
                     type_: #ty_string.to_string(),
                     description: "".to_string(),
                     schema: #schema,
@@ -484,7 +502,10 @@ mod tests {
                 name = "min",
             },
             quote! {
-                fn inner_min(args: Vec<f64>) -> f64 {
+                fn inner_min(
+                    /// The args to do shit to.
+                    args: Vec<f64>
+                ) -> f64 {
                     let mut min = std::f64::MAX;
                     for arg in args.iter() {
                         if *arg < min {

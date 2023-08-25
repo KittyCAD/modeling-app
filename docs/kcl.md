@@ -39,13 +39,17 @@
 
 ### min
 
+```
+min(args: Vec<f64>) -> f64
+```
+
 Returns the minimum of the given arguments.
 
 
 
 #### Arguments
 
-* `Vec<f64>` - 
+* `args`: `Vec<f64>`
 
 #### Returns
 
@@ -55,14 +59,18 @@ Returns the minimum of the given arguments.
 
 ### legLen
 
+```
+legLen(hypotenuse: f64, leg: f64) -> f64
+```
+
 Returns the length of the given leg.
 
 
 
 #### Arguments
 
-* `f64` - 
-* `f64` - 
+* `hypotenuse`: `f64`
+* `leg`: `f64`
 
 #### Returns
 
@@ -72,14 +80,18 @@ Returns the length of the given leg.
 
 ### legAngX
 
+```
+legAngX(hypotenuse: f64, leg: f64) -> f64
+```
+
 Returns the angle of the given leg for x.
 
 
 
 #### Arguments
 
-* `f64` - 
-* `f64` - 
+* `hypotenuse`: `f64`
+* `leg`: `f64`
 
 #### Returns
 
@@ -89,14 +101,18 @@ Returns the angle of the given leg for x.
 
 ### legAngY
 
+```
+legAngY(hypotenuse: f64, leg: f64) -> f64
+```
+
 Returns the angle of the given leg for y.
 
 
 
 #### Arguments
 
-* `f64` - 
-* `f64` - 
+* `hypotenuse`: `f64`
+* `leg`: `f64`
 
 #### Returns
 
@@ -106,14 +122,18 @@ Returns the angle of the given leg for y.
 
 ### extrude
 
+```
+extrude(length: f64, sketch_group: SketchGroup) -> ExtrudeGroup
+```
+
 Extrudes by a given amount.
 
 
 
 #### Arguments
 
-* `f64` - 
-* `SketchGroup` - 
+* `length`: `f64`
+* `sketch_group`: `SketchGroup`
 
 #### Returns
 
@@ -123,22 +143,30 @@ Extrudes by a given amount.
 
 ### getExtrudeWallTransform
 
+```
+getExtrudeWallTransform(surface_name: str, extrude_group: ExtrudeGroup) -> ExtrudeTransform
+```
+
 Returns the extrude wall transform.
 
 
 
 #### Arguments
 
-* `str` - 
-* `ExtrudeGroup` - 
+* `surface_name`: `str`
+* `extrude_group`: `ExtrudeGroup`
 
 #### Returns
 
-* `MemoryItem` - 
+* `ExtrudeTransform` - 
 
 
 
 ### segEndX
+
+```
+segEndX(segment_name: str, sketch_group: SketchGroup) -> f64
+```
 
 Returns the segment end of x.
 
@@ -146,8 +174,8 @@ Returns the segment end of x.
 
 #### Arguments
 
-* `str` - 
-* `SketchGroup` - 
+* `segment_name`: `str`
+* `sketch_group`: `SketchGroup`
 
 #### Returns
 
@@ -157,14 +185,18 @@ Returns the segment end of x.
 
 ### segEndY
 
+```
+segEndY(segment_name: str, sketch_group: SketchGroup) -> f64
+```
+
 Returns the segment end of y.
 
 
 
 #### Arguments
 
-* `str` - 
-* `SketchGroup` - 
+* `segment_name`: `str`
+* `sketch_group`: `SketchGroup`
 
 #### Returns
 
@@ -174,13 +206,17 @@ Returns the segment end of y.
 
 ### lastSegX
 
+```
+lastSegX(sketch_group: SketchGroup) -> f64
+```
+
 Returns the last segment of x.
 
 
 
 #### Arguments
 
-* `SketchGroup` - 
+* `sketch_group`: `SketchGroup`
 
 #### Returns
 
@@ -190,13 +226,17 @@ Returns the last segment of x.
 
 ### lastSegY
 
+```
+lastSegY(sketch_group: SketchGroup) -> f64
+```
+
 Returns the last segment of y.
 
 
 
 #### Arguments
 
-* `SketchGroup` - 
+* `sketch_group`: `SketchGroup`
 
 #### Returns
 
@@ -206,14 +246,18 @@ Returns the last segment of y.
 
 ### segLen
 
+```
+segLen(segment_name: str, sketch_group: SketchGroup) -> f64
+```
+
 Returns the length of the segment.
 
 
 
 #### Arguments
 
-* `str` - 
-* `SketchGroup` - 
+* `segment_name`: `str`
+* `sketch_group`: `SketchGroup`
 
 #### Returns
 
@@ -223,14 +267,18 @@ Returns the length of the segment.
 
 ### segAng
 
+```
+segAng(segment_name: str, sketch_group: SketchGroup) -> f64
+```
+
 Returns the angle of the segment.
 
 
 
 #### Arguments
 
-* `str` - 
-* `SketchGroup` - 
+* `segment_name`: `str`
+* `sketch_group`: `SketchGroup`
 
 #### Returns
 
@@ -240,15 +288,19 @@ Returns the angle of the segment.
 
 ### angleToMatchLengthX
 
+```
+angleToMatchLengthX(segment_name: str, to: f64, sketch_group: SketchGroup) -> f64
+```
+
 Returns the angle to match the given length for x.
 
 
 
 #### Arguments
 
-* `str` - 
-* `f64` - 
-* `SketchGroup` - 
+* `segment_name`: `str`
+* `to`: `f64`
+* `sketch_group`: `SketchGroup`
 
 #### Returns
 
@@ -258,15 +310,19 @@ Returns the angle to match the given length for x.
 
 ### angleToMatchLengthY
 
+```
+angleToMatchLengthY(segment_name: str, to: f64, sketch_group: SketchGroup) -> f64
+```
+
 Returns the angle to match the given length for y.
 
 
 
 #### Arguments
 
-* `str` - 
-* `f64` - 
-* `SketchGroup` - 
+* `segment_name`: `str`
+* `to`: `f64`
+* `sketch_group`: `SketchGroup`
 
 #### Returns
 
@@ -276,14 +332,18 @@ Returns the angle to match the given length for y.
 
 ### lineTo
 
+```
+lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
+```
+
 Draw a line to a point.
 
 
 
 #### Arguments
 
-* `LineToData` - 
-* `SketchGroup` - 
+* `data`: `LineToData`
+* `sketch_group`: `SketchGroup`
 
 #### Returns
 
@@ -293,14 +353,18 @@ Draw a line to a point.
 
 ### line
 
+```
+line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
+```
+
 Draw a line.
 
 
 
 #### Arguments
 
-* `LineData` - 
-* `SketchGroup` - 
+* `data`: `LineData`
+* `sketch_group`: `SketchGroup`
 
 #### Returns
 
@@ -310,14 +374,18 @@ Draw a line.
 
 ### xLineTo
 
+```
+xLineTo(data: AxisLineToData, sketch_group: SketchGroup) -> SketchGroup
+```
+
 Draw a line to a point on the x-axis.
 
 
 
 #### Arguments
 
-* `AxisLineToData` - 
-* `SketchGroup` - 
+* `data`: `AxisLineToData`
+* `sketch_group`: `SketchGroup`
 
 #### Returns
 
@@ -327,14 +395,18 @@ Draw a line to a point on the x-axis.
 
 ### xLine
 
+```
+xLine(data: AxisLineData, sketch_group: SketchGroup) -> SketchGroup
+```
+
 Draw a line on the x-axis.
 
 
 
 #### Arguments
 
-* `AxisLineData` - 
-* `SketchGroup` - 
+* `data`: `AxisLineData`
+* `sketch_group`: `SketchGroup`
 
 #### Returns
 
@@ -344,14 +416,18 @@ Draw a line on the x-axis.
 
 ### yLineTo
 
+```
+yLineTo(data: AxisLineToData, sketch_group: SketchGroup) -> SketchGroup
+```
+
 Draw a line to a point on the y-axis.
 
 
 
 #### Arguments
 
-* `AxisLineToData` - 
-* `SketchGroup` - 
+* `data`: `AxisLineToData`
+* `sketch_group`: `SketchGroup`
 
 #### Returns
 
@@ -361,14 +437,18 @@ Draw a line to a point on the y-axis.
 
 ### yLine
 
+```
+yLine(data: AxisLineData, sketch_group: SketchGroup) -> SketchGroup
+```
+
 Draw a line on the y-axis.
 
 
 
 #### Arguments
 
-* `AxisLineData` - 
-* `SketchGroup` - 
+* `data`: `AxisLineData`
+* `sketch_group`: `SketchGroup`
 
 #### Returns
 
@@ -378,14 +458,18 @@ Draw a line on the y-axis.
 
 ### angledLineToX
 
+```
+angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
+```
+
 Draw an angled line to a given x coordinate.
 
 
 
 #### Arguments
 
-* `AngledLineToData` - 
-* `SketchGroup` - 
+* `data`: `AngledLineToData`
+* `sketch_group`: `SketchGroup`
 
 #### Returns
 
@@ -395,14 +479,18 @@ Draw an angled line to a given x coordinate.
 
 ### angledLineToY
 
+```
+angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
+```
+
 Draw an angled line to a given y coordinate.
 
 
 
 #### Arguments
 
-* `AngledLineToData` - 
-* `SketchGroup` - 
+* `data`: `AngledLineToData`
+* `sketch_group`: `SketchGroup`
 
 #### Returns
 
@@ -412,14 +500,18 @@ Draw an angled line to a given y coordinate.
 
 ### angledLine
 
+```
+angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
+```
+
 Draw an angled line.
 
 
 
 #### Arguments
 
-* `AngledLineData` - 
-* `SketchGroup` - 
+* `data`: `AngledLineData`
+* `sketch_group`: `SketchGroup`
 
 #### Returns
 
@@ -429,14 +521,18 @@ Draw an angled line.
 
 ### angledLineOfXLength
 
+```
+angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
+```
+
 Draw an angled line of a given x length.
 
 
 
 #### Arguments
 
-* `AngledLineData` - 
-* `SketchGroup` - 
+* `data`: `AngledLineData`
+* `sketch_group`: `SketchGroup`
 
 #### Returns
 
@@ -446,14 +542,18 @@ Draw an angled line of a given x length.
 
 ### angledLineOfYLength
 
+```
+angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
+```
+
 Draw an angled line of a given y length.
 
 
 
 #### Arguments
 
-* `AngledLineData` - 
-* `SketchGroup` - 
+* `data`: `AngledLineData`
+* `sketch_group`: `SketchGroup`
 
 #### Returns
 
@@ -463,14 +563,18 @@ Draw an angled line of a given y length.
 
 ### angledLineThatIntersects
 
+```
+angledLineThatIntersects(data: AngeledLineThatIntersectsData, sketch_group: SketchGroup) -> SketchGroup
+```
+
 Draw an angled line that intersects with a given line.
 
 
 
 #### Arguments
 
-* `AngeledLineThatIntersectsData` - 
-* `SketchGroup` - 
+* `data`: `AngeledLineThatIntersectsData`
+* `sketch_group`: `SketchGroup`
 
 #### Returns
 
@@ -480,13 +584,17 @@ Draw an angled line that intersects with a given line.
 
 ### startSketchAt
 
+```
+startSketchAt(data: LineData) -> SketchGroup
+```
+
 Start a sketch at a given point.
 
 
 
 #### Arguments
 
-* `LineData` - 
+* `data`: `LineData`
 
 #### Returns
 
@@ -496,13 +604,17 @@ Start a sketch at a given point.
 
 ### close
 
+```
+close(sketch_group: SketchGroup) -> SketchGroup
+```
+
 Close the current sketch.
 
 
 
 #### Arguments
 
-* `SketchGroup` - 
+* `sketch_group`: `SketchGroup`
 
 #### Returns
 

@@ -698,7 +698,6 @@ mod tests {
     pub async fn parse_execute(code: &str) -> Result<ProgramMemory> {
         let tokens = crate::tokeniser::lexer(code);
         let program = crate::parser::abstract_syntax_tree(&tokens)?;
-        println!("{:#?}", program);
         let mut mem: ProgramMemory = Default::default();
         let mut engine = EngineConnection::new("dev.kittycad.io", "some-token", "").await?;
         let memory = execute(program, &mut mem, BodyType::Root, &mut engine)?;

@@ -568,7 +568,7 @@ mod tests {
         buf.push_str("* [Functions](#functions)\n");
 
         for internal_fn in &stdlib.internal_fn_names {
-            if internal_fn.unpublished() {
+            if internal_fn.unpublished() || internal_fn.deprecated() {
                 continue;
             }
 
@@ -590,23 +590,35 @@ mod tests {
 
             let mut fn_docs = String::new();
 
-            fn_docs.push_str(&format!("### {}", internal_fn.name()));
+            fn_docs.push_str(&format!("### {}\n\n", internal_fn.name()));
+
             if internal_fn.deprecated() {
-                fn_docs.push_str(" (deprecated)");
+                fn_docs.push_str("## DEPRECATED\n\n");
             }
-            fn_docs.push_str("\n\n");
+
+            fn_docs.push_str("```\n");
+            fn_docs.push_str(&format!("{}(", internal_fn.name()));
+            for (i, arg) in internal_fn.args().iter().enumerate() {
+                if i > 0 {
+                    fn_docs.push_str(", ");
+                }
+                fn_docs.push_str(&format!("{}: {}", arg.name, arg.type_));
+            }
+            fn_docs.push_str(") -> ");
+            fn_docs.push_str(&internal_fn.return_value().type_);
+            fn_docs.push_str("\n```\n\n");
 
             fn_docs.push_str(&format!("{}\n\n", internal_fn.summary()));
             fn_docs.push_str(&format!("{}\n\n", internal_fn.description()));
 
             fn_docs.push_str("#### Arguments\n\n");
             for arg in internal_fn.args() {
-                fn_docs.push_str(&format!("* `{}` - {}\n", arg.type_, arg.description));
+                fn_docs.push_str(&format!("* `{}`: `{}`\n", arg.name, arg.type_));
                 if let schemars::schema::Schema::Object(obj) = &arg.schema {
                     if let Some(obj_val) = &obj.object {
-                        println!("obj: {:#?}", obj_val);
+                        //println!("obj: {:#?}", obj_val);
                     } else {
-                        println!("arg: {:#?}", obj);
+                        //println!("arg: {:#?}", obj);
                     }
                 }
             }

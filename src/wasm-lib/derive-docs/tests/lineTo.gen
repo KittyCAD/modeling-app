@@ -27,12 +27,14 @@ impl crate::docs::StdLibFn for LineTo {
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
         vec![
             crate::docs::StdLibFnArg {
+                name: "data".to_string(),
                 type_: "LineToData".to_string(),
                 description: "".to_string(),
                 schema: LineToData::json_schema(&mut generator),
                 required: true,
             },
             crate::docs::StdLibFnArg {
+                name: "sketch_group".to_string(),
                 type_: "SketchGroup".to_string(),
                 description: "".to_string(),
                 schema: SketchGroup::json_schema(&mut generator),
@@ -45,6 +47,7 @@ impl crate::docs::StdLibFn for LineTo {
         let settings = schemars::gen::SchemaSettings::openapi3();
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
         crate::docs::StdLibFnArg {
+            name: "".to_string(),
             type_: "SketchGroup".to_string(),
             description: "".to_string(),
             schema: SketchGroup::json_schema(&mut generator),
