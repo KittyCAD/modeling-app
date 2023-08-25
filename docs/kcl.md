@@ -44,12 +44,12 @@ Returns the minimum of the given arguments.
 
 
 ```
-min(args: Vec<number>) -> number
+min(args: [number]) -> number
 ```
 
 #### Arguments
 
-* `args`: `Vec<number>`
+* `args`: `[number]`
 
 #### Returns
 

@@ -229,7 +229,7 @@ fn do_stdlib_inner(
         let ty_string = clean_type(&ty_string);
 
         if ty_string != "Args" {
-            let schema = if ty_string.starts_with("Vec<") {
+            let schema = if ty_ident.to_string().starts_with("Vec < ") {
                 quote! {
                    <#ty_ident>::json_schema(&mut generator)
                 }
@@ -466,6 +466,12 @@ impl Parse for ItemFnForSignature {
 }
 
 fn clean_type(t: &str) -> String {
+    let mut t = t.to_string();
+    // Turn vecs into arrays.
+    if t.starts_with("Vec<") {
+        t = t.replace("Vec<", "[").replace(">", "]");
+    }
+
     if t == "f64" {
         return "number".to_string();
     } else if t == "str" {

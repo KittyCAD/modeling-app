@@ -7,7 +7,7 @@
     "args": [
       {
         "name": "args",
-        "type_": "Vec<number>",
+        "type_": "[number]",
         "schema": {
           "type": "array",
           "items": {
