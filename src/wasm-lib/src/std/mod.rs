@@ -572,17 +572,17 @@ mod tests {
 
     use super::Primitive;
 
-    fn get_type_name_from_format(format: &str) -> String {
+    fn get_type_name_from_format(format: &str) -> (String, bool) {
         if format == "uuid" {
-            return Primitive::Uuid.to_string();
+            return (Primitive::Uuid.to_string(), false);
         } else if format == "double" || format == "uint" {
-            return Primitive::Number.to_string();
+            return (Primitive::Number.to_string(), false);
         } else {
             panic!("Unknown format: {}", format);
         }
     }
 
-    fn get_type_name_from_schema(schema: &schemars::schema::Schema) -> String {
+    fn get_type_name_from_schema(schema: &schemars::schema::Schema) -> (String, bool) {
         match schema {
             schemars::schema::Schema::Object(o) => {
                 if let Some(format) = &o.format {
@@ -591,7 +591,7 @@ mod tests {
 
                 if let Some(obj_val) = &o.object {
                     let mut fn_docs = String::new();
-                    fn_docs.push_str("{ ");
+                    fn_docs.push_str("{\n");
                     // Let's print out the object's properties.
                     for (prop_name, prop) in obj_val.properties.iter() {
                         if prop_name.starts_with('_') {
@@ -599,23 +599,23 @@ mod tests {
                         }
 
                         fn_docs.push_str(&format!(
-                            "\"{}\": {}, ",
+                            "\t\"{}\": {},\n",
                             prop_name,
-                            get_type_name_from_schema(&prop),
+                            get_type_name_from_schema(&prop).0,
                         ));
                     }
 
                     fn_docs.push_str("}");
 
-                    return fn_docs;
+                    return (fn_docs, true);
                 }
 
                 if let Some(array_val) = &o.array {
                     if let Some(schemars::schema::SingleOrVec::Single(items)) = &array_val.items {
                         // Let's print out the object's properties.
-                        return format!("[{}]", get_type_name_from_schema(&items));
-                    } else if let Some(item) = &array_val.contains {
-                        return format!("[{}]", get_type_name_from_schema(&item));
+                        return (format!("[{}]", get_type_name_from_schema(&items).0), false);
+                    } else if let Some(items) = &array_val.contains {
+                        return (format!("[{}]", get_type_name_from_schema(&items).0), false);
                     }
                 }
 
@@ -624,7 +624,7 @@ mod tests {
                     if let Some(items) = &subschemas.one_of {
                         for (i, item) in items.iter().enumerate() {
                             // Let's print out the object's properties.
-                            fn_docs.push_str(&format!("{}", get_type_name_from_schema(&item),));
+                            fn_docs.push_str(&format!("{}", get_type_name_from_schema(&item).0));
                             if i < items.len() - 1 {
                                 fn_docs.push_str(" | ");
                             }
@@ -632,7 +632,7 @@ mod tests {
                     } else if let Some(items) = &subschemas.any_of {
                         for (i, item) in items.iter().enumerate() {
                             // Let's print out the object's properties.
-                            fn_docs.push_str(&format!("{}", get_type_name_from_schema(&item),));
+                            fn_docs.push_str(&format!("{}", get_type_name_from_schema(&item).0));
                             if i < items.len() - 1 {
                                 fn_docs.push_str(" | ");
                             }
@@ -641,16 +641,16 @@ mod tests {
                         panic!("unknown subschemas: {:#?}", subschemas)
                     }
 
-                    return fn_docs;
+                    return (fn_docs, true);
                 }
 
                 if let Some(schemars::schema::SingleOrVec::Single(String)) = &o.instance_type {
-                    return Primitive::String.to_string();
+                    return (Primitive::String.to_string(), false);
                 }
 
                 panic!("unknown type: {:#?}", o)
             }
-            schemars::schema::Schema::Bool(_) => Primitive::Bool.to_string(),
+            schemars::schema::Schema::Bool(_) => (Primitive::Bool.to_string(), false),
         }
     }
 
@@ -714,11 +714,23 @@ mod tests {
 
             fn_docs.push_str("#### Arguments\n\n");
             for arg in internal_fn.args() {
-                fn_docs.push_str(&format!(
-                    "* `{}`: `{}`\n",
-                    arg.name,
-                    get_type_name_from_schema(&arg.schema)
-                ));
+                let (format, should_be_indented) = get_type_name_from_schema(&arg.schema);
+                if should_be_indented {
+                    fn_docs.push_str(&format!("* `{}`\n", arg.name,));
+
+                    fn_docs.push_str(&format!(
+                        "\t```\t\n{}\t\n```\n",
+                        get_type_name_from_schema(&arg.schema)
+                            .0
+                            .replace("\n", "\n\t")
+                    ));
+                } else {
+                    fn_docs.push_str(&format!(
+                        "* `{}`: `{}`\n",
+                        arg.name,
+                        get_type_name_from_schema(&arg.schema).0
+                    ));
+                }
             }
 
             fn_docs.push_str("\n#### Returns\n\n");
