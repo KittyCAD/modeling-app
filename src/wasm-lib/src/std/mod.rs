@@ -655,7 +655,7 @@ mod tests {
     }
 
     #[test]
-    fn test_generate_stdlib_docs() {
+    fn test_generate_stdlib_markdown_docs() {
         let stdlib = StdLib::new();
         let mut buf = String::new();
 
@@ -750,5 +750,21 @@ mod tests {
         }
 
         expectorate::assert_contents("../../docs/kcl.md", &buf);
+    }
+
+    #[test]
+    fn test_generate_stdlib_json_schema() {
+        let stdlib = StdLib::new();
+
+        let mut json_data = vec![];
+
+        for internal_fn in &stdlib.internal_fn_names {
+            json_data.push(internal_fn.to_json().unwrap());
+        }
+
+        expectorate::assert_contents(
+            "../../docs/kcl.json",
+            &serde_json::to_string_pretty(&json_data).unwrap(),
+        );
     }
 }
