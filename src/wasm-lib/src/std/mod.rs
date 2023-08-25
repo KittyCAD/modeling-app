@@ -719,10 +719,8 @@ mod tests {
                     fn_docs.push_str(&format!("* `{}`\n", arg.name,));
 
                     fn_docs.push_str(&format!(
-                        "\t```\t\n{}\t\n```\n",
-                        get_type_name_from_schema(&arg.schema)
-                            .0
-                            .replace("\n", "\n\t")
+                        "```\n{}\n```\n",
+                        get_type_name_from_schema(&arg.schema).0
                     ));
                 } else {
                     fn_docs.push_str(&format!(
