@@ -1,4 +1,3 @@
-import { getAngle } from '../../lib/utils'
 import { TooTip, toolTips } from '../../useStore'
 import {
   Program,
@@ -6,7 +5,6 @@ import {
   CallExpression,
 } from '../abstractSyntaxTreeTypes'
 import { SketchGroup, SourceRange } from '../executor'
-import { InternalFn } from './stdTypes'
 
 export function getSketchSegmentFromSourceRange(
   sketchGroup: SketchGroup,
@@ -35,79 +33,6 @@ export function getSketchSegmentFromSourceRange(
     index: lineIndex,
   }
 }
-
-export const segLen: InternalFn = (
-  _,
-  segName: string,
-  sketchGroup: SketchGroup
-): number => {
-  const line = sketchGroup?.value.find((seg) => seg?.name === segName)
-  // maybe this should throw, but the language doesn't have a way to handle errors yet
-  if (!line) return 0
-
-  return Math.sqrt(
-    (line.from[1] - line.to[1]) ** 2 + (line.from[0] - line.to[0]) ** 2
-  )
-}
-
-export const segAng: InternalFn = (
-  _,
-  segName: string,
-  sketchGroup: SketchGroup
-): number => {
-  const line = sketchGroup?.value.find((seg) => seg.name === segName)
-  // maybe this should throw, but the language doesn't have a way to handle errors yet
-  if (!line) return 0
-  return getAngle(line.from, line.to)
-}
-
-function segEndFactory(which: 'x' | 'y'): InternalFn {
-  return (_, segName: string, sketchGroup: SketchGroup): number => {
-    const line =
-      sketchGroup?.start?.name === segName
-        ? sketchGroup?.start
-        : sketchGroup?.value.find((seg) => seg.name === segName)
-    // maybe this should throw, but the language doesn't have a way to handle errors yet
-    if (!line) return 0
-    return which === 'x' ? line.to[0] : line.to[1]
-  }
-}
-
-export const segEndX: InternalFn = segEndFactory('x')
-export const segEndY: InternalFn = segEndFactory('y')
-
-function lastSegFactory(which: 'x' | 'y'): InternalFn {
-  return (_, sketchGroup: SketchGroup): number => {
-    const lastLine = sketchGroup?.value[sketchGroup.value.length - 1]
-    return which === 'x' ? lastLine.to[0] : lastLine.to[1]
-  }
-}
-
-export const lastSegX: InternalFn = lastSegFactory('x')
-export const lastSegY: InternalFn = lastSegFactory('y')
-
-function angleToMatchLengthFactory(which: 'x' | 'y'): InternalFn {
-  return (_, segName: string, to: number, sketchGroup: SketchGroup): number => {
-    const isX = which === 'x'
-    const lineToMatch = sketchGroup?.value.find((seg) => seg.name === segName)
-    // maybe this should throw, but the language doesn't have a way to handle errors yet
-    if (!lineToMatch) return 0
-    const lengthToMatch = Math.sqrt(
-      (lineToMatch.from[1] - lineToMatch.to[1]) ** 2 +
-        (lineToMatch.from[0] - lineToMatch.to[0]) ** 2
-    )
-
-    const lastLine = sketchGroup?.value[sketchGroup.value.length - 1]
-    const diff = Math.abs(to - (isX ? lastLine.to[0] : lastLine.to[1]))
-
-    const angleR = Math[isX ? 'acos' : 'asin'](diff / lengthToMatch)
-
-    return diff > lengthToMatch ? 0 : (angleR * 180) / Math.PI
-  }
-}
-
-export const angleToMatchLengthX: InternalFn = angleToMatchLengthFactory('x')
-export const angleToMatchLengthY: InternalFn = angleToMatchLengthFactory('y')
 
 export function isSketchVariablesLinked(
   secondaryVarDec: VariableDeclarator,

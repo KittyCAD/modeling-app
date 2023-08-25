@@ -17,44 +17,6 @@ export interface PathReturn {
   currentPath: Path
 }
 
-export type InternalFn = (internals: InternalFirstArg, ...args: any[]) => any
-
-export type InternalFnNames =
-  // TODO re-enable these
-  // | 'translate'
-  // | 'transform'
-  // | 'rx' // Enable rotations #152
-  // | 'ry'
-  // | 'rz'
-  | 'extrude'
-  | 'getExtrudeWallTransform'
-  | 'min'
-  | 'legLen'
-  | 'legAngX'
-  | 'legAngY'
-  | 'segEndX'
-  | 'segEndY'
-  | 'lastSegX'
-  | 'lastSegY'
-  | 'segLen'
-  | 'segAng'
-  | 'angleToMatchLengthX'
-  | 'angleToMatchLengthY'
-  | 'lineTo'
-  | 'yLineTo'
-  | 'xLineTo'
-  | 'line'
-  | 'yLine'
-  | 'xLine'
-  | 'angledLine'
-  | 'angledLineOfXLength'
-  | 'angledLineToX'
-  | 'angledLineOfYLength'
-  | 'angledLineToY'
-  | 'startSketchAt'
-  | 'close'
-  | 'angledLineThatIntersects'
-
 export interface ModifyAstBase {
   node: Program
   previousProgramMemory: ProgramMemory
@@ -87,7 +49,6 @@ export type SketchCallTransfromMap = {
 }
 
 export interface SketchLineHelper {
-  fn: InternalFn
   add: (a: addCall) => {
     modifiedAst: Program
     pathToNode: PathToNode
