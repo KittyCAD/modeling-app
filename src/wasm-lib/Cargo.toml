@@ -20,7 +20,7 @@ js-sys = { version = "0.3.64", optional = true }
 kittycad = { version = "0.2.15", default-features = false, features = ["js"] }
 lazy_static = "1.4.0"
 regex = "1.7.1"
-serde = {version = "1.0.152", features = ["derive"] }
+serde = {version = "1.0.186", features = ["derive"] }
 serde_json = "1.0.93"
 thiserror = "1.0.47"
 tokio = { version = "1.32.0", features = ["full"], optional = true }
