@@ -179,6 +179,7 @@ impl BinaryPart {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
+        stdlib: &crate::std::StdLib,
         engine: &mut EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         pipe_info.is_in_pipe = false;
@@ -189,10 +190,10 @@ impl BinaryPart {
                 Ok(value.clone())
             }
             BinaryPart::BinaryExpression(binary_expression) => {
-                binary_expression.get_result(memory, pipe_info, engine)
+                binary_expression.get_result(memory, pipe_info, stdlib, engine)
             }
             BinaryPart::CallExpression(call_expression) => {
-                call_expression.execute(memory, pipe_info, engine)
+                call_expression.execute(memory, pipe_info, stdlib, engine)
             }
             BinaryPart::UnaryExpression(unary_expression) => {
                 // Return an error this should not happen.
@@ -280,6 +281,7 @@ impl CallExpression {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
+        stdlib: &crate::std::StdLib,
         engine: &mut EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         let fn_name = self.callee.name.clone();
@@ -294,20 +296,20 @@ impl CallExpression {
                     value.clone()
                 }
                 Value::BinaryExpression(binary_expression) => {
-                    binary_expression.get_result(memory, pipe_info, engine)?
+                    binary_expression.get_result(memory, pipe_info, stdlib, engine)?
                 }
                 Value::CallExpression(call_expression) => {
                     pipe_info.is_in_pipe = false;
-                    call_expression.execute(memory, pipe_info, engine)?
+                    call_expression.execute(memory, pipe_info, stdlib, engine)?
                 }
                 Value::UnaryExpression(unary_expression) => {
-                    unary_expression.get_result(memory, pipe_info, engine)?
+                    unary_expression.get_result(memory, pipe_info, stdlib, engine)?
                 }
                 Value::ObjectExpression(object_expression) => {
-                    object_expression.execute(memory, pipe_info, engine)?
+                    object_expression.execute(memory, pipe_info, stdlib, engine)?
                 }
                 Value::ArrayExpression(array_expression) => {
-                    array_expression.execute(memory, pipe_info, engine)?
+                    array_expression.execute(memory, pipe_info, stdlib, engine)?
                 }
                 Value::PipeExpression(pipe_expression) => {
                     return Err(KclError::Semantic(KclErrorDetails {
@@ -354,7 +356,7 @@ impl CallExpression {
             fn_args.push(result);
         }
 
-        if let Some(func) = crate::std::INTERNAL_FNS.get(&fn_name) {
+        if let Some(func) = stdlib.fns.get(&fn_name) {
             // Attempt to call the function.
             let mut args = crate::std::Args::new(fn_args, self.into(), engine);
             let result = func(&mut args)?;
@@ -366,6 +368,7 @@ impl CallExpression {
                     &pipe_info.body.clone(),
                     pipe_info,
                     self.into(),
+                    stdlib,
                     engine,
                 )
             } else {
@@ -392,6 +395,7 @@ impl CallExpression {
                     &pipe_info.body.clone(),
                     pipe_info,
                     self.into(),
+                    stdlib,
                     engine,
                 )
             } else {
@@ -496,6 +500,7 @@ impl ArrayExpression {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
+        stdlib: &crate::std::StdLib,
         engine: &mut EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         let mut results = Vec::with_capacity(self.elements.len());
@@ -508,23 +513,23 @@ impl ArrayExpression {
                     value.clone()
                 }
                 Value::BinaryExpression(binary_expression) => {
-                    binary_expression.get_result(memory, pipe_info, engine)?
+                    binary_expression.get_result(memory, pipe_info, stdlib, engine)?
                 }
                 Value::CallExpression(call_expression) => {
                     pipe_info.is_in_pipe = false;
-                    call_expression.execute(memory, pipe_info, engine)?
+                    call_expression.execute(memory, pipe_info, stdlib, engine)?
                 }
                 Value::UnaryExpression(unary_expression) => {
-                    unary_expression.get_result(memory, pipe_info, engine)?
+                    unary_expression.get_result(memory, pipe_info, stdlib, engine)?
                 }
                 Value::ObjectExpression(object_expression) => {
-                    object_expression.execute(memory, pipe_info, engine)?
+                    object_expression.execute(memory, pipe_info, stdlib, engine)?
                 }
                 Value::ArrayExpression(array_expression) => {
-                    array_expression.execute(memory, pipe_info, engine)?
+                    array_expression.execute(memory, pipe_info, stdlib, engine)?
                 }
                 Value::PipeExpression(pipe_expression) => {
-                    pipe_expression.get_result(memory, pipe_info, engine)?
+                    pipe_expression.get_result(memory, pipe_info, stdlib, engine)?
                 }
                 Value::PipeSubstitution(pipe_substitution) => {
                     return Err(KclError::Semantic(KclErrorDetails {
@@ -582,6 +587,7 @@ impl ObjectExpression {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
+        stdlib: &crate::std::StdLib,
         engine: &mut EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         let mut object = Map::new();
@@ -593,23 +599,23 @@ impl ObjectExpression {
                     value.clone()
                 }
                 Value::BinaryExpression(binary_expression) => {
-                    binary_expression.get_result(memory, pipe_info, engine)?
+                    binary_expression.get_result(memory, pipe_info, stdlib, engine)?
                 }
                 Value::CallExpression(call_expression) => {
                     pipe_info.is_in_pipe = false;
-                    call_expression.execute(memory, pipe_info, engine)?
+                    call_expression.execute(memory, pipe_info, stdlib, engine)?
                 }
                 Value::UnaryExpression(unary_expression) => {
-                    unary_expression.get_result(memory, pipe_info, engine)?
+                    unary_expression.get_result(memory, pipe_info, stdlib, engine)?
                 }
                 Value::ObjectExpression(object_expression) => {
-                    object_expression.execute(memory, pipe_info, engine)?
+                    object_expression.execute(memory, pipe_info, stdlib, engine)?
                 }
                 Value::ArrayExpression(array_expression) => {
-                    array_expression.execute(memory, pipe_info, engine)?
+                    array_expression.execute(memory, pipe_info, stdlib, engine)?
                 }
                 Value::PipeExpression(pipe_expression) => {
-                    pipe_expression.get_result(memory, pipe_info, engine)?
+                    pipe_expression.get_result(memory, pipe_info, stdlib, engine)?
                 }
                 Value::PipeSubstitution(pipe_substitution) => {
                     return Err(KclError::Semantic(KclErrorDetails {
@@ -775,17 +781,18 @@ impl BinaryExpression {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
+        stdlib: &crate::std::StdLib,
         engine: &mut EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         pipe_info.is_in_pipe = false;
 
         let left_json_value = self
             .left
-            .get_result(memory, pipe_info, engine)?
+            .get_result(memory, pipe_info, stdlib, engine)?
             .get_json_value()?;
         let right_json_value = self
             .right
-            .get_result(memory, pipe_info, engine)?
+            .get_result(memory, pipe_info, stdlib, engine)?
             .get_json_value()?;
 
         // First check if we are doing string concatenation.
@@ -874,6 +881,7 @@ impl UnaryExpression {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
+        stdlib: &crate::std::StdLib,
         engine: &mut EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         pipe_info.is_in_pipe = false;
@@ -881,7 +889,7 @@ impl UnaryExpression {
         let num = parse_json_number_as_f64(
             &self
                 .argument
-                .get_result(memory, pipe_info, engine)?
+                .get_result(memory, pipe_info, stdlib, engine)?
                 .get_json_value()?,
             self.into(),
         )?;
@@ -911,12 +919,13 @@ impl PipeExpression {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
+        stdlib: &crate::std::StdLib,
         engine: &mut EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         // Reset the previous results.
         pipe_info.previous_results = vec![];
         pipe_info.index = 0;
-        execute_pipe_body(memory, &self.body, pipe_info, self.into(), engine)
+        execute_pipe_body(memory, &self.body, pipe_info, self.into(), stdlib, engine)
     }
 }
 
@@ -925,6 +934,7 @@ fn execute_pipe_body(
     body: &[Value],
     pipe_info: &mut PipeInfo,
     source_range: SourceRange,
+    stdlib: &crate::std::StdLib,
     engine: &mut EngineConnection,
 ) -> Result<MemoryItem, KclError> {
     if pipe_info.index == body.len() {
@@ -950,15 +960,15 @@ fn execute_pipe_body(
 
     match expression {
         Value::BinaryExpression(binary_expression) => {
-            let result = binary_expression.get_result(memory, pipe_info, engine)?;
+            let result = binary_expression.get_result(memory, pipe_info, stdlib, engine)?;
             pipe_info.previous_results.push(result);
             pipe_info.index += 1;
-            execute_pipe_body(memory, body, pipe_info, source_range, engine)
+            execute_pipe_body(memory, body, pipe_info, source_range, stdlib, engine)
         }
         Value::CallExpression(call_expression) => {
             pipe_info.is_in_pipe = true;
             pipe_info.body = body.to_vec();
-            call_expression.execute(memory, pipe_info, engine)
+            call_expression.execute(memory, pipe_info, stdlib, engine)
         }
         _ => {
             // Return an error this should not happen.

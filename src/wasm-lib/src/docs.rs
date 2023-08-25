@@ -39,4 +39,7 @@ pub trait StdLibFn {
 
     /// If the function is deprecated.
     fn deprecated(&self) -> bool;
+
+    /// The function itself.
+    fn std_lib_fn(&self) -> crate::std::StdFn;
 }

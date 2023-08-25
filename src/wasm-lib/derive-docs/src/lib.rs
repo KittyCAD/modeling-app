@@ -121,8 +121,9 @@ fn do_stdlib_inner(
     let name_str = name.to_string();
 
     let fn_name = &ast.sig.ident;
-    let _fn_name_str = fn_name.to_string();
-    let visibility = &ast.vis;
+    let fn_name_str = fn_name.to_string().replace("inner_", "");
+    let fn_name_ident = format_ident!("{}", fn_name_str);
+    let _visibility = &ast.vis;
 
     let (summary_text, description_text) = extract_doc_from_attrs(&ast.attrs);
     let comment_text = {
@@ -183,41 +184,48 @@ fn do_stdlib_inner(
     // require a type that satisfies SharedExtractor or ExclusiveExtractor.
     let mut arg_types = Vec::new();
     for arg in ast.sig.inputs.iter() {
-        match arg {
-            syn::FnArg::Receiver(pat) => {
-                let ty = pat.ty.as_ref().into_token_stream();
-                let ty_string = ty.to_string().replace('&', "").replace("mut", "");
-                let ty_string = ty_string.trim().to_string();
-                let ty_ident = format_ident!("{}", ty_string);
+        let ty = match arg {
+            syn::FnArg::Receiver(pat) => pat.ty.as_ref().into_token_stream(),
+            syn::FnArg::Typed(pat) => pat.ty.as_ref().into_token_stream(),
+        };
 
-                if ty_string != "Args" {
-                    arg_types.push(quote! {
-                        #docs_crate::StdLibFnArg {
-                            type_: #ty_string.to_string(),
-                            description: "".to_string(),
-                            schema: #ty_ident::json_schema(&mut generator),
-                            required: true,
-                        }
-                    });
-                }
+        let ty_string = ty
+            .to_string()
+            .replace('&', "")
+            .replace("mut", "")
+            .replace(" ", "");
+        let ty_string = ty_string.trim().to_string();
+        let ty_ident = if ty_string.starts_with("Vec<") {
+            let ty_string = ty_string.trim_start_matches("Vec<").trim_end_matches(">");
+            let ty_ident = format_ident!("{}", ty_string);
+            quote! {
+               Vec<#ty_ident>
             }
-            syn::FnArg::Typed(pat) => {
-                let ty = pat.ty.as_ref().into_token_stream();
-                let ty_string = ty.to_string().replace('&', "").replace("mut", "");
-                let ty_string = ty_string.trim().to_string();
-                let ty_ident = format_ident!("{}", ty_string);
+        } else {
+            let ty_ident = format_ident!("{}", ty_string);
+            quote! {
+               #ty_ident
+            }
+        };
 
-                if ty_string != "Args" {
-                    arg_types.push(quote! {
-                        #docs_crate::StdLibFnArg {
-                            type_: #ty_string.to_string(),
-                            description: "".to_string(),
-                            schema: #ty_ident::json_schema(&mut generator),
-                            required: true,
-                        }
-                    });
+        if ty_string != "Args" {
+            let schema = if ty_string.starts_with("Vec<") {
+                quote! {
+                   <#ty_ident>::json_schema(&mut generator)
                 }
-            }
+            } else {
+                quote! {
+                    #ty_ident::json_schema(&mut generator)
+                }
+            };
+            arg_types.push(quote! {
+                #docs_crate::StdLibFnArg {
+                    type_: #ty_string.to_string(),
+                    description: "".to_string(),
+                    schema: #schema,
+                    required: true,
+                }
+            });
         }
     }
 
@@ -246,7 +254,7 @@ fn do_stdlib_inner(
     // the span from the name of the function to which this macro was applied.
     let span = ast.sig.ident.span();
     let const_struct = quote_spanned! {span=>
-        #visibility const #name_ident: #name_ident = #name_ident {};
+        pub(crate) const #name_ident: #name_ident = #name_ident {};
     };
 
     // The final TokenStream returned will have a few components that reference
@@ -255,7 +263,7 @@ fn do_stdlib_inner(
         // ... a struct type called `#name_ident` that has no members
         #[allow(non_camel_case_types, missing_docs)]
         #description_doc_comment
-        #visibility struct #name_ident {}
+        pub(crate) struct #name_ident {}
         // ... a constant of type `#name` whose identifier is also #name_ident
         #[allow(non_upper_case_globals, missing_docs)]
         #description_doc_comment
@@ -299,6 +307,10 @@ fn do_stdlib_inner(
 
             fn deprecated(&self) -> bool {
                 #deprecated
+            }
+
+            fn std_lib_fn(&self) -> crate::std::StdFn {
+                #fn_name_ident
             }
         }
 
@@ -438,7 +450,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_stdlib_basic() {
+    fn test_stdlib_line_to() {
         let (item, errors) = do_stdlib(
             quote! {
                 name = "lineTo",
@@ -459,6 +471,35 @@ mod tests {
         assert!(errors.is_empty());
         expectorate::assert_contents(
             "tests/lineTo.gen",
+            &openapitor::types::get_text_fmt(&item).unwrap(),
+        );
+    }
+
+    #[test]
+    fn test_stdlib_min() {
+        let (item, errors) = do_stdlib(
+            quote! {
+                name = "min",
+            },
+            quote! {
+                fn inner_min(args: Vec<f64>) -> f64 {
+                    let mut min = std::f64::MAX;
+                    for arg in args.iter() {
+                        if *arg < min {
+                            min = *arg;
+                        }
+                    }
+
+                     min
+                }
+            },
+        )
+        .unwrap();
+        let _expected = quote! {};
+
+        assert!(errors.is_empty());
+        expectorate::assert_contents(
+            "tests/min.gen",
             &openapitor::types::get_text_fmt(&item).unwrap(),
         );
     }

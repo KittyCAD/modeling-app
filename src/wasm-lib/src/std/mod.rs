@@ -12,7 +12,6 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use lazy_static::lazy_static;
 use schemars::JsonSchema;
 
 use crate::{
@@ -20,62 +19,64 @@ use crate::{
     engine::EngineConnection,
     errors::{KclError, KclErrorDetails},
     executor::{ExtrudeGroup, MemoryItem, Metadata, SketchGroup, SourceRange},
-    std::extrude::{extrude, get_extrude_wall_transform},
-    std::segment::{
-        angle_to_match_length_x, angle_to_match_length_y, last_segment_x, last_segment_y,
-        segment_angle, segment_end_x, segment_end_y, segment_length,
-    },
-    std::sketch::{
-        angled_line, angled_line_of_x_length, angled_line_of_y_length, angled_line_that_intersects,
-        angled_line_to_x, angled_line_to_y, close, line, line_to, start_sketch_at, x_line,
-        x_line_to, y_line, y_line_to,
-    },
 };
 
 pub type FnMap = HashMap<String, StdFn>;
 pub type StdFn = fn(&mut Args) -> Result<MemoryItem, KclError>;
 
-lazy_static! {
-   pub static ref INTERNAL_FNS: FnMap =
-        {
-            HashMap::from([
-                // Extrude functions.
-                ("extrude".to_string(), extrude as StdFn),
-                ("getExtrudeWallTransform".to_string(), get_extrude_wall_transform as StdFn),
+pub struct StdLib {
+    pub fns: FnMap,
+}
 
-                ("min".to_string(), min as StdFn),
-                ("legLen".to_string(), leg_length as StdFn),
-                ("legAngX".to_string(),leg_angle_x as StdFn),
-                ("legAngY".to_string(), leg_angle_y as StdFn),
+impl StdLib {
+    pub fn new() -> Self {
+        let internal_fn_names: Vec<Box<(dyn crate::docs::StdLibFn)>> = vec![
+            Box::new(Min),
+            Box::new(LegLen),
+            Box::new(LegAngX),
+            Box::new(LegAngY),
+            Box::new(crate::std::extrude::Extrude),
+            Box::new(crate::std::extrude::GetExtrudeWallTransform),
+            Box::new(crate::std::segment::SegEndX),
+            Box::new(crate::std::segment::SegEndY),
+            Box::new(crate::std::segment::LastSegX),
+            Box::new(crate::std::segment::LastSegY),
+            Box::new(crate::std::segment::SegLen),
+            Box::new(crate::std::segment::SegAng),
+            Box::new(crate::std::segment::AngleToMatchLengthX),
+            Box::new(crate::std::segment::AngleToMatchLengthY),
+            Box::new(crate::std::sketch::LineTo),
+            Box::new(crate::std::sketch::Line),
+            Box::new(crate::std::sketch::XLineTo),
+            Box::new(crate::std::sketch::XLine),
+            Box::new(crate::std::sketch::YLineTo),
+            Box::new(crate::std::sketch::YLine),
+            Box::new(crate::std::sketch::AngledLineToX),
+            Box::new(crate::std::sketch::AngledLineToY),
+            Box::new(crate::std::sketch::AngledLine),
+            Box::new(crate::std::sketch::AngledLineOfXLength),
+            Box::new(crate::std::sketch::AngledLineOfYLength),
+            Box::new(crate::std::sketch::AngledLineThatIntersects),
+            Box::new(crate::std::sketch::StartSketchAt),
+            Box::new(crate::std::sketch::Close),
+        ];
 
-                // Sketch segment functions.
-                ("segEndX".to_string(), segment_end_x as StdFn),
-                ("segEndY".to_string(), segment_end_y as StdFn),
-                ("lastSegX".to_string(), last_segment_x as StdFn),
-                ("lastSegY".to_string(), last_segment_y as StdFn),
-                ("segLen".to_string(), segment_length as StdFn),
-                ("segAng".to_string(), segment_angle as StdFn),
-                ("angleToMatchLengthX".to_string(), angle_to_match_length_x as StdFn),
-                ("angleToMatchLengthY".to_string(), angle_to_match_length_y as StdFn),
+        let mut fns = HashMap::new();
+        for internal_fn_name in internal_fn_names {
+            fns.insert(
+                internal_fn_name.name().to_string(),
+                internal_fn_name.std_lib_fn(),
+            );
+        }
 
-                // Sketch functions.
-                ("lineTo".to_string(), line_to as StdFn),
-                ("xLineTo".to_string(), x_line_to as StdFn),
-                ("yLineTo".to_string(), y_line_to as StdFn),
-                ("line".to_string(), line as StdFn),
-                ("xLine".to_string(), x_line as StdFn),
-                ("yLine".to_string(), y_line as StdFn),
-                ("angledLine".to_string(), angled_line as StdFn),
-                ("angledLineOfXLength".to_string(), angled_line_of_x_length as StdFn),
-                ("angledLineToX".to_string(), angled_line_to_x as StdFn),
-                ("angledLineOfYLength".to_string(), angled_line_of_y_length as StdFn),
-                ("angledLineToY".to_string(), angled_line_to_y as StdFn),
-                ("angledLineThatIntersects".to_string(), angled_line_that_intersects as StdFn),
-                ("startSketchAt".to_string(), start_sketch_at as StdFn),
-                ("close".to_string(), close as StdFn),
-            ])
+        Self { fns }
+    }
+}
 
-        };
+impl Default for StdLib {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 #[derive(Debug)]
@@ -474,15 +475,27 @@ impl<'a> Args<'a> {
 }
 
 /// Returns the minimum of the given arguments.
+/// TODO fix min
 pub fn min(args: &mut Args) -> Result<MemoryItem, KclError> {
+    let nums = args.get_number_array()?;
+    let result = inner_min(nums);
+
+    args.make_user_val_from_f64(result)
+}
+
+/// Returns the minimum of the given arguments.
+#[stdlib {
+    name = "min",
+}]
+fn inner_min(args: Vec<f64>) -> f64 {
     let mut min = std::f64::MAX;
-    for arg in args.get_number_array()? {
-        if arg < min {
-            min = arg;
+    for arg in args.iter() {
+        if *arg < min {
+            min = *arg;
         }
     }
 
-    args.make_user_val_from_f64(min)
+    min
 }
 
 /// Returns the length of the given leg.

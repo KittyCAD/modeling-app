@@ -169,20 +169,8 @@ fn inner_segment_length(
 /// Returns the angle of the segment.
 pub fn segment_angle(args: &mut Args) -> Result<MemoryItem, KclError> {
     let (segment_name, sketch_group) = args.get_segment_name_sketch_group()?;
-    let path = sketch_group
-        .get_path_by_name(&segment_name)
-        .ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a segment name that exists in the given SketchGroup, found `{}`",
-                    segment_name
-                ),
-                source_ranges: vec![args.source_range],
-            })
-        })?;
-    let line = path.get_base();
 
-    let result = get_angle(&line.from, &line.to);
+    let result = inner_segment_angle(&segment_name, sketch_group, args)?;
     args.make_user_val_from_f64(result)
 }
 

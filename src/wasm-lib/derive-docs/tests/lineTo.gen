@@ -1,10 +1,10 @@
 #[allow(non_camel_case_types, missing_docs)]
 #[doc = "Std lib function: lineTo"]
-struct LineTo {}
+pub(crate) struct LineTo {}
 
 #[allow(non_upper_case_globals, missing_docs)]
 #[doc = "Std lib function: lineTo"]
-const LineTo: LineTo = LineTo {};
+pub(crate) const LineTo: LineTo = LineTo {};
 impl crate::docs::StdLibFn for LineTo {
     fn name(&self) -> String {
         "lineTo".to_string()
@@ -58,6 +58,10 @@ impl crate::docs::StdLibFn for LineTo {
 
     fn deprecated(&self) -> bool {
         false
+    }
+
+    fn std_lib_fn(&self) -> crate::std::StdFn {
+        line_to
     }
 }
 

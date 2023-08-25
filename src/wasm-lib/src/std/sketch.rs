@@ -274,7 +274,7 @@ fn inner_x_line(
 pub fn y_line(args: &mut Args) -> Result<MemoryItem, KclError> {
     let (data, sketch_group): (AxisLineData, SketchGroup) = args.get_data_and_sketch_group()?;
 
-    let new_sketch_group = inner_x_line(data, sketch_group, args)?;
+    let new_sketch_group = inner_y_line(data, sketch_group, args)?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 

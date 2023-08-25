@@ -472,6 +472,7 @@ fn execute(
     engine: &mut EngineConnection,
 ) -> Result<ProgramMemory, KclError> {
     let mut pipe_info = PipeInfo::default();
+    let stdlib = crate::std::StdLib::new();
 
     // Iterate over the body of the program.
     for statement in &program.body {
@@ -527,8 +528,12 @@ fn execute(
                             memory.add(&var_name, value.clone(), source_range)?;
                         }
                         Value::BinaryExpression(binary_expression) => {
-                            let result =
-                                binary_expression.get_result(memory, &mut pipe_info, engine)?;
+                            let result = binary_expression.get_result(
+                                memory,
+                                &mut pipe_info,
+                                &stdlib,
+                                engine,
+                            )?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::FunctionExpression(function_expression) => {
@@ -565,12 +570,17 @@ fn execute(
                             )?;
                         }
                         Value::CallExpression(call_expression) => {
-                            let result = call_expression.execute(memory, &mut pipe_info, engine)?;
+                            let result =
+                                call_expression.execute(memory, &mut pipe_info, &stdlib, engine)?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::PipeExpression(pipe_expression) => {
-                            let result =
-                                pipe_expression.get_result(memory, &mut pipe_info, engine)?;
+                            let result = pipe_expression.get_result(
+                                memory,
+                                &mut pipe_info,
+                                &stdlib,
+                                engine,
+                            )?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::PipeSubstitution(pipe_substitution) => {
@@ -580,13 +590,21 @@ fn execute(
                             }));
                         }
                         Value::ArrayExpression(array_expression) => {
-                            let result =
-                                array_expression.execute(memory, &mut pipe_info, engine)?;
+                            let result = array_expression.execute(
+                                memory,
+                                &mut pipe_info,
+                                &stdlib,
+                                engine,
+                            )?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::ObjectExpression(object_expression) => {
-                            let result =
-                                object_expression.execute(memory, &mut pipe_info, engine)?;
+                            let result = object_expression.execute(
+                                memory,
+                                &mut pipe_info,
+                                &stdlib,
+                                engine,
+                            )?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::MemberExpression(member_expression) => {
@@ -594,8 +612,12 @@ fn execute(
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::UnaryExpression(unary_expression) => {
-                            let result =
-                                unary_expression.get_result(memory, &mut pipe_info, engine)?;
+                            let result = unary_expression.get_result(
+                                memory,
+                                &mut pipe_info,
+                                &stdlib,
+                                engine,
+                            )?;
                             memory.add(&var_name, result, source_range)?;
                         }
                     }
@@ -603,7 +625,7 @@ fn execute(
             }
             BodyItem::ReturnStatement(return_statement) => match &return_statement.argument {
                 Value::BinaryExpression(bin_expr) => {
-                    let result = bin_expr.get_result(memory, &mut pipe_info, engine)?;
+                    let result = bin_expr.get_result(memory, &mut pipe_info, &stdlib, engine)?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::Identifier(identifier) => {
