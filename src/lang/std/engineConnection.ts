@@ -37,11 +37,7 @@ interface NewTrackArgs {
   mediaStream: MediaStream
 }
 
-export type EngineCommand = Models['WebSocketMessages_type']
-
-type OkResponse = Models['OkModelingCmdResponse_type']
-
-type WebSocketResponse = Models['WebSocketResponses_type']
+type WebSocketResponse = Models['OkWebSocketResponseData_type']
 
 // EngineConnection encapsulates the connection(s) to the Engine
 // for the EngineCommandManager; namely, the underlying WebSocket
@@ -158,18 +154,32 @@ export class EngineConnection {
         return
       }
 
-      if (event.data.toLocaleLowerCase().startsWith('error')) {
-        console.error('something went wrong: ', event.data)
+      const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
+
+      if (!message.success) {
+        if (message.request_id) {
+          console.error(`Error in response to request ${message.request_id}:`)
+        } else {
+          console.error(`Error from server:`)
+        }
+        message.errors.forEach((error) => {
+          console.error(` - ${error.error_code}: ${error.message}`)
+        })
         return
       }
 
-      const message: WebSocketResponse = JSON.parse(event.data)
+      let resp = message.resp
+      if (!resp) {
+        // If there's no body to the response, we can bail here.
+        return
+      }
 
-      if (
-        message.type === 'sdp_answer' &&
-        message?.answer &&
-        message?.answer?.type !== 'unspecified'
-      ) {
+      if (resp.type === 'sdp_answer') {
+        let answer = resp.data?.answer
+        if (!answer || answer.type === 'unspecified') {
+          return
+        }
+
         if (this.pc?.signalingState !== 'stable') {
           // If the connection is stable, we shouldn't bother updating the
           // SDP, since we have a stable connection to the backend. If we
@@ -177,24 +187,26 @@ export class EngineConnection {
           // tore down.
           this.pc?.setRemoteDescription(
             new RTCSessionDescription({
-              type: message.answer.type,
-              sdp: message.answer.sdp,
+              type: answer.type,
+              sdp: answer.sdp,
             })
           )
         }
-      } else if (message.type === 'trickle_ice') {
-        this.pc?.addIceCandidate(message.candidate as RTCIceCandidateInit)
-      } else if (message.type === 'ice_server_info' && this.pc) {
+      } else if (resp.type === 'trickle_ice') {
+        let candidate = resp.data?.candidate
+        this.pc?.addIceCandidate(candidate as RTCIceCandidateInit)
+      } else if (resp.type === 'ice_server_info' && this.pc) {
         console.log('received ice_server_info')
+        let ice_servers = resp.data?.ice_servers
 
-        if (message?.ice_servers?.length > 0) {
+        if (ice_servers?.length > 0) {
           // When we set the Configuration, we want to always force
           // iceTransportPolicy to 'relay', since we know the topology
           // of the ICE/STUN/TUN server and the engine. We don't wish to
           // talk to the engine in any configuration /other/ than relay
           // from a infra POV.
           this.pc.setConfiguration({
-            iceServers: message.ice_servers,
+            iceServers: ice_servers,
             iceTransportPolicy: 'relay',
           })
         } else {
@@ -215,13 +227,7 @@ export class EngineConnection {
 
         this.pc.addEventListener('icecandidate', (event) => {
           if (!this.pc || !this.websocket) return
-          if (event.candidate === null) {
-            // console.log('sent sdp_offer')
-            // this.send({
-            //   type: 'sdp_offer',
-            //   offer: this.pc.localDescription,
-            // })
-          } else {
+          if (event.candidate !== null) {
             console.log('sending trickle ice candidate')
             const { candidate } = event
             this.send({
@@ -324,6 +330,8 @@ export class EngineConnection {
   }
 }
 
+export type EngineCommand = Models['WebSocketRequest_type']
+
 export class EngineCommandManager {
   artifactMap: ArtifactMap = {}
   sourceRangeMap: SourceRangeMap = {}
@@ -368,14 +376,16 @@ export class EngineCommandManager {
           let lossyDataChannel = event.channel
 
           lossyDataChannel.addEventListener('message', (event) => {
-            const result: OkResponse = JSON.parse(event.data)
+            const result: Models['OkModelingCmdResponse_type'] = JSON.parse(
+              event.data
+            )
             if (
               result.type === 'highlight_set_entity' &&
-              result.sequence &&
-              result.sequence > this.inSequence
+              result?.data?.sequence &&
+              result.data.sequence > this.inSequence
             ) {
-              this.onHoverCallback(result.entity_id)
-              this.inSequence = result.sequence
+              this.onHoverCallback(result.data.entity_id)
+              this.inSequence = result.data.sequence
             }
           })
         })
@@ -390,15 +400,15 @@ export class EngineCommandManager {
             // Pass this to our export function.
             exportSave(event.data)
           } else {
-            if (event.data.toLocaleLowerCase().startsWith('error')) {
-              // Errors are not JSON encoded; if we have an error we can bail
-              // here; debugging the error to the console happens in the core
-              // engine code.
-              return
-            }
-            const message: WebSocketResponse = JSON.parse(event.data)
-            if (message.type === 'modeling') {
-              this.handleModelingCommand(message)
+            const message: Models['WebSocketResponse_type'] = JSON.parse(
+              event.data
+            )
+            if (
+              message.success &&
+              message.resp.type === 'modeling' &&
+              message.request_id
+            ) {
+              this.handleModelingCommand(message.resp, message.request_id)
             }
           }
         })
@@ -418,31 +428,28 @@ export class EngineCommandManager {
 
     this.engineConnection?.connect()
   }
-  handleModelingCommand(message: WebSocketResponse) {
+  handleModelingCommand(message: WebSocketResponse, id: string) {
     if (message.type !== 'modeling') {
       return
     }
+    const modelingResponse = message.data.modeling_response
 
-    const id = message.cmd_id
     const command = this.artifactMap[id]
-    if ('ok' in message.result) {
-      const result: OkResponse = message.result.ok
-      if (result.type === 'select_with_point') {
-        if (result.entity_id) {
-          this.onClickCallback({
-            id: result.entity_id,
-            type: 'default',
-          })
-        } else {
-          this.onClickCallback()
-        }
+    if (modelingResponse.type === 'select_with_point') {
+      if (modelingResponse?.data?.entity_id) {
+        this.onClickCallback({
+          id: modelingResponse?.data?.entity_id,
+          type: 'default',
+        })
+      } else {
+        this.onClickCallback()
       }
     }
     if (command && command.type === 'pending') {
       const resolve = command.resolve
       this.artifactMap[id] = {
         type: 'result',
-        data: message.result,
+        data: modelingResponse,
       }
       resolve({
         id,
@@ -450,7 +457,7 @@ export class EngineCommandManager {
     } else {
       this.artifactMap[id] = {
         type: 'result',
-        data: message.result,
+        data: modelingResponse,
       }
     }
   }
