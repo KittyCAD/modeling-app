@@ -193,10 +193,10 @@ fn do_stdlib_inner(
             .to_string()
             .replace('&', "")
             .replace("mut", "")
-            .replace(" ", "");
+            .replace(' ', "");
         let ty_string = ty_string.trim().to_string();
         let ty_ident = if ty_string.starts_with("Vec<") {
-            let ty_string = ty_string.trim_start_matches("Vec<").trim_end_matches(">");
+            let ty_string = ty_string.trim_start_matches("Vec<").trim_end_matches('>');
             let ty_ident = format_ident!("{}", ty_string);
             quote! {
                Vec<#ty_ident>
