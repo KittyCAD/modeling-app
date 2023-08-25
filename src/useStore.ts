@@ -20,6 +20,7 @@ import {
   EngineCommandManager,
 } from './lang/std/engineConnection'
 import { KCLError } from './lang/errors'
+import { Themes } from './lib/theme'
 
 export type Selection = {
   type: 'default' | 'line-end' | 'line-mid'
@@ -96,16 +97,13 @@ export type GuiModes =
     }
 
 type UnitSystem = 'imperial' | 'metric'
-export enum Themes {
-  Light = 'light',
-  Dark = 'dark',
-  System = 'system',
-}
 
-export const baseUnits: Record<UnitSystem, string[]> = {
+export const baseUnits = {
   imperial: ['in', 'ft'],
   metric: ['mm', 'cm', 'm'],
-}
+} as const
+
+export const baseUnitsUnion = Object.values(baseUnits).flatMap((v) => v)
 
 interface DefaultDir {
   base?: BaseDirectory

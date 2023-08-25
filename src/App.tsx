@@ -18,7 +18,7 @@ import {
   lineHighlightField,
   addLineHighlight,
 } from './editor/highlightextension'
-import { PaneType, Selections, Themes, useStore } from './useStore'
+import { PaneType, Selections, useStore } from './useStore'
 import { Logs, KCLErrors } from './components/Logs'
 import { CollapsiblePanel } from './components/CollapsiblePanel'
 import { MemoryPanel } from './components/MemoryPanel'
@@ -41,7 +41,7 @@ import {
 import { useHotkeys } from 'react-hotkeys-hook'
 import { TEST } from './env'
 import { getNormalisedCoordinates } from './lib/utils'
-import { getSystemTheme } from './lib/getSystemTheme'
+import { Themes, getSystemTheme } from './lib/theme'
 import { isTauri } from './lib/isTauri'
 import { useLoaderData, useParams } from 'react-router-dom'
 import { writeTextFile } from '@tauri-apps/api/fs'
