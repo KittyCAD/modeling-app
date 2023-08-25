@@ -376,7 +376,9 @@ export class EngineCommandManager {
           let lossyDataChannel = event.channel
 
           lossyDataChannel.addEventListener('message', (event) => {
-            const result: Models['OkModelingCmdResponse_type'] = JSON.parse(event.data)
+            const result: Models['OkModelingCmdResponse_type'] = JSON.parse(
+              event.data
+            )
             if (
               result.type === 'highlight_set_entity' &&
               result?.data?.sequence &&
@@ -398,8 +400,14 @@ export class EngineCommandManager {
             // Pass this to our export function.
             exportSave(event.data)
           } else {
-            const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
-            if (message.success && message.resp.type === 'modeling' && message.request_id) {
+            const message: Models['WebSocketResponse_type'] = JSON.parse(
+              event.data
+            )
+            if (
+              message.success &&
+              message.resp.type === 'modeling' &&
+              message.request_id
+            ) {
               this.handleModelingCommand(message.resp, message.request_id)
             }
           }
