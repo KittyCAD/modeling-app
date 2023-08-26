@@ -12,6 +12,7 @@ export const settingsCommandBarMeta: CommandBarMeta = {
       {
         name: 'theme',
         type: 'select',
+        defaultValue: 'theme',
         options: Object.values(Themes).map((v) => ({ name: v })) as {
           name: string
         }[],
@@ -25,6 +26,8 @@ export const settingsCommandBarMeta: CommandBarMeta = {
       {
         name: 'defaultProjectName',
         type: 'string',
+        description: '(default)',
+        defaultValue: 'defaultProjectName',
         options: 'defaultProjectName',
       },
     ],
@@ -38,6 +41,7 @@ export const settingsCommandBarMeta: CommandBarMeta = {
       {
         name: 'unitSystem',
         type: 'select',
+        defaultValue: 'unitSystem',
         options: [{ name: 'imperial' }, { name: 'metric' }],
       },
     ],
@@ -48,6 +52,7 @@ export const settingsCommandBarMeta: CommandBarMeta = {
       {
         name: 'baseUnit',
         type: 'select',
+        defaultValue: 'baseUnit',
         options: Object.values(baseUnitsUnion).map((v) => ({ name: v })),
       },
     ],
@@ -59,7 +64,7 @@ export const settingsCommandBarMeta: CommandBarMeta = {
 
 export const settingsMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYgFEA3MbNAAgEYBtABgF1FQAHAe1kxZe2LiAAeiAJwBmfABZJrVo2mMATGoCsmgBwA2ADQgAnojUB2WXL2TG582uusZ5zQF8PR7LwhxRqDBw8UT4BIREkcUQAWkMTRE1WfESdW0YVNR11dzcjAKxcAiJSEP5BTGFRCQQ5NSNTBBUdDw8gA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlTQAIAVACzAFswBtABgF1FQAHAe1iYsfbNxAAPRAA42+AEwB2KQFYAzGznKAnADZli1QBoQAT2kBGKfm37lOned3nzqgL6vjlLLgJFSFdCoAETAAMwBDAFdiagAFACc+ACswAGNqADlw5nYuJBB+QWFRfMkEABY5fDYa2rra83LjMwQdLWV8BXLyuxlVLU1Ld090bzxCEnJKYLComODMeLS0PniTXLFCoUwRMTK7fC1zNql7NgUjtnKjU0RlBSqpLVUVPVUda60tYZAvHHG-FNAgBVbBCKjIEywNBMDb5LbFPaILqdfRSORsS4qcxXZqIHqyK6qY4XOxsGTKco-P4+Cb+aYAIXCsDAVFBQjhvAE212pWkskUKnUml0+gUNxaqkU+EccnKF1UCnucnMcjcHl+o3+vkmZBofCgUFIMwARpEoFRYuFsGBiJyCtzEXzWrJlGxlKdVFKvfY1XiEBjyvhVOVzBdzu13pYFNStbTAQFqAB5bAmvjheIQf4QtDhNCRWD2hE7EqgfayHTEh7lHQNSxSf1Scz4cpHHFyFVujTKczuDXYPgQOBiGl4TaOktIhAAWg6X3nC4Xp39050sYw2rpYHHRUnztVhPJqmUlIGbEriv9WhrLZ6uibHcqUr7riAA */
     id: 'Settings',
     predictableActionArguments: true,
     context: {

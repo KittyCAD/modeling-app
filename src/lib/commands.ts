@@ -6,6 +6,7 @@ type InitialCommandBarMetaArg = {
   name: string
   type: 'string' | 'select'
   description?: string
+  defaultValue?: string
   options: string | Array<{ name: string }>
 }
 
@@ -69,10 +70,19 @@ export function createMachineCommand<T extends AnyStateMachine>({
       const optionsFromContext = state.context[
         arg.options as keyof typeof state.context
       ] as { name: string }[] | string | undefined
+      const defaultValueFromContext = state.context[
+        arg.defaultValue as keyof typeof state.context
+      ] as string | undefined
+
+      console.log(arg.name, { defaultValueFromContext })
 
       const options =
         arg.options instanceof Array
-          ? arg.options
+          ? arg.options.map((o) => ({
+              ...o,
+              description:
+                defaultValueFromContext === o.name ? '(current)' : '',
+            }))
           : !optionsFromContext || typeof optionsFromContext === 'string'
           ? [
               {
