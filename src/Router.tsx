@@ -29,7 +29,10 @@ import {
   GlobalStateProvider,
 } from './hooks/useAuthMachine'
 import SettingsCommandProvider from './components/SettingsCommandProvider'
-import { SETTINGS_PERSIST_KEY, settingsMachine } from './machines/settingsMachine'
+import {
+  SETTINGS_PERSIST_KEY,
+  settingsMachine,
+} from './machines/settingsMachine'
 import { ContextFrom } from 'xstate'
 
 const prependRoutes =
