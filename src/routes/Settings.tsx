@@ -193,6 +193,7 @@ export const Settings = () => {
             name="settings-debug-panel"
             checked={showDebugPanel}
             onChange={(e) => {
+              send('Toggle Debug Panel')
               toast.success(
                 'Debug panel toggled ' + (e.target.checked ? 'on' : 'off')
               )
