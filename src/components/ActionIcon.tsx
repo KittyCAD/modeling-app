@@ -14,6 +14,7 @@ const iconSizes = {
 
 export interface ActionIconProps extends React.PropsWithChildren {
   icon?: SolidIconDefinition | BrandIconDefinition
+  className?: string
   bgClassName?: string
   iconClassName?: string
   size?: keyof typeof iconSizes
@@ -21,6 +22,7 @@ export interface ActionIconProps extends React.PropsWithChildren {
 
 export const ActionIcon = ({
   icon = faCircleExclamation,
+  className,
   bgClassName,
   iconClassName,
   size = 'md',
@@ -31,7 +33,7 @@ export const ActionIcon = ({
       className={
         `p-${
           size === 'xl' ? '2' : '1'
-        } w-fit inline-grid place-content-center ` +
+        } w-fit inline-grid place-content-center ${className} ` +
         (bgClassName ||
           'bg-chalkboard-100 group-hover:bg-chalkboard-90 hover:bg-chalkboard-90 dark:bg-liquid-20 dark:group-hover:bg-liquid-10 dark:hover:bg-liquid-10')
       }

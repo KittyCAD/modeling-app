@@ -189,11 +189,11 @@ const CommandBar = () => {
           <Combobox
             value={selectedCommand}
             onChange={handleCommandSelection}
-            className="rounded-sm relative mx-auto z-40 p-2 bg-chalkboard-10 dark:bg-chalkboard-100 border dark:border-chalkboard-70 max-w-xl w-full shadow-lg"
+            className="rounded relative mx-auto z-40 p-2 bg-chalkboard-10 dark:bg-chalkboard-100 border dark:border-chalkboard-70 max-w-xl w-full shadow-lg"
             as="div"
           >
             <div className="flex gap-2 items-center">
-              <ActionIcon icon={faSearch} size="xl" />
+              <ActionIcon icon={faSearch} size="xl" className="rounded-sm" />
               <div>
                 {inSubCommand && (
                   <p className="text-liquid-70 dark:text-liquid-30">
