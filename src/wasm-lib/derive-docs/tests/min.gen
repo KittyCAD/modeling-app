@@ -1,0 +1,71 @@
+#[allow(non_camel_case_types, missing_docs)]
+#[doc = "Std lib function: min"]
+pub(crate) struct Min {}
+
+#[allow(non_upper_case_globals, missing_docs)]
+#[doc = "Std lib function: min"]
+pub(crate) const Min: Min = Min {};
+impl crate::docs::StdLibFn for Min {
+    fn name(&self) -> String {
+        "min".to_string()
+    }
+
+    fn summary(&self) -> String {
+        "".to_string()
+    }
+
+    fn description(&self) -> String {
+        "".to_string()
+    }
+
+    fn tags(&self) -> Vec<String> {
+        vec![]
+    }
+
+    fn args(&self) -> Vec<crate::docs::StdLibFnArg> {
+        let mut settings = schemars::gen::SchemaSettings::openapi3();
+        settings.inline_subschemas = true;
+        let mut generator = schemars::gen::SchemaGenerator::new(settings);
+        vec![crate::docs::StdLibFnArg {
+            name: "args".to_string(),
+            type_: "[number]".to_string(),
+            schema: <Vec<f64>>::json_schema(&mut generator),
+            required: true,
+        }]
+    }
+
+    fn return_value(&self) -> crate::docs::StdLibFnArg {
+        let mut settings = schemars::gen::SchemaSettings::openapi3();
+        settings.inline_subschemas = true;
+        let mut generator = schemars::gen::SchemaGenerator::new(settings);
+        crate::docs::StdLibFnArg {
+            name: "".to_string(),
+            type_: "number".to_string(),
+            schema: f64::json_schema(&mut generator),
+            required: true,
+        }
+    }
+
+    fn unpublished(&self) -> bool {
+        false
+    }
+
+    fn deprecated(&self) -> bool {
+        false
+    }
+
+    fn std_lib_fn(&self) -> crate::std::StdFn {
+        min
+    }
+}
+
+fn inner_min(#[doc = r" The args to do shit to."] args: Vec<f64>) -> f64 {
+    let mut min = std::f64::MAX;
+    for arg in args.iter() {
+        if *arg < min {
+            min = *arg;
+        }
+    }
+
+    min
+}

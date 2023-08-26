@@ -1,5 +1,4 @@
 import { Popover } from '@headlessui/react'
-import { User, useStore } from '../useStore'
 import { ActionButton } from './ActionButton'
 import { faBars, faGear, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
@@ -7,14 +6,16 @@ import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { paths } from '../Router'
 import makeUrlPathRelative from '../lib/makeUrlPathRelative'
+import { useAuthMachine } from '../hooks/useAuthMachine'
+import { Models } from '@kittycad/lib'
+
+type User = Models['User_type']
 
 const UserSidebarMenu = ({ user }: { user?: User }) => {
   const displayedName = getDisplayName(user)
   const [imageLoadFailed, setImageLoadFailed] = useState(false)
   const navigate = useNavigate()
-  const { setToken } = useStore((s) => ({
-    setToken: s.setToken,
-  }))
+  const [_, send] = useAuthMachine()
 
   // Fallback logic for displaying user's "name":
   // 1. user.name
@@ -119,10 +120,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
               </ActionButton>
               <ActionButton
                 Element="button"
-                onClick={() => {
-                  setToken('')
-                  navigate(paths.SIGN_IN)
-                }}
+                onClick={() => send('logout')}
                 icon={{
                   icon: faSignOutAlt,
                   bgClassName: 'bg-destroy-80',

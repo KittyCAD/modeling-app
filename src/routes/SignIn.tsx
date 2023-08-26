@@ -7,13 +7,14 @@ import { useNavigate } from 'react-router-dom'
 import { VITE_KC_SITE_BASE_URL, VITE_KC_API_BASE_URL } from '../env'
 import { getSystemTheme } from '../lib/getSystemTheme'
 import { paths } from '../Router'
+import { useAuthMachine } from '../hooks/useAuthMachine'
 
 const SignIn = () => {
   const navigate = useNavigate()
-  const { setToken, theme } = useStore((s) => ({
-    setToken: s.setToken,
+  const { theme } = useStore((s) => ({
     theme: s.theme,
   }))
+  const [_, send] = useAuthMachine()
   const appliedTheme = theme === Themes.System ? getSystemTheme() : theme
   const signInTauri = async () => {
     // We want to invoke our command to login via device auth.
@@ -21,8 +22,7 @@ const SignIn = () => {
       const token: string = await invoke('login', {
         host: VITE_KC_API_BASE_URL,
       })
-      setToken(token)
-      navigate(paths.INDEX)
+      send({ type: 'tryLogin', token })
     } catch (error) {
       console.error('login button', error)
     }

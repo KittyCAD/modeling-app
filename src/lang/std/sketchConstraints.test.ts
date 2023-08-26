@@ -391,6 +391,7 @@ show(part001)`
       type: 'toPoint',
       to: [5.62, 1.79],
       from: [3.48, 0.44],
+      name: '',
     })
   })
   it('verify it works when the segment is in the `start` property', async () => {
@@ -400,6 +401,6 @@ show(part001)`
       programMemory.root['part001'] as SketchGroup,
       [index, index]
     ).segment
-    expect(segment).toEqual({ type: 'base', to: [0, 0.04], from: [0, 0.04] })
+    expect(segment).toEqual({ to: [0, 0.04], from: [0, 0.04], name: '' })
   })
 })

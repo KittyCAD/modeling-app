@@ -48,6 +48,7 @@ import { writeTextFile } from '@tauri-apps/api/fs'
 import { PROJECT_ENTRYPOINT } from './lib/tauriFS'
 import { IndexLoaderData } from './Router'
 import { toast } from 'react-hot-toast'
+import { useAuthMachine } from './hooks/useAuthMachine'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
@@ -81,7 +82,6 @@ export function App() {
     isMouseDownInStream,
     cmdId,
     setCmdId,
-    token,
     formatCode,
     debugPanel,
     theme,
@@ -121,7 +121,6 @@ export function App() {
     isMouseDownInStream: s.isMouseDownInStream,
     cmdId: s.cmdId,
     setCmdId: s.setCmdId,
-    token: s.token,
     formatCode: s.formatCode,
     debugPanel: s.debugPanel,
     addKCLError: s.addKCLError,
@@ -134,6 +133,7 @@ export function App() {
     setStreamDimensions: s.setStreamDimensions,
     streamDimensions: s.streamDimensions,
   }))
+  const [token] = useAuthMachine((s) => s?.context?.token)
 
   const editorTheme = theme === Themes.System ? getSystemTheme() : theme
 
@@ -295,18 +295,6 @@ export function App() {
           _ast,
           {
             root: {
-              log: {
-                type: 'userVal',
-                value: (a: any) => {
-                  addLog(a)
-                },
-                __meta: [
-                  {
-                    pathToNode: [],
-                    sourceRange: [0, 0],
-                  },
-                ],
-              },
               _0: {
                 type: 'userVal',
                 value: 0,
@@ -328,11 +316,8 @@ export function App() {
                 __meta: [],
               },
             },
-            pendingMemory: {},
           },
-          engineCommandManager,
-          { bodyType: 'root' },
-          []
+          engineCommandManager
         )
 
         const { artifactMap, sourceRangeMap } =

@@ -13,19 +13,23 @@ pub enum KclError {
     Type(KclErrorDetails),
     #[error("unimplemented: {0:?}")]
     Unimplemented(KclErrorDetails),
+    #[error("unexpected: {0:?}")]
+    Unexpected(KclErrorDetails),
     #[error("value already defined: {0:?}")]
     ValueAlreadyDefined(KclErrorDetails),
     #[error("undefined value: {0:?}")]
     UndefinedValue(KclErrorDetails),
     #[error("invalid expression: {0:?}")]
     InvalidExpression(crate::math_parser::MathExpression),
+    #[error("engine: {0:?}")]
+    Engine(KclErrorDetails),
 }
 
 #[derive(Debug, Serialize, Deserialize, ts_rs::TS)]
 #[ts(export)]
 pub struct KclErrorDetails {
     #[serde(rename = "sourceRanges")]
-    pub source_ranges: Vec<[i32; 2]>,
+    pub source_ranges: Vec<crate::executor::SourceRange>,
     #[serde(rename = "msg")]
     pub message: String,
 }
@@ -35,5 +39,11 @@ pub struct KclErrorDetails {
 impl From<KclError> for String {
     fn from(error: KclError) -> Self {
         serde_json::to_string(&error).unwrap()
+    }
+}
+
+impl From<String> for KclError {
+    fn from(error: String) -> Self {
+        serde_json::from_str(&error).unwrap()
     }
 }

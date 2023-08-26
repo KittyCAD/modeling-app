@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest-8-cores
     strategy:
       matrix:
-        dir: ['src/wasm-lib', 'src-tauri']
+        dir: ['src/wasm-lib']
     steps:
       - uses: actions/checkout@v3
       - name: Install latest rust
