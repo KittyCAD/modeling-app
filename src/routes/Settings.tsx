@@ -8,7 +8,6 @@ import { AppHeader } from '../components/AppHeader'
 import { open } from '@tauri-apps/api/dialog'
 import { BaseUnit, baseUnits } from '../useStore'
 import { useContext, useRef, useState } from 'react'
-import { toast } from 'react-hot-toast'
 import { Toggle } from '../components/Toggle/Toggle'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -92,11 +91,7 @@ export const Settings = () => {
                   onChange={(e) => {
                     setTempDefaultDirectory(defaultDirectory + e.target.value)
                   }}
-                  onBlur={() => {
-                    tempDefaultDirectory !== defaultDirectory &&
-                      toast.success('Default directory updated')
-                    setTempDefaultDirectory(defaultDirectory)
-                  }}
+                  disabled
                 />
                 <ActionButton
                   Element="button"
@@ -120,17 +115,12 @@ export const Settings = () => {
             >
               <input
                 className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
-                value={defaultProjectName}
-                onChange={(e) => {
+                defaultValue={defaultProjectName}
+                onBlur={(e) => {
                   send({
                     type: 'Set Default Project Name',
                     data: { defaultProjectName: e.target.value },
                   })
-                }}
-                onBlur={() => {
-                  ogDefaultProjectName.current !== defaultProjectName &&
-                    toast.success('Default project name updated')
-                  ogDefaultProjectName.current = defaultProjectName
                 }}
                 autoCapitalize="off"
                 autoComplete="off"
@@ -153,12 +143,6 @@ export const Settings = () => {
                 type: 'Set Unit System',
                 data: { unitSystem: newUnitSystem },
               })
-              send({
-                type: 'Set Base Unit',
-                data: { baseUnit: baseUnits[newUnitSystem][0] },
-              })
-
-              toast.success('Unit system set to ' + newUnitSystem)
             }}
           />
         </SettingsSection>
@@ -175,7 +159,6 @@ export const Settings = () => {
                 type: 'Set Base Unit',
                 data: { baseUnit: e.target.value as BaseUnit },
               })
-              toast.success('Base unit changed to ' + e.target.value)
             }}
           >
             {baseUnits[unitSystem as keyof typeof baseUnits].map((unit) => (
@@ -194,9 +177,6 @@ export const Settings = () => {
             checked={showDebugPanel}
             onChange={(e) => {
               send('Toggle Debug Panel')
-              toast.success(
-                'Debug panel toggled ' + (e.target.checked ? 'on' : 'off')
-              )
             }}
           />
         </SettingsSection>
@@ -213,11 +193,6 @@ export const Settings = () => {
                 type: 'Set Theme',
                 data: { theme: e.target.value as Themes },
               })
-              toast.success(
-                'Theme changed to ' +
-                  e.target.value.slice(0, 1).toLocaleUpperCase() +
-                  e.target.value.slice(1)
-              )
             }}
           >
             {Object.entries(Themes).map(([label, value]) => (

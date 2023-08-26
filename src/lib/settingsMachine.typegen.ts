@@ -7,13 +7,21 @@ export interface Typegen0 {
   }
   invokeSrcNameMap: {}
   missingImplementations: {
-    actions: never
+    actions: 'toastSuccess'
     delays: never
     guards: never
     services: never
   }
   eventsCausingActions: {
     persistSettings:
+      | 'Set Base Unit'
+      | 'Set Default Directory'
+      | 'Set Default Project Name'
+      | 'Set Onboarding Status'
+      | 'Set Theme'
+      | 'Set Unit System'
+      | 'Toggle Debug Panel'
+    toastSuccess:
       | 'Set Base Unit'
       | 'Set Default Directory'
       | 'Set Default Project Name'

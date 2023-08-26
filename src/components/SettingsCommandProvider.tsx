@@ -9,6 +9,7 @@ import { createContext, useContext, useEffect, useRef } from 'react'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
 import { setThemeClass } from '../lib/theme'
 import { ContextFrom, InterpreterFrom, Prop } from 'xstate'
+import { toast } from 'react-hot-toast'
 
 export const SettingsContext = createContext(
   {} as {
@@ -31,6 +32,24 @@ export default function SettingsCommandProvider({
 
   const [state, send] = useMachine(settingsMachine, {
     context: persistedSettings,
+    actions: {
+      toastSuccess: (context, event) => {
+        const truncatedNewValue =
+          'data' in event && event.data instanceof Object
+            ? (context[Object.keys(event.data)[0] as keyof typeof context]
+                .toString()
+                .substring(0, 28) as any)
+            : undefined
+        toast.success(
+          event.type +
+            (truncatedNewValue
+              ? ` to "${truncatedNewValue}${
+                  truncatedNewValue.length === 28 ? '...' : ''
+                }"`
+              : '')
+        )
+      },
+    },
   })
   const { commands } = useContext(CommandsContext)
 
