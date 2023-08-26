@@ -32,12 +32,14 @@ pub struct TcpRead {
 impl TcpRead {
     pub async fn read(&mut self) -> Result<WebSocketResponse> {
         let msg = self.stream.next().await.unwrap()?;
-        let msg = match msg {
-            WsMsg::Text(text) => text,
-            WsMsg::Binary(bin) => bincode::deserialize(&bin)?,
+        let msg: WebSocketResponse = match msg {
+            WsMsg::Text(text) => serde_json::from_str(&text)?,
+            WsMsg::Binary(bin) => {
+                println!("got binary DATA:");
+                bincode::deserialize(&bin)?
+            }
             other => anyhow::bail!("Unexpected websocket message from server: {}", other),
         };
-        let msg = serde_json::from_str::<WebSocketResponse>(&msg)?;
         Ok(msg)
     }
 }
@@ -73,40 +75,46 @@ impl EngineConnection {
 
         let tcp_read_handle = tokio::spawn(async move {
             // Get Websocket messages from API server
-            while let Ok(ws_resp) = tcp_read.read().await {
-                if !ws_resp.success {
-                    println!("got ws errors: {:?}", ws_resp.errors);
-                    continue;
-                }
+            loop {
+                match tcp_read.read().await {
+                    Ok(ws_resp) => {
+                        if !ws_resp.success {
+                            println!("got ws errors: {:?}", ws_resp.errors);
+                            continue;
+                        }
 
-                println!("got ws resp: {:?}", ws_resp.resp);
-                if let Some(msg) = ws_resp.resp {
-                    match msg {
-                        OkWebSocketResponseData::IceServerInfo { ice_servers } => {
-                            println!("got ice server info: {:?}", ice_servers);
-                        }
-                        OkWebSocketResponseData::SdpAnswer { answer } => {
-                            println!("got sdp answer: {:?}", answer);
-                        }
-                        OkWebSocketResponseData::TrickleIce { candidate } => {
-                            println!("got trickle ice: {:?}", candidate);
-                        }
-                        OkWebSocketResponseData::Modeling { .. } => {}
-                        OkWebSocketResponseData::Export { files } => {
-                            // Save the files to our export directory.
-                            for file in files {
-                                let path = export_dir.join(file.name);
-                                std::fs::write(path, file.contents)?;
+                        println!("got ws resp: {:?}", ws_resp.resp);
+                        if let Some(msg) = ws_resp.resp {
+                            match msg {
+                                OkWebSocketResponseData::IceServerInfo { ice_servers } => {
+                                    println!("got ice server info: {:?}", ice_servers);
+                                }
+                                OkWebSocketResponseData::SdpAnswer { answer } => {
+                                    println!("got sdp answer: {:?}", answer);
+                                }
+                                OkWebSocketResponseData::TrickleIce { candidate } => {
+                                    println!("got trickle ice: {:?}", candidate);
+                                }
+                                OkWebSocketResponseData::Modeling { .. } => {}
+                                OkWebSocketResponseData::Export { files } => {
+                                    // Save the files to our export directory.
+                                    for file in files {
+                                        let path = export_dir.join(file.name);
+                                        std::fs::write(path, file.contents)?;
+                                    }
+
+                                    // Tell the export notifier that we have new files.
+                                    export_notifier.notify_one();
+                                }
                             }
-
-                            // Tell the export notifier that we have new files.
-                            export_notifier.notify_waiters();
                         }
+                    }
+                    Err(e) => {
+                        println!("got ws error: {:?}", e);
+                        continue;
                     }
                 }
             }
-
-            Ok::<(), anyhow::Error>(())
         });
 
         Ok(EngineConnection {
