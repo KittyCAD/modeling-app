@@ -8,16 +8,11 @@ import { CommandsContext } from './CommandBar'
 import { createContext, useContext, useEffect, useRef } from 'react'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
 import { setThemeClass } from '../lib/theme'
-import { ContextFrom, EventData, EventFrom, SingleOrArray, State } from 'xstate'
+import { ContextFrom, InterpreterFrom, Prop } from 'xstate'
 
 export const SettingsContext = createContext(
   {} as {
-    send: (
-      event:
-        | EventFrom<typeof settingsMachine>
-        | SingleOrArray<typeof settingsMachine>,
-      payload?: EventData | undefined
-    ) => State<typeof settingsMachine>
+    send: Prop<InterpreterFrom<typeof settingsMachine>, 'send'>
   } & ContextFrom<typeof settingsMachine>
 )
 

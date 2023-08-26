@@ -1,17 +1,16 @@
 import { faSignInAlt } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../components/ActionButton'
 import { isTauri } from '../lib/isTauri'
-import { useStore } from '../useStore'
 import { invoke } from '@tauri-apps/api/tauri'
 import { VITE_KC_SITE_BASE_URL, VITE_KC_API_BASE_URL } from '../env'
 import { Themes, getSystemTheme } from '../lib/theme'
 import { paths } from '../Router'
 import { useAuthMachine } from '../hooks/useAuthMachine'
+import { useContext } from 'react'
+import { SettingsContext } from 'components/SettingsCommandProvider'
 
 const SignIn = () => {
-  const { theme } = useStore((s) => ({
-    theme: s.theme,
-  }))
+  const { theme } = useContext(SettingsContext)
   const [_, send] = useAuthMachine()
   const appliedTheme = theme === Themes.System ? getSystemTheme() : theme
   const signInTauri = async () => {
