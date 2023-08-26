@@ -52,7 +52,7 @@ export const homeCommandMeta: CommandBarMeta = {
     ],
   },
   assign: {
-    hide: true,
+    hide: 'both',
   },
 }
 

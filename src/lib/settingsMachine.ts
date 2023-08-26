@@ -20,6 +20,7 @@ export const settingsCommandBarMeta: CommandBarMeta = {
   },
   'Set Default Project Name': {
     displayValue: (args: string[]) => 'Set a new default project name',
+    hide: 'web',
     args: [
       {
         name: 'defaultProjectName',
@@ -29,7 +30,7 @@ export const settingsCommandBarMeta: CommandBarMeta = {
     ],
   },
   'Set Default Directory': {
-    hide: true,
+    hide: 'web',
   },
   'Set Unit System': {
     displayValue: (args: string[]) => 'Set your default unit system',
@@ -52,7 +53,7 @@ export const settingsCommandBarMeta: CommandBarMeta = {
     ],
   },
   'Set Onboarding Status': {
-    hide: true,
+    hide: 'both',
   },
 }
 

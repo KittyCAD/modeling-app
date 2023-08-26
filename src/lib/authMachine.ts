@@ -22,7 +22,7 @@ const persistedToken = localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
 
 export const authCommandBarMeta: CommandBarMeta = {
   'Log in': {
-    hide: true,
+    hide: 'both',
   },
 }
 

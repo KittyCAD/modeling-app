@@ -1,4 +1,6 @@
 import { AnyStateMachine, EventFrom, StateFrom } from 'xstate'
+import { isTauri } from './isTauri'
+import { P } from 'vitest/dist/types-3c7dbfa5'
 
 type InitialCommandBarMetaArg = {
   name: string
@@ -7,14 +9,17 @@ type InitialCommandBarMetaArg = {
   options: string | Array<{ name: string }>
 }
 
+type Platform = 'both' | 'web' | 'desktop'
+
 export type CommandBarMeta = {
   [key: string]:
     | {
         displayValue: (args: string[]) => string
         args: InitialCommandBarMetaArg[]
+        hide?: Platform
       }
     | {
-        hide?: true
+        hide?: Platform
       }
 }
 
@@ -51,7 +56,12 @@ export function createMachineCommand<T extends AnyStateMachine>({
   owner,
 }: CommandBarArgs<T>): Command | null {
   const lookedUpMeta = commandBarMeta && commandBarMeta[type]
-  if (lookedUpMeta && 'hide' in lookedUpMeta) return null
+  if (lookedUpMeta && 'hide' in lookedUpMeta) {
+    const { hide } = lookedUpMeta
+    if (hide === 'both') return null
+    else if (hide === 'desktop' && isTauri()) return null
+    else if (hide === 'web' && !isTauri()) return null
+  }
   let replacedArgs
 
   if (lookedUpMeta && 'args' in lookedUpMeta) {
