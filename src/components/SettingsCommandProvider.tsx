@@ -2,7 +2,7 @@ import {
   SETTINGS_PERSIST_KEY,
   settingsCommandBarMeta,
   settingsMachine,
-} from '../lib/settingsMachine'
+} from '../machines/settingsMachine'
 import { useMachine } from '@xstate/react'
 import { CommandsContext } from './CommandBar'
 import { createContext, useContext, useEffect, useRef } from 'react'

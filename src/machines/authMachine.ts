@@ -1,7 +1,7 @@
 import { createMachine, assign } from 'xstate'
 import { Models } from '@kittycad/lib'
 import withBaseURL from '../lib/withBaseURL'
-import { CommandBarMeta } from './commands'
+import { CommandBarMeta } from '../lib/commands'
 
 export interface UserContext {
   user?: Models['User_type']

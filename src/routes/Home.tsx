@@ -17,7 +17,7 @@ import { Link } from 'react-router-dom'
 import { ProjectWithEntryPointMetadata, HomeLoaderData } from '../Router'
 import Loading from '../components/Loading'
 import { useMachine } from '@xstate/react'
-import { homeCommandMeta, homeMachine } from '../lib/homeMachine'
+import { homeCommandMeta, homeMachine } from '../machines/homeMachine'
 import { ContextFrom, EventFrom } from 'xstate'
 import { paths } from '../Router'
 import {

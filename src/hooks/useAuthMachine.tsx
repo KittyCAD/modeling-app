@@ -5,7 +5,7 @@ import {
   authCommandBarMeta,
   authMachine,
   TOKEN_PERSIST_KEY,
-} from '../lib/authMachine'
+} from '../machines/authMachine'
 import withBaseUrl from '../lib/withBaseURL'
 import React, { useContext, useState } from 'react'
 import CommandBar, { CommandsContext } from '../components/CommandBar'

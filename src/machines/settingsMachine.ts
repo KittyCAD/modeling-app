@@ -1,7 +1,7 @@
 import { assign, createMachine } from 'xstate'
 import { BaseUnit, baseUnitsUnion } from '../useStore'
-import { CommandBarMeta } from './commands'
-import { Themes } from './theme'
+import { CommandBarMeta } from '../lib/commands'
+import { Themes } from '../lib/theme'
 
 export const SETTINGS_PERSIST_KEY = 'SETTINGS_PERSIST_KEY'
 
