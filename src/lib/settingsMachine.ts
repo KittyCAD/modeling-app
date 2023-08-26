@@ -30,7 +30,7 @@ export const settingsCommandBarMeta: CommandBarMeta = {
     ],
   },
   'Set Default Directory': {
-    hide: 'web',
+    hide: 'both',
   },
   'Set Unit System': {
     displayValue: (args: string[]) => 'Set your default unit system',
