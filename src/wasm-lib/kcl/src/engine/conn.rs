@@ -34,10 +34,7 @@ impl TcpRead {
         let msg = self.stream.next().await.unwrap()?;
         let msg: WebSocketResponse = match msg {
             WsMsg::Text(text) => serde_json::from_str(&text)?,
-            WsMsg::Binary(bin) => {
-                println!("got binary DATA:");
-                bincode::deserialize(&bin)?
-            }
+            WsMsg::Binary(bin) => bincode::deserialize(&bin)?,
             other => anyhow::bail!("Unexpected websocket message from server: {}", other),
         };
         Ok(msg)
@@ -83,7 +80,6 @@ impl EngineConnection {
                             continue;
                         }
 
-                        println!("got ws resp: {:?}", ws_resp.resp);
                         if let Some(msg) = ws_resp.resp {
                             match msg {
                                 OkWebSocketResponseData::IceServerInfo { ice_servers } => {
