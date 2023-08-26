@@ -66,6 +66,7 @@ export const homeMachine = createMachine(
     context: {
       projects: [] as ProjectWithEntryPointMetadata[],
       defaultProjectName: '',
+      defaultDirectory: '',
     },
 
     on: {
@@ -73,6 +74,7 @@ export const homeMachine = createMachine(
         actions: assign((_, event) => ({
           ...event.data,
         })),
+        target: '.Reading projects',
       },
     },
     states: {

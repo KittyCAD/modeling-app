@@ -41,6 +41,7 @@ const Home = () => {
     context: {
       projects: loadedProjects,
       defaultProjectName,
+      defaultDirectory,
     },
     actions: {
       navigateToProject: (
@@ -51,7 +52,7 @@ const Home = () => {
           setCommandBarOpen(false)
           navigate(
             `${paths.FILE}/${encodeURIComponent(
-              defaultDirectory + '/' + event.data.name
+              context.defaultDirectory + '/' + event.data.name
             )}`
           )
         }
@@ -61,7 +62,7 @@ const Home = () => {
     },
     services: {
       readProjects: async (context: ContextFrom<typeof homeMachine>) =>
-        getProjectsInDir(defaultDirectory),
+        getProjectsInDir(context.defaultDirectory),
       createProject: async (
         context: ContextFrom<typeof homeMachine>,
         event: EventFrom<typeof homeMachine, 'Create project'>
@@ -75,7 +76,7 @@ const Home = () => {
           name = interpolateProjectNameWithIndex(name, nextIndex)
         }
 
-        await createNewProject(defaultDirectory + '/' + name)
+        await createNewProject(context.defaultDirectory + '/' + name)
         return `Successfully created "${name}"`
       },
       renameProject: async (
@@ -83,15 +84,15 @@ const Home = () => {
         event: EventFrom<typeof homeMachine, 'Rename project'>
       ) => {
         const { oldName, newName } = event.data
-        let name = newName ? newName : defaultProjectName
+        let name = newName ? newName : context.defaultProjectName
         if (doesProjectNameNeedInterpolated(name)) {
           const nextIndex = await getNextProjectIndex(name, projects)
           name = interpolateProjectNameWithIndex(name, nextIndex)
         }
 
         await renameFile(
-          defaultDirectory + '/' + oldName,
-          defaultDirectory + '/' + name
+          context.defaultDirectory + '/' + oldName,
+          context.defaultDirectory + '/' + name
         )
         return `Successfully renamed "${oldName}" to "${name}"`
       },
@@ -99,7 +100,7 @@ const Home = () => {
         context: ContextFrom<typeof homeMachine>,
         event: EventFrom<typeof homeMachine, 'Delete project'>
       ) => {
-        await removeDir(defaultDirectory + '/' + event.data.name, {
+        await removeDir(context.defaultDirectory + '/' + event.data.name, {
           recursive: true,
         })
         return `Successfully deleted "${event.data.name}"`

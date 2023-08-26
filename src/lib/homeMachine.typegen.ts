@@ -78,6 +78,7 @@ export interface Typegen0 {
     createProject: 'Create project'
     deleteProject: 'Delete project'
     readProjects:
+      | 'assign'
       | 'done.invoke.create-project'
       | 'done.invoke.delete-project'
       | 'done.invoke.rename-project'

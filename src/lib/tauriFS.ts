@@ -32,9 +32,9 @@ export async function initializeProjectDirectory(directory: string) {
     return directory
   }
 
-  const appData = await documentDir()
+  const docDirectory = await documentDir()
 
-  const INITIAL_DEFAULT_DIR = appData + PROJECT_FOLDER
+  const INITIAL_DEFAULT_DIR = docDirectory + PROJECT_FOLDER
 
   const defaultDirExists = await exists(INITIAL_DEFAULT_DIR)
 

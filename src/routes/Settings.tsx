@@ -7,7 +7,7 @@ import { ActionButton } from '../components/ActionButton'
 import { AppHeader } from '../components/AppHeader'
 import { open } from '@tauri-apps/api/dialog'
 import { BaseUnit, baseUnits } from '../useStore'
-import { useContext, useRef, useState } from 'react'
+import { useContext } from 'react'
 import { Toggle } from '../components/Toggle/Toggle'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -28,9 +28,6 @@ export const Settings = () => {
     theme,
     send,
   } = useContext(SettingsContext)
-  const [tempDefaultDirectory, setTempDefaultDirectory] =
-    useState(defaultDirectory)
-  const ogDefaultProjectName = useRef(defaultProjectName)
 
   async function handleDirectorySelection() {
     const newDirectory = await open({
@@ -42,7 +39,7 @@ export const Settings = () => {
     if (newDirectory && newDirectory !== null && !Array.isArray(newDirectory)) {
       send({
         type: 'Set Default Directory',
-        data: { defaultDirectory: defaultDirectory + newDirectory },
+        data: { defaultDirectory: newDirectory },
       })
     }
   }
@@ -87,10 +84,7 @@ export const Settings = () => {
               <div className="w-full flex gap-4 p-1 rounded border border-chalkboard-30">
                 <input
                   className="flex-1 px-2 bg-transparent"
-                  value={tempDefaultDirectory}
-                  onChange={(e) => {
-                    setTempDefaultDirectory(defaultDirectory + e.target.value)
-                  }}
+                  value={defaultDirectory}
                   disabled
                 />
                 <ActionButton
