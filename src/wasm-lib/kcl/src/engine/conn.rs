@@ -25,6 +25,21 @@ impl Drop for EngineConnection {
     }
 }
 
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct RawFile {
+    pub name: String,
+    pub contents: Vec<u8>,
+}
+
+impl From<RawFile> for kittycad::types::RawFile {
+    fn from(raw: RawFile) -> Self {
+        kittycad::types::RawFile {
+            name: raw.name,
+            contents: raw.contents,
+        }
+    }
+}
+
 pub struct TcpRead {
     stream: futures::stream::SplitStream<tokio_tungstenite::WebSocketStream<reqwest::Upgraded>>,
 }
@@ -34,7 +49,17 @@ impl TcpRead {
         let msg = self.stream.next().await.unwrap()?;
         let msg: WebSocketResponse = match msg {
             WsMsg::Text(text) => serde_json::from_str(&text)?,
-            WsMsg::Binary(bin) => bincode::deserialize(&bin)?,
+            WsMsg::Binary(bin) => {
+                let files: Vec<RawFile> = bincode::deserialize(&bin)?;
+                WebSocketResponse {
+                    success: true,
+                    resp: Some(OkWebSocketResponseData::Export {
+                        files: files.iter().map(|f| f.clone().into()).collect(),
+                    }),
+                    errors: None,
+                    request_id: None,
+                }
+            }
             other => anyhow::bail!("Unexpected websocket message from server: {}", other),
         };
         Ok(msg)
@@ -77,6 +102,7 @@ impl EngineConnection {
                     Ok(ws_resp) => {
                         if !ws_resp.success {
                             println!("got ws errors: {:?}", ws_resp.errors);
+                            export_notifier.notify_one();
                             continue;
                         }
 
@@ -96,7 +122,8 @@ impl EngineConnection {
                                     // Save the files to our export directory.
                                     for file in files {
                                         let path = export_dir.join(file.name);
-                                        std::fs::write(path, file.contents)?;
+                                        std::fs::write(&path, file.contents)?;
+                                        println!("Wrote file: {}", path.display());
                                     }
 
                                     // Tell the export notifier that we have new files.
@@ -107,6 +134,7 @@ impl EngineConnection {
                     }
                     Err(e) => {
                         println!("got ws error: {:?}", e);
+                        export_notifier.notify_one();
                         continue;
                     }
                 }
