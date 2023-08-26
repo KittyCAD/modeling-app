@@ -1,6 +1,7 @@
-import { Combobox, Dialog } from '@headlessui/react'
+import { Combobox, Dialog, Transition } from '@headlessui/react'
 import {
   Dispatch,
+  Fragment,
   SetStateAction,
   createContext,
   useContext,
@@ -99,7 +100,7 @@ const CommandBar = () => {
     if (isCommandWithoutSubcommands) {
       if (item.callback === undefined) return
       item.callback()
-      clearState()
+      setCommandBarOpen(false)
       return
     }
 
@@ -127,7 +128,7 @@ const CommandBar = () => {
           selectedCommand.item.meta?.args.length === newSubCommandIndex
         ) {
           selectedCommand.item.callback(newSubCommandData)
-          clearState()
+          setCommandBarOpen(false)
         } else {
           // Otherwise, set the subcommand data and increment the subcommand index
           setSubCommandData(newSubCommandData)
@@ -149,22 +150,48 @@ const CommandBar = () => {
   }
 
   return (
-    <Dialog
-      open={
+    <Transition.Root
+      show={
         commandBarOpen &&
         availableCommands?.length !== undefined &&
         availableCommands.length > 0
       }
-      onClose={() => {
-        setCommandBarOpen(false)
-        clearState()
-      }}
-      className="relative z-50"
+      as={Fragment}
+      afterLeave={() => clearState()}
     >
-      <Dialog.Backdrop className="fixed inset-0 bg-chalkboard-10/70 dark:bg-chalkboard-110/50" />
-      <div className="fixed inset-0 flex items-center justify-center">
-        <Dialog.Panel className="rounded-sm relative p-2 bg-chalkboard-10 dark:bg-chalkboard-100 border dark:border-chalkboard-70 max-w-xl w-full shadow-lg">
-          <Combobox value={selectedCommand} onChange={handleCommandSelection}>
+      <Dialog
+        onClose={() => {
+          setCommandBarOpen(false)
+          clearState()
+        }}
+        className="fixed inset-0 overflow-y-auto p-4 pt-[25vh]"
+      >
+        <Transition.Child
+          enter="duration-100 ease-out"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="duration-75 ease-in"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+          as={Fragment}
+        >
+          <Dialog.Overlay className="fixed z-40 inset-0 bg-chalkboard-10/70 dark:bg-chalkboard-110/50" />
+        </Transition.Child>
+        <Transition.Child
+          enter="duration-100 ease-out"
+          enterFrom="opacity-0 scale-95"
+          enterTo="opacity-100 scale-100"
+          leave="duration-75 ease-in"
+          leaveFrom="opacity-100 scale-100"
+          leaveTo="opacity-0 scale-95"
+          as={Fragment}
+        >
+          <Combobox
+            value={selectedCommand}
+            onChange={handleCommandSelection}
+            className="rounded-sm relative mx-auto z-40 p-2 bg-chalkboard-10 dark:bg-chalkboard-100 border dark:border-chalkboard-70 max-w-xl w-full shadow-lg"
+            as="div"
+          >
             <div className="flex gap-2 items-center">
               <ActionIcon icon={faSearch} size="xl" />
               <div>
@@ -176,7 +203,7 @@ const CommandBar = () => {
                 )}
                 <Combobox.Input
                   onChange={(event) => setQuery(event.target.value)}
-                  className="bg-transparent focus:outline-none"
+                  className="bg-transparent focus:outline-none w-full"
                   onKeyDown={(event) => {
                     if (event.metaKey && event.key === 'k')
                       setCommandBarOpen(false)
@@ -210,7 +237,7 @@ const CommandBar = () => {
                 <Combobox.Option
                   key={commandResult.item.name}
                   value={commandResult}
-                  className="first:mt-4 ui-active:bg-liquid-10 dark:ui-active:bg-liquid-90 py-1 px-2"
+                  className="my-2 first:mt-4 last:mb-4 ui-active:bg-liquid-10 dark:ui-active:bg-liquid-90 py-1 px-2"
                 >
                   <p>{commandResult.item.name}</p>
                   {(commandResult.item as SubCommand).description && (
@@ -222,9 +249,9 @@ const CommandBar = () => {
               ))}
             </Combobox.Options>
           </Combobox>
-        </Dialog.Panel>
-      </div>
-    </Dialog>
+        </Transition.Child>
+      </Dialog>
+    </Transition.Root>
   )
 }
 
