@@ -44,7 +44,7 @@ pub fn normalize_rad(angle: f64) -> f64 {
 /// # Examples
 ///
 /// ```
-/// assert_eq!(kcl::std::utils::delta_angle(std::f64::consts::PI/8.0, std::f64::consts::PI/4.0), std::f64::consts::PI/8.0);
+/// assert_eq!(kcl_lib::std::utils::delta_angle(std::f64::consts::PI/8.0, std::f64::consts::PI/4.0), std::f64::consts::PI/8.0);
 /// ```
 #[allow(dead_code)]
 pub fn delta_angle(from_angle: f64, to_angle: f64) -> f64 {
@@ -69,8 +69,8 @@ pub fn delta_angle(from_angle: f64, to_angle: f64) -> f64 {
 /// # Examples
 ///
 /// ```
-/// assert_eq!(kcl::std::utils::distance_between_points(&[0.0, 0.0], &[0.0, 5.0]), 5.0);
-/// assert_eq!(kcl::std::utils::distance_between_points(&[0.0, 0.0], &[3.0, 4.0]), 5.0);
+/// assert_eq!(kcl_lib::std::utils::distance_between_points(&[0.0, 0.0], &[0.0, 5.0]), 5.0);
+/// assert_eq!(kcl_lib::std::utils::distance_between_points(&[0.0, 0.0], &[3.0, 4.0]), 5.0);
 /// ```
 #[allow(dead_code)]
 pub fn distance_between_points(point_a: &[f64; 2], point_b: &[f64; 2]) -> f64 {
