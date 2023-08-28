@@ -1,8 +1,6 @@
-use gloo_utils::format::JsValueSerdeExt;
 use lazy_static::lazy_static;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
-use wasm_bindgen::prelude::*;
 
 #[derive(Debug, PartialEq, Eq, Copy, Clone, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
@@ -271,14 +269,6 @@ pub fn lexer(str: &str) -> Vec<Token> {
         recursively_tokenise(str, current_index + token_length, new_tokens)
     }
     recursively_tokenise(str, 0, Vec::new())
-}
-
-// wasm_bindgen wrapper for lexer
-// test for this function and by extension lexer are done in javascript land src/lang/tokeniser.test.ts
-#[wasm_bindgen]
-pub fn lexer_js(str: &str) -> Result<JsValue, JsError> {
-    let tokens = lexer(str);
-    Ok(JsValue::from_serde(&tokens)?)
 }
 
 #[cfg(test)]

@@ -1,7 +1,5 @@
 //! Generates source code from the AST.
 //! The inverse of parsing (which generates an AST from the source code)
-use gloo_utils::format::JsValueSerdeExt;
-use wasm_bindgen::prelude::*;
 
 use crate::abstract_syntax_tree_types::{
     ArrayExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression, FunctionExpression,
@@ -399,15 +397,4 @@ pub fn recast_function(expression: FunctionExpression) -> String {
             true
         )
     )
-}
-
-// wasm_bindgen wrapper for recast
-// test for this function and by extension the recaster are done in javascript land src/lang/recast.test.ts
-#[wasm_bindgen]
-pub fn recast_wasm(json_str: &str) -> Result<JsValue, JsError> {
-    // deserialize the ast from a stringified json
-    let program: Program = serde_json::from_str(json_str).map_err(JsError::from)?;
-
-    let result = recast(&program, "", false);
-    Ok(JsValue::from_serde(&result)?)
 }
