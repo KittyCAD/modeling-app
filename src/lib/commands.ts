@@ -1,6 +1,5 @@
 import { AnyStateMachine, EventFrom, StateFrom } from 'xstate'
 import { isTauri } from './isTauri'
-import { P } from 'vitest/dist/types-3c7dbfa5'
 
 type InitialCommandBarMetaArg = {
   name: string
