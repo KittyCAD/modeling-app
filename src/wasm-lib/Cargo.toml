@@ -18,7 +18,7 @@ gloo-utils = "0.2.0"
 http = "0.2.9"
 httparse = { version = "1.8.0", optional = true }
 js-sys = { version = "0.3.64", optional = true }
-kittycad = { version = "0.2.15", default-features = false, features = ["js"] }
+kittycad = { version = "0.2.20", default-features = false, features = ["js"] }
 lazy_static = "1.4.0"
 parse-display = "0.8.2"
 regex = "1.7.1"
