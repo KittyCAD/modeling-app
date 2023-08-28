@@ -5,6 +5,7 @@ import { EngineCommand } from '../lang/std/engineConnection'
 import { useState } from 'react'
 import { ActionButton } from '../components/ActionButton'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
+import { isReducedMotion } from 'lang/util'
 
 type SketchModeCmd = Extract<
   Extract<EngineCommand, { type: 'modeling_cmd_req' }>['cmd'],
@@ -22,7 +23,7 @@ export const DebugPanel = ({ className, ...props }: CollapsiblePanelProps) => {
     y_axis: { x: 0, y: 1, z: 0 },
     distance_to_plane: 100,
     ortho: true,
-    animated: true, // TODO #273 get prefers reduced motion from CSS
+    animated: !isReducedMotion(),
   })
   if (!sketchModeCmd) return null
   return (
