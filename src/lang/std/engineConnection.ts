@@ -359,12 +359,12 @@ export class EngineCommandManager {
   private resolveReady = () => {}
 
   subscriptions: {
-    [key: string]: {
+    [event: string]: {
       [localUnsubscribeId: string]: (a: any) => void
     }
   } = {} as any
   lossySubscriptions: {
-    [key: string]: {
+    [event: string]: {
       [localUnsubscribeId: string]: (a: any) => void
     }
   } = {} as any
