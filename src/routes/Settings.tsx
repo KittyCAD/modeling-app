@@ -13,21 +13,27 @@ import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { IndexLoaderData, paths } from '../Router'
 import { Themes } from '../lib/theme'
-import { SettingsContext } from '../components/SettingsCommandProvider'
+import { GlobalStateContext } from 'components/GlobalStateProvider'
 
 export const Settings = () => {
   const loaderData = useRouteLoaderData(paths.FILE) as IndexLoaderData
   const navigate = useNavigate()
   useHotkeys('esc', () => navigate('../'))
   const {
-    defaultProjectName,
-    showDebugPanel,
-    defaultDirectory,
-    unitSystem,
-    baseUnit,
-    theme,
-    send,
-  } = useContext(SettingsContext)
+    settings: {
+      send,
+      state: {
+        context: {
+          defaultProjectName,
+          showDebugPanel,
+          defaultDirectory,
+          unitSystem,
+          baseUnit,
+          theme,
+        },
+      },
+    },
+  } = useContext(GlobalStateContext)
 
   async function handleDirectorySelection() {
     const newDirectory = await open({

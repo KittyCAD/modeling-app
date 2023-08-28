@@ -3,10 +3,10 @@ import { ActionButton } from './ActionButton'
 import { faBars, faGear, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import { useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { paths } from '../Router'
 import makeUrlPathRelative from '../lib/makeUrlPathRelative'
-import { useAuthMachine } from '../hooks/useAuthMachine'
+import { GlobalStateContext } from './GlobalStateProvider'
 import { Models } from '@kittycad/lib'
 
 type User = Models['User_type']
@@ -15,7 +15,9 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   const displayedName = getDisplayName(user)
   const [imageLoadFailed, setImageLoadFailed] = useState(false)
   const navigate = useNavigate()
-  const [_, send] = useAuthMachine()
+  const {
+    auth: { send },
+  } = useContext(GlobalStateContext)
 
   // Fallback logic for displaying user's "name":
   // 1. user.name

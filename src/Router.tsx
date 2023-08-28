@@ -24,16 +24,13 @@ import {
 } from './lib/tauriFS'
 import { metadata, type Metadata } from 'tauri-plugin-fs-extra-api'
 import DownloadAppBanner from './components/DownloadAppBanner'
-import {
-  AuthMachineCommandProvider,
-  GlobalStateProvider,
-} from './hooks/useAuthMachine'
-import SettingsCommandProvider from './components/SettingsCommandProvider'
+import { GlobalStateProvider } from './components/GlobalStateProvider'
 import {
   SETTINGS_PERSIST_KEY,
   settingsMachine,
 } from './machines/settingsMachine'
 import { ContextFrom } from 'xstate'
+import CommandBarProvider from 'components/CommandBar'
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {
@@ -78,13 +75,9 @@ const addGlobalContextToElements = (
       ? {
           ...route,
           element: (
-            <GlobalStateProvider>
-              <AuthMachineCommandProvider>
-                <SettingsCommandProvider>
-                  {route.element}
-                </SettingsCommandProvider>
-              </AuthMachineCommandProvider>
-            </GlobalStateProvider>
+            <CommandBarProvider>
+              <GlobalStateProvider>{route.element}</GlobalStateProvider>
+            </CommandBarProvider>
           ),
         }
       : route

@@ -27,6 +27,39 @@ export const CommandsContext = createContext(
   }
 )
 
+export const CommandBarProvider = ({
+  children,
+}: {
+  children: React.ReactNode
+}) => {
+  const [commands, internalSetCommands] = useState([] as Command[])
+  const [commandBarOpen, setCommandBarOpen] = useState(false)
+
+  const addCommands = (newCommands: Command[]) => {
+    internalSetCommands((prevCommands) => [...newCommands, ...prevCommands])
+  }
+  const removeCommands = (newCommands: Command[]) => {
+    internalSetCommands((prevCommands) =>
+      prevCommands.filter((command) => !newCommands.includes(command))
+    )
+  }
+
+  return (
+    <CommandsContext.Provider
+      value={{
+        commands,
+        addCommands,
+        removeCommands,
+        commandBarOpen,
+        setCommandBarOpen,
+      }}
+    >
+      {children}
+      <CommandBar />
+    </CommandsContext.Provider>
+  )
+}
+
 const CommandBar = () => {
   const { commands, commandBarOpen, setCommandBarOpen } =
     useContext(CommandsContext)
@@ -255,4 +288,4 @@ const CommandBar = () => {
   )
 }
 
-export default CommandBar
+export default CommandBarProvider

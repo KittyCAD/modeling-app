@@ -2,7 +2,8 @@ import { Toolbar } from '../Toolbar'
 import UserSidebarMenu from './UserSidebarMenu'
 import { ProjectWithEntryPointMetadata } from '../Router'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
-import { useAuthMachine } from '../hooks/useAuthMachine'
+import { GlobalStateContext } from './GlobalStateProvider'
+import { useContext } from 'react'
 
 interface AppHeaderProps extends React.PropsWithChildren {
   showToolbar?: boolean
@@ -18,7 +19,11 @@ export const AppHeader = ({
   className = '',
   enableMenu = false,
 }: AppHeaderProps) => {
-  const [user] = useAuthMachine((s) => s?.context?.user)
+  const {
+    auth: {
+      context: { user },
+    },
+  } = useContext(GlobalStateContext)
 
   return (
     <header

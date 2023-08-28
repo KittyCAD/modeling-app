@@ -5,12 +5,17 @@ import { SettingsSection } from '../Settings'
 import { Toggle } from '../../components/Toggle/Toggle'
 import { useContext, useState } from 'react'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
-import { SettingsContext } from '../../components/SettingsCommandProvider'
+import { GlobalStateContext } from 'components/GlobalStateProvider'
 
 export default function Units() {
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.CAMERA)
-  const { send, unitSystem, baseUnit } = useContext(SettingsContext)
+  const {
+    settings: {
+      send,
+      context: { unitSystem, baseUnit },
+    },
+  } = useContext(GlobalStateContext)
   const [tempUnitSystem, setTempUnitSystem] = useState(unitSystem)
   const [tempBaseUnit, setTempBaseUnit] = useState(baseUnit)
 

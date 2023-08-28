@@ -2,7 +2,8 @@ import { render, screen } from '@testing-library/react'
 import { App } from './App'
 import { describe, test, vi } from 'vitest'
 import { BrowserRouter } from 'react-router-dom'
-import { GlobalStateProvider } from './hooks/useAuthMachine'
+import { GlobalStateProvider } from './components/GlobalStateProvider'
+import CommandBarProvider from 'components/CommandBar'
 
 let listener: ((rect: any) => void) | undefined = undefined
 ;(global as any).ResizeObserver = class ResizeObserver {
@@ -43,7 +44,9 @@ function TestWrap({ children }: { children: React.ReactNode }) {
   // wrap in router and xState context
   return (
     <BrowserRouter>
-      <GlobalStateProvider>{children}</GlobalStateProvider>
+      <CommandBarProvider>
+        <GlobalStateProvider>{children}</GlobalStateProvider>
+      </CommandBarProvider>
     </BrowserRouter>
   )
 }

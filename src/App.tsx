@@ -49,8 +49,7 @@ import { writeTextFile } from '@tauri-apps/api/fs'
 import { PROJECT_ENTRYPOINT } from './lib/tauriFS'
 import { IndexLoaderData } from './Router'
 import { toast } from 'react-hot-toast'
-import { useAuthMachine } from './hooks/useAuthMachine'
-import { SettingsContext } from 'components/SettingsCommandProvider'
+import { GlobalStateContext } from './components/GlobalStateProvider'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
@@ -129,10 +128,15 @@ export function App() {
     setStreamDimensions: s.setStreamDimensions,
     streamDimensions: s.streamDimensions,
   }))
-  const { showDebugPanel, theme, onboardingStatus } =
-    useContext(SettingsContext)
 
-  const [token] = useAuthMachine((s) => s?.context?.token)
+  const {
+    auth: {
+      context: { token },
+    },
+    settings: {
+      context: { showDebugPanel, theme, onboardingStatus },
+    },
+  } = useContext(GlobalStateContext)
 
   const editorTheme = theme === Themes.System ? getSystemTheme() : theme
 

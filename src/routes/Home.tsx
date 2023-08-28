@@ -27,7 +27,7 @@ import {
 } from '../lib/sorting'
 import { CommandsContext } from '../components/CommandBar'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
-import { SettingsContext } from '../components/SettingsCommandProvider'
+import { GlobalStateContext } from 'components/GlobalStateProvider'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
@@ -35,7 +35,11 @@ const Home = () => {
   const { commands, setCommandBarOpen } = useContext(CommandsContext)
   const navigate = useNavigate()
   const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
-  const { defaultDirectory, defaultProjectName } = useContext(SettingsContext)
+  const {
+    settings: {
+      context: { defaultDirectory, defaultProjectName },
+    },
+  } = useContext(GlobalStateContext)
 
   const [state, send] = useMachine(homeMachine, {
     context: {
