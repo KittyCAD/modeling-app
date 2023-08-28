@@ -331,6 +331,23 @@ export class EngineConnection {
 }
 
 export type EngineCommand = Models['WebSocketRequest_type']
+type ModelTypes = Models['OkModelingCmdResponse_type']['type']
+
+type LossyResponses = Extract<
+  Models['OkModelingCmdResponse_type'],
+  { type: 'highlight_set_entity' }
+>
+interface LossySubscription<T extends LossyResponses['type']> {
+  event: T
+  callback: (data: Extract<LossyResponses, { type: T }>) => void
+}
+
+interface Subscription<T extends ModelTypes> {
+  event: T
+  callback: (
+    data: Extract<Models['OkModelingCmdResponse_type'], { type: T }>
+  ) => void
+}
 
 export class EngineCommandManager {
   artifactMap: ArtifactMap = {}
@@ -340,10 +357,17 @@ export class EngineCommandManager {
   engineConnection?: EngineConnection
   waitForReady: Promise<void> = new Promise(() => {})
   private resolveReady = () => {}
-  onHoverCallback: (id?: string) => void = () => {}
-  onClickCallback: (selection?: SelectionsArgs) => void = () => {}
-  onCursorsSelectedCallback: (selections: CursorSelectionsArgs) => void =
-    () => {}
+
+  subscriptions: {
+    [key: string]: {
+      [localUnsubscribeId: string]: (a: any) => void
+    }
+  } = {} as any
+  lossySubscriptions: {
+    [key: string]: {
+      [localUnsubscribeId: string]: (a: any) => void
+    }
+  } = {} as any
   constructor({
     setMediaStream,
     setIsStreamReady,
@@ -376,17 +400,23 @@ export class EngineCommandManager {
           let lossyDataChannel = event.channel
 
           lossyDataChannel.addEventListener('message', (event) => {
-            const result: Models['OkModelingCmdResponse_type'] = JSON.parse(
-              event.data
+            const result: LossyResponses = JSON.parse(event.data)
+            Object.values(this.lossySubscriptions[result.type] || {}).forEach(
+              // TODO: There is only one response that uses the lossy channel atm,
+              // highlight_set_entity, if there are more it's likely they will all have the same
+              // sequence logic, but I'm not sure if we use a single global sequence or a sequence
+              // per lossy subscription.
+              (callback) => {
+                if (
+                  result?.data?.sequence &&
+                  result?.data.sequence > this.inSequence &&
+                  result.type === 'highlight_set_entity'
+                ) {
+                  this.inSequence = result.data.sequence
+                  callback(result)
+                }
+              }
             )
-            if (
-              result.type === 'highlight_set_entity' &&
-              result?.data?.sequence &&
-              result.data.sequence > this.inSequence
-            ) {
-              this.onHoverCallback(result.data.entity_id)
-              this.inSequence = result.data.sequence
-            }
           })
         })
 
@@ -433,18 +463,11 @@ export class EngineCommandManager {
       return
     }
     const modelingResponse = message.data.modeling_response
+    Object.values(this.subscriptions[modelingResponse.type] || {}).forEach(
+      (callback) => callback(modelingResponse)
+    )
 
     const command = this.artifactMap[id]
-    if (modelingResponse.type === 'select_with_point') {
-      if (modelingResponse?.data?.entity_id) {
-        this.onClickCallback({
-          id: modelingResponse?.data?.entity_id,
-          type: 'default',
-        })
-      } else {
-        this.onClickCallback()
-      }
-    }
     if (command && command.type === 'pending') {
       const resolve = command.resolve
       this.artifactMap[id] = {
@@ -453,6 +476,7 @@ export class EngineCommandManager {
       }
       resolve({
         id,
+        data: modelingResponse,
       })
     } else {
       this.artifactMap[id] = {
@@ -468,20 +492,45 @@ export class EngineCommandManager {
     this.artifactMap = {}
     this.sourceRangeMap = {}
   }
+  subscribeTo<T extends ModelTypes>({
+    event,
+    callback,
+  }: Subscription<T>): () => void {
+    const localUnsubscribeId = uuidv4()
+    const otherEventCallbacks = this.subscriptions[event]
+    if (otherEventCallbacks) {
+      otherEventCallbacks[localUnsubscribeId] = callback
+    } else {
+      this.subscriptions[event] = {
+        [localUnsubscribeId]: callback,
+      }
+    }
+    return () => this.unSubscribeTo(event, localUnsubscribeId)
+  }
+  private unSubscribeTo(event: ModelTypes, id: string) {
+    delete this.subscriptions[event][id]
+  }
+  subscribeToLossy<T extends LossyResponses['type']>({
+    event,
+    callback,
+  }: LossySubscription<T>): () => void {
+    const localUnsubscribeId = uuidv4()
+    const otherEventCallbacks = this.lossySubscriptions[event]
+    if (otherEventCallbacks) {
+      otherEventCallbacks[localUnsubscribeId] = callback
+    } else {
+      this.lossySubscriptions[event] = {
+        [localUnsubscribeId]: callback,
+      }
+    }
+    return () => this.unSubscribeToLossy(event, localUnsubscribeId)
+  }
+  private unSubscribeToLossy(event: LossyResponses['type'], id: string) {
+    delete this.lossySubscriptions[event][id]
+  }
   endSession() {
     // this.websocket?.close()
     // socket.off('command')
-  }
-  onHover(callback: (id?: string) => void) {
-    // It's when the user hovers over a part in the 3d scene, and so the engine should tell the
-    // frontend about that (with it's id) so that the FE can highlight code associated with that id
-    this.onHoverCallback = callback
-  }
-  onClick(callback: (selection?: SelectionsArgs) => void) {
-    // It's when the user clicks on a part in the 3d scene, and so the engine should tell the
-    // frontend about that (with it's id) so that the FE can put the user's cursor on the right
-    // line of code
-    this.onClickCallback = callback
   }
   cusorsSelected(selections: {
     otherSelections: Selections['otherSelections']
@@ -507,12 +556,12 @@ export class EngineCommandManager {
       cmd_id: uuidv4(),
     })
   }
-  sendSceneCommand(command: EngineCommand) {
+  sendSceneCommand(command: EngineCommand): Promise<any> {
     if (!this.engineConnection?.isReady()) {
       console.log('socket not ready')
-      return
+      return Promise.resolve()
     }
-    if (command.type !== 'modeling_cmd_req') return
+    if (command.type !== 'modeling_cmd_req') return Promise.resolve()
     const cmd = command.cmd
     if (
       cmd.type === 'camera_drag_move' &&
@@ -521,7 +570,7 @@ export class EngineCommandManager {
       cmd.sequence = this.outSequence
       this.outSequence++
       this.engineConnection?.lossyDataChannel?.send(JSON.stringify(command))
-      return
+      return Promise.resolve()
     } else if (
       cmd.type === 'highlight_set_entity' &&
       this.engineConnection?.lossyDataChannel
@@ -529,10 +578,12 @@ export class EngineCommandManager {
       cmd.sequence = this.outSequence
       this.outSequence++
       this.engineConnection?.lossyDataChannel?.send(JSON.stringify(command))
-      return
+      return Promise.resolve()
     }
     console.log('sending command', command)
+    // since it's not mouse drag or highlighting send over TCP and keep track of the command
     this.engineConnection?.send(command)
+    return this.handlePendingCommand(command.cmd_id)
   }
   sendModelingCommand({
     id,
@@ -547,9 +598,12 @@ export class EngineCommandManager {
 
     if (!this.engineConnection?.isReady()) {
       console.log('socket not ready')
-      return new Promise(() => {})
+      return Promise.resolve()
     }
     this.engineConnection?.send(command)
+    return this.handlePendingCommand(id)
+  }
+  handlePendingCommand(id: string) {
     let resolve: (val: any) => void = () => {}
     const promise = new Promise((_resolve, reject) => {
       resolve = _resolve
