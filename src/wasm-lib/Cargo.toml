@@ -8,7 +8,6 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-bincode = "1.3.3"
 gloo-utils = "0.2.0"
 kcl = { path = "kcl" }
 kittycad = { version = "0.2.15", default-features = false, features = ["js"] }

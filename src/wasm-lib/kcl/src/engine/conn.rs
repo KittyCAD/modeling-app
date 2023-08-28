@@ -25,21 +25,6 @@ impl Drop for EngineConnection {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
-pub struct RawFile {
-    pub name: String,
-    pub contents: Vec<u8>,
-}
-
-impl From<RawFile> for kittycad::types::RawFile {
-    fn from(raw: RawFile) -> Self {
-        kittycad::types::RawFile {
-            name: raw.name,
-            contents: raw.contents,
-        }
-    }
-}
-
 pub struct TcpRead {
     stream: futures::stream::SplitStream<tokio_tungstenite::WebSocketStream<reqwest::Upgraded>>,
 }
@@ -49,17 +34,7 @@ impl TcpRead {
         let msg = self.stream.next().await.unwrap()?;
         let msg: WebSocketResponse = match msg {
             WsMsg::Text(text) => serde_json::from_str(&text)?,
-            WsMsg::Binary(bin) => {
-                let files: Vec<RawFile> = bincode::deserialize(&bin)?;
-                WebSocketResponse {
-                    success: true,
-                    resp: Some(OkWebSocketResponseData::Export {
-                        files: files.iter().map(|f| f.clone().into()).collect(),
-                    }),
-                    errors: None,
-                    request_id: None,
-                }
-            }
+            WsMsg::Binary(bin) => bson::from_slice(&bin)?,
             other => anyhow::bail!("Unexpected websocket message from server: {}", other),
         };
         Ok(msg)
