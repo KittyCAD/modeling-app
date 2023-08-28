@@ -8,6 +8,7 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
+bson = { version = "2.6.1", features = ["uuid-1", "chrono"] }
 gloo-utils = "0.2.0"
 kcl = { path = "kcl" }
 kittycad = { version = "0.2.15", default-features = false, features = ["js"] }
