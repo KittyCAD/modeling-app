@@ -11,10 +11,10 @@ import { SetAngleLength } from './components/Toolbar/setAngleLength'
 import { ConvertToVariable } from './components/Toolbar/ConvertVariable'
 import { SetAbsDistance } from './components/Toolbar/SetAbsDistance'
 import { SetAngleBetween } from './components/Toolbar/SetAngleBetween'
-import { useEffect } from 'react'
+import { Fragment, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faX } from '@fortawesome/free-solid-svg-icons'
-import { Popover } from '@headlessui/react'
+import { Popover, Transition } from '@headlessui/react'
 import styles from './Toolbar.module.css'
 
 export const Toolbar = () => {
@@ -201,22 +201,42 @@ export const Toolbar = () => {
           <FontAwesomeIcon icon={faSearch} />
         </Popover.Button>
       </div>
-      <Popover.Overlay className="fixed inset-0 bg-chalkboard-110/20 dark:bg-chalkboard-110/50" />
-      <Popover.Panel className="absolute top-0 w-screen max-w-xl left-1/2 -translate-x-1/2 flex flex-col gap-8 bg-chalkboard-10 dark:bg-chalkboard-100 p-5 rounded border border-chalkboard-20/30 dark:border-chalkboard-70/50">
-        <section className="flex justify-between items-center">
-          <p
-            className={`${styles.toolbarCap} ${styles.label} !self-center rounded-r-full w-fit`}
-          >
-            You're in {guiMode.mode === 'sketch' ? '2D' : '3D'}
-          </p>
-          <Popover.Button className="p-2 flex items-center justify-center rounded-sm bg-chalkboard-20 text-chalkboard-110 dark:bg-chalkboard-70 dark:text-chalkboard-20 border-none hover:bg-chalkboard-30 dark:hover:bg-chalkboard-60">
-            <FontAwesomeIcon icon={faX} className="w-4 h-4" />
-          </Popover.Button>
-        </section>
-        <section>
-          <ToolbarButtons />
-        </section>
-      </Popover.Panel>
+      <Transition
+        as={Fragment}
+        enter="transition ease-out duration-200"
+        enterFrom="opacity-0"
+        enterTo="opacity-100"
+        leave="transition ease-out duration-100"
+        leaveFrom="opacity-100"
+        leaveTo="opacity-0"
+      >
+        <Popover.Overlay className="fixed inset-0 bg-chalkboard-110/20 dark:bg-chalkboard-110/50" />
+      </Transition>
+      <Transition
+        as={Fragment}
+        enter="transition ease-out duration-100"
+        enterFrom="opacity-0 translate-y-1 scale-95"
+        enterTo="opacity-100 translate-y-0 scale-100"
+        leave="transition ease-out duration-75"
+        leaveFrom="opacity-100 translate-y-0"
+        leaveTo="opacity-0 translate-y-2"
+      >
+        <Popover.Panel className="absolute top-0 w-screen max-w-xl left-1/2 -translate-x-1/2 flex flex-col gap-8 bg-chalkboard-10 dark:bg-chalkboard-100 p-5 rounded border border-chalkboard-20/30 dark:border-chalkboard-70/50">
+          <section className="flex justify-between items-center">
+            <p
+              className={`${styles.toolbarCap} ${styles.label} !self-center rounded-r-full w-fit`}
+            >
+              You're in {guiMode.mode === 'sketch' ? '2D' : '3D'}
+            </p>
+            <Popover.Button className="p-2 flex items-center justify-center rounded-sm bg-chalkboard-20 text-chalkboard-110 dark:bg-chalkboard-70 dark:text-chalkboard-20 border-none hover:bg-chalkboard-30 dark:hover:bg-chalkboard-60">
+              <FontAwesomeIcon icon={faX} className="w-4 h-4" />
+            </Popover.Button>
+          </section>
+          <section>
+            <ToolbarButtons />
+          </section>
+        </Popover.Panel>
+      </Transition>
     </Popover>
   )
 }
