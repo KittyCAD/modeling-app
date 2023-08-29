@@ -71,10 +71,12 @@ impl EngineConnection {
             loop {
                 match tcp_read.read().await {
                     Ok(ws_resp) => {
-                        if !ws_resp.success {
-                            println!("got ws errors: {:?}", ws_resp.errors);
-                            export_notifier.notify_one();
-                            continue;
+                        if let Some(success) = ws_resp.success {
+                            if !success {
+                                println!("got ws errors: {:?}", ws_resp.errors);
+                                export_notifier.notify_one();
+                                continue;
+                            }
                         }
 
                         if let Some(msg) = ws_resp.resp {

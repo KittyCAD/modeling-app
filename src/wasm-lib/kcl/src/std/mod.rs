@@ -96,6 +96,7 @@ impl<'a> Args<'a> {
             engine,
         }
     }
+
     pub fn send_modeling_cmd(&mut self, id: uuid::Uuid, cmd: kittycad::types::ModelingCmd) -> Result<(), KclError> {
         self.engine.send_modeling_cmd(id, self.source_range, cmd)
     }

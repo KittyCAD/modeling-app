@@ -31,8 +31,10 @@ pub async fn execute_wasm(
 pub fn deserialize_files(data: &[u8]) -> Result<JsValue, JsError> {
     let ws_resp: kittycad::types::WebSocketResponse = bson::from_slice(data)?;
 
-    if !ws_resp.success {
-        return Err(JsError::new(&format!("Server returned error: {:?}", ws_resp.errors)));
+    if let Some(success) = ws_resp.success {
+        if !success {
+            return Err(JsError::new(&format!("Server returned error: {:?}", ws_resp.errors)));
+        }
     }
 
     if let Some(kittycad::types::OkWebSocketResponseData::Export { files }) = ws_resp.resp {
