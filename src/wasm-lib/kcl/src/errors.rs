@@ -20,7 +20,7 @@ pub enum KclError {
     #[error("undefined value: {0:?}")]
     UndefinedValue(KclErrorDetails),
     #[error("invalid expression: {0:?}")]
-    InvalidExpression(crate::math_parser::MathExpression),
+    InvalidExpression(KclErrorDetails),
     #[error("engine: {0:?}")]
     Engine(KclErrorDetails),
 }
