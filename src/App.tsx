@@ -2,12 +2,8 @@ import {
   useRef,
   useEffect,
   useLayoutEffect,
-  useLocation,
-  useNavigationType,
-  createRoutesFromChildren,
   useMemo,
   useCallback,
-  matchRoutes,
   MouseEventHandler,
 } from 'react'
 import { DebugPanel } from './components/DebugPanel'
@@ -47,7 +43,12 @@ import { TEST, VITE_KC_SENTRY_DSN } from './env'
 import { getNormalisedCoordinates } from './lib/utils'
 import { Themes, getSystemTheme } from './lib/theme'
 import { isTauri } from './lib/isTauri'
-import { useLoaderData, useParams } from 'react-router-dom'
+import { useLoaderData, useParams, useLocation } from 'react-router-dom'
+import {
+  matchRoutes,
+  createRoutesFromChildren,
+  useNavigationType,
+} from 'react-router'
 import { writeTextFile } from '@tauri-apps/api/fs'
 import { PROJECT_ENTRYPOINT } from './lib/tauriFS'
 import { IndexLoaderData } from './Router'
@@ -58,6 +59,8 @@ import * as Sentry from '@sentry/react'
 if (VITE_KC_SENTRY_DSN) {
   Sentry.init({
     dsn: VITE_KC_SENTRY_DSN,
+    // TODO(paultag): pass in the right env here.
+    // environment: "production",
     integrations: [
       new Sentry.BrowserTracing({
         routingInstrumentation: Sentry.reactRouterV6Instrumentation(

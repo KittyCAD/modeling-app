@@ -8,6 +8,7 @@ import {
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
 import { v4 as uuidv4 } from 'uuid'
+import * as Sentry from '@sentry/react'
 
 interface ResultCommand {
   type: 'result'
@@ -284,27 +285,130 @@ export class EngineConnection {
       // us. We'll also eventually want more global statistical information,
       // but this will give us a baseline.
       if (parseInt(VITE_KC_CONNECTION_WEBRTC_REPORT_STATS_MS) !== 0) {
-        console.log(
-          `Reporting WebRTC statistical information every ${VITE_KC_CONNECTION_WEBRTC_REPORT_STATS_MS}ms`
-        )
         setInterval(() => {
           if (this.pc === undefined) {
             return
           }
 
+          console.log('Reporting statistics')
+
           // Use the WebRTC Statistics API to collect statistical information
           // about the WebRTC connection we're using to report to Sentry.
-          let stats = new Map<string, any>()
           mediaStream.getVideoTracks().forEach((videoTrack) => {
             let trackStats = new Map<string, any>()
             this.pc?.getStats(videoTrack).then((videoTrackStats) => {
+              // Sentry only allows 10 metrics per transaction. We're going
+              // to have to pick carefully here, eventually send like a prom
+              // file or something to the peer.
+
+              const transaction = Sentry.startTransaction({ name: 'webrtc' })
               videoTrackStats.forEach((videoTrackReport) => {
-                trackStats.set(videoTrackReport.type, videoTrackReport)
+                if (videoTrackReport.type === 'inbound-rtp') {
+                  // RTC Stream Info
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.framesDecoded',
+                  //   videoTrackReport.framesDecoded,
+                  //   'frame'
+                  // )
+                  transaction.setMeasurement(
+                    'mediaStreamTrack.framesDropped',
+                    videoTrackReport.framesDropped,
+                    'frame'
+                  )
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.framesReceived',
+                  //   videoTrackReport.framesReceived,
+                  //   'frame'
+                  // )
+                  transaction.setMeasurement(
+                    'mediaStreamTrack.framesPerSecond',
+                    videoTrackReport.framesPerSecond,
+                    'fps'
+                  )
+                  transaction.setMeasurement(
+                    'mediaStreamTrack.freezeCount',
+                    videoTrackReport.freezeCount,
+                    ''
+                  )
+                  transaction.setMeasurement(
+                    'mediaStreamTrack.jitter',
+                    videoTrackReport.jitter,
+                    'second'
+                  )
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.jitterBufferDelay',
+                  //   videoTrackReport.jitterBufferDelay,
+                  //   ''
+                  // )
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.jitterBufferEmittedCount',
+                  //   videoTrackReport.jitterBufferEmittedCount,
+                  //   ''
+                  // )
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.jitterBufferMinimumDelay',
+                  //   videoTrackReport.jitterBufferMinimumDelay,
+                  //   ''
+                  // )
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.jitterBufferTargetDelay',
+                  //   videoTrackReport.jitterBufferTargetDelay,
+                  //   ''
+                  // )
+                  transaction.setMeasurement(
+                    'mediaStreamTrack.keyFramesDecoded',
+                    videoTrackReport.keyFramesDecoded,
+                    ''
+                  )
+                  transaction.setMeasurement(
+                    'mediaStreamTrack.totalFreezesDuration',
+                    videoTrackReport.totalFreezesDuration,
+                    'second'
+                  )
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.totalInterFrameDelay',
+                  //   videoTrackReport.totalInterFrameDelay,
+                  //   ''
+                  // )
+                  transaction.setMeasurement(
+                    'mediaStreamTrack.totalPausesDuration',
+                    videoTrackReport.totalPausesDuration,
+                    'second'
+                  )
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.totalProcessingDelay',
+                  //   videoTrackReport.totalProcessingDelay,
+                  //   'second'
+                  // )
+                } else if (videoTrackReport.type === 'transport') {
+                  // // Bytes i/o
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.bytesReceived',
+                  //   videoTrackReport.bytesReceived,
+                  //   'byte'
+                  // )
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.bytesSent',
+                  //   videoTrackReport.bytesSent,
+                  //   'byte'
+                  // )
+
+                  // Packets i/o
+                  transaction.setMeasurement(
+                    'mediaStreamTrack.packetsReceived',
+                    videoTrackReport.packetsReceived,
+                    'packet'
+                  )
+                  transaction.setMeasurement(
+                    'mediaStreamTrack.packetsSent',
+                    videoTrackReport.packetsSent,
+                    'packet'
+                  )
+                }
               })
+              transaction.finish()
             })
-            stats.set(videoTrack.id, trackStats)
           })
-          console.log(stats)
         }, VITE_KC_CONNECTION_WEBRTC_REPORT_STATS_MS)
       }
 
@@ -327,10 +431,17 @@ export class EngineConnection {
 
         this.onDataChannelOpen(this)
 
-        let timeToConnectMs = new Date().getTime() - connectionStarted.getTime()
-        console.log(`engine connection time to connect: ${timeToConnectMs}ms`)
         this.onEngineConnectionOpen(this)
         this.ready = true
+
+        let timeToConnectMs = new Date().getTime() - connectionStarted.getTime()
+        console.log(`engine connection time to connect: ${timeToConnectMs}ms`)
+        const transaction = Sentry.getCurrentHub().getScope().getTransaction()
+        transaction?.setMeasurement(
+          'engineConnection.openTime',
+          timeToConnectMs,
+          'millisecond'
+        )
       })
 
       this.lossyDataChannel.addEventListener('close', (event) => {
