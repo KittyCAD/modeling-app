@@ -414,6 +414,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "derive-docs"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "075291fd1d6d70a886078f7b1c132a160559ceb9a0fe143177872d40ea587906"
+dependencies = [
+ "convert_case",
+ "proc-macro2",
+ "quote",
+ "serde",
+ "serde_tokenstream",
+ "syn 2.0.29",
+]
+
+[[package]]
 name = "diff"
 version = "0.1.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -932,12 +946,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "kcl"
+name = "kcl-lib"
 version = "0.1.0"
 dependencies = [
  "anyhow",
  "bson",
- "derive-docs",
+ "derive-docs 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "expectorate",
  "futures",
  "js-sys",
@@ -953,7 +967,7 @@ dependencies = [
  "thiserror",
  "tokio",
  "tokio-tungstenite",
- "ts-rs",
+ "ts-rs-json-value",
  "uuid",
  "wasm-bindgen",
  "wasm-bindgen-futures",
@@ -2346,9 +2360,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3528ecfd12c466c6f163363caf2d02a71161dd5e1cc6ae7b34207ea2d42d81ed"
 
 [[package]]
-name = "ts-rs"
+name = "ts-rs-json-value"
 version = "7.0.0"
-source = "git+https://github.com/kittycad/ts-rs.git?branch=serde_json#94e2a19c41194e47009fafc7b5a2c28ae544a6e8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b66d07e64e1e39d693819307757ad16878ff2be1f26d6fc2137c4e23bc0c0545"
 dependencies = [
  "serde_json",
  "thiserror",
@@ -2359,7 +2374,8 @@ dependencies = [
 [[package]]
 name = "ts-rs-macros"
 version = "7.0.0"
-source = "git+https://github.com/kittycad/ts-rs.git?branch=serde_json#94e2a19c41194e47009fafc7b5a2c28ae544a6e8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a6f41cc0aeb7a4a55730188e147d3795a7349b501f8334697fd37629b896cdc2"
 dependencies = [
  "Inflector",
  "proc-macro2",
@@ -2592,7 +2608,7 @@ version = "0.1.0"
 dependencies = [
  "bson",
  "gloo-utils",
- "kcl",
+ "kcl-lib",
  "kittycad",
  "serde_json",
  "wasm-bindgen",
