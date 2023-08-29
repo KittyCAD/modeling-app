@@ -18,7 +18,7 @@ schemars = { version = "0.8", features = ["url", "uuid1"] }
 serde = {version = "1.0.152", features = ["derive"] }
 serde_json = "1.0.93"
 thiserror = "1.0.47"
-ts-rs = { git = "https://github.com/kittycad/ts-rs.git", branch = "serde_json", features = ["serde-json-impl", "uuid-impl"] }
+ts-rs-json-value = { version = "7", alias = "ts-rs", features = ["serde-json-impl", "uuid-impl"] }
 uuid = { version = "1.4.1", features = ["v4", "js", "serde"] }
 wasm-bindgen = "0.2.87"
 wasm-bindgen-futures = "0.4.37"
