@@ -1,7 +1,7 @@
-import { useContext, useEffect } from 'react'
+import { useEffect } from 'react'
 import { AnyStateMachine, StateFrom } from 'xstate'
 import { Command, CommandBarMeta, createMachineCommand } from '../lib/commands'
-import { CommandsContext } from '../components/CommandBar'
+import { useCommandsContext } from './useCommandsContext'
 
 interface UseStateMachineCommandsArgs<T extends AnyStateMachine> {
   state: StateFrom<T>
@@ -17,7 +17,7 @@ export default function useStateMachineCommands<T extends AnyStateMachine>({
   commandBarMeta,
   owner,
 }: UseStateMachineCommandsArgs<T>) {
-  const { addCommands, removeCommands } = useContext(CommandsContext)
+  const { addCommands, removeCommands } = useCommandsContext()
 
   useEffect(() => {
     const newCommands = state.nextEvents

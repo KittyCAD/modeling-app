@@ -5,7 +5,6 @@ import {
   useMemo,
   useCallback,
   MouseEventHandler,
-  useContext,
 } from 'react'
 import { DebugPanel } from './components/DebugPanel'
 import { v4 as uuidv4 } from 'uuid'
@@ -49,8 +48,7 @@ import { writeTextFile } from '@tauri-apps/api/fs'
 import { PROJECT_ENTRYPOINT } from './lib/tauriFS'
 import { IndexLoaderData } from './Router'
 import { toast } from 'react-hot-toast'
-import { useAuthMachine } from './hooks/useAuthMachine'
-import { SettingsContext } from 'components/SettingsCommandProvider'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
@@ -129,10 +127,15 @@ export function App() {
     setStreamDimensions: s.setStreamDimensions,
     streamDimensions: s.streamDimensions,
   }))
-  const { showDebugPanel, theme, onboardingStatus } =
-    useContext(SettingsContext)
 
-  const [token] = useAuthMachine((s) => s?.context?.token)
+  const {
+    auth: {
+      context: { token },
+    },
+    settings: {
+      context: { showDebugPanel, theme, onboardingStatus },
+    },
+  } = useGlobalStateContext()
 
   const editorTheme = theme === Themes.System ? getSystemTheme() : theme
 

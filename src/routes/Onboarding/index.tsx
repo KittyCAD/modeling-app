@@ -4,9 +4,9 @@ import Introduction from './Introduction'
 import Units from './Units'
 import Camera from './Camera'
 import Sketching from './Sketching'
-import { useCallback, useContext } from 'react'
+import { useCallback } from 'react'
 import makeUrlPathRelative from '../../lib/makeUrlPathRelative'
-import { SettingsContext } from '../../components/SettingsCommandProvider'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 
 export const onboardingPaths = {
   INDEX: '/',
@@ -35,7 +35,9 @@ export const onboardingRoutes = [
 ]
 
 export function useNextClick(newStatus: string) {
-  const { send } = useContext(SettingsContext)
+  const {
+    settings: { send },
+  } = useGlobalStateContext()
   const navigate = useNavigate()
 
   return useCallback(() => {
@@ -48,7 +50,9 @@ export function useNextClick(newStatus: string) {
 }
 
 export function useDismiss() {
-  const { send } = useContext(SettingsContext)
+  const {
+    settings: { send },
+  } = useGlobalStateContext()
   const navigate = useNavigate()
 
   return useCallback(

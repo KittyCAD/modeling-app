@@ -3,14 +3,19 @@ import { BaseUnit, baseUnits } from '../../useStore'
 import { ActionButton } from '../../components/ActionButton'
 import { SettingsSection } from '../Settings'
 import { Toggle } from '../../components/Toggle/Toggle'
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
-import { SettingsContext } from '../../components/SettingsCommandProvider'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 
 export default function Units() {
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.CAMERA)
-  const { send, unitSystem, baseUnit } = useContext(SettingsContext)
+  const {
+    settings: {
+      send,
+      context: { unitSystem, baseUnit },
+    },
+  } = useGlobalStateContext()
   const [tempUnitSystem, setTempUnitSystem] = useState(unitSystem)
   const [tempBaseUnit, setTempBaseUnit] = useState(baseUnit)
 

@@ -1,9 +1,12 @@
 import Loading from './components/Loading'
-import { useAuthMachine } from './hooks/useAuthMachine'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 
 // Wrapper around protected routes, used in src/Router.tsx
 export const Auth = ({ children }: React.PropsWithChildren) => {
-  const [isLoggedIn] = useAuthMachine((s) => s.matches('checkIfLoggedIn'))
+  const {
+    auth: { state },
+  } = useGlobalStateContext()
+  const isLoggedIn = state.matches('checkIfLoggedIn')
 
   return isLoggedIn ? (
     <Loading>Loading KittyCAD Modeling App...</Loading>

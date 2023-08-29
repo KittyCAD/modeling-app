@@ -7,27 +7,32 @@ import { ActionButton } from '../components/ActionButton'
 import { AppHeader } from '../components/AppHeader'
 import { open } from '@tauri-apps/api/dialog'
 import { BaseUnit, baseUnits } from '../useStore'
-import { useContext } from 'react'
 import { Toggle } from '../components/Toggle/Toggle'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { IndexLoaderData, paths } from '../Router'
 import { Themes } from '../lib/theme'
-import { SettingsContext } from '../components/SettingsCommandProvider'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 
 export const Settings = () => {
   const loaderData = useRouteLoaderData(paths.FILE) as IndexLoaderData
   const navigate = useNavigate()
   useHotkeys('esc', () => navigate('../'))
   const {
-    defaultProjectName,
-    showDebugPanel,
-    defaultDirectory,
-    unitSystem,
-    baseUnit,
-    theme,
-    send,
-  } = useContext(SettingsContext)
+    settings: {
+      send,
+      state: {
+        context: {
+          defaultProjectName,
+          showDebugPanel,
+          defaultDirectory,
+          unitSystem,
+          baseUnit,
+          theme,
+        },
+      },
+    },
+  } = useGlobalStateContext()
 
   async function handleDirectorySelection() {
     const newDirectory = await open({

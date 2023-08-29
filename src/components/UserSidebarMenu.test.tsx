@@ -2,7 +2,8 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import UserSidebarMenu from './UserSidebarMenu'
 import { BrowserRouter } from 'react-router-dom'
 import { Models } from '@kittycad/lib'
-import { GlobalStateProvider } from '../hooks/useAuthMachine'
+import { GlobalStateProvider } from './GlobalStateProvider'
+import CommandBarProvider from './CommandBar'
 
 type User = Models['User_type']
 
@@ -94,7 +95,9 @@ function TestWrap({ children }: { children: React.ReactNode }) {
   // wrap in router and xState context
   return (
     <BrowserRouter>
-      <GlobalStateProvider>{children}</GlobalStateProvider>
+      <CommandBarProvider>
+        <GlobalStateProvider>{children}</GlobalStateProvider>
+      </CommandBarProvider>
     </BrowserRouter>
   )
 }

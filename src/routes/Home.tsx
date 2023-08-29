@@ -1,4 +1,4 @@
-import { FormEvent, useContext, useEffect } from 'react'
+import { FormEvent, useEffect } from 'react'
 import { removeDir, renameFile } from '@tauri-apps/api/fs'
 import {
   createNewProject,
@@ -25,17 +25,21 @@ import {
   getSortFunction,
   getSortIcon,
 } from '../lib/sorting'
-import { CommandsContext } from '../components/CommandBar'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
-import { SettingsContext } from '../components/SettingsCommandProvider'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useCommandsContext } from 'hooks/useCommandsContext'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
 const Home = () => {
-  const { commands, setCommandBarOpen } = useContext(CommandsContext)
+  const { commands, setCommandBarOpen } = useCommandsContext()
   const navigate = useNavigate()
   const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
-  const { defaultDirectory, defaultProjectName } = useContext(SettingsContext)
+  const {
+    settings: {
+      context: { defaultDirectory, defaultProjectName },
+    },
+  } = useGlobalStateContext()
 
   const [state, send] = useMachine(homeMachine, {
     context: {
