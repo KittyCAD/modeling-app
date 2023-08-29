@@ -147,15 +147,9 @@ fn get_type_string_from_schema(schema: &schemars::schema::Schema) -> Result<(Str
             if let Some(array_val) = &o.array {
                 if let Some(schemars::schema::SingleOrVec::Single(items)) = &array_val.items {
                     // Let's print out the object's properties.
-                    return Ok((
-                        format!("[{}]", get_type_string_from_schema(items)?.0),
-                        false,
-                    ));
+                    return Ok((format!("[{}]", get_type_string_from_schema(items)?.0), false));
                 } else if let Some(items) = &array_val.contains {
-                    return Ok((
-                        format!("[{}]", get_type_string_from_schema(items)?.0),
-                        false,
-                    ));
+                    return Ok((format!("[{}]", get_type_string_from_schema(items)?.0), false));
                 }
             }
 

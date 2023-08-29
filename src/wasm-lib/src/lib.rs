@@ -14,20 +14,14 @@ pub async fn execute_wasm(
     // deserialize the ast from a stringified json
     let program: kcl_lib::abstract_syntax_tree_types::Program =
         serde_json::from_str(program_str).map_err(|e| e.to_string())?;
-    let mut mem: kcl_lib::executor::ProgramMemory =
-        serde_json::from_str(memory_str).map_err(|e| e.to_string())?;
+    let mut mem: kcl_lib::executor::ProgramMemory = serde_json::from_str(memory_str).map_err(|e| e.to_string())?;
 
     let mut engine = kcl_lib::engine::EngineConnection::new(manager)
         .await
         .map_err(|e| format!("{:?}", e))?;
 
-    let memory = kcl_lib::executor::execute(
-        program,
-        &mut mem,
-        kcl_lib::executor::BodyType::Root,
-        &mut engine,
-    )
-    .map_err(String::from)?;
+    let memory = kcl_lib::executor::execute(program, &mut mem, kcl_lib::executor::BodyType::Root, &mut engine)
+        .map_err(String::from)?;
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
     JsValue::from_serde(&memory).map_err(|e| e.to_string())
@@ -38,20 +32,14 @@ pub fn deserialize_files(data: &[u8]) -> Result<JsValue, JsError> {
     let ws_resp: kittycad::types::WebSocketResponse = bson::from_slice(data)?;
 
     if !ws_resp.success {
-        return Err(JsError::new(&format!(
-            "Server returned error: {:?}",
-            ws_resp.errors
-        )));
+        return Err(JsError::new(&format!("Server returned error: {:?}", ws_resp.errors)));
     }
 
     if let Some(kittycad::types::OkWebSocketResponseData::Export { files }) = ws_resp.resp {
         return Ok(JsValue::from_serde(&files)?);
     }
 
-    Err(JsError::new(&format!(
-        "Invalid response type, got: {:?}",
-        ws_resp
-    )))
+    Err(JsError::new(&format!("Invalid response type, got: {:?}", ws_resp)))
 }
 
 // wasm_bindgen wrapper for lexer

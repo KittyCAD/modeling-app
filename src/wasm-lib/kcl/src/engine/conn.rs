@@ -12,8 +12,7 @@ use crate::errors::{KclError, KclErrorDetails};
 
 #[derive(Debug)]
 pub struct EngineConnection {
-    tcp_write:
-        futures::stream::SplitSink<tokio_tungstenite::WebSocketStream<reqwest::Upgraded>, WsMsg>,
+    tcp_write: futures::stream::SplitSink<tokio_tungstenite::WebSocketStream<reqwest::Upgraded>, WsMsg>,
     tcp_read_handle: tokio::task::JoinHandle<Result<()>>,
     export_notifier: Arc<tokio::sync::Notify>,
 }
@@ -50,10 +49,7 @@ impl EngineConnection {
         }
         // Make sure it is a directory.
         if !export_dir.is_dir() {
-            anyhow::bail!(
-                "Export directory is not a directory: {}",
-                export_dir.display()
-            );
+            anyhow::bail!("Export directory is not a directory: {}", export_dir.display());
         }
 
         let ws_stream = tokio_tungstenite::WebSocketStream::from_raw_socket(
@@ -140,15 +136,14 @@ impl EngineConnection {
         source_range: crate::executor::SourceRange,
         cmd: kittycad::types::ModelingCmd,
     ) -> Result<(), KclError> {
-        futures::executor::block_on(
-            self.tcp_send(WebSocketRequest::ModelingCmdReq { cmd, cmd_id: id }),
-        )
-        .map_err(|e| {
-            KclError::Engine(KclErrorDetails {
-                message: format!("Failed to send modeling command: {}", e),
-                source_ranges: vec![source_range],
-            })
-        })?;
+        futures::executor::block_on(self.tcp_send(WebSocketRequest::ModelingCmdReq { cmd, cmd_id: id })).map_err(
+            |e| {
+                KclError::Engine(KclErrorDetails {
+                    message: format!("Failed to send modeling command: {}", e),
+                    source_ranges: vec![source_range],
+                })
+            },
+        )?;
         Ok(())
     }
 }
