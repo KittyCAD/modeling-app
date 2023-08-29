@@ -7,8 +7,7 @@ import {
   TOKEN_PERSIST_KEY,
 } from '../machines/authMachine'
 import withBaseUrl from '../lib/withBaseURL'
-import React, { useContext, createContext, useEffect, useRef } from 'react'
-import { CommandsContext } from './CommandBar'
+import React, { createContext, useEffect, useRef } from 'react'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
 import {
   SETTINGS_PERSIST_KEY,
@@ -24,6 +23,7 @@ import {
   Prop,
   StateFrom,
 } from 'xstate'
+import { useCommandsContext } from 'hooks/useCommandsContext'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -44,7 +44,7 @@ export const GlobalStateProvider = ({
   children: React.ReactNode
 }) => {
   const navigate = useNavigate()
-  const { commands } = useContext(CommandsContext)
+  const { commands } = useCommandsContext()
 
   // Settings machine setup
   const retrievedSettings = useRef(

@@ -2,8 +2,7 @@ import { Toolbar } from '../Toolbar'
 import UserSidebarMenu from './UserSidebarMenu'
 import { ProjectWithEntryPointMetadata } from '../Router'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
-import { GlobalStateContext } from './GlobalStateProvider'
-import { useContext } from 'react'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 
 interface AppHeaderProps extends React.PropsWithChildren {
   showToolbar?: boolean
@@ -23,7 +22,7 @@ export const AppHeader = ({
     auth: {
       context: { user },
     },
-  } = useContext(GlobalStateContext)
+  } = useGlobalStateContext()
 
   return (
     <header

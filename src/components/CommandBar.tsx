@@ -4,7 +4,6 @@ import {
   Fragment,
   SetStateAction,
   createContext,
-  useContext,
   useState,
 } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -12,6 +11,7 @@ import { ActionIcon } from './ActionIcon'
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
 import Fuse from 'fuse.js'
 import { Command, SubCommand } from '../lib/commands'
+import { useCommandsContext } from 'hooks/useCommandsContext'
 
 export type SortedCommand = {
   item: Partial<Command | SubCommand> & { name: string }
@@ -61,8 +61,7 @@ export const CommandBarProvider = ({
 }
 
 const CommandBar = () => {
-  const { commands, commandBarOpen, setCommandBarOpen } =
-    useContext(CommandsContext)
+  const { commands, commandBarOpen, setCommandBarOpen } = useCommandsContext()
   useHotkeys('meta+k', () => {
     if (commands.length === 0) return
     setCommandBarOpen(!commandBarOpen)

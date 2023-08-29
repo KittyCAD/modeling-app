@@ -5,8 +5,7 @@ import { invoke } from '@tauri-apps/api/tauri'
 import { VITE_KC_SITE_BASE_URL, VITE_KC_API_BASE_URL } from '../env'
 import { Themes, getSystemTheme } from '../lib/theme'
 import { paths } from '../Router'
-import { GlobalStateContext } from '../components/GlobalStateProvider'
-import { useContext } from 'react'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 
 const SignIn = () => {
   const {
@@ -16,7 +15,7 @@ const SignIn = () => {
         context: { theme },
       },
     },
-  } = useContext(GlobalStateContext)
+  } = useGlobalStateContext()
 
   const appliedTheme = theme === Themes.System ? getSystemTheme() : theme
   const signInTauri = async () => {

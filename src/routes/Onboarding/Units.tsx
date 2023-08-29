@@ -3,9 +3,9 @@ import { BaseUnit, baseUnits } from '../../useStore'
 import { ActionButton } from '../../components/ActionButton'
 import { SettingsSection } from '../Settings'
 import { Toggle } from '../../components/Toggle/Toggle'
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
-import { GlobalStateContext } from 'components/GlobalStateProvider'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 
 export default function Units() {
   const dismiss = useDismiss()
@@ -15,7 +15,7 @@ export default function Units() {
       send,
       context: { unitSystem, baseUnit },
     },
-  } = useContext(GlobalStateContext)
+  } = useGlobalStateContext()
   const [tempUnitSystem, setTempUnitSystem] = useState(unitSystem)
   const [tempBaseUnit, setTempBaseUnit] = useState(baseUnit)
 
