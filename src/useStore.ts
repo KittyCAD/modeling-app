@@ -13,7 +13,6 @@ import {
 } from './lang/executor'
 import { recast } from './lang/recast'
 import { EditorSelection } from '@codemirror/state'
-import { BaseDirectory } from '@tauri-apps/api/fs'
 import {
   ArtifactMap,
   SourceRangeMap,
@@ -95,22 +94,14 @@ export type GuiModes =
       position: Position
     }
 
-type UnitSystem = 'imperial' | 'metric'
-export enum Themes {
-  Light = 'light',
-  Dark = 'dark',
-  System = 'system',
-}
-
-export const baseUnits: Record<UnitSystem, string[]> = {
+export const baseUnits = {
   imperial: ['in', 'ft'],
   metric: ['mm', 'cm', 'm'],
-}
+} as const
 
-interface DefaultDir {
-  base?: BaseDirectory
-  dir: string
-}
+export type BaseUnit = 'in' | 'ft' | 'mm' | 'cm' | 'm'
+
+export const baseUnitsUnion = Object.values(baseUnits).flatMap((v) => v)
 
 export type PaneType = 'code' | 'variables' | 'debug' | 'kclErrors' | 'logs'
 
@@ -181,21 +172,8 @@ export interface StoreState {
     streamHeight: number
   }) => void
 
-  // tauri specific app settings
-  defaultDir: DefaultDir
-  setDefaultDir: (dir: DefaultDir) => void
-  defaultProjectName: string
-  setDefaultProjectName: (defaultProjectName: string) => void
-  defaultUnitSystem: UnitSystem
-  setDefaultUnitSystem: (defaultUnitSystem: UnitSystem) => void
-  defaultBaseUnit: string
-  setDefaultBaseUnit: (defaultBaseUnit: string) => void
   showHomeMenu: boolean
   setHomeShowMenu: (showMenu: boolean) => void
-  onboardingStatus: string
-  setOnboardingStatus: (status: string) => void
-  theme: Themes
-  setTheme: (theme: Themes) => void
   isBannerDismissed: boolean
   setBannerDismissed: (isBannerDismissed: boolean) => void
   openPanes: PaneType[]
@@ -205,8 +183,6 @@ export interface StoreState {
     path: string
   }[]
   setHomeMenuItems: (items: { name: string; path: string }[]) => void
-  debugPanel: boolean
-  setDebugPanel: (debugPanel: boolean) => void
 }
 
 let pendingAstUpdates: number[] = []
@@ -385,18 +361,6 @@ export const useStore = create<StoreState>()(
       defaultDir: {
         dir: '',
       },
-      setDefaultDir: (dir) => set({ defaultDir: dir }),
-      defaultProjectName: 'new-project-$nnn',
-      setDefaultProjectName: (defaultProjectName) =>
-        set({ defaultProjectName }),
-      defaultUnitSystem: 'imperial',
-      setDefaultUnitSystem: (defaultUnitSystem) => set({ defaultUnitSystem }),
-      defaultBaseUnit: 'in',
-      setDefaultBaseUnit: (defaultBaseUnit) => set({ defaultBaseUnit }),
-      onboardingStatus: '',
-      setOnboardingStatus: (onboardingStatus) => set({ onboardingStatus }),
-      theme: Themes.System,
-      setTheme: (theme) => set({ theme }),
       isBannerDismissed: false,
       setBannerDismissed: (isBannerDismissed) => set({ isBannerDismissed }),
       openPanes: ['code'],
@@ -405,25 +369,13 @@ export const useStore = create<StoreState>()(
       setHomeShowMenu: (showHomeMenu) => set({ showHomeMenu }),
       homeMenuItems: [],
       setHomeMenuItems: (homeMenuItems) => set({ homeMenuItems }),
-      debugPanel: false,
-      setDebugPanel: (debugPanel) => set({ debugPanel }),
     }),
     {
       name: 'store',
       partialize: (state) =>
         Object.fromEntries(
           Object.entries(state).filter(([key]) =>
-            [
-              'code',
-              'defaultDir',
-              'defaultProjectName',
-              'defaultUnitSystem',
-              'defaultBaseUnit',
-              'debugPanel',
-              'onboardingStatus',
-              'theme',
-              'openPanes',
-            ].includes(key)
+            ['code', 'openPanes'].includes(key)
           )
         ),
     }

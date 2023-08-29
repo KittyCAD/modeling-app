@@ -24,7 +24,16 @@ import {
 } from './lib/tauriFS'
 import { metadata, type Metadata } from 'tauri-plugin-fs-extra-api'
 import DownloadAppBanner from './components/DownloadAppBanner'
-import { GlobalStateProvider } from './hooks/useAuthMachine'
+import {
+  AuthMachineCommandProvider,
+  GlobalStateProvider,
+} from './hooks/useAuthMachine'
+import SettingsCommandProvider from './components/SettingsCommandProvider'
+import {
+  SETTINGS_PERSIST_KEY,
+  settingsMachine,
+} from './machines/settingsMachine'
+import { ContextFrom } from 'xstate'
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {
@@ -68,7 +77,15 @@ const addGlobalContextToElements = (
     'element' in route
       ? {
           ...route,
-          element: <GlobalStateProvider>{route.element}</GlobalStateProvider>,
+          element: (
+            <GlobalStateProvider>
+              <AuthMachineCommandProvider>
+                <SettingsCommandProvider>
+                  {route.element}
+                </SettingsCommandProvider>
+              </AuthMachineCommandProvider>
+            </GlobalStateProvider>
+          ),
         }
       : route
   )
@@ -95,26 +112,23 @@ const router = createBrowserRouter(
         request,
         params,
       }): Promise<IndexLoaderData | Response> => {
-        const store = localStorage.getItem('store')
-        if (store === null) {
-          return redirect(paths.ONBOARDING.INDEX)
-        } else {
-          const status = JSON.parse(store).state.onboardingStatus || ''
-          const notEnRouteToOnboarding =
-            !request.url.includes(paths.ONBOARDING.INDEX) &&
-            request.method === 'GET'
-          // '' is the initial state, 'done' and 'dismissed' are the final states
-          const hasValidOnboardingStatus =
-            (status !== undefined && status.length === 0) ||
-            !(status === 'done' || status === 'dismissed')
-          const shouldRedirectToOnboarding =
-            notEnRouteToOnboarding && hasValidOnboardingStatus
+        const fetchedStorage = localStorage?.getItem(SETTINGS_PERSIST_KEY)
+        const persistedSettings = JSON.parse(fetchedStorage || '{}') as Partial<
+          ContextFrom<typeof settingsMachine>
+        >
 
-          if (shouldRedirectToOnboarding) {
-            return redirect(
-              makeUrlPathRelative(paths.ONBOARDING.INDEX) + status
-            )
-          }
+        const status = persistedSettings.onboardingStatus || ''
+        const notEnRouteToOnboarding = !request.url.includes(
+          paths.ONBOARDING.INDEX
+        )
+        // '' is the initial state, 'done' and 'dismissed' are the final states
+        const hasValidOnboardingStatus =
+          status.length === 0 || !(status === 'done' || status === 'dismissed')
+        const shouldRedirectToOnboarding =
+          notEnRouteToOnboarding && hasValidOnboardingStatus
+
+        if (shouldRedirectToOnboarding) {
+          return redirect(makeUrlPathRelative(paths.ONBOARDING.INDEX) + status)
         }
 
         if (params.id && params.id !== 'new') {
@@ -164,9 +178,23 @@ const router = createBrowserRouter(
         if (!isTauri()) {
           return redirect(paths.FILE + '/new')
         }
-
-        const projectDir = await initializeProjectDirectory()
-        const projectsNoMeta = (await readDir(projectDir.dir)).filter(
+        const fetchedStorage = localStorage?.getItem(SETTINGS_PERSIST_KEY)
+        const persistedSettings = JSON.parse(fetchedStorage || '{}') as Partial<
+          ContextFrom<typeof settingsMachine>
+        >
+        const projectDir = await initializeProjectDirectory(
+          persistedSettings.defaultDirectory || ''
+        )
+        if (projectDir !== persistedSettings.defaultDirectory) {
+          localStorage.setItem(
+            SETTINGS_PERSIST_KEY,
+            JSON.stringify({
+              ...persistedSettings,
+              defaultDirectory: projectDir,
+            })
+          )
+        }
+        const projectsNoMeta = (await readDir(projectDir)).filter(
           isProjectDirectory
         )
         const projects = await Promise.all(

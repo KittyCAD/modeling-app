@@ -2,23 +2,10 @@ import ReactDOM from 'react-dom/client'
 import './index.css'
 import reportWebVitals from './reportWebVitals'
 import { Toaster } from 'react-hot-toast'
-import { Themes, useStore } from './useStore'
 import { Router } from './Router'
 import { HotkeysProvider } from 'react-hotkeys-hook'
-import { getSystemTheme } from './lib/getSystemTheme'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
-function setThemeClass(state: Partial<{ theme: Themes }>) {
-  const systemTheme = state.theme === Themes.System && getSystemTheme()
-  if (state.theme === Themes.Dark || systemTheme === Themes.Dark) {
-    document.body.classList.add('dark')
-  } else {
-    document.body.classList.remove('dark')
-  }
-}
-const { theme } = useStore.getState()
-setThemeClass({ theme })
-useStore.subscribe(setThemeClass)
 
 root.render(
   <HotkeysProvider>

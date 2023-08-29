@@ -1,32 +1,23 @@
 import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
-import { baseUnits, useStore } from '../../useStore'
+import { BaseUnit, baseUnits } from '../../useStore'
 import { ActionButton } from '../../components/ActionButton'
 import { SettingsSection } from '../Settings'
 import { Toggle } from '../../components/Toggle/Toggle'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
+import { SettingsContext } from '../../components/SettingsCommandProvider'
 
 export default function Units() {
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.CAMERA)
-  const {
-    defaultUnitSystem: ogDefaultUnitSystem,
-    setDefaultUnitSystem: saveDefaultUnitSystem,
-    defaultBaseUnit: ogDefaultBaseUnit,
-    setDefaultBaseUnit: saveDefaultBaseUnit,
-  } = useStore((s) => ({
-    defaultUnitSystem: s.defaultUnitSystem,
-    setDefaultUnitSystem: s.setDefaultUnitSystem,
-    defaultBaseUnit: s.defaultBaseUnit,
-    setDefaultBaseUnit: s.setDefaultBaseUnit,
-  }))
-  const [defaultUnitSystem, setDefaultUnitSystem] =
-    useState(ogDefaultUnitSystem)
-  const [defaultBaseUnit, setDefaultBaseUnit] = useState(ogDefaultBaseUnit)
+  const { send, unitSystem, baseUnit } = useContext(SettingsContext)
+  const [tempUnitSystem, setTempUnitSystem] = useState(unitSystem)
+  const [tempBaseUnit, setTempBaseUnit] = useState(baseUnit)
 
   function handleNextClick() {
-    saveDefaultUnitSystem(defaultUnitSystem)
-    saveDefaultBaseUnit(defaultBaseUnit)
+    send({ type: 'Set Unit System', data: { unitSystem: tempUnitSystem } })
+    send({ type: 'Set Base Unit', data: { baseUnit: tempBaseUnit } })
+
     next()
   }
 
@@ -42,9 +33,9 @@ export default function Units() {
             offLabel="Imperial"
             onLabel="Metric"
             name="settings-units"
-            checked={defaultUnitSystem === 'metric'}
+            checked={tempUnitSystem === 'metric'}
             onChange={(e) =>
-              setDefaultUnitSystem(e.target.checked ? 'metric' : 'imperial')
+              setTempUnitSystem(e.target.checked ? 'metric' : 'imperial')
             }
           />
         </SettingsSection>
@@ -55,10 +46,10 @@ export default function Units() {
           <select
             id="base-unit"
             className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
-            value={defaultBaseUnit}
-            onChange={(e) => setDefaultBaseUnit(e.target.value)}
+            value={tempBaseUnit}
+            onChange={(e) => setTempBaseUnit(e.target.value as BaseUnit)}
           >
-            {baseUnits[defaultUnitSystem].map((unit) => (
+            {baseUnits[unitSystem].map((unit) => (
               <option key={unit} value={unit}>
                 {unit}
               </option>

@@ -120,7 +120,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
               </ActionButton>
               <ActionButton
                 Element="button"
-                onClick={() => send('logout')}
+                onClick={() => send('Log out')}
                 icon={{
                   icon: faSignOutAlt,
                   bgClassName: 'bg-destroy-80',

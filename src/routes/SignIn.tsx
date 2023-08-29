@@ -1,19 +1,16 @@
 import { faSignInAlt } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../components/ActionButton'
 import { isTauri } from '../lib/isTauri'
-import { Themes, useStore } from '../useStore'
 import { invoke } from '@tauri-apps/api/tauri'
-import { useNavigate } from 'react-router-dom'
 import { VITE_KC_SITE_BASE_URL, VITE_KC_API_BASE_URL } from '../env'
-import { getSystemTheme } from '../lib/getSystemTheme'
+import { Themes, getSystemTheme } from '../lib/theme'
 import { paths } from '../Router'
 import { useAuthMachine } from '../hooks/useAuthMachine'
+import { useContext } from 'react'
+import { SettingsContext } from 'components/SettingsCommandProvider'
 
 const SignIn = () => {
-  const navigate = useNavigate()
-  const { theme } = useStore((s) => ({
-    theme: s.theme,
-  }))
+  const { theme } = useContext(SettingsContext)
   const [_, send] = useAuthMachine()
   const appliedTheme = theme === Themes.System ? getSystemTheme() : theme
   const signInTauri = async () => {
@@ -22,7 +19,7 @@ const SignIn = () => {
       const token: string = await invoke('login', {
         host: VITE_KC_API_BASE_URL,
       })
-      send({ type: 'tryLogin', token })
+      send({ type: 'Log in', token })
     } catch (error) {
       console.error('login button', error)
     }

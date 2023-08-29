@@ -1,8 +1,16 @@
 import { createActorContext } from '@xstate/react'
 import { useNavigate } from 'react-router-dom'
 import { paths } from '../Router'
-import { authMachine, TOKEN_PERSIST_KEY } from '../lib/authMachine'
+import {
+  authCommandBarMeta,
+  authMachine,
+  TOKEN_PERSIST_KEY,
+} from '../machines/authMachine'
 import withBaseUrl from '../lib/withBaseURL'
+import React, { useContext, useState } from 'react'
+import CommandBar, { CommandsContext } from '../components/CommandBar'
+import { Command } from '../lib/commands'
+import useStateMachineCommands from './useStateMachineCommands'
 
 export const AuthMachineContext = createActorContext(authMachine)
 
@@ -11,7 +19,19 @@ export const GlobalStateProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  const [commands, internalSetCommands] = useState([] as Command[])
+  const [commandBarOpen, setCommandBarOpen] = useState(false)
   const navigate = useNavigate()
+
+  const addCommands = (newCommands: Command[]) => {
+    internalSetCommands((prevCommands) => [...newCommands, ...prevCommands])
+  }
+  const removeCommands = (newCommands: Command[]) => {
+    internalSetCommands((prevCommands) =>
+      prevCommands.filter((command) => !newCommands.includes(command))
+    )
+  }
+
   return (
     <AuthMachineContext.Provider
       machine={() =>
@@ -21,12 +41,27 @@ export const GlobalStateProvider = ({
               navigate(paths.SIGN_IN)
               logout()
             },
-            goToIndexPage: () => navigate(paths.INDEX),
+            goToIndexPage: () => {
+              if (window.location.pathname.includes(paths.SIGN_IN)) {
+                navigate(paths.INDEX)
+              }
+            },
           },
         })
       }
     >
-      {children}
+      <CommandsContext.Provider
+        value={{
+          commands,
+          addCommands,
+          removeCommands,
+          commandBarOpen,
+          setCommandBarOpen,
+        }}
+      >
+        {children}
+        <CommandBar />
+      </CommandsContext.Provider>
     </AuthMachineContext.Provider>
   )
 }
@@ -51,4 +86,19 @@ export function logout() {
     method: 'POST',
     credentials: 'include',
   })
+}
+
+export function AuthMachineCommandProvider(props: React.PropsWithChildren<{}>) {
+  const [state, send] = AuthMachineContext.useActor()
+  const { commands } = useContext(CommandsContext)
+
+  useStateMachineCommands({
+    state,
+    send,
+    commands,
+    commandBarMeta: authCommandBarMeta,
+    owner: 'auth',
+  })
+
+  return <>{props.children}</>
 }
