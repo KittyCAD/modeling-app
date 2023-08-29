@@ -1,6 +1,10 @@
 import { SourceRange } from 'lang/executor'
 import { Selections } from 'useStore'
-import { VITE_KC_API_WS_MODELING_URL, VITE_KC_CONNECTION_TIMEOUT_MS } from 'env'
+import {
+  VITE_KC_API_WS_MODELING_URL,
+  VITE_KC_CONNECTION_TIMEOUT_MS,
+  VITE_KC_CONNECTION_WEBRTC_REPORT_STATS_MS,
+} from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
 import { v4 as uuidv4 } from 'uuid'
@@ -274,6 +278,36 @@ export class EngineConnection {
     this.pc.addEventListener('track', (event) => {
       console.log('received track', event)
       const mediaStream = event.streams[0]
+
+      // Set up the background thread to keep an eye on statistical
+      // information about the WebRTC media stream from the server to
+      // us. We'll also eventually want more global statistical information,
+      // but this will give us a baseline.
+      if (parseInt(VITE_KC_CONNECTION_WEBRTC_REPORT_STATS_MS) !== 0) {
+        console.log(
+          `Reporting WebRTC statistical information every ${VITE_KC_CONNECTION_WEBRTC_REPORT_STATS_MS}ms`
+        )
+        setInterval(() => {
+          if (this.pc === undefined) {
+            return
+          }
+
+          // Use the WebRTC Statistics API to collect statistical information
+          // about the WebRTC connection we're using to report to Sentry.
+          let stats = new Map<string, any>()
+          mediaStream.getVideoTracks().forEach((videoTrack) => {
+            let trackStats = new Map<string, any>()
+            this.pc?.getStats(videoTrack).then((videoTrackStats) => {
+              videoTrackStats.forEach((videoTrackReport) => {
+                trackStats.set(videoTrackReport.type, videoTrackReport)
+              })
+            })
+            stats.set(videoTrack.id, trackStats)
+          })
+          console.log(stats)
+        }, VITE_KC_CONNECTION_WEBRTC_REPORT_STATS_MS)
+      }
+
       this.onNewTrack({
         conn: this,
         mediaStream: mediaStream,
