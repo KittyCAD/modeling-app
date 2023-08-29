@@ -154,7 +154,6 @@ export const settingsMachine = createMachine(
                 onboardingStatus: (_, event) => event.data.onboardingStatus,
               }),
               'persistSettings',
-              'toastSuccess',
             ],
             target: 'idle',
             internal: true,
