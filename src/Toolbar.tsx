@@ -13,9 +13,8 @@ import { SetAbsDistance } from './components/Toolbar/SetAbsDistance'
 import { SetAngleBetween } from './components/Toolbar/SetAngleBetween'
 import { useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPen, faSearch, faX } from '@fortawesome/free-solid-svg-icons'
+import { faSearch, faX } from '@fortawesome/free-solid-svg-icons'
 import { Popover } from '@headlessui/react'
-import { ActionButton } from 'components/ActionButton'
 import styles from './Toolbar.module.css'
 
 export const Toolbar = () => {
@@ -165,7 +164,6 @@ export const Toolbar = () => {
               </button>
             )
           })}
-        <br></br>
         <ConvertToVariable />
         <HorzVert horOrVert="horizontal" />
         <HorzVert horOrVert="vertical" />
@@ -194,20 +192,8 @@ export const Toolbar = () => {
         <span className={styles.toolbarCap + ' ' + styles.label}>
           {guiMode.mode === 'sketch' ? '2D' : '3D'}
         </span>
-        <menu className="flex flex-1 gap-2 py-0.5">
-          <ActionButton
-            Element="button"
-            icon={{ icon: faPen, size: 'sm' }}
-            onClick={() => {
-              setGuiMode({
-                mode: 'sketch',
-                sketchMode: 'selectFace',
-              })
-            }}
-            className="py-0 px-0.5 bg-chalkboard-10 dark:bg-chalkboard-100"
-          >
-            Start Sketch
-          </ActionButton>
+        <menu className="flex flex-1 gap-2 py-0.5 overflow-hidden whitespace-nowrap">
+          <ToolbarButtons />
         </menu>
         <Popover.Button
           className={styles.toolbarCap + ' ' + styles.popoverToggle}
@@ -219,7 +205,7 @@ export const Toolbar = () => {
       <Popover.Panel className="absolute top-0 w-screen max-w-xl left-1/2 -translate-x-1/2 flex flex-col gap-8 bg-chalkboard-10 dark:bg-chalkboard-100 p-5 rounded border border-chalkboard-20/30 dark:border-chalkboard-70/50">
         <section className="flex justify-between items-center">
           <p
-            className={`${styles.toolbarCap} ${styles.label} rounded-r-full w-fit`}
+            className={`${styles.toolbarCap} ${styles.label} !self-center rounded-r-full w-fit`}
           >
             You're in {guiMode.mode === 'sketch' ? '2D' : '3D'}
           </p>
