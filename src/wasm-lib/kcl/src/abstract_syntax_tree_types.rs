@@ -56,7 +56,7 @@ pub trait ValueMeta {
 
 macro_rules! impl_value_meta {
     {$name:ident} => {
-        impl ValueMeta for $name {
+        impl crate::abstract_syntax_tree_types::ValueMeta for $name {
             fn start(&self) -> usize {
                 self.start
             }
@@ -85,6 +85,8 @@ macro_rules! impl_value_meta {
         }
     };
 }
+
+pub(crate) use impl_value_meta;
 
 impl Value {
     pub fn start(&self) -> usize {
@@ -192,16 +194,11 @@ impl BinaryPart {
             BinaryPart::BinaryExpression(binary_expression) => {
                 binary_expression.get_result(memory, pipe_info, stdlib, engine)
             }
-            BinaryPart::CallExpression(call_expression) => {
-                call_expression.execute(memory, pipe_info, stdlib, engine)
-            }
+            BinaryPart::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, stdlib, engine),
             BinaryPart::UnaryExpression(unary_expression) => {
                 // Return an error this should not happen.
                 Err(KclError::Semantic(KclErrorDetails {
-                    message: format!(
-                        "UnaryExpression should not be a BinaryPart: {:?}",
-                        unary_expression
-                    ),
+                    message: format!("UnaryExpression should not be a BinaryPart: {:?}", unary_expression),
                     source_ranges: vec![unary_expression.into()],
                 }))
             }
@@ -313,10 +310,7 @@ impl CallExpression {
                 }
                 Value::PipeExpression(pipe_expression) => {
                     return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!(
-                            "PipeExpression not implemented here: {:?}",
-                            pipe_expression
-                        ),
+                        message: format!("PipeExpression not implemented here: {:?}", pipe_expression),
                         source_ranges: vec![pipe_expression.into()],
                     }));
                 }
@@ -325,29 +319,20 @@ impl CallExpression {
                     .get(&pipe_info.index - 1)
                     .ok_or_else(|| {
                         KclError::Semantic(KclErrorDetails {
-                            message: format!(
-                                "PipeSubstitution index out of bounds: {:?}",
-                                pipe_info
-                            ),
+                            message: format!("PipeSubstitution index out of bounds: {:?}", pipe_info),
                             source_ranges: vec![pipe_substitution.into()],
                         })
                     })?
                     .clone(),
                 Value::MemberExpression(member_expression) => {
                     return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!(
-                            "MemberExpression not implemented here: {:?}",
-                            member_expression
-                        ),
+                        message: format!("MemberExpression not implemented here: {:?}", member_expression),
                         source_ranges: vec![member_expression.into()],
                     }));
                 }
                 Value::FunctionExpression(function_expression) => {
                     return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!(
-                            "FunctionExpression not implemented here: {:?}",
-                            function_expression
-                        ),
+                        message: format!("FunctionExpression not implemented here: {:?}", function_expression),
                         source_ranges: vec![function_expression.into()],
                     }));
                 }
@@ -363,14 +348,7 @@ impl CallExpression {
             if pipe_info.is_in_pipe {
                 pipe_info.index += 1;
                 pipe_info.previous_results.push(result);
-                execute_pipe_body(
-                    memory,
-                    &pipe_info.body.clone(),
-                    pipe_info,
-                    self.into(),
-                    stdlib,
-                    engine,
-                )
+                execute_pipe_body(memory, &pipe_info.body.clone(), pipe_info, self.into(), stdlib, engine)
             } else {
                 Ok(result)
             }
@@ -390,14 +368,7 @@ impl CallExpression {
                 pipe_info.index += 1;
                 pipe_info.previous_results.push(result);
 
-                execute_pipe_body(
-                    memory,
-                    &pipe_info.body.clone(),
-                    pipe_info,
-                    self.into(),
-                    stdlib,
-                    engine,
-                )
+                execute_pipe_body(memory, &pipe_info.body.clone(), pipe_info, self.into(), stdlib, engine)
             } else {
                 Ok(result)
             }
@@ -533,28 +504,19 @@ impl ArrayExpression {
                 }
                 Value::PipeSubstitution(pipe_substitution) => {
                     return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!(
-                            "PipeSubstitution not implemented here: {:?}",
-                            pipe_substitution
-                        ),
+                        message: format!("PipeSubstitution not implemented here: {:?}", pipe_substitution),
                         source_ranges: vec![pipe_substitution.into()],
                     }));
                 }
                 Value::MemberExpression(member_expression) => {
                     return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!(
-                            "MemberExpression not implemented here: {:?}",
-                            member_expression
-                        ),
+                        message: format!("MemberExpression not implemented here: {:?}", member_expression),
                         source_ranges: vec![member_expression.into()],
                     }));
                 }
                 Value::FunctionExpression(function_expression) => {
                     return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!(
-                            "FunctionExpression not implemented here: {:?}",
-                            function_expression
-                        ),
+                        message: format!("FunctionExpression not implemented here: {:?}", function_expression),
                         source_ranges: vec![function_expression.into()],
                     }));
                 }
@@ -619,28 +581,19 @@ impl ObjectExpression {
                 }
                 Value::PipeSubstitution(pipe_substitution) => {
                     return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!(
-                            "PipeSubstitution not implemented here: {:?}",
-                            pipe_substitution
-                        ),
+                        message: format!("PipeSubstitution not implemented here: {:?}", pipe_substitution),
                         source_ranges: vec![pipe_substitution.into()],
                     }));
                 }
                 Value::MemberExpression(member_expression) => {
                     return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!(
-                            "MemberExpression not implemented here: {:?}",
-                            member_expression
-                        ),
+                        message: format!("MemberExpression not implemented here: {:?}", member_expression),
                         source_ranges: vec![member_expression.into()],
                     }));
                 }
                 Value::FunctionExpression(function_expression) => {
                     return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!(
-                            "FunctionExpression not implemented here: {:?}",
-                            function_expression
-                        ),
+                        message: format!("FunctionExpression not implemented here: {:?}", function_expression),
                         source_ranges: vec![function_expression.into()],
                     }));
                 }
@@ -712,10 +665,7 @@ impl MemberExpression {
                     string
                 } else {
                     return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!(
-                            "Expected string literal for property name, found {:?}",
-                            value
-                        ),
+                        message: format!("Expected string literal for property name, found {:?}", value),
                         source_ranges: vec![literal.into()],
                     }));
                 }
@@ -837,10 +787,7 @@ impl BinaryExpression {
     }
 }
 
-pub fn parse_json_number_as_f64(
-    j: &serde_json::Value,
-    source_range: SourceRange,
-) -> Result<f64, KclError> {
+pub fn parse_json_number_as_f64(j: &serde_json::Value, source_range: SourceRange) -> Result<f64, KclError> {
     if let serde_json::Value::Number(n) = &j {
         n.as_f64().ok_or_else(|| {
             KclError::Syntax(KclErrorDetails {
