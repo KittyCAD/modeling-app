@@ -162,7 +162,7 @@ export class EngineConnection {
         } else {
           console.error(`Error from server:`)
         }
-        message.errors.forEach((error) => {
+        message?.errors?.forEach((error) => {
           console.error(` - ${error.error_code}: ${error.message}`)
         })
         return
