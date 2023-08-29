@@ -12,4 +12,5 @@ export const VITE_KC_CONNECTION_WEBRTC_REPORT_STATS_MS = import.meta.env
   .VITE_KC_CONNECTION_WEBRTC_REPORT_STATS_MS
 export const VITE_KC_CONNECTION_TIMEOUT_MS = import.meta.env
   .VITE_KC_CONNECTION_TIMEOUT_MS
+export const VITE_KC_SENTRY_DSN = import.meta.env.VITE_KC_SENTRY_DSN
 export const TEST = import.meta.env.TEST
