@@ -11,9 +11,7 @@ import {
   createRoutesFromChildren,
   useNavigationType,
 } from 'react-router'
-import {
-  useEffect
-} from 'react'
+import { useEffect } from 'react'
 import { ErrorPage } from './components/ErrorPage'
 import { Settings } from './routes/Settings'
 import Onboarding, {

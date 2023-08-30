@@ -122,9 +122,11 @@ export class EngineConnection {
     // when a connection is in progress (state: connecting or something).
 
     // Information on the connect transaction
-    const webrtcMediaTransaction = Sentry.startTransaction({ name: 'webrtc-media' })
+    const webrtcMediaTransaction = Sentry.startTransaction({
+      name: 'webrtc-media',
+    })
 
-    const websocketSpan = webrtcMediaTransaction.startChild({ op: "websocket" })
+    const websocketSpan = webrtcMediaTransaction.startChild({ op: 'websocket' })
     let mediaTrackSpan: Sentry.Span
     let dataChannelSpan: Sentry.Span
     let handshakeSpan: Sentry.Span
@@ -145,9 +147,11 @@ export class EngineConnection {
       // websocketSpan.setStatus(SpanStatus.OK)
       websocketSpan.finish()
 
-      handshakeSpan = webrtcMediaTransaction.startChild({ op: "handshake" })
-      dataChannelSpan = webrtcMediaTransaction.startChild({ op: "data-channel" })
-      mediaTrackSpan = webrtcMediaTransaction.startChild({ op: "media-track" })
+      handshakeSpan = webrtcMediaTransaction.startChild({ op: 'handshake' })
+      dataChannelSpan = webrtcMediaTransaction.startChild({
+        op: 'data-channel',
+      })
+      mediaTrackSpan = webrtcMediaTransaction.startChild({ op: 'media-track' })
       this.onWebsocketOpen(this)
     })
 
@@ -325,7 +329,9 @@ export class EngineConnection {
               // to have to pick carefully here, eventually send like a prom
               // file or something to the peer.
 
-              const transaction = Sentry.startTransaction({ name: 'webrtc-stats' })
+              const transaction = Sentry.startTransaction({
+                name: 'webrtc-stats',
+              })
               videoTrackStats.forEach((videoTrackReport) => {
                 if (videoTrackReport.type === 'inbound-rtp') {
                   // RTC Stream Info
