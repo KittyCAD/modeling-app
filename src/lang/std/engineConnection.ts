@@ -121,6 +121,14 @@ export class EngineConnection {
     // TODO(paultag): make this safe to call multiple times, and figure out
     // when a connection is in progress (state: connecting or something).
 
+    // Information on the connect transaction
+    const webrtcMediaTransaction = Sentry.startTransaction({ name: 'webrtc-media' })
+
+    const websocketSpan = webrtcMediaTransaction.startChild({ op: "websocket" })
+    let mediaTrackSpan: Sentry.Span
+    let dataChannelSpan: Sentry.Span
+    let handshakeSpan: Sentry.Span
+
     this.websocket = new WebSocket(this.url, [])
     this.websocket.binaryType = 'arraybuffer'
 
@@ -134,6 +142,12 @@ export class EngineConnection {
     })
 
     this.websocket.addEventListener('open', (event) => {
+      // websocketSpan.setStatus(SpanStatus.OK)
+      websocketSpan.finish()
+
+      handshakeSpan = webrtcMediaTransaction.startChild({ op: "handshake" })
+      dataChannelSpan = webrtcMediaTransaction.startChild({ op: "data-channel" })
+      mediaTrackSpan = webrtcMediaTransaction.startChild({ op: "media-track" })
       this.onWebsocketOpen(this)
     })
 
@@ -196,6 +210,11 @@ export class EngineConnection {
               sdp: answer.sdp,
             })
           )
+
+          // When both ends have a local and remote SDP, we've been able to
+          // set up successfully. We'll still need to find the right ICE
+          // servers, but this is hand-shook.
+          handshakeSpan.finish()
         }
       } else if (resp.type === 'trickle_ice') {
         let candidate = resp.data?.candidate
@@ -280,6 +299,11 @@ export class EngineConnection {
       console.log('received track', event)
       const mediaStream = event.streams[0]
 
+      mediaStream.getVideoTracks()[0].addEventListener('unmute', () => {
+        mediaTrackSpan.finish()
+        webrtcMediaTransaction.finish()
+      })
+
       // Set up the background thread to keep an eye on statistical
       // information about the WebRTC media stream from the server to
       // us. We'll also eventually want more global statistical information,
@@ -301,7 +325,7 @@ export class EngineConnection {
               // to have to pick carefully here, eventually send like a prom
               // file or something to the peer.
 
-              const transaction = Sentry.startTransaction({ name: 'webrtc' })
+              const transaction = Sentry.startTransaction({ name: 'webrtc-stats' })
               videoTrackStats.forEach((videoTrackReport) => {
                 if (videoTrackReport.type === 'inbound-rtp') {
                   // RTC Stream Info
@@ -311,9 +335,9 @@ export class EngineConnection {
                   //   'frame'
                   // )
                   transaction.setMeasurement(
-                    'mediaStreamTrack.framesDropped',
+                    'rtcFramesDropped',
                     videoTrackReport.framesDropped,
-                    'frame'
+                    ''
                   )
                   // transaction.setMeasurement(
                   //   'mediaStreamTrack.framesReceived',
@@ -321,17 +345,17 @@ export class EngineConnection {
                   //   'frame'
                   // )
                   transaction.setMeasurement(
-                    'mediaStreamTrack.framesPerSecond',
+                    'rtcFramesPerSecond',
                     videoTrackReport.framesPerSecond,
                     'fps'
                   )
                   transaction.setMeasurement(
-                    'mediaStreamTrack.freezeCount',
+                    'rtcFreezeCount',
                     videoTrackReport.freezeCount,
                     ''
                   )
                   transaction.setMeasurement(
-                    'mediaStreamTrack.jitter',
+                    'rtcJitter',
                     videoTrackReport.jitter,
                     'second'
                   )
@@ -356,12 +380,12 @@ export class EngineConnection {
                   //   ''
                   // )
                   transaction.setMeasurement(
-                    'mediaStreamTrack.keyFramesDecoded',
+                    'rtcKeyFramesDecoded',
                     videoTrackReport.keyFramesDecoded,
                     ''
                   )
                   transaction.setMeasurement(
-                    'mediaStreamTrack.totalFreezesDuration',
+                    'rtcTotalFreezesDuration',
                     videoTrackReport.totalFreezesDuration,
                     'second'
                   )
@@ -371,7 +395,7 @@ export class EngineConnection {
                   //   ''
                   // )
                   transaction.setMeasurement(
-                    'mediaStreamTrack.totalPausesDuration',
+                    'rtcTotalPausesDuration',
                     videoTrackReport.totalPausesDuration,
                     'second'
                   )
@@ -392,18 +416,6 @@ export class EngineConnection {
                   //   videoTrackReport.bytesSent,
                   //   'byte'
                   // )
-
-                  // Packets i/o
-                  transaction.setMeasurement(
-                    'mediaStreamTrack.packetsReceived',
-                    videoTrackReport.packetsReceived,
-                    'packet'
-                  )
-                  transaction.setMeasurement(
-                    'mediaStreamTrack.packetsSent',
-                    videoTrackReport.packetsSent,
-                    'packet'
-                  )
                 }
               })
               transaction.finish()
@@ -428,20 +440,12 @@ export class EngineConnection {
       console.log('accepted lossy data channel', event.channel.label)
       this.lossyDataChannel.addEventListener('open', (event) => {
         console.log('lossy data channel opened', event)
+        dataChannelSpan.finish()
 
         this.onDataChannelOpen(this)
 
         this.onEngineConnectionOpen(this)
         this.ready = true
-
-        let timeToConnectMs = new Date().getTime() - connectionStarted.getTime()
-        console.log(`engine connection time to connect: ${timeToConnectMs}ms`)
-        const transaction = Sentry.getCurrentHub().getScope().getTransaction()
-        transaction?.setMeasurement(
-          'engineConnection.openTime',
-          timeToConnectMs,
-          'millisecond'
-        )
       })
 
       this.lossyDataChannel.addEventListener('close', (event) => {

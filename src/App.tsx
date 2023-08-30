@@ -39,54 +39,16 @@ import {
   faSquareRootVariable,
 } from '@fortawesome/free-solid-svg-icons'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { TEST, VITE_KC_SENTRY_DSN } from './env'
+import { TEST } from './env'
 import { getNormalisedCoordinates } from './lib/utils'
 import { Themes, getSystemTheme } from './lib/theme'
 import { isTauri } from './lib/isTauri'
-import { useLoaderData, useParams, useLocation } from 'react-router-dom'
-import {
-  matchRoutes,
-  createRoutesFromChildren,
-  useNavigationType,
-} from 'react-router'
+import { useLoaderData, useParams } from 'react-router-dom'
 import { writeTextFile } from '@tauri-apps/api/fs'
 import { PROJECT_ENTRYPOINT } from './lib/tauriFS'
 import { IndexLoaderData } from './Router'
 import { toast } from 'react-hot-toast'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
-import * as Sentry from '@sentry/react'
-
-if (VITE_KC_SENTRY_DSN) {
-  Sentry.init({
-    dsn: VITE_KC_SENTRY_DSN,
-    // TODO(paultag): pass in the right env here.
-    // environment: "production",
-    integrations: [
-      new Sentry.BrowserTracing({
-        routingInstrumentation: Sentry.reactRouterV6Instrumentation(
-          useEffect,
-          useLocation,
-          useNavigationType,
-          createRoutesFromChildren,
-          matchRoutes
-        ),
-      }),
-      new Sentry.Replay(),
-    ],
-
-    // Set tracesSampleRate to 1.0 to capture 100%
-    // of transactions for performance monitoring.
-    tracesSampleRate: 1.0,
-
-    // TODO: Add in kittycad.io endpoints
-    tracePropagationTargets: ['localhost'],
-
-    // Capture Replay for 10% of all sessions,
-    // plus for 100% of sessions with an error
-    replaysSessionSampleRate: 0.1,
-    replaysOnErrorSampleRate: 1.0,
-  })
-}
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
