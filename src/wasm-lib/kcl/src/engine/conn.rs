@@ -15,7 +15,6 @@ pub struct EngineConnection {
     tcp_write: futures::stream::SplitSink<tokio_tungstenite::WebSocketStream<reqwest::Upgraded>, WsMsg>,
     tcp_read_handle: tokio::task::JoinHandle<Result<()>>,
     export_notifier: Arc<tokio::sync::Notify>,
-    #[allow(dead_code)]
     snapshot_notifier: Arc<tokio::sync::Notify>,
 }
 
@@ -142,8 +141,12 @@ impl EngineConnection {
         })
     }
 
-    pub async fn wait_for_files(&self) {
+    pub async fn wait_for_export(&self) {
         self.export_notifier.notified().await;
+    }
+
+    pub async fn wait_for_snapshot(&self) {
+        self.snapshot_notifier.notified().await;
     }
 
     pub async fn tcp_send(&mut self, msg: WebSocketRequest) -> Result<()> {
