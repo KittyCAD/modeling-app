@@ -98,12 +98,16 @@ async function getUser(context: UserContext) {
   }
   if (!context.token && '__TAURI__' in window) throw 'not log in'
   if (context.token) headers['Authorization'] = `Bearer ${context.token}`
-  const response = await fetch(url, {
-    method: 'GET',
-    credentials: 'include',
-    headers,
-  })
-  const user = await response.json()
-  if ('error_code' in user) throw new Error(user.message)
-  return user
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      credentials: 'include',
+      headers,
+    })
+    const user = await response.json()
+    if ('error_code' in user) throw new Error(user.message)
+    return user
+  } catch (e) {
+    console.error(e)
+  }
 }
