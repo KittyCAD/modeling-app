@@ -50,7 +50,7 @@ type WebSocketResponse = Models['OkWebSocketResponseData_type']
 export class EngineConnection {
   websocket?: WebSocket
   pc?: RTCPeerConnection
-  lossyDataChannel?: RTCDataChannel
+  unreliableDataChannel?: RTCDataChannel
 
   private ready: boolean
 
@@ -462,11 +462,11 @@ export class EngineConnection {
     let connectionStarted = new Date()
 
     this.pc.addEventListener('datachannel', (event) => {
-      this.lossyDataChannel = event.channel
+      this.unreliableDataChannel = event.channel
 
-      console.log('accepted lossy data channel', event.channel.label)
-      this.lossyDataChannel.addEventListener('open', (event) => {
-        console.log('lossy data channel opened', event)
+      console.log('accepted unreliable data channel', event.channel.label)
+      this.unreliableDataChannel.addEventListener('open', (event) => {
+        console.log('unreliable data channel opened', event)
         if (this.shouldTrace()) {
           dataChannelSpan.finish()
         }
@@ -477,13 +477,13 @@ export class EngineConnection {
         this.ready = true
       })
 
-      this.lossyDataChannel.addEventListener('close', (event) => {
-        console.log('lossy data channel closed')
+      this.unreliableDataChannel.addEventListener('close', (event) => {
+        console.log('unreliable data channel closed')
         this.close()
       })
 
-      this.lossyDataChannel.addEventListener('error', (event) => {
-        console.log('lossy data channel error')
+      this.unreliableDataChannel.addEventListener('error', (event) => {
+        console.log('unreliable data channel error')
         this.close()
       })
     })
@@ -498,10 +498,10 @@ export class EngineConnection {
   close() {
     this.websocket?.close()
     this.pc?.close()
-    this.lossyDataChannel?.close()
+    this.unreliableDataChannel?.close()
     this.websocket = undefined
     this.pc = undefined
-    this.lossyDataChannel = undefined
+    this.unreliableDataChannel = undefined
 
     this.onClose(this)
     this.ready = false
@@ -511,13 +511,13 @@ export class EngineConnection {
 export type EngineCommand = Models['WebSocketRequest_type']
 type ModelTypes = Models['OkModelingCmdResponse_type']['type']
 
-type LossyResponses = Extract<
+type UnreliableResponses = Extract<
   Models['OkModelingCmdResponse_type'],
   { type: 'highlight_set_entity' }
 >
-interface LossySubscription<T extends LossyResponses['type']> {
+interface UnreliableSubscription<T extends UnreliableResponses['type']> {
   event: T
-  callback: (data: Extract<LossyResponses, { type: T }>) => void
+  callback: (data: Extract<UnreliableResponses, { type: T }>) => void
 }
 
 interface Subscription<T extends ModelTypes> {
@@ -541,7 +541,7 @@ export class EngineCommandManager {
       [localUnsubscribeId: string]: (a: any) => void
     }
   } = {} as any
-  lossySubscriptions: {
+  unreliableSubscriptions: {
     [event: string]: {
       [localUnsubscribeId: string]: (a: any) => void
     }
@@ -575,15 +575,17 @@ export class EngineCommandManager {
       },
       onConnectionStarted: (engineConnection) => {
         engineConnection?.pc?.addEventListener('datachannel', (event) => {
-          let lossyDataChannel = event.channel
+          let unreliableDataChannel = event.channel
 
-          lossyDataChannel.addEventListener('message', (event) => {
-            const result: LossyResponses = JSON.parse(event.data)
-            Object.values(this.lossySubscriptions[result.type] || {}).forEach(
-              // TODO: There is only one response that uses the lossy channel atm,
+          unreliableDataChannel.addEventListener('message', (event) => {
+            const result: UnreliableResponses = JSON.parse(event.data)
+            Object.values(
+              this.unreliableSubscriptions[result.type] || {}
+            ).forEach(
+              // TODO: There is only one response that uses the unreliable channel atm,
               // highlight_set_entity, if there are more it's likely they will all have the same
               // sequence logic, but I'm not sure if we use a single global sequence or a sequence
-              // per lossy subscription.
+              // per unreliable subscription.
               (callback) => {
                 if (
                   result?.data?.sequence &&
@@ -688,23 +690,26 @@ export class EngineCommandManager {
   private unSubscribeTo(event: ModelTypes, id: string) {
     delete this.subscriptions[event][id]
   }
-  subscribeToLossy<T extends LossyResponses['type']>({
+  subscribeToUnreliable<T extends UnreliableResponses['type']>({
     event,
     callback,
-  }: LossySubscription<T>): () => void {
+  }: UnreliableSubscription<T>): () => void {
     const localUnsubscribeId = uuidv4()
-    const otherEventCallbacks = this.lossySubscriptions[event]
+    const otherEventCallbacks = this.unreliableSubscriptions[event]
     if (otherEventCallbacks) {
       otherEventCallbacks[localUnsubscribeId] = callback
     } else {
-      this.lossySubscriptions[event] = {
+      this.unreliableSubscriptions[event] = {
         [localUnsubscribeId]: callback,
       }
     }
-    return () => this.unSubscribeToLossy(event, localUnsubscribeId)
+    return () => this.unSubscribeToUnreliable(event, localUnsubscribeId)
   }
-  private unSubscribeToLossy(event: LossyResponses['type'], id: string) {
-    delete this.lossySubscriptions[event][id]
+  private unSubscribeToUnreliable(
+    event: UnreliableResponses['type'],
+    id: string
+  ) {
+    delete this.unreliableSubscriptions[event][id]
   }
   endSession() {
     // this.websocket?.close()
@@ -743,19 +748,23 @@ export class EngineCommandManager {
     const cmd = command.cmd
     if (
       cmd.type === 'camera_drag_move' &&
-      this.engineConnection?.lossyDataChannel
+      this.engineConnection?.unreliableDataChannel
     ) {
       cmd.sequence = this.outSequence
       this.outSequence++
-      this.engineConnection?.lossyDataChannel?.send(JSON.stringify(command))
+      this.engineConnection?.unreliableDataChannel?.send(
+        JSON.stringify(command)
+      )
       return Promise.resolve()
     } else if (
       cmd.type === 'highlight_set_entity' &&
-      this.engineConnection?.lossyDataChannel
+      this.engineConnection?.unreliableDataChannel
     ) {
       cmd.sequence = this.outSequence
       this.outSequence++
-      this.engineConnection?.lossyDataChannel?.send(JSON.stringify(command))
+      this.engineConnection?.unreliableDataChannel?.send(
+        JSON.stringify(command)
+      )
       return Promise.resolve()
     }
     console.log('sending command', command)
