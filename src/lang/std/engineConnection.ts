@@ -1,9 +1,14 @@
 import { SourceRange } from 'lang/executor'
 import { Selections } from 'useStore'
-import { VITE_KC_API_WS_MODELING_URL, VITE_KC_CONNECTION_TIMEOUT_MS } from 'env'
+import {
+  VITE_KC_API_WS_MODELING_URL,
+  VITE_KC_CONNECTION_TIMEOUT_MS,
+  VITE_KC_CONNECTION_WEBRTC_REPORT_STATS_MS,
+} from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
 import { v4 as uuidv4 } from 'uuid'
+import * as Sentry from '@sentry/react'
 
 interface ResultCommand {
   type: 'result'
@@ -116,6 +121,16 @@ export class EngineConnection {
     // TODO(paultag): make this safe to call multiple times, and figure out
     // when a connection is in progress (state: connecting or something).
 
+    // Information on the connect transaction
+    const webrtcMediaTransaction = Sentry.startTransaction({
+      name: 'webrtc-media',
+    })
+
+    const websocketSpan = webrtcMediaTransaction.startChild({ op: 'websocket' })
+    let mediaTrackSpan: Sentry.Span
+    let dataChannelSpan: Sentry.Span
+    let handshakeSpan: Sentry.Span
+
     this.websocket = new WebSocket(this.url, [])
     this.websocket.binaryType = 'arraybuffer'
 
@@ -129,6 +144,14 @@ export class EngineConnection {
     })
 
     this.websocket.addEventListener('open', (event) => {
+      // websocketSpan.setStatus(SpanStatus.OK)
+      websocketSpan.finish()
+
+      handshakeSpan = webrtcMediaTransaction.startChild({ op: 'handshake' })
+      dataChannelSpan = webrtcMediaTransaction.startChild({
+        op: 'data-channel',
+      })
+      mediaTrackSpan = webrtcMediaTransaction.startChild({ op: 'media-track' })
       this.onWebsocketOpen(this)
     })
 
@@ -191,6 +214,11 @@ export class EngineConnection {
               sdp: answer.sdp,
             })
           )
+
+          // When both ends have a local and remote SDP, we've been able to
+          // set up successfully. We'll still need to find the right ICE
+          // servers, but this is hand-shook.
+          handshakeSpan.finish()
         }
       } else if (resp.type === 'trickle_ice') {
         let candidate = resp.data?.candidate
@@ -274,6 +302,134 @@ export class EngineConnection {
     this.pc.addEventListener('track', (event) => {
       console.log('received track', event)
       const mediaStream = event.streams[0]
+
+      mediaStream.getVideoTracks()[0].addEventListener('unmute', () => {
+        mediaTrackSpan.finish()
+        webrtcMediaTransaction.finish()
+      })
+
+      // Set up the background thread to keep an eye on statistical
+      // information about the WebRTC media stream from the server to
+      // us. We'll also eventually want more global statistical information,
+      // but this will give us a baseline.
+      if (parseInt(VITE_KC_CONNECTION_WEBRTC_REPORT_STATS_MS) !== 0) {
+        setInterval(() => {
+          if (this.pc === undefined) {
+            return
+          }
+
+          console.log('Reporting statistics')
+
+          // Use the WebRTC Statistics API to collect statistical information
+          // about the WebRTC connection we're using to report to Sentry.
+          mediaStream.getVideoTracks().forEach((videoTrack) => {
+            let trackStats = new Map<string, any>()
+            this.pc?.getStats(videoTrack).then((videoTrackStats) => {
+              // Sentry only allows 10 metrics per transaction. We're going
+              // to have to pick carefully here, eventually send like a prom
+              // file or something to the peer.
+
+              const transaction = Sentry.startTransaction({
+                name: 'webrtc-stats',
+              })
+              videoTrackStats.forEach((videoTrackReport) => {
+                if (videoTrackReport.type === 'inbound-rtp') {
+                  // RTC Stream Info
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.framesDecoded',
+                  //   videoTrackReport.framesDecoded,
+                  //   'frame'
+                  // )
+                  transaction.setMeasurement(
+                    'rtcFramesDropped',
+                    videoTrackReport.framesDropped,
+                    ''
+                  )
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.framesReceived',
+                  //   videoTrackReport.framesReceived,
+                  //   'frame'
+                  // )
+                  transaction.setMeasurement(
+                    'rtcFramesPerSecond',
+                    videoTrackReport.framesPerSecond,
+                    'fps'
+                  )
+                  transaction.setMeasurement(
+                    'rtcFreezeCount',
+                    videoTrackReport.freezeCount,
+                    ''
+                  )
+                  transaction.setMeasurement(
+                    'rtcJitter',
+                    videoTrackReport.jitter,
+                    'second'
+                  )
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.jitterBufferDelay',
+                  //   videoTrackReport.jitterBufferDelay,
+                  //   ''
+                  // )
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.jitterBufferEmittedCount',
+                  //   videoTrackReport.jitterBufferEmittedCount,
+                  //   ''
+                  // )
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.jitterBufferMinimumDelay',
+                  //   videoTrackReport.jitterBufferMinimumDelay,
+                  //   ''
+                  // )
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.jitterBufferTargetDelay',
+                  //   videoTrackReport.jitterBufferTargetDelay,
+                  //   ''
+                  // )
+                  transaction.setMeasurement(
+                    'rtcKeyFramesDecoded',
+                    videoTrackReport.keyFramesDecoded,
+                    ''
+                  )
+                  transaction.setMeasurement(
+                    'rtcTotalFreezesDuration',
+                    videoTrackReport.totalFreezesDuration,
+                    'second'
+                  )
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.totalInterFrameDelay',
+                  //   videoTrackReport.totalInterFrameDelay,
+                  //   ''
+                  // )
+                  transaction.setMeasurement(
+                    'rtcTotalPausesDuration',
+                    videoTrackReport.totalPausesDuration,
+                    'second'
+                  )
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.totalProcessingDelay',
+                  //   videoTrackReport.totalProcessingDelay,
+                  //   'second'
+                  // )
+                } else if (videoTrackReport.type === 'transport') {
+                  // // Bytes i/o
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.bytesReceived',
+                  //   videoTrackReport.bytesReceived,
+                  //   'byte'
+                  // )
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.bytesSent',
+                  //   videoTrackReport.bytesSent,
+                  //   'byte'
+                  // )
+                }
+              })
+              transaction.finish()
+            })
+          })
+        }, VITE_KC_CONNECTION_WEBRTC_REPORT_STATS_MS)
+      }
+
       this.onNewTrack({
         conn: this,
         mediaStream: mediaStream,
@@ -290,11 +446,10 @@ export class EngineConnection {
       console.log('accepted lossy data channel', event.channel.label)
       this.lossyDataChannel.addEventListener('open', (event) => {
         console.log('lossy data channel opened', event)
+        dataChannelSpan.finish()
 
         this.onDataChannelOpen(this)
 
-        let timeToConnectMs = new Date().getTime() - connectionStarted.getTime()
-        console.log(`engine connection time to connect: ${timeToConnectMs}ms`)
         this.onEngineConnectionOpen(this)
         this.ready = true
       })
