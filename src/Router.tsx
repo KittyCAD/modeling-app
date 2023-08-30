@@ -38,10 +38,10 @@ import {
 } from './machines/settingsMachine'
 import { ContextFrom } from 'xstate'
 import CommandBarProvider from 'components/CommandBar'
-import { VITE_KC_SENTRY_DSN } from './env'
+import { TEST, VITE_KC_SENTRY_DSN } from './env'
 import * as Sentry from '@sentry/react'
 
-if (VITE_KC_SENTRY_DSN) {
+if (VITE_KC_SENTRY_DSN && !TEST) {
   Sentry.init({
     dsn: VITE_KC_SENTRY_DSN,
     // TODO(paultag): pass in the right env here.

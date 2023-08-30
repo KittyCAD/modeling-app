@@ -112,6 +112,11 @@ export class EngineConnection {
   isReady() {
     return this.ready
   }
+  // shouldTrace will return true when Sentry should be used to instrument
+  // the Engine.
+  shouldTrace() {
+    return Sentry.getCurrentHub()?.getClient()?.getOptions()?.sendClientReports
+  }
   // connect will attempt to connect to the Engine over a WebSocket, and
   // establish the WebRTC connections.
   //
@@ -122,14 +127,19 @@ export class EngineConnection {
     // when a connection is in progress (state: connecting or something).
 
     // Information on the connect transaction
-    const webrtcMediaTransaction = Sentry.startTransaction({
-      name: 'webrtc-media',
-    })
 
-    const websocketSpan = webrtcMediaTransaction.startChild({ op: 'websocket' })
+    let webrtcMediaTransaction: Sentry.Transaction
+    let websocketSpan: Sentry.Span
     let mediaTrackSpan: Sentry.Span
     let dataChannelSpan: Sentry.Span
     let handshakeSpan: Sentry.Span
+
+    if (this.shouldTrace()) {
+      webrtcMediaTransaction = Sentry.startTransaction({
+        name: 'webrtc-media',
+      })
+      websocketSpan = webrtcMediaTransaction.startChild({ op: 'websocket' })
+    }
 
     this.websocket = new WebSocket(this.url, [])
     this.websocket.binaryType = 'arraybuffer'
@@ -144,14 +154,18 @@ export class EngineConnection {
     })
 
     this.websocket.addEventListener('open', (event) => {
-      // websocketSpan.setStatus(SpanStatus.OK)
-      websocketSpan.finish()
+      if (this.shouldTrace()) {
+        // websocketSpan.setStatus(SpanStatus.OK)
+        websocketSpan.finish()
 
-      handshakeSpan = webrtcMediaTransaction.startChild({ op: 'handshake' })
-      dataChannelSpan = webrtcMediaTransaction.startChild({
-        op: 'data-channel',
-      })
-      mediaTrackSpan = webrtcMediaTransaction.startChild({ op: 'media-track' })
+        handshakeSpan = webrtcMediaTransaction.startChild({ op: 'handshake' })
+        dataChannelSpan = webrtcMediaTransaction.startChild({
+          op: 'data-channel',
+        })
+        mediaTrackSpan = webrtcMediaTransaction.startChild({
+          op: 'media-track',
+        })
+      }
       this.onWebsocketOpen(this)
     })
 
@@ -215,10 +229,12 @@ export class EngineConnection {
             })
           )
 
-          // When both ends have a local and remote SDP, we've been able to
-          // set up successfully. We'll still need to find the right ICE
-          // servers, but this is hand-shook.
-          handshakeSpan.finish()
+          if (this.shouldTrace()) {
+            // When both ends have a local and remote SDP, we've been able to
+            // set up successfully. We'll still need to find the right ICE
+            // servers, but this is hand-shook.
+            handshakeSpan.finish()
+          }
         }
       } else if (resp.type === 'trickle_ice') {
         let candidate = resp.data?.candidate
@@ -303,10 +319,12 @@ export class EngineConnection {
       console.log('received track', event)
       const mediaStream = event.streams[0]
 
-      mediaStream.getVideoTracks()[0].addEventListener('unmute', () => {
-        mediaTrackSpan.finish()
-        webrtcMediaTransaction.finish()
-      })
+      if (this.shouldTrace()) {
+        mediaStream.getVideoTracks()[0].addEventListener('unmute', () => {
+          mediaTrackSpan.finish()
+          webrtcMediaTransaction.finish()
+        })
+      }
 
       // Set up the background thread to keep an eye on statistical
       // information about the WebRTC media stream from the server to
@@ -315,6 +333,9 @@ export class EngineConnection {
       if (parseInt(VITE_KC_CONNECTION_WEBRTC_REPORT_STATS_MS) !== 0) {
         setInterval(() => {
           if (this.pc === undefined) {
+            return
+          }
+          if (!this.shouldTrace()) {
             return
           }
 
@@ -424,7 +445,7 @@ export class EngineConnection {
                   // )
                 }
               })
-              transaction.finish()
+              transaction?.finish()
             })
           })
         }, VITE_KC_CONNECTION_WEBRTC_REPORT_STATS_MS)
@@ -446,7 +467,9 @@ export class EngineConnection {
       console.log('accepted lossy data channel', event.channel.label)
       this.lossyDataChannel.addEventListener('open', (event) => {
         console.log('lossy data channel opened', event)
-        dataChannelSpan.finish()
+        if (this.shouldTrace()) {
+          dataChannelSpan.finish()
+        }
 
         this.onDataChannelOpen(this)
 
