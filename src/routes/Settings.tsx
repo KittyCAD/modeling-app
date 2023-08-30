@@ -8,7 +8,7 @@ import { AppHeader } from '../components/AppHeader'
 import { open } from '@tauri-apps/api/dialog'
 import { BaseUnit, baseUnits } from '../useStore'
 import { Toggle } from '../components/Toggle/Toggle'
-import { useNavigate, useRouteLoaderData } from 'react-router-dom'
+import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { IndexLoaderData, paths } from '../Router'
 import { Themes } from '../lib/theme'
@@ -17,6 +17,7 @@ import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 export const Settings = () => {
   const loaderData = useRouteLoaderData(paths.FILE) as IndexLoaderData
   const navigate = useNavigate()
+  const location = useLocation()
   useHotkeys('esc', () => navigate('../'))
   const {
     settings: {
@@ -201,24 +202,26 @@ export const Settings = () => {
             ))}
           </select>
         </SettingsSection>
-        <SettingsSection
-          title="Onboarding"
-          description="Replay the onboarding process"
-        >
-          <ActionButton
-            Element="button"
-            onClick={() => {
-              send({
-                type: 'Set Onboarding Status',
-                data: { onboardingStatus: '' },
-              })
-              navigate('..' + paths.ONBOARDING.INDEX)
-            }}
-            icon={{ icon: faArrowRotateBack }}
+        {location.pathname.includes(paths.FILE) && (
+          <SettingsSection
+            title="Onboarding"
+            description="Replay the onboarding process"
           >
-            Replay Onboarding
-          </ActionButton>
-        </SettingsSection>
+            <ActionButton
+              Element="button"
+              onClick={() => {
+                send({
+                  type: 'Set Onboarding Status',
+                  data: { onboardingStatus: '' },
+                })
+                navigate('..' + paths.ONBOARDING.INDEX)
+              }}
+              icon={{ icon: faArrowRotateBack }}
+            >
+              Replay Onboarding
+            </ActionButton>
+          </SettingsSection>
+        )}
       </div>
     </div>
   )
