@@ -579,7 +579,9 @@ export class EngineCommandManager {
 
           unreliableDataChannel.addEventListener('message', (event) => {
             const result: UnreliableResponses = JSON.parse(event.data)
-            Object.values(this.unreliableSubscriptions[result.type] || {}).forEach(
+            Object.values(
+              this.unreliableSubscriptions[result.type] || {}
+            ).forEach(
               // TODO: There is only one response that uses the unreliable channel atm,
               // highlight_set_entity, if there are more it's likely they will all have the same
               // sequence logic, but I'm not sure if we use a single global sequence or a sequence
@@ -703,7 +705,10 @@ export class EngineCommandManager {
     }
     return () => this.unSubscribeToUnreliable(event, localUnsubscribeId)
   }
-  private unSubscribeToUnreliable(event: UnreliableResponses['type'], id: string) {
+  private unSubscribeToUnreliable(
+    event: UnreliableResponses['type'],
+    id: string
+  ) {
     delete this.unreliableSubscriptions[event][id]
   }
   endSession() {
@@ -747,7 +752,9 @@ export class EngineCommandManager {
     ) {
       cmd.sequence = this.outSequence
       this.outSequence++
-      this.engineConnection?.unreliableDataChannel?.send(JSON.stringify(command))
+      this.engineConnection?.unreliableDataChannel?.send(
+        JSON.stringify(command)
+      )
       return Promise.resolve()
     } else if (
       cmd.type === 'highlight_set_entity' &&
@@ -755,7 +762,9 @@ export class EngineCommandManager {
     ) {
       cmd.sequence = this.outSequence
       this.outSequence++
-      this.engineConnection?.unreliableDataChannel?.send(JSON.stringify(command))
+      this.engineConnection?.unreliableDataChannel?.send(
+        JSON.stringify(command)
+      )
       return Promise.resolve()
     }
     console.log('sending command', command)
