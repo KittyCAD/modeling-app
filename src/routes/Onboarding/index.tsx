@@ -1,13 +1,12 @@
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Outlet, useNavigate } from 'react-router-dom'
-import { useStore } from '../../useStore'
-
 import Introduction from './Introduction'
 import Units from './Units'
 import Camera from './Camera'
 import Sketching from './Sketching'
 import { useCallback } from 'react'
 import makeUrlPathRelative from '../../lib/makeUrlPathRelative'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 
 export const onboardingPaths = {
   INDEX: '/',
@@ -36,29 +35,35 @@ export const onboardingRoutes = [
 ]
 
 export function useNextClick(newStatus: string) {
-  const { setOnboardingStatus } = useStore((s) => ({
-    setOnboardingStatus: s.setOnboardingStatus,
-  }))
+  const {
+    settings: { send },
+  } = useGlobalStateContext()
   const navigate = useNavigate()
 
   return useCallback(() => {
-    setOnboardingStatus(newStatus)
+    send({
+      type: 'Set Onboarding Status',
+      data: { onboardingStatus: newStatus },
+    })
     navigate((newStatus !== onboardingPaths.UNITS ? '..' : '.') + newStatus)
-  }, [newStatus, setOnboardingStatus, navigate])
+  }, [newStatus, send, navigate])
 }
 
 export function useDismiss() {
-  const { setOnboardingStatus } = useStore((s) => ({
-    setOnboardingStatus: s.setOnboardingStatus,
-  }))
+  const {
+    settings: { send },
+  } = useGlobalStateContext()
   const navigate = useNavigate()
 
   return useCallback(
     (path: string) => {
-      setOnboardingStatus('dismissed')
+      send({
+        type: 'Set Onboarding Status',
+        data: { onboardingStatus: 'dismissed' },
+      })
       navigate(path)
     },
-    [setOnboardingStatus, navigate]
+    [send, navigate]
   )
 }
 

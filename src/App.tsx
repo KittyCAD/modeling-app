@@ -18,7 +18,7 @@ import {
   lineHighlightField,
   addLineHighlight,
 } from './editor/highlightextension'
-import { PaneType, Selections, Themes, useStore } from './useStore'
+import { PaneType, Selections, useStore } from './useStore'
 import { Logs, KCLErrors } from './components/Logs'
 import { CollapsiblePanel } from './components/CollapsiblePanel'
 import { MemoryPanel } from './components/MemoryPanel'
@@ -41,14 +41,14 @@ import {
 import { useHotkeys } from 'react-hotkeys-hook'
 import { TEST } from './env'
 import { getNormalisedCoordinates } from './lib/utils'
-import { getSystemTheme } from './lib/getSystemTheme'
+import { Themes, getSystemTheme } from './lib/theme'
 import { isTauri } from './lib/isTauri'
 import { useLoaderData, useParams } from 'react-router-dom'
 import { writeTextFile } from '@tauri-apps/api/fs'
 import { PROJECT_ENTRYPOINT } from './lib/tauriFS'
 import { IndexLoaderData } from './Router'
 import { toast } from 'react-hot-toast'
-import { useAuthMachine } from './hooks/useAuthMachine'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
@@ -83,11 +83,8 @@ export function App() {
     cmdId,
     setCmdId,
     formatCode,
-    debugPanel,
-    theme,
     openPanes,
     setOpenPanes,
-    onboardingStatus,
     didDragInStream,
     setDidDragInStream,
     setStreamDimensions,
@@ -122,18 +119,23 @@ export function App() {
     cmdId: s.cmdId,
     setCmdId: s.setCmdId,
     formatCode: s.formatCode,
-    debugPanel: s.debugPanel,
     addKCLError: s.addKCLError,
-    theme: s.theme,
     openPanes: s.openPanes,
     setOpenPanes: s.setOpenPanes,
-    onboardingStatus: s.onboardingStatus,
     didDragInStream: s.didDragInStream,
     setDidDragInStream: s.setDidDragInStream,
     setStreamDimensions: s.setStreamDimensions,
     streamDimensions: s.streamDimensions,
   }))
-  const [token] = useAuthMachine((s) => s?.context?.token)
+
+  const {
+    auth: {
+      context: { token },
+    },
+    settings: {
+      context: { showDebugPanel, theme, onboardingStatus },
+    },
+  } = useGlobalStateContext()
 
   const editorTheme = theme === Themes.System ? getSystemTheme() : theme
 
@@ -519,7 +521,7 @@ export function App() {
         </div>
       </Resizable>
       <Stream className="absolute inset-0 z-0" />
-      {debugPanel && (
+      {showDebugPanel && (
         <DebugPanel
           title="Debug"
           className={

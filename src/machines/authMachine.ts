@@ -1,6 +1,7 @@
 import { createMachine, assign } from 'xstate'
 import { Models } from '@kittycad/lib'
 import withBaseURL from '../lib/withBaseURL'
+import { CommandBarMeta } from '../lib/commands'
 
 export interface UserContext {
   user?: Models['User_type']
@@ -9,15 +10,21 @@ export interface UserContext {
 
 export type Events =
   | {
-      type: 'logout'
+      type: 'Log out'
     }
   | {
-      type: 'tryLogin'
+      type: 'Log in'
       token?: string
     }
 
 export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
 const persistedToken = localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
+
+export const authCommandBarMeta: CommandBarMeta = {
+  'Log in': {
+    hide: 'both',
+  },
+}
 
 export const authMachine = createMachine<UserContext, Events>(
   {
@@ -50,7 +57,7 @@ export const authMachine = createMachine<UserContext, Events>(
       loggedIn: {
         entry: ['goToIndexPage'],
         on: {
-          logout: {
+          'Log out': {
             target: 'loggedOut',
           },
         },
@@ -58,10 +65,10 @@ export const authMachine = createMachine<UserContext, Events>(
       loggedOut: {
         entry: ['goToSignInPage'],
         on: {
-          tryLogin: {
+          'Log in': {
             target: 'checkIfLoggedIn',
             actions: assign({
-              token: (context, event) => {
+              token: (_, event) => {
                 const token = event.token || ''
                 localStorage.setItem(TOKEN_PERSIST_KEY, token)
                 return token
@@ -71,7 +78,7 @@ export const authMachine = createMachine<UserContext, Events>(
         },
       },
     },
-    schema: { events: {} as { type: 'logout' } | { type: 'tryLogin' } },
+    schema: { events: {} as { type: 'Log out' } | { type: 'Log in' } },
     predictableActionArguments: true,
     preserveActionOrder: true,
     context: { token: persistedToken },
@@ -91,12 +98,16 @@ async function getUser(context: UserContext) {
   }
   if (!context.token && '__TAURI__' in window) throw 'not log in'
   if (context.token) headers['Authorization'] = `Bearer ${context.token}`
-  const response = await fetch(url, {
-    method: 'GET',
-    credentials: 'include',
-    headers,
-  })
-  const user = await response.json()
-  if ('error_code' in user) throw new Error(user.message)
-  return user
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      credentials: 'include',
+      headers,
+    })
+    const user = await response.json()
+    if ('error_code' in user) throw new Error(user.message)
+    return user
+  } catch (e) {
+    console.error(e)
+  }
 }

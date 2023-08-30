@@ -1,14 +1,14 @@
 //! Functions related to extruding.
 
+use anyhow::Result;
+use derive_docs::stdlib;
+use schemars::JsonSchema;
+
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{ExtrudeGroup, ExtrudeTransform, MemoryItem, SketchGroup},
     std::Args,
 };
-
-use anyhow::Result;
-use derive_docs::stdlib;
-use schemars::JsonSchema;
 
 /// Extrudes by a given amount.
 pub fn extrude(args: &mut Args) -> Result<MemoryItem, KclError> {
@@ -23,11 +23,7 @@ pub fn extrude(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "extrude"
 }]
-fn inner_extrude(
-    length: f64,
-    sketch_group: SketchGroup,
-    args: &mut Args,
-) -> Result<ExtrudeGroup, KclError> {
+fn inner_extrude(length: f64, sketch_group: SketchGroup, args: &mut Args) -> Result<ExtrudeGroup, KclError> {
     let id = uuid::Uuid::new_v4();
 
     let cmd = kittycad::types::ModelingCmd::Extrude {
@@ -65,17 +61,15 @@ fn inner_get_extrude_wall_transform(
     extrude_group: ExtrudeGroup,
     args: &mut Args,
 ) -> Result<ExtrudeTransform, KclError> {
-    let surface = extrude_group
-        .get_path_by_name(surface_name)
-        .ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a surface name that exists in the given ExtrudeGroup, found `{}`",
-                    surface_name
-                ),
-                source_ranges: vec![args.source_range],
-            })
-        })?;
+    let surface = extrude_group.get_path_by_name(surface_name).ok_or_else(|| {
+        KclError::Type(KclErrorDetails {
+            message: format!(
+                "Expected a surface name that exists in the given ExtrudeGroup, found `{}`",
+                surface_name
+            ),
+            source_ranges: vec![args.source_range],
+        })
+    })?;
 
     Ok(ExtrudeTransform {
         position: surface.get_position(),

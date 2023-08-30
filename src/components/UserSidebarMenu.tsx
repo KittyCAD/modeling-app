@@ -6,8 +6,8 @@ import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { paths } from '../Router'
 import makeUrlPathRelative from '../lib/makeUrlPathRelative'
-import { useAuthMachine } from '../hooks/useAuthMachine'
 import { Models } from '@kittycad/lib'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 
 type User = Models['User_type']
 
@@ -15,7 +15,9 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   const displayedName = getDisplayName(user)
   const [imageLoadFailed, setImageLoadFailed] = useState(false)
   const navigate = useNavigate()
-  const [_, send] = useAuthMachine()
+  const {
+    auth: { send },
+  } = useGlobalStateContext()
 
   // Fallback logic for displaying user's "name":
   // 1. user.name
@@ -120,7 +122,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
               </ActionButton>
               <ActionButton
                 Element="button"
-                onClick={() => send('logout')}
+                onClick={() => send('Log out')}
                 icon={{
                   icon: faSignOutAlt,
                   bgClassName: 'bg-destroy-80',

@@ -39,5 +39,7 @@ module.exports = {
     },
   },
   darkMode: 'class',
-  plugins: [],
+  plugins: [
+    require('@headlessui/tailwindcss'),
+  ],
 }

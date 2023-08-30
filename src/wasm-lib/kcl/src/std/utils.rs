@@ -44,7 +44,10 @@ pub fn normalize_rad(angle: f64) -> f64 {
 /// # Examples
 ///
 /// ```
-/// assert_eq!(delta_angle(std::f64::consts::PI/8.0, std::f64::consts::PI/4.0), std::f64::consts::PI/8.0);
+/// assert_eq!(
+///     kcl_lib::std::utils::delta_angle(std::f64::consts::PI / 8.0, std::f64::consts::PI / 4.0),
+///     std::f64::consts::PI / 8.0
+/// );
 /// ```
 #[allow(dead_code)]
 pub fn delta_angle(from_angle: f64, to_angle: f64) -> f64 {
@@ -69,8 +72,14 @@ pub fn delta_angle(from_angle: f64, to_angle: f64) -> f64 {
 /// # Examples
 ///
 /// ```
-/// assert_eq!(distance_between_points(&[0.0, 0.0], &[0.0, 5.0]), 5.0);
-/// assert_eq!(distance_between_points(&[0.0, 0.0], &[3.0, 4.0]), 5.0);
+/// assert_eq!(
+///     kcl_lib::std::utils::distance_between_points(&[0.0, 0.0], &[0.0, 5.0]),
+///     5.0
+/// );
+/// assert_eq!(
+///     kcl_lib::std::utils::distance_between_points(&[0.0, 0.0], &[3.0, 4.0]),
+///     5.0
+/// );
 /// ```
 #[allow(dead_code)]
 pub fn distance_between_points(point_a: &[f64; 2], point_b: &[f64; 2]) -> f64 {
@@ -82,11 +91,7 @@ pub fn distance_between_points(point_a: &[f64; 2], point_b: &[f64; 2]) -> f64 {
     ((y2 - y1).powi(2) + (x2 - x1).powi(2)).sqrt()
 }
 
-pub fn calculate_intersection_of_two_lines(
-    line1: &[[f64; 2]; 2],
-    line2_angle: f64,
-    line2_point: [f64; 2],
-) -> [f64; 2] {
+pub fn calculate_intersection_of_two_lines(line1: &[[f64; 2]; 2], line2_angle: f64, line2_point: [f64; 2]) -> [f64; 2] {
     let line2_point_b = [
         line2_point[0] + f64::cos(line2_angle * std::f64::consts::PI / 180.0) * 10.0,
         line2_point[1] + f64::sin(line2_angle * std::f64::consts::PI / 180.0) * 10.0,
@@ -117,27 +122,17 @@ pub fn intersection_with_parallel_line(
     line2_angle: f64,
     line2_point: [f64; 2],
 ) -> [f64; 2] {
-    calculate_intersection_of_two_lines(
-        &offset_line(line1_offset, line1[0], line1[1]),
-        line2_angle,
-        line2_point,
-    )
+    calculate_intersection_of_two_lines(&offset_line(line1_offset, line1[0], line1[1]), line2_angle, line2_point)
 }
 
 fn offset_line(offset: f64, p1: [f64; 2], p2: [f64; 2]) -> [[f64; 2]; 2] {
     if p1[0] == p2[0] {
         let direction = (p1[1] - p2[1]).signum();
-        return [
-            [p1[0] + offset * direction, p1[1]],
-            [p2[0] + offset * direction, p2[1]],
-        ];
+        return [[p1[0] + offset * direction, p1[1]], [p2[0] + offset * direction, p2[1]]];
     }
     if p1[1] == p2[1] {
         let direction = (p2[0] - p1[0]).signum();
-        return [
-            [p1[0], p1[1] + offset * direction],
-            [p2[0], p2[1] + offset * direction],
-        ];
+        return [[p1[0], p1[1] + offset * direction], [p2[0], p2[1] + offset * direction]];
     }
     let x_offset = offset / f64::sin(f64::atan2(p1[1] - p2[1], p1[0] - p2[0]));
     [[p1[0] + x_offset, p1[1]], [p2[0] + x_offset, p2[1]]]
@@ -168,8 +163,9 @@ pub fn get_x_component(angle_degree: f64, y_component: f64) -> [f64; 2] {
 #[cfg(test)]
 mod tests {
     // Here you can bring your functions into scope
-    use super::{get_x_component, get_y_component};
     use pretty_assertions::assert_eq;
+
+    use super::{get_x_component, get_y_component};
 
     static EACH_QUAD: [(i32, [i32; 2]); 12] = [
         (-315, [1, 1]),

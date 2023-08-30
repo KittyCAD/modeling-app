@@ -1,6 +1,6 @@
 {
   "name": "untitled-app",
-  "version": "0.0.4",
+  "version": "0.2.0",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
@@ -8,8 +8,10 @@
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@headlessui/react": "^1.7.13",
+    "@headlessui/tailwindcss": "^0.2.0",
     "@kittycad/lib": "^0.0.34",
     "@react-hook/resize-observer": "^1.2.6",
+    "@sentry/react": "^7.65.0",
     "@tauri-apps/api": "^1.3.0",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",
@@ -22,6 +24,7 @@
     "@xstate/react": "^3.2.2",
     "crypto-js": "^4.1.1",
     "formik": "^2.4.3",
+    "fuse.js": "^6.6.2",
     "http-server": "^14.1.1",
     "re-resizable": "^6.9.9",
     "react": "^18.2.0",
@@ -60,9 +63,9 @@
     "simpleserver": "http-server ./public --cors -p 3000",
     "fmt": "prettier --write ./src",
     "fmt-check": "prettier --check ./src",
-    "build:wasm": "yarn wasm-prep && (cd src/wasm-lib && wasm-pack build --target web --out-dir pkg --no-default-features --features web && cargo test --all) && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn fmt && yarn remove-importmeta",
+    "build:wasm": "yarn wasm-prep && (cd src/wasm-lib && wasm-pack build --target web --out-dir pkg && cargo test --all) && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn fmt && yarn remove-importmeta",
     "remove-importmeta": "sed -i 's/import.meta.url//g' \"./src/wasm-lib/pkg/wasm_lib.js\"; sed -i '' 's/import.meta.url//g' \"./src/wasm-lib/pkg/wasm_lib.js\" || echo \"sed for both mac and linux\"",
-    "wasm-prep": "rm -rf src/wasm-lib/pkg && mkdir src/wasm-lib/pkg && rm -rf src/wasm-lib/bindings",
+    "wasm-prep": "rm -rf src/wasm-lib/pkg && mkdir src/wasm-lib/pkg && rm -rf src/wasm-lib/kcl/bindings",
     "lint": "eslint --fix src",
     "bump-jsons": "echo \"$(jq --arg v \"$VERSION\" '.version=$v' package.json --indent 2)\" > package.json && echo \"$(jq --arg v \"$VERSION\" '.package.version=$v' src-tauri/tauri.conf.json --indent 2)\" > src-tauri/tauri.conf.json"
   },

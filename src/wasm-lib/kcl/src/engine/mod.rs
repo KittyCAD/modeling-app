@@ -2,19 +2,19 @@
 
 use wasm_bindgen::prelude::*;
 
-#[cfg(feature = "noweb")]
+#[cfg(not(target_arch = "wasm32"))]
 #[cfg(not(test))]
-pub mod conn_noweb;
-#[cfg(feature = "noweb")]
+pub mod conn;
+#[cfg(not(target_arch = "wasm32"))]
 #[cfg(not(test))]
-pub use conn_noweb::EngineConnection;
+pub use conn::EngineConnection;
 
-#[cfg(feature = "web")]
+#[cfg(target_arch = "wasm32")]
 #[cfg(not(test))]
-pub mod conn_web;
-#[cfg(feature = "web")]
+pub mod conn_wasm;
+#[cfg(target_arch = "wasm32")]
 #[cfg(not(test))]
-pub use conn_web::EngineConnection;
+pub use conn_wasm::EngineConnection;
 
 #[cfg(test)]
 pub mod conn_mock;
@@ -31,24 +31,13 @@ pub struct EngineManager {
 
 #[wasm_bindgen]
 impl EngineManager {
-    #[cfg(feature = "web")]
+    #[cfg(target_arch = "wasm32")]
     #[cfg(not(test))]
     #[wasm_bindgen(constructor)]
-    pub async fn new(manager: conn_web::EngineCommandManager) -> EngineManager {
+    pub async fn new(manager: conn_wasm::EngineCommandManager) -> EngineManager {
         EngineManager {
             // This unwrap is safe because the connection is always created.
             connection: EngineConnection::new(manager).await.unwrap(),
-        }
-    }
-
-    #[cfg(not(feature = "web"))]
-    #[wasm_bindgen(constructor)]
-    pub async fn new(conn_str: &str, auth_token: &str, origin: &str) -> EngineManager {
-        EngineManager {
-            // TODO: fix unwrap.
-            connection: EngineConnection::new(conn_str, auth_token, origin)
-                .await
-                .unwrap(),
         }
     }
 

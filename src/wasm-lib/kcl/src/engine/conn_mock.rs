@@ -9,11 +9,7 @@ use crate::errors::KclError;
 pub struct EngineConnection {}
 
 impl EngineConnection {
-    pub async fn new(
-        _conn_str: &str,
-        _auth_token: &str,
-        _origin: &str,
-    ) -> Result<EngineConnection> {
+    pub async fn new() -> Result<EngineConnection> {
         Ok(EngineConnection {})
     }
 

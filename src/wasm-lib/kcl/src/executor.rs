@@ -6,9 +6,6 @@ use anyhow::Result;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-#[cfg(not(test))]
-use wasm_bindgen::prelude::*;
-
 use crate::{
     abstract_syntax_tree_types::{BodyItem, FunctionExpression, Value},
     engine::EngineConnection,
@@ -33,12 +30,7 @@ impl ProgramMemory {
     }
 
     /// Add to the program memory.
-    pub fn add(
-        &mut self,
-        key: &str,
-        value: MemoryItem,
-        source_range: SourceRange,
-    ) -> Result<(), KclError> {
+    pub fn add(&mut self, key: &str, value: MemoryItem, source_range: SourceRange) -> Result<(), KclError> {
         if self.root.get(key).is_some() {
             return Err(KclError::ValueAlreadyDefined(KclErrorDetails {
                 message: format!("Cannot redefine {}", key),
@@ -172,12 +164,7 @@ impl MemoryItem {
         memory: &ProgramMemory,
         engine: &mut EngineConnection,
     ) -> Result<Option<ProgramReturn>, KclError> {
-        if let MemoryItem::Function {
-            func,
-            expression,
-            meta,
-        } = self
-        {
+        if let MemoryItem::Function { func, expression, meta } = self {
             if let Some(func) = func {
                 func(args, memory, expression, meta, engine)
             } else {
@@ -228,10 +215,7 @@ impl SketchGroup {
         if self.start.name == name {
             Some(&self.start)
         } else {
-            self.value
-                .iter()
-                .find(|p| p.get_name() == name)
-                .map(|p| p.get_base())
+            self.value.iter().find(|p| p.get_name() == name).map(|p| p.get_base())
         }
     }
 
@@ -506,7 +490,7 @@ impl Default for PipeInfo {
 }
 
 /// Execute a AST's program.
-fn execute(
+pub fn execute(
     program: crate::abstract_syntax_tree_types::Program,
     memory: &mut ProgramMemory,
     options: BodyType,
@@ -526,8 +510,7 @@ fn execute(
                         match arg {
                             Value::Literal(literal) => args.push(literal.into()),
                             Value::Identifier(identifier) => {
-                                let memory_item =
-                                    memory.get(&identifier.name, identifier.into())?;
+                                let memory_item = memory.get(&identifier.name, identifier.into())?;
                                 args.push(memory_item.clone());
                             }
                             // We do nothing for the rest.
@@ -542,8 +525,7 @@ fn execute(
                             }));
                         }
 
-                        memory.return_ =
-                            Some(ProgramReturn::Arguments(call_expr.arguments.clone()));
+                        memory.return_ = Some(ProgramReturn::Arguments(call_expr.arguments.clone()));
                     } else if let Some(func) = memory.clone().root.get(&fn_name) {
                         func.call_fn(&args, memory, engine)?;
                     } else {
@@ -569,12 +551,7 @@ fn execute(
                             memory.add(&var_name, value.clone(), source_range)?;
                         }
                         Value::BinaryExpression(binary_expression) => {
-                            let result = binary_expression.get_result(
-                                memory,
-                                &mut pipe_info,
-                                &stdlib,
-                                engine,
-                            )?;
+                            let result = binary_expression.get_result(memory, &mut pipe_info, &stdlib, engine)?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::FunctionExpression(function_expression) => {
@@ -611,41 +588,28 @@ fn execute(
                             )?;
                         }
                         Value::CallExpression(call_expression) => {
-                            let result =
-                                call_expression.execute(memory, &mut pipe_info, &stdlib, engine)?;
+                            let result = call_expression.execute(memory, &mut pipe_info, &stdlib, engine)?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::PipeExpression(pipe_expression) => {
-                            let result = pipe_expression.get_result(
-                                memory,
-                                &mut pipe_info,
-                                &stdlib,
-                                engine,
-                            )?;
+                            let result = pipe_expression.get_result(memory, &mut pipe_info, &stdlib, engine)?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::PipeSubstitution(pipe_substitution) => {
                             return Err(KclError::Semantic(KclErrorDetails {
-                                message: format!("pipe substitution not implemented for declaration of variable {}", var_name),
+                                message: format!(
+                                    "pipe substitution not implemented for declaration of variable {}",
+                                    var_name
+                                ),
                                 source_ranges: vec![pipe_substitution.into()],
                             }));
                         }
                         Value::ArrayExpression(array_expression) => {
-                            let result = array_expression.execute(
-                                memory,
-                                &mut pipe_info,
-                                &stdlib,
-                                engine,
-                            )?;
+                            let result = array_expression.execute(memory, &mut pipe_info, &stdlib, engine)?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::ObjectExpression(object_expression) => {
-                            let result = object_expression.execute(
-                                memory,
-                                &mut pipe_info,
-                                &stdlib,
-                                engine,
-                            )?;
+                            let result = object_expression.execute(memory, &mut pipe_info, &stdlib, engine)?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::MemberExpression(member_expression) => {
@@ -653,12 +617,7 @@ fn execute(
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::UnaryExpression(unary_expression) => {
-                            let result = unary_expression.get_result(
-                                memory,
-                                &mut pipe_info,
-                                &stdlib,
-                                engine,
-                            )?;
+                            let result = unary_expression.get_result(memory, &mut pipe_info, &stdlib, engine)?;
                             memory.add(&var_name, result, source_range)?;
                         }
                     }
@@ -681,63 +640,17 @@ fn execute(
     Ok(memory.clone())
 }
 
-// wasm_bindgen wrapper for execute
-#[cfg(feature = "web")]
-#[cfg(not(test))]
-#[wasm_bindgen]
-pub async fn execute_wasm(
-    program_str: &str,
-    memory_str: &str,
-    manager: crate::engine::conn_web::EngineCommandManager,
-) -> Result<JsValue, String> {
-    use gloo_utils::format::JsValueSerdeExt;
-
-    // deserialize the ast from a stringified json
-    let program: crate::abstract_syntax_tree_types::Program =
-        serde_json::from_str(program_str).map_err(|e| e.to_string())?;
-    let mut mem: ProgramMemory = serde_json::from_str(memory_str).map_err(|e| e.to_string())?;
-
-    let mut engine = EngineConnection::new(manager)
-        .await
-        .map_err(|e| format!("{:?}", e))?;
-
-    let memory = execute(program, &mut mem, BodyType::Root, &mut engine).map_err(String::from)?;
-    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
-    // gloo-serialize crate instead.
-    JsValue::from_serde(&memory).map_err(|e| e.to_string())
-}
-
-// wasm_bindgen wrapper for execute
-#[cfg(not(feature = "web"))]
-#[wasm_bindgen]
-pub async fn execute_wasm(program_str: &str, memory_str: &str) -> Result<JsValue, String> {
-    use gloo_utils::format::JsValueSerdeExt;
-
-    // deserialize the ast from a stringified json
-    let program: crate::abstract_syntax_tree_types::Program =
-        serde_json::from_str(program_str).map_err(|e| e.to_string())?;
-    let mut mem: ProgramMemory = serde_json::from_str(memory_str).map_err(|e| e.to_string())?;
-
-    let mut engine = EngineConnection::new("dev.kittycad.io", "some-token", "")
-        .await
-        .map_err(|e| format!("{:?}", e))?;
-
-    let memory = execute(program, &mut mem, BodyType::Root, &mut engine).map_err(String::from)?;
-    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
-    // gloo-serialize crate instead.
-    JsValue::from_serde(&memory).map_err(|e| e.to_string())
-}
-
 #[cfg(test)]
 mod tests {
-    use super::*;
     use pretty_assertions::assert_eq;
+
+    use super::*;
 
     pub async fn parse_execute(code: &str) -> Result<ProgramMemory> {
         let tokens = crate::tokeniser::lexer(code);
         let program = crate::parser::abstract_syntax_tree(&tokens)?;
         let mut mem: ProgramMemory = Default::default();
-        let mut engine = EngineConnection::new("dev.kittycad.io", "some-token", "").await?;
+        let mut engine = EngineConnection::new().await?;
         let memory = execute(program, &mut mem, BodyType::Root, &mut engine)?;
 
         Ok(memory)
@@ -780,23 +693,13 @@ show(part001)"#,
         let memory = parse_execute(&ast_fn("-1")).await.unwrap();
         assert_eq!(
             serde_json::json!(1.0 + 2.0f64.sqrt()),
-            memory
-                .root
-                .get("intersect")
-                .unwrap()
-                .get_json_value()
-                .unwrap()
+            memory.root.get("intersect").unwrap().get_json_value().unwrap()
         );
 
         let memory = parse_execute(&ast_fn("0")).await.unwrap();
         assert_eq!(
             serde_json::json!(1.0000000000000002),
-            memory
-                .root
-                .get("intersect")
-                .unwrap()
-                .get_json_value()
-                .unwrap()
+            memory.root.get("intersect").unwrap().get_json_value().unwrap()
         );
     }
 

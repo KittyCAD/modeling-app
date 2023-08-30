@@ -1,8 +1,6 @@
-use gloo_utils::format::JsValueSerdeExt;
 use lazy_static::lazy_static;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
-use wasm_bindgen::prelude::*;
 
 #[derive(Debug, PartialEq, Eq, Copy, Clone, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
@@ -48,8 +46,7 @@ lazy_static! {
     static ref WHITESPACE: Regex = Regex::new(r"\s+").unwrap();
     static ref WORD: Regex = Regex::new(r"^[a-zA-Z_][a-zA-Z0-9_]*").unwrap();
     static ref STRING: Regex = Regex::new(r#"^"([^"\\]|\\.)*"|'([^'\\]|\\.)*'"#).unwrap();
-    static ref OPERATOR: Regex =
-        Regex::new(r"^(>=|<=|==|=>|!= |\|>|\*|\+|-|/|%|=|<|>|\||\^)").unwrap();
+    static ref OPERATOR: Regex = Regex::new(r"^(>=|<=|==|=>|!= |\|>|\*|\+|-|/|%|=|<|>|\||\^)").unwrap();
     static ref BLOCK_START: Regex = Regex::new(r"^\{").unwrap();
     static ref BLOCK_END: Regex = Regex::new(r"^\}").unwrap();
     static ref PARAN_START: Regex = Regex::new(r"^\(").unwrap();
@@ -116,9 +113,7 @@ fn is_block_comment(character: &str) -> bool {
 }
 
 fn match_first(str: &str, regex: &Regex) -> Option<String> {
-    regex
-        .find(str)
-        .map(|the_match| the_match.as_str().to_string())
+    regex.find(str).map(|the_match| the_match.as_str().to_string())
 }
 
 fn make_token(token_type: TokenType, value: &str, start: usize) -> Token {
@@ -253,11 +248,7 @@ fn return_token_at_index(str: &str, start_index: usize) -> Option<Token> {
 }
 
 pub fn lexer(str: &str) -> Vec<Token> {
-    fn recursively_tokenise(
-        str: &str,
-        current_index: usize,
-        previous_tokens: Vec<Token>,
-    ) -> Vec<Token> {
+    fn recursively_tokenise(str: &str, current_index: usize, previous_tokens: Vec<Token>) -> Vec<Token> {
         if current_index >= str.len() {
             return previous_tokens;
         }
@@ -273,18 +264,11 @@ pub fn lexer(str: &str) -> Vec<Token> {
     recursively_tokenise(str, 0, Vec::new())
 }
 
-// wasm_bindgen wrapper for lexer
-// test for this function and by extension lexer are done in javascript land src/lang/tokeniser.test.ts
-#[wasm_bindgen]
-pub fn lexer_js(str: &str) -> Result<JsValue, JsError> {
-    let tokens = lexer(str);
-    Ok(JsValue::from_serde(&tokens)?)
-}
-
 #[cfg(test)]
 mod tests {
-    use super::*;
     use pretty_assertions::assert_eq;
+
+    use super::*;
 
     #[test]
     fn is_number_test() {

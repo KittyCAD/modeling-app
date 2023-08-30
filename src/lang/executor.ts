@@ -4,10 +4,10 @@ import {
   ArtifactMap,
   SourceRangeMap,
 } from './std/engineConnection'
-import { ProgramReturn } from '../wasm-lib/bindings/ProgramReturn'
+import { ProgramReturn } from '../wasm-lib/kcl/bindings/ProgramReturn'
 import { execute_wasm } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
-import { KclError as RustKclError } from '../wasm-lib/bindings/KclError'
+import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
 import { rangeTypeFix } from './abstractSyntaxTree'
 
 export type SourceRange = [number, number]
@@ -146,10 +146,8 @@ export const _executor = async (
     const parsed: RustKclError = JSON.parse(e.toString())
     const kclError = new KCLError(
       parsed.kind,
-      parsed.kind === 'invalid_expression' ? parsed.kind : parsed.msg,
-      parsed.kind === 'invalid_expression'
-        ? [[parsed.start, parsed.end]]
-        : rangeTypeFix(parsed.sourceRanges)
+      parsed.msg,
+      rangeTypeFix(parsed.sourceRanges)
     )
 
     console.log(kclError)

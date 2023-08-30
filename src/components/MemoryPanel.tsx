@@ -1,8 +1,9 @@
 import ReactJson from 'react-json-view'
 import { CollapsiblePanel, CollapsiblePanelProps } from './CollapsiblePanel'
-import { Themes, useStore } from '../useStore'
+import { useStore } from '../useStore'
 import { useMemo } from 'react'
 import { ProgramMemory } from '../lang/executor'
+import { Themes } from '../lib/theme'
 
 interface MemoryPanelProps extends CollapsiblePanelProps {
   theme?: Exclude<Themes, Themes.System>
