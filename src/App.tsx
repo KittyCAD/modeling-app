@@ -325,7 +325,7 @@ export function App() {
           await engineCommandManager.waitForAllCommands()
 
         setArtifactMap({ artifactMap, sourceRangeMap })
-        const unSubHover = engineCommandManager.subscribeToLossy({
+        const unSubHover = engineCommandManager.subscribeToUnreliable({
           event: 'highlight_set_entity',
           callback: ({ data }) => {
             if (!data?.entity_id) {
