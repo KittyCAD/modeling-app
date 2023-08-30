@@ -15,6 +15,7 @@ pub struct EngineConnection {
     tcp_write: futures::stream::SplitSink<tokio_tungstenite::WebSocketStream<reqwest::Upgraded>, WsMsg>,
     tcp_read_handle: tokio::task::JoinHandle<Result<()>>,
     export_notifier: Arc<tokio::sync::Notify>,
+    snapshot_notifier: Arc<tokio::sync::Notify>,
 }
 
 impl Drop for EngineConnection {
@@ -41,7 +42,7 @@ impl TcpRead {
 }
 
 impl EngineConnection {
-    pub async fn new(ws: reqwest::Upgraded, export_dir: &str) -> Result<EngineConnection> {
+    pub async fn new(ws: reqwest::Upgraded, export_dir: &str, snapshot_file: &str) -> Result<EngineConnection> {
         // Make sure the export directory exists and that it is a directory.
         let export_dir = std::path::Path::new(export_dir).to_owned();
         if !export_dir.exists() {
@@ -65,6 +66,11 @@ impl EngineConnection {
 
         let export_notifier = Arc::new(tokio::sync::Notify::new());
         let export_notifier_clone = export_notifier.clone();
+
+        let snapshot_notifier = Arc::new(tokio::sync::Notify::new());
+        let snapshot_notifier_clone = snapshot_notifier.clone();
+
+        let snapshot_file = snapshot_file.to_owned();
 
         let tcp_read_handle = tokio::spawn(async move {
             // Get Websocket messages from API server
@@ -90,7 +96,20 @@ impl EngineConnection {
                                 OkWebSocketResponseData::TrickleIce { candidate } => {
                                     println!("got trickle ice: {:?}", candidate);
                                 }
-                                OkWebSocketResponseData::Modeling { .. } => {}
+                                OkWebSocketResponseData::Modeling { modeling_response } => {
+                                    if let kittycad::types::OkModelingCmdResponse::TakeSnapshot { data } =
+                                        modeling_response
+                                    {
+                                        if snapshot_file.is_empty() {
+                                            println!("Got snapshot, but no snapshot file specified.");
+                                            continue;
+                                        }
+
+                                        // Save the snapshot locally.
+                                        std::fs::write(&snapshot_file, data.contents)?;
+                                        snapshot_notifier.notify_one();
+                                    }
+                                }
                                 OkWebSocketResponseData::Export { files } => {
                                     // Save the files to our export directory.
                                     for file in files {
@@ -118,11 +137,16 @@ impl EngineConnection {
             tcp_write,
             tcp_read_handle,
             export_notifier: export_notifier_clone,
+            snapshot_notifier: snapshot_notifier_clone,
         })
     }
 
-    pub async fn wait_for_files(&self) {
+    pub async fn wait_for_export(&self) {
         self.export_notifier.notified().await;
+    }
+
+    pub async fn wait_for_snapshot(&self) {
+        self.snapshot_notifier.notified().await;
     }
 
     pub async fn tcp_send(&mut self, msg: WebSocketRequest) -> Result<()> {
@@ -147,62 +171,5 @@ impl EngineConnection {
             },
         )?;
         Ok(())
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::executor::{execute, BodyType, ProgramMemory, SourceRange};
-
-    pub async fn parse_execute_export(code: &str) -> Result<()> {
-        let tokens = crate::tokeniser::lexer(code);
-        let export_dir_str = "/tmp/";
-        let program = crate::parser::abstract_syntax_tree(&tokens)?;
-        let mut mem: ProgramMemory = Default::default();
-        let mut engine = EngineConnection::new(
-            "wss://api.dev.kittycad.io/ws/modeling/commands?webrtc=false",
-            std::env::var("KITTYCAD_API_TOKEN").unwrap().as_str(),
-            "modeling-app-tests",
-            export_dir_str,
-        )
-        .await?;
-        let _ = execute(program, &mut mem, BodyType::Root, &mut engine)?;
-        // Send an export request to the engine.
-        engine.send_modeling_cmd(
-            uuid::Uuid::new_v4(),
-            SourceRange::default(),
-            kittycad::types::ModelingCmd::Export {
-                entity_ids: vec![],
-                format: kittycad::types::OutputFormat::Gltf {
-                    presentation: kittycad::types::Presentation::Pretty,
-                    storage: kittycad::types::Storage::Embedded,
-                },
-            },
-        )?;
-
-        engine.wait_for_files().await;
-
-        Ok(())
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_export_file() {
-        let ast = r#"const part001 = startSketchAt([-0.01, -0.06])
-  |> line([0, 20], %)
-  |> line([5, 0], %)
-  |> line([-10, 5], %)
-  |> close(%)
-  |> extrude(4, %)
-
-show(part001)"#;
-        parse_execute_export(ast).await.unwrap();
-
-        // Ensure we have a file called "part001.gltf" in the export directory.
-        let export_dir = std::path::Path::new("/tmp/");
-        let export_file = export_dir.join("part001.gltf");
-        assert!(export_file.exists());
-        // Make sure the file is not empty.
-        assert!(export_file.metadata().unwrap().len() != 0);
     }
 }
