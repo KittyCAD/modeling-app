@@ -3,6 +3,8 @@ import { Models } from '@kittycad/lib'
 import withBaseURL from '../lib/withBaseURL'
 import { CommandBarMeta } from '../lib/commands'
 
+const SKIP_AUTH =
+  import.meta.env.VITE_KC_SKIP_AUTH === 'true' && import.meta.env.DEV
 const LOCAL_USER: Models['User_type'] = {
   id: '8675309',
   name: 'Test User',
@@ -21,7 +23,6 @@ const LOCAL_USER: Models['User_type'] = {
 export interface UserContext {
   user?: Models['User_type']
   token?: string
-  isLocalEngine: boolean
 }
 
 export type Events =
@@ -99,10 +100,6 @@ export const authMachine = createMachine<UserContext, Events>(
     preserveActionOrder: true,
     context: {
       token: persistedToken,
-      isLocalEngine:
-        import.meta.env.DEV &&
-        (import.meta.env.VITE_KC_API_BASE_URL.includes('localhost') ||
-          import.meta.env.VITE_KC_API_BASE_URL.includes('192.')),
     },
   },
   {
@@ -120,7 +117,7 @@ async function getUser(context: UserContext) {
   }
   if (!context.token && '__TAURI__' in window) throw 'not log in'
   if (context.token) headers['Authorization'] = `Bearer ${context.token}`
-  if (context.isLocalEngine) return LOCAL_USER
+  if (SKIP_AUTH) return LOCAL_USER
   try {
     const response = await fetch(url, {
       method: 'GET',
