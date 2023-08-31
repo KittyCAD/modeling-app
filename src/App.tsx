@@ -49,6 +49,7 @@ import { PROJECT_ENTRYPOINT } from './lib/tauriFS'
 import { IndexLoaderData } from './Router'
 import { toast } from 'react-hot-toast'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { onboardingPaths } from 'routes/Onboarding'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
@@ -154,7 +155,7 @@ export function App() {
   useHotkeys('shift + d', () => togglePane('debug'))
 
   const paneOpacity =
-    onboardingStatus === '/camera'
+    onboardingStatus === onboardingPaths.CAMERA
       ? 'opacity-20'
       : didDragInStream
       ? 'opacity-40'
