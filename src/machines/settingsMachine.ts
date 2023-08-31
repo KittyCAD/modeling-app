@@ -3,6 +3,11 @@ import { BaseUnit, baseUnitsUnion } from '../useStore'
 import { CommandBarMeta } from '../lib/commands'
 import { Themes, getSystemTheme, setThemeClass } from '../lib/theme'
 
+export enum UnitSystem {
+  Imperial = 'imperial',
+  Metric = 'metric',
+}
+
 export const SETTINGS_PERSIST_KEY = 'SETTINGS_PERSIST_KEY'
 
 export const settingsCommandBarMeta: CommandBarMeta = {
@@ -42,7 +47,7 @@ export const settingsCommandBarMeta: CommandBarMeta = {
         name: 'unitSystem',
         type: 'select',
         defaultValue: 'unitSystem',
-        options: [{ name: 'imperial' }, { name: 'metric' }],
+        options: [{ name: UnitSystem.Imperial }, { name: UnitSystem.Metric }],
       },
     ],
   },
@@ -70,7 +75,7 @@ export const settingsMachine = createMachine(
     context: {
       theme: Themes.System,
       defaultProjectName: '',
-      unitSystem: 'imperial' as 'imperial' | 'metric',
+      unitSystem: UnitSystem.Imperial,
       baseUnit: 'in' as BaseUnit,
       defaultDirectory: '',
       showDebugPanel: false,
@@ -174,7 +179,7 @@ export const settingsMachine = createMachine(
         | { type: 'Set Default Directory'; data: { defaultDirectory: string } }
         | {
             type: 'Set Unit System'
-            data: { unitSystem: 'imperial' | 'metric' }
+            data: { unitSystem: UnitSystem }
           }
         | { type: 'Set Base Unit'; data: { baseUnit: BaseUnit } }
         | { type: 'Set Onboarding Status'; data: { onboardingStatus: string } }
