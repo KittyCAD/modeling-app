@@ -35,10 +35,7 @@ struct StdlibMetadata {
 }
 
 #[proc_macro_attribute]
-pub fn stdlib(
-    attr: proc_macro::TokenStream,
-    item: proc_macro::TokenStream,
-) -> proc_macro::TokenStream {
+pub fn stdlib(attr: proc_macro::TokenStream, item: proc_macro::TokenStream) -> proc_macro::TokenStream {
     do_output(do_stdlib(attr.into(), item.into()))
 }
 
@@ -50,9 +47,7 @@ fn do_stdlib(
     do_stdlib_inner(metadata, attr, item)
 }
 
-fn do_output(
-    res: Result<(proc_macro2::TokenStream, Vec<Error>), Error>,
-) -> proc_macro::TokenStream {
+fn do_output(res: Result<(proc_macro2::TokenStream, Vec<Error>), Error>) -> proc_macro::TokenStream {
     match res {
         Err(err) => err.to_compile_error().into(),
         Ok((stdlib_docs, errors)) => {
@@ -207,11 +202,7 @@ fn do_stdlib_inner(
             syn::FnArg::Typed(pat) => pat.ty.as_ref().into_token_stream(),
         };
 
-        let ty_string = ty
-            .to_string()
-            .replace('&', "")
-            .replace("mut", "")
-            .replace(' ', "");
+        let ty_string = ty.to_string().replace('&', "").replace("mut", "").replace(' ', "");
         let ty_string = ty_string.trim().to_string();
         let ty_ident = if ty_string.starts_with("Vec<") {
             let ty_string = ty_string.trim_start_matches("Vec<").trim_end_matches('>');
@@ -370,8 +361,7 @@ fn extract_doc_from_attrs(attrs: &[syn::Attribute]) -> (Option<String>, Option<S
         if let syn::Meta::NameValue(nv) = &attr.meta {
             if nv.path.is_ident(&doc) {
                 if let syn::Expr::Lit(syn::ExprLit {
-                    lit: syn::Lit::Str(s),
-                    ..
+                    lit: syn::Lit::Str(s), ..
                 }) = &nv.value
                 {
                     return normalize_comment_string(s.value());
@@ -508,10 +498,7 @@ mod tests {
         let _expected = quote! {};
 
         assert!(errors.is_empty());
-        expectorate::assert_contents(
-            "tests/lineTo.gen",
-            &openapitor::types::get_text_fmt(&item).unwrap(),
-        );
+        expectorate::assert_contents("tests/lineTo.gen", &openapitor::types::get_text_fmt(&item).unwrap());
     }
 
     #[test]
@@ -540,9 +527,6 @@ mod tests {
         let _expected = quote! {};
 
         assert!(errors.is_empty());
-        expectorate::assert_contents(
-            "tests/min.gen",
-            &openapitor::types::get_text_fmt(&item).unwrap(),
-        );
+        expectorate::assert_contents("tests/min.gen", &openapitor::types::get_text_fmt(&item).unwrap());
     }
 }

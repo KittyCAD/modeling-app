@@ -1,14 +1,14 @@
 //! Functions related to line segments.
 
+use anyhow::Result;
+use derive_docs::stdlib;
+use schemars::JsonSchema;
+
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{MemoryItem, SketchGroup},
     std::{utils::get_angle, Args},
 };
-
-use anyhow::Result;
-use derive_docs::stdlib;
-use schemars::JsonSchema;
 
 /// Returns the segment end of x.
 pub fn segment_end_x(args: &mut Args) -> Result<MemoryItem, KclError> {
@@ -22,22 +22,16 @@ pub fn segment_end_x(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "segEndX",
 }]
-fn inner_segment_end_x(
-    segment_name: &str,
-    sketch_group: SketchGroup,
-    args: &mut Args,
-) -> Result<f64, KclError> {
-    let line = sketch_group
-        .get_base_by_name_or_start(segment_name)
-        .ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a segment name that exists in the given SketchGroup, found `{}`",
-                    segment_name
-                ),
-                source_ranges: vec![args.source_range],
-            })
-        })?;
+fn inner_segment_end_x(segment_name: &str, sketch_group: SketchGroup, args: &mut Args) -> Result<f64, KclError> {
+    let line = sketch_group.get_base_by_name_or_start(segment_name).ok_or_else(|| {
+        KclError::Type(KclErrorDetails {
+            message: format!(
+                "Expected a segment name that exists in the given SketchGroup, found `{}`",
+                segment_name
+            ),
+            source_ranges: vec![args.source_range],
+        })
+    })?;
 
     Ok(line.to[0])
 }
@@ -54,22 +48,16 @@ pub fn segment_end_y(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "segEndY",
 }]
-fn inner_segment_end_y(
-    segment_name: &str,
-    sketch_group: SketchGroup,
-    args: &mut Args,
-) -> Result<f64, KclError> {
-    let line = sketch_group
-        .get_base_by_name_or_start(segment_name)
-        .ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a segment name that exists in the given SketchGroup, found `{}`",
-                    segment_name
-                ),
-                source_ranges: vec![args.source_range],
-            })
-        })?;
+fn inner_segment_end_y(segment_name: &str, sketch_group: SketchGroup, args: &mut Args) -> Result<f64, KclError> {
+    let line = sketch_group.get_base_by_name_or_start(segment_name).ok_or_else(|| {
+        KclError::Type(KclErrorDetails {
+            message: format!(
+                "Expected a segment name that exists in the given SketchGroup, found `{}`",
+                segment_name
+            ),
+            source_ranges: vec![args.source_range],
+        })
+    })?;
 
     Ok(line.to[1])
 }
@@ -145,11 +133,7 @@ pub fn segment_length(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "segLen",
 }]
-fn inner_segment_length(
-    segment_name: &str,
-    sketch_group: SketchGroup,
-    args: &mut Args,
-) -> Result<f64, KclError> {
+fn inner_segment_length(segment_name: &str, sketch_group: SketchGroup, args: &mut Args) -> Result<f64, KclError> {
     let path = sketch_group.get_path_by_name(segment_name).ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!(
@@ -178,11 +162,7 @@ pub fn segment_angle(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "segAng",
 }]
-fn inner_segment_angle(
-    segment_name: &str,
-    sketch_group: SketchGroup,
-    args: &mut Args,
-) -> Result<f64, KclError> {
+fn inner_segment_angle(segment_name: &str, sketch_group: SketchGroup, args: &mut Args) -> Result<f64, KclError> {
     let path = sketch_group.get_path_by_name(segment_name).ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!(

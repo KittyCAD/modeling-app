@@ -25,7 +25,6 @@ export interface Typegen0 {
       | 'Set Base Unit'
       | 'Set Default Directory'
       | 'Set Default Project Name'
-      | 'Set Onboarding Status'
       | 'Set Theme'
       | 'Set Unit System'
       | 'Toggle Debug Panel'

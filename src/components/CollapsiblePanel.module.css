@@ -1,10 +1,10 @@
 .panel {
   @apply relative overflow-auto z-0;
-  @apply bg-chalkboard-20/40;
+  @apply bg-chalkboard-10/70 backdrop-blur-sm;
 }
 
 :global(.dark) .panel {
-  @apply bg-chalkboard-110/50;
+  @apply bg-chalkboard-110/50 backdrop-blur-0;
 }
 
 .header {

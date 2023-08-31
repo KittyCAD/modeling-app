@@ -1,5 +1,6 @@
 //! Functions related to sketching.
 
+use anyhow::Result;
 use derive_docs::stdlib;
 use kittycad::types::{ModelingCmd, Point3D};
 use schemars::JsonSchema;
@@ -13,8 +14,6 @@ use crate::{
         Args,
     },
 };
-
-use anyhow::Result;
 
 /// Data to draw a line to a point.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -44,11 +43,7 @@ pub fn line_to(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "lineTo",
 }]
-fn inner_line_to(
-    data: LineToData,
-    sketch_group: SketchGroup,
-    args: &Args,
-) -> Result<SketchGroup, KclError> {
+fn inner_line_to(data: LineToData, sketch_group: SketchGroup, args: &Args) -> Result<SketchGroup, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
     let to = match data {
         LineToData::PointWithTag { to, .. } => to,
@@ -106,18 +101,11 @@ pub fn x_line_to(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "xLineTo",
 }]
-fn inner_x_line_to(
-    data: AxisLineToData,
-    sketch_group: SketchGroup,
-    args: &Args,
-) -> Result<SketchGroup, KclError> {
+fn inner_x_line_to(data: AxisLineToData, sketch_group: SketchGroup, args: &Args) -> Result<SketchGroup, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
 
     let line_to_data = match data {
-        AxisLineToData::PointWithTag { to, tag } => LineToData::PointWithTag {
-            to: [to, from.y],
-            tag,
-        },
+        AxisLineToData::PointWithTag { to, tag } => LineToData::PointWithTag { to: [to, from.y], tag },
         AxisLineToData::Point(data) => LineToData::Point([data, from.y]),
     };
 
@@ -138,18 +126,11 @@ pub fn y_line_to(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "yLineTo",
 }]
-fn inner_y_line_to(
-    data: AxisLineToData,
-    sketch_group: SketchGroup,
-    args: &Args,
-) -> Result<SketchGroup, KclError> {
+fn inner_y_line_to(data: AxisLineToData, sketch_group: SketchGroup, args: &Args) -> Result<SketchGroup, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
 
     let line_to_data = match data {
-        AxisLineToData::PointWithTag { to, tag } => LineToData::PointWithTag {
-            to: [from.x, to],
-            tag,
-        },
+        AxisLineToData::PointWithTag { to, tag } => LineToData::PointWithTag { to: [from.x, to], tag },
         AxisLineToData::Point(data) => LineToData::Point([from.x, data]),
     };
 
@@ -207,11 +188,7 @@ pub fn line(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "line",
 }]
-fn inner_line(
-    data: LineData,
-    sketch_group: SketchGroup,
-    args: &mut Args,
-) -> Result<SketchGroup, KclError> {
+fn inner_line(data: LineData, sketch_group: SketchGroup, args: &mut Args) -> Result<SketchGroup, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
 
     let default = [0.2, 1.0];
@@ -289,11 +266,7 @@ pub fn x_line(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "xLine",
 }]
-fn inner_x_line(
-    data: AxisLineData,
-    sketch_group: SketchGroup,
-    args: &mut Args,
-) -> Result<SketchGroup, KclError> {
+fn inner_x_line(data: AxisLineData, sketch_group: SketchGroup, args: &mut Args) -> Result<SketchGroup, KclError> {
     let line_data = match data {
         AxisLineData::LengthWithTag { length, tag } => LineData::PointWithTag {
             to: PointOrDefault::Point([length, 0.0]),
@@ -318,11 +291,7 @@ pub fn y_line(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "yLine",
 }]
-fn inner_y_line(
-    data: AxisLineData,
-    sketch_group: SketchGroup,
-    args: &mut Args,
-) -> Result<SketchGroup, KclError> {
+fn inner_y_line(data: AxisLineData, sketch_group: SketchGroup, args: &mut Args) -> Result<SketchGroup, KclError> {
     let line_data = match data {
         AxisLineData::LengthWithTag { length, tag } => LineData::PointWithTag {
             to: PointOrDefault::Point([0.0, length]),
@@ -373,9 +342,7 @@ fn inner_angled_line(
     let from = sketch_group.get_coords_from_paths()?;
     let (angle, length) = match &data {
         AngledLineData::AngleWithTag { angle, length, .. } => (*angle, *length),
-        AngledLineData::AngleAndLength(angle_and_length) => {
-            (angle_and_length[0], angle_and_length[1])
-        }
+        AngledLineData::AngleAndLength(angle_and_length) => (angle_and_length[0], angle_and_length[1]),
     };
     let to: [f64; 2] = [
         from.x + length * f64::cos(angle * std::f64::consts::PI / 180.0),
@@ -424,9 +391,7 @@ fn inner_angled_line_of_x_length(
 ) -> Result<SketchGroup, KclError> {
     let (angle, length) = match &data {
         AngledLineData::AngleWithTag { angle, length, .. } => (*angle, *length),
-        AngledLineData::AngleAndLength(angle_and_length) => {
-            (angle_and_length[0], angle_and_length[1])
-        }
+        AngledLineData::AngleAndLength(angle_and_length) => (angle_and_length[0], angle_and_length[1]),
     };
 
     let to = get_y_component(angle, length);
@@ -494,10 +459,7 @@ fn inner_angled_line_to_x(
 
     let new_sketch_group = inner_line_to(
         if let AngledLineToData::AngleWithTag { tag, .. } = data {
-            LineToData::PointWithTag {
-                to: [x_to, y_to],
-                tag,
-            }
+            LineToData::PointWithTag { to: [x_to, y_to], tag }
         } else {
             LineToData::Point([x_to, y_to])
         },
@@ -527,9 +489,7 @@ fn inner_angled_line_of_y_length(
 ) -> Result<SketchGroup, KclError> {
     let (angle, length) = match &data {
         AngledLineData::AngleWithTag { angle, length, .. } => (*angle, *length),
-        AngledLineData::AngleAndLength(angle_and_length) => {
-            (angle_and_length[0], angle_and_length[1])
-        }
+        AngledLineData::AngleAndLength(angle_and_length) => (angle_and_length[0], angle_and_length[1]),
     };
 
     let to = get_x_component(angle, length);
@@ -579,10 +539,7 @@ fn inner_angled_line_to_y(
 
     let new_sketch_group = inner_line_to(
         if let AngledLineToData::AngleWithTag { tag, .. } = data {
-            LineToData::PointWithTag {
-                to: [x_to, y_to],
-                tag,
-            }
+            LineToData::PointWithTag { to: [x_to, y_to], tag }
         } else {
             LineToData::Point([x_to, y_to])
         },
@@ -610,8 +567,7 @@ pub struct AngeledLineThatIntersectsData {
 
 /// Draw an angled line that intersects with a given line.
 pub fn angled_line_that_intersects(args: &mut Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (AngeledLineThatIntersectsData, SketchGroup) =
-        args.get_data_and_sketch_group()?;
+    let (data, sketch_group): (AngeledLineThatIntersectsData, SketchGroup) = args.get_data_and_sketch_group()?;
     let new_sketch_group = inner_angled_line_that_intersects(data, sketch_group, args)?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
@@ -763,9 +719,9 @@ fn inner_close(sketch_group: SketchGroup, args: &mut Args) -> Result<SketchGroup
 #[cfg(test)]
 mod tests {
 
-    use crate::std::sketch::{LineData, PointOrDefault};
-
     use pretty_assertions::assert_eq;
+
+    use crate::std::sketch::{LineData, PointOrDefault};
 
     #[test]
     fn test_deserialize_line_data() {

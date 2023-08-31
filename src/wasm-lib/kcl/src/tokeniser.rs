@@ -46,8 +46,7 @@ lazy_static! {
     static ref WHITESPACE: Regex = Regex::new(r"\s+").unwrap();
     static ref WORD: Regex = Regex::new(r"^[a-zA-Z_][a-zA-Z0-9_]*").unwrap();
     static ref STRING: Regex = Regex::new(r#"^"([^"\\]|\\.)*"|'([^'\\]|\\.)*'"#).unwrap();
-    static ref OPERATOR: Regex =
-        Regex::new(r"^(>=|<=|==|=>|!= |\|>|\*|\+|-|/|%|=|<|>|\||\^)").unwrap();
+    static ref OPERATOR: Regex = Regex::new(r"^(>=|<=|==|=>|!= |\|>|\*|\+|-|/|%|=|<|>|\||\^)").unwrap();
     static ref BLOCK_START: Regex = Regex::new(r"^\{").unwrap();
     static ref BLOCK_END: Regex = Regex::new(r"^\}").unwrap();
     static ref PARAN_START: Regex = Regex::new(r"^\(").unwrap();
@@ -114,9 +113,7 @@ fn is_block_comment(character: &str) -> bool {
 }
 
 fn match_first(str: &str, regex: &Regex) -> Option<String> {
-    regex
-        .find(str)
-        .map(|the_match| the_match.as_str().to_string())
+    regex.find(str).map(|the_match| the_match.as_str().to_string())
 }
 
 fn make_token(token_type: TokenType, value: &str, start: usize) -> Token {
@@ -251,11 +248,7 @@ fn return_token_at_index(str: &str, start_index: usize) -> Option<Token> {
 }
 
 pub fn lexer(str: &str) -> Vec<Token> {
-    fn recursively_tokenise(
-        str: &str,
-        current_index: usize,
-        previous_tokens: Vec<Token>,
-    ) -> Vec<Token> {
+    fn recursively_tokenise(str: &str, current_index: usize, previous_tokens: Vec<Token>) -> Vec<Token> {
         if current_index >= str.len() {
             return previous_tokens;
         }
@@ -273,8 +266,9 @@ pub fn lexer(str: &str) -> Vec<Token> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use pretty_assertions::assert_eq;
+
+    use super::*;
 
     #[test]
     fn is_number_test() {
