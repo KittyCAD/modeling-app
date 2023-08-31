@@ -16,15 +16,6 @@ export default function Units() {
       context: { unitSystem, baseUnit },
     },
   } = useGlobalStateContext()
-  const [tempUnitSystem, setTempUnitSystem] = useState(unitSystem)
-  const [tempBaseUnit, setTempBaseUnit] = useState(baseUnit)
-
-  function handleNextClick() {
-    send({ type: 'Set Unit System', data: { unitSystem: tempUnitSystem } })
-    send({ type: 'Set Base Unit', data: { baseUnit: tempBaseUnit } })
-
-    next()
-  }
 
   return (
     <div className="fixed grid place-content-center inset-0 bg-chalkboard-110/50 z-50">
@@ -38,10 +29,14 @@ export default function Units() {
             offLabel="Imperial"
             onLabel="Metric"
             name="settings-units"
-            checked={tempUnitSystem === 'metric'}
-            onChange={(e) =>
-              setTempUnitSystem(e.target.checked ? 'metric' : 'imperial')
-            }
+            checked={unitSystem === 'metric'}
+            onChange={(e) => {
+              const newUnitSystem = e.target.checked ? 'metric' : 'imperial'
+              send({
+                type: 'Set Unit System',
+                data: { unitSystem: newUnitSystem },
+              })
+            }}
           />
         </SettingsSection>
         <SettingsSection
@@ -51,8 +46,13 @@ export default function Units() {
           <select
             id="base-unit"
             className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
-            value={tempBaseUnit}
-            onChange={(e) => setTempBaseUnit(e.target.value as BaseUnit)}
+            value={baseUnit}
+            onChange={(e) => {
+              send({
+                type: 'Set Base Unit',
+                data: { baseUnit: e.target.value as BaseUnit },
+              })
+            }}
           >
             {baseUnits[unitSystem].map((unit) => (
               <option key={unit} value={unit}>
@@ -77,7 +77,7 @@ export default function Units() {
           </ActionButton>
           <ActionButton
             Element="button"
-            onClick={handleNextClick}
+            onClick={next}
             icon={{ icon: faArrowRight }}
           >
             Next: Camera
