@@ -13,6 +13,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { IndexLoaderData, paths } from '../Router'
 import { Themes } from '../lib/theme'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { UnitSystem } from 'machines/settingsMachine'
 
 export const Settings = () => {
   const loaderData = useRouteLoaderData(paths.FILE) as IndexLoaderData
@@ -136,9 +137,11 @@ export const Settings = () => {
             offLabel="Imperial"
             onLabel="Metric"
             name="settings-units"
-            checked={unitSystem === 'metric'}
+            checked={unitSystem === UnitSystem.Metric}
             onChange={(e) => {
-              const newUnitSystem = e.target.checked ? 'metric' : 'imperial'
+              const newUnitSystem = e.target.checked
+                ? UnitSystem.Metric
+                : UnitSystem.Imperial
               send({
                 type: 'Set Unit System',
                 data: { unitSystem: newUnitSystem },

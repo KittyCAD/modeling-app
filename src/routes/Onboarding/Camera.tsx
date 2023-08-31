@@ -37,8 +37,8 @@ export default function Units() {
           What you're seeing here is just a video, and your interactions are
           being sent to our Geometry Engine API, which sends back video frames
           in real time. How cool is that? It means that you can use KittyCAD
-          Modeling App (or whatever you want to build) on any device, even if it
-          doesn't have a GPU!
+          Modeling App (or whatever you want to build) on any device, even a
+          cheap laptop with no graphics card!
         </p>
         <div className="flex justify-between mt-6">
           <ActionButton

@@ -3,9 +3,9 @@ import { BaseUnit, baseUnits } from '../../useStore'
 import { ActionButton } from '../../components/ActionButton'
 import { SettingsSection } from '../Settings'
 import { Toggle } from '../../components/Toggle/Toggle'
-import { useState } from 'react'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { UnitSystem } from 'machines/settingsMachine'
 
 export default function Units() {
   const dismiss = useDismiss()
@@ -29,9 +29,11 @@ export default function Units() {
             offLabel="Imperial"
             onLabel="Metric"
             name="settings-units"
-            checked={unitSystem === 'metric'}
+            checked={unitSystem === UnitSystem.Metric}
             onChange={(e) => {
-              const newUnitSystem = e.target.checked ? 'metric' : 'imperial'
+              const newUnitSystem = e.target.checked
+                ? UnitSystem.Metric
+                : UnitSystem.Imperial
               send({
                 type: 'Set Unit System',
                 data: { unitSystem: newUnitSystem },
