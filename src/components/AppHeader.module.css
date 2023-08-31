@@ -1,0 +1,8 @@
+/*
+  Some CSS cannot be represented
+  in Tailwind, such as complex grid layouts.
+ */
+.header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+}
