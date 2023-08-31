@@ -490,10 +490,12 @@ export class EngineConnection {
 
     this.onConnectionStarted(this)
   }
-  send(message: object) {
+  send(message: object | string) {
     // TODO(paultag): Add in logic to determine the connection state and
     // take actions if needed?
-    this.websocket?.send(JSON.stringify(message))
+    this.websocket?.send(
+      typeof message === 'string' ? message : JSON.stringify(message)
+    )
   }
   close() {
     this.websocket?.close()
@@ -779,7 +781,7 @@ export class EngineCommandManager {
   }: {
     id: string
     range: SourceRange
-    command: EngineCommand
+    command: EngineCommand | string
   }): Promise<any> {
     this.sourceRangeMap[id] = range
 
@@ -816,10 +818,9 @@ export class EngineCommandManager {
     if (commandStr === undefined) {
       throw new Error('commandStr is undefined')
     }
-    const command: EngineCommand = JSON.parse(commandStr)
     const range: SourceRange = JSON.parse(rangeStr)
 
-    return this.sendModelingCommand({ id, range, command })
+    return this.sendModelingCommand({ id, range, command: commandStr })
   }
   commandResult(id: string): Promise<any> {
     const command = this.artifactMap[id]
