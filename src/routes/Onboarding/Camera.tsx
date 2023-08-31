@@ -20,9 +20,25 @@ export default function Units() {
       >
         <h1 className="text-2xl font-bold">Camera</h1>
         <p className="mt-6">
-          Moving the camera is easy. Just click and drag anywhere in the scene
-          to rotate the camera, or hold down the <kbd>Ctrl</kbd> key and drag to
-          pan the camera.
+          Moving the camera is easy! The controls are as you might expect:
+        </p>
+        <ul className="list-disc list-outside ms-8 mb-4">
+          <li>Click and drag anywhere in the scene to rotate the camera</li>
+          <li>
+            Hold down the <kbd>Shift</kbd> key while clicking and dragging to
+            pan the camera
+          </li>
+          <li>
+            Hold down the <kbd>Ctrl</kbd> key while dragging to zoom. You can
+            also use the scroll wheel to zoom in and out.
+          </li>
+        </ul>
+        <p>
+          What you're seeing here is just a video, and your interactions are
+          being sent to our Geometry Engine API, which sends back video frames
+          in real time. How cool is that? It means that you can use KittyCAD
+          Modeling App (or whatever you want to build) on any device, even if it
+          doesn't have a GPU!
         </p>
         <div className="flex justify-between mt-6">
           <ActionButton
