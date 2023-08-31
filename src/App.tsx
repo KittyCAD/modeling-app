@@ -154,7 +154,7 @@ export function App() {
   useHotkeys('shift + d', () => togglePane('debug'))
 
   const paneOpacity =
-    onboardingStatus === 'camera'
+    onboardingStatus === '/camera'
       ? 'opacity-20'
       : didDragInStream
       ? 'opacity-40'

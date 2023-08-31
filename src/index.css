@@ -86,8 +86,18 @@ code {
   @apply bg-transparent;
 }
 
+#code-mirror-override .cm-activeLine,
+#code-mirror-override .cm-activeLineGutter {
+  @apply bg-liquid-10/50;
+}
+
+.dark #code-mirror-override .cm-activeLine,
+.dark #code-mirror-override .cm-activeLineGutter {
+  @apply bg-liquid-80/50;
+}
+
 #code-mirror-override .cm-gutters {
-  @apply bg-chalkboard-10/50;
+  @apply bg-chalkboard-10/30;
 }
 
 .dark #code-mirror-override .cm-gutters {
@@ -99,14 +109,24 @@ code {
 }
 #code-mirror-override .cm-cursor {
   display: block;
-  width: 200px;
-  background: linear-gradient(
-    to right,
-    rgb(0, 55, 94) 0%,
-    #0084e2ff 2%,
-    #0084e255 5%,
-    transparent 100%
-  );
+  width: 1ch;
+  @apply bg-liquid-40 mix-blend-multiply;
+
+  animation: blink 2s ease-out infinite;
+}
+
+.dark #code-mirror-override .cm-cursor {
+  @apply bg-liquid-50;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.75;
+  }
 }
 
 .react-json-view {

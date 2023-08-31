@@ -1,0 +1,60 @@
+.toolbarWrapper {
+  @apply relative;
+}
+
+.toolbar {
+  @apply flex gap-4 items-center rounded-full;
+  @apply border border-cool-20/30 bg-cool-10/50;
+}
+
+:global(.dark) .toolbar {
+  @apply border-cool-100/50 bg-cool-120/50;
+}
+
+:global(.sketch) .toolbar {
+  @apply border-fern-20/20 bg-fern-10/20;
+}
+
+:global(.dark .sketch) .toolbar {
+  @apply border-fern-120/50 bg-fern-100/30;
+}
+
+.toolbarCap {
+  @apply text-sm font-bold;
+  @apply bg-cool-20/50 text-cool-100;
+}
+
+:global(.dark) .toolbarCap {
+  @apply bg-cool-90/50 text-cool-30;
+}
+
+:global(.sketch) .toolbarCap {
+  @apply bg-fern-20/50 text-fern-100;
+}
+
+:global(.dark .sketch) .toolbarCap {
+  @apply bg-fern-90/50 text-fern-30;
+}
+
+.label {
+  @apply self-stretch flex items-center px-4 py-1;
+  @apply rounded-l-full;
+}
+
+.popoverToggle {
+  @apply self-stretch m-0 flex items-center px-4 py-1;
+  @apply rounded-r-full border-none;
+  @apply hover:bg-cool-20;
+}
+
+:global(.dark) .popoverToggle {
+  @apply hover:bg-cool-90;
+}
+
+:global(.sketch) .popoverToggle {
+  @apply hover:bg-fern-20;
+}
+
+:global(.dark .sketch) .popoverToggle {
+  @apply hover:bg-fern-90;
+}

@@ -162,7 +162,9 @@ const router = createBrowserRouter(
           notEnRouteToOnboarding && hasValidOnboardingStatus
 
         if (shouldRedirectToOnboarding) {
-          return redirect(makeUrlPathRelative(paths.ONBOARDING.INDEX) + status)
+          return redirect(
+            makeUrlPathRelative(paths.ONBOARDING.INDEX) + status.slice(1)
+          )
         }
 
         if (params.id && params.id !== 'new') {

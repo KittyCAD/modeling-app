@@ -73,8 +73,6 @@ export function createMachineCommand<T extends AnyStateMachine>({
         arg.defaultValue as keyof typeof state.context
       ] as string | undefined
 
-      console.log(arg.name, { defaultValueFromContext })
-
       const options =
         arg.options instanceof Array
           ? arg.options.map((o) => ({

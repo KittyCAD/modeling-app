@@ -1,7 +1,7 @@
 import { assign, createMachine } from 'xstate'
 import { BaseUnit, baseUnitsUnion } from '../useStore'
 import { CommandBarMeta } from '../lib/commands'
-import { Themes } from '../lib/theme'
+import { Themes, getSystemTheme, setThemeClass } from '../lib/theme'
 
 export const SETTINGS_PERSIST_KEY = 'SETTINGS_PERSIST_KEY'
 
@@ -79,6 +79,7 @@ export const settingsMachine = createMachine(
     initial: 'idle',
     states: {
       idle: {
+        entry: ['setThemeClass'],
         on: {
           'Set Theme': {
             actions: [
@@ -87,6 +88,7 @@ export const settingsMachine = createMachine(
               }),
               'persistSettings',
               'toastSuccess',
+              'setThemeClass',
             ],
             target: 'idle',
             internal: true,
@@ -187,6 +189,13 @@ export const settingsMachine = createMachine(
         } catch (e) {
           console.error(e)
         }
+      },
+      setThemeClass: (context, event) => {
+        const currentTheme =
+          event.type === 'Set Theme' ? event.data.theme : context.theme
+        setThemeClass(
+          currentTheme === Themes.System ? getSystemTheme() : currentTheme
+        )
       },
     },
   }
