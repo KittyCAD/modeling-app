@@ -27,16 +27,6 @@ export interface SourceRangeMap {
   [key: string]: SourceRange
 }
 
-// interface SelectionsArgs {
-//   id: string
-//   type: Selections['codeBasedSelections'][number]['type']
-// }
-
-// interface CursorSelectionsArgs {
-//   otherSelections: Selections['otherSelections']
-//   idBasedSelections: { type: string; id: string }[]
-// }
-
 interface NewTrackArgs {
   conn: EngineConnection
   mediaStream: MediaStream
