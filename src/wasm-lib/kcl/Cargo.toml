@@ -10,7 +10,7 @@ license = "MIT"
 [dependencies]
 anyhow = "1.0.75"
 derive-docs = { version = "0.1.0" }
-kittycad = { version = "0.2.15", default-features = false, features = ["js"] }
+kittycad = { version = "0.2.23", default-features = false, features = ["js"] }
 lazy_static = "1.4.0"
 parse-display = "0.8.2"
 regex = "1.7.1"
