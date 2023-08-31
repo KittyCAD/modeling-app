@@ -27,7 +27,7 @@ export const AppHeader = ({
   return (
     <header
       className={
-        'overlaid-panes sticky top-0 z-20 py-1 px-5 bg-chalkboard-10/50 dark:bg-chalkboard-100/50 border-b dark:border-b-2 border-chalkboard-30 dark:border-chalkboard-90 flex justify-between items-center ' +
+        'overlaid-panes sticky top-0 z-20 py-1 px-5 bg-chalkboard-10/70 backdrop-blur-sm dark:bg-chalkboard-100/50 dark:backdrop-blur-0 border-b dark:border-b-2 border-chalkboard-30 dark:border-chalkboard-90 flex justify-between items-center ' +
         className
       }
     >
