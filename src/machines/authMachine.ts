@@ -3,9 +3,25 @@ import { Models } from '@kittycad/lib'
 import withBaseURL from '../lib/withBaseURL'
 import { CommandBarMeta } from '../lib/commands'
 
+const LOCAL_USER: Models['User_type'] = {
+  id: '8675309',
+  name: 'Test User',
+  email: 'kittycad.sidebar.test@example.com',
+  image: 'https://placekitten.com/200/200',
+  created_at: 'yesteryear',
+  updated_at: 'today',
+  company: 'Test Company',
+  discord: 'Test User#1234',
+  github: 'testuser',
+  phone: '555-555-5555',
+  first_name: 'Test',
+  last_name: 'User',
+}
+
 export interface UserContext {
   user?: Models['User_type']
   token?: string
+  isLocalEngine: boolean
 }
 
 export type Events =
@@ -81,7 +97,13 @@ export const authMachine = createMachine<UserContext, Events>(
     schema: { events: {} as { type: 'Log out' } | { type: 'Log in' } },
     predictableActionArguments: true,
     preserveActionOrder: true,
-    context: { token: persistedToken },
+    context: {
+      token: persistedToken,
+      isLocalEngine:
+        import.meta.env.DEV &&
+        (import.meta.env.VITE_KC_API_BASE_URL.includes('localhost') ||
+          import.meta.env.VITE_KC_API_BASE_URL.includes('192.')),
+    },
   },
   {
     actions: {},
@@ -98,6 +120,7 @@ async function getUser(context: UserContext) {
   }
   if (!context.token && '__TAURI__' in window) throw 'not log in'
   if (context.token) headers['Authorization'] = `Bearer ${context.token}`
+  if (context.isLocalEngine) return LOCAL_USER
   try {
     const response = await fetch(url, {
       method: 'GET',
