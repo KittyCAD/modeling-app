@@ -1,5 +1,5 @@
 pub mod abstract_syntax_tree_types;
-mod docs;
+pub mod docs;
 pub mod engine;
 pub mod errors;
 pub mod executor;

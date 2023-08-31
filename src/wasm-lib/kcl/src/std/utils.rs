@@ -1,3 +1,8 @@
+use crate::{
+    errors::{KclError, KclErrorDetails},
+    executor::{Point2d, SourceRange},
+};
+
 pub fn get_angle(a: &[f64; 2], b: &[f64; 2]) -> f64 {
     let x = b[0] - a[0];
     let y = b[1] - a[1];
@@ -160,12 +165,80 @@ pub fn get_x_component(angle_degree: f64, y_component: f64) -> [f64; 2] {
     [sign * x_component, sign * y_component]
 }
 
+pub fn arc_center_and_end(from: &Point2d, start_angle_deg: f64, end_angle_deg: f64, radius: f64) -> (Point2d, Point2d) {
+    let start_angle = start_angle_deg * (std::f64::consts::PI / 180.0);
+    let end_angle = end_angle_deg * (std::f64::consts::PI / 180.0);
+
+    let center = Point2d {
+        x: -1.0 * (radius * start_angle.cos() - from.x),
+        y: -1.0 * (radius * start_angle.sin() - from.y),
+    };
+
+    let end = Point2d {
+        x: center.x + radius * end_angle.cos(),
+        y: center.y + radius * end_angle.sin(),
+    };
+
+    (center, end)
+}
+
+pub fn arc_angles(
+    from: &Point2d,
+    to: &Point2d,
+    center: &Point2d,
+    radius: f64,
+    source_range: SourceRange,
+) -> Result<(f64, f64), KclError> {
+    // First make sure that the points are on the circumference of the circle.
+    // If not, we'll return an error.
+    if !is_on_circumference(center, from, radius) {
+        return Err(KclError::Semantic(KclErrorDetails {
+            message: format!(
+                "Point {:?} is not on the circumference of the circle with center {:?} and radius {}.",
+                from, center, radius
+            ),
+            source_ranges: vec![source_range],
+        }));
+    }
+
+    if !is_on_circumference(center, to, radius) {
+        return Err(KclError::Semantic(KclErrorDetails {
+            message: format!(
+                "Point {:?} is not on the circumference of the circle with center {:?} and radius {}.",
+                to, center, radius
+            ),
+            source_ranges: vec![source_range],
+        }));
+    }
+
+    let start_angle = (from.y - center.y).atan2(from.x - center.x);
+    let end_angle = (to.y - center.y).atan2(to.x - center.x);
+
+    let start_angle_deg = start_angle * (180.0 / std::f64::consts::PI);
+    let end_angle_deg = end_angle * (180.0 / std::f64::consts::PI);
+
+    Ok((start_angle_deg, end_angle_deg))
+}
+
+pub fn is_on_circumference(center: &Point2d, point: &Point2d, radius: f64) -> bool {
+    let dx = point.x - center.x;
+    let dy = point.y - center.y;
+
+    let distance_squared = dx.powi(2) + dy.powi(2);
+
+    // We'll check if the distance squared is approximately equal to radius squared.
+    // Due to potential floating point inaccuracies, we'll check if the difference
+    // is very small (e.g., 1e-9) rather than checking for strict equality.
+    (distance_squared - radius.powi(2)).abs() < 1e-9
+}
+
 #[cfg(test)]
 mod tests {
     // Here you can bring your functions into scope
     use pretty_assertions::assert_eq;
 
     use super::{get_x_component, get_y_component};
+    use crate::executor::SourceRange;
 
     static EACH_QUAD: [(i32, [i32; 2]); 12] = [
         (-315, [1, 1]),
@@ -240,5 +313,78 @@ mod tests {
         let result = get_x_component(270.0, 1.0);
         assert!((result[0] - 0.0).abs() < f64::EPSILON);
         assert_eq!(result[1] as i32, -1);
+    }
+
+    #[test]
+    fn test_arc_center_and_end() {
+        let (center, end) = super::arc_center_and_end(&super::Point2d { x: 0.0, y: 0.0 }, 0.0, 90.0, 1.0);
+        assert_eq!(center.x.round(), -1.0);
+        assert_eq!(center.y, 0.0);
+        assert_eq!(end.x.round(), -1.0);
+        assert_eq!(end.y, 1.0);
+
+        let (center, end) = super::arc_center_and_end(&super::Point2d { x: 0.0, y: 0.0 }, 0.0, 180.0, 1.0);
+        assert_eq!(center.x.round(), -1.0);
+        assert_eq!(center.y, 0.0);
+        assert_eq!(end.x.round(), -2.0);
+        assert_eq!(end.y.round(), 0.0);
+
+        let (center, end) = super::arc_center_and_end(&super::Point2d { x: 0.0, y: 0.0 }, 0.0, 180.0, 10.0);
+        assert_eq!(center.x.round(), -10.0);
+        assert_eq!(center.y, 0.0);
+        assert_eq!(end.x.round(), -20.0);
+        assert_eq!(end.y.round(), 0.0);
+    }
+
+    #[test]
+    fn test_arc_angles() {
+        let (angle_start, angle_end) = super::arc_angles(
+            &super::Point2d { x: 0.0, y: 0.0 },
+            &super::Point2d { x: -1.0, y: 1.0 },
+            &super::Point2d { x: -1.0, y: 0.0 },
+            1.0,
+            SourceRange(Default::default()),
+        )
+        .unwrap();
+        assert_eq!(angle_start.round(), 0.0);
+        assert_eq!(angle_end.round(), 90.0);
+
+        let (angle_start, angle_end) = super::arc_angles(
+            &super::Point2d { x: 0.0, y: 0.0 },
+            &super::Point2d { x: -2.0, y: 0.0 },
+            &super::Point2d { x: -1.0, y: 0.0 },
+            1.0,
+            SourceRange(Default::default()),
+        )
+        .unwrap();
+        assert_eq!(angle_start.round(), 0.0);
+        assert_eq!(angle_end.round(), 180.0);
+
+        let (angle_start, angle_end) = super::arc_angles(
+            &super::Point2d { x: 0.0, y: 0.0 },
+            &super::Point2d { x: -20.0, y: 0.0 },
+            &super::Point2d { x: -10.0, y: 0.0 },
+            10.0,
+            SourceRange(Default::default()),
+        )
+        .unwrap();
+        assert_eq!(angle_start.round(), 0.0);
+        assert_eq!(angle_end.round(), 180.0);
+
+        let result = super::arc_angles(
+            &super::Point2d { x: 0.0, y: 5.0 },
+            &super::Point2d { x: 5.0, y: 5.0 },
+            &super::Point2d { x: 10.0, y: -10.0 },
+            10.0,
+            SourceRange(Default::default()),
+        );
+
+        if let Err(err) = result {
+            assert!(err.to_string().contains( "Point Point2d { x: 0.0, y: 5.0 } is not on the circumference of the circle with center Point2d { x: 10.0, y: -10.0 } and radius 10."));
+        } else {
+            panic!("Expected error");
+        }
+        assert_eq!(angle_start.round(), 0.0);
+        assert_eq!(angle_end.round(), 180.0);
     }
 }

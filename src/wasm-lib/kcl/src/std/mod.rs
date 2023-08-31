@@ -27,8 +27,7 @@ pub type FnMap = HashMap<String, StdFn>;
 pub type StdFn = fn(&mut Args) -> Result<MemoryItem, KclError>;
 
 pub struct StdLib {
-    #[allow(dead_code)]
-    internal_fn_names: Vec<Box<(dyn crate::docs::StdLibFn)>>,
+    pub internal_fn_names: Vec<Box<(dyn crate::docs::StdLibFn)>>,
 
     pub fns: FnMap,
 }
@@ -64,6 +63,8 @@ impl StdLib {
             Box::new(crate::std::sketch::AngledLineThatIntersects),
             Box::new(crate::std::sketch::StartSketchAt),
             Box::new(crate::std::sketch::Close),
+            Box::new(crate::std::sketch::Arc),
+            Box::new(crate::std::sketch::BezierCurve),
         ];
 
         let mut fns = HashMap::new();
@@ -536,15 +537,8 @@ mod tests {
             fn_docs.push_str(&format!("{}\n\n", internal_fn.description()));
 
             fn_docs.push_str("```\n");
-            fn_docs.push_str(&format!("{}(", internal_fn.name()));
-            for (i, arg) in internal_fn.args().iter().enumerate() {
-                if i > 0 {
-                    fn_docs.push_str(", ");
-                }
-                fn_docs.push_str(&format!("{}: {}", arg.name, arg.type_));
-            }
-            fn_docs.push_str(") -> ");
-            fn_docs.push_str(&internal_fn.return_value().type_);
+            let signature = internal_fn.fn_signature();
+            fn_docs.push_str(&signature);
             fn_docs.push_str("\n```\n\n");
 
             fn_docs.push_str("#### Arguments\n\n");
