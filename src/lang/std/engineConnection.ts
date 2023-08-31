@@ -27,15 +27,15 @@ export interface SourceRangeMap {
   [key: string]: SourceRange
 }
 
-interface SelectionsArgs {
-  id: string
-  type: Selections['codeBasedSelections'][number]['type']
-}
+// interface SelectionsArgs {
+//   id: string
+//   type: Selections['codeBasedSelections'][number]['type']
+// }
 
-interface CursorSelectionsArgs {
-  otherSelections: Selections['otherSelections']
-  idBasedSelections: { type: string; id: string }[]
-}
+// interface CursorSelectionsArgs {
+//   otherSelections: Selections['otherSelections']
+//   idBasedSelections: { type: string; id: string }[]
+// }
 
 interface NewTrackArgs {
   conn: EngineConnection
@@ -128,17 +128,40 @@ export class EngineConnection {
 
     // Information on the connect transaction
 
+    class SpanPromise {
+      span: Sentry.Span
+      promise: Promise<void>
+      resolve?: (v: void) => void
+
+      constructor(span: Sentry.Span) {
+        this.span = span
+        this.promise = new Promise((resolve) => {
+          this.resolve = (v: void) => {
+            // here we're going to invoke finish before resolving the
+            // promise so that a `.then()` will order strictly after
+            // all spans have -- for sure -- been resolved, rather than
+            // doing a `then` on this promise.
+            this.span.finish()
+            resolve(v)
+          }
+        })
+      }
+    }
+
     let webrtcMediaTransaction: Sentry.Transaction
-    let websocketSpan: Sentry.Span
-    let mediaTrackSpan: Sentry.Span
-    let dataChannelSpan: Sentry.Span
-    let handshakeSpan: Sentry.Span
+    let websocketSpan: SpanPromise
+    let mediaTrackSpan: SpanPromise
+    let dataChannelSpan: SpanPromise
+    let handshakeSpan: SpanPromise
+    let iceSpan: SpanPromise
 
     if (this.shouldTrace()) {
       webrtcMediaTransaction = Sentry.startTransaction({
         name: 'webrtc-media',
       })
-      websocketSpan = webrtcMediaTransaction.startChild({ op: 'websocket' })
+      websocketSpan = new SpanPromise(
+        webrtcMediaTransaction.startChild({ op: 'websocket' })
+      )
     }
 
     this.websocket = new WebSocket(this.url, [])
@@ -155,17 +178,36 @@ export class EngineConnection {
 
     this.websocket.addEventListener('open', (event) => {
       if (this.shouldTrace()) {
-        // websocketSpan.setStatus(SpanStatus.OK)
-        websocketSpan.finish()
+        websocketSpan.resolve?.()
 
-        handshakeSpan = webrtcMediaTransaction.startChild({ op: 'handshake' })
-        dataChannelSpan = webrtcMediaTransaction.startChild({
-          op: 'data-channel',
-        })
-        mediaTrackSpan = webrtcMediaTransaction.startChild({
-          op: 'media-track',
-        })
+        handshakeSpan = new SpanPromise(
+          webrtcMediaTransaction.startChild({ op: 'handshake' })
+        )
+        iceSpan = new SpanPromise(
+          webrtcMediaTransaction.startChild({ op: 'ice' })
+        )
+        dataChannelSpan = new SpanPromise(
+          webrtcMediaTransaction.startChild({
+            op: 'data-channel',
+          })
+        )
+        mediaTrackSpan = new SpanPromise(
+          webrtcMediaTransaction.startChild({
+            op: 'media-track',
+          })
+        )
       }
+
+      Promise.all([
+        handshakeSpan.promise,
+        iceSpan.promise,
+        dataChannelSpan.promise,
+        mediaTrackSpan.promise,
+      ]).then(() => {
+        console.log('All spans finished, reporting')
+        webrtcMediaTransaction?.finish()
+      })
+
       this.onWebsocketOpen(this)
     })
 
@@ -233,7 +275,7 @@ export class EngineConnection {
             // When both ends have a local and remote SDP, we've been able to
             // set up successfully. We'll still need to find the right ICE
             // servers, but this is hand-shook.
-            handshakeSpan.finish()
+            handshakeSpan.resolve?.()
           }
         }
       } else if (resp.type === 'trickle_ice') {
@@ -264,9 +306,9 @@ export class EngineConnection {
         // PeerConnection and waiting for events to fire our callbacks.
 
         this.pc.addEventListener('connectionstatechange', (event) => {
-          // if (this.pc?.iceConnectionState === 'disconnected') {
-          //   this.close()
-          // }
+          if (this.pc?.iceConnectionState === 'connected') {
+            iceSpan.resolve?.()
+          }
         })
 
         this.pc.addEventListener('icecandidate', (event) => {
@@ -316,13 +358,16 @@ export class EngineConnection {
     })
 
     this.pc.addEventListener('track', (event) => {
-      console.log('received track', event)
       const mediaStream = event.streams[0]
 
       if (this.shouldTrace()) {
-        mediaStream.getVideoTracks()[0].addEventListener('unmute', () => {
-          mediaTrackSpan.finish()
-          webrtcMediaTransaction.finish()
+        let mediaStreamTrack = mediaStream.getVideoTracks()[0]
+        mediaStreamTrack.addEventListener('unmute', () => {
+          // let settings = mediaStreamTrack.getSettings()
+          // mediaTrackSpan.span.setTag("fps", settings.frameRate)
+          // mediaTrackSpan.span.setTag("width", settings.width)
+          // mediaTrackSpan.span.setTag("height", settings.height)
+          mediaTrackSpan.resolve?.()
         })
       }
 
@@ -338,8 +383,6 @@ export class EngineConnection {
           if (!this.shouldTrace()) {
             return
           }
-
-          console.log('Reporting statistics')
 
           // Use the WebRTC Statistics API to collect statistical information
           // about the WebRTC connection we're using to report to Sentry.
@@ -468,7 +511,7 @@ export class EngineConnection {
       this.unreliableDataChannel.addEventListener('open', (event) => {
         console.log('unreliable data channel opened', event)
         if (this.shouldTrace()) {
-          dataChannelSpan.finish()
+          dataChannelSpan.resolve?.()
         }
 
         this.onDataChannelOpen(this)
