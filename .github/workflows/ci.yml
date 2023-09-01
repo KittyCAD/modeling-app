@@ -121,9 +121,31 @@ jobs:
           path: src-tauri/target/release/bundle/*/*
 
 
+  test-github-release-upload:
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: write
+    needs: [build-test-web, build-apps]
+    env:
+      VERSION_NO_V: ${{ needs.build-test-web.outputs.version }}
+    steps:
+
+      - uses: actions/download-artifact@v3
+
+      - name: Upload release files to Github
+        uses: softprops/action-gh-release@v1
+        with:
+          files: artifact/*/kittycad-modeling-app*
+          draft: true
+          name: test-issue356
+          fail_on_unmatched_files: true
+
+
   publish-apps-release:
     runs-on: ubuntu-20.04
     if: github.event_name == 'release'
+    permissions:
+      contents: write
     needs: [build-test-web, build-apps]
     env:
       VERSION_NO_V: ${{ needs.build-test-web.outputs.version }}
@@ -189,3 +211,8 @@ jobs:
         with:
           path: last_update.json
           destination: dl.kittycad.io/releases/modeling-app
+
+      - name: Upload release files to Github
+        uses: softprops/action-gh-release@v1
+        with:
+          files: artifact/*/kittycad-modeling-app*
