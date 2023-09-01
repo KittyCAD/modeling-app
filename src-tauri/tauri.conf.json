@@ -7,7 +7,7 @@
     "distDir": "../build"
   },
   "package": {
-    "productName": "kittycad-modeling-app",
+    "productName": "kittycad-modeling",
     "version": "0.2.0"
   },
   "tauri": {
