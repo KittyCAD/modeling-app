@@ -663,8 +663,8 @@ export class EngineCommandManager {
 
         mediaStream.getVideoTracks()[0].addEventListener('mute', () => {
           console.log('peer is not sending video to us')
-          this.engineConnection?.close()
-          this.engineConnection?.connect()
+          // this.engineConnection?.close()
+          // this.engineConnection?.connect()
         })
 
         setMediaStream(mediaStream)
