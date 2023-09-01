@@ -97,11 +97,10 @@ describe('testing changeSketchArguments', () => {
   const lineAfterChange = 'lineTo([2, 3], %)'
   test('changeSketchArguments', async () => {
     // Enable rotations #152
-    const genCode = (line: string) => `
-const mySketch001 = startSketchAt([0, 0])
-    |> ${line}
-    |> lineTo([0.46, -5.82], %)
-    // |> rx(45, %)
+    const genCode = (line: string) => `const mySketch001 = startSketchAt([0, 0])
+  |> ${line}
+  |> lineTo([0.46, -5.82], %)
+// |> rx(45, %)
 show(mySketch001)`
     const code = genCode(lineToChange)
     const expectedCode = genCode(lineAfterChange)
@@ -160,8 +159,7 @@ show(mySketch001)`
       ],
     })
     // Enable rotations #152
-    const expectedCode = `
-const mySketch001 = startSketchAt([0, 0])
+    const expectedCode = `const mySketch001 = startSketchAt([0, 0])
   // |> rx(45, %)
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)
@@ -175,12 +173,11 @@ describe('testing addTagForSketchOnFace', () => {
   it('needs to be in it', async () => {
     const originalLine = 'lineTo([-1.59, -1.54], %)'
     // Enable rotations #152
-    const genCode = (line: string) => `
-  const mySketch001 = startSketchAt([0, 0])
-    // |> rx(45, %)
-    |> ${line}
-    |> lineTo([0.46, -5.82], %)
-  show(mySketch001)`
+    const genCode = (line: string) => `const mySketch001 = startSketchAt([0, 0])
+  // |> rx(45, %)
+  |> ${line}
+  |> lineTo([0.46, -5.82], %)
+show(mySketch001)`
     const code = genCode(originalLine)
     const ast = parser_wasm(code)
     const programMemory = await enginelessExecutor(ast)

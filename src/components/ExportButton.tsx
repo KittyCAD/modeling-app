@@ -39,7 +39,7 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
   const initialValues: OutputFormat = {
     type: defaultType,
     storage: 'embedded',
-    presentation: 'compact',
+    presentation: 'pretty',
   }
   const formik = useFormik({
     initialValues,
@@ -82,8 +82,6 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
       closeModal()
     },
   })
-
-  const yo = formik.values
 
   return (
     <>

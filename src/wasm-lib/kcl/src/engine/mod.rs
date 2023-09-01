@@ -1,5 +1,8 @@
 //! Functions for managing engine communications.
 
+#[cfg(target_arch = "wasm32")]
+#[cfg(not(test))]
+#[cfg(feature = "engine")]
 use wasm_bindgen::prelude::*;
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -32,19 +35,18 @@ pub mod conn_mock;
 #[cfg(not(test))]
 pub use conn_mock::EngineConnection;
 
-use crate::executor::SourceRange;
-
+#[cfg(target_arch = "wasm32")]
+#[cfg(not(test))]
 #[derive(Debug)]
 #[wasm_bindgen]
 pub struct EngineManager {
     connection: EngineConnection,
 }
-
+#[cfg(target_arch = "wasm32")]
+#[cfg(not(test))]
+#[cfg(feature = "engine")]
 #[wasm_bindgen]
 impl EngineManager {
-    #[cfg(target_arch = "wasm32")]
-    #[cfg(not(test))]
-    #[cfg(feature = "engine")]
     #[wasm_bindgen(constructor)]
     pub async fn new(manager: conn_wasm::EngineCommandManager) -> EngineManager {
         EngineManager {
@@ -57,7 +59,7 @@ impl EngineManager {
         let id = uuid::Uuid::parse_str(id_str).map_err(|e| e.to_string())?;
         let cmd = serde_json::from_str(cmd_str).map_err(|e| e.to_string())?;
         self.connection
-            .send_modeling_cmd(id, SourceRange::default(), cmd)
+            .send_modeling_cmd(id, crate::executor::SourceRange::default(), cmd)
             .map_err(String::from)?;
 
         Ok(())

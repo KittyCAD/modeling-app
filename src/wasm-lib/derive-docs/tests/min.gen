@@ -1,5 +1,7 @@
 #[allow(non_camel_case_types, missing_docs)]
 #[doc = "Std lib function: min"]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, schemars :: JsonSchema, ts_rs :: TS)]
+#[ts(export)]
 pub(crate) struct Min {}
 
 #[allow(non_upper_case_globals, missing_docs)]
@@ -34,16 +36,16 @@ impl crate::docs::StdLibFn for Min {
         }]
     }
 
-    fn return_value(&self) -> crate::docs::StdLibFnArg {
+    fn return_value(&self) -> Option<crate::docs::StdLibFnArg> {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = true;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
-        crate::docs::StdLibFnArg {
+        Some(crate::docs::StdLibFnArg {
             name: "".to_string(),
             type_: "number".to_string(),
             schema: f64::json_schema(&mut generator),
             required: true,
-        }
+        })
     }
 
     fn unpublished(&self) -> bool {
@@ -56,6 +58,10 @@ impl crate::docs::StdLibFn for Min {
 
     fn std_lib_fn(&self) -> crate::std::StdFn {
         min
+    }
+
+    fn clone_box(&self) -> Box<dyn crate::docs::StdLibFn> {
+        Box::new(self.clone())
     }
 }
 

@@ -11,7 +11,6 @@ import { v4 as uuidv4 } from 'uuid'
 import { asyncParser } from './lang/abstractSyntaxTree'
 import { _executor } from './lang/executor'
 import CodeMirror from '@uiw/react-codemirror'
-import { langs } from '@uiw/codemirror-extensions-langs'
 import { linter, lintGutter } from '@codemirror/lint'
 import { ViewUpdate } from '@codemirror/view'
 import {
@@ -19,12 +18,15 @@ import {
   addLineHighlight,
 } from './editor/highlightextension'
 import { PaneType, Selections, useStore } from './useStore'
-import { Logs, KCLErrors } from './components/Logs'
+import Server from './editor/lsp/server'
+import Client from './editor/lsp/client'
+import { Logs, KCLErrors, LSPMessages } from './components/Logs'
 import { CollapsiblePanel } from './components/CollapsiblePanel'
 import { MemoryPanel } from './components/MemoryPanel'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
 import { Stream } from './components/Stream'
 import ModalContainer from 'react-modal-promise'
+import { FromServer, IntoServer } from './editor/lsp/codec'
 import {
   EngineCommand,
   EngineCommandManager,
@@ -50,6 +52,8 @@ import { IndexLoaderData } from './Router'
 import { toast } from 'react-hot-toast'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { onboardingPaths } from 'routes/Onboarding'
+import { LanguageServerClient } from 'editor/lsp'
+import kclLanguage from 'editor/lsp/language'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
@@ -63,6 +67,7 @@ export function App() {
     selectionRanges,
     addLog,
     addKCLError,
+    addLSPMessage,
     code,
     setCode,
     setAst,
@@ -80,6 +85,8 @@ export function App() {
     setMediaStream,
     setIsStreamReady,
     isStreamReady,
+    isLSPServerReady,
+    setIsLSPServerReady,
     isMouseDownInStream,
     cmdId,
     setCmdId,
@@ -116,11 +123,14 @@ export function App() {
     setMediaStream: s.setMediaStream,
     isStreamReady: s.isStreamReady,
     setIsStreamReady: s.setIsStreamReady,
+    isLSPServerReady: s.isLSPServerReady,
+    setIsLSPServerReady: s.setIsLSPServerReady,
     isMouseDownInStream: s.isMouseDownInStream,
     cmdId: s.cmdId,
     setCmdId: s.setCmdId,
     formatCode: s.formatCode,
     addKCLError: s.addKCLError,
+    addLSPMessage: s.addLSPMessage,
     openPanes: s.openPanes,
     setOpenPanes: s.setOpenPanes,
     didDragInStream: s.didDragInStream,
@@ -430,6 +440,45 @@ export function App() {
     ]
   }, [])
 
+  // So this is a bit weird, we need to initialize the lsp server and client.
+  // But the server happens async so we break this into two parts.
+  // Below is the client and server promise.
+  const { lspClient } = useMemo(() => {
+    const intoServer: IntoServer = new IntoServer()
+    const fromServer: FromServer = FromServer.create()
+    const client = new Client(fromServer, intoServer, addLSPMessage)
+    if (!TEST) {
+      Server.initialize(intoServer, fromServer).then((lspServer) => {
+        lspServer.start()
+        setIsLSPServerReady(true)
+      })
+    }
+
+    const lspClient = new LanguageServerClient({ client })
+    return { lspClient }
+  }, [addLSPMessage, setIsLSPServerReady])
+
+  // Here we initialize the plugin which will start the client.
+  // When we have multi-file support the name of the file will be a dep of
+  // this use memo, as well as the directory structure, which I think is
+  // a good setup becuase it will restart the client but not the server :)
+  // We do not want to restart the server, its just wasteful.
+  const kclLSP = useMemo(() => {
+    let plugin = null
+    if (isLSPServerReady && !TEST) {
+      // Set up the lsp plugin.
+      const lsp = kclLanguage({
+        // When we have more than one file, we'll need to change this.
+        documentUri: `file:///we-just-have-one-file-for-now.kcl`,
+        workspaceFolders: null,
+        client: lspClient,
+      })
+
+      plugin = lsp
+    }
+    return plugin
+  }, [lspClient, isLSPServerReady])
+
   return (
     <div
       className="h-screen overflow-hidden relative flex flex-col cursor-pointer select-none"
@@ -487,11 +536,11 @@ export function App() {
               <CodeMirror
                 className="h-full"
                 value={code}
-                extensions={[
-                  langs.javascript({ jsx: true }),
-                  lineHighlightField,
-                  ...extraExtensions,
-                ]}
+                extensions={
+                  kclLSP
+                    ? [kclLSP, lineHighlightField, ...extraExtensions]
+                    : [lineHighlightField, ...extraExtensions]
+                }
                 onChange={onChange}
                 onUpdate={onUpdate}
                 theme={editorTheme}
@@ -517,6 +566,12 @@ export function App() {
               open={openPanes.includes('kclErrors')}
               title="KCL Errors"
               iconClassNames={{ icon: 'group-open:text-destroy-30' }}
+            />
+            <LSPMessages
+              theme={editorTheme}
+              open={openPanes.includes('lspMessages')}
+              title="LSP Messages"
+              icon={faCodeCommit}
             />
           </section>
         </div>

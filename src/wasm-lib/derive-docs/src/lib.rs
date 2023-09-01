@@ -195,7 +195,9 @@ fn do_stdlib_inner(
                     continue;
                 }
             },
-        };
+        }
+        .trim_start_matches('_')
+        .to_string();
 
         let ty = match arg {
             syn::FnArg::Receiver(pat) => pat.ty.as_ref().into_token_stream(),
@@ -247,15 +249,21 @@ fn do_stdlib_inner(
         .replace("-> ", "")
         .replace("Result < ", "")
         .replace(", KclError >", "");
-    let ret_ty_string = ret_ty_string.trim().to_string();
-    let ret_ty_ident = format_ident!("{}", ret_ty_string);
-    let ret_ty_string = clean_type(&ret_ty_string);
-    let return_type = quote! {
-        #docs_crate::StdLibFnArg {
-            name: "".to_string(),
-            type_: #ret_ty_string.to_string(),
-            schema: #ret_ty_ident::json_schema(&mut generator),
-            required: true,
+    let return_type = if !ret_ty_string.is_empty() {
+        let ret_ty_string = ret_ty_string.trim().to_string();
+        let ret_ty_ident = format_ident!("{}", ret_ty_string);
+        let ret_ty_string = clean_type(&ret_ty_string);
+        quote! {
+            Some(#docs_crate::StdLibFnArg {
+                name: "".to_string(),
+                type_: #ret_ty_string.to_string(),
+                schema: #ret_ty_ident::json_schema(&mut generator),
+                required: true,
+            })
+        }
+    } else {
+        quote! {
+            None
         }
     };
 
@@ -275,6 +283,8 @@ fn do_stdlib_inner(
         // ... a struct type called `#name_ident` that has no members
         #[allow(non_camel_case_types, missing_docs)]
         #description_doc_comment
+        #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, schemars::JsonSchema, ts_rs::TS)]
+        #[ts(export)]
         pub(crate) struct #name_ident {}
         // ... a constant of type `#name` whose identifier is also #name_ident
         #[allow(non_upper_case_globals, missing_docs)]
@@ -307,7 +317,7 @@ fn do_stdlib_inner(
                 vec![#(#arg_types),*]
             }
 
-            fn return_value(&self) -> #docs_crate::StdLibFnArg {
+            fn return_value(&self) -> Option<#docs_crate::StdLibFnArg> {
                 let mut settings = schemars::gen::SchemaSettings::openapi3();
                 settings.inline_subschemas = true;
                 let mut generator = schemars::gen::SchemaGenerator::new(settings);
@@ -325,6 +335,10 @@ fn do_stdlib_inner(
 
             fn std_lib_fn(&self) -> crate::std::StdFn {
                 #fn_name_ident
+            }
+
+            fn clone_box(&self) -> Box<dyn #docs_crate::StdLibFn> {
+                Box::new(self.clone())
             }
         }
 
@@ -528,5 +542,26 @@ mod tests {
 
         assert!(errors.is_empty());
         expectorate::assert_contents("tests/min.gen", &openapitor::types::get_text_fmt(&item).unwrap());
+    }
+
+    #[test]
+    fn test_stdlib_show() {
+        let (item, errors) = do_stdlib(
+            quote! {
+                name = "show",
+            },
+            quote! {
+                fn inner_show(
+                    /// The args to do shit to.
+                    _args: Vec<f64>
+                ) {
+                }
+            },
+        )
+        .unwrap();
+        let _expected = quote! {};
+
+        assert!(errors.is_empty());
+        expectorate::assert_contents("tests/show.gen", &openapitor::types::get_text_fmt(&item).unwrap());
     }
 }
