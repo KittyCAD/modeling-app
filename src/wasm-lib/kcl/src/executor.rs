@@ -298,9 +298,21 @@ impl From<[f64; 2]> for Point2d {
     }
 }
 
+impl From<&[f64; 2]> for Point2d {
+    fn from(p: &[f64; 2]) -> Self {
+        Self { x: p[0], y: p[1] }
+    }
+}
+
 impl From<Point2d> for [f64; 2] {
     fn from(p: Point2d) -> Self {
         [p.x, p.y]
+    }
+}
+
+impl From<Point2d> for kittycad::types::Point2D {
+    fn from(p: Point2d) -> Self {
+        Self { x: p.x, y: p.y }
     }
 }
 

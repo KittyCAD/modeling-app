@@ -4,21 +4,32 @@ use wasm_bindgen::prelude::*;
 
 #[cfg(not(target_arch = "wasm32"))]
 #[cfg(not(test))]
+#[cfg(feature = "engine")]
 pub mod conn;
 #[cfg(not(target_arch = "wasm32"))]
 #[cfg(not(test))]
+#[cfg(feature = "engine")]
 pub use conn::EngineConnection;
 
 #[cfg(target_arch = "wasm32")]
 #[cfg(not(test))]
+#[cfg(feature = "engine")]
 pub mod conn_wasm;
 #[cfg(target_arch = "wasm32")]
 #[cfg(not(test))]
+#[cfg(feature = "engine")]
 pub use conn_wasm::EngineConnection;
 
 #[cfg(test)]
 pub mod conn_mock;
 #[cfg(test)]
+pub use conn_mock::EngineConnection;
+
+#[cfg(not(feature = "engine"))]
+#[cfg(not(test))]
+pub mod conn_mock;
+#[cfg(not(feature = "engine"))]
+#[cfg(not(test))]
 pub use conn_mock::EngineConnection;
 
 use crate::executor::SourceRange;
@@ -33,6 +44,7 @@ pub struct EngineManager {
 impl EngineManager {
     #[cfg(target_arch = "wasm32")]
     #[cfg(not(test))]
+    #[cfg(feature = "engine")]
     #[wasm_bindgen(constructor)]
     pub async fn new(manager: conn_wasm::EngineCommandManager) -> EngineManager {
         EngineManager {

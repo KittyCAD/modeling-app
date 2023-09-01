@@ -1,11 +1,11 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, str::FromStr};
 
 use crate::{
     abstract_syntax_tree_types::{
         ArrayExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression, ExpressionStatement,
         FunctionExpression, Identifier, Literal, LiteralIdentifier, MemberExpression, MemberObject, NoneCodeMeta,
         NoneCodeNode, ObjectExpression, ObjectKeyInfo, ObjectProperty, PipeExpression, PipeSubstitution, Program,
-        ReturnStatement, UnaryExpression, Value, VariableDeclaration, VariableDeclarator,
+        ReturnStatement, UnaryExpression, Value, VariableDeclaration, VariableDeclarator, VariableKind,
     },
     errors::{KclError, KclErrorDetails},
     math_parser::parse_expression,
@@ -145,7 +145,12 @@ pub fn find_closing_brace(
     search_opening_brace: &str,
 ) -> Result<usize, KclError> {
     let closing_brace_map: HashMap<&str, &str> = [("(", ")"), ("{", "}"), ("[", "]")].iter().cloned().collect();
-    let current_token = &tokens[index];
+    let Some(current_token) = tokens.get(index) else {
+        return Err(KclError::Syntax(KclErrorDetails {
+            source_ranges: vec![tokens.last().unwrap().into()],
+            message: "unexpected end".to_string(),
+        }));
+    };
     let mut search_opening_brace = search_opening_brace;
     let is_first_call = search_opening_brace.is_empty() && brace_count == 0;
     if is_first_call {
@@ -966,13 +971,12 @@ fn make_variable_declaration(tokens: &[Token], index: usize) -> Result<VariableD
         declaration: VariableDeclaration {
             start: current_token.start,
             end: variable_declarators_result.declarations[variable_declarators_result.declarations.len() - 1].end,
-            kind: if current_token.value == "const" {
-                "const".to_string()
-            } else if current_token.value == "fn" {
-                "fn".to_string()
-            } else {
-                "unkown".to_string()
-            },
+            kind: VariableKind::from_str(&current_token.value).map_err(|_| {
+                KclError::Syntax(KclErrorDetails {
+                    source_ranges: vec![current_token.into()],
+                    message: "Unexpected token".to_string(),
+                })
+            })?,
             declarations: variable_declarators_result.declarations,
         },
         last_index: variable_declarators_result.last_index,
@@ -2479,7 +2483,7 @@ show(mySk1)"#;
   |> close(%)"#,
         );
         let result = make_variable_declaration(&tokens, 0).unwrap();
-        assert_eq!(result.declaration.kind, "const");
+        assert_eq!(result.declaration.kind.to_string(), "const");
         assert_eq!(result.declaration.declarations.len(), 1);
         assert_eq!(result.declaration.declarations[0].id.name, "yo");
         let declaration = result.declaration.declarations[0].clone();

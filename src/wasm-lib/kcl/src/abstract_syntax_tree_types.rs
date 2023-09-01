@@ -2,6 +2,7 @@
 
 use std::collections::HashMap;
 
+use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Map;
@@ -383,10 +384,21 @@ pub struct VariableDeclaration {
     pub start: usize,
     pub end: usize,
     pub declarations: Vec<VariableDeclarator>,
-    pub kind: String, // Change to enum if there are specific values
+    pub kind: VariableKind, // Change to enum if there are specific values
 }
 
 impl_value_meta!(VariableDeclaration);
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+#[display(style = "snake_case")]
+pub enum VariableKind {
+    Let,
+    Const,
+    Fn,
+    Var,
+}
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]

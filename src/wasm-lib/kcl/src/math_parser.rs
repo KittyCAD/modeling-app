@@ -315,23 +315,25 @@ fn build_tree(
         })));
         return build_tree(&reverse_polish_notation_tokens[1..], new_stack);
     } else if current_token.token_type == TokenType::Word {
-        if reverse_polish_notation_tokens[1].token_type == TokenType::Brace
-            && reverse_polish_notation_tokens[1].value == "("
-        {
-            let closing_brace = find_closing_brace(reverse_polish_notation_tokens, 1, 0, "")?;
+        if reverse_polish_notation_tokens.len() > 1 {
+            if reverse_polish_notation_tokens[1].token_type == TokenType::Brace
+                && reverse_polish_notation_tokens[1].value == "("
+            {
+                let closing_brace = find_closing_brace(reverse_polish_notation_tokens, 1, 0, "")?;
+                let mut new_stack = stack;
+                new_stack.push(MathExpression::CallExpression(Box::new(
+                    make_call_expression(reverse_polish_notation_tokens, 0)?.expression,
+                )));
+                return build_tree(&reverse_polish_notation_tokens[closing_brace + 1..], new_stack);
+            }
             let mut new_stack = stack;
-            new_stack.push(MathExpression::CallExpression(Box::new(
-                make_call_expression(reverse_polish_notation_tokens, 0)?.expression,
-            )));
-            return build_tree(&reverse_polish_notation_tokens[closing_brace + 1..], new_stack);
+            new_stack.push(MathExpression::Identifier(Box::new(Identifier {
+                name: current_token.value.clone(),
+                start: current_token.start,
+                end: current_token.end,
+            })));
+            return build_tree(&reverse_polish_notation_tokens[1..], new_stack);
         }
-        let mut new_stack = stack;
-        new_stack.push(MathExpression::Identifier(Box::new(Identifier {
-            name: current_token.value.clone(),
-            start: current_token.start,
-            end: current_token.end,
-        })));
-        return build_tree(&reverse_polish_notation_tokens[1..], new_stack);
     } else if current_token.token_type == TokenType::Brace && current_token.value == "(" {
         let mut new_stack = stack;
         new_stack.push(MathExpression::ParenthesisToken(Box::new(ParenthesisToken {
@@ -424,6 +426,14 @@ fn build_tree(
         new_stack.push(expression);
         return build_tree(&reverse_polish_notation_tokens[1..], new_stack);
     }
+
+    if stack.len() < 2 {
+        return Err(KclError::Syntax(KclErrorDetails {
+            source_ranges: vec![current_token.into()],
+            message: "unexpected end of expression".to_string(),
+        }));
+    }
+
     let left: (BinaryPart, usize) = match &stack[stack.len() - 2] {
         MathExpression::ExtendedBinaryExpression(bin_exp) => (
             BinaryPart::BinaryExpression(Box::new(BinaryExpression {
