@@ -1,12 +1,13 @@
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
-use crate::abstract_syntax_tree_types::{
-    BinaryExpression, BinaryPart, CallExpression, Identifier, Literal,
+use crate::{
+    abstract_syntax_tree_types::{BinaryExpression, BinaryPart, CallExpression, Identifier, Literal, ValueMeta},
+    errors::{KclError, KclErrorDetails},
+    executor::SourceRange,
+    parser::{find_closing_brace, is_not_code_token, make_call_expression},
+    tokeniser::{Token, TokenType},
 };
-use crate::errors::{KclError, KclErrorDetails};
-use crate::parser::{find_closing_brace, is_not_code_token, make_call_expression};
-use crate::tokeniser::{Token, TokenType};
 
 pub fn precedence(operator: &str) -> u8 {
     // might be useful for reference to make it match
@@ -182,6 +183,8 @@ pub struct ParenthesisToken {
     pub end: usize,
 }
 
+crate::abstract_syntax_tree_types::impl_value_meta!(ParenthesisToken);
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
@@ -195,10 +198,12 @@ pub struct ExtendedBinaryExpression {
     pub end_extended: Option<usize>,
 }
 
+crate::abstract_syntax_tree_types::impl_value_meta!(ExtendedBinaryExpression);
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
-pub struct ExntendedLiteral {
+pub struct ExtendedLiteral {
     pub start: usize,
     pub end: usize,
     pub value: serde_json::Value,
@@ -207,16 +212,42 @@ pub struct ExntendedLiteral {
     pub end_extended: Option<usize>,
 }
 
+crate::abstract_syntax_tree_types::impl_value_meta!(ExtendedLiteral);
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum MathExpression {
-    ExntendedLiteral(Box<ExntendedLiteral>),
+    ExtendedLiteral(Box<ExtendedLiteral>),
     Identifier(Box<Identifier>),
     CallExpression(Box<CallExpression>),
     BinaryExpression(Box<BinaryExpression>),
     ExtendedBinaryExpression(Box<ExtendedBinaryExpression>),
     ParenthesisToken(Box<ParenthesisToken>),
+}
+
+impl MathExpression {
+    pub fn start(&self) -> usize {
+        match self {
+            MathExpression::ExtendedLiteral(literal) => literal.start(),
+            MathExpression::Identifier(identifier) => identifier.start(),
+            MathExpression::CallExpression(call_expression) => call_expression.start(),
+            MathExpression::BinaryExpression(binary_expression) => binary_expression.start(),
+            MathExpression::ExtendedBinaryExpression(extended_binary_expression) => extended_binary_expression.start(),
+            MathExpression::ParenthesisToken(parenthesis_token) => parenthesis_token.start(),
+        }
+    }
+
+    pub fn end(&self) -> usize {
+        match self {
+            MathExpression::ExtendedLiteral(literal) => literal.end(),
+            MathExpression::Identifier(identifier) => identifier.end(),
+            MathExpression::CallExpression(call_expression) => call_expression.end(),
+            MathExpression::BinaryExpression(binary_expression) => binary_expression.end(),
+            MathExpression::ExtendedBinaryExpression(extended_binary_expression) => extended_binary_expression.end(),
+            MathExpression::ParenthesisToken(parenthesis_token) => parenthesis_token.end(),
+        }
+    }
 }
 
 fn build_tree(
@@ -241,80 +272,76 @@ fn build_tree(
             }),
 
             a => {
-                return Err(KclError::InvalidExpression(a.clone()));
+                return Err(KclError::InvalidExpression(KclErrorDetails {
+                    source_ranges: vec![SourceRange([a.start(), a.end()])],
+                    message: format!("{:?}", a),
+                }))
             }
         };
     }
     let current_token = &reverse_polish_notation_tokens[0];
-    if current_token.token_type == TokenType::Number
-        || current_token.token_type == TokenType::String
-    {
+    if current_token.token_type == TokenType::Number || current_token.token_type == TokenType::String {
         let mut new_stack = stack;
-        new_stack.push(MathExpression::ExntendedLiteral(Box::new(
-            ExntendedLiteral {
-                value: if current_token.token_type == TokenType::Number {
-                    if let Ok(value) = current_token.value.parse::<i64>() {
-                        serde_json::Value::Number(value.into())
-                    } else if let Ok(value) = current_token.value.parse::<f64>() {
-                        if let Some(n) = serde_json::Number::from_f64(value) {
-                            serde_json::Value::Number(n)
-                        } else {
-                            return Err(KclError::Syntax(KclErrorDetails {
-                                source_ranges: vec![current_token.into()],
-                                message: format!("Invalid float: {}", current_token.value),
-                            }));
-                        }
+        new_stack.push(MathExpression::ExtendedLiteral(Box::new(ExtendedLiteral {
+            value: if current_token.token_type == TokenType::Number {
+                if let Ok(value) = current_token.value.parse::<i64>() {
+                    serde_json::Value::Number(value.into())
+                } else if let Ok(value) = current_token.value.parse::<f64>() {
+                    if let Some(n) = serde_json::Number::from_f64(value) {
+                        serde_json::Value::Number(n)
                     } else {
                         return Err(KclError::Syntax(KclErrorDetails {
                             source_ranges: vec![current_token.into()],
-                            message: format!("Invalid integer: {}", current_token.value),
+                            message: format!("Invalid float: {}", current_token.value),
                         }));
                     }
                 } else {
-                    let mut str_val = current_token.value.clone();
-                    str_val.remove(0);
-                    str_val.pop();
-                    serde_json::Value::String(str_val)
-                },
-                start: current_token.start,
-                end: current_token.end,
-                raw: current_token.value.clone(),
-                end_extended: None,
-                start_extended: None,
+                    return Err(KclError::Syntax(KclErrorDetails {
+                        source_ranges: vec![current_token.into()],
+                        message: format!("Invalid integer: {}", current_token.value),
+                    }));
+                }
+            } else {
+                let mut str_val = current_token.value.clone();
+                str_val.remove(0);
+                str_val.pop();
+                serde_json::Value::String(str_val)
             },
-        )));
-        return build_tree(&reverse_polish_notation_tokens[1..], new_stack);
-    } else if current_token.token_type == TokenType::Word {
-        if reverse_polish_notation_tokens[1].token_type == TokenType::Brace
-            && reverse_polish_notation_tokens[1].value == "("
-        {
-            let closing_brace = find_closing_brace(reverse_polish_notation_tokens, 1, 0, "")?;
-            let mut new_stack = stack;
-            new_stack.push(MathExpression::CallExpression(Box::new(
-                make_call_expression(reverse_polish_notation_tokens, 0)?.expression,
-            )));
-            return build_tree(
-                &reverse_polish_notation_tokens[closing_brace + 1..],
-                new_stack,
-            );
-        }
-        let mut new_stack = stack;
-        new_stack.push(MathExpression::Identifier(Box::new(Identifier {
-            name: current_token.value.clone(),
             start: current_token.start,
             end: current_token.end,
+            raw: current_token.value.clone(),
+            end_extended: None,
+            start_extended: None,
         })));
         return build_tree(&reverse_polish_notation_tokens[1..], new_stack);
-    } else if current_token.token_type == TokenType::Brace && current_token.value == "(" {
-        let mut new_stack = stack;
-        new_stack.push(MathExpression::ParenthesisToken(Box::new(
-            ParenthesisToken {
-                value: "(".to_string(),
+    } else if current_token.token_type == TokenType::Word {
+        if reverse_polish_notation_tokens.len() > 1 {
+            if reverse_polish_notation_tokens[1].token_type == TokenType::Brace
+                && reverse_polish_notation_tokens[1].value == "("
+            {
+                let closing_brace = find_closing_brace(reverse_polish_notation_tokens, 1, 0, "")?;
+                let mut new_stack = stack;
+                new_stack.push(MathExpression::CallExpression(Box::new(
+                    make_call_expression(reverse_polish_notation_tokens, 0)?.expression,
+                )));
+                return build_tree(&reverse_polish_notation_tokens[closing_brace + 1..], new_stack);
+            }
+            let mut new_stack = stack;
+            new_stack.push(MathExpression::Identifier(Box::new(Identifier {
+                name: current_token.value.clone(),
                 start: current_token.start,
                 end: current_token.end,
-                token_type: MathTokenType::Parenthesis,
-            },
-        )));
+            })));
+            return build_tree(&reverse_polish_notation_tokens[1..], new_stack);
+        }
+    } else if current_token.token_type == TokenType::Brace && current_token.value == "(" {
+        let mut new_stack = stack;
+        new_stack.push(MathExpression::ParenthesisToken(Box::new(ParenthesisToken {
+            value: "(".to_string(),
+            start: current_token.start,
+            end: current_token.end,
+            token_type: MathTokenType::Parenthesis,
+        })));
         return build_tree(&reverse_polish_notation_tokens[1..], new_stack);
     } else if current_token.token_type == TokenType::Brace && current_token.value == ")" {
         let inner_node: MathExpression = match &stack[stack.len() - 1] {
@@ -340,14 +367,22 @@ fn build_tree(
                     end_extended: None,
                 }))
             }
-            MathExpression::ExntendedLiteral(literal) => {
-                MathExpression::ExntendedLiteral(literal.clone())
+            MathExpression::ExtendedLiteral(literal) => MathExpression::ExtendedLiteral(literal.clone()),
+            a => {
+                return Err(KclError::InvalidExpression(KclErrorDetails {
+                    source_ranges: vec![current_token.into()],
+                    message: format!("{:?}", a),
+                }))
             }
-            a => return Err(KclError::InvalidExpression(a.clone())),
         };
         let paran = match &stack[stack.len() - 2] {
             MathExpression::ParenthesisToken(paran) => paran.clone(),
-            a => return Err(KclError::InvalidExpression(a.clone())),
+            a => {
+                return Err(KclError::InvalidExpression(KclErrorDetails {
+                    source_ranges: vec![current_token.into()],
+                    message: format!("{:?}", a),
+                }))
+            }
         };
         let expression = match inner_node {
             MathExpression::ExtendedBinaryExpression(bin_exp) => {
@@ -372,22 +407,33 @@ fn build_tree(
                     end_extended: Some(current_token.end),
                 }))
             }
-            MathExpression::ExntendedLiteral(literal) => {
-                MathExpression::ExntendedLiteral(Box::new(ExntendedLiteral {
-                    value: literal.value.clone(),
-                    start: literal.start,
-                    end: literal.end,
-                    raw: literal.raw.clone(),
-                    end_extended: Some(current_token.end),
-                    start_extended: Some(paran.start),
+            MathExpression::ExtendedLiteral(literal) => MathExpression::ExtendedLiteral(Box::new(ExtendedLiteral {
+                value: literal.value.clone(),
+                start: literal.start,
+                end: literal.end,
+                raw: literal.raw.clone(),
+                end_extended: Some(current_token.end),
+                start_extended: Some(paran.start),
+            })),
+            a => {
+                return Err(KclError::InvalidExpression(KclErrorDetails {
+                    source_ranges: vec![current_token.into()],
+                    message: format!("{:?}", a),
                 }))
             }
-            a => return Err(KclError::InvalidExpression(a.clone())),
         };
         let mut new_stack = stack[0..stack.len() - 2].to_vec();
         new_stack.push(expression);
         return build_tree(&reverse_polish_notation_tokens[1..], new_stack);
     }
+
+    if stack.len() < 2 {
+        return Err(KclError::Syntax(KclErrorDetails {
+            source_ranges: vec![current_token.into()],
+            message: "unexpected end of expression".to_string(),
+        }));
+    }
+
     let left: (BinaryPart, usize) = match &stack[stack.len() - 2] {
         MathExpression::ExtendedBinaryExpression(bin_exp) => (
             BinaryPart::BinaryExpression(Box::new(BinaryExpression {
@@ -399,7 +445,7 @@ fn build_tree(
             })),
             bin_exp.start_extended.unwrap_or(bin_exp.start),
         ),
-        MathExpression::ExntendedLiteral(lit) => (
+        MathExpression::ExtendedLiteral(lit) => (
             BinaryPart::Literal(Box::new(Literal {
                 value: lit.value.clone(),
                 start: lit.start,
@@ -409,13 +455,14 @@ fn build_tree(
             lit.start_extended.unwrap_or(lit.start),
         ),
         MathExpression::Identifier(ident) => (BinaryPart::Identifier(ident.clone()), ident.start),
-        MathExpression::CallExpression(call) => {
-            (BinaryPart::CallExpression(call.clone()), call.start)
+        MathExpression::CallExpression(call) => (BinaryPart::CallExpression(call.clone()), call.start),
+        MathExpression::BinaryExpression(bin_exp) => (BinaryPart::BinaryExpression(bin_exp.clone()), bin_exp.start),
+        a => {
+            return Err(KclError::InvalidExpression(KclErrorDetails {
+                source_ranges: vec![current_token.into()],
+                message: format!("{:?}", a),
+            }))
         }
-        MathExpression::BinaryExpression(bin_exp) => {
-            (BinaryPart::BinaryExpression(bin_exp.clone()), bin_exp.start)
-        }
-        a => return Err(KclError::InvalidExpression(a.clone())),
     };
     let right = match &stack[stack.len() - 1] {
         MathExpression::ExtendedBinaryExpression(bin_exp) => (
@@ -428,7 +475,7 @@ fn build_tree(
             })),
             bin_exp.end_extended.unwrap_or(bin_exp.end),
         ),
-        MathExpression::ExntendedLiteral(lit) => (
+        MathExpression::ExtendedLiteral(lit) => (
             BinaryPart::Literal(Box::new(Literal {
                 value: lit.value.clone(),
                 start: lit.start,
@@ -438,13 +485,14 @@ fn build_tree(
             lit.end_extended.unwrap_or(lit.end),
         ),
         MathExpression::Identifier(ident) => (BinaryPart::Identifier(ident.clone()), ident.end),
-        MathExpression::CallExpression(call) => {
-            (BinaryPart::CallExpression(call.clone()), call.end)
+        MathExpression::CallExpression(call) => (BinaryPart::CallExpression(call.clone()), call.end),
+        MathExpression::BinaryExpression(bin_exp) => (BinaryPart::BinaryExpression(bin_exp.clone()), bin_exp.end),
+        a => {
+            return Err(KclError::InvalidExpression(KclErrorDetails {
+                source_ranges: vec![current_token.into()],
+                message: format!("{:?}", a),
+            }))
         }
-        MathExpression::BinaryExpression(bin_exp) => {
-            (BinaryPart::BinaryExpression(bin_exp.clone()), bin_exp.end)
-        }
-        a => return Err(KclError::InvalidExpression(a.clone())),
     };
 
     let right_end = match right.0.clone() {
@@ -458,11 +506,7 @@ fn build_tree(
     let tree = BinaryExpression {
         operator: current_token.value.clone(),
         start: left.1,
-        end: if right.1 > right_end {
-            right.1
-        } else {
-            right_end
-        },
+        end: if right.1 > right_end { right.1 } else { right_end },
         left: left.0,
         right: right.0,
     };
@@ -510,8 +554,9 @@ pub fn parse_expression(tokens: &[Token]) -> Result<BinaryExpression, KclError> 
 
 #[cfg(test)]
 mod test {
-    use super::*;
     use pretty_assertions::assert_eq;
+
+    use super::*;
 
     #[test]
     fn test_parse_expression() {
@@ -833,8 +878,7 @@ mod test {
 
     #[test]
     fn test_reverse_polish_notation_complex() {
-        let result =
-            reverse_polish_notation(&crate::tokeniser::lexer("1 + 2 * 3"), &[], &[]).unwrap();
+        let result = reverse_polish_notation(&crate::tokeniser::lexer("1 + 2 * 3"), &[], &[]).unwrap();
         assert_eq!(
             result,
             vec![
@@ -874,8 +918,7 @@ mod test {
 
     #[test]
     fn test_reverse_polish_notation_complex_with_parentheses() {
-        let result =
-            reverse_polish_notation(&crate::tokeniser::lexer("1 * ( 2 + 3 )"), &[], &[]).unwrap();
+        let result = reverse_polish_notation(&crate::tokeniser::lexer("1 * ( 2 + 3 )"), &[], &[]).unwrap();
         assert_eq!(
             result,
             vec![

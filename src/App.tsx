@@ -49,6 +49,7 @@ import { PROJECT_ENTRYPOINT } from './lib/tauriFS'
 import { IndexLoaderData } from './Router'
 import { toast } from 'react-hot-toast'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { onboardingPaths } from 'routes/Onboarding'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
@@ -154,7 +155,7 @@ export function App() {
   useHotkeys('shift + d', () => togglePane('debug'))
 
   const paneOpacity =
-    onboardingStatus === 'camera'
+    onboardingStatus === onboardingPaths.CAMERA
       ? 'opacity-20'
       : didDragInStream
       ? 'opacity-40'
@@ -278,6 +279,8 @@ export function App() {
 
   useEffect(() => {
     if (!isStreamReady) return
+    if (!engineCommandManager) return
+    let unsubFn: any[] = []
     const asyncWrap = async () => {
       try {
         if (!code) {
@@ -288,11 +291,8 @@ export function App() {
         setAst(_ast)
         resetLogs()
         resetKCLErrors()
-        if (engineCommandManager) {
-          engineCommandManager.endSession()
-          engineCommandManager.startNewSession()
-        }
-        if (!engineCommandManager) return
+        engineCommandManager.endSession()
+        engineCommandManager.startNewSession()
         const programMemory = await _executor(
           _ast,
           {
@@ -326,22 +326,29 @@ export function App() {
           await engineCommandManager.waitForAllCommands()
 
         setArtifactMap({ artifactMap, sourceRangeMap })
-        engineCommandManager.onHover((id) => {
-          if (!id) {
-            setHighlightRange([0, 0])
-          } else {
-            const sourceRange = sourceRangeMap[id]
-            setHighlightRange(sourceRange)
-          }
+        const unSubHover = engineCommandManager.subscribeToUnreliable({
+          event: 'highlight_set_entity',
+          callback: ({ data }) => {
+            if (!data?.entity_id) {
+              setHighlightRange([0, 0])
+            } else {
+              const sourceRange = sourceRangeMap[data.entity_id]
+              setHighlightRange(sourceRange)
+            }
+          },
         })
-        engineCommandManager.onClick((selections) => {
-          if (!selections) {
-            setCursor2()
-            return
-          }
-          const { id, type } = selections
-          setCursor2({ range: sourceRangeMap[id], type })
+        const unSubClick = engineCommandManager.subscribeTo({
+          event: 'select_with_point',
+          callback: ({ data }) => {
+            if (!data?.entity_id) {
+              setCursor2()
+              return
+            }
+            const sourceRange = sourceRangeMap[data.entity_id]
+            setCursor2({ range: sourceRange, type: 'default' })
+          },
         })
+        unsubFn.push(unSubHover, unSubClick)
         if (programMemory !== undefined) {
           setProgramMemory(programMemory)
         }
@@ -358,7 +365,10 @@ export function App() {
       }
     }
     asyncWrap()
-  }, [code, isStreamReady])
+    return () => {
+      unsubFn.forEach((fn) => fn())
+    }
+  }, [code, isStreamReady, engineCommandManager])
 
   const debounceSocketSend = throttle<EngineCommand>((message) => {
     engineCommandManager?.sendSceneCommand(message)

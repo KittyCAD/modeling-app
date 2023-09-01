@@ -1,9 +1,14 @@
 import { SourceRange } from 'lang/executor'
 import { Selections } from 'useStore'
-import { VITE_KC_API_WS_MODELING_URL, VITE_KC_CONNECTION_TIMEOUT_MS } from 'env'
+import {
+  VITE_KC_API_WS_MODELING_URL,
+  VITE_KC_CONNECTION_TIMEOUT_MS,
+  VITE_KC_CONNECTION_WEBRTC_REPORT_STATS_MS,
+} from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
 import { v4 as uuidv4 } from 'uuid'
+import * as Sentry from '@sentry/react'
 
 interface ResultCommand {
   type: 'result'
@@ -22,16 +27,6 @@ export interface SourceRangeMap {
   [key: string]: SourceRange
 }
 
-interface SelectionsArgs {
-  id: string
-  type: Selections['codeBasedSelections'][number]['type']
-}
-
-interface CursorSelectionsArgs {
-  otherSelections: Selections['otherSelections']
-  idBasedSelections: { type: string; id: string }[]
-}
-
 interface NewTrackArgs {
   conn: EngineConnection
   mediaStream: MediaStream
@@ -45,7 +40,7 @@ type WebSocketResponse = Models['OkWebSocketResponseData_type']
 export class EngineConnection {
   websocket?: WebSocket
   pc?: RTCPeerConnection
-  lossyDataChannel?: RTCDataChannel
+  unreliableDataChannel?: RTCDataChannel
 
   private ready: boolean
 
@@ -107,6 +102,11 @@ export class EngineConnection {
   isReady() {
     return this.ready
   }
+  // shouldTrace will return true when Sentry should be used to instrument
+  // the Engine.
+  shouldTrace() {
+    return Sentry.getCurrentHub()?.getClient()?.getOptions()?.sendClientReports
+  }
   // connect will attempt to connect to the Engine over a WebSocket, and
   // establish the WebRTC connections.
   //
@@ -115,6 +115,44 @@ export class EngineConnection {
   connect() {
     // TODO(paultag): make this safe to call multiple times, and figure out
     // when a connection is in progress (state: connecting or something).
+
+    // Information on the connect transaction
+
+    class SpanPromise {
+      span: Sentry.Span
+      promise: Promise<void>
+      resolve?: (v: void) => void
+
+      constructor(span: Sentry.Span) {
+        this.span = span
+        this.promise = new Promise((resolve) => {
+          this.resolve = (v: void) => {
+            // here we're going to invoke finish before resolving the
+            // promise so that a `.then()` will order strictly after
+            // all spans have -- for sure -- been resolved, rather than
+            // doing a `then` on this promise.
+            this.span.finish()
+            resolve(v)
+          }
+        })
+      }
+    }
+
+    let webrtcMediaTransaction: Sentry.Transaction
+    let websocketSpan: SpanPromise
+    let mediaTrackSpan: SpanPromise
+    let dataChannelSpan: SpanPromise
+    let handshakeSpan: SpanPromise
+    let iceSpan: SpanPromise
+
+    if (this.shouldTrace()) {
+      webrtcMediaTransaction = Sentry.startTransaction({
+        name: 'webrtc-media',
+      })
+      websocketSpan = new SpanPromise(
+        webrtcMediaTransaction.startChild({ op: 'websocket' })
+      )
+    }
 
     this.websocket = new WebSocket(this.url, [])
     this.websocket.binaryType = 'arraybuffer'
@@ -129,6 +167,37 @@ export class EngineConnection {
     })
 
     this.websocket.addEventListener('open', (event) => {
+      if (this.shouldTrace()) {
+        websocketSpan.resolve?.()
+
+        handshakeSpan = new SpanPromise(
+          webrtcMediaTransaction.startChild({ op: 'handshake' })
+        )
+        iceSpan = new SpanPromise(
+          webrtcMediaTransaction.startChild({ op: 'ice' })
+        )
+        dataChannelSpan = new SpanPromise(
+          webrtcMediaTransaction.startChild({
+            op: 'data-channel',
+          })
+        )
+        mediaTrackSpan = new SpanPromise(
+          webrtcMediaTransaction.startChild({
+            op: 'media-track',
+          })
+        )
+      }
+
+      Promise.all([
+        handshakeSpan.promise,
+        iceSpan.promise,
+        dataChannelSpan.promise,
+        mediaTrackSpan.promise,
+      ]).then(() => {
+        console.log('All spans finished, reporting')
+        webrtcMediaTransaction?.finish()
+      })
+
       this.onWebsocketOpen(this)
     })
 
@@ -191,6 +260,13 @@ export class EngineConnection {
               sdp: answer.sdp,
             })
           )
+
+          if (this.shouldTrace()) {
+            // When both ends have a local and remote SDP, we've been able to
+            // set up successfully. We'll still need to find the right ICE
+            // servers, but this is hand-shook.
+            handshakeSpan.resolve?.()
+          }
         }
       } else if (resp.type === 'trickle_ice') {
         let candidate = resp.data?.candidate
@@ -220,9 +296,9 @@ export class EngineConnection {
         // PeerConnection and waiting for events to fire our callbacks.
 
         this.pc.addEventListener('connectionstatechange', (event) => {
-          // if (this.pc?.iceConnectionState === 'disconnected') {
-          //   this.close()
-          // }
+          if (this.pc?.iceConnectionState === 'connected') {
+            iceSpan.resolve?.()
+          }
         })
 
         this.pc.addEventListener('icecandidate', (event) => {
@@ -272,8 +348,142 @@ export class EngineConnection {
     })
 
     this.pc.addEventListener('track', (event) => {
-      console.log('received track', event)
       const mediaStream = event.streams[0]
+
+      if (this.shouldTrace()) {
+        let mediaStreamTrack = mediaStream.getVideoTracks()[0]
+        mediaStreamTrack.addEventListener('unmute', () => {
+          // let settings = mediaStreamTrack.getSettings()
+          // mediaTrackSpan.span.setTag("fps", settings.frameRate)
+          // mediaTrackSpan.span.setTag("width", settings.width)
+          // mediaTrackSpan.span.setTag("height", settings.height)
+          mediaTrackSpan.resolve?.()
+        })
+      }
+
+      // Set up the background thread to keep an eye on statistical
+      // information about the WebRTC media stream from the server to
+      // us. We'll also eventually want more global statistical information,
+      // but this will give us a baseline.
+      if (parseInt(VITE_KC_CONNECTION_WEBRTC_REPORT_STATS_MS) !== 0) {
+        setInterval(() => {
+          if (this.pc === undefined) {
+            return
+          }
+          if (!this.shouldTrace()) {
+            return
+          }
+
+          // Use the WebRTC Statistics API to collect statistical information
+          // about the WebRTC connection we're using to report to Sentry.
+          mediaStream.getVideoTracks().forEach((videoTrack) => {
+            let trackStats = new Map<string, any>()
+            this.pc?.getStats(videoTrack).then((videoTrackStats) => {
+              // Sentry only allows 10 metrics per transaction. We're going
+              // to have to pick carefully here, eventually send like a prom
+              // file or something to the peer.
+
+              const transaction = Sentry.startTransaction({
+                name: 'webrtc-stats',
+              })
+              videoTrackStats.forEach((videoTrackReport) => {
+                if (videoTrackReport.type === 'inbound-rtp') {
+                  // RTC Stream Info
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.framesDecoded',
+                  //   videoTrackReport.framesDecoded,
+                  //   'frame'
+                  // )
+                  transaction.setMeasurement(
+                    'rtcFramesDropped',
+                    videoTrackReport.framesDropped,
+                    ''
+                  )
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.framesReceived',
+                  //   videoTrackReport.framesReceived,
+                  //   'frame'
+                  // )
+                  transaction.setMeasurement(
+                    'rtcFramesPerSecond',
+                    videoTrackReport.framesPerSecond,
+                    'fps'
+                  )
+                  transaction.setMeasurement(
+                    'rtcFreezeCount',
+                    videoTrackReport.freezeCount,
+                    ''
+                  )
+                  transaction.setMeasurement(
+                    'rtcJitter',
+                    videoTrackReport.jitter,
+                    'second'
+                  )
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.jitterBufferDelay',
+                  //   videoTrackReport.jitterBufferDelay,
+                  //   ''
+                  // )
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.jitterBufferEmittedCount',
+                  //   videoTrackReport.jitterBufferEmittedCount,
+                  //   ''
+                  // )
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.jitterBufferMinimumDelay',
+                  //   videoTrackReport.jitterBufferMinimumDelay,
+                  //   ''
+                  // )
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.jitterBufferTargetDelay',
+                  //   videoTrackReport.jitterBufferTargetDelay,
+                  //   ''
+                  // )
+                  transaction.setMeasurement(
+                    'rtcKeyFramesDecoded',
+                    videoTrackReport.keyFramesDecoded,
+                    ''
+                  )
+                  transaction.setMeasurement(
+                    'rtcTotalFreezesDuration',
+                    videoTrackReport.totalFreezesDuration,
+                    'second'
+                  )
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.totalInterFrameDelay',
+                  //   videoTrackReport.totalInterFrameDelay,
+                  //   ''
+                  // )
+                  transaction.setMeasurement(
+                    'rtcTotalPausesDuration',
+                    videoTrackReport.totalPausesDuration,
+                    'second'
+                  )
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.totalProcessingDelay',
+                  //   videoTrackReport.totalProcessingDelay,
+                  //   'second'
+                  // )
+                } else if (videoTrackReport.type === 'transport') {
+                  // // Bytes i/o
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.bytesReceived',
+                  //   videoTrackReport.bytesReceived,
+                  //   'byte'
+                  // )
+                  // transaction.setMeasurement(
+                  //   'mediaStreamTrack.bytesSent',
+                  //   videoTrackReport.bytesSent,
+                  //   'byte'
+                  // )
+                }
+              })
+              transaction?.finish()
+            })
+          })
+        }, VITE_KC_CONNECTION_WEBRTC_REPORT_STATS_MS)
+      }
+
       this.onNewTrack({
         conn: this,
         mediaStream: mediaStream,
@@ -285,45 +495,48 @@ export class EngineConnection {
     let connectionStarted = new Date()
 
     this.pc.addEventListener('datachannel', (event) => {
-      this.lossyDataChannel = event.channel
+      this.unreliableDataChannel = event.channel
 
-      console.log('accepted lossy data channel', event.channel.label)
-      this.lossyDataChannel.addEventListener('open', (event) => {
-        console.log('lossy data channel opened', event)
+      console.log('accepted unreliable data channel', event.channel.label)
+      this.unreliableDataChannel.addEventListener('open', (event) => {
+        console.log('unreliable data channel opened', event)
+        if (this.shouldTrace()) {
+          dataChannelSpan.resolve?.()
+        }
 
         this.onDataChannelOpen(this)
 
-        let timeToConnectMs = new Date().getTime() - connectionStarted.getTime()
-        console.log(`engine connection time to connect: ${timeToConnectMs}ms`)
         this.onEngineConnectionOpen(this)
         this.ready = true
       })
 
-      this.lossyDataChannel.addEventListener('close', (event) => {
-        console.log('lossy data channel closed')
+      this.unreliableDataChannel.addEventListener('close', (event) => {
+        console.log('unreliable data channel closed')
         this.close()
       })
 
-      this.lossyDataChannel.addEventListener('error', (event) => {
-        console.log('lossy data channel error')
+      this.unreliableDataChannel.addEventListener('error', (event) => {
+        console.log('unreliable data channel error')
         this.close()
       })
     })
 
     this.onConnectionStarted(this)
   }
-  send(message: object) {
+  send(message: object | string) {
     // TODO(paultag): Add in logic to determine the connection state and
     // take actions if needed?
-    this.websocket?.send(JSON.stringify(message))
+    this.websocket?.send(
+      typeof message === 'string' ? message : JSON.stringify(message)
+    )
   }
   close() {
     this.websocket?.close()
     this.pc?.close()
-    this.lossyDataChannel?.close()
+    this.unreliableDataChannel?.close()
     this.websocket = undefined
     this.pc = undefined
-    this.lossyDataChannel = undefined
+    this.unreliableDataChannel = undefined
 
     this.onClose(this)
     this.ready = false
@@ -331,6 +544,23 @@ export class EngineConnection {
 }
 
 export type EngineCommand = Models['WebSocketRequest_type']
+type ModelTypes = Models['OkModelingCmdResponse_type']['type']
+
+type UnreliableResponses = Extract<
+  Models['OkModelingCmdResponse_type'],
+  { type: 'highlight_set_entity' }
+>
+interface UnreliableSubscription<T extends UnreliableResponses['type']> {
+  event: T
+  callback: (data: Extract<UnreliableResponses, { type: T }>) => void
+}
+
+interface Subscription<T extends ModelTypes> {
+  event: T
+  callback: (
+    data: Extract<Models['OkModelingCmdResponse_type'], { type: T }>
+  ) => void
+}
 
 export class EngineCommandManager {
   artifactMap: ArtifactMap = {}
@@ -340,10 +570,17 @@ export class EngineCommandManager {
   engineConnection?: EngineConnection
   waitForReady: Promise<void> = new Promise(() => {})
   private resolveReady = () => {}
-  onHoverCallback: (id?: string) => void = () => {}
-  onClickCallback: (selection?: SelectionsArgs) => void = () => {}
-  onCursorsSelectedCallback: (selections: CursorSelectionsArgs) => void =
-    () => {}
+
+  subscriptions: {
+    [event: string]: {
+      [localUnsubscribeId: string]: (a: any) => void
+    }
+  } = {} as any
+  unreliableSubscriptions: {
+    [event: string]: {
+      [localUnsubscribeId: string]: (a: any) => void
+    }
+  } = {} as any
   constructor({
     setMediaStream,
     setIsStreamReady,
@@ -373,20 +610,28 @@ export class EngineCommandManager {
       },
       onConnectionStarted: (engineConnection) => {
         engineConnection?.pc?.addEventListener('datachannel', (event) => {
-          let lossyDataChannel = event.channel
+          let unreliableDataChannel = event.channel
 
-          lossyDataChannel.addEventListener('message', (event) => {
-            const result: Models['OkModelingCmdResponse_type'] = JSON.parse(
-              event.data
+          unreliableDataChannel.addEventListener('message', (event) => {
+            const result: UnreliableResponses = JSON.parse(event.data)
+            Object.values(
+              this.unreliableSubscriptions[result.type] || {}
+            ).forEach(
+              // TODO: There is only one response that uses the unreliable channel atm,
+              // highlight_set_entity, if there are more it's likely they will all have the same
+              // sequence logic, but I'm not sure if we use a single global sequence or a sequence
+              // per unreliable subscription.
+              (callback) => {
+                if (
+                  result?.data?.sequence &&
+                  result?.data.sequence > this.inSequence &&
+                  result.type === 'highlight_set_entity'
+                ) {
+                  this.inSequence = result.data.sequence
+                  callback(result)
+                }
+              }
             )
-            if (
-              result.type === 'highlight_set_entity' &&
-              result?.data?.sequence &&
-              result.data.sequence > this.inSequence
-            ) {
-              this.onHoverCallback(result.data.entity_id)
-              this.inSequence = result.data.sequence
-            }
           })
         })
 
@@ -418,8 +663,8 @@ export class EngineCommandManager {
 
         mediaStream.getVideoTracks()[0].addEventListener('mute', () => {
           console.log('peer is not sending video to us')
-          this.engineConnection?.close()
-          this.engineConnection?.connect()
+          // this.engineConnection?.close()
+          // this.engineConnection?.connect()
         })
 
         setMediaStream(mediaStream)
@@ -433,18 +678,11 @@ export class EngineCommandManager {
       return
     }
     const modelingResponse = message.data.modeling_response
+    Object.values(this.subscriptions[modelingResponse.type] || {}).forEach(
+      (callback) => callback(modelingResponse)
+    )
 
     const command = this.artifactMap[id]
-    if (modelingResponse.type === 'select_with_point') {
-      if (modelingResponse?.data?.entity_id) {
-        this.onClickCallback({
-          id: modelingResponse?.data?.entity_id,
-          type: 'default',
-        })
-      } else {
-        this.onClickCallback()
-      }
-    }
     if (command && command.type === 'pending') {
       const resolve = command.resolve
       this.artifactMap[id] = {
@@ -453,6 +691,7 @@ export class EngineCommandManager {
       }
       resolve({
         id,
+        data: modelingResponse,
       })
     } else {
       this.artifactMap[id] = {
@@ -468,20 +707,48 @@ export class EngineCommandManager {
     this.artifactMap = {}
     this.sourceRangeMap = {}
   }
+  subscribeTo<T extends ModelTypes>({
+    event,
+    callback,
+  }: Subscription<T>): () => void {
+    const localUnsubscribeId = uuidv4()
+    const otherEventCallbacks = this.subscriptions[event]
+    if (otherEventCallbacks) {
+      otherEventCallbacks[localUnsubscribeId] = callback
+    } else {
+      this.subscriptions[event] = {
+        [localUnsubscribeId]: callback,
+      }
+    }
+    return () => this.unSubscribeTo(event, localUnsubscribeId)
+  }
+  private unSubscribeTo(event: ModelTypes, id: string) {
+    delete this.subscriptions[event][id]
+  }
+  subscribeToUnreliable<T extends UnreliableResponses['type']>({
+    event,
+    callback,
+  }: UnreliableSubscription<T>): () => void {
+    const localUnsubscribeId = uuidv4()
+    const otherEventCallbacks = this.unreliableSubscriptions[event]
+    if (otherEventCallbacks) {
+      otherEventCallbacks[localUnsubscribeId] = callback
+    } else {
+      this.unreliableSubscriptions[event] = {
+        [localUnsubscribeId]: callback,
+      }
+    }
+    return () => this.unSubscribeToUnreliable(event, localUnsubscribeId)
+  }
+  private unSubscribeToUnreliable(
+    event: UnreliableResponses['type'],
+    id: string
+  ) {
+    delete this.unreliableSubscriptions[event][id]
+  }
   endSession() {
     // this.websocket?.close()
     // socket.off('command')
-  }
-  onHover(callback: (id?: string) => void) {
-    // It's when the user hovers over a part in the 3d scene, and so the engine should tell the
-    // frontend about that (with it's id) so that the FE can highlight code associated with that id
-    this.onHoverCallback = callback
-  }
-  onClick(callback: (selection?: SelectionsArgs) => void) {
-    // It's when the user clicks on a part in the 3d scene, and so the engine should tell the
-    // frontend about that (with it's id) so that the FE can put the user's cursor on the right
-    // line of code
-    this.onClickCallback = callback
   }
   cusorsSelected(selections: {
     otherSelections: Selections['otherSelections']
@@ -507,32 +774,38 @@ export class EngineCommandManager {
       cmd_id: uuidv4(),
     })
   }
-  sendSceneCommand(command: EngineCommand) {
+  sendSceneCommand(command: EngineCommand): Promise<any> {
     if (!this.engineConnection?.isReady()) {
       console.log('socket not ready')
-      return
+      return Promise.resolve()
     }
-    if (command.type !== 'modeling_cmd_req') return
+    if (command.type !== 'modeling_cmd_req') return Promise.resolve()
     const cmd = command.cmd
     if (
       cmd.type === 'camera_drag_move' &&
-      this.engineConnection?.lossyDataChannel
+      this.engineConnection?.unreliableDataChannel
     ) {
       cmd.sequence = this.outSequence
       this.outSequence++
-      this.engineConnection?.lossyDataChannel?.send(JSON.stringify(command))
-      return
+      this.engineConnection?.unreliableDataChannel?.send(
+        JSON.stringify(command)
+      )
+      return Promise.resolve()
     } else if (
       cmd.type === 'highlight_set_entity' &&
-      this.engineConnection?.lossyDataChannel
+      this.engineConnection?.unreliableDataChannel
     ) {
       cmd.sequence = this.outSequence
       this.outSequence++
-      this.engineConnection?.lossyDataChannel?.send(JSON.stringify(command))
-      return
+      this.engineConnection?.unreliableDataChannel?.send(
+        JSON.stringify(command)
+      )
+      return Promise.resolve()
     }
     console.log('sending command', command)
+    // since it's not mouse drag or highlighting send over TCP and keep track of the command
     this.engineConnection?.send(command)
+    return this.handlePendingCommand(command.cmd_id)
   }
   sendModelingCommand({
     id,
@@ -541,15 +814,18 @@ export class EngineCommandManager {
   }: {
     id: string
     range: SourceRange
-    command: EngineCommand
+    command: EngineCommand | string
   }): Promise<any> {
     this.sourceRangeMap[id] = range
 
     if (!this.engineConnection?.isReady()) {
       console.log('socket not ready')
-      return new Promise(() => {})
+      return Promise.resolve()
     }
     this.engineConnection?.send(command)
+    return this.handlePendingCommand(id)
+  }
+  handlePendingCommand(id: string) {
     let resolve: (val: any) => void = () => {}
     const promise = new Promise((_resolve, reject) => {
       resolve = _resolve
@@ -575,10 +851,9 @@ export class EngineCommandManager {
     if (commandStr === undefined) {
       throw new Error('commandStr is undefined')
     }
-    const command: EngineCommand = JSON.parse(commandStr)
     const range: SourceRange = JSON.parse(rangeStr)
 
-    return this.sendModelingCommand({ id, range, command })
+    return this.sendModelingCommand({ id, range, command: commandStr })
   }
   commandResult(id: string): Promise<any> {
     const command = this.artifactMap[id]

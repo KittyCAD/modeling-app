@@ -1,7 +1,12 @@
 import { assign, createMachine } from 'xstate'
 import { BaseUnit, baseUnitsUnion } from '../useStore'
 import { CommandBarMeta } from '../lib/commands'
-import { Themes } from '../lib/theme'
+import { Themes, getSystemTheme, setThemeClass } from '../lib/theme'
+
+export enum UnitSystem {
+  Imperial = 'imperial',
+  Metric = 'metric',
+}
 
 export const SETTINGS_PERSIST_KEY = 'SETTINGS_PERSIST_KEY'
 
@@ -42,7 +47,7 @@ export const settingsCommandBarMeta: CommandBarMeta = {
         name: 'unitSystem',
         type: 'select',
         defaultValue: 'unitSystem',
-        options: [{ name: 'imperial' }, { name: 'metric' }],
+        options: [{ name: UnitSystem.Imperial }, { name: UnitSystem.Metric }],
       },
     ],
   },
@@ -70,7 +75,7 @@ export const settingsMachine = createMachine(
     context: {
       theme: Themes.System,
       defaultProjectName: '',
-      unitSystem: 'imperial' as 'imperial' | 'metric',
+      unitSystem: UnitSystem.Imperial,
       baseUnit: 'in' as BaseUnit,
       defaultDirectory: '',
       showDebugPanel: false,
@@ -79,6 +84,7 @@ export const settingsMachine = createMachine(
     initial: 'idle',
     states: {
       idle: {
+        entry: ['setThemeClass'],
         on: {
           'Set Theme': {
             actions: [
@@ -87,6 +93,7 @@ export const settingsMachine = createMachine(
               }),
               'persistSettings',
               'toastSuccess',
+              'setThemeClass',
             ],
             target: 'idle',
             internal: true,
@@ -154,7 +161,6 @@ export const settingsMachine = createMachine(
                 onboardingStatus: (_, event) => event.data.onboardingStatus,
               }),
               'persistSettings',
-              'toastSuccess',
             ],
             target: 'idle',
             internal: true,
@@ -173,7 +179,7 @@ export const settingsMachine = createMachine(
         | { type: 'Set Default Directory'; data: { defaultDirectory: string } }
         | {
             type: 'Set Unit System'
-            data: { unitSystem: 'imperial' | 'metric' }
+            data: { unitSystem: UnitSystem }
           }
         | { type: 'Set Base Unit'; data: { baseUnit: BaseUnit } }
         | { type: 'Set Onboarding Status'; data: { onboardingStatus: string } }
@@ -188,6 +194,13 @@ export const settingsMachine = createMachine(
         } catch (e) {
           console.error(e)
         }
+      },
+      setThemeClass: (context, event) => {
+        const currentTheme =
+          event.type === 'Set Theme' ? event.data.theme : context.theme
+        setThemeClass(
+          currentTheme === Themes.System ? getSystemTheme() : currentTheme
+        )
       },
     },
   }

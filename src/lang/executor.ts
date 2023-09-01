@@ -146,10 +146,8 @@ export const _executor = async (
     const parsed: RustKclError = JSON.parse(e.toString())
     const kclError = new KCLError(
       parsed.kind,
-      parsed.kind === 'invalid_expression' ? parsed.kind : parsed.msg,
-      parsed.kind === 'invalid_expression'
-        ? [[parsed.start, parsed.end]]
-        : rangeTypeFix(parsed.sourceRanges)
+      parsed.msg,
+      rangeTypeFix(parsed.sourceRanges)
     )
 
     console.log(kclError)

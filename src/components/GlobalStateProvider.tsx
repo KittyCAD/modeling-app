@@ -15,7 +15,7 @@ import {
   settingsMachine,
 } from 'machines/settingsMachine'
 import { toast } from 'react-hot-toast'
-import { setThemeClass } from 'lib/theme'
+import { setThemeClass, Themes } from 'lib/theme'
 import {
   AnyStateMachine,
   ContextFrom,
@@ -87,10 +87,21 @@ export const GlobalStateProvider = ({
     commandBarMeta: settingsCommandBarMeta,
   })
 
-  useEffect(
-    () => setThemeClass(settingsState.context.theme),
-    [settingsState.context.theme]
-  )
+  // Listen for changes to the system theme and update the app theme accordingly
+  // This is only done if the theme setting is set to 'system'.
+  // It can't be done in XState (in an invoked callback, for example)
+  // because there doesn't seem to be a good way to listen to
+  // events outside of the machine that also depend on the machine's context
+  useEffect(() => {
+    const matcher = window.matchMedia('(prefers-color-scheme: dark)')
+    const listener = (e: MediaQueryListEvent) => {
+      if (settingsState.context.theme !== 'system') return
+      setThemeClass(e.matches ? Themes.Dark : Themes.Light)
+    }
+
+    matcher.addEventListener('change', listener)
+    return () => matcher.removeEventListener('change', listener)
+  }, [settingsState.context])
 
   // Auth machine setup
   const [authState, authSend] = useMachine(authMachine, {

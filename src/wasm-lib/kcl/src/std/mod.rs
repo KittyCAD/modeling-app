@@ -27,8 +27,7 @@ pub type FnMap = HashMap<String, StdFn>;
 pub type StdFn = fn(&mut Args) -> Result<MemoryItem, KclError>;
 
 pub struct StdLib {
-    #[allow(dead_code)]
-    internal_fn_names: Vec<Box<(dyn crate::docs::StdLibFn)>>,
+    pub internal_fn_names: Vec<Box<(dyn crate::docs::StdLibFn)>>,
 
     pub fns: FnMap,
 }
@@ -64,20 +63,16 @@ impl StdLib {
             Box::new(crate::std::sketch::AngledLineThatIntersects),
             Box::new(crate::std::sketch::StartSketchAt),
             Box::new(crate::std::sketch::Close),
+            Box::new(crate::std::sketch::Arc),
+            Box::new(crate::std::sketch::BezierCurve),
         ];
 
         let mut fns = HashMap::new();
         for internal_fn_name in &internal_fn_names {
-            fns.insert(
-                internal_fn_name.name().to_string(),
-                internal_fn_name.std_lib_fn(),
-            );
+            fns.insert(internal_fn_name.name().to_string(), internal_fn_name.std_lib_fn());
         }
 
-        Self {
-            internal_fn_names,
-            fns,
-        }
+        Self { internal_fn_names, fns }
     }
 }
 
@@ -95,22 +90,15 @@ pub struct Args<'a> {
 }
 
 impl<'a> Args<'a> {
-    pub fn new(
-        args: Vec<MemoryItem>,
-        source_range: SourceRange,
-        engine: &'a mut EngineConnection,
-    ) -> Self {
+    pub fn new(args: Vec<MemoryItem>, source_range: SourceRange, engine: &'a mut EngineConnection) -> Self {
         Self {
             args,
             source_range,
             engine,
         }
     }
-    pub fn send_modeling_cmd(
-        &mut self,
-        id: uuid::Uuid,
-        cmd: kittycad::types::ModelingCmd,
-    ) -> Result<(), KclError> {
+
+    pub fn send_modeling_cmd(&mut self, id: uuid::Uuid, cmd: kittycad::types::ModelingCmd) -> Result<(), KclError> {
         self.engine.send_modeling_cmd(id, self.source_range, cmd)
     }
 
@@ -124,14 +112,14 @@ impl<'a> Args<'a> {
     }
 
     fn make_user_val_from_f64(&self, f: f64) -> Result<MemoryItem, KclError> {
-        self.make_user_val_from_json(serde_json::Value::Number(
-            serde_json::Number::from_f64(f).ok_or_else(|| {
+        self.make_user_val_from_json(serde_json::Value::Number(serde_json::Number::from_f64(f).ok_or_else(
+            || {
                 KclError::Type(KclErrorDetails {
                     message: format!("Failed to convert `{}` to a number", f),
                     source_ranges: vec![self.source_range],
                 })
-            })?,
-        ))
+            },
+        )?))
     }
 
     fn get_number_array(&self) -> Result<Vec<f64>, KclError> {
@@ -164,10 +152,7 @@ impl<'a> Args<'a> {
             .first()
             .ok_or_else(|| {
                 KclError::Type(KclErrorDetails {
-                    message: format!(
-                        "Expected a string as the first argument, found `{:?}`",
-                        self.args
-                    ),
+                    message: format!("Expected a string as the first argument, found `{:?}`", self.args),
                     source_ranges: vec![self.source_range],
                 })
             })?
@@ -177,20 +162,14 @@ impl<'a> Args<'a> {
             s.to_string()
         } else {
             return Err(KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a string as the first argument, found `{:?}`",
-                    self.args
-                ),
+                message: format!("Expected a string as the first argument, found `{:?}`", self.args),
                 source_ranges: vec![self.source_range],
             }));
         };
 
         let second_value = self.args.get(1).ok_or_else(|| {
             KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup as the second argument, found `{:?}`",
-                    self.args
-                ),
+                message: format!("Expected a SketchGroup as the second argument, found `{:?}`", self.args),
                 source_ranges: vec![self.source_range],
             })
         })?;
@@ -199,10 +178,7 @@ impl<'a> Args<'a> {
             sg.clone()
         } else {
             return Err(KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup as the second argument, found `{:?}`",
-                    self.args
-                ),
+                message: format!("Expected a SketchGroup as the second argument, found `{:?}`", self.args),
                 source_ranges: vec![self.source_range],
             }));
         };
@@ -213,10 +189,7 @@ impl<'a> Args<'a> {
     fn get_sketch_group(&self) -> Result<SketchGroup, KclError> {
         let first_value = self.args.first().ok_or_else(|| {
             KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup as the first argument, found `{:?}`",
-                    self.args
-                ),
+                message: format!("Expected a SketchGroup as the first argument, found `{:?}`", self.args),
                 source_ranges: vec![self.source_range],
             })
         })?;
@@ -225,10 +198,7 @@ impl<'a> Args<'a> {
             sg.clone()
         } else {
             return Err(KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup as the first argument, found `{:?}`",
-                    self.args
-                ),
+                message: format!("Expected a SketchGroup as the first argument, found `{:?}`", self.args),
                 source_ranges: vec![self.source_range],
             }));
         };
@@ -242,10 +212,7 @@ impl<'a> Args<'a> {
             .first()
             .ok_or_else(|| {
                 KclError::Type(KclErrorDetails {
-                    message: format!(
-                        "Expected a struct as the first argument, found `{:?}`",
-                        self.args
-                    ),
+                    message: format!("Expected a struct as the first argument, found `{:?}`", self.args),
                     source_ranges: vec![self.source_range],
                 })
             })?
@@ -261,18 +228,13 @@ impl<'a> Args<'a> {
         Ok(data)
     }
 
-    fn get_data_and_sketch_group<T: serde::de::DeserializeOwned>(
-        &self,
-    ) -> Result<(T, SketchGroup), KclError> {
+    fn get_data_and_sketch_group<T: serde::de::DeserializeOwned>(&self) -> Result<(T, SketchGroup), KclError> {
         let first_value = self
             .args
             .first()
             .ok_or_else(|| {
                 KclError::Type(KclErrorDetails {
-                    message: format!(
-                        "Expected a struct as the first argument, found `{:?}`",
-                        self.args
-                    ),
+                    message: format!("Expected a struct as the first argument, found `{:?}`", self.args),
                     source_ranges: vec![self.source_range],
                 })
             })?
@@ -287,10 +249,7 @@ impl<'a> Args<'a> {
 
         let second_value = self.args.get(1).ok_or_else(|| {
             KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup as the second argument, found `{:?}`",
-                    self.args
-                ),
+                message: format!("Expected a SketchGroup as the second argument, found `{:?}`", self.args),
                 source_ranges: vec![self.source_range],
             })
         })?;
@@ -299,10 +258,7 @@ impl<'a> Args<'a> {
             sg.clone()
         } else {
             return Err(KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup as the second argument, found `{:?}`",
-                    self.args
-                ),
+                message: format!("Expected a SketchGroup as the second argument, found `{:?}`", self.args),
                 source_ranges: vec![self.source_range],
             }));
         };
@@ -310,9 +266,7 @@ impl<'a> Args<'a> {
         Ok((data, sketch_group))
     }
 
-    fn get_segment_name_to_number_sketch_group(
-        &self,
-    ) -> Result<(String, f64, SketchGroup), KclError> {
+    fn get_segment_name_to_number_sketch_group(&self) -> Result<(String, f64, SketchGroup), KclError> {
         // Iterate over our args, the first argument should be a UserVal with a string value.
         // The second argument should be a number.
         // The third argument should be a SketchGroup.
@@ -321,10 +275,7 @@ impl<'a> Args<'a> {
             .first()
             .ok_or_else(|| {
                 KclError::Type(KclErrorDetails {
-                    message: format!(
-                        "Expected a string as the first argument, found `{:?}`",
-                        self.args
-                    ),
+                    message: format!("Expected a string as the first argument, found `{:?}`", self.args),
                     source_ranges: vec![self.source_range],
                 })
             })?
@@ -334,10 +285,7 @@ impl<'a> Args<'a> {
             s.to_string()
         } else {
             return Err(KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a string as the first argument, found `{:?}`",
-                    self.args
-                ),
+                message: format!("Expected a string as the first argument, found `{:?}`", self.args),
                 source_ranges: vec![self.source_range],
             }));
         };
@@ -347,10 +295,7 @@ impl<'a> Args<'a> {
             .get(1)
             .ok_or_else(|| {
                 KclError::Type(KclErrorDetails {
-                    message: format!(
-                        "Expected a number as the second argument, found `{:?}`",
-                        self.args
-                    ),
+                    message: format!("Expected a number as the second argument, found `{:?}`", self.args),
                     source_ranges: vec![self.source_range],
                 })
             })?
@@ -360,10 +305,7 @@ impl<'a> Args<'a> {
 
         let third_value = self.args.get(2).ok_or_else(|| {
             KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup as the third argument, found `{:?}`",
-                    self.args
-                ),
+                message: format!("Expected a SketchGroup as the third argument, found `{:?}`", self.args),
                 source_ranges: vec![self.source_range],
             })
         })?;
@@ -372,10 +314,7 @@ impl<'a> Args<'a> {
             sg.clone()
         } else {
             return Err(KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup as the third argument, found `{:?}`",
-                    self.args
-                ),
+                message: format!("Expected a SketchGroup as the third argument, found `{:?}`", self.args),
                 source_ranges: vec![self.source_range],
             }));
         };
@@ -391,10 +330,7 @@ impl<'a> Args<'a> {
             .first()
             .ok_or_else(|| {
                 KclError::Type(KclErrorDetails {
-                    message: format!(
-                        "Expected a number as the first argument, found `{:?}`",
-                        self.args
-                    ),
+                    message: format!("Expected a number as the first argument, found `{:?}`", self.args),
                     source_ranges: vec![self.source_range],
                 })
             })?
@@ -404,10 +340,7 @@ impl<'a> Args<'a> {
 
         let second_value = self.args.get(1).ok_or_else(|| {
             KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup as the second argument, found `{:?}`",
-                    self.args
-                ),
+                message: format!("Expected a SketchGroup as the second argument, found `{:?}`", self.args),
                 source_ranges: vec![self.source_range],
             })
         })?;
@@ -416,10 +349,7 @@ impl<'a> Args<'a> {
             sg.clone()
         } else {
             return Err(KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a SketchGroup as the second argument, found `{:?}`",
-                    self.args
-                ),
+                message: format!("Expected a SketchGroup as the second argument, found `{:?}`", self.args),
                 source_ranges: vec![self.source_range],
             }));
         };
@@ -435,10 +365,7 @@ impl<'a> Args<'a> {
             .first()
             .ok_or_else(|| {
                 KclError::Type(KclErrorDetails {
-                    message: format!(
-                        "Expected a string as the first argument, found `{:?}`",
-                        self.args
-                    ),
+                    message: format!("Expected a string as the first argument, found `{:?}`", self.args),
                     source_ranges: vec![self.source_range],
                 })
             })?
@@ -448,10 +375,7 @@ impl<'a> Args<'a> {
             s.to_string()
         } else {
             return Err(KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected a string as the first argument, found `{:?}`",
-                    self.args
-                ),
+                message: format!("Expected a string as the first argument, found `{:?}`", self.args),
                 source_ranges: vec![self.source_range],
             }));
         };
@@ -589,11 +513,7 @@ mod tests {
                 continue;
             }
 
-            buf.push_str(&format!(
-                "\t* [`{}`](#{})\n",
-                internal_fn.name(),
-                internal_fn.name()
-            ));
+            buf.push_str(&format!("\t* [`{}`](#{})\n", internal_fn.name(), internal_fn.name()));
         }
 
         buf.push_str("\n\n");
@@ -617,25 +537,15 @@ mod tests {
             fn_docs.push_str(&format!("{}\n\n", internal_fn.description()));
 
             fn_docs.push_str("```\n");
-            fn_docs.push_str(&format!("{}(", internal_fn.name()));
-            for (i, arg) in internal_fn.args().iter().enumerate() {
-                if i > 0 {
-                    fn_docs.push_str(", ");
-                }
-                fn_docs.push_str(&format!("{}: {}", arg.name, arg.type_));
-            }
-            fn_docs.push_str(") -> ");
-            fn_docs.push_str(&internal_fn.return_value().type_);
+            let signature = internal_fn.fn_signature();
+            fn_docs.push_str(&signature);
             fn_docs.push_str("\n```\n\n");
 
             fn_docs.push_str("#### Arguments\n\n");
             for arg in internal_fn.args() {
                 let (format, should_be_indented) = arg.get_type_string().unwrap();
                 if let Some(description) = arg.description() {
-                    fn_docs.push_str(&format!(
-                        "* `{}`: `{}` - {}\n",
-                        arg.name, arg.type_, description
-                    ));
+                    fn_docs.push_str(&format!("* `{}`: `{}` - {}\n", arg.name, arg.type_, description));
                 } else {
                     fn_docs.push_str(&format!("* `{}`: `{}`\n", arg.name, arg.type_));
                 }

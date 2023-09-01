@@ -30,12 +30,7 @@ impl ProgramMemory {
     }
 
     /// Add to the program memory.
-    pub fn add(
-        &mut self,
-        key: &str,
-        value: MemoryItem,
-        source_range: SourceRange,
-    ) -> Result<(), KclError> {
+    pub fn add(&mut self, key: &str, value: MemoryItem, source_range: SourceRange) -> Result<(), KclError> {
         if self.root.get(key).is_some() {
             return Err(KclError::ValueAlreadyDefined(KclErrorDetails {
                 message: format!("Cannot redefine {}", key),
@@ -169,12 +164,7 @@ impl MemoryItem {
         memory: &ProgramMemory,
         engine: &mut EngineConnection,
     ) -> Result<Option<ProgramReturn>, KclError> {
-        if let MemoryItem::Function {
-            func,
-            expression,
-            meta,
-        } = self
-        {
+        if let MemoryItem::Function { func, expression, meta } = self {
             if let Some(func) = func {
                 func(args, memory, expression, meta, engine)
             } else {
@@ -225,10 +215,7 @@ impl SketchGroup {
         if self.start.name == name {
             Some(&self.start)
         } else {
-            self.value
-                .iter()
-                .find(|p| p.get_name() == name)
-                .map(|p| p.get_base())
+            self.value.iter().find(|p| p.get_name() == name).map(|p| p.get_base())
         }
     }
 
@@ -311,9 +298,21 @@ impl From<[f64; 2]> for Point2d {
     }
 }
 
+impl From<&[f64; 2]> for Point2d {
+    fn from(p: &[f64; 2]) -> Self {
+        Self { x: p[0], y: p[1] }
+    }
+}
+
 impl From<Point2d> for [f64; 2] {
     fn from(p: Point2d) -> Self {
         [p.x, p.y]
+    }
+}
+
+impl From<Point2d> for kittycad::types::Point2D {
+    fn from(p: Point2d) -> Self {
+        Self { x: p.x, y: p.y }
     }
 }
 
@@ -523,8 +522,7 @@ pub fn execute(
                         match arg {
                             Value::Literal(literal) => args.push(literal.into()),
                             Value::Identifier(identifier) => {
-                                let memory_item =
-                                    memory.get(&identifier.name, identifier.into())?;
+                                let memory_item = memory.get(&identifier.name, identifier.into())?;
                                 args.push(memory_item.clone());
                             }
                             // We do nothing for the rest.
@@ -539,8 +537,7 @@ pub fn execute(
                             }));
                         }
 
-                        memory.return_ =
-                            Some(ProgramReturn::Arguments(call_expr.arguments.clone()));
+                        memory.return_ = Some(ProgramReturn::Arguments(call_expr.arguments.clone()));
                     } else if let Some(func) = memory.clone().root.get(&fn_name) {
                         func.call_fn(&args, memory, engine)?;
                     } else {
@@ -566,12 +563,7 @@ pub fn execute(
                             memory.add(&var_name, value.clone(), source_range)?;
                         }
                         Value::BinaryExpression(binary_expression) => {
-                            let result = binary_expression.get_result(
-                                memory,
-                                &mut pipe_info,
-                                &stdlib,
-                                engine,
-                            )?;
+                            let result = binary_expression.get_result(memory, &mut pipe_info, &stdlib, engine)?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::FunctionExpression(function_expression) => {
@@ -608,41 +600,28 @@ pub fn execute(
                             )?;
                         }
                         Value::CallExpression(call_expression) => {
-                            let result =
-                                call_expression.execute(memory, &mut pipe_info, &stdlib, engine)?;
+                            let result = call_expression.execute(memory, &mut pipe_info, &stdlib, engine)?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::PipeExpression(pipe_expression) => {
-                            let result = pipe_expression.get_result(
-                                memory,
-                                &mut pipe_info,
-                                &stdlib,
-                                engine,
-                            )?;
+                            let result = pipe_expression.get_result(memory, &mut pipe_info, &stdlib, engine)?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::PipeSubstitution(pipe_substitution) => {
                             return Err(KclError::Semantic(KclErrorDetails {
-                                message: format!("pipe substitution not implemented for declaration of variable {}", var_name),
+                                message: format!(
+                                    "pipe substitution not implemented for declaration of variable {}",
+                                    var_name
+                                ),
                                 source_ranges: vec![pipe_substitution.into()],
                             }));
                         }
                         Value::ArrayExpression(array_expression) => {
-                            let result = array_expression.execute(
-                                memory,
-                                &mut pipe_info,
-                                &stdlib,
-                                engine,
-                            )?;
+                            let result = array_expression.execute(memory, &mut pipe_info, &stdlib, engine)?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::ObjectExpression(object_expression) => {
-                            let result = object_expression.execute(
-                                memory,
-                                &mut pipe_info,
-                                &stdlib,
-                                engine,
-                            )?;
+                            let result = object_expression.execute(memory, &mut pipe_info, &stdlib, engine)?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::MemberExpression(member_expression) => {
@@ -650,12 +629,7 @@ pub fn execute(
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::UnaryExpression(unary_expression) => {
-                            let result = unary_expression.get_result(
-                                memory,
-                                &mut pipe_info,
-                                &stdlib,
-                                engine,
-                            )?;
+                            let result = unary_expression.get_result(memory, &mut pipe_info, &stdlib, engine)?;
                             memory.add(&var_name, result, source_range)?;
                         }
                     }
@@ -680,8 +654,9 @@ pub fn execute(
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use pretty_assertions::assert_eq;
+
+    use super::*;
 
     pub async fn parse_execute(code: &str) -> Result<ProgramMemory> {
         let tokens = crate::tokeniser::lexer(code);
@@ -730,23 +705,13 @@ show(part001)"#,
         let memory = parse_execute(&ast_fn("-1")).await.unwrap();
         assert_eq!(
             serde_json::json!(1.0 + 2.0f64.sqrt()),
-            memory
-                .root
-                .get("intersect")
-                .unwrap()
-                .get_json_value()
-                .unwrap()
+            memory.root.get("intersect").unwrap().get_json_value().unwrap()
         );
 
         let memory = parse_execute(&ast_fn("0")).await.unwrap();
         assert_eq!(
             serde_json::json!(1.0000000000000002),
-            memory
-                .root
-                .get("intersect")
-                .unwrap()
-                .get_json_value()
-                .unwrap()
+            memory.root.get("intersect").unwrap().get_json_value().unwrap()
         );
     }
 

@@ -8,15 +8,17 @@ import { AppHeader } from '../components/AppHeader'
 import { open } from '@tauri-apps/api/dialog'
 import { BaseUnit, baseUnits } from '../useStore'
 import { Toggle } from '../components/Toggle/Toggle'
-import { useNavigate, useRouteLoaderData } from 'react-router-dom'
+import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { IndexLoaderData, paths } from '../Router'
 import { Themes } from '../lib/theme'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { UnitSystem } from 'machines/settingsMachine'
 
 export const Settings = () => {
   const loaderData = useRouteLoaderData(paths.FILE) as IndexLoaderData
   const navigate = useNavigate()
+  const location = useLocation()
   useHotkeys('esc', () => navigate('../'))
   const {
     settings: {
@@ -135,9 +137,11 @@ export const Settings = () => {
             offLabel="Imperial"
             onLabel="Metric"
             name="settings-units"
-            checked={unitSystem === 'metric'}
+            checked={unitSystem === UnitSystem.Metric}
             onChange={(e) => {
-              const newUnitSystem = e.target.checked ? 'metric' : 'imperial'
+              const newUnitSystem = e.target.checked
+                ? UnitSystem.Metric
+                : UnitSystem.Imperial
               send({
                 type: 'Set Unit System',
                 data: { unitSystem: newUnitSystem },
@@ -201,24 +205,26 @@ export const Settings = () => {
             ))}
           </select>
         </SettingsSection>
-        <SettingsSection
-          title="Onboarding"
-          description="Replay the onboarding process"
-        >
-          <ActionButton
-            Element="button"
-            onClick={() => {
-              send({
-                type: 'Set Onboarding Status',
-                data: { onboardingStatus: '' },
-              })
-              navigate('..' + paths.ONBOARDING.INDEX)
-            }}
-            icon={{ icon: faArrowRotateBack }}
+        {location.pathname.includes(paths.FILE) && (
+          <SettingsSection
+            title="Onboarding"
+            description="Replay the onboarding process"
           >
-            Replay Onboarding
-          </ActionButton>
-        </SettingsSection>
+            <ActionButton
+              Element="button"
+              onClick={() => {
+                send({
+                  type: 'Set Onboarding Status',
+                  data: { onboardingStatus: '' },
+                })
+                navigate('..' + paths.ONBOARDING.INDEX)
+              }}
+              icon={{ icon: faArrowRotateBack }}
+            >
+              Replay Onboarding
+            </ActionButton>
+          </SettingsSection>
+        )}
       </div>
     </div>
   )

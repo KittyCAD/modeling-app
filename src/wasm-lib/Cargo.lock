@@ -29,10 +29,11 @@ checksum = "f26201604c87b1e01bd3d98f8d5d9a8fcbb815e8cedb41ffccbeb4bf593a35fe"
 
 [[package]]
 name = "ahash"
-version = "0.7.6"
+version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fcb51a0695d8f838b1ee009b3fbf66bda078cd64590202a864a8f3e8c4315c47"
+checksum = "2c99f64d1e06488f620f932677e24bc6e2897582980441ae90a671415bd7ec2f"
 dependencies = [
+ "cfg-if",
  "getrandom",
  "once_cell",
  "version_check",
@@ -187,9 +188,9 @@ dependencies = [
 
 [[package]]
 name = "bson"
-version = "2.6.1"
+version = "2.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9aeb8bae494e49dbc330dd23cf78f6f7accee22f640ce3ab17841badaa4ce232"
+checksum = "58da0ae1e701ea752cc46c1bb9f39d5ecefc7395c3ecd526261a566d4f16e0c2"
 dependencies = [
  "ahash",
  "base64 0.13.1",
@@ -198,7 +199,7 @@ dependencies = [
  "hex",
  "indexmap 1.9.3",
  "js-sys",
- "lazy_static",
+ "once_cell",
  "rand",
  "serde",
  "serde_bytes",
@@ -406,6 +407,20 @@ dependencies = [
  "expectorate",
  "openapitor",
  "pretty_assertions",
+ "proc-macro2",
+ "quote",
+ "serde",
+ "serde_tokenstream",
+ "syn 2.0.29",
+]
+
+[[package]]
+name = "derive-docs"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "075291fd1d6d70a886078f7b1c132a160559ceb9a0fe143177872d40ea587906"
+dependencies = [
+ "convert_case",
  "proc-macro2",
  "quote",
  "serde",
@@ -932,12 +947,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "kcl"
-version = "0.1.0"
+name = "kcl-lib"
+version = "0.1.10"
 dependencies = [
  "anyhow",
  "bson",
- "derive-docs",
+ "derive-docs 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "expectorate",
  "futures",
  "js-sys",
@@ -953,7 +968,7 @@ dependencies = [
  "thiserror",
  "tokio",
  "tokio-tungstenite",
- "ts-rs",
+ "ts-rs-json-value",
  "uuid",
  "wasm-bindgen",
  "wasm-bindgen-futures",
@@ -961,9 +976,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.2.20"
+version = "0.2.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e71916b50966110cb9f70aa6c310748a153fdcb0183a02615324a6f457fd18e8"
+checksum = "b8b33e5df8f82b97e5f5af94ff1400ae37449d0f5f1bb79acedf17cf2193680f"
 dependencies = [
  "anyhow",
  "base64 0.21.2",
@@ -975,6 +990,7 @@ dependencies = [
  "phonenumber",
  "schemars",
  "serde",
+ "serde_bytes",
  "serde_json",
  "thiserror",
  "url",
@@ -1696,9 +1712,9 @@ dependencies = [
 
 [[package]]
 name = "schemars"
-version = "0.8.12"
+version = "0.8.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "02c613288622e5f0c3fdc5dbd4db1c5fbe752746b1d1a56a0630b78fd00de44f"
+checksum = "763f8cd0d4c71ed8389c90cb8100cba87e763bd01a8e614d4f0af97bcd50a161"
 dependencies = [
  "bigdecimal",
  "bytes",
@@ -1713,9 +1729,9 @@ dependencies = [
 
 [[package]]
 name = "schemars_derive"
-version = "0.8.12"
+version = "0.8.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "109da1e6b197438deb6db99952990c7f959572794b80ff93707d55a232545e7c"
+checksum = "ec0f696e21e10fa546b7ffb1c9672c6de8fbc7a81acf59524386d8639bf12737"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2346,9 +2362,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3528ecfd12c466c6f163363caf2d02a71161dd5e1cc6ae7b34207ea2d42d81ed"
 
 [[package]]
-name = "ts-rs"
+name = "ts-rs-json-value"
 version = "7.0.0"
-source = "git+https://github.com/kittycad/ts-rs.git?branch=serde_json#94e2a19c41194e47009fafc7b5a2c28ae544a6e8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b66d07e64e1e39d693819307757ad16878ff2be1f26d6fc2137c4e23bc0c0545"
 dependencies = [
  "serde_json",
  "thiserror",
@@ -2359,7 +2376,8 @@ dependencies = [
 [[package]]
 name = "ts-rs-macros"
 version = "7.0.0"
-source = "git+https://github.com/kittycad/ts-rs.git?branch=serde_json#94e2a19c41194e47009fafc7b5a2c28ae544a6e8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a6f41cc0aeb7a4a55730188e147d3795a7349b501f8334697fd37629b896cdc2"
 dependencies = [
  "Inflector",
  "proc-macro2",
@@ -2592,7 +2610,7 @@ version = "0.1.0"
 dependencies = [
  "bson",
  "gloo-utils",
- "kcl",
+ "kcl-lib",
  "kittycad",
  "serde_json",
  "wasm-bindgen",
