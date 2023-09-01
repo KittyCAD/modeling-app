@@ -124,6 +124,8 @@ jobs:
   publish-apps-release:
     runs-on: ubuntu-20.04
     if: github.event_name == 'release'
+    permissions:
+      contents: write
     needs: [build-test-web, build-apps]
     env:
       VERSION_NO_V: ${{ needs.build-test-web.outputs.version }}
@@ -189,3 +191,8 @@ jobs:
         with:
           path: last_update.json
           destination: dl.kittycad.io/releases/modeling-app
+
+      - name: Upload release files to Github
+        uses: softprops/action-gh-release@v1
+        with:
+          files: artifact/*/kittycad-modeling-app*
