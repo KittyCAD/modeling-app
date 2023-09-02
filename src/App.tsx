@@ -253,9 +253,9 @@ export function App() {
   const streamWidth = streamRef?.current?.offsetWidth
   const streamHeight = streamRef?.current?.offsetHeight
 
-  const width = streamWidth ? streamWidth * pixelDensity : 0
+  const width = streamWidth ? streamWidth : 0
   const quadWidth = Math.round(width / 4) * 4
-  const height = streamHeight ? streamHeight * pixelDensity : 0
+  const height = streamHeight ? streamHeight : 0
   const quadHeight = Math.round(height / 4) * 4
 
   useLayoutEffect(() => {
