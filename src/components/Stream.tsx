@@ -17,7 +17,6 @@ export const Stream = ({ className = '' }) => {
     mediaStream,
     engineCommandManager,
     setIsMouseDownInStream,
-    setCmdId,
     didDragInStream,
     setDidDragInStream,
     streamDimensions,
@@ -27,7 +26,6 @@ export const Stream = ({ className = '' }) => {
     isMouseDownInStream: s.isMouseDownInStream,
     setIsMouseDownInStream: s.setIsMouseDownInStream,
     fileId: s.fileId,
-    setCmdId: s.setCmdId,
     didDragInStream: s.didDragInStream,
     setDidDragInStream: s.setDidDragInStream,
     streamDimensions: s.streamDimensions,
@@ -59,7 +57,6 @@ export const Stream = ({ className = '' }) => {
     console.log('click', x, y)
 
     const newId = uuidv4()
-    setCmdId(newId)
 
     const interaction = ctrlKey ? 'pan' : 'rotate'
 
