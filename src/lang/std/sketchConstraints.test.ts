@@ -172,10 +172,10 @@ describe('testing swaping out sketch calls with xLine/xLineTo', () => {
       inputCode: bigExample,
       callToSwap: [
         `angledLineOfXLength({`,
-        `      angle: 217,`,
-        `      length: 0.86,`,
-        `      tag: 'abc4'`,
-        `    }, %)`,
+        `       angle: 217,`,
+        `       length: 0.86,`,
+        `       tag: 'abc4'`,
+        `     }, %)`,
       ].join('\n'),
       constraintType: 'horizontal',
     })
@@ -201,13 +201,14 @@ describe('testing swaping out sketch calls with xLine/xLineTo', () => {
       inputCode: bigExample,
       callToSwap: [
         `angledLineOfYLength({`,
-        `      angle: 104,`,
-        `      length: 1.58,`,
-        `      tag: 'abc5'`,
+        `       angle: 104,`,
+        `       length: 1.58,`,
+        `       tag: 'abc5'`,
         `    }, %)`,
       ].join('\n'),
       constraintType: 'vertical',
     })
+    throw newCode
     const expectedLine = "yLine({ length: 1.58, tag: 'abc5' }, %)"
     expect(newCode).toContain(expectedLine)
     // new line should start at the same place as the old line

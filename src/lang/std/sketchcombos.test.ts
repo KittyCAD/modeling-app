@@ -406,8 +406,8 @@ show(part001)`
         'setVertDistance'
       )
       expect(expectedCode).toContain(`|> lineTo([
-      lastSegX(%) + myVar,
-      segEndY('seg01', %) + 2.93
+        lastSegX(%) + myVar,
+        segEndY('seg01', %) + 2.93
     ], %) // xRelative`)
     })
     it('testing for yRelative to horizontal distance', async () => {
@@ -417,8 +417,8 @@ show(part001)`
         'setHorzDistance'
       )
       expect(expectedCode).toContain(`|> lineTo([
-      segEndX('seg01', %) + 2.6,
-      lastSegY(%) + myVar
+        segEndX('seg01', %) + 2.6,
+        lastSegY(%) + myVar
     ], %) // yRelative`)
     })
   })
