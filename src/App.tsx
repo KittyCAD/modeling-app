@@ -74,6 +74,7 @@ export function App() {
     setArtifactMap,
     engineCommandManager,
     setEngineCommandManager,
+    highlightRange,
     setHighlightRange,
     setCursor2,
     sourceRangeMap,
@@ -85,7 +86,6 @@ export function App() {
     openPanes,
     setOpenPanes,
     didDragInStream,
-    setDidDragInStream,
     setStreamDimensions,
     streamDimensions,
   } = useStore((s) => ({
@@ -106,6 +106,7 @@ export function App() {
     setArtifactMap: s.setArtifactNSourceRangeMaps,
     engineCommandManager: s.engineCommandManager,
     setEngineCommandManager: s.setEngineCommandManager,
+    highlightRange: s.highlightRange,
     setHighlightRange: s.setHighlightRange,
     isShiftDown: s.isShiftDown,
     setCursor: s.setCursor,
@@ -120,7 +121,6 @@ export function App() {
     openPanes: s.openPanes,
     setOpenPanes: s.setOpenPanes,
     didDragInStream: s.didDragInStream,
-    setDidDragInStream: s.setDidDragInStream,
     setStreamDimensions: s.setStreamDimensions,
     streamDimensions: s.streamDimensions,
   }))
@@ -324,11 +324,14 @@ export function App() {
         const unSubHover = engineCommandManager.subscribeToUnreliable({
           event: 'highlight_set_entity',
           callback: ({ data }) => {
-            if (!data?.entity_id) {
-              setHighlightRange([0, 0])
-            } else {
+            if (data?.entity_id) {
               const sourceRange = sourceRangeMap[data.entity_id]
               setHighlightRange(sourceRange)
+            } else if (
+              !highlightRange ||
+              (highlightRange[0] !== 0 && highlightRange[1] !== 0)
+            ) {
+              setHighlightRange([0, 0])
             }
           },
         })
