@@ -121,8 +121,9 @@ jobs:
           path: src-tauri/target/release/bundle/*/*
 
 
-  fake-apps-release:
+  publish-apps-release:
     runs-on: ubuntu-20.04
+    if: github.event_name == 'release'
     needs: [build-test-web, build-apps]
     env:
       VERSION_NO_V: ${{ needs.build-test-web.outputs.version }}
@@ -164,17 +165,6 @@ jobs:
               }
             }' > last_update.json
             cat last_update.json
-
-
-  publish-apps-release:
-    runs-on: ubuntu-20.04
-    if: github.event_name == 'release'
-    needs: [build-test-web, build-apps]
-    env:
-      VERSION_NO_V: ${{ needs.build-test-web.outputs.version }}
-    steps:
-
-      - uses: actions/download-artifact@v3
 
       - name: Authenticate to Google Cloud
         uses: 'google-github-actions/auth@v1.1.1'
