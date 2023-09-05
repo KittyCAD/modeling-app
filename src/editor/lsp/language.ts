@@ -1,6 +1,5 @@
 // Code mirror language implementation for kcl.
 
-import KclParser from './parser'
 import {
   Language,
   defineLanguageFacet,
@@ -9,6 +8,7 @@ import {
 import { LanguageServerClient } from '.'
 import { kclPlugin } from './plugin'
 import type * as LSP from 'vscode-languageserver-protocol'
+import { parser as jsParser } from '@lezer/javascript'
 
 const data = defineLanguageFacet({})
 
@@ -19,8 +19,10 @@ export interface LanguageOptions {
 }
 
 export default function kclLanguage(options: LanguageOptions): LanguageSupport {
-  const parser = new KclParser(options.client)
-  const lang = new Language(data, parser, [], 'kcl')
+  // For now let's use the javascript parser.
+  // It works really well and has good syntax highlighting.
+  // We can use our lsp for the rest.
+  const lang = new Language(data, jsParser, [], 'kcl')
 
   // Create our supporting extension.
   const kclLsp = kclPlugin({
