@@ -162,8 +162,6 @@ export interface StoreState {
   setIsMouseDownInStream: (isMouseDownInStream: boolean) => void
   didDragInStream: boolean
   setDidDragInStream: (didDragInStream: boolean) => void
-  cmdId?: string
-  setCmdId: (cmdId: string) => void
   fileId: string
   setFileId: (fileId: string) => void
   streamDimensions: { streamWidth: number; streamHeight: number }
@@ -350,8 +348,6 @@ export const useStore = create<StoreState>()(
         set({ didDragInStream })
       },
       // For stream event handling
-      cmdId: undefined,
-      setCmdId: (cmdId) => set({ cmdId }),
       fileId: '',
       setFileId: (fileId) => set({ fileId }),
       streamDimensions: { streamWidth: 1280, streamHeight: 720 },

@@ -81,8 +81,6 @@ export function App() {
     setIsStreamReady,
     isStreamReady,
     isMouseDownInStream,
-    cmdId,
-    setCmdId,
     formatCode,
     openPanes,
     setOpenPanes,
@@ -117,8 +115,6 @@ export function App() {
     isStreamReady: s.isStreamReady,
     setIsStreamReady: s.setIsStreamReady,
     isMouseDownInStream: s.isMouseDownInStream,
-    cmdId: s.cmdId,
-    setCmdId: s.setCmdId,
     formatCode: s.formatCode,
     addKCLError: s.addKCLError,
     openPanes: s.openPanes,
@@ -396,9 +392,8 @@ export function App() {
     const interaction = ctrlKey ? 'zoom' : shiftKey ? 'pan' : 'rotate'
 
     const newCmdId = uuidv4()
-    setCmdId(newCmdId)
 
-    if (cmdId && isMouseDownInStream) {
+    if (isMouseDownInStream) {
       debounceSocketSend({
         type: 'modeling_cmd_req',
         cmd: {
