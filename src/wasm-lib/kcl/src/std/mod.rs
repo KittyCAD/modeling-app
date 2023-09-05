@@ -5,9 +5,6 @@ pub mod segment;
 pub mod sketch;
 pub mod utils;
 
-// TODO: Something that would be nice is if we could generate docs for Kcl based on the
-// actual stdlib functions below.
-
 use std::collections::HashMap;
 
 use anyhow::Result;
