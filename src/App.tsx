@@ -245,7 +245,6 @@ export function App() {
       codeBasedSelections,
     })
   }
-  const pixelDensity = window.devicePixelRatio
   const streamWidth = streamRef?.current?.offsetWidth
   const streamHeight = streamRef?.current?.offsetHeight
 
