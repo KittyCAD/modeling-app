@@ -37,7 +37,6 @@ async function testingSwapSketchFnCall({
     codeBasedSelections: [range],
     otherSelections: [],
   }
-  console.log('selections', JSON.stringify(selections))
   const transformInfos = getTransformInfos(selections, ast, constraintType)
 
   if (!transformInfos) throw new Error('nope')
