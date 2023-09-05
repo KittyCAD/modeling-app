@@ -1,7 +1,13 @@
 import { autocompletion, completeFromList } from '@codemirror/autocomplete'
 import { setDiagnostics } from '@codemirror/lint'
 import { Facet } from '@codemirror/state'
-import { EditorView, ViewPlugin, Tooltip, hoverTooltip } from '@codemirror/view'
+import {
+  EditorView,
+  ViewPlugin,
+  Tooltip,
+  hoverTooltip,
+  tooltips,
+} from '@codemirror/view'
 import {
   DiagnosticSeverity,
   CompletionItemKind,
@@ -274,6 +280,9 @@ export function kclPlugin(options: LanguageServerOptions) {
         plugin?.requestHoverTooltip(view, offsetToPos(view.state.doc, pos)) ??
         null
     ),
+    tooltips({
+      position: 'absolute',
+    }),
     autocompletion({
       override: [
         async (context) => {

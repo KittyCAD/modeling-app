@@ -519,7 +519,7 @@ export function App() {
           <CollapsiblePanel
             title="Code"
             icon={faCode}
-            className="open:!mb-2"
+            className="open:!mb-2 overflow-x-hidden"
             open={openPanes.includes('code')}
           >
             <div className="px-2 py-1">
@@ -531,9 +531,12 @@ export function App() {
                 format
               </button>
             </div>
-            <div id="code-mirror-override">
+            <div
+              id="code-mirror-override"
+              className="overflow-x-hidden  h-full"
+            >
               <CodeMirror
-                className="h-full"
+                className="h-full overflow-hidden-x"
                 value={code}
                 extensions={
                   kclLSP

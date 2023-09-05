@@ -3,6 +3,7 @@
   "version": "0.3.0",
   "private": true,
   "dependencies": {
+    "@codemirror/autocomplete": "^6.9.0",
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
     "@fortawesome/free-brands-svg-icons": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
@@ -21,8 +22,8 @@
     "@types/node": "^16.7.13",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
-    "@uiw/codemirror-extensions-langs": "^4.21.9",
-    "@uiw/react-codemirror": "^4.15.1",
+    "@uiw/codemirror-extensions-langs": "^4.21.13",
+    "@uiw/react-codemirror": "^4.21.13",
     "@xstate/react": "^3.2.2",
     "crypto-js": "^4.1.1",
     "formik": "^2.4.3",

@@ -86,6 +86,9 @@ code {
   @apply bg-transparent;
 }
 
+#code-mirror-override .cm-scroller {
+}
+
 #code-mirror-override .cm-activeLine,
 #code-mirror-override .cm-activeLineGutter {
   @apply bg-liquid-10/50;
@@ -133,13 +136,15 @@ code {
   @apply bg-transparent !important;
 }
 
-#code-mirror-override .cm-lint-tooltip {
-  z-index: 9999;
+#code-mirror-override .cm-tooltip {
+  font-size: 80%;
 }
 
 #code-mirror-override .cm-tooltip-hover {
+}
+
+#code-mirror-override .cm-tooltip-hover .documentation {
   padding: 5;
-  font-size: 80%;
 }
 
 #code-mirror-override .cm-content {
