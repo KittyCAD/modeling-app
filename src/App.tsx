@@ -377,9 +377,6 @@ export function App() {
     nativeEvent,
   }) => {
     nativeEvent.preventDefault()
-    if (isMouseDownInStream) {
-      setDidDragInStream(true)
-    }
 
     const { x, y } = getNormalisedCoordinates({
       clientX,
