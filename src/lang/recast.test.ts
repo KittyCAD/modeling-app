@@ -45,8 +45,7 @@ const newVar = myVar + 1`
     expect(recasted).toBe(code.trim())
   })
   it('test with function call', () => {
-    const code = `
-const myVar = "hello"
+    const code = `const myVar = "hello"
 log(5, myVar)`
     const { ast } = code2ast(code)
     const recasted = recast(ast)
@@ -71,8 +70,7 @@ log(5, myVar)`
   |> lineTo({ to: [1, 0], tag: "rightPath" }, %)
   |> close(%)
 
-show(mySketch)
-`
+show(mySketch)`
     const { ast } = code2ast(code)
     const recasted = recast(ast)
     expect(recasted).toBe(code.trim())
@@ -186,8 +184,7 @@ const myVar2 = yo['a'][key2].c`
 
 describe('testing recasting with comments and whitespace', () => {
   it('code with comments', () => {
-    const code = `
-const yo = { a: { b: { c: '123' } } }
+    const code = `const yo = { a: { b: { c: '123' } } }
 // this is a comment
 const key = 'c'`
 
@@ -197,20 +194,18 @@ const key = 'c'`
     expect(recasted).toBe(code)
   })
   it('code with comment and extra lines', () => {
-    const code = `
-const yo = 'c' /* this is
+    const code = `const yo = 'c'
+
+/* this is
 a
 comment */
-
 const yo = 'bing'`
     const { ast } = code2ast(code)
     const recasted = recast(ast)
     expect(recasted).toBe(code)
   })
   it('comments at the start and end', () => {
-    const code = `
-// this is a comment
-
+    const code = `// this is a comment
 const yo = { a: { b: { c: '123' } } }
 const key = 'c'
 
@@ -220,12 +215,12 @@ const key = 'c'
     expect(recasted).toBe(code)
   })
   it('comments in a fn block', () => {
-    const code = `
-const myFn = () => {
+    const code = `const myFn = () => {
   // this is a comment
-  const yo = { a: { b: { c: '123' } } } /* block
-  comment */
+  const yo = { a: { b: { c: '123' } } }
 
+  /* block
+  comment */
   const key = 'c'
   // this is also a comment
 }`
@@ -255,7 +250,7 @@ const mySk1 = startSketchAt([0, 0])
   // comment here
   |> lineTo({ to: [0, 1], tag: 'myTag' }, %)
   |> lineTo([1, 1], %) /* and
-  here 
+  here
   */
   // a comment between pipe expression statements
   |> rx(90, %)
@@ -269,7 +264,21 @@ const mySk1 = startSketchAt([0, 0])
   */`
     const { ast } = code2ast(code)
     const recasted = recast(ast)
-    expect(recasted).toBe(code)
+    expect(recasted).toBe(`// comment at start
+const mySk1 = startSketchAt([0, 0])
+  |> lineTo([1, 1], %)
+  // comment here
+  |> lineTo({ to: [0, 1], tag: 'myTag' }, %)
+  |> lineTo([1, 1], %)
+  /* and
+  here
+
+a comment between pipe expression statements */
+  |> rx(90, %)
+  // and another with just white space between others below
+  |> ry(45, %)
+  |> rx(45, %)
+// one more for good measure`)
   })
 })
 
@@ -295,7 +304,7 @@ describe('testing call Expressions in BinaryExpressions and UnaryExpressions', (
   it('with unaryExpression in sketch situation', () => {
     const code = [
       'const part001 = startSketchAt([0, 0])',
-      '|> line([-2.21, -legLen(5, min(3, 999))], %)',
+      '  |> line([-2.21, -legLen(5, min(3, 999))], %)',
     ].join('\n')
     const { ast } = code2ast(code)
     const recasted = recast(ast)
@@ -309,10 +318,10 @@ describe('it recasts wrapped object expressions in pipe bodies with correct inde
   |> line({ to: [0.62, 4.15], tag: 'seg01' }, %)
   |> line([2.77, -1.24], %)
   |> angledLineThatIntersects({
-      angle: 201,
-      offset: -1.35,
-      intersectTag: 'seg01'
-    }, %)
+        angle: 201,
+        offset: -1.35,
+        intersectTag: 'seg01'
+     }, %)
   |> line([-0.42, -1.72], %)
 show(part001)`
     const { ast } = code2ast(code)

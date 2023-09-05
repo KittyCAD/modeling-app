@@ -5,9 +5,10 @@ use std::collections::HashMap;
 use anyhow::Result;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
-    abstract_syntax_tree_types::{BodyItem, FunctionExpression, Value},
+    abstract_syntax_tree_types::{BodyItem, Function, FunctionExpression, Value},
     engine::EngineConnection,
     errors::{KclError, KclErrorDetails},
 };
@@ -281,9 +282,64 @@ pub struct Position(pub [f64; 3]);
 #[ts(export)]
 pub struct Rotation(pub [f64; 4]);
 
-#[derive(Debug, Default, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Default, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema, Hash, Eq)]
 #[ts(export)]
 pub struct SourceRange(pub [usize; 2]);
+
+impl SourceRange {
+    /// Create a new source range.
+    pub fn new(start: usize, end: usize) -> Self {
+        Self([start, end])
+    }
+
+    /// Get the start of the range.
+    pub fn start(&self) -> usize {
+        self.0[0]
+    }
+
+    /// Get the end of the range.
+    pub fn end(&self) -> usize {
+        self.0[1]
+    }
+
+    /// Check if the range contains a position.
+    pub fn contains(&self, pos: usize) -> bool {
+        pos >= self.start() && pos <= self.end()
+    }
+
+    pub fn start_to_lsp_position(&self, code: &str) -> LspPosition {
+        // Calculate the line and column of the error from the source range.
+        // Lines are zero indexed in vscode so we need to subtract 1.
+        let mut line = code[..self.start()].lines().count();
+        if line > 0 {
+            line = line.saturating_sub(1);
+        }
+        let column = code[..self.start()].lines().last().map(|l| l.len()).unwrap_or_default();
+
+        LspPosition {
+            line: line as u32,
+            character: column as u32,
+        }
+    }
+
+    pub fn end_to_lsp_position(&self, code: &str) -> LspPosition {
+        // Calculate the line and column of the error from the source range.
+        // Lines are zero indexed in vscode so we need to subtract 1.
+        let line = code[..self.end()].lines().count() - 1;
+        let column = code[..self.end()].lines().last().map(|l| l.len()).unwrap_or_default();
+
+        LspPosition {
+            line: line as u32,
+            character: column as u32,
+        }
+    }
+
+    pub fn to_lsp_range(&self, code: &str) -> LspRange {
+        let start = self.start_to_lsp_position(code);
+        let end = self.end_to_lsp_position(code);
+        LspRange { start, end }
+    }
+}
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Clone, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -509,7 +565,6 @@ pub fn execute(
     engine: &mut EngineConnection,
 ) -> Result<ProgramMemory, KclError> {
     let mut pipe_info = PipeInfo::default();
-    let stdlib = crate::std::StdLib::new();
 
     // Iterate over the body of the program.
     for statement in &program.body {
@@ -529,7 +584,8 @@ pub fn execute(
                             _ => (),
                         }
                     }
-                    if fn_name == "show" {
+                    let _show_fn = Box::new(crate::std::Show);
+                    if let Function::StdLib { func: _show_fn } = &call_expr.function {
                         if options != BodyType::Root {
                             return Err(KclError::Semantic(KclErrorDetails {
                                 message: "Cannot call show outside of a root".to_string(),
@@ -563,7 +619,7 @@ pub fn execute(
                             memory.add(&var_name, value.clone(), source_range)?;
                         }
                         Value::BinaryExpression(binary_expression) => {
-                            let result = binary_expression.get_result(memory, &mut pipe_info, &stdlib, engine)?;
+                            let result = binary_expression.get_result(memory, &mut pipe_info, engine)?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::FunctionExpression(function_expression) => {
@@ -600,11 +656,11 @@ pub fn execute(
                             )?;
                         }
                         Value::CallExpression(call_expression) => {
-                            let result = call_expression.execute(memory, &mut pipe_info, &stdlib, engine)?;
+                            let result = call_expression.execute(memory, &mut pipe_info, engine)?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::PipeExpression(pipe_expression) => {
-                            let result = pipe_expression.get_result(memory, &mut pipe_info, &stdlib, engine)?;
+                            let result = pipe_expression.get_result(memory, &mut pipe_info, engine)?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::PipeSubstitution(pipe_substitution) => {
@@ -617,11 +673,11 @@ pub fn execute(
                             }));
                         }
                         Value::ArrayExpression(array_expression) => {
-                            let result = array_expression.execute(memory, &mut pipe_info, &stdlib, engine)?;
+                            let result = array_expression.execute(memory, &mut pipe_info, engine)?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::ObjectExpression(object_expression) => {
-                            let result = object_expression.execute(memory, &mut pipe_info, &stdlib, engine)?;
+                            let result = object_expression.execute(memory, &mut pipe_info, engine)?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::MemberExpression(member_expression) => {
@@ -629,7 +685,7 @@ pub fn execute(
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::UnaryExpression(unary_expression) => {
-                            let result = unary_expression.get_result(memory, &mut pipe_info, &stdlib, engine)?;
+                            let result = unary_expression.get_result(memory, &mut pipe_info, engine)?;
                             memory.add(&var_name, result, source_range)?;
                         }
                     }
@@ -637,7 +693,7 @@ pub fn execute(
             }
             BodyItem::ReturnStatement(return_statement) => match &return_statement.argument {
                 Value::BinaryExpression(bin_expr) => {
-                    let result = bin_expr.get_result(memory, &mut pipe_info, &stdlib, engine)?;
+                    let result = bin_expr.get_result(memory, &mut pipe_info, engine)?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::Identifier(identifier) => {
@@ -660,7 +716,8 @@ mod tests {
 
     pub async fn parse_execute(code: &str) -> Result<ProgramMemory> {
         let tokens = crate::tokeniser::lexer(code);
-        let program = crate::parser::abstract_syntax_tree(&tokens)?;
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast()?;
         let mut mem: ProgramMemory = Default::default();
         let mut engine = EngineConnection::new().await?;
         let memory = execute(program, &mut mem, BodyType::Root, &mut engine)?;
@@ -772,6 +829,28 @@ const part001 = startSketchAt([0, 0])
   min(segLen('seg01', %), myVar),
   legLen(segLen('seg01', %), myVar)
 ], %)
+
+show(part001)"#;
+
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_with_inline_comment() {
+        let ast = r#"const baseThick = 1
+const armAngle = 60
+
+const baseThickHalf = baseThick / 2
+const halfArmAngle = armAngle / 2
+
+const arrExpShouldNotBeIncluded = [1, 2, 3]
+const objExpShouldNotBeIncluded = { a: 1, b: 2, c: 3 }
+
+const part001 = startSketchAt([0, 0])
+  |> yLineTo(1, %)
+  |> xLine(3.84, %) // selection-range-7ish-before-this
+
+const variableBelowShouldNotBeIncluded = 3
 
 show(part001)"#;
 

@@ -1,15 +1,15 @@
 #[allow(non_camel_case_types, missing_docs)]
-#[doc = "Std lib function: lineTo"]
+#[doc = "Std lib function: show"]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, schemars :: JsonSchema, ts_rs :: TS)]
 #[ts(export)]
-pub(crate) struct LineTo {}
+pub(crate) struct Show {}
 
 #[allow(non_upper_case_globals, missing_docs)]
-#[doc = "Std lib function: lineTo"]
-pub(crate) const LineTo: LineTo = LineTo {};
-impl crate::docs::StdLibFn for LineTo {
+#[doc = "Std lib function: show"]
+pub(crate) const Show: Show = Show {};
+impl crate::docs::StdLibFn for Show {
     fn name(&self) -> String {
-        "lineTo".to_string()
+        "show".to_string()
     }
 
     fn summary(&self) -> String {
@@ -28,32 +28,19 @@ impl crate::docs::StdLibFn for LineTo {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = true;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
-        vec![
-            crate::docs::StdLibFnArg {
-                name: "data".to_string(),
-                type_: "LineToData".to_string(),
-                schema: LineToData::json_schema(&mut generator),
-                required: true,
-            },
-            crate::docs::StdLibFnArg {
-                name: "sketch_group".to_string(),
-                type_: "SketchGroup".to_string(),
-                schema: SketchGroup::json_schema(&mut generator),
-                required: true,
-            },
-        ]
+        vec![crate::docs::StdLibFnArg {
+            name: "args".to_string(),
+            type_: "[number]".to_string(),
+            schema: <Vec<f64>>::json_schema(&mut generator),
+            required: true,
+        }]
     }
 
     fn return_value(&self) -> Option<crate::docs::StdLibFnArg> {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = true;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
-        Some(crate::docs::StdLibFnArg {
-            name: "".to_string(),
-            type_: "SketchGroup".to_string(),
-            schema: SketchGroup::json_schema(&mut generator),
-            required: true,
-        })
+        None
     }
 
     fn unpublished(&self) -> bool {
@@ -65,7 +52,7 @@ impl crate::docs::StdLibFn for LineTo {
     }
 
     fn std_lib_fn(&self) -> crate::std::StdFn {
-        line_to
+        show
     }
 
     fn clone_box(&self) -> Box<dyn crate::docs::StdLibFn> {
@@ -73,10 +60,4 @@ impl crate::docs::StdLibFn for LineTo {
     }
 }
 
-fn inner_line_to(
-    data: LineToData,
-    sketch_group: SketchGroup,
-    args: &Args,
-) -> Result<SketchGroup, KclError> {
-    Ok(())
-}
+fn inner_show(#[doc = r" The args to do shit to."] _args: Vec<f64>) {}

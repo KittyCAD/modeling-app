@@ -103,7 +103,13 @@ export type BaseUnit = 'in' | 'ft' | 'mm' | 'cm' | 'm'
 
 export const baseUnitsUnion = Object.values(baseUnits).flatMap((v) => v)
 
-export type PaneType = 'code' | 'variables' | 'debug' | 'kclErrors' | 'logs'
+export type PaneType =
+  | 'code'
+  | 'variables'
+  | 'debug'
+  | 'kclErrors'
+  | 'logs'
+  | 'lspMessages'
 
 export interface StoreState {
   editorView: EditorView | null
@@ -158,6 +164,8 @@ export interface StoreState {
   setMediaStream: (mediaStream: MediaStream) => void
   isStreamReady: boolean
   setIsStreamReady: (isStreamReady: boolean) => void
+  isLSPServerReady: boolean
+  setIsLSPServerReady: (isLSPServerReady: boolean) => void
   isMouseDownInStream: boolean
   setIsMouseDownInStream: (isMouseDownInStream: boolean) => void
   didDragInStream: boolean
@@ -339,6 +347,8 @@ export const useStore = create<StoreState>()(
       setMediaStream: (mediaStream) => set({ mediaStream }),
       isStreamReady: false,
       setIsStreamReady: (isStreamReady) => set({ isStreamReady }),
+      isLSPServerReady: false,
+      setIsLSPServerReady: (isLSPServerReady) => set({ isLSPServerReady }),
       isMouseDownInStream: false,
       setIsMouseDownInStream: (isMouseDownInStream) => {
         set({ isMouseDownInStream })

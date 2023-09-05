@@ -86,6 +86,9 @@ code {
   @apply bg-transparent;
 }
 
+#code-mirror-override .cm-scroller {
+}
+
 #code-mirror-override .cm-activeLine,
 #code-mirror-override .cm-activeLineGutter {
   @apply bg-liquid-10/50;
@@ -131,4 +134,21 @@ code {
 
 .react-json-view {
   @apply bg-transparent !important;
+}
+
+#code-mirror-override .cm-tooltip {
+  font-size: 80%;
+}
+
+#code-mirror-override .cm-tooltip-hover {
+}
+
+#code-mirror-override .cm-tooltip-hover .documentation {
+  padding: 5;
+}
+
+#code-mirror-override .cm-content {
+  white-space: pre-wrap;
+  word-break: normal;
+  word-wrap: break-word;
 }

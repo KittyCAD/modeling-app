@@ -179,6 +179,9 @@ const newVar = myVar + 1
               name: 'aIdentifier',
             },
           ],
+          function: {
+            type: 'InMemory',
+          },
           optional: false,
         },
       },
@@ -211,7 +214,6 @@ describe('testing function declaration', () => {
               type: 'FunctionExpression',
               start: 11,
               end: 19,
-              id: null,
               params: [],
               body: {
                 start: 17,
@@ -250,7 +252,6 @@ describe('testing function declaration', () => {
               type: 'FunctionExpression',
               start: 11,
               end: 39,
-              id: null,
               params: [
                 {
                   type: 'Identifier',
@@ -326,7 +327,6 @@ const myVar = funcN(1, 2)`
               type: 'FunctionExpression',
               start: 11,
               end: 37,
-              id: null,
               params: [
                 {
                   type: 'Identifier',
@@ -416,6 +416,9 @@ const myVar = funcN(1, 2)`
                   raw: '2',
                 },
               ],
+              function: {
+                type: 'InMemory',
+              },
               optional: false,
             },
           },
@@ -485,6 +488,7 @@ describe('testing pipe operator special', () => {
                       ],
                     },
                   ],
+                  function: expect.any(Object),
                   optional: false,
                 },
                 {
@@ -521,6 +525,7 @@ describe('testing pipe operator special', () => {
                     },
                     { type: 'PipeSubstitution', start: 59, end: 60 },
                   ],
+                  function: expect.any(Object),
                   optional: false,
                 },
                 {
@@ -593,6 +598,7 @@ describe('testing pipe operator special', () => {
                     },
                     { type: 'PipeSubstitution', start: 105, end: 106 },
                   ],
+                  function: expect.any(Object),
                   optional: false,
                 },
                 {
@@ -629,6 +635,7 @@ describe('testing pipe operator special', () => {
                     },
                     { type: 'PipeSubstitution', start: 128, end: 129 },
                   ],
+                  function: expect.any(Object),
                   optional: false,
                 },
                 {
@@ -651,6 +658,9 @@ describe('testing pipe operator special', () => {
                     },
                     { type: 'PipeSubstitution', start: 143, end: 144 },
                   ],
+                  function: {
+                    type: 'InMemory',
+                  },
                   optional: false,
                 },
               ],
@@ -730,6 +740,9 @@ describe('testing pipe operator special', () => {
                       end: 35,
                     },
                   ],
+                  function: {
+                    type: 'InMemory',
+                  },
                   optional: false,
                 },
               ],
@@ -1550,7 +1563,10 @@ const key = 'c'`
       type: 'NoneCodeNode',
       start: code.indexOf('\n// this is a comment'),
       end: code.indexOf('const key'),
-      value: '\n// this is a comment\n',
+      value: {
+        type: 'block',
+        value: 'this is a comment',
+      },
     }
     const { nonCodeMeta } = parser_wasm(code)
     expect(nonCodeMeta.noneCodeNodes[0]).toEqual(nonCodeMetaInstance)
@@ -1560,7 +1576,9 @@ const key = 'c'`
     const { nonCodeMeta: nonCodeMeta2 } = parser_wasm(
       codeWithExtraStartWhitespace
     )
-    expect(nonCodeMeta2.noneCodeNodes[0].value).toBe(nonCodeMetaInstance.value)
+    expect(nonCodeMeta2.noneCodeNodes[0].value).toStrictEqual(
+      nonCodeMetaInstance.value
+    )
     expect(nonCodeMeta2.noneCodeNodes[0].start).not.toBe(
       nonCodeMetaInstance.start
     )
@@ -1583,7 +1601,10 @@ const key = 'c'`
       type: 'NoneCodeNode',
       start: 106,
       end: 166,
-      value: ' /* this is\n      a comment\n      spanning a few lines */\n  ',
+      value: {
+        type: 'block',
+        value: 'this is\n      a comment\n      spanning a few lines',
+      },
     })
   })
   it('comments in a pipe expression', () => {
@@ -1603,7 +1624,10 @@ const key = 'c'`
       type: 'NoneCodeNode',
       start: 125,
       end: 141,
-      value: '\n// a comment\n  ',
+      value: {
+        type: 'block',
+        value: 'a comment',
+      },
     })
   })
 })
@@ -1627,6 +1651,7 @@ describe('test UnaryExpression', () => {
           { type: 'Literal', start: 19, end: 20, value: 4, raw: '4' },
           { type: 'Literal', start: 22, end: 25, value: 100, raw: '100' },
         ],
+        function: expect.any(Object),
         optional: false,
       },
     })
@@ -1660,10 +1685,12 @@ describe('testing nested call expressions', () => {
               { type: 'Literal', start: 34, end: 35, value: 5, raw: '5' },
               { type: 'Literal', start: 37, end: 38, value: 3, raw: '3' },
             ],
+            function: expect.any(Object),
             optional: false,
           },
         },
       ],
+      function: expect.any(Object),
       optional: false,
     })
   })
@@ -1695,6 +1722,7 @@ describe('should recognise callExpresions in binaryExpressions', () => {
             },
             { type: 'PipeSubstitution', start: 25, end: 26 },
           ],
+          function: expect.any(Object),
           optional: false,
         },
         right: { type: 'Literal', value: 1, raw: '1', start: 30, end: 31 },
