@@ -1564,7 +1564,7 @@ const key = 'c'`
       start: code.indexOf('\n// this is a comment'),
       end: code.indexOf('const key'),
       value: {
-        type: 'block',
+        type: 'blockComment',
         value: 'this is a comment',
       },
     }
@@ -1602,7 +1602,7 @@ const key = 'c'`
       start: 106,
       end: 166,
       value: {
-        type: 'block',
+        type: 'blockComment',
         value: 'this is\n      a comment\n      spanning a few lines',
       },
     })
@@ -1625,7 +1625,7 @@ const key = 'c'`
       start: 125,
       end: 141,
       value: {
-        type: 'block',
+        type: 'blockComment',
         value: 'a comment',
       },
     })

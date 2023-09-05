@@ -1665,7 +1665,7 @@ const key = 'c'"#,
             Some(NoneCodeNode {
                 start: 38,
                 end: 60,
-                value: NoneCodeValue::Block {
+                value: NoneCodeValue::BlockComment {
                     value: "this is a comment".to_string(),
                 },
             }),
@@ -1687,7 +1687,7 @@ const key = 'c'"#,
             Some(NoneCodeNode {
                 start: 106,
                 end: 166,
-                value: NoneCodeValue::Block {
+                value: NoneCodeValue::BlockComment {
                     value: "this is\n      a comment\n      spanning a few lines".to_string(),
                 },
             }),

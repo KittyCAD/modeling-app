@@ -478,8 +478,9 @@ pub enum NoneCodeValue {
     },
     /// A block comment.
     /// An example of this is the following:
-    /// ```
-    /// /* This is a block comment */
+    /// ```python,no_run
+    /// /* This is a
+    ///     block comment */
     /// 1 + 1
     /// ```
     /// Now this is important. The block comment is attached to the next line.
