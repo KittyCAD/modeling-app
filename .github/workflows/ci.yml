@@ -116,21 +116,6 @@ jobs:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
 
-      - uses: actions/upload-artifact@v3
-        with:
-          path: src-tauri/target/release/bundle/*/*
-
-
-  publish-apps-release:
-    runs-on: ubuntu-20.04
-    if: github.event_name == 'release'
-    needs: [build-test-web, build-apps]
-    env:
-      VERSION_NO_V: ${{ needs.build-test-web.outputs.version }}
-    steps:
-
-      - uses: actions/download-artifact@v3
-
       - name: Generate the update static endpoint
         run: |
           ls -l artifact
@@ -142,11 +127,11 @@ jobs:
           jq --null-input \
             --arg version "v${VERSION_NO_V}" \
             --arg darwin_sig "$DARWIN_SIG" \
-            --arg darwin_url "$RELEASE_DIR/macos/kittycad-modeling-app.app.tar.gz" \
+            --arg darwin_url "$RELEASE_DIR/macos/KittyCAD%20Modeling.app.tar.gz" \
             --arg linux_sig "$LINUX_SIG" \
-            --arg linux_url "$RELEASE_DIR/appimage/kittycad-modeling-app_${VERSION_NO_V}_amd64.AppImage.tar.gz" \
+            --arg linux_url "$RELEASE_DIR/appimage/kittycad-modeling_${VERSION_NO_V}_amd64.AppImage.tar.gz" \
             --arg windows_sig "$WINDOWS_SIG" \
-            --arg windows_url "$RELEASE_DIR/nsis/kittycad-modeling-app_${VERSION_NO_V}_x64-setup.nsis.zip" \
+            --arg windows_url "$RELEASE_DIR/nsis/KittyCAD%20Modeling_${VERSION_NO_V}_x64-setup.nsis.zip" \
             '{
               "version": $version,
               "platforms": {
@@ -165,6 +150,21 @@ jobs:
               }
             }' > last_update.json
             cat last_update.json
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: src-tauri/target/release/bundle/*/*
+
+
+  publish-apps-release:
+    runs-on: ubuntu-20.04
+    if: github.event_name == 'release'
+    needs: [build-test-web, build-apps]
+    env:
+      VERSION_NO_V: ${{ needs.build-test-web.outputs.version }}
+    steps:
+
+      - uses: actions/download-artifact@v3
 
       - name: Authenticate to Google Cloud
         uses: 'google-github-actions/auth@v1.1.1'
