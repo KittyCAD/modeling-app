@@ -336,11 +336,11 @@ impl Parser {
             value: if start_end_string.starts_with("\n\n") && is_new_line_comment {
                 // Preserve if they want a whitespace line before the comment.
                 // But let's just allow one.
-                NoneCodeValue::NewLineBlock { value: full_string }
+                NoneCodeValue::NewLineBlockComment { value: full_string }
             } else if is_new_line_comment {
-                NoneCodeValue::Block { value: full_string }
+                NoneCodeValue::BlockComment { value: full_string }
             } else {
-                NoneCodeValue::Inline { value: full_string }
+                NoneCodeValue::InlineComment { value: full_string }
             },
         };
         Ok((Some(node), end_index - 1))

@@ -436,17 +436,17 @@ pub struct NoneCodeNode {
 impl NoneCodeNode {
     pub fn value(&self) -> String {
         match &self.value {
-            NoneCodeValue::Inline { value } => value.clone(),
-            NoneCodeValue::Block { value } => value.clone(),
-            NoneCodeValue::NewLineBlock { value } => value.clone(),
+            NoneCodeValue::InlineComment { value } => value.clone(),
+            NoneCodeValue::BlockComment { value } => value.clone(),
+            NoneCodeValue::NewLineBlockComment { value } => value.clone(),
             NoneCodeValue::NewLine => "\n\n".to_string(),
         }
     }
 
     pub fn format(&self, indentation: &str) -> String {
         match &self.value {
-            NoneCodeValue::Inline { value } => format!(" // {}\n", value),
-            NoneCodeValue::Block { value } => {
+            NoneCodeValue::InlineComment { value } => format!(" // {}\n", value),
+            NoneCodeValue::BlockComment { value } => {
                 let add_start_new_line = if self.start == 0 { "" } else { "\n" };
                 if value.contains('\n') {
                     format!("{}{}/* {} */\n", add_start_new_line, indentation, value)
@@ -454,7 +454,7 @@ impl NoneCodeNode {
                     format!("{}{}// {}\n", add_start_new_line, indentation, value)
                 }
             }
-            NoneCodeValue::NewLineBlock { value } => {
+            NoneCodeValue::NewLineBlockComment { value } => {
                 let add_start_new_line = if self.start == 0 { "" } else { "\n\n" };
                 if value.contains('\n') {
                     format!("{}{}/* {} */\n", add_start_new_line, indentation, value)
@@ -471,9 +471,28 @@ impl NoneCodeNode {
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum NoneCodeValue {
-    Inline { value: String },
-    Block { value: String },
-    NewLineBlock { value: String },
+    /// An inline comment.
+    /// An example of this is the following: `1 + 1 // This is an inline comment`.
+    InlineComment {
+        value: String,
+    },
+    /// A block comment.
+    /// An example of this is the following:
+    /// ```
+    /// /* This is a block comment */
+    /// 1 + 1
+    /// ```
+    /// Now this is important. The block comment is attached to the next line.
+    /// This is always the case. Also the block comment doesnt have a new line above it.
+    /// If it did it would be a `NewLineBlockComment`.
+    BlockComment {
+        value: String,
+    },
+    /// A block comment that has a new line above it.
+    /// The user explicitly added a new line above the block comment.
+    NewLineBlockComment {
+        value: String,
+    },
     // A new line like `\n\n` NOT a new line like `\n`.
     // This is also not a comment.
     NewLine,
