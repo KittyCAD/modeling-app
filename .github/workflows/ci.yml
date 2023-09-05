@@ -116,6 +116,20 @@ jobs:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
 
+      - uses: actions/upload-artifact@v3
+        with:
+          path: src-tauri/target/release/bundle/*/*
+
+
+  fake-apps-release:
+    runs-on: ubuntu-20.04
+    needs: [build-test-web, build-apps]
+    env:
+      VERSION_NO_V: ${{ needs.build-test-web.outputs.version }}
+    steps:
+
+      - uses: actions/download-artifact@v3
+
       - name: Generate the update static endpoint
         run: |
           ls -l artifact
@@ -151,10 +165,6 @@ jobs:
             }' > last_update.json
             cat last_update.json
 
-      - uses: actions/upload-artifact@v3
-        with:
-          path: src-tauri/target/release/bundle/*/*
-
 
   publish-apps-release:
     runs-on: ubuntu-20.04
@@ -180,7 +190,7 @@ jobs:
         uses: google-github-actions/upload-cloud-storage@v1.0.3
         with:
           path: artifact
-          glob: '*/kittycad-modeling-app*'
+          glob: '*/*'
           parent: false
           destination: dl.kittycad.io/releases/modeling-app/v${{ env.VERSION_NO_V }} 
       
@@ -193,4 +203,4 @@ jobs:
       - name: Upload release files to Github
         uses: softprops/action-gh-release@v1
         with:
-          files: artifact/*/kittycad-modeling-app*
+          files: artifact/*/*
