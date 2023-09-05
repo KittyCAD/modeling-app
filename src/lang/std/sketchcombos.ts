@@ -1426,6 +1426,7 @@ export function transformAstSketchLines({
   selectionRanges.codeBasedSelections.forEach(({ range }, index) => {
     const callBack = transformInfos?.[index].createNode
     const transformTo = transformInfos?.[index].tooltip
+    console.log('transformTo', transformInfos)
     if (!callBack || !transformTo) throw new Error('no callback helper')
 
     const getNode = getNodeFromPathCurry(

@@ -1,6 +1,6 @@
-import * as LSP from 'vscode-languageserver-protocol'
+import { Message } from 'vscode-languageserver-protocol'
 
-var env = process.env.NODE_ENV || 'development'
+const env = import.meta.env.MODE
 
 export default class Tracer {
   static client(message: string): void {
@@ -10,7 +10,7 @@ export default class Tracer {
     }
   }
 
-  static server(input: string | LSP.Message): void {
+  static server(input: string | Message): void {
     // These are really noisy, so we have a special env var for them.
     if (env === 'lsp_tracing') {
       const message: string =
