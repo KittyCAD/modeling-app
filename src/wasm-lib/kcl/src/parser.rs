@@ -163,6 +163,13 @@ impl Parser {
     }
 
     pub fn get_token(&self, index: usize) -> Result<&Token, KclError> {
+        if self.tokens.is_empty() {
+            return Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![],
+                message: "file is empty".to_string(),
+            }));
+        }
+
         let Some(token) = self.tokens.get(index) else {
             return Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: vec![self.tokens.last().unwrap().into()],
@@ -1342,6 +1349,13 @@ impl Parser {
         previous_non_code_meta: NoneCodeMeta,
     ) -> Result<BodyResult, KclError> {
         let mut non_code_meta = previous_non_code_meta;
+        if self.tokens.is_empty() {
+            return Err(KclError::Semantic(KclErrorDetails {
+                source_ranges: vec![],
+                message: "file is empty".to_string(),
+            }));
+        }
+
         if token_index >= self.tokens.len() - 1 {
             return Ok(BodyResult {
                 body: previous_body,
@@ -2691,5 +2705,15 @@ show(mySk1)"#;
         };
 
         assert_eq!(result, expected_result);
+    }
+
+    #[test]
+    fn test_empty_file() {
+        let some_program_string = r#""#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert!(result.err().unwrap().to_string().contains("file is empty"));
     }
 }
