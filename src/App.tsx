@@ -12,7 +12,7 @@ import { asyncParser } from './lang/abstractSyntaxTree'
 import { _executor } from './lang/executor'
 import CodeMirror from '@uiw/react-codemirror'
 import { linter, lintGutter } from '@codemirror/lint'
-import { ViewUpdate } from '@codemirror/view'
+import { ViewUpdate, EditorView } from '@codemirror/view'
 import {
   lineHighlightField,
   addLineHighlight,
@@ -435,6 +435,7 @@ export function App() {
       linter((_view) => {
         return kclErrToDiagnostic(useStore.getState().kclErrors)
       }),
+      EditorView.lineWrapping,
     ]
   }, [])
 
