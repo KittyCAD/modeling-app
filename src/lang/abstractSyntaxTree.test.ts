@@ -1576,7 +1576,9 @@ const key = 'c'`
     const { nonCodeMeta: nonCodeMeta2 } = parser_wasm(
       codeWithExtraStartWhitespace
     )
-    expect(nonCodeMeta2.noneCodeNodes[0].value).toStrictEqual(nonCodeMetaInstance.value)
+    expect(nonCodeMeta2.noneCodeNodes[0].value).toStrictEqual(
+      nonCodeMetaInstance.value
+    )
     expect(nonCodeMeta2.noneCodeNodes[0].start).not.toBe(
       nonCodeMetaInstance.start
     )
