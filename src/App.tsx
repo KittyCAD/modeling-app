@@ -20,7 +20,7 @@ import {
 import { PaneType, Selections, useStore } from './useStore'
 import Server from './editor/lsp/server'
 import Client from './editor/lsp/client'
-import { Logs, KCLErrors, LSPMessages } from './components/Logs'
+import { Logs, KCLErrors } from './components/Logs'
 import { CollapsiblePanel } from './components/CollapsiblePanel'
 import { MemoryPanel } from './components/MemoryPanel'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
@@ -67,7 +67,6 @@ export function App() {
     selectionRanges,
     addLog,
     addKCLError,
-    addLSPMessage,
     code,
     setCode,
     setAst,
@@ -130,7 +129,6 @@ export function App() {
     setCmdId: s.setCmdId,
     formatCode: s.formatCode,
     addKCLError: s.addKCLError,
-    addLSPMessage: s.addLSPMessage,
     openPanes: s.openPanes,
     setOpenPanes: s.setOpenPanes,
     didDragInStream: s.didDragInStream,
@@ -446,7 +444,7 @@ export function App() {
   const { lspClient } = useMemo(() => {
     const intoServer: IntoServer = new IntoServer()
     const fromServer: FromServer = FromServer.create()
-    const client = new Client(fromServer, intoServer, addLSPMessage)
+    const client = new Client(fromServer, intoServer)
     if (!TEST) {
       Server.initialize(intoServer, fromServer).then((lspServer) => {
         lspServer.start()
@@ -456,7 +454,7 @@ export function App() {
 
     const lspClient = new LanguageServerClient({ client })
     return { lspClient }
-  }, [addLSPMessage, setIsLSPServerReady])
+  }, [setIsLSPServerReady])
 
   // Here we initialize the plugin which will start the client.
   // When we have multi-file support the name of the file will be a dep of
@@ -566,12 +564,6 @@ export function App() {
               open={openPanes.includes('kclErrors')}
               title="KCL Errors"
               iconClassNames={{ icon: 'group-open:text-destroy-30' }}
-            />
-            <LSPMessages
-              theme={editorTheme}
-              open={openPanes.includes('lspMessages')}
-              title="LSP Messages"
-              icon={faCodeCommit}
             />
           </section>
         </div>

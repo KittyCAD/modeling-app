@@ -129,8 +129,6 @@ export interface StoreState {
   resetLogs: () => void
   kclErrors: KCLError[]
   addKCLError: (err: KCLError) => void
-  lspMessages: string[]
-  addLSPMessage: (msg: string) => void
   resetKCLErrors: () => void
   ast: Program | null
   setAst: (ast: Program | null) => void
@@ -280,10 +278,6 @@ export const useStore = create<StoreState>()(
       kclErrors: [],
       addKCLError: (e) => {
         set((state) => ({ kclErrors: [...state.kclErrors, e] }))
-      },
-      lspMessages: [],
-      addLSPMessage: (msg) => {
-        set((state) => ({ lspMessages: [...state.lspMessages, msg] }))
       },
       resetKCLErrors: () => {
         set({ kclErrors: [] })

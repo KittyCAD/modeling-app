@@ -78,29 +78,3 @@ export const KCLErrors = ({
     </CollapsiblePanel>
   )
 }
-
-export const LSPMessages = ({
-  theme = Themes.Light,
-  ...props
-}: LogPanelProps) => {
-  const { lspMessages } = useStore(({ lspMessages }) => ({
-    lspMessages,
-  }))
-  useEffect(() => {
-    const element = document.querySelector('.console-tile')
-    if (element) {
-      element.scrollTop = element.scrollHeight - element.clientHeight
-    }
-  }, [lspMessages])
-
-  const lspMessagesStr = lspMessages.map((msg) => msg).join('\n')
-  return (
-    <CollapsiblePanel {...props}>
-      <div className="h-full relative">
-        <div className="absolute inset-0 flex flex-col">
-          <pre style={{ fontSize: '10px' }}>{lspMessagesStr}</pre>
-        </div>
-      </div>
-    </CollapsiblePanel>
-  )
-}

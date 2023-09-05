@@ -64,14 +64,9 @@ const client_capabilities: LSP.ClientCapabilities = {
 export default class Client extends jsrpc.JSONRPCServerAndClient {
   afterInitializedHooks: (() => Promise<void>)[] = []
   #fromServer: FromServer
-  private addLSPMessage: (message: string) => void
   private serverCapabilities: LSP.ServerCapabilities<any> = {}
 
-  constructor(
-    fromServer: FromServer,
-    intoServer: IntoServer,
-    addLSPMessage: (message: string) => void
-  ) {
+  constructor(fromServer: FromServer, intoServer: IntoServer) {
     super(
       new jsrpc.JSONRPCServer(),
       new jsrpc.JSONRPCClient(async (json: jsrpc.JSONRPCRequest) => {
@@ -85,7 +80,6 @@ export default class Client extends jsrpc.JSONRPCServerAndClient {
       })
     )
     this.#fromServer = fromServer
-    this.addLSPMessage = addLSPMessage
   }
 
   async start(): Promise<void> {
@@ -115,7 +109,7 @@ export default class Client extends jsrpc.JSONRPCServerAndClient {
         }
       }
       messageString += message
-      this.addLSPMessage(messageString)
+      // console.log(messageString)
       return
     })
 
