@@ -117,6 +117,18 @@ impl Program {
         None
     }
 
+    /// Returns the body item that includes the given character position.
+    pub fn get_mut_body_item_for_position(&mut self, pos: usize) -> Option<&mut BodyItem> {
+        for item in &mut self.body {
+            let source_range: SourceRange = item.clone().into();
+            if source_range.contains(pos) {
+                return Some(item);
+            }
+        }
+
+        None
+    }
+
     /// Returns a value that includes the given character position.
     /// This is a bit more recursive than `get_body_item_for_position`.
     pub fn get_value_for_position(&self, pos: usize) -> Option<&Value> {
@@ -148,6 +160,81 @@ impl Program {
         }
 
         symbols
+    }
+
+    /// Rename the variable declaration at the given position.
+    pub fn rename_symbol(&mut self, new_name: &str, pos: usize) {
+        // The position must be within the variable declaration.
+        let mut old_name = None;
+        for item in &mut self.body {
+            match item {
+                BodyItem::ExpressionStatement(_expression_statement) => {
+                    continue;
+                }
+                BodyItem::VariableDeclaration(ref mut variable_declaration) => {
+                    if let Some(var_old_name) = variable_declaration.rename_symbol(new_name, pos) {
+                        old_name = Some(var_old_name);
+                        break;
+                    }
+                }
+                BodyItem::ReturnStatement(_return_statement) => continue,
+            }
+        }
+
+        if let Some(old_name) = old_name {
+            // Now rename all the identifiers in the rest of the program.
+            self.rename_identifiers(&old_name, new_name);
+        } else {
+            // Okay so this was not a top level variable declaration.
+            // But it might be a variable declaration inside a function or function params.
+            // So we need to check that.
+            let Some(ref mut item) = self.get_mut_body_item_for_position(pos) else {
+                return;
+            };
+
+            // Recurse over the item.
+            let mut value = match item {
+                BodyItem::ExpressionStatement(ref mut expression_statement) => {
+                    Some(&mut expression_statement.expression)
+                }
+                BodyItem::VariableDeclaration(ref mut variable_declaration) => {
+                    variable_declaration.get_mut_value_for_position(pos)
+                }
+                BodyItem::ReturnStatement(ref mut return_statement) => Some(&mut return_statement.argument),
+            };
+
+            // Check if we have a function expression.
+            if let Some(Value::FunctionExpression(ref mut function_expression)) = &mut value {
+                // Check if the params to the function expression contain the position.
+                for param in &mut function_expression.params {
+                    if param.start == pos {
+                        let old_name = param.name.clone();
+                        // Rename the param.
+                        param.rename(&old_name, new_name);
+                        // Now rename all the identifiers in the rest of the program.
+                        function_expression.body.rename_identifiers(&old_name, new_name);
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    /// Rename all identifiers that have the old name to the new given name.
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        for item in &mut self.body {
+            match item {
+                BodyItem::ExpressionStatement(ref mut expression_statement) => {
+                    expression_statement.expression.rename_identifiers(old_name, new_name);
+                }
+                BodyItem::VariableDeclaration(ref mut variable_declaration) => {
+                    variable_declaration.rename_identifiers(old_name, new_name);
+                }
+                BodyItem::ReturnStatement(ref mut return_statement) => {
+                    return_statement.argument.rename_identifiers(old_name, new_name);
+                }
+            }
+        }
     }
 }
 
@@ -315,6 +402,29 @@ impl Value {
             Value::UnaryExpression(unary_expression) => unary_expression.get_hover_value_for_position(pos, code),
         }
     }
+
+    /// Rename all identifiers that have the old name to the new given name.
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        match self {
+            Value::Literal(_literal) => {}
+            Value::Identifier(ref mut identifier) => identifier.rename(old_name, new_name),
+            Value::BinaryExpression(ref mut binary_expression) => {
+                binary_expression.rename_identifiers(old_name, new_name)
+            }
+            Value::FunctionExpression(_function_identifier) => {}
+            Value::CallExpression(ref mut call_expression) => call_expression.rename_identifiers(old_name, new_name),
+            Value::PipeExpression(ref mut pipe_expression) => pipe_expression.rename_identifiers(old_name, new_name),
+            Value::PipeSubstitution(_) => {}
+            Value::ArrayExpression(ref mut array_expression) => array_expression.rename_identifiers(old_name, new_name),
+            Value::ObjectExpression(ref mut object_expression) => {
+                object_expression.rename_identifiers(old_name, new_name)
+            }
+            Value::MemberExpression(ref mut member_expression) => {
+                member_expression.rename_identifiers(old_name, new_name)
+            }
+            Value::UnaryExpression(ref mut unary_expression) => unary_expression.rename_identifiers(old_name, new_name),
+        }
+    }
 }
 
 impl From<Value> for crate::executor::SourceRange {
@@ -418,6 +528,23 @@ impl BinaryPart {
             }
             BinaryPart::CallExpression(call_expression) => call_expression.get_hover_value_for_position(pos, code),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_hover_value_for_position(pos, code),
+        }
+    }
+
+    /// Rename all identifiers that have the old name to the new given name.
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        match self {
+            BinaryPart::Literal(_literal) => {}
+            BinaryPart::Identifier(ref mut identifier) => identifier.rename(old_name, new_name),
+            BinaryPart::BinaryExpression(ref mut binary_expression) => {
+                binary_expression.rename_identifiers(old_name, new_name)
+            }
+            BinaryPart::CallExpression(ref mut call_expression) => {
+                call_expression.rename_identifiers(old_name, new_name)
+            }
+            BinaryPart::UnaryExpression(ref mut unary_expression) => {
+                unary_expression.rename_identifiers(old_name, new_name)
+            }
         }
     }
 }
@@ -689,6 +816,15 @@ impl CallExpression {
 
         None
     }
+
+    /// Rename all identifiers that have the old name to the new given name.
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        self.callee.rename(old_name, new_name);
+
+        for arg in &mut self.arguments {
+            arg.rename_identifiers(old_name, new_name);
+        }
+    }
 }
 
 /// A function declaration.
@@ -739,6 +875,49 @@ impl VariableDeclaration {
         }
 
         None
+    }
+
+    /// Returns a value that includes the given character position.
+    pub fn get_mut_value_for_position(&mut self, pos: usize) -> Option<&mut Value> {
+        for declaration in &mut self.declarations {
+            let source_range: SourceRange = declaration.clone().into();
+            if source_range.contains(pos) {
+                return Some(&mut declaration.init);
+            }
+        }
+
+        None
+    }
+
+    /// Rename the variable declaration at the given position.
+    /// This returns the old name of the variable, if it found one.
+    pub fn rename_symbol(&mut self, new_name: &str, pos: usize) -> Option<String> {
+        // The position must be within the variable declaration.
+        let source_range: SourceRange = self.clone().into();
+        if !source_range.contains(pos) {
+            return None;
+        }
+
+        for declaration in &mut self.declarations {
+            if declaration.id.start == pos {
+                let old_name = declaration.id.name.clone();
+                declaration.id.name = new_name.to_string();
+                return Some(old_name);
+            }
+        }
+
+        None
+    }
+
+    pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        for declaration in &mut self.declarations {
+            // Skip the init for the variable with the new name since it is the one we are renaming.
+            if declaration.id.name == new_name {
+                continue;
+            }
+
+            declaration.init.rename_identifiers(old_name, new_name);
+        }
     }
 
     pub fn get_lsp_symbols(&self, code: &str) -> Vec<DocumentSymbol> {
@@ -857,7 +1036,9 @@ impl VariableKind {
 pub struct VariableDeclarator {
     pub start: usize,
     pub end: usize,
+    /// The identifier of the variable.
     pub id: Identifier,
+    /// The value of the variable.
     pub init: Value,
 }
 
@@ -918,6 +1099,15 @@ pub struct Identifier {
 }
 
 impl_value_meta!(Identifier);
+
+impl Identifier {
+    /// Rename all identifiers that have the old name to the new given name.
+    fn rename(&mut self, old_name: &str, new_name: &str) {
+        if self.name == old_name {
+            self.name = new_name.to_string();
+        }
+    }
+}
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -1045,6 +1235,13 @@ impl ArrayExpression {
             }],
         })
     }
+
+    /// Rename all identifiers that have the old name to the new given name.
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        for element in &mut self.elements {
+            element.rename_identifiers(old_name, new_name);
+        }
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1158,6 +1355,13 @@ impl ObjectExpression {
                 source_range: self.into(),
             }],
         })
+    }
+
+    /// Rename all identifiers that have the old name to the new given name.
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        for property in &mut self.properties {
+            property.value.rename_identifiers(old_name, new_name);
+        }
     }
 }
 
@@ -1376,6 +1580,21 @@ impl MemberExpression {
             }))
         }
     }
+
+    /// Rename all identifiers that have the old name to the new given name.
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        match &mut self.object {
+            MemberObject::MemberExpression(ref mut member_expression) => {
+                member_expression.rename_identifiers(old_name, new_name)
+            }
+            MemberObject::Identifier(ref mut identifier) => identifier.rename(old_name, new_name),
+        }
+
+        match &mut self.property {
+            LiteralIdentifier::Identifier(ref mut identifier) => identifier.rename(old_name, new_name),
+            LiteralIdentifier::Literal(_) => {}
+        }
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1492,6 +1711,12 @@ impl BinaryExpression {
             }],
         })
     }
+
+    /// Rename all identifiers that have the old name to the new given name.
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        self.left.rename_identifiers(old_name, new_name);
+        self.right.rename_identifiers(old_name, new_name);
+    }
 }
 
 pub fn parse_json_number_as_f64(j: &serde_json::Value, source_range: SourceRange) -> Result<f64, KclError> {
@@ -1599,6 +1824,11 @@ impl UnaryExpression {
 
         None
     }
+
+    /// Rename all identifiers that have the old name to the new given name.
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        self.argument.rename_identifiers(old_name, new_name);
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
@@ -1674,6 +1904,13 @@ impl PipeExpression {
         pipe_info.previous_results = vec![];
         pipe_info.index = 0;
         execute_pipe_body(memory, &self.body, pipe_info, self.into(), engine)
+    }
+
+    /// Rename all identifiers that have the old name to the new given name.
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        for statement in &mut self.body {
+            statement.rename_identifiers(old_name, new_name);
+        }
     }
 }
 
@@ -2157,5 +2394,65 @@ const part001 = startSketchAt([0, 0])
             0,
         );
         assert_eq!(recasted, some_program_string);
+    }
+
+    #[test]
+    fn test_recast_after_rename_std() {
+        let some_program_string = r#"const part001 = startSketchAt([0.0000000000, 5.0000000000])
+    |> line([0.4900857016, -0.0240763666], %)
+
+const part002 = "part002"
+const things = [part001, 0.0]
+let blah = 1
+const foo = false
+let baz = {a: 1, part001: "thing"}
+
+fn ghi = (part001) => {
+  return part001
+}
+
+show(part001)"#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let mut program = parser.ast().unwrap();
+        program.rename_symbol("mySuperCoolPart", 6);
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"const mySuperCoolPart = startSketchAt([0.0, 5.0])
+  |> line([0.4900857016, -0.0240763666], %)
+
+const part002 = "part002"
+const things = [mySuperCoolPart, 0.0]
+let blah = 1
+const foo = false
+let baz = { a: 1, part001: "thing" }
+
+fn ghi = (part001) => {
+  return part001
+}
+
+show(mySuperCoolPart)"#
+        );
+    }
+
+    #[test]
+    fn test_recast_after_rename_fn_args() {
+        let some_program_string = r#"fn ghi = (x, y, z) => {
+  return x
+}"#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let mut program = parser.ast().unwrap();
+        program.rename_symbol("newName", 10);
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"fn ghi = (newName, y, z) => {
+  return newName
+}"#
+        );
     }
 }
