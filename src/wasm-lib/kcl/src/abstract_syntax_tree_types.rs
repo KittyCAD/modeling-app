@@ -27,12 +27,16 @@ pub struct Program {
 }
 
 impl Program {
-    pub fn recast(&self, indentation: &str, is_with_block: bool) -> String {
-        self.body
+    pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
+        let indentation = options.get_indentation(indentation_level);
+        let result = self
+            .body
             .iter()
             .map(|statement| match statement.clone() {
                 BodyItem::ExpressionStatement(expression_statement) => {
-                    expression_statement.expression.recast(indentation, false)
+                    expression_statement
+                        .expression
+                        .recast(options, indentation_level, false)
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => variable_declaration
                     .declarations
@@ -43,56 +47,44 @@ impl Program {
                             indentation,
                             variable_declaration.kind,
                             declaration.id.name,
-                            declaration.init.recast("", false)
+                            declaration.init.recast(options, 0, false)
                         )
                     })
                     .collect::<String>(),
                 BodyItem::ReturnStatement(return_statement) => {
-                    format!("{}return {}", indentation, return_statement.argument.recast("", false))
+                    format!(
+                        "{}return {}",
+                        indentation,
+                        return_statement.argument.recast(options, 0, false)
+                    )
                 }
             })
             .enumerate()
             .map(|(index, recast_str)| {
-                let is_legit_custom_whitespace_or_comment = |s: String| s != " " && s != "\n" && s != "  " && s != "\t";
-
-                // determine the value of startString
-                let last_white_space_or_comment = if index > 0 {
-                    let tmp = if let Some(non_code_node) = self.non_code_meta.none_code_nodes.get(&(index - 1)) {
-                        non_code_node.format(indentation)
-                    } else {
-                        " ".to_string()
-                    };
-                    tmp
-                } else {
-                    " ".to_string()
-                };
-                // indentation of this line will be covered by the previous if we're using a custom whitespace or comment
-                let mut start_string = if is_legit_custom_whitespace_or_comment(last_white_space_or_comment) {
-                    String::new()
-                } else {
-                    indentation.to_owned()
-                };
-                if index == 0 {
+                let start_string = if index == 0 {
+                    // We need to indent.
                     if let Some(start) = self.non_code_meta.start.clone() {
-                        start_string = start.format(indentation);
+                        start.format(&indentation)
                     } else {
-                        start_string = indentation.to_owned();
+                        indentation.to_string()
                     }
-                }
+                } else {
+                    // Do nothing, we already applied the indentation elsewhere.
+                    String::new()
+                };
 
-                // determine the value of endString
-                let maybe_line_break: String = if index == self.body.len() - 1 && !is_with_block {
+                // determine the value of the end string
+                // basically if we are inside a nested function we want to end with a new line
+                let maybe_line_break: String = if index == self.body.len() - 1 && indentation_level == 0 {
                     String::new()
                 } else {
                     "\n".to_string()
                 };
-                let mut custom_white_space_or_comment = match self.non_code_meta.none_code_nodes.get(&index) {
-                    Some(custom_white_space_or_comment) => custom_white_space_or_comment.format(indentation),
+
+                let custom_white_space_or_comment = match self.non_code_meta.none_code_nodes.get(&index) {
+                    Some(custom_white_space_or_comment) => custom_white_space_or_comment.format(&indentation),
                     None => String::new(),
                 };
-                if !is_legit_custom_whitespace_or_comment(custom_white_space_or_comment.clone()) {
-                    custom_white_space_or_comment = String::new();
-                }
                 let end_string = if custom_white_space_or_comment.is_empty() {
                     maybe_line_break
                 } else {
@@ -103,7 +95,14 @@ impl Program {
             })
             .collect::<String>()
             .trim()
-            .to_string()
+            .to_string();
+
+        // Insert a final new line if the user wants it.
+        if options.insert_final_newline {
+            format!("{}\n", result)
+        } else {
+            result
+        }
     }
 
     /// Returns the body item that includes the given character position.
@@ -249,19 +248,18 @@ pub enum Value {
 }
 
 impl Value {
-    fn recast(&self, indentation: &str, is_in_pipe_expression: bool) -> String {
-        let indentation = indentation.to_string() + if is_in_pipe_expression { "  " } else { "" };
+    fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
         match &self {
-            Value::BinaryExpression(bin_exp) => bin_exp.recast(),
-            Value::ArrayExpression(array_exp) => array_exp.recast(&indentation, is_in_pipe_expression),
-            Value::ObjectExpression(ref obj_exp) => obj_exp.recast(&indentation, is_in_pipe_expression),
+            Value::BinaryExpression(bin_exp) => bin_exp.recast(options),
+            Value::ArrayExpression(array_exp) => array_exp.recast(options, indentation_level, is_in_pipe),
+            Value::ObjectExpression(ref obj_exp) => obj_exp.recast(options, indentation_level, is_in_pipe),
             Value::MemberExpression(mem_exp) => mem_exp.recast(),
             Value::Literal(literal) => literal.recast(),
-            Value::FunctionExpression(func_exp) => func_exp.recast(&indentation),
-            Value::CallExpression(call_exp) => call_exp.recast(&indentation, is_in_pipe_expression),
+            Value::FunctionExpression(func_exp) => func_exp.recast(options, indentation_level),
+            Value::CallExpression(call_exp) => call_exp.recast(options, indentation_level, is_in_pipe),
             Value::Identifier(ident) => ident.name.to_string(),
-            Value::PipeExpression(pipe_exp) => pipe_exp.recast(&indentation),
-            Value::UnaryExpression(unary_exp) => unary_exp.recast(),
+            Value::PipeExpression(pipe_exp) => pipe_exp.recast(options, indentation_level),
+            Value::UnaryExpression(unary_exp) => unary_exp.recast(options),
             Value::PipeSubstitution(_) => crate::parser::PIPE_SUBSTITUTION_OPERATOR.to_string(),
         }
     }
@@ -355,13 +353,13 @@ impl From<&BinaryPart> for crate::executor::SourceRange {
 }
 
 impl BinaryPart {
-    fn recast(&self, indentation: &str) -> String {
+    fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         match &self {
             BinaryPart::Literal(literal) => literal.recast(),
             BinaryPart::Identifier(identifier) => identifier.name.to_string(),
-            BinaryPart::BinaryExpression(binary_expression) => binary_expression.recast(),
-            BinaryPart::CallExpression(call_expression) => call_expression.recast(indentation, false),
-            BinaryPart::UnaryExpression(unary_expression) => unary_expression.recast(),
+            BinaryPart::BinaryExpression(binary_expression) => binary_expression.recast(options),
+            BinaryPart::CallExpression(call_expression) => call_expression.recast(options, indentation_level, false),
+            BinaryPart::UnaryExpression(unary_expression) => unary_expression.recast(options),
         }
     }
 
@@ -436,17 +434,17 @@ pub struct NoneCodeNode {
 impl NoneCodeNode {
     pub fn value(&self) -> String {
         match &self.value {
-            NoneCodeValue::Inline { value } => value.clone(),
-            NoneCodeValue::Block { value } => value.clone(),
-            NoneCodeValue::NewLineBlock { value } => value.clone(),
+            NoneCodeValue::InlineComment { value } => value.clone(),
+            NoneCodeValue::BlockComment { value } => value.clone(),
+            NoneCodeValue::NewLineBlockComment { value } => value.clone(),
             NoneCodeValue::NewLine => "\n\n".to_string(),
         }
     }
 
     pub fn format(&self, indentation: &str) -> String {
         match &self.value {
-            NoneCodeValue::Inline { value } => format!(" // {}\n", value),
-            NoneCodeValue::Block { value } => {
+            NoneCodeValue::InlineComment { value } => format!(" // {}\n", value),
+            NoneCodeValue::BlockComment { value } => {
                 let add_start_new_line = if self.start == 0 { "" } else { "\n" };
                 if value.contains('\n') {
                     format!("{}{}/* {} */\n", add_start_new_line, indentation, value)
@@ -454,7 +452,7 @@ impl NoneCodeNode {
                     format!("{}{}// {}\n", add_start_new_line, indentation, value)
                 }
             }
-            NoneCodeValue::NewLineBlock { value } => {
+            NoneCodeValue::NewLineBlockComment { value } => {
                 let add_start_new_line = if self.start == 0 { "" } else { "\n\n" };
                 if value.contains('\n') {
                     format!("{}{}/* {} */\n", add_start_new_line, indentation, value)
@@ -471,9 +469,29 @@ impl NoneCodeNode {
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum NoneCodeValue {
-    Inline { value: String },
-    Block { value: String },
-    NewLineBlock { value: String },
+    /// An inline comment.
+    /// An example of this is the following: `1 + 1 // This is an inline comment`.
+    InlineComment {
+        value: String,
+    },
+    /// A block comment.
+    /// An example of this is the following:
+    /// ```python,no_run
+    /// /* This is a
+    ///     block comment */
+    /// 1 + 1
+    /// ```
+    /// Now this is important. The block comment is attached to the next line.
+    /// This is always the case. Also the block comment doesnt have a new line above it.
+    /// If it did it would be a `NewLineBlockComment`.
+    BlockComment {
+        value: String,
+    },
+    /// A block comment that has a new line above it.
+    /// The user explicitly added a new line above the block comment.
+    NewLineBlockComment {
+        value: String,
+    },
     // A new line like `\n\n` NOT a new line like `\n`.
     // This is also not a comment.
     NewLine,
@@ -539,13 +557,13 @@ pub struct CallExpression {
 impl_value_meta!(CallExpression);
 
 impl CallExpression {
-    fn recast(&self, indentation: &str, is_in_pipe_expression: bool) -> String {
+    fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
         format!(
             "{}({})",
             self.callee.name,
             self.arguments
                 .iter()
-                .map(|arg| arg.recast(indentation, is_in_pipe_expression))
+                .map(|arg| arg.recast(options, indentation_level, is_in_pipe))
                 .collect::<Vec<String>>()
                 .join(", ")
         )
@@ -923,27 +941,35 @@ pub struct ArrayExpression {
 impl_value_meta!(ArrayExpression);
 
 impl ArrayExpression {
-    fn recast(&self, indentation: &str, is_in_pipe_expression: bool) -> String {
+    fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
         let flat_recast = format!(
             "[{}]",
             self.elements
                 .iter()
-                .map(|el| el.recast("", false))
+                .map(|el| el.recast(options, 0, false))
                 .collect::<Vec<String>>()
                 .join(", ")
         );
         let max_array_length = 40;
         if flat_recast.len() > max_array_length {
-            let indentation = indentation.to_string() + "  ";
+            let inner_indentation = if is_in_pipe {
+                options.get_indentation_offset_pipe(indentation_level + 1)
+            } else {
+                options.get_indentation(indentation_level + 1)
+            };
             format!(
                 "[\n{}{}\n{}]",
-                indentation,
+                inner_indentation,
                 self.elements
                     .iter()
-                    .map(|el| el.recast(&indentation, false))
+                    .map(|el| el.recast(options, indentation_level, false))
                     .collect::<Vec<String>>()
-                    .join(format!(",\n{}", indentation).as_str()),
-                if is_in_pipe_expression { "    " } else { "" }
+                    .join(format!(",\n{}", inner_indentation).as_str()),
+                if is_in_pipe {
+                    options.get_indentation_offset_pipe(indentation_level)
+                } else {
+                    options.get_indentation(indentation_level)
+                },
             )
         } else {
             flat_recast
@@ -1031,27 +1057,35 @@ pub struct ObjectExpression {
 }
 
 impl ObjectExpression {
-    fn recast(&self, indentation: &str, is_in_pipe_expression: bool) -> String {
+    fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
         let flat_recast = format!(
             "{{ {} }}",
             self.properties
                 .iter()
-                .map(|prop| { format!("{}: {}", prop.key.name, prop.value.recast("", false)) })
+                .map(|prop| { format!("{}: {}", prop.key.name, prop.value.recast(options, 0, false)) })
                 .collect::<Vec<String>>()
                 .join(", ")
         );
         let max_array_length = 40;
         if flat_recast.len() > max_array_length {
-            let indentation = indentation.to_owned() + "  ";
+            let inner_indentation = if is_in_pipe {
+                options.get_indentation_offset_pipe(indentation_level + 1)
+            } else {
+                options.get_indentation(indentation_level + 1)
+            };
             format!(
                 "{{\n{}{}\n{}}}",
-                indentation,
+                inner_indentation,
                 self.properties
                     .iter()
-                    .map(|prop| { format!("{}: {}", prop.key.name, prop.value.recast("", is_in_pipe_expression)) })
+                    .map(|prop| { format!("{}: {}", prop.key.name, prop.value.recast(options, 0, false)) })
                     .collect::<Vec<String>>()
-                    .join(format!(",\n{}", indentation).as_str()),
-                if is_in_pipe_expression { "     " } else { "" }
+                    .join(format!(",\n{}", inner_indentation).as_str()),
+                if is_in_pipe {
+                    options.get_indentation_offset_pipe(indentation_level)
+                } else {
+                    options.get_indentation(indentation_level)
+                },
             )
         } else {
             flat_recast
@@ -1370,7 +1404,7 @@ impl BinaryExpression {
         self.operator.precedence()
     }
 
-    fn recast(&self) -> String {
+    fn recast(&self, options: &FormatOptions) -> String {
         let maybe_wrap_it = |a: String, doit: bool| -> String {
             if doit {
                 format!("({})", a)
@@ -1393,9 +1427,9 @@ impl BinaryExpression {
 
         format!(
             "{} {} {}",
-            maybe_wrap_it(self.left.recast(""), should_wrap_left),
+            maybe_wrap_it(self.left.recast(options, 0), should_wrap_left),
             self.operator,
-            maybe_wrap_it(self.right.recast(""), should_wrap_right)
+            maybe_wrap_it(self.right.recast(options, 0), should_wrap_right)
         )
     }
 
@@ -1532,8 +1566,8 @@ pub struct UnaryExpression {
 impl_value_meta!(UnaryExpression);
 
 impl UnaryExpression {
-    fn recast(&self) -> String {
-        format!("{}{}", &self.operator, self.argument.recast(""))
+    fn recast(&self, options: &FormatOptions) -> String {
+        format!("{}{}", &self.operator, self.argument.recast(options, 0))
     }
 
     pub fn get_result(
@@ -1595,13 +1629,13 @@ pub struct PipeExpression {
 impl_value_meta!(PipeExpression);
 
 impl PipeExpression {
-    fn recast(&self, indentation: &str) -> String {
+    fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         self.body
             .iter()
             .enumerate()
             .map(|(index, statement)| {
-                let indentation = indentation.to_string() + "  ";
-                let mut s = statement.recast(&indentation, true);
+                let indentation = options.get_indentation(indentation_level + 1);
+                let mut s = statement.recast(options, indentation_level + 1, true);
                 let non_code_meta = self.non_code_meta.clone();
                 if let Some(non_code_meta_value) = non_code_meta.none_code_nodes.get(&index) {
                     s += non_code_meta_value.format(&indentation).trim_end_matches('\n')
@@ -1706,17 +1740,16 @@ pub struct FunctionExpression {
 impl_value_meta!(FunctionExpression);
 
 impl FunctionExpression {
-    pub fn recast(&self, indentation: &str) -> String {
+    pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         format!(
-            "({}) => {{\n{}{}{}\n}}",
+            "({}) => {{\n{}{}\n}}",
             self.params
                 .iter()
                 .map(|param| param.name.clone())
                 .collect::<Vec<String>>()
                 .join(", "),
-            indentation,
-            "  ",
-            self.body.recast("  ", true)
+            options.get_indentation(indentation_level + 1),
+            self.body.recast(options, indentation_level + 1)
         )
     }
 
@@ -1754,6 +1787,58 @@ pub enum Hover {
         parameter_index: u32,
         range: LspRange,
     },
+}
+
+/// Format options.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct FormatOptions {
+    /// Size of a tab in spaces.
+    pub tab_size: usize,
+    /// Prefer tabs over spaces.
+    pub use_tabs: bool,
+    /// How to handle the final newline in the file.
+    /// If true, ensure file ends with a newline.
+    /// If false, ensure file does not end with a newline.
+    pub insert_final_newline: bool,
+}
+
+impl Default for FormatOptions {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl FormatOptions {
+    /// Define the default format options.
+    /// We use 2 spaces for indentation.
+    pub fn new() -> Self {
+        Self {
+            tab_size: 2,
+            use_tabs: false,
+            insert_final_newline: false,
+        }
+    }
+
+    /// Get the indentation string for the given level.
+    pub fn get_indentation(&self, level: usize) -> String {
+        if self.use_tabs {
+            "\t".repeat(level)
+        } else {
+            " ".repeat(level * self.tab_size)
+        }
+    }
+
+    /// Get the indentation string for the given level.
+    /// But offset the pipe operator (and a space) by one level.
+    pub fn get_indentation_offset_pipe(&self, level: usize) -> String {
+        if self.use_tabs {
+            "\t".repeat(level + 1)
+        } else {
+            " ".repeat(level * self.tab_size) + " ".repeat(PIPE_OPERATOR.len() + 1).as_str()
+        }
+    }
 }
 
 #[cfg(test)]
@@ -1797,7 +1882,7 @@ show(part001)"#;
         let some_program: crate::abstract_syntax_tree_types::Program =
             serde_json::from_str(some_program_string).unwrap();
 
-        let recasted = some_program.recast("", false);
+        let recasted = some_program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
             r#"const part001 = startSketchAt('default')
@@ -1816,7 +1901,7 @@ show(part001)"#
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
-        let recasted = program.recast("", false);
+        let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
             r#"const part001 = startSketchAt([0.0, 5.0])
@@ -1834,7 +1919,7 @@ show(part001)"#
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
-        let recasted = program.recast("", false);
+        let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
             r#"const part001 = startSketchAt([0.0, 5.0])
@@ -1852,7 +1937,7 @@ show(part001)"#
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
-        let recasted = program.recast("", false);
+        let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
             r#"const part001 = startSketchAt([0.0, 5.0])
@@ -1877,7 +1962,7 @@ show(part001)"#
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
-        let recasted = program.recast("", false);
+        let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
             r#"const myFn = () => {
@@ -1913,7 +1998,7 @@ const mySk1 = startSketchAt([0, 0])
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
-        let recasted = program.recast("", false);
+        let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
             r#"// comment at start
@@ -1940,9 +2025,9 @@ a comment between pipe expression statements */
   |> line({ to: [0.62, 4.15], tag: 'seg01' }, %)
   |> line([2.77, -1.24], %)
   |> angledLineThatIntersects({
-        angle: 201,
-        offset: -1.35,
-        intersectTag: 'seg01'
+       angle: 201,
+       offset: -1.35,
+       intersectTag: 'seg01'
      }, %)
   |> line([-0.42, -1.72], %)
 
@@ -1951,7 +2036,7 @@ show(part001)"#;
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
-        let recasted = program.recast("", false);
+        let recasted = program.recast(&Default::default(), 0);
         assert_eq!(recasted, some_program_string);
     }
 
@@ -1964,12 +2049,19 @@ const yo = {
   anum: 2,
   identifier: three,
   binExp: 4 + 5
-}"#;
+}
+const yo = [
+  1,
+  "  2,",
+  "three",
+  4 + 5,
+  "  hey oooooo really long long long"
+]"#;
         let tokens = crate::tokeniser::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
-        let recasted = program.recast("", false);
+        let recasted = program.recast(&Default::default(), 0);
         assert_eq!(recasted, some_program_string);
     }
 
@@ -1987,7 +2079,7 @@ const things = "things"
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
-        let recasted = program.recast("", false);
+        let recasted = program.recast(&Default::default(), 0);
         assert_eq!(recasted, some_program_string.trim());
     }
 
@@ -2005,7 +2097,65 @@ const things = "things"
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
-        let recasted = program.recast("", false);
+        let recasted = program.recast(&Default::default(), 0);
         assert_eq!(recasted, some_program_string.trim());
+    }
+
+    #[test]
+    fn test_recast_array_new_line_in_pipe() {
+        let some_program_string = r#"const myVar = 3
+const myVar2 = 5
+const myVar3 = 6
+const myAng = 40
+const myAng2 = 134
+const part001 = startSketchAt([0, 0])
+  |> line({ to: [1, 3.82], tag: 'seg01' }, %) // ln-should-get-tag
+  |> angledLineToX([
+       -angleToMatchLengthX('seg01', myVar, %),
+       myVar
+     ], %) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
+  |> angledLineToY([
+       -angleToMatchLengthY('seg01', myVar, %),
+       myVar
+     ], %) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper"#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
+    }
+
+    #[test]
+    fn test_recast_array_new_line_in_pipe_custom() {
+        let some_program_string = r#"const myVar = 3
+const myVar2 = 5
+const myVar3 = 6
+const myAng = 40
+const myAng2 = 134
+const part001 = startSketchAt([0, 0])
+   |> line({ to: [1, 3.82], tag: 'seg01' }, %) // ln-should-get-tag
+   |> angledLineToX([
+         -angleToMatchLengthX('seg01', myVar, %),
+         myVar
+      ], %) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
+   |> angledLineToY([
+         -angleToMatchLengthY('seg01', myVar, %),
+         myVar
+      ], %) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper
+"#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(
+            &FormatOptions {
+                tab_size: 3,
+                use_tabs: false,
+                insert_final_newline: true,
+            },
+            0,
+        );
+        assert_eq!(recasted, some_program_string);
     }
 }

@@ -552,19 +552,14 @@ impl LanguageServer for Backend {
             return Ok(None);
         };
         // Now recast it.
-        // Make spaces for the tab size.
-        /*let mut tab_size = String::new();
-        for _ in 0..params.options.tab_size {
-            tab_size.push(' ');
-        }*/
-        // TODO: use the tab size.
-        let mut recast = ast.recast("", false).trim().to_string();
-        if let Some(insert_final_newline) = params.options.insert_final_newline {
-            if insert_final_newline {
-                recast.push('\n');
-            }
-        }
-
+        let recast = ast.recast(
+            &crate::abstract_syntax_tree_types::FormatOptions {
+                tab_size: params.options.tab_size as usize,
+                insert_final_newline: params.options.insert_final_newline.unwrap_or(false),
+                use_tabs: !params.options.insert_spaces,
+            },
+            0,
+        );
         let source_range = SourceRange([0, current_code.len() - 1]);
         let range = source_range.to_lsp_range(&current_code);
         Ok(Some(vec![TextEdit {
