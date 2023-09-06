@@ -130,6 +130,11 @@ jobs:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
 
+      - name: install apple silicon target mac
+        if: matrix.os == 'macos-latest'
+        run: |
+          rustup target add aarch64-apple-darwin
+
       # this will do apple silicon on mac
       - name: Build the app for the current platform (no upload)
         uses: tauri-apps/tauri-action@v0
