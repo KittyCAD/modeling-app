@@ -207,7 +207,8 @@ impl Program {
             if let Some(Value::FunctionExpression(ref mut function_expression)) = &mut value {
                 // Check if the params to the function expression contain the position.
                 for param in &mut function_expression.params {
-                    if param.start == pos {
+                    let param_source_range: SourceRange = param.clone().into();
+                    if param_source_range.contains(pos) {
                         let old_name = param.name.clone();
                         // Rename the param.
                         param.rename(&old_name, new_name);
@@ -899,7 +900,8 @@ impl VariableDeclaration {
         }
 
         for declaration in &mut self.declarations {
-            if declaration.id.start == pos {
+            let declaration_source_range: SourceRange = declaration.id.clone().into();
+            if declaration_source_range.contains(pos) {
                 let old_name = declaration.id.name.clone();
                 declaration.id.name = new_name.to_string();
                 return Some(old_name);
