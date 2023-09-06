@@ -29,7 +29,8 @@ pub struct Program {
 impl Program {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         let indentation = options.get_indentation(indentation_level);
-        self.body
+        let result = self
+            .body
             .iter()
             .map(|statement| match statement.clone() {
                 BodyItem::ExpressionStatement(expression_statement) => {
@@ -60,46 +61,30 @@ impl Program {
             })
             .enumerate()
             .map(|(index, recast_str)| {
-                let is_legit_custom_whitespace_or_comment = |s: String| s != " " && s != "\n" && s != "  " && s != "\t";
-
-                // determine the value of startString
-                let last_white_space_or_comment = if index > 0 {
-                    let tmp = if let Some(non_code_node) = self.non_code_meta.none_code_nodes.get(&(index - 1)) {
-                        non_code_node.format(&indentation)
-                    } else {
-                        " ".to_string()
-                    };
-                    tmp
-                } else {
-                    " ".to_string()
-                };
-                // indentation of this line will be covered by the previous if we're using a custom whitespace or comment
-                let mut start_string = if is_legit_custom_whitespace_or_comment(last_white_space_or_comment) {
-                    String::new()
-                } else {
-                    indentation.to_owned()
-                };
-                if index == 0 {
+                let start_string = if index == 0 {
+                    // We need to indent.
                     if let Some(start) = self.non_code_meta.start.clone() {
-                        start_string = start.format(&indentation);
+                        start.format(&indentation)
                     } else {
-                        start_string = indentation.to_owned();
+                        indentation.to_string()
                     }
-                }
+                } else {
+                    // Do nothing, we already applied the indentation elsewhere.
+                    String::new()
+                };
 
                 // determine the value of the end string
+                // basically if we are inside a nested function we want to end with a new line
                 let maybe_line_break: String = if index == self.body.len() - 1 && indentation_level == 0 {
                     String::new()
                 } else {
                     "\n".to_string()
                 };
-                let mut custom_white_space_or_comment = match self.non_code_meta.none_code_nodes.get(&index) {
+
+                let custom_white_space_or_comment = match self.non_code_meta.none_code_nodes.get(&index) {
                     Some(custom_white_space_or_comment) => custom_white_space_or_comment.format(&indentation),
                     None => String::new(),
                 };
-                if !is_legit_custom_whitespace_or_comment(custom_white_space_or_comment.clone()) {
-                    custom_white_space_or_comment = String::new();
-                }
                 let end_string = if custom_white_space_or_comment.is_empty() {
                     maybe_line_break
                 } else {
@@ -110,7 +95,14 @@ impl Program {
             })
             .collect::<String>()
             .trim()
-            .to_string()
+            .to_string();
+
+        // Insert a final new line if the user wants it.
+        if options.insert_final_newline {
+            format!("{}\n", result)
+        } else {
+            result
+        }
     }
 
     /// Returns the body item that includes the given character position.
@@ -960,15 +952,19 @@ impl ArrayExpression {
         );
         let max_array_length = 40;
         if flat_recast.len() > max_array_length {
-            let offset = if is_in_pipe { 3 } else { 1 };
+            let inner_indentation = if is_in_pipe {
+                options.get_indentation_offset_pipe(indentation_level + 1)
+            } else {
+                options.get_indentation(indentation_level + 1)
+            };
             format!(
                 "[\n{}{}\n{}]",
-                options.get_indentation(indentation_level + offset),
+                inner_indentation,
                 self.elements
                     .iter()
                     .map(|el| el.recast(options, indentation_level, false))
                     .collect::<Vec<String>>()
-                    .join(format!(",\n{}", options.get_indentation(indentation_level + offset)).as_str()),
+                    .join(format!(",\n{}", inner_indentation).as_str()),
                 if is_in_pipe {
                     options.get_indentation_offset_pipe(indentation_level)
                 } else {
@@ -1072,15 +1068,19 @@ impl ObjectExpression {
         );
         let max_array_length = 40;
         if flat_recast.len() > max_array_length {
-            let offset = if is_in_pipe { 3 } else { 1 };
+            let inner_indentation = if is_in_pipe {
+                options.get_indentation_offset_pipe(indentation_level + 1)
+            } else {
+                options.get_indentation(indentation_level + 1)
+            };
             format!(
                 "{{\n{}{}\n{}}}",
-                options.get_indentation(indentation_level + offset),
+                inner_indentation,
                 self.properties
                     .iter()
                     .map(|prop| { format!("{}: {}", prop.key.name, prop.value.recast(options, 0, false)) })
                     .collect::<Vec<String>>()
-                    .join(format!(",\n{}", options.get_indentation(indentation_level + offset)).as_str()),
+                    .join(format!(",\n{}", inner_indentation).as_str()),
                 if is_in_pipe {
                     options.get_indentation_offset_pipe(indentation_level)
                 } else {
@@ -2025,9 +2025,9 @@ a comment between pipe expression statements */
   |> line({ to: [0.62, 4.15], tag: 'seg01' }, %)
   |> line([2.77, -1.24], %)
   |> angledLineThatIntersects({
-        angle: 201,
-        offset: -1.35,
-        intersectTag: 'seg01'
+       angle: 201,
+       offset: -1.35,
+       intersectTag: 'seg01'
      }, %)
   |> line([-0.42, -1.72], %)
 
@@ -2111,18 +2111,51 @@ const myAng2 = 134
 const part001 = startSketchAt([0, 0])
   |> line({ to: [1, 3.82], tag: 'seg01' }, %) // ln-should-get-tag
   |> angledLineToX([
-        -angleToMatchLengthX('seg01', myVar, %),
-        myVar
+       -angleToMatchLengthX('seg01', myVar, %),
+       myVar
      ], %) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
   |> angledLineToY([
-        -angleToMatchLengthY('seg01', myVar, %),
-        myVar
+       -angleToMatchLengthY('seg01', myVar, %),
+       myVar
      ], %) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper"#;
         let tokens = crate::tokeniser::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
-        assert_eq!(recasted, some_program_string.trim());
+        assert_eq!(recasted, some_program_string);
+    }
+
+    #[test]
+    fn test_recast_array_new_line_in_pipe_custom() {
+        let some_program_string = r#"const myVar = 3
+const myVar2 = 5
+const myVar3 = 6
+const myAng = 40
+const myAng2 = 134
+const part001 = startSketchAt([0, 0])
+   |> line({ to: [1, 3.82], tag: 'seg01' }, %) // ln-should-get-tag
+   |> angledLineToX([
+         -angleToMatchLengthX('seg01', myVar, %),
+         myVar
+      ], %) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
+   |> angledLineToY([
+         -angleToMatchLengthY('seg01', myVar, %),
+         myVar
+      ], %) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper
+"#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(
+            &FormatOptions {
+                tab_size: 3,
+                use_tabs: false,
+                insert_final_newline: true,
+            },
+            0,
+        );
+        assert_eq!(recasted, some_program_string);
     }
 }
