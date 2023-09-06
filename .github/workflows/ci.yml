@@ -1,4 +1,4 @@
-name: CI 
+name: CI
 
 on:
   pull_request:
@@ -26,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: yarn test:rust
-  
+
   check-types:
     runs-on: ubuntu-20.04
 
@@ -123,11 +123,22 @@ jobs:
       - name: Fix format
         run: yarn fmt
 
+      # This will do intel silicon on mac
       - name: Build the app for the current platform (no upload)
         uses: tauri-apps/tauri-action@v0
         env:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+
+      # this will do apple silicon on mac
+      - name: Build the app for the current platform (no upload)
+        uses: tauri-apps/tauri-action@v0
+        if: matrix.os == 'macos-latest'
+        env:
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+        with:
+          args: --target universal-apple-darwin
 
       - uses: actions/upload-artifact@v3
         with:
@@ -187,15 +198,15 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1.1.1
         with:
           project_id: kittycadapi
-      
+
       - name: Upload release files to public bucket
         uses: google-github-actions/upload-cloud-storage@v1.0.3
         with:
           path: artifact
           glob: '*/*itty*'
           parent: false
-          destination: dl.kittycad.io/releases/modeling-app/v${{ env.VERSION_NO_V }} 
-      
+          destination: dl.kittycad.io/releases/modeling-app/v${{ env.VERSION_NO_V }}
+
       - name: Upload update endpoint to public bucket
         uses: google-github-actions/upload-cloud-storage@v1.0.3
         with:
