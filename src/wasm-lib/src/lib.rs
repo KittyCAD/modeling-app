@@ -76,7 +76,8 @@ pub fn recast_wasm(json_str: &str) -> Result<JsValue, JsError> {
     let program: kcl_lib::abstract_syntax_tree_types::Program =
         serde_json::from_str(json_str).map_err(JsError::from)?;
 
-    let result = program.recast("", false);
+    // Use the default options until we integrate into the UI the ability to change them.
+    let result = program.recast(&Default::default(), 0);
     Ok(JsValue::from_serde(&result)?)
 }
 
