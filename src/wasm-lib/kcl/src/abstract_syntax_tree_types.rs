@@ -1831,7 +1831,7 @@ impl FormatOptions {
     }
 
     /// Get the indentation string for the given level.
-    /// But offset the pipe operator by one level.
+    /// But offset the pipe operator (and a space) by one level.
     pub fn get_indentation_offset_pipe(&self, level: usize) -> String {
         if self.use_tabs {
             "\t".repeat(level + 1)
