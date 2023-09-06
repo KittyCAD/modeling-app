@@ -82,11 +82,22 @@ code {
     monospace;
 }
 
+.full-height-subtract {
+  --height-subtract: 2.25rem;
+  height: 100%;
+  max-height: calc(100% - var(--height-subtract));
+}
+
 #code-mirror-override .cm-editor {
-  @apply bg-transparent;
+  @apply h-full bg-transparent;
 }
 
 #code-mirror-override .cm-scroller {
+  @apply h-full;
+}
+
+#code-mirror-override .cm-scroller::-webkit-scrollbar {
+  @apply h-0;
 }
 
 #code-mirror-override .cm-activeLine,
@@ -137,14 +148,10 @@ code {
 }
 
 #code-mirror-override .cm-tooltip {
-  font-size: 80%;
+  @apply text-xs;
 }
 
 #code-mirror-override .cm-tooltip-hover {
-}
-
-#code-mirror-override .cm-tooltip-hover .documentation {
-  padding: 5;
 }
 
 #code-mirror-override .cm-content {

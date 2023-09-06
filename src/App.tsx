@@ -54,6 +54,7 @@ import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { onboardingPaths } from 'routes/Onboarding'
 import { LanguageServerClient } from 'editor/lsp'
 import kclLanguage from 'editor/lsp/language'
+import { CSSRuleObject } from 'tailwindcss/types/config'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
@@ -513,7 +514,7 @@ export function App() {
           <CollapsiblePanel
             title="Code"
             icon={faCode}
-            className="open:!mb-2 overflow-x-hidden"
+            className="open:!mb-2"
             open={openPanes.includes('code')}
           >
             <div className="px-2 py-1">
@@ -527,10 +528,11 @@ export function App() {
             </div>
             <div
               id="code-mirror-override"
-              className="overflow-x-hidden  h-full"
+              className="full-height-subtract"
+              style={{ '--height-subtract': '4.25rem' } as CSSRuleObject}
             >
               <CodeMirror
-                className="h-full overflow-hidden-x"
+                className="h-full"
                 value={code}
                 extensions={
                   kclLSP
