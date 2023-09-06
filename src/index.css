@@ -148,10 +148,35 @@ code {
 }
 
 #code-mirror-override .cm-tooltip {
-  @apply text-xs;
+  @apply text-xs shadow-md;
+  @apply bg-chalkboard-10 text-chalkboard-80;
+  @apply rounded-sm border-solid border border-chalkboard-40/30;
 }
 
-#code-mirror-override .cm-tooltip-hover {
+.dark #code-mirror-override .cm-tooltip {
+  @apply bg-chalkboard-110 text-chalkboard-40;
+  @apply border-chalkboard-70/20;
+}
+
+#code-mirror-override .cm-completionInfo {
+  @apply px-4 rounded-l-none;
+  @apply bg-chalkboard-10 text-liquid-90;
+  @apply border-liquid-40/30;
+}
+
+.dark #code-mirror-override .cm-completionInfo {
+  @apply bg-liquid-120 text-liquid-50;
+  @apply border-liquid-90/60;
+}
+
+#code-mirror-override .cm-tooltip-autocomplete li {
+  @apply px-2 py-1;
+}
+#code-mirror-override .cm-tooltip-autocomplete li[aria-selected='true'] {
+  @apply bg-liquid-10 text-liquid-110;
+}
+.dark #code-mirror-override .cm-tooltip-autocomplete li[aria-selected='true'] {
+  @apply bg-liquid-100 text-liquid-20;
 }
 
 #code-mirror-override .cm-content {
