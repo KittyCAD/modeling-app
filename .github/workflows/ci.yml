@@ -121,6 +121,18 @@ jobs:
           path: src-tauri/target/release/bundle/*/*
 
 
+  test:
+    runs-on: ubuntu-20.04
+    needs: [build-test-web, build-apps]
+    steps:
+
+      - uses: actions/download-artifact@v3
+
+      - name: Generate the update static endpoint
+        run: |
+          ls -l artifact/*/*itty*
+
+
   publish-apps-release:
     runs-on: ubuntu-20.04
     if: github.event_name == 'release'
@@ -180,7 +192,7 @@ jobs:
         uses: google-github-actions/upload-cloud-storage@v1.0.3
         with:
           path: artifact
-          glob: '*/*'
+          glob: '*/*itty*'
           parent: false
           destination: dl.kittycad.io/releases/modeling-app/v${{ env.VERSION_NO_V }} 
       
@@ -193,4 +205,4 @@ jobs:
       - name: Upload release files to Github
         uses: softprops/action-gh-release@v1
         with:
-          files: artifact/*/*
+          files: artifact/*/*itty*
