@@ -121,18 +121,6 @@ jobs:
           path: src-tauri/target/release/bundle/*/*
 
 
-  test:
-    runs-on: ubuntu-20.04
-    needs: [build-test-web, build-apps]
-    steps:
-
-      - uses: actions/download-artifact@v3
-
-      - name: Generate the update static endpoint
-        run: |
-          ls -l artifact/*/*itty*
-
-
   publish-apps-release:
     runs-on: ubuntu-20.04
     if: github.event_name == 'release'
@@ -145,8 +133,7 @@ jobs:
 
       - name: Generate the update static endpoint
         run: |
-          ls -l artifact
-          ls -l artifact/*
+          ls -l artifact/*/*itty*
           DARWIN_SIG=`cat artifact/macos/*.app.tar.gz.sig`
           LINUX_SIG=`cat artifact/appimage/*.AppImage.tar.gz.sig`
           WINDOWS_SIG=`cat artifact/nsis/*.nsis.zip.sig`
