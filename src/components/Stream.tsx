@@ -12,6 +12,7 @@ import Loading from './Loading'
 
 export const Stream = ({ className = '' }) => {
   const [isLoading, setIsLoading] = useState(true)
+  const [clickCoords, setClickCoords] = useState<{ x: number; y: number }>()
   const videoRef = useRef<HTMLVideoElement>(null)
   const {
     mediaStream,
@@ -71,6 +72,7 @@ export const Stream = ({ className = '' }) => {
     })
 
     setIsMouseDownInStream(true)
+    setClickCoords({ x, y })
   }
 
   const handleScroll: WheelEventHandler<HTMLVideoElement> = (e) => {
@@ -124,6 +126,19 @@ export const Stream = ({ className = '' }) => {
       })
     }
     setDidDragInStream(false)
+    setClickCoords(undefined)
+  }
+
+  const handleMouseMove: MouseEventHandler<HTMLVideoElement> = (e) => {
+    if (!clickCoords) return
+
+    const delta =
+      ((clickCoords.x - e.clientX) ** 2 + (clickCoords.y - e.clientY) ** 2) **
+      0.5
+
+    if (delta > 5 && !didDragInStream) {
+      setDidDragInStream(true)
+    }
   }
 
   return (
@@ -139,6 +154,7 @@ export const Stream = ({ className = '' }) => {
         onContextMenuCapture={(e) => e.preventDefault()}
         onWheel={handleScroll}
         onPlay={() => setIsLoading(false)}
+        onMouseMoveCapture={handleMouseMove}
         className="w-full h-full"
       />
       {isLoading && (
