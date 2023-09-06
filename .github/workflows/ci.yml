@@ -13,16 +13,32 @@ jobs:
   check-format:
     runs-on: 'ubuntu-20.04'
     steps:
-
       - uses: actions/checkout@v3
-
       - uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
-
+          cache: 'yarn'
       - run: yarn install
-
       - run: yarn fmt-check
+
+  test-rust:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - run: yarn test:rust
+  
+  check-types:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+      - run: yarn install
+      - run: yarn build:wasm
+      - run: yarn tsc
 
 
   build-test-web:
@@ -36,12 +52,11 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
+          cache: 'yarn'
 
       - run: yarn install
 
       - run: yarn build:wasm
-
-      - run: yarn tsc
 
       - run: yarn simpleserver:ci
 
@@ -49,14 +64,12 @@ jobs:
 
       - run: yarn test:cov
 
-      - run: yarn test:rust
-      
       - id: export_version
         run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
 
 
   build-apps:
-    needs: [check-format, build-test-web]
+    needs: [check-format, build-test-web, test-rust, check-types]
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
