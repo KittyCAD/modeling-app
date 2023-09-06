@@ -10,7 +10,7 @@ import { DebugPanel } from './components/DebugPanel'
 import { v4 as uuidv4 } from 'uuid'
 import { asyncParser } from './lang/abstractSyntaxTree'
 import { _executor } from './lang/executor'
-import CodeMirror from '@uiw/react-codemirror'
+import CodeMirror, { Extension } from '@uiw/react-codemirror'
 import { linter, lintGutter } from '@codemirror/lint'
 import { ViewUpdate, EditorView } from '@codemirror/view'
 import {
@@ -139,7 +139,7 @@ export function App() {
       context: { token },
     },
     settings: {
-      context: { showDebugPanel, theme, onboardingStatus },
+      context: { showDebugPanel, theme, onboardingStatus, textWrapping },
     },
   } = useGlobalStateContext()
 
@@ -423,17 +423,6 @@ export function App() {
     }
   }
 
-  const extraExtensions = useMemo(() => {
-    if (TEST) return []
-    return [
-      lintGutter(),
-      linter((_view) => {
-        return kclErrToDiagnostic(useStore.getState().kclErrors)
-      }),
-      EditorView.lineWrapping,
-    ]
-  }, [])
-
   // So this is a bit weird, we need to initialize the lsp server and client.
   // But the server happens async so we break this into two parts.
   // Below is the client and server promise.
@@ -472,6 +461,25 @@ export function App() {
     }
     return plugin
   }, [lspClient, isLSPServerReady])
+
+  const editorExtensions = useMemo(() => {
+    const extensions = [lineHighlightField] as Extension[]
+
+    if (kclLSP) extensions.push(kclLSP)
+    if (textWrapping === 'On') extensions.push(EditorView.lineWrapping)
+
+    // These extensions have proven to mess with vitest
+    if (!TEST) {
+      extensions.push(
+        lintGutter(),
+        linter((_view) => {
+          return kclErrToDiagnostic(useStore.getState().kclErrors)
+        })
+      )
+    }
+
+    return extensions
+  }, [kclLSP, textWrapping])
 
   return (
     <div
@@ -534,11 +542,7 @@ export function App() {
               <CodeMirror
                 className="h-full"
                 value={code}
-                extensions={
-                  kclLSP
-                    ? [kclLSP, lineHighlightField, ...extraExtensions]
-                    : [lineHighlightField, ...extraExtensions]
-                }
+                extensions={editorExtensions}
                 onChange={onChange}
                 onUpdate={onUpdate}
                 theme={editorTheme}

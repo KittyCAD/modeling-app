@@ -62,6 +62,17 @@ export const settingsCommandBarMeta: CommandBarMeta = {
       },
     ],
   },
+  'Set Text Wrapping': {
+    displayValue: (args: string[]) => 'Set whether text in the editor wraps',
+    args: [
+      {
+        name: 'textWrapping',
+        type: 'select',
+        defaultValue: 'textWrapping',
+        options: [{ name: 'On' }, { name: 'Off' }],
+      },
+    ],
+  },
   'Set Onboarding Status': {
     hide: 'both',
   },
@@ -78,6 +89,7 @@ export const settingsMachine = createMachine(
       unitSystem: UnitSystem.Imperial,
       baseUnit: 'in' as BaseUnit,
       defaultDirectory: '',
+      textWrapping: 'On' as 'On' | 'Off',
       showDebugPanel: false,
       onboardingStatus: '',
     },
@@ -142,6 +154,17 @@ export const settingsMachine = createMachine(
             target: 'idle',
             internal: true,
           },
+          'Set Text Wrapping': {
+            actions: [
+              assign({
+                textWrapping: (_, event) => event.data.textWrapping,
+              }),
+              'persistSettings',
+              'toastSuccess',
+            ],
+            target: 'idle',
+            internal: true,
+          },
           'Toggle Debug Panel': {
             actions: [
               assign({
@@ -182,6 +205,7 @@ export const settingsMachine = createMachine(
             data: { unitSystem: UnitSystem }
           }
         | { type: 'Set Base Unit'; data: { baseUnit: BaseUnit } }
+        | { type: 'Set Text Wrapping'; data: { textWrapping: 'On' | 'Off' } }
         | { type: 'Set Onboarding Status'; data: { onboardingStatus: string } }
         | { type: 'Toggle Debug Panel' },
     },
