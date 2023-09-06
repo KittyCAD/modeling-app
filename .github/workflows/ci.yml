@@ -133,8 +133,7 @@ jobs:
 
       - name: Generate the update static endpoint
         run: |
-          ls -l artifact
-          ls -l artifact/*
+          ls -l artifact/*/*itty*
           DARWIN_SIG=`cat artifact/macos/*.app.tar.gz.sig`
           LINUX_SIG=`cat artifact/appimage/*.AppImage.tar.gz.sig`
           WINDOWS_SIG=`cat artifact/nsis/*.nsis.zip.sig`
@@ -180,7 +179,7 @@ jobs:
         uses: google-github-actions/upload-cloud-storage@v1.0.3
         with:
           path: artifact
-          glob: '*/*'
+          glob: '*/*itty*'
           parent: false
           destination: dl.kittycad.io/releases/modeling-app/v${{ env.VERSION_NO_V }} 
       
@@ -193,4 +192,4 @@ jobs:
       - name: Upload release files to Github
         uses: softprops/action-gh-release@v1
         with:
-          files: artifact/*/*
+          files: artifact/*/*itty*
