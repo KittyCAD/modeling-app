@@ -38,8 +38,8 @@ jobs:
           cache: 'yarn'
       - run: yarn install
       - uses: Swatinem/rust-cache@v2
-          with:
-            workspaces: "./src/wasm-lib"
+        with:
+          workspaces: "./src/wasm-lib"
 
       - run: yarn build:wasm
       - run: yarn tsc
@@ -61,8 +61,8 @@ jobs:
       - run: yarn install
 
       - uses: Swatinem/rust-cache@v2
-          with:
-            workspaces: "./src/wasm-lib"
+        with:
+          workspaces: "./src/wasm-lib"
 
       - run: yarn build:wasm
 
@@ -109,8 +109,8 @@ jobs:
           workspaces: './src-tauri -> target'
 
       - uses: Swatinem/rust-cache@v2
-          with:
-            workspaces: "./src/wasm-lib"
+        with:
+          workspaces: "./src/wasm-lib"
 
       - name: wasm prep
         shell: bash
