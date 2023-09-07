@@ -22,59 +22,134 @@ type CADProgram =
   | 'Creo'
   | 'AutoCAD'
 
+type MouseGuardHandler = {
+  description: string
+  callback: MouseEventHandler
+}
+
+type MouseGuardZoomHandler = {
+  description: string
+  dragCallback: MouseEventHandler
+  scrollCallback: MouseEventHandler
+}
+
 type MouseGuard = {
-  pan: MouseEventHandler
-  zoomDrag: MouseEventHandler
-  zoomScroll: MouseEventHandler
-  rotate: MouseEventHandler
+  pan: MouseGuardHandler
+  zoom: MouseGuardZoomHandler
+  rotate: MouseGuardHandler
 }
 
 export const cameraMouseDragGuards = {
   KittyCAD: {
-    pan: (e) =>
-      (e.button === 3 && noModifiersPressed(e)) ||
-      (e.button === 2 && e.shiftKey),
-    zoomDrag: (e) => e.button === 2 && e.ctrlKey,
-    zoomScroll: () => true,
-    rotate: (e) => e.button === 2 && noModifiersPressed(e),
+    pan: {
+      description: 'Right click + Shift + drag or middle click + drag',
+      callback: (e) =>
+        (e.button === 3 && noModifiersPressed(e)) ||
+        (e.button === 2 && e.shiftKey),
+    },
+    zoom: {
+      description: 'Scroll wheel or Right click + Ctrl + drag',
+      dragCallback: (e) => e.button === 2 && e.ctrlKey,
+      scrollCallback: () => true,
+    },
+    rotate: {
+      description: 'Right click + drag',
+      callback: (e) => e.button === 2 && noModifiersPressed(e),
+    },
   },
   OnShape: {
-    pan: (e) =>
-      (e.button === 2 && e.ctrlKey) ||
-      (e.button === 3 && noModifiersPressed(e)),
-    zoomDrag: () => false,
-    zoomScroll: () => true,
-    rotate: (e) => e.button === 2 && noModifiersPressed(e),
+    pan: {
+      description: 'Right click + Ctrl + drag or middle click + drag',
+      callback: (e) =>
+        (e.button === 2 && e.ctrlKey) ||
+        (e.button === 3 && noModifiersPressed(e)),
+    },
+    zoom: {
+      description: 'Scroll wheel',
+      dragCallback: () => false,
+      scrollCallback: () => true,
+    },
+    rotate: {
+      description: 'Right click + drag',
+      callback: (e) => e.button === 2 && noModifiersPressed(e),
+    },
   },
   Solidworks: {
-    pan: (e) => e.button === 2 && e.ctrlKey,
-    zoomDrag: (e) => e.button === 3 && e.shiftKey,
-    zoomScroll: () => true,
-    rotate: (e) => e.button === 3 && noModifiersPressed(e),
+    pan: {
+      description: 'Right click + Ctrl + drag',
+      callback: (e) => e.button === 2 && e.ctrlKey,
+    },
+    zoom: {
+      description: 'Scroll wheel or Middle click + Shift + drag',
+      dragCallback: (e) => e.button === 3 && e.shiftKey,
+      scrollCallback: () => true,
+    },
+    rotate: {
+      description: 'Middle click + drag',
+      callback: (e) => e.button === 3 && noModifiersPressed(e),
+    },
   },
   NX: {
-    pan: (e) => e.button === 3 && e.shiftKey,
-    zoomDrag: (e) => e.button === 3 && e.ctrlKey,
-    zoomScroll: () => true,
-    rotate: (e) => e.button === 3 && noModifiersPressed(e),
+    pan: {
+      description: 'Middle click + Shift + drag',
+      callback: (e) => e.button === 3 && e.shiftKey,
+    },
+    zoom: {
+      description: 'Scroll wheel or Middle click + Ctrl + drag',
+      dragCallback: (e) => e.button === 3 && e.ctrlKey,
+      scrollCallback: () => true,
+    },
+    rotate: {
+      description: 'Middle click + drag',
+      callback: (e) => e.button === 3 && noModifiersPressed(e),
+    },
   },
   Creo: {
-    pan: (e) => e.button === 3 && e.shiftKey,
-    zoomDrag: (e) => e.button === 3 && e.ctrlKey,
-    zoomScroll: () => true,
-    rotate: (e) => e.button === 3 && noModifiersPressed(e),
+    pan: {
+      description: 'Middle click + Shift + drag',
+      callback: (e) => e.button === 3 && e.shiftKey,
+    },
+    zoom: {
+      description: 'Scroll wheel or Middle click + Ctrl + drag',
+      dragCallback: (e) => e.button === 3 && e.ctrlKey,
+      scrollCallback: () => true,
+    },
+    rotate: {
+      description: 'Middle click + drag',
+      callback: (e) => e.button === 3 && noModifiersPressed(e),
+    },
   },
   AutoCAD: {
-    pan: (e) => e.button === 3 && noModifiersPressed(e),
-    zoomDrag: (e) => false,
-    zoomScroll: () => true,
-    rotate: (e) => e.button === 3 && e.shiftKey,
+    pan: {
+      description: 'Middle click + drag',
+      callback: (e) => e.button === 3 && noModifiersPressed(e),
+    },
+    zoom: {
+      description: 'Scroll wheel',
+      dragCallback: () => false,
+      scrollCallback: () => true,
+    },
+    rotate: {
+      description: 'Middle click + Shift + drag',
+      callback: (e) => e.button === 3 && e.shiftKey,
+    },
   },
 } as Record<CADProgram, MouseGuard>
 
 export const settingsCommandBarMeta: CommandBarMeta = {
   'Set Base Unit': {
     displayValue: (args: string[]) => 'Set your default base unit',
+    args: [
+      {
+        name: 'baseUnit',
+        type: 'select',
+        defaultValue: 'baseUnit',
+        options: Object.values(baseUnitsUnion).map((v) => ({ name: v })),
+      },
+    ],
+  },
+  'Set Camera Controls': {
+    displayValue: (args: string[]) => 'Set your camera controls',
     args: [
       {
         name: 'baseUnit',
@@ -147,6 +222,7 @@ export const settingsMachine = createMachine(
     predictableActionArguments: true,
     context: {
       baseUnit: 'in' as BaseUnit,
+      cameraControls: 'KittyCAD' as CADProgram,
       defaultDirectory: '',
       defaultProjectName: '',
       onboardingStatus: '',
@@ -163,6 +239,17 @@ export const settingsMachine = createMachine(
           'Set Base Unit': {
             actions: [
               assign({ baseUnit: (_, event) => event.data.baseUnit }),
+              'persistSettings',
+              'toastSuccess',
+            ],
+            target: 'idle',
+            internal: true,
+          },
+          'Set Camera Controls': {
+            actions: [
+              assign({
+                cameraControls: (_, event) => event.data.cameraControls,
+              }),
               'persistSettings',
               'toastSuccess',
             ],
@@ -257,6 +344,7 @@ export const settingsMachine = createMachine(
     schema: {
       events: {} as
         | { type: 'Set Base Unit'; data: { baseUnit: BaseUnit } }
+        | { type: 'Set Camera Controls'; data: { cameraControls: CADProgram } }
         | { type: 'Set Default Directory'; data: { defaultDirectory: string } }
         | {
             type: 'Set Default Project Name'
