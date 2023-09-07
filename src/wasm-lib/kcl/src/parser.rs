@@ -414,7 +414,7 @@ impl Parser {
         if found_another_opening_brace {
             return self.find_closing_brace(index + 1, brace_count + 1, search_opening_brace);
         }
-        if found_another_closing_brace {
+        if found_another_closing_brace && brace_count > 0 {
             return self.find_closing_brace(index + 1, brace_count - 1, search_opening_brace);
         }
         // non-brace token, increment and continue
@@ -860,6 +860,8 @@ impl Parser {
     fn make_array_expression(&self, index: usize) -> Result<ArrayReturn, KclError> {
         let opening_brace_token = self.get_token(index)?;
         let first_element_token = self.next_meaningful_token(index, None)?;
+        // Make sure there is a closing brace.
+        let _closing_brace = self.find_closing_brace(index, 0, "")?;
         let array_elements = self.make_array_elements(first_element_token.index, Vec::new())?;
         Ok(ArrayReturn {
             expression: ArrayExpression {
@@ -2790,11 +2792,14 @@ const secondExtrude = startSketchAt([0,0])
     }
 
     #[test]
-    fn test_parse_weird_whitespace() {
-        let tokens = crate::tokeniser::lexer("	n(#-");
+    fn test_parse_nested_open_brackets() {
+        let tokens = crate::tokeniser::lexer(
+            r#"
+z(-[["#,
+        );
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
-        assert!(result.err().unwrap().to_string().contains("Unexpected token"));
+        assert!(result.err().unwrap().to_string().contains("unexpected end"));
     }
 }
