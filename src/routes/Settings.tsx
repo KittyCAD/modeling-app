@@ -15,10 +15,10 @@ import { Themes } from '../lib/theme'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import {
   CADProgram,
-  UnitSystem,
   cadPrograms,
   cameraMouseDragGuards,
-} from 'machines/settingsMachine'
+} from 'lib/cameraControls'
+import { UnitSystem } from 'machines/settingsMachine'
 
 export const Settings = () => {
   const loaderData = useRouteLoaderData(paths.FILE) as IndexLoaderData

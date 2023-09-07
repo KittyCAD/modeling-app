@@ -55,7 +55,7 @@ import { onboardingPaths } from 'routes/Onboarding'
 import { LanguageServerClient } from 'editor/lsp'
 import kclLanguage from 'editor/lsp/language'
 import { CSSRuleObject } from 'tailwindcss/types/config'
-import { cameraMouseDragGuards } from 'machines/settingsMachine'
+import { cameraMouseDragGuards } from 'lib/cameraControls'
 import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
 
 export function App() {
@@ -415,8 +415,6 @@ export function App() {
       } else {
         return
       }
-
-      console.log('interaction', interaction)
 
       debounceSocketSend({
         type: 'modeling_cmd_req',

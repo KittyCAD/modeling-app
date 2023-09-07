@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { useStore } from '../useStore'
 import { getNormalisedCoordinates } from '../lib/utils'
 import Loading from './Loading'
-import { cameraMouseDragGuards } from 'machines/settingsMachine'
+import { cameraMouseDragGuards } from 'lib/cameraControls'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
 
