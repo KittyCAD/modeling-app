@@ -2,6 +2,7 @@ import { assign, createMachine } from 'xstate'
 import { BaseUnit, baseUnitsUnion } from '../useStore'
 import { CommandBarMeta } from '../lib/commands'
 import { Themes, getSystemTheme, setThemeClass } from '../lib/theme'
+import { MouseEventHandler } from 'react'
 
 export enum UnitSystem {
   Imperial = 'imperial',
@@ -9,6 +10,67 @@ export enum UnitSystem {
 }
 
 export const SETTINGS_PERSIST_KEY = 'SETTINGS_PERSIST_KEY'
+
+const noModifiersPressed: MouseEventHandler = (e) =>
+  !e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey
+
+type CADProgram =
+  | 'KittyCAD'
+  | 'OnShape'
+  | 'Solidworks'
+  | 'NX'
+  | 'Creo'
+  | 'AutoCAD'
+
+type MouseGuard = {
+  pan: MouseEventHandler
+  zoomDrag: MouseEventHandler
+  zoomScroll: MouseEventHandler
+  rotate: MouseEventHandler
+}
+
+export const cameraMouseDragGuards = {
+  KittyCAD: {
+    pan: (e) =>
+      (e.button === 3 && noModifiersPressed(e)) ||
+      (e.button === 2 && e.shiftKey),
+    zoomDrag: (e) => e.button === 2 && e.ctrlKey,
+    zoomScroll: () => true,
+    rotate: (e) => e.button === 2 && noModifiersPressed(e),
+  },
+  OnShape: {
+    pan: (e) =>
+      (e.button === 2 && e.ctrlKey) ||
+      (e.button === 3 && noModifiersPressed(e)),
+    zoomDrag: () => false,
+    zoomScroll: () => true,
+    rotate: (e) => e.button === 2 && noModifiersPressed(e),
+  },
+  Solidworks: {
+    pan: (e) => e.button === 2 && e.ctrlKey,
+    zoomDrag: (e) => e.button === 3 && e.shiftKey,
+    zoomScroll: () => true,
+    rotate: (e) => e.button === 3 && noModifiersPressed(e),
+  },
+  NX: {
+    pan: (e) => e.button === 3 && e.shiftKey,
+    zoomDrag: (e) => e.button === 3 && e.ctrlKey,
+    zoomScroll: () => true,
+    rotate: (e) => e.button === 3 && noModifiersPressed(e),
+  },
+  Creo: {
+    pan: (e) => e.button === 3 && e.shiftKey,
+    zoomDrag: (e) => e.button === 3 && e.ctrlKey,
+    zoomScroll: () => true,
+    rotate: (e) => e.button === 3 && noModifiersPressed(e),
+  },
+  AutoCAD: {
+    pan: (e) => e.button === 3 && noModifiersPressed(e),
+    zoomDrag: (e) => false,
+    zoomScroll: () => true,
+    rotate: (e) => e.button === 3 && e.shiftKey,
+  },
+} as Record<CADProgram, MouseGuard>
 
 export const settingsCommandBarMeta: CommandBarMeta = {
   'Set Theme': {
