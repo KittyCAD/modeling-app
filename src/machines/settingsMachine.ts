@@ -2,7 +2,7 @@ import { assign, createMachine } from 'xstate'
 import { BaseUnit, baseUnitsUnion } from '../useStore'
 import { CommandBarMeta } from '../lib/commands'
 import { Themes, getSystemTheme, setThemeClass } from '../lib/theme'
-import { CADProgram } from 'lib/cameraControls'
+import { CADProgram, cadPrograms } from 'lib/cameraControls'
 
 export enum UnitSystem {
   Imperial = 'imperial',
@@ -27,10 +27,10 @@ export const settingsCommandBarMeta: CommandBarMeta = {
     displayValue: (args: string[]) => 'Set your camera controls',
     args: [
       {
-        name: 'baseUnit',
+        name: 'cameraControls',
         type: 'select',
-        defaultValue: 'baseUnit',
-        options: Object.values(baseUnitsUnion).map((v) => ({ name: v })),
+        defaultValue: 'cameraControls',
+        options: Object.values(cadPrograms).map((v) => ({ name: v })),
       },
     ],
   },
