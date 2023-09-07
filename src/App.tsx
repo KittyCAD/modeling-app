@@ -466,7 +466,6 @@ export function App() {
     const extensions = [lineHighlightField] as Extension[]
 
     if (kclLSP) extensions.push(kclLSP)
-    if (textWrapping === 'On') extensions.push(EditorView.lineWrapping)
 
     // These extensions have proven to mess with vitest
     if (!TEST) {
@@ -476,6 +475,7 @@ export function App() {
           return kclErrToDiagnostic(useStore.getState().kclErrors)
         })
       )
+      if (textWrapping === 'On') extensions.push(EditorView.lineWrapping)
     }
 
     return extensions
