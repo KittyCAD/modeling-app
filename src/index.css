@@ -150,12 +150,16 @@ code {
 #code-mirror-override .cm-tooltip {
   @apply text-xs shadow-md;
   @apply bg-chalkboard-10 text-chalkboard-80;
-  @apply rounded-sm border-solid border border-chalkboard-40/30;
+  @apply rounded-sm border-solid border border-chalkboard-40/30 border-l-liquid-10;
 }
 
 .dark #code-mirror-override .cm-tooltip {
   @apply bg-chalkboard-110 text-chalkboard-40;
-  @apply border-chalkboard-70/20;
+  @apply border-chalkboard-70/20 border-l-liquid-70;
+}
+
+#code-mirror-override .cm-tooltip-hover {
+  @apply py-1 px-2 w-max max-w-md;
 }
 
 #code-mirror-override .cm-completionInfo {
