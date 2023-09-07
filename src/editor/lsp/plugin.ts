@@ -208,7 +208,13 @@ export class LanguageServerPlugin implements PluginValue {
           filterText: filterText ?? label,
         }
         if (documentation) {
-          completion.info = formatContents(documentation)
+          completion.info = () => {
+            const htmlString = formatContents(documentation)
+            const htmlNode = document.createElement('div')
+            htmlNode.style.display = 'contents'
+            htmlNode.innerHTML = htmlString
+            return { dom: htmlNode }
+          }
         }
 
         return completion
