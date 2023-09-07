@@ -170,13 +170,6 @@ impl Parser {
             }));
         }
 
-        if index >= self.tokens.len() {
-            return Err(KclError::Syntax(KclErrorDetails {
-                source_ranges: vec![self.tokens.last().unwrap().into()],
-                message: "unexpected end".to_string(),
-            }));
-        }
-
         let Some(token) = self.tokens.get(index) else {
             return Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: vec![self.tokens.last().unwrap().into()],
@@ -354,6 +347,15 @@ impl Parser {
     }
 
     fn next_meaningful_token(&self, index: usize, offset: Option<usize>) -> Result<TokenReturnWithNonCode, KclError> {
+        // There is no next meaningful token.
+        if index >= self.tokens.len() - 1 {
+            return Ok(TokenReturnWithNonCode {
+                token: None,
+                index: self.tokens.len() - 1,
+                non_code_node: None,
+            });
+        }
+
         let new_index = index + offset.unwrap_or(1);
         let Ok(token) = self.get_token(new_index) else {
             return Ok(TokenReturnWithNonCode {
@@ -1029,7 +1031,7 @@ impl Parser {
                     } else {
                         return Err(KclError::Unimplemented(KclErrorDetails {
                             source_ranges: vec![argument_token_token.clone().into()],
-                            message: format!("Unexpected token {} ", argument_token_token.value),
+                            message: format!("Unexpected token {}", argument_token_token.value),
                         }));
                     };
                 }
@@ -1054,18 +1056,18 @@ impl Parser {
 
                 Err(KclError::Unimplemented(KclErrorDetails {
                     source_ranges: vec![argument_token_token.clone().into()],
-                    message: format!("Unexpected token {} ", argument_token_token.value),
+                    message: format!("Unexpected token {}", argument_token_token.value),
                 }))
             } else {
                 Err(KclError::Unimplemented(KclErrorDetails {
                     source_ranges: vec![brace_or_comma_token.into()],
-                    message: format!("Unexpected token {} ", brace_or_comma_token.value),
+                    message: format!("Unexpected token {}", brace_or_comma_token.value),
                 }))
             }
         } else {
             Err(KclError::Unimplemented(KclErrorDetails {
                 source_ranges: vec![brace_or_comma_token.into()],
-                message: format!("Unexpected token {} ", brace_or_comma_token.value),
+                message: format!("Unexpected token {}", brace_or_comma_token.value),
             }))
         }
     }
@@ -1119,7 +1121,7 @@ impl Parser {
         let Some(assignment_token) = assignment.token else {
             return Err(KclError::Unimplemented(KclErrorDetails {
                 source_ranges: vec![current_token.clone().into()],
-                message: format!("Unexpected token {} ", current_token.value),
+                message: format!("Unexpected token {}", current_token.value),
             }));
         };
 
@@ -1195,7 +1197,7 @@ impl Parser {
         } else {
             Err(KclError::Unimplemented(KclErrorDetails {
                 source_ranges: vec![brace_or_comma_token.into()],
-                message: format!("Unexpected token {} ", brace_or_comma_token.value),
+                message: format!("Unexpected token {}", brace_or_comma_token.value),
             }))
         }
     }
@@ -1243,7 +1245,6 @@ impl Parser {
                 return Ok(ExpressionStatementResult {
                     expression: ExpressionStatement {
                         start: current_token.start,
-                        // end: call_expression.last_index,
                         end,
                         expression: Value::CallExpression(Box::new(call_expression.expression)),
                     },
@@ -2786,5 +2787,14 @@ const secondExtrude = startSketchAt([0,0])
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_parse_weird_whitespace() {
+        let tokens = crate::tokeniser::lexer("	n(#-");
+        let parser = Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert!(result.err().unwrap().to_string().contains("Unexpected token"));
     }
 }
