@@ -1215,6 +1215,12 @@ impl Parser {
     fn make_unary_expression(&self, index: usize) -> Result<UnaryExpressionResult, KclError> {
         let current_token = self.get_token(index)?;
         let next_token = self.next_meaningful_token(index, None)?;
+        if next_token.token.is_none() {
+            return Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![current_token.into()],
+                message: "expected another token".to_string(),
+            }));
+        }
         let argument = self.make_value(next_token.index)?;
         let argument_token = self.get_token(argument.last_index)?;
         Ok(UnaryExpressionResult {
@@ -2849,5 +2855,14 @@ e
             .unwrap()
             .to_string()
             .contains("expected to be started on a identifier or literal"));
+    }
+
+    #[test]
+    fn test_parse_weird_close_before_nada() {
+        let tokens = crate::tokeniser::lexer(r#"fn)n-"#);
+        let parser = Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert!(result.err().unwrap().to_string().contains("expected another token"));
     }
 }
