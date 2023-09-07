@@ -14,13 +14,22 @@ export const SETTINGS_PERSIST_KEY = 'SETTINGS_PERSIST_KEY'
 const noModifiersPressed: MouseEventHandler = (e) =>
   !e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey
 
-type CADProgram =
+export type CADProgram =
   | 'KittyCAD'
   | 'OnShape'
   | 'Solidworks'
   | 'NX'
   | 'Creo'
   | 'AutoCAD'
+
+export const cadPrograms = [
+  'KittyCAD',
+  'OnShape',
+  'Solidworks',
+  'NX',
+  'Creo',
+  'AutoCAD',
+]
 
 type MouseGuardHandler = {
   description: string
