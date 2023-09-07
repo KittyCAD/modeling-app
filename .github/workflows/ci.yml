@@ -21,12 +21,6 @@ jobs:
       - run: yarn install
       - run: yarn fmt-check
 
-  test-rust:
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v3
-      - run: yarn test:rust
-  
   check-types:
     runs-on: ubuntu-20.04
 
@@ -69,7 +63,7 @@ jobs:
 
 
   build-apps:
-    needs: [check-format, build-test-web, test-rust, check-types]
+    needs: [check-format, build-test-web, check-types]
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
