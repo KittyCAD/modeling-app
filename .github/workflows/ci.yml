@@ -143,17 +143,11 @@ jobs:
           args: ${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }}
 
       - uses: actions/upload-artifact@v3
-        if: matrix.os != 'macos-latest'
         with:
-          path: src-tauri/target/release/bundle/*/*
-
-      - uses: actions/upload-artifact@v3
-        if: matrix.os == 'macos-latest'
-        with:
-          path: src-tauri/target/universal-apple-darwin/release/bundle/*/*
+          path: ${{ matrix.os == 'macos-latest' && 'src-tauri/target/universal-apple-darwin/release/bundle/*/*' || 'src-tauri/target/release/bundle/*/*' }}
 
 
-  test-publish-apps-release:
+  to-remove-publish-apps-release:
     runs-on: ubuntu-20.04
     needs: [build-test-web, build-apps]
     env:
@@ -230,6 +224,10 @@ jobs:
               "version": $version,
               "platforms": {
                 "darwin-x86_64": {
+                  "signature": $darwin_sig,
+                  "url": $darwin_url
+                },
+                "darwin-aarch64": {
                   "signature": $darwin_sig,
                   "url": $darwin_url
                 },
