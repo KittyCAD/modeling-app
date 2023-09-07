@@ -143,8 +143,14 @@ jobs:
           args: ${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }}
 
       - uses: actions/upload-artifact@v3
+        if: matrix.os != 'macos-latest'
         with:
           path: src-tauri/target/release/bundle/*/*
+
+      - uses: actions/upload-artifact@v3
+        if: matrix.os == 'macos-latest'
+        with:
+          path: src-tauri/target/universal-apple-darwin/release/bundle/*/*
 
 
   test-publish-apps-release:
@@ -159,14 +165,14 @@ jobs:
       - name: Generate the update static endpoint
         run: |
           ls -l artifact/*/*itty*
-          DARWIN_SIG=`cat artifact/universal-apple-darwin/*.app.tar.gz.sig`
+          DARWIN_SIG=`cat artifact/macos/*.app.tar.gz.sig`
           LINUX_SIG=`cat artifact/appimage/*.AppImage.tar.gz.sig`
           WINDOWS_SIG=`cat artifact/nsis/*.nsis.zip.sig`
           RELEASE_DIR=https://dl.kittycad.io/releases/modeling-app/v${VERSION_NO_V}
           jq --null-input \
             --arg version "v${VERSION_NO_V}" \
             --arg darwin_sig "$DARWIN_SIG" \
-            --arg darwin_url "$RELEASE_DIR/universal-apple-darwin/KittyCAD%20Modeling.app.tar.gz" \
+            --arg darwin_url "$RELEASE_DIR/macos/KittyCAD%20Modeling.app.tar.gz" \
             --arg linux_sig "$LINUX_SIG" \
             --arg linux_url "$RELEASE_DIR/appimage/kittycad-modeling_${VERSION_NO_V}_amd64.AppImage.tar.gz" \
             --arg windows_sig "$WINDOWS_SIG" \
