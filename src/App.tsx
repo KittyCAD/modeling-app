@@ -88,7 +88,7 @@ export function App() {
     isStreamReady,
     isLSPServerReady,
     setIsLSPServerReady,
-    isMouseDownInStream,
+    buttonDownInStream,
     formatCode,
     openPanes,
     setOpenPanes,
@@ -124,7 +124,7 @@ export function App() {
     setIsStreamReady: s.setIsStreamReady,
     isLSPServerReady: s.isLSPServerReady,
     setIsLSPServerReady: s.setIsLSPServerReady,
-    isMouseDownInStream: s.isMouseDownInStream,
+    buttonDownInStream: s.buttonDownInStream,
     formatCode: s.formatCode,
     addKCLError: s.addKCLError,
     openPanes: s.openPanes,
@@ -394,7 +394,7 @@ export function App() {
 
     const newCmdId = uuidv4()
 
-    if (isMouseDownInStream) {
+    if (buttonDownInStream) {
       debounceSocketSend({
         type: 'modeling_cmd_req',
         cmd: {
@@ -484,7 +484,7 @@ export function App() {
         className={
           'transition-opacity transition-duration-75 ' +
           paneOpacity +
-          (isMouseDownInStream ? ' pointer-events-none' : '')
+          (buttonDownInStream ? ' pointer-events-none' : '')
         }
         project={project}
         enableMenu={true}
@@ -493,7 +493,7 @@ export function App() {
       <Resizable
         className={
           'h-full flex flex-col flex-1 z-10 my-5 ml-5 pr-1 transition-opacity transition-duration-75 ' +
-          (isMouseDownInStream || onboardingStatus === 'camera'
+          (buttonDownInStream || onboardingStatus === 'camera'
             ? ' pointer-events-none '
             : ' ') +
           paneOpacity
@@ -572,7 +572,7 @@ export function App() {
           className={
             'transition-opacity transition-duration-75 ' +
             paneOpacity +
-            (isMouseDownInStream ? ' pointer-events-none' : '')
+            (buttonDownInStream ? ' pointer-events-none' : '')
           }
           open={openPanes.includes('debug')}
         />

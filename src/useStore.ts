@@ -166,8 +166,8 @@ export interface StoreState {
   setIsStreamReady: (isStreamReady: boolean) => void
   isLSPServerReady: boolean
   setIsLSPServerReady: (isLSPServerReady: boolean) => void
-  isMouseDownInStream: boolean
-  setIsMouseDownInStream: (isMouseDownInStream: boolean) => void
+  buttonDownInStream: number
+  setButtonDownInStream: (buttonDownInStream: number) => void
   didDragInStream: boolean
   setDidDragInStream: (didDragInStream: boolean) => void
   fileId: string
@@ -349,9 +349,9 @@ export const useStore = create<StoreState>()(
       setIsStreamReady: (isStreamReady) => set({ isStreamReady }),
       isLSPServerReady: false,
       setIsLSPServerReady: (isLSPServerReady) => set({ isLSPServerReady }),
-      isMouseDownInStream: false,
-      setIsMouseDownInStream: (isMouseDownInStream) => {
-        set({ isMouseDownInStream })
+      buttonDownInStream: 0,
+      setButtonDownInStream: (buttonDownInStream) => {
+        set({ buttonDownInStream })
       },
       didDragInStream: false,
       setDidDragInStream: (didDragInStream) => {

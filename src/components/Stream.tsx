@@ -17,15 +17,14 @@ export const Stream = ({ className = '' }) => {
   const {
     mediaStream,
     engineCommandManager,
-    setIsMouseDownInStream,
+    setButtonDownInStream,
     didDragInStream,
     setDidDragInStream,
     streamDimensions,
   } = useStore((s) => ({
     mediaStream: s.mediaStream,
     engineCommandManager: s.engineCommandManager,
-    isMouseDownInStream: s.isMouseDownInStream,
-    setIsMouseDownInStream: s.setIsMouseDownInStream,
+    setButtonDownInStream: s.setButtonDownInStream,
     fileId: s.fileId,
     didDragInStream: s.didDragInStream,
     setDidDragInStream: s.setDidDragInStream,
@@ -71,7 +70,7 @@ export const Stream = ({ className = '' }) => {
       cmd_id: newId,
     })
 
-    setIsMouseDownInStream(true)
+    setButtonDownInStream(e.button)
     setClickCoords({ x, y })
   }
 
@@ -113,7 +112,7 @@ export const Stream = ({ className = '' }) => {
       cmd_id: newCmdId,
     })
 
-    setIsMouseDownInStream(false)
+    setButtonDownInStream(0)
     if (!didDragInStream) {
       engineCommandManager?.sendSceneCommand({
         type: 'modeling_cmd_req',

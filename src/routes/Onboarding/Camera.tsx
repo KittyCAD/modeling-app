@@ -4,8 +4,8 @@ import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from '../../useStore'
 
 export default function Units() {
-  const { isMouseDownInStream } = useStore((s) => ({
-    isMouseDownInStream: s.isMouseDownInStream,
+  const { buttonDownInStream } = useStore((s) => ({
+    buttonDownInStream: s.buttonDownInStream,
   }))
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.SKETCHING)
@@ -15,7 +15,7 @@ export default function Units() {
       <div
         className={
           'max-w-2xl flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
-          (isMouseDownInStream ? '' : ' pointer-events-auto')
+          (buttonDownInStream ? '' : ' pointer-events-auto')
         }
       >
         <h1 className="text-2xl font-bold">Camera</h1>
