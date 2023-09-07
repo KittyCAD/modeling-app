@@ -53,6 +53,9 @@ export class EngineConnection {
   private onClose: (engineConnection: EngineConnection) => void
   private onNewTrack: (track: NewTrackArgs) => void
 
+  // TODO: actual type is ClientMetrics
+  private webrtcStatsCollector?: () => Promise<{}>
+
   constructor({
     url,
     token,
@@ -330,6 +333,17 @@ export class EngineConnection {
             })
           })
           .catch(console.log)
+      } else if (resp.type === 'metrics_request') {
+        if (this.webrtcStatsCollector === undefined) {
+          // TODO: Error message here?
+          return
+        }
+        this.webrtcStatsCollector().then((client_metrics) => {
+          this.send({
+            type: 'metrics_response',
+            metrics: client_metrics,
+          })
+        })
       }
 
       // TODO(paultag): This ought to be both controllable, as well as something
@@ -361,127 +375,53 @@ export class EngineConnection {
         })
       }
 
-      // Set up the background thread to keep an eye on statistical
-      // information about the WebRTC media stream from the server to
-      // us. We'll also eventually want more global statistical information,
-      // but this will give us a baseline.
-      if (parseInt(VITE_KC_CONNECTION_WEBRTC_REPORT_STATS_MS) !== 0) {
-        setInterval(() => {
-          if (this.pc === undefined) {
-            return
-          }
-          if (!this.shouldTrace()) {
+      this.webrtcStatsCollector = (): Promise<{}> => {
+        return new Promise((resolve, reject) => {
+          if (mediaStream.getVideoTracks().length !== 1) {
+            reject(new Error('too many video tracks to report'))
             return
           }
 
-          // Use the WebRTC Statistics API to collect statistical information
-          // about the WebRTC connection we're using to report to Sentry.
-          mediaStream.getVideoTracks().forEach((videoTrack) => {
-            let trackStats = new Map<string, any>()
-            this.pc?.getStats(videoTrack).then((videoTrackStats) => {
-              // Sentry only allows 10 metrics per transaction. We're going
-              // to have to pick carefully here, eventually send like a prom
-              // file or something to the peer.
+          let videoTrack = mediaStream.getVideoTracks()[0]
+          this.pc?.getStats(videoTrack).then((videoTrackStats) => {
+            // TODO(paultag): this needs type information from the KittyCAD typescript
+            // library once it's updated
+            let client_metrics = {}
 
-              const transaction = Sentry.startTransaction({
-                name: 'webrtc-stats',
-              })
-              videoTrackStats.forEach((videoTrackReport) => {
-                if (videoTrackReport.type === 'inbound-rtp') {
-                  // RTC Stream Info
-                  // transaction.setMeasurement(
-                  //   'mediaStreamTrack.framesDecoded',
-                  //   videoTrackReport.framesDecoded,
-                  //   'frame'
-                  // )
-                  transaction.setMeasurement(
-                    'rtcFramesDropped',
-                    videoTrackReport.framesDropped,
-                    ''
-                  )
-                  // transaction.setMeasurement(
-                  //   'mediaStreamTrack.framesReceived',
-                  //   videoTrackReport.framesReceived,
-                  //   'frame'
-                  // )
-                  transaction.setMeasurement(
-                    'rtcFramesPerSecond',
-                    videoTrackReport.framesPerSecond,
-                    'fps'
-                  )
-                  transaction.setMeasurement(
-                    'rtcFreezeCount',
-                    videoTrackReport.freezeCount,
-                    ''
-                  )
-                  transaction.setMeasurement(
-                    'rtcJitter',
-                    videoTrackReport.jitter,
-                    'second'
-                  )
-                  // transaction.setMeasurement(
-                  //   'mediaStreamTrack.jitterBufferDelay',
-                  //   videoTrackReport.jitterBufferDelay,
-                  //   ''
-                  // )
-                  // transaction.setMeasurement(
-                  //   'mediaStreamTrack.jitterBufferEmittedCount',
-                  //   videoTrackReport.jitterBufferEmittedCount,
-                  //   ''
-                  // )
-                  // transaction.setMeasurement(
-                  //   'mediaStreamTrack.jitterBufferMinimumDelay',
-                  //   videoTrackReport.jitterBufferMinimumDelay,
-                  //   ''
-                  // )
-                  // transaction.setMeasurement(
-                  //   'mediaStreamTrack.jitterBufferTargetDelay',
-                  //   videoTrackReport.jitterBufferTargetDelay,
-                  //   ''
-                  // )
-                  transaction.setMeasurement(
-                    'rtcKeyFramesDecoded',
-                    videoTrackReport.keyFramesDecoded,
-                    ''
-                  )
-                  transaction.setMeasurement(
-                    'rtcTotalFreezesDuration',
-                    videoTrackReport.totalFreezesDuration,
-                    'second'
-                  )
-                  // transaction.setMeasurement(
-                  //   'mediaStreamTrack.totalInterFrameDelay',
-                  //   videoTrackReport.totalInterFrameDelay,
-                  //   ''
-                  // )
-                  transaction.setMeasurement(
-                    'rtcTotalPausesDuration',
-                    videoTrackReport.totalPausesDuration,
-                    'second'
-                  )
-                  // transaction.setMeasurement(
-                  //   'mediaStreamTrack.totalProcessingDelay',
-                  //   videoTrackReport.totalProcessingDelay,
-                  //   'second'
-                  // )
-                } else if (videoTrackReport.type === 'transport') {
-                  // // Bytes i/o
-                  // transaction.setMeasurement(
-                  //   'mediaStreamTrack.bytesReceived',
-                  //   videoTrackReport.bytesReceived,
-                  //   'byte'
-                  // )
-                  // transaction.setMeasurement(
-                  //   'mediaStreamTrack.bytesSent',
-                  //   videoTrackReport.bytesSent,
-                  //   'byte'
-                  // )
-                }
-              })
-              transaction?.finish()
+            // TODO(paultag): Since we can technically have multiple WebRTC
+            // video tracks (even if the Server doesn't at the moment), we
+            // ought to send stats for every video track(?), and add the stream
+            // ID into it.  This raises the cardinality of collected metrics
+            // when/if we do, but for now, just report the one stream.
+
+            videoTrackStats.forEach((videoTrackReport) => {
+              if (videoTrackReport.type === 'inbound-rtp') {
+                client_metrics.rtc_frames_decoded =
+                  videoTrackReport.framesDecoded
+                client_metrics.rtc_frames_dropped =
+                  videoTrackReport.framesDropped
+                client_metrics.rtc_frames_received =
+                  videoTrackReport.framesReceived
+                client_metrics.rtc_frames_per_second =
+                  videoTrackReport.framesPerSecond || 0
+                client_metrics.rtc_freeze_count = videoTrackReport.freezeCount
+                client_metrics.rtc_jitter_sec = videoTrackReport.jitter
+                client_metrics.rtc_keyframes_decoded =
+                  videoTrackReport.keyFramesDecoded
+                client_metrics.rtc_total_freezes_duration_sec =
+                  videoTrackReport.totalFreezesDuration
+                client_metrics.rtc_total_pauses_duration_sec =
+                  videoTrackReport.totalPausesDuration
+                client_metrics.rtc_total_processing_delay_sec =
+                  videoTrackReport.totalProcessingDelay
+              } else if (videoTrackReport.type === 'transport') {
+                // videoTrackReport.bytesReceived,
+                // videoTrackReport.bytesSent,
+              }
             })
+            resolve(client_metrics)
           })
-        }, VITE_KC_CONNECTION_WEBRTC_REPORT_STATS_MS)
+        })
       }
 
       this.onNewTrack({
@@ -489,10 +429,6 @@ export class EngineConnection {
         mediaStream: mediaStream,
       })
     })
-
-    // During startup, we'll track the time from `connect` being called
-    // until the 'done' event fires.
-    let connectionStarted = new Date()
 
     this.pc.addEventListener('datachannel', (event) => {
       this.unreliableDataChannel = event.channel
@@ -537,6 +473,7 @@ export class EngineConnection {
     this.websocket = undefined
     this.pc = undefined
     this.unreliableDataChannel = undefined
+    this.webrtcStatsCollector = undefined
 
     this.onClose(this)
     this.ready = false
