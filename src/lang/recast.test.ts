@@ -318,9 +318,9 @@ describe('it recasts wrapped object expressions in pipe bodies with correct inde
   |> line({ to: [0.62, 4.15], tag: 'seg01' }, %)
   |> line([2.77, -1.24], %)
   |> angledLineThatIntersects({
-        angle: 201,
-        offset: -1.35,
-        intersectTag: 'seg01'
+       angle: 201,
+       offset: -1.35,
+       intersectTag: 'seg01'
      }, %)
   |> line([-0.42, -1.72], %)
 show(part001)`
