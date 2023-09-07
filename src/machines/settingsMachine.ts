@@ -125,7 +125,8 @@ export const settingsMachine = createMachine(
           'Set Default Project Name': {
             actions: [
               assign({
-                defaultProjectName: (_, event) => event.data.defaultProjectName,
+                defaultProjectName: (_, event) =>
+                  event.data.defaultProjectName.trim() || DEFAULT_PROJECT_NAME,
               }),
               'persistSettings',
               'toastSuccess',
