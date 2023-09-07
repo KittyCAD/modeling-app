@@ -196,7 +196,7 @@ const CommandBar = () => {
           setCommandBarOpen(false)
           clearState()
         }}
-        className="fixed inset-0 overflow-y-auto p-4 pt-[25vh]"
+        className="fixed inset-0 z-40 overflow-y-auto p-4 pt-[25vh]"
       >
         <Transition.Child
           enter="duration-100 ease-out"
@@ -207,7 +207,7 @@ const CommandBar = () => {
           leaveTo="opacity-0"
           as={Fragment}
         >
-          <Dialog.Overlay className="fixed z-40 inset-0 bg-chalkboard-10/70 dark:bg-chalkboard-110/50" />
+          <Dialog.Overlay className="fixed inset-0 bg-chalkboard-10/70 dark:bg-chalkboard-110/50" />
         </Transition.Child>
         <Transition.Child
           enter="duration-100 ease-out"
@@ -221,7 +221,7 @@ const CommandBar = () => {
           <Combobox
             value={selectedCommand}
             onChange={handleCommandSelection}
-            className="rounded relative mx-auto z-40 p-2 bg-chalkboard-10 dark:bg-chalkboard-100 border dark:border-chalkboard-70 max-w-xl w-full shadow-lg"
+            className="rounded relative mx-auto p-2 bg-chalkboard-10 dark:bg-chalkboard-100 border dark:border-chalkboard-70 max-w-xl w-full shadow-lg"
             as="div"
           >
             <div className="flex gap-2 items-center">
