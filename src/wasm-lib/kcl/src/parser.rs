@@ -347,6 +347,15 @@ impl Parser {
     }
 
     fn next_meaningful_token(&self, index: usize, offset: Option<usize>) -> Result<TokenReturnWithNonCode, KclError> {
+        // There is no next meaningful token.
+        if index >= self.tokens.len() - 1 {
+            return Ok(TokenReturnWithNonCode {
+                token: None,
+                index: self.tokens.len() - 1,
+                non_code_node: None,
+            });
+        }
+
         let new_index = index + offset.unwrap_or(1);
         let Ok(token) = self.get_token(new_index) else {
             return Ok(TokenReturnWithNonCode {
@@ -405,7 +414,7 @@ impl Parser {
         if found_another_opening_brace {
             return self.find_closing_brace(index + 1, brace_count + 1, search_opening_brace);
         }
-        if found_another_closing_brace {
+        if found_another_closing_brace && brace_count > 0 {
             return self.find_closing_brace(index + 1, brace_count - 1, search_opening_brace);
         }
         // non-brace token, increment and continue
@@ -610,6 +619,12 @@ impl Parser {
     fn make_member_expression(&self, index: usize) -> Result<MemberExpressionReturn, KclError> {
         let current_token = self.get_token(index)?;
         let mut keys_info = self.collect_object_keys(index, None)?;
+        if keys_info.is_empty() {
+            return Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![current_token.into()],
+                message: "expected to be started on a identifier or literal".to_string(),
+            }));
+        }
         let last_key = keys_info[keys_info.len() - 1].clone();
         let first_key = keys_info.remove(0);
         let root = self.make_identifier(index)?;
@@ -679,7 +694,11 @@ impl Parser {
                 return Ok(index);
             }
             let next_right = self.next_meaningful_token(maybe_operator.index, None)?;
-            self.find_end_of_binary_expression(next_right.index)
+            if next_right.index != index {
+                self.find_end_of_binary_expression(next_right.index)
+            } else {
+                Ok(index)
+            }
         } else {
             Ok(index)
         }
@@ -847,6 +866,8 @@ impl Parser {
     fn make_array_expression(&self, index: usize) -> Result<ArrayReturn, KclError> {
         let opening_brace_token = self.get_token(index)?;
         let first_element_token = self.next_meaningful_token(index, None)?;
+        // Make sure there is a closing brace.
+        let _closing_brace = self.find_closing_brace(index, 0, "")?;
         let array_elements = self.make_array_elements(first_element_token.index, Vec::new())?;
         Ok(ArrayReturn {
             expression: ArrayExpression {
@@ -1018,7 +1039,7 @@ impl Parser {
                     } else {
                         return Err(KclError::Unimplemented(KclErrorDetails {
                             source_ranges: vec![argument_token_token.clone().into()],
-                            message: format!("Unexpected token {} ", argument_token_token.value),
+                            message: format!("Unexpected token {}", argument_token_token.value),
                         }));
                     };
                 }
@@ -1043,18 +1064,18 @@ impl Parser {
 
                 Err(KclError::Unimplemented(KclErrorDetails {
                     source_ranges: vec![argument_token_token.clone().into()],
-                    message: format!("Unexpected token {} ", argument_token_token.value),
+                    message: format!("Unexpected token {}", argument_token_token.value),
                 }))
             } else {
                 Err(KclError::Unimplemented(KclErrorDetails {
                     source_ranges: vec![brace_or_comma_token.into()],
-                    message: format!("Unexpected token {} ", brace_or_comma_token.value),
+                    message: format!("Unexpected token {}", brace_or_comma_token.value),
                 }))
             }
         } else {
             Err(KclError::Unimplemented(KclErrorDetails {
                 source_ranges: vec![brace_or_comma_token.into()],
-                message: format!("Unexpected token {} ", brace_or_comma_token.value),
+                message: format!("Unexpected token {}", brace_or_comma_token.value),
             }))
         }
     }
@@ -1063,6 +1084,8 @@ impl Parser {
         let current_token = self.get_token(index)?;
         let brace_token = self.next_meaningful_token(index, None)?;
         let callee = self.make_identifier(index)?;
+        // Make sure there is a closing brace.
+        let _closing_brace_token = self.find_closing_brace(brace_token.index, 0, "")?;
         let args = self.make_arguments(brace_token.index, vec![])?;
         let closing_brace_token = self.get_token(args.last_index)?;
         let function = if let Some(stdlib_fn) = self.stdlib.get(&callee.name) {
@@ -1105,42 +1128,42 @@ impl Parser {
     ) -> Result<VariableDeclaratorsReturn, KclError> {
         let current_token = self.get_token(index)?;
         let assignment = self.next_meaningful_token(index, None)?;
-        if let Some(assignment_token) = assignment.token {
-            let contents_start_token = self.next_meaningful_token(assignment.index, None)?;
-            let pipe_start_index = if assignment_token.token_type == TokenType::Operator {
-                contents_start_token.index
-            } else {
-                assignment.index
-            };
-            let next_pipe_operator = self.has_pipe_operator(pipe_start_index, None)?;
-            let init: Value;
-            let last_index = if next_pipe_operator.token.is_some() {
-                let pipe_expression_result = self.make_pipe_expression(assignment.index)?;
-                init = Value::PipeExpression(Box::new(pipe_expression_result.expression));
-                pipe_expression_result.last_index
-            } else {
-                let value_result = self.make_value(contents_start_token.index)?;
-                init = value_result.value;
-                value_result.last_index
-            };
-            let current_declarator = VariableDeclarator {
-                start: current_token.start,
-                end: self.get_token(last_index)?.end,
-                id: self.make_identifier(index)?,
-                init,
-            };
-            let mut declarations = previous_declarators;
-            declarations.push(current_declarator);
-            Ok(VariableDeclaratorsReturn {
-                declarations,
-                last_index,
-            })
-        } else {
-            Err(KclError::Unimplemented(KclErrorDetails {
+        let Some(assignment_token) = assignment.token else {
+            return Err(KclError::Unimplemented(KclErrorDetails {
                 source_ranges: vec![current_token.clone().into()],
-                message: format!("Unexpected token {} ", current_token.value),
-            }))
-        }
+                message: format!("Unexpected token {}", current_token.value),
+            }));
+        };
+
+        let contents_start_token = self.next_meaningful_token(assignment.index, None)?;
+        let pipe_start_index = if assignment_token.token_type == TokenType::Operator {
+            contents_start_token.index
+        } else {
+            assignment.index
+        };
+        let next_pipe_operator = self.has_pipe_operator(pipe_start_index, None)?;
+        let init: Value;
+        let last_index = if next_pipe_operator.token.is_some() {
+            let pipe_expression_result = self.make_pipe_expression(assignment.index)?;
+            init = Value::PipeExpression(Box::new(pipe_expression_result.expression));
+            pipe_expression_result.last_index
+        } else {
+            let value_result = self.make_value(contents_start_token.index)?;
+            init = value_result.value;
+            value_result.last_index
+        };
+        let current_declarator = VariableDeclarator {
+            start: current_token.start,
+            end: self.get_token(last_index)?.end,
+            id: self.make_identifier(index)?,
+            init,
+        };
+        let mut declarations = previous_declarators;
+        declarations.push(current_declarator);
+        Ok(VariableDeclaratorsReturn {
+            declarations,
+            last_index,
+        })
     }
 
     fn make_variable_declaration(&self, index: usize) -> Result<VariableDeclarationResult, KclError> {
@@ -1184,7 +1207,7 @@ impl Parser {
         } else {
             Err(KclError::Unimplemented(KclErrorDetails {
                 source_ranges: vec![brace_or_comma_token.into()],
-                message: format!("Unexpected token {} ", brace_or_comma_token.value),
+                message: format!("Unexpected token {}", brace_or_comma_token.value),
             }))
         }
     }
@@ -1192,6 +1215,12 @@ impl Parser {
     fn make_unary_expression(&self, index: usize) -> Result<UnaryExpressionResult, KclError> {
         let current_token = self.get_token(index)?;
         let next_token = self.next_meaningful_token(index, None)?;
+        if next_token.token.is_none() {
+            return Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![current_token.into()],
+                message: "expected another token".to_string(),
+            }));
+        }
         let argument = self.make_value(next_token.index)?;
         let argument_token = self.get_token(argument.last_index)?;
         Ok(UnaryExpressionResult {
@@ -1232,7 +1261,6 @@ impl Parser {
                 return Ok(ExpressionStatementResult {
                     expression: ExpressionStatement {
                         start: current_token.start,
-                        // end: call_expression.last_index,
                         end,
                         expression: Value::CallExpression(Box::new(call_expression.expression)),
                     },
@@ -1314,6 +1342,8 @@ impl Parser {
 
     fn make_object_expression(&self, index: usize) -> Result<ObjectExpressionResult, KclError> {
         let opening_brace_token = self.get_token(index)?;
+        // Make sure there is a closing brace.
+        let _closing_brace = self.find_closing_brace(index, 0, "")?;
         let first_property_token = self.next_meaningful_token(index, None)?;
         let object_properties = self.make_object_properties(first_property_token.index, vec![])?;
         Ok(ObjectExpressionResult {
@@ -2715,5 +2745,140 @@ show(mySk1)"#;
         let result = parser.ast();
         assert!(result.is_err());
         assert!(result.err().unwrap().to_string().contains("file is empty"));
+    }
+
+    #[test]
+    fn test_parse_half_pipe_small() {
+        let tokens = crate::tokeniser::lexer(
+            "const secondExtrude = startSketchAt([0,0])
+  |",
+        );
+        let parser = Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert!(result.err().unwrap().to_string().contains("Unexpected token"));
+    }
+
+    #[test]
+    fn test_parse_half_pipe() {
+        let tokens = crate::tokeniser::lexer(
+            "const height = 10
+
+const firstExtrude = startSketchAt([0,0])
+  |> line([0, 8], %)
+  |> line([20, 0], %)
+  |> line([0, -8], %)
+  |> close(%)
+  |> extrude(2, %)
+
+show(firstExtrude)
+
+const secondExtrude = startSketchAt([0,0])
+  |",
+        );
+        let parser = Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert!(result.err().unwrap().to_string().contains("Unexpected token"));
+    }
+
+    #[test]
+    fn test_parse_greater_bang() {
+        let tokens = crate::tokeniser::lexer(">!");
+        let parser = Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_parse_z_percent_parens() {
+        let tokens = crate::tokeniser::lexer("z%)");
+        let parser = Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert!(result.err().unwrap().to_string().contains("Unexpected token"));
+    }
+
+    #[test]
+    fn test_parse_parens_unicode() {
+        let tokens = crate::tokeniser::lexer("(ޜ");
+        let parser = Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_parse_nested_open_brackets() {
+        let tokens = crate::tokeniser::lexer(
+            r#"
+z(-[["#,
+        );
+        let parser = Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert!(result.err().unwrap().to_string().contains("unexpected end"));
+    }
+
+    #[test]
+    fn test_parse_weird_new_line_function() {
+        let tokens = crate::tokeniser::lexer(
+            r#"z
+ (--#"#,
+        );
+        let parser = Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert!(result.err().unwrap().to_string().contains("unexpected end"));
+    }
+
+    #[test]
+    fn test_parse_weird_lots_of_fancy_brackets() {
+        let tokens = crate::tokeniser::lexer(r#"zz({{{{{{{{)iegAng{{{{{{{##"#);
+        let parser = Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert!(result.err().unwrap().to_string().contains("unexpected end"));
+    }
+
+    #[test]
+    fn test_parse_weird_close_before_open() {
+        let tokens = crate::tokeniser::lexer(
+            r#"fn)n
+e
+["#,
+        );
+        let parser = Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert!(result
+            .err()
+            .unwrap()
+            .to_string()
+            .contains("expected to be started on a identifier or literal"));
+    }
+
+    #[test]
+    fn test_parse_weird_close_before_nada() {
+        let tokens = crate::tokeniser::lexer(r#"fn)n-"#);
+        let parser = Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert!(result.err().unwrap().to_string().contains("expected another token"));
+    }
+
+    #[test]
+    fn test_parse_weird_lots_of_slashes() {
+        let tokens = crate::tokeniser::lexer(
+            r#"J///////////o//+///////////P++++*++++++P///////˟
+++4"#,
+        );
+        let parser = Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert!(result
+            .err()
+            .unwrap()
+            .to_string()
+            .contains("unexpected end of expression"));
     }
 }

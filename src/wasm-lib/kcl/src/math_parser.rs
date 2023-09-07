@@ -228,8 +228,8 @@ impl ReversePolishNotation {
                     .collect::<Vec<Token>>(),
             );
             return rpn.parse();
-        } else if current_token.value == ")" {
-            if !self.operators.is_empty() && self.operators[self.operators.len() - 1].value != "(" {
+        } else if current_token.value == ")" && !self.operators.is_empty() {
+            if self.operators[self.operators.len() - 1].value != "(" {
                 // pop operators off the stack and push them to postFix until we find the matching '('
                 let rpn = ReversePolishNotation::new(
                     &self.parser.tokens,

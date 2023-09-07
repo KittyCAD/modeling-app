@@ -1,4 +1,4 @@
-name: CI 
+name: CI
 
 on:
   pull_request:
@@ -13,16 +13,30 @@ jobs:
   check-format:
     runs-on: 'ubuntu-20.04'
     steps:
-
       - uses: actions/checkout@v3
-
       - uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
-
+          cache: 'yarn'
       - run: yarn install
-
       - run: yarn fmt-check
+
+  check-types:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+      - run: yarn install
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "./src/wasm-lib"
+
+      - run: yarn build:wasm
+      - run: yarn tsc
 
 
   build-test-web:
@@ -36,12 +50,15 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
+          cache: 'yarn'
 
       - run: yarn install
 
-      - run: yarn build:wasm
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "./src/wasm-lib"
 
-      - run: yarn tsc
+      - run: yarn build:wasm
 
       - run: yarn simpleserver:ci
 
@@ -49,14 +66,12 @@ jobs:
 
       - run: yarn test:cov
 
-      - run: yarn test:rust
-      
       - id: export_version
         run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
 
 
   build-apps:
-    needs: [check-format, build-test-web]
+    needs: [check-format, build-test-web, check-types]
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -87,6 +102,10 @@ jobs:
         with:
           workspaces: './src-tauri -> target'
 
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "./src/wasm-lib"
+
       - name: wasm prep
         shell: bash
         run: |
@@ -110,11 +129,27 @@ jobs:
       - name: Fix format
         run: yarn fmt
 
+      # This will do intel silicon on mac
       - name: Build the app for the current platform (no upload)
         uses: tauri-apps/tauri-action@v0
         env:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+
+      - name: install apple silicon target mac
+        if: matrix.os == 'macos-latest'
+        run: |
+          rustup target add aarch64-apple-darwin
+
+      # this will do apple silicon on mac
+      - name: Build the app for the current platform (no upload)
+        uses: tauri-apps/tauri-action@v0
+        if: matrix.os == 'macos-latest'
+        env:
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+        with:
+          args: --target universal-apple-darwin
 
       - uses: actions/upload-artifact@v3
         with:
@@ -174,15 +209,15 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1.1.1
         with:
           project_id: kittycadapi
-      
+
       - name: Upload release files to public bucket
         uses: google-github-actions/upload-cloud-storage@v1.0.3
         with:
           path: artifact
           glob: '*/*itty*'
           parent: false
-          destination: dl.kittycad.io/releases/modeling-app/v${{ env.VERSION_NO_V }} 
-      
+          destination: dl.kittycad.io/releases/modeling-app/v${{ env.VERSION_NO_V }}
+
       - name: Upload update endpoint to public bucket
         uses: google-github-actions/upload-cloud-storage@v1.0.3
         with:
