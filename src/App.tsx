@@ -380,24 +380,17 @@ export function App() {
   const debounceSocketSend = throttle<EngineCommand>((message) => {
     engineCommandManager?.sendSceneCommand(message)
   }, 16)
-  const handleMouseMove: MouseEventHandler<HTMLDivElement> = ({
-    clientX,
-    clientY,
-    ctrlKey,
-    shiftKey,
-    currentTarget,
-    nativeEvent,
-  }) => {
-    nativeEvent.preventDefault()
+  const handleMouseMove: MouseEventHandler<HTMLDivElement> = (e) => {
+    e.nativeEvent.preventDefault()
 
     const { x, y } = getNormalisedCoordinates({
-      clientX,
-      clientY,
-      el: currentTarget,
+      clientX: e.clientX,
+      clientY: e.clientY,
+      el: e.currentTarget,
       ...streamDimensions,
     })
 
-    const interaction = ctrlKey ? 'zoom' : shiftKey ? 'pan' : 'rotate'
+    const interaction = e.ctrlKey ? 'zoom' : e.shiftKey ? 'pan' : 'rotate'
 
     const newCmdId = uuidv4()
 
