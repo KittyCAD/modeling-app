@@ -1330,6 +1330,8 @@ impl Parser {
 
     fn make_object_expression(&self, index: usize) -> Result<ObjectExpressionResult, KclError> {
         let opening_brace_token = self.get_token(index)?;
+        // Make sure there is a closing brace.
+        let _closing_brace = self.find_closing_brace(index, 0, "")?;
         let first_property_token = self.next_meaningful_token(index, None)?;
         let object_properties = self.make_object_properties(first_property_token.index, vec![])?;
         Ok(ObjectExpressionResult {
@@ -2811,6 +2813,15 @@ z(-[["#,
             r#"z
  (--#"#,
         );
+        let parser = Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert!(result.err().unwrap().to_string().contains("unexpected end"));
+    }
+
+    #[test]
+    fn test_parse_weird_lots_of_fancy_brackets() {
+        let tokens = crate::tokeniser::lexer(r#"zz({{{{{{{{)iegAng{{{{{{{##"#);
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
