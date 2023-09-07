@@ -206,8 +206,8 @@ fn is_block_comment(character: &str) -> bool {
     BLOCKCOMMENT.is_match(character)
 }
 
-fn match_first(str: &str, regex: &Regex) -> Option<String> {
-    regex.find(str).map(|the_match| the_match.as_str().to_string())
+fn match_first(s: &str, regex: &Regex) -> Option<String> {
+    regex.find(s).map(|the_match| the_match.as_str().to_string())
 }
 
 fn make_token(token_type: TokenType, value: &str, start: usize) -> Token {
@@ -219,8 +219,8 @@ fn make_token(token_type: TokenType, value: &str, start: usize) -> Token {
     }
 }
 
-fn return_token_at_index(str: &str, start_index: usize) -> Option<Token> {
-    let str_from_index = &str[start_index..];
+fn return_token_at_index(s: &str, start_index: usize) -> Option<Token> {
+    let str_from_index = &s[start_index..];
     if is_string(str_from_index) {
         return Some(make_token(
             TokenType::String,
@@ -348,21 +348,22 @@ fn return_token_at_index(str: &str, start_index: usize) -> Option<Token> {
     None
 }
 
-pub fn lexer(str: &str) -> Vec<Token> {
-    fn recursively_tokenise(str: &str, current_index: usize, previous_tokens: Vec<Token>) -> Vec<Token> {
-        if current_index >= str.len() {
-            return previous_tokens;
-        }
-        let token = return_token_at_index(str, current_index);
-        let Some(token) = token else {
-            return recursively_tokenise(str, current_index + 1, previous_tokens);
-        };
-        let mut new_tokens = previous_tokens;
-        let token_length = token.value.len();
-        new_tokens.push(token);
-        recursively_tokenise(str, current_index + token_length, new_tokens)
+fn recursively_tokenise(s: &str, current_index: usize, previous_tokens: Vec<Token>) -> Vec<Token> {
+    if current_index >= s.len() {
+        return previous_tokens;
     }
-    recursively_tokenise(str, 0, Vec::new())
+    let token = return_token_at_index(s, current_index);
+    let Some(token) = token else {
+        return recursively_tokenise(s, current_index + 1, previous_tokens);
+    };
+    let mut new_tokens = previous_tokens;
+    let token_length = token.value.len();
+    new_tokens.push(token);
+    recursively_tokenise(s, current_index + token_length, new_tokens)
+}
+
+pub fn lexer(s: &str) -> Vec<Token> {
+    recursively_tokenise(s, 0, Vec::new())
 }
 
 #[cfg(test)]

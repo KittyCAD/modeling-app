@@ -170,6 +170,13 @@ impl Parser {
             }));
         }
 
+        if index >= self.tokens.len() {
+            return Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![self.tokens.last().unwrap().into()],
+                message: "unexpected end".to_string(),
+            }));
+        }
+
         let Some(token) = self.tokens.get(index) else {
             return Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: vec![self.tokens.last().unwrap().into()],
@@ -679,7 +686,11 @@ impl Parser {
                 return Ok(index);
             }
             let next_right = self.next_meaningful_token(maybe_operator.index, None)?;
-            self.find_end_of_binary_expression(next_right.index)
+            if next_right.index != index {
+                self.find_end_of_binary_expression(next_right.index)
+            } else {
+                return Ok(index);
+            }
         } else {
             Ok(index)
         }
@@ -1105,42 +1116,42 @@ impl Parser {
     ) -> Result<VariableDeclaratorsReturn, KclError> {
         let current_token = self.get_token(index)?;
         let assignment = self.next_meaningful_token(index, None)?;
-        if let Some(assignment_token) = assignment.token {
-            let contents_start_token = self.next_meaningful_token(assignment.index, None)?;
-            let pipe_start_index = if assignment_token.token_type == TokenType::Operator {
-                contents_start_token.index
-            } else {
-                assignment.index
-            };
-            let next_pipe_operator = self.has_pipe_operator(pipe_start_index, None)?;
-            let init: Value;
-            let last_index = if next_pipe_operator.token.is_some() {
-                let pipe_expression_result = self.make_pipe_expression(assignment.index)?;
-                init = Value::PipeExpression(Box::new(pipe_expression_result.expression));
-                pipe_expression_result.last_index
-            } else {
-                let value_result = self.make_value(contents_start_token.index)?;
-                init = value_result.value;
-                value_result.last_index
-            };
-            let current_declarator = VariableDeclarator {
-                start: current_token.start,
-                end: self.get_token(last_index)?.end,
-                id: self.make_identifier(index)?,
-                init,
-            };
-            let mut declarations = previous_declarators;
-            declarations.push(current_declarator);
-            Ok(VariableDeclaratorsReturn {
-                declarations,
-                last_index,
-            })
-        } else {
-            Err(KclError::Unimplemented(KclErrorDetails {
+        let Some(assignment_token) = assignment.token else {
+            return Err(KclError::Unimplemented(KclErrorDetails {
                 source_ranges: vec![current_token.clone().into()],
                 message: format!("Unexpected token {} ", current_token.value),
-            }))
-        }
+            }));
+        };
+
+        let contents_start_token = self.next_meaningful_token(assignment.index, None)?;
+        let pipe_start_index = if assignment_token.token_type == TokenType::Operator {
+            contents_start_token.index
+        } else {
+            assignment.index
+        };
+        let next_pipe_operator = self.has_pipe_operator(pipe_start_index, None)?;
+        let init: Value;
+        let last_index = if next_pipe_operator.token.is_some() {
+            let pipe_expression_result = self.make_pipe_expression(assignment.index)?;
+            init = Value::PipeExpression(Box::new(pipe_expression_result.expression));
+            pipe_expression_result.last_index
+        } else {
+            let value_result = self.make_value(contents_start_token.index)?;
+            init = value_result.value;
+            value_result.last_index
+        };
+        let current_declarator = VariableDeclarator {
+            start: current_token.start,
+            end: self.get_token(last_index)?.end,
+            id: self.make_identifier(index)?,
+            init,
+        };
+        let mut declarations = previous_declarators;
+        declarations.push(current_declarator);
+        Ok(VariableDeclaratorsReturn {
+            declarations,
+            last_index,
+        })
     }
 
     fn make_variable_declaration(&self, index: usize) -> Result<VariableDeclarationResult, KclError> {
@@ -2715,5 +2726,40 @@ show(mySk1)"#;
         let result = parser.ast();
         assert!(result.is_err());
         assert!(result.err().unwrap().to_string().contains("file is empty"));
+    }
+
+    #[test]
+    fn test_parse_half_pipe_small() {
+        let tokens = crate::tokeniser::lexer(
+            "const secondExtrude = startSketchAt([0,0])
+  |",
+        );
+        let parser = Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert!(result.err().unwrap().to_string().contains("Unexpected token"));
+    }
+
+    #[test]
+    fn test_parse_half_pipe() {
+        let tokens = crate::tokeniser::lexer(
+            "const height = 10
+
+const firstExtrude = startSketchAt([0,0])
+  |> line([0, 8], %)
+  |> line([20, 0], %)
+  |> line([0, -8], %)
+  |> close(%)
+  |> extrude(2, %)
+
+show(firstExtrude)
+
+const secondExtrude = startSketchAt([0,0])
+  |",
+        );
+        let parser = Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert!(result.err().unwrap().to_string().contains("Unexpected token"));
     }
 }
