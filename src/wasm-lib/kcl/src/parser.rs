@@ -2865,4 +2865,20 @@ e
         assert!(result.is_err());
         assert!(result.err().unwrap().to_string().contains("expected another token"));
     }
+
+    #[test]
+    fn test_parse_weird_lots_of_slashes() {
+        let tokens = crate::tokeniser::lexer(
+            r#"J///////////o//+///////////P++++*++++++P///////˟
+++4"#,
+        );
+        let parser = Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert!(result
+            .err()
+            .unwrap()
+            .to_string()
+            .contains("unexpected end of expression"));
+    }
 }
