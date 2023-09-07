@@ -86,3 +86,24 @@ The PR may serve as a place to discuss the human-readable changelog and extra QA
 3. Create a new release and tag pointing to the bump version commit using semantic versioning `v{x}.{y}.{z}`
 
 4. A new Action kicks in at https://github.com/KittyCAD/modeling-app/actions, uploading artifacts to the release
+
+## Fuzzing the parser
+
+Make sure you install cargo fuzz:
+
+```bash
+$ cargo install cargo-fuzz
+```
+
+```bash
+$ cd src/wasm-lib/kcl
+
+# list the fuzz targets
+$ cargo fuzz list
+
+# run the parser fuzzer
+$ cargo +nightly fuzz run parser
+```
+
+For more information on fuzzing you can check out 
+[this guide](https://rust-fuzz.github.io/book/cargo-fuzz.html).

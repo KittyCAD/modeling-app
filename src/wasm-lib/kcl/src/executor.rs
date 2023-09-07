@@ -642,7 +642,7 @@ pub fn execute(
                                         for (index, param) in function_expression.params.iter().enumerate() {
                                             fn_memory.add(
                                                 &param.name,
-                                                args.clone().get(index).unwrap().clone(),
+                                                args.get(index).unwrap().clone(),
                                                 param.into(),
                                             )?;
                                         }

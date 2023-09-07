@@ -220,7 +220,7 @@ fn make_token(token_type: TokenType, value: &str, start: usize) -> Token {
 }
 
 fn return_token_at_index(s: &str, start_index: usize) -> Option<Token> {
-    let str_from_index = &s[start_index..];
+    let str_from_index = &s.chars().skip(start_index).collect::<String>();
     if is_string(str_from_index) {
         return Some(make_token(
             TokenType::String,
