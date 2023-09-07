@@ -37,6 +37,10 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'yarn'
       - run: yarn install
+      - uses: Swatinem/rust-cache@v2
+          with:
+            workspaces: "./src/wasm-lib"
+
       - run: yarn build:wasm
       - run: yarn tsc
 
@@ -55,6 +59,10 @@ jobs:
           cache: 'yarn'
 
       - run: yarn install
+
+      - uses: Swatinem/rust-cache@v2
+          with:
+            workspaces: "./src/wasm-lib"
 
       - run: yarn build:wasm
 
@@ -99,6 +107,10 @@ jobs:
         uses: swatinem/rust-cache@v2
         with:
           workspaces: './src-tauri -> target'
+
+      - uses: Swatinem/rust-cache@v2
+          with:
+            workspaces: "./src/wasm-lib"
 
       - name: wasm prep
         shell: bash
