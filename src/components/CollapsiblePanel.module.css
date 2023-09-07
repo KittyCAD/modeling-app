@@ -1,5 +1,5 @@
 .panel {
-  @apply relative overflow-auto z-0;
+  @apply relative z-0;
   @apply bg-chalkboard-10/70 backdrop-blur-sm;
 }
 
