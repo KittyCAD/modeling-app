@@ -2779,4 +2779,12 @@ const secondExtrude = startSketchAt([0,0])
         assert!(result.is_err());
         assert!(result.err().unwrap().to_string().contains("Unexpected token"));
     }
+
+    #[test]
+    fn test_parse_parens_unicode() {
+        let tokens = crate::tokeniser::lexer("(ޜ");
+        let parser = Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_ok());
+    }
 }
