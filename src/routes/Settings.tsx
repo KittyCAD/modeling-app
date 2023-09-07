@@ -6,7 +6,7 @@ import {
 import { ActionButton } from '../components/ActionButton'
 import { AppHeader } from '../components/AppHeader'
 import { open } from '@tauri-apps/api/dialog'
-import { BaseUnit, baseUnits } from '../useStore'
+import { BaseUnit, baseUnits } from '../machines/settingsMachine'
 import { Toggle } from '../components/Toggle/Toggle'
 import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'

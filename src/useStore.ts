@@ -94,15 +94,6 @@ export type GuiModes =
       position: Position
     }
 
-export const baseUnits = {
-  imperial: ['in', 'ft'],
-  metric: ['mm', 'cm', 'm'],
-} as const
-
-export type BaseUnit = 'in' | 'ft' | 'mm' | 'cm' | 'm'
-
-export const baseUnitsUnion = Object.values(baseUnits).flatMap((v) => v)
-
 export type PaneType =
   | 'code'
   | 'variables'

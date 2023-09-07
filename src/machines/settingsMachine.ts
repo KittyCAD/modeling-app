@@ -1,14 +1,22 @@
 import { assign, createMachine } from 'xstate'
-import { BaseUnit, baseUnitsUnion } from '../useStore'
 import { CommandBarMeta } from '../lib/commands'
 import { Themes, getSystemTheme, setThemeClass } from '../lib/theme'
 
-const DEFAULT_PROJECT_NAME = 'project-$nnn'
+export const DEFAULT_PROJECT_NAME = 'project-$nnn'
 
 export enum UnitSystem {
   Imperial = 'imperial',
   Metric = 'metric',
 }
+
+export const baseUnits = {
+  imperial: ['in', 'ft'],
+  metric: ['mm', 'cm', 'm'],
+} as const
+
+export type BaseUnit = 'in' | 'ft' | 'mm' | 'cm' | 'm'
+
+export const baseUnitsUnion = Object.values(baseUnits).flatMap((v) => v)
 
 export type Toggle = 'On' | 'Off'
 
