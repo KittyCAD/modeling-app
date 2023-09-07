@@ -619,6 +619,12 @@ impl Parser {
     fn make_member_expression(&self, index: usize) -> Result<MemberExpressionReturn, KclError> {
         let current_token = self.get_token(index)?;
         let mut keys_info = self.collect_object_keys(index, None)?;
+        if keys_info.is_empty() {
+            return Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![current_token.into()],
+                message: "expected to be started on a identifier or literal".to_string(),
+            }));
+        }
         let last_key = keys_info[keys_info.len() - 1].clone();
         let first_key = keys_info.remove(0);
         let root = self.make_identifier(index)?;
@@ -2826,5 +2832,22 @@ z(-[["#,
         let result = parser.ast();
         assert!(result.is_err());
         assert!(result.err().unwrap().to_string().contains("unexpected end"));
+    }
+
+    #[test]
+    fn test_parse_weird_close_before_open() {
+        let tokens = crate::tokeniser::lexer(
+            r#"fn)n
+e
+["#,
+        );
+        let parser = Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert!(result
+            .err()
+            .unwrap()
+            .to_string()
+            .contains("expected to be started on a identifier or literal"));
     }
 }
