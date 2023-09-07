@@ -5,3 +5,5 @@ coverage
 # Ignore Rust projects:
 *.rs
 target
+src/wasm-lib/pkg
+src/wasm-lib/kcl/bindings
