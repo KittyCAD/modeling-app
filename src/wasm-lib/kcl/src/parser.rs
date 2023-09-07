@@ -689,7 +689,7 @@ impl Parser {
             if next_right.index != index {
                 self.find_end_of_binary_expression(next_right.index)
             } else {
-                return Ok(index);
+                Ok(index)
             }
         } else {
             Ok(index)
