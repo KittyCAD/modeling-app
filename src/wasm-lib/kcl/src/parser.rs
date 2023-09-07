@@ -1078,6 +1078,8 @@ impl Parser {
         let current_token = self.get_token(index)?;
         let brace_token = self.next_meaningful_token(index, None)?;
         let callee = self.make_identifier(index)?;
+        // Make sure there is a closing brace.
+        let _closing_brace_token = self.find_closing_brace(brace_token.index, 0, "")?;
         let args = self.make_arguments(brace_token.index, vec![])?;
         let closing_brace_token = self.get_token(args.last_index)?;
         let function = if let Some(stdlib_fn) = self.stdlib.get(&callee.name) {
@@ -2796,6 +2798,18 @@ const secondExtrude = startSketchAt([0,0])
         let tokens = crate::tokeniser::lexer(
             r#"
 z(-[["#,
+        );
+        let parser = Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert!(result.err().unwrap().to_string().contains("unexpected end"));
+    }
+
+    #[test]
+    fn test_parse_weird_new_line_function() {
+        let tokens = crate::tokeniser::lexer(
+            r#"z
+ (--#"#,
         );
         let parser = Parser::new(tokens);
         let result = parser.ast();
