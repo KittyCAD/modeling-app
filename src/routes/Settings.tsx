@@ -30,13 +30,13 @@ export const Settings = () => {
       send,
       state: {
         context: {
+          baseUnit,
           cameraControls,
+          defaultDirectory,
           defaultProjectName,
           showDebugPanel,
-          defaultDirectory,
-          unitSystem,
-          baseUnit,
           theme,
+          unitSystem,
         },
       },
     },
