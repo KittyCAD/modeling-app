@@ -55,6 +55,8 @@ import { onboardingPaths } from 'routes/Onboarding'
 import { LanguageServerClient } from 'editor/lsp'
 import kclLanguage from 'editor/lsp/language'
 import { CSSRuleObject } from 'tailwindcss/types/config'
+import { cameraMouseDragGuards } from 'machines/settingsMachine'
+import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
@@ -139,7 +141,13 @@ export function App() {
       context: { token },
     },
     settings: {
-      context: { showDebugPanel, theme, onboardingStatus, textWrapping },
+      context: {
+        showDebugPanel,
+        theme,
+        onboardingStatus,
+        textWrapping,
+        cameraControls,
+      },
     },
   } = useGlobalStateContext()
 
@@ -390,11 +398,26 @@ export function App() {
       ...streamDimensions,
     })
 
-    const interaction = e.ctrlKey ? 'zoom' : e.shiftKey ? 'pan' : 'rotate'
-
     const newCmdId = uuidv4()
 
     if (buttonDownInStream) {
+      const interactionGuards = cameraMouseDragGuards[cameraControls]
+      let interaction
+
+      const eWithButton = { ...e, button: buttonDownInStream }
+
+      if (interactionGuards.pan.callback(eWithButton)) {
+        interaction = 'pan' as CameraDragInteractionType_type
+      } else if (interactionGuards.rotate.callback(eWithButton)) {
+        interaction = 'rotate' as CameraDragInteractionType_type
+      } else if (interactionGuards.zoom.dragCallback(eWithButton)) {
+        interaction = 'zoom' as CameraDragInteractionType_type
+      } else {
+        return
+      }
+
+      console.log('interaction', interaction)
+
       debounceSocketSend({
         type: 'modeling_cmd_req',
         cmd: {

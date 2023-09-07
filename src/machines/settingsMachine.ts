@@ -24,13 +24,13 @@ type CADProgram =
 
 type MouseGuardHandler = {
   description: string
-  callback: MouseEventHandler
+  callback: (e: React.MouseEvent) => boolean
 }
 
 type MouseGuardZoomHandler = {
   description: string
-  dragCallback: MouseEventHandler
-  scrollCallback: MouseEventHandler
+  dragCallback: (e: React.MouseEvent) => boolean
+  scrollCallback: (e: React.MouseEvent) => boolean
 }
 
 type MouseGuard = {

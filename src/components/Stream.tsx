@@ -9,6 +9,9 @@ import { v4 as uuidv4 } from 'uuid'
 import { useStore } from '../useStore'
 import { getNormalisedCoordinates } from '../lib/utils'
 import Loading from './Loading'
+import { cameraMouseDragGuards } from 'machines/settingsMachine'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
 
 export const Stream = ({ className = '' }) => {
   const [isLoading, setIsLoading] = useState(true)
@@ -30,6 +33,11 @@ export const Stream = ({ className = '' }) => {
     setDidDragInStream: s.setDidDragInStream,
     streamDimensions: s.streamDimensions,
   }))
+  const {
+    settings: {
+      context: { cameraControls },
+    },
+  } = useGlobalStateContext()
 
   useEffect(() => {
     if (
@@ -42,23 +50,29 @@ export const Stream = ({ className = '' }) => {
     videoRef.current.srcObject = mediaStream
   }, [mediaStream, engineCommandManager])
 
-  const handleMouseDown: MouseEventHandler<HTMLVideoElement> = ({
-    clientX,
-    clientY,
-    ctrlKey,
-  }) => {
+  const handleMouseDown: MouseEventHandler<HTMLVideoElement> = (e) => {
     if (!videoRef.current) return
     const { x, y } = getNormalisedCoordinates({
-      clientX,
-      clientY,
+      clientX: e.clientX,
+      clientY: e.clientY,
       el: videoRef.current,
       ...streamDimensions,
     })
-    console.log('click', x, y)
 
     const newId = uuidv4()
 
-    const interaction = ctrlKey ? 'pan' : 'rotate'
+    const interactionGuards = cameraMouseDragGuards[cameraControls]
+    let interaction
+
+    if (interactionGuards.pan.callback(e)) {
+      interaction = 'pan' as CameraDragInteractionType_type
+    } else if (interactionGuards.rotate.callback(e)) {
+      interaction = 'rotate' as CameraDragInteractionType_type
+    } else if (interactionGuards.zoom.dragCallback(e)) {
+      interaction = 'zoom' as CameraDragInteractionType_type
+    } else {
+      return
+    }
 
     engineCommandManager?.sendSceneCommand({
       type: 'modeling_cmd_req',
@@ -75,6 +89,8 @@ export const Stream = ({ className = '' }) => {
   }
 
   const handleScroll: WheelEventHandler<HTMLVideoElement> = (e) => {
+    if (!cameraMouseDragGuards[cameraControls].zoom.scrollCallback(e)) return
+
     e.preventDefault()
     engineCommandManager?.sendSceneCommand({
       type: 'modeling_cmd_req',
