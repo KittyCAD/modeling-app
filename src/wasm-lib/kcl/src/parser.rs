@@ -2762,4 +2762,21 @@ const secondExtrude = startSketchAt([0,0])
         assert!(result.is_err());
         assert!(result.err().unwrap().to_string().contains("Unexpected token"));
     }
+
+    #[test]
+    fn test_parse_greater_bang() {
+        let tokens = crate::tokeniser::lexer(">!");
+        let parser = Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_parse_z_percent_parens() {
+        let tokens = crate::tokeniser::lexer("z%)");
+        let parser = Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert!(result.err().unwrap().to_string().contains("Unexpected token"));
+    }
 }

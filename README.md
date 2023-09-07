@@ -102,7 +102,7 @@ $ cd src/wasm-lib/kcl
 $ cargo fuzz list
 
 # run the parser fuzzer
-$ cargo fuzz run parser
+$ cargo +nightly fuzz run parser
 ```
 
 For more information on fuzzing you can check out 

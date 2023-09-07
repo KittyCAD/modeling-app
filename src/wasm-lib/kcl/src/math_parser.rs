@@ -229,32 +229,34 @@ impl ReversePolishNotation {
             );
             return rpn.parse();
         } else if current_token.value == ")" {
-            if !self.operators.is_empty() && self.operators[self.operators.len() - 1].value != "(" {
-                // pop operators off the stack and push them to postFix until we find the matching '('
+            if !self.operators.is_empty() {
+                if self.operators[self.operators.len() - 1].value != "(" {
+                    // pop operators off the stack and push them to postFix until we find the matching '('
+                    let rpn = ReversePolishNotation::new(
+                        &self.parser.tokens,
+                        &self
+                            .previous_postfix
+                            .iter()
+                            .cloned()
+                            .chain(vec![self.operators[self.operators.len() - 1].clone()])
+                            .collect::<Vec<Token>>(),
+                        &self.operators[0..self.operators.len() - 1],
+                    );
+                    return rpn.parse();
+                }
+
                 let rpn = ReversePolishNotation::new(
-                    &self.parser.tokens,
+                    &self.parser.tokens[1..],
                     &self
                         .previous_postfix
                         .iter()
                         .cloned()
-                        .chain(vec![self.operators[self.operators.len() - 1].clone()])
+                        .chain(vec![current_token.clone()])
                         .collect::<Vec<Token>>(),
                     &self.operators[0..self.operators.len() - 1],
                 );
                 return rpn.parse();
             }
-
-            let rpn = ReversePolishNotation::new(
-                &self.parser.tokens[1..],
-                &self
-                    .previous_postfix
-                    .iter()
-                    .cloned()
-                    .chain(vec![current_token.clone()])
-                    .collect::<Vec<Token>>(),
-                &self.operators[0..self.operators.len() - 1],
-            );
-            return rpn.parse();
         }
 
         if is_not_code_token(current_token) {

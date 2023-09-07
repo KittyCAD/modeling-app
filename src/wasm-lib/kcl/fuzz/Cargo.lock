@@ -769,7 +769,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.1.21"
+version = "0.1.24"
 dependencies = [
  "anyhow",
  "bson",
