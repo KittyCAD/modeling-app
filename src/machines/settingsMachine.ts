@@ -73,18 +73,19 @@ export const cameraMouseDragGuards = {
 } as Record<CADProgram, MouseGuard>
 
 export const settingsCommandBarMeta: CommandBarMeta = {
-  'Set Theme': {
-    displayValue: (args: string[]) => 'Change the app theme',
+  'Set Base Unit': {
+    displayValue: (args: string[]) => 'Set your default base unit',
     args: [
       {
-        name: 'theme',
+        name: 'baseUnit',
         type: 'select',
-        defaultValue: 'theme',
-        options: Object.values(Themes).map((v) => ({ name: v })) as {
-          name: string
-        }[],
+        defaultValue: 'baseUnit',
+        options: Object.values(baseUnitsUnion).map((v) => ({ name: v })),
       },
     ],
+  },
+  'Set Default Directory': {
+    hide: 'both',
   },
   'Set Default Project Name': {
     displayValue: (args: string[]) => 'Set a new default project name',
@@ -99,30 +100,8 @@ export const settingsCommandBarMeta: CommandBarMeta = {
       },
     ],
   },
-  'Set Default Directory': {
+  'Set Onboarding Status': {
     hide: 'both',
-  },
-  'Set Unit System': {
-    displayValue: (args: string[]) => 'Set your default unit system',
-    args: [
-      {
-        name: 'unitSystem',
-        type: 'select',
-        defaultValue: 'unitSystem',
-        options: [{ name: UnitSystem.Imperial }, { name: UnitSystem.Metric }],
-      },
-    ],
-  },
-  'Set Base Unit': {
-    displayValue: (args: string[]) => 'Set your default base unit',
-    args: [
-      {
-        name: 'baseUnit',
-        type: 'select',
-        defaultValue: 'baseUnit',
-        options: Object.values(baseUnitsUnion).map((v) => ({ name: v })),
-      },
-    ],
   },
   'Set Text Wrapping': {
     displayValue: (args: string[]) => 'Set whether text in the editor wraps',
@@ -135,8 +114,29 @@ export const settingsCommandBarMeta: CommandBarMeta = {
       },
     ],
   },
-  'Set Onboarding Status': {
-    hide: 'both',
+  'Set Theme': {
+    displayValue: (args: string[]) => 'Change the app theme',
+    args: [
+      {
+        name: 'theme',
+        type: 'select',
+        defaultValue: 'theme',
+        options: Object.values(Themes).map((v) => ({ name: v })) as {
+          name: string
+        }[],
+      },
+    ],
+  },
+  'Set Unit System': {
+    displayValue: (args: string[]) => 'Set your default unit system',
+    args: [
+      {
+        name: 'unitSystem',
+        type: 'select',
+        defaultValue: 'unitSystem',
+        options: [{ name: UnitSystem.Imperial }, { name: UnitSystem.Metric }],
+      },
+    ],
   },
 }
 
@@ -146,37 +146,23 @@ export const settingsMachine = createMachine(
     id: 'Settings',
     predictableActionArguments: true,
     context: {
-      theme: Themes.System,
-      defaultProjectName: '',
-      unitSystem: UnitSystem.Imperial,
       baseUnit: 'in' as BaseUnit,
       defaultDirectory: '',
-      textWrapping: 'On' as 'On' | 'Off',
-      showDebugPanel: false,
+      defaultProjectName: '',
       onboardingStatus: '',
+      showDebugPanel: false,
+      textWrapping: 'On' as 'On' | 'Off',
+      theme: Themes.System,
+      unitSystem: UnitSystem.Imperial,
     },
     initial: 'idle',
     states: {
       idle: {
         entry: ['setThemeClass'],
         on: {
-          'Set Theme': {
+          'Set Base Unit': {
             actions: [
-              assign({
-                theme: (_, event) => event.data.theme,
-              }),
-              'persistSettings',
-              'toastSuccess',
-              'setThemeClass',
-            ],
-            target: 'idle',
-            internal: true,
-          },
-          'Set Default Project Name': {
-            actions: [
-              assign({
-                defaultProjectName: (_, event) => event.data.defaultProjectName,
-              }),
+              assign({ baseUnit: (_, event) => event.data.baseUnit }),
               'persistSettings',
               'toastSuccess',
             ],
@@ -194,12 +180,10 @@ export const settingsMachine = createMachine(
             target: 'idle',
             internal: true,
           },
-          'Set Unit System': {
+          'Set Default Project Name': {
             actions: [
               assign({
-                unitSystem: (_, event) => event.data.unitSystem,
-                baseUnit: (_, event) =>
-                  event.data.unitSystem === 'imperial' ? 'in' : 'mm',
+                defaultProjectName: (_, event) => event.data.defaultProjectName,
               }),
               'persistSettings',
               'toastSuccess',
@@ -207,11 +191,12 @@ export const settingsMachine = createMachine(
             target: 'idle',
             internal: true,
           },
-          'Set Base Unit': {
+          'Set Onboarding Status': {
             actions: [
-              assign({ baseUnit: (_, event) => event.data.baseUnit }),
+              assign({
+                onboardingStatus: (_, event) => event.data.onboardingStatus,
+              }),
               'persistSettings',
-              'toastSuccess',
             ],
             target: 'idle',
             internal: true,
@@ -220,6 +205,31 @@ export const settingsMachine = createMachine(
             actions: [
               assign({
                 textWrapping: (_, event) => event.data.textWrapping,
+              }),
+              'persistSettings',
+              'toastSuccess',
+            ],
+            target: 'idle',
+            internal: true,
+          },
+          'Set Theme': {
+            actions: [
+              assign({
+                theme: (_, event) => event.data.theme,
+              }),
+              'persistSettings',
+              'toastSuccess',
+              'setThemeClass',
+            ],
+            target: 'idle',
+            internal: true,
+          },
+          'Set Unit System': {
+            actions: [
+              assign({
+                unitSystem: (_, event) => event.data.unitSystem,
+                baseUnit: (_, event) =>
+                  event.data.unitSystem === 'imperial' ? 'in' : 'mm',
               }),
               'persistSettings',
               'toastSuccess',
@@ -240,35 +250,25 @@ export const settingsMachine = createMachine(
             target: 'idle',
             internal: true,
           },
-          'Set Onboarding Status': {
-            actions: [
-              assign({
-                onboardingStatus: (_, event) => event.data.onboardingStatus,
-              }),
-              'persistSettings',
-            ],
-            target: 'idle',
-            internal: true,
-          },
         },
       },
     },
     tsTypes: {} as import('./settingsMachine.typegen').Typegen0,
     schema: {
       events: {} as
-        | { type: 'Set Theme'; data: { theme: Themes } }
+        | { type: 'Set Base Unit'; data: { baseUnit: BaseUnit } }
+        | { type: 'Set Default Directory'; data: { defaultDirectory: string } }
         | {
             type: 'Set Default Project Name'
             data: { defaultProjectName: string }
           }
-        | { type: 'Set Default Directory'; data: { defaultDirectory: string } }
+        | { type: 'Set Onboarding Status'; data: { onboardingStatus: string } }
+        | { type: 'Set Text Wrapping'; data: { textWrapping: 'On' | 'Off' } }
+        | { type: 'Set Theme'; data: { theme: Themes } }
         | {
             type: 'Set Unit System'
             data: { unitSystem: UnitSystem }
           }
-        | { type: 'Set Base Unit'; data: { baseUnit: BaseUnit } }
-        | { type: 'Set Text Wrapping'; data: { textWrapping: 'On' | 'Off' } }
-        | { type: 'Set Onboarding Status'; data: { onboardingStatus: string } }
         | { type: 'Toggle Debug Panel' },
     },
   },
