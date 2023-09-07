@@ -1,47 +1,56 @@
-## Kurt demo project
+![KittyCAD Modeling App](https://app.kittycad.io/kcma-logomark.png)
+
+## KittyCAD Modeling App
 
 live at [app.kittycad.io](https://app.kittycad.io/)
 
-Not sure what to call this, it's both a language/interpreter and a UI that uses the language as the source of truth model the user build with direct-manipulation with the UI.
+A CAD application from the future, brought to you by the [KittyCAD team](https://kittycad.io).
 
-It might make sense to split this repo up at some point, but not the lang and the UI are all togther in a react app
+This is an example application of what a small team can build on top of the KittyCAD API. It is open source so that anyone can fork it, extend it, or learn from it. We hope it inspires you to build the hardware design tool you've always wanted to see in the world.
 
-Originally Presented on 10/01/2023
+KittyCAD Modeling App is a *hybrid* user interface for CAD modeling. You can point-and-click to design parts (and soon assemblies), but everything you make is really just [`kcl` code](https://github.com/KittyCAD/kcl-experiments) under the hood. All of your CAD models can be checked into source control such as GitHub and responsibly versioned, rolled back, and more.
 
-[Video](https://drive.google.com/file/d/183_wjqGdzZ8EEZXSqZ3eDcJocYPCyOdC/view?pli=1)
+The 3D view in KittyCAD Modeling App is just a video stream from our hosted geometry engine. The app sends new modeling commands to the engine via WebSockets, which returns back video frames of the view within the engine.
 
-[demo-slides.pdf](https://github.com/KittyCAD/Eng/files/10398178/demo.pdf)
+## Tools
 
-## To run, there are a couple steps since we're compiling rust to WASM, you'll need to have rust stuff installed, then
+- UI
+  - [React](https://react.dev/)
+  - [Headless UI](https://headlessui.com/)
+  - [TailwindCSS](https://tailwindcss.com/)
+- Networking
+  - WebSockets (via [KittyCAD TS client](https://github.com/KittyCAD/kittycad.ts))
+- Code Editor
+  - [CodeMirror](https://codemirror.net/)
+  - Custom WASM LSP Server
+- Modeling
+  - [KittyCAD TypeScript client](https://github.com/KittyCAD/kittycad.ts)
+
+[Original demo video](https://drive.google.com/file/d/183_wjqGdzZ8EEZXSqZ3eDcJocYPCyOdC/view?pli=1)
+
+[Original demo slides](https://github.com/KittyCAD/Eng/files/10398178/demo.pdf)
+
+## Get started
+
+We recommend downloading the latest application binary from [our Releases page](https://github.com/KittyCAD/modeling-app/releases). If you don't see your architecture supported there, please file an issue.
+
+## Running a development build
+
+First, [install Rust via `rustup`](https://www.rust-lang.org/tools/install). This project uses a lot of Rust compiled to [WASM](https://webassembly.org/) within it. Then, run:
 
 ```
 yarn install
 ```
-then
+followed by:
 ```
 yarn build:wasm
 ```
 That will build the WASM binary and put in the `public` dir (though gitignored)
 
-finally
+finally, to run the web app only, run:
 ```
 yarn start
 ```
-
-and `yarn test` you would have need to have built the WASM previously. The tests need to download the binary from a server, so if you've already got `yarn start` running, that will work, otherwise running
-```
-yarn simpleserver
-```
-in one terminal
-and 
-```
-yarn test
-```
-in another.
-
-If you want to edit the rust files, you can cd into `src/wasm-lib` and then use the usual rust commands, `cargo build`, `cargo test`, when you want to bring the changes back to the web-app, a fresh `yarn build:wasm` in the root will be needed.
-
-Worth noting that the integration of the WASM into this project is very hacky because I'm really pushing create-react-app further than what's practical, but focusing on features atm rather than the setup.
 
 ## Developing in Chrome
 
@@ -51,6 +60,17 @@ If you're having trouble logging into the `modeling-app`, you may need to
 enable third-party cookies. You can enable third-party cookies by clicking on
 the eye with a slash through it in the URL bar, and clicking on "Enable
 Third-Party Cookies".
+
+## Running tests
+
+First, start the dev server following "Running a development build" above.
+
+Then in another terminal tab, run:
+```
+yarn test
+```
+
+Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testing Library E2E](https://testing-library.com/docs/react-testing-library/intro/) tests, in interactive mode by default.
 
 ## Tauri
 
@@ -71,6 +91,17 @@ Note that these became separate apps on Macos, so make sure you open the right o
 <img width="1232" alt="image" src="https://user-images.githubusercontent.com/29681384/211947063-46164bb4-7bdd-45cb-9a76-2f40c71a24aa.png">
 
 <img width="1232" alt="image (1)" src="https://user-images.githubusercontent.com/29681384/211947073-e76b4933-bef5-4636-bc4d-e930ac8e290f.png">
+
+## Before submitting a PR
+
+Before you submit a contribution PR to this repo, please ensure that:
+- There is a corresponding issue for the changes you want to make, so that discussion of approach can be had before work begins.
+- You have separated out refactoring commits from feature commits as much as possible
+- You have run all of the following commands locally:
+    - `yarn fmt`
+    - `yarn tsc`
+    - `yarn test`
+    - Here they are all together: `yarn fmt && yarn tsc && yarn test`
 
 ## Release a new version
 
