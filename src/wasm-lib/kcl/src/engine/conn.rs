@@ -87,6 +87,9 @@ impl EngineConnection {
 
                         if let Some(msg) = ws_resp.resp {
                             match msg {
+                                OkWebSocketResponseData::MetricsRequest {} => {
+                                    // @paultag todo
+                                }
                                 OkWebSocketResponseData::IceServerInfo { ice_servers } => {
                                     println!("got ice server info: {:?}", ice_servers);
                                 }
