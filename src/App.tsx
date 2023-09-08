@@ -57,6 +57,7 @@ import kclLanguage from 'editor/lsp/language'
 import { CSSRuleObject } from 'tailwindcss/types/config'
 import { cameraMouseDragGuards } from 'lib/cameraControls'
 import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
+import { CodeMenu } from 'components/CodeMenu'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
@@ -91,7 +92,6 @@ export function App() {
     isLSPServerReady,
     setIsLSPServerReady,
     buttonDownInStream,
-    formatCode,
     openPanes,
     setOpenPanes,
     didDragInStream,
@@ -132,7 +132,6 @@ export function App() {
     isLSPServerReady: s.isLSPServerReady,
     setIsLSPServerReady: s.setIsLSPServerReady,
     buttonDownInStream: s.buttonDownInStream,
-    formatCode: s.formatCode,
     addKCLError: s.addKCLError,
     openPanes: s.openPanes,
     setOpenPanes: s.setOpenPanes,
@@ -546,16 +545,8 @@ export function App() {
             icon={faCode}
             className="open:!mb-2"
             open={openPanes.includes('code')}
+            menu={<CodeMenu />}
           >
-            <div className="px-2 py-1">
-              <button
-                // disabled={!shouldFormat}
-                onClick={formatCode}
-                // className={`${!shouldFormat && 'text-gray-300'}`}
-              >
-                format
-              </button>
-            </div>
             <div
               id="code-mirror-override"
               className="full-height-subtract"

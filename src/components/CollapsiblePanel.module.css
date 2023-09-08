@@ -9,7 +9,7 @@
 
 .header {
   @apply sticky top-0 z-10 cursor-pointer;
-  @apply flex items-center gap-2 w-full p-2;
+  @apply flex items-center justify-between gap-2 w-full p-2;
   @apply font-mono text-xs font-bold select-none text-chalkboard-90;
   @apply bg-chalkboard-20;
 }

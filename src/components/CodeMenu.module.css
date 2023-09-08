@@ -1,0 +1,25 @@
+.button {
+  @apply flex justify-between items-center gap-2 px-2 py-1 text-left border-none rounded-sm;
+  @apply font-mono text-xs font-bold select-none text-chalkboard-90;
+  @apply transition-colors ease-out;
+}
+
+:global(.dark) .button {
+  @apply text-chalkboard-30;
+}
+
+.button:hover {
+  @apply bg-liquid-10/50 text-liquid-90;
+}
+
+:global(.dark) .button:hover {
+  @apply bg-chalkboard-80 text-liquid-10;
+}
+
+.button small {
+  @apply text-chalkboard-60;
+}
+
+:global(.dark) .button small {
+  @apply text-chalkboard-40;
+}
