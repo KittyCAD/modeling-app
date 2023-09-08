@@ -21,7 +21,6 @@ import {
 } from '../queryAst'
 import { GuiModes, toolTips, TooTip } from '../../useStore'
 import { splitPathAtPipeExpression } from '../modifyAst'
-import { generateUuidFromHashSeed } from '../../lib/uuid'
 
 import { SketchLineHelper, ModifyAstBase, TransformCallback } from './stdTypes'
 
@@ -94,16 +93,10 @@ export function createFirstArg(
   throw new Error('all sketch line types should have been covered')
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type LineData = {
   from: [number, number, number]
   to: [number, number, number]
-}
-
-function makeId(seed: string | any) {
-  if (typeof seed === 'string') {
-    return generateUuidFromHashSeed(seed)
-  }
-  return generateUuidFromHashSeed(JSON.stringify(seed))
 }
 
 export const lineTo: SketchLineHelper = {

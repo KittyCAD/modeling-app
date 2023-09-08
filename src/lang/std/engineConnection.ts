@@ -382,7 +382,6 @@ export class EngineConnection {
           // Use the WebRTC Statistics API to collect statistical information
           // about the WebRTC connection we're using to report to Sentry.
           mediaStream.getVideoTracks().forEach((videoTrack) => {
-            let trackStats = new Map<string, any>()
             this.pc?.getStats(videoTrack).then((videoTrackStats) => {
               // Sentry only allows 10 metrics per transaction. We're going
               // to have to pick carefully here, eventually send like a prom
@@ -497,6 +496,7 @@ export class EngineConnection {
 
     // During startup, we'll track the time from `connect` being called
     // until the 'done' event fires.
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let connectionStarted = new Date()
 
     this.pc.addEventListener('datachannel', (event) => {
@@ -874,7 +874,7 @@ export class EngineCommandManager {
       if (parseCommand.type === 'modeling_cmd_req')
         return this.handlePendingCommand(id, parseCommand?.cmd, range)
     }
-    throw 'shouldnt reach here'
+    throw Error('shouldnt reach here')
   }
   handlePendingCommand(
     id: string,

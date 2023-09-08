@@ -247,6 +247,7 @@ export function App() {
             id: hasOverlap[0][0],
           }
         }
+        return undefined
       })
       .filter(Boolean) as any
 
@@ -285,7 +286,7 @@ export function App() {
     return () => {
       eng?.tearDown()
     }
-  }, [quadWidth, quadHeight])
+  }, [height, setEngineCommandManager, setIsStreamReady, setMediaStream, setStreamDimensions, token, width])
 
   useEffect(() => {
     if (!isStreamReady) return

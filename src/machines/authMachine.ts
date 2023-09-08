@@ -115,7 +115,7 @@ async function getUser(context: UserContext) {
   const headers: { [key: string]: string } = {
     'Content-Type': 'application/json',
   }
-  if (!context.token && '__TAURI__' in window) throw 'not log in'
+  if (!context.token && '__TAURI__' in window) throw Error('not log in')
   if (context.token) headers['Authorization'] = `Bearer ${context.token}`
   if (SKIP_AUTH) return LOCAL_USER
   try {
