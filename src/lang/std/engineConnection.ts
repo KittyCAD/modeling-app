@@ -394,14 +394,14 @@ export class EngineConnection {
             // TODO(paultag): this needs type information from the KittyCAD typescript
             // library once it's updated
             let client_metrics: ClientMetrics = {
-                rtc_frames_decoded: 0,
-                rtc_frames_dropped: 0,
-                rtc_frames_received: 0,
-                rtc_frames_per_second: 0,
-                rtc_freeze_count: 0,
-                rtc_jitter_sec: 0.0,
-                rtc_keyframes_decoded: 0,
-                rtc_total_freezes_duration_sec: 0.0,
+              rtc_frames_decoded: 0,
+              rtc_frames_dropped: 0,
+              rtc_frames_received: 0,
+              rtc_frames_per_second: 0,
+              rtc_freeze_count: 0,
+              rtc_jitter_sec: 0.0,
+              rtc_keyframes_decoded: 0,
+              rtc_total_freezes_duration_sec: 0.0,
             }
 
             // TODO(paultag): Since we can technically have multiple WebRTC
