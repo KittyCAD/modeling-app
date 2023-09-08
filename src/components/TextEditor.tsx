@@ -197,7 +197,7 @@ export const TextEditor = ({ theme }: { theme: Themes.Light | Themes.Dark }) => 
           },
         },
         {
-          key: 'Ctrl-Shift-v',
+          key: 'Alt-Shift-a',
           run: () => {
             if (convertEnabled) {
               convertCallback()

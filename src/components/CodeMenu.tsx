@@ -47,7 +47,7 @@ export const CodeMenu = ({ children }: PropsWithChildren) => {
                 className={styles.button}
                 >
                 <span>Convert to Variable</span>
-                <small>Ctrl + Shift + V</small>
+                <small>Alt + Shift + A</small>
               </button>
             </Menu.Item>
           )}
