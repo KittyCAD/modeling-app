@@ -11,7 +11,7 @@ export type CADProgram =
   | 'Creo'
   | 'AutoCAD'
 
-export const cadPrograms = [
+export const cadPrograms: CADProgram[] = [
   'KittyCAD',
   'OnShape',
   'Solidworks',
