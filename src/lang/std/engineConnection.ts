@@ -39,6 +39,8 @@ interface NewTrackArgs {
 
 type WebSocketResponse = Models['OkWebSocketResponseData_type']
 
+type ClientMetrics = Models['ClientMetrics_type']
+
 // EngineConnection encapsulates the connection(s) to the Engine
 // for the EngineCommandManager; namely, the underlying WebSocket
 // and WebRTC connections.
@@ -59,7 +61,7 @@ export class EngineConnection {
   private onNewTrack: (track: NewTrackArgs) => void
 
   // TODO: actual type is ClientMetrics
-  private webrtcStatsCollector?: () => Promise<{}>
+  private webrtcStatsCollector?: () => Promise<ClientMetrics>
 
   constructor({
     url,
@@ -380,7 +382,7 @@ export class EngineConnection {
         })
       }
 
-      this.webrtcStatsCollector = (): Promise<{}> => {
+      this.webrtcStatsCollector = (): Promise<ClientMetrics> => {
         return new Promise((resolve, reject) => {
           if (mediaStream.getVideoTracks().length !== 1) {
             reject(new Error('too many video tracks to report'))
@@ -391,7 +393,16 @@ export class EngineConnection {
           this.pc?.getStats(videoTrack).then((videoTrackStats) => {
             // TODO(paultag): this needs type information from the KittyCAD typescript
             // library once it's updated
-            let client_metrics = {}
+            let client_metrics: ClientMetrics = {
+                rtc_frames_decoded: 0,
+                rtc_frames_dropped: 0,
+                rtc_frames_received: 0,
+                rtc_frames_per_second: 0,
+                rtc_freeze_count: 0,
+                rtc_jitter_sec: 0.0,
+                rtc_keyframes_decoded: 0,
+                rtc_total_freezes_duration_sec: 0.0,
+            }
 
             // TODO(paultag): Since we can technically have multiple WebRTC
             // video tracks (even if the Server doesn't at the moment), we
@@ -415,10 +426,6 @@ export class EngineConnection {
                   videoTrackReport.keyFramesDecoded
                 client_metrics.rtc_total_freezes_duration_sec =
                   videoTrackReport.totalFreezesDuration
-                client_metrics.rtc_total_pauses_duration_sec =
-                  videoTrackReport.totalPausesDuration
-                client_metrics.rtc_total_processing_delay_sec =
-                  videoTrackReport.totalProcessingDelay
               } else if (videoTrackReport.type === 'transport') {
                 // videoTrackReport.bytesReceived,
                 // videoTrackReport.bytesSent,
