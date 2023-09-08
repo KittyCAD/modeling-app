@@ -28,6 +28,7 @@ import {
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { useCommandsContext } from 'hooks/useCommandsContext'
+import { DEFAULT_PROJECT_NAME } from 'machines/settingsMachine'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
@@ -38,6 +39,7 @@ const Home = () => {
   const {
     settings: {
       context: { defaultDirectory, defaultProjectName },
+      send: sendToSettings,
     },
   } = useGlobalStateContext()
 
@@ -71,16 +73,33 @@ const Home = () => {
         context: ContextFrom<typeof homeMachine>,
         event: EventFrom<typeof homeMachine, 'Create project'>
       ) => {
-        let name =
+        let name = (
           event.data && 'name' in event.data
             ? event.data.name
             : defaultProjectName
+        ).trim()
+        let shouldUpdateDefaultProjectName = false
+
+        // If there is no default project name, flag it to be set to the default
+        if (!name) {
+          name = DEFAULT_PROJECT_NAME
+          shouldUpdateDefaultProjectName = true
+        }
+
         if (doesProjectNameNeedInterpolated(name)) {
           const nextIndex = await getNextProjectIndex(name, projects)
           name = interpolateProjectNameWithIndex(name, nextIndex)
         }
 
         await createNewProject(context.defaultDirectory + '/' + name)
+
+        if (shouldUpdateDefaultProjectName) {
+          sendToSettings({
+            type: 'Set Default Project Name',
+            data: { defaultProjectName: DEFAULT_PROJECT_NAME },
+          })
+        }
+
         return `Successfully created "${name}"`
       },
       renameProject: async (

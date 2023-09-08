@@ -1,12 +1,24 @@
 import { assign, createMachine } from 'xstate'
-import { BaseUnit, baseUnitsUnion } from '../useStore'
 import { CommandBarMeta } from '../lib/commands'
 import { Themes, getSystemTheme, setThemeClass } from '../lib/theme'
+
+export const DEFAULT_PROJECT_NAME = 'project-$nnn'
 
 export enum UnitSystem {
   Imperial = 'imperial',
   Metric = 'metric',
 }
+
+export const baseUnits = {
+  imperial: ['in', 'ft'],
+  metric: ['mm', 'cm', 'm'],
+} as const
+
+export type BaseUnit = 'in' | 'ft' | 'mm' | 'cm' | 'm'
+
+export const baseUnitsUnion = Object.values(baseUnits).flatMap((v) => v)
+
+export type Toggle = 'On' | 'Off'
 
 export const SETTINGS_PERSIST_KEY = 'SETTINGS_PERSIST_KEY'
 
@@ -85,11 +97,11 @@ export const settingsMachine = createMachine(
     predictableActionArguments: true,
     context: {
       theme: Themes.System,
-      defaultProjectName: '',
+      defaultProjectName: DEFAULT_PROJECT_NAME,
       unitSystem: UnitSystem.Imperial,
       baseUnit: 'in' as BaseUnit,
       defaultDirectory: '',
-      textWrapping: 'On' as 'On' | 'Off',
+      textWrapping: 'On' as Toggle,
       showDebugPanel: false,
       onboardingStatus: '',
     },
@@ -113,7 +125,8 @@ export const settingsMachine = createMachine(
           'Set Default Project Name': {
             actions: [
               assign({
-                defaultProjectName: (_, event) => event.data.defaultProjectName,
+                defaultProjectName: (_, event) =>
+                  event.data.defaultProjectName.trim() || DEFAULT_PROJECT_NAME,
               }),
               'persistSettings',
               'toastSuccess',
@@ -205,7 +218,7 @@ export const settingsMachine = createMachine(
             data: { unitSystem: UnitSystem }
           }
         | { type: 'Set Base Unit'; data: { baseUnit: BaseUnit } }
-        | { type: 'Set Text Wrapping'; data: { textWrapping: 'On' | 'Off' } }
+        | { type: 'Set Text Wrapping'; data: { textWrapping: Toggle } }
         | { type: 'Set Onboarding Status'; data: { onboardingStatus: string } }
         | { type: 'Toggle Debug Panel' },
     },
