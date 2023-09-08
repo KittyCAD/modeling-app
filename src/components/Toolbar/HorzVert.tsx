@@ -47,7 +47,7 @@ export const HorzVert = ({
 
     const _enableHorz = isAllTooltips && theTransforms.every(Boolean)
     setEnableHorz(_enableHorz)
-  }, [ast, guiMode, horOrVert, selectionRanges])
+  }, [guiMode, selectionRanges])
   if (guiMode.mode !== 'sketch') return null
 
   return (

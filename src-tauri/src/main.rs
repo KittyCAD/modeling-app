@@ -87,10 +87,10 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
 
 fn main() {
     tauri::Builder::default()
-        .setup(|_app| {
+        .setup(|app| {
             #[cfg(debug_assertions)] // only include this code on debug builds
             {
-                let window = _app.get_window("main").unwrap();
+                let window = app.get_window("main").unwrap();
                 // comment out the below if you don't devtools to open everytime.
                 // it's useful because otherwise devtools shuts everytime rust code changes.
                 window.open_devtools();

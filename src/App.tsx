@@ -286,17 +286,7 @@ export function App() {
     return () => {
       eng?.tearDown()
     }
-  }, [
-    height,
-    quadHeight,
-    quadWidth,
-    setEngineCommandManager,
-    setIsStreamReady,
-    setMediaStream,
-    setStreamDimensions,
-    token,
-    width,
-  ])
+  }, [height, setEngineCommandManager, setIsStreamReady, setMediaStream, setStreamDimensions, token, width])
 
   useEffect(() => {
     if (!isStreamReady) return
@@ -395,23 +385,7 @@ export function App() {
     return () => {
       unsubFn.forEach((fn) => fn())
     }
-  }, [
-    defferedCode,
-    isStreamReady,
-    engineCommandManager,
-    setAst,
-    resetLogs,
-    resetKCLErrors,
-    setIsExecuting,
-    setArtifactMap,
-    setError,
-    highlightRange,
-    setHighlightRange,
-    setCursor2,
-    setProgramMemory,
-    addKCLError,
-    addLog,
-  ])
+  }, [defferedCode, isStreamReady, engineCommandManager])
 
   const debounceSocketSend = throttle<EngineCommand>((message) => {
     engineCommandManager?.sendSceneCommand(message)

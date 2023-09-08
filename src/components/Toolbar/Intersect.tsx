@@ -119,7 +119,7 @@ export const Intersect = () => {
       theTransforms.every(Boolean) &&
       _forcedSelectionRanges?.codeBasedSelections?.[1]?.type === 'line-end'
     setEnable(_enableEqual)
-  }, [ast, guiMode, programMemory, selectionRanges])
+  }, [guiMode, selectionRanges])
   if (guiMode.mode !== 'sketch') return null
 
   return (

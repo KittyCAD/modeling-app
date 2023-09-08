@@ -30,7 +30,7 @@ export const ConvertToVariable = () => {
 
     const _enableHorz = canReplace && isOnlyOneSelection
     setEnableAngLen(_enableHorz)
-  }, [ast, guiMode, selectionRanges])
+  }, [guiMode, selectionRanges])
 
   return (
     <button

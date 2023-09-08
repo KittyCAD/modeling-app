@@ -68,7 +68,7 @@ export const EqualAngle = () => {
       isOthersLinkedToPrimary &&
       theTransforms.every(Boolean)
     setEnableEqual(_enableEqual)
-  }, [ast, guiMode, selectionRanges])
+  }, [guiMode, selectionRanges])
   if (guiMode.mode !== 'sketch') return null
 
   return (

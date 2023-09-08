@@ -122,7 +122,7 @@ export function useCalc({
     if (ast) {
       setNewVariableName(findUniqueName(ast, valueName))
     }
-  }, [ast, value, valueName])
+  }, [])
 
   useEffect(() => {
     const allVarNames = Object.keys(programMemory.root)
@@ -131,7 +131,7 @@ export function useCalc({
     } else {
       setIsNewVariableNameUnique(true)
     }
-  }, [newVariableName, programMemory.root])
+  }, [newVariableName])
 
   useEffect(() => {
     if (!ast || !programMemory || !selectionRange) return
@@ -165,7 +165,7 @@ export function useCalc({
       setCalcResult('NAN')
       setValueNode(null)
     }
-  }, [availableVarInfo.variables, engineCommandManager, value])
+  }, [value])
 
   return {
     valueNode,
