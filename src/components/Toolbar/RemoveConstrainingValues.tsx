@@ -51,7 +51,7 @@ export const RemoveConstrainingValues = () => {
     } catch (e) {
       console.error(e)
     }
-  }, [guiMode, selectionRanges])
+  }, [ast, guiMode, selectionRanges])
   if (guiMode.mode !== 'sketch') return null
 
   return (

@@ -78,7 +78,7 @@ export const SetAngleBetween = () => {
       isOthersLinkedToPrimary &&
       theTransforms.every(Boolean)
     setEnable(_enableEqual)
-  }, [guiMode, selectionRanges])
+  }, [ast, guiMode, selectionRanges])
   if (guiMode.mode !== 'sketch') return null
 
   return (

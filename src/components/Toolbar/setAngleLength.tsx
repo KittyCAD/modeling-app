@@ -59,7 +59,7 @@ export const SetAngleLength = ({
 
     const _enableHorz = isAllTooltips && theTransforms.every(Boolean)
     setEnableAngLen(_enableHorz)
-  }, [guiMode, selectionRanges])
+  }, [angleOrLength, ast, guiMode, selectionRanges])
   if (guiMode.mode !== 'sketch') return null
 
   return (

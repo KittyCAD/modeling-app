@@ -77,7 +77,7 @@ export const SetAbsDistance = ({
       selectionRanges.codeBasedSelections.length === 1 &&
       (enableX || enableY)
     setEnableAngLen(_enableHorz)
-  }, [guiMode, selectionRanges])
+  }, [ast, disType, guiMode, selectionRanges])
   if (guiMode.mode !== 'sketch') return null
 
   const isAlign = buttonType === 'snapToYAxis' || buttonType === 'snapToXAxis'

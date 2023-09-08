@@ -68,7 +68,7 @@ export const EqualLength = () => {
       isOthersLinkedToPrimary &&
       theTransforms.every(Boolean)
     setEnableEqual(_enableEqual)
-  }, [guiMode, selectionRanges])
+  }, [ast, guiMode, selectionRanges])
   if (guiMode.mode !== 'sketch') return null
 
   return (

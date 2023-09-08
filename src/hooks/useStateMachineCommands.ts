@@ -38,5 +38,5 @@ export default function useStateMachineCommands<T extends AnyStateMachine>({
     return () => {
       removeCommands(newCommands)
     }
-  }, [state])
+  }, [addCommands, commandBarMeta, owner, removeCommands, send, state])
 }

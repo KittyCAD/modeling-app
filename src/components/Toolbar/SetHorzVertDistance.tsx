@@ -96,7 +96,7 @@ export const SetHorzVertDistance = ({
       isOthersLinkedToPrimary &&
       theTransforms.every(Boolean)
     setEnable(_enableEqual)
-  }, [guiMode, selectionRanges])
+  }, [ast, constraint, guiMode, selectionRanges])
   if (guiMode.mode !== 'sketch') return null
 
   const isAlign =
