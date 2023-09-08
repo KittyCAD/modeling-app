@@ -59,6 +59,7 @@ import { cameraMouseDragGuards } from 'lib/cameraControls'
 import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
 import { CodeMenu } from 'components/CodeMenu'
 import { useCommandsContext } from 'hooks/useCommandsContext'
+import { useConvertToVariable } from 'hooks/useToolbarGuards'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
@@ -159,6 +160,8 @@ export function App() {
     },
   } = useGlobalStateContext()
   const { setCommandBarOpen } = useCommandsContext()
+  const { enable: convertEnabled, handleClick: convertCallback } =
+    useConvertToVariable()
 
   const editorTheme = theme === Themes.System ? getSystemTheme() : theme
 
@@ -494,9 +497,8 @@ export function App() {
         {
           key: 'Meta-k',
           run: () => {
-            console.log('command bar')
             setCommandBarOpen(true)
-            return true
+            return false
           },
         },
         {
@@ -504,6 +506,16 @@ export function App() {
           run: () => {
             formatCode()
             return true
+          },
+        },
+        {
+          key: 'Ctrl-Shift-v',
+          run: () => {
+            if (convertEnabled) {
+              convertCallback()
+              return true
+            }
+            return false
           },
         },
       ]),

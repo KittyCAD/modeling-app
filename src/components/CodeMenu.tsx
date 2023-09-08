@@ -28,12 +28,12 @@ export const CodeMenu = ({ children }: PropsWithChildren) => {
           <ActionIcon
             icon={faEllipsis}
             bgClassName={
-              'bg-chalkboard-20 dark:bg-chalkboard-110 hover:bg-chalkboard-30 hover:dark:bg-chalkboard-90 ui-active:bg-chalkboard-80 ui-active:dark:bg-chalkboard-90  rounded'
+              'bg-chalkboard-20 dark:bg-chalkboard-110 hover:bg-liquid-10/50 hover:dark:bg-chalkboard-90 ui-active:bg-chalkboard-80 ui-active:dark:bg-chalkboard-90  rounded'
             }
             iconClassName={'text-chalkboard-90 dark:text-chalkboard-40'}
           />
         </Menu.Button>
-        <Menu.Items className="absolute right-0 left-auto w-64 flex flex-col gap-1 divide-y divide-chalkboard-20 dark:divide-chalkboard-70 align-stretch px-0 py-1 bg-chalkboard-10 dark:bg-chalkboard-90 rounded shadow-lg border border-solid border-chalkboard-30/50 dark:border-chalkboard-80/50">
+        <Menu.Items className="absolute right-0 left-auto w-72 flex flex-col gap-1 divide-y divide-chalkboard-20 dark:divide-chalkboard-70 align-stretch px-0 py-1 bg-chalkboard-10 dark:bg-chalkboard-90 rounded-sm shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50">
           <Menu.Item>
             <button onClick={() => formatCode()} className={styles.button}>
               <span>Format code</span>
@@ -45,8 +45,9 @@ export const CodeMenu = ({ children }: PropsWithChildren) => {
               <button
                 onClick={handleConvertToVarClick}
                 className={styles.button}
-              >
+                >
                 <span>Convert to Variable</span>
+                <small>Ctrl + Shift + V</small>
               </button>
             </Menu.Item>
           )}
