@@ -129,31 +129,22 @@ jobs:
       - name: Fix format
         run: yarn fmt
 
-      # This will do intel silicon on mac
-      - name: Build the app for the current platform (no upload)
-        uses: tauri-apps/tauri-action@v0
-        env:
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
-
       - name: install apple silicon target mac
         if: matrix.os == 'macos-latest'
         run: |
           rustup target add aarch64-apple-darwin
 
-      # this will do apple silicon on mac
       - name: Build the app for the current platform (no upload)
         uses: tauri-apps/tauri-action@v0
-        if: matrix.os == 'macos-latest'
         env:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
-          args: --target universal-apple-darwin
+          args: ${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }}
 
       - uses: actions/upload-artifact@v3
         with:
-          path: src-tauri/target/release/bundle/*/*
+          path: ${{ matrix.os == 'macos-latest' && 'src-tauri/target/universal-apple-darwin/release/bundle/*/*' || 'src-tauri/target/release/bundle/*/*' }}
 
 
   publish-apps-release:
@@ -185,6 +176,10 @@ jobs:
               "version": $version,
               "platforms": {
                 "darwin-x86_64": {
+                  "signature": $darwin_sig,
+                  "url": $darwin_url
+                },
+                "darwin-aarch64": {
                   "signature": $darwin_sig,
                   "url": $darwin_url
                 },
