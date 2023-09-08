@@ -97,6 +97,9 @@ export function App() {
     didDragInStream,
     setStreamDimensions,
     streamDimensions,
+    setIsExecuting,
+    defferedCode,
+    defferedSetCode,
   } = useStore((s) => ({
     editorView: s.editorView,
     setEditorView: s.setEditorView,
@@ -105,7 +108,9 @@ export function App() {
     setGuiMode: s.setGuiMode,
     addLog: s.addLog,
     code: s.code,
+    defferedCode: s.defferedCode,
     setCode: s.setCode,
+    defferedSetCode: s.defferedSetCode,
     setAst: s.setAst,
     setError: s.setError,
     setProgramMemory: s.setProgramMemory,
@@ -134,6 +139,7 @@ export function App() {
     didDragInStream: s.didDragInStream,
     setStreamDimensions: s.setStreamDimensions,
     streamDimensions: s.streamDimensions,
+    setIsExecuting: s.setIsExecuting,
   }))
 
   const {
@@ -190,7 +196,7 @@ export function App() {
 
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
-    setCode(value)
+    defferedSetCode(value)
     if (isTauri() && pathParams.id) {
       // Save the file to disk
       // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
@@ -295,16 +301,17 @@ export function App() {
     let unsubFn: any[] = []
     const asyncWrap = async () => {
       try {
-        if (!code) {
+        if (!defferedCode) {
           setAst(null)
           return
         }
-        const _ast = await asyncParser(code)
+        const _ast = await asyncParser(defferedCode)
         setAst(_ast)
         resetLogs()
         resetKCLErrors()
         engineCommandManager.endSession()
         engineCommandManager.startNewSession()
+        setIsExecuting(true)
         const programMemory = await _executor(
           _ast,
           {
@@ -336,6 +343,7 @@ export function App() {
 
         const { artifactMap, sourceRangeMap } =
           await engineCommandManager.waitForAllCommands()
+        setIsExecuting(false)
 
         setArtifactMap({ artifactMap, sourceRangeMap })
         const unSubHover = engineCommandManager.subscribeToUnreliable({
@@ -370,6 +378,7 @@ export function App() {
 
         setError()
       } catch (e: any) {
+        setIsExecuting(false)
         if (e instanceof KCLError) {
           addKCLError(e)
         } else {
@@ -383,7 +392,7 @@ export function App() {
     return () => {
       unsubFn.forEach((fn) => fn())
     }
-  }, [code, isStreamReady, engineCommandManager])
+  }, [defferedCode, isStreamReady, engineCommandManager])
 
   const debounceSocketSend = throttle<EngineCommand>((message) => {
     engineCommandManager?.sendSceneCommand(message)

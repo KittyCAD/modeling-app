@@ -6,7 +6,11 @@ import {
 import { ActionButton } from '../components/ActionButton'
 import { AppHeader } from '../components/AppHeader'
 import { open } from '@tauri-apps/api/dialog'
-import { BaseUnit, baseUnits } from '../useStore'
+import {
+  BaseUnit,
+  DEFAULT_PROJECT_NAME,
+  baseUnits,
+} from '../machines/settingsMachine'
 import { Toggle } from '../components/Toggle/Toggle'
 import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -160,10 +164,14 @@ export const Settings = () => {
                 className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
                 defaultValue={defaultProjectName}
                 onBlur={(e) => {
+                  const newValue = e.target.value.trim() || DEFAULT_PROJECT_NAME
                   send({
                     type: 'Set Default Project Name',
-                    data: { defaultProjectName: e.target.value },
+                    data: {
+                      defaultProjectName: newValue,
+                    },
                   })
+                  e.target.value = newValue
                 }}
                 autoCapitalize="off"
                 autoComplete="off"

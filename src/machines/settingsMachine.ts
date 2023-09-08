@@ -1,13 +1,25 @@
 import { assign, createMachine } from 'xstate'
-import { BaseUnit, baseUnitsUnion } from '../useStore'
 import { CommandBarMeta } from '../lib/commands'
 import { Themes, getSystemTheme, setThemeClass } from '../lib/theme'
 import { CADProgram, cadPrograms } from 'lib/cameraControls'
+
+export const DEFAULT_PROJECT_NAME = 'project-$nnn'
 
 export enum UnitSystem {
   Imperial = 'imperial',
   Metric = 'metric',
 }
+
+export const baseUnits = {
+  imperial: ['in', 'ft'],
+  metric: ['mm', 'cm', 'm'],
+} as const
+
+export type BaseUnit = 'in' | 'ft' | 'mm' | 'cm' | 'm'
+
+export const baseUnitsUnion = Object.values(baseUnits).flatMap((v) => v)
+
+export type Toggle = 'On' | 'Off'
 
 export const SETTINGS_PERSIST_KEY = 'SETTINGS_PERSIST_KEY'
 
@@ -99,10 +111,10 @@ export const settingsMachine = createMachine(
       baseUnit: 'in' as BaseUnit,
       cameraControls: 'KittyCAD' as CADProgram,
       defaultDirectory: '',
-      defaultProjectName: '',
+      defaultProjectName: DEFAULT_PROJECT_NAME,
       onboardingStatus: '',
       showDebugPanel: false,
-      textWrapping: 'On' as 'On' | 'Off',
+      textWrapping: 'On' as Toggle,
       theme: Themes.System,
       unitSystem: UnitSystem.Imperial,
     },
@@ -145,7 +157,8 @@ export const settingsMachine = createMachine(
           'Set Default Project Name': {
             actions: [
               assign({
-                defaultProjectName: (_, event) => event.data.defaultProjectName,
+                defaultProjectName: (_, event) =>
+                  event.data.defaultProjectName.trim() || DEFAULT_PROJECT_NAME,
               }),
               'persistSettings',
               'toastSuccess',
@@ -226,7 +239,7 @@ export const settingsMachine = createMachine(
             data: { defaultProjectName: string }
           }
         | { type: 'Set Onboarding Status'; data: { onboardingStatus: string } }
-        | { type: 'Set Text Wrapping'; data: { textWrapping: 'On' | 'Off' } }
+        | { type: 'Set Text Wrapping'; data: { textWrapping: Toggle } }
         | { type: 'Set Theme'; data: { theme: Themes } }
         | {
             type: 'Set Unit System'
