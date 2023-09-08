@@ -71,9 +71,7 @@ export const settingsCommandBarMeta: CommandBarMeta = {
         name: 'theme',
         type: 'select',
         defaultValue: 'theme',
-        options: Object.values(Themes).map((v) => ({ name: v })) as {
-          name: string
-        }[],
+        options: Object.values(Themes).map((v): {name: string} => ({ name: v })),
       },
     ],
   },
