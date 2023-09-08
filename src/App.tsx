@@ -286,7 +286,15 @@ export function App() {
     return () => {
       eng?.tearDown()
     }
-  }, [height, setEngineCommandManager, setIsStreamReady, setMediaStream, setStreamDimensions, token, width])
+  }, [
+    height,
+    setEngineCommandManager,
+    setIsStreamReady,
+    setMediaStream,
+    setStreamDimensions,
+    token,
+    width,
+  ])
 
   useEffect(() => {
     if (!isStreamReady) return
