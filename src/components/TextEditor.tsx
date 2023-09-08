@@ -1,4 +1,8 @@
-import ReactCodeMirror, { Extension, ViewUpdate, keymap } from '@uiw/react-codemirror'
+import ReactCodeMirror, {
+  Extension,
+  ViewUpdate,
+  keymap,
+} from '@uiw/react-codemirror'
 import { FromServer, IntoServer } from 'editor/lsp/codec'
 import Server from '../editor/lsp/server'
 import Client from '../editor/lsp/client'
@@ -17,7 +21,11 @@ import { useParams } from 'react-router-dom'
 import { writeTextFile } from '@tauri-apps/api/fs'
 import { PROJECT_ENTRYPOINT } from 'lib/tauriFS'
 import { toast } from 'react-hot-toast'
-import { EditorView, addLineHighlight, lineHighlightField } from 'editor/highlightextension'
+import {
+  EditorView,
+  addLineHighlight,
+  lineHighlightField,
+} from 'editor/highlightextension'
 import { isOverlap } from 'lib/utils'
 import { kclErrToDiagnostic } from 'lang/errors'
 import { CSSRuleObject } from 'tailwindcss/types/config'
@@ -33,7 +41,11 @@ export const editorShortcutMeta = {
   },
 }
 
-export const TextEditor = ({ theme }: { theme: Themes.Light | Themes.Dark }) => {
+export const TextEditor = ({
+  theme,
+}: {
+  theme: Themes.Light | Themes.Dark
+}) => {
   const pathParams = useParams()
   const {
     code,
@@ -112,7 +124,6 @@ export const TextEditor = ({ theme }: { theme: Themes.Light | Themes.Dark }) => 
     }
     return plugin
   }, [lspClient, isLSPServerReady])
-
 
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {

@@ -210,10 +210,7 @@ export const CreateNewVariable = ({
 }) => {
   return (
     <>
-      <label
-        htmlFor="create-new-variable"
-        className="block mt-3 font-mono"
-      >
+      <label htmlFor="create-new-variable" className="block mt-3 font-mono">
         Create new variable
       </label>
       <div className="mt-1 flex gap-2 items-center">
@@ -232,8 +229,8 @@ export const CreateNewVariable = ({
           name="create-new-variable"
           id="create-new-variable"
           autoFocus={true}
-          autoCapitalize='off'
-          autoCorrect='off'
+          autoCapitalize="off"
+          autoCorrect="off"
           className={`font-mono flex-1 sm:text-sm px-2 py-1 rounded-sm bg-chalkboard-10 dark:bg-chalkboard-90 text-chalkboard-90 dark:text-chalkboard-10 ${
             !shouldCreateVariable ? 'opacity-50' : ''
           }`}

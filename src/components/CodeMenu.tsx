@@ -46,7 +46,7 @@ export const CodeMenu = ({ children }: PropsWithChildren) => {
               <button
                 onClick={handleConvertToVarClick}
                 className={styles.button}
-                >
+              >
                 <span>Convert to Variable</span>
                 <small>{editorShortcutMeta.convertToVariable.display}</small>
               </button>

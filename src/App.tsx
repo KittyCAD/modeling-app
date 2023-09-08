@@ -32,7 +32,7 @@ import {
 import { useHotkeys } from 'react-hotkeys-hook'
 import { getNormalisedCoordinates } from './lib/utils'
 import { isTauri } from './lib/isTauri'
-import { useLoaderData} from 'react-router-dom'
+import { useLoaderData } from 'react-router-dom'
 import { IndexLoaderData } from './Router'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { onboardingPaths } from 'routes/Onboarding'
@@ -44,7 +44,7 @@ import { Themes, getSystemTheme } from 'lib/theme'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
-  
+
   const streamRef = useRef<HTMLDivElement>(null)
   useHotKeyListener()
   const {
@@ -107,12 +107,7 @@ export function App() {
       context: { token },
     },
     settings: {
-      context: {
-        showDebugPanel,
-        onboardingStatus,
-        cameraControls,
-        theme,
-      },
+      context: { showDebugPanel, onboardingStatus, cameraControls, theme },
     },
   } = useGlobalStateContext()
 
@@ -152,7 +147,7 @@ export function App() {
       }
     }
   }, [loadedCode, setCode])
-  
+
   const streamWidth = streamRef?.current?.offsetWidth
   const streamHeight = streamRef?.current?.offsetHeight
 
