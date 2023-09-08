@@ -402,20 +402,19 @@ export function App() {
 
     if (buttonDownInStream) {
       const interactionGuards = cameraMouseDragGuards[cameraControls]
-      let interaction
+      let interaction: CameraDragInteractionType_type;
 
       const eWithButton = { ...e, button: buttonDownInStream }
 
       if (interactionGuards.pan.callback(eWithButton)) {
-        interaction = 'pan' as CameraDragInteractionType_type
+        interaction = 'pan'
       } else if (interactionGuards.rotate.callback(eWithButton)) {
-        interaction = 'rotate' as CameraDragInteractionType_type
+        interaction = 'rotate'
       } else if (interactionGuards.zoom.dragCallback(eWithButton)) {
-        interaction = 'zoom' as CameraDragInteractionType_type
+        interaction = 'zoom'
       } else {
         return
       }
-
       debounceSocketSend({
         type: 'modeling_cmd_req',
         cmd: {
