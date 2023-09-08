@@ -5,6 +5,7 @@ import { ActionIcon } from './ActionIcon'
 import { useStore } from 'useStore'
 import styles from './CodeMenu.module.css'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
+import { editorShortcutMeta } from './TextEditor'
 
 export const CodeMenu = ({ children }: PropsWithChildren) => {
   const { formatCode } = useStore((s) => ({
@@ -37,7 +38,7 @@ export const CodeMenu = ({ children }: PropsWithChildren) => {
           <Menu.Item>
             <button onClick={() => formatCode()} className={styles.button}>
               <span>Format code</span>
-              <small>Alt + Shift + F</small>
+              <small>{editorShortcutMeta.formatCode.display}</small>
             </button>
           </Menu.Item>
           {convertToVarEnabled && (
@@ -47,7 +48,7 @@ export const CodeMenu = ({ children }: PropsWithChildren) => {
                 className={styles.button}
                 >
                 <span>Convert to Variable</span>
-                <small>Alt + Shift + A</small>
+                <small>{editorShortcutMeta.convertToVariable.display}</small>
               </button>
             </Menu.Item>
           )}

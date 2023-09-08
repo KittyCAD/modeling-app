@@ -22,6 +22,17 @@ import { isOverlap } from 'lib/utils'
 import { kclErrToDiagnostic } from 'lang/errors'
 import { CSSRuleObject } from 'tailwindcss/types/config'
 
+export const editorShortcutMeta = {
+  formatCode: {
+    codeMirror: 'Alt-Shift-f',
+    display: 'Alt + Shift + F',
+  },
+  convertToVariable: {
+    codeMirror: 'Alt-Shift-a',
+    display: 'Alt + Shift + A',
+  },
+}
+
 export const TextEditor = ({ theme }: { theme: Themes.Light | Themes.Dark }) => {
   const pathParams = useParams()
   const {
@@ -190,14 +201,14 @@ export const TextEditor = ({ theme }: { theme: Themes.Light | Themes.Dark }) => 
           },
         },
         {
-          key: 'Alt-Shift-f',
+          key: editorShortcutMeta.formatCode.codeMirror,
           run: () => {
             formatCode()
             return true
           },
         },
         {
-          key: 'Alt-Shift-a',
+          key: editorShortcutMeta.convertToVariable.codeMirror,
           run: () => {
             if (convertEnabled) {
               convertCallback()
