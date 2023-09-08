@@ -19,6 +19,7 @@ import {
   EngineCommandManager,
 } from './lang/std/engineConnection'
 import { KCLError } from './lang/errors'
+import { defferExecution } from 'lib/utils'
 
 export type Selection = {
   type: 'default' | 'line-end' | 'line-mid'
@@ -132,7 +133,9 @@ export interface StoreState {
   ) => void
   updateAstAsync: (ast: Program, focusPath?: PathToNode) => void
   code: string
+  defferedCode: string
   setCode: (code: string) => void
+  defferedSetCode: (code: string) => void
   formatCode: () => void
   errorState: {
     isError: boolean
@@ -168,6 +171,8 @@ export interface StoreState {
     streamWidth: number
     streamHeight: number
   }) => void
+  isExecuting: boolean
+  setIsExecuting: (isExecuting: boolean) => void
 
   showHomeMenu: boolean
   setHomeShowMenu: (showMenu: boolean) => void
@@ -186,187 +191,201 @@ let pendingAstUpdates: number[] = []
 
 export const useStore = create<StoreState>()(
   persist(
-    (set, get) => ({
-      editorView: null,
-      setEditorView: (editorView) => {
-        set({ editorView })
-      },
-      highlightRange: [0, 0],
-      setHighlightRange: (selection) => {
-        set({ highlightRange: selection })
-        const editorView = get().editorView
-        if (editorView) {
-          editorView.dispatch({ effects: addLineHighlight.of(selection) })
-        }
-      },
-      setCursor: (selections) => {
-        const { editorView } = get()
-        if (!editorView) return
-        const ranges: ReturnType<typeof EditorSelection.cursor>[] = []
-        const selectionRangeTypeMap: { [key: number]: Selection['type'] } = {}
-        set({ selectionRangeTypeMap })
-        selections.codeBasedSelections.forEach(({ range, type }) => {
-          if (range?.[1]) {
-            ranges.push(EditorSelection.cursor(range[1]))
-            selectionRangeTypeMap[range[1]] = type
+    (set, get) => {
+      const setDefferedCode = defferExecution(
+        (code: string) => set({ defferedCode: code }),
+        600
+      )
+      return {
+        editorView: null,
+        setEditorView: (editorView) => {
+          set({ editorView })
+        },
+        highlightRange: [0, 0],
+        setHighlightRange: (selection) => {
+          set({ highlightRange: selection })
+          const editorView = get().editorView
+          if (editorView) {
+            editorView.dispatch({ effects: addLineHighlight.of(selection) })
           }
-        })
-        setTimeout(() => {
-          editorView.dispatch({
-            selection: EditorSelection.create(
-              ranges,
-              selections.codeBasedSelections.length - 1
-            ),
+        },
+        setCursor: (selections) => {
+          const { editorView } = get()
+          if (!editorView) return
+          const ranges: ReturnType<typeof EditorSelection.cursor>[] = []
+          const selectionRangeTypeMap: { [key: number]: Selection['type'] } = {}
+          set({ selectionRangeTypeMap })
+          selections.codeBasedSelections.forEach(({ range, type }) => {
+            if (range?.[1]) {
+              ranges.push(EditorSelection.cursor(range[1]))
+              selectionRangeTypeMap[range[1]] = type
+            }
           })
-        })
-      },
-      setCursor2: (codeSelections) => {
-        const currestSelections = get().selectionRanges
-        const code = get().code
-        if (!codeSelections) {
-          get().setCursor({
-            otherSelections: currestSelections.otherSelections,
-            codeBasedSelections: [
-              { range: [0, code.length - 1], type: 'default' },
-            ],
-          })
-          return
-        }
-        const selections: Selections = {
-          ...currestSelections,
-          codeBasedSelections: get().isShiftDown
-            ? [...currestSelections.codeBasedSelections, codeSelections]
-            : [codeSelections],
-        }
-        get().setCursor(selections)
-      },
-      selectionRangeTypeMap: {},
-      selectionRanges: {
-        otherSelections: [],
-        codeBasedSelections: [],
-      },
-      setSelectionRanges: (selectionRanges) =>
-        set({ selectionRanges, selectionRangeTypeMap: {} }),
-      guiMode: { mode: 'default' },
-      lastGuiMode: { mode: 'default' },
-      setGuiMode: (guiMode) => {
-        set({ guiMode })
-      },
-      logs: [],
-      addLog: (log) => {
-        if (Array.isArray(log)) {
-          const cleanLog: any = log.map(({ __geoMeta, ...rest }) => rest)
-          set((state) => ({ logs: [...state.logs, cleanLog] }))
-        } else {
-          set((state) => ({ logs: [...state.logs, log] }))
-        }
-      },
-      resetLogs: () => {
-        set({ logs: [] })
-      },
-      kclErrors: [],
-      addKCLError: (e) => {
-        set((state) => ({ kclErrors: [...state.kclErrors, e] }))
-      },
-      resetKCLErrors: () => {
-        set({ kclErrors: [] })
-      },
-      ast: null,
-      setAst: (ast) => {
-        set({ ast })
-      },
-      updateAst: async (ast, { focusPath, callBack = () => {} } = {}) => {
-        const newCode = recast(ast)
-        const astWithUpdatedSource = parser_wasm(newCode)
-        callBack(astWithUpdatedSource)
-
-        set({ ast: astWithUpdatedSource, code: newCode })
-        if (focusPath) {
-          const { node } = getNodeFromPath<any>(astWithUpdatedSource, focusPath)
-          const { start, end } = node
-          if (!start || !end) return
           setTimeout(() => {
-            get().setCursor({
-              codeBasedSelections: [
-                {
-                  type: 'default',
-                  range: [start, end],
-                },
-              ],
-              otherSelections: [],
+            editorView.dispatch({
+              selection: EditorSelection.create(
+                ranges,
+                selections.codeBasedSelections.length - 1
+              ),
             })
           })
-        }
-      },
-      updateAstAsync: async (ast, focusPath) => {
-        // clear any pending updates
-        pendingAstUpdates.forEach((id) => clearTimeout(id))
-        pendingAstUpdates = []
-        // setup a new update
-        pendingAstUpdates.push(
-          setTimeout(() => {
-            get().updateAst(ast, { focusPath })
-          }, 100) as unknown as number
-        )
-      },
-      code: '',
-      setCode: (code) => {
-        set({ code })
-      },
-      formatCode: async () => {
-        const code = get().code
-        const ast = parser_wasm(code)
-        const newCode = recast(ast)
-        set({ code: newCode, ast })
-      },
-      errorState: {
-        isError: false,
-        error: '',
-      },
-      setError: (error = '') => {
-        set({ errorState: { isError: !!error, error } })
-      },
-      programMemory: { root: {}, pendingMemory: {} },
-      setProgramMemory: (programMemory) => set({ programMemory }),
-      isShiftDown: false,
-      setIsShiftDown: (isShiftDown) => set({ isShiftDown }),
-      artifactMap: {},
-      sourceRangeMap: {},
-      setArtifactNSourceRangeMaps: (maps) => set({ ...maps }),
-      setEngineCommandManager: (engineCommandManager) =>
-        set({ engineCommandManager }),
-      setMediaStream: (mediaStream) => set({ mediaStream }),
-      isStreamReady: false,
-      setIsStreamReady: (isStreamReady) => set({ isStreamReady }),
-      isLSPServerReady: false,
-      setIsLSPServerReady: (isLSPServerReady) => set({ isLSPServerReady }),
-      isMouseDownInStream: false,
-      setIsMouseDownInStream: (isMouseDownInStream) => {
-        set({ isMouseDownInStream })
-      },
-      didDragInStream: false,
-      setDidDragInStream: (didDragInStream) => {
-        set({ didDragInStream })
-      },
-      // For stream event handling
-      fileId: '',
-      setFileId: (fileId) => set({ fileId }),
-      streamDimensions: { streamWidth: 1280, streamHeight: 720 },
-      setStreamDimensions: (streamDimensions) => set({ streamDimensions }),
+        },
+        setCursor2: (codeSelections) => {
+          const currestSelections = get().selectionRanges
+          const code = get().code
+          if (!codeSelections) {
+            get().setCursor({
+              otherSelections: currestSelections.otherSelections,
+              codeBasedSelections: [
+                { range: [0, code.length - 1], type: 'default' },
+              ],
+            })
+            return
+          }
+          const selections: Selections = {
+            ...currestSelections,
+            codeBasedSelections: get().isShiftDown
+              ? [...currestSelections.codeBasedSelections, codeSelections]
+              : [codeSelections],
+          }
+          get().setCursor(selections)
+        },
+        selectionRangeTypeMap: {},
+        selectionRanges: {
+          otherSelections: [],
+          codeBasedSelections: [],
+        },
+        setSelectionRanges: (selectionRanges) =>
+          set({ selectionRanges, selectionRangeTypeMap: {} }),
+        guiMode: { mode: 'default' },
+        lastGuiMode: { mode: 'default' },
+        setGuiMode: (guiMode) => {
+          set({ guiMode })
+        },
+        logs: [],
+        addLog: (log) => {
+          if (Array.isArray(log)) {
+            const cleanLog: any = log.map(({ __geoMeta, ...rest }) => rest)
+            set((state) => ({ logs: [...state.logs, cleanLog] }))
+          } else {
+            set((state) => ({ logs: [...state.logs, log] }))
+          }
+        },
+        resetLogs: () => {
+          set({ logs: [] })
+        },
+        kclErrors: [],
+        addKCLError: (e) => {
+          set((state) => ({ kclErrors: [...state.kclErrors, e] }))
+        },
+        resetKCLErrors: () => {
+          set({ kclErrors: [] })
+        },
+        ast: null,
+        setAst: (ast) => {
+          set({ ast })
+        },
+        updateAst: async (ast, { focusPath, callBack = () => {} } = {}) => {
+          const newCode = recast(ast)
+          const astWithUpdatedSource = parser_wasm(newCode)
+          callBack(astWithUpdatedSource)
 
-      // tauri specific app settings
-      defaultDir: {
-        dir: '',
-      },
-      isBannerDismissed: false,
-      setBannerDismissed: (isBannerDismissed) => set({ isBannerDismissed }),
-      openPanes: ['code'],
-      setOpenPanes: (openPanes) => set({ openPanes }),
-      showHomeMenu: true,
-      setHomeShowMenu: (showHomeMenu) => set({ showHomeMenu }),
-      homeMenuItems: [],
-      setHomeMenuItems: (homeMenuItems) => set({ homeMenuItems }),
-    }),
+          set({ ast: astWithUpdatedSource, code: newCode })
+          if (focusPath) {
+            const { node } = getNodeFromPath<any>(
+              astWithUpdatedSource,
+              focusPath
+            )
+            const { start, end } = node
+            if (!start || !end) return
+            setTimeout(() => {
+              get().setCursor({
+                codeBasedSelections: [
+                  {
+                    type: 'default',
+                    range: [start, end],
+                  },
+                ],
+                otherSelections: [],
+              })
+            })
+          }
+        },
+        updateAstAsync: async (ast, focusPath) => {
+          // clear any pending updates
+          pendingAstUpdates.forEach((id) => clearTimeout(id))
+          pendingAstUpdates = []
+          // setup a new update
+          pendingAstUpdates.push(
+            setTimeout(() => {
+              get().updateAst(ast, { focusPath })
+            }, 100) as unknown as number
+          )
+        },
+        code: '',
+        defferedCode: '',
+        setCode: (code) => set({ code, defferedCode: code }),
+        defferedSetCode: (code) => {
+          set({ code })
+          setDefferedCode(code)
+        },
+        formatCode: async () => {
+          const code = get().code
+          const ast = parser_wasm(code)
+          const newCode = recast(ast)
+          set({ code: newCode, ast })
+        },
+        errorState: {
+          isError: false,
+          error: '',
+        },
+        setError: (error = '') => {
+          set({ errorState: { isError: !!error, error } })
+        },
+        programMemory: { root: {}, pendingMemory: {} },
+        setProgramMemory: (programMemory) => set({ programMemory }),
+        isShiftDown: false,
+        setIsShiftDown: (isShiftDown) => set({ isShiftDown }),
+        artifactMap: {},
+        sourceRangeMap: {},
+        setArtifactNSourceRangeMaps: (maps) => set({ ...maps }),
+        setEngineCommandManager: (engineCommandManager) =>
+          set({ engineCommandManager }),
+        setMediaStream: (mediaStream) => set({ mediaStream }),
+        isStreamReady: false,
+        setIsStreamReady: (isStreamReady) => set({ isStreamReady }),
+        isLSPServerReady: false,
+        setIsLSPServerReady: (isLSPServerReady) => set({ isLSPServerReady }),
+        isMouseDownInStream: false,
+        setIsMouseDownInStream: (isMouseDownInStream) => {
+          set({ isMouseDownInStream })
+        },
+        didDragInStream: false,
+        setDidDragInStream: (didDragInStream) => {
+          set({ didDragInStream })
+        },
+        // For stream event handling
+        fileId: '',
+        setFileId: (fileId) => set({ fileId }),
+        streamDimensions: { streamWidth: 1280, streamHeight: 720 },
+        setStreamDimensions: (streamDimensions) => set({ streamDimensions }),
+        isExecuting: false,
+        setIsExecuting: (isExecuting) => set({ isExecuting }),
+
+        // tauri specific app settings
+        defaultDir: {
+          dir: '',
+        },
+        isBannerDismissed: false,
+        setBannerDismissed: (isBannerDismissed) => set({ isBannerDismissed }),
+        openPanes: ['code'],
+        setOpenPanes: (openPanes) => set({ openPanes }),
+        showHomeMenu: true,
+        setHomeShowMenu: (showHomeMenu) => set({ showHomeMenu }),
+        homeMenuItems: [],
+        setHomeMenuItems: (homeMenuItems) => set({ homeMenuItems }),
+      }
+    },
     {
       name: 'store',
       partialize: (state) =>

@@ -21,6 +21,7 @@ export const Stream = ({ className = '' }) => {
     didDragInStream,
     setDidDragInStream,
     streamDimensions,
+    isExecuting,
   } = useStore((s) => ({
     mediaStream: s.mediaStream,
     engineCommandManager: s.engineCommandManager,
@@ -30,6 +31,7 @@ export const Stream = ({ className = '' }) => {
     didDragInStream: s.didDragInStream,
     setDidDragInStream: s.setDidDragInStream,
     streamDimensions: s.streamDimensions,
+    isExecuting: s.isExecuting,
   }))
 
   useEffect(() => {
@@ -155,7 +157,8 @@ export const Stream = ({ className = '' }) => {
         onWheel={handleScroll}
         onPlay={() => setIsLoading(false)}
         onMouseMoveCapture={handleMouseMove}
-        className="w-full h-full"
+        className={`w-full h-full ${isExecuting && 'blur-md'}`}
+        style={{ transitionDuration: '200ms', transitionProperty: 'filter' }}
       />
       {isLoading && (
         <div className="text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
