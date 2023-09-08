@@ -28,8 +28,8 @@ export const editorShortcutMeta = {
     display: 'Alt + Shift + F',
   },
   convertToVariable: {
-    codeMirror: 'Alt-Shift-a',
-    display: 'Alt + Shift + A',
+    codeMirror: 'Ctrl-Shift-c',
+    display: 'Ctrl + Shift + C',
   },
 }
 
