@@ -55,6 +55,8 @@ import { onboardingPaths } from 'routes/Onboarding'
 import { LanguageServerClient } from 'editor/lsp'
 import kclLanguage from 'editor/lsp/language'
 import { CSSRuleObject } from 'tailwindcss/types/config'
+import { cameraMouseDragGuards } from 'lib/cameraControls'
+import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
@@ -88,7 +90,7 @@ export function App() {
     isStreamReady,
     isLSPServerReady,
     setIsLSPServerReady,
-    isMouseDownInStream,
+    buttonDownInStream,
     formatCode,
     openPanes,
     setOpenPanes,
@@ -129,7 +131,7 @@ export function App() {
     setIsStreamReady: s.setIsStreamReady,
     isLSPServerReady: s.isLSPServerReady,
     setIsLSPServerReady: s.setIsLSPServerReady,
-    isMouseDownInStream: s.isMouseDownInStream,
+    buttonDownInStream: s.buttonDownInStream,
     formatCode: s.formatCode,
     addKCLError: s.addKCLError,
     openPanes: s.openPanes,
@@ -145,7 +147,13 @@ export function App() {
       context: { token },
     },
     settings: {
-      context: { showDebugPanel, theme, onboardingStatus, textWrapping },
+      context: {
+        showDebugPanel,
+        theme,
+        onboardingStatus,
+        textWrapping,
+        cameraControls,
+      },
     },
   } = useGlobalStateContext()
 
@@ -389,28 +397,33 @@ export function App() {
   const debounceSocketSend = throttle<EngineCommand>((message) => {
     engineCommandManager?.sendSceneCommand(message)
   }, 16)
-  const handleMouseMove: MouseEventHandler<HTMLDivElement> = ({
-    clientX,
-    clientY,
-    ctrlKey,
-    shiftKey,
-    currentTarget,
-    nativeEvent,
-  }) => {
-    nativeEvent.preventDefault()
+  const handleMouseMove: MouseEventHandler<HTMLDivElement> = (e) => {
+    e.nativeEvent.preventDefault()
 
     const { x, y } = getNormalisedCoordinates({
-      clientX,
-      clientY,
-      el: currentTarget,
+      clientX: e.clientX,
+      clientY: e.clientY,
+      el: e.currentTarget,
       ...streamDimensions,
     })
 
-    const interaction = ctrlKey ? 'zoom' : shiftKey ? 'pan' : 'rotate'
-
     const newCmdId = uuidv4()
 
-    if (isMouseDownInStream) {
+    if (buttonDownInStream) {
+      const interactionGuards = cameraMouseDragGuards[cameraControls]
+      let interaction: CameraDragInteractionType_type
+
+      const eWithButton = { ...e, button: buttonDownInStream }
+
+      if (interactionGuards.pan.callback(eWithButton)) {
+        interaction = 'pan'
+      } else if (interactionGuards.rotate.callback(eWithButton)) {
+        interaction = 'rotate'
+      } else if (interactionGuards.zoom.dragCallback(eWithButton)) {
+        interaction = 'zoom'
+      } else {
+        return
+      }
       debounceSocketSend({
         type: 'modeling_cmd_req',
         cmd: {
@@ -500,7 +513,7 @@ export function App() {
         className={
           'transition-opacity transition-duration-75 ' +
           paneOpacity +
-          (isMouseDownInStream ? ' pointer-events-none' : '')
+          (buttonDownInStream ? ' pointer-events-none' : '')
         }
         project={project}
         enableMenu={true}
@@ -509,7 +522,7 @@ export function App() {
       <Resizable
         className={
           'h-full flex flex-col flex-1 z-10 my-5 ml-5 pr-1 transition-opacity transition-duration-75 ' +
-          (isMouseDownInStream || onboardingStatus === 'camera'
+          (buttonDownInStream || onboardingStatus === 'camera'
             ? ' pointer-events-none '
             : ' ') +
           paneOpacity
@@ -588,7 +601,7 @@ export function App() {
           className={
             'transition-opacity transition-duration-75 ' +
             paneOpacity +
-            (isMouseDownInStream ? ' pointer-events-none' : '')
+            (buttonDownInStream ? ' pointer-events-none' : '')
           }
           open={openPanes.includes('debug')}
         />
