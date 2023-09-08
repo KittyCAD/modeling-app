@@ -391,7 +391,7 @@ export const useStore = create<StoreState>()(
       partialize: (state) =>
         Object.fromEntries(
           Object.entries(state).filter(([key]) =>
-            ['code', 'openPanes'].includes(key)
+            ['code', 'defferedCode', 'openPanes'].includes(key)
           )
         ),
     }
