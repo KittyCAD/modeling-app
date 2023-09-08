@@ -1,6 +1,6 @@
 import { Menu } from '@headlessui/react'
 import { PropsWithChildren } from 'react'
-import { faListDots } from '@fortawesome/free-solid-svg-icons'
+import { faEllipsis } from '@fortawesome/free-solid-svg-icons'
 import { ActionIcon } from './ActionIcon'
 import { useStore } from 'useStore'
 import styles from './CodeMenu.module.css'
@@ -23,12 +23,12 @@ export const CodeMenu = ({ children }: PropsWithChildren) => {
       >
         <Menu.Button className="p-0 border-none relative">
           <ActionIcon
-            icon={faListDots}
+            icon={faEllipsis}
             bgClassName={
               'bg-chalkboard-20 dark:bg-chalkboard-110 hover:bg-chalkboard-30 hover:dark:bg-chalkboard-90 ui-active:bg-chalkboard-80 ui-active:dark:bg-chalkboard-90  rounded'
             }
             iconClassName={
-              'text-chalkboard-90 dark:text-chalkboard-40 hover:text-liquid-10'
+              'text-chalkboard-90 dark:text-chalkboard-40'
             }
           />
         </Menu.Button>
@@ -36,7 +36,7 @@ export const CodeMenu = ({ children }: PropsWithChildren) => {
           <Menu.Item>
             <button onClick={() => formatCode()} className={styles.button}>
               <span>Format code</span>
-              {/* <small>Alt + Shift + F</small> */}
+              <small>Alt + Shift + F</small>
             </button>
           </Menu.Item>
         </Menu.Items>

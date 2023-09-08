@@ -10,7 +10,7 @@ import { DebugPanel } from './components/DebugPanel'
 import { v4 as uuidv4 } from 'uuid'
 import { asyncParser } from './lang/abstractSyntaxTree'
 import { _executor } from './lang/executor'
-import CodeMirror, { Extension } from '@uiw/react-codemirror'
+import CodeMirror, { Extension, keymap } from '@uiw/react-codemirror'
 import { linter, lintGutter } from '@codemirror/lint'
 import { ViewUpdate, EditorView } from '@codemirror/view'
 import {
@@ -58,6 +58,7 @@ import { CSSRuleObject } from 'tailwindcss/types/config'
 import { cameraMouseDragGuards } from 'lib/cameraControls'
 import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
 import { CodeMenu } from 'components/CodeMenu'
+import { useCommandsContext } from 'hooks/useCommandsContext'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
@@ -97,6 +98,7 @@ export function App() {
     didDragInStream,
     setStreamDimensions,
     streamDimensions,
+    formatCode,
     setIsExecuting,
     defferedCode,
     defferedSetCode,
@@ -139,6 +141,7 @@ export function App() {
     setStreamDimensions: s.setStreamDimensions,
     streamDimensions: s.streamDimensions,
     setIsExecuting: s.setIsExecuting,
+    formatCode: s.formatCode,
   }))
 
   const {
@@ -155,6 +158,7 @@ export function App() {
       },
     },
   } = useGlobalStateContext()
+  const { setCommandBarOpen } = useCommandsContext()
 
   const editorTheme = theme === Themes.System ? getSystemTheme() : theme
 
@@ -484,7 +488,26 @@ export function App() {
   }, [lspClient, isLSPServerReady])
 
   const editorExtensions = useMemo(() => {
-    const extensions = [lineHighlightField] as Extension[]
+    const extensions = [
+      lineHighlightField,
+      keymap.of([
+        {
+          key: 'Meta-k',
+          run: () => {
+            console.log('command bar')
+            setCommandBarOpen(true)
+            return true
+          },
+        },
+        {
+          key: 'Alt-Shift-f',
+          run: () => {
+            formatCode()
+            return true
+          },
+        },
+      ]),
+    ] as Extension[]
 
     if (kclLSP) extensions.push(kclLSP)
 
