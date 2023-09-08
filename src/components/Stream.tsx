@@ -62,14 +62,14 @@ export const Stream = ({ className = '' }) => {
     const newId = uuidv4()
 
     const interactionGuards = cameraMouseDragGuards[cameraControls]
-    let interaction
+    let interaction: CameraDragInteractionType_type
 
     if (interactionGuards.pan.callback(e)) {
-      interaction = 'pan' as CameraDragInteractionType_type
+      interaction = 'pan'
     } else if (interactionGuards.rotate.callback(e)) {
-      interaction = 'rotate' as CameraDragInteractionType_type
+      interaction = 'rotate'
     } else if (interactionGuards.zoom.dragCallback(e)) {
-      interaction = 'zoom' as CameraDragInteractionType_type
+      interaction = 'zoom'
     } else {
       return
     }
