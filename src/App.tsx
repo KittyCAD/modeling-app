@@ -402,7 +402,7 @@ export function App() {
 
     if (buttonDownInStream) {
       const interactionGuards = cameraMouseDragGuards[cameraControls]
-      let interaction: CameraDragInteractionType_type;
+      let interaction: CameraDragInteractionType_type
 
       const eWithButton = { ...e, button: buttonDownInStream }
 

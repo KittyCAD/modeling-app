@@ -1,6 +1,4 @@
-import { MouseEventHandler } from 'react'
-
-const noModifiersPressed: MouseEventHandler = (e) =>
+const noModifiersPressed = (e: React.MouseEvent) =>
   !e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey
 
 export type CADProgram =
@@ -20,24 +18,24 @@ export const cadPrograms: CADProgram[] = [
   'AutoCAD',
 ]
 
-type MouseGuardHandler = {
+interface MouseGuardHandler {
   description: string
   callback: (e: React.MouseEvent) => boolean
 }
 
-type MouseGuardZoomHandler = {
+interface MouseGuardZoomHandler {
   description: string
   dragCallback: (e: React.MouseEvent) => boolean
   scrollCallback: (e: React.MouseEvent) => boolean
 }
 
-type MouseGuard = {
+interface MouseGuard {
   pan: MouseGuardHandler
   zoom: MouseGuardZoomHandler
   rotate: MouseGuardHandler
 }
 
-export const cameraMouseDragGuards = {
+export const cameraMouseDragGuards: Record<CADProgram, MouseGuard> = {
   KittyCAD: {
     pan: {
       description: 'Right click + Shift + drag or middle click + drag',
@@ -132,4 +130,4 @@ export const cameraMouseDragGuards = {
       callback: (e) => e.button === 3 && e.shiftKey,
     },
   },
-} as Record<CADProgram, MouseGuard>
+}
