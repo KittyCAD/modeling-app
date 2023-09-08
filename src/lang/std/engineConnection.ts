@@ -1,10 +1,6 @@
 import { SourceRange } from 'lang/executor'
 import { Selections } from 'useStore'
-import {
-  VITE_KC_API_WS_MODELING_URL,
-  VITE_KC_CONNECTION_TIMEOUT_MS,
-  VITE_KC_CONNECTION_WEBRTC_REPORT_STATS_MS,
-} from 'env'
+import { VITE_KC_API_WS_MODELING_URL, VITE_KC_CONNECTION_TIMEOUT_MS } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
 import { v4 as uuidv4 } from 'uuid'
