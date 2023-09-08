@@ -20,7 +20,16 @@ use crate::{
     executor::{ExtrudeGroup, MemoryItem, Metadata, SketchGroup, SourceRange},
 };
 
-pub type StdFn = fn(&mut Args) -> Result<MemoryItem, KclError>;
+/// The response from a standard library function.
+pub struct StdLibFnResponse {
+    /// The memory item that we are returning.
+    pub memory_item: MemoryItem,
+    /// If we modified the sketch, we need to store that id that we used
+    /// for this entity in the engine.
+    pub engine_id: Option<uuid::Uuid>,
+}
+
+pub type StdFn = fn(&mut Args) -> Result<StdLibFnResponse, KclError>;
 pub type FnMap = HashMap<String, StdFn>;
 
 pub struct StdLib {
@@ -86,14 +95,24 @@ impl Default for StdLib {
 pub struct Args<'a> {
     pub args: Vec<MemoryItem>,
     pub source_range: SourceRange,
+    /// This is the engine_id that we had previously stored from the engine.
+    /// If this is None, then we are not modifying the sketch, we are
+    /// executing for the first time.
+    pub previous_engine_id: Option<uuid::Uuid>,
     engine: &'a mut EngineConnection,
 }
 
 impl<'a> Args<'a> {
-    pub fn new(args: Vec<MemoryItem>, source_range: SourceRange, engine: &'a mut EngineConnection) -> Self {
+    pub fn new(
+        args: Vec<MemoryItem>,
+        source_range: SourceRange,
+        previous_engine_id: &Option<uuid::Uuid>,
+        engine: &'a mut EngineConnection,
+    ) -> Self {
         Self {
             args,
             source_range,
+            previous_engine_id: *previous_engine_id,
             engine,
         }
     }
@@ -407,11 +426,14 @@ impl<'a> Args<'a> {
 }
 
 /// Returns the minimum of the given arguments.
-pub fn min(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn min(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let nums = args.get_number_array()?;
     let result = inner_min(nums);
 
-    args.make_user_val_from_f64(result)
+    Ok(StdLibFnResponse {
+        memory_item: args.make_user_val_from_f64(result)?,
+        engine_id: None,
+    })
 }
 
 /// Returns the minimum of the given arguments.
@@ -431,11 +453,14 @@ fn inner_min(args: Vec<f64>) -> f64 {
 
 /// Render a model.
 // This never actually gets called so this is fine.
-pub fn show(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn show(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let sketch_group = args.get_sketch_group()?;
     inner_show(sketch_group);
 
-    args.make_user_val_from_f64(0.0)
+    Ok(StdLibFnResponse {
+        memory_item: args.make_user_val_from_f64(0.0)?,
+        engine_id: None,
+    })
 }
 
 /// Render a model.
@@ -445,10 +470,14 @@ pub fn show(args: &mut Args) -> Result<MemoryItem, KclError> {
 fn inner_show(_sketch: SketchGroup) {}
 
 /// Returns the length of the given leg.
-pub fn leg_length(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn leg_length(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
     let result = inner_leg_length(hypotenuse, leg);
-    args.make_user_val_from_f64(result)
+
+    Ok(StdLibFnResponse {
+        memory_item: args.make_user_val_from_f64(result)?,
+        engine_id: None,
+    })
 }
 
 /// Returns the length of the given leg.
@@ -460,10 +489,14 @@ fn inner_leg_length(hypotenuse: f64, leg: f64) -> f64 {
 }
 
 /// Returns the angle of the given leg for x.
-pub fn leg_angle_x(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn leg_angle_x(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
     let result = inner_leg_angle_x(hypotenuse, leg);
-    args.make_user_val_from_f64(result)
+
+    Ok(StdLibFnResponse {
+        memory_item: args.make_user_val_from_f64(result)?,
+        engine_id: None,
+    })
 }
 
 /// Returns the angle of the given leg for x.
@@ -475,10 +508,14 @@ fn inner_leg_angle_x(hypotenuse: f64, leg: f64) -> f64 {
 }
 
 /// Returns the angle of the given leg for y.
-pub fn leg_angle_y(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn leg_angle_y(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
     let result = inner_leg_angle_y(hypotenuse, leg);
-    args.make_user_val_from_f64(result)
+
+    Ok(StdLibFnResponse {
+        memory_item: args.make_user_val_from_f64(result)?,
+        engine_id: None,
+    })
 }
 
 /// Returns the angle of the given leg for y.

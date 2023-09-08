@@ -7,16 +7,19 @@ use schemars::JsonSchema;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{ExtrudeGroup, ExtrudeTransform, MemoryItem, SketchGroup},
-    std::Args,
+    std::{Args, StdLibFnResponse},
 };
 
 /// Extrudes by a given amount.
-pub fn extrude(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn extrude(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let (length, sketch_group) = args.get_number_sketch_group()?;
 
     let result = inner_extrude(length, sketch_group, args)?;
 
-    Ok(MemoryItem::ExtrudeGroup(result))
+    Ok(StdLibFnResponse {
+        memory_item: MemoryItem::ExtrudeGroup(result),
+        engine_id: None,
+    })
 }
 
 /// Extrudes by a given amount.
@@ -46,10 +49,14 @@ fn inner_extrude(length: f64, sketch_group: SketchGroup, args: &mut Args) -> Res
 }
 
 /// Returns the extrude wall transform.
-pub fn get_extrude_wall_transform(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn get_extrude_wall_transform(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let (surface_name, extrude_group) = args.get_path_name_extrude_group()?;
     let result = inner_get_extrude_wall_transform(&surface_name, extrude_group, args)?;
-    Ok(MemoryItem::ExtrudeTransform(result))
+
+    Ok(StdLibFnResponse {
+        memory_item: MemoryItem::ExtrudeTransform(result),
+        engine_id: None,
+    })
 }
 
 /// Returns the extrude wall transform.

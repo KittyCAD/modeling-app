@@ -6,16 +6,19 @@ use schemars::JsonSchema;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{MemoryItem, SketchGroup},
-    std::{utils::get_angle, Args},
+    executor::SketchGroup,
+    std::{utils::get_angle, Args, StdLibFnResponse},
 };
 
 /// Returns the segment end of x.
-pub fn segment_end_x(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn segment_end_x(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let (segment_name, sketch_group) = args.get_segment_name_sketch_group()?;
     let result = inner_segment_end_x(&segment_name, sketch_group, args)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(StdLibFnResponse {
+        memory_item: args.make_user_val_from_f64(result)?,
+        engine_id: None,
+    })
 }
 
 /// Returns the segment end of x.
@@ -37,11 +40,14 @@ fn inner_segment_end_x(segment_name: &str, sketch_group: SketchGroup, args: &mut
 }
 
 /// Returns the segment end of y.
-pub fn segment_end_y(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn segment_end_y(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let (segment_name, sketch_group) = args.get_segment_name_sketch_group()?;
     let result = inner_segment_end_y(&segment_name, sketch_group, args)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(StdLibFnResponse {
+        memory_item: args.make_user_val_from_f64(result)?,
+        engine_id: None,
+    })
 }
 
 /// Returns the segment end of y.
@@ -63,11 +69,14 @@ fn inner_segment_end_y(segment_name: &str, sketch_group: SketchGroup, args: &mut
 }
 
 /// Returns the last segment of x.
-pub fn last_segment_x(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn last_segment_x(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let sketch_group = args.get_sketch_group()?;
     let result = inner_last_segment_x(sketch_group, args)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(StdLibFnResponse {
+        memory_item: args.make_user_val_from_f64(result)?,
+        engine_id: None,
+    })
 }
 
 /// Returns the last segment of x.
@@ -93,11 +102,14 @@ fn inner_last_segment_x(sketch_group: SketchGroup, args: &mut Args) -> Result<f6
 }
 
 /// Returns the last segment of y.
-pub fn last_segment_y(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn last_segment_y(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let sketch_group = args.get_sketch_group()?;
     let result = inner_last_segment_y(sketch_group, args)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(StdLibFnResponse {
+        memory_item: args.make_user_val_from_f64(result)?,
+        engine_id: None,
+    })
 }
 
 /// Returns the last segment of y.
@@ -123,10 +135,14 @@ fn inner_last_segment_y(sketch_group: SketchGroup, args: &mut Args) -> Result<f6
 }
 
 /// Returns the length of the segment.
-pub fn segment_length(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn segment_length(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let (segment_name, sketch_group) = args.get_segment_name_sketch_group()?;
     let result = inner_segment_length(&segment_name, sketch_group, args)?;
-    args.make_user_val_from_f64(result)
+
+    Ok(StdLibFnResponse {
+        memory_item: args.make_user_val_from_f64(result)?,
+        engine_id: None,
+    })
 }
 
 /// Returns the length of the segment.
@@ -151,11 +167,15 @@ fn inner_segment_length(segment_name: &str, sketch_group: SketchGroup, args: &mu
 }
 
 /// Returns the angle of the segment.
-pub fn segment_angle(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn segment_angle(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let (segment_name, sketch_group) = args.get_segment_name_sketch_group()?;
 
     let result = inner_segment_angle(&segment_name, sketch_group, args)?;
-    args.make_user_val_from_f64(result)
+
+    Ok(StdLibFnResponse {
+        memory_item: args.make_user_val_from_f64(result)?,
+        engine_id: None,
+    })
 }
 
 /// Returns the angle of the segment.
@@ -180,10 +200,14 @@ fn inner_segment_angle(segment_name: &str, sketch_group: SketchGroup, args: &mut
 }
 
 /// Returns the angle to match the given length for x.
-pub fn angle_to_match_length_x(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn angle_to_match_length_x(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let (segment_name, to, sketch_group) = args.get_segment_name_to_number_sketch_group()?;
     let result = inner_angle_to_match_length_x(&segment_name, to, sketch_group, args)?;
-    args.make_user_val_from_f64(result)
+
+    Ok(StdLibFnResponse {
+        memory_item: args.make_user_val_from_f64(result)?,
+        engine_id: None,
+    })
 }
 
 /// Returns the angle to match the given length for x.
@@ -235,10 +259,14 @@ fn inner_angle_to_match_length_x(
 }
 
 /// Returns the angle to match the given length for y.
-pub fn angle_to_match_length_y(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn angle_to_match_length_y(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let (segment_name, to, sketch_group) = args.get_segment_name_to_number_sketch_group()?;
     let result = inner_angle_to_match_length_y(&segment_name, to, sketch_group, args)?;
-    args.make_user_val_from_f64(result)
+
+    Ok(StdLibFnResponse {
+        memory_item: args.make_user_val_from_f64(result)?,
+        engine_id: None,
+    })
 }
 
 /// Returns the angle to match the given length for y.

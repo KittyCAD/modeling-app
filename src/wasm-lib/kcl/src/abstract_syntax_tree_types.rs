@@ -771,14 +771,14 @@ impl CallExpression {
         match &self.function {
             Function::StdLib { func, engine_id } => {
                 // Attempt to call the function.
-                let mut args = crate::std::Args::new(fn_args, self.into(), engine);
+                let mut args = crate::std::Args::new(fn_args, self.into(), engine_id, engine);
                 let result = func.std_lib_fn()(&mut args)?;
                 if pipe_info.is_in_pipe {
                     pipe_info.index += 1;
-                    pipe_info.previous_results.push(result);
+                    pipe_info.previous_results.push(result.memory_item);
                     execute_pipe_body(memory, &pipe_info.body.clone(), pipe_info, self.into(), engine)
                 } else {
-                    Ok(result)
+                    Ok(result.memory_item)
                 }
             }
             Function::InMemory => {
@@ -853,7 +853,7 @@ pub enum Function {
         /// etc.
         /// Not all stdlib functions have an engine id.
         /// Only ones that modify parts of a model.
-        engine_id: Option<String>,
+        engine_id: Option<uuid::Uuid>,
     },
     /// A function that is defined in memory.
     #[default]

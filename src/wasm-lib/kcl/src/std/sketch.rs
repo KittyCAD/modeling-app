@@ -11,7 +11,7 @@ use crate::{
     executor::{BasePath, GeoMeta, MemoryItem, Path, Point2d, Position, Rotation, SketchGroup},
     std::{
         utils::{arc_angles, arc_center_and_end, get_x_component, get_y_component, intersection_with_parallel_line},
-        Args,
+        Args, StdLibFnResponse,
     },
 };
 
@@ -32,11 +32,15 @@ pub enum LineToData {
 }
 
 /// Draw a line to a point.
-pub fn line_to(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn line_to(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let (data, sketch_group): (LineToData, SketchGroup) = args.get_data_and_sketch_group()?;
 
     let new_sketch_group = inner_line_to(data, sketch_group, args)?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+
+    Ok(StdLibFnResponse {
+        memory_item: MemoryItem::SketchGroup(new_sketch_group),
+        engine_id: None,
+    })
 }
 
 /// Draw a line to a point.
@@ -105,11 +109,15 @@ pub enum AxisLineToData {
 }
 
 /// Draw a line to a point on the x-axis.
-pub fn x_line_to(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn x_line_to(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let (data, sketch_group): (AxisLineToData, SketchGroup) = args.get_data_and_sketch_group()?;
 
     let new_sketch_group = inner_x_line_to(data, sketch_group, args)?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+
+    Ok(StdLibFnResponse {
+        memory_item: MemoryItem::SketchGroup(new_sketch_group),
+        engine_id: None,
+    })
 }
 
 /// Draw a line to a point on the x-axis.
@@ -130,11 +138,15 @@ fn inner_x_line_to(data: AxisLineToData, sketch_group: SketchGroup, args: &mut A
 }
 
 /// Draw a line to a point on the y-axis.
-pub fn y_line_to(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn y_line_to(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let (data, sketch_group): (AxisLineToData, SketchGroup) = args.get_data_and_sketch_group()?;
 
     let new_sketch_group = inner_y_line_to(data, sketch_group, args)?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+
+    Ok(StdLibFnResponse {
+        memory_item: MemoryItem::SketchGroup(new_sketch_group),
+        engine_id: None,
+    })
 }
 
 /// Draw a line to a point on the y-axis.
@@ -192,11 +204,15 @@ impl PointOrDefault {
 }
 
 /// Draw a line.
-pub fn line(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn line(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let (data, sketch_group): (LineData, SketchGroup) = args.get_data_and_sketch_group()?;
 
     let new_sketch_group = inner_line(data, sketch_group, args)?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+
+    Ok(StdLibFnResponse {
+        memory_item: MemoryItem::SketchGroup(new_sketch_group),
+        engine_id: None,
+    })
 }
 
 /// Draw a line.
@@ -270,11 +286,15 @@ pub enum AxisLineData {
 }
 
 /// Draw a line on the x-axis.
-pub fn x_line(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn x_line(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let (data, sketch_group): (AxisLineData, SketchGroup) = args.get_data_and_sketch_group()?;
 
     let new_sketch_group = inner_x_line(data, sketch_group, args)?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+
+    Ok(StdLibFnResponse {
+        memory_item: MemoryItem::SketchGroup(new_sketch_group),
+        engine_id: None,
+    })
 }
 
 /// Draw a line on the x-axis.
@@ -295,11 +315,15 @@ fn inner_x_line(data: AxisLineData, sketch_group: SketchGroup, args: &mut Args) 
 }
 
 /// Draw a line on the y-axis.
-pub fn y_line(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn y_line(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let (data, sketch_group): (AxisLineData, SketchGroup) = args.get_data_and_sketch_group()?;
 
     let new_sketch_group = inner_y_line(data, sketch_group, args)?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+
+    Ok(StdLibFnResponse {
+        memory_item: MemoryItem::SketchGroup(new_sketch_group),
+        engine_id: None,
+    })
 }
 
 /// Draw a line on the y-axis.
@@ -338,11 +362,15 @@ pub enum AngledLineData {
 }
 
 /// Draw an angled line.
-pub fn angled_line(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn angled_line(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let (data, sketch_group): (AngledLineData, SketchGroup) = args.get_data_and_sketch_group()?;
 
     let new_sketch_group = inner_angled_line(data, sketch_group, args)?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+
+    Ok(StdLibFnResponse {
+        memory_item: MemoryItem::SketchGroup(new_sketch_group),
+        engine_id: None,
+    })
 }
 
 /// Draw an angled line.
@@ -402,11 +430,15 @@ fn inner_angled_line(
 }
 
 /// Draw an angled line of a given x length.
-pub fn angled_line_of_x_length(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn angled_line_of_x_length(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let (data, sketch_group): (AngledLineData, SketchGroup) = args.get_data_and_sketch_group()?;
 
     let new_sketch_group = inner_angled_line_of_x_length(data, sketch_group, args)?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+
+    Ok(StdLibFnResponse {
+        memory_item: MemoryItem::SketchGroup(new_sketch_group),
+        engine_id: None,
+    })
 }
 
 /// Draw an angled line of a given x length.
@@ -460,11 +492,15 @@ pub enum AngledLineToData {
 }
 
 /// Draw an angled line to a given x coordinate.
-pub fn angled_line_to_x(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn angled_line_to_x(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let (data, sketch_group): (AngledLineToData, SketchGroup) = args.get_data_and_sketch_group()?;
 
     let new_sketch_group = inner_angled_line_to_x(data, sketch_group, args)?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+
+    Ok(StdLibFnResponse {
+        memory_item: MemoryItem::SketchGroup(new_sketch_group),
+        engine_id: None,
+    })
 }
 
 /// Draw an angled line to a given x coordinate.
@@ -499,12 +535,15 @@ fn inner_angled_line_to_x(
 }
 
 /// Draw an angled line of a given y length.
-pub fn angled_line_of_y_length(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn angled_line_of_y_length(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let (data, sketch_group): (AngledLineData, SketchGroup) = args.get_data_and_sketch_group()?;
 
     let new_sketch_group = inner_angled_line_of_y_length(data, sketch_group, args)?;
 
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+    Ok(StdLibFnResponse {
+        memory_item: MemoryItem::SketchGroup(new_sketch_group),
+        engine_id: None,
+    })
 }
 
 /// Draw an angled line of a given y length.
@@ -540,11 +579,15 @@ fn inner_angled_line_of_y_length(
 }
 
 /// Draw an angled line to a given y coordinate.
-pub fn angled_line_to_y(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn angled_line_to_y(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let (data, sketch_group): (AngledLineToData, SketchGroup) = args.get_data_and_sketch_group()?;
 
     let new_sketch_group = inner_angled_line_to_y(data, sketch_group, args)?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+
+    Ok(StdLibFnResponse {
+        memory_item: MemoryItem::SketchGroup(new_sketch_group),
+        engine_id: None,
+    })
 }
 
 /// Draw an angled line to a given y coordinate.
@@ -595,10 +638,14 @@ pub struct AngeledLineThatIntersectsData {
 }
 
 /// Draw an angled line that intersects with a given line.
-pub fn angled_line_that_intersects(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn angled_line_that_intersects(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let (data, sketch_group): (AngeledLineThatIntersectsData, SketchGroup) = args.get_data_and_sketch_group()?;
     let new_sketch_group = inner_angled_line_that_intersects(data, sketch_group, args)?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+
+    Ok(StdLibFnResponse {
+        memory_item: MemoryItem::SketchGroup(new_sketch_group),
+        engine_id: None,
+    })
 }
 
 /// Draw an angled line that intersects with a given line.
@@ -642,11 +689,15 @@ fn inner_angled_line_that_intersects(
 }
 
 /// Start a sketch at a given point.
-pub fn start_sketch_at(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn start_sketch_at(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let data: LineData = args.get_data()?;
 
     let sketch_group = inner_start_sketch_at(data, args)?;
-    Ok(MemoryItem::SketchGroup(sketch_group))
+
+    Ok(StdLibFnResponse {
+        memory_item: MemoryItem::SketchGroup(sketch_group),
+        engine_id: None,
+    })
 }
 
 /// Start a sketch at a given point.
@@ -703,12 +754,15 @@ fn inner_start_sketch_at(data: LineData, args: &mut Args) -> Result<SketchGroup,
 }
 
 /// Close the current sketch.
-pub fn close(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn close(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let sketch_group = args.get_sketch_group()?;
 
     let new_sketch_group = inner_close(sketch_group, args)?;
 
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+    Ok(StdLibFnResponse {
+        memory_item: MemoryItem::SketchGroup(new_sketch_group),
+        engine_id: None,
+    })
 }
 
 /// Close the current sketch.
@@ -793,11 +847,15 @@ pub enum ArcData {
 }
 
 /// Draw an arc.
-pub fn arc(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn arc(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let (data, sketch_group): (ArcData, SketchGroup) = args.get_data_and_sketch_group()?;
 
     let new_sketch_group = inner_arc(data, sketch_group, args)?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+
+    Ok(StdLibFnResponse {
+        memory_item: MemoryItem::SketchGroup(new_sketch_group),
+        engine_id: None,
+    })
 }
 
 /// Draw an arc.
@@ -916,11 +974,15 @@ pub enum BezierData {
 }
 
 /// Draw a bezier curve.
-pub fn bezier_curve(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub fn bezier_curve(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let (data, sketch_group): (BezierData, SketchGroup) = args.get_data_and_sketch_group()?;
 
     let new_sketch_group = inner_bezier_curve(data, sketch_group, args)?;
-    Ok(MemoryItem::SketchGroup(new_sketch_group))
+
+    Ok(StdLibFnResponse {
+        memory_item: MemoryItem::SketchGroup(new_sketch_group),
+        engine_id: None,
+    })
 }
 
 /// Draw a bezier curve.
