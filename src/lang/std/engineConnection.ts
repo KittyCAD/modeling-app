@@ -10,11 +10,16 @@ import { exportSave } from 'lib/exportSave'
 import { v4 as uuidv4 } from 'uuid'
 import * as Sentry from '@sentry/react'
 
-interface ResultCommand {
+interface CommandInfo {
+  commandType: CommandTypes
+  range: SourceRange
+  parentId?: string
+}
+interface ResultCommand extends CommandInfo {
   type: 'result'
   data: any
 }
-interface PendingCommand {
+interface PendingCommand extends CommandInfo {
   type: 'pending'
   promise: Promise<any>
   resolve: (val: any) => void
@@ -483,6 +488,8 @@ export class EngineConnection {
 export type EngineCommand = Models['WebSocketRequest_type']
 type ModelTypes = Models['OkModelingCmdResponse_type']['type']
 
+type CommandTypes = Models['ModelingCmd_type']['type']
+
 type UnreliableResponses = Extract<
   Models['OkModelingCmdResponse_type'],
   { type: 'highlight_set_entity' }
@@ -624,15 +631,22 @@ export class EngineCommandManager {
       const resolve = command.resolve
       this.artifactMap[id] = {
         type: 'result',
+        range: command.range,
+        commandType: command.commandType,
+        parentId: command.parentId ? command.parentId : undefined,
         data: modelingResponse,
       }
       resolve({
         id,
+        commandType: command.commandType,
+        range: command.range,
         data: modelingResponse,
       })
     } else {
       this.artifactMap[id] = {
         type: 'result',
+        commandType: command?.commandType,
+        range: command?.range,
         data: modelingResponse,
       }
     }
@@ -684,8 +698,29 @@ export class EngineCommandManager {
     delete this.unreliableSubscriptions[event][id]
   }
   endSession() {
-    // this.websocket?.close()
-    // socket.off('command')
+    // TODO: instead of sending a single command with `object_ids: Object.keys(this.artifactMap)`
+    // we need to loop over them each individualy because if the engine doesn't recognise a single
+    // id the whole command fails.
+    Object.entries(this.artifactMap).forEach(([id, artifact]) => {
+      const artifactTypesToDelete: ArtifactMap[string]['commandType'][] = [
+        // 'start_path' creates a new scene object for the path, which is why it needs to be deleted,
+        // however all of the segments in the path are its children so there don't need to be deleted.
+        // this fact is very opaque in the api and docs (as to what should can be deleted).
+        // Using an array is the list is likely to grow.
+        'start_path',
+      ]
+      if (!artifactTypesToDelete.includes(artifact.commandType)) return
+
+      const deletCmd: EngineCommand = {
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'remove_scene_objects',
+          object_ids: [id],
+        },
+      }
+      this.engineConnection?.send(deletCmd)
+    })
   }
   cusorsSelected(selections: {
     otherSelections: Selections['otherSelections']
@@ -738,11 +773,20 @@ export class EngineCommandManager {
         JSON.stringify(command)
       )
       return Promise.resolve()
+    } else if (
+      cmd.type === 'mouse_move' &&
+      this.engineConnection.unreliableDataChannel
+    ) {
+      cmd.sequence = this.outSequence
+      this.outSequence++
+      this.engineConnection?.unreliableDataChannel?.send(
+        JSON.stringify(command)
+      )
+      return Promise.resolve()
     }
-    console.log('sending command', command)
     // since it's not mouse drag or highlighting send over TCP and keep track of the command
     this.engineConnection?.send(command)
-    return this.handlePendingCommand(command.cmd_id)
+    return this.handlePendingCommand(command.cmd_id, command.cmd)
   }
   sendModelingCommand({
     id,
@@ -760,15 +804,35 @@ export class EngineCommandManager {
       return Promise.resolve()
     }
     this.engineConnection?.send(command)
-    return this.handlePendingCommand(id)
+    if (typeof command !== 'string' && command.type === 'modeling_cmd_req') {
+      return this.handlePendingCommand(id, command?.cmd, range)
+    } else if (typeof command === 'string') {
+      const parseCommand: EngineCommand = JSON.parse(command)
+      if (parseCommand.type === 'modeling_cmd_req')
+        return this.handlePendingCommand(id, parseCommand?.cmd, range)
+    }
+    throw 'shouldnt reach here'
   }
-  handlePendingCommand(id: string) {
+  handlePendingCommand(
+    id: string,
+    command: Models['ModelingCmd_type'],
+    range?: SourceRange
+  ) {
     let resolve: (val: any) => void = () => {}
     const promise = new Promise((_resolve, reject) => {
       resolve = _resolve
     })
+    const getParentId = (): string | undefined => {
+      if (command.type === 'extend_path') {
+        return command.path
+      }
+      // TODO handle other commands that have a parent
+    }
     this.artifactMap[id] = {
+      range: range || [0, 0],
       type: 'pending',
+      commandType: command.type,
+      parentId: getParentId(),
       promise,
       resolve,
     }
