@@ -769,7 +769,7 @@ impl CallExpression {
         }
 
         match &self.function {
-            Function::StdLib { func } => {
+            Function::StdLib { func, engine_id } => {
                 // Attempt to call the function.
                 let mut args = crate::std::Args::new(fn_args, self.into(), engine);
                 let result = func.std_lib_fn()(&mut args)?;
@@ -848,6 +848,12 @@ pub enum Function {
     StdLib {
         /// The function.
         func: Box<dyn crate::docs::StdLibFn>,
+        /// The id of the entity in the engine.
+        /// We store this so we can modify the engine when we change arguments into this function,
+        /// etc.
+        /// Not all stdlib functions have an engine id.
+        /// Only ones that modify parts of a model.
+        engine_id: Option<String>,
     },
     /// A function that is defined in memory.
     #[default]
@@ -857,7 +863,16 @@ pub enum Function {
 impl PartialEq for Function {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
-            (Function::StdLib { func: func1 }, Function::StdLib { func: func2 }) => func1.name() == func2.name(),
+            (
+                Function::StdLib {
+                    func: func1,
+                    engine_id: engine_id1,
+                },
+                Function::StdLib {
+                    func: func2,
+                    engine_id: engine_id2,
+                },
+            ) => func1.name() == func2.name() && engine_id1 == engine_id2,
             (Function::InMemory, Function::InMemory) => true,
             _ => false,
         }

@@ -1089,7 +1089,11 @@ impl Parser {
         let args = self.make_arguments(brace_token.index, vec![])?;
         let closing_brace_token = self.get_token(args.last_index)?;
         let function = if let Some(stdlib_fn) = self.stdlib.get(&callee.name) {
-            crate::abstract_syntax_tree_types::Function::StdLib { func: stdlib_fn }
+            crate::abstract_syntax_tree_types::Function::StdLib {
+                func: stdlib_fn,
+                // We don't set an engine id here, we do it later.
+                engine_id: None,
+            }
         } else {
             crate::abstract_syntax_tree_types::Function::InMemory
         };

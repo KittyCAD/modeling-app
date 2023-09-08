@@ -594,7 +594,11 @@ pub fn execute(
                         }
                     }
                     let _show_fn = Box::new(crate::std::Show);
-                    if let Function::StdLib { func: _show_fn } = &call_expr.function {
+                    if let Function::StdLib {
+                        func: _show_fn,
+                        engine_id: _,
+                    } = &call_expr.function
+                    {
                         if options != BodyType::Root {
                             return Err(KclError::Semantic(KclErrorDetails {
                                 message: "Cannot call show outside of a root".to_string(),

@@ -488,6 +488,7 @@ mod tests {
     fn test_serialize_function() {
         let some_function = crate::abstract_syntax_tree_types::Function::StdLib {
             func: Box::new(crate::std::sketch::Line),
+            engine_id: None,
         };
         let serialized = serde_json::to_string(&some_function).unwrap();
         assert!(serialized.contains(r#"{"type":"StdLib""#));
@@ -503,6 +504,7 @@ mod tests {
             some_function,
             crate::abstract_syntax_tree_types::Function::StdLib {
                 func: Box::new(crate::std::sketch::Line),
+                engine_id: None,
             }
         );
     }
@@ -517,6 +519,7 @@ mod tests {
             some_function,
             crate::abstract_syntax_tree_types::Function::StdLib {
                 func: Box::new(crate::std::Show),
+                engine_id: None,
             }
         );
     }
