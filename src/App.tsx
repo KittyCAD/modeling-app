@@ -87,7 +87,6 @@ export function App() {
     setEngineCommandManager: s.setEngineCommandManager,
     highlightRange: s.highlightRange,
     setHighlightRange: s.setHighlightRange,
-    isShiftDown: s.isShiftDown,
     setCursor2: s.setCursor2,
     setMediaStream: s.setMediaStream,
     isStreamReady: s.isStreamReady,
