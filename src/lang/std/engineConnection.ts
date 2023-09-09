@@ -194,15 +194,17 @@ export class EngineConnection {
         )
       }
 
-      Promise.all([
-        handshakeSpan.promise,
-        iceSpan.promise,
-        dataChannelSpan.promise,
-        mediaTrackSpan.promise,
-      ]).then(() => {
-        console.log('All spans finished, reporting')
-        webrtcMediaTransaction?.finish()
-      })
+      if (this.shouldTrace()) {
+        Promise.all([
+          handshakeSpan.promise,
+          iceSpan.promise,
+          dataChannelSpan.promise,
+          mediaTrackSpan.promise,
+        ]).then(() => {
+          console.log('All spans finished, reporting')
+          webrtcMediaTransaction?.finish()
+        })
+      }
 
       this.onWebsocketOpen(this)
     })
@@ -303,7 +305,9 @@ export class EngineConnection {
 
         this.pc.addEventListener('connectionstatechange', (event) => {
           if (this.pc?.iceConnectionState === 'connected') {
-            iceSpan.resolve?.()
+            if (this.shouldTrace()) {
+              iceSpan.resolve?.()
+            }
           }
         })
 
