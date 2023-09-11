@@ -2,7 +2,6 @@ import {
   useRef,
   useEffect,
   useLayoutEffect,
-  useMemo,
   useCallback,
   MouseEventHandler,
 } from 'react'
@@ -10,30 +9,20 @@ import { DebugPanel } from './components/DebugPanel'
 import { v4 as uuidv4 } from 'uuid'
 import { asyncParser } from './lang/abstractSyntaxTree'
 import { _executor } from './lang/executor'
-import CodeMirror, { Extension } from '@uiw/react-codemirror'
-import { linter, lintGutter } from '@codemirror/lint'
-import { ViewUpdate, EditorView } from '@codemirror/view'
-import {
-  lineHighlightField,
-  addLineHighlight,
-} from './editor/highlightextension'
-import { PaneType, Selections, useStore } from './useStore'
-import Server from './editor/lsp/server'
-import Client from './editor/lsp/client'
+import { PaneType, useStore } from './useStore'
 import { Logs, KCLErrors } from './components/Logs'
 import { CollapsiblePanel } from './components/CollapsiblePanel'
 import { MemoryPanel } from './components/MemoryPanel'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
 import { Stream } from './components/Stream'
 import ModalContainer from 'react-modal-promise'
-import { FromServer, IntoServer } from './editor/lsp/codec'
 import {
   EngineCommand,
   EngineCommandManager,
 } from './lang/std/engineConnection'
-import { isOverlap, throttle } from './lib/utils'
+import { throttle } from './lib/utils'
 import { AppHeader } from './components/AppHeader'
-import { KCLError, kclErrToDiagnostic } from './lang/errors'
+import { KCLError } from './lang/errors'
 import { Resizable } from 're-resizable'
 import {
   faCode,
@@ -41,57 +30,42 @@ import {
   faSquareRootVariable,
 } from '@fortawesome/free-solid-svg-icons'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { TEST } from './env'
 import { getNormalisedCoordinates } from './lib/utils'
-import { Themes, getSystemTheme } from './lib/theme'
 import { isTauri } from './lib/isTauri'
-import { useLoaderData, useParams } from 'react-router-dom'
-import { writeTextFile } from '@tauri-apps/api/fs'
-import { PROJECT_ENTRYPOINT } from './lib/tauriFS'
+import { useLoaderData } from 'react-router-dom'
 import { IndexLoaderData } from './Router'
-import { toast } from 'react-hot-toast'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { onboardingPaths } from 'routes/Onboarding'
-import { LanguageServerClient } from 'editor/lsp'
-import kclLanguage from 'editor/lsp/language'
-import { CSSRuleObject } from 'tailwindcss/types/config'
 import { cameraMouseDragGuards } from 'lib/cameraControls'
 import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
+import { CodeMenu } from 'components/CodeMenu'
+import { TextEditor } from 'components/TextEditor'
+import { Themes, getSystemTheme } from 'lib/theme'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
-  const pathParams = useParams()
+
   const streamRef = useRef<HTMLDivElement>(null)
   useHotKeyListener()
   const {
-    editorView,
-    setEditorView,
-    setSelectionRanges,
-    selectionRanges,
     addLog,
     addKCLError,
-    code,
     setCode,
     setAst,
     setError,
     setProgramMemory,
     resetLogs,
     resetKCLErrors,
-    selectionRangeTypeMap,
     setArtifactMap,
     engineCommandManager,
     setEngineCommandManager,
     highlightRange,
     setHighlightRange,
     setCursor2,
-    sourceRangeMap,
     setMediaStream,
     setIsStreamReady,
     isStreamReady,
-    isLSPServerReady,
-    setIsLSPServerReady,
     buttonDownInStream,
-    formatCode,
     openPanes,
     setOpenPanes,
     didDragInStream,
@@ -99,40 +73,25 @@ export function App() {
     streamDimensions,
     setIsExecuting,
     defferedCode,
-    defferedSetCode,
   } = useStore((s) => ({
-    editorView: s.editorView,
-    setEditorView: s.setEditorView,
-    setSelectionRanges: s.setSelectionRanges,
-    selectionRanges: s.selectionRanges,
-    setGuiMode: s.setGuiMode,
     addLog: s.addLog,
-    code: s.code,
     defferedCode: s.defferedCode,
     setCode: s.setCode,
-    defferedSetCode: s.defferedSetCode,
     setAst: s.setAst,
     setError: s.setError,
     setProgramMemory: s.setProgramMemory,
     resetLogs: s.resetLogs,
     resetKCLErrors: s.resetKCLErrors,
-    selectionRangeTypeMap: s.selectionRangeTypeMap,
     setArtifactMap: s.setArtifactNSourceRangeMaps,
     engineCommandManager: s.engineCommandManager,
     setEngineCommandManager: s.setEngineCommandManager,
     highlightRange: s.highlightRange,
     setHighlightRange: s.setHighlightRange,
-    isShiftDown: s.isShiftDown,
-    setCursor: s.setCursor,
     setCursor2: s.setCursor2,
-    sourceRangeMap: s.sourceRangeMap,
     setMediaStream: s.setMediaStream,
     isStreamReady: s.isStreamReady,
     setIsStreamReady: s.setIsStreamReady,
-    isLSPServerReady: s.isLSPServerReady,
-    setIsLSPServerReady: s.setIsLSPServerReady,
     buttonDownInStream: s.buttonDownInStream,
-    formatCode: s.formatCode,
     addKCLError: s.addKCLError,
     openPanes: s.openPanes,
     setOpenPanes: s.setOpenPanes,
@@ -147,13 +106,7 @@ export function App() {
       context: { token },
     },
     settings: {
-      context: {
-        showDebugPanel,
-        theme,
-        onboardingStatus,
-        textWrapping,
-        cameraControls,
-      },
+      context: { showDebugPanel, onboardingStatus, cameraControls, theme },
     },
   } = useGlobalStateContext()
 
@@ -194,80 +147,6 @@ export function App() {
     }
   }, [loadedCode, setCode])
 
-  // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
-  const onChange = (value: string, viewUpdate: ViewUpdate) => {
-    defferedSetCode(value)
-    if (isTauri() && pathParams.id) {
-      // Save the file to disk
-      // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
-      writeTextFile(pathParams.id + '/' + PROJECT_ENTRYPOINT, value).catch(
-        (err) => {
-          // TODO: add Sentry per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
-          console.error('error saving file', err)
-          toast.error('Error saving file, please check file permissions')
-        }
-      )
-    }
-    if (editorView) {
-      editorView?.dispatch({ effects: addLineHighlight.of([0, 0]) })
-    }
-  } //, []);
-  const onUpdate = (viewUpdate: ViewUpdate) => {
-    if (!editorView) {
-      setEditorView(viewUpdate.view)
-    }
-    const ranges = viewUpdate.state.selection.ranges
-
-    const isChange =
-      ranges.length !== selectionRanges.codeBasedSelections.length ||
-      ranges.some(({ from, to }, i) => {
-        return (
-          from !== selectionRanges.codeBasedSelections[i].range[0] ||
-          to !== selectionRanges.codeBasedSelections[i].range[1]
-        )
-      })
-
-    if (!isChange) return
-    const codeBasedSelections: Selections['codeBasedSelections'] = ranges.map(
-      ({ from, to }) => {
-        if (selectionRangeTypeMap[to]) {
-          return {
-            type: selectionRangeTypeMap[to],
-            range: [from, to],
-          }
-        }
-        return {
-          type: 'default',
-          range: [from, to],
-        }
-      }
-    )
-    const idBasedSelections = codeBasedSelections
-      .map(({ type, range }) => {
-        const hasOverlap = Object.entries(sourceRangeMap).filter(
-          ([_, sourceRange]) => {
-            return isOverlap(sourceRange, range)
-          }
-        )
-        if (hasOverlap.length) {
-          return {
-            type,
-            id: hasOverlap[0][0],
-          }
-        }
-      })
-      .filter(Boolean) as any
-
-    engineCommandManager?.cusorsSelected({
-      otherSelections: [],
-      idBasedSelections,
-    })
-
-    setSelectionRanges({
-      otherSelections: [],
-      codeBasedSelections,
-    })
-  }
   const streamWidth = streamRef?.current?.offsetWidth
   const streamHeight = streamRef?.current?.offsetHeight
 
@@ -446,64 +325,6 @@ export function App() {
     }
   }
 
-  // So this is a bit weird, we need to initialize the lsp server and client.
-  // But the server happens async so we break this into two parts.
-  // Below is the client and server promise.
-  const { lspClient } = useMemo(() => {
-    const intoServer: IntoServer = new IntoServer()
-    const fromServer: FromServer = FromServer.create()
-    const client = new Client(fromServer, intoServer)
-    if (!TEST) {
-      Server.initialize(intoServer, fromServer).then((lspServer) => {
-        lspServer.start()
-        setIsLSPServerReady(true)
-      })
-    }
-
-    const lspClient = new LanguageServerClient({ client })
-    return { lspClient }
-  }, [setIsLSPServerReady])
-
-  // Here we initialize the plugin which will start the client.
-  // When we have multi-file support the name of the file will be a dep of
-  // this use memo, as well as the directory structure, which I think is
-  // a good setup becuase it will restart the client but not the server :)
-  // We do not want to restart the server, its just wasteful.
-  const kclLSP = useMemo(() => {
-    let plugin = null
-    if (isLSPServerReady && !TEST) {
-      // Set up the lsp plugin.
-      const lsp = kclLanguage({
-        // When we have more than one file, we'll need to change this.
-        documentUri: `file:///we-just-have-one-file-for-now.kcl`,
-        workspaceFolders: null,
-        client: lspClient,
-      })
-
-      plugin = lsp
-    }
-    return plugin
-  }, [lspClient, isLSPServerReady])
-
-  const editorExtensions = useMemo(() => {
-    const extensions = [lineHighlightField] as Extension[]
-
-    if (kclLSP) extensions.push(kclLSP)
-
-    // These extensions have proven to mess with vitest
-    if (!TEST) {
-      extensions.push(
-        lintGutter(),
-        linter((_view) => {
-          return kclErrToDiagnostic(useStore.getState().kclErrors)
-        })
-      )
-      if (textWrapping === 'On') extensions.push(EditorView.lineWrapping)
-    }
-
-    return extensions
-  }, [kclLSP, textWrapping])
-
   return (
     <div
       className="h-screen overflow-hidden relative flex flex-col cursor-pointer select-none"
@@ -547,31 +368,9 @@ export function App() {
             icon={faCode}
             className="open:!mb-2"
             open={openPanes.includes('code')}
+            menu={<CodeMenu />}
           >
-            <div className="px-2 py-1">
-              <button
-                // disabled={!shouldFormat}
-                onClick={formatCode}
-                // className={`${!shouldFormat && 'text-gray-300'}`}
-              >
-                format
-              </button>
-            </div>
-            <div
-              id="code-mirror-override"
-              className="full-height-subtract"
-              style={{ '--height-subtract': '4.25rem' } as CSSRuleObject}
-            >
-              <CodeMirror
-                className="h-full"
-                value={code}
-                extensions={editorExtensions}
-                onChange={onChange}
-                onUpdate={onUpdate}
-                theme={editorTheme}
-                onCreateEditor={(_editorView) => setEditorView(_editorView)}
-              />
-            </div>
+            <TextEditor theme={editorTheme} />
           </CollapsiblePanel>
           <section className="flex flex-col">
             <MemoryPanel
