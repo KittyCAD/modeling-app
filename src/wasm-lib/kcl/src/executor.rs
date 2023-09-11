@@ -729,7 +729,8 @@ pub fn execute(
                     let result = pipe_expr.get_result(memory, &mut pipe_info, engine)?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
-                _ => {}
+                Value::PipeSubstitution(_) => {}
+                Value::FunctionExpression(_) => {}
             },
         }
     }
