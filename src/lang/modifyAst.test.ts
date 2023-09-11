@@ -179,7 +179,10 @@ describe('Testing moveValueIntoNewVariable', () => {
   return x
 }
 `
-  const code = `${fn('def')}${fn('ghi')}${fn('jkl')}${fn('hmm')}
+  const code = `${fn('def')}${fn('jkl')}${fn('hmm')}
+fn ghi = (x) => {
+    return 2
+}
 const abc = 3
 const identifierGuy = 5
 const yo = 5 + 6
