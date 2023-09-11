@@ -1,7 +1,7 @@
 const noModifiersPressed = (e: React.MouseEvent) =>
   !e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey
 
-export type CADProgram =
+export type CameraSystem =
   | 'KittyCAD'
   | 'OnShape'
   | 'Solidworks'
@@ -9,7 +9,7 @@ export type CADProgram =
   | 'Creo'
   | 'AutoCAD'
 
-export const cadPrograms: CADProgram[] = [
+export const cameraSystems: CameraSystem[] = [
   'KittyCAD',
   'OnShape',
   'Solidworks',
@@ -35,7 +35,7 @@ interface MouseGuard {
   rotate: MouseGuardHandler
 }
 
-export const cameraMouseDragGuards: Record<CADProgram, MouseGuard> = {
+export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
   KittyCAD: {
     pan: {
       description: 'Right click + Shift + drag or middle click + drag',
