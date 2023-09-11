@@ -717,6 +717,10 @@ pub fn execute(
                     let result = obj_expr.execute(memory, &mut pipe_info, engine)?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
+                Value::CallExpression(call_expr) => {
+                    let result = call_expr.execute(memory, &mut pipe_info, engine)?;
+                    memory.return_ = Some(ProgramReturn::Value(result));
+                }
                 _ => {}
             },
         }
@@ -932,6 +936,32 @@ const firstExtrude = startSketchAt([0,0])
   |> line([0, l], %)
   |> line([w, 0], %)
   |> line(thing(8), %)
+  |> close(%)
+  |> extrude(h, %)
+
+show(firstExtrude)"#;
+
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_with_function_call_in_pipe() {
+        let ast = r#"const w = 20
+const l = 8
+const h = 10
+
+fn other_thing = (y) => {
+  return -y
+}
+
+fn thing = (x) => {
+  return other_thing(x)
+}
+
+const firstExtrude = startSketchAt([0,0])
+  |> line([0, l], %)
+  |> line([w, 0], %)
+  |> line([0, thing(8)], %)
   |> close(%)
   |> extrude(h, %)
 
