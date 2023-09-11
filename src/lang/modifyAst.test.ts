@@ -188,9 +188,8 @@ const part001 = startSketchAt([-1.2, 4.83])
 |> angledLine([100 + 100, 3.09], %)
 |> angledLine([abc, 3.09], %)
 |> angledLine([def(yo), 3.09], %)
-|> angledLine([ghi(2), 3.09], %)
+|> angledLine([ghi(%), 3.09], %)
 |> angledLine([jkl(yo) + 2, 3.09], %)
-
 const yo2 = hmm([identifierGuy + 5])
 show(part001)`
   it('should move a binary expression into a new variable', async () => {
