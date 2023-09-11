@@ -40,7 +40,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
     pan: {
       description: 'Right click + Shift + drag or middle click + drag',
       callback: (e) =>
-        (e.button === 3 && noModifiersPressed(e)) ||
+        (e.button === 1 && noModifiersPressed(e)) ||
         (e.button === 2 && e.shiftKey),
     },
     zoom: {
@@ -58,7 +58,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
       description: 'Right click + Ctrl + drag or middle click + drag',
       callback: (e) =>
         (e.button === 2 && e.ctrlKey) ||
-        (e.button === 3 && noModifiersPressed(e)),
+        (e.button === 1 && noModifiersPressed(e)),
     },
     zoom: {
       description: 'Scroll wheel',
@@ -77,48 +77,48 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
     },
     zoom: {
       description: 'Scroll wheel or Middle click + Shift + drag',
-      dragCallback: (e) => e.button === 3 && e.shiftKey,
+      dragCallback: (e) => e.button === 1 && e.shiftKey,
       scrollCallback: () => true,
     },
     rotate: {
       description: 'Middle click + drag',
-      callback: (e) => e.button === 3 && noModifiersPressed(e),
+      callback: (e) => e.button === 1 && noModifiersPressed(e),
     },
   },
   NX: {
     pan: {
       description: 'Middle click + Shift + drag',
-      callback: (e) => e.button === 3 && e.shiftKey,
+      callback: (e) => e.button === 1 && e.shiftKey,
     },
     zoom: {
       description: 'Scroll wheel or Middle click + Ctrl + drag',
-      dragCallback: (e) => e.button === 3 && e.ctrlKey,
+      dragCallback: (e) => e.button === 1 && e.ctrlKey,
       scrollCallback: () => true,
     },
     rotate: {
       description: 'Middle click + drag',
-      callback: (e) => e.button === 3 && noModifiersPressed(e),
+      callback: (e) => e.button === 1 && noModifiersPressed(e),
     },
   },
   Creo: {
     pan: {
       description: 'Middle click + Shift + drag',
-      callback: (e) => e.button === 3 && e.shiftKey,
+      callback: (e) => e.button === 1 && e.shiftKey,
     },
     zoom: {
       description: 'Scroll wheel or Middle click + Ctrl + drag',
-      dragCallback: (e) => e.button === 3 && e.ctrlKey,
+      dragCallback: (e) => e.button === 1 && e.ctrlKey,
       scrollCallback: () => true,
     },
     rotate: {
       description: 'Middle click + drag',
-      callback: (e) => e.button === 3 && noModifiersPressed(e),
+      callback: (e) => e.button === 1 && noModifiersPressed(e),
     },
   },
   AutoCAD: {
     pan: {
       description: 'Middle click + drag',
-      callback: (e) => e.button === 3 && noModifiersPressed(e),
+      callback: (e) => e.button === 1 && noModifiersPressed(e),
     },
     zoom: {
       description: 'Scroll wheel',
@@ -127,7 +127,7 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
     },
     rotate: {
       description: 'Middle click + Shift + drag',
-      callback: (e) => e.button === 3 && e.shiftKey,
+      callback: (e) => e.button === 1 && e.shiftKey,
     },
   },
 }
