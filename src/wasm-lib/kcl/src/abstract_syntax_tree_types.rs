@@ -780,7 +780,7 @@ impl CallExpression {
             Function::InMemory => {
                 let mem = memory.clone();
                 let func = mem.get(&fn_name, self.into())?;
-                let result = func.call_fn(&fn_args, memory, engine)?.ok_or_else(|| {
+                let result = func.call_fn(&fn_args, &mem, engine)?.ok_or_else(|| {
                     KclError::UndefinedValue(KclErrorDetails {
                         message: format!("Result of function {} is undefined", fn_name),
                         source_ranges: vec![self.into()],

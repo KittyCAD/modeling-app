@@ -595,7 +595,9 @@ pub fn execute(
 
                         memory.return_ = Some(ProgramReturn::Arguments(call_expr.arguments.clone()));
                     } else if let Some(func) = memory.clone().root.get(&fn_name) {
-                        func.call_fn(&args, memory, engine)?;
+                        let result = func.call_fn(&args, memory, engine)?;
+
+                        memory.return_ = result;
                     } else {
                         return Err(KclError::Semantic(KclErrorDetails {
                             message: format!("No such name {} defined", fn_name),
@@ -700,7 +702,10 @@ pub fn execute(
                     let value = memory.get(&identifier.name, identifier.into())?.clone();
                     memory.return_ = Some(ProgramReturn::Value(value));
                 }
-                _ => (),
+                Value::Literal(literal) => {
+                    memory.return_ = Some(ProgramReturn::Value(literal.into()));
+                }
+                _ => {}
             },
         }
     }
