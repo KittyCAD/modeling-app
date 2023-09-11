@@ -978,4 +978,24 @@ show(firstExtrude)"#;
 
         parse_execute(ast).await.unwrap();
     }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_with_function_sketch() {
+        let ast = r#"const box = (h, l, w) => {
+ const myBox = startSketchAt([0,0])
+    |> line([0, l], %)
+    |> line([w, 0], %)
+    |> line([0, -l], %)
+    |> close(%)
+    |> extrude(h, %)
+
+  return myBox
+}
+
+const fnBox = box(3, 6, 10)
+
+show(fnBox)"#;
+
+        parse_execute(ast).await.unwrap();
+    }
 }
