@@ -698,6 +698,10 @@ pub fn execute(
                     let result = bin_expr.get_result(memory, &mut pipe_info, engine)?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
+                Value::UnaryExpression(unary_expr) => {
+                    let result = unary_expr.get_result(memory, &mut pipe_info, engine)?;
+                    memory.return_ = Some(ProgramReturn::Value(result));
+                }
                 Value::Identifier(identifier) => {
                     let value = memory.get(&identifier.name, identifier.into())?.clone();
                     memory.return_ = Some(ProgramReturn::Value(value));
@@ -858,6 +862,50 @@ const part001 = startSketchAt([0, 0])
 const variableBelowShouldNotBeIncluded = 3
 
 show(part001)"#;
+
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_with_function_literal_in_pipe() {
+        let ast = r#"const w = 20
+const l = 8
+const h = 10
+
+fn thing = () => {
+  return -8
+}
+
+const firstExtrude = startSketchAt([0,0])
+  |> line([0, l], %)
+  |> line([w, 0], %)
+  |> line([0, thing()], %)
+  |> close(%)
+  |> extrude(h, %)
+
+show(firstExtrude)"#;
+
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_with_function_unary_in_pipe() {
+        let ast = r#"const w = 20
+const l = 8
+const h = 10
+
+fn thing = (x) => {
+  return -x
+}
+
+const firstExtrude = startSketchAt([0,0])
+  |> line([0, l], %)
+  |> line([w, 0], %)
+  |> line([0, thing(8)], %)
+  |> close(%)
+  |> extrude(h, %)
+
+show(firstExtrude)"#;
 
         parse_execute(ast).await.unwrap();
     }
