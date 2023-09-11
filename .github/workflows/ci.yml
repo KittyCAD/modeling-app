@@ -162,7 +162,7 @@ jobs:
           ls -l artifact/*/*itty*
           DARWIN_SIG=`cat artifact/macos/*.app.tar.gz.sig`
           LINUX_SIG=`cat artifact/appimage/*.AppImage.tar.gz.sig`
-          WINDOWS_SIG=`cat artifact/nsis/*.nsis.zip.sig`
+          WINDOWS_SIG=`cat artifact/msi/*.msi.zip.sig`
           RELEASE_DIR=https://dl.kittycad.io/releases/modeling-app/v${VERSION_NO_V}
           jq --null-input \
             --arg version "v${VERSION_NO_V}" \
@@ -171,7 +171,7 @@ jobs:
             --arg linux_sig "$LINUX_SIG" \
             --arg linux_url "$RELEASE_DIR/appimage/kittycad-modeling_${VERSION_NO_V}_amd64.AppImage.tar.gz" \
             --arg windows_sig "$WINDOWS_SIG" \
-            --arg windows_url "$RELEASE_DIR/nsis/KittyCAD%20Modeling_${VERSION_NO_V}_x64-setup.nsis.zip" \
+            --arg windows_url "$RELEASE_DIR/msi/KittyCAD%20Modeling_${VERSION_NO_V}_x64_en-US.msi.zip" \
             '{
               "version": $version,
               "platforms": {
