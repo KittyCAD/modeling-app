@@ -1681,10 +1681,20 @@ impl BinaryExpression {
         pipe_info: &mut PipeInfo,
         engine: &mut EngineConnection,
     ) -> Result<MemoryItem, KclError> {
-        pipe_info.is_in_pipe = false;
+        // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
+        // stop the execution of the pipe.
+        // THIS IS IMPORTANT.
+        let mut new_pipe_info = pipe_info.clone();
+        new_pipe_info.is_in_pipe = false;
 
-        let left_json_value = self.left.get_result(memory, pipe_info, engine)?.get_json_value()?;
-        let right_json_value = self.right.get_result(memory, pipe_info, engine)?.get_json_value()?;
+        let left_json_value = self
+            .left
+            .get_result(memory, &mut new_pipe_info, engine)?
+            .get_json_value()?;
+        let right_json_value = self
+            .right
+            .get_result(memory, &mut new_pipe_info, engine)?
+            .get_json_value()?;
 
         // First check if we are doing string concatenation.
         if self.operator == BinaryOperator::Add {
