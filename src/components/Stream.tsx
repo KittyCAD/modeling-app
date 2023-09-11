@@ -93,7 +93,6 @@ export const Stream = ({ className = '' }) => {
   const handleScroll: WheelEventHandler<HTMLVideoElement> = (e) => {
     if (!cameraMouseDragGuards[cameraControls].zoom.scrollCallback(e)) return
 
-    e.preventDefault()
     engineCommandManager?.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd: {
@@ -130,7 +129,7 @@ export const Stream = ({ className = '' }) => {
       cmd_id: newCmdId,
     })
 
-    setButtonDownInStream(0)
+    setButtonDownInStream(undefined)
     if (!didDragInStream) {
       engineCommandManager?.sendSceneCommand({
         type: 'modeling_cmd_req',

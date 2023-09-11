@@ -409,7 +409,7 @@ export function App() {
 
     const newCmdId = uuidv4()
 
-    if (buttonDownInStream) {
+    if (buttonDownInStream !== undefined) {
       const interactionGuards = cameraMouseDragGuards[cameraControls]
       let interaction: CameraDragInteractionType_type
 
@@ -424,6 +424,7 @@ export function App() {
       } else {
         return
       }
+
       debounceSocketSend({
         type: 'modeling_cmd_req',
         cmd: {

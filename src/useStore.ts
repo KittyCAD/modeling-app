@@ -160,8 +160,8 @@ export interface StoreState {
   setIsStreamReady: (isStreamReady: boolean) => void
   isLSPServerReady: boolean
   setIsLSPServerReady: (isLSPServerReady: boolean) => void
-  buttonDownInStream: number
-  setButtonDownInStream: (buttonDownInStream: number) => void
+  buttonDownInStream: number | undefined
+  setButtonDownInStream: (buttonDownInStream: number | undefined) => void
   didDragInStream: boolean
   setDidDragInStream: (didDragInStream: boolean) => void
   fileId: string
@@ -356,7 +356,7 @@ export const useStore = create<StoreState>()(
         setIsStreamReady: (isStreamReady) => set({ isStreamReady }),
         isLSPServerReady: false,
         setIsLSPServerReady: (isLSPServerReady) => set({ isLSPServerReady }),
-        buttonDownInStream: 0,
+        buttonDownInStream: undefined,
         setButtonDownInStream: (buttonDownInStream) => {
           set({ buttonDownInStream })
         },
