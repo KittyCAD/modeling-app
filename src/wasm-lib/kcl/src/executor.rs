@@ -721,6 +721,14 @@ pub fn execute(
                     let result = call_expr.execute(memory, &mut pipe_info, engine)?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
+                Value::MemberExpression(member_expr) => {
+                    let result = member_expr.get_result(memory)?;
+                    memory.return_ = Some(ProgramReturn::Value(result));
+                }
+                Value::PipeExpression(pipe_expr) => {
+                    let result = pipe_expr.get_result(memory, &mut pipe_info, engine)?;
+                    memory.return_ = Some(ProgramReturn::Value(result));
+                }
                 _ => {}
             },
         }
