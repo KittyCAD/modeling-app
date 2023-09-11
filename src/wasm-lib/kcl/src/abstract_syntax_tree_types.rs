@@ -500,6 +500,9 @@ impl BinaryPart {
         pipe_info: &mut PipeInfo,
         engine: &mut EngineConnection,
     ) -> Result<MemoryItem, KclError> {
+        // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
+        // stop the execution of the pipe.
+        // THIS IS IMPORTANT.
         let mut new_pipe_info = pipe_info.clone();
         new_pipe_info.is_in_pipe = false;
 
@@ -1807,6 +1810,9 @@ impl UnaryExpression {
         pipe_info: &mut PipeInfo,
         engine: &mut EngineConnection,
     ) -> Result<MemoryItem, KclError> {
+        // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
+        // stop the execution of the pipe.
+        // THIS IS IMPORTANT.
         let mut new_pipe_info = pipe_info.clone();
         new_pipe_info.is_in_pipe = false;
 
