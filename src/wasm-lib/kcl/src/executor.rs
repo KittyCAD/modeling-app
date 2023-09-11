@@ -595,7 +595,9 @@ pub fn execute(
 
                         memory.return_ = Some(ProgramReturn::Arguments(call_expr.arguments.clone()));
                     } else if let Some(func) = memory.clone().root.get(&fn_name) {
-                        func.call_fn(&args, memory, engine)?;
+                        let result = func.call_fn(&args, memory, engine)?;
+
+                        memory.return_ = result;
                     } else {
                         return Err(KclError::Semantic(KclErrorDetails {
                             message: format!("No such name {} defined", fn_name),
@@ -696,11 +698,39 @@ pub fn execute(
                     let result = bin_expr.get_result(memory, &mut pipe_info, engine)?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
+                Value::UnaryExpression(unary_expr) => {
+                    let result = unary_expr.get_result(memory, &mut pipe_info, engine)?;
+                    memory.return_ = Some(ProgramReturn::Value(result));
+                }
                 Value::Identifier(identifier) => {
                     let value = memory.get(&identifier.name, identifier.into())?.clone();
                     memory.return_ = Some(ProgramReturn::Value(value));
                 }
-                _ => (),
+                Value::Literal(literal) => {
+                    memory.return_ = Some(ProgramReturn::Value(literal.into()));
+                }
+                Value::ArrayExpression(array_expr) => {
+                    let result = array_expr.execute(memory, &mut pipe_info, engine)?;
+                    memory.return_ = Some(ProgramReturn::Value(result));
+                }
+                Value::ObjectExpression(obj_expr) => {
+                    let result = obj_expr.execute(memory, &mut pipe_info, engine)?;
+                    memory.return_ = Some(ProgramReturn::Value(result));
+                }
+                Value::CallExpression(call_expr) => {
+                    let result = call_expr.execute(memory, &mut pipe_info, engine)?;
+                    memory.return_ = Some(ProgramReturn::Value(result));
+                }
+                Value::MemberExpression(member_expr) => {
+                    let result = member_expr.get_result(memory)?;
+                    memory.return_ = Some(ProgramReturn::Value(result));
+                }
+                Value::PipeExpression(pipe_expr) => {
+                    let result = pipe_expr.get_result(memory, &mut pipe_info, engine)?;
+                    memory.return_ = Some(ProgramReturn::Value(result));
+                }
+                Value::PipeSubstitution(_) => {}
+                Value::FunctionExpression(_) => {}
             },
         }
     }
@@ -853,6 +883,118 @@ const part001 = startSketchAt([0, 0])
 const variableBelowShouldNotBeIncluded = 3
 
 show(part001)"#;
+
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_with_function_literal_in_pipe() {
+        let ast = r#"const w = 20
+const l = 8
+const h = 10
+
+fn thing = () => {
+  return -8
+}
+
+const firstExtrude = startSketchAt([0,0])
+  |> line([0, l], %)
+  |> line([w, 0], %)
+  |> line([0, thing()], %)
+  |> close(%)
+  |> extrude(h, %)
+
+show(firstExtrude)"#;
+
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_with_function_unary_in_pipe() {
+        let ast = r#"const w = 20
+const l = 8
+const h = 10
+
+fn thing = (x) => {
+  return -x
+}
+
+const firstExtrude = startSketchAt([0,0])
+  |> line([0, l], %)
+  |> line([w, 0], %)
+  |> line([0, thing(8)], %)
+  |> close(%)
+  |> extrude(h, %)
+
+show(firstExtrude)"#;
+
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_with_function_array_in_pipe() {
+        let ast = r#"const w = 20
+const l = 8
+const h = 10
+
+fn thing = (x) => {
+  return [0, -x]
+}
+
+const firstExtrude = startSketchAt([0,0])
+  |> line([0, l], %)
+  |> line([w, 0], %)
+  |> line(thing(8), %)
+  |> close(%)
+  |> extrude(h, %)
+
+show(firstExtrude)"#;
+
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_with_function_call_in_pipe() {
+        let ast = r#"const w = 20
+const l = 8
+const h = 10
+
+fn other_thing = (y) => {
+  return -y
+}
+
+fn thing = (x) => {
+  return other_thing(x)
+}
+
+const firstExtrude = startSketchAt([0,0])
+  |> line([0, l], %)
+  |> line([w, 0], %)
+  |> line([0, thing(8)], %)
+  |> close(%)
+  |> extrude(h, %)
+
+show(firstExtrude)"#;
+
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_with_function_sketch() {
+        let ast = r#"const box = (h, l, w) => {
+ const myBox = startSketchAt([0,0])
+    |> line([0, l], %)
+    |> line([w, 0], %)
+    |> line([0, -l], %)
+    |> close(%)
+    |> extrude(h, %)
+
+  return myBox
+}
+
+const fnBox = box(3, 6, 10)
+
+show(fnBox)"#;
 
         parse_execute(ast).await.unwrap();
     }
