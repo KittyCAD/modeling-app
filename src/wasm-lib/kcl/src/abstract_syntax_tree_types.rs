@@ -1206,8 +1206,12 @@ impl ArrayExpression {
                     binary_expression.get_result(memory, pipe_info, engine)?
                 }
                 Value::CallExpression(call_expression) => {
-                    pipe_info.is_in_pipe = false;
-                    call_expression.execute(memory, pipe_info, engine)?
+                    // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
+                    // stop the execution of the pipe.
+                    // THIS IS IMPORTANT.
+                    let mut new_pipe_info = pipe_info.clone();
+                    new_pipe_info.is_in_pipe = false;
+                    call_expression.execute(memory, &mut new_pipe_info, engine)?
                 }
                 Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, engine)?,
                 Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, engine)?,
@@ -1328,8 +1332,12 @@ impl ObjectExpression {
                     binary_expression.get_result(memory, pipe_info, engine)?
                 }
                 Value::CallExpression(call_expression) => {
-                    pipe_info.is_in_pipe = false;
-                    call_expression.execute(memory, pipe_info, engine)?
+                    // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
+                    // stop the execution of the pipe.
+                    // THIS IS IMPORTANT.
+                    let mut new_pipe_info = pipe_info.clone();
+                    new_pipe_info.is_in_pipe = false;
+                    call_expression.execute(memory, &mut new_pipe_info, engine)?
                 }
                 Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, engine)?,
                 Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, engine)?,
