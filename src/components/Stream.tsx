@@ -66,11 +66,20 @@ export const Stream = ({ className = '' }) => {
     const interactionGuards = cameraMouseDragGuards[cameraControls]
     let interaction: CameraDragInteractionType_type
 
-    if (interactionGuards.pan.callback(e)) {
+    if (
+      interactionGuards.pan.callback(e) ||
+      interactionGuards.pan.lenientDragStartButton === e.button
+    ) {
       interaction = 'pan'
-    } else if (interactionGuards.rotate.callback(e)) {
+    } else if (
+      interactionGuards.rotate.callback(e) ||
+      interactionGuards.rotate.lenientDragStartButton === e.button
+    ) {
       interaction = 'rotate'
-    } else if (interactionGuards.zoom.dragCallback(e)) {
+    } else if (
+      interactionGuards.zoom.dragCallback(e) ||
+      interactionGuards.zoom.lenientDragStartButton === e.button
+    ) {
       interaction = 'zoom'
     } else {
       return

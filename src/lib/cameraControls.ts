@@ -23,12 +23,14 @@ export const cameraSystems: CameraSystem[] = [
 interface MouseGuardHandler {
   description: string
   callback: (e: React.MouseEvent) => boolean
+  lenientDragStartButton?: number
 }
 
 interface MouseGuardZoomHandler {
   description: string
   dragCallback: (e: React.MouseEvent) => boolean
   scrollCallback: (e: React.MouseEvent) => boolean
+  lenientDragStartButton?: number
 }
 
 interface MouseGuard {
@@ -87,12 +89,14 @@ export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
     rotate: {
       description: 'Left click + Alt + drag',
       callback: (e) => e.button === 0 && e.altKey && !e.shiftKey && !e.metaKey,
+      lenientDragStartButton: 0,
     },
   },
   Solidworks: {
     pan: {
       description: 'Right click + Ctrl + drag',
       callback: (e) => e.button === 2 && e.ctrlKey,
+      lenientDragStartButton: 2,
     },
     zoom: {
       description: 'Scroll wheel or Middle click + Shift + drag',
