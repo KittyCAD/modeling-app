@@ -1,7 +1,7 @@
 import { assign, createMachine } from 'xstate'
 import { CommandBarMeta } from '../lib/commands'
 import { Themes, getSystemTheme, setThemeClass } from '../lib/theme'
-import { CADProgram, cadPrograms } from 'lib/cameraControls'
+import { CameraSystem, cameraSystems } from 'lib/cameraControls'
 
 export const DEFAULT_PROJECT_NAME = 'project-$nnn'
 
@@ -42,7 +42,7 @@ export const settingsCommandBarMeta: CommandBarMeta = {
         name: 'cameraControls',
         type: 'select',
         defaultValue: 'cameraControls',
-        options: Object.values(cadPrograms).map((v) => ({ name: v })),
+        options: Object.values(cameraSystems).map((v) => ({ name: v })),
       },
     ],
   },
@@ -109,7 +109,7 @@ export const settingsMachine = createMachine(
     predictableActionArguments: true,
     context: {
       baseUnit: 'in' as BaseUnit,
-      cameraControls: 'KittyCAD' as CADProgram,
+      cameraControls: 'KittyCAD' as CameraSystem,
       defaultDirectory: '',
       defaultProjectName: DEFAULT_PROJECT_NAME,
       onboardingStatus: '',
@@ -232,7 +232,10 @@ export const settingsMachine = createMachine(
     schema: {
       events: {} as
         | { type: 'Set Base Unit'; data: { baseUnit: BaseUnit } }
-        | { type: 'Set Camera Controls'; data: { cameraControls: CADProgram } }
+        | {
+            type: 'Set Camera Controls'
+            data: { cameraControls: CameraSystem }
+          }
         | { type: 'Set Default Directory'; data: { defaultDirectory: string } }
         | {
             type: 'Set Default Project Name'
