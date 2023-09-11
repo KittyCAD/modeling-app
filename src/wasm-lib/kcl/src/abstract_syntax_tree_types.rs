@@ -2016,6 +2016,9 @@ impl_value_meta!(FunctionExpression);
 
 impl FunctionExpression {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
+        // We don't want to end with a new line inside nested functions.
+        let mut new_options = options.clone();
+        new_options.insert_final_newline = false;
         format!(
             "({}) => {{\n{}{}\n}}",
             self.params
@@ -2024,7 +2027,7 @@ impl FunctionExpression {
                 .collect::<Vec<String>>()
                 .join(", "),
             options.get_indentation(indentation_level + 1),
-            self.body.recast(options, indentation_level + 1)
+            self.body.recast(&new_options, indentation_level + 1)
         )
     }
 
@@ -2092,7 +2095,7 @@ impl FormatOptions {
         Self {
             tab_size: 2,
             use_tabs: false,
-            insert_final_newline: false,
+            insert_final_newline: true,
         }
     }
 
@@ -2163,7 +2166,8 @@ show(part001)"#;
             r#"const part001 = startSketchAt('default')
   |> ry(90, %)
   |> line('default', %)
-show(part001)"#
+show(part001)
+"#
         );
     }
 
@@ -2181,7 +2185,8 @@ show(part001)"#
             recasted,
             r#"const part001 = startSketchAt([0.0, 5.0])
   |> line([0.4900857016, -0.0240763666], %)
-  |> line([0.6804562304, 0.9087880491], %)"#
+  |> line([0.6804562304, 0.9087880491], %)
+"#
         );
     }
 
@@ -2199,7 +2204,8 @@ show(part001)"#
             recasted,
             r#"const part001 = startSketchAt([0.0, 5.0])
   |> line([0.4900857016, -0.0240763666], %) // hello world
-  |> line([0.6804562304, 0.9087880491], %)"#
+  |> line([0.6804562304, 0.9087880491], %)
+"#
         );
     }
     #[test]
@@ -2218,7 +2224,8 @@ show(part001)"#
             r#"const part001 = startSketchAt([0.0, 5.0])
   |> line([0.4900857016, -0.0240763666], %)
   // hello world
-  |> line([0.6804562304, 0.9087880491], %)"#
+  |> line([0.6804562304, 0.9087880491], %)
+"#
         );
     }
 
@@ -2248,7 +2255,8 @@ show(part001)"#
   const key = 'c'
   // this is also a comment
   return things
-}"#
+}
+"#
         );
     }
 
@@ -2290,7 +2298,8 @@ a comment between pipe expression statements */
   // and another with just white space between others below
   |> ry(45, %)
   |> rx(45, %)
-// one more for good measure"#
+// one more for good measure
+"#
         );
     }
 
@@ -2312,7 +2321,7 @@ show(part001)"#;
         let program = parser.ast().unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
-        assert_eq!(recasted, some_program_string);
+        assert_eq!(recasted.trim(), some_program_string);
     }
 
     #[test]
@@ -2331,7 +2340,8 @@ const yo = [
   "three",
   4 + 5,
   "  hey oooooo really long long long"
-]"#;
+]
+"#;
         let tokens = crate::tokeniser::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
@@ -2355,7 +2365,7 @@ const things = "things"
         let program = parser.ast().unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
-        assert_eq!(recasted, some_program_string.trim());
+        assert_eq!(recasted.trim(), some_program_string.trim());
     }
 
     #[test]
@@ -2373,7 +2383,7 @@ const things = "things"
         let program = parser.ast().unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
-        assert_eq!(recasted, some_program_string.trim());
+        assert_eq!(recasted.trim(), some_program_string.trim());
     }
 
     #[test]
@@ -2398,7 +2408,7 @@ const part001 = startSketchAt([0, 0])
         let program = parser.ast().unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
-        assert_eq!(recasted, some_program_string);
+        assert_eq!(recasted.trim(), some_program_string);
     }
 
     #[test]
@@ -2471,7 +2481,8 @@ fn ghi = (part001) => {
   return part001
 }
 
-show(mySuperCoolPart)"#
+show(mySuperCoolPart)
+"#
         );
     }
 
@@ -2490,7 +2501,8 @@ show(mySuperCoolPart)"#
             recasted,
             r#"fn ghi = (newName, y, z) => {
   return newName
-}"#
+}
+"#
         );
     }
 
@@ -2526,7 +2538,8 @@ const firstExtrude = startSketchAt([0, 0])
   |> close(%)
   |> extrude(h, %)
 
-show(firstExtrude)"#
+show(firstExtrude)
+"#
         );
     }
 }
