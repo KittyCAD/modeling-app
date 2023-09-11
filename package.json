@@ -10,7 +10,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@headlessui/react": "^1.7.13",
     "@headlessui/tailwindcss": "^0.2.0",
-    "@kittycad/lib": "^0.0.36",
+    "@kittycad/lib": "^0.0.37",
     "@lezer/javascript": "^1.4.7",
     "@open-rpc/client-js": "^1.8.1",
     "@react-hook/resize-observer": "^1.2.6",
@@ -70,7 +70,7 @@
     "fmt": "prettier --write ./src",
     "fmt-check": "prettier --check ./src",
     "build:wasm": "yarn wasm-prep && (cd src/wasm-lib && wasm-pack build --target web --out-dir pkg && cargo test -p kcl-lib export_bindings) && cp src/wasm-lib/pkg/wasm_lib_bg.wasm public && yarn fmt && yarn remove-importmeta",
-    "remove-importmeta": "sed -i 's/import.meta.url//g' \"./src/wasm-lib/pkg/wasm_lib.js\"; sed -i '' 's/import.meta.url//g' \"./src/wasm-lib/pkg/wasm_lib.js\" || echo \"sed for both mac and linux\"",
+    "remove-importmeta": "sed -i 's/import.meta.url/window.location.origin/g' \"./src/wasm-lib/pkg/wasm_lib.js\"; sed -i '' 's/import.meta.url/window.location.origin/g' \"./src/wasm-lib/pkg/wasm_lib.js\" || echo \"sed for both mac and linux\"",
     "wasm-prep": "rm -rf src/wasm-lib/pkg && mkdir src/wasm-lib/pkg && rm -rf src/wasm-lib/kcl/bindings",
     "lint": "eslint --fix src",
     "bump-jsons": "echo \"$(jq --arg v \"$VERSION\" '.version=$v' package.json --indent 2)\" > package.json && echo \"$(jq --arg v \"$VERSION\" '.package.version=$v' src-tauri/tauri.conf.json --indent 2)\" > src-tauri/tauri.conf.json"

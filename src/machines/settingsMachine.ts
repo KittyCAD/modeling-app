@@ -1,6 +1,7 @@
 import { assign, createMachine } from 'xstate'
 import { CommandBarMeta } from '../lib/commands'
 import { Themes, getSystemTheme, setThemeClass } from '../lib/theme'
+import { CADProgram, cadPrograms } from 'lib/cameraControls'
 
 export const DEFAULT_PROJECT_NAME = 'project-$nnn'
 
@@ -23,18 +24,30 @@ export type Toggle = 'On' | 'Off'
 export const SETTINGS_PERSIST_KEY = 'SETTINGS_PERSIST_KEY'
 
 export const settingsCommandBarMeta: CommandBarMeta = {
-  'Set Theme': {
-    displayValue: (args: string[]) => 'Change the app theme',
+  'Set Base Unit': {
+    displayValue: (args: string[]) => 'Set your default base unit',
     args: [
       {
-        name: 'theme',
+        name: 'baseUnit',
         type: 'select',
-        defaultValue: 'theme',
-        options: Object.values(Themes).map((v) => ({ name: v })) as {
-          name: string
-        }[],
+        defaultValue: 'baseUnit',
+        options: Object.values(baseUnitsUnion).map((v) => ({ name: v })),
       },
     ],
+  },
+  'Set Camera Controls': {
+    displayValue: (args: string[]) => 'Set your camera controls',
+    args: [
+      {
+        name: 'cameraControls',
+        type: 'select',
+        defaultValue: 'cameraControls',
+        options: Object.values(cadPrograms).map((v) => ({ name: v })),
+      },
+    ],
+  },
+  'Set Default Directory': {
+    hide: 'both',
   },
   'Set Default Project Name': {
     displayValue: (args: string[]) => 'Set a new default project name',
@@ -49,30 +62,8 @@ export const settingsCommandBarMeta: CommandBarMeta = {
       },
     ],
   },
-  'Set Default Directory': {
+  'Set Onboarding Status': {
     hide: 'both',
-  },
-  'Set Unit System': {
-    displayValue: (args: string[]) => 'Set your default unit system',
-    args: [
-      {
-        name: 'unitSystem',
-        type: 'select',
-        defaultValue: 'unitSystem',
-        options: [{ name: UnitSystem.Imperial }, { name: UnitSystem.Metric }],
-      },
-    ],
-  },
-  'Set Base Unit': {
-    displayValue: (args: string[]) => 'Set your default base unit',
-    args: [
-      {
-        name: 'baseUnit',
-        type: 'select',
-        defaultValue: 'baseUnit',
-        options: Object.values(baseUnitsUnion).map((v) => ({ name: v })),
-      },
-    ],
   },
   'Set Text Wrapping': {
     displayValue: (args: string[]) => 'Set whether text in the editor wraps',
@@ -85,8 +76,29 @@ export const settingsCommandBarMeta: CommandBarMeta = {
       },
     ],
   },
-  'Set Onboarding Status': {
-    hide: 'both',
+  'Set Theme': {
+    displayValue: (args: string[]) => 'Change the app theme',
+    args: [
+      {
+        name: 'theme',
+        type: 'select',
+        defaultValue: 'theme',
+        options: Object.values(Themes).map((v): { name: string } => ({
+          name: v,
+        })),
+      },
+    ],
+  },
+  'Set Unit System': {
+    displayValue: (args: string[]) => 'Set your default unit system',
+    args: [
+      {
+        name: 'unitSystem',
+        type: 'select',
+        defaultValue: 'unitSystem',
+        options: [{ name: UnitSystem.Imperial }, { name: UnitSystem.Metric }],
+      },
+    ],
   },
 }
 
@@ -96,37 +108,34 @@ export const settingsMachine = createMachine(
     id: 'Settings',
     predictableActionArguments: true,
     context: {
-      theme: Themes.System,
-      defaultProjectName: DEFAULT_PROJECT_NAME,
-      unitSystem: UnitSystem.Imperial,
       baseUnit: 'in' as BaseUnit,
+      cameraControls: 'KittyCAD' as CADProgram,
       defaultDirectory: '',
-      textWrapping: 'On' as Toggle,
-      showDebugPanel: false,
+      defaultProjectName: DEFAULT_PROJECT_NAME,
       onboardingStatus: '',
+      showDebugPanel: false,
+      textWrapping: 'On' as Toggle,
+      theme: Themes.System,
+      unitSystem: UnitSystem.Imperial,
     },
     initial: 'idle',
     states: {
       idle: {
         entry: ['setThemeClass'],
         on: {
-          'Set Theme': {
+          'Set Base Unit': {
             actions: [
-              assign({
-                theme: (_, event) => event.data.theme,
-              }),
+              assign({ baseUnit: (_, event) => event.data.baseUnit }),
               'persistSettings',
               'toastSuccess',
-              'setThemeClass',
             ],
             target: 'idle',
             internal: true,
           },
-          'Set Default Project Name': {
+          'Set Camera Controls': {
             actions: [
               assign({
-                defaultProjectName: (_, event) =>
-                  event.data.defaultProjectName.trim() || DEFAULT_PROJECT_NAME,
+                cameraControls: (_, event) => event.data.cameraControls,
               }),
               'persistSettings',
               'toastSuccess',
@@ -145,12 +154,11 @@ export const settingsMachine = createMachine(
             target: 'idle',
             internal: true,
           },
-          'Set Unit System': {
+          'Set Default Project Name': {
             actions: [
               assign({
-                unitSystem: (_, event) => event.data.unitSystem,
-                baseUnit: (_, event) =>
-                  event.data.unitSystem === 'imperial' ? 'in' : 'mm',
+                defaultProjectName: (_, event) =>
+                  event.data.defaultProjectName.trim() || DEFAULT_PROJECT_NAME,
               }),
               'persistSettings',
               'toastSuccess',
@@ -158,11 +166,12 @@ export const settingsMachine = createMachine(
             target: 'idle',
             internal: true,
           },
-          'Set Base Unit': {
+          'Set Onboarding Status': {
             actions: [
-              assign({ baseUnit: (_, event) => event.data.baseUnit }),
+              assign({
+                onboardingStatus: (_, event) => event.data.onboardingStatus,
+              }),
               'persistSettings',
-              'toastSuccess',
             ],
             target: 'idle',
             internal: true,
@@ -171,6 +180,31 @@ export const settingsMachine = createMachine(
             actions: [
               assign({
                 textWrapping: (_, event) => event.data.textWrapping,
+              }),
+              'persistSettings',
+              'toastSuccess',
+            ],
+            target: 'idle',
+            internal: true,
+          },
+          'Set Theme': {
+            actions: [
+              assign({
+                theme: (_, event) => event.data.theme,
+              }),
+              'persistSettings',
+              'toastSuccess',
+              'setThemeClass',
+            ],
+            target: 'idle',
+            internal: true,
+          },
+          'Set Unit System': {
+            actions: [
+              assign({
+                unitSystem: (_, event) => event.data.unitSystem,
+                baseUnit: (_, event) =>
+                  event.data.unitSystem === 'imperial' ? 'in' : 'mm',
               }),
               'persistSettings',
               'toastSuccess',
@@ -191,35 +225,26 @@ export const settingsMachine = createMachine(
             target: 'idle',
             internal: true,
           },
-          'Set Onboarding Status': {
-            actions: [
-              assign({
-                onboardingStatus: (_, event) => event.data.onboardingStatus,
-              }),
-              'persistSettings',
-            ],
-            target: 'idle',
-            internal: true,
-          },
         },
       },
     },
     tsTypes: {} as import('./settingsMachine.typegen').Typegen0,
     schema: {
       events: {} as
-        | { type: 'Set Theme'; data: { theme: Themes } }
+        | { type: 'Set Base Unit'; data: { baseUnit: BaseUnit } }
+        | { type: 'Set Camera Controls'; data: { cameraControls: CADProgram } }
+        | { type: 'Set Default Directory'; data: { defaultDirectory: string } }
         | {
             type: 'Set Default Project Name'
             data: { defaultProjectName: string }
           }
-        | { type: 'Set Default Directory'; data: { defaultDirectory: string } }
+        | { type: 'Set Onboarding Status'; data: { onboardingStatus: string } }
+        | { type: 'Set Text Wrapping'; data: { textWrapping: Toggle } }
+        | { type: 'Set Theme'; data: { theme: Themes } }
         | {
             type: 'Set Unit System'
             data: { unitSystem: UnitSystem }
           }
-        | { type: 'Set Base Unit'; data: { baseUnit: BaseUnit } }
-        | { type: 'Set Text Wrapping'; data: { textWrapping: Toggle } }
-        | { type: 'Set Onboarding Status'; data: { onboardingStatus: string } }
         | { type: 'Toggle Debug Panel' },
     },
   },
