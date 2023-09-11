@@ -18,8 +18,8 @@ import { IndexLoaderData, paths } from '../Router'
 import { Themes } from '../lib/theme'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import {
-  CADProgram,
-  cadPrograms,
+  CameraSystem,
+  cameraSystems,
   cameraMouseDragGuards,
 } from 'lib/cameraControls'
 import { UnitSystem } from 'machines/settingsMachine'
@@ -103,11 +103,11 @@ export const Settings = () => {
             onChange={(e) => {
               send({
                 type: 'Set Camera Controls',
-                data: { cameraControls: e.target.value as CADProgram },
+                data: { cameraControls: e.target.value as CameraSystem },
               })
             }}
           >
-            {cadPrograms.map((program) => (
+            {cameraSystems.map((program) => (
               <option key={program} value={program}>
                 {program}
               </option>
