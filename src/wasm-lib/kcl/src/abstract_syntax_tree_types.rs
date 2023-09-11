@@ -500,15 +500,19 @@ impl BinaryPart {
         pipe_info: &mut PipeInfo,
         engine: &mut EngineConnection,
     ) -> Result<MemoryItem, KclError> {
-        pipe_info.is_in_pipe = false;
+        let mut new_pipe_info = pipe_info.clone();
+        new_pipe_info.is_in_pipe = false;
+
         match self {
             BinaryPart::Literal(literal) => Ok(literal.into()),
             BinaryPart::Identifier(identifier) => {
                 let value = memory.get(&identifier.name, identifier.into())?;
                 Ok(value.clone())
             }
-            BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_result(memory, pipe_info, engine),
-            BinaryPart::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, engine),
+            BinaryPart::BinaryExpression(binary_expression) => {
+                binary_expression.get_result(memory, &mut new_pipe_info, engine)
+            }
+            BinaryPart::CallExpression(call_expression) => call_expression.execute(memory, &mut new_pipe_info, engine),
             BinaryPart::UnaryExpression(unary_expression) => {
                 // Return an error this should not happen.
                 Err(KclError::Semantic(KclErrorDetails {
@@ -1803,10 +1807,14 @@ impl UnaryExpression {
         pipe_info: &mut PipeInfo,
         engine: &mut EngineConnection,
     ) -> Result<MemoryItem, KclError> {
-        pipe_info.is_in_pipe = false;
+        let mut new_pipe_info = pipe_info.clone();
+        new_pipe_info.is_in_pipe = false;
 
         let num = parse_json_number_as_f64(
-            &self.argument.get_result(memory, pipe_info, engine)?.get_json_value()?,
+            &self
+                .argument
+                .get_result(memory, &mut new_pipe_info, engine)?
+                .get_json_value()?,
             self.into(),
         )?;
         Ok(MemoryItem::UserVal {
@@ -2455,6 +2463,42 @@ show(mySuperCoolPart)"#
             r#"fn ghi = (newName, y, z) => {
   return newName
 }"#
+        );
+    }
+
+    #[test]
+    fn test_recast_negative_var() {
+        let some_program_string = r#"const w = 20
+const l = 8
+const h = 10
+
+const firstExtrude = startSketchAt([0,0])
+  |> line([0, l], %)
+  |> line([w, 0], %)
+  |> line([0, -l], %)
+  |> close(%)
+  |> extrude(h, %)
+
+show(firstExtrude)"#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"const w = 20
+const l = 8
+const h = 10
+
+const firstExtrude = startSketchAt([0, 0])
+  |> line([0, l], %)
+  |> line([w, 0], %)
+  |> line([0, -l], %)
+  |> close(%)
+  |> extrude(h, %)
+
+show(firstExtrude)"#
         );
     }
 }
