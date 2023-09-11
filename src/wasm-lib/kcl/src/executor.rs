@@ -713,6 +713,10 @@ pub fn execute(
                     let result = array_expr.execute(memory, &mut pipe_info, engine)?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
+                Value::ObjectExpression(obj_expr) => {
+                    let result = obj_expr.execute(memory, &mut pipe_info, engine)?;
+                    memory.return_ = Some(ProgramReturn::Value(result));
+                }
                 _ => {}
             },
         }
