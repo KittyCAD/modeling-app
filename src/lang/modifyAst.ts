@@ -28,6 +28,46 @@ import {
   createFirstArg,
 } from './std/sketch'
 
+export function addStartSketch(
+  node: Program,
+  start: [number, number],
+  end: [number, number]
+): { modifiedAst: Program; id: string; pathToNode: PathToNode } {
+  const _node = { ...node }
+  const _name = findUniqueName(node, 'part')
+
+  const startSketchAt = createCallExpression('startSketchAt', [
+    createArrayExpression([createLiteral(start[0]), createLiteral(start[1])]),
+  ])
+  const initialLineTo = createCallExpression('line', [
+    createArrayExpression([createLiteral(end[0]), createLiteral(end[1])]),
+    createPipeSubstitution(),
+  ])
+
+  const pipeBody = [startSketchAt, initialLineTo]
+
+  const variableDeclaration = createVariableDeclaration(
+    _name,
+    createPipeExpression(pipeBody)
+  )
+
+  _node.body = [...node.body, variableDeclaration]
+
+  let pathToNode: PathToNode = [
+    ['body', ''],
+    ['0', 'index'],
+    ['declarations', 'VariableDeclaration'],
+    ['0', 'index'],
+    ['init', 'VariableDeclarator'],
+  ]
+
+  return {
+    modifiedAst: _node,
+    id: _name,
+    pathToNode,
+  }
+}
+
 export function addSketchTo(
   node: Program,
   axis: 'xy' | 'xz' | 'yz',

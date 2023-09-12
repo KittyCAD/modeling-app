@@ -73,7 +73,9 @@ export function App() {
     streamDimensions,
     setIsExecuting,
     defferedCode,
+    guiMode,
   } = useStore((s) => ({
+    guiMode: s.guiMode,
     addLog: s.addLog,
     defferedCode: s.defferedCode,
     setCode: s.setCode,
@@ -181,7 +183,18 @@ export function App() {
     const asyncWrap = async () => {
       try {
         if (!defferedCode) {
-          setAst(null)
+          setAst({
+            start: 0,
+            end: 0,
+            body: [],
+            nonCodeMeta: {
+              noneCodeNodes: {},
+              start: null,
+            },
+          })
+          setProgramMemory({ root: {} })
+          engineCommandManager.endSession()
+          engineCommandManager.startNewSession()
           return
         }
         const _ast = await asyncParser(defferedCode)
@@ -223,6 +236,9 @@ export function App() {
         const { artifactMap, sourceRangeMap } =
           await engineCommandManager.waitForAllCommands()
         setIsExecuting(false)
+        if (programMemory !== undefined) {
+          setProgramMemory(programMemory)
+        }
 
         setArtifactMap({ artifactMap, sourceRangeMap })
         const unSubHover = engineCommandManager.subscribeToUnreliable({
@@ -251,9 +267,6 @@ export function App() {
           },
         })
         unsubFn.push(unSubHover, unSubClick)
-        if (programMemory !== undefined) {
-          setProgramMemory(programMemory)
-        }
 
         setError()
       } catch (e: any) {
@@ -287,8 +300,42 @@ export function App() {
     })
 
     const newCmdId = uuidv4()
-
-    if (buttonDownInStream !== undefined) {
+    if (buttonDownInStream === undefined) {
+      if (
+        guiMode.mode === 'sketch' &&
+        guiMode.sketchMode === ('sketch_line' as any)
+      ) {
+        debounceSocketSend({
+          type: 'modeling_cmd_req',
+          cmd_id: newCmdId,
+          cmd: {
+            type: 'mouse_move',
+            window: { x, y },
+          },
+        })
+      } else if (
+        guiMode.mode === 'sketch' &&
+        guiMode.sketchMode === ('move' as any)
+      ) {
+        debounceSocketSend({
+          type: 'modeling_cmd_req',
+          cmd_id: newCmdId,
+          cmd: {
+            type: 'handle_mouse_drag_move',
+            window: { x, y },
+          },
+        })
+      } else {
+        debounceSocketSend({
+          type: 'modeling_cmd_req',
+          cmd: {
+            type: 'highlight_set_entity',
+            selected_at_window: { x, y },
+          },
+          cmd_id: newCmdId,
+        })
+      }
+    } else {
       const interactionGuards = cameraMouseDragGuards[cameraControls]
       let interaction: CameraDragInteractionType_type
 
@@ -301,6 +348,7 @@ export function App() {
       } else if (interactionGuards.zoom.dragCallback(eWithButton)) {
         interaction = 'zoom'
       } else {
+        console.log('none')
         return
       }
 
@@ -310,15 +358,6 @@ export function App() {
           type: 'camera_drag_move',
           interaction,
           window: { x, y },
-        },
-        cmd_id: newCmdId,
-      })
-    } else {
-      debounceSocketSend({
-        type: 'modeling_cmd_req',
-        cmd: {
-          type: 'highlight_set_entity',
-          selected_at_window: { x, y },
         },
         cmd_id: newCmdId,
       })
@@ -350,11 +389,11 @@ export function App() {
           paneOpacity
         }
         defaultSize={{
-          width: '400px',
+          width: '550px',
           height: 'auto',
         }}
         minWidth={200}
-        maxWidth={600}
+        maxWidth={800}
         minHeight={'auto'}
         maxHeight={'auto'}
         handleClasses={{
