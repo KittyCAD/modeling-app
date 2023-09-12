@@ -19,9 +19,8 @@ function TestWrap({ children }: { children: React.ReactNode }) {
   )
 }
 
-
 describe('NetworkHealthIndicator tests', () => {
-  test("Renders the network indicator", () => {
+  test('Renders the network indicator', () => {
     render(
       <TestWrap>
         <NetworkHealthIndicator />
@@ -35,7 +34,7 @@ describe('NetworkHealthIndicator tests', () => {
     )
   })
 
-  test("Responds to network changes", () => {
+  test('Responds to network changes', () => {
     render(
       <TestWrap>
         <NetworkHealthIndicator />
@@ -49,6 +48,4 @@ describe('NetworkHealthIndicator tests', () => {
       NETWORK_CONTENT.bad
     )
   })
-
-  
 })
