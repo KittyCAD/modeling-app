@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 
 import { parser_wasm } from './abstractSyntaxTree'
-import { ProgramMemory } from './executor'
+import { ProgramMemory, SketchGroup } from './executor'
 import { initPromise } from './rust'
 import { enginelessExecutor } from '../lib/testHelpers'
 import { vi } from 'vitest'
@@ -338,7 +338,7 @@ describe('testing math operators', () => {
     const { root } = await exe(code)
     const sketch = root.part001
     // result of `-legLen(5, min(3, 999))` should be -4
-    const yVal = sketch.value?.[0]?.to?.[1]
+    const yVal = (sketch as SketchGroup).value?.[0]?.to?.[1]
     expect(yVal).toBe(-4)
   })
   it('test that % substitution feeds down CallExp->ArrExp->UnaryExp->CallExp', async () => {
@@ -356,8 +356,8 @@ describe('testing math operators', () => {
     const { root } = await exe(code)
     const sketch = root.part001
     // expect -legLen(segLen('seg01', %), myVar) to equal -4 setting the y value back to 0
-    expect(sketch.value?.[1]?.from).toEqual([3, 4])
-    expect(sketch.value?.[1]?.to).toEqual([6, 0])
+    expect((sketch as SketchGroup).value?.[1]?.from).toEqual([3, 4])
+    expect((sketch as SketchGroup).value?.[1]?.to).toEqual([6, 0])
     const removedUnaryExp = code.replace(
       `-legLen(segLen('seg01', %), myVar)`,
       `legLen(segLen('seg01', %), myVar)`
@@ -366,7 +366,9 @@ describe('testing math operators', () => {
     const removedUnaryExpRootSketch = removedUnaryExpRoot.part001
 
     // without the minus sign, the y value should be 8
-    expect(removedUnaryExpRootSketch.value?.[1]?.to).toEqual([6, 8])
+    expect((removedUnaryExpRootSketch as SketchGroup).value?.[1]?.to).toEqual([
+      6, 8,
+    ])
   })
   it('with nested callExpression and binaryExpression', async () => {
     const code = 'const myVar = 2 + min(100, -1 + legLen(5, 3))'
