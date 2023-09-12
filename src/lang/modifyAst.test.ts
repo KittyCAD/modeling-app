@@ -114,7 +114,8 @@ describe('Testing addSketchTo', () => {
     expect(str).toBe(`const part001 = startSketchAt('default')
   |> ry(90, %)
   |> line('default', %)
-show(part001)`)
+show(part001)
+`)
   })
 })
 
