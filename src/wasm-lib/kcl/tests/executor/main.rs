@@ -79,3 +79,20 @@ show(fnBox)"#;
     let result = execute_and_snapshot(code).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/function_sketch.png", &result, 1.0);
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_execute_with_angled_line() {
+    let code = r#"const part001 = startSketchAt([4.83, 12.56])
+  |> line([15.1, 2.48], %)
+  |> line({ to: [3.15, -9.85], tag: 'seg01' }, %)
+  |> line([-15.17, -4.1], %)
+  |> angledLine([segAng('seg01', %), 12.35], %)
+  |> line([-13.02, 10.03], %)
+  |> close(%)
+  |> extrude(4, %)
+
+show(part001)"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/angled_line.png", &result, 1.0);
+}
