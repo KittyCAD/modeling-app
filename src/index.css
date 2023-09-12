@@ -82,8 +82,22 @@ code {
     monospace;
 }
 
+.full-height-subtract {
+  --height-subtract: 2.25rem;
+  height: 100%;
+  max-height: calc(100% - var(--height-subtract));
+}
+
 #code-mirror-override .cm-editor {
-  @apply bg-transparent;
+  @apply h-full bg-transparent;
+}
+
+#code-mirror-override .cm-scroller {
+  @apply h-full;
+}
+
+#code-mirror-override .cm-scroller::-webkit-scrollbar {
+  @apply h-0;
 }
 
 #code-mirror-override .cm-activeLine,
@@ -131,4 +145,46 @@ code {
 
 .react-json-view {
   @apply bg-transparent !important;
+}
+
+#code-mirror-override .cm-tooltip {
+  @apply text-xs shadow-md;
+  @apply bg-chalkboard-10 text-chalkboard-80;
+  @apply rounded-sm border-solid border border-chalkboard-40/30 border-l-liquid-10;
+}
+
+.dark #code-mirror-override .cm-tooltip {
+  @apply bg-chalkboard-110 text-chalkboard-40;
+  @apply border-chalkboard-70/20 border-l-liquid-70;
+}
+
+#code-mirror-override .cm-tooltip-hover {
+  @apply py-1 px-2 w-max max-w-md;
+}
+
+#code-mirror-override .cm-completionInfo {
+  @apply px-4 rounded-l-none;
+  @apply bg-chalkboard-10 text-liquid-90;
+  @apply border-liquid-40/30;
+}
+
+.dark #code-mirror-override .cm-completionInfo {
+  @apply bg-liquid-120 text-liquid-50;
+  @apply border-liquid-90/60;
+}
+
+#code-mirror-override .cm-tooltip-autocomplete li {
+  @apply px-2 py-1;
+}
+#code-mirror-override .cm-tooltip-autocomplete li[aria-selected='true'] {
+  @apply bg-liquid-10 text-liquid-110;
+}
+.dark #code-mirror-override .cm-tooltip-autocomplete li[aria-selected='true'] {
+  @apply bg-liquid-100 text-liquid-20;
+}
+
+#code-mirror-override .cm-content {
+  white-space: pre-wrap;
+  word-break: normal;
+  word-wrap: break-word;
 }

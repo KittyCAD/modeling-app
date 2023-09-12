@@ -5,53 +5,118 @@
 ## Table of Contents
 
 * [Functions](#functions)
-	* [`min`](#min)
-	* [`legLen`](#legLen)
-	* [`legAngX`](#legAngX)
-	* [`legAngY`](#legAngY)
-	* [`extrude`](#extrude)
-	* [`getExtrudeWallTransform`](#getExtrudeWallTransform)
-	* [`segEndX`](#segEndX)
-	* [`segEndY`](#segEndY)
-	* [`lastSegX`](#lastSegX)
-	* [`lastSegY`](#lastSegY)
-	* [`segLen`](#segLen)
-	* [`segAng`](#segAng)
 	* [`angleToMatchLengthX`](#angleToMatchLengthX)
 	* [`angleToMatchLengthY`](#angleToMatchLengthY)
-	* [`lineTo`](#lineTo)
-	* [`line`](#line)
-	* [`xLineTo`](#xLineTo)
-	* [`xLine`](#xLine)
-	* [`yLineTo`](#yLineTo)
-	* [`yLine`](#yLine)
-	* [`angledLineToX`](#angledLineToX)
-	* [`angledLineToY`](#angledLineToY)
 	* [`angledLine`](#angledLine)
 	* [`angledLineOfXLength`](#angledLineOfXLength)
 	* [`angledLineOfYLength`](#angledLineOfYLength)
 	* [`angledLineThatIntersects`](#angledLineThatIntersects)
-	* [`startSketchAt`](#startSketchAt)
-	* [`close`](#close)
+	* [`angledLineToX`](#angledLineToX)
+	* [`angledLineToY`](#angledLineToY)
 	* [`arc`](#arc)
 	* [`bezierCurve`](#bezierCurve)
+	* [`close`](#close)
+	* [`extrude`](#extrude)
+	* [`getExtrudeWallTransform`](#getExtrudeWallTransform)
+	* [`lastSegX`](#lastSegX)
+	* [`lastSegY`](#lastSegY)
+	* [`legAngX`](#legAngX)
+	* [`legAngY`](#legAngY)
+	* [`legLen`](#legLen)
+	* [`line`](#line)
+	* [`lineTo`](#lineTo)
+	* [`min`](#min)
+	* [`segAng`](#segAng)
+	* [`segEndX`](#segEndX)
+	* [`segEndY`](#segEndY)
+	* [`segLen`](#segLen)
+	* [`show`](#show)
+	* [`startSketchAt`](#startSketchAt)
+	* [`xLine`](#xLine)
+	* [`xLineTo`](#xLineTo)
+	* [`yLine`](#yLine)
+	* [`yLineTo`](#yLineTo)
 
 
 ## Functions
 
-### min
+### angleToMatchLengthX
 
-Returns the minimum of the given arguments.
+Returns the angle to match the given length for x.
 
 
 
 ```
-min(args: [number]) -> number
+angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup) -> number
 ```
 
 #### Arguments
 
-* `args`: `[number]`
+* `segment_name`: `string`
+* `to`: `number`
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
 
 #### Returns
 
@@ -59,20 +124,1838 @@ min(args: [number]) -> number
 
 
 
-### legLen
+### angleToMatchLengthY
 
-Returns the length of the given leg.
+Returns the angle to match the given length for y.
 
 
 
 ```
-legLen(hypotenuse: number, leg: number) -> number
+angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup) -> number
 ```
 
 #### Arguments
 
-* `hypotenuse`: `number`
-* `leg`: `number`
+* `segment_name`: `string`
+* `to`: `number`
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+#### Returns
+
+* `number`
+
+
+
+### angledLine
+
+Draw an angled line.
+
+
+
+```
+angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Arguments
+
+* `data`: `AngledLineData` - Data to draw an angled line.
+```
+{
+	// The angle of the line.
+	angle: number,
+	// The length of the line.
+	length: number,
+	// The tag.
+	tag: string,
+} |
+[number]
+```
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+#### Returns
+
+* `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+
+
+### angledLineOfXLength
+
+Draw an angled line of a given x length.
+
+
+
+```
+angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Arguments
+
+* `data`: `AngledLineData` - Data to draw an angled line.
+```
+{
+	// The angle of the line.
+	angle: number,
+	// The length of the line.
+	length: number,
+	// The tag.
+	tag: string,
+} |
+[number]
+```
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+#### Returns
+
+* `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+
+
+### angledLineOfYLength
+
+Draw an angled line of a given y length.
+
+
+
+```
+angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Arguments
+
+* `data`: `AngledLineData` - Data to draw an angled line.
+```
+{
+	// The angle of the line.
+	angle: number,
+	// The length of the line.
+	length: number,
+	// The tag.
+	tag: string,
+} |
+[number]
+```
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+#### Returns
+
+* `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+
+
+### angledLineThatIntersects
+
+Draw an angled line that intersects with a given line.
+
+
+
+```
+angledLineThatIntersects(data: AngeledLineThatIntersectsData, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Arguments
+
+* `data`: `AngeledLineThatIntersectsData` - Data for drawing an angled line that intersects with a given line.
+```
+{
+	// The angle of the line.
+	angle: number,
+	// The tag of the line to intersect with.
+	intersectTag: string,
+	// The offset from the intersecting line.
+	offset: number,
+	// The tag.
+	tag: string,
+}
+```
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+#### Returns
+
+* `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+
+
+### angledLineToX
+
+Draw an angled line to a given x coordinate.
+
+
+
+```
+angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Arguments
+
+* `data`: `AngledLineToData` - Data to draw an angled line to a point.
+```
+{
+	// The angle of the line.
+	angle: number,
+	// The tag.
+	tag: string,
+	// The point to draw to.
+	to: number,
+} |
+[number]
+```
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+#### Returns
+
+* `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+
+
+### angledLineToY
+
+Draw an angled line to a given y coordinate.
+
+
+
+```
+angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Arguments
+
+* `data`: `AngledLineToData` - Data to draw an angled line to a point.
+```
+{
+	// The angle of the line.
+	angle: number,
+	// The tag.
+	tag: string,
+	// The point to draw to.
+	to: number,
+} |
+[number]
+```
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+#### Returns
+
+* `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+
+
+### arc
+
+Draw an arc.
+
+
+
+```
+arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Arguments
+
+* `data`: `ArcData` - Data to draw an arc.
+```
+{
+	// The end angle.
+	angle_end: number,
+	// The start angle.
+	angle_start: number,
+	// The radius.
+	radius: number,
+	// The tag.
+	tag: string,
+} |
+{
+	// The end angle.
+	angle_end: number,
+	// The start angle.
+	angle_start: number,
+	// The radius.
+	radius: number,
+} |
+{
+	// The center.
+	center: [number],
+	// The radius.
+	radius: number,
+	// The tag.
+	tag: string,
+	// The to point.
+	to: [number],
+} |
+{
+	// The center.
+	center: [number],
+	// The radius.
+	radius: number,
+	// The to point.
+	to: [number],
+}
+```
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+#### Returns
+
+* `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+
+
+### bezierCurve
+
+Draw a bezier curve.
+
+
+
+```
+bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Arguments
+
+* `data`: `BezierData` - Data to draw a bezier curve.
+```
+{
+	// The first control point.
+	control1: [number],
+	// The second control point.
+	control2: [number],
+	// The tag.
+	tag: string,
+	// The to point.
+	to: [number],
+} |
+{
+	// The first control point.
+	control1: [number],
+	// The second control point.
+	control2: [number],
+	// The to point.
+	to: [number],
+}
+```
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+#### Returns
+
+* `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+
+
+### close
+
+Close the current sketch.
+
+
+
+```
+close(sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Arguments
+
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+#### Returns
+
+* `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+
+
+### extrude
+
+Extrudes by a given amount.
+
+
+
+```
+extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
+```
+
+#### Arguments
+
+* `length`: `number`
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+#### Returns
+
+* `ExtrudeGroup` - An extrude group is a collection of extrude surfaces.
+```
+{
+	// The height of the extrude group.
+	height: number,
+	// The id of the extrude group.
+	id: uuid,
+	// The position of the extrude group.
+	position: [number],
+	// The rotation of the extrude group.
+	rotation: [number],
+	// The extrude surfaces.
+	value: [{
+	// The id of the geometry.
+	id: uuid,
+	// The name.
+	name: string,
+	// The position.
+	position: [number],
+	// The rotation.
+	rotation: [number],
+	// The source range.
+	sourceRange: [number],
+	type: string,
+}],
+}
+```
+
+
+
+### getExtrudeWallTransform
+
+Returns the extrude wall transform.
+
+
+
+```
+getExtrudeWallTransform(surface_name: string, extrude_group: ExtrudeGroup) -> ExtrudeTransform
+```
+
+#### Arguments
+
+* `surface_name`: `string`
+* `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces.
+```
+{
+	// The height of the extrude group.
+	height: number,
+	// The id of the extrude group.
+	id: uuid,
+	// The position of the extrude group.
+	position: [number],
+	// The rotation of the extrude group.
+	rotation: [number],
+	// The extrude surfaces.
+	value: [{
+	// The id of the geometry.
+	id: uuid,
+	// The name.
+	name: string,
+	// The position.
+	position: [number],
+	// The rotation.
+	rotation: [number],
+	// The source range.
+	sourceRange: [number],
+	type: string,
+}],
+}
+```
+
+#### Returns
+
+* `ExtrudeTransform`
+```
+{
+	position: [number],
+	rotation: [number],
+}
+```
+
+
+
+### lastSegX
+
+Returns the last segment of x.
+
+
+
+```
+lastSegX(sketch_group: SketchGroup) -> number
+```
+
+#### Arguments
+
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+#### Returns
+
+* `number`
+
+
+
+### lastSegY
+
+Returns the last segment of y.
+
+
+
+```
+lastSegY(sketch_group: SketchGroup) -> number
+```
+
+#### Arguments
+
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
 
 #### Returns
 
@@ -122,165 +2005,437 @@ legAngY(hypotenuse: number, leg: number) -> number
 
 
 
-### extrude
+### legLen
 
-Extrudes by a given amount.
+Returns the length of the given leg.
 
 
 
 ```
-extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
+legLen(hypotenuse: number, leg: number) -> number
 ```
 
 #### Arguments
 
-* `length`: `number`
+* `hypotenuse`: `number`
+* `leg`: `number`
+
+#### Returns
+
+* `number`
+
+
+
+### line
+
+Draw a line.
+
+
+
+```
+line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Arguments
+
+* `data`: `LineData` - Data to draw a line.
+```
+{
+	// The tag.
+	tag: string,
+	// The to point.
+	to: [number] |
+string,
+} |
+[number] |
+string
+```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	// The id of the sketch group.
-	"id": uuid,
+	id: uuid,
 	// The position of the sketch group.
-	"position": [number],
+	position: [number],
 	// The rotation of the sketch group.
-	"rotation": [number],
+	rotation: [number],
 	// The starting path.
-	"start": {
+	start: {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
+	to: [number],
 },
 	// The paths in the sketch group.
-	"value": [{
+	value: [{
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 	// The x coordinate.
-	"x": number,
+	x: number,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 	// The x coordinate.
-	"x": number,
+	x: number,
 	// The y coordinate.
-	"y": number,
+	y: number,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 }],
 }
 ```
 
 #### Returns
 
-* `ExtrudeGroup` - An extrude group is a collection of extrude surfaces.
+* `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
-	// The height of the extrude group.
-	"height": number,
-	// The id of the extrude group.
-	"id": uuid,
-	// The position of the extrude group.
-	"position": [number],
-	// The rotation of the extrude group.
-	"rotation": [number],
-	// The extrude surfaces.
-	"value": [{
-	// The id of the geometry.
-	"id": uuid,
-	// The name.
-	"name": string,
-	// The position.
-	"position": [number],
-	// The rotation.
-	"rotation": [number],
-	// The source range.
-	"sourceRange": [number],
-	"type": string,
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
 }],
 }
 ```
 
 
 
-### getExtrudeWallTransform
+### lineTo
 
-Returns the extrude wall transform.
+Draw a line to a point.
 
 
 
 ```
-getExtrudeWallTransform(surface_name: string, extrude_group: ExtrudeGroup) -> ExtrudeTransform
+lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
 #### Arguments
 
-* `surface_name`: `string`
-* `extrude_group`: `ExtrudeGroup` - An extrude group is a collection of extrude surfaces.
+* `data`: `LineToData` - Data to draw a line to a point.
 ```
 {
-	// The height of the extrude group.
-	"height": number,
-	// The id of the extrude group.
-	"id": uuid,
-	// The position of the extrude group.
-	"position": [number],
-	// The rotation of the extrude group.
-	"rotation": [number],
-	// The extrude surfaces.
-	"value": [{
-	// The id of the geometry.
-	"id": uuid,
-	// The name.
-	"name": string,
-	// The position.
-	"position": [number],
-	// The rotation.
-	"rotation": [number],
-	// The source range.
-	"sourceRange": [number],
-	"type": string,
+	// The tag.
+	tag: string,
+	// The to point.
+	to: [number],
+} |
+[number]
+```
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
 }],
 }
 ```
 
 #### Returns
 
-* `ExtrudeTransform`
+* `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
-	"position": [number],
-	"rotation": [number],
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
 }
 ```
+
+
+
+### min
+
+Returns the minimum of the given arguments.
+
+
+
+```
+min(args: [number]) -> number
+```
+
+#### Arguments
+
+* `args`: `[number]`
+
+#### Returns
+
+* `number`
+
+
+
+### segAng
+
+Returns the angle of the segment.
+
+
+
+```
+segAng(segment_name: string, sketch_group: SketchGroup) -> number
+```
+
+#### Arguments
+
+* `segment_name`: `string`
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+#### Returns
+
+* `number`
 
 
 
@@ -301,62 +2456,62 @@ segEndX(segment_name: string, sketch_group: SketchGroup) -> number
 ```
 {
 	// The id of the sketch group.
-	"id": uuid,
+	id: uuid,
 	// The position of the sketch group.
-	"position": [number],
+	position: [number],
 	// The rotation of the sketch group.
-	"rotation": [number],
+	rotation: [number],
 	// The starting path.
-	"start": {
+	start: {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
+	to: [number],
 },
 	// The paths in the sketch group.
-	"value": [{
+	value: [{
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 	// The x coordinate.
-	"x": number,
+	x: number,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 	// The x coordinate.
-	"x": number,
+	x: number,
 	// The y coordinate.
-	"y": number,
+	y: number,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 }],
 }
 ```
@@ -384,226 +2539,62 @@ segEndY(segment_name: string, sketch_group: SketchGroup) -> number
 ```
 {
 	// The id of the sketch group.
-	"id": uuid,
+	id: uuid,
 	// The position of the sketch group.
-	"position": [number],
+	position: [number],
 	// The rotation of the sketch group.
-	"rotation": [number],
+	rotation: [number],
 	// The starting path.
-	"start": {
+	start: {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
+	to: [number],
 },
 	// The paths in the sketch group.
-	"value": [{
+	value: [{
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 	// The x coordinate.
-	"x": number,
+	x: number,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 	// The x coordinate.
-	"x": number,
+	x: number,
 	// The y coordinate.
-	"y": number,
+	y: number,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-#### Returns
-
-* `number`
-
-
-
-### lastSegX
-
-Returns the last segment of x.
-
-
-
-```
-lastSegX(sketch_group: SketchGroup) -> number
-```
-
-#### Arguments
-
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-#### Returns
-
-* `number`
-
-
-
-### lastSegY
-
-Returns the last segment of y.
-
-
-
-```
-lastSegY(sketch_group: SketchGroup) -> number
-```
-
-#### Arguments
-
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 }],
 }
 ```
@@ -631,62 +2622,62 @@ segLen(segment_name: string, sketch_group: SketchGroup) -> number
 ```
 {
 	// The id of the sketch group.
-	"id": uuid,
+	id: uuid,
 	// The position of the sketch group.
-	"position": [number],
+	position: [number],
 	// The rotation of the sketch group.
-	"rotation": [number],
+	rotation: [number],
 	// The starting path.
-	"start": {
+	start: {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
+	to: [number],
 },
 	// The paths in the sketch group.
-	"value": [{
+	value: [{
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 	// The x coordinate.
-	"x": number,
+	x: number,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 	// The x coordinate.
-	"x": number,
+	x: number,
 	// The y coordinate.
-	"y": number,
+	y: number,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 }],
 }
 ```
@@ -697,2114 +2688,78 @@ segLen(segment_name: string, sketch_group: SketchGroup) -> number
 
 
 
-### segAng
+### show
 
-Returns the angle of the segment.
-
-
-
-```
-segAng(segment_name: string, sketch_group: SketchGroup) -> number
-```
-
-#### Arguments
-
-* `segment_name`: `string`
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-#### Returns
-
-* `number`
-
-
-
-### angleToMatchLengthX
-
-Returns the angle to match the given length for x.
+Render a model.
 
 
 
 ```
-angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup) -> number
+show(sketch: SketchGroup)
 ```
 
 #### Arguments
 
-* `segment_name`: `string`
-* `to`: `number`
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+* `sketch`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	// The id of the sketch group.
-	"id": uuid,
+	id: uuid,
 	// The position of the sketch group.
-	"position": [number],
+	position: [number],
 	// The rotation of the sketch group.
-	"rotation": [number],
+	rotation: [number],
 	// The starting path.
-	"start": {
+	start: {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
+	to: [number],
 },
 	// The paths in the sketch group.
-	"value": [{
+	value: [{
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 	// The x coordinate.
-	"x": number,
+	x: number,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 	// The x coordinate.
-	"x": number,
+	x: number,
 	// The y coordinate.
-	"y": number,
+	y: number,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-#### Returns
-
-* `number`
-
-
-
-### angleToMatchLengthY
-
-Returns the angle to match the given length for y.
-
-
-
-```
-angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup) -> number
-```
-
-#### Arguments
-
-* `segment_name`: `string`
-* `to`: `number`
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-#### Returns
-
-* `number`
-
-
-
-### lineTo
-
-Draw a line to a point.
-
-
-
-```
-lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
-```
-
-#### Arguments
-
-* `data`: `LineToData` - Data to draw a line to a point.
-```
-{
-	// The tag.
-	"tag": string,
-	// The to point.
-	"to": [number],
-} |
-[number]
-```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-#### Returns
-
-* `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-
-
-### line
-
-Draw a line.
-
-
-
-```
-line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
-```
-
-#### Arguments
-
-* `data`: `LineData` - Data to draw a line.
-```
-{
-	// The tag.
-	"tag": string,
-	// The to point.
-	"to": [number] |
-string,
-} |
-[number] |
-string
-```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-#### Returns
-
-* `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-
-
-### xLineTo
-
-Draw a line to a point on the x-axis.
-
-
-
-```
-xLineTo(data: AxisLineToData, sketch_group: SketchGroup) -> SketchGroup
-```
-
-#### Arguments
-
-* `data`: `AxisLineToData` - Data to draw a line to a point on an axis.
-```
-{
-	// The tag.
-	"tag": string,
-	// The to point.
-	"to": number,
-} |
-number
-```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-#### Returns
-
-* `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-
-
-### xLine
-
-Draw a line on the x-axis.
-
-
-
-```
-xLine(data: AxisLineData, sketch_group: SketchGroup) -> SketchGroup
-```
-
-#### Arguments
-
-* `data`: `AxisLineData` - Data to draw a line on an axis.
-```
-{
-	// The length of the line.
-	"length": number,
-	// The tag.
-	"tag": string,
-} |
-number
-```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-#### Returns
-
-* `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-
-
-### yLineTo
-
-Draw a line to a point on the y-axis.
-
-
-
-```
-yLineTo(data: AxisLineToData, sketch_group: SketchGroup) -> SketchGroup
-```
-
-#### Arguments
-
-* `data`: `AxisLineToData` - Data to draw a line to a point on an axis.
-```
-{
-	// The tag.
-	"tag": string,
-	// The to point.
-	"to": number,
-} |
-number
-```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-#### Returns
-
-* `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-
-
-### yLine
-
-Draw a line on the y-axis.
-
-
-
-```
-yLine(data: AxisLineData, sketch_group: SketchGroup) -> SketchGroup
-```
-
-#### Arguments
-
-* `data`: `AxisLineData` - Data to draw a line on an axis.
-```
-{
-	// The length of the line.
-	"length": number,
-	// The tag.
-	"tag": string,
-} |
-number
-```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-#### Returns
-
-* `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-
-
-### angledLineToX
-
-Draw an angled line to a given x coordinate.
-
-
-
-```
-angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
-```
-
-#### Arguments
-
-* `data`: `AngledLineToData` - Data to draw an angled line to a point.
-```
-{
-	// The angle of the line.
-	"angle": number,
-	// The tag.
-	"tag": string,
-	// The point to draw to.
-	"to": number,
-} |
-[number]
-```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-#### Returns
-
-* `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-
-
-### angledLineToY
-
-Draw an angled line to a given y coordinate.
-
-
-
-```
-angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
-```
-
-#### Arguments
-
-* `data`: `AngledLineToData` - Data to draw an angled line to a point.
-```
-{
-	// The angle of the line.
-	"angle": number,
-	// The tag.
-	"tag": string,
-	// The point to draw to.
-	"to": number,
-} |
-[number]
-```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-#### Returns
-
-* `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-
-
-### angledLine
-
-Draw an angled line.
-
-
-
-```
-angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
-```
-
-#### Arguments
-
-* `data`: `AngledLineData` - Data to draw an angled line.
-```
-{
-	// The angle of the line.
-	"angle": number,
-	// The length of the line.
-	"length": number,
-	// The tag.
-	"tag": string,
-} |
-[number]
-```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-#### Returns
-
-* `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-
-
-### angledLineOfXLength
-
-Draw an angled line of a given x length.
-
-
-
-```
-angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
-```
-
-#### Arguments
-
-* `data`: `AngledLineData` - Data to draw an angled line.
-```
-{
-	// The angle of the line.
-	"angle": number,
-	// The length of the line.
-	"length": number,
-	// The tag.
-	"tag": string,
-} |
-[number]
-```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-#### Returns
-
-* `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-
-
-### angledLineOfYLength
-
-Draw an angled line of a given y length.
-
-
-
-```
-angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
-```
-
-#### Arguments
-
-* `data`: `AngledLineData` - Data to draw an angled line.
-```
-{
-	// The angle of the line.
-	"angle": number,
-	// The length of the line.
-	"length": number,
-	// The tag.
-	"tag": string,
-} |
-[number]
-```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-#### Returns
-
-* `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-
-
-### angledLineThatIntersects
-
-Draw an angled line that intersects with a given line.
-
-
-
-```
-angledLineThatIntersects(data: AngeledLineThatIntersectsData, sketch_group: SketchGroup) -> SketchGroup
-```
-
-#### Arguments
-
-* `data`: `AngeledLineThatIntersectsData` - Data for drawing an angled line that intersects with a given line.
-```
-{
-	// The angle of the line.
-	"angle": number,
-	// The tag of the line to intersect with.
-	"intersectTag": string,
-	// The offset from the intersecting line.
-	"offset": number,
-	// The tag.
-	"tag": string,
-}
-```
-* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-}],
-}
-```
-
-#### Returns
-
-* `SketchGroup` - A sketch group is a collection of paths.
-```
-{
-	// The id of the sketch group.
-	"id": uuid,
-	// The position of the sketch group.
-	"position": [number],
-	// The rotation of the sketch group.
-	"rotation": [number],
-	// The starting path.
-	"start": {
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-},
-	// The paths in the sketch group.
-	"value": [{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
-	// The x coordinate.
-	"x": number,
-	// The y coordinate.
-	"y": number,
-} |
-{
-	// The from point.
-	"from": [number],
-	// The name of the path.
-	"name": string,
-	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 }],
 }
 ```
@@ -2827,9 +2782,9 @@ startSketchAt(data: LineData) -> SketchGroup
 ```
 {
 	// The tag.
-	"tag": string,
+	tag: string,
 	// The to point.
-	"to": [number] |
+	to: [number] |
 string,
 } |
 [number] |
@@ -2842,140 +2797,150 @@ string
 ```
 {
 	// The id of the sketch group.
-	"id": uuid,
+	id: uuid,
 	// The position of the sketch group.
-	"position": [number],
+	position: [number],
 	// The rotation of the sketch group.
-	"rotation": [number],
+	rotation: [number],
 	// The starting path.
-	"start": {
+	start: {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
+	to: [number],
 },
 	// The paths in the sketch group.
-	"value": [{
+	value: [{
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 	// The x coordinate.
-	"x": number,
+	x: number,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 	// The x coordinate.
-	"x": number,
+	x: number,
 	// The y coordinate.
-	"y": number,
+	y: number,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 }],
 }
 ```
 
 
 
-### close
+### xLine
 
-Close the current sketch.
+Draw a line on the x-axis.
 
 
 
 ```
-close(sketch_group: SketchGroup) -> SketchGroup
+xLine(data: AxisLineData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
 #### Arguments
 
+* `data`: `AxisLineData` - Data to draw a line on an axis.
+```
+{
+	// The length of the line.
+	length: number,
+	// The tag.
+	tag: string,
+} |
+number
+```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	// The id of the sketch group.
-	"id": uuid,
+	id: uuid,
 	// The position of the sketch group.
-	"position": [number],
+	position: [number],
 	// The rotation of the sketch group.
-	"rotation": [number],
+	rotation: [number],
 	// The starting path.
-	"start": {
+	start: {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
+	to: [number],
 },
 	// The paths in the sketch group.
-	"value": [{
+	value: [{
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 	// The x coordinate.
-	"x": number,
+	x: number,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 	// The x coordinate.
-	"x": number,
+	x: number,
 	// The y coordinate.
-	"y": number,
+	y: number,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 }],
 }
 ```
@@ -2986,179 +2951,150 @@ close(sketch_group: SketchGroup) -> SketchGroup
 ```
 {
 	// The id of the sketch group.
-	"id": uuid,
+	id: uuid,
 	// The position of the sketch group.
-	"position": [number],
+	position: [number],
 	// The rotation of the sketch group.
-	"rotation": [number],
+	rotation: [number],
 	// The starting path.
-	"start": {
+	start: {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
+	to: [number],
 },
 	// The paths in the sketch group.
-	"value": [{
+	value: [{
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 	// The x coordinate.
-	"x": number,
+	x: number,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 	// The x coordinate.
-	"x": number,
+	x: number,
 	// The y coordinate.
-	"y": number,
+	y: number,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 }],
 }
 ```
 
 
 
-### arc
+### xLineTo
 
-Draw an arc.
+Draw a line to a point on the x-axis.
 
 
 
 ```
-arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
+xLineTo(data: AxisLineToData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
 #### Arguments
 
-* `data`: `ArcData` - Data to draw an arc.
+* `data`: `AxisLineToData` - Data to draw a line to a point on an axis.
 ```
 {
-	// The end angle.
-	"angle_end": number,
-	// The start angle.
-	"angle_start": number,
-	// The radius.
-	"radius": number,
 	// The tag.
-	"tag": string,
-} |
-{
-	// The end angle.
-	"angle_end": number,
-	// The start angle.
-	"angle_start": number,
-	// The radius.
-	"radius": number,
-} |
-{
-	// The center.
-	"center": [number],
-	// The radius.
-	"radius": number,
-	// The tag.
-	"tag": string,
+	tag: string,
 	// The to point.
-	"to": [number],
+	to: number,
 } |
-{
-	// The center.
-	"center": [number],
-	// The radius.
-	"radius": number,
-	// The to point.
-	"to": [number],
-}
+number
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	// The id of the sketch group.
-	"id": uuid,
+	id: uuid,
 	// The position of the sketch group.
-	"position": [number],
+	position: [number],
 	// The rotation of the sketch group.
-	"rotation": [number],
+	rotation: [number],
 	// The starting path.
-	"start": {
+	start: {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
+	to: [number],
 },
 	// The paths in the sketch group.
-	"value": [{
+	value: [{
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 	// The x coordinate.
-	"x": number,
+	x: number,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 	// The x coordinate.
-	"x": number,
+	x: number,
 	// The y coordinate.
-	"y": number,
+	y: number,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 }],
 }
 ```
@@ -3169,161 +3105,150 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 ```
 {
 	// The id of the sketch group.
-	"id": uuid,
+	id: uuid,
 	// The position of the sketch group.
-	"position": [number],
+	position: [number],
 	// The rotation of the sketch group.
-	"rotation": [number],
+	rotation: [number],
 	// The starting path.
-	"start": {
+	start: {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
+	to: [number],
 },
 	// The paths in the sketch group.
-	"value": [{
+	value: [{
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 	// The x coordinate.
-	"x": number,
+	x: number,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 	// The x coordinate.
-	"x": number,
+	x: number,
 	// The y coordinate.
-	"y": number,
+	y: number,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 }],
 }
 ```
 
 
 
-### bezierCurve
+### yLine
 
-Draw a bezier curve.
+Draw a line on the y-axis.
 
 
 
 ```
-bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
+yLine(data: AxisLineData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
 #### Arguments
 
-* `data`: `BezierData` - Data to draw a bezier curve.
+* `data`: `AxisLineData` - Data to draw a line on an axis.
 ```
 {
-	// The first control point.
-	"control1": [number],
-	// The second control point.
-	"control2": [number],
+	// The length of the line.
+	length: number,
 	// The tag.
-	"tag": string,
-	// The to point.
-	"to": [number],
+	tag: string,
 } |
-{
-	// The first control point.
-	"control1": [number],
-	// The second control point.
-	"control2": [number],
-	// The to point.
-	"to": [number],
-}
+number
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
 	// The id of the sketch group.
-	"id": uuid,
+	id: uuid,
 	// The position of the sketch group.
-	"position": [number],
+	position: [number],
 	// The rotation of the sketch group.
-	"rotation": [number],
+	rotation: [number],
 	// The starting path.
-	"start": {
+	start: {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
+	to: [number],
 },
 	// The paths in the sketch group.
-	"value": [{
+	value: [{
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 	// The x coordinate.
-	"x": number,
+	x: number,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 	// The x coordinate.
-	"x": number,
+	x: number,
 	// The y coordinate.
-	"y": number,
+	y: number,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 }],
 }
 ```
@@ -3334,62 +3259,216 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 ```
 {
 	// The id of the sketch group.
-	"id": uuid,
+	id: uuid,
 	// The position of the sketch group.
-	"position": [number],
+	position: [number],
 	// The rotation of the sketch group.
-	"rotation": [number],
+	rotation: [number],
 	// The starting path.
-	"start": {
+	start: {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
+	to: [number],
 },
 	// The paths in the sketch group.
-	"value": [{
+	value: [{
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 	// The x coordinate.
-	"x": number,
+	x: number,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
 	// The x coordinate.
-	"x": number,
+	x: number,
 	// The y coordinate.
-	"y": number,
+	y: number,
 } |
 {
 	// The from point.
-	"from": [number],
+	from: [number],
 	// The name of the path.
-	"name": string,
+	name: string,
 	// The to point.
-	"to": [number],
-	"type": string,
+	to: [number],
+	type: string,
+}],
+}
+```
+
+
+
+### yLineTo
+
+Draw a line to a point on the y-axis.
+
+
+
+```
+yLineTo(data: AxisLineToData, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Arguments
+
+* `data`: `AxisLineToData` - Data to draw a line to a point on an axis.
+```
+{
+	// The tag.
+	tag: string,
+	// The to point.
+	to: number,
+} |
+number
+```
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+#### Returns
+
+* `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
 }],
 }
 ```

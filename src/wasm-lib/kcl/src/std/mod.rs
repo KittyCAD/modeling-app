@@ -5,9 +5,6 @@ pub mod segment;
 pub mod sketch;
 pub mod utils;
 
-// TODO: Something that would be nice is if we could generate docs for Kcl based on the
-// actual stdlib functions below.
-
 use std::collections::HashMap;
 
 use anyhow::Result;
@@ -23,18 +20,17 @@ use crate::{
     executor::{ExtrudeGroup, MemoryItem, Metadata, SketchGroup, SourceRange},
 };
 
-pub type FnMap = HashMap<String, StdFn>;
 pub type StdFn = fn(&mut Args) -> Result<MemoryItem, KclError>;
+pub type FnMap = HashMap<String, StdFn>;
 
 pub struct StdLib {
-    pub internal_fn_names: Vec<Box<(dyn crate::docs::StdLibFn)>>,
-
-    pub fns: FnMap,
+    pub fns: HashMap<String, Box<(dyn crate::docs::StdLibFn)>>,
 }
 
 impl StdLib {
     pub fn new() -> Self {
-        let internal_fn_names: Vec<Box<(dyn crate::docs::StdLibFn)>> = vec![
+        let internal_fns: Vec<Box<(dyn crate::docs::StdLibFn)>> = vec![
+            Box::new(Show),
             Box::new(Min),
             Box::new(LegLen),
             Box::new(LegAngX),
@@ -68,11 +64,15 @@ impl StdLib {
         ];
 
         let mut fns = HashMap::new();
-        for internal_fn_name in &internal_fn_names {
-            fns.insert(internal_fn_name.name().to_string(), internal_fn_name.std_lib_fn());
+        for internal_fn in &internal_fns {
+            fns.insert(internal_fn.name().to_string(), internal_fn.clone());
         }
 
-        Self { internal_fn_names, fns }
+        Self { fns }
+    }
+
+    pub fn get(&self, name: &str) -> Option<Box<dyn crate::docs::StdLibFn>> {
+        self.fns.get(name).cloned()
     }
 }
 
@@ -407,7 +407,6 @@ impl<'a> Args<'a> {
 }
 
 /// Returns the minimum of the given arguments.
-/// TODO fix min
 pub fn min(args: &mut Args) -> Result<MemoryItem, KclError> {
     let nums = args.get_number_array()?;
     let result = inner_min(nums);
@@ -429,6 +428,21 @@ fn inner_min(args: Vec<f64>) -> f64 {
 
     min
 }
+
+/// Render a model.
+// This never actually gets called so this is fine.
+pub fn show(args: &mut Args) -> Result<MemoryItem, KclError> {
+    let sketch_group = args.get_sketch_group()?;
+    inner_show(sketch_group);
+
+    args.make_user_val_from_f64(0.0)
+}
+
+/// Render a model.
+#[stdlib {
+    name = "show",
+}]
+fn inner_show(_sketch: SketchGroup) {}
 
 /// Returns the length of the given leg.
 pub fn leg_length(args: &mut Args) -> Result<MemoryItem, KclError> {
@@ -493,6 +507,7 @@ pub enum Primitive {
 #[cfg(test)]
 mod tests {
     use crate::std::StdLib;
+    use itertools::Itertools;
 
     #[test]
     fn test_generate_stdlib_markdown_docs() {
@@ -508,7 +523,8 @@ mod tests {
 
         buf.push_str("* [Functions](#functions)\n");
 
-        for internal_fn in &stdlib.internal_fn_names {
+        for key in stdlib.fns.keys().sorted() {
+            let internal_fn = stdlib.fns.get(key).unwrap();
             if internal_fn.unpublished() || internal_fn.deprecated() {
                 continue;
             }
@@ -520,7 +536,8 @@ mod tests {
 
         buf.push_str("## Functions\n\n");
 
-        for internal_fn in &stdlib.internal_fn_names {
+        for key in stdlib.fns.keys().sorted() {
+            let internal_fn = stdlib.fns.get(key).unwrap();
             if internal_fn.unpublished() {
                 continue;
             }
@@ -555,17 +572,18 @@ mod tests {
                 }
             }
 
-            fn_docs.push_str("\n#### Returns\n\n");
-            let return_type = internal_fn.return_value();
-            if let Some(description) = return_type.description() {
-                fn_docs.push_str(&format!("* `{}` - {}\n", return_type.type_, description));
-            } else {
-                fn_docs.push_str(&format!("* `{}`\n", return_type.type_));
-            }
+            if let Some(return_type) = internal_fn.return_value() {
+                fn_docs.push_str("\n#### Returns\n\n");
+                if let Some(description) = return_type.description() {
+                    fn_docs.push_str(&format!("* `{}` - {}\n", return_type.type_, description));
+                } else {
+                    fn_docs.push_str(&format!("* `{}`\n", return_type.type_));
+                }
 
-            let (format, should_be_indented) = return_type.get_type_string().unwrap();
-            if should_be_indented {
-                fn_docs.push_str(&format!("```\n{}\n```\n", format));
+                let (format, should_be_indented) = return_type.get_type_string().unwrap();
+                if should_be_indented {
+                    fn_docs.push_str(&format!("```\n{}\n```\n", format));
+                }
             }
 
             fn_docs.push_str("\n\n\n");
@@ -582,7 +600,8 @@ mod tests {
 
         let mut json_data = vec![];
 
-        for internal_fn in &stdlib.internal_fn_names {
+        for key in stdlib.fns.keys().sorted() {
+            let internal_fn = stdlib.fns.get(key).unwrap();
             json_data.push(internal_fn.to_json().unwrap());
         }
 

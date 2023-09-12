@@ -1,4 +1,4 @@
-name: CI 
+name: CI
 
 on:
   pull_request:
@@ -13,16 +13,30 @@ jobs:
   check-format:
     runs-on: 'ubuntu-20.04'
     steps:
-
       - uses: actions/checkout@v3
-
       - uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
-
+          cache: 'yarn'
       - run: yarn install
-
       - run: yarn fmt-check
+
+  check-types:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+      - run: yarn install
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "./src/wasm-lib"
+
+      - run: yarn build:wasm
+      - run: yarn tsc
 
 
   build-test-web:
@@ -36,12 +50,15 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
+          cache: 'yarn'
 
       - run: yarn install
 
-      - run: yarn build:wasm
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "./src/wasm-lib"
 
-      - run: yarn tsc
+      - run: yarn build:wasm
 
       - run: yarn simpleserver:ci
 
@@ -49,14 +66,12 @@ jobs:
 
       - run: yarn test:cov
 
-      - run: yarn test:rust
-      
       - id: export_version
         run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
 
 
   build-apps:
-    needs: [check-format, build-test-web]
+    needs: [check-format, build-test-web, check-types]
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -87,6 +102,10 @@ jobs:
         with:
           workspaces: './src-tauri -> target'
 
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "./src/wasm-lib"
+
       - name: wasm prep
         shell: bash
         run: |
@@ -110,22 +129,27 @@ jobs:
       - name: Fix format
         run: yarn fmt
 
+      - name: install apple silicon target mac
+        if: matrix.os == 'macos-latest'
+        run: |
+          rustup target add aarch64-apple-darwin
+
       - name: Build the app for the current platform (no upload)
         uses: tauri-apps/tauri-action@v0
         env:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+        with:
+          args: ${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }}
 
       - uses: actions/upload-artifact@v3
         with:
-          path: src-tauri/target/release/bundle/*/*
+          path: ${{ matrix.os == 'macos-latest' && 'src-tauri/target/universal-apple-darwin/release/bundle/*/*' || 'src-tauri/target/release/bundle/*/*' }}
 
 
   publish-apps-release:
     runs-on: ubuntu-20.04
     if: github.event_name == 'release'
-    permissions:
-      contents: write
     needs: [build-test-web, build-apps]
     env:
       VERSION_NO_V: ${{ needs.build-test-web.outputs.version }}
@@ -135,8 +159,7 @@ jobs:
 
       - name: Generate the update static endpoint
         run: |
-          ls -l artifact
-          ls -l artifact/*
+          ls -l artifact/*/*itty*
           DARWIN_SIG=`cat artifact/macos/*.app.tar.gz.sig`
           LINUX_SIG=`cat artifact/appimage/*.AppImage.tar.gz.sig`
           WINDOWS_SIG=`cat artifact/nsis/*.nsis.zip.sig`
@@ -144,15 +167,19 @@ jobs:
           jq --null-input \
             --arg version "v${VERSION_NO_V}" \
             --arg darwin_sig "$DARWIN_SIG" \
-            --arg darwin_url "$RELEASE_DIR/macos/kittycad-modeling-app.app.tar.gz" \
+            --arg darwin_url "$RELEASE_DIR/macos/KittyCAD%20Modeling.app.tar.gz" \
             --arg linux_sig "$LINUX_SIG" \
-            --arg linux_url "$RELEASE_DIR/appimage/kittycad-modeling-app_${VERSION_NO_V}_amd64.AppImage.tar.gz" \
+            --arg linux_url "$RELEASE_DIR/appimage/kittycad-modeling_${VERSION_NO_V}_amd64.AppImage.tar.gz" \
             --arg windows_sig "$WINDOWS_SIG" \
-            --arg windows_url "$RELEASE_DIR/nsis/kittycad-modeling-app_${VERSION_NO_V}_x64-setup.nsis.zip" \
+            --arg windows_url "$RELEASE_DIR/nsis/KittyCAD%20Modeling_${VERSION_NO_V}_x64-setup.nsis.zip" \
             '{
               "version": $version,
               "platforms": {
                 "darwin-x86_64": {
+                  "signature": $darwin_sig,
+                  "url": $darwin_url
+                },
+                "darwin-aarch64": {
                   "signature": $darwin_sig,
                   "url": $darwin_url
                 },
@@ -177,15 +204,15 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1.1.1
         with:
           project_id: kittycadapi
-      
+
       - name: Upload release files to public bucket
         uses: google-github-actions/upload-cloud-storage@v1.0.3
         with:
           path: artifact
-          glob: '*/kittycad-modeling-app*'
+          glob: '*/*itty*'
           parent: false
-          destination: dl.kittycad.io/releases/modeling-app/v${{ env.VERSION_NO_V }} 
-      
+          destination: dl.kittycad.io/releases/modeling-app/v${{ env.VERSION_NO_V }}
+
       - name: Upload update endpoint to public bucket
         uses: google-github-actions/upload-cloud-storage@v1.0.3
         with:
@@ -195,4 +222,4 @@ jobs:
       - name: Upload release files to Github
         uses: softprops/action-gh-release@v1
         with:
-          files: artifact/*/kittycad-modeling-app*
+          files: artifact/*/*itty*

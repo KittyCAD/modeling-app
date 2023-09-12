@@ -5,6 +5,6 @@ pub mod errors;
 pub mod executor;
 pub mod math_parser;
 pub mod parser;
-pub mod recast;
+pub mod server;
 pub mod std;
 pub mod tokeniser;

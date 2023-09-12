@@ -2,7 +2,6 @@ import {
   useRef,
   useEffect,
   useLayoutEffect,
-  useMemo,
   useCallback,
   MouseEventHandler,
 } from 'react'
@@ -10,15 +9,7 @@ import { DebugPanel } from './components/DebugPanel'
 import { v4 as uuidv4 } from 'uuid'
 import { asyncParser } from './lang/abstractSyntaxTree'
 import { _executor } from './lang/executor'
-import CodeMirror from '@uiw/react-codemirror'
-import { langs } from '@uiw/codemirror-extensions-langs'
-import { linter, lintGutter } from '@codemirror/lint'
-import { ViewUpdate } from '@codemirror/view'
-import {
-  lineHighlightField,
-  addLineHighlight,
-} from './editor/highlightextension'
-import { PaneType, Selections, useStore } from './useStore'
+import { PaneType, useStore } from './useStore'
 import { Logs, KCLErrors } from './components/Logs'
 import { CollapsiblePanel } from './components/CollapsiblePanel'
 import { MemoryPanel } from './components/MemoryPanel'
@@ -29,9 +20,9 @@ import {
   EngineCommand,
   EngineCommandManager,
 } from './lang/std/engineConnection'
-import { isOverlap, throttle } from './lib/utils'
+import { throttle } from './lib/utils'
 import { AppHeader } from './components/AppHeader'
-import { KCLError, kclErrToDiagnostic } from './lang/errors'
+import { KCLError } from './lang/errors'
 import { Resizable } from 're-resizable'
 import {
   faCode,
@@ -39,94 +30,75 @@ import {
   faSquareRootVariable,
 } from '@fortawesome/free-solid-svg-icons'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { TEST } from './env'
 import { getNormalisedCoordinates } from './lib/utils'
-import { Themes, getSystemTheme } from './lib/theme'
 import { isTauri } from './lib/isTauri'
-import { useLoaderData, useParams } from 'react-router-dom'
-import { writeTextFile } from '@tauri-apps/api/fs'
-import { PROJECT_ENTRYPOINT } from './lib/tauriFS'
+import { useLoaderData } from 'react-router-dom'
 import { IndexLoaderData } from './Router'
-import { toast } from 'react-hot-toast'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { onboardingPaths } from 'routes/Onboarding'
+import { cameraMouseDragGuards } from 'lib/cameraControls'
+import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
+import { CodeMenu } from 'components/CodeMenu'
+import { TextEditor } from 'components/TextEditor'
+import { Themes, getSystemTheme } from 'lib/theme'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
-  const pathParams = useParams()
+
   const streamRef = useRef<HTMLDivElement>(null)
   useHotKeyListener()
   const {
-    editorView,
-    setEditorView,
-    setSelectionRanges,
-    selectionRanges,
     addLog,
     addKCLError,
-    code,
     setCode,
     setAst,
     setError,
     setProgramMemory,
     resetLogs,
     resetKCLErrors,
-    selectionRangeTypeMap,
     setArtifactMap,
     engineCommandManager,
     setEngineCommandManager,
+    highlightRange,
     setHighlightRange,
     setCursor2,
-    sourceRangeMap,
     setMediaStream,
     setIsStreamReady,
     isStreamReady,
-    isMouseDownInStream,
-    cmdId,
-    setCmdId,
-    formatCode,
+    buttonDownInStream,
     openPanes,
     setOpenPanes,
     didDragInStream,
-    setDidDragInStream,
     setStreamDimensions,
     streamDimensions,
+    setIsExecuting,
+    defferedCode,
   } = useStore((s) => ({
-    editorView: s.editorView,
-    setEditorView: s.setEditorView,
-    setSelectionRanges: s.setSelectionRanges,
-    selectionRanges: s.selectionRanges,
-    setGuiMode: s.setGuiMode,
     addLog: s.addLog,
-    code: s.code,
+    defferedCode: s.defferedCode,
     setCode: s.setCode,
     setAst: s.setAst,
     setError: s.setError,
     setProgramMemory: s.setProgramMemory,
     resetLogs: s.resetLogs,
     resetKCLErrors: s.resetKCLErrors,
-    selectionRangeTypeMap: s.selectionRangeTypeMap,
     setArtifactMap: s.setArtifactNSourceRangeMaps,
     engineCommandManager: s.engineCommandManager,
     setEngineCommandManager: s.setEngineCommandManager,
+    highlightRange: s.highlightRange,
     setHighlightRange: s.setHighlightRange,
-    isShiftDown: s.isShiftDown,
-    setCursor: s.setCursor,
     setCursor2: s.setCursor2,
-    sourceRangeMap: s.sourceRangeMap,
     setMediaStream: s.setMediaStream,
     isStreamReady: s.isStreamReady,
     setIsStreamReady: s.setIsStreamReady,
-    isMouseDownInStream: s.isMouseDownInStream,
-    cmdId: s.cmdId,
-    setCmdId: s.setCmdId,
-    formatCode: s.formatCode,
+    buttonDownInStream: s.buttonDownInStream,
     addKCLError: s.addKCLError,
     openPanes: s.openPanes,
     setOpenPanes: s.setOpenPanes,
     didDragInStream: s.didDragInStream,
-    setDidDragInStream: s.setDidDragInStream,
     setStreamDimensions: s.setStreamDimensions,
     streamDimensions: s.streamDimensions,
+    setIsExecuting: s.setIsExecuting,
   }))
 
   const {
@@ -134,7 +106,7 @@ export function App() {
       context: { token },
     },
     settings: {
-      context: { showDebugPanel, theme, onboardingStatus },
+      context: { showDebugPanel, onboardingStatus, cameraControls, theme },
     },
   } = useGlobalStateContext()
 
@@ -175,87 +147,12 @@ export function App() {
     }
   }, [loadedCode, setCode])
 
-  // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
-  const onChange = (value: string, viewUpdate: ViewUpdate) => {
-    setCode(value)
-    if (isTauri() && pathParams.id) {
-      // Save the file to disk
-      // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
-      writeTextFile(pathParams.id + '/' + PROJECT_ENTRYPOINT, value).catch(
-        (err) => {
-          // TODO: add Sentry per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
-          console.error('error saving file', err)
-          toast.error('Error saving file, please check file permissions')
-        }
-      )
-    }
-    if (editorView) {
-      editorView?.dispatch({ effects: addLineHighlight.of([0, 0]) })
-    }
-  } //, []);
-  const onUpdate = (viewUpdate: ViewUpdate) => {
-    if (!editorView) {
-      setEditorView(viewUpdate.view)
-    }
-    const ranges = viewUpdate.state.selection.ranges
-
-    const isChange =
-      ranges.length !== selectionRanges.codeBasedSelections.length ||
-      ranges.some(({ from, to }, i) => {
-        return (
-          from !== selectionRanges.codeBasedSelections[i].range[0] ||
-          to !== selectionRanges.codeBasedSelections[i].range[1]
-        )
-      })
-
-    if (!isChange) return
-    const codeBasedSelections: Selections['codeBasedSelections'] = ranges.map(
-      ({ from, to }) => {
-        if (selectionRangeTypeMap[to]) {
-          return {
-            type: selectionRangeTypeMap[to],
-            range: [from, to],
-          }
-        }
-        return {
-          type: 'default',
-          range: [from, to],
-        }
-      }
-    )
-    const idBasedSelections = codeBasedSelections
-      .map(({ type, range }) => {
-        const hasOverlap = Object.entries(sourceRangeMap).filter(
-          ([_, sourceRange]) => {
-            return isOverlap(sourceRange, range)
-          }
-        )
-        if (hasOverlap.length) {
-          return {
-            type,
-            id: hasOverlap[0][0],
-          }
-        }
-      })
-      .filter(Boolean) as any
-
-    engineCommandManager?.cusorsSelected({
-      otherSelections: [],
-      idBasedSelections,
-    })
-
-    setSelectionRanges({
-      otherSelections: [],
-      codeBasedSelections,
-    })
-  }
-  const pixelDensity = window.devicePixelRatio
   const streamWidth = streamRef?.current?.offsetWidth
   const streamHeight = streamRef?.current?.offsetHeight
 
-  const width = streamWidth ? streamWidth * pixelDensity : 0
+  const width = streamWidth ? streamWidth : 0
   const quadWidth = Math.round(width / 4) * 4
-  const height = streamHeight ? streamHeight * pixelDensity : 0
+  const height = streamHeight ? streamHeight : 0
   const quadHeight = Math.round(height / 4) * 4
 
   useLayoutEffect(() => {
@@ -283,16 +180,17 @@ export function App() {
     let unsubFn: any[] = []
     const asyncWrap = async () => {
       try {
-        if (!code) {
+        if (!defferedCode) {
           setAst(null)
           return
         }
-        const _ast = await asyncParser(code)
+        const _ast = await asyncParser(defferedCode)
         setAst(_ast)
         resetLogs()
         resetKCLErrors()
         engineCommandManager.endSession()
         engineCommandManager.startNewSession()
+        setIsExecuting(true)
         const programMemory = await _executor(
           _ast,
           {
@@ -324,16 +222,20 @@ export function App() {
 
         const { artifactMap, sourceRangeMap } =
           await engineCommandManager.waitForAllCommands()
+        setIsExecuting(false)
 
         setArtifactMap({ artifactMap, sourceRangeMap })
         const unSubHover = engineCommandManager.subscribeToUnreliable({
           event: 'highlight_set_entity',
           callback: ({ data }) => {
-            if (!data?.entity_id) {
-              setHighlightRange([0, 0])
-            } else {
+            if (data?.entity_id) {
               const sourceRange = sourceRangeMap[data.entity_id]
               setHighlightRange(sourceRange)
+            } else if (
+              !highlightRange ||
+              (highlightRange[0] !== 0 && highlightRange[1] !== 0)
+            ) {
+              setHighlightRange([0, 0])
             }
           },
         })
@@ -355,6 +257,7 @@ export function App() {
 
         setError()
       } catch (e: any) {
+        setIsExecuting(false)
         if (e instanceof KCLError) {
           addKCLError(e)
         } else {
@@ -368,37 +271,39 @@ export function App() {
     return () => {
       unsubFn.forEach((fn) => fn())
     }
-  }, [code, isStreamReady, engineCommandManager])
+  }, [defferedCode, isStreamReady, engineCommandManager])
 
   const debounceSocketSend = throttle<EngineCommand>((message) => {
     engineCommandManager?.sendSceneCommand(message)
   }, 16)
-  const handleMouseMove: MouseEventHandler<HTMLDivElement> = ({
-    clientX,
-    clientY,
-    ctrlKey,
-    shiftKey,
-    currentTarget,
-    nativeEvent,
-  }) => {
-    nativeEvent.preventDefault()
-    if (isMouseDownInStream) {
-      setDidDragInStream(true)
-    }
+  const handleMouseMove: MouseEventHandler<HTMLDivElement> = (e) => {
+    e.nativeEvent.preventDefault()
 
     const { x, y } = getNormalisedCoordinates({
-      clientX,
-      clientY,
-      el: currentTarget,
+      clientX: e.clientX,
+      clientY: e.clientY,
+      el: e.currentTarget,
       ...streamDimensions,
     })
 
-    const interaction = ctrlKey ? 'zoom' : shiftKey ? 'pan' : 'rotate'
-
     const newCmdId = uuidv4()
-    setCmdId(newCmdId)
 
-    if (cmdId && isMouseDownInStream) {
+    if (buttonDownInStream !== undefined) {
+      const interactionGuards = cameraMouseDragGuards[cameraControls]
+      let interaction: CameraDragInteractionType_type
+
+      const eWithButton = { ...e, button: buttonDownInStream }
+
+      if (interactionGuards.pan.callback(eWithButton)) {
+        interaction = 'pan'
+      } else if (interactionGuards.rotate.callback(eWithButton)) {
+        interaction = 'rotate'
+      } else if (interactionGuards.zoom.dragCallback(eWithButton)) {
+        interaction = 'zoom'
+      } else {
+        return
+      }
+
       debounceSocketSend({
         type: 'modeling_cmd_req',
         cmd: {
@@ -420,16 +325,6 @@ export function App() {
     }
   }
 
-  const extraExtensions = useMemo(() => {
-    if (TEST) return []
-    return [
-      lintGutter(),
-      linter((_view) => {
-        return kclErrToDiagnostic(useStore.getState().kclErrors)
-      }),
-    ]
-  }, [])
-
   return (
     <div
       className="h-screen overflow-hidden relative flex flex-col cursor-pointer select-none"
@@ -440,7 +335,7 @@ export function App() {
         className={
           'transition-opacity transition-duration-75 ' +
           paneOpacity +
-          (isMouseDownInStream ? ' pointer-events-none' : '')
+          (buttonDownInStream ? ' pointer-events-none' : '')
         }
         project={project}
         enableMenu={true}
@@ -449,7 +344,7 @@ export function App() {
       <Resizable
         className={
           'h-full flex flex-col flex-1 z-10 my-5 ml-5 pr-1 transition-opacity transition-duration-75 ' +
-          (isMouseDownInStream || onboardingStatus === 'camera'
+          (buttonDownInStream || onboardingStatus === 'camera'
             ? ' pointer-events-none '
             : ' ') +
           paneOpacity
@@ -473,31 +368,9 @@ export function App() {
             icon={faCode}
             className="open:!mb-2"
             open={openPanes.includes('code')}
+            menu={<CodeMenu />}
           >
-            <div className="px-2 py-1">
-              <button
-                // disabled={!shouldFormat}
-                onClick={formatCode}
-                // className={`${!shouldFormat && 'text-gray-300'}`}
-              >
-                format
-              </button>
-            </div>
-            <div id="code-mirror-override">
-              <CodeMirror
-                className="h-full"
-                value={code}
-                extensions={[
-                  langs.javascript({ jsx: true }),
-                  lineHighlightField,
-                  ...extraExtensions,
-                ]}
-                onChange={onChange}
-                onUpdate={onUpdate}
-                theme={editorTheme}
-                onCreateEditor={(_editorView) => setEditorView(_editorView)}
-              />
-            </div>
+            <TextEditor theme={editorTheme} />
           </CollapsiblePanel>
           <section className="flex flex-col">
             <MemoryPanel
@@ -528,7 +401,7 @@ export function App() {
           className={
             'transition-opacity transition-duration-75 ' +
             paneOpacity +
-            (isMouseDownInStream ? ' pointer-events-none' : '')
+            (buttonDownInStream ? ' pointer-events-none' : '')
           }
           open={openPanes.includes('debug')}
         />

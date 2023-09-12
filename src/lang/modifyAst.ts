@@ -36,14 +36,14 @@ export function addSketchTo(
   const _node = { ...node }
   const _name = name || findUniqueName(node, 'part')
 
-  const startSketchAt = createCallExpression('startSketchAt', [
+  const startSketchAt = createCallExpressionStdLib('startSketchAt', [
     createLiteral('default'),
   ])
   const rotate = createCallExpression(axis === 'xz' ? 'rx' : 'ry', [
     createLiteral(90),
     createPipeSubstitution(),
   ])
-  const initialLineTo = createCallExpression('line', [
+  const initialLineTo = createCallExpressionStdLib('line', [
     createLiteral('default'),
     createPipeSubstitution(),
   ])
@@ -112,7 +112,9 @@ function addToShow(node: Program, name: string): Program {
   const dumbyStartend = { start: 0, end: 0 }
   const showCallIndex = getShowIndex(_node)
   if (showCallIndex === -1) {
-    const showCall = createCallExpression('show', [createIdentifier(name)])
+    const showCall = createCallExpressionStdLib('show', [
+      createIdentifier(name),
+    ])
     const showExpressionStatement: ExpressionStatement = {
       type: 'ExpressionStatement',
       ...dumbyStartend,
@@ -124,7 +126,7 @@ function addToShow(node: Program, name: string): Program {
   const showCall = { ..._node.body[showCallIndex] } as ExpressionStatement
   const showCallArgs = (showCall.expression as CallExpression).arguments
   const newShowCallArgs: Value[] = [...showCallArgs, createIdentifier(name)]
-  const newShowExpression = createCallExpression('show', newShowCallArgs)
+  const newShowExpression = createCallExpressionStdLib('show', newShowCallArgs)
 
   _node.body[showCallIndex] = {
     ...showCall,
@@ -225,7 +227,7 @@ export function extrudeSketch(
   const { node: variableDeclorator, shallowPath: pathToDecleration } =
     getNodeFromPath<VariableDeclarator>(_node, pathToNode, 'VariableDeclarator')
 
-  const extrudeCall = createCallExpression('extrude', [
+  const extrudeCall = createCallExpressionStdLib('extrude', [
     createLiteral(4),
     shouldPipe
       ? createPipeSubstitution()
@@ -313,15 +315,15 @@ export function sketchOnExtrudedFace(
   const newSketch = createVariableDeclaration(
     newSketchName,
     createPipeExpression([
-      createCallExpression('startSketchAt', [
+      createCallExpressionStdLib('startSketchAt', [
         createArrayExpression([createLiteral(0), createLiteral(0)]),
       ]),
-      createCallExpression('lineTo', [
+      createCallExpressionStdLib('lineTo', [
         createArrayExpression([createLiteral(1), createLiteral(1)]),
         createPipeSubstitution(),
       ]),
       createCallExpression('transform', [
-        createCallExpression('getExtrudeWallTransform', [
+        createCallExpressionStdLib('getExtrudeWallTransform', [
           createLiteral(tag),
           createIdentifier(oldSketchName),
         ]),
@@ -414,6 +416,40 @@ export function createPipeSubstitution(): PipeSubstitution {
   }
 }
 
+export function createCallExpressionStdLib(
+  name: string,
+  args: CallExpression['arguments']
+): CallExpression {
+  return {
+    type: 'CallExpression',
+    start: 0,
+    end: 0,
+    callee: {
+      type: 'Identifier',
+      start: 0,
+      end: 0,
+      name,
+    },
+    function: {
+      type: 'StdLib',
+      func: {
+        // We only need the name here to map it back when it serializes
+        // to rust, don't worry about the rest.
+        name,
+        summary: '',
+        description: '',
+        tags: [],
+        returnValue: { type: '', required: false, name: '', schema: {} },
+        args: [],
+        unpublished: false,
+        deprecated: false,
+      },
+    },
+    optional: false,
+    arguments: args,
+  }
+}
+
 export function createCallExpression(
   name: string,
   args: CallExpression['arguments']
@@ -427,6 +463,9 @@ export function createCallExpression(
       start: 0,
       end: 0,
       name,
+    },
+    function: {
+      type: 'InMemory',
     },
     optional: false,
     arguments: args,

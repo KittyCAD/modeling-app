@@ -1,5 +1,8 @@
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
+use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
+
+use crate::executor::SourceRange;
 
 #[derive(Error, Debug, Serialize, Deserialize, ts_rs::TS)]
 #[ts(export)]
@@ -29,7 +32,7 @@ pub enum KclError {
 #[ts(export)]
 pub struct KclErrorDetails {
     #[serde(rename = "sourceRanges")]
-    pub source_ranges: Vec<crate::executor::SourceRange>,
+    pub source_ranges: Vec<SourceRange>,
     #[serde(rename = "msg")]
     pub message: String,
 }
@@ -60,6 +63,37 @@ impl KclError {
         };
 
         (format!("{}: {}", type_, message), line, column)
+    }
+
+    pub fn source_ranges(&self) -> Vec<SourceRange> {
+        match &self {
+            KclError::Syntax(e) => e.source_ranges.clone(),
+            KclError::Semantic(e) => e.source_ranges.clone(),
+            KclError::Type(e) => e.source_ranges.clone(),
+            KclError::Unimplemented(e) => e.source_ranges.clone(),
+            KclError::Unexpected(e) => e.source_ranges.clone(),
+            KclError::ValueAlreadyDefined(e) => e.source_ranges.clone(),
+            KclError::UndefinedValue(e) => e.source_ranges.clone(),
+            KclError::InvalidExpression(e) => e.source_ranges.clone(),
+            KclError::Engine(e) => e.source_ranges.clone(),
+        }
+    }
+    pub fn to_lsp_diagnostic(&self, code: &str) -> Diagnostic {
+        let (message, _, _) = self.get_message_line_column(code);
+        let source_ranges = self.source_ranges();
+
+        Diagnostic {
+            range: source_ranges.first().map(|r| r.to_lsp_range(code)).unwrap_or_default(),
+            severity: Some(DiagnosticSeverity::ERROR),
+            code: None,
+            // TODO: this is neat we can pass a URL to a help page here for this specific error.
+            code_description: None,
+            source: Some("kcl".to_string()),
+            message,
+            related_information: None,
+            tags: None,
+            data: None,
+        }
     }
 }
 

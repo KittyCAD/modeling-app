@@ -5,9 +5,10 @@ use std::collections::HashMap;
 use anyhow::Result;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
-    abstract_syntax_tree_types::{BodyItem, FunctionExpression, Value},
+    abstract_syntax_tree_types::{BodyItem, Function, FunctionExpression, Value},
     engine::EngineConnection,
     errors::{KclError, KclErrorDetails},
 };
@@ -281,9 +282,64 @@ pub struct Position(pub [f64; 3]);
 #[ts(export)]
 pub struct Rotation(pub [f64; 4]);
 
-#[derive(Debug, Default, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Default, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema, Hash, Eq)]
 #[ts(export)]
 pub struct SourceRange(pub [usize; 2]);
+
+impl SourceRange {
+    /// Create a new source range.
+    pub fn new(start: usize, end: usize) -> Self {
+        Self([start, end])
+    }
+
+    /// Get the start of the range.
+    pub fn start(&self) -> usize {
+        self.0[0]
+    }
+
+    /// Get the end of the range.
+    pub fn end(&self) -> usize {
+        self.0[1]
+    }
+
+    /// Check if the range contains a position.
+    pub fn contains(&self, pos: usize) -> bool {
+        pos >= self.start() && pos <= self.end()
+    }
+
+    pub fn start_to_lsp_position(&self, code: &str) -> LspPosition {
+        // Calculate the line and column of the error from the source range.
+        // Lines are zero indexed in vscode so we need to subtract 1.
+        let mut line = code[..self.start()].lines().count();
+        if line > 0 {
+            line = line.saturating_sub(1);
+        }
+        let column = code[..self.start()].lines().last().map(|l| l.len()).unwrap_or_default();
+
+        LspPosition {
+            line: line as u32,
+            character: column as u32,
+        }
+    }
+
+    pub fn end_to_lsp_position(&self, code: &str) -> LspPosition {
+        // Calculate the line and column of the error from the source range.
+        // Lines are zero indexed in vscode so we need to subtract 1.
+        let line = code[..self.end()].lines().count() - 1;
+        let column = code[..self.end()].lines().last().map(|l| l.len()).unwrap_or_default();
+
+        LspPosition {
+            line: line as u32,
+            character: column as u32,
+        }
+    }
+
+    pub fn to_lsp_range(&self, code: &str) -> LspRange {
+        let start = self.start_to_lsp_position(code);
+        let end = self.end_to_lsp_position(code);
+        LspRange { start, end }
+    }
+}
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Clone, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -509,7 +565,6 @@ pub fn execute(
     engine: &mut EngineConnection,
 ) -> Result<ProgramMemory, KclError> {
     let mut pipe_info = PipeInfo::default();
-    let stdlib = crate::std::StdLib::new();
 
     // Iterate over the body of the program.
     for statement in &program.body {
@@ -529,7 +584,8 @@ pub fn execute(
                             _ => (),
                         }
                     }
-                    if fn_name == "show" {
+                    let _show_fn = Box::new(crate::std::Show);
+                    if let Function::StdLib { func: _show_fn } = &call_expr.function {
                         if options != BodyType::Root {
                             return Err(KclError::Semantic(KclErrorDetails {
                                 message: "Cannot call show outside of a root".to_string(),
@@ -539,7 +595,9 @@ pub fn execute(
 
                         memory.return_ = Some(ProgramReturn::Arguments(call_expr.arguments.clone()));
                     } else if let Some(func) = memory.clone().root.get(&fn_name) {
-                        func.call_fn(&args, memory, engine)?;
+                        let result = func.call_fn(&args, memory, engine)?;
+
+                        memory.return_ = result;
                     } else {
                         return Err(KclError::Semantic(KclErrorDetails {
                             message: format!("No such name {} defined", fn_name),
@@ -563,7 +621,7 @@ pub fn execute(
                             memory.add(&var_name, value.clone(), source_range)?;
                         }
                         Value::BinaryExpression(binary_expression) => {
-                            let result = binary_expression.get_result(memory, &mut pipe_info, &stdlib, engine)?;
+                            let result = binary_expression.get_result(memory, &mut pipe_info, engine)?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::FunctionExpression(function_expression) => {
@@ -586,7 +644,7 @@ pub fn execute(
                                         for (index, param) in function_expression.params.iter().enumerate() {
                                             fn_memory.add(
                                                 &param.name,
-                                                args.clone().get(index).unwrap().clone(),
+                                                args.get(index).unwrap().clone(),
                                                 param.into(),
                                             )?;
                                         }
@@ -600,11 +658,11 @@ pub fn execute(
                             )?;
                         }
                         Value::CallExpression(call_expression) => {
-                            let result = call_expression.execute(memory, &mut pipe_info, &stdlib, engine)?;
+                            let result = call_expression.execute(memory, &mut pipe_info, engine)?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::PipeExpression(pipe_expression) => {
-                            let result = pipe_expression.get_result(memory, &mut pipe_info, &stdlib, engine)?;
+                            let result = pipe_expression.get_result(memory, &mut pipe_info, engine)?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::PipeSubstitution(pipe_substitution) => {
@@ -617,11 +675,11 @@ pub fn execute(
                             }));
                         }
                         Value::ArrayExpression(array_expression) => {
-                            let result = array_expression.execute(memory, &mut pipe_info, &stdlib, engine)?;
+                            let result = array_expression.execute(memory, &mut pipe_info, engine)?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::ObjectExpression(object_expression) => {
-                            let result = object_expression.execute(memory, &mut pipe_info, &stdlib, engine)?;
+                            let result = object_expression.execute(memory, &mut pipe_info, engine)?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::MemberExpression(member_expression) => {
@@ -629,7 +687,7 @@ pub fn execute(
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::UnaryExpression(unary_expression) => {
-                            let result = unary_expression.get_result(memory, &mut pipe_info, &stdlib, engine)?;
+                            let result = unary_expression.get_result(memory, &mut pipe_info, engine)?;
                             memory.add(&var_name, result, source_range)?;
                         }
                     }
@@ -637,14 +695,42 @@ pub fn execute(
             }
             BodyItem::ReturnStatement(return_statement) => match &return_statement.argument {
                 Value::BinaryExpression(bin_expr) => {
-                    let result = bin_expr.get_result(memory, &mut pipe_info, &stdlib, engine)?;
+                    let result = bin_expr.get_result(memory, &mut pipe_info, engine)?;
+                    memory.return_ = Some(ProgramReturn::Value(result));
+                }
+                Value::UnaryExpression(unary_expr) => {
+                    let result = unary_expr.get_result(memory, &mut pipe_info, engine)?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::Identifier(identifier) => {
                     let value = memory.get(&identifier.name, identifier.into())?.clone();
                     memory.return_ = Some(ProgramReturn::Value(value));
                 }
-                _ => (),
+                Value::Literal(literal) => {
+                    memory.return_ = Some(ProgramReturn::Value(literal.into()));
+                }
+                Value::ArrayExpression(array_expr) => {
+                    let result = array_expr.execute(memory, &mut pipe_info, engine)?;
+                    memory.return_ = Some(ProgramReturn::Value(result));
+                }
+                Value::ObjectExpression(obj_expr) => {
+                    let result = obj_expr.execute(memory, &mut pipe_info, engine)?;
+                    memory.return_ = Some(ProgramReturn::Value(result));
+                }
+                Value::CallExpression(call_expr) => {
+                    let result = call_expr.execute(memory, &mut pipe_info, engine)?;
+                    memory.return_ = Some(ProgramReturn::Value(result));
+                }
+                Value::MemberExpression(member_expr) => {
+                    let result = member_expr.get_result(memory)?;
+                    memory.return_ = Some(ProgramReturn::Value(result));
+                }
+                Value::PipeExpression(pipe_expr) => {
+                    let result = pipe_expr.get_result(memory, &mut pipe_info, engine)?;
+                    memory.return_ = Some(ProgramReturn::Value(result));
+                }
+                Value::PipeSubstitution(_) => {}
+                Value::FunctionExpression(_) => {}
             },
         }
     }
@@ -660,7 +746,8 @@ mod tests {
 
     pub async fn parse_execute(code: &str) -> Result<ProgramMemory> {
         let tokens = crate::tokeniser::lexer(code);
-        let program = crate::parser::abstract_syntax_tree(&tokens)?;
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast()?;
         let mut mem: ProgramMemory = Default::default();
         let mut engine = EngineConnection::new().await?;
         let memory = execute(program, &mut mem, BodyType::Root, &mut engine)?;
@@ -774,6 +861,140 @@ const part001 = startSketchAt([0, 0])
 ], %)
 
 show(part001)"#;
+
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_with_inline_comment() {
+        let ast = r#"const baseThick = 1
+const armAngle = 60
+
+const baseThickHalf = baseThick / 2
+const halfArmAngle = armAngle / 2
+
+const arrExpShouldNotBeIncluded = [1, 2, 3]
+const objExpShouldNotBeIncluded = { a: 1, b: 2, c: 3 }
+
+const part001 = startSketchAt([0, 0])
+  |> yLineTo(1, %)
+  |> xLine(3.84, %) // selection-range-7ish-before-this
+
+const variableBelowShouldNotBeIncluded = 3
+
+show(part001)"#;
+
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_with_function_literal_in_pipe() {
+        let ast = r#"const w = 20
+const l = 8
+const h = 10
+
+fn thing = () => {
+  return -8
+}
+
+const firstExtrude = startSketchAt([0,0])
+  |> line([0, l], %)
+  |> line([w, 0], %)
+  |> line([0, thing()], %)
+  |> close(%)
+  |> extrude(h, %)
+
+show(firstExtrude)"#;
+
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_with_function_unary_in_pipe() {
+        let ast = r#"const w = 20
+const l = 8
+const h = 10
+
+fn thing = (x) => {
+  return -x
+}
+
+const firstExtrude = startSketchAt([0,0])
+  |> line([0, l], %)
+  |> line([w, 0], %)
+  |> line([0, thing(8)], %)
+  |> close(%)
+  |> extrude(h, %)
+
+show(firstExtrude)"#;
+
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_with_function_array_in_pipe() {
+        let ast = r#"const w = 20
+const l = 8
+const h = 10
+
+fn thing = (x) => {
+  return [0, -x]
+}
+
+const firstExtrude = startSketchAt([0,0])
+  |> line([0, l], %)
+  |> line([w, 0], %)
+  |> line(thing(8), %)
+  |> close(%)
+  |> extrude(h, %)
+
+show(firstExtrude)"#;
+
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_with_function_call_in_pipe() {
+        let ast = r#"const w = 20
+const l = 8
+const h = 10
+
+fn other_thing = (y) => {
+  return -y
+}
+
+fn thing = (x) => {
+  return other_thing(x)
+}
+
+const firstExtrude = startSketchAt([0,0])
+  |> line([0, l], %)
+  |> line([w, 0], %)
+  |> line([0, thing(8)], %)
+  |> close(%)
+  |> extrude(h, %)
+
+show(firstExtrude)"#;
+
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_with_function_sketch() {
+        let ast = r#"const box = (h, l, w) => {
+ const myBox = startSketchAt([0,0])
+    |> line([0, l], %)
+    |> line([w, 0], %)
+    |> line([0, -l], %)
+    |> close(%)
+    |> extrude(h, %)
+
+  return myBox
+}
+
+const fnBox = box(3, 6, 10)
+
+show(fnBox)"#;
 
         parse_execute(ast).await.unwrap();
     }

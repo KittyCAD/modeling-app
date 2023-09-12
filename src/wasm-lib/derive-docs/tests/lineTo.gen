@@ -1,5 +1,7 @@
 #[allow(non_camel_case_types, missing_docs)]
 #[doc = "Std lib function: lineTo"]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, schemars :: JsonSchema, ts_rs :: TS)]
+#[ts(export)]
 pub(crate) struct LineTo {}
 
 #[allow(non_upper_case_globals, missing_docs)]
@@ -42,16 +44,16 @@ impl crate::docs::StdLibFn for LineTo {
         ]
     }
 
-    fn return_value(&self) -> crate::docs::StdLibFnArg {
+    fn return_value(&self) -> Option<crate::docs::StdLibFnArg> {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = true;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
-        crate::docs::StdLibFnArg {
+        Some(crate::docs::StdLibFnArg {
             name: "".to_string(),
             type_: "SketchGroup".to_string(),
             schema: SketchGroup::json_schema(&mut generator),
             required: true,
-        }
+        })
     }
 
     fn unpublished(&self) -> bool {
@@ -64,6 +66,10 @@ impl crate::docs::StdLibFn for LineTo {
 
     fn std_lib_fn(&self) -> crate::std::StdFn {
         line_to
+    }
+
+    fn clone_box(&self) -> Box<dyn crate::docs::StdLibFn> {
+        Box::new(self.clone())
     }
 }
 
