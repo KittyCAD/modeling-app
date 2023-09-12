@@ -35,17 +35,6 @@ jobs:
         with:
           workspaces: "./src/wasm-lib"
 
-      - name: Install ffmpeg
-        run: |
-          sudo apt update
-          sudo apt install \
-            ffmpeg \
-            libavformat-dev \
-            libavutil-dev \
-            libclang-dev \
-            libswscale-dev \
-            --no-install-recommends
-
       - run: yarn build:wasm
       - run: yarn tsc
 
@@ -68,17 +57,6 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: "./src/wasm-lib"
-
-      - name: Install ffmpeg
-        run: |
-          sudo apt update
-          sudo apt install \
-            ffmpeg \
-            libavformat-dev \
-            libavutil-dev \
-            libclang-dev \
-            libswscale-dev \
-            --no-install-recommends
 
       - run: yarn build:wasm
 
