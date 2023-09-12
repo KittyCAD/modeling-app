@@ -3,10 +3,14 @@ import {
   faExclamation,
   faWifi,
 } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Popover } from '@headlessui/react'
 import { useEffect, useState } from 'react'
 import { ActionIcon } from './ActionIcon'
+
+export const NETWORK_CONTENT = {
+  good: 'Network health is good',
+  bad: 'Network issue',
+}
 
 const NETWORK_MESSAGES = {
   offline: 'You are offline',
@@ -47,6 +51,7 @@ export const NetworkHealthIndicator = () => {
             ? 'focus-visible:outline-destroy-80'
             : 'focus-visible:outline-succeed-80')
         }
+        data-testid="network-toggle"
       >
         <span className="sr-only">Network Health</span>
         <ActionIcon
@@ -65,18 +70,25 @@ export const NetworkHealthIndicator = () => {
       </Popover.Button>
       <Popover.Panel className="absolute right-0 left-auto top-full mt-1 w-56 flex flex-col gap-1 divide-y divide-chalkboard-20 dark:divide-chalkboard-70 align-stretch py-2 bg-chalkboard-10 dark:bg-chalkboard-90 rounded shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50 text-sm">
         {!hasIssues ? (
-          <span className="flex items-center justify-center gap-1 px-4">
+          <span
+            className="flex items-center justify-center gap-1 px-4"
+            data-testid="network-good"
+          >
             <ActionIcon
               icon={faCheck}
               bgClassName={'bg-succeed-10/50 dark:bg-succeed-80/50 rounded'}
               iconClassName={'text-succeed-80 dark:text-succeed-30'}
             />
-            Network health is good
+            {NETWORK_CONTENT.good}
           </span>
         ) : (
           <ul className="divide-y divide-chalkboard-20 dark:divide-chalkboard-80">
-            <span className="font-bold text-xs uppercase text-destroy-60 dark:text-destroy-50 px-4">
-              Network issue{networkIssues.length > 1 ? 's' : ''}
+            <span
+              className="font-bold text-xs uppercase text-destroy-60 dark:text-destroy-50 px-4"
+              data-testid="network-bad"
+            >
+              {NETWORK_CONTENT.bad}
+              {networkIssues.length > 1 ? 's' : ''}
             </span>
             {networkIssues.map((issue) => (
               <li
