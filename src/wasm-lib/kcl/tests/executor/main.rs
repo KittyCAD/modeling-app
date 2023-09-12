@@ -28,7 +28,7 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
         .await?;
 
     // Create a temporary file to write the output to.
-    let output_file = std::env::temp_dir().join(&format!("kcl_output_{}.png", uuid::Uuid::new_v4()));
+    let output_file = std::env::temp_dir().join(format!("kcl_output_{}.png", uuid::Uuid::new_v4()));
 
     let tokens = kcl_lib::tokeniser::lexer(code);
     let parser = kcl_lib::parser::Parser::new(tokens);
