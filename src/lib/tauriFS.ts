@@ -5,7 +5,7 @@ import {
   readDir,
   writeTextFile,
 } from '@tauri-apps/api/fs'
-import { documentDir } from '@tauri-apps/api/path'
+import { documentDir, homeDir } from '@tauri-apps/api/path'
 import { isTauri } from './isTauri'
 import { ProjectWithEntryPointMetadata } from '../Router'
 import { metadata } from 'tauri-plugin-fs-extra-api'
@@ -32,11 +32,15 @@ export async function initializeProjectDirectory(directory: string) {
     return directory
   }
 
-  const docDirectory = await documentDir()
+  let docDirectory: string
+  try {
+    docDirectory = await documentDir()
+  } catch (e) {
+    console.log(e)
+    docDirectory = await homeDir() // seems to work better on Linux
+  }
 
   const INITIAL_DEFAULT_DIR = docDirectory + PROJECT_FOLDER
-
-  alert(INITIAL_DEFAULT_DIR)
 
   const defaultDirExists = await exists(INITIAL_DEFAULT_DIR)
 
