@@ -382,6 +382,20 @@ fn inner_angled_line(
         },
     };
 
+    args.send_modeling_cmd(
+        id,
+        ModelingCmd::ExtendPath {
+            path: sketch_group.id,
+            segment: kittycad::types::PathSegment::Line {
+                end: Point3D {
+                    x: to[0],
+                    y: to[1],
+                    z: 0.0,
+                },
+            },
+        },
+    )?;
+
     let mut new_sketch_group = sketch_group.clone();
     new_sketch_group.value.push(current_path);
     Ok(new_sketch_group)

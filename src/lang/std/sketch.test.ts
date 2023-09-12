@@ -101,7 +101,8 @@ describe('testing changeSketchArguments', () => {
   |> ${line}
   |> lineTo([0.46, -5.82], %)
 // |> rx(45, %)
-show(mySketch001)`
+show(mySketch001)
+`
     const code = genCode(lineToChange)
     const expectedCode = genCode(lineAfterChange)
     const ast = parser_wasm(code)
@@ -164,7 +165,8 @@ show(mySketch001)`
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)
   |> lineTo([2, 3], %)
-show(mySketch001)`
+show(mySketch001)
+`
     expect(recast(modifiedAst)).toBe(expectedCode)
   })
 })
@@ -177,7 +179,8 @@ describe('testing addTagForSketchOnFace', () => {
   // |> rx(45, %)
   |> ${line}
   |> lineTo([0.46, -5.82], %)
-show(mySketch001)`
+show(mySketch001)
+`
     const code = genCode(originalLine)
     const ast = parser_wasm(code)
     const programMemory = await enginelessExecutor(ast)
