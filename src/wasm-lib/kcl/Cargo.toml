@@ -48,6 +48,9 @@ debug = true
 
 [dev-dependencies]
 expectorate = "1.0.7"
+image = "0.24.7"
 itertools = "0.11.0"
+kittycad = "0.2.25"
 pretty_assertions = "1.4.0"
 tokio = { version = "1.32.0", features = ["rt-multi-thread", "macros", "time"] }
+twenty-twenty = "0.6.1"
