@@ -36,6 +36,8 @@ export async function initializeProjectDirectory(directory: string) {
 
   const INITIAL_DEFAULT_DIR = docDirectory + PROJECT_FOLDER
 
+  alert(INITIAL_DEFAULT_DIR)
+
   const defaultDirExists = await exists(INITIAL_DEFAULT_DIR)
 
   if (!defaultDirExists) {
