@@ -12,7 +12,7 @@ use tower_lsp::lsp_types::{CompletionItem, CompletionItemKind, DocumentSymbol, R
 use crate::{
     engine::EngineConnection,
     errors::{KclError, KclErrorDetails},
-    executor::{MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange},
+    executor::{MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange, UserVal},
     parser::PIPE_OPERATOR,
 };
 
@@ -1082,23 +1082,23 @@ impl Literal {
 
 impl From<Literal> for MemoryItem {
     fn from(literal: Literal) -> Self {
-        MemoryItem::UserVal {
+        MemoryItem::UserVal(UserVal {
             value: literal.value.clone(),
             meta: vec![Metadata {
                 source_range: literal.into(),
             }],
-        }
+        })
     }
 }
 
 impl From<&Box<Literal>> for MemoryItem {
     fn from(literal: &Box<Literal>) -> Self {
-        MemoryItem::UserVal {
+        MemoryItem::UserVal(UserVal {
             value: literal.value.clone(),
             meta: vec![Metadata {
                 source_range: literal.into(),
             }],
-        }
+        })
     }
 }
 
@@ -1245,12 +1245,12 @@ impl ArrayExpression {
             results.push(result);
         }
 
-        Ok(MemoryItem::UserVal {
+        Ok(MemoryItem::UserVal(UserVal {
             value: results.into(),
             meta: vec![Metadata {
                 source_range: self.into(),
             }],
-        })
+        }))
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -1370,12 +1370,12 @@ impl ObjectExpression {
             object.insert(property.key.name.clone(), result.get_json_value()?);
         }
 
-        Ok(MemoryItem::UserVal {
+        Ok(MemoryItem::UserVal(UserVal {
             value: object.into(),
             meta: vec![Metadata {
                 source_range: self.into(),
             }],
-        })
+        }))
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -1582,12 +1582,12 @@ impl MemberExpression {
 
         if let serde_json::Value::Object(map) = object {
             if let Some(value) = map.get(&property_name) {
-                Ok(MemoryItem::UserVal {
+                Ok(MemoryItem::UserVal(UserVal {
                     value: value.clone(),
                     meta: vec![Metadata {
                         source_range: self.into(),
                     }],
-                })
+                }))
             } else {
                 Err(KclError::UndefinedValue(KclErrorDetails {
                     message: format!("Property {} not found in object", property_name),
@@ -1715,12 +1715,12 @@ impl BinaryExpression {
                 parse_json_value_as_string(&right_json_value),
             ) {
                 let value = serde_json::Value::String(format!("{}{}", left, right));
-                return Ok(MemoryItem::UserVal {
+                return Ok(MemoryItem::UserVal(UserVal {
                     value,
                     meta: vec![Metadata {
                         source_range: self.into(),
                     }],
-                });
+                }));
             }
         }
 
@@ -1735,12 +1735,12 @@ impl BinaryExpression {
             BinaryOperator::Mod => (left % right).into(),
         };
 
-        Ok(MemoryItem::UserVal {
+        Ok(MemoryItem::UserVal(UserVal {
             value,
             meta: vec![Metadata {
                 source_range: self.into(),
             }],
-        })
+        }))
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -1845,12 +1845,12 @@ impl UnaryExpression {
                 .get_json_value()?,
             self.into(),
         )?;
-        Ok(MemoryItem::UserVal {
+        Ok(MemoryItem::UserVal(UserVal {
             value: (-(num)).into(),
             meta: vec![Metadata {
                 source_range: self.into(),
             }],
-        })
+        }))
     }
 
     /// Returns a hover value that includes the given character position.

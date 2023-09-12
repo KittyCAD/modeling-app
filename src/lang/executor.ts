@@ -4,97 +4,23 @@ import {
   ArtifactMap,
   SourceRangeMap,
 } from './std/engineConnection'
+//import { ProgramMemory } from '../wasm-lib/kcl/bindings/ProgramMemory'
 import { ProgramReturn } from '../wasm-lib/kcl/bindings/ProgramReturn'
+import { MemoryItem } from '../wasm-lib/kcl/bindings/MemoryItem'
 import { execute_wasm } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
 import { rangeTypeFix } from './abstractSyntaxTree'
 
-export type SourceRange = [number, number]
-export type PathToNode = [string | number, string][] // [pathKey, nodeType][]
-export type Metadata = {
-  sourceRange: SourceRange
-}
-export type Position = [number, number, number]
-export type Rotation = [number, number, number, number]
+//export type { ProgramMemory } from '../wasm-lib/kcl/bindings/ProgramMemory'
+export type { SourceRange } from '../wasm-lib/kcl/bindings/SourceRange'
+export type { Position } from '../wasm-lib/kcl/bindings/Position'
+export type { Rotation } from '../wasm-lib/kcl/bindings/Rotation'
+export type { Path } from '../wasm-lib/kcl/bindings/Path'
+export type { SketchGroup } from '../wasm-lib/kcl/bindings/SketchGroup'
+export type { MemoryItem } from '../wasm-lib/kcl/bindings/MemoryItem'
 
-interface BasePath {
-  from: [number, number]
-  to: [number, number]
-  name?: string
-  __geoMeta: {
-    id: string
-    sourceRange: SourceRange
-  }
-}
-
-export interface ToPoint extends BasePath {
-  type: 'toPoint'
-}
-
-export interface Base extends BasePath {
-  type: 'base'
-}
-
-export interface HorizontalLineTo extends BasePath {
-  type: 'horizontalLineTo'
-  x: number
-}
-
-export interface AngledLineTo extends BasePath {
-  type: 'angledLineTo'
-  angle: number
-  x?: number
-  y?: number
-}
-
-interface GeoMeta {
-  __geoMeta: {
-    id: string
-    sourceRange: SourceRange
-  }
-}
-
-export type Path = ToPoint | HorizontalLineTo | AngledLineTo | Base
-
-export interface SketchGroup {
-  type: 'sketchGroup'
-  id: string
-  value: Path[]
-  start?: Base
-  position: Position
-  rotation: Rotation
-  __meta: Metadata[]
-}
-
-interface ExtrudePlane {
-  type: 'extrudePlane'
-  position: Position
-  rotation: Rotation
-  name?: string
-}
-
-export type ExtrudeSurface = GeoMeta &
-  ExtrudePlane /* | ExtrudeRadius | ExtrudeSpline */
-
-export interface ExtrudeGroup {
-  type: 'extrudeGroup'
-  id: string
-  value: ExtrudeSurface[]
-  height: number
-  position: Position
-  rotation: Rotation
-  __meta: Metadata[]
-}
-
-/** UserVal not produced by one of our internal functions */
-export interface UserVal {
-  type: 'userVal'
-  value: any
-  __meta: Metadata[]
-}
-
-type MemoryItem = UserVal | SketchGroup | ExtrudeGroup
+export type PathToNode = [string | number, string][]
 
 interface Memory {
   [key: string]: MemoryItem
@@ -102,12 +28,12 @@ interface Memory {
 
 export interface ProgramMemory {
   root: Memory
-  return?: ProgramReturn
+  return: ProgramReturn | null
 }
 
 export const executor = async (
   node: Program,
-  programMemory: ProgramMemory = { root: {} },
+  programMemory: ProgramMemory = { root: {}, return: null },
   engineCommandManager: EngineCommandManager,
   // work around while the gemotry is still be stored on the frontend
   // will be removed when the stream UI is added.
@@ -132,7 +58,7 @@ export const executor = async (
 
 export const _executor = async (
   node: Program,
-  programMemory: ProgramMemory = { root: {} },
+  programMemory: ProgramMemory = { root: {}, return: null },
   engineCommandManager: EngineCommandManager
 ): Promise<ProgramMemory> => {
   try {

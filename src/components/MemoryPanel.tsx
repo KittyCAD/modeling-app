@@ -2,7 +2,7 @@ import ReactJson from 'react-json-view'
 import { CollapsiblePanel, CollapsiblePanelProps } from './CollapsiblePanel'
 import { useStore } from '../useStore'
 import { useMemo } from 'react'
-import { ProgramMemory } from '../lang/executor'
+import { ProgramMemory, Path } from '../lang/executor'
 import { Themes } from '../lib/theme'
 
 interface MemoryPanelProps extends CollapsiblePanelProps {
@@ -49,8 +49,8 @@ export const processMemory = (programMemory: ProgramMemory) => {
   Object.keys(programMemory.root).forEach((key) => {
     const val = programMemory.root[key]
     if (typeof val.value !== 'function') {
-      if (val.type === 'sketchGroup' || val.type === 'extrudeGroup') {
-        processedMemory[key] = val.value.map(({ __geoMeta, ...rest }) => {
+      if (val.type === 'SketchGroup' || val.type === 'ExtrudeGroup') {
+        processedMemory[key] = val.value.map(({ __geoMeta, ...rest }: Path) => {
           return rest
         })
       } else {

@@ -4,7 +4,7 @@ import {
   VariableDeclarator,
   CallExpression,
 } from '../abstractSyntaxTreeTypes'
-import { SketchGroup, SourceRange } from '../executor'
+import { SketchGroup, SourceRange, Path } from '../executor'
 
 export function getSketchSegmentFromSourceRange(
   sketchGroup: SketchGroup,
@@ -23,7 +23,7 @@ export function getSketchSegmentFromSourceRange(
     return { segment: sketchGroup.start, index: -1 }
 
   const lineIndex = sketchGroup.value.findIndex(
-    ({ __geoMeta: { sourceRange } }) =>
+    ({ __geoMeta: { sourceRange } }: Path) =>
       sourceRange[0] <= rangeStart && sourceRange[1] >= rangeEnd
   )
   const line = sketchGroup.value[lineIndex]

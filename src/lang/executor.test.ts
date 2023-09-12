@@ -397,7 +397,10 @@ show(theExtrude)`
 
 // helpers
 
-async function exe(code: string, programMemory: ProgramMemory = { root: {} }) {
+async function exe(
+  code: string,
+  programMemory: ProgramMemory = { root: {}, return: null }
+) {
   const ast = parser_wasm(code)
 
   const result = await enginelessExecutor(ast, programMemory)

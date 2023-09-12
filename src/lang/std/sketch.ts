@@ -4,6 +4,7 @@ import {
   SketchGroup,
   SourceRange,
   PathToNode,
+  MemoryItem,
 } from '../executor'
 import {
   Program,
@@ -197,7 +198,7 @@ export const line: SketchLineHelper = {
     )
     const variableName = varDec.id.name
     const sketch = previousProgramMemory?.root?.[variableName]
-    if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
+    if (sketch.type !== 'SketchGroup') throw new Error('not a SketchGroup')
 
     const newXVal = createLiteral(roundOff(to[0] - from[0], 2))
     const newYVal = createLiteral(roundOff(to[1] - from[1], 2))
@@ -538,7 +539,7 @@ export const angledLineOfXLength: SketchLineHelper = {
     )
     const variableName = varDec.id.name
     const sketch = previousProgramMemory?.root?.[variableName]
-    if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
+    if (sketch.type !== 'SketchGroup') throw new Error('not a SketchGroup')
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const xLength = createLiteral(roundOff(Math.abs(from[0] - to[0]), 2) || 0.1)
     const newLine = createCallback
@@ -611,7 +612,7 @@ export const angledLineOfYLength: SketchLineHelper = {
     )
     const variableName = varDec.id.name
     const sketch = previousProgramMemory?.root?.[variableName]
-    if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
+    if (sketch.type !== 'SketchGroup') throw new Error('not a SketchGroup')
 
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const yLength = createLiteral(roundOff(Math.abs(from[1] - to[1]), 2) || 0.1)
@@ -868,7 +869,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
     const varName = varDec.declarations[0].id.name
     const sketchGroup = previousProgramMemory.root[varName] as SketchGroup
     const intersectPath = sketchGroup.value.find(
-      ({ name }) => name === intersectTagName
+      ({ name }: Path) => name === intersectTagName
     )
     let offset = 0
     if (intersectPath) {
@@ -965,7 +966,7 @@ export function addNewSketchLn({
   >(node, pathToNode, 'PipeExpression')
   const variableName = varDec.id.name
   const sketch = previousProgramMemory?.root?.[variableName]
-  if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
+  if (sketch.type !== 'SketchGroup') throw new Error('not a SketchGroup')
 
   const last = sketch.value[sketch.value.length - 1] || sketch.start
   const from = last.to

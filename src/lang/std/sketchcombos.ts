@@ -28,6 +28,7 @@ import { createFirstArg, getFirstArg, replaceSketchLine } from './sketch'
 import { PathToNode, ProgramMemory } from '../executor'
 import { getSketchSegmentFromSourceRange } from './sketchConstraints'
 import { getAngle, roundOff, normaliseAngle } from '../../lib/utils'
+import { MemoryItem } from 'wasm-lib/kcl/bindings/MemoryItem'
 
 type LineInputsType =
   | 'xAbsolute'
@@ -1452,7 +1453,7 @@ export function transformAstSketchLines({
 
     const varName = varDec.id.name
     const sketchGroup = programMemory.root?.[varName]
-    if (!sketchGroup || sketchGroup.type !== 'sketchGroup')
+    if (!sketchGroup || sketchGroup.type !== 'SketchGroup')
       throw new Error('not a sketch group')
     const seg = getSketchSegmentFromSourceRange(sketchGroup, range).segment
     const referencedSegment = referencedSegmentRange
