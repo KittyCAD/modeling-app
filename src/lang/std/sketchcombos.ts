@@ -1452,7 +1452,7 @@ export function transformAstSketchLines({
 
     const varName = varDec.id.name
     const sketchGroup = programMemory.root?.[varName]
-    if (!sketchGroup || sketchGroup.type !== 'sketchGroup')
+    if (!sketchGroup || sketchGroup.type !== 'SketchGroup')
       throw new Error('not a sketch group')
     const seg = getSketchSegmentFromSourceRange(sketchGroup, range).segment
     const referencedSegment = referencedSegmentRange

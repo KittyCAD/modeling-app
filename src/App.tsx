@@ -192,7 +192,7 @@ export function App() {
               start: null,
             },
           })
-          setProgramMemory({ root: {} })
+          setProgramMemory({ root: {}, return: null })
           engineCommandManager.endSession()
           engineCommandManager.startNewSession()
           return
@@ -209,26 +209,27 @@ export function App() {
           {
             root: {
               _0: {
-                type: 'userVal',
+                type: 'UserVal',
                 value: 0,
                 __meta: [],
               },
               _90: {
-                type: 'userVal',
+                type: 'UserVal',
                 value: 90,
                 __meta: [],
               },
               _180: {
-                type: 'userVal',
+                type: 'UserVal',
                 value: 180,
                 __meta: [],
               },
               _270: {
-                type: 'userVal',
+                type: 'UserVal',
                 value: 270,
                 __meta: [],
               },
             },
+            return: null,
           },
           engineCommandManager
         )
