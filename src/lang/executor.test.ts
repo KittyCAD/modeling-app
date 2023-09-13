@@ -117,10 +117,10 @@ show(mySketch)
   //   ].join('\n')
   //   const { root } = await exe(code)
   //   expect(root.mySk1.value).toHaveLength(3)
-  //   expect(root?.rotated?.type).toBe('sketchGroup')
+  //   expect(root?.rotated?.type).toBe('SketchGroup')
   //   if (
-  //     root?.mySk1?.type !== 'sketchGroup' ||
-  //     root?.rotated?.type !== 'sketchGroup'
+  //     root?.mySk1?.type !== 'SketchGroup' ||
+  //     root?.rotated?.type !== 'SketchGroup'
   //   )
   //     throw new Error('not a sketch group')
   //   expect(root.mySk1.rotation).toEqual([0, 0, 0, 1])
@@ -143,7 +143,7 @@ show(mySketch)
     ].join('\n')
     const { root } = await exe(code)
     expect(root.mySk1).toEqual({
-      type: 'sketchGroup',
+      type: 'SketchGroup',
       start: {
         to: [0, 0],
         from: [0, 0],
@@ -199,7 +199,7 @@ show(mySketch)
     // TODO path to node is probably wrong here, zero indexes are not correct
     expect(root).toEqual({
       three: {
-        type: 'userVal',
+        type: 'UserVal',
         value: 3,
         __meta: [
           {
@@ -208,7 +208,7 @@ show(mySketch)
         ],
       },
       yo: {
-        type: 'userVal',
+        type: 'UserVal',
         value: [1, '2', 3, 9],
         __meta: [
           {
@@ -225,7 +225,7 @@ show(mySketch)
     ].join('\n')
     const { root } = await exe(code)
     expect(root.yo).toEqual({
-      type: 'userVal',
+      type: 'UserVal',
       value: { aStr: 'str', anum: 2, identifier: 3, binExp: 9 },
       __meta: [
         {
@@ -240,7 +240,7 @@ show(mySketch)
     )
     const { root } = await exe(code)
     expect(root.myVar).toEqual({
-      type: 'userVal',
+      type: 'UserVal',
       value: '123',
       __meta: [
         {
