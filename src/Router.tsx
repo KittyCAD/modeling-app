@@ -138,7 +138,7 @@ const router = createBrowserRouter(
         <Auth>
           <Outlet />
           <ModelingMachineProvider>
-          <App />
+            <App />
           </ModelingMachineProvider>
           {!isTauri() && import.meta.env.PROD && <DownloadAppBanner />}
         </Auth>

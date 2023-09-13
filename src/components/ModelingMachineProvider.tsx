@@ -1,7 +1,5 @@
 import { useMachine } from '@xstate/react'
-import { paths } from '../Router'
-import React, { createContext, useEffect, useRef } from 'react'
-import { setThemeClass, Themes } from 'lib/theme'
+import React, { createContext, useRef } from 'react'
 import {
   AnyStateMachine,
   ContextFrom,
@@ -9,7 +7,7 @@ import {
   Prop,
   StateFrom,
 } from 'xstate'
-import { MODELING_PERSIST_KEY, modelingMachine } from 'machines/modelingMachine'
+import { modelingMachine } from 'machines/modelingMachine'
 import { useEngineWithStream } from 'hooks/useEngineWithStream'
 
 type MachineContext<T extends AnyStateMachine> = {
@@ -45,10 +43,34 @@ export const ModelingMachineProvider = ({
   //   >
   // )
 
-  // const [modelingState, modelingSend] = useMachine(modelingMachine, {
-  //   // context: persistedSettings,
-  //   actions: {},
-  // })
+  const [modelingState, modelingSend] = useMachine(modelingMachine, {
+    // context: persistedSettings,
+    actions: {
+      'Modify AST': () => {},
+      'Make selection horizontal': () => {},
+      'Make selection vertical': () => {},
+      'Update code selection cursors': () => {},
+    },
+    guards: {
+      'Can make selection horizontal': () => true,
+      'Can make selection vertical': () => true,
+      'Selection contains axis': () => true,
+      'Selection contains edge': () => true,
+      'Selection contains face': () => true,
+      'Selection contains line': () => true,
+      'Selection contains point': () => true,
+      'Selection is empty': () => true,
+      'Selection is not empty': () => true,
+      'Selection is one face': () => true,
+      'Selection is one or more edges': () => true,
+    },
+    services: {
+      createSketch: async () => {},
+      createLine: async () => {},
+      createExtrude: async () => {},
+      createFillet: async () => {},
+    },
+  })
 
   // useStateMachineCommands({
   //   state: settingsState,
@@ -59,20 +81,17 @@ export const ModelingMachineProvider = ({
   // })
 
   return (
-    // <ModelingMachineContext.Provider
-    //   value={{
-    //     state: modelingState,
-    //     context: modelingState.context,
-    //     send: modelingSend,
-    //   }}
-    // >
-    <div
-      className="h-screen overflow-hidden select-none"
-      ref={streamRef}
+    <ModelingMachineContext.Provider
+      value={{
+        state: modelingState,
+        context: modelingState.context,
+        send: modelingSend,
+      }}
     >
-      {children}
-    </div>
-    // </ModelingMachineContext.Provider>
+      <div className="h-screen overflow-hidden select-none" ref={streamRef}>
+        {children}
+      </div>
+    </ModelingMachineContext.Provider>
   )
 }
 

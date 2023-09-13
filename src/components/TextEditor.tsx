@@ -29,6 +29,7 @@ import {
 import { isOverlap } from 'lib/utils'
 import { kclErrToDiagnostic } from 'lang/errors'
 import { CSSRuleObject } from 'tailwindcss/types/config'
+import { useModelingContext } from 'hooks/useModelingContext'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -76,6 +77,11 @@ export const TextEditor = ({
     setSelectionRanges: s.setSelectionRanges,
     sourceRangeMap: s.sourceRangeMap,
   }))
+
+  const {
+    context: { selectionRanges: machineSelectionRanges },
+    send,
+  } = useModelingContext()
 
   const {
     settings: {
@@ -197,6 +203,14 @@ export const TextEditor = ({
     setSelectionRanges({
       otherSelections: [],
       codeBasedSelections,
+    })
+
+    send({
+      type: 'Set selection',
+      data: {
+        ...machineSelectionRanges,
+        codeBasedSelections,
+      },
     })
   }
 
