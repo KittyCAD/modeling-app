@@ -695,8 +695,10 @@ pub fn start_sketch_at(args: &mut Args) -> Result<StdLibFnResponse, KclError> {
     let sketch_group = inner_start_sketch_at(data, args)?;
 
     Ok(StdLibFnResponse {
+        // pass thru the engine id so we can check it in the cache.
+        // this is the engine id for the whole sketch object, not individual line segments.
+        engine_id: Some(sketch_group.id),
         memory_item: MemoryItem::SketchGroup(sketch_group),
-        engine_id: None,
     })
 }
 

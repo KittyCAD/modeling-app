@@ -472,6 +472,8 @@ export function createCallExpressionStdLib(
     },
     function: {
       type: 'StdLib',
+      // We make the engine id null since we have not executed this code yet.
+      engine_id: null,
       func: {
         // We only need the name here to map it back when it serializes
         // to rust, don't worry about the rest.
