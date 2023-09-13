@@ -1,4 +1,4 @@
-import { useStore, toolTips } from './useStore'
+import { useStore, toolTips, Selections } from './useStore'
 import { extrudeSketch, sketchOnExtrudedFace } from './lang/modifyAst'
 import { getNodePathFromSourceRange } from './lang/queryAst'
 import { HorzVert } from './components/Toolbar/HorzVert'
@@ -8,7 +8,6 @@ import { EqualAngle } from './components/Toolbar/EqualAngle'
 import { Intersect } from './components/Toolbar/Intersect'
 import { SetHorzVertDistance } from './components/Toolbar/SetHorzVertDistance'
 import { SetAngleLength } from './components/Toolbar/setAngleLength'
-import { ConvertToVariable } from './components/Toolbar/ConvertVariable'
 import { SetAbsDistance } from './components/Toolbar/SetAbsDistance'
 import { SetAngleBetween } from './components/Toolbar/SetAngleBetween'
 import { Fragment, useEffect } from 'react'
@@ -16,6 +15,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faX } from '@fortawesome/free-solid-svg-icons'
 import { Popover, Transition } from '@headlessui/react'
 import styles from './Toolbar.module.css'
+import { v4 as uuidv4 } from 'uuid'
+import { useAppMode } from 'hooks/useAppMode'
 
 export const Toolbar = () => {
   const {
@@ -25,6 +26,7 @@ export const Toolbar = () => {
     ast,
     updateAst,
     programMemory,
+    engineCommandManager,
   } = useStore((s) => ({
     guiMode: s.guiMode,
     setGuiMode: s.setGuiMode,
@@ -32,7 +34,9 @@ export const Toolbar = () => {
     ast: s.ast,
     updateAst: s.updateAst,
     programMemory: s.programMemory,
+    engineCommandManager: s.engineCommandManager,
   }))
+  useAppMode()
 
   useEffect(() => {
     console.log('guiMode', guiMode)
@@ -40,7 +44,7 @@ export const Toolbar = () => {
 
   function ToolbarButtons() {
     return (
-      <>
+      <span className="overflow-x-auto">
         {guiMode.mode === 'default' && (
           <button
             onClick={() => {
@@ -72,9 +76,18 @@ export const Toolbar = () => {
             SketchOnFace
           </button>
         )}
-        {(guiMode.mode === 'canEditSketch' || false) && (
+        {guiMode.mode === 'canEditSketch' && (
           <button
             onClick={() => {
+              console.log('guiMode.pathId', guiMode.pathId)
+              engineCommandManager?.sendSceneCommand({
+                type: 'modeling_cmd_req',
+                cmd_id: uuidv4(),
+                cmd: {
+                  type: 'edit_mode_enter',
+                  target: guiMode.pathId,
+                },
+              })
               setGuiMode({
                 mode: 'sketch',
                 sketchMode: 'sketchEdit',
@@ -126,14 +139,23 @@ export const Toolbar = () => {
         )}
 
         {guiMode.mode === 'sketch' && (
-          <button onClick={() => setGuiMode({ mode: 'default' })}>
+          <button
+            onClick={() => {
+              engineCommandManager?.sendSceneCommand({
+                type: 'modeling_cmd_req',
+                cmd_id: uuidv4(),
+                cmd: { type: 'edit_mode_exit' },
+              })
+              setGuiMode({ mode: 'default' })
+            }}
+          >
             Exit sketch
           </button>
         )}
         {toolTips
           .filter(
             // (sketchFnName) => !['angledLineThatIntersects'].includes(sketchFnName)
-            (sketchFnName) => ['line'].includes(sketchFnName)
+            (sketchFnName) => ['sketch_line', 'move'].includes(sketchFnName)
           )
           .map((sketchFnName) => {
             if (
@@ -144,7 +166,18 @@ export const Toolbar = () => {
             return (
               <button
                 key={sketchFnName}
-                onClick={() =>
+                onClick={() => {
+                  engineCommandManager?.sendSceneCommand({
+                    type: 'modeling_cmd_req',
+                    cmd_id: uuidv4(),
+                    cmd: {
+                      type: 'set_tool',
+                      tool:
+                        guiMode.sketchMode === sketchFnName
+                          ? 'select'
+                          : (sketchFnName as any),
+                    },
+                  })
                   setGuiMode({
                     ...guiMode,
                     ...(guiMode.sketchMode === sketchFnName
@@ -154,17 +187,17 @@ export const Toolbar = () => {
                         }
                       : {
                           sketchMode: sketchFnName,
+                          waitingFirstClick: true,
                           isTooltip: true,
                         }),
                   })
-                }
+                }}
               >
                 {sketchFnName}
                 {guiMode.sketchMode === sketchFnName && '✅'}
               </button>
             )
           })}
-        <ConvertToVariable />
         <HorzVert horOrVert="horizontal" />
         <HorzVert horOrVert="vertical" />
         <EqualLength />
@@ -182,7 +215,7 @@ export const Toolbar = () => {
         <Intersect />
         <RemoveConstrainingValues />
         <SetAngleBetween />
-      </>
+      </span>
     )
   }
 

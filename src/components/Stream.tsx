@@ -7,8 +7,14 @@ import {
 } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { useStore } from '../useStore'
-import { getNormalisedCoordinates } from '../lib/utils'
+import { getNormalisedCoordinates, roundOff } from '../lib/utils'
 import Loading from './Loading'
+import { cameraMouseDragGuards } from 'lib/cameraControls'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
+import { Models } from '@kittycad/lib'
+import { addStartSketch } from 'lang/modifyAst'
+import { addNewSketchLn } from 'lang/std/sketch'
 
 export const Stream = ({ className = '' }) => {
   const [isLoading, setIsLoading] = useState(true)
@@ -17,20 +23,36 @@ export const Stream = ({ className = '' }) => {
   const {
     mediaStream,
     engineCommandManager,
-    setIsMouseDownInStream,
+    setButtonDownInStream,
     didDragInStream,
     setDidDragInStream,
     streamDimensions,
+    isExecuting,
+    guiMode,
+    ast,
+    updateAst,
+    setGuiMode,
+    programMemory,
   } = useStore((s) => ({
     mediaStream: s.mediaStream,
     engineCommandManager: s.engineCommandManager,
-    isMouseDownInStream: s.isMouseDownInStream,
-    setIsMouseDownInStream: s.setIsMouseDownInStream,
+    setButtonDownInStream: s.setButtonDownInStream,
     fileId: s.fileId,
     didDragInStream: s.didDragInStream,
     setDidDragInStream: s.setDidDragInStream,
     streamDimensions: s.streamDimensions,
+    isExecuting: s.isExecuting,
+    guiMode: s.guiMode,
+    ast: s.ast,
+    updateAst: s.updateAst,
+    setGuiMode: s.setGuiMode,
+    programMemory: s.programMemory,
   }))
+  const {
+    settings: {
+      context: { cameraControls },
+    },
+  } = useGlobalStateContext()
 
   useEffect(() => {
     if (
@@ -43,40 +65,70 @@ export const Stream = ({ className = '' }) => {
     videoRef.current.srcObject = mediaStream
   }, [mediaStream, engineCommandManager])
 
-  const handleMouseDown: MouseEventHandler<HTMLVideoElement> = ({
-    clientX,
-    clientY,
-    ctrlKey,
-  }) => {
+  const handleMouseDown: MouseEventHandler<HTMLVideoElement> = (e) => {
     if (!videoRef.current) return
     const { x, y } = getNormalisedCoordinates({
-      clientX,
-      clientY,
+      clientX: e.clientX,
+      clientY: e.clientY,
       el: videoRef.current,
       ...streamDimensions,
     })
-    console.log('click', x, y)
 
     const newId = uuidv4()
 
-    const interaction = ctrlKey ? 'pan' : 'rotate'
+    const interactionGuards = cameraMouseDragGuards[cameraControls]
+    let interaction: CameraDragInteractionType_type = 'rotate'
 
-    engineCommandManager?.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'camera_drag_start',
-        interaction,
-        window: { x, y },
-      },
-      cmd_id: newId,
-    })
+    if (
+      interactionGuards.pan.callback(e) ||
+      interactionGuards.pan.lenientDragStartButton === e.button
+    ) {
+      interaction = 'pan'
+    } else if (
+      interactionGuards.rotate.callback(e) ||
+      interactionGuards.rotate.lenientDragStartButton === e.button
+    ) {
+      interaction = 'rotate'
+    } else if (
+      interactionGuards.zoom.dragCallback(e) ||
+      interactionGuards.zoom.lenientDragStartButton === e.button
+    ) {
+      interaction = 'zoom'
+    }
 
-    setIsMouseDownInStream(true)
+    if (guiMode.mode === 'sketch' && guiMode.sketchMode === ('move' as any)) {
+      engineCommandManager?.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd: {
+          type: 'handle_mouse_drag_start',
+          window: { x, y },
+        },
+        cmd_id: newId,
+      })
+    } else if (
+      !(
+        guiMode.mode === 'sketch' &&
+        guiMode.sketchMode === ('sketch_line' as any)
+      )
+    ) {
+      engineCommandManager?.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd: {
+          type: 'camera_drag_start',
+          interaction,
+          window: { x, y },
+        },
+        cmd_id: newId,
+      })
+    }
+
+    setButtonDownInStream(e.button)
     setClickCoords({ x, y })
   }
 
   const handleScroll: WheelEventHandler<HTMLVideoElement> = (e) => {
-    e.preventDefault()
+    if (!cameraMouseDragGuards[cameraControls].zoom.scrollCallback(e)) return
+
     engineCommandManager?.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd: {
@@ -93,6 +145,7 @@ export const Stream = ({ className = '' }) => {
     ctrlKey,
   }) => {
     if (!videoRef.current) return
+    setButtonDownInStream(undefined)
     const { x, y } = getNormalisedCoordinates({
       clientX,
       clientY,
@@ -103,7 +156,7 @@ export const Stream = ({ className = '' }) => {
     const newCmdId = uuidv4()
     const interaction = ctrlKey ? 'pan' : 'rotate'
 
-    engineCommandManager?.sendSceneCommand({
+    const command: Models['WebSocketRequest_type'] = {
       type: 'modeling_cmd_req',
       cmd: {
         type: 'camera_drag_end',
@@ -111,9 +164,8 @@ export const Stream = ({ className = '' }) => {
         window: { x, y },
       },
       cmd_id: newCmdId,
-    })
+    }
 
-    setIsMouseDownInStream(false)
     if (!didDragInStream) {
       engineCommandManager?.sendSceneCommand({
         type: 'modeling_cmd_req',
@@ -125,6 +177,95 @@ export const Stream = ({ className = '' }) => {
         cmd_id: uuidv4(),
       })
     }
+
+    if (!didDragInStream && guiMode.mode === 'default') {
+      command.cmd = {
+        type: 'select_with_point',
+        selection_type: 'add',
+        selected_at_window: { x, y },
+      }
+    } else if (
+      (!didDragInStream &&
+        guiMode.mode === 'sketch' &&
+        ['move', 'select'].includes(guiMode.sketchMode)) ||
+      (guiMode.mode === 'sketch' &&
+        guiMode.sketchMode === ('sketch_line' as any))
+    ) {
+      command.cmd = {
+        type: 'mouse_click',
+        window: { x, y },
+      }
+    } else if (
+      guiMode.mode === 'sketch' &&
+      guiMode.sketchMode === ('move' as any)
+    ) {
+      command.cmd = {
+        type: 'handle_mouse_drag_end',
+        window: { x, y },
+      }
+    }
+    engineCommandManager?.sendSceneCommand(command).then(async ({ data }) => {
+      if (command.cmd.type !== 'mouse_click' || !ast) return
+      if (
+        !(
+          guiMode.mode === 'sketch' &&
+          guiMode.sketchMode === ('sketch_line' as any as 'line')
+        )
+      )
+        return
+
+      if (data?.data?.entities_modified?.length && guiMode.waitingFirstClick) {
+        const curve = await engineCommandManager?.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'curve_get_control_points',
+            curve_id: data?.data?.entities_modified[0],
+          },
+        })
+        const coords: { x: number; y: number }[] =
+          curve.data.data.control_points
+        const _addStartSketch = addStartSketch(
+          ast,
+          [roundOff(coords[0].x), roundOff(coords[0].y)],
+          [
+            roundOff(coords[1].x - coords[0].x),
+            roundOff(coords[1].y - coords[0].y),
+          ]
+        )
+        const _modifiedAst = _addStartSketch.modifiedAst
+        const _pathToNode = _addStartSketch.pathToNode
+
+        setGuiMode({
+          ...guiMode,
+          pathToNode: _pathToNode,
+          waitingFirstClick: false,
+        })
+        updateAst(_modifiedAst)
+      } else if (
+        data?.data?.entities_modified?.length &&
+        !guiMode.waitingFirstClick
+      ) {
+        const curve = await engineCommandManager?.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'curve_get_control_points',
+            curve_id: data?.data?.entities_modified[0],
+          },
+        })
+        const coords: { x: number; y: number }[] =
+          curve.data.data.control_points
+        const _modifiedAst = addNewSketchLn({
+          node: ast,
+          programMemory,
+          to: [coords[1].x, coords[1].y],
+          fnName: 'line',
+          pathToNode: guiMode.pathToNode,
+        }).modifiedAst
+        updateAst(_modifiedAst)
+      }
+    })
     setDidDragInStream(false)
     setClickCoords(undefined)
   }
@@ -155,7 +296,8 @@ export const Stream = ({ className = '' }) => {
         onWheel={handleScroll}
         onPlay={() => setIsLoading(false)}
         onMouseMoveCapture={handleMouseMove}
-        className="w-full h-full"
+        className={`w-full h-full ${isExecuting && 'blur-md'}`}
+        style={{ transitionDuration: '200ms', transitionProperty: 'filter' }}
       />
       {isLoading && (
         <div className="text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">

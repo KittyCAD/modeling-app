@@ -6,13 +6,22 @@ import {
 import { ActionButton } from '../components/ActionButton'
 import { AppHeader } from '../components/AppHeader'
 import { open } from '@tauri-apps/api/dialog'
-import { BaseUnit, baseUnits } from '../useStore'
+import {
+  BaseUnit,
+  DEFAULT_PROJECT_NAME,
+  baseUnits,
+} from '../machines/settingsMachine'
 import { Toggle } from '../components/Toggle/Toggle'
 import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { IndexLoaderData, paths } from '../Router'
 import { Themes } from '../lib/theme'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import {
+  CameraSystem,
+  cameraSystems,
+  cameraMouseDragGuards,
+} from 'lib/cameraControls'
 import { UnitSystem } from 'machines/settingsMachine'
 
 export const Settings = () => {
@@ -25,12 +34,13 @@ export const Settings = () => {
       send,
       state: {
         context: {
+          baseUnit,
+          cameraControls,
+          defaultDirectory,
           defaultProjectName,
           showDebugPanel,
-          defaultDirectory,
-          unitSystem,
-          baseUnit,
           theme,
+          unitSystem,
         },
       },
     },
@@ -82,6 +92,42 @@ export const Settings = () => {
           , and start a discussion if you don't see it! Your feedback will help
           us prioritize what to build next.
         </p>
+        <SettingsSection
+          title="Camera Controls"
+          description="How you want to control the camera in the 3D view"
+        >
+          <select
+            id="camera-controls"
+            className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
+            value={cameraControls}
+            onChange={(e) => {
+              send({
+                type: 'Set Camera Controls',
+                data: { cameraControls: e.target.value as CameraSystem },
+              })
+            }}
+          >
+            {cameraSystems.map((program) => (
+              <option key={program} value={program}>
+                {program}
+              </option>
+            ))}
+          </select>
+          <ul className="text-sm my-2 mx-4 leading-relaxed">
+            <li>
+              <strong>Pan:</strong>{' '}
+              {cameraMouseDragGuards[cameraControls].pan.description}
+            </li>
+            <li>
+              <strong>Zoom:</strong>{' '}
+              {cameraMouseDragGuards[cameraControls].zoom.description}
+            </li>
+            <li>
+              <strong>Rotate:</strong>{' '}
+              {cameraMouseDragGuards[cameraControls].rotate.description}
+            </li>
+          </ul>
+        </SettingsSection>
         {(window as any).__TAURI__ && (
           <>
             <SettingsSection
@@ -118,10 +164,14 @@ export const Settings = () => {
                 className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
                 defaultValue={defaultProjectName}
                 onBlur={(e) => {
+                  const newValue = e.target.value.trim() || DEFAULT_PROJECT_NAME
                   send({
                     type: 'Set Default Project Name',
-                    data: { defaultProjectName: e.target.value },
+                    data: {
+                      defaultProjectName: newValue,
+                    },
                   })
+                  e.target.value = newValue
                 }}
                 autoCapitalize="off"
                 autoComplete="off"

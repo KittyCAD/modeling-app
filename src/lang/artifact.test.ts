@@ -21,7 +21,7 @@ show(mySketch001)`
     )
     expect(shown).toEqual([
       {
-        type: 'sketchGroup',
+        type: 'SketchGroup',
         start: {
           to: [0, 0],
           from: [0, 0],
@@ -77,7 +77,7 @@ show(mySketch001)`
     )
     expect(shown).toEqual([
       {
-        type: 'extrudeGroup',
+        type: 'ExtrudeGroup',
         id: expect.any(String),
         value: [],
         height: 2,
@@ -117,7 +117,7 @@ show(theExtrude, sk2)`
     )
     expect(geos).toEqual([
       {
-        type: 'extrudeGroup',
+        type: 'ExtrudeGroup',
         id: expect.any(String),
         value: [],
         height: 2,
@@ -126,7 +126,7 @@ show(theExtrude, sk2)`
         __meta: [{ sourceRange: [13, 34] }],
       },
       {
-        type: 'extrudeGroup',
+        type: 'ExtrudeGroup',
         id: expect.any(String),
         value: [],
         height: 2,

@@ -56,6 +56,27 @@ export function throttle<T>(
   return throttled
 }
 
+// takes a function and executes it after the wait time, if the function is called again before the wait time is up, the timer is reset
+export function defferExecution<T>(func: (args: T) => any, wait: number) {
+  let timeout: ReturnType<typeof setTimeout> | null
+  let latestArgs: T
+
+  function later() {
+    timeout = null
+    func(latestArgs)
+  }
+
+  function deffered(args: T) {
+    latestArgs = args
+    if (timeout) {
+      clearTimeout(timeout)
+    }
+    timeout = setTimeout(later, wait)
+  }
+
+  return deffered
+}
+
 export function getNormalisedCoordinates({
   clientX,
   clientY,

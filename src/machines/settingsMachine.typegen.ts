@@ -15,6 +15,7 @@ export interface Typegen0 {
   eventsCausingActions: {
     persistSettings:
       | 'Set Base Unit'
+      | 'Set Camera Controls'
       | 'Set Default Directory'
       | 'Set Default Project Name'
       | 'Set Onboarding Status'
@@ -24,6 +25,7 @@ export interface Typegen0 {
       | 'Toggle Debug Panel'
     setThemeClass:
       | 'Set Base Unit'
+      | 'Set Camera Controls'
       | 'Set Default Directory'
       | 'Set Default Project Name'
       | 'Set Onboarding Status'
@@ -34,6 +36,7 @@ export interface Typegen0 {
       | 'xstate.init'
     toastSuccess:
       | 'Set Base Unit'
+      | 'Set Camera Controls'
       | 'Set Default Directory'
       | 'Set Default Project Name'
       | 'Set Text Wrapping'

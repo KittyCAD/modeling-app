@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { ActionButton } from '../components/ActionButton'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import { isReducedMotion } from 'lang/util'
+import { AstExplorer } from './AstExplorer'
 
 type SketchModeCmd = Extract<
   Extract<EngineCommand, { type: 'modeling_cmd_req' }>['cmd'],
@@ -94,6 +95,9 @@ export const DebugPanel = ({ className, ...props }: CollapsiblePanelProps) => {
         >
           Send sketch mode command
         </ActionButton>
+        <div style={{ height: '400px' }} className="overflow-y-auto">
+          <AstExplorer />
+        </div>
       </section>
     </CollapsiblePanel>
   )

@@ -144,7 +144,7 @@ export function useCalc({
     try {
       const code = `const __result__ = ${value}\nshow(__result__)`
       const ast = parser_wasm(code)
-      const _programMem: any = { root: {} }
+      const _programMem: any = { root: {}, return: null }
       availableVarInfo.variables.forEach(({ key, value }) => {
         _programMem.root[key] = { type: 'userVal', value, __meta: [] }
       })
@@ -198,29 +198,25 @@ export const CreateNewVariable = ({
   isNewVariableNameUnique,
   setNewVariableName,
   shouldCreateVariable,
-  setShouldCreateVariable,
+  setShouldCreateVariable = () => {},
   showCheckbox = true,
 }: {
   isNewVariableNameUnique: boolean
   newVariableName: string
   setNewVariableName: (a: string) => void
-  shouldCreateVariable: boolean
-  setShouldCreateVariable: (a: boolean) => void
+  shouldCreateVariable?: boolean
+  setShouldCreateVariable?: (a: boolean) => void
   showCheckbox?: boolean
 }) => {
   return (
     <>
-      <label
-        htmlFor="create-new-variable"
-        className="block text-sm font-medium text-gray-700 mt-3 font-mono"
-      >
+      <label htmlFor="create-new-variable" className="block mt-3 font-mono">
         Create new variable
       </label>
-      <div className="mt-1 flex flex-1">
+      <div className="mt-1 flex gap-2 items-center">
         {showCheckbox && (
           <input
             type="checkbox"
-            className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md font-mono pl-1 flex-shrink"
             checked={shouldCreateVariable}
             onChange={(e) => {
               setShouldCreateVariable(e.target.checked)
@@ -232,7 +228,10 @@ export const CreateNewVariable = ({
           disabled={!shouldCreateVariable}
           name="create-new-variable"
           id="create-new-variable"
-          className={`shadow-sm font-[monospace] focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md font-mono pl-1 flex-shrink-0 ${
+          autoFocus={true}
+          autoCapitalize="off"
+          autoCorrect="off"
+          className={`font-mono flex-1 sm:text-sm px-2 py-1 rounded-sm bg-chalkboard-10 dark:bg-chalkboard-90 text-chalkboard-90 dark:text-chalkboard-10 ${
             !shouldCreateVariable ? 'opacity-50' : ''
           }`}
           value={newVariableName}

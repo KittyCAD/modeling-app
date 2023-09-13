@@ -1,6 +1,7 @@
 //! Functions implemented for language execution.
 
 pub mod extrude;
+pub mod math;
 pub mod segment;
 pub mod sketch;
 pub mod utils;
@@ -61,6 +62,10 @@ impl StdLib {
             Box::new(crate::std::sketch::Close),
             Box::new(crate::std::sketch::Arc),
             Box::new(crate::std::sketch::BezierCurve),
+            Box::new(crate::std::math::Cos),
+            Box::new(crate::std::math::Sin),
+            Box::new(crate::std::math::Tan),
+            Box::new(crate::std::math::Pi),
         ];
 
         let mut fns = HashMap::new();
@@ -103,12 +108,12 @@ impl<'a> Args<'a> {
     }
 
     fn make_user_val_from_json(&self, j: serde_json::Value) -> Result<MemoryItem, KclError> {
-        Ok(MemoryItem::UserVal {
+        Ok(MemoryItem::UserVal(crate::executor::UserVal {
             value: j,
             meta: vec![Metadata {
                 source_range: self.source_range,
             }],
-        })
+        }))
     }
 
     fn make_user_val_from_f64(&self, f: f64) -> Result<MemoryItem, KclError> {
@@ -120,6 +125,21 @@ impl<'a> Args<'a> {
                 })
             },
         )?))
+    }
+
+    fn get_number(&self) -> Result<f64, KclError> {
+        let first_value = self
+            .args
+            .first()
+            .ok_or_else(|| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Expected a number as the first argument, found `{:?}`", self.args),
+                    source_ranges: vec![self.source_range],
+                })
+            })?
+            .get_json_value()?;
+
+        parse_json_number_as_f64(&first_value, self.source_range)
     }
 
     fn get_number_array(&self) -> Result<Vec<f64>, KclError> {
@@ -591,7 +611,7 @@ mod tests {
             buf.push_str(&fn_docs);
         }
 
-        expectorate::assert_contents("../../../docs/kcl.md", &buf);
+        expectorate::assert_contents("../../../docs/kcl/std.md", &buf);
     }
 
     #[test]
@@ -606,7 +626,7 @@ mod tests {
         }
 
         expectorate::assert_contents(
-            "../../../docs/kcl.json",
+            "../../../docs/kcl/std.json",
             &serde_json::to_string_pretty(&json_data).unwrap(),
         );
     }

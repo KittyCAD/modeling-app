@@ -41,6 +41,16 @@ jobs:
       - uses: taiki-e/install-action@nextest
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2.6.1
+      - name: Install ffmpeg
+        run: |
+          sudo apt update
+          sudo apt install \
+            ffmpeg \
+            libavformat-dev \
+            libavutil-dev \
+            libclang-dev \
+            libswscale-dev \
+            --no-install-recommends
       - name: cargo test
         shell: bash
         run: |-
