@@ -755,7 +755,6 @@ impl Parser {
 
     fn make_value(&self, index: usize) -> Result<ValueReturn, KclError> {
         let current_token = self.get_token(index)?;
-        println!("make_value: {:?}", current_token);
         let next = self.next_meaningful_token(index, None)?;
         if let Some(next_token) = &next.token {
             if next_token.token_type == TokenType::Brace && next_token.value == "(" {
@@ -1292,6 +1291,18 @@ impl Parser {
         previous_declarators: Vec<VariableDeclarator>,
     ) -> Result<VariableDeclaratorsReturn, KclError> {
         let current_token = self.get_token(index)?;
+
+        // Make sure they are not assigning a variable to a reserved keyword.
+        if current_token.token_type == TokenType::Keyword {
+            return Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![current_token.into()],
+                message: format!(
+                    "Cannot assign a variable to a reserved keyword: {}",
+                    current_token.value
+                ),
+            }));
+        }
+
         let assignment = self.next_meaningful_token(index, None)?;
         let Some(assignment_token) = assignment.token else {
             return Err(KclError::Unimplemented(KclErrorDetails {
@@ -1354,27 +1365,38 @@ impl Parser {
     fn make_params(&self, index: usize, previous_params: Vec<Identifier>) -> Result<ParamsResult, KclError> {
         let brace_or_comma_token = self.get_token(index)?;
         let argument = self.next_meaningful_token(index, None)?;
-        if let Some(argument_token) = argument.token {
-            let should_finish_recursion = (argument_token.token_type == TokenType::Brace
-                && argument_token.value == ")")
-                || (brace_or_comma_token.token_type == TokenType::Brace && brace_or_comma_token.value == ")");
-            if should_finish_recursion {
-                return Ok(ParamsResult {
-                    params: previous_params,
-                    last_index: index,
-                });
-            }
-            let next_brace_or_comma_token = self.next_meaningful_token(argument.index, None)?;
-            let identifier = self.make_identifier(argument.index)?;
-            let mut _previous_params = previous_params;
-            _previous_params.push(identifier);
-            self.make_params(next_brace_or_comma_token.index, _previous_params)
-        } else {
-            Err(KclError::Unimplemented(KclErrorDetails {
+        let Some(argument_token) = argument.token else {
+            return Err(KclError::Unimplemented(KclErrorDetails {
                 source_ranges: vec![brace_or_comma_token.into()],
-                message: format!("Unexpected token {}", brace_or_comma_token.value),
-            }))
+                message: format!("expected a function parameter, found: {}", brace_or_comma_token.value),
+            }));
+        };
+
+        let should_finish_recursion = (argument_token.token_type == TokenType::Brace && argument_token.value == ")")
+            || (brace_or_comma_token.token_type == TokenType::Brace && brace_or_comma_token.value == ")");
+        if should_finish_recursion {
+            return Ok(ParamsResult {
+                params: previous_params,
+                last_index: index,
+            });
         }
+
+        // Make sure they are not assigning a variable to a reserved keyword.
+        if argument_token.token_type == TokenType::Keyword {
+            return Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![argument_token.clone().into()],
+                message: format!(
+                    "Cannot assign a variable to a reserved keyword: {}",
+                    argument_token.value
+                ),
+            }));
+        }
+
+        let next_brace_or_comma_token = self.next_meaningful_token(argument.index, None)?;
+        let identifier = self.make_identifier(argument.index)?;
+        let mut _previous_params = previous_params;
+        _previous_params.push(identifier);
+        self.make_params(next_brace_or_comma_token.index, _previous_params)
     }
 
     fn make_unary_expression(&self, index: usize) -> Result<UnaryExpressionResult, KclError> {
@@ -3222,5 +3244,46 @@ e
         };
 
         assert_eq!(result, expected_result);
+    }
+
+    #[test]
+    fn test_error_keyword_in_variable() {
+        let some_program_string = r#"const let = "thing""#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert_eq!(
+            result.err().unwrap().to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([6, 9])], message: "Cannot assign a variable to a reserved keyword: let" }"#
+        );
+    }
+
+    #[test]
+    fn test_error_keyword_in_fn_name() {
+        let some_program_string = r#"fn let = () {}"#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert_eq!(
+            result.err().unwrap().to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([3, 6])], message: "Cannot assign a variable to a reserved keyword: let" }"#
+        );
+    }
+
+    #[test]
+    fn test_error_keyword_in_fn_args() {
+        let some_program_string = r#"fn thing = (let) => {
+    return 1
+}"#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert_eq!(
+            result.err().unwrap().to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([12, 15])], message: "Cannot assign a variable to a reserved keyword: let" }"#
+        );
     }
 }
