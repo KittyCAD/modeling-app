@@ -2995,7 +2995,10 @@ z(-[["#,
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
-        assert!(result.err().unwrap().to_string().contains("unexpected end"));
+        assert_eq!(
+            result.err().unwrap().to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([1, 2])], message: "missing a closing brace for the function call" }"#
+        );
     }
 
     #[test]
@@ -3007,7 +3010,10 @@ z(-[["#,
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
-        assert!(result.err().unwrap().to_string().contains("unexpected end"));
+        assert_eq!(
+            result.err().unwrap().to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([0, 1])], message: "missing a closing brace for the function call" }"#
+        );
     }
 
     #[test]
