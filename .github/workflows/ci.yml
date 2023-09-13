@@ -153,7 +153,7 @@ jobs:
     env:
       VERSION_NO_V: ${{ needs.build-test-web.outputs.version }}
       PUB_DATE: "2020-06-22T19:25:57Z"  # TODO: replace with {{ github.event.release.created_at }}
-      NOTES: "line1\\nline2\\nline3\\n"  # TODO: replace with {{ github.event.release.body }}
+      NOTES: "Line1\\nLine2\\nLine3\\n"  # TODO: replace with {{ github.event.release.body }}
     steps:
 
       - name: Generate the download static endpoint
@@ -181,8 +181,24 @@ jobs:
                   "url": $windows_url
                 }
               }
-            }' > download.json
-            cat download.json
+            }' > last_download.json
+            cat last_download.json
+
+      - name: Authenticate to Google Cloud
+        uses: 'google-github-actions/auth@v1.1.1'
+        with:
+          credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1.1.1
+        with:
+          project_id: kittycadapi
+
+      - name: Upload download endpoint to public bucket
+        uses: google-github-actions/upload-cloud-storage@v1.0.3
+        with:
+          path: last_download.json
+          destination: dl.kittycad.io/releases/modeling-app/test  # TODO: remove test dir
 
 
   publish-apps-release:
