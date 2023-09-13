@@ -257,9 +257,8 @@ export const TextEditor = ({
                     : e.shiftKey
                     ? 10
                     : 1
-                const pixelsPerIncrement = 3
 
-                const delta = (e.movementX / pixelsPerIncrement) * multiplier
+                const delta = e.movementX * multiplier
 
                 const newVal = roundOff(
                   Number(text) + delta,
