@@ -897,6 +897,8 @@ export const close: SketchLineHelper = {
     node,
     previousProgramMemory,
     pathToNode,
+    to,
+    from,
     replaceExisting,
     referencedSegment,
     createCallback,
@@ -916,9 +918,7 @@ export const close: SketchLineHelper = {
     const sketch = previousProgramMemory?.root?.[variableName]
     if (sketch.type !== 'SketchGroup') throw new Error('not a SketchGroup')
 
-    const callExp = createCallExpression('close', [
-      createPipeSubstitution(),
-    ])
+    const callExp = createCallExpression('close', [createPipeSubstitution()])
     if (pipe.type === 'PipeExpression') {
       pipe.body = [...pipe.body, callExp]
     } else {
@@ -1000,10 +1000,10 @@ interface CreateLineFnCallArgs {
   pathToNode: PathToNode
 }
 
-function compareVec2Epsilon(vec1, vec2) {
+function compareVec2Epsilon(vec1: [number, number], vec2: [number, number]) {
   let compareEpsilon = 0.015625 // or 2^-6
-  let xDifference =  Math.abs(vec1[0] - vec2[0])
-  let yDifference =  Math.abs(vec1[0] - vec2[0])
+  let xDifference = Math.abs(vec1[0] - vec2[0])
+  let yDifference = Math.abs(vec1[0] - vec2[0])
   return xDifference < compareEpsilon && yDifference < compareEpsilon
 }
 
@@ -1027,9 +1027,11 @@ export function addNewSketchLn({
   const sketch = previousProgramMemory?.root?.[variableName]
   if (sketch.type !== 'SketchGroup') throw new Error('not a SketchGroup')
 
+  const last = sketch.value[sketch.value.length - 1] || sketch.start
+  const from = last.to
   if (compareVec2Epsilon(to, sketch.start.from)) {
     // I imagine in the future there may be more than just close
-    // as this now assumes it's always the same. Perhaps we could derive 
+    // as this now assumes it's always the same. Perhaps we could derive
     // the close type from the fnName in the future.
     const { add, updateArgs } = sketchLineHelperMap?.['close'] || {}
 
@@ -1037,11 +1039,11 @@ export function addNewSketchLn({
       node,
       previousProgramMemory,
       pathToNode,
+      to,
+      from,
       replaceExisting: false,
     })
   } else {
-    const last = sketch.value[sketch.value.length - 1] || sketch.start
-    const from = last.to
     const { add, updateArgs } = sketchLineHelperMap?.[fnName] || {}
     if (!add || !updateArgs) throw new Error('not a sketch line helper')
 
