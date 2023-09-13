@@ -1555,6 +1555,38 @@ impl MemberExpression {
         None
     }
 
+    pub fn get_result_array(&self, memory: &mut ProgramMemory, index: usize) -> Result<MemoryItem, KclError> {
+        let array = match &self.object {
+            MemberObject::MemberExpression(member_expr) => member_expr.get_result(memory)?,
+            MemberObject::Identifier(identifier) => {
+                let value = memory.get(&identifier.name, identifier.into())?;
+                value.clone()
+            }
+        }
+        .get_json_value()?;
+
+        if let serde_json::Value::Array(array) = array {
+            if let Some(value) = array.get(index) {
+                Ok(MemoryItem::UserVal(UserVal {
+                    value: value.clone(),
+                    meta: vec![Metadata {
+                        source_range: self.into(),
+                    }],
+                }))
+            } else {
+                Err(KclError::UndefinedValue(KclErrorDetails {
+                    message: format!("index {} not found in array", index),
+                    source_ranges: vec![self.clone().into()],
+                }))
+            }
+        } else {
+            Err(KclError::Semantic(KclErrorDetails {
+                message: format!("MemberExpression array is not an array: {:?}", array),
+                source_ranges: vec![self.clone().into()],
+            }))
+        }
+    }
+
     pub fn get_result(&self, memory: &mut ProgramMemory) -> Result<MemoryItem, KclError> {
         let property_name = match &self.property {
             LiteralIdentifier::Identifier(identifier) => identifier.name.to_string(),
@@ -1563,9 +1595,12 @@ impl MemberExpression {
                 // Parse this as a string.
                 if let serde_json::Value::String(string) = value {
                     string
+                } else if let serde_json::Value::Number(_) = &value {
+                    // It can also be a number if we are getting a member of an array.
+                    return self.get_result_array(memory, parse_json_number_as_usize(&value, self.into())?);
                 } else {
                     return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!("Expected string literal for property name, found {:?}", value),
+                        message: format!("Expected string literal or number for property name, found {:?}", value),
                         source_ranges: vec![literal.into()],
                     }));
                 }
@@ -1763,6 +1798,22 @@ pub fn parse_json_number_as_f64(j: &serde_json::Value, source_range: SourceRange
         Err(KclError::Syntax(KclErrorDetails {
             source_ranges: vec![source_range],
             message: format!("Invalid number: {}", j),
+        }))
+    }
+}
+
+pub fn parse_json_number_as_usize(j: &serde_json::Value, source_range: SourceRange) -> Result<usize, KclError> {
+    if let serde_json::Value::Number(n) = &j {
+        Ok(n.as_i64().ok_or_else(|| {
+            KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![source_range],
+                message: format!("Invalid index: {}", j),
+            })
+        })? as usize)
+    } else {
+        Err(KclError::Syntax(KclErrorDetails {
+            source_ranges: vec![source_range],
+            message: format!("Invalid index: {}", j),
         }))
     }
 }
