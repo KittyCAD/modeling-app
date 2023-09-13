@@ -1190,11 +1190,19 @@ function getTransformMapPath(
   const firstArg = getFirstArg(sketchFnExp)
   if (Array.isArray(firstArg.val)) {
     const [a, b] = firstArg.val
-    if (a?.type !== 'Literal' && b?.type !== 'Literal') {
+    if (
+      a?.type !== 'Literal' &&
+      a?.type !== 'UnaryExpression' &&
+      b?.type !== 'Literal' &&
+      b?.type !== 'UnaryExpression'
+    ) {
       return false
     }
   } else {
-    if (firstArg.val?.type !== 'Literal') {
+    if (
+      firstArg.val?.type !== 'Literal' &&
+      firstArg.val?.type !== 'UnaryExpression'
+    ) {
       return false
     }
   }
@@ -1202,10 +1210,14 @@ function getTransformMapPath(
   // check if the function has no constraints
   const isTwoValFree =
     Array.isArray(firstArg.val) &&
-    firstArg.val?.[0]?.type === 'Literal' &&
-    firstArg.val?.[1]?.type === 'Literal'
+    (firstArg.val?.[0]?.type === 'Literal' ||
+      firstArg.val?.[0]?.type === 'UnaryExpression') &&
+    (firstArg.val?.[1]?.type === 'Literal' ||
+      firstArg.val?.[1]?.type === 'UnaryExpression')
   const isOneValFree =
-    !Array.isArray(firstArg.val) && firstArg.val?.type === 'Literal'
+    !Array.isArray(firstArg.val) &&
+    (firstArg.val?.type === 'Literal' ||
+      firstArg.val?.type === 'UnaryExpression')
   if (isTwoValFree || isOneValFree) {
     const info = transformMap?.[name]?.free?.[constraintType]
     if (info)
