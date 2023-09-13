@@ -21,12 +21,23 @@ import {
 import { KCLError } from './lang/errors'
 import { defferExecution } from 'lib/utils'
 
+export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
+
 export type Selection = {
-  type: 'default' | 'line-end' | 'line-mid'
+  type:
+    | 'default'
+    | 'line-end'
+    | 'line-mid'
+    | 'face'
+    | 'point'
+    | 'edge'
+    | 'line'
+    | 'arc'
+    | 'all'
   range: SourceRange
 }
 export type Selections = {
-  otherSelections: ('y-axis' | 'x-axis' | 'z-axis')[]
+  otherSelections: Axis[]
   codeBasedSelections: Selection[]
 }
 export type TooTip =
