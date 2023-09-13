@@ -150,7 +150,6 @@ jobs:
   sign-windows-msi:
     runs-on: windows-latest
     needs: [build-test-web, build-apps]
-    if: false
     env:
       VERSION_NO_V: ${{ needs.build-test-web.outputs.version }}
     steps:
