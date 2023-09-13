@@ -1001,9 +1001,9 @@ interface CreateLineFnCallArgs {
 }
 
 function compareVec2Epsilon(vec1: [number, number], vec2: [number, number]) {
-  let compareEpsilon = 0.015625 // or 2^-6
-  let xDifference = Math.abs(vec1[0] - vec2[0])
-  let yDifference = Math.abs(vec1[0] - vec2[0])
+  const compareEpsilon = 0.015625 // or 2^-6
+  const xDifference = Math.abs(vec1[0] - vec2[0])
+  const yDifference = Math.abs(vec1[0] - vec2[0])
   return xDifference < compareEpsilon && yDifference < compareEpsilon
 }
 
