@@ -770,7 +770,8 @@ export class EngineCommandManager {
     if (command.type !== 'modeling_cmd_req') return Promise.resolve()
     const cmd = command.cmd
     if (
-      cmd.type === 'camera_drag_move' &&
+      (cmd.type === 'camera_drag_move' ||
+        cmd.type === 'handle_mouse_drag_move') &&
       this.engineConnection?.unreliableDataChannel
     ) {
       cmd.sequence = this.outSequence
