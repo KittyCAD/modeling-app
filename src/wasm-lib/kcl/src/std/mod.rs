@@ -103,12 +103,12 @@ impl<'a> Args<'a> {
     }
 
     fn make_user_val_from_json(&self, j: serde_json::Value) -> Result<MemoryItem, KclError> {
-        Ok(MemoryItem::UserVal {
+        Ok(MemoryItem::UserVal(crate::executor::UserVal {
             value: j,
             meta: vec![Metadata {
                 source_range: self.source_range,
             }],
-        })
+        }))
     }
 
     fn make_user_val_from_f64(&self, f: f64) -> Result<MemoryItem, KclError> {

@@ -98,16 +98,14 @@ impl ProgramReturn {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type", rename_all = "camelCase")]
+#[serde(tag = "type")]
 pub enum MemoryItem {
-    UserVal {
-        value: serde_json::Value,
-        #[serde(rename = "__meta")]
-        meta: Vec<Metadata>,
-    },
+    UserVal(UserVal),
     SketchGroup(SketchGroup),
     ExtrudeGroup(ExtrudeGroup),
+    #[ts(skip)]
     ExtrudeTransform(ExtrudeTransform),
+    #[ts(skip)]
     Function {
         #[serde(skip)]
         func: Option<MemoryFunction>,
@@ -119,7 +117,16 @@ pub enum MemoryItem {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(rename_all = "camelCase")]
+#[serde(tag = "type", rename_all = "camelCase")]
+pub struct UserVal {
+    pub value: serde_json::Value,
+    #[serde(rename = "__meta")]
+    pub meta: Vec<Metadata>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub struct ExtrudeTransform {
     pub position: Position,
     pub rotation: Rotation,
@@ -138,7 +145,7 @@ pub type MemoryFunction = fn(
 impl From<MemoryItem> for Vec<SourceRange> {
     fn from(item: MemoryItem) -> Self {
         match item {
-            MemoryItem::UserVal { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
+            MemoryItem::UserVal(u) => u.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::SketchGroup(s) => s.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::ExtrudeGroup(e) => e.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::ExtrudeTransform(e) => e.meta.iter().map(|m| m.source_range).collect(),
@@ -149,8 +156,8 @@ impl From<MemoryItem> for Vec<SourceRange> {
 
 impl MemoryItem {
     pub fn get_json_value(&self) -> Result<serde_json::Value, KclError> {
-        if let MemoryItem::UserVal { value, .. } = self {
-            Ok(value.clone())
+        if let MemoryItem::UserVal(user_val) = self {
+            Ok(user_val.value.clone())
         } else {
             Err(KclError::Semantic(KclErrorDetails {
                 message: format!("Not a user value: {:?}", self),
@@ -186,7 +193,7 @@ impl MemoryItem {
 /// A sketch group is a collection of paths.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(rename_all = "camelCase")]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub struct SketchGroup {
     /// The id of the sketch group.
     pub id: uuid::Uuid,
@@ -238,7 +245,7 @@ impl SketchGroup {
 /// An extrude group is a collection of extrude surfaces.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(rename_all = "camelCase")]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub struct ExtrudeGroup {
     /// The id of the extrude group.
     pub id: uuid::Uuid,
@@ -276,15 +283,15 @@ pub enum BodyType {
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-pub struct Position(pub [f64; 3]);
+pub struct Position(#[ts(type = "[number, number, number]")] pub [f64; 3]);
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-pub struct Rotation(pub [f64; 4]);
+pub struct Rotation(#[ts(type = "[number, number, number, number]")] pub [f64; 4]);
 
 #[derive(Debug, Default, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema, Hash, Eq)]
 #[ts(export)]
-pub struct SourceRange(pub [usize; 2]);
+pub struct SourceRange(#[ts(type = "[number, number]")] pub [usize; 2]);
 
 impl SourceRange {
     /// Create a new source range.
@@ -401,8 +408,10 @@ impl From<SourceRange> for Metadata {
 #[serde(rename_all = "camelCase")]
 pub struct BasePath {
     /// The from point.
+    #[ts(type = "[number, number]")]
     pub from: [f64; 2],
     /// The to point.
+    #[ts(type = "[number, number]")]
     pub to: [f64; 2],
     /// The name of the path.
     pub name: String,
