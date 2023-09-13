@@ -16,7 +16,7 @@ proc-macro2 = "1"
 quote = "1"
 serde = { version = "1.0.186", features = ["derive"] }
 serde_tokenstream = "0.2"
-syn = { version = "2.0.29", features = ["full"] }
+syn = { version = "2.0.32", features = ["full"] }
 
 [dev-dependencies]
 expectorate = "1.0.7"
