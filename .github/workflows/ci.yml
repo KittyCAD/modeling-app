@@ -156,10 +156,6 @@ jobs:
 
       - uses: actions/download-artifact@v3
 
-      - name: List artifacts
-        run: |
-          ls -l artifact/*/*itty*
-
       - name: Setup Certificate 
         run: | 
           echo "${{secrets.SM_CLIENT_CERT_FILE_B64 }}" | base64 --decode > /d/Certificate_pkcs12.p12 
