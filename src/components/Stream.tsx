@@ -180,7 +180,7 @@ export const Stream = ({ className = '' }) => {
         onWheel={handleScroll}
         onPlay={() => setIsLoading(false)}
         onMouseMoveCapture={handleMouseMove}
-        className={`w-full h-full ${isExecuting && 'blur-md'}`}
+        className={`w-full cursor-pointer h-full ${isExecuting && 'blur-md'}`}
         style={{ transitionDuration: '200ms', transitionProperty: 'filter' }}
       />
       {isLoading && (

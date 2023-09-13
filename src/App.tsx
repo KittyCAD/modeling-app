@@ -1,10 +1,4 @@
-import {
-  useRef,
-  useEffect,
-  useLayoutEffect,
-  useCallback,
-  MouseEventHandler,
-} from 'react'
+import { useEffect, useCallback, MouseEventHandler } from 'react'
 import { DebugPanel } from './components/DebugPanel'
 import { v4 as uuidv4 } from 'uuid'
 import { asyncParser } from './lang/abstractSyntaxTree'
@@ -16,10 +10,7 @@ import { MemoryPanel } from './components/MemoryPanel'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
 import { Stream } from './components/Stream'
 import ModalContainer from 'react-modal-promise'
-import {
-  EngineCommand,
-  EngineCommandManager,
-} from './lang/std/engineConnection'
+import { EngineCommand } from './lang/std/engineConnection'
 import { throttle } from './lib/utils'
 import { AppHeader } from './components/AppHeader'
 import { KCLError } from './lang/errors'
@@ -41,13 +32,9 @@ import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/mod
 import { CodeMenu } from 'components/CodeMenu'
 import { TextEditor } from 'components/TextEditor'
 import { Themes, getSystemTheme } from 'lib/theme'
-import { useEngineWithStream } from 'hooks/useEngineWithStream'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
-
-  const streamRef = useRef<HTMLDivElement>(null)
-  useEngineWithStream(streamRef)
 
   useHotKeyListener()
   const {
@@ -302,11 +289,7 @@ export function App() {
   }
 
   return (
-    <div
-      className="h-screen overflow-hidden relative flex flex-col cursor-pointer select-none"
-      onMouseMove={handleMouseMove}
-      ref={streamRef}
-    >
+    <div className='relative h-full flex flex-col' onMouseMove={handleMouseMove}>
       <AppHeader
         className={
           'transition-opacity transition-duration-75 ' +
