@@ -314,18 +314,6 @@ export function App() {
             window: { x, y },
           },
         })
-      } else if (
-        guiMode.mode === 'sketch' &&
-        guiMode.sketchMode === ('move' as any)
-      ) {
-        debounceSocketSend({
-          type: 'modeling_cmd_req',
-          cmd_id: newCmdId,
-          cmd: {
-            type: 'handle_mouse_drag_move',
-            window: { x, y },
-          },
-        })
       } else {
         debounceSocketSend({
           type: 'modeling_cmd_req',
@@ -337,6 +325,17 @@ export function App() {
         })
       }
     } else {
+      if (guiMode.mode === 'sketch' && guiMode.sketchMode === ('move' as any)) {
+        debounceSocketSend({
+          type: 'modeling_cmd_req',
+          cmd_id: newCmdId,
+          cmd: {
+            type: 'handle_mouse_drag_move',
+            window: { x, y },
+          },
+        })
+        return
+      }
       const interactionGuards = cameraMouseDragGuards[cameraControls]
       let interaction: CameraDragInteractionType_type
 

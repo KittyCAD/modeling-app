@@ -61,7 +61,7 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn test_execute_with_function_sketch() {
-    let code = r#"const box = (h, l, w) => {
+    let code = r#"fn box = (h, l, w) => {
  const myBox = startSketchAt([0,0])
     |> line([0, l], %)
     |> line([w, 0], %)

@@ -9323,6 +9323,34 @@
     "deprecated": false
   },
   {
+    "name": "cos",
+    "summary": "Computes the sine of a number (in radians).",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
     "name": "extrude",
     "summary": "Extrudes by a given amount.",
     "description": "",
@@ -11173,22 +11201,13 @@
                 },
                 "to": {
                   "description": "The to point.",
-                  "anyOf": [
-                    {
-                      "description": "A point.",
-                      "type": "array",
-                      "items": {
-                        "type": "number",
-                        "format": "double"
-                      },
-                      "maxItems": 2,
-                      "minItems": 2
-                    },
-                    {
-                      "description": "A string like `default`.",
-                      "type": "string"
-                    }
-                  ]
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "format": "double"
+                  },
+                  "maxItems": 2,
+                  "minItems": 2
                 }
               }
             },
@@ -11201,10 +11220,6 @@
               },
               "maxItems": 2,
               "minItems": 2
-            },
-            {
-              "description": "A string like `default`.",
-              "type": "string"
             }
           ]
         },
@@ -13019,6 +13034,24 @@
         "required": true
       }
     ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "pi",
+    "summary": "Return the value of `pi`.",
+    "description": "",
+    "tags": [],
+    "args": [],
     "returnValue": {
       "name": "",
       "type": "number",
@@ -15316,6 +15349,34 @@
     "deprecated": false
   },
   {
+    "name": "sin",
+    "summary": "Computes the sine of a number (in radians).",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
     "name": "startSketchAt",
     "summary": "Start a sketch at a given point.",
     "description": "",
@@ -15341,22 +15402,13 @@
                 },
                 "to": {
                   "description": "The to point.",
-                  "anyOf": [
-                    {
-                      "description": "A point.",
-                      "type": "array",
-                      "items": {
-                        "type": "number",
-                        "format": "double"
-                      },
-                      "maxItems": 2,
-                      "minItems": 2
-                    },
-                    {
-                      "description": "A string like `default`.",
-                      "type": "string"
-                    }
-                  ]
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "format": "double"
+                  },
+                  "maxItems": 2,
+                  "minItems": 2
                 }
               }
             },
@@ -15369,10 +15421,6 @@
               },
               "maxItems": 2,
               "minItems": 2
-            },
-            {
-              "description": "A string like `default`.",
-              "type": "string"
             }
           ]
         },
@@ -15809,6 +15857,34 @@
             }
           }
         }
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "tan",
+    "summary": "Computes the tangent of a number (in radians).",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
       },
       "required": true
     },

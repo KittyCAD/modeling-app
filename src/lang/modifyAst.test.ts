@@ -176,7 +176,7 @@ show(part001)`
 })
 
 describe('Testing moveValueIntoNewVariable', () => {
-  const fn = (fnName: string) => `const ${fnName} = (x) => {
+  const fn = (fnName: string) => `fn ${fnName} = (x) => {
   return x
 }
 `
