@@ -200,6 +200,35 @@ impl ReversePolishNotation {
             return rpn.parse();
         } else if let Ok(binop) = BinaryOperator::from_str(current_token.value.as_str()) {
             if !self.operators.is_empty() {
+                if binop == BinaryOperator::Sub {
+                    // We need to check if we have a "sub" and if the previous token is a word or
+                    // number or string, then we need to treat it as a negative number.
+                    // This oddity only applies to the "-" operator.
+                    if let Some(prevtoken) = self.previous_postfix.last() {
+                        if prevtoken.token_type == TokenType::Operator {
+                            // Get the next token and see if it is a number.
+                            if let Ok(nexttoken) = self.parser.get_token(1) {
+                                if nexttoken.token_type == TokenType::Number {
+                                    // We have a negative number/ word or string.
+                                    // Change the value of the token to be the negative number/ word or string.
+                                    let mut new_token = nexttoken.clone();
+                                    new_token.value = format!("-{}", nexttoken.value);
+                                    let rpn = ReversePolishNotation::new(
+                                        &self.parser.tokens[2..],
+                                        &self
+                                            .previous_postfix
+                                            .iter()
+                                            .cloned()
+                                            .chain(vec![new_token.clone()])
+                                            .collect::<Vec<Token>>(),
+                                        &self.operators,
+                                    );
+                                    return rpn.parse();
+                                }
+                            }
+                        }
+                    }
+                }
                 if let Ok(prevbinop) = BinaryOperator::from_str(self.operators[self.operators.len() - 1].value.as_str())
                 {
                     if prevbinop.precedence() >= binop.precedence() {
@@ -212,6 +241,29 @@ impl ReversePolishNotation {
                                 .chain(vec![self.operators[self.operators.len() - 1].clone()])
                                 .collect::<Vec<Token>>(),
                             &self.operators[0..self.operators.len() - 1],
+                        );
+                        return rpn.parse();
+                    }
+                }
+            } else if self.previous_postfix.is_empty()
+                && current_token.token_type == TokenType::Operator
+                && current_token.value == "-"
+            {
+                if let Ok(nexttoken) = self.parser.get_token(1) {
+                    if nexttoken.token_type == TokenType::Number {
+                        // We have a negative number/ word or string.
+                        // Change the value of the token to be the negative number/ word or string.
+                        let mut new_token = nexttoken.clone();
+                        new_token.value = format!("-{}", nexttoken.value);
+                        let rpn = ReversePolishNotation::new(
+                            &self.parser.tokens[2..],
+                            &self
+                                .previous_postfix
+                                .iter()
+                                .cloned()
+                                .chain(vec![new_token.clone()])
+                                .collect::<Vec<Token>>(),
+                            &self.operators,
                         );
                         return rpn.parse();
                     }

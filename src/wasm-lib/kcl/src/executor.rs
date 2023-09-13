@@ -1133,4 +1133,34 @@ show(thisBox)
 "#;
         parse_execute(ast).await.unwrap();
     }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_execute_with_functions() {
+        let ast = r#"const myVar = 2 + min(100, -1 + legLen(5, 3))"#;
+        let memory = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            serde_json::json!(5.0),
+            memory.root.get("myVar").unwrap().get_json_value().unwrap()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_execute() {
+        let ast = r#"const myVar = 1 + 2 * (3 - 4) / -5 + 6"#;
+        let memory = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            serde_json::json!(7.4),
+            memory.root.get("myVar").unwrap().get_json_value().unwrap()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_execute_start_negative() {
+        let ast = r#"const myVar = -5 + 6"#;
+        let memory = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            serde_json::json!(1.0),
+            memory.root.get("myVar").unwrap().get_json_value().unwrap()
+        );
+    }
 }

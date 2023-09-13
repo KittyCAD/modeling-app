@@ -1744,6 +1744,12 @@ describe('parsing errors', () => {
       _theError = e
     }
     const theError = _theError as any
-    expect(theError).toEqual(new KCLError("unexpected", "Unexpected token Token { token_type: Brace, start: 29, end: 30, value: \"}\" }", [[29, 30]]))
+    expect(theError).toEqual(
+      new KCLError(
+        'unexpected',
+        'Unexpected token Token { token_type: Brace, start: 29, end: 30, value: "}" }',
+        [[29, 30]]
+      )
+    )
   })
 })

@@ -793,6 +793,29 @@ impl Parser {
                 }
             }
         }
+
+        // Account for negative numbers.
+        if current_token.token_type == TokenType::Operator || current_token.value == "-" {
+            if let Some(next_token) = &next.token {
+                if next_token.token_type == TokenType::Word
+                    || next_token.token_type == TokenType::Number
+                    || next_token.token_type == TokenType::String
+                {
+                    // See if the next token is an operator.
+                    let next_right = self.next_meaningful_token(next.index, None)?;
+                    if let Some(next_right_token) = next_right.token {
+                        if next_right_token.token_type == TokenType::Operator {
+                            let binary_expression = self.make_binary_expression(index)?;
+                            return Ok(ValueReturn {
+                                value: Value::BinaryExpression(Box::new(binary_expression.expression)),
+                                last_index: binary_expression.last_index,
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
         if current_token.token_type == TokenType::Brace && current_token.value == "{" {
             let object_expression = self.make_object_expression(index)?;
             return Ok(ValueReturn {
@@ -1040,11 +1063,10 @@ impl Parser {
                 }
 
                 if argument_token_token.token_type == TokenType::Operator && argument_token_token.value == "-" {
-                    let unary_expression = self.make_unary_expression(argument_token.index)?;
-                    let next_comma_or_brace_token_index =
-                        self.next_meaningful_token(unary_expression.last_index, None)?.index;
+                    let value = self.make_value(argument_token.index)?;
+                    let next_comma_or_brace_token_index = self.next_meaningful_token(value.last_index, None)?.index;
                     let mut _previous_args = previous_args;
-                    _previous_args.push(Value::UnaryExpression(Box::new(unary_expression.expression)));
+                    _previous_args.push(value.value);
                     return self.make_arguments(next_comma_or_brace_token_index, _previous_args);
                 }
                 if argument_token_token.token_type == TokenType::Brace && argument_token_token.value == "{" {
