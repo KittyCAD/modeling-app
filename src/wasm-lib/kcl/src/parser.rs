@@ -952,12 +952,18 @@ impl Parser {
         let opening_brace_token = self.get_token(index)?;
         let first_element_token = self.next_meaningful_token(index, None)?;
         // Make sure there is a closing brace.
-        let _closing_brace = self.find_closing_brace(index, 0, "")?;
+        let closing_brace_index = self.find_closing_brace(index, 0, "").map_err(|_| {
+            KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![opening_brace_token.into()],
+                message: "missing a closing brace for the array".to_string(),
+            })
+        })?;
+        let closing_brace_token = self.get_token(closing_brace_index)?;
         let array_elements = self.make_array_elements(first_element_token.index, Vec::new())?;
         Ok(ArrayReturn {
             expression: ArrayExpression {
                 start: opening_brace_token.start,
-                end: self.get_token(array_elements.last_index)?.end,
+                end: closing_brace_token.end,
                 elements: array_elements.elements,
             },
             last_index: array_elements.last_index,
@@ -1038,17 +1044,6 @@ impl Parser {
         if let Some(argument_token_token) = argument_token.token {
             let next_brace_or_comma = self.next_meaningful_token(argument_token.index, None)?;
             if let Some(next_brace_or_comma_token) = next_brace_or_comma.token {
-                let is_identifier_or_literal = next_brace_or_comma_token.token_type == TokenType::Comma
-                    || next_brace_or_comma_token.token_type == TokenType::Brace;
-                if argument_token_token.token_type == TokenType::Brace && argument_token_token.value == "[" {
-                    let array_expression = self.make_array_expression(argument_token.index)?;
-                    let next_comma_or_brace_token_index =
-                        self.next_meaningful_token(array_expression.last_index, None)?.index;
-                    let mut _previous_args = previous_args;
-                    _previous_args.push(Value::ArrayExpression(Box::new(array_expression.expression)));
-                    return self.make_arguments(next_comma_or_brace_token_index, _previous_args);
-                }
-
                 if (argument_token_token.token_type == TokenType::Word)
                     && (next_brace_or_comma_token.token_type == TokenType::Period
                         || (next_brace_or_comma_token.token_type == TokenType::Brace
@@ -1059,6 +1054,17 @@ impl Parser {
                     _previous_args.push(Value::MemberExpression(Box::new(member_expression.expression)));
                     let next_comma_or_brace_token_index =
                         self.next_meaningful_token(member_expression.last_index, None)?.index;
+                    return self.make_arguments(next_comma_or_brace_token_index, _previous_args);
+                }
+
+                let is_identifier_or_literal = next_brace_or_comma_token.token_type == TokenType::Comma
+                    || next_brace_or_comma_token.token_type == TokenType::Brace;
+                if argument_token_token.token_type == TokenType::Brace && argument_token_token.value == "[" {
+                    let array_expression = self.make_array_expression(argument_token.index)?;
+                    let next_comma_or_brace_token_index =
+                        self.next_meaningful_token(array_expression.last_index, None)?.index;
+                    let mut _previous_args = previous_args;
+                    _previous_args.push(Value::ArrayExpression(Box::new(array_expression.expression)));
                     return self.make_arguments(next_comma_or_brace_token_index, _previous_args);
                 }
 
@@ -1185,9 +1191,14 @@ impl Parser {
         let brace_token = self.next_meaningful_token(index, None)?;
         let callee = self.make_identifier(index)?;
         // Make sure there is a closing brace.
-        let _closing_brace_token = self.find_closing_brace(brace_token.index, 0, "")?;
+        let closing_brace_index = self.find_closing_brace(brace_token.index, 0, "").map_err(|_| {
+            KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![current_token.into()],
+                message: "missing a closing brace for the function call".to_string(),
+            })
+        })?;
+        let closing_brace_token = self.get_token(closing_brace_index)?;
         let args = self.make_arguments(brace_token.index, vec![])?;
-        let closing_brace_token = self.get_token(args.last_index)?;
         let function = if let Some(stdlib_fn) = self.stdlib.get(&callee.name) {
             crate::abstract_syntax_tree_types::Function::StdLib { func: stdlib_fn }
         } else {
