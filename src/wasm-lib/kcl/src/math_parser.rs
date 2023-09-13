@@ -187,7 +187,6 @@ impl ReversePolishNotation {
             || current_token.token_type == TokenType::Word
             || current_token.token_type == TokenType::String
         {
-            println!("current_token: {:?}", current_token);
             let rpn = ReversePolishNotation::new(
                 &self.parser.tokens[1..],
                 &self
@@ -300,7 +299,6 @@ impl ReversePolishNotation {
         self.parser = Parser::new(reverse_polish_notation_tokens.to_vec());
 
         if reverse_polish_notation_tokens.is_empty() {
-            println!("stack: {:?}", stack[0]);
             return match &stack[0] {
                 MathExpression::ExtendedBinaryExpression(bin_exp) => Ok(BinaryExpression {
                     operator: bin_exp.operator.clone(),
@@ -378,7 +376,6 @@ impl ReversePolishNotation {
                 {
                     let mut new_stack = stack;
                     let member_expression = self.parser.make_member_expression(0)?;
-                    println!("member_expression: {:?}", member_expression);
                     new_stack.push(MathExpression::MemberExpression(Box::new(member_expression.expression)));
                     return self.build_tree(
                         &reverse_polish_notation_tokens[member_expression.last_index + 1..],
@@ -565,9 +562,6 @@ impl ReversePolishNotation {
         };
 
         let right_end = right.0.clone().end();
-
-        println!("left: {:?}", left);
-        println!("right: {:?}", right);
 
         let tree = BinaryExpression {
             operator: BinaryOperator::from_str(&current_token.value.clone()).map_err(|err| {
