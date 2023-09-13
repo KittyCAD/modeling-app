@@ -147,6 +147,44 @@ jobs:
           path: ${{ matrix.os == 'macos-latest' && 'src-tauri/target/universal-apple-darwin/release/bundle/*/*' || 'src-tauri/target/release/bundle/*/*' }}
 
 
+  test-download-page-content:
+    runs-on: ubuntu-20.04
+    needs: [build-test-web, build-apps]
+    env:
+      VERSION_NO_V: ${{ needs.build-test-web.outputs.version }}
+      PUB_DATE: "2020-06-22T19:25:57Z"  # TODO: replace with {{ github.event.release.created_at }}
+      NOTES: "line1\\nline2\\nline3\\n"  # TODO: replace with {{ github.event.release.body }}
+    steps:
+
+      - uses: actions/download-artifact@v3
+
+      - name: Generate the download static endpoint
+        run: |
+          RELEASE_DIR=https://dl.kittycad.io/releases/modeling-app/v${VERSION_NO_V}
+          jq --null-input \
+            --arg version "v${VERSION_NO_V}" \
+            --arg darwin_url "$RELEASE_DIR/macos/KittyCAD%20Modeling.dmg" \
+            --arg linux_url "$RELEASE_DIR/appimage/kittycad-modeling_${VERSION_NO_V}_amd64.AppImage" \
+            --arg windows_url "$RELEASE_DIR/msi/KittyCAD%20Modeling_${VERSION_NO_V}_x64_en-US.msi.zip" \
+            '{
+              "version": $version,
+              "pub_date": "",
+              "notes": "",
+              "platforms": {
+                "dmg-universal": {
+                  "url": $darwin_url
+                },
+                "appimage-x86_64": {
+                  "url": $linux_url
+                },
+                "msi-x86_64": {
+                  "url": $windows_url
+                }
+              }
+            }' > download.json
+            cat download.json
+
+
   publish-apps-release:
     runs-on: ubuntu-20.04
     if: github.event_name == 'release'
