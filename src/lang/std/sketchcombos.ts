@@ -1534,8 +1534,10 @@ export function getConstraintLevelFromSourceRange(
 }
 
 export function isLiteralArrayOrStatic(
-  val: Value | [Value, Value] | [Value, Value, Value]
+  val: Value | [Value, Value] | [Value, Value, Value] | undefined
 ): boolean {
+  if (!val) return false
+
   if (Array.isArray(val)) {
     const [a, b] = val
     return isLiteralArrayOrStatic(a) && isLiteralArrayOrStatic(b)

@@ -27,6 +27,7 @@ import {
   getFirstArg,
   createFirstArg,
 } from './std/sketch'
+import { isLiteralArrayOrStatic } from './std/sketchcombos'
 
 export function addStartSketch(
   node: Program,
@@ -191,7 +192,7 @@ export function mutateArrExp(
 ): boolean {
   if (node.type === 'ArrayExpression') {
     node.elements.forEach((element, i) => {
-      if (element.type === 'Literal') {
+      if (isLiteralArrayOrStatic(element)) {
         node.elements[i] = updateWith.elements[i]
       }
     })
@@ -209,8 +210,8 @@ export function mutateObjExpProp(
     const keyIndex = node.properties.findIndex((a) => a.key.name === key)
     if (keyIndex !== -1) {
       if (
-        updateWith.type === 'Literal' &&
-        node.properties[keyIndex].value.type === 'Literal'
+        isLiteralArrayOrStatic(updateWith) &&
+        isLiteralArrayOrStatic(node.properties[keyIndex].value)
       ) {
         node.properties[keyIndex].value = updateWith
         return true
@@ -220,7 +221,7 @@ export function mutateObjExpProp(
       ) {
         const arrExp = node.properties[keyIndex].value as ArrayExpression
         arrExp.elements.forEach((element, i) => {
-          if (element.type === 'Literal') {
+          if (isLiteralArrayOrStatic(element)) {
             arrExp.elements[i] = updateWith.elements[i]
           }
         })
