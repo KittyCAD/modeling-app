@@ -192,7 +192,7 @@ export function App() {
               start: null,
             },
           })
-          setProgramMemory({ root: {} })
+          setProgramMemory({ root: {}, return: null })
           engineCommandManager.endSession()
           engineCommandManager.startNewSession()
           return
