@@ -16,6 +16,7 @@
 	* [`arc`](#arc)
 	* [`bezierCurve`](#bezierCurve)
 	* [`close`](#close)
+	* [`cos`](#cos)
 	* [`extrude`](#extrude)
 	* [`getExtrudeWallTransform`](#getExtrudeWallTransform)
 	* [`lastSegX`](#lastSegX)
@@ -26,12 +27,15 @@
 	* [`line`](#line)
 	* [`lineTo`](#lineTo)
 	* [`min`](#min)
+	* [`pi`](#pi)
 	* [`segAng`](#segAng)
 	* [`segEndX`](#segEndX)
 	* [`segEndY`](#segEndY)
 	* [`segLen`](#segLen)
 	* [`show`](#show)
+	* [`sin`](#sin)
 	* [`startSketchAt`](#startSketchAt)
+	* [`tan`](#tan)
 	* [`xLine`](#xLine)
 	* [`xLineTo`](#xLineTo)
 	* [`yLine`](#yLine)
@@ -1637,6 +1641,26 @@ close(sketch_group: SketchGroup) -> SketchGroup
 
 
 
+### cos
+
+Computes the sine of a number (in radians).
+
+
+
+```
+cos(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
 ### extrude
 
 Extrudes by a given amount.
@@ -2354,6 +2378,25 @@ min(args: [number]) -> number
 
 
 
+### pi
+
+Return the value of `pi`.
+
+
+
+```
+pi() -> number
+```
+
+#### Arguments
+
+
+#### Returns
+
+* `number`
+
+
+
 ### segAng
 
 Returns the angle of the segment.
@@ -2764,6 +2807,26 @@ show(sketch: SketchGroup)
 
 
 
+### sin
+
+Computes the sine of a number (in radians).
+
+
+
+```
+sin(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
 ### startSketchAt
 
 Start a sketch at a given point.
@@ -2852,6 +2915,26 @@ startSketchAt(data: LineData) -> SketchGroup
 }],
 }
 ```
+
+
+
+### tan
+
+Computes the tangent of a number (in radians).
+
+
+
+```
+tan(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
 
 
 
