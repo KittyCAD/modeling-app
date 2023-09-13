@@ -985,7 +985,6 @@ impl Parser {
 
     fn make_binary_expression(&self, index: usize) -> Result<BinaryExpressionReturn, KclError> {
         let end_index = self.find_end_of_binary_expression(index)?;
-        let end_token = self.get_token(end_index)?;
         let mut math_parser = MathParser::new(&self.tokens[index..end_index + 1]);
         let expression = math_parser.parse()?;
         Ok(BinaryExpressionReturn {
