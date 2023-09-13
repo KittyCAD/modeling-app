@@ -20,6 +20,7 @@ import {
   getNodeFromPathCurry,
   getNodePathFromSourceRange,
 } from '../queryAst'
+import { isLiteralArrayOrStatic } from './sketchcombos'
 import { GuiModes, toolTips, TooTip } from '../../useStore'
 import { createPipeExpression, splitPathAtPipeExpression } from '../modifyAst'
 import { generateUuidFromHashSeed } from '../../lib/uuid'
@@ -294,7 +295,7 @@ export const xLineTo: SketchLineHelper = {
       pathToNode
     )
     const newX = createLiteral(roundOff(to[0], 2))
-    if (callExpression.arguments?.[0]?.type === 'Literal') {
+    if (isLiteralArrayOrStatic(callExpression.arguments?.[0])) {
       callExpression.arguments[0] = newX
     } else {
       mutateObjExpProp(callExpression.arguments?.[0], newX, 'to')
@@ -342,7 +343,7 @@ export const yLineTo: SketchLineHelper = {
       pathToNode
     )
     const newY = createLiteral(roundOff(to[1], 2))
-    if (callExpression.arguments?.[0]?.type === 'Literal') {
+    if (isLiteralArrayOrStatic(callExpression.arguments?.[0])) {
       callExpression.arguments[0] = newY
     } else {
       mutateObjExpProp(callExpression.arguments?.[0], newY, 'to')
@@ -392,7 +393,7 @@ export const xLine: SketchLineHelper = {
       pathToNode
     )
     const newX = createLiteral(roundOff(to[0] - from[0], 2))
-    if (callExpression.arguments?.[0]?.type === 'Literal') {
+    if (isLiteralArrayOrStatic(callExpression.arguments?.[0])) {
       callExpression.arguments[0] = newX
     } else {
       mutateObjExpProp(callExpression.arguments?.[0], newX, 'length')
@@ -436,7 +437,7 @@ export const yLine: SketchLineHelper = {
       pathToNode
     )
     const newY = createLiteral(roundOff(to[1] - from[1], 2))
-    if (callExpression.arguments?.[0]?.type === 'Literal') {
+    if (isLiteralArrayOrStatic(callExpression.arguments?.[0])) {
       callExpression.arguments[0] = newY
     } else {
       mutateObjExpProp(callExpression.arguments?.[0], newY, 'length')
@@ -1036,10 +1037,11 @@ export function addTagForSketchOnFace(
 
 function isAngleLiteral(lineArugement: Value): boolean {
   return lineArugement?.type === 'ArrayExpression'
-    ? lineArugement.elements[0].type === 'Literal'
+    ? isLiteralArrayOrStatic(lineArugement.elements[0])
     : lineArugement?.type === 'ObjectExpression'
-    ? lineArugement.properties.find(({ key }) => key.name === 'angle')?.value
-        .type === 'Literal'
+    ? isLiteralArrayOrStatic(
+        lineArugement.properties.find(({ key }) => key.name === 'angle')?.value
+      )
     : false
 }
 

@@ -2044,11 +2044,9 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 	// The tag.
 	tag: string,
 	// The to point.
-	to: [number] |
-string,
+	to: [number],
 } |
-[number] |
-string
+[number]
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
@@ -2784,11 +2782,9 @@ startSketchAt(data: LineData) -> SketchGroup
 	// The tag.
 	tag: string,
 	// The to point.
-	to: [number] |
-string,
+	to: [number],
 } |
-[number] |
-string
+[number]
 ```
 
 #### Returns

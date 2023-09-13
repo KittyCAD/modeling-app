@@ -449,6 +449,7 @@ pub enum BinaryPart {
     BinaryExpression(Box<BinaryExpression>),
     CallExpression(Box<CallExpression>),
     UnaryExpression(Box<UnaryExpression>),
+    MemberExpression(Box<MemberExpression>),
 }
 
 impl From<BinaryPart> for crate::executor::SourceRange {
@@ -471,6 +472,7 @@ impl BinaryPart {
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.recast(options),
             BinaryPart::CallExpression(call_expression) => call_expression.recast(options, indentation_level, false),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.recast(options),
+            BinaryPart::MemberExpression(member_expression) => member_expression.recast(),
         }
     }
 
@@ -481,6 +483,7 @@ impl BinaryPart {
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.start(),
             BinaryPart::CallExpression(call_expression) => call_expression.start(),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.start(),
+            BinaryPart::MemberExpression(member_expression) => member_expression.start(),
         }
     }
 
@@ -491,6 +494,7 @@ impl BinaryPart {
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.end(),
             BinaryPart::CallExpression(call_expression) => call_expression.end(),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.end(),
+            BinaryPart::MemberExpression(member_expression) => member_expression.end(),
         }
     }
 
@@ -523,6 +527,7 @@ impl BinaryPart {
                     source_ranges: vec![unary_expression.into()],
                 }))
             }
+            BinaryPart::MemberExpression(member_expression) => member_expression.get_result(memory),
         }
     }
 
@@ -536,6 +541,9 @@ impl BinaryPart {
             }
             BinaryPart::CallExpression(call_expression) => call_expression.get_hover_value_for_position(pos, code),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_hover_value_for_position(pos, code),
+            BinaryPart::MemberExpression(member_expression) => {
+                member_expression.get_hover_value_for_position(pos, code)
+            }
         }
     }
 
@@ -552,6 +560,9 @@ impl BinaryPart {
             }
             BinaryPart::UnaryExpression(ref mut unary_expression) => {
                 unary_expression.rename_identifiers(old_name, new_name)
+            }
+            BinaryPart::MemberExpression(ref mut member_expression) => {
+                member_expression.rename_identifiers(old_name, new_name)
             }
         }
     }
@@ -751,12 +762,7 @@ impl CallExpression {
                         })
                     })?
                     .clone(),
-                Value::MemberExpression(member_expression) => {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!("MemberExpression not implemented here: {:?}", member_expression),
-                        source_ranges: vec![member_expression.into()],
-                    }));
-                }
+                Value::MemberExpression(member_expression) => member_expression.get_result(memory)?,
                 Value::FunctionExpression(function_expression) => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: format!("FunctionExpression not implemented here: {:?}", function_expression),
@@ -1227,12 +1233,7 @@ impl ArrayExpression {
                         source_ranges: vec![pipe_substitution.into()],
                     }));
                 }
-                Value::MemberExpression(member_expression) => {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!("MemberExpression not implemented here: {:?}", member_expression),
-                        source_ranges: vec![member_expression.into()],
-                    }));
-                }
+                Value::MemberExpression(member_expression) => member_expression.get_result(memory)?,
                 Value::FunctionExpression(function_expression) => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: format!("FunctionExpression not implemented here: {:?}", function_expression),
@@ -2541,5 +2542,16 @@ const firstExtrude = startSketchAt([0, 0])
 show(firstExtrude)
 "#
         );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_recast_math_start_negative() {
+        let some_program_string = r#"const myVar = -5 + 6"#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted.trim(), some_program_string);
     }
 }
