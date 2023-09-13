@@ -142,7 +142,7 @@ lazy_static! {
     static ref WORD: Regex = Regex::new(r"^[a-zA-Z_][a-zA-Z0-9_]*").unwrap();
     // TODO: these should be generated using our struct types for these.
     static ref KEYWORD: Regex =
-        Regex::new(r"^(if|else|for|while|return|break|continue|fn|let|true|false|nil|and|or|not|var|const)\b").unwrap();
+        Regex::new(r"^(if|else|for|while|return|break|continue|fn|let|mut|loop|true|false|nil|and|or|not|var|const)\b").unwrap();
     static ref OPERATOR: Regex = Regex::new(r"^(>=|<=|==|=>|!= |\|>|\*|\+|-|/|%|=|<|>|\||\^)").unwrap();
     static ref STRING: Regex = Regex::new(r#"^"([^"\\]|\\.)*"|'([^'\\]|\\.)*'"#).unwrap();
     static ref BLOCK_START: Regex = Regex::new(r"^\{").unwrap();
