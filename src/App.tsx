@@ -1,8 +1,6 @@
 import { useEffect, useCallback, MouseEventHandler } from 'react'
 import { DebugPanel } from './components/DebugPanel'
 import { v4 as uuidv4 } from 'uuid'
-import { asyncParser } from './lang/abstractSyntaxTree'
-import { _executor } from './lang/executor'
 import { PaneType, useStore } from './useStore'
 import { Logs, KCLErrors } from './components/Logs'
 import { CollapsiblePanel } from './components/CollapsiblePanel'
@@ -13,7 +11,6 @@ import ModalContainer from 'react-modal-promise'
 import { EngineCommand } from './lang/std/engineConnection'
 import { throttle } from './lib/utils'
 import { AppHeader } from './components/AppHeader'
-import { KCLError } from './lang/errors'
 import { Resizable } from 're-resizable'
 import {
   faCode,
@@ -38,63 +35,24 @@ export function App() {
 
   useHotKeyListener()
   const {
-    addLog,
-    addKCLError,
     setCode,
-    setAst,
-    setError,
-    setProgramMemory,
-    resetLogs,
-    resetKCLErrors,
-    setArtifactMap,
     engineCommandManager,
-    setEngineCommandManager,
-    highlightRange,
-    setHighlightRange,
-    setCursor2,
-    setMediaStream,
-    setIsStreamReady,
-    isStreamReady,
     buttonDownInStream,
     openPanes,
     setOpenPanes,
     didDragInStream,
-    setStreamDimensions,
     streamDimensions,
-    setIsExecuting,
-    defferedCode,
   } = useStore((s) => ({
-    addLog: s.addLog,
-    defferedCode: s.defferedCode,
     setCode: s.setCode,
-    setAst: s.setAst,
-    setError: s.setError,
-    setProgramMemory: s.setProgramMemory,
-    resetLogs: s.resetLogs,
-    resetKCLErrors: s.resetKCLErrors,
-    setArtifactMap: s.setArtifactNSourceRangeMaps,
     engineCommandManager: s.engineCommandManager,
-    setEngineCommandManager: s.setEngineCommandManager,
-    highlightRange: s.highlightRange,
-    setHighlightRange: s.setHighlightRange,
-    setCursor2: s.setCursor2,
-    setMediaStream: s.setMediaStream,
-    isStreamReady: s.isStreamReady,
-    setIsStreamReady: s.setIsStreamReady,
     buttonDownInStream: s.buttonDownInStream,
-    addKCLError: s.addKCLError,
     openPanes: s.openPanes,
     setOpenPanes: s.setOpenPanes,
     didDragInStream: s.didDragInStream,
-    setStreamDimensions: s.setStreamDimensions,
     streamDimensions: s.streamDimensions,
-    setIsExecuting: s.setIsExecuting,
   }))
 
   const {
-    auth: {
-      context: { token },
-    },
     settings: {
       context: { showDebugPanel, onboardingStatus, cameraControls, theme },
     },
@@ -136,105 +94,6 @@ export function App() {
       }
     }
   }, [loadedCode, setCode])
-
-  useEffect(() => {
-    if (!isStreamReady) return
-    if (!engineCommandManager) return
-    let unsubFn: any[] = []
-    const asyncWrap = async () => {
-      try {
-        if (!defferedCode) {
-          setAst(null)
-          return
-        }
-        const _ast = await asyncParser(defferedCode)
-        setAst(_ast)
-        resetLogs()
-        resetKCLErrors()
-        engineCommandManager.endSession()
-        engineCommandManager.startNewSession()
-        setIsExecuting(true)
-        const programMemory = await _executor(
-          _ast,
-          {
-            root: {
-              _0: {
-                type: 'userVal',
-                value: 0,
-                __meta: [],
-              },
-              _90: {
-                type: 'userVal',
-                value: 90,
-                __meta: [],
-              },
-              _180: {
-                type: 'userVal',
-                value: 180,
-                __meta: [],
-              },
-              _270: {
-                type: 'userVal',
-                value: 270,
-                __meta: [],
-              },
-            },
-          },
-          engineCommandManager
-        )
-
-        const { artifactMap, sourceRangeMap } =
-          await engineCommandManager.waitForAllCommands()
-        setIsExecuting(false)
-
-        setArtifactMap({ artifactMap, sourceRangeMap })
-        const unSubHover = engineCommandManager.subscribeToUnreliable({
-          event: 'highlight_set_entity',
-          callback: ({ data }) => {
-            if (data?.entity_id) {
-              const sourceRange = sourceRangeMap[data.entity_id]
-              setHighlightRange(sourceRange)
-            } else if (
-              !highlightRange ||
-              (highlightRange[0] !== 0 && highlightRange[1] !== 0)
-            ) {
-              setHighlightRange([0, 0])
-            }
-          },
-        })
-        const unSubClick = engineCommandManager.subscribeTo({
-          event: 'select_with_point',
-          callback: ({ data }) => {
-            if (!data?.entity_id) {
-              setCursor2()
-              return
-            }
-            const sourceRange = sourceRangeMap[data.entity_id]
-            setCursor2({ range: sourceRange, type: 'default' })
-          },
-        })
-        unsubFn.push(unSubHover, unSubClick)
-        if (programMemory !== undefined) {
-          setProgramMemory(programMemory)
-        }
-
-        setError()
-      } catch (e: any) {
-        setIsExecuting(false)
-        if (e instanceof KCLError) {
-          addKCLError(e)
-        } else {
-          setError('problem')
-          console.log(e)
-          addLog(e)
-        }
-      }
-    }
-    asyncWrap()
-    return () => {
-      unsubFn.forEach((fn) => fn())
-    }
-  }, [defferedCode, isStreamReady, engineCommandManager])
 
   const debounceSocketSend = throttle<EngineCommand>((message) => {
     engineCommandManager?.sendSceneCommand(message)
@@ -289,7 +148,10 @@ export function App() {
   }
 
   return (
-    <div className='relative h-full flex flex-col' onMouseMove={handleMouseMove}>
+    <div
+      className="relative h-full flex flex-col"
+      onMouseMove={handleMouseMove}
+    >
       <AppHeader
         className={
           'transition-opacity transition-duration-75 ' +
