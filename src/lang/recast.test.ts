@@ -224,7 +224,7 @@ const key = 'c'
     expect(recasted).toBe(code)
   })
   it('comments in a fn block', () => {
-    const code = `const myFn = () => {
+    const code = `fn myFn = () => {
   // this is a comment
   const yo = { a: { b: { c: '123' } } }
 
