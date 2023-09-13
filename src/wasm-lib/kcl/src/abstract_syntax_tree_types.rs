@@ -2543,4 +2543,15 @@ show(firstExtrude)
 "#
         );
     }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_recast_math_start_negative() {
+        let some_program_string = r#"const myVar = -5 + 6"#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted.trim(), some_program_string);
+    }
 }

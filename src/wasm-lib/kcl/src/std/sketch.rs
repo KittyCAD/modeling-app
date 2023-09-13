@@ -161,34 +161,12 @@ pub enum LineData {
     /// A point with a tag.
     PointWithTag {
         /// The to point.
-        to: PointOrDefault,
+        to: [f64; 2],
         /// The tag.
         tag: String,
     },
     /// A point.
     Point([f64; 2]),
-    /// A string like `default`.
-    Default(String),
-}
-
-/// A point or a default value.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase", untagged)]
-pub enum PointOrDefault {
-    /// A point.
-    Point([f64; 2]),
-    /// A string like `default`.
-    Default(String),
-}
-
-impl PointOrDefault {
-    fn get_point_with_default(&self, default: [f64; 2]) -> [f64; 2] {
-        match self {
-            PointOrDefault::Point(point) => *point,
-            PointOrDefault::Default(_) => default,
-        }
-    }
 }
 
 /// Draw a line.
@@ -205,12 +183,9 @@ pub fn line(args: &mut Args) -> Result<MemoryItem, KclError> {
 }]
 fn inner_line(data: LineData, sketch_group: SketchGroup, args: &mut Args) -> Result<SketchGroup, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
-
-    let default = [0.2, 1.0];
     let inner_args = match &data {
-        LineData::PointWithTag { to, .. } => to.get_point_with_default(default),
+        LineData::PointWithTag { to, .. } => *to,
         LineData::Point(to) => *to,
-        LineData::Default(_) => default,
     };
 
     let to = [from.x + inner_args[0], from.y + inner_args[1]];
@@ -283,10 +258,7 @@ pub fn x_line(args: &mut Args) -> Result<MemoryItem, KclError> {
 }]
 fn inner_x_line(data: AxisLineData, sketch_group: SketchGroup, args: &mut Args) -> Result<SketchGroup, KclError> {
     let line_data = match data {
-        AxisLineData::LengthWithTag { length, tag } => LineData::PointWithTag {
-            to: PointOrDefault::Point([length, 0.0]),
-            tag,
-        },
+        AxisLineData::LengthWithTag { length, tag } => LineData::PointWithTag { to: [length, 0.0], tag },
         AxisLineData::Length(length) => LineData::Point([length, 0.0]),
     };
 
@@ -308,10 +280,7 @@ pub fn y_line(args: &mut Args) -> Result<MemoryItem, KclError> {
 }]
 fn inner_y_line(data: AxisLineData, sketch_group: SketchGroup, args: &mut Args) -> Result<SketchGroup, KclError> {
     let line_data = match data {
-        AxisLineData::LengthWithTag { length, tag } => LineData::PointWithTag {
-            to: PointOrDefault::Point([0.0, length]),
-            tag,
-        },
+        AxisLineData::LengthWithTag { length, tag } => LineData::PointWithTag { to: [0.0, length], tag },
         AxisLineData::Length(length) => LineData::Point([0.0, length]),
     };
 
@@ -427,10 +396,7 @@ fn inner_angled_line_of_x_length(
 
     let new_sketch_group = inner_line(
         if let AngledLineData::AngleWithTag { tag, .. } = data {
-            LineData::PointWithTag {
-                to: PointOrDefault::Point(to),
-                tag,
-            }
+            LineData::PointWithTag { to, tag }
         } else {
             LineData::Point(to)
         },
@@ -525,10 +491,7 @@ fn inner_angled_line_of_y_length(
 
     let new_sketch_group = inner_line(
         if let AngledLineData::AngleWithTag { tag, .. } = data {
-            LineData::PointWithTag {
-                to: PointOrDefault::Point(to),
-                tag,
-            }
+            LineData::PointWithTag { to, tag }
         } else {
             LineData::Point(to)
         },
@@ -654,11 +617,9 @@ pub fn start_sketch_at(args: &mut Args) -> Result<MemoryItem, KclError> {
     name = "startSketchAt",
 }]
 fn inner_start_sketch_at(data: LineData, args: &mut Args) -> Result<SketchGroup, KclError> {
-    let default = [0.0, 0.0];
     let to = match &data {
-        LineData::PointWithTag { to, .. } => to.get_point_with_default(default),
+        LineData::PointWithTag { to, .. } => *to,
         LineData::Point(to) => *to,
-        LineData::Default(_) => default,
     };
 
     let id = uuid::Uuid::new_v4();
@@ -992,16 +953,12 @@ mod tests {
 
     use pretty_assertions::assert_eq;
 
-    use crate::std::sketch::{LineData, PointOrDefault};
+    use crate::std::sketch::LineData;
 
     #[test]
     fn test_deserialize_line_data() {
-        let mut str_json = "\"default\"".to_string();
-        let data: LineData = serde_json::from_str(&str_json).unwrap();
-        assert_eq!(data, LineData::Default("default".to_string()));
-
         let data = LineData::Point([0.0, 1.0]);
-        str_json = serde_json::to_string(&data).unwrap();
+        let mut str_json = serde_json::to_string(&data).unwrap();
         assert_eq!(str_json, "[0.0,1.0]");
 
         str_json = "[0, 1]".to_string();
@@ -1013,7 +970,7 @@ mod tests {
         assert_eq!(
             data,
             LineData::PointWithTag {
-                to: PointOrDefault::Point([0.0, 1.0]),
+                to: [0.0, 1.0],
                 tag: "thing".to_string()
             }
         );

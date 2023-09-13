@@ -27,6 +27,7 @@ async function testingSwapSketchFnCall({
   originalRange: [number, number]
 }> {
   const startIndex = inputCode.indexOf(callToSwap)
+    println(startIndex)
   const range: Selection = {
     type: 'default',
     range: [startIndex, startIndex + callToSwap.length],

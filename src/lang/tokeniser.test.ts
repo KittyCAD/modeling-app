@@ -135,7 +135,8 @@ const yi=45`
       "number       '1'        from 1   to 2",
     ])
     expect(stringSummaryLexer('-1.5')).toEqual([
-      "number       '-1.5'     from 0   to 4",
+      "operator     '-'        from 0   to 1",
+      "number       '1.5'      from 1   to 4",
     ])
     expect(stringSummaryLexer('1.5')).toEqual([
       "number       '1.5'      from 0   to 3",
@@ -159,10 +160,12 @@ const yi=45`
       "whitespace   ' '        from 3   to 4",
       "operator     '+'        from 4   to 5",
       "whitespace   ' '        from 5   to 6",
-      "number       '-2.5'     from 6   to 10",
+      "operator     '-'        from 6   to 7",
+      "number       '2.5'      from 7   to 10",
     ])
     expect(stringSummaryLexer('-1.5 + 2.5')).toEqual([
-      "number       '-1.5'     from 0   to 4",
+      "operator     '-'        from 0   to 1",
+      "number       '1.5'      from 1   to 4",
       "whitespace   ' '        from 4   to 5",
       "operator     '+'        from 5   to 6",
       "whitespace   ' '        from 6   to 7",
