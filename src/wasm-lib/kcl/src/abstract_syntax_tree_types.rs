@@ -2283,7 +2283,7 @@ show(part001)
 
     #[test]
     fn test_recast_comment_in_a_fn_block() {
-        let some_program_string = r#"const myFn = () => {
+        let some_program_string = r#"fn myFn = () => {
   // this is a comment
   const yo = { a: { b: { c: '123' } } } /* block
   comment */
@@ -2299,7 +2299,7 @@ show(part001)
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"const myFn = () => {
+            r#"fn myFn = () => {
   // this is a comment
   const yo = { a: { b: { c: '123' } } }
   /* block

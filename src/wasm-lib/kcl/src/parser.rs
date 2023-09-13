@@ -1339,17 +1339,40 @@ impl Parser {
     fn make_variable_declaration(&self, index: usize) -> Result<VariableDeclarationResult, KclError> {
         let current_token = self.get_token(index)?;
         let declaration_start_token = self.next_meaningful_token(index, None)?;
+        let kind = VariableKind::from_str(&current_token.value).map_err(|_| {
+            KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![current_token.into()],
+                message: format!("Unexpected token: {}", current_token.value),
+            })
+        })?;
         let variable_declarators_result = self.make_variable_declarators(declaration_start_token.index, vec![])?;
+
+        // Check if we have a fn variable kind but are not assigning a function.
+        if !variable_declarators_result.declarations.is_empty() {
+            if let Some(declarator) = variable_declarators_result.declarations.get(0) {
+                if let Value::FunctionExpression(_) = declarator.init {
+                    if kind != VariableKind::Fn {
+                        return Err(KclError::Syntax(KclErrorDetails {
+                            source_ranges: vec![current_token.into()],
+                            message: format!("Expected a `fn` variable kind, found: `{}`", current_token.value),
+                        }));
+                    }
+                } else {
+                    // If we have anything other than a function, make sure we are not using the `fn` variable kind.
+                    if kind == VariableKind::Fn {
+                        return Err(KclError::Syntax(KclErrorDetails {
+                            source_ranges: vec![current_token.into()],
+                            message: format!("Expected a `let` variable kind, found: `{}`", current_token.value),
+                        }));
+                    }
+                }
+            }
+        }
         Ok(VariableDeclarationResult {
             declaration: VariableDeclaration {
                 start: current_token.start,
                 end: variable_declarators_result.declarations[variable_declarators_result.declarations.len() - 1].end,
-                kind: VariableKind::from_str(&current_token.value).map_err(|_| {
-                    KclError::Syntax(KclErrorDetails {
-                        source_ranges: vec![current_token.into()],
-                        message: format!("Unexpected token: {}", current_token.value),
-                    })
-                })?,
+                kind,
                 declarations: variable_declarators_result.declarations,
             },
             last_index: variable_declarators_result.last_index,
@@ -3290,5 +3313,45 @@ thing(false)
         let tokens = crate::tokeniser::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         parser.ast().unwrap();
+    }
+
+    #[test]
+    fn test_error_define_function_as_var() {
+        for name in ["var", "let", "const"] {
+            let some_program_string = format!(
+                r#"{} thing = (param) => {{
+    return true
+}}
+
+thing(false)
+"#,
+                name
+            );
+            let tokens = crate::tokeniser::lexer(&some_program_string);
+            let parser = crate::parser::Parser::new(tokens);
+            let result = parser.ast();
+            assert!(result.is_err());
+            assert_eq!(
+                result.err().unwrap().to_string(),
+                format!(
+                    r#"syntax: KclErrorDetails {{ source_ranges: [SourceRange([0, {}])], message: "Expected a `fn` variable kind, found: `{}`" }}"#,
+                    name.len(),
+                    name
+                )
+            );
+        }
+    }
+
+    #[test]
+    fn test_error_define_var_as_function() {
+        let some_program_string = r#"fn thing = "thing""#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert_eq!(
+            result.err().unwrap().to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([0, 2])], message: "Expected a `let` variable kind, found: `fn`" }"#
+        );
     }
 }
