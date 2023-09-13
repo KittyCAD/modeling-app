@@ -137,7 +137,7 @@ impl From<&Token> for crate::executor::SourceRange {
 }
 
 lazy_static! {
-    static ref NUMBER: Regex = Regex::new(r"^-?\d+(\.\d+)?").unwrap();
+    static ref NUMBER: Regex = Regex::new(r"^(\d+(\.\d*)?|\.\d+)\b").unwrap();
     static ref WHITESPACE: Regex = Regex::new(r"\s+").unwrap();
     static ref WORD: Regex = Regex::new(r"^[a-zA-Z_][a-zA-Z0-9_]*").unwrap();
     // TODO: these should be generated using our struct types for these.
@@ -394,19 +394,18 @@ mod tests {
     fn is_number_test() {
         assert!(is_number("1"));
         assert!(is_number("1 abc"));
-        assert!(is_number("1abc"));
         assert!(is_number("1.1"));
         assert!(is_number("1.1 abc"));
         assert!(!is_number("a"));
 
         assert!(is_number("1"));
+        assert!(is_number(".1"));
         assert!(is_number("5?"));
         assert!(is_number("5 + 6"));
         assert!(is_number("5 + a"));
-        assert!(is_number("-5"));
         assert!(is_number("5.5"));
-        assert!(is_number("-5.5"));
 
+        assert!(!is_number("1abc"));
         assert!(!is_number("a"));
         assert!(!is_number("?"));
         assert!(!is_number("?5"));
