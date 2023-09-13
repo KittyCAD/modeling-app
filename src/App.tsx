@@ -1,7 +1,6 @@
 import { useRef, useEffect, useCallback, MouseEventHandler } from 'react'
 import { DebugPanel } from './components/DebugPanel'
 import { v4 as uuidv4 } from 'uuid'
-import { asyncParser } from './lang/abstractSyntaxTree'
 import { _executor } from './lang/executor'
 import { PaneType, useStore } from './useStore'
 import { Logs, KCLErrors } from './components/Logs'
@@ -13,7 +12,6 @@ import ModalContainer from 'react-modal-promise'
 import { EngineCommand } from './lang/std/engineConnection'
 import { throttle } from './lib/utils'
 import { AppHeader } from './components/AppHeader'
-import { KCLError } from './lang/errors'
 import { Resizable } from 're-resizable'
 import {
   faCode,
@@ -33,6 +31,7 @@ import { CodeMenu } from 'components/CodeMenu'
 import { TextEditor } from 'components/TextEditor'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
+import { useCodeEval } from 'hooks/useCodeEval'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
@@ -40,51 +39,23 @@ export function App() {
   const streamRef = useRef<HTMLDivElement>(null)
   useHotKeyListener()
   const {
-    addLog,
-    addKCLError,
     setCode,
-    setAst,
-    setError,
-    setProgramMemory,
-    resetLogs,
-    resetKCLErrors,
-    setArtifactMap,
     engineCommandManager,
-    highlightRange,
-    setHighlightRange,
-    setCursor2,
-    isStreamReady,
     buttonDownInStream,
     openPanes,
     setOpenPanes,
     didDragInStream,
     streamDimensions,
-    setIsExecuting,
-    defferedCode,
     guiMode,
   } = useStore((s) => ({
     guiMode: s.guiMode,
-    addLog: s.addLog,
-    defferedCode: s.defferedCode,
     setCode: s.setCode,
-    setAst: s.setAst,
-    setError: s.setError,
-    setProgramMemory: s.setProgramMemory,
-    resetLogs: s.resetLogs,
-    resetKCLErrors: s.resetKCLErrors,
-    setArtifactMap: s.setArtifactNSourceRangeMaps,
     engineCommandManager: s.engineCommandManager,
-    highlightRange: s.highlightRange,
-    setHighlightRange: s.setHighlightRange,
-    setCursor2: s.setCursor2,
-    isStreamReady: s.isStreamReady,
     buttonDownInStream: s.buttonDownInStream,
-    addKCLError: s.addKCLError,
     openPanes: s.openPanes,
     setOpenPanes: s.setOpenPanes,
     didDragInStream: s.didDragInStream,
     streamDimensions: s.streamDimensions,
-    setIsExecuting: s.setIsExecuting,
   }))
 
   const {
@@ -134,117 +105,7 @@ export function App() {
   }, [loadedCode, setCode])
 
   useSetupEngineManager(streamRef, token)
-
-  useEffect(() => {
-    if (!isStreamReady) return
-    if (!engineCommandManager) return
-    let unsubFn: any[] = []
-    const asyncWrap = async () => {
-      try {
-        if (!defferedCode) {
-          setAst({
-            start: 0,
-            end: 0,
-            body: [],
-            nonCodeMeta: {
-              noneCodeNodes: {},
-              start: null,
-            },
-          })
-          setProgramMemory({ root: {}, return: null })
-          engineCommandManager.endSession()
-          engineCommandManager.startNewSession()
-          return
-        }
-        const _ast = await asyncParser(defferedCode)
-        setAst(_ast)
-        resetLogs()
-        resetKCLErrors()
-        engineCommandManager.endSession()
-        engineCommandManager.startNewSession()
-        setIsExecuting(true)
-        const programMemory = await _executor(
-          _ast,
-          {
-            root: {
-              _0: {
-                type: 'UserVal',
-                value: 0,
-                __meta: [],
-              },
-              _90: {
-                type: 'UserVal',
-                value: 90,
-                __meta: [],
-              },
-              _180: {
-                type: 'UserVal',
-                value: 180,
-                __meta: [],
-              },
-              _270: {
-                type: 'UserVal',
-                value: 270,
-                __meta: [],
-              },
-            },
-            return: null,
-          },
-          engineCommandManager
-        )
-
-        const { artifactMap, sourceRangeMap } =
-          await engineCommandManager.waitForAllCommands()
-        setIsExecuting(false)
-        if (programMemory !== undefined) {
-          setProgramMemory(programMemory)
-        }
-
-        setArtifactMap({ artifactMap, sourceRangeMap })
-        const unSubHover = engineCommandManager.subscribeToUnreliable({
-          event: 'highlight_set_entity',
-          callback: ({ data }) => {
-            if (data?.entity_id) {
-              const sourceRange = sourceRangeMap[data.entity_id]
-              setHighlightRange(sourceRange)
-            } else if (
-              !highlightRange ||
-              (highlightRange[0] !== 0 && highlightRange[1] !== 0)
-            ) {
-              setHighlightRange([0, 0])
-            }
-          },
-        })
-        const unSubClick = engineCommandManager.subscribeTo({
-          event: 'select_with_point',
-          callback: ({ data }) => {
-            if (!data?.entity_id) {
-              setCursor2()
-              return
-            }
-            const sourceRange = sourceRangeMap[data.entity_id]
-            setCursor2({ range: sourceRange, type: 'default' })
-          },
-        })
-        unsubFn.push(unSubHover, unSubClick)
-
-        setError()
-      } catch (e: any) {
-        setIsExecuting(false)
-        if (e instanceof KCLError) {
-          addKCLError(e)
-        } else {
-          setError('problem')
-          console.log(e)
-          addLog(e)
-        }
-      }
-    }
-    asyncWrap()
-    return () => {
-      unsubFn.forEach((fn) => fn())
-    }
-  }, [defferedCode, isStreamReady, engineCommandManager])
+  useCodeEval()
 
   const debounceSocketSend = throttle<EngineCommand>((message) => {
     engineCommandManager?.sendSceneCommand(message)
