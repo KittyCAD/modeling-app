@@ -427,7 +427,7 @@ impl Parser {
         }
         let current_token = self.get_token(index)?;
         let very_next_token = self.get_token(index + 1)?;
-        if (current_token.token_type == TokenType::Word || current_token.token_type == TokenType::Keyword)
+        if (current_token.token_type == TokenType::Word)
             && very_next_token.token_type == TokenType::Brace
             && very_next_token.value == "("
         {
@@ -622,16 +622,12 @@ impl Parser {
                 key_token.index
             };
             if let Some(key_token_token) = key_token.token {
-                let key = if key_token_token.token_type == TokenType::Word
-                    || key_token_token.token_type == TokenType::Keyword
-                {
+                let key = if key_token_token.token_type == TokenType::Word {
                     LiteralIdentifier::Identifier(Box::new(self.make_identifier(key_token.index)?))
                 } else {
                     LiteralIdentifier::Literal(Box::new(self.make_literal(key_token.index)?))
                 };
-                let computed = is_braced
-                    && (key_token_token.token_type == TokenType::Word
-                        || key_token_token.token_type == TokenType::Keyword);
+                let computed = is_braced && key_token_token.token_type == TokenType::Word;
                 let mut new_previous_keys = previous_keys;
                 new_previous_keys.push(ObjectKeyInfo {
                     key,
@@ -1136,8 +1132,7 @@ impl Parser {
                     _previous_args.push(Value::ObjectExpression(Box::new(object_expression.expression)));
                     return self.make_arguments(next_comma_or_brace_token_index, _previous_args);
                 }
-                if (argument_token_token.token_type == TokenType::Keyword
-                    || argument_token_token.token_type == TokenType::Word
+                if (argument_token_token.token_type == TokenType::Word
                     || argument_token_token.token_type == TokenType::Number
                     || argument_token_token.token_type == TokenType::String)
                     && next_brace_or_comma_token.token_type == TokenType::Operator
@@ -1169,8 +1164,7 @@ impl Parser {
                     _previous_args.push(value);
                     return self.make_arguments(next_brace_or_comma.index, _previous_args);
                 }
-                if (argument_token_token.token_type == TokenType::Keyword
-                    || argument_token_token.token_type == TokenType::Word)
+                if argument_token_token.token_type == TokenType::Word
                     && next_brace_or_comma_token.token_type == TokenType::Brace
                     && next_brace_or_comma_token.value == "("
                 {
@@ -1650,7 +1644,7 @@ impl Parser {
         }
 
         if let Some(next_token) = next.token {
-            if (token.token_type == TokenType::Keyword || token.token_type == TokenType::Word)
+            if token.token_type == TokenType::Word
                 && next_token.token_type == TokenType::Brace
                 && next_token.value == "("
             {
@@ -1676,9 +1670,7 @@ impl Parser {
 
         let next_thing = self.next_meaningful_token(token_index, None)?;
         if let Some(next_thing_token) = next_thing.token {
-            if (token.token_type == TokenType::Number
-                || token.token_type == TokenType::Word
-                || token.token_type == TokenType::Keyword)
+            if (token.token_type == TokenType::Number || token.token_type == TokenType::Word)
                 && next_thing_token.token_type == TokenType::Operator
             {
                 if let Some(node) = &next_thing.non_code_node {
