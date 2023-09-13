@@ -1013,7 +1013,10 @@ export function addNewSketchLn({
   to,
   fnName,
   pathToNode,
-}: Omit<CreateLineFnCallArgs, 'from'>): { modifiedAst: Program } {
+}: Omit<CreateLineFnCallArgs, 'from'>): {
+  modifiedAst: Program
+  sketchClosed: boolean
+} {
   const node = JSON.parse(JSON.stringify(_node))
   const { node: varDec } = getNodeFromPath<VariableDeclarator>(
     node,
@@ -1029,32 +1032,26 @@ export function addNewSketchLn({
 
   const last = sketch.value[sketch.value.length - 1] || sketch.start
   const from = last.to
+  let newFnName = fnName
   if (compareVec2Epsilon(to, sketch.start.from)) {
     // I imagine in the future there may be more than just close
     // as this now assumes it's always the same. Perhaps we could derive
     // the close type from the fnName in the future.
-    const { add, updateArgs } = sketchLineHelperMap?.['close'] || {}
+    newFnName = 'close'
+  }
+  let { add, updateArgs } = sketchLineHelperMap?.[newFnName]
+  if (!add || !updateArgs) throw new Error('not a sketch line helper')
 
-    return add({
+  return {
+    ...add({
       node,
       previousProgramMemory,
       pathToNode,
       to,
       from,
       replaceExisting: false,
-    })
-  } else {
-    const { add, updateArgs } = sketchLineHelperMap?.[fnName] || {}
-    if (!add || !updateArgs) throw new Error('not a sketch line helper')
-
-    return add({
-      node,
-      previousProgramMemory,
-      pathToNode,
-      to,
-      from,
-      replaceExisting: false,
-    })
+    }),
+    sketchClosed: newFnName === 'close',
   }
 }
 

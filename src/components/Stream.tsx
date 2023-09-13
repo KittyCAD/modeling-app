@@ -256,14 +256,21 @@ export const Stream = ({ className = '' }) => {
         })
         const coords: { x: number; y: number }[] =
           curve.data.data.control_points
-        const _modifiedAst = addNewSketchLn({
+        const { modifiedAst: _modifiedAst, sketchClosed } = addNewSketchLn({
           node: ast,
           programMemory,
           to: [coords[1].x, coords[1].y],
           fnName: 'line',
           pathToNode: guiMode.pathToNode,
-        }).modifiedAst
+        })
         updateAst(_modifiedAst)
+        if (sketchClosed) {
+          setGuiMode({
+            ...guiMode,
+            pathToNode: [],
+            waitingFirstClick: true,
+          })
+        }
       }
     })
     setDidDragInStream(false)
