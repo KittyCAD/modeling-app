@@ -52,11 +52,12 @@ export function addStartSketch(
     createPipeExpression(pipeBody)
   )
 
+  const newIndex = node.body.length
   _node.body = [...node.body, variableDeclaration]
 
   let pathToNode: PathToNode = [
     ['body', ''],
-    ['0', 'index'],
+    [newIndex.toString(10), 'index'],
     ['declarations', 'VariableDeclaration'],
     ['0', 'index'],
     ['init', 'VariableDeclarator'],
