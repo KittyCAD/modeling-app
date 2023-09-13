@@ -892,7 +892,60 @@ export const angledLineThatIntersects: SketchLineHelper = {
   addTag: addTagWithTo('angleTo'), // TODO might be wrong
 }
 
+export const close: SketchLineHelper = {
+  add: ({
+    node,
+    previousProgramMemory,
+    pathToNode,
+    replaceExisting,
+    referencedSegment,
+    createCallback,
+  }) => {
+    const _node = { ...node }
+    const { node: pipe } = getNodeFromPath<PipeExpression | CallExpression>(
+      _node,
+      pathToNode,
+      'PipeExpression'
+    )
+    const { node: varDec } = getNodeFromPath<VariableDeclarator>(
+      _node,
+      pathToNode,
+      'VariableDeclarator'
+    )
+    const variableName = varDec.id.name
+    const sketch = previousProgramMemory?.root?.[variableName]
+    if (sketch.type !== 'SketchGroup') throw new Error('not a SketchGroup')
+
+    const callExp = createCallExpression('close', [
+      createPipeSubstitution(),
+    ])
+    if (pipe.type === 'PipeExpression') {
+      pipe.body = [...pipe.body, callExp]
+    } else {
+      varDec.init = createPipeExpression([varDec.init, callExp])
+    }
+    return {
+      modifiedAst: _node,
+      pathToNode,
+    }
+  },
+  updateArgs: ({ node, pathToNode, to, from }) => {
+    const _node = { ...node }
+    const { node: callExpression } = getNodeFromPath<CallExpression>(
+      _node,
+      pathToNode
+    )
+
+    return {
+      modifiedAst: _node,
+      pathToNode,
+    }
+  },
+  addTag: addTagWithTo('default'),
+}
+
 export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
+  close,
   line,
   lineTo,
   xLine,
@@ -947,6 +1000,13 @@ interface CreateLineFnCallArgs {
   pathToNode: PathToNode
 }
 
+function compareVec2Epsilon(vec1, vec2) {
+  let compareEpsilon = 0.015625 // or 2^-6
+  let xDifference =  Math.abs(vec1[0] - vec2[0])
+  let yDifference =  Math.abs(vec1[0] - vec2[0])
+  return xDifference < compareEpsilon && yDifference < compareEpsilon
+}
+
 export function addNewSketchLn({
   node: _node,
   programMemory: previousProgramMemory,
@@ -955,8 +1015,6 @@ export function addNewSketchLn({
   pathToNode,
 }: Omit<CreateLineFnCallArgs, 'from'>): { modifiedAst: Program } {
   const node = JSON.parse(JSON.stringify(_node))
-  const { add, updateArgs } = sketchLineHelperMap?.[fnName] || {}
-  if (!add || !updateArgs) throw new Error('not a sketch line helper')
   const { node: varDec } = getNodeFromPath<VariableDeclarator>(
     node,
     pathToNode,
@@ -969,17 +1027,33 @@ export function addNewSketchLn({
   const sketch = previousProgramMemory?.root?.[variableName]
   if (sketch.type !== 'SketchGroup') throw new Error('not a SketchGroup')
 
-  const last = sketch.value[sketch.value.length - 1] || sketch.start
-  const from = last.to
+  if (compareVec2Epsilon(to, sketch.start.from)) {
+    // I imagine in the future there may be more than just close
+    // as this now assumes it's always the same. Perhaps we could derive 
+    // the close type from the fnName in the future.
+    const { add, updateArgs } = sketchLineHelperMap?.['close'] || {}
 
-  return add({
-    node,
-    previousProgramMemory,
-    pathToNode,
-    to,
-    from,
-    replaceExisting: false,
-  })
+    return add({
+      node,
+      previousProgramMemory,
+      pathToNode,
+      replaceExisting: false,
+    })
+  } else {
+    const last = sketch.value[sketch.value.length - 1] || sketch.start
+    const from = last.to
+    const { add, updateArgs } = sketchLineHelperMap?.[fnName] || {}
+    if (!add || !updateArgs) throw new Error('not a sketch line helper')
+
+    return add({
+      node,
+      previousProgramMemory,
+      pathToNode,
+      to,
+      from,
+      replaceExisting: false,
+    })
+  }
 }
 
 export function replaceSketchLine({
