@@ -1238,7 +1238,7 @@ export function getConstraintType(
     if (fnName === 'xLineTo') return 'yAbsolute'
     if (fnName === 'yLineTo') return 'xAbsolute'
   } else {
-    const isFirstArgLockedDown = val?.[0]?.type !== 'Literal'
+    const isFirstArgLockedDown = isNotLiteralArrayOrStatic(val[0])
     if (fnName === 'line')
       return isFirstArgLockedDown ? 'xRelative' : 'yRelative'
     if (fnName === 'lineTo')
