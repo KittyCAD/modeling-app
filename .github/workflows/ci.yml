@@ -29,7 +29,6 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
-          cache: 'yarn'
       - run: yarn install
       - uses: Swatinem/rust-cache@v2
         with:
