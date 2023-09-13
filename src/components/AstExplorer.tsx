@@ -62,13 +62,17 @@ function DisplayBody({
   filterKeys: string[]
   node: any
 }) {
-  return body.map((b, index) => {
-    return (
-      <div className="my-2" key={index}>
-        <DisplayObj obj={b} filterKeys={filterKeys} node={node} />
-      </div>
-    )
-  })
+  return (
+    <>
+      {body.map((b, index) => {
+        return (
+          <div className="my-2" key={index}>
+            <DisplayObj obj={b} filterKeys={filterKeys} node={node} />
+          </div>
+        )
+      })}
+    </>
+  )
 }
 
 function DisplayObj({
@@ -135,13 +139,13 @@ function DisplayObj({
               } else if (Array.isArray(value)) {
                 return (
                   <li key={key}>
-                    {key}: [
+                    {`${key}: [`}
                     <DisplayBody
                       body={value}
                       filterKeys={filterKeys}
                       node={node}
                     />
-                    ]
+                    {']'}
                   </li>
                 )
               } else if (
