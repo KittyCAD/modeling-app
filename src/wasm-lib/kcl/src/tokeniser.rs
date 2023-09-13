@@ -296,17 +296,17 @@ fn return_token_at_index(s: &str, start_index: usize) -> Option<Token> {
             start_index,
         ));
     }
-    if is_number(str_from_index) {
-        return Some(make_token(
-            TokenType::Number,
-            &match_first(str_from_index, &NUMBER)?,
-            start_index,
-        ));
-    }
     if is_operator(str_from_index) {
         return Some(make_token(
             TokenType::Operator,
             &match_first(str_from_index, &OPERATOR)?,
+            start_index,
+        ));
+    }
+    if is_number(str_from_index) {
+        return Some(make_token(
+            TokenType::Number,
+            &match_first(str_from_index, &NUMBER)?,
             start_index,
         ));
     }

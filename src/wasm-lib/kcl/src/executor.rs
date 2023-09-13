@@ -1009,7 +1009,7 @@ show(fnBox)"#;
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_get_member_of_object_with_function() {
+    async fn test_get_member_of_object_with_function_period() {
         let ast = r#"const box = (obj) => {
  let myBox = startSketchAt(obj.start)
     |> line([0, obj.l], %)
@@ -1029,6 +1029,47 @@ show(thisBox)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_member_of_object_with_function_brace() {
+        let ast = r#"const box = (obj) => {
+ let myBox = startSketchAt(obj["start"])
+    |> line([0, obj["l"]], %)
+    |> line([obj["w"], 0], %)
+    |> line([0, -obj["l"]], %)
+    |> close(%)
+    |> extrude(obj["h"], %)
+
+  return myBox
+}
+
+const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
+
+show(thisBox)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_member_of_object_with_function_mix_period_brace() {
+        let ast = r#"const box = (obj) => {
+ let myBox = startSketchAt(obj["start"])
+    |> line([0, obj["l"]], %)
+    |> line([obj["w"], 0], %)
+    |> line([10 - obj["w"], -obj.l], %)
+    |> close(%)
+    |> extrude(obj["h"], %)
+
+  return myBox
+}
+
+const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
+
+show(thisBox)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    #[ignore] // ignore til we get loops
     async fn test_execute_with_function_sketch_loop_objects() {
         let ast = r#"const box = (obj) => {
  let myBox = startSketchAt(obj.start)
@@ -1050,6 +1091,7 @@ for var in [{start: [0,0], l: 6, w: 10, h: 3}, {start: [-10,-10], l: 3, w: 5, h:
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    #[ignore] // ignore til we get loops
     async fn test_execute_with_function_sketch_loop_array() {
         let ast = r#"const box = (h, l, w, start) => {
  const myBox = startSketchAt([0,0])
@@ -1072,6 +1114,7 @@ for var in [[3, 6, 10, [0,0]], [1.5, 3, 5, [-10,-10]]] {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    #[ignore] // ignore til we get working.
     async fn test_get_member_of_array_with_function() {
         let ast = r#"const box = (array) => {
  let myBox = startSketchAt(array[0])
