@@ -163,7 +163,7 @@ jobs:
             --arg version "v${VERSION_NO_V}" \
             --arg pub_date "${PUB_DATE}" \
             --arg notes "${NOTES}" \
-            --arg darwin_url "$RELEASE_DIR/macos/KittyCAD%20Modeling.dmg" \
+            --arg darwin_url "$RELEASE_DIR/dmg/KittyCAD%20Modeling_${VERSION_NO_V}_universal.dmg" \
             --arg linux_url "$RELEASE_DIR/appimage/kittycad-modeling_${VERSION_NO_V}_amd64.AppImage" \
             --arg windows_url "$RELEASE_DIR/msi/KittyCAD%20Modeling_${VERSION_NO_V}_x64_en-US.msi.zip" \
             '{
