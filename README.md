@@ -32,7 +32,7 @@ The 3D view in KittyCAD Modeling App is just a video stream from our hosted geom
 
 ## Get started
 
-We recommend downloading the latest application binary from [our Releases page](https://github.com/KittyCAD/modeling-app/releases). If you don't see your architecture supported there, please file an issue.
+We recommend downloading the latest application binary from [our Releases page](https://github.com/KittyCAD/modeling-app/releases). If you don't see your platform or architecture supported there, please file an issue.
 
 ## Running a development build
 
