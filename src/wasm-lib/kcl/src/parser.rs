@@ -1287,7 +1287,8 @@ impl Parser {
         let current_token = self.get_token(index)?;
 
         // Make sure they are not assigning a variable to a reserved keyword.
-        if current_token.token_type == TokenType::Keyword {
+        // Or a stdlib function.
+        if current_token.token_type == TokenType::Keyword || self.stdlib.fns.contains_key(&current_token.value) {
             return Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: vec![current_token.into()],
                 message: format!(
@@ -1399,7 +1400,8 @@ impl Parser {
         }
 
         // Make sure they are not assigning a variable to a reserved keyword.
-        if argument_token.token_type == TokenType::Keyword {
+        // Or a stdlib function.
+        if argument_token.token_type == TokenType::Keyword || self.stdlib.fns.contains_key(&argument_token.value) {
             return Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: vec![argument_token.clone().into()],
                 message: format!(
@@ -3288,6 +3290,19 @@ e
     }
 
     #[test]
+    fn test_error_stdlib_in_fn_name() {
+        let some_program_string = r#"fn cos = () {}"#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert_eq!(
+            result.err().unwrap().to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([3, 6])], message: "Cannot assign a variable to a reserved keyword: cos" }"#
+        );
+    }
+
+    #[test]
     fn test_error_keyword_in_fn_args() {
         let some_program_string = r#"fn thing = (let) => {
     return 1
@@ -3299,6 +3314,21 @@ e
         assert_eq!(
             result.err().unwrap().to_string(),
             r#"syntax: KclErrorDetails { source_ranges: [SourceRange([12, 15])], message: "Cannot assign a variable to a reserved keyword: let" }"#
+        );
+    }
+
+    #[test]
+    fn test_error_stdlib_in_fn_args() {
+        let some_program_string = r#"fn thing = (cos) => {
+    return 1
+}"#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert_eq!(
+            result.err().unwrap().to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([12, 15])], message: "Cannot assign a variable to a reserved keyword: cos" }"#
         );
     }
 
