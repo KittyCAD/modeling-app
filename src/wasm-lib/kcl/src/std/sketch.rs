@@ -62,6 +62,7 @@ fn inner_line_to(data: LineToData, sketch_group: SketchGroup, args: &mut Args) -
                     y: to[1],
                     z: 0.0,
                 },
+                relative: false,
             },
         },
     )?;
@@ -188,6 +189,7 @@ fn inner_line(data: LineData, sketch_group: SketchGroup, args: &mut Args) -> Res
         LineData::Point(to) => *to,
     };
 
+    let delta = inner_args;
     let to = [from.x + inner_args[0], from.y + inner_args[1]];
 
     let id = uuid::Uuid::new_v4();
@@ -198,10 +200,11 @@ fn inner_line(data: LineData, sketch_group: SketchGroup, args: &mut Args) -> Res
             path: sketch_group.id,
             segment: kittycad::types::PathSegment::Line {
                 end: Point3D {
-                    x: to[0],
-                    y: to[1],
+                    x: delta[0],
+                    y: delta[1],
                     z: 0.0,
                 },
+                relative: true
             },
         },
     )?;
@@ -328,9 +331,17 @@ fn inner_angled_line(
         AngledLineData::AngleWithTag { angle, length, .. } => (*angle, *length),
         AngledLineData::AngleAndLength(angle_and_length) => (angle_and_length[0], angle_and_length[1]),
     };
+
+    //double check me on this one - mike
+    let delta: [f64; 2] = [
+        length * f64::cos(angle * std::f64::consts::PI / 180.0),
+        length * f64::sin(angle * std::f64::consts::PI / 180.0)
+    ];
+    let relative = true;
+
     let to: [f64; 2] = [
-        from.x + length * f64::cos(angle * std::f64::consts::PI / 180.0),
-        from.y + length * f64::sin(angle * std::f64::consts::PI / 180.0),
+        from.x + delta[0],
+        from.y + delta[1],
     ];
 
     let id = uuid::Uuid::new_v4();
@@ -357,10 +368,11 @@ fn inner_angled_line(
             path: sketch_group.id,
             segment: kittycad::types::PathSegment::Line {
                 end: Point3D {
-                    x: to[0],
-                    y: to[1],
+                    x: delta[0],
+                    y: delta[1],
                     z: 0.0,
                 },
+                relative: relative,
             },
         },
     )?;
@@ -807,9 +819,14 @@ fn inner_arc(data: ArcData, sketch_group: SketchGroup, args: &mut Args) -> Resul
                 angle_end,
                 center: center.into(),
                 radius,
+                relative: false,
             },
         },
     )?;
+
+    // TODO:  Dont do this (move path pen) - mike
+    // lets review what the needs are here and see if any existing arc endpoints can accomplish this
+
     // Move the path pen to the end of the arc.
     // Since that is where we want to draw the next path.
     // TODO: the engine should automatically move the pen to the end of the arc.
@@ -898,6 +915,8 @@ fn inner_bezier_curve(data: BezierData, sketch_group: SketchGroup, args: &mut Ar
         BezierData::Points { to, control1, control2 } => (to, control1, control2),
     };
 
+    let relative = true;
+    let delta = to;
     let to = [from.x + to[0], from.y + to[1]];
 
     let id = uuid::Uuid::new_v4();
@@ -908,20 +927,21 @@ fn inner_bezier_curve(data: BezierData, sketch_group: SketchGroup, args: &mut Ar
             path: sketch_group.id,
             segment: kittycad::types::PathSegment::Bezier {
                 control1: Point3D {
-                    x: from.x + control1[0],
-                    y: from.y + control1[1],
+                    x: control1[0],
+                    y: control1[1],
                     z: 0.0,
                 },
                 control2: Point3D {
-                    x: from.x + control2[0],
-                    y: from.y + control2[1],
+                    x: control2[0],
+                    y: control2[1],
                     z: 0.0,
                 },
                 end: Point3D {
-                    x: to[0],
-                    y: to[1],
+                    x: delta[0],
+                    y: delta[1],
                     z: 0.0,
                 },
+                relative: relative
             },
         },
     )?;
