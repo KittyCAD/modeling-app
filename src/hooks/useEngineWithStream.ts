@@ -98,7 +98,18 @@ export function useEngineWithStream(streamRef: React.RefObject<HTMLElement>) {
     const asyncWrap = async () => {
       try {
         if (!defferedCode) {
-          setAst(null)
+          setAst({
+            start: 0,
+            end: 0,
+            body: [],
+            nonCodeMeta: {
+              noneCodeNodes: {},
+              start: null,
+            },
+          })
+          setProgramMemory({ root: {}, return: null })
+          engineCommandManager.endSession()
+          engineCommandManager.startNewSession()
           return
         }
         const _ast = await asyncParser(defferedCode)
@@ -113,26 +124,27 @@ export function useEngineWithStream(streamRef: React.RefObject<HTMLElement>) {
           {
             root: {
               _0: {
-                type: 'userVal',
+                type: 'UserVal',
                 value: 0,
                 __meta: [],
               },
               _90: {
-                type: 'userVal',
+                type: 'UserVal',
                 value: 90,
                 __meta: [],
               },
               _180: {
-                type: 'userVal',
+                type: 'UserVal',
                 value: 180,
                 __meta: [],
               },
               _270: {
-                type: 'userVal',
+                type: 'UserVal',
                 value: 270,
                 __meta: [],
               },
             },
+            return: null,
           },
           engineCommandManager
         )
@@ -140,6 +152,9 @@ export function useEngineWithStream(streamRef: React.RefObject<HTMLElement>) {
         const { artifactMap, sourceRangeMap } =
           await engineCommandManager.waitForAllCommands()
         setIsExecuting(false)
+        if (programMemory !== undefined) {
+          setProgramMemory(programMemory)
+        }
 
         setArtifactMap({ artifactMap, sourceRangeMap })
         const unSubHover = engineCommandManager.subscribeToUnreliable({
@@ -168,9 +183,6 @@ export function useEngineWithStream(streamRef: React.RefObject<HTMLElement>) {
           },
         })
         unsubFn.push(unSubHover, unSubClick)
-        if (programMemory !== undefined) {
-          setProgramMemory(programMemory)
-        }
 
         setError()
       } catch (e: any) {
