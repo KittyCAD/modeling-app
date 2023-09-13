@@ -29,6 +29,7 @@ import {
 import { isOverlap } from 'lib/utils'
 import { kclErrToDiagnostic } from 'lang/errors'
 import { CSSRuleObject } from 'tailwindcss/types/config'
+import interact from '@replit/codemirror-interact'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -237,6 +238,39 @@ export const TextEditor = ({
         lintGutter(),
         linter((_view) => {
           return kclErrToDiagnostic(useStore.getState().kclErrors)
+        }),
+        interact({
+          rules: [
+            // a rule for a number dragger
+            {
+              // the regexp matching the value
+              regexp: /-?\b\d+\.?\d*\b/g,
+              // set cursor to "ew-resize" on hover
+              cursor: 'ew-resize',
+              // change number value based on mouse X movement on drag
+              onDrag: (text, setText, e) => {
+                const multiplier = e.shiftKey ? 10 : e.metaKey ? 0.1 : 1
+                const pixelsPerIncrement = 3
+
+                // Round to 1 decimal place if metaKey is held, otherwise round to nearest integer
+                const roundingFactor = multiplier === 0.1 ? 10 : 1
+
+                const delta =
+                  Math.round(
+                    (e.movementX / pixelsPerIncrement) *
+                      multiplier *
+                      roundingFactor
+                  ) / roundingFactor
+
+                const newVal =
+                  Math.round((Number(text) + delta) * roundingFactor) /
+                  roundingFactor
+
+                if (isNaN(newVal)) return
+                setText(newVal.toString())
+              },
+            },
+          ],
         })
       )
       if (textWrapping === 'On') extensions.push(EditorView.lineWrapping)
