@@ -33,8 +33,10 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: "./src/wasm-lib"
-
       - run: yarn build:wasm
+      - run: |
+          cat src/App.tsx | grep return
+
       - run: yarn tsc
 
 
