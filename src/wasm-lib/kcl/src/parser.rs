@@ -572,7 +572,14 @@ impl Parser {
                 if has_opening_brace && next_token_val.token_type == TokenType::Brace && next_token_val.value == "]" {
                     // We need to reset our has_opening_brace flag, since we've closed it.
                     has_opening_brace = false;
-                    self.next_meaningful_token(next_token.index, None)?
+                    let next_next_token = self.next_meaningful_token(next_token.index, None)?;
+                    if let Some(next_next_token_val) = &next_next_token.token {
+                        if next_next_token_val.token_type == TokenType::Brace && next_next_token_val.value == "[" {
+                            // Set the opening brace flag again, since we've opened it again.
+                            has_opening_brace = true;
+                        }
+                    }
+                    next_next_token.clone()
                 } else {
                     next_token.clone()
                 }
@@ -2829,6 +2836,13 @@ show(mySk1)"#;
         let result = parser.ast();
         assert!(result.is_err());
         assert!(result.err().unwrap().to_string().contains("Unexpected token"));
+    }
+
+    #[test]
+    fn test_parse_member_expression_double_nested_braces() {
+        let tokens = crate::tokeniser::lexer(r#"const prop = yo["one"][two]"#);
+        let parser = Parser::new(tokens);
+        parser.ast().unwrap();
     }
 
     #[test]

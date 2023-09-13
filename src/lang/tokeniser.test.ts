@@ -131,7 +131,8 @@ const yi=45`
   })
   it('test negative and decimal numbers', () => {
     expect(stringSummaryLexer('-1')).toEqual([
-      "number       '-1'       from 0   to 2",
+        "operator     '-'        from 0   to 1",
+   "number       '1'        from 1   to 2",
     ])
     expect(stringSummaryLexer('-1.5')).toEqual([
       "number       '-1.5'     from 0   to 4",
