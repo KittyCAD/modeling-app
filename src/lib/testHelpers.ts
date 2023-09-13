@@ -49,7 +49,7 @@ class MockEngineCommandManager {
 
 export async function enginelessExecutor(
   ast: Program,
-  pm: ProgramMemory = { root: {} }
+  pm: ProgramMemory = { root: {}, return: null }
 ): Promise<ProgramMemory> {
   const mockEngineCommandManager = new MockEngineCommandManager({
     setIsStreamReady: () => {},
@@ -64,7 +64,7 @@ export async function enginelessExecutor(
 
 export async function executor(
   ast: Program,
-  pm: ProgramMemory = { root: {} }
+  pm: ProgramMemory = { root: {}, return: null }
 ): Promise<ProgramMemory> {
   const engineCommandManager = new EngineCommandManager({
     setIsStreamReady: () => {},

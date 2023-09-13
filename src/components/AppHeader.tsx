@@ -4,6 +4,7 @@ import { ProjectWithEntryPointMetadata } from '../Router'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import styles from './AppHeader.module.css'
+import { NetworkHealthIndicator } from './NetworkHealthIndicator'
 
 interface AppHeaderProps extends React.PropsWithChildren {
   showToolbar?: boolean
@@ -43,7 +44,8 @@ export const AppHeader = ({
       )}
       {/* If there are children, show them, otherwise show User menu */}
       {children || (
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-1">
+          <NetworkHealthIndicator />
           <UserSidebarMenu user={user} />
         </div>
       )}

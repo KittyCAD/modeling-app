@@ -98,16 +98,14 @@ impl ProgramReturn {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type", rename_all = "camelCase")]
+#[serde(tag = "type")]
 pub enum MemoryItem {
-    UserVal {
-        value: serde_json::Value,
-        #[serde(rename = "__meta")]
-        meta: Vec<Metadata>,
-    },
+    UserVal(UserVal),
     SketchGroup(SketchGroup),
     ExtrudeGroup(ExtrudeGroup),
+    #[ts(skip)]
     ExtrudeTransform(ExtrudeTransform),
+    #[ts(skip)]
     Function {
         #[serde(skip)]
         func: Option<MemoryFunction>,
@@ -119,7 +117,16 @@ pub enum MemoryItem {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(rename_all = "camelCase")]
+#[serde(tag = "type", rename_all = "camelCase")]
+pub struct UserVal {
+    pub value: serde_json::Value,
+    #[serde(rename = "__meta")]
+    pub meta: Vec<Metadata>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub struct ExtrudeTransform {
     pub position: Position,
     pub rotation: Rotation,
@@ -138,7 +145,7 @@ pub type MemoryFunction = fn(
 impl From<MemoryItem> for Vec<SourceRange> {
     fn from(item: MemoryItem) -> Self {
         match item {
-            MemoryItem::UserVal { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
+            MemoryItem::UserVal(u) => u.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::SketchGroup(s) => s.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::ExtrudeGroup(e) => e.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::ExtrudeTransform(e) => e.meta.iter().map(|m| m.source_range).collect(),
@@ -149,8 +156,8 @@ impl From<MemoryItem> for Vec<SourceRange> {
 
 impl MemoryItem {
     pub fn get_json_value(&self) -> Result<serde_json::Value, KclError> {
-        if let MemoryItem::UserVal { value, .. } = self {
-            Ok(value.clone())
+        if let MemoryItem::UserVal(user_val) = self {
+            Ok(user_val.value.clone())
         } else {
             Err(KclError::Semantic(KclErrorDetails {
                 message: format!("Not a user value: {:?}", self),
@@ -186,7 +193,7 @@ impl MemoryItem {
 /// A sketch group is a collection of paths.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(rename_all = "camelCase")]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub struct SketchGroup {
     /// The id of the sketch group.
     pub id: uuid::Uuid,
@@ -238,7 +245,7 @@ impl SketchGroup {
 /// An extrude group is a collection of extrude surfaces.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(rename_all = "camelCase")]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub struct ExtrudeGroup {
     /// The id of the extrude group.
     pub id: uuid::Uuid,
@@ -276,15 +283,15 @@ pub enum BodyType {
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-pub struct Position(pub [f64; 3]);
+pub struct Position(#[ts(type = "[number, number, number]")] pub [f64; 3]);
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-pub struct Rotation(pub [f64; 4]);
+pub struct Rotation(#[ts(type = "[number, number, number, number]")] pub [f64; 4]);
 
 #[derive(Debug, Default, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema, Hash, Eq)]
 #[ts(export)]
-pub struct SourceRange(pub [usize; 2]);
+pub struct SourceRange(#[ts(type = "[number, number]")] pub [usize; 2]);
 
 impl SourceRange {
     /// Create a new source range.
@@ -401,8 +408,10 @@ impl From<SourceRange> for Metadata {
 #[serde(rename_all = "camelCase")]
 pub struct BasePath {
     /// The from point.
+    #[ts(type = "[number, number]")]
     pub from: [f64; 2],
     /// The to point.
+    #[ts(type = "[number, number]")]
     pub to: [f64; 2],
     /// The name of the path.
     pub name: String,
@@ -804,16 +813,16 @@ show(part001)"#,
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_fn_definitions() {
-        let ast = r#"const def = (x) => {
+        let ast = r#"fn def = (x) => {
   return x
 }
-const ghi = (x) => {
+fn ghi = (x) => {
   return x
 }
-const jkl = (x) => {
+fn jkl = (x) => {
   return x
 }
-const hmm = (x) => {
+fn hmm = (x) => {
   return x
 }
 
@@ -981,7 +990,7 @@ show(firstExtrude)"#;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_with_function_sketch() {
-        let ast = r#"const box = (h, l, w) => {
+        let ast = r#"fn box = (h, l, w) => {
  const myBox = startSketchAt([0,0])
     |> line([0, l], %)
     |> line([w, 0], %)
@@ -997,5 +1006,160 @@ const fnBox = box(3, 6, 10)
 show(fnBox)"#;
 
         parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_member_of_object_with_function_period() {
+        let ast = r#"fn box = (obj) => {
+ let myBox = startSketchAt(obj.start)
+    |> line([0, obj.l], %)
+    |> line([obj.w, 0], %)
+    |> line([0, -obj.l], %)
+    |> close(%)
+    |> extrude(obj.h, %)
+
+  return myBox
+}
+
+const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
+
+show(thisBox)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_member_of_object_with_function_brace() {
+        let ast = r#"fn box = (obj) => {
+ let myBox = startSketchAt(obj["start"])
+    |> line([0, obj["l"]], %)
+    |> line([obj["w"], 0], %)
+    |> line([0, -obj["l"]], %)
+    |> close(%)
+    |> extrude(obj["h"], %)
+
+  return myBox
+}
+
+const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
+
+show(thisBox)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_member_of_object_with_function_mix_period_brace() {
+        let ast = r#"fn box = (obj) => {
+ let myBox = startSketchAt(obj["start"])
+    |> line([0, obj["l"]], %)
+    |> line([obj["w"], 0], %)
+    |> line([10 - obj["w"], -obj.l], %)
+    |> close(%)
+    |> extrude(obj["h"], %)
+
+  return myBox
+}
+
+const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
+
+show(thisBox)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    #[ignore] // ignore til we get loops
+    async fn test_execute_with_function_sketch_loop_objects() {
+        let ast = r#"fn box = (obj) => {
+ let myBox = startSketchAt(obj.start)
+    |> line([0, obj.l], %)
+    |> line([obj.w, 0], %)
+    |> line([0, -obj.l], %)
+    |> close(%)
+    |> extrude(obj.h, %)
+
+  return myBox
+}
+
+for var in [{start: [0,0], l: 6, w: 10, h: 3}, {start: [-10,-10], l: 3, w: 5, h: 1.5}] {
+  const thisBox = box(var)
+  show(thisBox)
+}"#;
+
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    #[ignore] // ignore til we get loops
+    async fn test_execute_with_function_sketch_loop_array() {
+        let ast = r#"fn box = (h, l, w, start) => {
+ const myBox = startSketchAt([0,0])
+    |> line([0, l], %)
+    |> line([w, 0], %)
+    |> line([0, -l], %)
+    |> close(%)
+    |> extrude(h, %)
+
+  return myBox
+}
+
+
+for var in [[3, 6, 10, [0,0]], [1.5, 3, 5, [-10,-10]]] {
+  const thisBox = box(var[0], var[1], var[2], var[3])
+  show(thisBox)
+}"#;
+
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_member_of_array_with_function() {
+        let ast = r#"fn box = (array) => {
+ let myBox = startSketchAt(array[0])
+    |> line([0, array[1]], %)
+    |> line([array[2], 0], %)
+    |> line([0, -array[1]], %)
+    |> close(%)
+    |> extrude(array[3], %)
+
+  return myBox
+}
+
+const thisBox = box([[0,0], 6, 10, 3])
+
+show(thisBox)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_execute_with_functions() {
+        let ast = r#"const myVar = 2 + min(100, -1 + legLen(5, 3))"#;
+        let memory = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            serde_json::json!(5.0),
+            memory.root.get("myVar").unwrap().get_json_value().unwrap()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_execute() {
+        let ast = r#"const myVar = 1 + 2 * (3 - 4) / -5 + 6"#;
+        let memory = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            serde_json::json!(7.4),
+            memory.root.get("myVar").unwrap().get_json_value().unwrap()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_execute_start_negative() {
+        let ast = r#"const myVar = -5 + 6"#;
+        let memory = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            serde_json::json!(1.0),
+            memory.root.get("myVar").unwrap().get_json_value().unwrap()
+        );
     }
 }

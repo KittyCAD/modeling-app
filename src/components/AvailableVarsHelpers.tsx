@@ -144,7 +144,7 @@ export function useCalc({
     try {
       const code = `const __result__ = ${value}\nshow(__result__)`
       const ast = parser_wasm(code)
-      const _programMem: any = { root: {} }
+      const _programMem: any = { root: {}, return: null }
       availableVarInfo.variables.forEach(({ key, value }) => {
         _programMem.root[key] = { type: 'userVal', value, __meta: [] }
       })

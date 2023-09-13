@@ -153,6 +153,8 @@ jobs:
     needs: [build-test-web, build-apps]
     env:
       VERSION_NO_V: ${{ needs.build-test-web.outputs.version }}
+      PUB_DATE: ${{ github.event.release.created_at }}
+      NOTES: ${{ github.event.release.body }}
     steps:
 
       - uses: actions/download-artifact@v3
@@ -166,6 +168,8 @@ jobs:
           RELEASE_DIR=https://dl.kittycad.io/releases/modeling-app/v${VERSION_NO_V}
           jq --null-input \
             --arg version "v${VERSION_NO_V}" \
+            --arg pub_date "${PUB_DATE}" \
+            --arg notes "${NOTES}" \
             --arg darwin_sig "$DARWIN_SIG" \
             --arg darwin_url "$RELEASE_DIR/macos/KittyCAD%20Modeling.app.tar.gz" \
             --arg linux_sig "$LINUX_SIG" \
@@ -174,6 +178,8 @@ jobs:
             --arg windows_url "$RELEASE_DIR/nsis/KittyCAD%20Modeling_${VERSION_NO_V}_x64-setup.nsis.zip" \
             '{
               "version": $version,
+              "pub_date": $pub_date,
+              "notes": $notes,
               "platforms": {
                 "darwin-x86_64": {
                   "signature": $darwin_sig,
@@ -194,6 +200,34 @@ jobs:
               }
             }' > last_update.json
             cat last_update.json
+
+      - name: Generate the download static endpoint
+        run: |
+          RELEASE_DIR=https://dl.kittycad.io/releases/modeling-app/v${VERSION_NO_V}
+          jq --null-input \
+            --arg version "v${VERSION_NO_V}" \
+            --arg pub_date "${PUB_DATE}" \
+            --arg notes "${NOTES}" \
+            --arg darwin_url "$RELEASE_DIR/dmg/KittyCAD%20Modeling_${VERSION_NO_V}_universal.dmg" \
+            --arg linux_url "$RELEASE_DIR/appimage/kittycad-modeling_${VERSION_NO_V}_amd64.AppImage" \
+            --arg windows_url "$RELEASE_DIR/msi/KittyCAD%20Modeling_${VERSION_NO_V}_x64_en-US.msi.zip" \
+            '{
+              "version": $version,
+              "pub_date": $pub_date,
+              "notes": $notes,
+              "platforms": {
+                "dmg-universal": {
+                  "url": $darwin_url
+                },
+                "appimage-x86_64": {
+                  "url": $linux_url
+                },
+                "msi-x86_64": {
+                  "url": $windows_url
+                }
+              }
+            }' > last_download.json
+            cat last_download.json
 
       - name: Authenticate to Google Cloud
         uses: 'google-github-actions/auth@v1.1.1'
@@ -217,6 +251,12 @@ jobs:
         uses: google-github-actions/upload-cloud-storage@v1.0.3
         with:
           path: last_update.json
+          destination: dl.kittycad.io/releases/modeling-app
+
+      - name: Upload download endpoint to public bucket
+        uses: google-github-actions/upload-cloud-storage@v1.0.3
+        with:
+          path: last_download.json
           destination: dl.kittycad.io/releases/modeling-app
 
       - name: Upload release files to Github

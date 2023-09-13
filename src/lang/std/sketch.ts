@@ -4,6 +4,7 @@ import {
   SketchGroup,
   SourceRange,
   PathToNode,
+  MemoryItem,
 } from '../executor'
 import {
   Program,
@@ -19,8 +20,9 @@ import {
   getNodeFromPathCurry,
   getNodePathFromSourceRange,
 } from '../queryAst'
+import { isLiteralArrayOrStatic } from './sketchcombos'
 import { GuiModes, toolTips, TooTip } from '../../useStore'
-import { splitPathAtPipeExpression } from '../modifyAst'
+import { createPipeExpression, splitPathAtPipeExpression } from '../modifyAst'
 import { generateUuidFromHashSeed } from '../../lib/uuid'
 
 import { SketchLineHelper, ModifyAstBase, TransformCallback } from './stdTypes'
@@ -185,7 +187,7 @@ export const line: SketchLineHelper = {
     createCallback,
   }) => {
     const _node = { ...node }
-    const { node: pipe } = getNodeFromPath<PipeExpression>(
+    const { node: pipe } = getNodeFromPath<PipeExpression | CallExpression>(
       _node,
       pathToNode,
       'PipeExpression'
@@ -197,12 +199,12 @@ export const line: SketchLineHelper = {
     )
     const variableName = varDec.id.name
     const sketch = previousProgramMemory?.root?.[variableName]
-    if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
+    if (sketch.type !== 'SketchGroup') throw new Error('not a SketchGroup')
 
     const newXVal = createLiteral(roundOff(to[0] - from[0], 2))
     const newYVal = createLiteral(roundOff(to[1] - from[1], 2))
 
-    if (replaceExisting && createCallback) {
+    if (replaceExisting && createCallback && pipe.type !== 'CallExpression') {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       const { callExp, valueUsedInTransform } = createCallback(
         [newXVal, newYVal],
@@ -220,7 +222,11 @@ export const line: SketchLineHelper = {
       createArrayExpression([newXVal, newYVal]),
       createPipeSubstitution(),
     ])
-    pipe.body = [...pipe.body, callExp]
+    if (pipe.type === 'PipeExpression') {
+      pipe.body = [...pipe.body, callExp]
+    } else {
+      varDec.init = createPipeExpression([varDec.init, callExp])
+    }
     return {
       modifiedAst: _node,
       pathToNode,
@@ -238,22 +244,10 @@ export const line: SketchLineHelper = {
       createLiteral(roundOff(to[1] - from[1], 2)),
     ])
 
-    if (
-      callExpression.arguments?.[0].type === 'Literal' &&
-      callExpression.arguments?.[0].value === 'default'
-    ) {
-      callExpression.arguments[0] = toArrExp
-    } else if (callExpression.arguments?.[0].type === 'ObjectExpression') {
+    if (callExpression.arguments?.[0].type === 'ObjectExpression') {
       const toProp = callExpression.arguments?.[0].properties?.find(
         ({ key }) => key.name === 'to'
       )
-      if (
-        toProp &&
-        toProp.value.type === 'Literal' &&
-        toProp.value.value === 'default'
-      ) {
-        toProp.value = toArrExp
-      }
       mutateObjExpProp(callExpression.arguments?.[0], toArrExp, 'to')
     } else {
       mutateArrExp(callExpression.arguments?.[0], toArrExp)
@@ -301,7 +295,7 @@ export const xLineTo: SketchLineHelper = {
       pathToNode
     )
     const newX = createLiteral(roundOff(to[0], 2))
-    if (callExpression.arguments?.[0]?.type === 'Literal') {
+    if (isLiteralArrayOrStatic(callExpression.arguments?.[0])) {
       callExpression.arguments[0] = newX
     } else {
       mutateObjExpProp(callExpression.arguments?.[0], newX, 'to')
@@ -349,7 +343,7 @@ export const yLineTo: SketchLineHelper = {
       pathToNode
     )
     const newY = createLiteral(roundOff(to[1], 2))
-    if (callExpression.arguments?.[0]?.type === 'Literal') {
+    if (isLiteralArrayOrStatic(callExpression.arguments?.[0])) {
       callExpression.arguments[0] = newY
     } else {
       mutateObjExpProp(callExpression.arguments?.[0], newY, 'to')
@@ -399,7 +393,7 @@ export const xLine: SketchLineHelper = {
       pathToNode
     )
     const newX = createLiteral(roundOff(to[0] - from[0], 2))
-    if (callExpression.arguments?.[0]?.type === 'Literal') {
+    if (isLiteralArrayOrStatic(callExpression.arguments?.[0])) {
       callExpression.arguments[0] = newX
     } else {
       mutateObjExpProp(callExpression.arguments?.[0], newX, 'length')
@@ -443,7 +437,7 @@ export const yLine: SketchLineHelper = {
       pathToNode
     )
     const newY = createLiteral(roundOff(to[1] - from[1], 2))
-    if (callExpression.arguments?.[0]?.type === 'Literal') {
+    if (isLiteralArrayOrStatic(callExpression.arguments?.[0])) {
       callExpression.arguments[0] = newY
     } else {
       mutateObjExpProp(callExpression.arguments?.[0], newY, 'length')
@@ -546,7 +540,7 @@ export const angledLineOfXLength: SketchLineHelper = {
     )
     const variableName = varDec.id.name
     const sketch = previousProgramMemory?.root?.[variableName]
-    if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
+    if (sketch.type !== 'SketchGroup') throw new Error('not a SketchGroup')
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const xLength = createLiteral(roundOff(Math.abs(from[0] - to[0]), 2) || 0.1)
     const newLine = createCallback
@@ -619,7 +613,7 @@ export const angledLineOfYLength: SketchLineHelper = {
     )
     const variableName = varDec.id.name
     const sketch = previousProgramMemory?.root?.[variableName]
-    if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
+    if (sketch.type !== 'SketchGroup') throw new Error('not a SketchGroup')
 
     const angle = createLiteral(roundOff(getAngle(from, to), 0))
     const yLength = createLiteral(roundOff(Math.abs(from[1] - to[1]), 2) || 0.1)
@@ -876,7 +870,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
     const varName = varDec.declarations[0].id.name
     const sketchGroup = previousProgramMemory.root[varName] as SketchGroup
     const intersectPath = sketchGroup.value.find(
-      ({ name }) => name === intersectTagName
+      ({ name }: Path) => name === intersectTagName
     )
     let offset = 0
     if (intersectPath) {
@@ -968,60 +962,14 @@ export function addNewSketchLn({
     pathToNode,
     'VariableDeclarator'
   )
-  const { node: pipeExp, shallowPath: pipePath } =
-    getNodeFromPath<PipeExpression>(node, pathToNode, 'PipeExpression')
-  const maybeStartSketchAt = pipeExp.body.find(
-    (exp) =>
-      exp.type === 'CallExpression' &&
-      exp.callee.name === 'startSketchAt' &&
-      exp.arguments[0].type === 'Literal' &&
-      exp.arguments[0].value === 'default'
-  )
-  const maybeDefaultLine = pipeExp.body.findIndex(
-    (exp) =>
-      exp.type === 'CallExpression' &&
-      exp.callee.name === 'line' &&
-      exp.arguments[0].type === 'Literal' &&
-      exp.arguments[0].value === 'default'
-  )
-  const defaultLinePath: PathToNode = [
-    ...pipePath,
-    ['body', ''],
-    [maybeDefaultLine, ''],
-  ]
+  const { node: pipeExp, shallowPath: pipePath } = getNodeFromPath<
+    PipeExpression | CallExpression
+  >(node, pathToNode, 'PipeExpression')
   const variableName = varDec.id.name
   const sketch = previousProgramMemory?.root?.[variableName]
-  if (sketch.type !== 'sketchGroup') throw new Error('not a sketchGroup')
+  if (sketch.type !== 'SketchGroup') throw new Error('not a SketchGroup')
 
-  if (maybeStartSketchAt) {
-    const startSketchAt = maybeStartSketchAt as any
-    startSketchAt.arguments[0] = createArrayExpression([
-      createLiteral(to[0]),
-      createLiteral(to[1]),
-    ])
-    return {
-      modifiedAst: node,
-    }
-  }
-  if (maybeDefaultLine !== -1) {
-    const defaultLine = getNodeFromPath<CallExpression>(
-      node,
-      defaultLinePath
-    ).node
-    const { from } = getSketchSegmentFromSourceRange(sketch, [
-      defaultLine.start,
-      defaultLine.end,
-    ]).segment
-    return updateArgs({
-      node,
-      previousProgramMemory,
-      pathToNode: defaultLinePath,
-      to,
-      from,
-    })
-  }
-
-  const last = sketch.value[sketch.value.length - 1]
+  const last = sketch.value[sketch.value.length - 1] || sketch.start
   const from = last.to
 
   return add({
@@ -1089,10 +1037,11 @@ export function addTagForSketchOnFace(
 
 function isAngleLiteral(lineArugement: Value): boolean {
   return lineArugement?.type === 'ArrayExpression'
-    ? lineArugement.elements[0].type === 'Literal'
+    ? isLiteralArrayOrStatic(lineArugement.elements[0])
     : lineArugement?.type === 'ObjectExpression'
-    ? lineArugement.properties.find(({ key }) => key.name === 'angle')?.value
-        .type === 'Literal'
+    ? isLiteralArrayOrStatic(
+        lineArugement.properties.find(({ key }) => key.name === 'angle')?.value
+      )
     : false
 }
 
@@ -1198,14 +1147,6 @@ function getFirstArgValuesForXYFns(callExpression: CallExpression): {
 } {
   // used for lineTo, line
   const firstArg = callExpression.arguments[0]
-  if (firstArg.type === 'Literal' && firstArg.value === 'default') {
-    return {
-      val:
-        callExpression.callee.name === 'startSketchAt'
-          ? [createLiteral(0), createLiteral(0)]
-          : [createLiteral(1), createLiteral(1)],
-    }
-  }
   if (firstArg.type === 'ArrayExpression') {
     return { val: [firstArg.elements[0], firstArg.elements[1]] }
   }
@@ -1215,8 +1156,6 @@ function getFirstArgValuesForXYFns(callExpression: CallExpression): {
     if (to?.type === 'ArrayExpression') {
       const [x, y] = to.elements
       return { val: [x, y], tag }
-    } else if (to?.type === 'Literal' && to.value === 'default') {
-      return { val: [createLiteral(0), createLiteral(0)], tag }
     }
   }
   throw new Error('expected ArrayExpression or ObjectExpression')

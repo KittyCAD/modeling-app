@@ -10,7 +10,7 @@ describe('processMemory', () => {
     // Enable rotations #152
     const code = `
   const myVar = 5
-  const myFn = (a) => {
+  fn myFn = (a) => {
     return a - 2
   }
   const otherVar = myFn(5)
@@ -29,6 +29,7 @@ describe('processMemory', () => {
     const ast = parser_wasm(code)
     const programMemory = await enginelessExecutor(ast, {
       root: {},
+      return: null,
     })
     const output = processMemory(programMemory)
     expect(output.myVar).toEqual(5)

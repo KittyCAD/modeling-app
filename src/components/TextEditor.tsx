@@ -63,7 +63,6 @@ export const TextEditor = ({
     sourceRangeMap,
   } = useStore((s) => ({
     code: s.code,
-    defferedCode: s.defferedCode,
     defferedSetCode: s.defferedSetCode,
     editorView: s.editorView,
     engineCommandManager: s.engineCommandManager,
@@ -71,7 +70,6 @@ export const TextEditor = ({
     isLSPServerReady: s.isLSPServerReady,
     selectionRanges: s.selectionRanges,
     selectionRangeTypeMap: s.selectionRangeTypeMap,
-    setCode: s.setCode,
     setEditorView: s.setEditorView,
     setIsLSPServerReady: s.setIsLSPServerReady,
     setSelectionRanges: s.setSelectionRanges,
