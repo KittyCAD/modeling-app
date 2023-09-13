@@ -26,7 +26,7 @@ import {
   addLineHighlight,
   lineHighlightField,
 } from 'editor/highlightextension'
-import { isOverlap } from 'lib/utils'
+import { isOverlap, roundOff } from 'lib/utils'
 import { kclErrToDiagnostic } from 'lang/errors'
 import { CSSRuleObject } from 'tailwindcss/types/config'
 import interact from '@replit/codemirror-interact'
@@ -249,22 +249,22 @@ export const TextEditor = ({
               cursor: 'ew-resize',
               // change number value based on mouse X movement on drag
               onDrag: (text, setText, e) => {
-                const multiplier = e.shiftKey ? 10 : e.metaKey ? 0.1 : 1
+                const multiplier =
+                  e.shiftKey && e.metaKey
+                    ? 0.01
+                    : e.metaKey
+                    ? 0.1
+                    : e.shiftKey
+                    ? 10
+                    : 1
                 const pixelsPerIncrement = 3
 
-                // Round to 1 decimal place if metaKey is held, otherwise round to nearest integer
-                const roundingFactor = multiplier === 0.1 ? 10 : 1
+                const delta = (e.movementX / pixelsPerIncrement) * multiplier
 
-                const delta =
-                  Math.round(
-                    (e.movementX / pixelsPerIncrement) *
-                      multiplier *
-                      roundingFactor
-                  ) / roundingFactor
-
-                const newVal =
-                  Math.round((Number(text) + delta) * roundingFactor) /
-                  roundingFactor
+                const newVal = roundOff(
+                  Number(text) + delta,
+                  multiplier === 0.01 ? 2 : multiplier === 0.1 ? 1 : 0
+                )
 
                 if (isNaN(newVal)) return
                 setText(newVal.toString())
