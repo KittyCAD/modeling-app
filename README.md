@@ -6,9 +6,20 @@ live at [app.kittycad.io](https://app.kittycad.io/)
 
 A CAD application from the future, brought to you by the [KittyCAD team](https://kittycad.io).
 
-This is an example application of what a small team can build on top of the KittyCAD API. It is open source so that anyone can fork it, extend it, or learn from it. We hope it inspires you to build the hardware design tool you've always wanted to see in the world.
+The KittyCAD modeling app is our take on what a modern modelling experience can be. It is applying several lessons learned in the decades since most major CAD tools came into existence:
 
-KittyCAD Modeling App is a *hybrid* user interface for CAD modeling. You can point-and-click to design parts (and soon assemblies), but everything you make is really just [`kcl` code](https://github.com/KittyCAD/kcl-experiments) under the hood. All of your CAD models can be checked into source control such as GitHub and responsibly versioned, rolled back, and more.
+- All artifacts—including parts and assemblies—should be represented as human-readable code. At the end of the day, your CAD project should be "plain text"
+  - This makes version control—which is a solved problem in software engineering—trivial for CAD
+- All GUI (or point-and-click) interactions should be actions performed on this code representation under the hood
+  - This unlocks a hybrid approach to modeling. Whether you point-and-click as you always have or you write your own KCL code, you are performing the same action in KittyCAD Modeling App
+- Everything graphics _has_ to be built for the GPU
+  - Most CAD applications have had to retrofit support for GPUs, but our geometry engine is made for GPUs (primarily Nvidia's Vulkan), getting the order of magnitude rendering performance boost with it
+- Make the resource-intensive pieces of an application auto-scaling
+  - One of the bottlenecks of today's hardware design tools is that they all rely on the local machine's resources to do the hardest parts, which include geometry rendering and analysis. Our geometry engine parallelizes rendering and just sends video frames back to the app (seriously, inspect source, it's just a `<video>` element), and our API will offload analysis as we build it in
+
+We are excited about what a small team of people could build in a short time with our API. We welcome you to try our API, build your own applications, or contribute to ours!
+
+KittyCAD Modeling App is a _hybrid_ user interface for CAD modeling. You can point-and-click to design parts (and soon assemblies), but everything you make is really just [`kcl` code](https://github.com/KittyCAD/kcl-experiments) under the hood. All of your CAD models can be checked into source control such as GitHub and responsibly versioned, rolled back, and more.
 
 The 3D view in KittyCAD Modeling App is just a video stream from our hosted geometry engine. The app sends new modeling commands to the engine via WebSockets, which returns back video frames of the view within the engine.
 
@@ -41,13 +52,17 @@ First, [install Rust via `rustup`](https://www.rust-lang.org/tools/install). Thi
 ```
 yarn install
 ```
+
 followed by:
+
 ```
 yarn build:wasm
 ```
+
 That will build the WASM binary and put in the `public` dir (though gitignored)
 
 finally, to run the web app only, run:
+
 ```
 yarn start
 ```
@@ -66,6 +81,7 @@ Third-Party Cookies".
 First, start the dev server following "Running a development build" above.
 
 Then in another terminal tab, run:
+
 ```
 yarn test
 ```
@@ -75,9 +91,11 @@ Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testin
 ## Tauri
 
 To spin up up tauri dev, `yarn install` and `yarn build:wasm` need to have been done before hand then
+
 ```
 yarn tauri dev
 ```
+
 Will spin up the web app before opening up the tauri dev desktop app. Note that it's probably a good idea to close the browser tab that gets opened since at the time of writting they can conflict.
 
 The dev instance automatically opens up the browser devtools which can be disabled by [commenting it out](https://github.com/KittyCAD/modeling-app/blob/main/src-tauri/src/main.rs#L92.)
@@ -87,7 +105,6 @@ To build, run `yarn tauri build`, or `yarn tauri build --debug` to keep access t
 Note that these became separate apps on Macos, so make sure you open the right one after a build 😉
 ![image](https://github.com/KittyCAD/modeling-app/assets/29681384/a08762c5-8d16-42d8-a02f-a5efc9ae5551)
 
-
 <img width="1232" alt="image" src="https://user-images.githubusercontent.com/29681384/211947063-46164bb4-7bdd-45cb-9a76-2f40c71a24aa.png">
 
 <img width="1232" alt="image (1)" src="https://user-images.githubusercontent.com/29681384/211947073-e76b4933-bef5-4636-bc4d-e930ac8e290f.png">
@@ -95,13 +112,14 @@ Note that these became separate apps on Macos, so make sure you open the right o
 ## Before submitting a PR
 
 Before you submit a contribution PR to this repo, please ensure that:
+
 - There is a corresponding issue for the changes you want to make, so that discussion of approach can be had before work begins.
 - You have separated out refactoring commits from feature commits as much as possible
 - You have run all of the following commands locally:
-    - `yarn fmt`
-    - `yarn tsc`
-    - `yarn test`
-    - Here they are all together: `yarn fmt && yarn tsc && yarn test`
+  - `yarn fmt`
+  - `yarn tsc`
+  - `yarn test`
+  - Here they are all together: `yarn fmt && yarn tsc && yarn test`
 
 ## Release a new version
 
@@ -110,6 +128,7 @@ Before you submit a contribution PR to this repo, please ensure that:
 ```bash
 VERSION=x.y.z yarn run bump-jsons
 ```
+
 The PR may serve as a place to discuss the human-readable changelog and extra QA.
 
 2. Merge the PR
@@ -136,5 +155,5 @@ $ cargo fuzz list
 $ cargo +nightly fuzz run parser
 ```
 
-For more information on fuzzing you can check out 
+For more information on fuzzing you can check out
 [this guide](https://rust-fuzz.github.io/book/cargo-fuzz.html).
