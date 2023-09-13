@@ -29,6 +29,7 @@ describe('processMemory', () => {
     const ast = parser_wasm(code)
     const programMemory = await enginelessExecutor(ast, {
       root: {},
+      return: null,
     })
     const output = processMemory(programMemory)
     expect(output.myVar).toEqual(5)

@@ -401,6 +401,11 @@ show(part001)`
       programMemory.root['part001'] as SketchGroup,
       [index, index]
     ).segment
-    expect(segment).toEqual({ to: [0, 0.04], from: [0, 0.04], name: '' })
+    expect(segment).toEqual({
+      to: [0, 0.04],
+      from: [0, 0.04],
+      name: '',
+      type: 'base',
+    })
   })
 })
