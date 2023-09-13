@@ -42,6 +42,7 @@ export type TooTip =
   | 'xLineTo'
   | 'yLineTo'
   | 'angledLineThatIntersects'
+  | 'close'
 
 export const toolTips = [
   'sketch_line',
