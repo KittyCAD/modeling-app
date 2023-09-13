@@ -1,10 +1,4 @@
-import {
-  useRef,
-  useEffect,
-  useLayoutEffect,
-  useCallback,
-  MouseEventHandler,
-} from 'react'
+import { useRef, useEffect, useCallback, MouseEventHandler } from 'react'
 import { DebugPanel } from './components/DebugPanel'
 import { v4 as uuidv4 } from 'uuid'
 import { asyncParser } from './lang/abstractSyntaxTree'
@@ -16,10 +10,7 @@ import { MemoryPanel } from './components/MemoryPanel'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
 import { Stream } from './components/Stream'
 import ModalContainer from 'react-modal-promise'
-import {
-  EngineCommand,
-  EngineCommandManager,
-} from './lang/std/engineConnection'
+import { EngineCommand } from './lang/std/engineConnection'
 import { throttle } from './lib/utils'
 import { AppHeader } from './components/AppHeader'
 import { KCLError } from './lang/errors'
@@ -41,6 +32,7 @@ import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/mod
 import { CodeMenu } from 'components/CodeMenu'
 import { TextEditor } from 'components/TextEditor'
 import { Themes, getSystemTheme } from 'lib/theme'
+import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
@@ -58,18 +50,14 @@ export function App() {
     resetKCLErrors,
     setArtifactMap,
     engineCommandManager,
-    setEngineCommandManager,
     highlightRange,
     setHighlightRange,
     setCursor2,
-    setMediaStream,
-    setIsStreamReady,
     isStreamReady,
     buttonDownInStream,
     openPanes,
     setOpenPanes,
     didDragInStream,
-    setStreamDimensions,
     streamDimensions,
     setIsExecuting,
     defferedCode,
@@ -86,19 +74,15 @@ export function App() {
     resetKCLErrors: s.resetKCLErrors,
     setArtifactMap: s.setArtifactNSourceRangeMaps,
     engineCommandManager: s.engineCommandManager,
-    setEngineCommandManager: s.setEngineCommandManager,
     highlightRange: s.highlightRange,
     setHighlightRange: s.setHighlightRange,
     setCursor2: s.setCursor2,
-    setMediaStream: s.setMediaStream,
     isStreamReady: s.isStreamReady,
-    setIsStreamReady: s.setIsStreamReady,
     buttonDownInStream: s.buttonDownInStream,
     addKCLError: s.addKCLError,
     openPanes: s.openPanes,
     setOpenPanes: s.setOpenPanes,
     didDragInStream: s.didDragInStream,
-    setStreamDimensions: s.setStreamDimensions,
     streamDimensions: s.streamDimensions,
     setIsExecuting: s.setIsExecuting,
   }))
@@ -149,32 +133,7 @@ export function App() {
     }
   }, [loadedCode, setCode])
 
-  const streamWidth = streamRef?.current?.offsetWidth
-  const streamHeight = streamRef?.current?.offsetHeight
-
-  const width = streamWidth ? streamWidth : 0
-  const quadWidth = Math.round(width / 4) * 4
-  const height = streamHeight ? streamHeight : 0
-  const quadHeight = Math.round(height / 4) * 4
-
-  useLayoutEffect(() => {
-    setStreamDimensions({
-      streamWidth: quadWidth,
-      streamHeight: quadHeight,
-    })
-    if (!width || !height) return
-    const eng = new EngineCommandManager({
-      setMediaStream,
-      setIsStreamReady,
-      width: quadWidth,
-      height: quadHeight,
-      token,
-    })
-    setEngineCommandManager(eng)
-    return () => {
-      eng?.tearDown()
-    }
-  }, [quadWidth, quadHeight])
+  useSetupEngineManager(streamRef, token)
 
   useEffect(() => {
     if (!isStreamReady) return
