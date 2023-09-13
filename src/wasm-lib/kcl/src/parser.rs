@@ -755,6 +755,7 @@ impl Parser {
 
     fn make_value(&self, index: usize) -> Result<ValueReturn, KclError> {
         let current_token = self.get_token(index)?;
+        println!("make_value: {:?}", current_token);
         let next = self.next_meaningful_token(index, None)?;
         if let Some(next_token) = &next.token {
             if next_token.token_type == TokenType::Brace && next_token.value == "(" {
@@ -926,10 +927,12 @@ impl Parser {
         if let Some(next_token_token) = next_token.token {
             let is_closing_brace = next_token_token.token_type == TokenType::Brace && next_token_token.value == "]";
             let is_comma = next_token_token.token_type == TokenType::Comma;
-            if !is_closing_brace && !is_comma {
+            // Check if we have a double period, which would act as an expansion operator.
+            let is_double_period = next_token_token.token_type == TokenType::DoublePeriod;
+            if !is_closing_brace && !is_comma && !is_double_period {
                 return Err(KclError::Syntax(KclErrorDetails {
                     source_ranges: vec![next_token_token.clone().into()],
-                    message: format!("Expected a comma or closing brace, found {:?}", next_token_token.value),
+                    message: format!("Expected a `,`, `]`, or `..`, found {:?}", next_token_token.value),
                 }));
             }
             let next_call_index = if is_closing_brace {
@@ -937,9 +940,60 @@ impl Parser {
             } else {
                 self.next_meaningful_token(next_token.index, None)?.index
             };
-            let mut _previous_elements = previous_elements;
-            _previous_elements.push(current_element.value);
-            self.make_array_elements(next_call_index, _previous_elements)
+
+            if is_double_period {
+                // We want to expand the array.
+                // Make sure the previous element is a number literal.
+                if first_element_token.token_type != TokenType::Number {
+                    return Err(KclError::Syntax(KclErrorDetails {
+                        source_ranges: vec![first_element_token.into()],
+                        message: "`..` expansion operator requires a number literal on both sides".to_string(),
+                    }));
+                }
+
+                // Make sure the next element is a number literal.
+                let last_element_token = self.get_token(next_call_index)?;
+                if last_element_token.token_type != TokenType::Number {
+                    return Err(KclError::Syntax(KclErrorDetails {
+                        source_ranges: vec![last_element_token.into()],
+                        message: "`..` expansion operator requires a number literal on both sides".to_string(),
+                    }));
+                }
+
+                // Expand the array.
+                let mut previous_elements = previous_elements.clone();
+                let first_element = first_element_token.value.parse::<i64>().map_err(|_| {
+                    KclError::Syntax(KclErrorDetails {
+                        source_ranges: vec![first_element_token.into()],
+                        message: "expected a number literal".to_string(),
+                    })
+                })?;
+                let last_element = last_element_token.value.parse::<i64>().map_err(|_| {
+                    KclError::Syntax(KclErrorDetails {
+                        source_ranges: vec![last_element_token.into()],
+                        message: "expected a number literal".to_string(),
+                    })
+                })?;
+                if first_element > last_element {
+                    return Err(KclError::Syntax(KclErrorDetails {
+                        source_ranges: vec![first_element_token.into(), last_element_token.into()],
+                        message: "first element must be less than or equal to the last element".to_string(),
+                    }));
+                }
+                for i in first_element..=last_element {
+                    previous_elements.push(Value::Literal(Box::new(Literal {
+                        start: first_element_token.start,
+                        end: first_element_token.end,
+                        value: i.into(),
+                        raw: i.to_string(),
+                    })));
+                }
+                return self.make_array_elements(next_call_index + 1, previous_elements);
+            }
+
+            let mut previous_elements = previous_elements.clone();
+            previous_elements.push(current_element.value);
+            self.make_array_elements(next_call_index, previous_elements)
         } else {
             Err(KclError::Unimplemented(KclErrorDetails {
                 source_ranges: vec![first_element_token.into()],
@@ -3065,5 +3119,108 @@ e
             .unwrap()
             .to_string()
             .contains("unexpected end of expression"));
+    }
+
+    #[test]
+    fn test_parse_expand_array() {
+        let code = "const myArray = [0..10]";
+        let parser = Parser::new(crate::tokeniser::lexer(code));
+        let result = parser.ast().unwrap();
+        let expected_result = Program {
+            start: 0,
+            end: 23,
+            body: vec![BodyItem::VariableDeclaration(VariableDeclaration {
+                start: 0,
+                end: 23,
+                declarations: vec![VariableDeclarator {
+                    start: 6,
+                    end: 23,
+                    id: Identifier {
+                        start: 6,
+                        end: 13,
+                        name: "myArray".to_string(),
+                    },
+                    init: Value::ArrayExpression(Box::new(ArrayExpression {
+                        start: 16,
+                        end: 23,
+                        elements: vec![
+                            Value::Literal(Box::new(Literal {
+                                start: 17,
+                                end: 18,
+                                value: 0.into(),
+                                raw: "0".to_string(),
+                            })),
+                            Value::Literal(Box::new(Literal {
+                                start: 17,
+                                end: 18,
+                                value: 1.into(),
+                                raw: "1".to_string(),
+                            })),
+                            Value::Literal(Box::new(Literal {
+                                start: 17,
+                                end: 18,
+                                value: 2.into(),
+                                raw: "2".to_string(),
+                            })),
+                            Value::Literal(Box::new(Literal {
+                                start: 17,
+                                end: 18,
+                                value: 3.into(),
+                                raw: "3".to_string(),
+                            })),
+                            Value::Literal(Box::new(Literal {
+                                start: 17,
+                                end: 18,
+                                value: 4.into(),
+                                raw: "4".to_string(),
+                            })),
+                            Value::Literal(Box::new(Literal {
+                                start: 17,
+                                end: 18,
+                                value: 5.into(),
+                                raw: "5".to_string(),
+                            })),
+                            Value::Literal(Box::new(Literal {
+                                start: 17,
+                                end: 18,
+                                value: 6.into(),
+                                raw: "6".to_string(),
+                            })),
+                            Value::Literal(Box::new(Literal {
+                                start: 17,
+                                end: 18,
+                                value: 7.into(),
+                                raw: "7".to_string(),
+                            })),
+                            Value::Literal(Box::new(Literal {
+                                start: 17,
+                                end: 18,
+                                value: 8.into(),
+                                raw: "8".to_string(),
+                            })),
+                            Value::Literal(Box::new(Literal {
+                                start: 17,
+                                end: 18,
+                                value: 9.into(),
+                                raw: "9".to_string(),
+                            })),
+                            Value::Literal(Box::new(Literal {
+                                start: 17,
+                                end: 18,
+                                value: 10.into(),
+                                raw: "10".to_string(),
+                            })),
+                        ],
+                    })),
+                }],
+                kind: VariableKind::Const,
+            })],
+            non_code_meta: NoneCodeMeta {
+                none_code_nodes: Default::default(),
+                start: None,
+            },
+        };
+
+        assert_eq!(result, expected_result);
     }
 }

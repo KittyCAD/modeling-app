@@ -34,6 +34,8 @@ pub enum TokenType {
     Colon,
     /// A period.
     Period,
+    /// A double period: `..`.
+    DoublePeriod,
     /// A line comment.
     LineComment,
     /// A block comment.
@@ -54,7 +56,12 @@ impl TryFrom<TokenType> for SemanticTokenType {
             TokenType::LineComment => Self::COMMENT,
             TokenType::BlockComment => Self::COMMENT,
             TokenType::Function => Self::FUNCTION,
-            TokenType::Whitespace | TokenType::Brace | TokenType::Comma | TokenType::Colon | TokenType::Period => {
+            TokenType::Whitespace
+            | TokenType::Brace
+            | TokenType::Comma
+            | TokenType::Colon
+            | TokenType::Period
+            | TokenType::DoublePeriod => {
                 anyhow::bail!("unsupported token type: {:?}", token_type)
             }
         })
@@ -147,6 +154,7 @@ lazy_static! {
     static ref COMMA: Regex = Regex::new(r"^,").unwrap();
     static ref COLON: Regex = Regex::new(r"^:").unwrap();
     static ref PERIOD: Regex = Regex::new(r"^\.").unwrap();
+    static ref DOUBLE_PERIOD: Regex = Regex::new(r"^\.\.").unwrap();
     static ref LINECOMMENT: Regex = Regex::new(r"^//.*").unwrap();
     static ref BLOCKCOMMENT: Regex = Regex::new(r"^/\*[\s\S]*?\*/").unwrap();
 }
@@ -195,6 +203,9 @@ fn is_comma(character: &str) -> bool {
 }
 fn is_colon(character: &str) -> bool {
     COLON.is_match(character)
+}
+fn is_double_period(character: &str) -> bool {
+    DOUBLE_PERIOD.is_match(character)
 }
 fn is_period(character: &str) -> bool {
     PERIOD.is_match(character)
@@ -328,6 +339,13 @@ fn return_token_at_index(s: &str, start_index: usize) -> Option<Token> {
         return Some(make_token(
             TokenType::Colon,
             &match_first(str_from_index, &COLON)?,
+            start_index,
+        ));
+    }
+    if is_double_period(str_from_index) {
+        return Some(make_token(
+            TokenType::DoublePeriod,
+            &match_first(str_from_index, &DOUBLE_PERIOD)?,
             start_index,
         ));
     }
