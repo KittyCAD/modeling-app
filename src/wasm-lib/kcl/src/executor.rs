@@ -1162,4 +1162,14 @@ show(thisBox)
             memory.root.get("myVar").unwrap().get_json_value().unwrap()
         );
     }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_define_decimal_without_leading_zero() {
+        let ast = r#"let thing = .4 + 7"#;
+        let memory = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            serde_json::json!(7.4),
+            memory.root.get("thing").unwrap().get_json_value().unwrap()
+        );
+    }
 }
