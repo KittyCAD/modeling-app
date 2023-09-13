@@ -1553,18 +1553,32 @@ export function getConstraintLevelFromSourceRange(
   // check if the function is fully constrained
   if (Array.isArray(firstArg.val)) {
     const [a, b] = firstArg.val
-    if (a?.type !== 'Literal' && b?.type !== 'Literal') return 'full'
+    if (
+      a?.type !== 'Literal' &&
+      a?.type !== 'UnaryExpression' &&
+      b?.type !== 'Literal' &&
+      b?.type !== 'UnaryExpression'
+    )
+      return 'full'
   } else {
-    if (firstArg.val?.type !== 'Literal') return 'full'
+    if (
+      firstArg.val?.type !== 'Literal' &&
+      firstArg.val?.type !== 'UnaryExpression'
+    )
+      return 'full'
   }
 
   // check if the function has no constraints
   const isTwoValFree =
     Array.isArray(firstArg.val) &&
-    firstArg.val?.[0]?.type === 'Literal' &&
-    firstArg.val?.[1]?.type === 'Literal'
+    (firstArg.val?.[0]?.type === 'Literal' ||
+      firstArg.val?.[0]?.type === 'UnaryExpression') &&
+    (firstArg.val?.[1]?.type === 'Literal' ||
+      firstArg.val?.[1]?.type === 'UnaryExpression')
   const isOneValFree =
-    !Array.isArray(firstArg.val) && firstArg.val?.type === 'Literal'
+    !Array.isArray(firstArg.val) &&
+    (firstArg.val?.type === 'Literal' ||
+      firstArg.val?.type === 'UnaryExpression')
 
   if (isTwoValFree) return 'free'
   if (isOneValFree) return 'partial'
