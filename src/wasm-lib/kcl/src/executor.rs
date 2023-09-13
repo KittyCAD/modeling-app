@@ -1114,11 +1114,10 @@ for var in [[3, 6, 10, [0,0]], [1.5, 3, 5, [-10,-10]]] {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    #[ignore] // ignore til we get working.
     async fn test_get_member_of_array_with_function() {
         let ast = r#"const box = (array) => {
  let myBox = startSketchAt(array[0])
-    |> line([0, array[1], %)
+    |> line([0, array[1]], %)
     |> line([array[2], 0], %)
     |> line([0, -array[1]], %)
     |> close(%)
