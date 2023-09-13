@@ -4,7 +4,6 @@ import {
   ArtifactMap,
   SourceRangeMap,
 } from './std/engineConnection'
-//import { ProgramMemory } from '../wasm-lib/kcl/bindings/ProgramMemory'
 import { ProgramReturn } from '../wasm-lib/kcl/bindings/ProgramReturn'
 import { MemoryItem } from '../wasm-lib/kcl/bindings/MemoryItem'
 import { execute_wasm } from '../wasm-lib/pkg/wasm_lib'
@@ -12,7 +11,6 @@ import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
 import { rangeTypeFix } from './abstractSyntaxTree'
 
-//export type { ProgramMemory } from '../wasm-lib/kcl/bindings/ProgramMemory'
 export type { SourceRange } from '../wasm-lib/kcl/bindings/SourceRange'
 export type { Position } from '../wasm-lib/kcl/bindings/Position'
 export type { Rotation } from '../wasm-lib/kcl/bindings/Rotation'
