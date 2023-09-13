@@ -41,11 +41,14 @@ import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/mod
 import { CodeMenu } from 'components/CodeMenu'
 import { TextEditor } from 'components/TextEditor'
 import { Themes, getSystemTheme } from 'lib/theme'
+import { useEngineWithStream } from 'hooks/useEngineWithStream'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
 
   const streamRef = useRef<HTMLDivElement>(null)
+  useEngineWithStream(streamRef)
+
   useHotKeyListener()
   const {
     addLog,
@@ -146,33 +149,6 @@ export function App() {
       }
     }
   }, [loadedCode, setCode])
-
-  const streamWidth = streamRef?.current?.offsetWidth
-  const streamHeight = streamRef?.current?.offsetHeight
-
-  const width = streamWidth ? streamWidth : 0
-  const quadWidth = Math.round(width / 4) * 4
-  const height = streamHeight ? streamHeight : 0
-  const quadHeight = Math.round(height / 4) * 4
-
-  useLayoutEffect(() => {
-    setStreamDimensions({
-      streamWidth: quadWidth,
-      streamHeight: quadHeight,
-    })
-    if (!width || !height) return
-    const eng = new EngineCommandManager({
-      setMediaStream,
-      setIsStreamReady,
-      width: quadWidth,
-      height: quadHeight,
-      token,
-    })
-    setEngineCommandManager(eng)
-    return () => {
-      eng?.tearDown()
-    }
-  }, [quadWidth, quadHeight])
 
   useEffect(() => {
     if (!isStreamReady) return
