@@ -358,7 +358,6 @@ export const useStore = create<StoreState>()(
                 programMemory
               )
             get().setIsExecuting(false)
-            console.log('programMemory', programMemory)
             if (programMemory !== undefined) {
               get().setProgramMemory(programMemory)
             }

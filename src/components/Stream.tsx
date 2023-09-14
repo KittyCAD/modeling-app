@@ -220,6 +220,8 @@ export const Stream = ({ className = '' }) => {
       )
         return
 
+      // We need a better way to figure out here if they are creating a new
+      // sketch or modifying an existing one.
       if (
         resp?.data?.data?.entities_modified?.length &&
         guiMode.waitingFirstClick
