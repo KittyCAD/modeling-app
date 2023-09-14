@@ -206,13 +206,20 @@ export const useStore = create<StoreState>()(
   persist(
     (set, get) => {
       const setDeferredCode = deferExecution((code: string) => {
+        // We defer this so that likely our ast has caught up to the code.
+        // If we are making changes that are not reflected in the ast, we
+        // should not be updating the ast.
+
         // Let's parse the ast.
         const ast = parser_wasm(code)
         // Check if the ast we have is equal to the ast in the storage.
         // If it is, we don't need to update the ast.
         if (JSON.stringify(ast) === JSON.stringify(get().ast)) return
-        // If it isn't, we need to update the ast.
-        get().updateAst(ast, true) // we also want to re-execute the ast.
+        // If it isn't, we need to update the ast and execute.
+        // We do not call updateAst directly because we don't want to move the
+        // cursor when the user is typing.
+        get().setAst(ast)
+        get().executeAst()
       }, 600)
       return {
         editorView: null,
