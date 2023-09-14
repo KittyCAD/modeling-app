@@ -1000,7 +1000,10 @@ interface CreateLineFnCallArgs {
   pathToNode: PathToNode
 }
 
-function compareVec2Epsilon(vec1: [number, number], vec2: [number, number]) {
+export function compareVec2Epsilon(
+  vec1: [number, number],
+  vec2: [number, number]
+) {
   const compareEpsilon = 0.015625 // or 2^-6
   const xDifference = Math.abs(vec1[0] - vec2[0])
   const yDifference = Math.abs(vec1[0] - vec2[0])
@@ -1053,6 +1056,29 @@ export function addNewSketchLn({
     }),
     sketchClosed: newFnName === 'close',
   }
+}
+
+export function addCloseToPipe({
+  node,
+  pathToNode,
+}: {
+  node: Program
+  programMemory: ProgramMemory
+  pathToNode: PathToNode
+}) {
+  const _node = { ...node }
+  const closeExpression = createCallExpression('close', [
+    createPipeSubstitution(),
+  ])
+  const pipeExpression = getNodeFromPath<PipeExpression>(
+    _node,
+    pathToNode,
+    'PipeExpression'
+  ).node
+  if (pipeExpression.type !== 'PipeExpression')
+    throw new Error('not a pipe expression')
+  pipeExpression.body = [...pipeExpression.body, closeExpression]
+  return _node
 }
 
 export function replaceSketchLine({
