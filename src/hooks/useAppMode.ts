@@ -54,11 +54,11 @@ export function useAppMode() {
         })
         setDefaultPlanes({ xy, yz, xz })
       } else {
-        setDefaultPlanesVisibility(engineCommandManager, defaultPlanes, false)
+        setDefaultPlanesHidden(engineCommandManager, defaultPlanes, false)
       }
     }
     if (guiMode.mode !== 'sketch' && defaultPlanes) {
-      setDefaultPlanesVisibility(engineCommandManager, defaultPlanes, true)
+      setDefaultPlanesHidden(engineCommandManager, defaultPlanes, true)
     } else if (guiMode.mode === 'default') {
       const pathId =
         engineCommandManager &&
@@ -118,7 +118,7 @@ export function useAppMode() {
             },
           }
         )
-        setDefaultPlanesVisibility(engineCommandManager, defaultPlanes, true)
+        setDefaultPlanesHidden(engineCommandManager, defaultPlanes, true)
         const sketchUuid = uuidv4()
         const proms: any[] = []
         proms.push(
@@ -194,7 +194,7 @@ function createPlane(
   return planeId
 }
 
-function setDefaultPlanesVisibility(
+function setDefaultPlanesHidden(
   engineCommandManager: EngineCommandManager | undefined,
   defaultPlanes: DefaultPlanes,
   hidden: boolean
