@@ -75,6 +75,6 @@ export async function executor(
   await engineCommandManager.waitForReady
   engineCommandManager.startNewSession()
   const programMemory = await _executor(ast, pm, engineCommandManager)
-  await engineCommandManager.waitForAllCommands()
+  await engineCommandManager.waitForAllCommands(ast, programMemory)
   return programMemory
 }
