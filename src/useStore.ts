@@ -4,6 +4,7 @@ import { addLineHighlight, EditorView } from './editor/highlightextension'
 import { parser_wasm } from './lang/abstractSyntaxTree'
 import { Program } from './lang/abstractSyntaxTreeTypes'
 import { getNodeFromPath } from './lang/queryAst'
+import { enginelessExecutor } from './lib/testHelpers'
 import {
   ProgramMemory,
   Position,
@@ -20,7 +21,6 @@ import {
 } from './lang/std/engineConnection'
 import { KCLError } from './lang/errors'
 import { defferExecution } from 'lib/utils'
-import { asyncParser } from './lang/abstractSyntaxTree'
 import { _executor } from './lang/executor'
 
 export type Selection = {
@@ -132,6 +132,7 @@ export interface StoreState {
   ast: Program
   setAst: (ast: Program) => void
   executeAst: () => void
+  executeAstMock: () => void
   updateAst: (
     ast: Program,
     execute: boolean,
@@ -315,7 +316,6 @@ export const useStore = create<StoreState>()(
           const engineCommandManager = get().engineCommandManager!
           // We assume we have already set the ast.
           try {
-            const _ast = await asyncParser(get().defferedCode)
             get().resetLogs()
             get().resetKCLErrors()
 
@@ -323,7 +323,7 @@ export const useStore = create<StoreState>()(
             engineCommandManager.startNewSession()
             get().setIsExecuting(true)
             const programMemory = await _executor(
-              _ast,
+              get().ast,
               {
                 root: {
                   _0: {
@@ -353,8 +353,12 @@ export const useStore = create<StoreState>()(
             )
 
             const { artifactMap, sourceRangeMap } =
-              await engineCommandManager.waitForAllCommands(_ast, programMemory)
+              await engineCommandManager.waitForAllCommands(
+                get().ast,
+                programMemory
+              )
             get().setIsExecuting(false)
+            console.log('programMemory', programMemory)
             if (programMemory !== undefined) {
               get().setProgramMemory(programMemory)
             }
@@ -391,6 +395,55 @@ export const useStore = create<StoreState>()(
             get().setError()
           } catch (e: any) {
             get().setIsExecuting(false)
+            if (e instanceof KCLError) {
+              get().addKCLError(e)
+            } else {
+              get().setError('problem')
+              console.log(e)
+              get().addLog(e)
+            }
+          }
+        },
+        executeAstMock: async () => {
+          if (!get().isStreamReady) return
+
+          // We assume we have already set the ast and updated the code.
+          try {
+            get().resetLogs()
+            get().resetKCLErrors()
+
+            // Get the mock executor.
+            const programMemory = await enginelessExecutor(get().ast, {
+              root: {
+                _0: {
+                  type: 'UserVal',
+                  value: 0,
+                  __meta: [],
+                },
+                _90: {
+                  type: 'UserVal',
+                  value: 90,
+                  __meta: [],
+                },
+                _180: {
+                  type: 'UserVal',
+                  value: 180,
+                  __meta: [],
+                },
+                _270: {
+                  type: 'UserVal',
+                  value: 270,
+                  __meta: [],
+                },
+              },
+              return: null,
+            })
+
+            if (programMemory !== undefined) {
+              get().setProgramMemory(programMemory)
+            }
+            get().setError()
+          } catch (e: any) {
             if (e instanceof KCLError) {
               get().addKCLError(e)
             } else {
@@ -437,6 +490,11 @@ export const useStore = create<StoreState>()(
           if (reexecute) {
             // Call execute on the set ast.
             get().executeAst()
+          } else {
+            // When we don't re-execute, we still want to update the program
+            // memory with the new ast. So we will hit the mock executor
+            // instead.
+            get().executeAstMock()
           }
         },
         updateAstAsync: async (ast, reexecute, focusPath) => {
