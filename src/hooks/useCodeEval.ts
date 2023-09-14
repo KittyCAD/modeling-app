@@ -102,7 +102,7 @@ export function useCodeEval() {
         )
 
         const { artifactMap, sourceRangeMap } =
-          await engineCommandManager.waitForAllCommands()
+          await engineCommandManager.waitForAllCommands(_ast, programMemory)
         setIsExecuting(false)
         if (programMemory !== undefined) {
           setProgramMemory(programMemory)
