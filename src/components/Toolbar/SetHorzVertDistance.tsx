@@ -137,7 +137,7 @@ export const SetHorzVertDistance = ({
               constraint === 'setHorzDistance' ? 'xDis' : 'yDis',
           } as any))
         if (segName === tagInfo?.tag && value === valueUsedInTransform) {
-          updateAst(modifiedAst, {
+          updateAst(modifiedAst, false, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
         } else {
@@ -163,7 +163,7 @@ export const SetHorzVertDistance = ({
             )
             _modifiedAst.body = newBody
           }
-          updateAst(_modifiedAst, {
+          updateAst(_modifiedAst, false, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
         }

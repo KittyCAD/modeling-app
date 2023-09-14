@@ -70,7 +70,7 @@ export const Toolbar = () => {
                 pathToNode,
                 programMemory
               )
-              updateAst(modifiedAst)
+              updateAst(modifiedAst, false)
             }}
           >
             SketchOnFace
@@ -113,7 +113,7 @@ export const Toolbar = () => {
                   ast,
                   pathToNode
                 )
-                updateAst(modifiedAst, { focusPath: pathToExtrudeArg })
+                updateAst(modifiedAst, false, { focusPath: pathToExtrudeArg })
               }}
             >
               ExtrudeSketch
@@ -130,7 +130,7 @@ export const Toolbar = () => {
                   pathToNode,
                   false
                 )
-                updateAst(modifiedAst, { focusPath: pathToExtrudeArg })
+                updateAst(modifiedAst, false, { focusPath: pathToExtrudeArg })
               }}
             >
               ExtrudeSketch (w/o pipe)

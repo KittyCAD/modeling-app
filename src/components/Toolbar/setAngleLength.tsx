@@ -136,7 +136,7 @@ export const SetAngleLength = ({
             _modifiedAst.body = newBody
           }
 
-          updateAst(_modifiedAst, {
+          updateAst(_modifiedAst, false, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
         } catch (e) {

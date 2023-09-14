@@ -250,7 +250,7 @@ export const Stream = ({ className = '' }) => {
           pathToNode: _pathToNode,
           waitingFirstClick: false,
         })
-        updateAst(_modifiedAst)
+        updateAst(_modifiedAst, false)
       } else if (
         resp?.data?.data?.entities_modified?.length &&
         !guiMode.waitingFirstClick
@@ -300,7 +300,7 @@ export const Stream = ({ className = '' }) => {
             mode: 'default',
           })
         }
-        updateAst(_modifiedAst)
+        updateAst(_modifiedAst, false)
       }
     })
     setDidDragInStream(false)

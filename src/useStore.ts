@@ -20,6 +20,8 @@ import {
 } from './lang/std/engineConnection'
 import { KCLError } from './lang/errors'
 import { defferExecution } from 'lib/utils'
+import { asyncParser } from './lang/abstractSyntaxTree'
+import { _executor } from './lang/executor'
 
 export type Selection = {
   type: 'default' | 'line-end' | 'line-mid'
@@ -129,14 +131,20 @@ export interface StoreState {
   resetKCLErrors: () => void
   ast: Program
   setAst: (ast: Program) => void
+  executeAst: () => void
   updateAst: (
     ast: Program,
+    execute: boolean,
     optionalParams?: {
       focusPath?: PathToNode
       callBack?: (ast: Program) => void
     }
   ) => void
-  updateAstAsync: (ast: Program, focusPath?: PathToNode) => void
+  updateAstAsync: (
+    ast: Program,
+    reexecute: boolean,
+    focusPath?: PathToNode
+  ) => void
   code: string
   defferedCode: string
   setCode: (code: string) => void
@@ -299,7 +307,104 @@ export const useStore = create<StoreState>()(
         setAst: (ast) => {
           set({ ast })
         },
-        updateAst: async (ast, { focusPath, callBack = () => {} } = {}) => {
+        executeAst: async () => {
+          if (!get().isStreamReady) return
+          if (!get().engineCommandManager) return
+          let unsubFn: any[] = []
+
+          const engineCommandManager = get().engineCommandManager!
+          // We assume we have already set the ast.
+          try {
+            const _ast = await asyncParser(get().defferedCode)
+            get().resetLogs()
+            get().resetKCLErrors()
+
+            engineCommandManager.endSession()
+            engineCommandManager.startNewSession()
+            get().setIsExecuting(true)
+            const programMemory = await _executor(
+              _ast,
+              {
+                root: {
+                  _0: {
+                    type: 'UserVal',
+                    value: 0,
+                    __meta: [],
+                  },
+                  _90: {
+                    type: 'UserVal',
+                    value: 90,
+                    __meta: [],
+                  },
+                  _180: {
+                    type: 'UserVal',
+                    value: 180,
+                    __meta: [],
+                  },
+                  _270: {
+                    type: 'UserVal',
+                    value: 270,
+                    __meta: [],
+                  },
+                },
+                return: null,
+              },
+              engineCommandManager
+            )
+
+            const { artifactMap, sourceRangeMap } =
+              await engineCommandManager.waitForAllCommands(_ast, programMemory)
+            get().setIsExecuting(false)
+            if (programMemory !== undefined) {
+              get().setProgramMemory(programMemory)
+            }
+
+            get().setArtifactNSourceRangeMaps({ artifactMap, sourceRangeMap })
+            const unSubHover = engineCommandManager.subscribeToUnreliable({
+              event: 'highlight_set_entity',
+              callback: ({ data }) => {
+                if (data?.entity_id) {
+                  const sourceRange = sourceRangeMap[data.entity_id]
+                  get().setHighlightRange(sourceRange)
+                } else if (
+                  !get().highlightRange ||
+                  (get().highlightRange[0] !== 0 &&
+                    get().highlightRange[1] !== 0)
+                ) {
+                  get().setHighlightRange([0, 0])
+                }
+              },
+            })
+            const unSubClick = engineCommandManager.subscribeTo({
+              event: 'select_with_point',
+              callback: ({ data }) => {
+                if (!data?.entity_id) {
+                  get().setCursor2()
+                  return
+                }
+                const sourceRange = sourceRangeMap[data.entity_id]
+                get().setCursor2({ range: sourceRange, type: 'default' })
+              },
+            })
+            unsubFn.push(unSubHover, unSubClick)
+
+            get().setError()
+          } catch (e: any) {
+            get().setIsExecuting(false)
+            if (e instanceof KCLError) {
+              get().addKCLError(e)
+            } else {
+              get().setError('problem')
+              console.log(e)
+              get().addLog(e)
+            }
+          }
+        },
+        updateAst: async (
+          ast,
+          reexecute,
+          { focusPath, callBack = () => {} } = {}
+        ) => {
           const newCode = recast(ast)
           const astWithUpdatedSource = parser_wasm(newCode)
           callBack(astWithUpdatedSource)
@@ -328,15 +433,20 @@ export const useStore = create<StoreState>()(
               })
             })
           }
+
+          if (reexecute) {
+            // Call execute on the set ast.
+            get().executeAst()
+          }
         },
-        updateAstAsync: async (ast, focusPath) => {
+        updateAstAsync: async (ast, reexecute, focusPath) => {
           // clear any pending updates
           pendingAstUpdates.forEach((id) => clearTimeout(id))
           pendingAstUpdates = []
           // setup a new update
           pendingAstUpdates.push(
             setTimeout(() => {
-              get().updateAst(ast, { focusPath })
+              get().updateAst(ast, reexecute, { focusPath })
             }, 100) as unknown as number
           )
         },

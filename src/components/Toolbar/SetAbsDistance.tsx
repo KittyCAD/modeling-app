@@ -124,7 +124,7 @@ export const SetAbsDistance = ({
             _modifiedAst.body = newBody
           }
 
-          updateAst(_modifiedAst, {
+          updateAst(_modifiedAst, true, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
         } catch (e) {

@@ -113,7 +113,7 @@ export const SetAngleBetween = () => {
           initialVariableName: 'angle',
         } as any)
         if (segName === tagInfo?.tag && value === valueUsedInTransform) {
-          updateAst(modifiedAst, {
+          updateAst(modifiedAst, false, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
         } else {
@@ -141,7 +141,7 @@ export const SetAngleBetween = () => {
             )
             _modifiedAst.body = newBody
           }
-          updateAst(_modifiedAst, {
+          updateAst(_modifiedAst, false, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
         }
