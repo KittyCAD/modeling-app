@@ -103,46 +103,6 @@ async fn get_user(token: Option<String>) -> Result<kittycad::types::User, Invoke
     Ok(user_info)
 }
 
-/// This command lets the user logout of KittyCAD from within the app.
-#[tauri::command]
-fn logout(host: &str, token: Option<String>) -> Result<(), InvokeError> {
-    if token.is_none() {
-        println!("No token provided, skipping logout...");
-        return Ok(());
-    }
-
-    println!("Logging out...");
-
-    // Set up an auth client
-    // We can hardcode the client ID.
-    // This value is safe to be embedded in version control.
-    // This is the client ID of the KittyCAD app.
-    let client_id = "2af127fb-e14e-400a-9c57-a9ed08d1a5b7".to_string();
-    let auth_client = oauth2::basic::BasicClient::new(
-        oauth2::ClientId::new(client_id),
-        None,
-        oauth2::AuthUrl::new(format!("{host}/authorize"))
-            .map_err(|e| InvokeError::from_anyhow(e.into()))?,
-        Some(
-            oauth2::TokenUrl::new(format!("{host}/oauth2/device/token"))
-                .map_err(|e| InvokeError::from_anyhow(e.into()))?,
-        ),
-    );
-
-    // Revoke the token.
-    auth_client
-        .set_revocation_uri(
-            oauth2::RevocationUrl::new(format!("{host}/oauth2/device/token/revoke"))
-                .map_err(|e| InvokeError::from_anyhow(e.into()))?,
-        )
-        .revoke_token(oauth2::StandardRevocableToken::AccessToken(
-            oauth2::AccessToken::new(token.unwrap()),
-        ))
-        .map_err(|e| InvokeError::from_anyhow(e.into()))?;
-
-    Ok(())
-}
-
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
