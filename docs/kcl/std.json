@@ -9323,6 +9323,34 @@
     "deprecated": false
   },
   {
+    "name": "cos",
+    "summary": "Computes the sine of a number (in radians).",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
     "name": "extrude",
     "summary": "Extrudes by a given amount.",
     "description": "",
@@ -13019,6 +13047,24 @@
     "deprecated": false
   },
   {
+    "name": "pi",
+    "summary": "Return the value of `pi`.",
+    "description": "",
+    "tags": [],
+    "args": [],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
     "name": "segAng",
     "summary": "Returns the angle of the segment.",
     "description": "",
@@ -15303,6 +15349,34 @@
     "deprecated": false
   },
   {
+    "name": "sin",
+    "summary": "Computes the sine of a number (in radians).",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
     "name": "startSketchAt",
     "summary": "Start a sketch at a given point.",
     "description": "",
@@ -15783,6 +15857,34 @@
             }
           }
         }
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "tan",
+    "summary": "Computes the tangent of a number (in radians).",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
       },
       "required": true
     },

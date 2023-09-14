@@ -16,12 +16,12 @@ tauri-build = { version = "1.4.0", features = [] }
 
 [dependencies]
 anyhow = "1"
-oauth2 = "4.4.1"
+oauth2 = "4.4.2"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-tauri = { version = "1.3.0", features = ["dialog-all", "fs-all", "http-request", "path-all", "shell-open", "shell-open-api", "updater"] }
-tokio = { version = "1.29.1", features = ["time"] }
-toml = "0.6.0"
+tauri = { version = "1.4.1", features = ["dialog-all", "fs-all", "http-request", "path-all", "shell-open", "shell-open-api", "updater", "devtools"] }
+tokio = { version = "1.32.0", features = ["time"] }
+toml = "0.8.0"
 tauri-plugin-fs-extra = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 
 [features]

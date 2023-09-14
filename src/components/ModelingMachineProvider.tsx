@@ -8,7 +8,9 @@ import {
   StateFrom,
 } from 'xstate'
 import { modelingMachine } from 'machines/modelingMachine'
-import { useEngineWithStream } from 'hooks/useEngineWithStream'
+import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
+import { useCodeEval } from 'hooks/useCodeEval'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -25,8 +27,14 @@ export const ModelingMachineProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  const {
+    auth: {
+      context: { token },
+    },
+  } = useGlobalStateContext()
   const streamRef = useRef<HTMLDivElement>(null)
-  useEngineWithStream(streamRef)
+  useSetupEngineManager(streamRef, token)
+  useCodeEval()
 
   // const { commands } = useCommandsContext()
 

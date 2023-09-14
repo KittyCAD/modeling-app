@@ -1,96 +1,48 @@
-import { useEffect, useLayoutEffect } from 'react'
-import { useStore } from 'useStore'
-import { useGlobalStateContext } from './useGlobalStateContext'
-import { EngineCommandManager } from 'lang/std/engineConnection'
-import { asyncParser } from 'lang/abstractSyntaxTree'
-import { _executor } from 'lang/executor'
-import { KCLError } from 'lang/errors'
+import { useEffect } from 'react'
+import { asyncParser } from '../lang/abstractSyntaxTree'
+import { _executor } from '../lang/executor'
+import { useStore } from '../useStore'
+import { KCLError } from '../lang/errors'
 
-export function useEngineWithStream(streamRef: React.RefObject<HTMLElement>) {
+// This recently moved out of app.tsx
+// and is our old way of thinking that whenever the code changes we need to re-execute, instead of
+// being more decisive about when and where we execute, its likey this custom hook will be
+// refactored away entirely at some point
+
+export function useCodeEval() {
   const {
-    addKCLError,
     addLog,
-    defferedCode,
+    addKCLError,
+    setAst,
+    setError,
+    setProgramMemory,
+    resetLogs,
+    resetKCLErrors,
+    setArtifactMap,
     engineCommandManager,
     highlightRange,
-    isStreamReady,
-    resetKCLErrors,
-    resetLogs,
-    setArtifactMap,
-    setAst,
-    setCursor2,
-    setEngineCommandManager,
-    setError,
     setHighlightRange,
+    setCursor2,
+    isStreamReady,
     setIsExecuting,
-    setIsStreamReady,
-    setProgramMemory,
-    setStreamDimensions,
-    setMediaStream,
+    defferedCode,
   } = useStore((s) => ({
-    addKCLError: s.addKCLError,
     addLog: s.addLog,
     defferedCode: s.defferedCode,
+    setAst: s.setAst,
+    setError: s.setError,
+    setProgramMemory: s.setProgramMemory,
+    resetLogs: s.resetLogs,
+    resetKCLErrors: s.resetKCLErrors,
+    setArtifactMap: s.setArtifactNSourceRangeMaps,
     engineCommandManager: s.engineCommandManager,
     highlightRange: s.highlightRange,
-    isStreamReady: s.isStreamReady,
-    resetKCLErrors: s.resetKCLErrors,
-    resetLogs: s.resetLogs,
-    setArtifactMap: s.setArtifactNSourceRangeMaps,
-    setAst: s.setAst,
-    setCursor2: s.setCursor2,
-    setEngineCommandManager: s.setEngineCommandManager,
-    setError: s.setError,
     setHighlightRange: s.setHighlightRange,
+    setCursor2: s.setCursor2,
+    isStreamReady: s.isStreamReady,
+    addKCLError: s.addKCLError,
     setIsExecuting: s.setIsExecuting,
-    setIsStreamReady: s.setIsStreamReady,
-    setMediaStream: s.setMediaStream,
-    setProgramMemory: s.setProgramMemory,
-    setStreamDimensions: s.setStreamDimensions,
   }))
-  const {
-    auth: {
-      context: { token },
-    },
-  } = useGlobalStateContext()
-
-  const streamWidth = streamRef?.current?.offsetWidth
-  const streamHeight = streamRef?.current?.offsetHeight
-
-  const width = streamWidth ? streamWidth : 0
-  const quadWidth = Math.round(width / 4) * 4
-  const height = streamHeight ? streamHeight : 0
-  const quadHeight = Math.round(height / 4) * 4
-
-  useLayoutEffect(() => {
-    setStreamDimensions({
-      streamWidth: quadWidth,
-      streamHeight: quadHeight,
-    })
-    if (!width || !height) return
-    const eng = new EngineCommandManager({
-      setMediaStream,
-      setIsStreamReady,
-      width: quadWidth,
-      height: quadHeight,
-      token,
-    })
-    setEngineCommandManager(eng)
-    return () => {
-      eng?.tearDown()
-    }
-  }, [
-    quadWidth,
-    quadHeight,
-    setStreamDimensions,
-    width,
-    height,
-    setMediaStream,
-    setIsStreamReady,
-    token,
-    setEngineCommandManager,
-  ])
-
   useEffect(() => {
     if (!isStreamReady) return
     if (!engineCommandManager) return
@@ -150,7 +102,7 @@ export function useEngineWithStream(streamRef: React.RefObject<HTMLElement>) {
         )
 
         const { artifactMap, sourceRangeMap } =
-          await engineCommandManager.waitForAllCommands()
+          await engineCommandManager.waitForAllCommands(_ast, programMemory)
         setIsExecuting(false)
         if (programMemory !== undefined) {
           setProgramMemory(programMemory)

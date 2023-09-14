@@ -6,7 +6,7 @@ use crate::{
 pub fn get_angle(a: &[f64; 2], b: &[f64; 2]) -> f64 {
     let x = b[0] - a[0];
     let y = b[1] - a[1];
-    normalise_angle(y.atan2(x) * 180.0 / std::f64::consts::PI)
+    normalise_angle(y.atan2(x).to_degrees())
 }
 
 pub fn normalise_angle(angle: f64) -> f64 {
@@ -98,8 +98,8 @@ pub fn distance_between_points(point_a: &[f64; 2], point_b: &[f64; 2]) -> f64 {
 
 pub fn calculate_intersection_of_two_lines(line1: &[[f64; 2]; 2], line2_angle: f64, line2_point: [f64; 2]) -> [f64; 2] {
     let line2_point_b = [
-        line2_point[0] + f64::cos(line2_angle * std::f64::consts::PI / 180.0) * 10.0,
-        line2_point[1] + f64::sin(line2_angle * std::f64::consts::PI / 180.0) * 10.0,
+        line2_point[0] + f64::cos(line2_angle.to_radians()) * 10.0,
+        line2_point[1] + f64::sin(line2_angle.to_radians()) * 10.0,
     ];
     intersect(line1[0], line1[1], line2_point, line2_point_b)
 }
@@ -145,7 +145,7 @@ fn offset_line(offset: f64, p1: [f64; 2], p2: [f64; 2]) -> [[f64; 2]; 2] {
 
 pub fn get_y_component(angle_degree: f64, x_component: f64) -> [f64; 2] {
     let normalised_angle = ((angle_degree % 360.0) + 360.0) % 360.0; // between 0 and 360
-    let y_component = x_component * f64::tan(normalised_angle * std::f64::consts::PI / 180.0);
+    let y_component = x_component * f64::tan(normalised_angle.to_radians());
     let sign = if normalised_angle > 90.0 && normalised_angle <= 270.0 {
         -1.0
     } else {
@@ -156,7 +156,7 @@ pub fn get_y_component(angle_degree: f64, x_component: f64) -> [f64; 2] {
 
 pub fn get_x_component(angle_degree: f64, y_component: f64) -> [f64; 2] {
     let normalised_angle = ((angle_degree % 360.0) + 360.0) % 360.0; // between 0 and 360
-    let x_component = y_component / f64::tan(normalised_angle * std::f64::consts::PI / 180.0);
+    let x_component = y_component / f64::tan(normalised_angle.to_radians());
     let sign = if normalised_angle > 180.0 && normalised_angle <= 360.0 {
         -1.0
     } else {
@@ -166,8 +166,8 @@ pub fn get_x_component(angle_degree: f64, y_component: f64) -> [f64; 2] {
 }
 
 pub fn arc_center_and_end(from: &Point2d, start_angle_deg: f64, end_angle_deg: f64, radius: f64) -> (Point2d, Point2d) {
-    let start_angle = start_angle_deg * (std::f64::consts::PI / 180.0);
-    let end_angle = end_angle_deg * (std::f64::consts::PI / 180.0);
+    let start_angle = start_angle_deg.to_radians();
+    let end_angle = end_angle_deg.to_radians();
 
     let center = Point2d {
         x: -1.0 * (radius * start_angle.cos() - from.x),
@@ -214,8 +214,8 @@ pub fn arc_angles(
     let start_angle = (from.y - center.y).atan2(from.x - center.x);
     let end_angle = (to.y - center.y).atan2(to.x - center.x);
 
-    let start_angle_deg = start_angle * (180.0 / std::f64::consts::PI);
-    let end_angle_deg = end_angle * (180.0 / std::f64::consts::PI);
+    let start_angle_deg = start_angle.to_degrees();
+    let end_angle_deg = end_angle.to_degrees();
 
     Ok((start_angle_deg, end_angle_deg))
 }

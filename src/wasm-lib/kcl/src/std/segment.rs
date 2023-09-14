@@ -230,7 +230,7 @@ fn inner_angle_to_match_length_x(
     if diff > length {
         Ok(0.0)
     } else {
-        Ok(angle_r * 180.0 / std::f64::consts::PI)
+        Ok(angle_r.to_degrees())
     }
 }
 
@@ -285,6 +285,6 @@ fn inner_angle_to_match_length_y(
     if diff > length {
         Ok(0.0)
     } else {
-        Ok(angle_r * 180.0 / std::f64::consts::PI)
+        Ok(angle_r.to_degrees())
     }
 }

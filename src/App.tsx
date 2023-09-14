@@ -29,7 +29,7 @@ import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/mod
 import { CodeMenu } from 'components/CodeMenu'
 import { TextEditor } from 'components/TextEditor'
 import { Themes, getSystemTheme } from 'lib/theme'
-
+ 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
 

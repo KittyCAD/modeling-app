@@ -26,10 +26,11 @@ import {
   addLineHighlight,
   lineHighlightField,
 } from 'editor/highlightextension'
-import { isOverlap } from 'lib/utils'
+import { isOverlap, roundOff } from 'lib/utils'
 import { kclErrToDiagnostic } from 'lang/errors'
 import { CSSRuleObject } from 'tailwindcss/types/config'
 import { useModelingContext } from 'hooks/useModelingContext'
+import interact from '@replit/codemirror-interact'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -251,6 +252,38 @@ export const TextEditor = ({
         lintGutter(),
         linter((_view) => {
           return kclErrToDiagnostic(useStore.getState().kclErrors)
+        }),
+        interact({
+          rules: [
+            // a rule for a number dragger
+            {
+              // the regexp matching the value
+              regexp: /-?\b\d+\.?\d*\b/g,
+              // set cursor to "ew-resize" on hover
+              cursor: 'ew-resize',
+              // change number value based on mouse X movement on drag
+              onDrag: (text, setText, e) => {
+                const multiplier =
+                  e.shiftKey && e.metaKey
+                    ? 0.01
+                    : e.metaKey
+                    ? 0.1
+                    : e.shiftKey
+                    ? 10
+                    : 1
+
+                const delta = e.movementX * multiplier
+
+                const newVal = roundOff(
+                  Number(text) + delta,
+                  multiplier === 0.01 ? 2 : multiplier === 0.1 ? 1 : 0
+                )
+
+                if (isNaN(newVal)) return
+                setText(newVal.toString())
+              },
+            },
+          ],
         })
       )
       if (textWrapping === 'On') extensions.push(EditorView.lineWrapping)
