@@ -26,9 +26,9 @@ impl Angle {
         self.degrees.to_radians()
     }
     /// Get the angle between these points
-    pub fn between(a: &[f64; 2], b: &[f64; 2]) -> Self {
-        let x = b[0] - a[0];
-        let y = b[1] - a[1];
+    pub fn between(a: Point2d, b: Point2d) -> Self {
+        let x = b.x - a.x;
+        let y = b.y - a.y;
         Self::from_radians(y.atan2(x)).normalize()
     }
     /// Normalize the angle
@@ -71,12 +71,12 @@ impl Angle {
 }
 
 #[allow(dead_code)]
-pub fn clockwise_sign(points: &[[f64; 2]]) -> i32 {
+pub fn clockwise_sign(points: &[Point2d]) -> i32 {
     let mut sum = 0.0;
     for i in 0..points.len() {
         let current_point = points[i];
         let next_point = points[(i + 1) % points.len()];
-        sum += (next_point[0] - current_point[0]) * (next_point[1] + current_point[1]);
+        sum += (next_point.x - current_point.x) * (next_point.y + current_point.y);
     }
     if sum >= 0.0 {
         1
@@ -110,85 +110,118 @@ pub fn normalize_rad(angle: f64) -> f64 {
 /// );
 /// ```
 #[allow(dead_code)]
-pub fn distance_between_points(point_a: &[f64; 2], point_b: &[f64; 2]) -> f64 {
-    let x1 = point_a[0];
-    let y1 = point_a[1];
-    let x2 = point_b[0];
-    let y2 = point_b[1];
+pub fn distance_between_points(point_a: Point2d, point_b: Point2d) -> f64 {
+    let x1 = point_a.x;
+    let y1 = point_a.y;
+    let x2 = point_b.x;
+    let y2 = point_b.y;
 
     ((y2 - y1).powi(2) + (x2 - x1).powi(2)).sqrt()
 }
 
-pub fn calculate_intersection_of_two_lines(line1: &[[f64; 2]; 2], line2_angle: f64, line2_point: [f64; 2]) -> [f64; 2] {
-    let line2_point_b = [
-        line2_point[0] + f64::cos(line2_angle.to_radians()) * 10.0,
-        line2_point[1] + f64::sin(line2_angle.to_radians()) * 10.0,
-    ];
+pub fn calculate_intersection_of_two_lines(line1: &[Point2d; 2], line2_angle: f64, line2_point: Point2d) -> Point2d {
+    let line2_point_b = Point2d {
+        x: line2_point.x + f64::cos(line2_angle.to_radians()) * 10.0,
+        y: line2_point.y + f64::sin(line2_angle.to_radians()) * 10.0,
+    };
     intersect(line1[0], line1[1], line2_point, line2_point_b)
 }
 
-pub fn intersect(p1: [f64; 2], p2: [f64; 2], p3: [f64; 2], p4: [f64; 2]) -> [f64; 2] {
-    let slope = |p1: [f64; 2], p2: [f64; 2]| (p1[1] - p2[1]) / (p1[0] - p2[0]);
-    let constant = |p1: [f64; 2], p2: [f64; 2]| p1[1] - slope(p1, p2) * p1[0];
-    let get_y = |for_x: f64, p1: [f64; 2], p2: [f64; 2]| slope(p1, p2) * for_x + constant(p1, p2);
+pub fn intersect(p1: Point2d, p2: Point2d, p3: Point2d, p4: Point2d) -> Point2d {
+    let slope = |p1: Point2d, p2: Point2d| (p1.y - p2.y) / (p1.x - p2.x);
+    let constant = |p1: Point2d, p2: Point2d| p1.y - slope(p1, p2) * p1.x;
+    let get_y = |for_x: f64, p1: Point2d, p2: Point2d| slope(p1, p2) * for_x + constant(p1, p2);
 
-    if p1[0] == p2[0] {
-        return [p1[0], get_y(p1[0], p3, p4)];
+    if p1.x == p2.x {
+        return Point2d {
+            x: p1.x,
+            y: get_y(p1.x, p3, p4),
+        };
     }
-    if p3[0] == p4[0] {
-        return [p3[0], get_y(p3[0], p1, p2)];
+    if p3.x == p4.x {
+        return Point2d {
+            x: p3.x,
+            y: get_y(p3.x, p1, p2),
+        };
     }
 
     let x = (constant(p3, p4) - constant(p1, p2)) / (slope(p1, p2) - slope(p3, p4));
     let y = get_y(x, p1, p2);
-    [x, y]
+    Point2d { x, y }
 }
 
 pub fn intersection_with_parallel_line(
-    line1: &[[f64; 2]; 2],
+    line1: &[Point2d; 2],
     line1_offset: f64,
     line2_angle: f64,
-    line2_point: [f64; 2],
-) -> [f64; 2] {
+    line2_point: Point2d,
+) -> Point2d {
     calculate_intersection_of_two_lines(&offset_line(line1_offset, line1[0], line1[1]), line2_angle, line2_point)
 }
 
-fn offset_line(offset: f64, p1: [f64; 2], p2: [f64; 2]) -> [[f64; 2]; 2] {
-    if p1[0] == p2[0] {
-        let direction = (p1[1] - p2[1]).signum();
-        return [[p1[0] + offset * direction, p1[1]], [p2[0] + offset * direction, p2[1]]];
+fn offset_line(offset: f64, p1: Point2d, p2: Point2d) -> [Point2d; 2] {
+    if p1.x == p2.x {
+        let direction = (p1.y - p2.y).signum();
+        return [
+            Point2d {
+                x: p1.x + offset * direction,
+                y: p1.y,
+            },
+            Point2d {
+                x: p2.x + offset * direction,
+                y: p2.y,
+            },
+        ];
     }
-    if p1[1] == p2[1] {
-        let direction = (p2[0] - p1[0]).signum();
-        return [[p1[0], p1[1] + offset * direction], [p2[0], p2[1] + offset * direction]];
+    if p1.y == p2.y {
+        let direction = (p2.x - p1.x).signum();
+        return [
+            Point2d {
+                x: p1.x,
+                y: p1.y + offset * direction,
+            },
+            Point2d {
+                x: p2.x,
+                y: p2.y + offset * direction,
+            },
+        ];
     }
-    let x_offset = offset / f64::sin(f64::atan2(p1[1] - p2[1], p1[0] - p2[0]));
-    [[p1[0] + x_offset, p1[1]], [p2[0] + x_offset, p2[1]]]
+    let x_offset = offset / f64::sin(f64::atan2(p1.y - p2.y, p1.x - p2.x));
+    [
+        Point2d {
+            x: p1.x + x_offset,
+            y: p1.y,
+        },
+        Point2d {
+            x: p2.x + x_offset,
+            y: p2.y,
+        },
+    ]
 }
 
-pub fn get_y_component(angle_degree: f64, x_component: f64) -> [f64; 2] {
+pub fn get_y_component(angle_degree: f64, x: f64) -> Point2d {
     let normalised_angle = ((angle_degree % 360.0) + 360.0) % 360.0; // between 0 and 360
-    let y_component = x_component * f64::tan(normalised_angle.to_radians());
+    let y = x * f64::tan(normalised_angle.to_radians());
     let sign = if normalised_angle > 90.0 && normalised_angle <= 270.0 {
         -1.0
     } else {
         1.0
     };
-    [sign * x_component, sign * y_component]
+    Point2d { x, y }.scale(sign)
 }
 
-pub fn get_x_component(angle_degree: f64, y_component: f64) -> [f64; 2] {
+pub fn get_x_component(angle_degree: f64, y: f64) -> Point2d {
     let normalised_angle = ((angle_degree % 360.0) + 360.0) % 360.0; // between 0 and 360
-    let x_component = y_component / f64::tan(normalised_angle.to_radians());
+    let x = y / f64::tan(normalised_angle.to_radians());
     let sign = if normalised_angle > 180.0 && normalised_angle <= 360.0 {
         -1.0
     } else {
         1.0
     };
-    [sign * x_component, sign * y_component]
+    Point2d { x, y }.scale(sign)
 }
 
-pub fn arc_center_and_end(from: &Point2d, start_angle_deg: f64, end_angle_deg: f64, radius: f64) -> (Point2d, Point2d) {
+pub fn arc_center_and_end(from: Point2d, start_angle_deg: f64, end_angle_deg: f64, radius: f64) -> (Point2d, Point2d) {
     let start_angle = start_angle_deg.to_radians();
     let end_angle = end_angle_deg.to_radians();
 
@@ -206,9 +239,9 @@ pub fn arc_center_and_end(from: &Point2d, start_angle_deg: f64, end_angle_deg: f
 }
 
 pub fn arc_angles(
-    from: &Point2d,
-    to: &Point2d,
-    center: &Point2d,
+    from: Point2d,
+    to: Point2d,
+    center: Point2d,
     radius: f64,
     source_range: SourceRange,
 ) -> Result<(f64, f64), KclError> {
@@ -243,7 +276,7 @@ pub fn arc_angles(
     Ok((start_angle_deg, end_angle_deg))
 }
 
-pub fn is_on_circumference(center: &Point2d, point: &Point2d, radius: f64) -> bool {
+pub fn is_on_circumference(center: Point2d, point: Point2d, radius: f64) -> bool {
     let dx = point.x - center.x;
     let dy = point.y - center.y;
 
@@ -285,27 +318,27 @@ mod tests {
 
         for &(angle, expected_result) in EACH_QUAD.iter() {
             let res = get_y_component(angle as f64, 1.0);
-            results.push([res[0].round() as i32, res[1].round() as i32]);
+            results.push([res.x.round() as i32, res.y.round() as i32]);
             expected.push(expected_result);
         }
 
         assert_eq!(results, expected);
 
         let result = get_y_component(0.0, 1.0);
-        assert_eq!(result[0] as i32, 1);
-        assert_eq!(result[1] as i32, 0);
+        assert_eq!(result.x as i32, 1);
+        assert_eq!(result.y as i32, 0);
 
         let result = get_y_component(90.0, 1.0);
-        assert_eq!(result[0] as i32, 1);
-        assert!(result[1] > 100000.0);
+        assert_eq!(result.x as i32, 1);
+        assert!(result.y > 100000.0);
 
         let result = get_y_component(180.0, 1.0);
-        assert_eq!(result[0] as i32, -1);
-        assert!((result[1] - 0.0).abs() < f64::EPSILON);
+        assert_eq!(result.x as i32, -1);
+        assert!((result.y - 0.0).abs() < f64::EPSILON);
 
         let result = get_y_component(270.0, 1.0);
-        assert_eq!(result[0] as i32, -1);
-        assert!(result[1] < -100000.0);
+        assert_eq!(result.x as i32, -1);
+        assert!(result.y < -100000.0);
     }
 
     #[test]
@@ -315,44 +348,44 @@ mod tests {
 
         for &(angle, expected_result) in EACH_QUAD.iter() {
             let res = get_x_component(angle as f64, 1.0);
-            results.push([res[0].round() as i32, res[1].round() as i32]);
+            results.push([res.x.round() as i32, res.y.round() as i32]);
             expected.push(expected_result);
         }
 
         assert_eq!(results, expected);
 
         let result = get_x_component(0.0, 1.0);
-        assert!(result[0] > 100000.0);
-        assert_eq!(result[1] as i32, 1);
+        assert!(result.x > 100000.0);
+        assert_eq!(result.y as i32, 1);
 
         let result = get_x_component(90.0, 1.0);
-        assert!((result[0] - 0.0).abs() < f64::EPSILON);
-        assert_eq!(result[1] as i32, 1);
+        assert!((result.x - 0.0).abs() < f64::EPSILON);
+        assert_eq!(result.y as i32, 1);
 
         let result = get_x_component(180.0, 1.0);
-        assert!(result[0] < -100000.0);
-        assert_eq!(result[1] as i32, 1);
+        assert!(result.x < -100000.0);
+        assert_eq!(result.y as i32, 1);
 
         let result = get_x_component(270.0, 1.0);
-        assert!((result[0] - 0.0).abs() < f64::EPSILON);
-        assert_eq!(result[1] as i32, -1);
+        assert!((result.x - 0.0).abs() < f64::EPSILON);
+        assert_eq!(result.y as i32, -1);
     }
 
     #[test]
     fn test_arc_center_and_end() {
-        let (center, end) = super::arc_center_and_end(&super::Point2d { x: 0.0, y: 0.0 }, 0.0, 90.0, 1.0);
+        let (center, end) = super::arc_center_and_end(super::Point2d { x: 0.0, y: 0.0 }, 0.0, 90.0, 1.0);
         assert_eq!(center.x.round(), -1.0);
         assert_eq!(center.y, 0.0);
         assert_eq!(end.x.round(), -1.0);
         assert_eq!(end.y, 1.0);
 
-        let (center, end) = super::arc_center_and_end(&super::Point2d { x: 0.0, y: 0.0 }, 0.0, 180.0, 1.0);
+        let (center, end) = super::arc_center_and_end(super::Point2d { x: 0.0, y: 0.0 }, 0.0, 180.0, 1.0);
         assert_eq!(center.x.round(), -1.0);
         assert_eq!(center.y, 0.0);
         assert_eq!(end.x.round(), -2.0);
         assert_eq!(end.y.round(), 0.0);
 
-        let (center, end) = super::arc_center_and_end(&super::Point2d { x: 0.0, y: 0.0 }, 0.0, 180.0, 10.0);
+        let (center, end) = super::arc_center_and_end(super::Point2d { x: 0.0, y: 0.0 }, 0.0, 180.0, 10.0);
         assert_eq!(center.x.round(), -10.0);
         assert_eq!(center.y, 0.0);
         assert_eq!(end.x.round(), -20.0);
@@ -362,9 +395,9 @@ mod tests {
     #[test]
     fn test_arc_angles() {
         let (angle_start, angle_end) = super::arc_angles(
-            &super::Point2d { x: 0.0, y: 0.0 },
-            &super::Point2d { x: -1.0, y: 1.0 },
-            &super::Point2d { x: -1.0, y: 0.0 },
+            super::Point2d { x: 0.0, y: 0.0 },
+            super::Point2d { x: -1.0, y: 1.0 },
+            super::Point2d { x: -1.0, y: 0.0 },
             1.0,
             SourceRange(Default::default()),
         )
@@ -373,9 +406,9 @@ mod tests {
         assert_eq!(angle_end.round(), 90.0);
 
         let (angle_start, angle_end) = super::arc_angles(
-            &super::Point2d { x: 0.0, y: 0.0 },
-            &super::Point2d { x: -2.0, y: 0.0 },
-            &super::Point2d { x: -1.0, y: 0.0 },
+            super::Point2d { x: 0.0, y: 0.0 },
+            super::Point2d { x: -2.0, y: 0.0 },
+            super::Point2d { x: -1.0, y: 0.0 },
             1.0,
             SourceRange(Default::default()),
         )
@@ -384,9 +417,9 @@ mod tests {
         assert_eq!(angle_end.round(), 180.0);
 
         let (angle_start, angle_end) = super::arc_angles(
-            &super::Point2d { x: 0.0, y: 0.0 },
-            &super::Point2d { x: -20.0, y: 0.0 },
-            &super::Point2d { x: -10.0, y: 0.0 },
+            super::Point2d { x: 0.0, y: 0.0 },
+            super::Point2d { x: -20.0, y: 0.0 },
+            super::Point2d { x: -10.0, y: 0.0 },
             10.0,
             SourceRange(Default::default()),
         )
@@ -395,9 +428,9 @@ mod tests {
         assert_eq!(angle_end.round(), 180.0);
 
         let result = super::arc_angles(
-            &super::Point2d { x: 0.0, y: 5.0 },
-            &super::Point2d { x: 5.0, y: 5.0 },
-            &super::Point2d { x: 10.0, y: -10.0 },
+            super::Point2d { x: 0.0, y: 5.0 },
+            super::Point2d { x: 5.0, y: 5.0 },
+            super::Point2d { x: 10.0, y: -10.0 },
             10.0,
             SourceRange(Default::default()),
         );

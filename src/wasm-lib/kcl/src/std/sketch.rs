@@ -396,9 +396,9 @@ fn inner_angled_line_of_x_length(
 
     let new_sketch_group = inner_line(
         if let AngledLineData::AngleWithTag { tag, .. } = data {
-            LineData::PointWithTag { to, tag }
+            LineData::PointWithTag { to: to.into(), tag }
         } else {
-            LineData::Point(to)
+            LineData::Point(to.into())
         },
         sketch_group,
         args,
@@ -491,9 +491,9 @@ fn inner_angled_line_of_y_length(
 
     let new_sketch_group = inner_line(
         if let AngledLineData::AngleWithTag { tag, .. } = data {
-            LineData::PointWithTag { to, tag }
+            LineData::PointWithTag { to: to.into(), tag }
         } else {
-            LineData::Point(to)
+            LineData::Point(to.into())
         },
         sketch_group,
         args,
@@ -588,16 +588,16 @@ fn inner_angled_line_that_intersects(
 
     let from = sketch_group.get_coords_from_paths()?;
     let to = intersection_with_parallel_line(
-        &[intersect_path.from, intersect_path.to],
+        &[intersect_path.from.into(), intersect_path.to.into()],
         data.offset.unwrap_or_default(),
         data.angle,
         from.into(),
     );
 
     let line_to_data = if let Some(tag) = data.tag {
-        LineToData::PointWithTag { to, tag }
+        LineToData::PointWithTag { to: to.into(), tag }
     } else {
-        LineToData::Point(to)
+        LineToData::Point(to.into())
     };
 
     let new_sketch_group = inner_line_to(line_to_data, sketch_group, args)?;
@@ -766,7 +766,7 @@ pub fn arc(args: &mut Args) -> Result<MemoryItem, KclError> {
     name = "arc",
 }]
 fn inner_arc(data: ArcData, sketch_group: SketchGroup, args: &mut Args) -> Result<SketchGroup, KclError> {
-    let from = sketch_group.get_coords_from_paths()?;
+    let from: Point2d = sketch_group.get_coords_from_paths()?.into();
 
     let (center, angle_start, angle_end, radius, end) = match &data {
         ArcData::AnglesAndRadiusWithTag {
@@ -775,7 +775,7 @@ fn inner_arc(data: ArcData, sketch_group: SketchGroup, args: &mut Args) -> Resul
             radius,
             ..
         } => {
-            let (center, end) = arc_center_and_end(&from, *angle_start, *angle_end, *radius);
+            let (center, end) = arc_center_and_end(from, *angle_start, *angle_end, *radius);
             (center, *angle_start, *angle_end, *radius, end)
         }
         ArcData::AnglesAndRadius {
@@ -783,15 +783,15 @@ fn inner_arc(data: ArcData, sketch_group: SketchGroup, args: &mut Args) -> Resul
             angle_end,
             radius,
         } => {
-            let (center, end) = arc_center_and_end(&from, *angle_start, *angle_end, *radius);
+            let (center, end) = arc_center_and_end(from, *angle_start, *angle_end, *radius);
             (center, *angle_start, *angle_end, *radius, end)
         }
         ArcData::CenterToRadiusWithTag { center, to, radius, .. } => {
-            let (angle_start, angle_end) = arc_angles(&from, &center.into(), &to.into(), *radius, args.source_range)?;
+            let (angle_start, angle_end) = arc_angles(from, center.into(), to.into(), *radius, args.source_range)?;
             (center.into(), angle_start, angle_end, *radius, to.into())
         }
         ArcData::CenterToRadius { center, to, radius } => {
-            let (angle_start, angle_end) = arc_angles(&from, &center.into(), &to.into(), *radius, args.source_range)?;
+            let (angle_start, angle_end) = arc_angles(from, center.into(), to.into(), *radius, args.source_range)?;
             (center.into(), angle_start, angle_end, *radius, to.into())
         }
     };

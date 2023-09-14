@@ -348,7 +348,7 @@ impl SourceRange {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct Point2d {
     pub x: f64,
@@ -376,6 +376,15 @@ impl From<Point2d> for [f64; 2] {
 impl From<Point2d> for kittycad::types::Point2D {
     fn from(p: Point2d) -> Self {
         Self { x: p.x, y: p.y }
+    }
+}
+
+impl Point2d {
+    pub fn scale(self, scalar: f64) -> Self {
+        Self {
+            x: self.x * scalar,
+            y: self.y * scalar,
+        }
     }
 }
 

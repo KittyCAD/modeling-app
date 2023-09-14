@@ -174,7 +174,7 @@ fn inner_segment_angle(segment_name: &str, sketch_group: SketchGroup, args: &mut
     })?;
     let line = path.get_base();
 
-    let result = Angle::between(&line.from, &line.to);
+    let result = Angle::between(line.from.into(), line.to.into());
 
     Ok(result.degrees())
 }
