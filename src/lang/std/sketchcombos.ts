@@ -28,6 +28,7 @@ import { createFirstArg, getFirstArg, replaceSketchLine } from './sketch'
 import { PathToNode, ProgramMemory } from '../executor'
 import { getSketchSegmentFromSourceRange } from './sketchConstraints'
 import { getAngle, roundOff, normaliseAngle } from '../../lib/utils'
+import { MemoryItem } from 'wasm-lib/kcl/bindings/MemoryItem'
 
 type LineInputsType =
   | 'xAbsolute'
@@ -1136,27 +1137,18 @@ export function getRemoveConstraintsTransform(
 
   // check if the function is locked down and so can't be transformed
   const firstArg = getFirstArg(sketchFnExp)
-  if (Array.isArray(firstArg.val)) {
-    const [a, b] = firstArg.val
-    if (a?.type !== 'Literal' || b?.type !== 'Literal') {
-      return transformInfo
-    }
-  } else {
-    if (firstArg.val?.type !== 'Literal') {
-      return transformInfo
-    }
+  if (isNotLiteralArrayOrStatic(firstArg.val)) {
+    return transformInfo
   }
 
   // check if the function has no constraints
   const isTwoValFree =
-    Array.isArray(firstArg.val) &&
-    firstArg.val?.[0]?.type === 'Literal' &&
-    firstArg.val?.[1]?.type === 'Literal'
+    Array.isArray(firstArg.val) && isLiteralArrayOrStatic(firstArg.val)
   if (isTwoValFree) {
     return false
   }
   const isOneValFree =
-    !Array.isArray(firstArg.val) && firstArg.val?.type === 'Literal'
+    !Array.isArray(firstArg.val) && isLiteralArrayOrStatic(firstArg.val)
   if (isOneValFree) {
     return transformInfo
   }
@@ -1187,25 +1179,12 @@ function getTransformMapPath(
 
   // check if the function is locked down and so can't be transformed
   const firstArg = getFirstArg(sketchFnExp)
-  if (Array.isArray(firstArg.val)) {
-    const [a, b] = firstArg.val
-    if (a?.type !== 'Literal' && b?.type !== 'Literal') {
-      return false
-    }
-  } else {
-    if (firstArg.val?.type !== 'Literal') {
-      return false
-    }
+  if (isNotLiteralArrayOrStatic(firstArg.val)) {
+    return false
   }
 
   // check if the function has no constraints
-  const isTwoValFree =
-    Array.isArray(firstArg.val) &&
-    firstArg.val?.[0]?.type === 'Literal' &&
-    firstArg.val?.[1]?.type === 'Literal'
-  const isOneValFree =
-    !Array.isArray(firstArg.val) && firstArg.val?.type === 'Literal'
-  if (isTwoValFree || isOneValFree) {
+  if (isLiteralArrayOrStatic(firstArg.val)) {
     const info = transformMap?.[name]?.free?.[constraintType]
     if (info)
       return {
@@ -1259,7 +1238,7 @@ export function getConstraintType(
     if (fnName === 'xLineTo') return 'yAbsolute'
     if (fnName === 'yLineTo') return 'xAbsolute'
   } else {
-    const isFirstArgLockedDown = val?.[0]?.type !== 'Literal'
+    const isFirstArgLockedDown = isNotLiteralArrayOrStatic(val[0])
     if (fnName === 'line')
       return isFirstArgLockedDown ? 'xRelative' : 'yRelative'
     if (fnName === 'lineTo')
@@ -1452,7 +1431,7 @@ export function transformAstSketchLines({
 
     const varName = varDec.id.name
     const sketchGroup = programMemory.root?.[varName]
-    if (!sketchGroup || sketchGroup.type !== 'sketchGroup')
+    if (!sketchGroup || sketchGroup.type !== 'SketchGroup')
       throw new Error('not a sketch group')
     const seg = getSketchSegmentFromSourceRange(sketchGroup, range).segment
     const referencedSegment = referencedSegmentRange
@@ -1538,23 +1517,46 @@ export function getConstraintLevelFromSourceRange(
   const firstArg = getFirstArg(sketchFnExp)
 
   // check if the function is fully constrained
-  if (Array.isArray(firstArg.val)) {
-    const [a, b] = firstArg.val
-    if (a?.type !== 'Literal' && b?.type !== 'Literal') return 'full'
-  } else {
-    if (firstArg.val?.type !== 'Literal') return 'full'
+  if (isNotLiteralArrayOrStatic(firstArg.val)) {
+    return 'full'
   }
 
   // check if the function has no constraints
   const isTwoValFree =
-    Array.isArray(firstArg.val) &&
-    firstArg.val?.[0]?.type === 'Literal' &&
-    firstArg.val?.[1]?.type === 'Literal'
+    Array.isArray(firstArg.val) && isLiteralArrayOrStatic(firstArg.val)
   const isOneValFree =
-    !Array.isArray(firstArg.val) && firstArg.val?.type === 'Literal'
+    !Array.isArray(firstArg.val) && isLiteralArrayOrStatic(firstArg.val)
 
   if (isTwoValFree) return 'free'
   if (isOneValFree) return 'partial'
 
   return 'partial'
+}
+
+export function isLiteralArrayOrStatic(
+  val: Value | [Value, Value] | [Value, Value, Value] | undefined
+): boolean {
+  if (!val) return false
+
+  if (Array.isArray(val)) {
+    const [a, b] = val
+    return isLiteralArrayOrStatic(a) && isLiteralArrayOrStatic(b)
+  }
+  return (
+    val.type === 'Literal' ||
+    (val.type === 'UnaryExpression' && val.argument.type === 'Literal')
+  )
+}
+
+export function isNotLiteralArrayOrStatic(
+  val: Value | [Value, Value] | [Value, Value, Value]
+): boolean {
+  if (Array.isArray(val)) {
+    const [a, b] = val
+    return isNotLiteralArrayOrStatic(a) && isNotLiteralArrayOrStatic(b)
+  }
+  return (
+    (val.type !== 'Literal' && val.type !== 'UnaryExpression') ||
+    (val.type === 'UnaryExpression' && val.argument.type !== 'Literal')
+  )
 }

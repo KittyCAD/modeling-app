@@ -114,7 +114,8 @@ describe('Testing addSketchTo', () => {
     expect(str).toBe(`const part001 = startSketchAt('default')
   |> ry(90, %)
   |> line('default', %)
-show(part001)`)
+show(part001)
+`)
   })
 })
 
@@ -175,11 +176,14 @@ show(part001)`
 })
 
 describe('Testing moveValueIntoNewVariable', () => {
-  const fn = (fnName: string) => `const ${fnName} = (x) => {
+  const fn = (fnName: string) => `fn ${fnName} = (x) => {
   return x
 }
 `
-  const code = `${fn('def')}${fn('ghi')}${fn('jkl')}${fn('hmm')}
+  const code = `${fn('def')}${fn('jkl')}${fn('hmm')}
+fn ghi = (x) => {
+    return 2
+}
 const abc = 3
 const identifierGuy = 5
 const yo = 5 + 6

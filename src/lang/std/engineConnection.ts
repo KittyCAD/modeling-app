@@ -6,6 +6,8 @@ import { exportSave } from 'lib/exportSave'
 import { v4 as uuidv4 } from 'uuid'
 import * as Sentry from '@sentry/react'
 
+let lastMessage = ''
+
 interface CommandInfo {
   commandType: CommandTypes
   range: SourceRange
@@ -754,6 +756,13 @@ export class EngineCommandManager {
     })
   }
   sendSceneCommand(command: EngineCommand): Promise<any> {
+    if (
+      command.type === 'modeling_cmd_req' &&
+      command.cmd.type !== lastMessage
+    ) {
+      console.log('sending command', command.cmd.type)
+      lastMessage = command.cmd.type
+    }
     if (!this.engineConnection?.isReady()) {
       console.log('socket not ready')
       return Promise.resolve()
@@ -761,7 +770,8 @@ export class EngineCommandManager {
     if (command.type !== 'modeling_cmd_req') return Promise.resolve()
     const cmd = command.cmd
     if (
-      cmd.type === 'camera_drag_move' &&
+      (cmd.type === 'camera_drag_move' ||
+        cmd.type === 'handle_mouse_drag_move') &&
       this.engineConnection?.unreliableDataChannel
     ) {
       cmd.sequence = this.outSequence

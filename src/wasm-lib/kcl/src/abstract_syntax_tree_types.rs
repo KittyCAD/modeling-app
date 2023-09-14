@@ -12,7 +12,7 @@ use tower_lsp::lsp_types::{CompletionItem, CompletionItemKind, DocumentSymbol, R
 use crate::{
     engine::EngineConnection,
     errors::{KclError, KclErrorDetails},
-    executor::{MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange},
+    executor::{MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange, UserVal},
     parser::PIPE_OPERATOR,
 };
 
@@ -449,6 +449,7 @@ pub enum BinaryPart {
     BinaryExpression(Box<BinaryExpression>),
     CallExpression(Box<CallExpression>),
     UnaryExpression(Box<UnaryExpression>),
+    MemberExpression(Box<MemberExpression>),
 }
 
 impl From<BinaryPart> for crate::executor::SourceRange {
@@ -471,6 +472,7 @@ impl BinaryPart {
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.recast(options),
             BinaryPart::CallExpression(call_expression) => call_expression.recast(options, indentation_level, false),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.recast(options),
+            BinaryPart::MemberExpression(member_expression) => member_expression.recast(),
         }
     }
 
@@ -481,6 +483,7 @@ impl BinaryPart {
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.start(),
             BinaryPart::CallExpression(call_expression) => call_expression.start(),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.start(),
+            BinaryPart::MemberExpression(member_expression) => member_expression.start(),
         }
     }
 
@@ -491,6 +494,7 @@ impl BinaryPart {
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.end(),
             BinaryPart::CallExpression(call_expression) => call_expression.end(),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.end(),
+            BinaryPart::MemberExpression(member_expression) => member_expression.end(),
         }
     }
 
@@ -500,15 +504,22 @@ impl BinaryPart {
         pipe_info: &mut PipeInfo,
         engine: &mut EngineConnection,
     ) -> Result<MemoryItem, KclError> {
-        pipe_info.is_in_pipe = false;
+        // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
+        // stop the execution of the pipe.
+        // THIS IS IMPORTANT.
+        let mut new_pipe_info = pipe_info.clone();
+        new_pipe_info.is_in_pipe = false;
+
         match self {
             BinaryPart::Literal(literal) => Ok(literal.into()),
             BinaryPart::Identifier(identifier) => {
                 let value = memory.get(&identifier.name, identifier.into())?;
                 Ok(value.clone())
             }
-            BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_result(memory, pipe_info, engine),
-            BinaryPart::CallExpression(call_expression) => call_expression.execute(memory, pipe_info, engine),
+            BinaryPart::BinaryExpression(binary_expression) => {
+                binary_expression.get_result(memory, &mut new_pipe_info, engine)
+            }
+            BinaryPart::CallExpression(call_expression) => call_expression.execute(memory, &mut new_pipe_info, engine),
             BinaryPart::UnaryExpression(unary_expression) => {
                 // Return an error this should not happen.
                 Err(KclError::Semantic(KclErrorDetails {
@@ -516,6 +527,7 @@ impl BinaryPart {
                     source_ranges: vec![unary_expression.into()],
                 }))
             }
+            BinaryPart::MemberExpression(member_expression) => member_expression.get_result(memory),
         }
     }
 
@@ -529,6 +541,9 @@ impl BinaryPart {
             }
             BinaryPart::CallExpression(call_expression) => call_expression.get_hover_value_for_position(pos, code),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_hover_value_for_position(pos, code),
+            BinaryPart::MemberExpression(member_expression) => {
+                member_expression.get_hover_value_for_position(pos, code)
+            }
         }
     }
 
@@ -545,6 +560,9 @@ impl BinaryPart {
             }
             BinaryPart::UnaryExpression(ref mut unary_expression) => {
                 unary_expression.rename_identifiers(old_name, new_name)
+            }
+            BinaryPart::MemberExpression(ref mut member_expression) => {
+                member_expression.rename_identifiers(old_name, new_name)
             }
         }
     }
@@ -718,8 +736,12 @@ impl CallExpression {
                     binary_expression.get_result(memory, pipe_info, engine)?
                 }
                 Value::CallExpression(call_expression) => {
-                    pipe_info.is_in_pipe = false;
-                    call_expression.execute(memory, pipe_info, engine)?
+                    // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
+                    // stop the execution of the pipe.
+                    // THIS IS IMPORTANT.
+                    let mut new_pipe_info = pipe_info.clone();
+                    new_pipe_info.is_in_pipe = false;
+                    call_expression.execute(memory, &mut new_pipe_info, engine)?
                 }
                 Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, engine)?,
                 Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, engine)?,
@@ -740,12 +762,7 @@ impl CallExpression {
                         })
                     })?
                     .clone(),
-                Value::MemberExpression(member_expression) => {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!("MemberExpression not implemented here: {:?}", member_expression),
-                        source_ranges: vec![member_expression.into()],
-                    }));
-                }
+                Value::MemberExpression(member_expression) => member_expression.get_result(memory)?,
                 Value::FunctionExpression(function_expression) => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: format!("FunctionExpression not implemented here: {:?}", function_expression),
@@ -773,7 +790,7 @@ impl CallExpression {
             Function::InMemory => {
                 let mem = memory.clone();
                 let func = mem.get(&fn_name, self.into())?;
-                let result = func.call_fn(&fn_args, memory, engine)?.ok_or_else(|| {
+                let result = func.call_fn(&fn_args, &mem, engine)?.ok_or_else(|| {
                     KclError::UndefinedValue(KclErrorDetails {
                         message: format!("Result of function {} is undefined", fn_name),
                         source_ranges: vec![self.into()],
@@ -1071,23 +1088,23 @@ impl Literal {
 
 impl From<Literal> for MemoryItem {
     fn from(literal: Literal) -> Self {
-        MemoryItem::UserVal {
+        MemoryItem::UserVal(UserVal {
             value: literal.value.clone(),
             meta: vec![Metadata {
                 source_range: literal.into(),
             }],
-        }
+        })
     }
 }
 
 impl From<&Box<Literal>> for MemoryItem {
     fn from(literal: &Box<Literal>) -> Self {
-        MemoryItem::UserVal {
+        MemoryItem::UserVal(UserVal {
             value: literal.value.clone(),
             meta: vec![Metadata {
                 source_range: literal.into(),
             }],
-        }
+        })
     }
 }
 
@@ -1199,8 +1216,12 @@ impl ArrayExpression {
                     binary_expression.get_result(memory, pipe_info, engine)?
                 }
                 Value::CallExpression(call_expression) => {
-                    pipe_info.is_in_pipe = false;
-                    call_expression.execute(memory, pipe_info, engine)?
+                    // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
+                    // stop the execution of the pipe.
+                    // THIS IS IMPORTANT.
+                    let mut new_pipe_info = pipe_info.clone();
+                    new_pipe_info.is_in_pipe = false;
+                    call_expression.execute(memory, &mut new_pipe_info, engine)?
                 }
                 Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, engine)?,
                 Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, engine)?,
@@ -1212,12 +1233,7 @@ impl ArrayExpression {
                         source_ranges: vec![pipe_substitution.into()],
                     }));
                 }
-                Value::MemberExpression(member_expression) => {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!("MemberExpression not implemented here: {:?}", member_expression),
-                        source_ranges: vec![member_expression.into()],
-                    }));
-                }
+                Value::MemberExpression(member_expression) => member_expression.get_result(memory)?,
                 Value::FunctionExpression(function_expression) => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: format!("FunctionExpression not implemented here: {:?}", function_expression),
@@ -1230,12 +1246,12 @@ impl ArrayExpression {
             results.push(result);
         }
 
-        Ok(MemoryItem::UserVal {
+        Ok(MemoryItem::UserVal(UserVal {
             value: results.into(),
             meta: vec![Metadata {
                 source_range: self.into(),
             }],
-        })
+        }))
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -1321,8 +1337,12 @@ impl ObjectExpression {
                     binary_expression.get_result(memory, pipe_info, engine)?
                 }
                 Value::CallExpression(call_expression) => {
-                    pipe_info.is_in_pipe = false;
-                    call_expression.execute(memory, pipe_info, engine)?
+                    // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
+                    // stop the execution of the pipe.
+                    // THIS IS IMPORTANT.
+                    let mut new_pipe_info = pipe_info.clone();
+                    new_pipe_info.is_in_pipe = false;
+                    call_expression.execute(memory, &mut new_pipe_info, engine)?
                 }
                 Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, engine)?,
                 Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, engine)?,
@@ -1351,12 +1371,12 @@ impl ObjectExpression {
             object.insert(property.key.name.clone(), result.get_json_value()?);
         }
 
-        Ok(MemoryItem::UserVal {
+        Ok(MemoryItem::UserVal(UserVal {
             value: object.into(),
             meta: vec![Metadata {
                 source_range: self.into(),
             }],
-        })
+        }))
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -1535,6 +1555,38 @@ impl MemberExpression {
         None
     }
 
+    pub fn get_result_array(&self, memory: &mut ProgramMemory, index: usize) -> Result<MemoryItem, KclError> {
+        let array = match &self.object {
+            MemberObject::MemberExpression(member_expr) => member_expr.get_result(memory)?,
+            MemberObject::Identifier(identifier) => {
+                let value = memory.get(&identifier.name, identifier.into())?;
+                value.clone()
+            }
+        }
+        .get_json_value()?;
+
+        if let serde_json::Value::Array(array) = array {
+            if let Some(value) = array.get(index) {
+                Ok(MemoryItem::UserVal(UserVal {
+                    value: value.clone(),
+                    meta: vec![Metadata {
+                        source_range: self.into(),
+                    }],
+                }))
+            } else {
+                Err(KclError::UndefinedValue(KclErrorDetails {
+                    message: format!("index {} not found in array", index),
+                    source_ranges: vec![self.clone().into()],
+                }))
+            }
+        } else {
+            Err(KclError::Semantic(KclErrorDetails {
+                message: format!("MemberExpression array is not an array: {:?}", array),
+                source_ranges: vec![self.clone().into()],
+            }))
+        }
+    }
+
     pub fn get_result(&self, memory: &mut ProgramMemory) -> Result<MemoryItem, KclError> {
         let property_name = match &self.property {
             LiteralIdentifier::Identifier(identifier) => identifier.name.to_string(),
@@ -1543,9 +1595,12 @@ impl MemberExpression {
                 // Parse this as a string.
                 if let serde_json::Value::String(string) = value {
                     string
+                } else if let serde_json::Value::Number(_) = &value {
+                    // It can also be a number if we are getting a member of an array.
+                    return self.get_result_array(memory, parse_json_number_as_usize(&value, self.into())?);
                 } else {
                     return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!("Expected string literal for property name, found {:?}", value),
+                        message: format!("Expected string literal or number for property name, found {:?}", value),
                         source_ranges: vec![literal.into()],
                     }));
                 }
@@ -1563,12 +1618,12 @@ impl MemberExpression {
 
         if let serde_json::Value::Object(map) = object {
             if let Some(value) = map.get(&property_name) {
-                Ok(MemoryItem::UserVal {
+                Ok(MemoryItem::UserVal(UserVal {
                     value: value.clone(),
                     meta: vec![Metadata {
                         source_range: self.into(),
                     }],
-                })
+                }))
             } else {
                 Err(KclError::UndefinedValue(KclErrorDetails {
                     message: format!("Property {} not found in object", property_name),
@@ -1674,10 +1729,20 @@ impl BinaryExpression {
         pipe_info: &mut PipeInfo,
         engine: &mut EngineConnection,
     ) -> Result<MemoryItem, KclError> {
-        pipe_info.is_in_pipe = false;
+        // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
+        // stop the execution of the pipe.
+        // THIS IS IMPORTANT.
+        let mut new_pipe_info = pipe_info.clone();
+        new_pipe_info.is_in_pipe = false;
 
-        let left_json_value = self.left.get_result(memory, pipe_info, engine)?.get_json_value()?;
-        let right_json_value = self.right.get_result(memory, pipe_info, engine)?.get_json_value()?;
+        let left_json_value = self
+            .left
+            .get_result(memory, &mut new_pipe_info, engine)?
+            .get_json_value()?;
+        let right_json_value = self
+            .right
+            .get_result(memory, &mut new_pipe_info, engine)?
+            .get_json_value()?;
 
         // First check if we are doing string concatenation.
         if self.operator == BinaryOperator::Add {
@@ -1686,12 +1751,12 @@ impl BinaryExpression {
                 parse_json_value_as_string(&right_json_value),
             ) {
                 let value = serde_json::Value::String(format!("{}{}", left, right));
-                return Ok(MemoryItem::UserVal {
+                return Ok(MemoryItem::UserVal(UserVal {
                     value,
                     meta: vec![Metadata {
                         source_range: self.into(),
                     }],
-                });
+                }));
             }
         }
 
@@ -1706,12 +1771,12 @@ impl BinaryExpression {
             BinaryOperator::Mod => (left % right).into(),
         };
 
-        Ok(MemoryItem::UserVal {
+        Ok(MemoryItem::UserVal(UserVal {
             value,
             meta: vec![Metadata {
                 source_range: self.into(),
             }],
-        })
+        }))
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -1733,6 +1798,22 @@ pub fn parse_json_number_as_f64(j: &serde_json::Value, source_range: SourceRange
         Err(KclError::Syntax(KclErrorDetails {
             source_ranges: vec![source_range],
             message: format!("Invalid number: {}", j),
+        }))
+    }
+}
+
+pub fn parse_json_number_as_usize(j: &serde_json::Value, source_range: SourceRange) -> Result<usize, KclError> {
+    if let serde_json::Value::Number(n) = &j {
+        Ok(n.as_i64().ok_or_else(|| {
+            KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![source_range],
+                message: format!("Invalid index: {}", j),
+            })
+        })? as usize)
+    } else {
+        Err(KclError::Syntax(KclErrorDetails {
+            source_ranges: vec![source_range],
+            message: format!("Invalid index: {}", j),
         }))
     }
 }
@@ -1803,18 +1884,25 @@ impl UnaryExpression {
         pipe_info: &mut PipeInfo,
         engine: &mut EngineConnection,
     ) -> Result<MemoryItem, KclError> {
-        pipe_info.is_in_pipe = false;
+        // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
+        // stop the execution of the pipe.
+        // THIS IS IMPORTANT.
+        let mut new_pipe_info = pipe_info.clone();
+        new_pipe_info.is_in_pipe = false;
 
         let num = parse_json_number_as_f64(
-            &self.argument.get_result(memory, pipe_info, engine)?.get_json_value()?,
+            &self
+                .argument
+                .get_result(memory, &mut new_pipe_info, engine)?
+                .get_json_value()?,
             self.into(),
         )?;
-        Ok(MemoryItem::UserVal {
+        Ok(MemoryItem::UserVal(UserVal {
             value: (-(num)).into(),
             meta: vec![Metadata {
                 source_range: self.into(),
             }],
-        })
+        }))
     }
 
     /// Returns a hover value that includes the given character position.
@@ -1980,6 +2068,9 @@ impl_value_meta!(FunctionExpression);
 
 impl FunctionExpression {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
+        // We don't want to end with a new line inside nested functions.
+        let mut new_options = options.clone();
+        new_options.insert_final_newline = false;
         format!(
             "({}) => {{\n{}{}\n}}",
             self.params
@@ -1988,7 +2079,7 @@ impl FunctionExpression {
                 .collect::<Vec<String>>()
                 .join(", "),
             options.get_indentation(indentation_level + 1),
-            self.body.recast(options, indentation_level + 1)
+            self.body.recast(&new_options, indentation_level + 1)
         )
     }
 
@@ -2056,7 +2147,7 @@ impl FormatOptions {
         Self {
             tab_size: 2,
             use_tabs: false,
-            insert_final_newline: false,
+            insert_final_newline: true,
         }
     }
 
@@ -2127,7 +2218,8 @@ show(part001)"#;
             r#"const part001 = startSketchAt('default')
   |> ry(90, %)
   |> line('default', %)
-show(part001)"#
+show(part001)
+"#
         );
     }
 
@@ -2145,7 +2237,8 @@ show(part001)"#
             recasted,
             r#"const part001 = startSketchAt([0.0, 5.0])
   |> line([0.4900857016, -0.0240763666], %)
-  |> line([0.6804562304, 0.9087880491], %)"#
+  |> line([0.6804562304, 0.9087880491], %)
+"#
         );
     }
 
@@ -2163,7 +2256,8 @@ show(part001)"#
             recasted,
             r#"const part001 = startSketchAt([0.0, 5.0])
   |> line([0.4900857016, -0.0240763666], %) // hello world
-  |> line([0.6804562304, 0.9087880491], %)"#
+  |> line([0.6804562304, 0.9087880491], %)
+"#
         );
     }
     #[test]
@@ -2182,13 +2276,14 @@ show(part001)"#
             r#"const part001 = startSketchAt([0.0, 5.0])
   |> line([0.4900857016, -0.0240763666], %)
   // hello world
-  |> line([0.6804562304, 0.9087880491], %)"#
+  |> line([0.6804562304, 0.9087880491], %)
+"#
         );
     }
 
     #[test]
     fn test_recast_comment_in_a_fn_block() {
-        let some_program_string = r#"const myFn = () => {
+        let some_program_string = r#"fn myFn = () => {
   // this is a comment
   const yo = { a: { b: { c: '123' } } } /* block
   comment */
@@ -2204,7 +2299,7 @@ show(part001)"#
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"const myFn = () => {
+            r#"fn myFn = () => {
   // this is a comment
   const yo = { a: { b: { c: '123' } } }
   /* block
@@ -2212,7 +2307,8 @@ show(part001)"#
   const key = 'c'
   // this is also a comment
   return things
-}"#
+}
+"#
         );
     }
 
@@ -2254,7 +2350,8 @@ a comment between pipe expression statements */
   // and another with just white space between others below
   |> ry(45, %)
   |> rx(45, %)
-// one more for good measure"#
+// one more for good measure
+"#
         );
     }
 
@@ -2276,7 +2373,7 @@ show(part001)"#;
         let program = parser.ast().unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
-        assert_eq!(recasted, some_program_string);
+        assert_eq!(recasted.trim(), some_program_string);
     }
 
     #[test]
@@ -2295,7 +2392,8 @@ const yo = [
   "three",
   4 + 5,
   "  hey oooooo really long long long"
-]"#;
+]
+"#;
         let tokens = crate::tokeniser::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
@@ -2319,7 +2417,7 @@ const things = "things"
         let program = parser.ast().unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
-        assert_eq!(recasted, some_program_string.trim());
+        assert_eq!(recasted.trim(), some_program_string.trim());
     }
 
     #[test]
@@ -2337,7 +2435,7 @@ const things = "things"
         let program = parser.ast().unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
-        assert_eq!(recasted, some_program_string.trim());
+        assert_eq!(recasted.trim(), some_program_string.trim());
     }
 
     #[test]
@@ -2362,7 +2460,7 @@ const part001 = startSketchAt([0, 0])
         let program = parser.ast().unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
-        assert_eq!(recasted, some_program_string);
+        assert_eq!(recasted.trim(), some_program_string);
     }
 
     #[test]
@@ -2435,7 +2533,8 @@ fn ghi = (part001) => {
   return part001
 }
 
-show(mySuperCoolPart)"#
+show(mySuperCoolPart)
+"#
         );
     }
 
@@ -2454,7 +2553,56 @@ show(mySuperCoolPart)"#
             recasted,
             r#"fn ghi = (newName, y, z) => {
   return newName
-}"#
+}
+"#
         );
+    }
+
+    #[test]
+    fn test_recast_negative_var() {
+        let some_program_string = r#"const w = 20
+const l = 8
+const h = 10
+
+const firstExtrude = startSketchAt([0,0])
+  |> line([0, l], %)
+  |> line([w, 0], %)
+  |> line([0, -l], %)
+  |> close(%)
+  |> extrude(h, %)
+
+show(firstExtrude)"#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"const w = 20
+const l = 8
+const h = 10
+
+const firstExtrude = startSketchAt([0, 0])
+  |> line([0, l], %)
+  |> line([w, 0], %)
+  |> line([0, -l], %)
+  |> close(%)
+  |> extrude(h, %)
+
+show(firstExtrude)
+"#
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_recast_math_start_negative() {
+        let some_program_string = r#"const myVar = -5 + 6"#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted.trim(), some_program_string);
     }
 }

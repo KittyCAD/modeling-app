@@ -43,9 +43,12 @@ export type TooTip =
   | 'yLineTo'
   | 'angledLineThatIntersects'
 
-export const toolTips: TooTip[] = [
-  'lineTo',
+export const toolTips = [
+  'sketch_line',
+  'move',
+  // original tooltips
   'line',
+  'lineTo',
   'angledLine',
   'angledLineOfXLength',
   'angledLineOfYLength',
@@ -56,7 +59,7 @@ export const toolTips: TooTip[] = [
   'xLineTo',
   'yLineTo',
   'angledLineThatIntersects',
-]
+] as any as TooTip[]
 
 export type GuiModes =
   | {
@@ -66,6 +69,7 @@ export type GuiModes =
       mode: 'sketch'
       sketchMode: TooTip
       isTooltip: true
+      waitingFirstClick: boolean
       rotation: Rotation
       position: Position
       id?: string
@@ -84,6 +88,7 @@ export type GuiModes =
     }
   | {
       mode: 'canEditSketch'
+      pathId: string
       pathToNode: PathToNode
       rotation: Rotation
       position: Position
@@ -122,8 +127,8 @@ export interface StoreState {
   kclErrors: KCLError[]
   addKCLError: (err: KCLError) => void
   resetKCLErrors: () => void
-  ast: Program | null
-  setAst: (ast: Program | null) => void
+  ast: Program
+  setAst: (ast: Program) => void
   updateAst: (
     ast: Program,
     optionalParams?: {
@@ -222,12 +227,13 @@ export const useStore = create<StoreState>()(
             }
           })
           setTimeout(() => {
-            editorView.dispatch({
-              selection: EditorSelection.create(
-                ranges,
-                selections.codeBasedSelections.length - 1
-              ),
-            })
+            ranges.length &&
+              editorView.dispatch({
+                selection: EditorSelection.create(
+                  ranges,
+                  selections.codeBasedSelections.length - 1
+                ),
+              })
           })
         },
         setCursor2: (codeSelections) => {
@@ -281,7 +287,15 @@ export const useStore = create<StoreState>()(
         resetKCLErrors: () => {
           set({ kclErrors: [] })
         },
-        ast: null,
+        ast: {
+          start: 0,
+          end: 0,
+          body: [],
+          nonCodeMeta: {
+            noneCodeNodes: {},
+            start: null,
+          },
+        },
         setAst: (ast) => {
           set({ ast })
         },
@@ -290,7 +304,11 @@ export const useStore = create<StoreState>()(
           const astWithUpdatedSource = parser_wasm(newCode)
           callBack(astWithUpdatedSource)
 
-          set({ ast: astWithUpdatedSource, code: newCode })
+          set({
+            ast: astWithUpdatedSource,
+            code: newCode,
+            defferedCode: newCode,
+          })
           if (focusPath) {
             const { node } = getNodeFromPath<any>(
               astWithUpdatedSource,
@@ -342,7 +360,7 @@ export const useStore = create<StoreState>()(
         setError: (error = '') => {
           set({ errorState: { isError: !!error, error } })
         },
-        programMemory: { root: {}, pendingMemory: {} },
+        programMemory: { root: {}, return: null },
         setProgramMemory: (programMemory) => set({ programMemory }),
         isShiftDown: false,
         setIsShiftDown: (isShiftDown) => set({ isShiftDown }),
