@@ -220,11 +220,21 @@ export const Stream = ({ className = '' }) => {
       )
         return
 
-      // We need a better way to figure out here if they are creating a new
-      // sketch or modifying an existing one.
+      // Check if the sketch group already exists.
+      const varDec = getNodeFromPath<VariableDeclarator>(
+        ast,
+        guiMode.pathToNode,
+        'VariableDeclarator'
+      ).node
+      const variableName = varDec?.id?.name
+      const sketchGroup = programMemory.root[variableName]
+      const isEditingExistingSketch =
+        sketchGroup?.type === 'SketchGroup' && sketchGroup.value.length
+
       if (
         resp?.data?.data?.entities_modified?.length &&
-        guiMode.waitingFirstClick
+        guiMode.waitingFirstClick &&
+        !isEditingExistingSketch
       ) {
         const curve = await engineCommandManager?.sendSceneCommand({
           type: 'modeling_cmd_req',
@@ -255,7 +265,7 @@ export const Stream = ({ className = '' }) => {
         updateAst(_modifiedAst, false)
       } else if (
         resp?.data?.data?.entities_modified?.length &&
-        !guiMode.waitingFirstClick
+        (!guiMode.waitingFirstClick || isEditingExistingSketch)
       ) {
         const curve = await engineCommandManager?.sendSceneCommand({
           type: 'modeling_cmd_req',
