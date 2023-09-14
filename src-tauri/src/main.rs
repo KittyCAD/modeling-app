@@ -118,7 +118,6 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             get_user,
             login,
-            logout,
             read_toml,
             read_txt_file
         ])
