@@ -41,7 +41,7 @@
     "react-modal-promise": "^1.0.2",
     "react-router-dom": "^6.14.2",
     "sketch-helpers": "^0.0.4",
-    "swr": "^2.0.4",
+    "swr": "^2.2.2",
     "tauri-plugin-fs-extra-api": "https://github.com/tauri-apps/tauri-plugin-fs-extra#v1",
     "toml": "^3.0.0",
     "ts-node": "^10.9.1",
