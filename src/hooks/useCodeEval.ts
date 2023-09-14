@@ -4,6 +4,11 @@ import { _executor } from '../lang/executor'
 import { useStore } from '../useStore'
 import { KCLError } from '../lang/errors'
 
+// This recently moved out of app.tsx
+// and is our old way of thinking that whenever the code changes we need to re-execute, instead of
+// being more decisive about when and where we execute, its likey this custom hook will be
+// refactored away entirely at some point
+
 export function useCodeEval() {
   const {
     addLog,
