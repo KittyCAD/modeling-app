@@ -4,6 +4,7 @@ import {
   addNewSketchLn,
   getYComponent,
   getXComponent,
+  addCloseToPipe,
 } from './sketch'
 import { parser_wasm } from '../abstractSyntaxTree'
 import { getNodePathFromSourceRange } from '../queryAst'
@@ -169,12 +170,9 @@ show(mySketch001)
 `
     expect(recast(modifiedAst)).toBe(expectedCode)
 
-    modifiedAst = addNewSketchLn({
+    modifiedAst = addCloseToPipe({
       node: ast,
       programMemory,
-      // End at some distance between epsilon and 0,0
-      to: [0.01, 0.01],
-      fnName: 'lineTo',
       pathToNode: [
         ['body', ''],
         [0, 'index'],
@@ -182,7 +180,7 @@ show(mySketch001)
         [0, 'index'],
         ['init', 'VariableDeclarator'],
       ],
-    }).modifiedAst
+    })
 
     expectedCode = `const mySketch001 = startSketchAt([0, 0])
   // |> rx(45, %)
