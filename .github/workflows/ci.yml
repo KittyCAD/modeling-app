@@ -149,6 +149,7 @@ jobs:
 
   sign-windows-msi:
     runs-on: windows-latest
+    if: github.event_name == 'release'
     needs: [build-test-web, build-apps]
     env:
       VERSION_NO_V: ${{ needs.build-test-web.outputs.version }}
@@ -189,6 +190,8 @@ jobs:
         run: | 
           signtool.exe sign /sha1 ${{ secrets.SM_CODE_SIGNING_CERT_SHA1_HASH }} /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 "artifact\msi\*.msi"
           signtool.exe verify /v /pa "artifact\msi\*.msi"
+      
+      # TODO: for the updater, investigate if we need to also replace what's in the .zip, and what to do about the .sig file
 
       - uses: actions/upload-artifact@v3
         with:
@@ -198,7 +201,7 @@ jobs:
   publish-apps-release:
     runs-on: ubuntu-20.04
     if: github.event_name == 'release'
-    needs: [build-test-web, build-apps]
+    needs: [build-test-web, build-apps, sign-windows-msi]
     env:
       VERSION_NO_V: ${{ needs.build-test-web.outputs.version }}
       PUB_DATE: ${{ github.event.release.created_at }}
@@ -258,7 +261,7 @@ jobs:
             --arg notes "${NOTES}" \
             --arg darwin_url "$RELEASE_DIR/dmg/KittyCAD%20Modeling_${VERSION_NO_V}_universal.dmg" \
             --arg linux_url "$RELEASE_DIR/appimage/kittycad-modeling_${VERSION_NO_V}_amd64.AppImage" \
-            --arg windows_url "$RELEASE_DIR/msi/KittyCAD%20Modeling_${VERSION_NO_V}_x64_en-US.msi.zip" \
+            --arg windows_url "$RELEASE_DIR/msi/KittyCAD%20Modeling_${VERSION_NO_V}_x64_en-US.msi" \
             '{
               "version": $version,
               "pub_date": $pub_date,
