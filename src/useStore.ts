@@ -240,7 +240,7 @@ export const useStore = create<StoreState>()(
             get().executeAst()
           } catch (e: any) {
             if (e instanceof KCLError) {
-              if (e.toString().includes('file is empty')) {
+              if (e.msg == 'file is empty') {
                 // Reset the ast and program memory and reexecute the empty
                 // file.
                 // Empty the ast.
@@ -292,7 +292,10 @@ export const useStore = create<StoreState>()(
             get().setCursor({
               otherSelections: currestSelections.otherSelections,
               codeBasedSelections: [
-                { range: [0, code.length - 1], type: 'default' },
+                {
+                  range: [0, code.length ? code.length - 1 : 0],
+                  type: 'default',
+                },
               ],
             })
             return
