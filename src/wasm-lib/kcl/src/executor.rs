@@ -813,16 +813,16 @@ show(part001)"#,
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_fn_definitions() {
-        let ast = r#"const def = (x) => {
+        let ast = r#"fn def = (x) => {
   return x
 }
-const ghi = (x) => {
+fn ghi = (x) => {
   return x
 }
-const jkl = (x) => {
+fn jkl = (x) => {
   return x
 }
-const hmm = (x) => {
+fn hmm = (x) => {
   return x
 }
 
@@ -990,7 +990,7 @@ show(firstExtrude)"#;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_with_function_sketch() {
-        let ast = r#"const box = (h, l, w) => {
+        let ast = r#"fn box = (h, l, w) => {
  const myBox = startSketchAt([0,0])
     |> line([0, l], %)
     |> line([w, 0], %)
@@ -1010,7 +1010,7 @@ show(fnBox)"#;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_member_of_object_with_function_period() {
-        let ast = r#"const box = (obj) => {
+        let ast = r#"fn box = (obj) => {
  let myBox = startSketchAt(obj.start)
     |> line([0, obj.l], %)
     |> line([obj.w, 0], %)
@@ -1030,7 +1030,7 @@ show(thisBox)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_member_of_object_with_function_brace() {
-        let ast = r#"const box = (obj) => {
+        let ast = r#"fn box = (obj) => {
  let myBox = startSketchAt(obj["start"])
     |> line([0, obj["l"]], %)
     |> line([obj["w"], 0], %)
@@ -1050,7 +1050,7 @@ show(thisBox)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_member_of_object_with_function_mix_period_brace() {
-        let ast = r#"const box = (obj) => {
+        let ast = r#"fn box = (obj) => {
  let myBox = startSketchAt(obj["start"])
     |> line([0, obj["l"]], %)
     |> line([obj["w"], 0], %)
@@ -1071,7 +1071,7 @@ show(thisBox)
     #[tokio::test(flavor = "multi_thread")]
     #[ignore] // ignore til we get loops
     async fn test_execute_with_function_sketch_loop_objects() {
-        let ast = r#"const box = (obj) => {
+        let ast = r#"fn box = (obj) => {
  let myBox = startSketchAt(obj.start)
     |> line([0, obj.l], %)
     |> line([obj.w, 0], %)
@@ -1093,7 +1093,7 @@ for var in [{start: [0,0], l: 6, w: 10, h: 3}, {start: [-10,-10], l: 3, w: 5, h:
     #[tokio::test(flavor = "multi_thread")]
     #[ignore] // ignore til we get loops
     async fn test_execute_with_function_sketch_loop_array() {
-        let ast = r#"const box = (h, l, w, start) => {
+        let ast = r#"fn box = (h, l, w, start) => {
  const myBox = startSketchAt([0,0])
     |> line([0, l], %)
     |> line([w, 0], %)
@@ -1115,7 +1115,7 @@ for var in [[3, 6, 10, [0,0]], [1.5, 3, 5, [-10,-10]]] {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_member_of_array_with_function() {
-        let ast = r#"const box = (array) => {
+        let ast = r#"fn box = (array) => {
  let myBox = startSketchAt(array[0])
     |> line([0, array[1]], %)
     |> line([array[2], 0], %)
@@ -1160,6 +1160,16 @@ show(thisBox)
         assert_eq!(
             serde_json::json!(1.0),
             memory.root.get("myVar").unwrap().get_json_value().unwrap()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_define_decimal_without_leading_zero() {
+        let ast = r#"let thing = .4 + 7"#;
+        let memory = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            serde_json::json!(7.4),
+            memory.root.get("thing").unwrap().get_json_value().unwrap()
         );
     }
 }
