@@ -329,8 +329,8 @@ fn inner_angled_line(
         AngledLineData::AngleAndLength(angle_and_length) => (angle_and_length[0], angle_and_length[1]),
     };
     let to: [f64; 2] = [
-        from.x + length * f64::cos(angle * std::f64::consts::PI / 180.0),
-        from.y + length * f64::sin(angle * std::f64::consts::PI / 180.0),
+        from.x + length * f64::cos(angle.to_radians()),
+        from.y + length * f64::sin(angle.to_radians()),
     ];
 
     let id = uuid::Uuid::new_v4();
@@ -449,7 +449,7 @@ fn inner_angled_line_to_x(
     };
 
     let x_component = x_to - from.x;
-    let y_component = x_component * f64::tan(angle * std::f64::consts::PI / 180.0);
+    let y_component = x_component * f64::tan(angle.to_radians());
     let y_to = from.y + y_component;
 
     let new_sketch_group = inner_line_to(
@@ -526,7 +526,7 @@ fn inner_angled_line_to_y(
     };
 
     let y_component = y_to - from.y;
-    let x_component = y_component / f64::tan(angle * std::f64::consts::PI / 180.0);
+    let x_component = y_component / f64::tan(angle.to_radians());
     let x_to = from.x + x_component;
 
     let new_sketch_group = inner_line_to(
