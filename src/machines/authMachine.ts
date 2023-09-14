@@ -2,6 +2,8 @@ import { createMachine, assign } from 'xstate'
 import { Models } from '@kittycad/lib'
 import withBaseURL from '../lib/withBaseURL'
 import { CommandBarMeta } from '../lib/commands'
+import { isTauri } from 'lib/isTauri'
+import { invoke } from '@tauri-apps/api'
 
 const SKIP_AUTH =
   import.meta.env.VITE_KC_SKIP_AUTH === 'true' && import.meta.env.DEV
@@ -115,16 +117,25 @@ async function getUser(context: UserContext) {
   const headers: { [key: string]: string } = {
     'Content-Type': 'application/json',
   }
-  if (!context.token && '__TAURI__' in window) throw 'not log in'
+
+  if (!context.token && isTauri()) throw new Error('No token found')
   if (context.token) headers['Authorization'] = `Bearer ${context.token}`
   if (SKIP_AUTH) return LOCAL_USER
-  const response = await fetch(url, {
-    method: 'GET',
-    credentials: 'include',
-    headers,
-  })
 
-  const user = await response.json()
+  const userPromise = !isTauri()
+    ? fetch(url, {
+        method: 'GET',
+        credentials: 'include',
+        headers,
+      })
+        .then((res) => res.json())
+        .catch((err) => console.error('error from Browser getUser', err))
+    : invoke<Models['User_type'] | Record<'error_code', unknown>>('get_user', {
+        token: context.token,
+      }).catch((err) => console.error('error from Tauri getUser', err))
+
+  const user = await userPromise
+
   if ('error_code' in user) throw new Error(user.message)
 
   return user
