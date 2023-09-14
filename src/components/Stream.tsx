@@ -14,7 +14,13 @@ import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
 import { Models } from '@kittycad/lib'
 import { addStartSketch } from 'lang/modifyAst'
-import { addNewSketchLn } from 'lang/std/sketch'
+import {
+  addCloseToPipe,
+  addNewSketchLn,
+  compareVec2Epsilon,
+} from 'lang/std/sketch'
+import { getNodeFromPath } from 'lang/queryAst'
+import { Program, VariableDeclarator } from 'lang/abstractSyntaxTreeTypes'
 
 export const Stream = ({ className = '' }) => {
   const [isLoading, setIsLoading] = useState(true)
@@ -204,8 +210,8 @@ export const Stream = ({ className = '' }) => {
         window: { x, y },
       }
     }
-    engineCommandManager?.sendSceneCommand(command).then(async ({ data }) => {
-      if (command.cmd.type !== 'mouse_click' || !ast) return
+    engineCommandManager?.sendSceneCommand(command).then(async (resp) => {
+      if (command?.cmd?.type !== 'mouse_click' || !ast) return
       if (
         !(
           guiMode.mode === 'sketch' &&
@@ -214,13 +220,16 @@ export const Stream = ({ className = '' }) => {
       )
         return
 
-      if (data?.data?.entities_modified?.length && guiMode.waitingFirstClick) {
+      if (
+        resp?.data?.data?.entities_modified?.length &&
+        guiMode.waitingFirstClick
+      ) {
         const curve = await engineCommandManager?.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
             type: 'curve_get_control_points',
-            curve_id: data?.data?.entities_modified[0],
+            curve_id: resp?.data?.data?.entities_modified[0],
           },
         })
         const coords: { x: number; y: number }[] =
@@ -243,7 +252,7 @@ export const Stream = ({ className = '' }) => {
         })
         updateAst(_modifiedAst)
       } else if (
-        data?.data?.entities_modified?.length &&
+        resp?.data?.data?.entities_modified?.length &&
         !guiMode.waitingFirstClick
       ) {
         const curve = await engineCommandManager?.sendSceneCommand({
@@ -251,18 +260,46 @@ export const Stream = ({ className = '' }) => {
           cmd_id: uuidv4(),
           cmd: {
             type: 'curve_get_control_points',
-            curve_id: data?.data?.entities_modified[0],
+            curve_id: resp?.data?.data?.entities_modified[0],
           },
         })
         const coords: { x: number; y: number }[] =
           curve.data.data.control_points
-        const _modifiedAst = addNewSketchLn({
-          node: ast,
-          programMemory,
-          to: [coords[1].x, coords[1].y],
-          fnName: 'line',
-          pathToNode: guiMode.pathToNode,
-        }).modifiedAst
+
+        const { node: varDec } = getNodeFromPath<VariableDeclarator>(
+          ast,
+          guiMode.pathToNode,
+          'VariableDeclarator'
+        )
+        const variableName = varDec.id.name
+        const sketchGroup = programMemory.root[variableName]
+        if (!sketchGroup || sketchGroup.type !== 'SketchGroup') return
+        const initialCoords = sketchGroup.value[0].from
+
+        const isClose = compareVec2Epsilon(initialCoords, [
+          coords[1].x,
+          coords[1].y,
+        ])
+
+        let _modifiedAst: Program
+        if (!isClose) {
+          _modifiedAst = addNewSketchLn({
+            node: ast,
+            programMemory,
+            to: [coords[1].x, coords[1].y],
+            fnName: 'line',
+            pathToNode: guiMode.pathToNode,
+          }).modifiedAst
+        } else {
+          _modifiedAst = addCloseToPipe({
+            node: ast,
+            programMemory,
+            pathToNode: guiMode.pathToNode,
+          })
+          setGuiMode({
+            mode: 'default',
+          })
+        }
         updateAst(_modifiedAst)
       }
     })

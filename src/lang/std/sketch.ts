@@ -947,13 +947,25 @@ interface CreateLineFnCallArgs {
   pathToNode: PathToNode
 }
 
+export function compareVec2Epsilon(
+  vec1: [number, number],
+  vec2: [number, number]
+) {
+  const compareEpsilon = 0.015625 // or 2^-6
+  const xDifference = Math.abs(vec1[0] - vec2[0])
+  const yDifference = Math.abs(vec1[0] - vec2[0])
+  return xDifference < compareEpsilon && yDifference < compareEpsilon
+}
+
 export function addNewSketchLn({
   node: _node,
   programMemory: previousProgramMemory,
   to,
   fnName,
   pathToNode,
-}: Omit<CreateLineFnCallArgs, 'from'>): { modifiedAst: Program } {
+}: Omit<CreateLineFnCallArgs, 'from'>): {
+  modifiedAst: Program
+} {
   const node = JSON.parse(JSON.stringify(_node))
   const { add, updateArgs } = sketchLineHelperMap?.[fnName] || {}
   if (!add || !updateArgs) throw new Error('not a sketch line helper')
@@ -971,7 +983,6 @@ export function addNewSketchLn({
 
   const last = sketch.value[sketch.value.length - 1] || sketch.start
   const from = last.to
-
   return add({
     node,
     previousProgramMemory,
@@ -980,6 +991,29 @@ export function addNewSketchLn({
     from,
     replaceExisting: false,
   })
+}
+
+export function addCloseToPipe({
+  node,
+  pathToNode,
+}: {
+  node: Program
+  programMemory: ProgramMemory
+  pathToNode: PathToNode
+}) {
+  const _node = { ...node }
+  const closeExpression = createCallExpression('close', [
+    createPipeSubstitution(),
+  ])
+  const pipeExpression = getNodeFromPath<PipeExpression>(
+    _node,
+    pathToNode,
+    'PipeExpression'
+  ).node
+  if (pipeExpression.type !== 'PipeExpression')
+    throw new Error('not a pipe expression')
+  pipeExpression.body = [...pipeExpression.body, closeExpression]
+  return _node
 }
 
 export function replaceSketchLine({
