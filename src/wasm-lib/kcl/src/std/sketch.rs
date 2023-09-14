@@ -777,16 +777,20 @@ fn inner_arc(data: ArcData, sketch_group: SketchGroup, args: &mut Args) -> Resul
             radius,
             ..
         } => {
-            let (center, end) = arc_center_and_end(from, *angle_start, *angle_end, *radius);
-            (center, *angle_start, *angle_end, *radius, end)
+            let a_start = Angle::from_degrees(*angle_start);
+            let a_end = Angle::from_degrees(*angle_end);
+            let (center, end) = arc_center_and_end(from, a_start, a_end, *radius);
+            (center, a_start, a_end, *radius, end)
         }
         ArcData::AnglesAndRadius {
             angle_start,
             angle_end,
             radius,
         } => {
-            let (center, end) = arc_center_and_end(from, *angle_start, *angle_end, *radius);
-            (center, *angle_start, *angle_end, *radius, end)
+            let a_start = Angle::from_degrees(*angle_start);
+            let a_end = Angle::from_degrees(*angle_end);
+            let (center, end) = arc_center_and_end(from, a_start, a_end, *radius);
+            (center, a_start, a_end, *radius, end)
         }
         ArcData::CenterToRadiusWithTag { center, to, radius, .. } => {
             let (angle_start, angle_end) = arc_angles(from, center.into(), to.into(), *radius, args.source_range)?;
@@ -805,8 +809,8 @@ fn inner_arc(data: ArcData, sketch_group: SketchGroup, args: &mut Args) -> Resul
         ModelingCmd::ExtendPath {
             path: sketch_group.id,
             segment: kittycad::types::PathSegment::Arc {
-                angle_start,
-                angle_end,
+                angle_start: angle_start.degrees(),
+                angle_end: angle_end.degrees(),
                 center: center.into(),
                 radius,
             },

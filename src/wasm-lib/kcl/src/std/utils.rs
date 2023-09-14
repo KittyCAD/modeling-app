@@ -224,9 +224,9 @@ pub fn get_x_component(angle: Angle, y: f64) -> Point2d {
     Point2d { x, y }.scale(sign)
 }
 
-pub fn arc_center_and_end(from: Point2d, start_angle_deg: f64, end_angle_deg: f64, radius: f64) -> (Point2d, Point2d) {
-    let start_angle = start_angle_deg.to_radians();
-    let end_angle = end_angle_deg.to_radians();
+pub fn arc_center_and_end(from: Point2d, start_angle: Angle, end_angle: Angle, radius: f64) -> (Point2d, Point2d) {
+    let start_angle = start_angle.radians();
+    let end_angle = end_angle.radians();
 
     let center = Point2d {
         x: -1.0 * (radius * start_angle.cos() - from.x),
@@ -247,7 +247,7 @@ pub fn arc_angles(
     center: Point2d,
     radius: f64,
     source_range: SourceRange,
-) -> Result<(f64, f64), KclError> {
+) -> Result<(Angle, Angle), KclError> {
     // First make sure that the points are on the circumference of the circle.
     // If not, we'll return an error.
     if !is_on_circumference(center, from, radius) {
@@ -273,10 +273,7 @@ pub fn arc_angles(
     let start_angle = (from.y - center.y).atan2(from.x - center.x);
     let end_angle = (to.y - center.y).atan2(to.x - center.x);
 
-    let start_angle_deg = start_angle.to_degrees();
-    let end_angle_deg = end_angle.to_degrees();
-
-    Ok((start_angle_deg, end_angle_deg))
+    Ok((Angle::from_radians(start_angle), Angle::from_radians(end_angle)))
 }
 
 pub fn is_on_circumference(center: Point2d, point: Point2d, radius: f64) -> bool {
@@ -376,19 +373,34 @@ mod tests {
 
     #[test]
     fn test_arc_center_and_end() {
-        let (center, end) = super::arc_center_and_end(super::Point2d { x: 0.0, y: 0.0 }, 0.0, 90.0, 1.0);
+        let (center, end) = super::arc_center_and_end(
+            super::Point2d { x: 0.0, y: 0.0 },
+            Angle::ZERO,
+            Angle::from_degrees(90.0),
+            1.0,
+        );
         assert_eq!(center.x.round(), -1.0);
         assert_eq!(center.y, 0.0);
         assert_eq!(end.x.round(), -1.0);
         assert_eq!(end.y, 1.0);
 
-        let (center, end) = super::arc_center_and_end(super::Point2d { x: 0.0, y: 0.0 }, 0.0, 180.0, 1.0);
+        let (center, end) = super::arc_center_and_end(
+            super::Point2d { x: 0.0, y: 0.0 },
+            Angle::ZERO,
+            Angle::from_degrees(180.0),
+            1.0,
+        );
         assert_eq!(center.x.round(), -1.0);
         assert_eq!(center.y, 0.0);
         assert_eq!(end.x.round(), -2.0);
         assert_eq!(end.y.round(), 0.0);
 
-        let (center, end) = super::arc_center_and_end(super::Point2d { x: 0.0, y: 0.0 }, 0.0, 180.0, 10.0);
+        let (center, end) = super::arc_center_and_end(
+            super::Point2d { x: 0.0, y: 0.0 },
+            Angle::ZERO,
+            Angle::from_degrees(180.0),
+            10.0,
+        );
         assert_eq!(center.x.round(), -10.0);
         assert_eq!(center.y, 0.0);
         assert_eq!(end.x.round(), -20.0);
@@ -405,8 +417,8 @@ mod tests {
             SourceRange(Default::default()),
         )
         .unwrap();
-        assert_eq!(angle_start.round(), 0.0);
-        assert_eq!(angle_end.round(), 90.0);
+        assert_eq!(angle_start.degrees().round(), 0.0);
+        assert_eq!(angle_end.degrees().round(), 90.0);
 
         let (angle_start, angle_end) = super::arc_angles(
             super::Point2d { x: 0.0, y: 0.0 },
@@ -416,8 +428,8 @@ mod tests {
             SourceRange(Default::default()),
         )
         .unwrap();
-        assert_eq!(angle_start.round(), 0.0);
-        assert_eq!(angle_end.round(), 180.0);
+        assert_eq!(angle_start.degrees().round(), 0.0);
+        assert_eq!(angle_end.degrees().round(), 180.0);
 
         let (angle_start, angle_end) = super::arc_angles(
             super::Point2d { x: 0.0, y: 0.0 },
@@ -427,8 +439,8 @@ mod tests {
             SourceRange(Default::default()),
         )
         .unwrap();
-        assert_eq!(angle_start.round(), 0.0);
-        assert_eq!(angle_end.round(), 180.0);
+        assert_eq!(angle_start.degrees().round(), 0.0);
+        assert_eq!(angle_end.degrees().round(), 180.0);
 
         let result = super::arc_angles(
             super::Point2d { x: 0.0, y: 5.0 },
@@ -443,7 +455,7 @@ mod tests {
         } else {
             panic!("Expected error");
         }
-        assert_eq!(angle_start.round(), 0.0);
-        assert_eq!(angle_end.round(), 180.0);
+        assert_eq!(angle_start.degrees().round(), 0.0);
+        assert_eq!(angle_end.degrees().round(), 180.0);
     }
 }
