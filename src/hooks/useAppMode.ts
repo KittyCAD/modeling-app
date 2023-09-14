@@ -195,7 +195,7 @@ function createPlane(
 }
 
 function setDefaultPlanesVisibility(
-  engineCommandManager: EngineCommandManager,
+  engineCommandManager: EngineCommandManager | undefined,
   defaultPlanes: DefaultPlanes,
   hidden: boolean
 ) {
