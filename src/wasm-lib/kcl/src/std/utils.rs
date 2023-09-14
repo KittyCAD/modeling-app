@@ -3,18 +3,70 @@ use crate::{
     executor::{Point2d, SourceRange},
 };
 
-pub fn get_angle(a: &[f64; 2], b: &[f64; 2]) -> f64 {
-    let x = b[0] - a[0];
-    let y = b[1] - a[1];
-    normalise_angle(y.atan2(x).to_degrees())
+#[derive(Clone, Copy, Default, PartialOrd, PartialEq, Debug)]
+pub struct Angle {
+    degrees: f64,
 }
 
-pub fn normalise_angle(angle: f64) -> f64 {
-    let result = ((angle % 360.0) + 360.0) % 360.0;
-    if result > 180.0 {
-        result - 360.0
-    } else {
-        result
+impl Angle {
+    /// Make an angle of the given degrees.
+    pub fn from_degrees(degrees: f64) -> Self {
+        Self { degrees }
+    }
+    /// Make an angle of the given radians.
+    pub fn from_radians(radians: f64) -> Self {
+        Self::from_degrees(radians.to_degrees())
+    }
+    /// Get the angle in degrees
+    pub fn degrees(&self) -> f64 {
+        self.degrees
+    }
+    /// Get the angle in radians
+    pub fn radians(&self) -> f64 {
+        self.degrees.to_radians()
+    }
+    /// Get the angle between these points
+    pub fn between(a: &[f64; 2], b: &[f64; 2]) -> Self {
+        let x = b[0] - a[0];
+        let y = b[1] - a[1];
+        Self::from_radians(y.atan2(x)).normalize()
+    }
+    /// Normalize the angle
+    pub fn normalize(self) -> Self {
+        let angle = self.degrees();
+        let result = ((angle % 360.0) + 360.0) % 360.0;
+        Self::from_degrees(if result > 180.0 { result - 360.0 } else { result })
+    }
+    fn zero() -> Self {
+        Self { degrees: 0.0 }
+    }
+    /// Gives the ▲-angle between from and to angles (shortest path), use radians.
+    ///
+    /// Sign of the returned angle denotes direction, positive means counterClockwise 🔄
+    /// # Examples
+    ///
+    /// ```
+    /// assert_eq!(
+    ///     kcl_lib::std::utils::delta_angle(std::f64::consts::PI / 8.0, std::f64::consts::PI / 4.0),
+    ///     std::f64::consts::PI / 8.0
+    /// );
+    /// ```
+    #[allow(dead_code)]
+    pub fn delta(from_angle: Self, to_angle: Self) -> Self {
+        let norm_from_angle = normalize_rad(from_angle.radians());
+        let norm_to_angle = normalize_rad(to_angle.radians());
+        let provisional = norm_to_angle - norm_from_angle;
+
+        if provisional > -std::f64::consts::PI && provisional <= std::f64::consts::PI {
+            return Angle::from_radians(provisional);
+        }
+        if provisional > std::f64::consts::PI {
+            return Angle::from_radians(provisional - 2.0 * std::f64::consts::PI);
+        }
+        if provisional < -std::f64::consts::PI {
+            return Angle::from_radians(provisional + 2.0 * std::f64::consts::PI);
+        }
+        Angle::zero()
     }
 }
 
@@ -41,35 +93,6 @@ pub fn normalize_rad(angle: f64) -> f64 {
     } else {
         draft
     }
-}
-
-/// Gives the ▲-angle between from and to angles (shortest path), use radians.
-///
-/// Sign of the returned angle denotes direction, positive means counterClockwise 🔄
-/// # Examples
-///
-/// ```
-/// assert_eq!(
-///     kcl_lib::std::utils::delta_angle(std::f64::consts::PI / 8.0, std::f64::consts::PI / 4.0),
-///     std::f64::consts::PI / 8.0
-/// );
-/// ```
-#[allow(dead_code)]
-pub fn delta_angle(from_angle: f64, to_angle: f64) -> f64 {
-    let norm_from_angle = normalize_rad(from_angle);
-    let norm_to_angle = normalize_rad(to_angle);
-    let provisional = norm_to_angle - norm_from_angle;
-
-    if provisional > -std::f64::consts::PI && provisional <= std::f64::consts::PI {
-        return provisional;
-    }
-    if provisional > std::f64::consts::PI {
-        return provisional - 2.0 * std::f64::consts::PI;
-    }
-    if provisional < -std::f64::consts::PI {
-        return provisional + 2.0 * std::f64::consts::PI;
-    }
-    0.0
 }
 
 /// Calculates the distance between two points.
