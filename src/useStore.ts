@@ -149,6 +149,7 @@ export interface StoreState {
   code: string
   setCode: (code: string) => void
   deferredSetCode: (code: string) => void
+  executeCode: () => void
   formatCode: () => void
   errorState: {
     isError: boolean
@@ -205,21 +206,12 @@ let pendingAstUpdates: number[] = []
 export const useStore = create<StoreState>()(
   persist(
     (set, get) => {
+      // We defer this so that likely our ast has caught up to the code.
+      // If we are making changes that are not reflected in the ast, we
+      // should not be updating the ast.
       const setDeferredCode = deferExecution((code: string) => {
-        // We defer this so that likely our ast has caught up to the code.
-        // If we are making changes that are not reflected in the ast, we
-        // should not be updating the ast.
-
-        // Let's parse the ast.
-        const ast = parser_wasm(code)
-        // Check if the ast we have is equal to the ast in the storage.
-        // If it is, we don't need to update the ast.
-        if (JSON.stringify(ast) === JSON.stringify(get().ast)) return
-        // If it isn't, we need to update the ast and execute.
-        // We do not call updateAst directly because we don't want to move the
-        // cursor when the user is typing.
-        get().setAst(ast)
-        get().executeAst()
+        set({ code })
+        get().executeCode()
       }, 600)
       return {
         editorView: null,
@@ -232,6 +224,43 @@ export const useStore = create<StoreState>()(
           const editorView = get().editorView
           if (editorView) {
             editorView.dispatch({ effects: addLineHighlight.of(selection) })
+          }
+        },
+        executeCode: () => {
+          try {
+            // Let's parse the ast.
+            const ast = parser_wasm(get().code)
+            // Check if the ast we have is equal to the ast in the storage.
+            // If it is, we don't need to update the ast.
+            if (JSON.stringify(ast) === JSON.stringify(get().ast)) return
+            // If it isn't, we need to update the ast and execute.
+            // We do not call updateAst directly because we don't want to move the
+            // cursor when the user is typing.
+            get().setAst(ast)
+            get().executeAst()
+          } catch (e: any) {
+            if (e instanceof KCLError) {
+              if (e.toString().includes('file is empty')) {
+                // Reset the ast and program memory and reexecute the empty
+                // file.
+                // Empty the ast.
+                get().setAst({
+                  start: 0,
+                  end: 0,
+                  body: [],
+                  nonCodeMeta: {
+                    noneCodeNodes: {},
+                    start: null,
+                  },
+                })
+                get().executeAst()
+              }
+              get().addKCLError(e)
+            } else {
+              get().setError('problem')
+              console.log(e)
+              get().addLog(e)
+            }
           }
         },
         setCursor: (selections) => {

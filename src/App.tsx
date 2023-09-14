@@ -46,8 +46,10 @@ export function App() {
     didDragInStream,
     streamDimensions,
     guiMode,
+    setGuiMode,
   } = useStore((s) => ({
     guiMode: s.guiMode,
+    setGuiMode: s.setGuiMode,
     setCode: s.setCode,
     engineCommandManager: s.engineCommandManager,
     buttonDownInStream: s.buttonDownInStream,
@@ -81,6 +83,7 @@ export function App() {
   useHotkeys('shift + l', () => togglePane('logs'))
   useHotkeys('shift + e', () => togglePane('kclErrors'))
   useHotkeys('shift + d', () => togglePane('debug'))
+  useHotkeys('esc', () => setGuiMode({ mode: 'default' }))
 
   const paneOpacity =
     onboardingStatus === onboardingPaths.CAMERA

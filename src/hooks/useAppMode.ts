@@ -229,8 +229,8 @@ function isCursorInSketchCommandRange(
     ([id, artifact]) =>
       selectionRanges.codeBasedSelections.some(
         (selection) =>
-          Array.isArray(selection.range) &&
-          Array.isArray(artifact.range) &&
+          Array.isArray(selection?.range) &&
+          Array.isArray(artifact?.range) &&
           isOverlap(selection.range, artifact.range) &&
           (artifact.commandType === 'start_path' ||
             artifact.commandType === 'extend_path' ||
