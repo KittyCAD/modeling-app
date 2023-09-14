@@ -109,10 +109,10 @@ export const GlobalStateProvider = ({
   // Auth machine setup
   const [authState, authSend] = useMachine(authMachine, {
     actions: {
-      goToSignInPage: (context) => {
+      goToSignInPage: () => {
         navigate(paths.SIGN_IN)
 
-        logout(context.token)
+        logout()
       },
       goToIndexPage: () => {
         if (window.location.pathname.includes(paths.SIGN_IN)) {
@@ -152,15 +152,13 @@ export const GlobalStateProvider = ({
 
 export default GlobalStateProvider
 
-export function logout(token?: string) {
+export function logout() {
   localStorage.removeItem(TOKEN_PERSIST_KEY)
-  return !isTauri()
-    ? fetch(withBaseUrl('/logout'), {
-        method: 'POST',
-        credentials: 'include',
-      })
-    : invoke('logout', {
-        token,
-        host: VITE_KC_API_BASE_URL,
-      })
+  return (
+    !isTauri() &&
+    fetch(withBaseUrl('/logout'), {
+      method: 'POST',
+      credentials: 'include',
+    })
+  )
 }
