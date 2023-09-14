@@ -9,6 +9,7 @@ pub struct Angle {
 }
 
 impl Angle {
+    const ZERO: Self = Self { degrees: 0.0 };
     /// Make an angle of the given degrees.
     pub fn from_degrees(degrees: f64) -> Self {
         Self { degrees }
@@ -37,9 +38,6 @@ impl Angle {
         let result = ((angle % 360.0) + 360.0) % 360.0;
         Self::from_degrees(if result > 180.0 { result - 360.0 } else { result })
     }
-    fn zero() -> Self {
-        Self { degrees: 0.0 }
-    }
     /// Gives the ▲-angle between from and to angles (shortest path), use radians.
     ///
     /// Sign of the returned angle denotes direction, positive means counterClockwise 🔄
@@ -66,7 +64,7 @@ impl Angle {
         if provisional < -std::f64::consts::PI {
             return Angle::from_radians(provisional + 2.0 * std::f64::consts::PI);
         }
-        Angle::zero()
+        Angle::ZERO
     }
 }
 
@@ -199,8 +197,8 @@ fn offset_line(offset: f64, p1: Point2d, p2: Point2d) -> [Point2d; 2] {
     ]
 }
 
-pub fn get_y_component(angle_degree: f64, x: f64) -> Point2d {
-    let normalised_angle = ((angle_degree % 360.0) + 360.0) % 360.0; // between 0 and 360
+pub fn get_y_component(angle: Angle, x: f64) -> Point2d {
+    let normalised_angle = ((angle.degrees() % 360.0) + 360.0) % 360.0; // between 0 and 360
     let y = x * f64::tan(normalised_angle.to_radians());
     let sign = if normalised_angle > 90.0 && normalised_angle <= 270.0 {
         -1.0
@@ -210,8 +208,8 @@ pub fn get_y_component(angle_degree: f64, x: f64) -> Point2d {
     Point2d { x, y }.scale(sign)
 }
 
-pub fn get_x_component(angle_degree: f64, y: f64) -> Point2d {
-    let normalised_angle = ((angle_degree % 360.0) + 360.0) % 360.0; // between 0 and 360
+pub fn get_x_component(angle: Angle, y: f64) -> Point2d {
+    let normalised_angle = ((angle.degrees() % 360.0) + 360.0) % 360.0; // between 0 and 360
     let x = y / f64::tan(normalised_angle.to_radians());
     let sign = if normalised_angle > 180.0 && normalised_angle <= 360.0 {
         -1.0
@@ -293,7 +291,7 @@ mod tests {
     // Here you can bring your functions into scope
     use pretty_assertions::assert_eq;
 
-    use super::{get_x_component, get_y_component};
+    use super::{get_x_component, get_y_component, Angle};
     use crate::executor::SourceRange;
 
     static EACH_QUAD: [(i32, [i32; 2]); 12] = [
@@ -317,26 +315,26 @@ mod tests {
         let mut results = Vec::new();
 
         for &(angle, expected_result) in EACH_QUAD.iter() {
-            let res = get_y_component(angle as f64, 1.0);
+            let res = get_y_component(Angle::from_degrees(angle as f64), 1.0);
             results.push([res.x.round() as i32, res.y.round() as i32]);
             expected.push(expected_result);
         }
 
         assert_eq!(results, expected);
 
-        let result = get_y_component(0.0, 1.0);
+        let result = get_y_component(Angle::ZERO, 1.0);
         assert_eq!(result.x as i32, 1);
         assert_eq!(result.y as i32, 0);
 
-        let result = get_y_component(90.0, 1.0);
+        let result = get_y_component(Angle::from_degrees(90.0), 1.0);
         assert_eq!(result.x as i32, 1);
         assert!(result.y > 100000.0);
 
-        let result = get_y_component(180.0, 1.0);
+        let result = get_y_component(Angle::from_degrees(180.0), 1.0);
         assert_eq!(result.x as i32, -1);
         assert!((result.y - 0.0).abs() < f64::EPSILON);
 
-        let result = get_y_component(270.0, 1.0);
+        let result = get_y_component(Angle::from_degrees(270.0), 1.0);
         assert_eq!(result.x as i32, -1);
         assert!(result.y < -100000.0);
     }
@@ -347,26 +345,26 @@ mod tests {
         let mut results = Vec::new();
 
         for &(angle, expected_result) in EACH_QUAD.iter() {
-            let res = get_x_component(angle as f64, 1.0);
+            let res = get_x_component(Angle::from_degrees(angle as f64), 1.0);
             results.push([res.x.round() as i32, res.y.round() as i32]);
             expected.push(expected_result);
         }
 
         assert_eq!(results, expected);
 
-        let result = get_x_component(0.0, 1.0);
+        let result = get_x_component(Angle::ZERO, 1.0);
         assert!(result.x > 100000.0);
         assert_eq!(result.y as i32, 1);
 
-        let result = get_x_component(90.0, 1.0);
+        let result = get_x_component(Angle::from_degrees(90.0), 1.0);
         assert!((result.x - 0.0).abs() < f64::EPSILON);
         assert_eq!(result.y as i32, 1);
 
-        let result = get_x_component(180.0, 1.0);
+        let result = get_x_component(Angle::from_degrees(180.0), 1.0);
         assert!(result.x < -100000.0);
         assert_eq!(result.y as i32, 1);
 
-        let result = get_x_component(270.0, 1.0);
+        let result = get_x_component(Angle::from_degrees(270.0), 1.0);
         assert!((result.x - 0.0).abs() < f64::EPSILON);
         assert_eq!(result.y as i32, -1);
     }

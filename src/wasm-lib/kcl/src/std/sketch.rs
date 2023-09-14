@@ -15,6 +15,8 @@ use crate::{
     },
 };
 
+use super::utils::Angle;
+
 /// Data to draw a line to a point.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -392,7 +394,7 @@ fn inner_angled_line_of_x_length(
         AngledLineData::AngleAndLength(angle_and_length) => (angle_and_length[0], angle_and_length[1]),
     };
 
-    let to = get_y_component(angle, length);
+    let to = get_y_component(Angle::from_degrees(angle), length);
 
     let new_sketch_group = inner_line(
         if let AngledLineData::AngleWithTag { tag, .. } = data {
@@ -487,7 +489,7 @@ fn inner_angled_line_of_y_length(
         AngledLineData::AngleAndLength(angle_and_length) => (angle_and_length[0], angle_and_length[1]),
     };
 
-    let to = get_x_component(angle, length);
+    let to = get_x_component(Angle::from_degrees(angle), length);
 
     let new_sketch_group = inner_line(
         if let AngledLineData::AngleWithTag { tag, .. } = data {
@@ -591,7 +593,7 @@ fn inner_angled_line_that_intersects(
         &[intersect_path.from.into(), intersect_path.to.into()],
         data.offset.unwrap_or_default(),
         data.angle,
-        from.into(),
+        from,
     );
 
     let line_to_data = if let Some(tag) = data.tag {
@@ -766,7 +768,7 @@ pub fn arc(args: &mut Args) -> Result<MemoryItem, KclError> {
     name = "arc",
 }]
 fn inner_arc(data: ArcData, sketch_group: SketchGroup, args: &mut Args) -> Result<SketchGroup, KclError> {
-    let from: Point2d = sketch_group.get_coords_from_paths()?.into();
+    let from: Point2d = sketch_group.get_coords_from_paths()?;
 
     let (center, angle_start, angle_end, radius, end) = match &data {
         ArcData::AnglesAndRadiusWithTag {
