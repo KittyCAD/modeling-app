@@ -1,3 +1,5 @@
+use std::f64::consts::PI;
+
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{Point2d, SourceRange},
@@ -58,14 +60,14 @@ impl Angle {
         let norm_to_angle = normalize_rad(to_angle.radians());
         let provisional = norm_to_angle - norm_from_angle;
 
-        if provisional > -std::f64::consts::PI && provisional <= std::f64::consts::PI {
+        if provisional > -PI && provisional <= PI {
             return Angle::from_radians(provisional);
         }
-        if provisional > std::f64::consts::PI {
-            return Angle::from_radians(provisional - 2.0 * std::f64::consts::PI);
+        if provisional > PI {
+            return Angle::from_radians(provisional - 2.0 * PI);
         }
-        if provisional < -std::f64::consts::PI {
-            return Angle::from_radians(provisional + 2.0 * std::f64::consts::PI);
+        if provisional < -PI {
+            return Angle::from_radians(provisional + 2.0 * PI);
         }
         Angle::ZERO
     }
@@ -88,9 +90,9 @@ pub fn clockwise_sign(points: &[Point2d]) -> i32 {
 
 #[allow(dead_code)]
 pub fn normalize_rad(angle: f64) -> f64 {
-    let draft = angle % (2.0 * std::f64::consts::PI);
+    let draft = angle % (2.0 * PI);
     if draft < 0.0 {
-        draft + 2.0 * std::f64::consts::PI
+        draft + 2.0 * PI
     } else {
         draft
     }
