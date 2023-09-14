@@ -50,7 +50,7 @@ export const TextEditor = ({
   const pathParams = useParams()
   const {
     code,
-    defferedSetCode,
+    deferredSetCode,
     editorView,
     engineCommandManager,
     formatCode,
@@ -63,7 +63,7 @@ export const TextEditor = ({
     sourceRangeMap,
   } = useStore((s) => ({
     code: s.code,
-    defferedSetCode: s.defferedSetCode,
+    deferredSetCode: s.deferredSetCode,
     editorView: s.editorView,
     engineCommandManager: s.engineCommandManager,
     formatCode: s.formatCode,
@@ -126,7 +126,7 @@ export const TextEditor = ({
 
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
-    defferedSetCode(value)
+    deferredSetCode(value)
     if (isTauri() && pathParams.id) {
       // Save the file to disk
       // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files

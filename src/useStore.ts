@@ -20,7 +20,7 @@ import {
   EngineCommandManager,
 } from './lang/std/engineConnection'
 import { KCLError } from './lang/errors'
-import { defferExecution } from 'lib/utils'
+import { deferExecution } from 'lib/utils'
 import { _executor } from './lang/executor'
 
 export type Selection = {
@@ -147,9 +147,8 @@ export interface StoreState {
     focusPath?: PathToNode
   ) => void
   code: string
-  defferedCode: string
   setCode: (code: string) => void
-  defferedSetCode: (code: string) => void
+  deferredSetCode: (code: string) => void
   formatCode: () => void
   errorState: {
     isError: boolean
@@ -206,10 +205,15 @@ let pendingAstUpdates: number[] = []
 export const useStore = create<StoreState>()(
   persist(
     (set, get) => {
-      const setDefferedCode = defferExecution(
-        (code: string) => set({ defferedCode: code }),
-        600
-      )
+      const setDeferredCode = deferExecution((code: string) => {
+        // Let's parse the ast.
+        const ast = parser_wasm(code)
+        // Check if the ast we have is equal to the ast in the storage.
+        // If it is, we don't need to update the ast.
+        if (JSON.stringify(ast) === JSON.stringify(get().ast)) return
+        // If it isn't, we need to update the ast.
+        get().updateAst(ast, true) // we also want to re-execute the ast.
+      }, 600)
       return {
         editorView: null,
         setEditorView: (editorView) => {
@@ -464,7 +468,6 @@ export const useStore = create<StoreState>()(
           set({
             ast: astWithUpdatedSource,
             code: newCode,
-            defferedCode: newCode,
           })
           if (focusPath) {
             const { node } = getNodeFromPath<any>(
@@ -508,11 +511,10 @@ export const useStore = create<StoreState>()(
           )
         },
         code: '',
-        defferedCode: '',
-        setCode: (code) => set({ code, defferedCode: code }),
-        defferedSetCode: (code) => {
+        setCode: (code) => set({ code }),
+        deferredSetCode: (code) => {
           set({ code })
-          setDefferedCode(code)
+          setDeferredCode(code)
         },
         formatCode: async () => {
           const code = get().code
@@ -576,7 +578,7 @@ export const useStore = create<StoreState>()(
       partialize: (state) =>
         Object.fromEntries(
           Object.entries(state).filter(([key]) =>
-            ['code', 'defferedCode', 'openPanes'].includes(key)
+            ['code', 'openPanes'].includes(key)
           )
         ),
     }
