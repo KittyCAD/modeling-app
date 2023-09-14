@@ -380,6 +380,7 @@ impl From<Point2d> for kittycad::types::Point2D {
 }
 
 impl Point2d {
+    pub const ZERO: Self = Self { x: 0.0, y: 0.0 };
     pub fn scale(self, scalar: f64) -> Self {
         Self {
             x: self.x * scalar,

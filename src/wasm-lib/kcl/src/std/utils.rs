@@ -44,9 +44,12 @@ impl Angle {
     /// # Examples
     ///
     /// ```
+    /// use std::f64::consts::PI;
+    /// use kcl_lib::std::utils::Angle;
+    ///
     /// assert_eq!(
-    ///     kcl_lib::std::utils::delta_angle(std::f64::consts::PI / 8.0, std::f64::consts::PI / 4.0),
-    ///     std::f64::consts::PI / 8.0
+    ///     Angle::delta(Angle::from_radians(PI / 8.0), Angle::from_radians(PI / 4.0)),
+    ///     Angle::from_radians(PI / 8.0)
     /// );
     /// ```
     #[allow(dead_code)]
@@ -98,12 +101,14 @@ pub fn normalize_rad(angle: f64) -> f64 {
 /// # Examples
 ///
 /// ```
+/// use kcl_lib::executor::Point2d;
+///
 /// assert_eq!(
-///     kcl_lib::std::utils::distance_between_points(&[0.0, 0.0], &[0.0, 5.0]),
+///     kcl_lib::std::utils::distance_between_points(Point2d::ZERO, Point2d{x: 0.0, y: 5.0}),
 ///     5.0
 /// );
 /// assert_eq!(
-///     kcl_lib::std::utils::distance_between_points(&[0.0, 0.0], &[3.0, 4.0]),
+///     kcl_lib::std::utils::distance_between_points(Point2d::ZERO, Point2d{x: 3.0, y: 4.0}),
 ///     5.0
 /// );
 /// ```
