@@ -491,7 +491,7 @@ pub fn leg_angle_x(args: &mut Args) -> Result<MemoryItem, KclError> {
     name = "legAngX",
 }]
 fn inner_leg_angle_x(hypotenuse: f64, leg: f64) -> f64 {
-    (leg.min(hypotenuse) / hypotenuse).acos() * 180.0 / std::f64::consts::PI
+    (leg.min(hypotenuse) / hypotenuse).acos().to_degrees()
 }
 
 /// Returns the angle of the given leg for y.
@@ -506,7 +506,7 @@ pub fn leg_angle_y(args: &mut Args) -> Result<MemoryItem, KclError> {
     name = "legAngY",
 }]
 fn inner_leg_angle_y(hypotenuse: f64, leg: f64) -> f64 {
-    (leg.min(hypotenuse) / hypotenuse).asin() * 180.0 / std::f64::consts::PI
+    (leg.min(hypotenuse) / hypotenuse).asin().to_degrees()
 }
 
 /// The primitive types that can be used in a KCL file.
