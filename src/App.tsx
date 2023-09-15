@@ -83,7 +83,29 @@ export function App() {
   useHotkeys('shift + l', () => togglePane('logs'))
   useHotkeys('shift + e', () => togglePane('kclErrors'))
   useHotkeys('shift + d', () => togglePane('debug'))
-  useHotkeys('esc', () => setGuiMode({ mode: 'default' }))
+  useHotkeys('esc', () => {
+    if (guiMode.mode === 'sketch') {
+      if (guiMode.sketchMode === 'selectFace') return
+      engineCommandManager?.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'set_tool',
+          tool: 'select',
+        },
+      })
+      setGuiMode({
+        mode: 'sketch',
+        sketchMode: 'sketchEdit',
+        rotation: guiMode.rotation,
+        position: guiMode.position,
+        pathToNode: guiMode.pathToNode,
+        // todo: ...guiMod is adding isTooltip: true, will probably just fix with xstate migtaion
+      })
+    } else {
+      setGuiMode({ mode: 'default' })
+    }
+  })
 
   const paneOpacity =
     onboardingStatus === onboardingPaths.CAMERA
