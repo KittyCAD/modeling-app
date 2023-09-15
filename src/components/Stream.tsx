@@ -315,9 +315,12 @@ export const Stream = ({ className = '' }) => {
           engineCommandManager?.sendSceneCommand({
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
-            cmd: {
-              type: 'sketch_mode_disable',
-            },
+            cmd: { type: 'edit_mode_exit' },
+          })
+          engineCommandManager?.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: { type: 'default_camera_disable_sketch_mode' },
           })
           updateAst(_modifiedAst, true)
         }
