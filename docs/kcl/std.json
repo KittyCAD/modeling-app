@@ -1,5 +1,61 @@
 [
   {
+    "name": "abs",
+    "summary": "Computes the absolute value of a number.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "acos",
+    "summary": "Computes the arccosine of a number (in radians).",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
     "name": "angleToMatchLengthX",
     "summary": "Returns the angle to match the given length for x.",
     "description": "",
@@ -7474,6 +7530,62 @@
     "deprecated": false
   },
   {
+    "name": "asin",
+    "summary": "Computes the arcsine of a number (in radians).",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "atan",
+    "summary": "Computes the arctangent of a number (in radians).",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
     "name": "bezierCurve",
     "summary": "Draw a bezier curve.",
     "description": "",
@@ -8440,6 +8552,34 @@
             }
           }
         }
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "ceil",
+    "summary": "Computes the smallest integer greater than or equal to a number.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
       },
       "required": true
     },
@@ -9938,6 +10078,34 @@
             }
           }
         }
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "floor",
+    "summary": "Computes the largest integer less than or equal to a number.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
       },
       "required": true
     },
@@ -13016,6 +13184,37 @@
     "deprecated": false
   },
   {
+    "name": "max",
+    "summary": "Returns the maximum of the given arguments.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "args",
+        "type": "[number]",
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
     "name": "min",
     "summary": "Returns the minimum of the given arguments.",
     "description": "",
@@ -13052,6 +13251,43 @@
     "description": "",
     "tags": [],
     "args": [],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "pow",
+    "summary": "Computes the number to a power.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      },
+      {
+        "name": "pow",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
     "returnValue": {
       "name": "",
       "type": "number",
@@ -15351,6 +15587,34 @@
   {
     "name": "sin",
     "summary": "Computes the sine of a number (in radians).",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "sqrt",
+    "summary": "Computes the square root of a number.",
     "description": "",
     "tags": [],
     "args": [

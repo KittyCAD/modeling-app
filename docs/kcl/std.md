@@ -5,6 +5,8 @@
 ## Table of Contents
 
 * [Functions](#functions)
+	* [`abs`](#abs)
+	* [`acos`](#acos)
 	* [`angleToMatchLengthX`](#angleToMatchLengthX)
 	* [`angleToMatchLengthY`](#angleToMatchLengthY)
 	* [`angledLine`](#angledLine)
@@ -14,10 +16,14 @@
 	* [`angledLineToX`](#angledLineToX)
 	* [`angledLineToY`](#angledLineToY)
 	* [`arc`](#arc)
+	* [`asin`](#asin)
+	* [`atan`](#atan)
 	* [`bezierCurve`](#bezierCurve)
+	* [`ceil`](#ceil)
 	* [`close`](#close)
 	* [`cos`](#cos)
 	* [`extrude`](#extrude)
+	* [`floor`](#floor)
 	* [`getExtrudeWallTransform`](#getExtrudeWallTransform)
 	* [`lastSegX`](#lastSegX)
 	* [`lastSegY`](#lastSegY)
@@ -26,14 +32,17 @@
 	* [`legLen`](#legLen)
 	* [`line`](#line)
 	* [`lineTo`](#lineTo)
+	* [`max`](#max)
 	* [`min`](#min)
 	* [`pi`](#pi)
+	* [`pow`](#pow)
 	* [`segAng`](#segAng)
 	* [`segEndX`](#segEndX)
 	* [`segEndY`](#segEndY)
 	* [`segLen`](#segLen)
 	* [`show`](#show)
 	* [`sin`](#sin)
+	* [`sqrt`](#sqrt)
 	* [`startSketchAt`](#startSketchAt)
 	* [`tan`](#tan)
 	* [`xLine`](#xLine)
@@ -43,6 +52,46 @@
 
 
 ## Functions
+
+### abs
+
+Computes the absolute value of a number.
+
+
+
+```
+abs(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
+### acos
+
+Computes the arccosine of a number (in radians).
+
+
+
+```
+acos(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
 
 ### angleToMatchLengthX
 
@@ -1332,6 +1381,46 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 
 
 
+### asin
+
+Computes the arcsine of a number (in radians).
+
+
+
+```
+asin(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
+### atan
+
+Computes the arctangent of a number (in radians).
+
+
+
+```
+atan(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
 ### bezierCurve
 
 Draw a bezier curve.
@@ -1494,6 +1583,26 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 }],
 }
 ```
+
+
+
+### ceil
+
+Computes the smallest integer greater than or equal to a number.
+
+
+
+```
+ceil(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
 
 
 
@@ -1767,6 +1876,26 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 }],
 }
 ```
+
+
+
+### floor
+
+Computes the largest integer less than or equal to a number.
+
+
+
+```
+floor(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
 
 
 
@@ -2358,6 +2487,26 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 
 
 
+### max
+
+Returns the maximum of the given arguments.
+
+
+
+```
+max(args: [number]) -> number
+```
+
+#### Arguments
+
+* `args`: `[number]`
+
+#### Returns
+
+* `number`
+
+
+
 ### min
 
 Returns the minimum of the given arguments.
@@ -2390,6 +2539,27 @@ pi() -> number
 
 #### Arguments
 
+
+#### Returns
+
+* `number`
+
+
+
+### pow
+
+Computes the number to a power.
+
+
+
+```
+pow(num: number, pow: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+* `pow`: `number`
 
 #### Returns
 
@@ -2815,6 +2985,26 @@ Computes the sine of a number (in radians).
 
 ```
 sin(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
+### sqrt
+
+Computes the square root of a number.
+
+
+
+```
+sqrt(num: number) -> number
 ```
 
 #### Arguments
