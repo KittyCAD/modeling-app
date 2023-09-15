@@ -27,7 +27,7 @@ export type Selections = {
   otherSelections: ('y-axis' | 'x-axis' | 'z-axis')[]
   codeBasedSelections: Selection[]
 }
-export type TooTip =
+export type ToolTip =
   | 'lineTo'
   | 'line'
   | 'angledLine'
@@ -57,7 +57,7 @@ export const toolTips = [
   'xLineTo',
   'yLineTo',
   'angledLineThatIntersects',
-] as any as TooTip[]
+] as any as ToolTip[]
 
 export type GuiModes =
   | {
@@ -65,7 +65,7 @@ export type GuiModes =
     }
   | {
       mode: 'sketch'
-      sketchMode: TooTip
+      sketchMode: ToolTip
       isTooltip: true
       waitingFirstClick: boolean
       rotation: Rotation

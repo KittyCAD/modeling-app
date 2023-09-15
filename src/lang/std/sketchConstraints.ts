@@ -1,4 +1,4 @@
-import { TooTip, toolTips } from '../../useStore'
+import { ToolTip, toolTips } from '../../useStore'
 import {
   Program,
   VariableDeclarator,
@@ -67,7 +67,10 @@ export function isSketchVariablesLinked(
     return false
   const firstCallExp = // first in pipe expression or just the call expression
     init?.type === 'CallExpression' ? init : (init?.body[0] as CallExpression)
-  if (!firstCallExp || !toolTips.includes(firstCallExp?.callee?.name as TooTip))
+  if (
+    !firstCallExp ||
+    !toolTips.includes(firstCallExp?.callee?.name as ToolTip)
+  )
     return false
   // convention for sketch fns is that the second argument is the sketch group
   const secondArg = firstCallExp?.arguments[1]

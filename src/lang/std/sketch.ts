@@ -21,7 +21,7 @@ import {
   getNodePathFromSourceRange,
 } from '../queryAst'
 import { isLiteralArrayOrStatic } from './sketchcombos'
-import { GuiModes, toolTips, TooTip } from '../../useStore'
+import { GuiModes, toolTips, ToolTip } from '../../useStore'
 import { createPipeExpression, splitPathAtPipeExpression } from '../modifyAst'
 import { generateUuidFromHashSeed } from '../../lib/uuid'
 
@@ -57,7 +57,7 @@ export function getCoordsFromPaths(skGroup: SketchGroup, index = 0): Coords2d {
 }
 
 export function createFirstArg(
-  sketchFn: TooTip,
+  sketchFn: ToolTip,
   val: Value | [Value, Value] | [Value, Value, Value],
   tag?: Value
 ): Value {
@@ -943,7 +943,7 @@ interface CreateLineFnCallArgs {
   programMemory: ProgramMemory
   to: [number, number]
   from: [number, number]
-  fnName: TooTip
+  fnName: ToolTip
   pathToNode: PathToNode
 }
 
@@ -1029,7 +1029,7 @@ export function replaceSketchLine({
   node: Program
   programMemory: ProgramMemory
   sourceRange: SourceRange
-  fnName: TooTip
+  fnName: ToolTip
   to: [number, number]
   from: [number, number]
   createCallback: TransformCallback
@@ -1208,7 +1208,7 @@ function getFirstArgValuesForAngleFns(callExpression: CallExpression): {
     const tag = firstArg.properties.find((p) => p.key.name === 'tag')?.value
     const angle = firstArg.properties.find((p) => p.key.name === 'angle')?.value
     const secondArgName = ['angledLineToX', 'angledLineToY'].includes(
-      callExpression?.callee?.name as TooTip
+      callExpression?.callee?.name as ToolTip
     )
       ? 'to'
       : 'length'
