@@ -54,21 +54,11 @@ export function useAppMode() {
         })
         setDefaultPlanes({ xy, yz, xz })
       } else {
-        hideDefaultPlanes(engineCommandManager, defaultPlanes)
+        setDefaultPlanesHidden(engineCommandManager, defaultPlanes, false)
       }
     }
     if (guiMode.mode !== 'sketch' && defaultPlanes) {
-      Object.values(defaultPlanes).forEach((planeId) => {
-        engineCommandManager?.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'object_visible',
-            object_id: planeId,
-            hidden: true,
-          },
-        })
-      })
+      setDefaultPlanesHidden(engineCommandManager, defaultPlanes, true)
     } else if (guiMode.mode === 'default') {
       const pathId =
         engineCommandManager &&
@@ -128,7 +118,7 @@ export function useAppMode() {
             },
           }
         )
-        hideDefaultPlanes(engineCommandManager, defaultPlanes)
+        setDefaultPlanesHidden(engineCommandManager, defaultPlanes, true)
         const sketchUuid = uuidv4()
         const proms: any[] = []
         proms.push(
@@ -204,9 +194,10 @@ function createPlane(
   return planeId
 }
 
-function hideDefaultPlanes(
-  engineCommandManager: EngineCommandManager,
-  defaultPlanes: DefaultPlanes
+function setDefaultPlanesHidden(
+  engineCommandManager: EngineCommandManager | undefined,
+  defaultPlanes: DefaultPlanes,
+  hidden: boolean
 ) {
   Object.values(defaultPlanes).forEach((planeId) => {
     engineCommandManager?.sendSceneCommand({
@@ -215,7 +206,7 @@ function hideDefaultPlanes(
       cmd: {
         type: 'object_visible',
         object_id: planeId,
-        hidden: true,
+        hidden: hidden,
       },
     })
   })
