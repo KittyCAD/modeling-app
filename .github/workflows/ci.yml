@@ -177,7 +177,7 @@ jobs:
   publish-apps-release:
     runs-on: ubuntu-20.04
     if: github.event_name == 'release'
-    needs: [build-test-web, build-apps, sign-windows-msi]
+    needs: [build-test-web, build-apps]
     env:
       VERSION_NO_V: ${{ needs.build-test-web.outputs.version }}
       PUB_DATE: ${{ github.event.release.created_at }}
