@@ -11,8 +11,9 @@ import { isOverlap } from 'lib/utils'
 
 interface DefaultPlanes {
   xy: string
-  yz: string
-  xz: string
+  // TODO re-enable
+  // yz: string
+  // xz: string
 }
 
 export function useAppMode() {
@@ -42,17 +43,18 @@ export function useAppMode() {
           y_axis: { x: 0, y: 1, z: 0 },
           color: { r: 0.7, g: 0.28, b: 0.28, a: 0.4 },
         })
-        const yz = createPlane(engineCommandManager, {
-          x_axis: { x: 0, y: 1, z: 0 },
-          y_axis: { x: 0, y: 0, z: 1 },
-          color: { r: 0.28, g: 0.7, b: 0.28, a: 0.4 },
-        })
-        const xz = createPlane(engineCommandManager, {
-          x_axis: { x: 1, y: 0, z: 0 },
-          y_axis: { x: 0, y: 0, z: 1 },
-          color: { r: 0.28, g: 0.28, b: 0.7, a: 0.4 },
-        })
-        setDefaultPlanes({ xy, yz, xz })
+        // TODO re-enable
+        // const yz = createPlane(engineCommandManager, {
+        //   x_axis: { x: 0, y: 1, z: 0 },
+        //   y_axis: { x: 0, y: 0, z: 1 },
+        //   color: { r: 0.28, g: 0.7, b: 0.28, a: 0.4 },
+        // })
+        // const xz = createPlane(engineCommandManager, {
+        //   x_axis: { x: 1, y: 0, z: 0 },
+        //   y_axis: { x: 0, y: 0, z: 1 },
+        //   color: { r: 0.28, g: 0.28, b: 0.7, a: 0.4 },
+        // })
+        setDefaultPlanes({ xy })
       } else {
         setDefaultPlanesHidden(engineCommandManager, defaultPlanes, false)
       }
