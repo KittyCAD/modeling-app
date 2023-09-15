@@ -1271,4 +1271,22 @@ mod test {
         let output = parser.build_tree(&input_tokens, vec![]).unwrap();
         assert_eq!(output, expected_output);
     }
+
+    #[test]
+    fn test_parse_expression_braces_around_lots_of_math() {
+        let code = "(distance * p * FOS * 6 / (sigmaAllow * width))";
+        let tokens = crate::tokeniser::lexer(code);
+        let mut parser = MathParser::new(&tokens);
+        let result = parser.parse();
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_parse_expression_braces_around_internals_lots_of_math() {
+        let code = "distance * p * FOS * 6 / (sigmaAllow * width)";
+        let tokens = crate::tokeniser::lexer(code);
+        let mut parser = MathParser::new(&tokens);
+        let result = parser.parse();
+        assert!(result.is_ok());
+    }
 }

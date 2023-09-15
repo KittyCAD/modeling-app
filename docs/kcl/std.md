@@ -32,6 +32,10 @@
 	* [`legLen`](#legLen)
 	* [`line`](#line)
 	* [`lineTo`](#lineTo)
+	* [`ln`](#ln)
+	* [`log`](#log)
+	* [`log10`](#log10)
+	* [`log2`](#log2)
 	* [`max`](#max)
 	* [`min`](#min)
 	* [`pi`](#pi)
@@ -2487,9 +2491,90 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 
 
 
+### ln
+
+Computes the natural logarithm of the number.
+
+
+
+```
+ln(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
+### log
+
+Computes the logarithm of the number with respect to an arbitrary base.
+
+The result might not be correctly rounded owing to implementation details; `log2()` can produce more accurate results for base 2, and `log10()` can produce more accurate results for base 10.
+
+```
+log(num: number, base: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+* `base`: `number`
+
+#### Returns
+
+* `number`
+
+
+
+### log10
+
+Computes the base 10 logarithm of the number.
+
+
+
+```
+log10(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
+### log2
+
+Computes the base 2 logarithm of the number.
+
+
+
+```
+log2(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
 ### max
 
-Returns the maximum of the given arguments.
+Computes the maximum of the given arguments.
 
 
 
@@ -2509,7 +2594,7 @@ max(args: [number]) -> number
 
 ### min
 
-Returns the minimum of the given arguments.
+Computes the minimum of the given arguments.
 
 
 

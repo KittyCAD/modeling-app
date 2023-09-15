@@ -75,6 +75,10 @@ impl StdLib {
             Box::new(crate::std::math::Min),
             Box::new(crate::std::math::Max),
             Box::new(crate::std::math::Pow),
+            Box::new(crate::std::math::Log),
+            Box::new(crate::std::math::Log2),
+            Box::new(crate::std::math::Log10),
+            Box::new(crate::std::math::Ln),
         ];
 
         let mut fns = HashMap::new();

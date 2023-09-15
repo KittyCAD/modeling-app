@@ -137,7 +137,7 @@ fn inner_ceil(num: f64) -> Result<f64, KclError> {
     Ok(num.ceil())
 }
 
-/// Returns the minimum of the given arguments.
+/// Computes the minimum of the given arguments.
 pub fn min(args: &mut Args) -> Result<MemoryItem, KclError> {
     let nums = args.get_number_array()?;
     let result = inner_min(nums);
@@ -145,7 +145,7 @@ pub fn min(args: &mut Args) -> Result<MemoryItem, KclError> {
     args.make_user_val_from_f64(result)
 }
 
-/// Returns the minimum of the given arguments.
+/// Computes the minimum of the given arguments.
 #[stdlib {
     name = "min",
 }]
@@ -160,7 +160,7 @@ fn inner_min(args: Vec<f64>) -> f64 {
     min
 }
 
-/// Returns the maximum of the given arguments.
+/// Computes the maximum of the given arguments.
 pub fn max(args: &mut Args) -> Result<MemoryItem, KclError> {
     let nums = args.get_number_array()?;
     let result = inner_max(nums);
@@ -168,7 +168,7 @@ pub fn max(args: &mut Args) -> Result<MemoryItem, KclError> {
     args.make_user_val_from_f64(result)
 }
 
-/// Returns the maximum of the given arguments.
+/// Computes the maximum of the given arguments.
 #[stdlib {
     name = "max",
 }]
@@ -259,4 +259,89 @@ pub fn atan(args: &mut Args) -> Result<MemoryItem, KclError> {
 }]
 fn inner_atan(num: f64) -> Result<f64, KclError> {
     Ok(num.atan())
+}
+
+/// Computes the logarithm of the number with respect to an arbitrary base.
+///
+/// The result might not be correctly rounded owing to implementation
+/// details; `log2()` can produce more accurate results for base 2,
+/// and `log10()` can produce more accurate results for base 10.
+pub fn log(args: &mut Args) -> Result<MemoryItem, KclError> {
+    let nums = args.get_number_array()?;
+    if nums.len() > 2 {
+        return Err(KclError::Type(KclErrorDetails {
+            message: format!("expected 2 arguments, got {}", nums.len()),
+            source_ranges: vec![args.source_range],
+        }));
+    }
+
+    if nums.len() <= 1 {
+        return Err(KclError::Type(KclErrorDetails {
+            message: format!("expected 2 arguments, got {}", nums.len()),
+            source_ranges: vec![args.source_range],
+        }));
+    }
+    let result = inner_log(nums[0], nums[1])?;
+
+    args.make_user_val_from_f64(result)
+}
+
+/// Computes the logarithm of the number with respect to an arbitrary base.
+///
+/// The result might not be correctly rounded owing to implementation
+/// details; `log2()` can produce more accurate results for base 2,
+/// and `log10()` can produce more accurate results for base 10.
+#[stdlib {
+    name = "log",
+}]
+fn inner_log(num: f64, base: f64) -> Result<f64, KclError> {
+    Ok(num.log(base))
+}
+
+/// Computes the base 2 logarithm of the number.
+pub fn log2(args: &mut Args) -> Result<MemoryItem, KclError> {
+    let num = args.get_number()?;
+    let result = inner_log2(num)?;
+
+    args.make_user_val_from_f64(result)
+}
+
+/// Computes the base 2 logarithm of the number.
+#[stdlib {
+    name = "log2",
+}]
+fn inner_log2(num: f64) -> Result<f64, KclError> {
+    Ok(num.log2())
+}
+
+/// Computes the base 10 logarithm of the number.
+pub fn log10(args: &mut Args) -> Result<MemoryItem, KclError> {
+    let num = args.get_number()?;
+    let result = inner_log10(num)?;
+
+    args.make_user_val_from_f64(result)
+}
+
+/// Computes the base 10 logarithm of the number.
+#[stdlib {
+    name = "log10",
+}]
+fn inner_log10(num: f64) -> Result<f64, KclError> {
+    Ok(num.log10())
+}
+
+/// Computes the natural logarithm of the number.
+pub fn ln(args: &mut Args) -> Result<MemoryItem, KclError> {
+    let num = args.get_number()?;
+    let result = inner_ln(num)?;
+
+    args.make_user_val_from_f64(result)
+}
+
+/// Computes the natural logarithm of the number.
+#[stdlib {
+    name = "ln",
+}]
+fn inner_ln(num: f64) -> Result<f64, KclError> {
+    Ok(num.ln())
 }
