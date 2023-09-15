@@ -38,7 +38,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
     <Popover className="relative">
       {user?.image && !imageLoadFailed ? (
         <Popover.Button
-          className="border-0 rounded-full w-fit p-0 focus:outline-none group"
+          className="border-0 rounded-full w-fit min-w-max p-0 focus:outline-none group"
           data-testid="user-sidebar-toggle"
         >
           <div className="rounded-full border border-chalkboard-70/50 hover:border-liquid-50 group-focus:border-liquid-50 overflow-hidden">
