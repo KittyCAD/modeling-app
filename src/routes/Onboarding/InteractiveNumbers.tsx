@@ -29,7 +29,7 @@ export default function InteractiveNumbers() {
             Let's do a little bit of hybrid editing to this part.
           </p>
           <p className="my-4">
-            Try changing the value of <code>width</code> on line 4 by holding
+            Try changing the value of <code>width</code> on line 3 by holding
             the <kbd>Alt</kbd> key and dragging the number left and right. You
             can hold down different modifier keys to change the value by
             different increments:
