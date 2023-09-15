@@ -18,6 +18,7 @@ import { EngineCommandManager } from './lang/std/engineConnection'
 import { KCLError } from './lang/errors'
 import { deferExecution } from 'lib/utils'
 import { _executor } from './lang/executor'
+import { bracket } from 'lib/exampleKcl'
 
 export type Selection = {
   type: 'default' | 'line-end' | 'line-mid'
@@ -409,7 +410,7 @@ export const useStore = create<StoreState>()(
             }, 100) as unknown as number
           )
         },
-        code: '',
+        code: bracket,
         setCode: (code) => set({ code }),
         deferredSetCode: (code) => {
           set({ code })
