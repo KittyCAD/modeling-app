@@ -395,8 +395,6 @@ export class EngineConnection {
 
           let videoTrack = mediaStream.getVideoTracks()[0]
           this.pc?.getStats(videoTrack).then((videoTrackStats) => {
-            // TODO(paultag): this needs type information from the KittyCAD typescript
-            // library once it's updated
             let client_metrics: ClientMetrics = {
               rtc_frames_decoded: 0,
               rtc_frames_dropped: 0,
@@ -424,12 +422,13 @@ export class EngineConnection {
                   videoTrackReport.framesReceived
                 client_metrics.rtc_frames_per_second =
                   videoTrackReport.framesPerSecond || 0
-                client_metrics.rtc_freeze_count = videoTrackReport.freezeCount
+                client_metrics.rtc_freeze_count =
+                  videoTrackReport.freezeCount || 0
                 client_metrics.rtc_jitter_sec = videoTrackReport.jitter
                 client_metrics.rtc_keyframes_decoded =
                   videoTrackReport.keyFramesDecoded
                 client_metrics.rtc_total_freezes_duration_sec =
-                  videoTrackReport.totalFreezesDuration
+                  videoTrackReport.totalFreezesDuration || 0
               } else if (videoTrackReport.type === 'transport') {
                 // videoTrackReport.bytesReceived,
                 // videoTrackReport.bytesSent,
