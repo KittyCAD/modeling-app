@@ -16,7 +16,7 @@ export default function ParametricModeling() {
     },
   } = useGlobalStateContext()
   const dismiss = useDismiss()
-  const next = useNextClick(onboardingPaths.SKETCHING)
+  const next = useNextClick(onboardingPaths.INTERACTIVE_NUMBERS)
 
   return (
     <div className="fixed grid justify-end items-center inset-0 z-50 pointer-events-none">
@@ -73,7 +73,7 @@ export default function ParametricModeling() {
             onClick={next}
             icon={{ icon: faArrowRight }}
           >
-            Next: Sketching
+            Next: Interactive Numbers
           </ActionButton>
         </div>
       </div>

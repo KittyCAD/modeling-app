@@ -9,6 +9,7 @@ import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import Streaming from './Streaming'
 import CodeEditor from './CodeEditor'
 import ParametricModeling from './ParametricModeling'
+import InteractiveNumbers from './InteractiveNumbers'
 
 export const onboardingPaths = {
   INDEX: '/',
@@ -48,7 +49,10 @@ export const onboardingRoutes = [
     path: makeUrlPathRelative(onboardingPaths.PARAMETRIC_MODELING),
     element: <ParametricModeling />,
   },
-  // Interactive numbers
+  {
+    path: makeUrlPathRelative(onboardingPaths.INTERACTIVE_NUMBERS),
+    element: <InteractiveNumbers />,
+  },
   // Autocomplete / LSP
   // Command + K
   // User menu
