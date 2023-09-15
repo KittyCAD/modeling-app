@@ -440,13 +440,13 @@ impl ReversePolishNotation {
                     );
                 }
                 let mut new_stack = stack;
-                if current_token.value.starts_with("-") {
+                if current_token.value.starts_with('-') {
                     let expression = UnaryExpression {
                         start: current_token.start,
                         end: current_token.end,
                         operator: crate::abstract_syntax_tree_types::UnaryOperator::Neg,
                         argument: BinaryPart::Identifier(Box::new(Identifier {
-                            name: current_token.value.trim_start_matches("-").to_string(),
+                            name: current_token.value.trim_start_matches('-').to_string(),
                             start: current_token.start + 1,
                             end: current_token.end,
                         })),
