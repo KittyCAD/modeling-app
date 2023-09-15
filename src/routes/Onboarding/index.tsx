@@ -7,12 +7,14 @@ import Sketching from './Sketching'
 import { useCallback } from 'react'
 import makeUrlPathRelative from '../../lib/makeUrlPathRelative'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import Streaming from './Streaming'
 
 export const onboardingPaths = {
   INDEX: '/',
   UNITS: '/units',
   CAMERA: '/camera',
   SKETCHING: '/sketching',
+  STREAMING: '/streaming',
 }
 
 export const onboardingRoutes = [
@@ -28,7 +30,10 @@ export const onboardingRoutes = [
     path: makeUrlPathRelative(onboardingPaths.CAMERA),
     element: <Camera />,
   },
-  // Streaming
+  {
+    path: makeUrlPathRelative(onboardingPaths.STREAMING),
+    element: <Streaming />,
+  },
   // Code editor / KCL
   // Parametric modeling
   // Interactive numbers

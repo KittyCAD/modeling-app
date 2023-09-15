@@ -15,7 +15,7 @@ export default function Units() {
     buttonDownInStream: s.buttonDownInStream,
   }))
   const dismiss = useDismiss()
-  const next = useNextClick(onboardingPaths.SKETCHING)
+  const next = useNextClick(onboardingPaths.STREAMING)
   const {
     settings: {
       send,
@@ -88,7 +88,7 @@ export default function Units() {
             onClick={next}
             icon={{ icon: faArrowRight }}
           >
-            Next: Sketching
+            Next: Streaming
           </ActionButton>
         </div>
       </div>

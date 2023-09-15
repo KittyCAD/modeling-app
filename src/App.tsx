@@ -117,12 +117,13 @@ export function App() {
     }
   })
 
-  const paneOpacity =
-    onboardingStatus === onboardingPaths.CAMERA
-      ? 'opacity-20'
-      : didDragInStream
-      ? 'opacity-40'
-      : ''
+  const paneOpacity = [onboardingPaths.CAMERA, onboardingPaths.STREAMING].some(
+    (p) => p === onboardingStatus
+  )
+    ? 'opacity-20'
+    : didDragInStream
+    ? 'opacity-40'
+    : ''
 
   // Use file code loaded from disk
   // on mount, and overwrite any locally-stored code
