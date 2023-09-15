@@ -22,6 +22,7 @@
 	* [`ceil`](#ceil)
 	* [`close`](#close)
 	* [`cos`](#cos)
+	* [`e`](#e)
 	* [`extrude`](#extrude)
 	* [`floor`](#floor)
 	* [`getExtrudeWallTransform`](#getExtrudeWallTransform)
@@ -49,6 +50,7 @@
 	* [`sqrt`](#sqrt)
 	* [`startSketchAt`](#startSketchAt)
 	* [`tan`](#tan)
+	* [`tau`](#tau)
 	* [`xLine`](#xLine)
 	* [`xLineTo`](#xLineTo)
 	* [`yLine`](#yLine)
@@ -1774,6 +1776,25 @@ cos(num: number) -> number
 
 
 
+### e
+
+Return the value of Euler’s number `e`.
+
+
+
+```
+e() -> number
+```
+
+#### Arguments
+
+
+#### Returns
+
+* `number`
+
+
+
 ### extrude
 
 Extrudes by a given amount.
@@ -2614,7 +2635,7 @@ min(args: [number]) -> number
 
 ### pi
 
-Return the value of `pi`.
+Return the value of `pi`. Archimedes’ constant (π).
 
 
 
@@ -3206,6 +3227,25 @@ tan(num: number) -> number
 #### Arguments
 
 * `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
+### tau
+
+Return the value of `tau`. The full circle constant (τ). Equal to 2π.
+
+
+
+```
+tau() -> number
+```
+
+#### Arguments
+
 
 #### Returns
 

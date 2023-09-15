@@ -9491,6 +9491,24 @@
     "deprecated": false
   },
   {
+    "name": "e",
+    "summary": "Return the value of Euler’s number `e`.",
+    "description": "",
+    "tags": [],
+    "args": [],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
     "name": "extrude",
     "summary": "Extrudes by a given amount.",
     "description": "",
@@ -13368,7 +13386,7 @@
   },
   {
     "name": "pi",
-    "summary": "Return the value of `pi`.",
+    "summary": "Return the value of `pi`. Archimedes’ constant (π).",
     "description": "",
     "tags": [],
     "args": [],
@@ -16264,6 +16282,24 @@
         "required": true
       }
     ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "tau",
+    "summary": "Return the value of `tau`. The full circle constant (τ). Equal to 2π.",
+    "description": "",
+    "tags": [],
+    "args": [],
     "returnValue": {
       "name": "",
       "type": "number",
