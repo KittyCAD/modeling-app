@@ -72,7 +72,7 @@
       "targets": "all",
       "windows": {
         "certificateThumbprint": "F4C9A52FF7BC26EE5E054946F6B11DEEA94C748D",
-        "digestAlgorithm": "sha1",
+        "digestAlgorithm": "sha256",
         "timestampUrl": "http://timestamp.digicert.com"
       }
     },
