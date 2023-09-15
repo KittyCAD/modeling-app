@@ -1182,4 +1182,28 @@ show(thisBox)
             memory.root.get("thing").unwrap().get_json_value().unwrap()
         );
     }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_negative_variable_in_binary_expression() {
+        let ast = r#"const sigmaAllow = 35000 // psi
+const width = 1 // inch
+
+const p = 150 // lbs
+const distance = 6 // inches
+const FOS = 2
+
+const leg1 = 5 // inches
+const leg2 = 8 // inches
+
+const thickness_squared = distance * p * FOS * 6 / sigmaAllow
+const thickness = 0.56 // inches. App does not support square root function yet
+
+const bracket = startSketchAt([0,0])
+  |> line([0, leg1], %)
+  |> line([leg2, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-leg2 + thickness, 0], %)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
 }

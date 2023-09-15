@@ -103,9 +103,9 @@ pub struct ParamsResult {
 }
 
 #[derive(Debug, PartialEq, Clone)]
-struct UnaryExpressionResult {
-    expression: UnaryExpression,
-    last_index: usize,
+pub struct UnaryExpressionResult {
+    pub expression: UnaryExpression,
+    pub last_index: usize,
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -731,7 +731,9 @@ impl Parser {
 
         let maybe_operator = self.next_meaningful_token(index, None)?;
         if let Some(maybe_operator_token) = maybe_operator.token {
-            if maybe_operator_token.token_type == TokenType::Number {
+            if maybe_operator_token.token_type == TokenType::Number
+                || maybe_operator_token.token_type == TokenType::Word
+            {
                 return self.find_end_of_binary_expression(maybe_operator.index);
             } else if maybe_operator_token.token_type != TokenType::Operator
                 || maybe_operator_token.value == PIPE_OPERATOR
@@ -1418,7 +1420,7 @@ impl Parser {
         self.make_params(next_brace_or_comma_token.index, _previous_params)
     }
 
-    fn make_unary_expression(&self, index: usize) -> Result<UnaryExpressionResult, KclError> {
+    pub fn make_unary_expression(&self, index: usize) -> Result<UnaryExpressionResult, KclError> {
         let current_token = self.get_token(index)?;
         let next_token = self.next_meaningful_token(index, None)?;
         if next_token.token.is_none() {
@@ -2741,6 +2743,12 @@ show(mySk1)"#;
         let tokens = crate::tokeniser::lexer(code);
         let parser = Parser::new(tokens);
         let _end = parser.find_end_of_binary_expression(0).unwrap();
+        // with call expression at the end of binary expression
+        let code = "-legX + 2, ";
+        let tokens = crate::tokeniser::lexer(code);
+        let parser = Parser::new(tokens.clone());
+        let end = parser.find_end_of_binary_expression(0).unwrap();
+        assert_eq!(tokens[end].value, "2");
     }
 
     #[test]
@@ -3074,6 +3082,20 @@ const secondExtrude = startSketchAt([0,0])
     #[test]
     fn test_parse_parens_unicode() {
         let tokens = crate::tokeniser::lexer("(ޜ");
+        let parser = Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_parse_negative_in_array_binary_expression() {
+        let tokens = crate::tokeniser::lexer(
+            r#"const leg1 = 5
+const thickness = 0.56
+
+const bracket = [-leg2 + thickness, 0]
+"#,
+        );
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_ok());

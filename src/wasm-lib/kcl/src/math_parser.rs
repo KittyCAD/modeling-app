@@ -5,7 +5,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     abstract_syntax_tree_types::{
-        BinaryExpression, BinaryOperator, BinaryPart, CallExpression, Identifier, Literal, MemberExpression, ValueMeta,
+        BinaryExpression, BinaryOperator, BinaryPart, CallExpression, Identifier, Literal, MemberExpression,
+        UnaryExpression, ValueMeta,
     },
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
@@ -82,6 +83,7 @@ pub enum MathExpression {
     ExtendedBinaryExpression(Box<ExtendedBinaryExpression>),
     ParenthesisToken(Box<ParenthesisToken>),
     MemberExpression(Box<MemberExpression>),
+    UnaryExpression(Box<UnaryExpression>),
 }
 
 impl MathExpression {
@@ -94,6 +96,7 @@ impl MathExpression {
             MathExpression::ExtendedBinaryExpression(extended_binary_expression) => extended_binary_expression.start(),
             MathExpression::ParenthesisToken(parenthesis_token) => parenthesis_token.start(),
             MathExpression::MemberExpression(member_expression) => member_expression.start(),
+            MathExpression::UnaryExpression(unary_expression) => unary_expression.start(),
         }
     }
 
@@ -106,6 +109,7 @@ impl MathExpression {
             MathExpression::ExtendedBinaryExpression(extended_binary_expression) => extended_binary_expression.end(),
             MathExpression::ParenthesisToken(parenthesis_token) => parenthesis_token.end(),
             MathExpression::MemberExpression(member_expression) => member_expression.end(),
+            MathExpression::UnaryExpression(unary_expression) => unary_expression.end(),
         }
     }
 }
@@ -208,7 +212,8 @@ impl ReversePolishNotation {
                         if prevtoken.token_type == TokenType::Operator {
                             // Get the next token and see if it is a number.
                             if let Ok(nexttoken) = self.parser.get_token(1) {
-                                if nexttoken.token_type == TokenType::Number {
+                                if nexttoken.token_type == TokenType::Number || nexttoken.token_type == TokenType::Word
+                                {
                                     // We have a negative number/ word or string.
                                     // Change the value of the token to be the negative number/ word or string.
                                     let mut new_token = nexttoken.clone();
@@ -250,7 +255,7 @@ impl ReversePolishNotation {
                 && current_token.value == "-"
             {
                 if let Ok(nexttoken) = self.parser.get_token(1) {
-                    if nexttoken.token_type == TokenType::Number {
+                    if nexttoken.token_type == TokenType::Number || nexttoken.token_type == TokenType::Word {
                         // We have a negative number/ word or string.
                         // Change the value of the token to be the negative number/ word or string.
                         let mut new_token = nexttoken.clone();
@@ -435,11 +440,25 @@ impl ReversePolishNotation {
                     );
                 }
                 let mut new_stack = stack;
-                new_stack.push(MathExpression::Identifier(Box::new(Identifier {
-                    name: current_token.value.clone(),
-                    start: current_token.start,
-                    end: current_token.end,
-                })));
+                if current_token.value.starts_with("-") {
+                    let expression = UnaryExpression {
+                        start: current_token.start,
+                        end: current_token.end,
+                        operator: crate::abstract_syntax_tree_types::UnaryOperator::Neg,
+                        argument: BinaryPart::Identifier(Box::new(Identifier {
+                            name: current_token.value.trim_start_matches("-").to_string(),
+                            start: current_token.start + 1,
+                            end: current_token.end,
+                        })),
+                    };
+                    new_stack.push(MathExpression::UnaryExpression(Box::new(expression)));
+                } else {
+                    new_stack.push(MathExpression::Identifier(Box::new(Identifier {
+                        name: current_token.value.clone(),
+                        start: current_token.start,
+                        end: current_token.end,
+                    })));
+                }
                 return self.build_tree(&reverse_polish_notation_tokens[1..], new_stack);
             }
         } else if current_token.token_type == TokenType::Brace && current_token.value == "(" {
@@ -571,6 +590,10 @@ impl ReversePolishNotation {
                 BinaryPart::MemberExpression(member_expression.clone()),
                 member_expression.start,
             ),
+            MathExpression::UnaryExpression(unary_expression) => (
+                BinaryPart::UnaryExpression(unary_expression.clone()),
+                unary_expression.start,
+            ),
             a => {
                 return Err(KclError::InvalidExpression(KclErrorDetails {
                     source_ranges: vec![current_token.into()],
@@ -604,6 +627,10 @@ impl ReversePolishNotation {
             MathExpression::MemberExpression(member_expression) => (
                 BinaryPart::MemberExpression(member_expression.clone()),
                 member_expression.end,
+            ),
+            MathExpression::UnaryExpression(unary_expression) => (
+                BinaryPart::UnaryExpression(unary_expression.clone()),
+                unary_expression.end,
             ),
             a => {
                 return Err(KclError::InvalidExpression(KclErrorDetails {
