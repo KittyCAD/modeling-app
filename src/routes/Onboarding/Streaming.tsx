@@ -8,7 +8,7 @@ export default function Streaming() {
     buttonDownInStream: s.buttonDownInStream,
   }))
   const dismiss = useDismiss()
-  const next = useNextClick(onboardingPaths.SKETCHING)
+  const next = useNextClick(onboardingPaths.EDITOR)
 
   return (
     <div className="fixed grid justify-start items-center inset-0 z-50 pointer-events-none">
@@ -57,7 +57,7 @@ export default function Streaming() {
             onClick={next}
             icon={{ icon: faArrowRight }}
           >
-            Next: Sketching
+            Next: Code Editing
           </ActionButton>
         </div>
       </div>

@@ -256,7 +256,7 @@ export function App() {
             'hover:bg-liquid-30/40 dark:hover:bg-liquid-10/40 bg-transparent transition-colors duration-100 transition-ease-out delay-100',
         }}
       >
-        <div className="h-full flex flex-col justify-between">
+        <div id="code-pane" className="h-full flex flex-col justify-between">
           <CollapsiblePanel
             title="Code"
             icon={faCode}
