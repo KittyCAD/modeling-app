@@ -1,4 +1,4 @@
-import { useStore, toolTips } from './useStore'
+import { useStore, toolTips, TooTip } from './useStore'
 import { extrudeSketch, sketchOnExtrudedFace } from './lang/modifyAst'
 import { getNodePathFromSourceRange } from './lang/queryAst'
 import { HorzVert } from './components/Toolbar/HorzVert'
@@ -19,10 +19,27 @@ import { v4 as uuidv4 } from 'uuid'
 import { useAppMode } from 'hooks/useAppMode'
 import { ActionIcon } from 'components/ActionIcon'
 
-const sketchButtonClassnames = {
+export const sketchButtonClassnames = {
   background:
-    'bg-chalkboard-100 group-hover:bg-chalkboard-90 hover:bg-chalkboard-90 dark:bg-fern-20 dark:group-hover:bg-fern-10 dark:hover:bg-fern-10 group-disabled:bg-chalkboard-50 hover:group-disabled:bg-inherit',
-  icon: 'text-fern-20 h-auto group-hover:text-fern-10 hover:text-fern-10 dark:text-chalkboard-100 dark:group-hover:text-chalkboard-100 dark:hover:text-chalkboard-100 hover:group-disabled:text-inherit',
+    'bg-chalkboard-100 group-hover:bg-chalkboard-90 hover:bg-chalkboard-90 dark:bg-fern-20 dark:group-hover:bg-fern-10 dark:hover:bg-fern-10 group-disabled:bg-chalkboard-50 dark:group-disabled:bg-chalkboard-60 group-hover:group-disabled:bg-chalkboard-50 dark:group-hover:group-disabled:bg-chalkboard-50',
+  icon: 'text-fern-20 h-auto group-hover:text-fern-10 hover:text-fern-10 dark:text-chalkboard-100 dark:group-hover:text-chalkboard-100 dark:hover:text-chalkboard-100 group-disabled:bg-chalkboard-60 hover:group-disabled:text-inherit',
+}
+
+const sketchFnLabels: Record<TooTip | 'sketch_line' | 'move', string> = {
+  sketch_line: 'Line',
+  line: 'Line',
+  move: 'Move',
+  angledLine: 'Angled Line',
+  angledLineThatIntersects: 'Angled Line That Intersects',
+  angledLineOfXLength: 'Angled Line Of X Length',
+  angledLineOfYLength: 'Angled Line Of Y Length',
+  angledLineToX: 'Angled Line To X',
+  angledLineToY: 'Angled Line To Y',
+  lineTo: 'Line to Point',
+  xLine: 'Horizontal Line',
+  yLine: 'Vertical Line',
+  xLineTo: 'Horizontal Line to Point',
+  yLineTo: 'Vertical Line to Point',
 }
 
 export const Toolbar = () => {
@@ -83,8 +100,10 @@ export const Toolbar = () => {
               )
               updateAst(modifiedAst, true)
             }}
+            className="group"
           >
-            SketchOnFace
+            <ActionIcon icon="sketch" className="!p-0.5" size="md" />
+            Sketch on Face
           </button>
         )}
         {guiMode.mode === 'canEditSketch' && (
@@ -107,7 +126,9 @@ export const Toolbar = () => {
                 position: guiMode.position,
               })
             }}
+            className="group"
           >
+            <ActionIcon icon="sketch" className="!p-0.5" size="md" />
             Edit Sketch
           </button>
         )}
@@ -126,8 +147,10 @@ export const Toolbar = () => {
                 )
                 updateAst(modifiedAst, true, { focusPath: pathToExtrudeArg })
               }}
+              className="group"
             >
-              ExtrudeSketch
+              <ActionIcon icon="extrude" className="!p-0.5" size="md" />
+              Extrude
             </button>
             <button
               onClick={() => {
@@ -143,8 +166,10 @@ export const Toolbar = () => {
                 )
                 updateAst(modifiedAst, true, { focusPath: pathToExtrudeArg })
               }}
+              className="group"
             >
-              ExtrudeSketch (w/o pipe)
+              <ActionIcon icon="extrude" className="!p-0.5" size="md" />
+              Extrude as new
             </button>
           </>
         )}
@@ -218,9 +243,21 @@ export const Toolbar = () => {
                         }),
                   })
                 }}
+                className={
+                  'group ' +
+                  (guiMode.sketchMode === sketchFnName
+                    ? '!text-fern-70 !bg-fern-10 !dark:text-fern-20 !border-fern-50'
+                    : '')
+                }
               >
-                {sketchFnName}
-                {guiMode.sketchMode === sketchFnName && '✅'}
+                <ActionIcon
+                  icon={sketchFnName.includes('line') ? 'line' : 'move'}
+                  className="!p-0.5"
+                  bgClassName={sketchButtonClassnames.background}
+                  iconClassName={sketchButtonClassnames.icon}
+                  size="md"
+                />
+                {sketchFnLabels[sketchFnName]}
               </button>
             )
           })}

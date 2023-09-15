@@ -70,9 +70,9 @@ export const RemoveConstrainingValues = () => {
         })
       }}
       disabled={!enableHorz}
-      title="yo dawg"
+      title="Remove Constraining Values"
     >
-      RemoveConstrainingValues
+      Remove Constraining Values
     </button>
   )
 }

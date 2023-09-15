@@ -32,11 +32,11 @@ export const ActionIcon = ({
   // By default, we reverse the icon color and background color in dark mode
   const computedIconClassName =
     iconClassName ||
-    `text-liquid-20 h-auto group-hover:text-liquid-10 hover:text-liquid-10 dark:text-chalkboard-100 dark:group-hover:text-chalkboard-100 dark:hover:text-chalkboard-100`
+    `text-liquid-20 h-auto group-hover:text-liquid-10 hover:text-liquid-10 dark:text-chalkboard-100 dark:group-hover:text-chalkboard-100 dark:hover:text-chalkboard-100 group-disabled:bg-chalkboard-50 dark:group-disabled:bg-chalkboard-60 group-hover:group-disabled:bg-chalkboard-50 dark:group-hover:group-disabled:bg-chalkboard-50`
 
   const computedBgClassName =
     bgClassName ||
-    `bg-chalkboard-100 group-hover:bg-chalkboard-90 hover:bg-chalkboard-90 dark:bg-liquid-20 dark:group-hover:bg-liquid-10 dark:hover:bg-liquid-10 group-disabled:bg-chalkboard-50`
+    `bg-chalkboard-100 group-hover:bg-chalkboard-90 hover:bg-chalkboard-90 dark:bg-liquid-20 dark:group-hover:bg-liquid-10 dark:hover:bg-liquid-10 group-disabled:bg-chalkboard-80 dark:group-disabled:bg-chalkboard-80`
 
   return (
     <div

@@ -64,6 +64,9 @@
   @apply gap-1.5 p-0.5 pr-1;
   @apply rounded-sm;
 }
+:global(.dark) .toolbarButtons button {
+  @apply text-chalkboard-30 bg-chalkboard-90/50 border-chalkboard-50;
+}
 .toolbarButtons button:hover {
   @apply text-cool-90 bg-cool-10;
 }

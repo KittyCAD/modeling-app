@@ -188,8 +188,9 @@ export const Intersect = () => {
         }
       }}
       disabled={!enable}
+      title="Set Perpendicular Distance"
     >
-      perpendicularDistance
+      Set Perpendicular Distance
     </button>
   )
 }
