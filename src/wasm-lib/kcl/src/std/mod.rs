@@ -68,6 +68,8 @@ impl StdLib {
             Box::new(crate::std::math::Asin),
             Box::new(crate::std::math::Atan),
             Box::new(crate::std::math::Pi),
+            Box::new(crate::std::math::E),
+            Box::new(crate::std::math::Tau),
             Box::new(crate::std::math::Sqrt),
             Box::new(crate::std::math::Abs),
             Box::new(crate::std::math::Floor),

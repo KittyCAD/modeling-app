@@ -58,14 +58,14 @@ fn inner_tan(num: f64) -> Result<f64, KclError> {
     Ok(num.tan())
 }
 
-/// Return the value of `pi`.
+/// Return the value of `pi`. Archimedes’ constant (π).
 pub fn pi(args: &mut Args) -> Result<MemoryItem, KclError> {
     let result = inner_pi()?;
 
     args.make_user_val_from_f64(result)
 }
 
-/// Return the value of `pi`.
+/// Return the value of `pi`. Archimedes’ constant (π).
 #[stdlib {
     name = "pi",
 }]
@@ -344,4 +344,34 @@ pub fn ln(args: &mut Args) -> Result<MemoryItem, KclError> {
 }]
 fn inner_ln(num: f64) -> Result<f64, KclError> {
     Ok(num.ln())
+}
+
+/// Return the value of Euler’s number `e`.
+pub fn e(args: &mut Args) -> Result<MemoryItem, KclError> {
+    let result = inner_e()?;
+
+    args.make_user_val_from_f64(result)
+}
+
+/// Return the value of Euler’s number `e`.
+#[stdlib {
+    name = "e",
+}]
+fn inner_e() -> Result<f64, KclError> {
+    Ok(std::f64::consts::E)
+}
+
+/// Return the value of `tau`. The full circle constant (τ). Equal to 2π.
+pub fn tau(args: &mut Args) -> Result<MemoryItem, KclError> {
+    let result = inner_tau()?;
+
+    args.make_user_val_from_f64(result)
+}
+
+/// Return the value of `tau`. The full circle constant (τ). Equal to 2π.
+#[stdlib {
+    name = "tau",
+}]
+fn inner_tau() -> Result<f64, KclError> {
+    Ok(std::f64::consts::TAU)
 }
