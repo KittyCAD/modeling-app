@@ -47,6 +47,15 @@
   @apply hover:bg-cool-20;
 }
 
+.smallScrollbar::-webkit-scrollbar {
+  @apply h-0.5;
+}
+
+.smallScrollbar {
+  @apply overflow-x-auto;
+  scrollbar-width: thin;
+}
+
 :global(.dark) .popoverToggle {
   @apply hover:bg-cool-90;
 }

@@ -44,7 +44,7 @@ export const Toolbar = () => {
 
   function ToolbarButtons() {
     return (
-      <span className="overflow-x-auto">
+      <span className={styles.smallScrollbar}>
         {guiMode.mode === 'default' && (
           <button
             onClick={() => {
