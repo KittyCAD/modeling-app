@@ -529,6 +529,8 @@ async function executeCode({
     if (e instanceof KCLError) {
       errors = [e]
       logs = []
+      if (e.msg === 'file is empty')
+        engineCommandManager?.endSession()
     }
     return {
       isChange: true,
