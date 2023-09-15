@@ -302,6 +302,7 @@ export const Stream = ({ className = '' }) => {
             fnName: 'line',
             pathToNode: guiMode.pathToNode,
           }).modifiedAst
+          updateAst(_modifiedAst, false)
         } else {
           _modifiedAst = addCloseToPipe({
             node: ast,
@@ -311,8 +312,15 @@ export const Stream = ({ className = '' }) => {
           setGuiMode({
             mode: 'default',
           })
+          engineCommandManager?.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'sketch_mode_disable',
+            },
+          })
+          updateAst(_modifiedAst, true)
         }
-        updateAst(_modifiedAst, false)
       }
     })
     setDidDragInStream(false)
