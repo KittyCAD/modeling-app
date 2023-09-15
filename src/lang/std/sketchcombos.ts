@@ -1,5 +1,5 @@
 import { TransformCallback } from './stdTypes'
-import { Selections, toolTips, TooTip, Selection } from '../../useStore'
+import { Selections, toolTips, ToolTip, Selection } from '../../useStore'
 import {
   CallExpression,
   Program,
@@ -54,7 +54,7 @@ export type ConstraintType =
   | 'setAngleBetween'
 
 function createCallWrapper(
-  a: TooTip,
+  a: ToolTip,
   val: [Value, Value] | Value,
   tag?: Value,
   valueUsedInTransform?: number
@@ -101,7 +101,7 @@ function intersectCallWrapper({
 }
 
 export type TransformInfo = {
-  tooltip: TooTip
+  tooltip: ToolTip
   createNode: (a: {
     varValA: Value // x / angle
     varValB: Value // y / length or x y for angledLineOfXlength etc
@@ -112,7 +112,7 @@ export type TransformInfo = {
 }
 
 type TransformMap = {
-  [key in TooTip]?: {
+  [key in ToolTip]?: {
     [key in LineInputsType | 'free']?: {
       [key in ConstraintType]?: TransformInfo
     }
@@ -1095,12 +1095,12 @@ export function getRemoveConstraintsTransform(
   sketchFnExp: CallExpression,
   constraintType: ConstraintType
 ): TransformInfo | false {
-  let name = sketchFnExp.callee.name as TooTip
+  let name = sketchFnExp.callee.name as ToolTip
   if (!toolTips.includes(name)) {
     return false
   }
   const xyLineMap: {
-    [key in TooTip]?: TooTip
+    [key in ToolTip]?: ToolTip
   } = {
     xLine: 'line',
     yLine: 'line',
@@ -1167,12 +1167,12 @@ function getTransformMapPath(
   constraintType: ConstraintType
 ):
   | {
-      toolTip: TooTip
+      toolTip: ToolTip
       lineInputType: LineInputsType | 'free'
       constraintType: ConstraintType
     }
   | false {
-  const name = sketchFnExp.callee.name as TooTip
+  const name = sketchFnExp.callee.name as ToolTip
   if (!toolTips.includes(name)) {
     return false
   }
@@ -1225,7 +1225,7 @@ export function getTransformInfo(
 
 export function getConstraintType(
   val: Value | [Value, Value] | [Value, Value, Value],
-  fnName: TooTip
+  fnName: ToolTip
 ): LineInputsType | null {
   // this function assumes that for two val sketch functions that one arg is locked down not both
   // and for one val sketch functions that the arg is NOT locked down
@@ -1445,7 +1445,7 @@ export function transformAstSketchLines({
         programMemory,
         sourceRange: range,
         referencedSegment,
-        fnName: transformTo || (callExp.callee.name as TooTip),
+        fnName: transformTo || (callExp.callee.name as ToolTip),
         to,
         from,
         createCallback: callBack({
@@ -1511,7 +1511,7 @@ export function getConstraintLevelFromSourceRange(
     getNodePathFromSourceRange(ast, cursorRange),
     'CallExpression'
   )
-  const name = sketchFnExp?.callee?.name as TooTip
+  const name = sketchFnExp?.callee?.name as ToolTip
   if (!toolTips.includes(name)) return 'free'
 
   const firstArg = getFirstArg(sketchFnExp)

@@ -1,4 +1,4 @@
-import { Selection, TooTip } from '../useStore'
+import { Selection, ToolTip } from '../useStore'
 import {
   Program,
   CallExpression,
@@ -635,7 +635,7 @@ export function giveSketchFnCallTag(
     createLiteral(tag || findUniqueName(ast, 'seg', 2))) as Literal
   const tagStr = String(tagValue.value)
   const newFirstArg = createFirstArg(
-    primaryCallExp.callee.name as TooTip,
+    primaryCallExp.callee.name as ToolTip,
     firstArg.val,
     tagValue
   )
