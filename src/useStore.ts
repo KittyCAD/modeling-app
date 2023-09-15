@@ -14,11 +14,7 @@ import {
 } from './lang/executor'
 import { recast } from './lang/recast'
 import { EditorSelection } from '@codemirror/state'
-import {
-  ArtifactMap,
-  SourceRangeMap,
-  EngineCommandManager,
-} from './lang/std/engineConnection'
+import { EngineCommandManager } from './lang/std/engineConnection'
 import { KCLError } from './lang/errors'
 import { deferExecution } from 'lib/utils'
 import { _executor } from './lang/executor'
@@ -125,14 +121,15 @@ export interface StoreState {
   setGuiMode: (guiMode: GuiModes) => void
   logs: string[]
   addLog: (log: string) => void
-  resetLogs: () => void
+  setLogs: (logs: string[]) => void
   kclErrors: KCLError[]
   addKCLError: (err: KCLError) => void
+  setErrors: (errors: KCLError[]) => void
   resetKCLErrors: () => void
   ast: Program
   setAst: (ast: Program) => void
-  executeAst: () => void
-  executeAstMock: () => void
+  executeAst: (ast: Program) => void
+  executeAstMock: (ast: Program) => void
   updateAst: (
     ast: Program,
     execute: boolean,
@@ -149,23 +146,12 @@ export interface StoreState {
   code: string
   setCode: (code: string) => void
   deferredSetCode: (code: string) => void
-  executeCode: () => void
+  executeCode: (code?: string) => void
   formatCode: () => void
-  errorState: {
-    isError: boolean
-    error: string
-  }
-  setError: (error?: string) => void
   programMemory: ProgramMemory
   setProgramMemory: (programMemory: ProgramMemory) => void
   isShiftDown: boolean
   setIsShiftDown: (isShiftDown: boolean) => void
-  artifactMap: ArtifactMap
-  sourceRangeMap: SourceRangeMap
-  setArtifactNSourceRangeMaps: (a: {
-    artifactMap: ArtifactMap
-    sourceRangeMap: SourceRangeMap
-  }) => void
   engineCommandManager?: EngineCommandManager
   setEngineCommandManager: (engineCommandManager: EngineCommandManager) => void
   mediaStream?: MediaStream
@@ -211,7 +197,7 @@ export const useStore = create<StoreState>()(
       // should not be updating the ast.
       const setDeferredCode = deferExecution((code: string) => {
         set({ code })
-        get().executeCode()
+        get().executeCode(code)
       }, 600)
       return {
         editorView: null,
@@ -226,42 +212,21 @@ export const useStore = create<StoreState>()(
             editorView.dispatch({ effects: addLineHighlight.of(selection) })
           }
         },
-        executeCode: () => {
-          try {
-            // Let's parse the ast.
-            const ast = parser_wasm(get().code)
-            // Check if the ast we have is equal to the ast in the storage.
-            // If it is, we don't need to update the ast.
-            if (JSON.stringify(ast) === JSON.stringify(get().ast)) return
-            // If it isn't, we need to update the ast and execute.
-            // We do not call updateAst directly because we don't want to move the
-            // cursor when the user is typing.
-            get().setAst(ast)
-            get().executeAst()
-          } catch (e: any) {
-            if (e instanceof KCLError) {
-              if (e.msg == 'file is empty') {
-                // Reset the ast and program memory and reexecute the empty
-                // file.
-                // Empty the ast.
-                get().setAst({
-                  start: 0,
-                  end: 0,
-                  body: [],
-                  nonCodeMeta: {
-                    noneCodeNodes: {},
-                    start: null,
-                  },
-                })
-                get().executeAst()
-              }
-              get().addKCLError(e)
-            } else {
-              get().setError('problem')
-              console.log(e)
-              get().addLog(e)
-            }
+        executeCode: async (code) => {
+          const result = await executeCode({
+            code: code || get().code,
+            lastAst: get().ast,
+            engineCommandManager: get().engineCommandManager,
+          })
+          if (!result.isChange) {
+            return
           }
+          set({
+            ast: result.ast,
+            logs: result.logs,
+            kclErrors: result.errors,
+            programMemory: result.programMemory,
+          })
         },
         setCursor: (selections) => {
           const { editorView } = get()
@@ -329,8 +294,8 @@ export const useStore = create<StoreState>()(
             set((state) => ({ logs: [...state.logs, log] }))
           }
         },
-        resetLogs: () => {
-          set({ logs: [] })
+        setLogs: (logs) => {
+          set({ logs })
         },
         kclErrors: [],
         addKCLError: (e) => {
@@ -338,6 +303,9 @@ export const useStore = create<StoreState>()(
         },
         resetKCLErrors: () => {
           set({ kclErrors: [] })
+        },
+        setErrors: (errors) => {
+          set({ kclErrors: errors })
         },
         ast: {
           start: 0,
@@ -351,149 +319,41 @@ export const useStore = create<StoreState>()(
         setAst: (ast) => {
           set({ ast })
         },
-        executeAst: async () => {
+        executeAst: async (ast?: Program) => {
+          const _ast = ast || get().ast
           if (!get().isStreamReady) return
-          if (!get().engineCommandManager) return
-          let unsubFn: any[] = []
-
           const engineCommandManager = get().engineCommandManager!
-          // We assume we have already set the ast.
-          try {
-            get().resetLogs()
-            get().resetKCLErrors()
+          if (!engineCommandManager) return
 
-            engineCommandManager.endSession()
-            engineCommandManager.startNewSession()
-            get().setIsExecuting(true)
-            const programMemory = await _executor(
-              get().ast,
-              {
-                root: {
-                  _0: {
-                    type: 'UserVal',
-                    value: 0,
-                    __meta: [],
-                  },
-                  _90: {
-                    type: 'UserVal',
-                    value: 90,
-                    __meta: [],
-                  },
-                  _180: {
-                    type: 'UserVal',
-                    value: 180,
-                    __meta: [],
-                  },
-                  _270: {
-                    type: 'UserVal',
-                    value: 270,
-                    __meta: [],
-                  },
-                },
-                return: null,
-              },
-              engineCommandManager
-            )
-
-            const { artifactMap, sourceRangeMap } =
-              await engineCommandManager.waitForAllCommands(
-                get().ast,
-                programMemory
-              )
-            get().setIsExecuting(false)
-            if (programMemory !== undefined) {
-              get().setProgramMemory(programMemory)
-            }
-
-            get().setArtifactNSourceRangeMaps({ artifactMap, sourceRangeMap })
-            const unSubHover = engineCommandManager.subscribeToUnreliable({
-              event: 'highlight_set_entity',
-              callback: ({ data }) => {
-                if (data?.entity_id) {
-                  const sourceRange = sourceRangeMap[data.entity_id]
-                  get().setHighlightRange(sourceRange)
-                } else if (
-                  !get().highlightRange ||
-                  (get().highlightRange[0] !== 0 &&
-                    get().highlightRange[1] !== 0)
-                ) {
-                  get().setHighlightRange([0, 0])
-                }
-              },
-            })
-            const unSubClick = engineCommandManager.subscribeTo({
-              event: 'select_with_point',
-              callback: ({ data }) => {
-                if (!data?.entity_id) {
-                  get().setCursor2()
-                  return
-                }
-                const sourceRange = sourceRangeMap[data.entity_id]
-                get().setCursor2({ range: sourceRange, type: 'default' })
-              },
-            })
-            unsubFn.push(unSubHover, unSubClick)
-
-            get().setError()
-          } catch (e: any) {
-            get().setIsExecuting(false)
-            if (e instanceof KCLError) {
-              get().addKCLError(e)
-            } else {
-              get().setError('problem')
-              console.log(e)
-              get().addLog(e)
-            }
-          }
+          set({ isExecuting: true })
+          const { logs, errors, programMemory } = await executeAst({
+            ast: _ast,
+            engineCommandManager,
+          })
+          set({
+            programMemory,
+            logs,
+            kclErrors: errors,
+            isExecuting: false,
+          })
         },
-        executeAstMock: async () => {
+        executeAstMock: async (ast?: Program) => {
+          const _ast = ast || get().ast
           if (!get().isStreamReady) return
+          const engineCommandManager = get().engineCommandManager!
+          if (!engineCommandManager) return
 
-          // We assume we have already set the ast and updated the code.
-          try {
-            get().resetLogs()
-            get().resetKCLErrors()
-
-            // Get the mock executor.
-            const programMemory = await enginelessExecutor(get().ast, {
-              root: {
-                _0: {
-                  type: 'UserVal',
-                  value: 0,
-                  __meta: [],
-                },
-                _90: {
-                  type: 'UserVal',
-                  value: 90,
-                  __meta: [],
-                },
-                _180: {
-                  type: 'UserVal',
-                  value: 180,
-                  __meta: [],
-                },
-                _270: {
-                  type: 'UserVal',
-                  value: 270,
-                  __meta: [],
-                },
-              },
-              return: null,
-            })
-
-            if (programMemory !== undefined) {
-              get().setProgramMemory(programMemory)
-            }
-            get().setError()
-          } catch (e: any) {
-            if (e instanceof KCLError) {
-              get().addKCLError(e)
-            } else {
-              get().setError('problem')
-              console.log(e)
-              get().addLog(e)
-            }
-          }
+          const { logs, errors, programMemory } = await executeAst({
+            ast: _ast,
+            engineCommandManager,
+            useFakeExecutor: true,
+          })
+          set({
+            programMemory,
+            logs,
+            kclErrors: errors,
+            isExecuting: false,
+          })
         },
         updateAst: async (
           ast,
@@ -530,12 +390,12 @@ export const useStore = create<StoreState>()(
 
           if (reexecute) {
             // Call execute on the set ast.
-            get().executeAst()
+            get().executeAst(astWithUpdatedSource)
           } else {
             // When we don't re-execute, we still want to update the program
             // memory with the new ast. So we will hit the mock executor
             // instead.
-            get().executeAstMock()
+            get().executeAstMock(astWithUpdatedSource)
           }
         },
         updateAstAsync: async (ast, reexecute, focusPath) => {
@@ -561,20 +421,10 @@ export const useStore = create<StoreState>()(
           const newCode = recast(ast)
           set({ code: newCode, ast })
         },
-        errorState: {
-          isError: false,
-          error: '',
-        },
-        setError: (error = '') => {
-          set({ errorState: { isError: !!error, error } })
-        },
         programMemory: { root: {}, return: null },
         setProgramMemory: (programMemory) => set({ programMemory }),
         isShiftDown: false,
         setIsShiftDown: (isShiftDown) => set({ isShiftDown }),
-        artifactMap: {},
-        sourceRangeMap: {},
-        setArtifactNSourceRangeMaps: (maps) => set({ ...maps }),
         setEngineCommandManager: (engineCommandManager) =>
           set({ engineCommandManager }),
         setMediaStream: (mediaStream) => set({ mediaStream }),
@@ -623,3 +473,158 @@ export const useStore = create<StoreState>()(
     }
   )
 )
+
+const defaultProgramMemory: ProgramMemory['root'] = {
+  _0: {
+    type: 'UserVal',
+    value: 0,
+    __meta: [],
+  },
+  _90: {
+    type: 'UserVal',
+    value: 90,
+    __meta: [],
+  },
+  _180: {
+    type: 'UserVal',
+    value: 180,
+    __meta: [],
+  },
+  _270: {
+    type: 'UserVal',
+    value: 270,
+    __meta: [],
+  },
+  PI: {
+    type: 'UserVal',
+    value: Math.PI,
+    __meta: [],
+  },
+}
+
+async function executeCode({
+  engineCommandManager,
+  code,
+  lastAst,
+}: {
+  code: string
+  lastAst: Program
+  engineCommandManager?: EngineCommandManager
+}): Promise<
+  | {
+      logs: string[]
+      errors: KCLError[]
+      programMemory: ProgramMemory
+      ast: Program
+      isChange: true
+    }
+  | { isChange: false }
+> {
+  let ast: Program
+  try {
+    ast = parser_wasm(code)
+  } catch (e) {
+    let errors: KCLError[] = []
+    let logs: string[] = [JSON.stringify(e)]
+    if (e instanceof KCLError) {
+      errors = [e]
+      logs = []
+    }
+    return {
+      isChange: true,
+      logs,
+      errors,
+      programMemory: {
+        root: {},
+        return: null,
+      },
+      ast: {
+        start: 0,
+        end: 0,
+        body: [],
+        nonCodeMeta: {
+          noneCodeNodes: {},
+          start: null,
+        },
+      },
+    }
+  }
+  // Check if the ast we have is equal to the ast in the storage.
+  // If it is, we don't need to update the ast.
+  if (!engineCommandManager || JSON.stringify(ast) === JSON.stringify(lastAst))
+    return { isChange: false }
+
+  const { logs, errors, programMemory } = await executeAst({
+    ast,
+    engineCommandManager,
+  })
+  return {
+    ast,
+    logs,
+    errors,
+    programMemory,
+    isChange: true,
+  }
+}
+
+async function executeAst({
+  ast,
+  engineCommandManager,
+  useFakeExecutor = false,
+}: {
+  ast: Program
+  engineCommandManager: EngineCommandManager
+  useFakeExecutor?: boolean
+}): Promise<{
+  logs: string[]
+  errors: KCLError[]
+  programMemory: ProgramMemory
+}> {
+  try {
+    if (!useFakeExecutor) {
+      engineCommandManager.endSession()
+      engineCommandManager.startNewSession()
+    }
+    const programMemory = await (useFakeExecutor
+      ? enginelessExecutor(ast, {
+          root: defaultProgramMemory,
+          return: null,
+        })
+      : _executor(
+          ast,
+          {
+            root: defaultProgramMemory,
+            return: null,
+          },
+          engineCommandManager
+        ))
+
+    await engineCommandManager.waitForAllCommands(ast, programMemory)
+    return {
+      logs: [],
+      errors: [],
+      programMemory,
+    }
+  } catch (e: any) {
+    if (e instanceof KCLError) {
+      return {
+        errors: [e],
+        logs: [],
+        programMemory: {
+          root: {},
+          return: null,
+        },
+      }
+    } else {
+      console.log(e)
+      return {
+        logs: [e],
+        errors: [],
+        programMemory: {
+          root: {},
+          return: null,
+        },
+      }
+    }
+  }
+}

@@ -31,6 +31,7 @@ import { CodeMenu } from 'components/CodeMenu'
 import { TextEditor } from 'components/TextEditor'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
+import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
@@ -138,6 +139,7 @@ export function App() {
   }, [loadedCode, setCode])
 
   useSetupEngineManager(streamRef, token)
+  useEngineConnectionSubscriptions()
 
   const debounceSocketSend = throttle<EngineCommand>((message) => {
     engineCommandManager?.sendSceneCommand(message)

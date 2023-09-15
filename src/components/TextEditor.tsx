@@ -60,7 +60,6 @@ export const TextEditor = ({
     setEditorView,
     setIsLSPServerReady,
     setSelectionRanges,
-    sourceRangeMap,
   } = useStore((s) => ({
     code: s.code,
     deferredSetCode: s.deferredSetCode,
@@ -73,7 +72,6 @@ export const TextEditor = ({
     setEditorView: s.setEditorView,
     setIsLSPServerReady: s.setIsLSPServerReady,
     setSelectionRanges: s.setSelectionRanges,
-    sourceRangeMap: s.sourceRangeMap,
   }))
 
   const {
@@ -174,11 +172,11 @@ export const TextEditor = ({
     )
     const idBasedSelections = codeBasedSelections
       .map(({ type, range }) => {
-        const hasOverlap = Object.entries(sourceRangeMap).filter(
-          ([_, sourceRange]) => {
-            return isOverlap(sourceRange, range)
-          }
-        )
+        const hasOverlap = Object.entries(
+          engineCommandManager?.sourceRangeMap || {}
+        ).filter(([_, sourceRange]) => {
+          return isOverlap(sourceRange, range)
+        })
         if (hasOverlap.length) {
           return {
             type,
