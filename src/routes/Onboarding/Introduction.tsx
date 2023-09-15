@@ -13,7 +13,7 @@ export default function Introduction() {
     },
   } = useGlobalStateContext()
   const dismiss = useDismiss()
-  const next = useNextClick(onboardingPaths.UNITS)
+  const next = useNextClick(onboardingPaths.CAMERA)
 
   return (
     <div className="fixed grid place-content-center inset-0 bg-chalkboard-110/50 z-50">
@@ -42,7 +42,7 @@ export default function Introduction() {
             <a
               href="https://gist.github.com/jgomez720/5cd53fb7e8e54079f6dc0d2625de5393"
               target="_blank"
-              rel="noopener"
+              rel="noreferrer noopener"
             >
               expectations for alpha users here
             </a>

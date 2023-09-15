@@ -1,7 +1,6 @@
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Outlet, useNavigate } from 'react-router-dom'
 import Introduction from './Introduction'
-import Units from './Units'
 import Camera from './Camera'
 import Sketching from './Sketching'
 import { useCallback } from 'react'
@@ -11,7 +10,6 @@ import Streaming from './Streaming'
 
 export const onboardingPaths = {
   INDEX: '/',
-  UNITS: '/units',
   CAMERA: '/camera',
   SKETCHING: '/sketching',
   STREAMING: '/streaming',
@@ -21,10 +19,6 @@ export const onboardingRoutes = [
   {
     index: true,
     element: <Introduction />,
-  },
-  {
-    path: makeUrlPathRelative(onboardingPaths.UNITS),
-    element: <Units />,
   },
   {
     path: makeUrlPathRelative(onboardingPaths.CAMERA),
@@ -61,7 +55,7 @@ export function useNextClick(newStatus: string) {
       type: 'Set Onboarding Status',
       data: { onboardingStatus: newStatus },
     })
-    navigate((newStatus !== onboardingPaths.UNITS ? '..' : '.') + newStatus)
+    navigate((newStatus !== onboardingPaths.CAMERA ? '..' : '.') + newStatus)
   }, [newStatus, send, navigate])
 }
 
