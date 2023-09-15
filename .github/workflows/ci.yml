@@ -136,7 +136,6 @@ jobs:
 
       - name: Prepare Windows certificate and variables
         if: matrix.os == 'windows-latest'
-        id: variables 
         run: | 
           echo "${{secrets.SM_CLIENT_CERT_FILE_B64 }}" | base64 --decode > /d/Certificate_pkcs12.p12 
           cat /d/Certificate_pkcs12.p12 
@@ -161,7 +160,7 @@ jobs:
           smksp_cert_sync.exe 
         shell: cmd 
 
-      - name: Build the app for the current platform (no upload)
+      - name: Build and sign the app for the current platform
         uses: tauri-apps/tauri-action@v0
         env:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
