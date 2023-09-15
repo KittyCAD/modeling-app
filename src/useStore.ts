@@ -82,6 +82,14 @@ export type GuiModes =
     }
   | {
       mode: 'sketch'
+      sketchMode: 'enterSketchEdit'
+      rotation: Rotation
+      position: Position
+      pathToNode: PathToNode
+      pathId: string
+    }
+  | {
+      mode: 'sketch'
       sketchMode: 'selectFace'
     }
   | {

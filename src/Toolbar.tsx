@@ -82,20 +82,13 @@ export const Toolbar = () => {
           <button
             onClick={() => {
               console.log('guiMode.pathId', guiMode.pathId)
-              engineCommandManager?.sendSceneCommand({
-                type: 'modeling_cmd_req',
-                cmd_id: uuidv4(),
-                cmd: {
-                  type: 'edit_mode_enter',
-                  target: guiMode.pathId,
-                },
-              })
               setGuiMode({
                 mode: 'sketch',
-                sketchMode: 'sketchEdit',
+                sketchMode: 'enterSketchEdit',
                 pathToNode: guiMode.pathToNode,
-                rotation: guiMode.rotation,
-                position: guiMode.position,
+                rotation: [0, 0, 0, 1],
+                position: [0, 0, 0],
+                pathId: guiMode.pathId,
               })
             }}
           >
