@@ -3,13 +3,20 @@ import { ActionButton } from '../../components/ActionButton'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from '../../useStore'
 import { useBackdropHighlight } from 'hooks/useBackdropHighlight'
+import { Themes } from 'lib/theme'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 
-export default function CodeEditor() {
+export default function ParametricModeling() {
   const { buttonDownInStream } = useStore((s) => ({
     buttonDownInStream: s.buttonDownInStream,
   }))
+  const {
+    settings: {
+      context: { theme },
+    },
+  } = useGlobalStateContext()
   const dismiss = useDismiss()
-  const next = useNextClick(onboardingPaths.PARAMETRIC_MODELING)
+  const next = useNextClick(onboardingPaths.SKETCHING)
 
   return (
     <div className="fixed grid justify-end items-center inset-0 z-50 pointer-events-none">
@@ -23,38 +30,28 @@ export default function CodeEditor() {
           (buttonDownInStream ? '' : ' pointer-events-auto')
         }
       >
-        <section className="flex-1">
-          <h2 className="text-2xl">
-            Editing code with <code>kcl</code>
-          </h2>
+        <section className="flex-1 overflow-y-auto mb-6">
+          <h2 className="text-2xl">Towards true parametric modeling</h2>
           <p className="my-4">
-            The left pane is where you write your code. It's a code editor with
-            syntax highlighting and autocompletion. We've decided to take the
-            difficult route of writing our own language—called <code>kcl</code>
-            —for describing geometry, because don't want to inherit all the
-            other functionality from existing languages. We have a lot of ideas
-            about how <code>kcl</code> will evolve, and we want to hear your
-            thoughts on it.
+            This example script shows how having access to the code
+            representation of a part can allow us to do things that are tedious
+            or impossible in traditional CAD software. Here we are building a
+            simplified shelf bracket out of aluminum:
           </p>
+          <figure className="my-4 w-3/4 mx-auto">
+            <img
+              src={`/onboarding-bracket${
+                theme === Themes.Light ? '-dark' : ''
+              }.png`}
+              alt="Bracket"
+            />
+            <figcaption className="text-small italic text-center">
+              A simplified shelf bracket
+            </figcaption>
+          </figure>
           <p className="my-4">
-            We've built a language server for <code>kcl</code> that provides
-            documentation and autocompletion automatically generated from our
-            compiler code. You can try it out by hovering over some of the
-            function names in the pane now. If you like using VSCode, you can
-            try out our{' '}
-            <a
-              href="https://marketplace.visualstudio.com/items?itemName=KittyCAD.kcl-language-server"
-              rel="noreferrer noopener"
-              target="_blank"
-            >
-              VSCode extension
-            </a>
-            .
-          </p>
-          <p className="my-4">
-            You can resize the pane by dragging the handle on the right, and you
-            can collapse it by clicking the title bar or pressing{' '}
-            <kbd>Shift</kbd> + <kbd>C</kbd>.
+            We are able to easily calculate the thickness of the material based
+            on the width of the bracket to meet a set safety factor on line 13.
           </p>
         </section>
         <div className="flex justify-between">
@@ -76,7 +73,7 @@ export default function CodeEditor() {
             onClick={next}
             icon={{ icon: faArrowRight }}
           >
-            Next: Parametric Modeling
+            Next: Sketching
           </ActionButton>
         </div>
       </div>

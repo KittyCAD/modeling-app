@@ -8,12 +8,21 @@ import makeUrlPathRelative from '../../lib/makeUrlPathRelative'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import Streaming from './Streaming'
 import CodeEditor from './CodeEditor'
+import ParametricModeling from './ParametricModeling'
 
 export const onboardingPaths = {
   INDEX: '/',
   CAMERA: '/camera',
   STREAMING: '/streaming',
   EDITOR: '/editor',
+  PARAMETRIC_MODELING: '/parametric-modeling',
+  INTERACTIVE_NUMBERS: '/interactive-numbers',
+  AUTOCOMPLETE: '/autocomplete',
+  COMMAND_K: '/command-k',
+  USER_MENU: '/user-menu',
+  PROJECT_MENU: '/project-menu',
+  EXPORT: '/export',
+  MOVE: '/move',
   SKETCHING: '/sketching',
   FUTURE_WORK: '/future-work',
 }
@@ -35,7 +44,10 @@ export const onboardingRoutes = [
     path: makeUrlPathRelative(onboardingPaths.EDITOR),
     element: <CodeEditor />,
   },
-  // Parametric modeling
+  {
+    path: makeUrlPathRelative(onboardingPaths.PARAMETRIC_MODELING),
+    element: <ParametricModeling />,
+  },
   // Interactive numbers
   // Autocomplete / LSP
   // Command + K
