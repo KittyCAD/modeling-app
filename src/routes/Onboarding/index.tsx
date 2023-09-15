@@ -28,10 +28,21 @@ export const onboardingRoutes = [
     path: makeUrlPathRelative(onboardingPaths.CAMERA),
     element: <Camera />,
   },
+  // Streaming
+  // Code editor / KCL
+  // Parametric modeling
+  // Interactive numbers
+  // Autocomplete / LSP
+  // Command + K
+  // User menu
+  // Project menu
+  // Export / conversion API
   {
     path: makeUrlPathRelative(onboardingPaths.SKETCHING),
     element: <Sketching />,
   },
+  // Move
+  // Future Work
 ]
 
 export function useNextClick(newStatus: string) {
