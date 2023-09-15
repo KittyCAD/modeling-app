@@ -128,8 +128,8 @@ export interface StoreState {
   resetKCLErrors: () => void
   ast: Program
   setAst: (ast: Program) => void
-  executeAst: (ast: Program) => void
-  executeAstMock: (ast: Program) => void
+  executeAst: (ast?: Program) => void
+  executeAstMock: (ast?: Program) => void
   updateAst: (
     ast: Program,
     execute: boolean,
@@ -319,7 +319,7 @@ export const useStore = create<StoreState>()(
         setAst: (ast) => {
           set({ ast })
         },
-        executeAst: async (ast?: Program) => {
+        executeAst: async (ast) => {
           const _ast = ast || get().ast
           if (!get().isStreamReady) return
           const engineCommandManager = get().engineCommandManager!
@@ -337,7 +337,7 @@ export const useStore = create<StoreState>()(
             isExecuting: false,
           })
         },
-        executeAstMock: async (ast?: Program) => {
+        executeAstMock: async (ast) => {
           const _ast = ast || get().ast
           if (!get().isStreamReady) return
           const engineCommandManager = get().engineCommandManager!

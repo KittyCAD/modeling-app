@@ -27,6 +27,7 @@ export const Toolbar = () => {
     updateAst,
     programMemory,
     engineCommandManager,
+    executeAst,
   } = useStore((s) => ({
     guiMode: s.guiMode,
     setGuiMode: s.setGuiMode,
@@ -35,6 +36,7 @@ export const Toolbar = () => {
     updateAst: s.updateAst,
     programMemory: s.programMemory,
     engineCommandManager: s.engineCommandManager,
+    executeAst: s.executeAst,
   }))
   useAppMode()
 
@@ -153,6 +155,7 @@ export const Toolbar = () => {
               })
 
               setGuiMode({ mode: 'default' })
+              executeAst()
             }}
           >
             Exit sketch

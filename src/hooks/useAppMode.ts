@@ -61,7 +61,8 @@ export function useAppMode() {
     }
     if (guiMode.mode !== 'sketch' && defaultPlanes) {
       setDefaultPlanesHidden(engineCommandManager, defaultPlanes, true)
-    } else if (guiMode.mode === 'default') {
+    }
+    if (guiMode.mode === 'default') {
       const pathId =
         engineCommandManager &&
         isCursorInSketchCommandRange(
@@ -227,10 +228,12 @@ function isCursorInSketchCommandRange(
           isOverlap(selection.range, artifact.range) &&
           (artifact.commandType === 'start_path' ||
             artifact.commandType === 'extend_path' ||
-            'close_path')
+            artifact.commandType === 'close_path')
       )
   )
-  return overlapingEntries.length === 1 && overlapingEntries[0][1].parentId
+  return overlapingEntries.length && overlapingEntries[0][1].parentId
     ? overlapingEntries[0][1].parentId
-    : false
+    : overlapingEntries.find(
+        ([, artifact]) => artifact.commandType === 'start_path'
+      )?.[0] || false
 }
