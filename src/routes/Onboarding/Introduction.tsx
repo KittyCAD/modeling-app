@@ -39,7 +39,7 @@ export default function Introduction() {
           <p className="my-4">
             This is an alpha release, so you will encounter bugs and missing
             features. You can read our{' '}
-            <a href="/expectations.md" target="_blank" rel="noopener">
+            <a href="https://gist.github.com/jgomez720/5cd53fb7e8e54079f6dc0d2625de5393" target="_blank" rel="noopener">
               expectations for alpha users here
             </a>
             . Please give us feedback on your experience! We are trying to
