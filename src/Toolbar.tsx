@@ -1,4 +1,4 @@
-import { useStore, toolTips, Selections } from './useStore'
+import { useStore, toolTips } from './useStore'
 import { extrudeSketch, sketchOnExtrudedFace } from './lang/modifyAst'
 import { getNodePathFromSourceRange } from './lang/queryAst'
 import { HorzVert } from './components/Toolbar/HorzVert'
@@ -17,6 +17,13 @@ import { Popover, Transition } from '@headlessui/react'
 import styles from './Toolbar.module.css'
 import { v4 as uuidv4 } from 'uuid'
 import { useAppMode } from 'hooks/useAppMode'
+import { ActionIcon } from 'components/ActionIcon'
+
+const sketchButtonClassnames = {
+  background:
+    'bg-chalkboard-100 group-hover:bg-chalkboard-90 hover:bg-chalkboard-90 dark:bg-fern-20 dark:group-hover:bg-fern-10 dark:hover:bg-fern-10 group-disabled:bg-chalkboard-50 hover:group-disabled:bg-inherit',
+  icon: 'text-fern-20 h-auto group-hover:text-fern-10 hover:text-fern-10 dark:text-chalkboard-100 dark:group-hover:text-chalkboard-100 dark:hover:text-chalkboard-100 hover:group-disabled:text-inherit',
+}
 
 export const Toolbar = () => {
   const {
@@ -44,9 +51,9 @@ export const Toolbar = () => {
     console.log('guiMode', guiMode)
   }, [guiMode])
 
-  function ToolbarButtons() {
+  function ToolbarButtons({ className }: React.HTMLAttributes<HTMLElement>) {
     return (
-      <span className={styles.smallScrollbar}>
+      <span className={styles.toolbarButtons + ' ' + className}>
         {guiMode.mode === 'default' && (
           <button
             onClick={() => {
@@ -55,7 +62,9 @@ export const Toolbar = () => {
                 sketchMode: 'selectFace',
               })
             }}
+            className="group"
           >
+            <ActionIcon icon="sketch" className="!p-0.5" size="md" />
             Start Sketch
           </button>
         )}
@@ -157,7 +166,15 @@ export const Toolbar = () => {
               setGuiMode({ mode: 'default' })
               executeAst()
             }}
+            className="group"
           >
+            <ActionIcon
+              icon="exit"
+              className="!p-0.5"
+              bgClassName={sketchButtonClassnames.background}
+              iconClassName={sketchButtonClassnames.icon}
+              size="md"
+            />
             Exit sketch
           </button>
         )}
@@ -234,7 +251,7 @@ export const Toolbar = () => {
         <span className={styles.toolbarCap + ' ' + styles.label}>
           {guiMode.mode === 'sketch' ? '2D' : '3D'}
         </span>
-        <menu className="flex flex-1 gap-2 py-0.5 overflow-hidden whitespace-nowrap">
+        <menu className="flex-1 gap-2 py-0.5 overflow-hidden whitespace-nowrap">
           <ToolbarButtons />
         </menu>
         <Popover.Button
@@ -275,7 +292,7 @@ export const Toolbar = () => {
             </Popover.Button>
           </section>
           <section>
-            <ToolbarButtons />
+            <ToolbarButtons className="flex-wrap" />
           </section>
         </Popover.Panel>
       </Transition>
