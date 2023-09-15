@@ -1,4 +1,4 @@
-import { Selection, TooTip } from '../useStore'
+import { Selection, ToolTip } from '../useStore'
 import {
   Program,
   CallExpression,
@@ -305,7 +305,11 @@ export function extrudeSketch(
   }
   const name = findUniqueName(node, 'part')
   const VariableDeclaration = createVariableDeclaration(name, extrudeCall)
-  const showCallIndex = getShowIndex(_node)
+  let showCallIndex = getShowIndex(_node)
+  if (showCallIndex == -1) {
+    // We didn't find a show, so let's just append everything
+    showCallIndex = _node.body.length
+  }
   _node.body.splice(showCallIndex, 0, VariableDeclaration)
   const pathToExtrudeArg: PathToNode = [
     ['body', ''],
@@ -635,7 +639,7 @@ export function giveSketchFnCallTag(
     createLiteral(tag || findUniqueName(ast, 'seg', 2))) as Literal
   const tagStr = String(tagValue.value)
   const newFirstArg = createFirstArg(
-    primaryCallExp.callee.name as TooTip,
+    primaryCallExp.callee.name as ToolTip,
     firstArg.val,
     tagValue
   )

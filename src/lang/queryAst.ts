@@ -1,5 +1,5 @@
 import { PathToNode, ProgramMemory, SketchGroup, SourceRange } from './executor'
-import { Selection, TooTip } from '../useStore'
+import { Selection, ToolTip } from '../useStore'
 import {
   BinaryExpression,
   Program,
@@ -457,7 +457,7 @@ export function isLinesParallelAndConstrained(
     const secondaryFirstArg = getFirstArg(secondaryNode)
     const constraintType = getConstraintType(
       secondaryFirstArg.val,
-      secondaryNode.callee.name as TooTip
+      secondaryNode.callee.name as ToolTip
     )
     const constraintLevel = getConstraintLevelFromSourceRange(
       secondaryLine.range,
