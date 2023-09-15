@@ -86,22 +86,31 @@ export function App() {
   useHotkeys('esc', () => {
     if (guiMode.mode === 'sketch') {
       if (guiMode.sketchMode === 'selectFace') return
-      engineCommandManager?.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'set_tool',
-          tool: 'select',
-        },
-      })
-      setGuiMode({
-        mode: 'sketch',
-        sketchMode: 'sketchEdit',
-        rotation: guiMode.rotation,
-        position: guiMode.position,
-        pathToNode: guiMode.pathToNode,
-        // todo: ...guiMod is adding isTooltip: true, will probably just fix with xstate migtaion
-      })
+      if (guiMode.sketchMode === 'sketchEdit') {
+        engineCommandManager?.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: { type: 'edit_mode_exit' },
+        })
+        setGuiMode({ mode: 'default' })
+      } else {
+        engineCommandManager?.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'set_tool',
+            tool: 'select',
+          },
+        })
+        setGuiMode({
+          mode: 'sketch',
+          sketchMode: 'sketchEdit',
+          rotation: guiMode.rotation,
+          position: guiMode.position,
+          pathToNode: guiMode.pathToNode,
+          // todo: ...guiMod is adding isTooltip: true, will probably just fix with xstate migtaion
+        })
+      }
     } else {
       setGuiMode({ mode: 'default' })
     }

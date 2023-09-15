@@ -146,6 +146,12 @@ export const Toolbar = () => {
                 cmd_id: uuidv4(),
                 cmd: { type: 'edit_mode_exit' },
               })
+              engineCommandManager?.sendSceneCommand({
+                type: 'modeling_cmd_req',
+                cmd_id: uuidv4(),
+                cmd: { type: 'default_camera_disable_sketch_mode' },
+              })
+
               setGuiMode({ mode: 'default' })
             }}
           >
