@@ -905,7 +905,7 @@ export class EngineCommandManager {
       sourceRangeMap: this.sourceRangeMap,
     }
   }
-  private async fixIdMappings(ast: Program, programMemory: ProgramMemory) {
+  async fixIdMappings(ast: Program, programMemory: ProgramMemory) {
     /* This is a temporary solution since the cmd_ids that are sent through when
     sending 'extend_path' ids are not used as the segment ids.
 
@@ -939,10 +939,37 @@ export class EngineCommandManager {
     }
 
     const pathInfos = await Promise.all(pathInfoProms)
+    console.log('pathInfos', pathInfos)
+
+    const controlPointsProms = []
+    pathInfos.forEach(({ originalId, segments }) => {
+      // Get the control points for each segment.
+      segments.forEach((segment) => {
+        if (segment && segment.command_id) {
+          controlPointsProms.push(
+            this.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: {
+                type: 'curve_get_control_points',
+                curve_id: segment.command_id,
+              },
+            }).then(({ data }) => ({
+              control_points: data?.data?.control_points,
+              segment,
+              originalId,
+            }))
+          )
+        }
+      })
+    })
+
+    const controlPoints = await Promise.all(controlPointsProms)
+    console.log('controlPoints', controlPoints)
+
     pathInfos.forEach(({ originalId, segments }) => {
       const originalArtifact = this.artifactMap[originalId]
       if (!originalArtifact || originalArtifact.type === 'pending') {
-        console.log('problem')
         return
       }
       const pipeExpPath = getNodePathFromSourceRange(
@@ -955,23 +982,19 @@ export class EngineCommandManager {
         'VariableDeclarator'
       ).node
       if (pipeExp.type !== 'VariableDeclarator') {
-        console.log('problem', pipeExp, pipeExpPath, ast)
         return
       }
       const variableName = pipeExp.id.name
       const memoryItem = programMemory.root[variableName]
       if (!memoryItem) {
-        console.log('problem', variableName, programMemory)
         return
       } else if (memoryItem.type !== 'SketchGroup') {
-        console.log('problem', memoryItem, programMemory)
         return
       }
       const relevantSegments = segments.filter(
         ({ command_id }: { command_id: string | null }) => command_id
       )
       if (memoryItem.value.length !== relevantSegments.length) {
-        console.log('problem', memoryItem.value, relevantSegments)
         return
       }
       for (let i = 0; i < relevantSegments.length; i++) {

@@ -173,6 +173,8 @@ export interface StoreState {
   }) => void
   isExecuting: boolean
   setIsExecuting: (isExecuting: boolean) => void
+  lastMouseClickId: string
+  setLastMouseClickId: (id: string) => void
 
   showHomeMenu: boolean
   setHomeShowMenu: (showMenu: boolean) => void
@@ -447,6 +449,8 @@ export const useStore = create<StoreState>()(
         setStreamDimensions: (streamDimensions) => set({ streamDimensions }),
         isExecuting: false,
         setIsExecuting: (isExecuting) => set({ isExecuting }),
+        lastMouseClickId: '',
+        setLastMouseClickId: (id) => set({ lastMouseClickId: id }),
 
         // tauri specific app settings
         defaultDir: {
