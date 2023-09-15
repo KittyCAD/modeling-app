@@ -82,7 +82,7 @@ export const EqualLength = () => {
             transformInfos,
             programMemory,
           })
-        updateAst(modifiedAst, {
+        updateAst(modifiedAst, true, {
           callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
         })
       }}

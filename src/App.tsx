@@ -31,7 +31,7 @@ import { CodeMenu } from 'components/CodeMenu'
 import { TextEditor } from 'components/TextEditor'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
-import { useCodeEval } from 'hooks/useCodeEval'
+import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
@@ -47,8 +47,10 @@ export function App() {
     didDragInStream,
     streamDimensions,
     guiMode,
+    setGuiMode,
   } = useStore((s) => ({
     guiMode: s.guiMode,
+    setGuiMode: s.setGuiMode,
     setCode: s.setCode,
     engineCommandManager: s.engineCommandManager,
     buttonDownInStream: s.buttonDownInStream,
@@ -82,6 +84,38 @@ export function App() {
   useHotkeys('shift + l', () => togglePane('logs'))
   useHotkeys('shift + e', () => togglePane('kclErrors'))
   useHotkeys('shift + d', () => togglePane('debug'))
+  useHotkeys('esc', () => {
+    if (guiMode.mode === 'sketch') {
+      if (guiMode.sketchMode === 'selectFace') return
+      if (guiMode.sketchMode === 'sketchEdit') {
+        engineCommandManager?.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: { type: 'edit_mode_exit' },
+        })
+        setGuiMode({ mode: 'default' })
+      } else {
+        engineCommandManager?.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'set_tool',
+            tool: 'select',
+          },
+        })
+        setGuiMode({
+          mode: 'sketch',
+          sketchMode: 'sketchEdit',
+          rotation: guiMode.rotation,
+          position: guiMode.position,
+          pathToNode: guiMode.pathToNode,
+          // todo: ...guiMod is adding isTooltip: true, will probably just fix with xstate migtaion
+        })
+      }
+    } else {
+      setGuiMode({ mode: 'default' })
+    }
+  })
 
   const paneOpacity =
     onboardingStatus === onboardingPaths.CAMERA
@@ -105,7 +139,7 @@ export function App() {
   }, [loadedCode, setCode])
 
   useSetupEngineManager(streamRef, token)
-  useCodeEval()
+  useEngineConnectionSubscriptions()
 
   const debounceSocketSend = throttle<EngineCommand>((message) => {
     engineCommandManager?.sendSceneCommand(message)

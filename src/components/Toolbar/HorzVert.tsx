@@ -61,7 +61,7 @@ export const HorzVert = ({
           programMemory,
           referenceSegName: '',
         })
-        updateAst(modifiedAst, {
+        updateAst(modifiedAst, true, {
           callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
         })
       }}

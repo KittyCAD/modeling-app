@@ -908,14 +908,14 @@ export class EngineCommandManager {
   }
   private async fixIdMappings(ast: Program, programMemory: ProgramMemory) {
     /* This is a temporary solution since the cmd_ids that are sent through when
-    sending 'extend_path' ids are not used as the segment ids. 
+    sending 'extend_path' ids are not used as the segment ids.
 
     We have a way to back fill them with 'path_get_info', however this relies on one
     the sketchGroup array and the segements array returned from the server to be in
     the same length and order. plus it's super hacky, we first use the path_id to get
     the source range of the pipe expression then use the name of the variable to get
     the sketchGroup from programMemory.
-    
+
     I feel queezy about relying on all these steps to always line up.
     We have also had to pollute this EngineCommandManager class with knowledge of both the ast and programMemory
     We should get the cmd_ids to match with the segment ids and delete this method.

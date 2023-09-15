@@ -27,6 +27,7 @@ export const Toolbar = () => {
     updateAst,
     programMemory,
     engineCommandManager,
+    executeAst,
   } = useStore((s) => ({
     guiMode: s.guiMode,
     setGuiMode: s.setGuiMode,
@@ -35,6 +36,7 @@ export const Toolbar = () => {
     updateAst: s.updateAst,
     programMemory: s.programMemory,
     engineCommandManager: s.engineCommandManager,
+    executeAst: s.executeAst,
   }))
   useAppMode()
 
@@ -44,7 +46,7 @@ export const Toolbar = () => {
 
   function ToolbarButtons() {
     return (
-      <span className="overflow-x-auto">
+      <span className={styles.smallScrollbar}>
         {guiMode.mode === 'default' && (
           <button
             onClick={() => {
@@ -70,7 +72,7 @@ export const Toolbar = () => {
                 pathToNode,
                 programMemory
               )
-              updateAst(modifiedAst)
+              updateAst(modifiedAst, true)
             }}
           >
             SketchOnFace
@@ -113,7 +115,7 @@ export const Toolbar = () => {
                   ast,
                   pathToNode
                 )
-                updateAst(modifiedAst, { focusPath: pathToExtrudeArg })
+                updateAst(modifiedAst, true, { focusPath: pathToExtrudeArg })
               }}
             >
               ExtrudeSketch
@@ -130,7 +132,7 @@ export const Toolbar = () => {
                   pathToNode,
                   false
                 )
-                updateAst(modifiedAst, { focusPath: pathToExtrudeArg })
+                updateAst(modifiedAst, true, { focusPath: pathToExtrudeArg })
               }}
             >
               ExtrudeSketch (w/o pipe)
@@ -146,7 +148,14 @@ export const Toolbar = () => {
                 cmd_id: uuidv4(),
                 cmd: { type: 'edit_mode_exit' },
               })
+              engineCommandManager?.sendSceneCommand({
+                type: 'modeling_cmd_req',
+                cmd_id: uuidv4(),
+                cmd: { type: 'default_camera_disable_sketch_mode' },
+              })
+
               setGuiMode({ mode: 'default' })
+              executeAst()
             }}
           >
             Exit sketch

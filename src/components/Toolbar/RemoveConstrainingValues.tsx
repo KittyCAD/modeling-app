@@ -65,7 +65,7 @@ export const RemoveConstrainingValues = () => {
           programMemory,
           referenceSegName: '',
         })
-        updateAst(modifiedAst, {
+        updateAst(modifiedAst, true, {
           callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
         })
       }}
