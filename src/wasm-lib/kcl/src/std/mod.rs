@@ -32,7 +32,6 @@ impl StdLib {
     pub fn new() -> Self {
         let internal_fns: Vec<Box<(dyn crate::docs::StdLibFn)>> = vec![
             Box::new(Show),
-            Box::new(Min),
             Box::new(LegLen),
             Box::new(LegAngX),
             Box::new(LegAngY),
@@ -65,7 +64,17 @@ impl StdLib {
             Box::new(crate::std::math::Cos),
             Box::new(crate::std::math::Sin),
             Box::new(crate::std::math::Tan),
+            Box::new(crate::std::math::Acos),
+            Box::new(crate::std::math::Asin),
+            Box::new(crate::std::math::Atan),
             Box::new(crate::std::math::Pi),
+            Box::new(crate::std::math::Sqrt),
+            Box::new(crate::std::math::Abs),
+            Box::new(crate::std::math::Floor),
+            Box::new(crate::std::math::Ceil),
+            Box::new(crate::std::math::Min),
+            Box::new(crate::std::math::Max),
+            Box::new(crate::std::math::Pow),
         ];
 
         let mut fns = HashMap::new();
@@ -424,29 +433,6 @@ impl<'a> Args<'a> {
 
         Ok((path_name, extrude_group))
     }
-}
-
-/// Returns the minimum of the given arguments.
-pub fn min(args: &mut Args) -> Result<MemoryItem, KclError> {
-    let nums = args.get_number_array()?;
-    let result = inner_min(nums);
-
-    args.make_user_val_from_f64(result)
-}
-
-/// Returns the minimum of the given arguments.
-#[stdlib {
-    name = "min",
-}]
-fn inner_min(args: Vec<f64>) -> f64 {
-    let mut min = std::f64::MAX;
-    for arg in args.iter() {
-        if *arg < min {
-            min = *arg;
-        }
-    }
-
-    min
 }
 
 /// Render a model.

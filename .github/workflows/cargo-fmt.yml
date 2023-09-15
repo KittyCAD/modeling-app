@@ -27,7 +27,7 @@ jobs:
       matrix:
         dir: ['src/wasm-lib', 'src-tauri']
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install latest rust
         uses: actions-rs/toolchain@v1
         with:
