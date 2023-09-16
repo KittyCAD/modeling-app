@@ -139,54 +139,6 @@ const newVar = myVar + 1
       },
     ])
   })
-  test('using std function "log"', () => {
-    const code = `log(5, "hello", aIdentifier)`
-    const { body } = parser_wasm(code)
-    expect(body).toEqual([
-      {
-        type: 'ExpressionStatement',
-        start: 0,
-        end: 28,
-        expression: {
-          type: 'CallExpression',
-          start: 0,
-          end: 28,
-          callee: {
-            type: 'Identifier',
-            start: 0,
-            end: 3,
-            name: 'log',
-          },
-          arguments: [
-            {
-              type: 'Literal',
-              start: 4,
-              end: 5,
-              value: 5,
-              raw: '5',
-            },
-            {
-              type: 'Literal',
-              start: 7,
-              end: 14,
-              value: 'hello',
-              raw: '"hello"',
-            },
-            {
-              type: 'Identifier',
-              start: 16,
-              end: 27,
-              name: 'aIdentifier',
-            },
-          ],
-          function: {
-            type: 'InMemory',
-          },
-          optional: false,
-        },
-      },
-    ])
-  })
 })
 
 describe('testing function declaration', () => {

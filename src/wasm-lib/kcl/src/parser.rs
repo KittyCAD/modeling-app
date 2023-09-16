@@ -880,10 +880,12 @@ impl Parser {
                         last_index: function_expression.last_index,
                     })
                 } else {
-                    return Err(KclError::Unimplemented(KclErrorDetails {
-                        source_ranges: vec![current_token.into()],
-                        message: "expression with braces".to_string(),
-                    }));
+                    // This is likely a binary expression that starts with a parenthesis.
+                    let binary_expression = self.make_binary_expression(index)?;
+                    Ok(ValueReturn {
+                        value: Value::BinaryExpression(Box::new(binary_expression.expression)),
+                        last_index: binary_expression.last_index,
+                    })
                 }
             } else {
                 return Err(KclError::Unimplemented(KclErrorDetails {
