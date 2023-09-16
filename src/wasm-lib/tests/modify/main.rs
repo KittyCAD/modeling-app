@@ -90,7 +90,7 @@ async fn setup(code: &str, name: &str) -> Result<(EngineConnection, Program, uui
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_modify_sketch_part001() {
+async fn serial_test_modify_sketch_part001() {
     let name = "part001";
     let code = format!(
         r#"const {} = startSketchAt([8.41, 5.78])
@@ -114,7 +114,7 @@ async fn test_modify_sketch_part001() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_modify_sketch_part002() {
+async fn serial_test_modify_sketch_part002() {
     let name = "part002";
     let code = format!(
         r#"const {} = startSketchAt([8.41, 5.78])
@@ -138,7 +138,7 @@ async fn test_modify_sketch_part002() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_modify_close_sketch() {
+async fn serial_test_modify_close_sketch() {
     let name = "part002";
     let code = format!(
         r#"const {} = startSketchAt([7.91, 3.89])
@@ -163,7 +163,7 @@ async fn test_modify_close_sketch() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_modify_line_to_close_sketch() {
+async fn serial_test_modify_line_to_close_sketch() {
     let name = "part002";
     let code = format!(
         r#"const {} = startSketchAt([7.91, 3.89])
@@ -197,7 +197,7 @@ async fn test_modify_line_to_close_sketch() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_modify_with_constraint() {
+async fn serial_test_modify_with_constraint() {
     let name = "part002";
     let code = format!(
         r#"const thing = 12
@@ -217,6 +217,6 @@ const {} = startSketchAt([7.91, 3.89])
     assert!(result.is_err());
     assert_eq!(
         result.unwrap_err().to_string(),
-        r#"engine: KclErrorDetails { source_ranges: [SourceRange([0, 0])], message: "Sketch part002 is constrained `partial` and cannot be modified" }"#
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([31, 175])], message: "Sketch part002 is constrained `partial` and cannot be modified" }"#
     );
 }

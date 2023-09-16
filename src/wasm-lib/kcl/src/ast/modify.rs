@@ -1,5 +1,6 @@
 use kittycad::types::{ModelingCmd, Point3D};
 
+use super::types::ConstraintLevel;
 use crate::{
     ast::types::{
         ArrayExpression, CallExpression, FormatOptions, Literal, PipeExpression, PipeSubstitution, Program,
@@ -9,8 +10,6 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{Point2d, SourceRange},
 };
-
-use super::types::ConstraintLevel;
 
 #[derive(Debug)]
 /// The control point data for a curve or line.
@@ -39,15 +38,15 @@ pub async fn modify_ast_for_sketch(
     // Get the information about the sketch.
     if let Some(ast_sketch) = program.get_variable(sketch_name) {
         let constraint_level = ast_sketch.get_constraint_level();
-        if constraint_level != ConstraintLevel::None {
+        let ConstraintLevel::None { source_ranges: _ } = constraint_level else {
             return Err(KclError::Engine(KclErrorDetails {
                 message: format!(
                     "Sketch {} is constrained `{}` and cannot be modified",
                     sketch_name, constraint_level
                 ),
-                source_ranges: vec![SourceRange::default()],
+                source_ranges: constraint_level.into(),
             }));
-        }
+        };
     }
 
     // Let's start by getting the path info.
