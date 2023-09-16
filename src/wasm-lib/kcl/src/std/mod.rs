@@ -16,7 +16,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     ast::types::parse_json_number_as_f64,
-    engine::EngineConnection,
+    engine::{EngineConnection, EngineManager},
     errors::{KclError, KclErrorDetails},
     executor::{ExtrudeGroup, MemoryItem, Metadata, SketchGroup, SourceRange},
 };

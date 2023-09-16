@@ -1,13 +1,14 @@
 use kittycad::types::{ModelingCmd, Point3D};
 
 use crate::{
-    ast::types::{ArrayExpression, CallExpression, FormatOptions, Literal, Program},
-    engine::EngineConnection,
+    ast::types::{
+        ArrayExpression, CallExpression, FormatOptions, Literal, PipeExpression, PipeSubstitution, Program,
+        VariableDeclarator,
+    },
+    engine::{EngineConnection, EngineManager},
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
 };
-
-use super::types::{PipeExpression, PipeSubstitution, VariableDeclarator};
 
 #[derive(Debug)]
 /// The control point data for a curve or line.

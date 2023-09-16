@@ -1310,9 +1310,10 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.1.28"
+version = "0.1.29"
 dependencies = [
  "anyhow",
+ "async-trait",
  "bson",
  "clap",
  "dashmap",

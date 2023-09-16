@@ -1,4 +1,5 @@
 use anyhow::Result;
+use kcl_lib::engine::EngineManager;
 
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
