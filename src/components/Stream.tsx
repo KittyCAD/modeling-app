@@ -39,8 +39,6 @@ export const Stream = ({ className = '' }) => {
     updateAst,
     setGuiMode,
     programMemory,
-    lastMouseClickId,
-    setLastMouseClickId,
   } = useStore((s) => ({
     mediaStream: s.mediaStream,
     engineCommandManager: s.engineCommandManager,
@@ -55,8 +53,6 @@ export const Stream = ({ className = '' }) => {
     updateAst: s.updateAst,
     setGuiMode: s.setGuiMode,
     programMemory: s.programMemory,
-    lastMouseClickId: s.lastMouseClickId,
-    setLastMouseClickId: s.setLastMouseClickId,
   }))
   const {
     settings: {
@@ -215,17 +211,10 @@ export const Stream = ({ className = '' }) => {
       }
     }
     engineCommandManager?.sendSceneCommand(command).then(async (resp) => {
-      if (command?.cmd?.type === 'mouse_click') {
-        console.log('mouse click', resp)
-        const mouseClickId = resp?.data?.data?.entities_selected[0]
-        if (mouseClickId) {
-          setLastMouseClickId(mouseClickId)
-        }
-      }
       if (guiMode.mode === 'sketch' && guiMode.sketchMode === ('move' as any)) {
-        console.log('lastMouseClickId', lastMouseClickId)
         // Let's get the path info.
-        await engineCommandManager.fixIdMappings(ast, programMemory)
+        //await engineCommandManager.fixIdMappings(ast, programMemory)
+        // TODO run our wasm function to modify the code.
         console.log('mappings', engineCommandManager.artifactMap)
         console.log('sourceRangeMap', engineCommandManager.sourceRangeMap)
       }
