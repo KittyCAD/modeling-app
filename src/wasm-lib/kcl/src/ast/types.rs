@@ -257,6 +257,27 @@ impl Program {
             }
         }
     }
+
+    /// Get the variable declaration with the given name.
+    pub fn get_variable(&self, name: &str) -> Option<&VariableDeclarator> {
+        for item in &self.body {
+            match item {
+                BodyItem::ExpressionStatement(_expression_statement) => {
+                    continue;
+                }
+                BodyItem::VariableDeclaration(variable_declaration) => {
+                    for declaration in &variable_declaration.declarations {
+                        if declaration.id.name == name {
+                            return Some(declaration);
+                        }
+                    }
+                }
+                BodyItem::ReturnStatement(_return_statement) => continue,
+            }
+        }
+
+        None
+    }
 }
 
 pub trait ValueMeta {
