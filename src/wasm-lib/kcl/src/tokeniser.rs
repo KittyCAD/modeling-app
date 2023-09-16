@@ -720,4 +720,25 @@ mod tests {
         let semantic_types = TokenType::to_semantic_token_types().unwrap();
         assert!(!semantic_types.is_empty());
     }
+
+    #[test]
+    fn test_lexer_negative_word() {
+        assert_eq!(
+            lexer("-legX"),
+            vec![
+                Token {
+                    token_type: TokenType::Operator,
+                    value: "-".to_string(),
+                    start: 0,
+                    end: 1,
+                },
+                Token {
+                    token_type: TokenType::Word,
+                    value: "legX".to_string(),
+                    start: 1,
+                    end: 5,
+                },
+            ]
+        );
+    }
 }

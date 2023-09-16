@@ -5,6 +5,8 @@
 ## Table of Contents
 
 * [Functions](#functions)
+	* [`abs`](#abs)
+	* [`acos`](#acos)
 	* [`angleToMatchLengthX`](#angleToMatchLengthX)
 	* [`angleToMatchLengthY`](#angleToMatchLengthY)
 	* [`angledLine`](#angledLine)
@@ -14,10 +16,15 @@
 	* [`angledLineToX`](#angledLineToX)
 	* [`angledLineToY`](#angledLineToY)
 	* [`arc`](#arc)
+	* [`asin`](#asin)
+	* [`atan`](#atan)
 	* [`bezierCurve`](#bezierCurve)
+	* [`ceil`](#ceil)
 	* [`close`](#close)
 	* [`cos`](#cos)
+	* [`e`](#e)
 	* [`extrude`](#extrude)
+	* [`floor`](#floor)
 	* [`getExtrudeWallTransform`](#getExtrudeWallTransform)
 	* [`lastSegX`](#lastSegX)
 	* [`lastSegY`](#lastSegY)
@@ -26,16 +33,24 @@
 	* [`legLen`](#legLen)
 	* [`line`](#line)
 	* [`lineTo`](#lineTo)
+	* [`ln`](#ln)
+	* [`log`](#log)
+	* [`log10`](#log10)
+	* [`log2`](#log2)
+	* [`max`](#max)
 	* [`min`](#min)
 	* [`pi`](#pi)
+	* [`pow`](#pow)
 	* [`segAng`](#segAng)
 	* [`segEndX`](#segEndX)
 	* [`segEndY`](#segEndY)
 	* [`segLen`](#segLen)
 	* [`show`](#show)
 	* [`sin`](#sin)
+	* [`sqrt`](#sqrt)
 	* [`startSketchAt`](#startSketchAt)
 	* [`tan`](#tan)
+	* [`tau`](#tau)
 	* [`xLine`](#xLine)
 	* [`xLineTo`](#xLineTo)
 	* [`yLine`](#yLine)
@@ -43,6 +58,46 @@
 
 
 ## Functions
+
+### abs
+
+Computes the absolute value of a number.
+
+
+
+```
+abs(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
+### acos
+
+Computes the arccosine of a number (in radians).
+
+
+
+```
+acos(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
 
 ### angleToMatchLengthX
 
@@ -1332,6 +1387,46 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 
 
 
+### asin
+
+Computes the arcsine of a number (in radians).
+
+
+
+```
+asin(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
+### atan
+
+Computes the arctangent of a number (in radians).
+
+
+
+```
+atan(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
 ### bezierCurve
 
 Draw a bezier curve.
@@ -1494,6 +1589,26 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 }],
 }
 ```
+
+
+
+### ceil
+
+Computes the smallest integer greater than or equal to a number.
+
+
+
+```
+ceil(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
 
 
 
@@ -1661,6 +1776,25 @@ cos(num: number) -> number
 
 
 
+### e
+
+Return the value of Euler’s number `e`.
+
+
+
+```
+e() -> number
+```
+
+#### Arguments
+
+
+#### Returns
+
+* `number`
+
+
+
 ### extrude
 
 Extrudes by a given amount.
@@ -1767,6 +1901,26 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 }],
 }
 ```
+
+
+
+### floor
+
+Computes the largest integer less than or equal to a number.
+
+
+
+```
+floor(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
 
 
 
@@ -2358,9 +2512,110 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 
 
 
+### ln
+
+Computes the natural logarithm of the number.
+
+
+
+```
+ln(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
+### log
+
+Computes the logarithm of the number with respect to an arbitrary base.
+
+The result might not be correctly rounded owing to implementation details; `log2()` can produce more accurate results for base 2, and `log10()` can produce more accurate results for base 10.
+
+```
+log(num: number, base: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+* `base`: `number`
+
+#### Returns
+
+* `number`
+
+
+
+### log10
+
+Computes the base 10 logarithm of the number.
+
+
+
+```
+log10(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
+### log2
+
+Computes the base 2 logarithm of the number.
+
+
+
+```
+log2(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
+### max
+
+Computes the maximum of the given arguments.
+
+
+
+```
+max(args: [number]) -> number
+```
+
+#### Arguments
+
+* `args`: `[number]`
+
+#### Returns
+
+* `number`
+
+
+
 ### min
 
-Returns the minimum of the given arguments.
+Computes the minimum of the given arguments.
 
 
 
@@ -2380,7 +2635,7 @@ min(args: [number]) -> number
 
 ### pi
 
-Return the value of `pi`.
+Return the value of `pi`. Archimedes’ constant (π).
 
 
 
@@ -2390,6 +2645,27 @@ pi() -> number
 
 #### Arguments
 
+
+#### Returns
+
+* `number`
+
+
+
+### pow
+
+Computes the number to a power.
+
+
+
+```
+pow(num: number, pow: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+* `pow`: `number`
 
 #### Returns
 
@@ -2827,6 +3103,26 @@ sin(num: number) -> number
 
 
 
+### sqrt
+
+Computes the square root of a number.
+
+
+
+```
+sqrt(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
 ### startSketchAt
 
 Start a sketch at a given point.
@@ -2931,6 +3227,25 @@ tan(num: number) -> number
 #### Arguments
 
 * `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
+### tau
+
+Return the value of `tau`. The full circle constant (τ). Equal to 2π.
+
+
+
+```
+tau() -> number
+```
+
+#### Arguments
+
 
 #### Returns
 

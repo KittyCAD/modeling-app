@@ -18,6 +18,7 @@ import { EngineCommandManager } from './lang/std/engineConnection'
 import { KCLError } from './lang/errors'
 import { deferExecution } from 'lib/utils'
 import { _executor } from './lang/executor'
+import { bracket } from 'lib/exampleKcl'
 
 export type Selection = {
   type: 'default' | 'line-end' | 'line-mid'
@@ -27,7 +28,7 @@ export type Selections = {
   otherSelections: ('y-axis' | 'x-axis' | 'z-axis')[]
   codeBasedSelections: Selection[]
 }
-export type TooTip =
+export type ToolTip =
   | 'lineTo'
   | 'line'
   | 'angledLine'
@@ -57,7 +58,7 @@ export const toolTips = [
   'xLineTo',
   'yLineTo',
   'angledLineThatIntersects',
-] as any as TooTip[]
+] as any as ToolTip[]
 
 export type GuiModes =
   | {
@@ -65,7 +66,7 @@ export type GuiModes =
     }
   | {
       mode: 'sketch'
-      sketchMode: TooTip
+      sketchMode: ToolTip
       isTooltip: true
       waitingFirstClick: boolean
       rotation: Rotation
@@ -409,7 +410,7 @@ export const useStore = create<StoreState>()(
             }, 100) as unknown as number
           )
         },
-        code: '',
+        code: bracket,
         setCode: (code) => set({ code }),
         deferredSetCode: (code) => {
           set({ code })
