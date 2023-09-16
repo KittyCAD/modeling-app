@@ -10,6 +10,8 @@ use crate::{
     executor::{Point2d, SourceRange},
 };
 
+use super::types::ConstraintLevel;
+
 #[derive(Debug)]
 /// The control point data for a curve or line.
 pub struct ControlPointData {
@@ -31,6 +33,23 @@ pub async fn modify_ast_for_sketch(
     // The ID of the parent sketch.
     sketch_id: uuid::Uuid,
 ) -> Result<String, KclError> {
+    // First we need to check if this sketch is constrained (even partially).
+    // If it is, we cannot modify it.
+
+    // Get the information about the sketch.
+    if let Some(ast_sketch) = program.get_variable(sketch_name) {
+        let constraint_level = ast_sketch.get_constraint_level();
+        if constraint_level != ConstraintLevel::None {
+            return Err(KclError::Engine(KclErrorDetails {
+                message: format!(
+                    "Sketch {} is constrained `{}` and cannot be modified",
+                    sketch_name, constraint_level
+                ),
+                source_ranges: vec![SourceRange::default()],
+            }));
+        }
+    }
+
     // Let's start by getting the path info.
 
     // Let's get the path info.

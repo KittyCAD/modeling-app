@@ -478,7 +478,7 @@ impl Value {
             Value::FunctionExpression(function_identifier) => function_identifier.get_constraint_level(),
             Value::CallExpression(call_expression) => call_expression.get_constraint_level(),
             Value::PipeExpression(pipe_expression) => pipe_expression.get_constraint_level(),
-            Value::PipeSubstitution(_) => ConstraintLevel::Full,
+            Value::PipeSubstitution(_) => ConstraintLevel::Ignore,
             Value::ArrayExpression(array_expression) => array_expression.get_constraint_level(),
             Value::ObjectExpression(object_expression) => object_expression.get_constraint_level(),
             Value::MemberExpression(member_expression) => member_expression.get_constraint_level(),
@@ -944,17 +944,12 @@ impl CallExpression {
         }
 
         // Iterate over the arguments and get the constraint level for each one.
-        let mut constraint_levels = Vec::with_capacity(self.arguments.len());
+        let mut constraint_levels = ConstraintLevels::new();
         for arg in &self.arguments {
             constraint_levels.push(arg.get_constraint_level());
         }
 
-        // Check if all the constraint levels are the same.
-        if constraint_levels.iter().all(|level| *level == constraint_levels[0]) {
-            constraint_levels[0].clone()
-        } else {
-            ConstraintLevel::Partial
-        }
+        constraint_levels.get_constraint_level()
     }
 }
 
@@ -1194,6 +1189,10 @@ impl VariableDeclarator {
             init,
         }
     }
+
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        self.init.get_constraint_level()
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1355,17 +1354,12 @@ impl ArrayExpression {
             return ConstraintLevel::None;
         }
 
-        let mut constraint_levels = Vec::with_capacity(self.elements.len());
+        let mut constraint_levels = ConstraintLevels::new();
         for element in &self.elements {
             constraint_levels.push(element.get_constraint_level());
         }
 
-        // Check if the constraint levels are all the same.
-        if constraint_levels.iter().all(|level| *level == constraint_levels[0]) {
-            constraint_levels[0].clone()
-        } else {
-            ConstraintLevel::Partial
-        }
+        constraint_levels.get_constraint_level()
     }
 
     fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
@@ -1503,17 +1497,12 @@ impl ObjectExpression {
             return ConstraintLevel::None;
         }
 
-        let mut constraint_levels = Vec::with_capacity(self.properties.len());
+        let mut constraint_levels = ConstraintLevels::new();
         for property in &self.properties {
             constraint_levels.push(property.value.get_constraint_level());
         }
 
-        // Check if the constraint levels are all the same.
-        if constraint_levels.iter().all(|level| *level == constraint_levels[0]) {
-            constraint_levels[0].clone()
-        } else {
-            ConstraintLevel::Partial
-        }
+        constraint_levels.get_constraint_level()
     }
 
     fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
@@ -2256,17 +2245,12 @@ impl PipeExpression {
         }
 
         // Iterate over all body expressions.
-        let mut constraint_levels = Vec::with_capacity(self.body.len());
+        let mut constraint_levels = ConstraintLevels::new();
         for expression in &self.body {
             constraint_levels.push(expression.get_constraint_level());
         }
 
-        // Check if the constraint values are the same.
-        if constraint_levels.iter().all(|x| *x == constraint_levels[0]) {
-            constraint_levels[0].clone()
-        } else {
-            ConstraintLevel::Partial
-        }
+        constraint_levels.get_constraint_level()
     }
 
     fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
@@ -2502,12 +2486,55 @@ impl FormatOptions {
 #[serde(rename_all = "camelCase")]
 #[display(style = "camelCase")]
 pub enum ConstraintLevel {
+    /// Ignore constraints.
+    /// This is useful for stuff like pipe substitutions where we don't want it to
+    /// factor into the overall constraint level.
+    /// Like empty arrays or objects, etc.
+    Ignore,
     /// No constraints.
     None,
     /// Partially constrained.
     Partial,
     /// Fully constrained.
     Full,
+}
+
+/// A vector of constraint levels.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+pub struct ConstraintLevels(pub Vec<ConstraintLevel>);
+
+impl Default for ConstraintLevels {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl ConstraintLevels {
+    pub fn new() -> Self {
+        Self(vec![])
+    }
+
+    pub fn push(&mut self, constraint_level: ConstraintLevel) {
+        self.0.push(constraint_level);
+    }
+
+    /// Get the overall constraint level.
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        if self.0.is_empty() {
+            return ConstraintLevel::Ignore;
+        }
+
+        // Check if all the constraint levels are the same.
+        if self
+            .0
+            .iter()
+            .all(|level| *level == self.0[0] || *level == ConstraintLevel::Ignore)
+        {
+            self.0[0].clone()
+        } else {
+            ConstraintLevel::Partial
+        }
+    }
 }
 
 #[cfg(test)]
