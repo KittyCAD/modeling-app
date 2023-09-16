@@ -22,11 +22,16 @@ import { updateCursors } from '../../lang/util'
 
 const getModalInfo = create(SetAngleLengthModal as any)
 
-export const SetAbsDistance = ({
-  buttonType,
-}: {
-  buttonType: 'xAbs' | 'yAbs' | 'snapToYAxis' | 'snapToXAxis'
-}) => {
+type ButtonType = 'xAbs' | 'yAbs' | 'snapToYAxis' | 'snapToXAxis'
+
+const buttonLabels: Record<ButtonType, string> = {
+  xAbs: 'Set distance from X Axis',
+  yAbs: 'Set distance from Y Axis',
+  snapToYAxis: 'Snap To Y Axis',
+  snapToXAxis: 'Snap To X Axis',
+}
+
+export const SetAbsDistance = ({ buttonType }: { buttonType: ButtonType }) => {
   const { guiMode, selectionRanges, ast, programMemory, updateAst, setCursor } =
     useStore((s) => ({
       guiMode: s.guiMode,
@@ -132,8 +137,9 @@ export const SetAbsDistance = ({
         }
       }}
       disabled={!enableAngLen}
+      title={buttonLabels[buttonType]}
     >
-      {buttonType}
+      {buttonLabels[buttonType]}
     </button>
   )
 }

@@ -11,6 +11,8 @@ import {
   transformAstSketchLines,
 } from '../../lang/std/sketchcombos'
 import { updateCursors } from '../../lang/util'
+import { ActionIcon } from 'components/ActionIcon'
+import { sketchButtonClassnames } from 'Toolbar'
 
 export const HorzVert = ({
   horOrVert,
@@ -66,9 +68,17 @@ export const HorzVert = ({
         })
       }}
       disabled={!enableHorz}
-      title="yo dawg"
+      className="group"
+      title={horOrVert === 'horizontal' ? 'Horizontal' : 'Vertical'}
     >
-      {horOrVert === 'horizontal' ? 'Horz' : 'Vert'}
+      <ActionIcon
+        icon={horOrVert === 'horizontal' ? 'horizontal' : 'vertical'}
+        className="!p-0.5"
+        bgClassName={sketchButtonClassnames.background}
+        iconClassName={sketchButtonClassnames.icon}
+        size="md"
+      />
+      {horOrVert === 'horizontal' ? 'Horizontal' : 'Vertical'}
     </button>
   )
 }
