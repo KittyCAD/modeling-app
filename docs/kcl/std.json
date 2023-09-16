@@ -9491,6 +9491,24 @@
     "deprecated": false
   },
   {
+    "name": "e",
+    "summary": "Return the value of Euler’s number `e`.",
+    "description": "",
+    "tags": [],
+    "args": [],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
     "name": "extrude",
     "summary": "Extrudes by a given amount.",
     "description": "",
@@ -13184,8 +13202,129 @@
     "deprecated": false
   },
   {
+    "name": "ln",
+    "summary": "Computes the natural logarithm of the number.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "log",
+    "summary": "Computes the logarithm of the number with respect to an arbitrary base.",
+    "description": "The result might not be correctly rounded owing to implementation details; `log2()` can produce more accurate results for base 2, and `log10()` can produce more accurate results for base 10.",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      },
+      {
+        "name": "base",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "log10",
+    "summary": "Computes the base 10 logarithm of the number.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "log2",
+    "summary": "Computes the base 2 logarithm of the number.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
     "name": "max",
-    "summary": "Returns the maximum of the given arguments.",
+    "summary": "Computes the maximum of the given arguments.",
     "description": "",
     "tags": [],
     "args": [
@@ -13216,7 +13355,7 @@
   },
   {
     "name": "min",
-    "summary": "Returns the minimum of the given arguments.",
+    "summary": "Computes the minimum of the given arguments.",
     "description": "",
     "tags": [],
     "args": [
@@ -13247,7 +13386,7 @@
   },
   {
     "name": "pi",
-    "summary": "Return the value of `pi`.",
+    "summary": "Return the value of `pi`. Archimedes’ constant (π).",
     "description": "",
     "tags": [],
     "args": [],
@@ -16143,6 +16282,24 @@
         "required": true
       }
     ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "tau",
+    "summary": "Return the value of `tau`. The full circle constant (τ). Equal to 2π.",
+    "description": "",
+    "tags": [],
+    "args": [],
     "returnValue": {
       "name": "",
       "type": "number",
