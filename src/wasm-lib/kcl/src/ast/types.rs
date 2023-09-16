@@ -639,7 +639,7 @@ pub enum NoneCodeValue {
     NewLine,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Default, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct NoneCodeMeta {
@@ -699,6 +699,16 @@ pub struct CallExpression {
 impl_value_meta!(CallExpression);
 
 impl CallExpression {
+    pub fn new(name: &str, arguments: Vec<Value>, function: Function) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            callee: Identifier::new(name),
+            arguments,
+            optional: false,
+            function,
+        }
+    }
     fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
         format!(
             "{}({})",
@@ -879,6 +889,15 @@ pub struct VariableDeclaration {
 impl_value_meta!(VariableDeclaration);
 
 impl VariableDeclaration {
+    pub fn new(declarations: Vec<VariableDeclarator>, kind: VariableKind) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            declarations,
+            kind,
+        }
+    }
+
     /// Returns a value that includes the given character position.
     pub fn get_value_for_position(&self, pos: usize) -> Option<&Value> {
         for declaration in &self.declarations {
@@ -1059,6 +1078,17 @@ pub struct VariableDeclarator {
 
 impl_value_meta!(VariableDeclarator);
 
+impl VariableDeclarator {
+    pub fn new(name: &str, init: Value) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            id: Identifier::new(name),
+            init,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
@@ -1072,6 +1102,15 @@ pub struct Literal {
 impl_value_meta!(Literal);
 
 impl Literal {
+    pub fn new(value: serde_json::Value) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            raw: value.to_string(),
+            value,
+        }
+    }
+
     fn recast(&self) -> String {
         if let serde_json::Value::String(value) = &self.value {
             let quote = if self.raw.trim().starts_with('"') { '"' } else { '\'' };
@@ -1116,6 +1155,14 @@ pub struct Identifier {
 impl_value_meta!(Identifier);
 
 impl Identifier {
+    pub fn new(name: &str) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            name: name.to_string(),
+        }
+    }
+
     /// Rename all identifiers that have the old name to the new given name.
     fn rename(&mut self, old_name: &str, new_name: &str) {
         if self.name == old_name {
@@ -1134,6 +1181,12 @@ pub struct PipeSubstitution {
 
 impl_value_meta!(PipeSubstitution);
 
+impl PipeSubstitution {
+    pub fn new() -> Self {
+        Self { start: 0, end: 0 }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
@@ -1146,6 +1199,14 @@ pub struct ArrayExpression {
 impl_value_meta!(ArrayExpression);
 
 impl ArrayExpression {
+    pub fn new(elements: Vec<Value>) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            elements,
+        }
+    }
+
     fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
         let flat_recast = format!(
             "[{}]",
@@ -1268,6 +1329,14 @@ pub struct ObjectExpression {
 }
 
 impl ObjectExpression {
+    pub fn new(properties: Vec<ObjectProperty>) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            properties,
+        }
+    }
+
     fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
         let flat_recast = format!(
             "{{ {} }}",
@@ -1672,6 +1741,16 @@ pub struct BinaryExpression {
 impl_value_meta!(BinaryExpression);
 
 impl BinaryExpression {
+    pub fn new(operator: BinaryOperator, left: BinaryPart, right: BinaryPart) -> Self {
+        Self {
+            start: left.start(),
+            end: right.end(),
+            operator,
+            left,
+            right,
+        }
+    }
+
     pub fn precedence(&self) -> u8 {
         self.operator.precedence()
     }
@@ -1870,6 +1949,15 @@ pub struct UnaryExpression {
 impl_value_meta!(UnaryExpression);
 
 impl UnaryExpression {
+    pub fn new(operator: UnaryOperator, argument: BinaryPart) -> Self {
+        Self {
+            start: 0,
+            end: argument.end(),
+            operator,
+            argument,
+        }
+    }
+
     fn recast(&self, options: &FormatOptions) -> String {
         format!("{}{}", &self.operator, self.argument.recast(options, 0))
     }
@@ -1945,6 +2033,15 @@ pub struct PipeExpression {
 impl_value_meta!(PipeExpression);
 
 impl PipeExpression {
+    pub fn new(body: Vec<Value>) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            body,
+            non_code_meta: Default::default(),
+        }
+    }
+
     fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         self.body
             .iter()
