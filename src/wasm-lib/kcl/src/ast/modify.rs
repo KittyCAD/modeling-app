@@ -38,15 +38,31 @@ pub async fn modify_ast_for_sketch(
     // Get the information about the sketch.
     if let Some(ast_sketch) = program.get_variable(sketch_name) {
         let constraint_level = ast_sketch.get_constraint_level();
-        let ConstraintLevel::None { source_ranges: _ } = constraint_level else {
-            return Err(KclError::Engine(KclErrorDetails {
-                message: format!(
-                    "Sketch {} is constrained `{}` and cannot be modified",
-                    sketch_name, constraint_level
-                ),
-                source_ranges: constraint_level.into(),
-            }));
-        };
+        match &constraint_level {
+            ConstraintLevel::None { source_ranges: _ } => {}
+            ConstraintLevel::Ignore { source_ranges: _ } => {}
+            ConstraintLevel::Partial {
+                source_ranges: _,
+                levels,
+            } => {
+                return Err(KclError::Engine(KclErrorDetails {
+                    message: format!(
+                        "Sketch {} is constrained `{}` and cannot be modified",
+                        sketch_name, constraint_level
+                    ),
+                    source_ranges: levels.get_all_partial_or_full_source_ranges(),
+                }));
+            }
+            ConstraintLevel::Full { source_ranges } => {
+                return Err(KclError::Engine(KclErrorDetails {
+                    message: format!(
+                        "Sketch {} is constrained `{}` and cannot be modified",
+                        sketch_name, constraint_level
+                    ),
+                    source_ranges: source_ranges.clone(),
+                }));
+            }
+        }
     }
 
     // Let's start by getting the path info.

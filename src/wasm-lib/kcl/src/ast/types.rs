@@ -1943,13 +1943,10 @@ impl BinaryExpression {
         let left_constraint_level = self.left.get_constraint_level();
         let right_constraint_level = self.right.get_constraint_level();
 
-        if left_constraint_level == right_constraint_level {
-            left_constraint_level.update_source_ranges(self.into())
-        } else {
-            ConstraintLevel::Partial {
-                source_ranges: vec![self.left.clone().into(), self.right.clone().into()],
-            }
-        }
+        let mut constraint_levels = ConstraintLevels::new();
+        constraint_levels.push(left_constraint_level);
+        constraint_levels.push(right_constraint_level);
+        constraint_levels.get_constraint_level(self.into())
     }
 
     pub fn precedence(&self) -> u8 {
@@ -2515,7 +2512,10 @@ pub enum ConstraintLevel {
     None { source_ranges: Vec<SourceRange> },
     /// Partially constrained.
     #[display("partial")]
-    Partial { source_ranges: Vec<SourceRange> },
+    Partial {
+        source_ranges: Vec<SourceRange>,
+        levels: ConstraintLevels,
+    },
     /// Fully constrained.
     #[display("full")]
     Full { source_ranges: Vec<SourceRange> },
@@ -2526,7 +2526,10 @@ impl From<ConstraintLevel> for Vec<SourceRange> {
         match constraint_level {
             ConstraintLevel::Ignore { source_ranges } => source_ranges,
             ConstraintLevel::None { source_ranges } => source_ranges,
-            ConstraintLevel::Partial { source_ranges } => source_ranges,
+            ConstraintLevel::Partial {
+                source_ranges,
+                levels: _,
+            } => source_ranges,
             ConstraintLevel::Full { source_ranges } => source_ranges,
         }
     }
@@ -2548,8 +2551,12 @@ impl ConstraintLevel {
             ConstraintLevel::None { source_ranges: _ } => ConstraintLevel::None {
                 source_ranges: vec![source_range],
             },
-            ConstraintLevel::Partial { source_ranges: _ } => ConstraintLevel::Partial {
+            ConstraintLevel::Partial {
+                source_ranges: _,
+                levels,
+            } => ConstraintLevel::Partial {
                 source_ranges: vec![source_range],
+                levels: levels.clone(),
             },
             ConstraintLevel::Full { source_ranges: _ } => ConstraintLevel::Full {
                 source_ranges: vec![source_range],
@@ -2595,8 +2602,33 @@ impl ConstraintLevels {
         } else {
             ConstraintLevel::Partial {
                 source_ranges: vec![source_range],
+                levels: self.clone(),
             }
         }
+    }
+
+    pub fn get_all_partial_or_full_source_ranges(&self) -> Vec<SourceRange> {
+        let mut source_ranges = Vec::new();
+        // Add to our source ranges anything that is not none or ignore.
+        for level in &self.0 {
+            match level {
+                ConstraintLevel::None { source_ranges: _ } => {}
+                ConstraintLevel::Ignore { source_ranges: _ } => {}
+                ConstraintLevel::Partial {
+                    source_ranges: _,
+                    levels,
+                } => {
+                    source_ranges.extend(levels.get_all_partial_or_full_source_ranges());
+                }
+                ConstraintLevel::Full {
+                    source_ranges: full_source_ranges,
+                } => {
+                    source_ranges.extend(full_source_ranges);
+                }
+            }
+        }
+
+        source_ranges
     }
 }
 

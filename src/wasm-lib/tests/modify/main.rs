@@ -217,6 +217,6 @@ const {} = startSketchAt([7.91, 3.89])
     assert!(result.is_err());
     assert_eq!(
         result.unwrap_err().to_string(),
-        r#"engine: KclErrorDetails { source_ranges: [SourceRange([31, 175])], message: "Sketch part002 is constrained `partial` and cannot be modified" }"#
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([159, 164])], message: "Sketch part002 is constrained `partial` and cannot be modified" }"#
     );
 }
