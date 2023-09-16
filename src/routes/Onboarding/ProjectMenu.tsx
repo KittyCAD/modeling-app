@@ -2,13 +2,14 @@ import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../../components/ActionButton'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from '../../useStore'
+import { isTauri } from 'lib/isTauri'
 
-export default function UserMenu() {
+export default function ProjectMenu() {
   const { buttonDownInStream } = useStore((s) => ({
     buttonDownInStream: s.buttonDownInStream,
   }))
   const dismiss = useDismiss()
-  const next = useNextClick(onboardingPaths.PROJECT_MENU)
+  const next = useNextClick(onboardingPaths.SKETCHING)
 
   return (
     <div className="fixed grid justify-center items-start inset-0 z-50 pointer-events-none">
@@ -19,10 +20,12 @@ export default function UserMenu() {
         }
       >
         <section className="flex-1">
-          <h2 className="text-2xl">User Menu</h2>
+          <h2 className="text-2xl">Project Menu</h2>
           <p className="my-4">
-            Click your avatar on the upper right to open the user menu. You can
-            change your settings, sign out, or report a bug.
+            Click on Kitt in the upper left to open the project menu. You can
+            only {isTauri() && 'go home or '}export your model—which we'll talk
+            about next—for now. We'll add more options here soon, especially as
+            we add support for multi-file assemblies.
           </p>
         </section>
         <div className="flex justify-between">
@@ -44,7 +47,7 @@ export default function UserMenu() {
             onClick={next}
             icon={{ icon: faArrowRight }}
           >
-            Next: Project Menu
+            Next: Sketching
           </ActionButton>
         </div>
       </div>
