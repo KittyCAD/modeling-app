@@ -134,8 +134,8 @@ export function App() {
     onboardingStatus === onboardingPaths.CAMERA
       ? 'opacity-20'
       : didDragInStream
-        ? 'opacity-40'
-        : ''
+      ? 'opacity-40'
+      : ''
 
   // Use file code loaded from disk
   // on mount, and overwrite any locally-stored code
