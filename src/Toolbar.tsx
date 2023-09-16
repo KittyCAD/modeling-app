@@ -1,4 +1,4 @@
-import { useStore, toolTips, TooTip } from './useStore'
+import { useStore, toolTips, ToolTip } from './useStore'
 import { extrudeSketch, sketchOnExtrudedFace } from './lang/modifyAst'
 import { getNodePathFromSourceRange } from './lang/queryAst'
 import { HorzVert } from './components/Toolbar/HorzVert'
@@ -25,7 +25,7 @@ export const sketchButtonClassnames = {
   icon: 'text-fern-20 h-auto group-hover:text-fern-10 hover:text-fern-10 dark:text-chalkboard-100 dark:group-hover:text-chalkboard-100 dark:hover:text-chalkboard-100 group-disabled:bg-chalkboard-60 hover:group-disabled:text-inherit',
 }
 
-const sketchFnLabels: Record<TooTip | 'sketch_line' | 'move', string> = {
+const sketchFnLabels: Record<ToolTip | 'sketch_line' | 'move', string> = {
   sketch_line: 'Line',
   line: 'Line',
   move: 'Move',
