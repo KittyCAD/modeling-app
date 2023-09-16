@@ -933,7 +933,6 @@ export class EngineCommandManager {
     const pathInfoProms = []
     for (const [id, artifact] of Object.entries(this.artifactMap)) {
       if (artifact.commandType === 'start_path') {
-        console.log('getting path info for', id)
         pathInfoProms.push(
           this.sendSceneCommand({
             type: 'modeling_cmd_req',

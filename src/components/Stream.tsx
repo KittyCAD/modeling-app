@@ -238,11 +238,19 @@ export const Stream = ({ className = '' }) => {
         // Let's get the updated ast.
         if (sketchGroupId === '') return
 
-        console.log('sketchGroupId', sketchGroupId)
-        console.log('sketchGroup', sketchGroup)
-        const engineId = engineCommandManager.oldToNewSketchIdMap[sketchGroupId]
-        console.log(engineCommandManager.oldToNewSketchIdMap)
-        console.log(engineId)
+        /* I am not sure if this is the best way to do this. */
+        // Get the last start_sketch command.
+        let engineId = ''
+
+        for (const [id, artifact] of Object.entries(
+          engineCommandManager.artifactMap
+        )) {
+          if (artifact.commandType === 'start_path') {
+            engineId = id
+          }
+        }
+
+        if (engineId === '') return
 
         const updatedAst: Program = await modify_ast_for_sketch(
           engineCommandManager,
