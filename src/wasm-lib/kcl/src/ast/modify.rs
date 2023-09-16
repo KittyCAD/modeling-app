@@ -47,8 +47,6 @@ pub async fn modify_ast_for_sketch(
         }));
     };
 
-    println!("path_info: {:?}", path_info);
-
     // Now let's get the control points for all the segments.
     // TODO: We should probably await all these at once so we aren't going one by one.
     // But I guess this is fine for now.
