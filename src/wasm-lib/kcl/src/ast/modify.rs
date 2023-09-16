@@ -1,6 +1,4 @@
-use std::collections::HashMap;
-
-use kittycad::types::ModelingCmd;
+use kittycad::types::{ModelingCmd, Point3D};
 
 use crate::{
     ast::types::{ArrayExpression, CallExpression, FormatOptions, Literal, Program},
@@ -56,7 +54,8 @@ pub async fn modify_ast_for_sketch(
     // Now let's get the control points for all the segments.
     // TODO: We should probably await all these at once so we aren't going one by one.
     // But I guess this is fine for now.
-    let mut handles = HashMap::new();
+    // We absolutely have to preserve the order of the control points.
+    let mut control_points = Vec::new();
     for segment in &path_info.segments {
         if let Some(command_id) = &segment.command_id {
             let h = engine.send_modeling_cmd_get_response(
@@ -64,30 +63,24 @@ pub async fn modify_ast_for_sketch(
                 SourceRange::default(),
                 ModelingCmd::CurveGetControlPoints { curve_id: *command_id },
             );
-            handles.insert(command_id, (h.await?, segment.command.clone()));
+
+            let kittycad::types::OkWebSocketResponseData::Modeling {
+                modeling_response: kittycad::types::OkModelingCmdResponse::CurveGetControlPoints { data },
+            } = h.await?
+            else {
+                return Err(KclError::Engine(KclErrorDetails {
+                    message: format!("Curve get control points response was not as expected: {:?}", resp),
+                    source_ranges: vec![SourceRange::default()],
+                }));
+            };
+
+            control_points.push(ControlPointData {
+                points: data.control_points.clone(),
+                command: segment.command.clone(),
+                id: *command_id,
+            });
         }
     }
-
-    // TODO await all these.
-    let mut control_points = Vec::new();
-    for (id, (handle, command)) in handles {
-        let kittycad::types::OkWebSocketResponseData::Modeling {
-            modeling_response: kittycad::types::OkModelingCmdResponse::CurveGetControlPoints { data },
-        } = handle
-        else {
-            return Err(KclError::Engine(KclErrorDetails {
-                message: format!("Curve get control points response was not as expected: {:?}", resp),
-                source_ranges: vec![SourceRange::default()],
-            }));
-        };
-        control_points.push(ControlPointData {
-            points: data.control_points,
-            command,
-            id: *id,
-        });
-    }
-
-    println!("control_points: {:#?}", control_points);
 
     if control_points.is_empty() {
         return Err(KclError::Engine(KclErrorDetails {
@@ -96,27 +89,51 @@ pub async fn modify_ast_for_sketch(
         }));
     }
 
-    let first_control_points = &control_points[0];
+    let first_control_points = control_points.first().ok_or_else(|| {
+        KclError::Engine(KclErrorDetails {
+            message: format!("No control points found for sketch {}", sketch_name),
+            source_ranges: vec![SourceRange::default()],
+        })
+    })?;
 
     let mut additional_lines = Vec::new();
-    for control_point in &control_points[1..] {
-        additional_lines.push([control_point.points[0].x, control_point.points[0].y]);
+    let mut last_point = first_control_points.points[1].clone();
+    for control_point in control_points[1..].iter() {
+        additional_lines.push([
+            round_to_2_places(control_point.points[1].x - last_point.x),
+            round_to_2_places(control_point.points[1].y - last_point.y),
+        ]);
+        last_point = Point3D {
+            x: control_point.points[1].x,
+            y: control_point.points[1].y,
+            z: control_point.points[1].z,
+        };
     }
 
     // Okay now let's recalculate the sketch from the control points.
+    let start_sketch_at_end = Point3D {
+        x: round_to_2_places(first_control_points.points[1].x - first_control_points.points[0].x),
+        y: round_to_2_places(first_control_points.points[1].y - first_control_points.points[0].y),
+        z: round_to_2_places(first_control_points.points[1].z - first_control_points.points[0].z),
+    };
     let sketch = create_start_sketch_at(
         sketch_name,
         [first_control_points.points[0].x, first_control_points.points[0].y],
-        [first_control_points.points[1].x, first_control_points.points[1].y],
+        [start_sketch_at_end.x, start_sketch_at_end.y],
         additional_lines,
     )?;
-
-    println!("sketch: {:#?}", sketch);
 
     // Add the sketch back to the program.
     program.replace_variable(sketch_name, sketch);
 
-    Ok(program.recast(&FormatOptions::default(), 0))
+    let recasted = program.recast(&FormatOptions::default(), 0);
+
+    // Re-parse the ast so we get the correct source ranges.
+    let tokens = crate::tokeniser::lexer(&recasted);
+    let parser = crate::parser::Parser::new(tokens);
+    *program = parser.ast()?;
+
+    Ok(recasted)
 }
 
 /// Create a pipe expression that starts a sketch at the given point and draws a line to the given point.
@@ -166,4 +183,8 @@ fn create_start_sketch_at(
     }
 
     Ok(VariableDeclarator::new(name, PipeExpression::new(pipe_body).into()))
+}
+
+fn round_to_2_places(num: f64) -> f64 {
+    (num * 100.0).round() / 100.0
 }
