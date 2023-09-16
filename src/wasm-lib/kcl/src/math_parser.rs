@@ -4,7 +4,7 @@ use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    abstract_syntax_tree_types::{
+    ast::types::{
         BinaryExpression, BinaryOperator, BinaryPart, CallExpression, Identifier, Literal, MemberExpression,
         UnaryExpression, ValueMeta,
     },
@@ -41,7 +41,7 @@ pub struct ParenthesisToken {
     pub end: usize,
 }
 
-crate::abstract_syntax_tree_types::impl_value_meta!(ParenthesisToken);
+crate::ast::types::impl_value_meta!(ParenthesisToken);
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
@@ -56,7 +56,7 @@ pub struct ExtendedBinaryExpression {
     pub end_extended: Option<usize>,
 }
 
-crate::abstract_syntax_tree_types::impl_value_meta!(ExtendedBinaryExpression);
+crate::ast::types::impl_value_meta!(ExtendedBinaryExpression);
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
@@ -70,7 +70,7 @@ pub struct ExtendedLiteral {
     pub end_extended: Option<usize>,
 }
 
-crate::abstract_syntax_tree_types::impl_value_meta!(ExtendedLiteral);
+crate::ast::types::impl_value_meta!(ExtendedLiteral);
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
@@ -444,7 +444,7 @@ impl ReversePolishNotation {
                     let expression = UnaryExpression {
                         start: current_token.start,
                         end: current_token.end,
-                        operator: crate::abstract_syntax_tree_types::UnaryOperator::Neg,
+                        operator: crate::ast::types::UnaryOperator::Neg,
                         argument: BinaryPart::Identifier(Box::new(Identifier {
                             name: current_token.value.trim_start_matches('-').to_string(),
                             start: current_token.start + 1,

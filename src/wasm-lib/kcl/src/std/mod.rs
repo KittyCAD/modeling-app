@@ -15,7 +15,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    abstract_syntax_tree_types::parse_json_number_as_f64,
+    ast::types::parse_json_number_as_f64,
     engine::EngineConnection,
     errors::{KclError, KclErrorDetails},
     executor::{ExtrudeGroup, MemoryItem, Metadata, SketchGroup, SourceRange},

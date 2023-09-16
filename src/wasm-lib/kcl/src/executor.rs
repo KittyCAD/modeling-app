@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
-    abstract_syntax_tree_types::{BodyItem, Function, FunctionExpression, Value},
+    ast::types::{BodyItem, Function, FunctionExpression, Value},
     engine::EngineConnection,
     errors::{KclError, KclErrorDetails},
 };
@@ -578,7 +578,7 @@ impl Default for PipeInfo {
 
 /// Execute a AST's program.
 pub fn execute(
-    program: crate::abstract_syntax_tree_types::Program,
+    program: crate::ast::types::Program,
     memory: &mut ProgramMemory,
     options: BodyType,
     engine: &mut EngineConnection,
