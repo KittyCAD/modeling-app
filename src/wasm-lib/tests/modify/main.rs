@@ -138,6 +138,7 @@ async fn serial_test_modify_sketch_part002() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+#[ignore] // until KittyCAD/engine#1434 is fixed.
 async fn serial_test_modify_close_sketch() {
     let name = "part002";
     let code = format!(
