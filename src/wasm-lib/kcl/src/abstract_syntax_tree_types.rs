@@ -510,6 +510,8 @@ impl BinaryPart {
         let mut new_pipe_info = pipe_info.clone();
         new_pipe_info.is_in_pipe = false;
 
+        println!("BinaryPart::get_result: {:?}", self);
+
         match self {
             BinaryPart::Literal(literal) => Ok(literal.into()),
             BinaryPart::Identifier(identifier) => {
@@ -521,11 +523,7 @@ impl BinaryPart {
             }
             BinaryPart::CallExpression(call_expression) => call_expression.execute(memory, &mut new_pipe_info, engine),
             BinaryPart::UnaryExpression(unary_expression) => {
-                // Return an error this should not happen.
-                Err(KclError::Semantic(KclErrorDetails {
-                    message: format!("UnaryExpression should not be a BinaryPart: {:?}", unary_expression),
-                    source_ranges: vec![unary_expression.into()],
-                }))
+                unary_expression.get_result(memory, &mut new_pipe_info, engine)
             }
             BinaryPart::MemberExpression(member_expression) => member_expression.get_result(memory),
         }
