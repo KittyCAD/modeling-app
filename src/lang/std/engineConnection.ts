@@ -15,9 +15,13 @@ interface CommandInfo {
   range: SourceRange
   parentId?: string
 }
+
+type WebSocketResponse = Models['OkWebSocketResponseData_type']
+
 interface ResultCommand extends CommandInfo {
   type: 'result'
   data: any
+  raw: WebSocketResponse
 }
 interface PendingCommand extends CommandInfo {
   type: 'pending'
@@ -36,8 +40,6 @@ interface NewTrackArgs {
   conn: EngineConnection
   mediaStream: MediaStream
 }
-
-type WebSocketResponse = Models['OkWebSocketResponseData_type']
 
 type ClientMetrics = Models['ClientMetrics_type']
 
@@ -652,12 +654,14 @@ export class EngineCommandManager {
         commandType: command.commandType,
         parentId: command.parentId ? command.parentId : undefined,
         data: modelingResponse,
+        raw: message,
       }
       resolve({
         id,
         commandType: command.commandType,
         range: command.range,
         data: modelingResponse,
+        raw: message,
       })
     } else {
       this.artifactMap[id] = {
@@ -665,6 +669,7 @@ export class EngineCommandManager {
         commandType: command?.commandType,
         range: command?.range,
         data: modelingResponse,
+        raw: message,
       }
     }
   }
@@ -873,7 +878,10 @@ export class EngineCommandManager {
     }
     const range: SourceRange = JSON.parse(rangeStr)
 
-    return this.sendModelingCommand({ id, range, command: commandStr })
+    // We only care about the modeling command response.
+    return this.sendModelingCommand({ id, range, command: commandStr }).then(
+      ({ raw }) => JSON.stringify(raw)
+    )
   }
   commandResult(id: string): Promise<any> {
     const command = this.artifactMap[id]

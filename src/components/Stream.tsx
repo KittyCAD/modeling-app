@@ -212,8 +212,6 @@ export const Stream = ({ className = '' }) => {
       }
     }
     engineCommandManager?.sendSceneCommand(command).then(async (resp) => {
-      if (command?.cmd?.type !== 'mouse_click' || !ast) return
-
       if (!(guiMode.mode === 'sketch')) return
 
       if (guiMode.sketchMode === 'selectFace') return
@@ -235,8 +233,9 @@ export const Stream = ({ className = '' }) => {
 
       if (guiMode.sketchMode === ('move' as any)) {
         // Let's get the updated ast.
-        console.log('sketchGroup.value', sketchGroup)
         if (sketchGroupId === '') return
+
+        console.log('sketchGroupId', sketchGroupId)
 
         const updatedAst: Program = await modify_ast_for_sketch(
           engineCommandManager,
@@ -248,6 +247,8 @@ export const Stream = ({ className = '' }) => {
         updateAst(updatedAst, false)
         return
       }
+
+      if (command?.cmd?.type !== 'mouse_click' || !ast) return
 
       if (!(guiMode.sketchMode === ('sketch_line' as any as 'line'))) return
 
