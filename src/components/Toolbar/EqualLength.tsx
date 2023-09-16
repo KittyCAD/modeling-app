@@ -12,6 +12,8 @@ import {
   getTransformInfos,
 } from '../../lang/std/sketchcombos'
 import { updateCursors } from '../../lang/util'
+import { ActionIcon } from 'components/ActionIcon'
+import { sketchButtonClassnames } from 'Toolbar'
 
 export const EqualLength = () => {
   const { guiMode, selectionRanges, ast, programMemory, updateAst, setCursor } =
@@ -87,9 +89,17 @@ export const EqualLength = () => {
         })
       }}
       disabled={!enableEqual}
-      title="yo dawg"
+      className="group"
+      title="Equal Length"
     >
-      EqualLength
+      <ActionIcon
+        icon="equal"
+        className="!p-0.5"
+        bgClassName={sketchButtonClassnames.background}
+        iconClassName={sketchButtonClassnames.icon}
+        size="md"
+      />
+      Equal Length
     </button>
   )
 }

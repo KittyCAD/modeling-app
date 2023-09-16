@@ -147,8 +147,9 @@ export const SetAngleBetween = () => {
         }
       }}
       disabled={!enable}
+      title="Set Angle Between"
     >
-      angleBetween
+      Set Angle Between
     </button>
   )
 }
