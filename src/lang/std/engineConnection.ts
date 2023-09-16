@@ -906,7 +906,7 @@ export class EngineCommandManager {
       sourceRangeMap: this.sourceRangeMap,
     }
   }
-  async fixIdMappings(ast: Program, programMemory: ProgramMemory) {
+  private async fixIdMappings(ast: Program, programMemory: ProgramMemory) {
     /* This is a temporary solution since the cmd_ids that are sent through when
     sending 'extend_path' ids are not used as the segment ids.
 
@@ -940,34 +940,6 @@ export class EngineCommandManager {
     }
 
     const pathInfos = await Promise.all(pathInfoProms)
-    console.log('pathInfos', pathInfos)
-
-    const controlPointsProms = []
-    pathInfos.forEach(({ originalId, segments }) => {
-      // Get the control points for each segment.
-      segments.forEach((segment) => {
-        if (segment && segment.command_id) {
-          controlPointsProms.push(
-            this.sendSceneCommand({
-              type: 'modeling_cmd_req',
-              cmd_id: uuidv4(),
-              cmd: {
-                type: 'curve_get_control_points',
-                curve_id: segment.command_id,
-              },
-            }).then(({ data }) => ({
-              control_points: data?.data?.control_points,
-              segment,
-              originalId,
-            }))
-          )
-        }
-      })
-    })
-
-    const controlPoints = await Promise.all(controlPointsProms)
-    console.log('controlPoints', controlPoints)
-
     pathInfos.forEach(({ originalId, segments }) => {
       const originalArtifact = this.artifactMap[originalId]
       if (!originalArtifact || originalArtifact.type === 'pending') {
