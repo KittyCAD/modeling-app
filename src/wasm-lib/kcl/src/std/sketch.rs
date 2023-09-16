@@ -626,7 +626,6 @@ fn inner_start_sketch_at(data: LineData, args: &mut Args) -> Result<SketchGroup,
     let id = uuid::Uuid::new_v4();
     let path_id = uuid::Uuid::new_v4();
 
-    println!("path_id: {:?}", path_id);
     args.send_modeling_cmd(path_id, ModelingCmd::StartPath {})?;
     args.send_modeling_cmd(
         id,
