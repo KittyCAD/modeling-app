@@ -220,9 +220,21 @@ export const Stream = ({ className = '' }) => {
       )
         return
 
+      // Check if the sketch group already exists.
+      const varDec = getNodeFromPath<VariableDeclarator>(
+        ast,
+        guiMode.pathToNode,
+        'VariableDeclarator'
+      ).node
+      const variableName = varDec?.id?.name
+      const sketchGroup = programMemory.root[variableName]
+      const isEditingExistingSketch =
+        sketchGroup?.type === 'SketchGroup' && sketchGroup.value.length
+
       if (
         resp?.data?.data?.entities_modified?.length &&
-        guiMode.waitingFirstClick
+        guiMode.waitingFirstClick &&
+        !isEditingExistingSketch
       ) {
         const curve = await engineCommandManager?.sendSceneCommand({
           type: 'modeling_cmd_req',
@@ -250,10 +262,10 @@ export const Stream = ({ className = '' }) => {
           pathToNode: _pathToNode,
           waitingFirstClick: false,
         })
-        updateAst(_modifiedAst)
+        updateAst(_modifiedAst, false)
       } else if (
         resp?.data?.data?.entities_modified?.length &&
-        !guiMode.waitingFirstClick
+        (!guiMode.waitingFirstClick || isEditingExistingSketch)
       ) {
         const curve = await engineCommandManager?.sendSceneCommand({
           type: 'modeling_cmd_req',
@@ -290,6 +302,7 @@ export const Stream = ({ className = '' }) => {
             fnName: 'line',
             pathToNode: guiMode.pathToNode,
           }).modifiedAst
+          updateAst(_modifiedAst, false)
         } else {
           _modifiedAst = addCloseToPipe({
             node: ast,
@@ -299,8 +312,15 @@ export const Stream = ({ className = '' }) => {
           setGuiMode({
             mode: 'default',
           })
+          engineCommandManager?.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'sketch_mode_disable',
+            },
+          })
+          updateAst(_modifiedAst, true)
         }
-        updateAst(_modifiedAst)
       }
     })
     setDidDragInStream(false)

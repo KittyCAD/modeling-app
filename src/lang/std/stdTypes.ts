@@ -1,6 +1,6 @@
 import { ProgramMemory, Path, SourceRange } from '../executor'
 import { Program, Value } from '../abstractSyntaxTreeTypes'
-import { TooTip } from '../../useStore'
+import { ToolTip } from '../../useStore'
 import { PathToNode } from '../executor'
 import { EngineCommandManager } from './engineConnection'
 
@@ -45,7 +45,7 @@ export type TransformCallback = (
 }
 
 export type SketchCallTransfromMap = {
-  [key in TooTip]: TransformCallback
+  [key in ToolTip]: TransformCallback
 }
 
 export interface SketchLineHelper {

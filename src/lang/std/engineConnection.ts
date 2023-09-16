@@ -395,8 +395,6 @@ export class EngineConnection {
 
           let videoTrack = mediaStream.getVideoTracks()[0]
           this.pc?.getStats(videoTrack).then((videoTrackStats) => {
-            // TODO(paultag): this needs type information from the KittyCAD typescript
-            // library once it's updated
             let client_metrics: ClientMetrics = {
               rtc_frames_decoded: 0,
               rtc_frames_dropped: 0,
@@ -424,12 +422,13 @@ export class EngineConnection {
                   videoTrackReport.framesReceived
                 client_metrics.rtc_frames_per_second =
                   videoTrackReport.framesPerSecond || 0
-                client_metrics.rtc_freeze_count = videoTrackReport.freezeCount
+                client_metrics.rtc_freeze_count =
+                  videoTrackReport.freezeCount || 0
                 client_metrics.rtc_jitter_sec = videoTrackReport.jitter
                 client_metrics.rtc_keyframes_decoded =
                   videoTrackReport.keyFramesDecoded
                 client_metrics.rtc_total_freezes_duration_sec =
-                  videoTrackReport.totalFreezesDuration
+                  videoTrackReport.totalFreezesDuration || 0
               } else if (videoTrackReport.type === 'transport') {
                 // videoTrackReport.bytesReceived,
                 // videoTrackReport.bytesSent,
@@ -474,6 +473,13 @@ export class EngineConnection {
     })
 
     this.onConnectionStarted(this)
+  }
+  unreliableSend(message: object | string) {
+    // TODO(paultag): Add in logic to determine the connection state and
+    // take actions if needed?
+    this.unreliableDataChannel?.send(
+      typeof message === 'string' ? message : JSON.stringify(message)
+    )
   }
   send(message: object | string) {
     // TODO(paultag): Add in logic to determine the connection state and
@@ -778,9 +784,7 @@ export class EngineCommandManager {
     ) {
       cmd.sequence = this.outSequence
       this.outSequence++
-      this.engineConnection?.unreliableDataChannel?.send(
-        JSON.stringify(command)
-      )
+      this.engineConnection?.unreliableSend(command)
       return Promise.resolve()
     } else if (
       cmd.type === 'highlight_set_entity' &&
@@ -788,9 +792,7 @@ export class EngineCommandManager {
     ) {
       cmd.sequence = this.outSequence
       this.outSequence++
-      this.engineConnection?.unreliableDataChannel?.send(
-        JSON.stringify(command)
-      )
+      this.engineConnection?.unreliableSend(command)
       return Promise.resolve()
     } else if (
       cmd.type === 'mouse_move' &&
@@ -798,9 +800,7 @@ export class EngineCommandManager {
     ) {
       cmd.sequence = this.outSequence
       this.outSequence++
-      this.engineConnection?.unreliableDataChannel?.send(
-        JSON.stringify(command)
-      )
+      this.engineConnection?.unreliableSend(command)
       return Promise.resolve()
     }
     // since it's not mouse drag or highlighting send over TCP and keep track of the command
@@ -908,14 +908,14 @@ export class EngineCommandManager {
   }
   private async fixIdMappings(ast: Program, programMemory: ProgramMemory) {
     /* This is a temporary solution since the cmd_ids that are sent through when
-    sending 'extend_path' ids are not used as the segment ids. 
+    sending 'extend_path' ids are not used as the segment ids.
 
     We have a way to back fill them with 'path_get_info', however this relies on one
     the sketchGroup array and the segements array returned from the server to be in
     the same length and order. plus it's super hacky, we first use the path_id to get
     the source range of the pipe expression then use the name of the variable to get
     the sketchGroup from programMemory.
-    
+
     I feel queezy about relying on all these steps to always line up.
     We have also had to pollute this EngineCommandManager class with knowledge of both the ast and programMemory
     We should get the cmd_ids to match with the segment ids and delete this method.

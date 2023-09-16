@@ -31,7 +31,7 @@ import { CodeMenu } from 'components/CodeMenu'
 import { TextEditor } from 'components/TextEditor'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
-import { useCodeEval } from 'hooks/useCodeEval'
+import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
@@ -47,8 +47,10 @@ export function App() {
     didDragInStream,
     streamDimensions,
     guiMode,
+    setGuiMode,
   } = useStore((s) => ({
     guiMode: s.guiMode,
+    setGuiMode: s.setGuiMode,
     setCode: s.setCode,
     engineCommandManager: s.engineCommandManager,
     buttonDownInStream: s.buttonDownInStream,
@@ -82,13 +84,46 @@ export function App() {
   useHotkeys('shift + l', () => togglePane('logs'))
   useHotkeys('shift + e', () => togglePane('kclErrors'))
   useHotkeys('shift + d', () => togglePane('debug'))
+  useHotkeys('esc', () => {
+    if (guiMode.mode === 'sketch') {
+      if (guiMode.sketchMode === 'selectFace') return
+      if (guiMode.sketchMode === 'sketchEdit') {
+        engineCommandManager?.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: { type: 'edit_mode_exit' },
+        })
+        setGuiMode({ mode: 'default' })
+      } else {
+        engineCommandManager?.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'set_tool',
+            tool: 'select',
+          },
+        })
+        setGuiMode({
+          mode: 'sketch',
+          sketchMode: 'sketchEdit',
+          rotation: guiMode.rotation,
+          position: guiMode.position,
+          pathToNode: guiMode.pathToNode,
+          // todo: ...guiMod is adding isTooltip: true, will probably just fix with xstate migtaion
+        })
+      }
+    } else {
+      setGuiMode({ mode: 'default' })
+    }
+  })
 
-  const paneOpacity =
-    onboardingStatus === onboardingPaths.CAMERA
-      ? 'opacity-20'
-      : didDragInStream
-      ? 'opacity-40'
-      : ''
+  const paneOpacity = [onboardingPaths.CAMERA, onboardingPaths.STREAMING].some(
+    (p) => p === onboardingStatus
+  )
+    ? 'opacity-20'
+    : didDragInStream
+    ? 'opacity-40'
+    : ''
 
   // Use file code loaded from disk
   // on mount, and overwrite any locally-stored code
@@ -105,7 +140,7 @@ export function App() {
   }, [loadedCode, setCode])
 
   useSetupEngineManager(streamRef, token)
-  useCodeEval()
+  useEngineConnectionSubscriptions()
 
   const debounceSocketSend = throttle<EngineCommand>((message) => {
     engineCommandManager?.sendSceneCommand(message)
@@ -221,7 +256,7 @@ export function App() {
             'hover:bg-liquid-30/40 dark:hover:bg-liquid-10/40 bg-transparent transition-colors duration-100 transition-ease-out delay-100',
         }}
       >
-        <div className="h-full flex flex-col justify-between">
+        <div id="code-pane" className="h-full flex flex-col justify-between">
           <CollapsiblePanel
             title="Code"
             icon={faCode}
