@@ -16,8 +16,10 @@ use super::types::{PipeExpression, PipeSubstitution, VariableDeclarator};
 pub struct ControlPointData {
     /// The control points for the curve or line.
     pub points: Vec<kittycad::types::Point3D>,
-    /// The command that created this curve (or line).
+    /// The command that created this curve or line.
     pub command: kittycad::types::PathCommand,
+    /// The id of the curve or line.
+    pub id: uuid::Uuid,
 }
 
 /// Update the AST to reflect the new state of the program after something like
@@ -65,7 +67,7 @@ pub async fn modify_ast_for_sketch(
     }
 
     // TODO await all these.
-    let mut control_points = HashMap::new();
+    let mut control_points = Vec::new();
     for (id, (handle, command)) in handles {
         let kittycad::types::OkWebSocketResponseData::Modeling {
             modeling_response: kittycad::types::OkModelingCmdResponse::CurveGetControlPoints { data },
@@ -76,13 +78,11 @@ pub async fn modify_ast_for_sketch(
                 source_ranges: vec![SourceRange::default()],
             }));
         };
-        control_points.insert(
-            id,
-            ControlPointData {
-                points: data.control_points,
-                command,
-            },
-        );
+        control_points.push(ControlPointData {
+            points: data.control_points,
+            command,
+            id: *id,
+        });
     }
 
     println!("control_points: {:#?}", control_points);
