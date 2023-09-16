@@ -101,12 +101,13 @@ async fn test_modify_basic_sketch() {
     );
 
     let (mut engine, program, sketch_id) = setup(&code, name).await.unwrap();
-    let (new_program, new_code) = modify_ast_for_sketch(&mut engine, &program, name, sketch_id)
+    let mut new_program = program.clone();
+    let new_code = modify_ast_for_sketch(&mut engine, &mut new_program, name, sketch_id)
         .await
         .unwrap();
 
     // Make sure the code is the same.
     assert_eq!(code, new_code);
     // Make sure the program is the same.
-    assert_eq!(program, new_program);
+    assert_eq!(new_program, program);
 }

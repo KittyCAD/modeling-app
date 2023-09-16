@@ -237,6 +237,26 @@ impl Program {
             }
         }
     }
+
+    /// Replace a variable declaration with the given name with a new one.
+    pub fn replace_variable(&mut self, name: &str, declarator: VariableDeclarator) {
+        for item in &mut self.body {
+            match item {
+                BodyItem::ExpressionStatement(_expression_statement) => {
+                    continue;
+                }
+                BodyItem::VariableDeclaration(ref mut variable_declaration) => {
+                    for declaration in &mut variable_declaration.declarations {
+                        if declaration.id.name == name {
+                            *declaration = declarator;
+                            return;
+                        }
+                    }
+                }
+                BodyItem::ReturnStatement(_return_statement) => continue,
+            }
+        }
+    }
 }
 
 pub trait ValueMeta {
