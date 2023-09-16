@@ -8,7 +8,7 @@ use kittycad::types::{ModelingCmd, Point3D};
 use pretty_assertions::assert_eq;
 
 /// Setup the engine and parse code for an ast.
-async fn setup(code: &str) -> Result<(EngineConnection, Program, uuid::Uuid)> {
+async fn setup(code: &str, name: &str) -> Result<(EngineConnection, Program, uuid::Uuid)> {
     let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
     let http_client = reqwest::Client::builder()
         .user_agent(user_agent)
@@ -47,7 +47,7 @@ async fn setup(code: &str) -> Result<(EngineConnection, Program, uuid::Uuid)> {
 
     // We need to get the sketch ID.
     // Get the sketch group ID from memory.
-    let MemoryItem::SketchGroup(sketch_group) = memory.root.get("part001").unwrap() else {
+    let MemoryItem::SketchGroup(sketch_group) = memory.root.get(name).unwrap() else {
         anyhow::bail!("part001 not found in memory: {:?}", memory);
     };
     let sketch_id = sketch_group.id;
@@ -90,14 +90,20 @@ async fn setup(code: &str) -> Result<(EngineConnection, Program, uuid::Uuid)> {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn test_modify_basic_sketch() {
-    let code = r#"const part001 = startSketchAt([8.41, 5.78])
+    let name = "part001";
+    let code = format!(
+        r#"const {} = startSketchAt([8.41, 5.78])
   |> line([7.37, -11], %)
   |> line([-8.69, -3.75], %)
   |> line([-5, 4.25], %)
-"#;
+"#,
+        name
+    );
 
-    let (mut engine, program, sketch_id) = setup(code).await.unwrap();
-    let (new_program, new_code) = modify_ast_for_sketch(&mut engine, &program, sketch_id).await.unwrap();
+    let (mut engine, program, sketch_id) = setup(&code, name).await.unwrap();
+    let (new_program, new_code) = modify_ast_for_sketch(&mut engine, &program, name, sketch_id)
+        .await
+        .unwrap();
 
     // Make sure the code is the same.
     assert_eq!(code, new_code);
