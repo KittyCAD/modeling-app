@@ -195,3 +195,28 @@ async fn test_modify_line_to_close_sketch() {
         )
     );
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_modify_with_constraint() {
+    let name = "part002";
+    let code = format!(
+        r#"const thing = 12
+const {} = startSketchAt([7.91, 3.89])
+  |> line([7.42, -8.62], %)
+  |> line([-6.38, -3.51], %)
+  |> line([-3.77, 3.56], %)
+  |> lineTo([thing, 3.89], %)
+"#,
+        name
+    );
+
+    let (mut engine, program, sketch_id) = setup(&code, name).await.unwrap();
+    let mut new_program = program.clone();
+    let result = modify_ast_for_sketch(&mut engine, &mut new_program, name, sketch_id).await;
+
+    assert!(result.is_err());
+    assert_eq!(
+        result.unwrap_err().to_string(),
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([0, 0])], message: "Sketch part002 is constrained `partial` and cannot be modified" }"#
+    );
+}
