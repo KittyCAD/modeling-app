@@ -48,6 +48,7 @@ export function App() {
     streamDimensions,
     guiMode,
     setGuiMode,
+    executeAst,
   } = useStore((s) => ({
     guiMode: s.guiMode,
     setGuiMode: s.setGuiMode,
@@ -58,6 +59,7 @@ export function App() {
     setOpenPanes: s.setOpenPanes,
     didDragInStream: s.didDragInStream,
     streamDimensions: s.streamDimensions,
+    executeAst: s.executeAst,
   }))
 
   const {
@@ -88,12 +90,23 @@ export function App() {
     if (guiMode.mode === 'sketch') {
       if (guiMode.sketchMode === 'selectFace') return
       if (guiMode.sketchMode === 'sketchEdit') {
+        // TODO: share this with Toolbar's "Exit sketch" button
+        // exiting sketch should be done consistently across all exits
         engineCommandManager?.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: { type: 'edit_mode_exit' },
         })
+        engineCommandManager?.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: { type: 'default_camera_disable_sketch_mode' },
+        })
         setGuiMode({ mode: 'default' })
+        // this is necessary to get the UI back into a consistent
+        // state right now, hopefully won't need to rerender
+        // when exiting sketch mode in the future
+        executeAst()
       } else {
         engineCommandManager?.sendSceneCommand({
           type: 'modeling_cmd_req',
@@ -121,8 +134,8 @@ export function App() {
     onboardingStatus === onboardingPaths.CAMERA
       ? 'opacity-20'
       : didDragInStream
-      ? 'opacity-40'
-      : ''
+        ? 'opacity-40'
+        : ''
 
   // Use file code loaded from disk
   // on mount, and overwrite any locally-stored code
