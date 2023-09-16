@@ -446,6 +446,24 @@ impl Value {
             Value::UnaryExpression(ref mut unary_expression) => unary_expression.rename_identifiers(old_name, new_name),
         }
     }
+
+    /// Get the constraint level for a value type.
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        match self {
+            Value::Literal(literal) => literal.get_constraint_level(),
+            Value::Identifier(identifier) => identifier.get_constraint_level(),
+            Value::BinaryExpression(binary_expression) => binary_expression.get_constraint_level(),
+
+            Value::FunctionExpression(function_identifier) => function_identifier.get_constraint_level(),
+            Value::CallExpression(call_expression) => call_expression.get_constraint_level(),
+            Value::PipeExpression(pipe_expression) => pipe_expression.get_constraint_level(),
+            Value::PipeSubstitution(_) => ConstraintLevel::Full,
+            Value::ArrayExpression(array_expression) => array_expression.get_constraint_level(),
+            Value::ObjectExpression(object_expression) => object_expression.get_constraint_level(),
+            Value::MemberExpression(member_expression) => member_expression.get_constraint_level(),
+            Value::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
+        }
+    }
 }
 
 impl From<Value> for crate::executor::SourceRange {
@@ -485,6 +503,18 @@ impl From<&BinaryPart> for crate::executor::SourceRange {
 }
 
 impl BinaryPart {
+    /// Get the constraint level.
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        match self {
+            BinaryPart::Literal(literal) => literal.get_constraint_level(),
+            BinaryPart::Identifier(identifier) => identifier.get_constraint_level(),
+            BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_constraint_level(),
+            BinaryPart::CallExpression(call_expression) => call_expression.get_constraint_level(),
+            BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
+            BinaryPart::MemberExpression(member_expression) => member_expression.get_constraint_level(),
+        }
+    }
+
     fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         match &self {
             BinaryPart::Literal(literal) => literal.recast(),
@@ -744,6 +774,7 @@ impl CallExpression {
             function: Function::StdLib { func },
         })
     }
+
     fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
         format!(
             "{}({})",
@@ -882,6 +913,26 @@ impl CallExpression {
 
         for arg in &mut self.arguments {
             arg.rename_identifiers(old_name, new_name);
+        }
+    }
+
+    /// Return the constraint level for this call expression.
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        if self.arguments.is_empty() {
+            return ConstraintLevel::Full;
+        }
+
+        // Iterate over the arguments and get the constraint level for each one.
+        let mut constraint_levels = Vec::with_capacity(self.arguments.len());
+        for arg in &self.arguments {
+            constraint_levels.push(arg.get_constraint_level());
+        }
+
+        // Check if all the constraint levels are the same.
+        if constraint_levels.iter().all(|level| *level == constraint_levels[0]) {
+            constraint_levels[0].clone()
+        } else {
+            ConstraintLevel::Partial
         }
     }
 }
@@ -1152,6 +1203,12 @@ impl Literal {
         }
     }
 
+    /// Get the constraint level for this literal.
+    /// Literals are always not constrained.
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        ConstraintLevel::None
+    }
+
     fn recast(&self) -> String {
         if let serde_json::Value::String(value) = &self.value {
             let quote = if self.raw.trim().starts_with('"') { '"' } else { '\'' };
@@ -1202,6 +1259,12 @@ impl Identifier {
             end: 0,
             name: name.to_string(),
         }
+    }
+
+    /// Get the constraint level for this identifier.
+    /// Identifier are always fully constrained.
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        ConstraintLevel::Full
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -1263,6 +1326,24 @@ impl ArrayExpression {
             start: 0,
             end: 0,
             elements,
+        }
+    }
+
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        if self.elements.is_empty() {
+            return ConstraintLevel::None;
+        }
+
+        let mut constraint_levels = Vec::with_capacity(self.elements.len());
+        for element in &self.elements {
+            constraint_levels.push(element.get_constraint_level());
+        }
+
+        // Check if the constraint levels are all the same.
+        if constraint_levels.iter().all(|level| *level == constraint_levels[0]) {
+            constraint_levels[0].clone()
+        } else {
+            ConstraintLevel::Partial
         }
     }
 
@@ -1393,6 +1474,24 @@ impl ObjectExpression {
             start: 0,
             end: 0,
             properties,
+        }
+    }
+
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        if self.properties.is_empty() {
+            return ConstraintLevel::None;
+        }
+
+        let mut constraint_levels = Vec::with_capacity(self.properties.len());
+        for property in &self.properties {
+            constraint_levels.push(property.value.get_constraint_level());
+        }
+
+        // Check if the constraint levels are all the same.
+        if constraint_levels.iter().all(|level| *level == constraint_levels[0]) {
+            constraint_levels[0].clone()
+        } else {
+            ConstraintLevel::Partial
         }
     }
 
@@ -1651,6 +1750,12 @@ pub struct MemberExpression {
 impl_value_meta!(MemberExpression);
 
 impl MemberExpression {
+    /// Get the constraint level for a member expression.
+    /// This is always fully constrained.
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        ConstraintLevel::Full
+    }
+
     fn recast(&self) -> String {
         let key_str = match &self.property {
             LiteralIdentifier::Identifier(identifier) => {
@@ -1807,6 +1912,19 @@ impl BinaryExpression {
             operator,
             left,
             right,
+        }
+    }
+
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        let left_constraint_level = self.left.get_constraint_level();
+        let right_constraint_level = self.right.get_constraint_level();
+
+        if left_constraint_level == ConstraintLevel::None && right_constraint_level == ConstraintLevel::None {
+            ConstraintLevel::None
+        } else if left_constraint_level == ConstraintLevel::Full && right_constraint_level == ConstraintLevel::Full {
+            ConstraintLevel::Full
+        } else {
+            ConstraintLevel::Partial
         }
     }
 
@@ -2017,6 +2135,10 @@ impl UnaryExpression {
         }
     }
 
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        self.argument.get_constraint_level()
+    }
+
     fn recast(&self, options: &FormatOptions) -> String {
         format!("{}{}", &self.operator, self.argument.recast(options, 0))
     }
@@ -2104,6 +2226,25 @@ impl PipeExpression {
             end: 0,
             body,
             non_code_meta: Default::default(),
+        }
+    }
+
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        if self.body.is_empty() {
+            return ConstraintLevel::None;
+        }
+
+        // Iterate over all body expressions.
+        let mut constraint_levels = Vec::with_capacity(self.body.len());
+        for expression in &self.body {
+            constraint_levels.push(expression.get_constraint_level());
+        }
+
+        // Check if the constraint values are the same.
+        if constraint_levels.iter().all(|x| *x == constraint_levels[0]) {
+            constraint_levels[0].clone()
+        } else {
+            ConstraintLevel::Partial
         }
     }
 
@@ -2225,6 +2366,11 @@ pub struct FunctionExpression {
 impl_value_meta!(FunctionExpression);
 
 impl FunctionExpression {
+    /// Function expressions are always fully constrained.
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        ConstraintLevel::Full
+    }
+
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         // We don't want to end with a new line inside nested functions.
         let mut new_options = options.clone();
@@ -2327,6 +2473,20 @@ impl FormatOptions {
             " ".repeat(level * self.tab_size) + " ".repeat(PIPE_OPERATOR.len() + 1).as_str()
         }
     }
+}
+
+/// The constraint level.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+#[display(style = "camelCase")]
+pub enum ConstraintLevel {
+    /// No constraints.
+    None,
+    /// Partially constrained.
+    Partial,
+    /// Fully constrained.
+    Full,
 }
 
 #[cfg(test)]
