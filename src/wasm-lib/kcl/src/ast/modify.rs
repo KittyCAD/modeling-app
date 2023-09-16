@@ -26,12 +26,12 @@ pub struct ControlPointData {
 /// a move or a new line.
 pub async fn modify_ast_for_sketch(
     engine: &mut EngineConnection,
-    program: &Program,
+    program: &mut Program,
     // The name of the sketch.
     sketch_name: &str,
     // The ID of the parent sketch.
     sketch_id: uuid::Uuid,
-) -> Result<(Program, String), KclError> {
+) -> Result<String, KclError> {
     // Let's start by getting the path info.
 
     // Let's get the path info.
@@ -98,17 +98,25 @@ pub async fn modify_ast_for_sketch(
 
     let first_control_points = &control_points[0];
 
+    let mut additional_lines = Vec::new();
+    for control_point in &control_points[1..] {
+        additional_lines.push([control_point.points[0].x, control_point.points[0].y]);
+    }
+
     // Okay now let's recalculate the sketch from the control points.
     let sketch = create_start_sketch_at(
         sketch_name,
         [first_control_points.points[0].x, first_control_points.points[0].y],
         [first_control_points.points[1].x, first_control_points.points[1].y],
-        vec![[0.0, 0.0], [0.0, 0.0]],
+        additional_lines,
     )?;
 
     println!("sketch: {:#?}", sketch);
 
-    Ok((program.clone(), program.recast(&FormatOptions::default(), 0)))
+    // Add the sketch back to the program.
+    program.replace_variable(sketch_name, sketch);
+
+    Ok(program.recast(&FormatOptions::default(), 0))
 }
 
 /// Create a pipe expression that starts a sketch at the given point and draws a line to the given point.
