@@ -7,7 +7,7 @@ use crate::{
     },
     engine::{EngineConnection, EngineManager},
     errors::{KclError, KclErrorDetails},
-    executor::SourceRange,
+    executor::{Point2d, SourceRange},
 };
 
 #[derive(Debug)]
@@ -51,8 +51,6 @@ pub async fn modify_ast_for_sketch(
             source_ranges: vec![SourceRange::default()],
         }));
     };
-
-    println!("path_info: {:#?}", path_info);
 
     /* // Let's try to get the children of the sketch.
     let resp = engine
@@ -196,6 +194,14 @@ fn create_start_sketch_at(
         .into()],
     )?;
 
+    // Keep track of where we are so we can close the sketch if we need to.
+    let mut current_position = Point2d {
+        x: start[0],
+        y: start[1],
+    };
+    current_position.x += end[0];
+    current_position.y += end[1];
+
     let initial_line = CallExpression::new(
         "line",
         vec![
@@ -210,7 +216,23 @@ fn create_start_sketch_at(
 
     let mut pipe_body = vec![start_sketch_at.into(), initial_line.into()];
 
-    for line in additional_lines {
+    for (index, line) in additional_lines.iter().enumerate() {
+        current_position.x += line[0];
+        current_position.y += line[1];
+
+        // If we are on the last line, check if we have to close the sketch.
+        if index == additional_lines.len() - 1 {
+            // Compare the end of the last line to the start of the first line.
+            if round_to_2_places(current_position.x - start[0]).abs() < std::f64::EPSILON
+                && round_to_2_places(current_position.y - start[1]).abs() < std::f64::EPSILON
+            {
+                // We have to close the sketch.
+                let close = CallExpression::new("close", vec![PipeSubstitution::new().into()])?;
+                pipe_body.push(close.into());
+                break;
+            }
+        }
+
         // TODO: we should check if we should close the sketch.
         let line = CallExpression::new(
             "line",
