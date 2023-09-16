@@ -528,6 +528,7 @@ interface Subscription<T extends ModelTypes> {
 export class EngineCommandManager {
   artifactMap: ArtifactMap = {}
   sourceRangeMap: SourceRangeMap = {}
+  oldToNewSketchIdMap: { [key: string]: string } = {}
   outSequence = 1
   inSequence = 1
   engineConnection?: EngineConnection
@@ -679,6 +680,7 @@ export class EngineCommandManager {
   startNewSession() {
     this.artifactMap = {}
     this.sourceRangeMap = {}
+    this.oldToNewSketchIdMap = {}
   }
   subscribeTo<T extends ModelTypes>({
     event,
@@ -931,6 +933,7 @@ export class EngineCommandManager {
     const pathInfoProms = []
     for (const [id, artifact] of Object.entries(this.artifactMap)) {
       if (artifact.commandType === 'start_path') {
+        console.log('getting path info for', id)
         pathInfoProms.push(
           this.sendSceneCommand({
             type: 'modeling_cmd_req',
@@ -972,6 +975,8 @@ export class EngineCommandManager {
       } else if (memoryItem.type !== 'SketchGroup') {
         return
       }
+
+      this.oldToNewSketchIdMap[memoryItem.id] = originalId
       const relevantSegments = segments.filter(
         ({ command_id }: { command_id: string | null }) => command_id
       )

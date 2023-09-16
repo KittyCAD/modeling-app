@@ -231,17 +231,22 @@ export const Stream = ({ className = '' }) => {
         sketchGroupId = sketchGroup.id
       }
 
-      if (guiMode.sketchMode === ('move' as any)) {
+      if (guiMode.sketchMode === ('move' as any as 'line') &&
+        command.cmd.type === 'handle_mouse_drag_end') {
         // Let's get the updated ast.
         if (sketchGroupId === '') return
 
         console.log('sketchGroupId', sketchGroupId)
+        console.log('sketchGroup', sketchGroup)
+        const engineId = engineCommandManager.oldToNewSketchIdMap[sketchGroupId]
+          console.log(engineCommandManager.oldToNewSketchIdMap)
+          console.log(engineId)
 
         const updatedAst: Program = await modify_ast_for_sketch(
           engineCommandManager,
           JSON.stringify(ast),
           variableName,
-          sketchGroupId
+          engineId
         )
 
         updateAst(updatedAst, false)
