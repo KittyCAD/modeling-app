@@ -38,13 +38,15 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
     let _ = kcl_lib::executor::execute(program, &mut mem, kcl_lib::executor::BodyType::Root, &mut engine)?;
 
     // Send a snapshot request to the engine.
-    let resp = engine.send_modeling_cmd_get_response(
-        uuid::Uuid::new_v4(),
-        kcl_lib::executor::SourceRange::default(),
-        kittycad::types::ModelingCmd::TakeSnapshot {
-            format: kittycad::types::ImageFormat::Png,
-        },
-    )?;
+    let resp = engine
+        .send_modeling_cmd_get_response(
+            uuid::Uuid::new_v4(),
+            kcl_lib::executor::SourceRange::default(),
+            kittycad::types::ModelingCmd::TakeSnapshot {
+                format: kittycad::types::ImageFormat::Png,
+            },
+        )
+        .await?;
 
     if let kittycad::types::OkWebSocketResponseData::Modeling {
         modeling_response: kittycad::types::OkModelingCmdResponse::TakeSnapshot { data },

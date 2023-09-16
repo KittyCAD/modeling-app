@@ -23,7 +23,7 @@ impl EngineConnection {
         Ok(())
     }
 
-    pub fn send_modeling_cmd_get_response(
+    pub async fn send_modeling_cmd_get_response(
         &mut self,
         _id: uuid::Uuid,
         _source_range: crate::executor::SourceRange,

@@ -3441,6 +3441,7 @@ dependencies = [
  "js-sys",
  "kcl-lib",
  "kittycad",
+ "pretty_assertions",
  "reqwest",
  "serde_json",
  "tokio",
