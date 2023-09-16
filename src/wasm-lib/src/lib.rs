@@ -32,6 +32,36 @@ pub async fn execute_wasm(
     JsValue::from_serde(&memory).map_err(|e| e.to_string())
 }
 
+// wasm_bindgen wrapper for execute
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen]
+pub async fn modify_ast_for_sketch(
+    manager: kcl_lib::engine::conn_wasm::EngineCommandManager,
+    program_str: &str,
+    sketch_name: &str,
+    sketch_id: &str,
+) -> Result<JsValue, String> {
+    // deserialize the ast from a stringified json
+    let mut program: kcl_lib::ast::types::Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
+
+    let mut engine = kcl_lib::engine::EngineConnection::new(manager)
+        .await
+        .map_err(|e| format!("{:?}", e))?;
+
+    let _ = kcl_lib::ast::modify::modify_ast_for_sketch(
+        &mut engine,
+        &mut program,
+        sketch_name,
+        uuid::Uuid::parse_str(sketch_id).map_err(|e| e.to_string())?,
+    )
+    .await
+    .map_err(String::from)?;
+
+    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
+    // gloo-serialize crate instead.
+    JsValue::from_serde(&program).map_err(|e| e.to_string())
+}
+
 #[wasm_bindgen]
 pub fn deserialize_files(data: &[u8]) -> Result<JsValue, JsError> {
     let ws_resp: kittycad::types::WebSocketResponse = bson::from_slice(data)?;

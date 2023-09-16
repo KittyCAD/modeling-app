@@ -21,6 +21,7 @@ import {
 } from 'lang/std/sketch'
 import { getNodeFromPath } from 'lang/queryAst'
 import { Program, VariableDeclarator } from 'lang/abstractSyntaxTreeTypes'
+import { modify_ast_for_sketch } from '../wasm-lib/pkg/wasm_lib'
 
 export const Stream = ({ className = '' }) => {
   const [isLoading, setIsLoading] = useState(true)
@@ -211,22 +212,11 @@ export const Stream = ({ className = '' }) => {
       }
     }
     engineCommandManager?.sendSceneCommand(command).then(async (resp) => {
-      if (guiMode.mode === 'sketch' && guiMode.sketchMode === ('move' as any)) {
-        // Let's get the path info.
-        //await engineCommandManager.fixIdMappings(ast, programMemory)
-        // TODO run our wasm function to modify the code.
-        console.log('mappings', engineCommandManager.artifactMap)
-        console.log('sourceRangeMap', engineCommandManager.sourceRangeMap)
-      }
-
       if (command?.cmd?.type !== 'mouse_click' || !ast) return
-      if (
-        !(
-          guiMode.mode === 'sketch' &&
-          guiMode.sketchMode === ('sketch_line' as any as 'line')
-        )
-      )
-        return
+
+      if (!(guiMode.mode === 'sketch')) return
+
+      if (guiMode.sketchMode === 'selectFace') return
 
       // Check if the sketch group already exists.
       const varDec = getNodeFromPath<VariableDeclarator>(
@@ -238,6 +228,29 @@ export const Stream = ({ className = '' }) => {
       const sketchGroup = programMemory.root[variableName]
       const isEditingExistingSketch =
         sketchGroup?.type === 'SketchGroup' && sketchGroup.value.length
+      let sketchGroupId = ''
+      if (sketchGroup && sketchGroup.type === 'SketchGroup') {
+        sketchGroupId = sketchGroup.id
+      }
+
+      if (guiMode.sketchMode === ('move' as any)) {
+        // Let's get the updated ast.
+        console.log('sketchGroup.value', sketchGroup)
+        if (sketchGroupId === '') return
+
+        const updatedAst: Program = await modify_ast_for_sketch(
+          engineCommandManager,
+          JSON.stringify(ast),
+          variableName,
+          sketchGroupId
+        )
+
+        updateAst(updatedAst, false)
+        return
+      }
+
+      if (!(guiMode.sketchMode === ('sketch_line' as any as 'line'))) return
+
       if (
         resp?.data?.data?.entities_modified?.length &&
         guiMode.waitingFirstClick &&
