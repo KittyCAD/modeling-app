@@ -2567,6 +2567,7 @@ impl ConstraintLevel {
 
 /// A vector of constraint levels.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
 pub struct ConstraintLevels(pub Vec<ConstraintLevel>);
 
 impl Default for ConstraintLevels {
