@@ -238,8 +238,12 @@ export const Stream = ({ className = '' }) => {
         // Let's get the updated ast.
         if (sketchGroupId === '') return
 
-        /* I am not sure if this is the best way to do this. */
-        // Get the last start_sketch command.
+        /* Ok so here is the deal, we need the sketch id for the sketch we are
+         * on. Which is most likely (maybe?) the last call to `start_path`,
+         * unless we have multiple sketches. In that case we need a better way
+         * to track "what sketch are we currently editing and what is its engine
+         * id". Regardless this is working for now and demonstrates that this
+         * works if you have the correct engine sketch id. */
         let engineId = ''
 
         for (const [id, artifact] of Object.entries(
