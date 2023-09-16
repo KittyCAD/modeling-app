@@ -90,8 +90,6 @@ impl crate::engine::EngineManager for EngineConnection {
             })
         })?;
 
-        web_sys::console::log_1(&value);
-
         // Parse the value as a string.
         let s = value.as_string().ok_or_else(|| {
             KclError::Engine(KclErrorDetails {
