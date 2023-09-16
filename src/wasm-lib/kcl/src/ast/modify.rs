@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use kittycad::types::ModelingCmd;
 
 use crate::{
@@ -6,6 +8,15 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
 };
+
+#[derive(Debug)]
+/// The control point data for a curve or line.
+pub struct ControlPointData {
+    /// The control points for the curve or line.
+    pub points: Vec<kittycad::types::Point3D>,
+    /// The command that created this curve (or line).
+    pub command: kittycad::types::PathCommand,
+}
 
 /// Update the AST to reflect the new state of the program after something like
 /// a move or a new line.
@@ -36,10 +47,12 @@ pub async fn modify_ast_for_sketch(
         }));
     };
 
+    println!("path_info: {:?}", path_info);
+
     // Now let's get the control points for all the segments.
     // TODO: We should probably await all these at once so we aren't going one by one.
     // But I guess this is fine for now.
-    let mut handles = vec![];
+    let mut handles = HashMap::new();
     for segment in &path_info.segments {
         if let Some(command_id) = &segment.command_id {
             let h = engine.send_modeling_cmd_get_response(
@@ -47,19 +60,32 @@ pub async fn modify_ast_for_sketch(
                 SourceRange::default(),
                 ModelingCmd::CurveGetControlPoints { curve_id: *command_id },
             );
-            handles.push(h.await?);
+            handles.insert(command_id, (h.await?, segment.command.clone()));
         }
     }
 
-    /*let mut control_points = vec![];
-    for handle in handles {
-        control_points.push(handle.await?);
-    }*/
     // TODO await all these.
+    let mut control_points = HashMap::new();
+    for (id, (handle, command)) in handles {
+        let kittycad::types::OkWebSocketResponseData::Modeling {
+            modeling_response: kittycad::types::OkModelingCmdResponse::CurveGetControlPoints { data },
+        } = handle
+        else {
+            return Err(KclError::Engine(KclErrorDetails {
+                message: format!("Curve get control points response was not as expected: {:?}", resp),
+                source_ranges: vec![SourceRange::default()],
+            }));
+        };
+        control_points.insert(
+            id,
+            ControlPointData {
+                points: data.control_points,
+                command,
+            },
+        );
+    }
 
-    let control_points = handles;
-
-    println!("control_points: {:?}", control_points);
+    println!("control_points: {:#?}", control_points);
 
     // Okay now let's recalculate the sketch from the control points.
 
