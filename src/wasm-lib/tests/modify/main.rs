@@ -52,6 +52,7 @@ async fn setup(code: &str, name: &str) -> Result<(EngineConnection, Program, uui
     };
     let sketch_id = sketch_group.id;
 
+    println!("sketch_id: {:?}", sketch_id);
     let plane_id = uuid::Uuid::new_v4();
     engine.send_modeling_cmd(
         plane_id,
@@ -67,6 +68,7 @@ async fn setup(code: &str, name: &str) -> Result<(EngineConnection, Program, uui
 
     // Enter sketch mode.
     // We can't get control points without being in sketch mode.
+    // You can however get path info without sketch mode.
     engine.send_modeling_cmd(
         uuid::Uuid::new_v4(),
         SourceRange::default(),
@@ -89,13 +91,62 @@ async fn setup(code: &str, name: &str) -> Result<(EngineConnection, Program, uui
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_modify_basic_sketch() {
+async fn test_modify_sketch_part001() {
     let name = "part001";
     let code = format!(
         r#"const {} = startSketchAt([8.41, 5.78])
   |> line([7.37, -11.0], %)
   |> line([-8.69, -3.75], %)
   |> line([-5.0, 4.25], %)
+"#,
+        name
+    );
+
+    let (mut engine, program, sketch_id) = setup(&code, name).await.unwrap();
+    let mut new_program = program.clone();
+    let new_code = modify_ast_for_sketch(&mut engine, &mut new_program, name, sketch_id)
+        .await
+        .unwrap();
+
+    // Make sure the code is the same.
+    assert_eq!(code, new_code);
+    // Make sure the program is the same.
+    assert_eq!(new_program, program);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_modify_sketch_part002() {
+    let name = "part002";
+    let code = format!(
+        r#"const {} = startSketchAt([8.41, 5.78])
+  |> line([7.42, -8.62], %)
+  |> line([-6.38, -3.51], %)
+  |> line([-3.77, 3.56], %)
+"#,
+        name
+    );
+
+    let (mut engine, program, sketch_id) = setup(&code, name).await.unwrap();
+    let mut new_program = program.clone();
+    let new_code = modify_ast_for_sketch(&mut engine, &mut new_program, name, sketch_id)
+        .await
+        .unwrap();
+
+    // Make sure the code is the same.
+    assert_eq!(code, new_code);
+    // Make sure the program is the same.
+    assert_eq!(new_program, program);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_modify_close_sketch() {
+    let name = "part002";
+    let code = format!(
+        r#"const {} = startSketchAt([7.91, 3.89])
+  |> line([7.42, -8.62], %)
+  |> line([-6.38, -3.51], %)
+  |> line([-3.77, 3.56], %)
+  |> close(%)
 "#,
         name
     );
