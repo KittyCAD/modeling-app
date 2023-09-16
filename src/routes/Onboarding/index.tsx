@@ -14,6 +14,7 @@ import CmdK from './CmdK'
 import UserMenu from './UserMenu'
 import ProjectMenu from './ProjectMenu'
 import Export from './Export'
+import FutureWork from './FutureWork'
 
 export const onboardingPaths = {
   INDEX: '/',
@@ -77,8 +78,10 @@ export const onboardingRoutes = [
     path: makeUrlPathRelative(onboardingPaths.SKETCHING),
     element: <Sketching />,
   },
-  // Move
-  // Future Work
+  {
+    path: makeUrlPathRelative(onboardingPaths.FUTURE_WORK),
+    element: <FutureWork />,
+  },
 ]
 
 export function useNextClick(newStatus: string) {

@@ -1,6 +1,6 @@
 import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../../components/ActionButton'
-import { useDismiss } from '.'
+import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from 'useStore'
 import { useEffect } from 'react'
 
@@ -10,6 +10,7 @@ export default function Sketching() {
     buttonDownInStream: s.buttonDownInStream,
   }))
   const dismiss = useDismiss()
+  const next = useNextClick(onboardingPaths.FUTURE_WORK)
 
   useEffect(() => {
     setCode('')
@@ -50,10 +51,10 @@ export default function Sketching() {
           </ActionButton>
           <ActionButton
             Element="button"
-            onClick={() => dismiss('../../')}
+            onClick={next}
             icon={{ icon: faArrowRight }}
           >
-            Finish
+            Next: Future Work
           </ActionButton>
         </div>
       </div>
