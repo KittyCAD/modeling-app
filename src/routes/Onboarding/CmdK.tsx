@@ -1,41 +1,44 @@
 import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../../components/ActionButton'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
-import { useStore } from 'useStore'
-import { useEffect } from 'react'
+import { useStore } from '../../useStore'
 
-export default function Sketching() {
-  const { setCode, buttonDownInStream } = useStore((s) => ({
-    setCode: s.setCode,
+export default function CmdK() {
+  const { buttonDownInStream } = useStore((s) => ({
     buttonDownInStream: s.buttonDownInStream,
   }))
   const dismiss = useDismiss()
-  const next = useNextClick(onboardingPaths.FUTURE_WORK)
-
-  useEffect(() => {
-    setCode('')
-  }, [setCode])
+  const next = useNextClick(onboardingPaths.USER_MENU)
 
   return (
     <div className="fixed grid justify-center items-end inset-0 z-50 pointer-events-none">
       <div
         className={
-          'max-w-full xl:max-w-2xl flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
+          'max-w-full xl:max-w-4xl flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
           (buttonDownInStream ? '' : ' pointer-events-auto')
         }
       >
-        <h1 className="text-2xl font-bold">Sketching</h1>
+        <h2 className="text-2xl">Command Bar</h2>
         <p className="my-4">
-          Our 3D modeling tools are still very much a work in progress, but we
-          want to show you some early features. Try creating a sketch by
-          clicking Create Sketch in the top toolbar, then clicking the Line
-          tool, and clicking in the 3D view.
+          Press <kbd>Cmd/Win</kbd> + <kbd>K</kbd> to open the command bar. Try
+          changing your camera controls with it.
         </p>
         <p className="my-4">
-          Watch the code pane as you click. Point-and-click interactions are
-          always just modifying and generating code in KittyCAD Modeling App.
+          We are working on a command bar that will allow you to quickly see and
+          search for any available commands. We are building KittyCAD Modeling
+          App's state management system on top of{' '}
+          <a
+            href="https://xstate.js.org/"
+            rel="noreferrer noopener"
+            target="_blank"
+          >
+            XState
+          </a>
+          . Currently you can only control settings, authentication, and file
+          management from the command bar, but we will be powering modeling
+          commands with it soon.
         </p>
-        <div className="flex justify-between mt-6">
+        <div className="flex justify-between">
           <ActionButton
             Element="button"
             onClick={() => dismiss('../../')}
@@ -54,7 +57,7 @@ export default function Sketching() {
             onClick={next}
             icon={{ icon: faArrowRight }}
           >
-            Next: Future Work
+            Next: User Menu
           </ActionButton>
         </div>
       </div>

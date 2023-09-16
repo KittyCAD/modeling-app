@@ -1,20 +1,14 @@
 import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../../components/ActionButton'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
-import { useStore } from 'useStore'
-import { useEffect } from 'react'
+import { useStore } from '../../useStore'
 
-export default function Sketching() {
-  const { setCode, buttonDownInStream } = useStore((s) => ({
-    setCode: s.setCode,
+export default function Export() {
+  const { buttonDownInStream } = useStore((s) => ({
     buttonDownInStream: s.buttonDownInStream,
   }))
   const dismiss = useDismiss()
-  const next = useNextClick(onboardingPaths.FUTURE_WORK)
-
-  useEffect(() => {
-    setCode('')
-  }, [setCode])
+  const next = useNextClick(onboardingPaths.SKETCHING)
 
   return (
     <div className="fixed grid justify-center items-end inset-0 z-50 pointer-events-none">
@@ -24,18 +18,26 @@ export default function Sketching() {
           (buttonDownInStream ? '' : ' pointer-events-auto')
         }
       >
-        <h1 className="text-2xl font-bold">Sketching</h1>
-        <p className="my-4">
-          Our 3D modeling tools are still very much a work in progress, but we
-          want to show you some early features. Try creating a sketch by
-          clicking Create Sketch in the top toolbar, then clicking the Line
-          tool, and clicking in the 3D view.
-        </p>
-        <p className="my-4">
-          Watch the code pane as you click. Point-and-click interactions are
-          always just modifying and generating code in KittyCAD Modeling App.
-        </p>
-        <div className="flex justify-between mt-6">
+        <section className="flex-1">
+          <h2 className="text-2xl">Export</h2>
+          <p className="my-4">
+            Try opening the project menu and clicking "Export Model".
+          </p>
+          <p className="my-4">
+            KittyCAD Modeling App uses our open-source extension proposal for
+            the GLTF file format.{' '}
+            <a
+              href="https://kittycad.io/docs/api/convert-cad-file"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              Our conversion API
+            </a>{' '}
+            can convert to and from most common CAD file formats, allowing
+            export to almost any CAD software.
+          </p>
+        </section>
+        <div className="flex justify-between">
           <ActionButton
             Element="button"
             onClick={() => dismiss('../../')}
@@ -54,7 +56,7 @@ export default function Sketching() {
             onClick={next}
             icon={{ icon: faArrowRight }}
           >
-            Next: Future Work
+            Next: Sketching
           </ActionButton>
         </div>
       </div>
