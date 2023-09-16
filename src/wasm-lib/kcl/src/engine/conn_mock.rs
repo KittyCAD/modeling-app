@@ -2,6 +2,7 @@
 //! engine.
 
 use anyhow::Result;
+use kittycad::types::OkWebSocketResponseData;
 
 use crate::errors::KclError;
 
@@ -20,5 +21,14 @@ impl EngineConnection {
         _cmd: kittycad::types::ModelingCmd,
     ) -> Result<(), KclError> {
         Ok(())
+    }
+
+    pub fn send_modeling_cmd_get_response(
+        &mut self,
+        _id: uuid::Uuid,
+        _source_range: crate::executor::SourceRange,
+        _cmd: kittycad::types::ModelingCmd,
+    ) -> Result<OkWebSocketResponseData, KclError> {
+        todo!()
     }
 }
