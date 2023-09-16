@@ -3,8 +3,13 @@ import { ActionButton } from '../../components/ActionButton'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { Themes } from 'lib/theme'
+import { useEffect } from 'react'
+import { bracket } from 'lib/exampleKcl'
 
 export default function Introduction() {
+  const { setCode } = useStore((s) => ({
+    setCode: s.setCode,
+  }))
   const {
     settings: {
       state: {
@@ -14,6 +19,10 @@ export default function Introduction() {
   } = useGlobalStateContext()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.CAMERA)
+
+  useEffect(() => {
+    setCode(bracket)
+  }, [setCode])
 
   return (
     <div className="fixed grid place-content-center inset-0 bg-chalkboard-110/50 z-50">

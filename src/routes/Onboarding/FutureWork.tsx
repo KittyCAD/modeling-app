@@ -13,7 +13,7 @@ export default function FutureWork() {
 
   useEffect(() => {
     setCode(bracket)
-  })
+  }, [setCode])
 
   return (
     <div className="fixed grid justify-center items-center inset-0 bg-chalkboard-100/50 z-50">
