@@ -9,7 +9,7 @@ export default function InteractiveNumbers() {
     buttonDownInStream: s.buttonDownInStream,
   }))
   const dismiss = useDismiss()
-  const next = useNextClick(onboardingPaths.SKETCHING)
+  const next = useNextClick(onboardingPaths.COMMAND_K)
 
   return (
     <div className="fixed grid justify-end items-center inset-0 z-50 pointer-events-none">
@@ -33,31 +33,39 @@ export default function InteractiveNumbers() {
             the <kbd>Alt</kbd> key and dragging the number left and right. You
             can hold down different modifier keys to change the value by
             different increments:
-            <table className="border-collapse">
+            <table className="border-collapse text-sm mx-auto my-4">
               <tbody>
                 <tr>
-                  <td>
+                  <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70">
                     <kbd>Alt + Shift + Cmd/Win</kbd>
                   </td>
-                  <td>0.01</td>
+                  <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70 text-right">
+                    0.01
+                  </td>
                 </tr>
                 <tr>
-                  <td>
+                  <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70">
                     <kbd>Alt + Cmd/Win</kbd>
                   </td>
-                  <td>0.1</td>
+                  <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70 text-right">
+                    0.1
+                  </td>
                 </tr>
                 <tr>
-                  <td>
+                  <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70">
                     <kbd>Alt</kbd>
                   </td>
-                  <td>1</td>
+                  <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70 text-right">
+                    1
+                  </td>
                 </tr>
                 <tr>
-                  <td>
+                  <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70">
                     <kbd>Alt + Shift</kbd>
                   </td>
-                  <td>10</td>
+                  <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70 text-right">
+                    10
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -108,7 +116,7 @@ export default function InteractiveNumbers() {
             onClick={next}
             icon={{ icon: faArrowRight }}
           >
-            Next: Sketching
+            Next: Command Bar
           </ActionButton>
         </div>
       </div>

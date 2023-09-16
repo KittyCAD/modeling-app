@@ -10,6 +10,7 @@ import Streaming from './Streaming'
 import CodeEditor from './CodeEditor'
 import ParametricModeling from './ParametricModeling'
 import InteractiveNumbers from './InteractiveNumbers'
+import CmdK from './CmdK'
 
 export const onboardingPaths = {
   INDEX: '/',
@@ -18,7 +19,6 @@ export const onboardingPaths = {
   EDITOR: '/editor',
   PARAMETRIC_MODELING: '/parametric-modeling',
   INTERACTIVE_NUMBERS: '/interactive-numbers',
-  AUTOCOMPLETE: '/autocomplete',
   COMMAND_K: '/command-k',
   USER_MENU: '/user-menu',
   PROJECT_MENU: '/project-menu',
@@ -53,8 +53,10 @@ export const onboardingRoutes = [
     path: makeUrlPathRelative(onboardingPaths.INTERACTIVE_NUMBERS),
     element: <InteractiveNumbers />,
   },
-  // Autocomplete / LSP
-  // Command + K
+  {
+    path: makeUrlPathRelative(onboardingPaths.COMMAND_K),
+    element: <CmdK />,
+  },
   // User menu
   // Project menu
   // Export / conversion API
