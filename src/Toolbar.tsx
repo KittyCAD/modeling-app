@@ -229,14 +229,14 @@ export const Toolbar = () => {
                     ...guiMode,
                     ...(guiMode.sketchMode === sketchFnName
                       ? {
-                        sketchMode: 'sketchEdit',
-                        // todo: ...guiMod is adding isTooltip: true, will probably just fix with xstate migtaion
-                      }
+                          sketchMode: 'sketchEdit',
+                          // todo: ...guiMod is adding isTooltip: true, will probably just fix with xstate migtaion
+                        }
                       : {
-                        sketchMode: sketchFnName,
-                        waitingFirstClick: true,
-                        isTooltip: true,
-                      }),
+                          sketchMode: sketchFnName,
+                          waitingFirstClick: true,
+                          isTooltip: true,
+                        }),
                   })
                 }}
                 className={
