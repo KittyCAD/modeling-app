@@ -93,9 +93,9 @@ async fn test_modify_basic_sketch() {
     let name = "part001";
     let code = format!(
         r#"const {} = startSketchAt([8.41, 5.78])
-  |> line([7.37, -11], %)
+  |> line([7.37, -11.0], %)
   |> line([-8.69, -3.75], %)
-  |> line([-5, 4.25], %)
+  |> line([-5.0, 4.25], %)
 "#,
         name
     );
