@@ -510,8 +510,6 @@ impl BinaryPart {
         let mut new_pipe_info = pipe_info.clone();
         new_pipe_info.is_in_pipe = false;
 
-        println!("BinaryPart::get_result: {:?}", self);
-
         match self {
             BinaryPart::Literal(literal) => Ok(literal.into()),
             BinaryPart::Identifier(identifier) => {
