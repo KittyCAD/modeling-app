@@ -27,6 +27,8 @@ pub struct ControlPointData {
 pub async fn modify_ast_for_sketch(
     engine: &mut EngineConnection,
     program: &Program,
+    // The name of the sketch.
+    sketch_name: &str,
     // The ID of the parent sketch.
     sketch_id: uuid::Uuid,
 ) -> Result<(Program, String), KclError> {
@@ -87,7 +89,24 @@ pub async fn modify_ast_for_sketch(
 
     println!("control_points: {:#?}", control_points);
 
+    if control_points.is_empty() {
+        return Err(KclError::Engine(KclErrorDetails {
+            message: format!("No control points found for sketch {}", sketch_name),
+            source_ranges: vec![SourceRange::default()],
+        }));
+    }
+
+    let first_control_points = &control_points[0];
+
     // Okay now let's recalculate the sketch from the control points.
+    let sketch = create_start_sketch_at(
+        sketch_name,
+        [first_control_points.points[0].x, first_control_points.points[0].y],
+        [first_control_points.points[1].x, first_control_points.points[1].y],
+        vec![[0.0, 0.0], [0.0, 0.0]],
+    )?;
+
+    println!("sketch: {:#?}", sketch);
 
     Ok((program.clone(), program.recast(&FormatOptions::default(), 0)))
 }
