@@ -85,14 +85,17 @@ impl crate::engine::EngineManager for EngineConnection {
 
         let value = wasm_bindgen_futures::JsFuture::from(promise).await.map_err(|e| {
             KclError::Engine(KclErrorDetails {
-                message: format!("Failed to get response from engine: {:?}", e),
+                message: format!("Failed to wait for promise from engine: {:?}", e),
                 source_ranges: vec![source_range],
             })
         })?;
 
+        web_sys::console::log_1(&value);
+
+        // Parse the value as a string.
         let s = value.as_string().ok_or_else(|| {
             KclError::Engine(KclErrorDetails {
-                message: "Failed to get response from engine".to_string(),
+                message: format!("Failed to get string from response from engine: `{:?}`", value),
                 source_ranges: vec![source_range],
             })
         })?;
