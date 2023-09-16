@@ -109,11 +109,14 @@ export const Toolbar = () => {
         {guiMode.mode === 'canEditSketch' && (
           <button
             onClick={() => {
-              console.log('guiMode.pathId', guiMode.pathId)
+              const pathToNode = getNodePathFromSourceRange(
+                ast,
+                selectionRanges.codeBasedSelections[0].range
+              )
               setGuiMode({
                 mode: 'sketch',
                 sketchMode: 'enterSketchEdit',
-                pathToNode: guiMode.pathToNode,
+                pathToNode: pathToNode,
                 rotation: [0, 0, 0, 1],
                 position: [0, 0, 0],
                 pathId: guiMode.pathId,
@@ -226,14 +229,14 @@ export const Toolbar = () => {
                     ...guiMode,
                     ...(guiMode.sketchMode === sketchFnName
                       ? {
-                          sketchMode: 'sketchEdit',
-                          // todo: ...guiMod is adding isTooltip: true, will probably just fix with xstate migtaion
-                        }
+                        sketchMode: 'sketchEdit',
+                        // todo: ...guiMod is adding isTooltip: true, will probably just fix with xstate migtaion
+                      }
                       : {
-                          sketchMode: sketchFnName,
-                          waitingFirstClick: true,
-                          isTooltip: true,
-                        }),
+                        sketchMode: sketchFnName,
+                        waitingFirstClick: true,
+                        isTooltip: true,
+                      }),
                   })
                 }}
                 className={
