@@ -13,6 +13,7 @@ import InteractiveNumbers from './InteractiveNumbers'
 import CmdK from './CmdK'
 import UserMenu from './UserMenu'
 import ProjectMenu from './ProjectMenu'
+import Export from './Export'
 
 export const onboardingPaths = {
   INDEX: '/',
@@ -67,7 +68,10 @@ export const onboardingRoutes = [
     path: makeUrlPathRelative(onboardingPaths.PROJECT_MENU),
     element: <ProjectMenu />,
   },
-  // Project menu
+  {
+    path: makeUrlPathRelative(onboardingPaths.EXPORT),
+    element: <Export />,
+  },
   // Export / conversion API
   {
     path: makeUrlPathRelative(onboardingPaths.SKETCHING),

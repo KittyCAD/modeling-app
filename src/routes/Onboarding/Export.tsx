@@ -2,30 +2,39 @@ import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../../components/ActionButton'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from '../../useStore'
-import { isTauri } from 'lib/isTauri'
 
-export default function ProjectMenu() {
+export default function Export() {
   const { buttonDownInStream } = useStore((s) => ({
     buttonDownInStream: s.buttonDownInStream,
   }))
   const dismiss = useDismiss()
-  const next = useNextClick(onboardingPaths.EXPORT)
+  const next = useNextClick(onboardingPaths.SKETCHING)
 
   return (
-    <div className="fixed grid justify-center items-start inset-0 z-50 pointer-events-none">
+    <div className="fixed grid justify-center items-end inset-0 z-50 pointer-events-none">
       <div
         className={
-          'max-w-xl flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
+          'max-w-full xl:max-w-2xl flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
           (buttonDownInStream ? '' : ' pointer-events-auto')
         }
       >
         <section className="flex-1">
-          <h2 className="text-2xl">Project Menu</h2>
+          <h2 className="text-2xl">Export</h2>
           <p className="my-4">
-            Click on Kitt in the upper left to open the project menu. You can
-            only {isTauri() && 'go home or '}export your model—which we'll talk
-            about next—for now. We'll add more options here soon, especially as
-            we add support for multi-file assemblies.
+            Try opening the project menu and clicking "Export Model".
+          </p>
+          <p className="my-4">
+            KittyCAD Modeling App uses our open-source extension proposal for
+            the GLTF file format.{' '}
+            <a
+              href="https://kittycad.io/docs/api/convert-cad-file"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              Our conversion API
+            </a>{' '}
+            can convert to and from most common CAD file formats, allowing
+            export to almost any CAD software.
           </p>
         </section>
         <div className="flex justify-between">
@@ -47,7 +56,7 @@ export default function ProjectMenu() {
             onClick={next}
             icon={{ icon: faArrowRight }}
           >
-            Next: Export
+            Next: Sketching
           </ActionButton>
         </div>
       </div>
