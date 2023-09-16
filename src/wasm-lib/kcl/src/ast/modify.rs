@@ -3,11 +3,13 @@ use std::collections::HashMap;
 use kittycad::types::ModelingCmd;
 
 use crate::{
-    ast::types::{FormatOptions, Program},
+    ast::types::{ArrayExpression, CallExpression, FormatOptions, Literal, Program},
     engine::EngineConnection,
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
 };
+
+use super::types::{PipeExpression, PipeSubstitution, VariableDeclarator};
 
 #[derive(Debug)]
 /// The control point data for a curve or line.
@@ -88,4 +90,53 @@ pub async fn modify_ast_for_sketch(
     // Okay now let's recalculate the sketch from the control points.
 
     Ok((program.clone(), program.recast(&FormatOptions::default(), 0)))
+}
+
+/// Create a pipe expression that starts a sketch at the given point and draws a line to the given point.
+fn create_start_sketch_at(
+    name: &str,
+    start: [f64; 2],
+    end: [f64; 2],
+    additional_lines: Vec<[f64; 2]>,
+) -> Result<VariableDeclarator, KclError> {
+    let start_sketch_at = CallExpression::new(
+        "startSketchAt",
+        vec![ArrayExpression::new(vec![
+            Literal::new(start[0].into()).into(),
+            Literal::new(start[1].into()).into(),
+        ])
+        .into()],
+    )?;
+
+    let initial_line = CallExpression::new(
+        "line",
+        vec![
+            ArrayExpression::new(vec![
+                Literal::new(end[0].into()).into(),
+                Literal::new(end[1].into()).into(),
+            ])
+            .into(),
+            PipeSubstitution::new().into(),
+        ],
+    )?;
+
+    let mut pipe_body = vec![start_sketch_at.into(), initial_line.into()];
+
+    for line in additional_lines {
+        // TODO: we should check if we should close the sketch.
+        let line = CallExpression::new(
+            "line",
+            vec![
+                ArrayExpression::new(vec![
+                    Literal::new(line[0].into()).into(),
+                    Literal::new(line[1].into()).into(),
+                ])
+                .into(),
+                PipeSubstitution::new().into(),
+            ],
+        )?;
+        pipe_body.push(line.into());
+    }
+
+    Ok(VariableDeclarator::new(name, PipeExpression::new(pipe_body).into()))
 }

@@ -698,16 +698,31 @@ pub struct CallExpression {
 
 impl_value_meta!(CallExpression);
 
+impl From<CallExpression> for Value {
+    fn from(call_expression: CallExpression) -> Self {
+        Value::CallExpression(Box::new(call_expression))
+    }
+}
+
 impl CallExpression {
-    pub fn new(name: &str, arguments: Vec<Value>, function: Function) -> Self {
-        Self {
+    pub fn new(name: &str, arguments: Vec<Value>) -> Result<Self, KclError> {
+        // Create our stdlib.
+        let stdlib = crate::std::StdLib::new();
+        let func = stdlib.get(name).ok_or_else(|| {
+            KclError::UndefinedValue(KclErrorDetails {
+                message: format!("Function {} is not defined", name),
+                source_ranges: vec![],
+            })
+        })?;
+
+        Ok(Self {
             start: 0,
             end: 0,
             callee: Identifier::new(name),
             arguments,
             optional: false,
-            function,
-        }
+            function: Function::StdLib { func },
+        })
     }
     fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
         format!(
@@ -1101,6 +1116,12 @@ pub struct Literal {
 
 impl_value_meta!(Literal);
 
+impl From<Literal> for Value {
+    fn from(literal: Literal) -> Self {
+        Value::Literal(Box::new(literal))
+    }
+}
+
 impl Literal {
     pub fn new(value: serde_json::Value) -> Self {
         Self {
@@ -1187,6 +1208,18 @@ impl PipeSubstitution {
     }
 }
 
+impl Default for PipeSubstitution {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl From<PipeSubstitution> for Value {
+    fn from(pipe_substitution: PipeSubstitution) -> Self {
+        Value::PipeSubstitution(Box::new(pipe_substitution))
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
@@ -1197,6 +1230,12 @@ pub struct ArrayExpression {
 }
 
 impl_value_meta!(ArrayExpression);
+
+impl From<ArrayExpression> for Value {
+    fn from(array_expression: ArrayExpression) -> Self {
+        Value::ArrayExpression(Box::new(array_expression))
+    }
+}
 
 impl ArrayExpression {
     pub fn new(elements: Vec<Value>) -> Self {
@@ -2031,6 +2070,12 @@ pub struct PipeExpression {
 }
 
 impl_value_meta!(PipeExpression);
+
+impl From<PipeExpression> for Value {
+    fn from(pipe_expression: PipeExpression) -> Self {
+        Value::PipeExpression(Box::new(pipe_expression))
+    }
+}
 
 impl PipeExpression {
     pub fn new(body: Vec<Value>) -> Self {
