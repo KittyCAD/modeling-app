@@ -478,7 +478,9 @@ impl Value {
             Value::FunctionExpression(function_identifier) => function_identifier.get_constraint_level(),
             Value::CallExpression(call_expression) => call_expression.get_constraint_level(),
             Value::PipeExpression(pipe_expression) => pipe_expression.get_constraint_level(),
-            Value::PipeSubstitution(_) => ConstraintLevel::Ignore,
+            Value::PipeSubstitution(pipe_substitution) => ConstraintLevel::Ignore {
+                source_ranges: vec![pipe_substitution.into()],
+            },
             Value::ArrayExpression(array_expression) => array_expression.get_constraint_level(),
             Value::ObjectExpression(object_expression) => object_expression.get_constraint_level(),
             Value::MemberExpression(member_expression) => member_expression.get_constraint_level(),
@@ -940,7 +942,9 @@ impl CallExpression {
     /// Return the constraint level for this call expression.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         if self.arguments.is_empty() {
-            return ConstraintLevel::Full;
+            return ConstraintLevel::Ignore {
+                source_ranges: vec![self.into()],
+            };
         }
 
         // Iterate over the arguments and get the constraint level for each one.
@@ -949,7 +953,7 @@ impl CallExpression {
             constraint_levels.push(arg.get_constraint_level());
         }
 
-        constraint_levels.get_constraint_level()
+        constraint_levels.get_constraint_level(self.into())
     }
 }
 
@@ -1226,7 +1230,9 @@ impl Literal {
     /// Get the constraint level for this literal.
     /// Literals are always not constrained.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
-        ConstraintLevel::None
+        ConstraintLevel::None {
+            source_ranges: vec![self.into()],
+        }
     }
 
     fn recast(&self) -> String {
@@ -1284,7 +1290,9 @@ impl Identifier {
     /// Get the constraint level for this identifier.
     /// Identifier are always fully constrained.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
-        ConstraintLevel::Full
+        ConstraintLevel::Full {
+            source_ranges: vec![self.into()],
+        }
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -1351,7 +1359,9 @@ impl ArrayExpression {
 
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         if self.elements.is_empty() {
-            return ConstraintLevel::None;
+            return ConstraintLevel::Ignore {
+                source_ranges: vec![self.into()],
+            };
         }
 
         let mut constraint_levels = ConstraintLevels::new();
@@ -1359,7 +1369,7 @@ impl ArrayExpression {
             constraint_levels.push(element.get_constraint_level());
         }
 
-        constraint_levels.get_constraint_level()
+        constraint_levels.get_constraint_level(self.into())
     }
 
     fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
@@ -1494,7 +1504,9 @@ impl ObjectExpression {
 
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         if self.properties.is_empty() {
-            return ConstraintLevel::None;
+            return ConstraintLevel::Ignore {
+                source_ranges: vec![self.into()],
+            };
         }
 
         let mut constraint_levels = ConstraintLevels::new();
@@ -1502,7 +1514,7 @@ impl ObjectExpression {
             constraint_levels.push(property.value.get_constraint_level());
         }
 
-        constraint_levels.get_constraint_level()
+        constraint_levels.get_constraint_level(self.into())
     }
 
     fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
@@ -1763,7 +1775,9 @@ impl MemberExpression {
     /// Get the constraint level for a member expression.
     /// This is always fully constrained.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
-        ConstraintLevel::Full
+        ConstraintLevel::Full {
+            source_ranges: vec![self.into()],
+        }
     }
 
     fn recast(&self) -> String {
@@ -1929,12 +1943,12 @@ impl BinaryExpression {
         let left_constraint_level = self.left.get_constraint_level();
         let right_constraint_level = self.right.get_constraint_level();
 
-        if left_constraint_level == ConstraintLevel::None && right_constraint_level == ConstraintLevel::None {
-            ConstraintLevel::None
-        } else if left_constraint_level == ConstraintLevel::Full && right_constraint_level == ConstraintLevel::Full {
-            ConstraintLevel::Full
+        if left_constraint_level == right_constraint_level {
+            left_constraint_level.update_source_ranges(self.into())
         } else {
-            ConstraintLevel::Partial
+            ConstraintLevel::Partial {
+                source_ranges: vec![self.left.clone().into(), self.right.clone().into()],
+            }
         }
     }
 
@@ -2241,7 +2255,9 @@ impl PipeExpression {
 
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         if self.body.is_empty() {
-            return ConstraintLevel::None;
+            return ConstraintLevel::Ignore {
+                source_ranges: vec![self.into()],
+            };
         }
 
         // Iterate over all body expressions.
@@ -2250,7 +2266,7 @@ impl PipeExpression {
             constraint_levels.push(expression.get_constraint_level());
         }
 
-        constraint_levels.get_constraint_level()
+        constraint_levels.get_constraint_level(self.into())
     }
 
     fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
@@ -2371,9 +2387,11 @@ pub struct FunctionExpression {
 impl_value_meta!(FunctionExpression);
 
 impl FunctionExpression {
-    /// Function expressions are always fully constrained.
+    /// Function expressions don't really apply.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
-        ConstraintLevel::Full
+        ConstraintLevel::Ignore {
+            source_ranges: vec![self.into()],
+        }
     }
 
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
@@ -2481,22 +2499,63 @@ impl FormatOptions {
 }
 
 /// The constraint level.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS, JsonSchema, Display)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
-#[display(style = "camelCase")]
+#[display(style = "snake_case")]
 pub enum ConstraintLevel {
     /// Ignore constraints.
     /// This is useful for stuff like pipe substitutions where we don't want it to
     /// factor into the overall constraint level.
     /// Like empty arrays or objects, etc.
-    Ignore,
+    #[display("ignore")]
+    Ignore { source_ranges: Vec<SourceRange> },
     /// No constraints.
-    None,
+    #[display("none")]
+    None { source_ranges: Vec<SourceRange> },
     /// Partially constrained.
-    Partial,
+    #[display("partial")]
+    Partial { source_ranges: Vec<SourceRange> },
     /// Fully constrained.
-    Full,
+    #[display("full")]
+    Full { source_ranges: Vec<SourceRange> },
+}
+
+impl From<ConstraintLevel> for Vec<SourceRange> {
+    fn from(constraint_level: ConstraintLevel) -> Self {
+        match constraint_level {
+            ConstraintLevel::Ignore { source_ranges } => source_ranges,
+            ConstraintLevel::None { source_ranges } => source_ranges,
+            ConstraintLevel::Partial { source_ranges } => source_ranges,
+            ConstraintLevel::Full { source_ranges } => source_ranges,
+        }
+    }
+}
+
+impl PartialEq for ConstraintLevel {
+    fn eq(&self, other: &Self) -> bool {
+        // Just check the variant.
+        std::mem::discriminant(self) == std::mem::discriminant(other)
+    }
+}
+
+impl ConstraintLevel {
+    pub fn update_source_ranges(&self, source_range: SourceRange) -> Self {
+        match self {
+            ConstraintLevel::Ignore { source_ranges: _ } => ConstraintLevel::Ignore {
+                source_ranges: vec![source_range],
+            },
+            ConstraintLevel::None { source_ranges: _ } => ConstraintLevel::None {
+                source_ranges: vec![source_range],
+            },
+            ConstraintLevel::Partial { source_ranges: _ } => ConstraintLevel::Partial {
+                source_ranges: vec![source_range],
+            },
+            ConstraintLevel::Full { source_ranges: _ } => ConstraintLevel::Full {
+                source_ranges: vec![source_range],
+            },
+        }
+    }
 }
 
 /// A vector of constraint levels.
@@ -2519,20 +2578,24 @@ impl ConstraintLevels {
     }
 
     /// Get the overall constraint level.
-    pub fn get_constraint_level(&self) -> ConstraintLevel {
+    pub fn get_constraint_level(&self, source_range: SourceRange) -> ConstraintLevel {
         if self.0.is_empty() {
-            return ConstraintLevel::Ignore;
+            return ConstraintLevel::Ignore {
+                source_ranges: vec![source_range],
+            };
         }
 
         // Check if all the constraint levels are the same.
         if self
             .0
             .iter()
-            .all(|level| *level == self.0[0] || *level == ConstraintLevel::Ignore)
+            .all(|level| *level == self.0[0] || matches!(level, ConstraintLevel::Ignore { .. }))
         {
             self.0[0].clone()
         } else {
-            ConstraintLevel::Partial
+            ConstraintLevel::Partial {
+                source_ranges: vec![source_range],
+            }
         }
     }
 }

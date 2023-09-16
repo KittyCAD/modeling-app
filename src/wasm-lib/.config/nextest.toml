@@ -1,0 +1,22 @@
+# Each test can have at most 4 threads, but if its name contains "serial_test_", then it
+# also requires 4 threads.
+# This means such tests run one at a time, with 4 threads.
+
+[test-groups]
+serial-integration = { max-threads = 4 }
+
+[profile.default]
+slow-timeout = { period = "10s", terminate-after = 1 }
+
+[profile.ci]
+slow-timeout = { period = "60s", terminate-after = 10 }
+
+[[profile.default.overrides]]
+filter = "test(serial_test_)"
+test-group = "serial-integration"
+threads-required = 4
+
+[[profile.ci.overrides]]
+filter = "test(serial_test_)"
+test-group = "serial-integration"
+threads-required = 4
