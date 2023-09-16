@@ -8,7 +8,8 @@ import { bracket } from 'lib/exampleKcl'
 import { useStore } from 'useStore'
 
 export default function Introduction() {
-  const { setCode } = useStore((s) => ({
+  const { setCode, code } = useStore((s) => ({
+    code: s.code,
     setCode: s.setCode,
   }))
   const {
@@ -22,8 +23,9 @@ export default function Introduction() {
   const next = useNextClick(onboardingPaths.CAMERA)
 
   useEffect(() => {
+    if (code !== '') return
     setCode(bracket)
-  }, [setCode])
+  }, [code, setCode])
 
   return (
     <div className="fixed grid place-content-center inset-0 bg-chalkboard-110/50 z-50">
