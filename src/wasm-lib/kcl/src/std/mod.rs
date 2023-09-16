@@ -518,8 +518,9 @@ pub enum Primitive {
 
 #[cfg(test)]
 mod tests {
-    use crate::std::StdLib;
     use itertools::Itertools;
+
+    use crate::std::StdLib;
 
     #[test]
     fn test_generate_stdlib_markdown_docs() {

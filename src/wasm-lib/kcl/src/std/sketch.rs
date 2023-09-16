@@ -6,6 +6,7 @@ use kittycad::types::{ModelingCmd, Point3D};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+use super::utils::Angle;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{BasePath, GeoMeta, MemoryItem, Path, Point2d, Position, Rotation, SketchGroup},
@@ -14,8 +15,6 @@ use crate::{
         Args,
     },
 };
-
-use super::utils::Angle;
 
 /// Data to draw a line to a point.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
