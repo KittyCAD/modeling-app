@@ -2169,8 +2169,9 @@ impl FormatOptions {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use pretty_assertions::assert_eq;
+
+    use super::*;
 
     // We have this as a test so we can ensure it never panics with an unwrap in the server.
     #[test]
