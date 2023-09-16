@@ -3,9 +3,118 @@ import { ActionButton } from '../../components/ActionButton'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { Themes } from 'lib/theme'
-import { useEffect } from 'react'
 import { bracket } from 'lib/exampleKcl'
 import { useStore } from 'useStore'
+import {
+  createNewProject,
+  getNextProjectIndex,
+  getProjectsInDir,
+  interpolateProjectNameWithIndex,
+} from 'lib/tauriFS'
+import { isTauri } from 'lib/isTauri'
+import { useNavigate } from 'react-router-dom'
+import { paths } from 'Router'
+import { useEffect } from 'react'
+
+function OnboardingWithNewFile() {
+  const navigate = useNavigate()
+  const dismiss = useDismiss()
+  const next = useNextClick(onboardingPaths.INDEX)
+  const { setCode, code } = useStore((s) => ({
+    code: s.code,
+    setCode: s.setCode,
+  }))
+  const {
+    settings: {
+      context: { defaultDirectory, defaultProjectName },
+    },
+  } = useGlobalStateContext()
+
+  async function createAndOpenNewProject() {
+    const projects = await getProjectsInDir(defaultDirectory)
+    const nextIndex = await getNextProjectIndex(defaultProjectName, projects)
+    const name = interpolateProjectNameWithIndex(defaultProjectName, nextIndex)
+    const newFile = await createNewProject(defaultDirectory + '/' + name)
+    navigate(`${paths.FILE}/${encodeURIComponent(newFile.path)}`)
+  }
+  return (
+    <div className="fixed grid place-content-center inset-0 bg-chalkboard-110/50 z-50">
+      <div className="max-w-3xl bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded">
+        {!isTauri() ? (
+          <>
+            <h1 className="text-2xl font-bold text-warn-80 dark:text-warn-10">
+              Replaying onboarding resets your code
+            </h1>
+            <p className="my-4">
+              We see you have some of your own code written in this project.
+              Please save it somewhere else before continuing the onboarding.
+            </p>
+            <div className="flex justify-between mt-6">
+              <ActionButton
+                Element="button"
+                onClick={() => dismiss('../')}
+                icon={{
+                  icon: faXmark,
+                  bgClassName: 'bg-destroy-80',
+                  iconClassName:
+                    'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
+                }}
+                className="hover:border-destroy-40"
+              >
+                Dismiss
+              </ActionButton>
+              <ActionButton
+                Element="button"
+                onClick={() => {
+                  setCode(bracket)
+                  next()
+                }}
+                icon={{ icon: faArrowRight }}
+              >
+                Overwrite code and continue
+              </ActionButton>
+            </div>
+          </>
+        ) : (
+          <>
+            <h1 className="text-2xl font-bold flex gap-4 flex-wrap items-center">
+              Would you like to create a new project?
+            </h1>
+            <section className="my-12">
+              <p className="my-4">
+                You have some content in this project that we don't want to
+                overwrite. If you would like to create a new project, please
+                click the button below.
+              </p>
+            </section>
+            <div className="flex justify-between mt-6">
+              <ActionButton
+                Element="button"
+                onClick={() => dismiss('../')}
+                icon={{
+                  icon: faXmark,
+                  bgClassName: 'bg-destroy-80',
+                  iconClassName:
+                    'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
+                }}
+                className="hover:border-destroy-40"
+              >
+                Dismiss
+              </ActionButton>
+              <ActionButton
+                Element="button"
+                onClick={createAndOpenNewProject}
+                icon={{ icon: faArrowRight }}
+              >
+                Make a new project
+              </ActionButton>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
 
 export default function Introduction() {
   const { setCode, code } = useStore((s) => ({
@@ -23,11 +132,10 @@ export default function Introduction() {
   const next = useNextClick(onboardingPaths.CAMERA)
 
   useEffect(() => {
-    if (code !== '') return
-    setCode(bracket)
+    if (code === '') setCode(bracket)
   }, [code, setCode])
 
-  return (
+  return !(code !== '' && code !== bracket) ? (
     <div className="fixed grid place-content-center inset-0 bg-chalkboard-110/50 z-50">
       <div className="max-w-3xl bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded">
         <h1 className="text-2xl font-bold flex gap-4 flex-wrap items-center">
@@ -86,5 +194,7 @@ export default function Introduction() {
         </div>
       </div>
     </div>
+  ) : (
+    <OnboardingWithNewFile />
   )
 }
