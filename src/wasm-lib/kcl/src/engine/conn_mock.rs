@@ -13,8 +13,11 @@ impl EngineConnection {
     pub async fn new() -> Result<EngineConnection> {
         Ok(EngineConnection {})
     }
+}
 
-    pub fn send_modeling_cmd(
+#[async_trait::async_trait(?Send)]
+impl crate::engine::EngineManager for EngineConnection {
+    fn send_modeling_cmd(
         &mut self,
         _id: uuid::Uuid,
         _source_range: crate::executor::SourceRange,
@@ -23,7 +26,7 @@ impl EngineConnection {
         Ok(())
     }
 
-    pub async fn send_modeling_cmd_get_response(
+    async fn send_modeling_cmd_get_response(
         &mut self,
         _id: uuid::Uuid,
         _source_range: crate::executor::SourceRange,

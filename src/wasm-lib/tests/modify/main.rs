@@ -1,7 +1,7 @@
 use anyhow::Result;
 use kcl_lib::{
     ast::{modify::modify_ast_for_sketch, types::Program},
-    engine::EngineConnection,
+    engine::{EngineConnection, EngineManager},
     executor::{MemoryItem, SourceRange},
 };
 use kittycad::types::{ModelingCmd, Point3D};
