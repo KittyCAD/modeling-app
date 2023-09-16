@@ -34,16 +34,11 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
     let mut mem: kcl_lib::executor::ProgramMemory = Default::default();
-    let mut engine = kcl_lib::engine::EngineConnection::new(
-        ws,
-        std::env::temp_dir().display().to_string().as_str(),
-        output_file.display().to_string().as_str(),
-    )
-    .await?;
+    let mut engine = kcl_lib::engine::EngineConnection::new(ws).await?;
     let _ = kcl_lib::executor::execute(program, &mut mem, kcl_lib::executor::BodyType::Root, &mut engine)?;
 
     // Send a snapshot request to the engine.
-    engine.send_modeling_cmd(
+    let resp = engine.send_modeling_cmd_get_response(
         uuid::Uuid::new_v4(),
         kcl_lib::executor::SourceRange::default(),
         kittycad::types::ModelingCmd::TakeSnapshot {
@@ -51,8 +46,15 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
         },
     )?;
 
-    // Wait for the snapshot to be taken.
-    engine.wait_for_snapshot().await;
+    if let kittycad::types::OkWebSocketResponseData::Modeling {
+        modeling_response: kittycad::types::OkModelingCmdResponse::TakeSnapshot { data },
+    } = &resp
+    {
+        // Save the snapshot locally.
+        std::fs::write(&output_file, &data.contents.0)?;
+    } else {
+        anyhow::bail!("Unexpected response from engine: {:?}", resp);
+    }
 
     // Read the output file.
     let actual = image::io::Reader::open(output_file).unwrap().decode().unwrap();
@@ -95,4 +97,30 @@ show(part001)"#;
 
     let result = execute_and_snapshot(code).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/angled_line.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_execute_parametric_example() {
+    let code = r#"const sigmaAllow = 35000 // psi
+const width = 9 // inch
+const p = 150 // Force on shelf - lbs
+const distance = 6 // inches
+const FOS = 2
+
+const leg1 = 5 // inches
+const leg2 = 8 // inches
+const thickness = sqrt(distance * p * FOS * 6 / sigmaAllow / width) // inches
+const bracket = startSketchAt([0, 0])
+  |> line([0, leg1], %)
+  |> line([leg2, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-leg2 + thickness, 0], %)
+  |> line([0, -leg1 + thickness], %)
+  |> close(%)
+  |> extrude(width, %)
+
+show(bracket)"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/parametric.png", &result, 1.0);
 }
