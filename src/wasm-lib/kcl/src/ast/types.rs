@@ -247,7 +247,7 @@ pub trait ValueMeta {
 
 macro_rules! impl_value_meta {
     {$name:ident} => {
-        impl crate::abstract_syntax_tree_types::ValueMeta for $name {
+        impl crate::ast::types::ValueMeta for $name {
             fn start(&self) -> usize {
                 self.start
             }
@@ -2205,8 +2205,7 @@ show(part001)"#;
     #[test]
     fn test_recast_with_std_and_non_stdlib() {
         let some_program_string = r#"{"body":[{"type":"VariableDeclaration","start":0,"end":0,"declarations":[{"type":"VariableDeclarator","start":0,"end":0,"id":{"type":"Identifier","start":0,"end":0,"name":"part001"},"init":{"type":"PipeExpression","start":0,"end":0,"body":[{"type":"CallExpression","start":0,"end":0,"callee":{"type":"Identifier","start":0,"end":0,"name":"startSketchAt"},"function":{"type":"StdLib","func":{"name":"startSketchAt","summary":"","description":"","tags":[],"returnValue":{"type":"","required":false,"name":"","schema":{}},"args":[],"unpublished":false,"deprecated":false}},"optional":false,"arguments":[{"type":"Literal","start":0,"end":0,"value":"default","raw":"default"}]},{"type":"CallExpression","start":0,"end":0,"callee":{"type":"Identifier","start":0,"end":0,"name":"ry"},"function":{"type":"InMemory"},"optional":false,"arguments":[{"type":"Literal","start":0,"end":0,"value":90,"raw":"90"},{"type":"PipeSubstitution","start":0,"end":0}]},{"type":"CallExpression","start":0,"end":0,"callee":{"type":"Identifier","start":0,"end":0,"name":"line"},"function":{"type":"StdLib","func":{"name":"line","summary":"","description":"","tags":[],"returnValue":{"type":"","required":false,"name":"","schema":{}},"args":[],"unpublished":false,"deprecated":false}},"optional":false,"arguments":[{"type":"Literal","start":0,"end":0,"value":"default","raw":"default"},{"type":"PipeSubstitution","start":0,"end":0}]}],"nonCodeMeta":{"noneCodeNodes":{},"start":null}}}],"kind":"const"},{"type":"ExpressionStatement","start":0,"end":0,"expression":{"type":"CallExpression","start":0,"end":0,"callee":{"type":"Identifier","start":0,"end":0,"name":"show"},"function":{"type":"StdLib","func":{"name":"show","summary":"","description":"","tags":[],"returnValue":{"type":"","required":false,"name":"","schema":{}},"args":[],"unpublished":false,"deprecated":false}},"optional":false,"arguments":[{"type":"Identifier","start":0,"end":0,"name":"part001"}]}}],"start":0,"end":0,"nonCodeMeta":{"noneCodeNodes":{},"start":null}}"#;
-        let some_program: crate::abstract_syntax_tree_types::Program =
-            serde_json::from_str(some_program_string).unwrap();
+        let some_program: crate::ast::types::Program = serde_json::from_str(some_program_string).unwrap();
 
         let recasted = some_program.recast(&Default::default(), 0);
         assert_eq!(

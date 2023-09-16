@@ -18,8 +18,7 @@ pub async fn execute_wasm(
     manager: kcl_lib::engine::conn_wasm::EngineCommandManager,
 ) -> Result<JsValue, String> {
     // deserialize the ast from a stringified json
-    let program: kcl_lib::abstract_syntax_tree_types::Program =
-        serde_json::from_str(program_str).map_err(|e| e.to_string())?;
+    let program: kcl_lib::ast::types::Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
     let mut mem: kcl_lib::executor::ProgramMemory = serde_json::from_str(memory_str).map_err(|e| e.to_string())?;
 
     let mut engine = kcl_lib::engine::EngineConnection::new(manager)
@@ -73,8 +72,7 @@ pub fn parse_js(js: &str) -> Result<JsValue, String> {
 #[wasm_bindgen]
 pub fn recast_wasm(json_str: &str) -> Result<JsValue, JsError> {
     // deserialize the ast from a stringified json
-    let program: kcl_lib::abstract_syntax_tree_types::Program =
-        serde_json::from_str(json_str).map_err(JsError::from)?;
+    let program: kcl_lib::ast::types::Program = serde_json::from_str(json_str).map_err(JsError::from)?;
 
     // Use the default options until we integrate into the UI the ability to change them.
     let result = program.recast(&Default::default(), 0);
