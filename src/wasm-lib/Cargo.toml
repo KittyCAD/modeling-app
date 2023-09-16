@@ -52,3 +52,16 @@ members = [
 	"derive-docs",
 	"kcl",
 ]
+
+[[test]]
+name = "executor"
+path = "tests/executor/main.rs"
+# We don't want to overload the engine backends since this hits prod.
+test-args = ["--test-threads 1"]
+
+[[test]]
+name = "modify"
+path = "tests/modify/main.rs"
+# We don't want to overload the engine backends since this hits prod.
+test-args = ["--test-threads 1"]
+
