@@ -110,13 +110,20 @@ impl EngineConnection {
     }
 
     /// Send a modeling command and wait for the response message.
-    pub fn send_modeling_cmd_get_response(
+    pub async fn send_modeling_cmd_get_response(
         &mut self,
         id: uuid::Uuid,
         source_range: crate::executor::SourceRange,
         cmd: kittycad::types::ModelingCmd,
     ) -> Result<OkWebSocketResponseData, KclError> {
-        self.send_modeling_cmd(id, source_range, cmd)?;
+        self.tcp_send(WebSocketRequest::ModelingCmdReq { cmd, cmd_id: id })
+            .await
+            .map_err(|e| {
+                KclError::Engine(KclErrorDetails {
+                    message: format!("Failed to send modeling command: {}", e),
+                    source_ranges: vec![source_range],
+                })
+            })?;
 
         // Wait for the response.
         loop {

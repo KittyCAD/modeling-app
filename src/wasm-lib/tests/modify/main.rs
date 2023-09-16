@@ -1,8 +1,14 @@
 use anyhow::Result;
-use kcl_lib::{ast::types::Program, engine::EngineConnection};
+use kcl_lib::{
+    ast::{modify::modify_ast_for_sketch, types::Program},
+    engine::EngineConnection,
+    executor::{MemoryItem, SourceRange},
+};
+use kittycad::types::{ModelingCmd, Point3D};
+use pretty_assertions::assert_eq;
 
 /// Setup the engine and parse code for an ast.
-async fn setup(code: &str) -> Result<(EngineConnection, Program)> {
+async fn setup(code: &str) -> Result<(EngineConnection, Program, uuid::Uuid)> {
     let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
     let http_client = reqwest::Client::builder()
         .user_agent(user_agent)
@@ -27,36 +33,74 @@ async fn setup(code: &str) -> Result<(EngineConnection, Program)> {
         .commands_ws(None, None, None, None, Some(false))
         .await?;
 
-    // Create a temporary file to write the output to.
-    let output_file = std::env::temp_dir().join(format!("kcl_output_{}.png", uuid::Uuid::new_v4()));
-
     let tokens = kcl_lib::tokeniser::lexer(code);
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
     let mut mem: kcl_lib::executor::ProgramMemory = Default::default();
     let mut engine = kcl_lib::engine::EngineConnection::new(ws).await?;
-    let _ = kcl_lib::executor::execute(program, &mut mem, kcl_lib::executor::BodyType::Root, &mut engine)?;
+    let memory = kcl_lib::executor::execute(
+        program.clone(),
+        &mut mem,
+        kcl_lib::executor::BodyType::Root,
+        &mut engine,
+    )?;
 
-    // Send a snapshot request to the engine.
-    let resp = engine.send_modeling_cmd_get_response(
-        uuid::Uuid::new_v4(),
-        kcl_lib::executor::SourceRange::default(),
-        kittycad::types::ModelingCmd::TakeSnapshot {
-            format: kittycad::types::ImageFormat::Png,
+    // We need to get the sketch ID.
+    // Get the sketch group ID from memory.
+    let MemoryItem::SketchGroup(sketch_group) = memory.root.get("part001").unwrap() else {
+        anyhow::bail!("part001 not found in memory: {:?}", memory);
+    };
+    let sketch_id = sketch_group.id;
+
+    let plane_id = uuid::Uuid::new_v4();
+    engine.send_modeling_cmd(
+        plane_id,
+        SourceRange::default(),
+        ModelingCmd::MakePlane {
+            clobber: false,
+            origin: Point3D { x: 0.0, y: 0.0, z: 0.0 },
+            size: 60.0,
+            x_axis: Point3D { x: 1.0, y: 0.0, z: 0.0 },
+            y_axis: Point3D { x: 0.0, y: 1.0, z: 0.0 },
         },
     )?;
 
-    if let kittycad::types::OkWebSocketResponseData::Modeling {
-        modeling_response: kittycad::types::OkModelingCmdResponse::TakeSnapshot { data },
-    } = &resp
-    {
-        // Save the snapshot locally.
-        std::fs::write(&output_file, &data.contents.0)?;
-    } else {
-        anyhow::bail!("Unexpected response from engine: {:?}", resp);
-    }
+    // Enter sketch mode.
+    // We can't get control points without being in sketch mode.
+    engine.send_modeling_cmd(
+        uuid::Uuid::new_v4(),
+        SourceRange::default(),
+        ModelingCmd::SketchModeEnable {
+            animated: false,
+            ortho: true,
+            plane_id,
+        },
+    )?;
 
-    // Read the output file.
-    let actual = image::io::Reader::open(output_file).unwrap().decode().unwrap();
-    Ok(actual)
+    // Enter edit mode.
+    // We can't get control points of an existing sketch without being in edit mode.
+    engine.send_modeling_cmd(
+        uuid::Uuid::new_v4(),
+        SourceRange::default(),
+        ModelingCmd::EditModeEnter { target: sketch_id },
+    )?;
+
+    Ok((engine, program, sketch_id))
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_modify_basic_sketch() {
+    let code = r#"const part001 = startSketchAt([8.41, 5.78])
+  |> line([7.37, -11], %)
+  |> line([-8.69, -3.75], %)
+  |> line([-5, 4.25], %)
+"#;
+
+    let (mut engine, program, sketch_id) = setup(code).await.unwrap();
+    let (new_program, new_code) = modify_ast_for_sketch(&mut engine, &program, sketch_id).await.unwrap();
+
+    // Make sure the code is the same.
+    assert_eq!(code, new_code);
+    // Make sure the program is the same.
+    assert_eq!(program, new_program);
 }
