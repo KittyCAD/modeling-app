@@ -5,6 +5,7 @@ import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { Themes } from 'lib/theme'
 import { useEffect } from 'react'
 import { bracket } from 'lib/exampleKcl'
+import { useStore } from 'useStore'
 
 export default function Introduction() {
   const { setCode } = useStore((s) => ({
