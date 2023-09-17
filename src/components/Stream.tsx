@@ -22,6 +22,9 @@ import {
 import { getNodeFromPath } from 'lang/queryAst'
 import { Program, VariableDeclarator } from 'lang/abstractSyntaxTreeTypes'
 import { modify_ast_for_sketch } from '../wasm-lib/pkg/wasm_lib'
+import { KCLError } from 'lang/errors'
+import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
+import { rangeTypeFix } from 'lang/abstractSyntaxTree'
 
 export const Stream = ({ className = '' }) => {
   const [isLoading, setIsLoading] = useState(true)
@@ -256,14 +259,26 @@ export const Stream = ({ className = '' }) => {
 
         if (engineId === '') return
 
-        const updatedAst: Program = await modify_ast_for_sketch(
-          engineCommandManager,
-          JSON.stringify(ast),
-          variableName,
-          engineId
-        )
+        try {
+          const updatedAst: Program = await modify_ast_for_sketch(
+            engineCommandManager,
+            JSON.stringify(ast),
+            variableName,
+            engineId
+          )
 
-        updateAst(updatedAst, false)
+          updateAst(updatedAst, false)
+        } catch (e: any) {
+          const parsed: RustKclError = JSON.parse(e.toString())
+          const kclError = new KCLError(
+            parsed.kind,
+            parsed.msg,
+            rangeTypeFix(parsed.sourceRanges)
+          )
+
+          console.log(kclError)
+          throw kclError
+        }
         return
       }
 
