@@ -236,6 +236,7 @@ export const Toolbar = () => {
                           sketchMode: sketchFnName,
                           waitingFirstClick: true,
                           isTooltip: true,
+                          pathId: guiMode.pathId,
                         }),
                   })
                 }}

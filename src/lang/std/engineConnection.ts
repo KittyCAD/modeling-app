@@ -986,8 +986,10 @@ export class EngineCommandManager {
         const artifact = this.artifactMap[oldId]
         delete this.artifactMap[oldId]
         delete this.sourceRangeMap[oldId]
-        this.artifactMap[engineSegment.command_id] = artifact
-        this.sourceRangeMap[engineSegment.command_id] = artifact.range
+        if (artifact) {
+          this.artifactMap[engineSegment.command_id] = artifact
+          this.sourceRangeMap[engineSegment.command_id] = artifact.range
+        }
       }
     })
   }

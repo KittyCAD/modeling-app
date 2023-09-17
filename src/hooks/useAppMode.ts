@@ -186,6 +186,7 @@ export function useAppMode() {
           rotation: [0, 0, 0, 1],
           position: [0, 0, 0],
           pathToNode: [],
+          pathId: sketchUuid,
         })
 
         console.log('sketchModeResponse', sketchModeResponse)

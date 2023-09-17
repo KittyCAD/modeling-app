@@ -121,6 +121,7 @@ export function App() {
           rotation: guiMode.rotation,
           position: guiMode.position,
           pathToNode: guiMode.pathToNode,
+          pathId: guiMode.pathId,
           // todo: ...guiMod is adding isTooltip: true, will probably just fix with xstate migtaion
         })
       }

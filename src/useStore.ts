@@ -71,7 +71,7 @@ export type GuiModes =
       waitingFirstClick: boolean
       rotation: Rotation
       position: Position
-      id?: string
+      pathId: string
       pathToNode: PathToNode
     }
   | {
@@ -80,6 +80,7 @@ export type GuiModes =
       rotation: Rotation
       position: Position
       pathToNode: PathToNode
+      pathId: string
     }
   | {
       mode: 'sketch'

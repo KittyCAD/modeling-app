@@ -241,23 +241,17 @@ export const Stream = ({ className = '' }) => {
         // Let's get the updated ast.
         if (sketchGroupId === '') return
 
-        /* Ok so here is the deal, we need the sketch id for the sketch we are
-         * on. Which is most likely (maybe?) the last call to `start_path`,
-         * unless we have multiple sketches. In that case we need a better way
-         * to track "what sketch are we currently editing and what is its engine
-         * id". Regardless this is working for now and demonstrates that this
-         * works if you have the correct engine sketch id. */
-        let engineId = ''
+        console.log('guiMode.pathId', guiMode.pathId)
 
-        for (const [id, artifact] of Object.entries(
-          engineCommandManager.artifactMap
-        )) {
-          if (artifact.commandType === 'start_path') {
-            engineId = id
-          }
-        }
+        // We have a problem if we do not have an id for the sketch group.
+        if (
+          guiMode.pathId === undefined ||
+          guiMode.pathId === null ||
+          guiMode.pathId === ''
+        )
+          return
 
-        if (engineId === '') return
+        let engineId = guiMode.pathId
 
         try {
           const updatedAst: Program = await modify_ast_for_sketch(
@@ -311,6 +305,16 @@ export const Stream = ({ className = '' }) => {
         )
         const _modifiedAst = _addStartSketch.modifiedAst
         const _pathToNode = _addStartSketch.pathToNode
+
+        // We need to update the guiMode with the right pathId so that we can
+        // move lines later and send the right sketch id to the engine.
+        for (const [id, artifact] of Object.entries(
+          engineCommandManager.artifactMap
+        )) {
+          if (artifact.commandType === 'start_path') {
+            guiMode.pathId = id
+          }
+        }
 
         setGuiMode({
           ...guiMode,
