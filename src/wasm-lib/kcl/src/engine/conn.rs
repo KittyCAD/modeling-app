@@ -73,7 +73,7 @@ impl EngineConnection {
                     }
                     Err(e) => {
                         println!("got ws error: {:?}", e);
-                        continue;
+                        return Err(e);
                     }
                 }
             }
