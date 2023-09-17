@@ -528,7 +528,6 @@ interface Subscription<T extends ModelTypes> {
 export class EngineCommandManager {
   artifactMap: ArtifactMap = {}
   sourceRangeMap: SourceRangeMap = {}
-  oldToNewSketchIdMap: { [key: string]: string } = {}
   outSequence = 1
   inSequence = 1
   engineConnection?: EngineConnection
@@ -680,7 +679,6 @@ export class EngineCommandManager {
   startNewSession() {
     this.artifactMap = {}
     this.sourceRangeMap = {}
-    this.oldToNewSketchIdMap = {}
   }
   subscribeTo<T extends ModelTypes>({
     event,
@@ -975,7 +973,6 @@ export class EngineCommandManager {
         return
       }
 
-      this.oldToNewSketchIdMap[memoryItem.id] = originalId
       const relevantSegments = segments.filter(
         ({ command_id }: { command_id: string | null }) => command_id
       )
