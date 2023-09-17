@@ -22,6 +22,8 @@ pub struct ControlPointData {
     pub id: uuid::Uuid,
 }
 
+const EPSILON: f64 = 0.015625; // or 2^-6
+
 /// Update the AST to reflect the new state of the program after something like
 /// a move or a new line.
 pub async fn modify_ast_for_sketch(
@@ -259,8 +261,8 @@ fn create_start_sketch_at(
             let diff_x = (current_position.x - start[0]).abs();
             let diff_y = (current_position.y - start[1]).abs();
             // Compare the end of the last line to the start of the first line.
-            // We multiply to make it a little more lenient.
-            if diff_x <= std::f64::EPSILON * 10.0 && diff_y <= std::f64::EPSILON * 10.0 {
+            // This is a bit more lenient if you look at the value of epsilon.
+            if diff_x <= EPSILON && diff_y <= EPSILON {
                 // We have to close the sketch.
                 let close = CallExpression::new("close", vec![PipeSubstitution::new().into()])?;
                 pipe_body.push(close.into());
