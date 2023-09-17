@@ -221,3 +221,37 @@ const {} = startSketchAt([7.91, 3.89])
         r#"engine: KclErrorDetails { source_ranges: [SourceRange([159, 164])], message: "Sketch part002 is constrained `partial` and cannot be modified" }"#
     );
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_modify_line_should_close_sketch() {
+    let name = "part003";
+    let code = format!(
+        r#"const {} = startSketchAt([13.69, 3.8])
+  |> line([4.23, -11.79], %)
+  |> line([-10.7, -1.16], %)
+  |> line([-3.72, 8.69], %)
+  |> line([10.19, 4.26], %)
+"#,
+        name
+    );
+
+    let (mut engine, program, sketch_id) = setup(&code, name).await.unwrap();
+    let mut new_program = program.clone();
+    let new_code = modify_ast_for_sketch(&mut engine, &mut new_program, name, sketch_id)
+        .await
+        .unwrap();
+
+    // Make sure the code is the same.
+    assert_eq!(
+        new_code,
+        format!(
+            r#"const {} = startSketchAt([13.69, 3.8])
+  |> line([4.23, -11.79], %)
+  |> line([-10.7, -1.16], %)
+  |> line([-3.72, 8.69], %)
+  |> close(%)
+"#,
+            name
+        )
+    );
+}

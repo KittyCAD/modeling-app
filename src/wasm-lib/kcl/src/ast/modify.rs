@@ -176,8 +176,8 @@ pub async fn modify_ast_for_sketch(
     let mut last_point = first_control_points.points[1].clone();
     for control_point in control_points[1..].iter() {
         additional_lines.push([
-            round_to_2_places(control_point.points[1].x - last_point.x),
-            round_to_2_places(control_point.points[1].y - last_point.y),
+            (control_point.points[1].x - last_point.x),
+            (control_point.points[1].y - last_point.y),
         ]);
         last_point = Point3D {
             x: control_point.points[1].x,
@@ -188,9 +188,9 @@ pub async fn modify_ast_for_sketch(
 
     // Okay now let's recalculate the sketch from the control points.
     let start_sketch_at_end = Point3D {
-        x: round_to_2_places(first_control_points.points[1].x - first_control_points.points[0].x),
-        y: round_to_2_places(first_control_points.points[1].y - first_control_points.points[0].y),
-        z: round_to_2_places(first_control_points.points[1].z - first_control_points.points[0].z),
+        x: (first_control_points.points[1].x - first_control_points.points[0].x),
+        y: (first_control_points.points[1].y - first_control_points.points[0].y),
+        z: (first_control_points.points[1].z - first_control_points.points[0].z),
     };
     let sketch = create_start_sketch_at(
         sketch_name,
@@ -222,8 +222,8 @@ fn create_start_sketch_at(
     let start_sketch_at = CallExpression::new(
         "startSketchAt",
         vec![ArrayExpression::new(vec![
-            Literal::new(start[0].into()).into(),
-            Literal::new(start[1].into()).into(),
+            Literal::new(round_before_recast(start[0]).into()).into(),
+            Literal::new(round_before_recast(start[1]).into()).into(),
         ])
         .into()],
     )?;
@@ -240,8 +240,8 @@ fn create_start_sketch_at(
         "line",
         vec![
             ArrayExpression::new(vec![
-                Literal::new(end[0].into()).into(),
-                Literal::new(end[1].into()).into(),
+                Literal::new(round_before_recast(end[0]).into()).into(),
+                Literal::new(round_before_recast(end[1]).into()).into(),
             ])
             .into(),
             PipeSubstitution::new().into(),
@@ -256,10 +256,11 @@ fn create_start_sketch_at(
 
         // If we are on the last line, check if we have to close the sketch.
         if index == additional_lines.len() - 1 {
+            let diff_x = (current_position.x - start[0]).abs();
+            let diff_y = (current_position.y - start[1]).abs();
             // Compare the end of the last line to the start of the first line.
-            if round_to_2_places(current_position.x - start[0]).abs() < std::f64::EPSILON
-                && round_to_2_places(current_position.y - start[1]).abs() < std::f64::EPSILON
-            {
+            // We multiply to make it a little more lenient.
+            if diff_x <= std::f64::EPSILON * 10.0 && diff_y <= std::f64::EPSILON * 10.0 {
                 // We have to close the sketch.
                 let close = CallExpression::new("close", vec![PipeSubstitution::new().into()])?;
                 pipe_body.push(close.into());
@@ -272,8 +273,8 @@ fn create_start_sketch_at(
             "line",
             vec![
                 ArrayExpression::new(vec![
-                    Literal::new(line[0].into()).into(),
-                    Literal::new(line[1].into()).into(),
+                    Literal::new(round_before_recast(line[0]).into()).into(),
+                    Literal::new(round_before_recast(line[1]).into()).into(),
                 ])
                 .into(),
                 PipeSubstitution::new().into(),
@@ -285,6 +286,6 @@ fn create_start_sketch_at(
     Ok(VariableDeclarator::new(name, PipeExpression::new(pipe_body).into()))
 }
 
-fn round_to_2_places(num: f64) -> f64 {
-    (num * 100.0).round() / 100.0
+fn round_before_recast(num: f64) -> f64 {
+    (num * 100000.0).round() / 100000.0
 }
