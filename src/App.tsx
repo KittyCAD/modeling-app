@@ -1,7 +1,6 @@
 import { useRef, useEffect, useCallback, MouseEventHandler } from 'react'
 import { DebugPanel } from './components/DebugPanel'
 import { v4 as uuidv4 } from 'uuid'
-import { _executor } from './lang/executor'
 import { PaneType, useStore } from './useStore'
 import { Logs, KCLErrors } from './components/Logs'
 import { CollapsiblePanel } from './components/CollapsiblePanel'
