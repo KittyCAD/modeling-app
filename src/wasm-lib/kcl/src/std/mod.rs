@@ -275,7 +275,7 @@ impl<'a> Args<'a> {
             })?
             .get_json_value()?;
 
-        let data: T = serde_json::from_value(dbg!(first_value)).map_err(|e| {
+        let data: T = serde_json::from_value(first_value).map_err(|e| {
             KclError::Type(KclErrorDetails {
                 message: format!("Failed to deserialize struct from JSON: {}", e),
                 source_ranges: vec![self.source_range],

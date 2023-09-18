@@ -180,7 +180,7 @@ fn inner_segment_angle(segment_name: &str, sketch_group: SketchGroup, args: &mut
     })?;
     let line = path.get_base();
 
-    dbg!(Ok(Angle::between(line.from.into(), line.to.into())))
+    Ok(Angle::between(line.from.into(), line.to.into()))
 }
 
 /// Returns the angle to match the given length for x.
