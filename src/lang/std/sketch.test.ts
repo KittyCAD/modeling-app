@@ -4,6 +4,7 @@ import {
   addNewSketchLn,
   getYComponent,
   getXComponent,
+  addCloseToPipe,
 } from './sketch'
 import { parser_wasm } from '../abstractSyntaxTree'
 import { getNodePathFromSourceRange } from '../queryAst'
@@ -116,6 +117,7 @@ show(mySketch001)
       {
         mode: 'sketch',
         sketchMode: 'sketchEdit',
+        pathId: '',
         rotation: [0, 0, 0, 1],
         position: [0, 0, 0],
         pathToNode: [
@@ -146,7 +148,7 @@ show(mySketch001)`
     const programMemory = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(lineToChange)
     expect(sourceStart).toBe(66)
-    const { modifiedAst } = addNewSketchLn({
+    let { modifiedAst } = addNewSketchLn({
       node: ast,
       programMemory,
       to: [2, 3],
@@ -160,11 +162,32 @@ show(mySketch001)`
       ],
     })
     // Enable rotations #152
-    const expectedCode = `const mySketch001 = startSketchAt([0, 0])
+    let expectedCode = `const mySketch001 = startSketchAt([0, 0])
   // |> rx(45, %)
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)
   |> lineTo([2, 3], %)
+show(mySketch001)
+`
+    expect(recast(modifiedAst)).toBe(expectedCode)
+
+    modifiedAst = addCloseToPipe({
+      node: ast,
+      programMemory,
+      pathToNode: [
+        ['body', ''],
+        [0, 'index'],
+        ['declarations', 'VariableDeclaration'],
+        [0, 'index'],
+        ['init', 'VariableDeclarator'],
+      ],
+    })
+
+    expectedCode = `const mySketch001 = startSketchAt([0, 0])
+  // |> rx(45, %)
+  |> lineTo([-1.59, -1.54], %)
+  |> lineTo([0.46, -5.82], %)
+  |> close(%)
 show(mySketch001)
 `
     expect(recast(modifiedAst)).toBe(expectedCode)

@@ -23,10 +23,17 @@ import { updateCursors } from '../../lang/util'
 
 const getModalInfo = create(SetAngleLengthModal as any)
 
+type ButtonType = 'setAngle' | 'setLength'
+
+const buttonLabels: Record<ButtonType, string> = {
+  setAngle: 'Set Angle',
+  setLength: 'Set Length',
+}
+
 export const SetAngleLength = ({
   angleOrLength,
 }: {
-  angleOrLength: 'setAngle' | 'setLength'
+  angleOrLength: ButtonType
 }) => {
   const { guiMode, selectionRanges, ast, programMemory, updateAst, setCursor } =
     useStore((s) => ({
@@ -136,7 +143,7 @@ export const SetAngleLength = ({
             _modifiedAst.body = newBody
           }
 
-          updateAst(_modifiedAst, {
+          updateAst(_modifiedAst, true, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
         } catch (e) {
@@ -144,8 +151,9 @@ export const SetAngleLength = ({
         }
       }}
       disabled={!enableAngLen}
+      title={buttonLabels[angleOrLength]}
     >
-      {angleOrLength}
+      {buttonLabels[angleOrLength]}
     </button>
   )
 }

@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
-    abstract_syntax_tree_types::{BodyItem, Function, FunctionExpression, Value},
+    ast::types::{BodyItem, Function, FunctionExpression, Value},
     engine::EngineConnection,
     errors::{KclError, KclErrorDetails},
 };
@@ -348,7 +348,7 @@ impl SourceRange {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct Point2d {
     pub x: f64,
@@ -376,6 +376,16 @@ impl From<Point2d> for [f64; 2] {
 impl From<Point2d> for kittycad::types::Point2D {
     fn from(p: Point2d) -> Self {
         Self { x: p.x, y: p.y }
+    }
+}
+
+impl Point2d {
+    pub const ZERO: Self = Self { x: 0.0, y: 0.0 };
+    pub fn scale(self, scalar: f64) -> Self {
+        Self {
+            x: self.x * scalar,
+            y: self.y * scalar,
+        }
     }
 }
 
@@ -568,7 +578,7 @@ impl Default for PipeInfo {
 
 /// Execute a AST's program.
 pub fn execute(
-    program: crate::abstract_syntax_tree_types::Program,
+    program: crate::ast::types::Program,
     memory: &mut ProgramMemory,
     options: BodyType,
     engine: &mut EngineConnection,
@@ -1171,5 +1181,77 @@ show(thisBox)
             serde_json::json!(7.4),
             memory.root.get("thing").unwrap().get_json_value().unwrap()
         );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_negative_variable_in_binary_expression() {
+        let ast = r#"const sigmaAllow = 35000 // psi
+const width = 1 // inch
+
+const p = 150 // lbs
+const distance = 6 // inches
+const FOS = 2
+
+const leg1 = 5 // inches
+const leg2 = 8 // inches
+
+const thickness_squared = distance * p * FOS * 6 / sigmaAllow
+const thickness = 0.56 // inches. App does not support square root function yet
+
+const bracket = startSketchAt([0,0])
+  |> line([0, leg1], %)
+  |> line([leg2, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-leg2 + thickness, 0], %)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_doubly_nested_parens() {
+        let ast = r#"const sigmaAllow = 35000 // psi
+const width = 4 // inch
+const p = 150 // Force on shelf - lbs
+const distance = 6 // inches
+const FOS = 2
+const leg1 = 5 // inches
+const leg2 = 8 // inches
+const thickness_squared = (distance * p * FOS * 6 / (sigmaAllow - width))
+const thickness = 0.32 // inches. App does not support square root function yet
+const bracket = startSketchAt([0,0])
+    |> line([0, leg1], %)
+  |> line([leg2, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-1 * leg2 + thickness, 0], %)
+  |> line([0, -1 * leg1 + thickness], %)
+  |> close(%)
+  |> extrude(width, %)
+show(bracket)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_nested_parens_one_less() {
+        let ast = r#"const sigmaAllow = 35000 // psi
+const width = 4 // inch
+const p = 150 // Force on shelf - lbs
+const distance = 6 // inches
+const FOS = 2
+const leg1 = 5 // inches
+const leg2 = 8 // inches
+const thickness_squared = distance * p * FOS * 6 / (sigmaAllow - width)
+const thickness = 0.32 // inches. App does not support square root function yet
+const bracket = startSketchAt([0,0])
+    |> line([0, leg1], %)
+  |> line([leg2, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-1 * leg2 + thickness, 0], %)
+  |> line([0, -1 * leg1 + thickness], %)
+  |> close(%)
+  |> extrude(width, %)
+show(bracket)
+"#;
+        parse_execute(ast).await.unwrap();
     }
 }

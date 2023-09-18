@@ -7,7 +7,7 @@ use clap::Parser;
 use dashmap::DashMap;
 use tower_lsp::{jsonrpc::Result as RpcResult, lsp_types::*, Client, LanguageServer};
 
-use crate::{abstract_syntax_tree_types::VariableKind, executor::SourceRange, parser::PIPE_OPERATOR};
+use crate::{ast::types::VariableKind, executor::SourceRange, parser::PIPE_OPERATOR};
 
 /// A subcommand for running the server.
 #[derive(Parser, Clone, Debug)]
@@ -34,7 +34,7 @@ pub struct Backend {
     /// Token maps.
     pub token_map: DashMap<String, Vec<crate::tokeniser::Token>>,
     /// AST maps.
-    pub ast_map: DashMap<String, crate::abstract_syntax_tree_types::Program>,
+    pub ast_map: DashMap<String, crate::ast::types::Program>,
     /// Current code.
     pub current_code_map: DashMap<String, String>,
     /// Diagnostics.
@@ -171,19 +171,19 @@ impl Backend {
 
         for item in &ast.body {
             match item {
-                crate::abstract_syntax_tree_types::BodyItem::ExpressionStatement(_) => continue,
-                crate::abstract_syntax_tree_types::BodyItem::ReturnStatement(_) => continue,
-                crate::abstract_syntax_tree_types::BodyItem::VariableDeclaration(variable) => {
+                crate::ast::types::BodyItem::ExpressionStatement(_) => continue,
+                crate::ast::types::BodyItem::ReturnStatement(_) => continue,
+                crate::ast::types::BodyItem::VariableDeclaration(variable) => {
                     // We only want to complete variables.
                     for declaration in &variable.declarations {
                         completions.push(CompletionItem {
                             label: declaration.id.name.to_string(),
                             label_details: None,
                             kind: Some(match variable.kind {
-                                crate::abstract_syntax_tree_types::VariableKind::Let => CompletionItemKind::VARIABLE,
-                                crate::abstract_syntax_tree_types::VariableKind::Const => CompletionItemKind::CONSTANT,
-                                crate::abstract_syntax_tree_types::VariableKind::Var => CompletionItemKind::VARIABLE,
-                                crate::abstract_syntax_tree_types::VariableKind::Fn => CompletionItemKind::FUNCTION,
+                                crate::ast::types::VariableKind::Let => CompletionItemKind::VARIABLE,
+                                crate::ast::types::VariableKind::Const => CompletionItemKind::CONSTANT,
+                                crate::ast::types::VariableKind::Var => CompletionItemKind::VARIABLE,
+                                crate::ast::types::VariableKind::Fn => CompletionItemKind::FUNCTION,
                             }),
                             detail: Some(variable.kind.to_string()),
                             documentation: None,
@@ -368,7 +368,7 @@ impl LanguageServer for Backend {
         };
 
         match hover {
-            crate::abstract_syntax_tree_types::Hover::Function { name, range } => {
+            crate::ast::types::Hover::Function { name, range } => {
                 // Get the docs for this function.
                 let Some(completion) = self.stdlib_completions.get(&name) else {
                     return Ok(None);
@@ -399,7 +399,7 @@ impl LanguageServer for Backend {
                     range: Some(range),
                 }))
             }
-            crate::abstract_syntax_tree_types::Hover::Signature { .. } => Ok(None),
+            crate::ast::types::Hover::Signature { .. } => Ok(None),
         }
     }
 
@@ -482,7 +482,7 @@ impl LanguageServer for Backend {
         };
 
         match hover {
-            crate::abstract_syntax_tree_types::Hover::Function { name, range: _ } => {
+            crate::ast::types::Hover::Function { name, range: _ } => {
                 // Get the docs for this function.
                 let Some(signature) = self.stdlib_signatures.get(&name) else {
                     return Ok(None);
@@ -490,7 +490,7 @@ impl LanguageServer for Backend {
 
                 Ok(Some(signature.clone()))
             }
-            crate::abstract_syntax_tree_types::Hover::Signature {
+            crate::ast::types::Hover::Signature {
                 name,
                 parameter_index,
                 range: _,
@@ -554,7 +554,7 @@ impl LanguageServer for Backend {
         };
         // Now recast it.
         let recast = ast.recast(
-            &crate::abstract_syntax_tree_types::FormatOptions {
+            &crate::ast::types::FormatOptions {
                 tab_size: params.options.tab_size as usize,
                 insert_final_newline: params.options.insert_final_newline.unwrap_or(false),
                 use_tabs: !params.options.insert_spaces,

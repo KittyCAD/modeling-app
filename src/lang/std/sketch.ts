@@ -21,7 +21,7 @@ import {
   getNodePathFromSourceRange,
 } from '../queryAst'
 import { isLiteralArrayOrStatic } from './sketchcombos'
-import { GuiModes, toolTips, TooTip } from '../../useStore'
+import { GuiModes, toolTips, ToolTip } from '../../useStore'
 import { createPipeExpression, splitPathAtPipeExpression } from '../modifyAst'
 import { generateUuidFromHashSeed } from '../../lib/uuid'
 
@@ -57,7 +57,7 @@ export function getCoordsFromPaths(skGroup: SketchGroup, index = 0): Coords2d {
 }
 
 export function createFirstArg(
-  sketchFn: TooTip,
+  sketchFn: ToolTip,
   val: Value | [Value, Value] | [Value, Value, Value],
   tag?: Value
 ): Value {
@@ -943,8 +943,18 @@ interface CreateLineFnCallArgs {
   programMemory: ProgramMemory
   to: [number, number]
   from: [number, number]
-  fnName: TooTip
+  fnName: ToolTip
   pathToNode: PathToNode
+}
+
+export function compareVec2Epsilon(
+  vec1: [number, number],
+  vec2: [number, number]
+) {
+  const compareEpsilon = 0.015625 // or 2^-6
+  const xDifference = Math.abs(vec1[0] - vec2[0])
+  const yDifference = Math.abs(vec1[0] - vec2[0])
+  return xDifference < compareEpsilon && yDifference < compareEpsilon
 }
 
 export function addNewSketchLn({
@@ -953,7 +963,9 @@ export function addNewSketchLn({
   to,
   fnName,
   pathToNode,
-}: Omit<CreateLineFnCallArgs, 'from'>): { modifiedAst: Program } {
+}: Omit<CreateLineFnCallArgs, 'from'>): {
+  modifiedAst: Program
+} {
   const node = JSON.parse(JSON.stringify(_node))
   const { add, updateArgs } = sketchLineHelperMap?.[fnName] || {}
   if (!add || !updateArgs) throw new Error('not a sketch line helper')
@@ -971,7 +983,6 @@ export function addNewSketchLn({
 
   const last = sketch.value[sketch.value.length - 1] || sketch.start
   const from = last.to
-
   return add({
     node,
     previousProgramMemory,
@@ -980,6 +991,29 @@ export function addNewSketchLn({
     from,
     replaceExisting: false,
   })
+}
+
+export function addCloseToPipe({
+  node,
+  pathToNode,
+}: {
+  node: Program
+  programMemory: ProgramMemory
+  pathToNode: PathToNode
+}) {
+  const _node = { ...node }
+  const closeExpression = createCallExpression('close', [
+    createPipeSubstitution(),
+  ])
+  const pipeExpression = getNodeFromPath<PipeExpression>(
+    _node,
+    pathToNode,
+    'PipeExpression'
+  ).node
+  if (pipeExpression.type !== 'PipeExpression')
+    throw new Error('not a pipe expression')
+  pipeExpression.body = [...pipeExpression.body, closeExpression]
+  return _node
 }
 
 export function replaceSketchLine({
@@ -995,7 +1029,7 @@ export function replaceSketchLine({
   node: Program
   programMemory: ProgramMemory
   sourceRange: SourceRange
-  fnName: TooTip
+  fnName: ToolTip
   to: [number, number]
   from: [number, number]
   createCallback: TransformCallback
@@ -1174,7 +1208,7 @@ function getFirstArgValuesForAngleFns(callExpression: CallExpression): {
     const tag = firstArg.properties.find((p) => p.key.name === 'tag')?.value
     const angle = firstArg.properties.find((p) => p.key.name === 'angle')?.value
     const secondArgName = ['angledLineToX', 'angledLineToY'].includes(
-      callExpression?.callee?.name as TooTip
+      callExpression?.callee?.name as ToolTip
     )
       ? 'to'
       : 'length'

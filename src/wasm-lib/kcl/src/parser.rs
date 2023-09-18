@@ -1,7 +1,7 @@
 use std::{collections::HashMap, str::FromStr};
 
 use crate::{
-    abstract_syntax_tree_types::{
+    ast::types::{
         ArrayExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression, ExpressionStatement,
         FunctionExpression, Identifier, Literal, LiteralIdentifier, MemberExpression, MemberObject, NoneCodeMeta,
         NoneCodeNode, NoneCodeValue, ObjectExpression, ObjectKeyInfo, ObjectProperty, PipeExpression, PipeSubstitution,
@@ -103,9 +103,9 @@ pub struct ParamsResult {
 }
 
 #[derive(Debug, PartialEq, Clone)]
-struct UnaryExpressionResult {
-    expression: UnaryExpression,
-    last_index: usize,
+pub struct UnaryExpressionResult {
+    pub expression: UnaryExpression,
+    pub last_index: usize,
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -731,7 +731,9 @@ impl Parser {
 
         let maybe_operator = self.next_meaningful_token(index, None)?;
         if let Some(maybe_operator_token) = maybe_operator.token {
-            if maybe_operator_token.token_type == TokenType::Number {
+            if maybe_operator_token.token_type == TokenType::Number
+                || maybe_operator_token.token_type == TokenType::Word
+            {
                 return self.find_end_of_binary_expression(maybe_operator.index);
             } else if maybe_operator_token.token_type != TokenType::Operator
                 || maybe_operator_token.value == PIPE_OPERATOR
@@ -878,10 +880,12 @@ impl Parser {
                         last_index: function_expression.last_index,
                     })
                 } else {
-                    return Err(KclError::Unimplemented(KclErrorDetails {
-                        source_ranges: vec![current_token.into()],
-                        message: "expression with braces".to_string(),
-                    }));
+                    // This is likely a binary expression that starts with a parenthesis.
+                    let binary_expression = self.make_binary_expression(index)?;
+                    Ok(ValueReturn {
+                        value: Value::BinaryExpression(Box::new(binary_expression.expression)),
+                        last_index: binary_expression.last_index,
+                    })
                 }
             } else {
                 return Err(KclError::Unimplemented(KclErrorDetails {
@@ -1247,9 +1251,9 @@ impl Parser {
         let closing_brace_token = self.get_token(closing_brace_index)?;
         let args = self.make_arguments(brace_token.index, vec![])?;
         let function = if let Some(stdlib_fn) = self.stdlib.get(&callee.name) {
-            crate::abstract_syntax_tree_types::Function::StdLib { func: stdlib_fn }
+            crate::ast::types::Function::StdLib { func: stdlib_fn }
         } else {
-            crate::abstract_syntax_tree_types::Function::InMemory
+            crate::ast::types::Function::InMemory
         };
         Ok(CallExpressionResult {
             expression: CallExpression {
@@ -1418,7 +1422,7 @@ impl Parser {
         self.make_params(next_brace_or_comma_token.index, _previous_params)
     }
 
-    fn make_unary_expression(&self, index: usize) -> Result<UnaryExpressionResult, KclError> {
+    pub fn make_unary_expression(&self, index: usize) -> Result<UnaryExpressionResult, KclError> {
         let current_token = self.get_token(index)?;
         let next_token = self.next_meaningful_token(index, None)?;
         if next_token.token.is_none() {
@@ -1786,7 +1790,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::abstract_syntax_tree_types::BinaryOperator;
+    use crate::ast::types::BinaryOperator;
 
     #[test]
     fn test_make_identifier() {
@@ -2741,6 +2745,12 @@ show(mySk1)"#;
         let tokens = crate::tokeniser::lexer(code);
         let parser = Parser::new(tokens);
         let _end = parser.find_end_of_binary_expression(0).unwrap();
+        // with call expression at the end of binary expression
+        let code = "-legX + 2, ";
+        let tokens = crate::tokeniser::lexer(code);
+        let parser = Parser::new(tokens.clone());
+        let end = parser.find_end_of_binary_expression(0).unwrap();
+        assert_eq!(tokens[end].value, "2");
     }
 
     #[test]
@@ -3074,6 +3084,20 @@ const secondExtrude = startSketchAt([0,0])
     #[test]
     fn test_parse_parens_unicode() {
         let tokens = crate::tokeniser::lexer("(ޜ");
+        let parser = Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_parse_negative_in_array_binary_expression() {
+        let tokens = crate::tokeniser::lexer(
+            r#"const leg1 = 5
+const thickness = 0.56
+
+const bracket = [-leg2 + thickness, 0]
+"#,
+        );
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_ok());
