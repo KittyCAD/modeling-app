@@ -22,7 +22,7 @@ export default function UserMenu() {
           <h2 className="text-2xl">User Menu</h2>
           <p className="my-4">
             Click your avatar on the upper right to open the user menu. You can
-            change your settings, sign out, or report a bug.
+            change your settings, sign out, or request a feature.
           </p>
         </section>
         <div className="flex justify-between">

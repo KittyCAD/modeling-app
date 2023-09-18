@@ -21,7 +21,7 @@ export default function CmdK() {
         <h2 className="text-2xl">Command Bar</h2>
         <p className="my-4">
           Press <kbd>Cmd/Win</kbd> + <kbd>K</kbd> to open the command bar. Try
-          changing your camera controls with it.
+          changing your theme with it.
         </p>
         <p className="my-4">
           We are working on a command bar that will allow you to quickly see and
