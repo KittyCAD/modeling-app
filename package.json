@@ -74,7 +74,7 @@
     "remove-importmeta": "run-script-os",
     "remove-importmeta:darwin": "sed -i '' 's/import.meta.url/window.location.origin/g' './src/wasm-lib/pkg/wasm_lib.js'",
     "remove-importmeta:linux": "sed -i 's/import.meta.url/window.location.origin/g' './src/wasm-lib/pkg/wasm_lib.js'",
-    "remove-importmeta:win32": "@powershell -Command \\\"get-content ./src/wasm-lib/pkg/wasm_lib.js | %{$_ -replace \\\"import.meta.url\\\", \\\"window.location.origin\" }\\\"",
+    "remove-importmeta:win32": "@powershell -Command \"get-content ./src/index.tsx | %{$_ -replace \\\"import.meta.url\\\", \\\"window.location.origin\\\" }\"",
     "wasm-prep": "rm -rf src/wasm-lib/pkg && mkdir src/wasm-lib/pkg && rm -rf src/wasm-lib/kcl/bindings",
     "lint": "eslint --fix src",
     "bump-jsons": "echo \"$(jq --arg v \"$VERSION\" '.version=$v' package.json --indent 2)\" > package.json && echo \"$(jq --arg v \"$VERSION\" '.package.version=$v' src-tauri/tauri.conf.json --indent 2)\" > src-tauri/tauri.conf.json"

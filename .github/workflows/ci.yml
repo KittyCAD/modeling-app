@@ -124,10 +124,10 @@ jobs:
       # Windows find-and-replace is based on this StackOverflow answer:
       # https://stackoverflow.com/a/6028937
       - name: windows sed
-        if: matrix.os != 'windows-latest'
-        shell: bash
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
         run: |
-          @powershell -Command "get-content ./src/wasm-lib/pkg/wasm_lib.js | %{$_ -replace \"import.meta.url\", \"window.location.origin\" }"
+          get-content ./src/wasm-lib/pkg/wasm_lib.js | %{$_ -replace "import.meta.url", "window.location.origin" }
 
       - name: Fix format
         run: yarn fmt
