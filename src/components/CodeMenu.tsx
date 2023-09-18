@@ -23,7 +23,8 @@ export const CodeMenu = ({ children }: PropsWithChildren) => {
       <div
         className="relative"
         onClick={(e) => {
-          if (e.eventPhase === 3) {
+          const target = e.target as HTMLElement
+          if (e.eventPhase === 3 && target.closest('a') === null) {
             e.stopPropagation()
             e.preventDefault()
           }
