@@ -18,7 +18,7 @@ extern "C" {
         id: String,
         rangeStr: String,
         cmdStr: String,
-    ) -> js_sys::Promise;
+    ) -> JsValue;
 }
 
 #[derive(Debug, Clone)]
@@ -65,17 +65,6 @@ impl crate::engine::EngineManager for EngineConnection {
         source_range: crate::executor::SourceRange,
         cmd: kittycad::types::ModelingCmd,
     ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError> {
-        let result = futures::executor::block_on(self.send_modeling_cmd_get_response(id, source_range, cmd))?;
-
-        Ok(result)
-    }
-
-    async fn send_modeling_cmd_get_response(
-        &mut self,
-        id: uuid::Uuid,
-        source_range: crate::executor::SourceRange,
-        cmd: kittycad::types::ModelingCmd,
-    ) -> Result<kittycad::types::OkWebSocketResponseData, KclError> {
         let source_range_str = serde_json::to_string(&source_range).map_err(|e| {
             KclError::Engine(KclErrorDetails {
                 message: format!("Failed to serialize source range: {:?}", e),
@@ -90,16 +79,9 @@ impl crate::engine::EngineManager for EngineConnection {
             })
         })?;
 
-        let promise = self
+        let value = self
             .manager
             .sendModelingCommandFromWasm(id.to_string(), source_range_str, cmd_str);
-
-        let value = wasm_bindgen_futures::JsFuture::from(promise).await.map_err(|e| {
-            KclError::Engine(KclErrorDetails {
-                message: format!("Failed to wait for promise from engine: {:?}", e),
-                source_ranges: vec![source_range],
-            })
-        })?;
 
         // Parse the value as a string.
         let s = value.as_string().ok_or_else(|| {
@@ -117,5 +99,14 @@ impl crate::engine::EngineManager for EngineConnection {
         })?;
 
         Ok(modeling_result)
+    }
+
+    async fn send_modeling_cmd_get_response(
+        &mut self,
+        id: uuid::Uuid,
+        source_range: crate::executor::SourceRange,
+        cmd: kittycad::types::ModelingCmd,
+    ) -> Result<kittycad::types::OkWebSocketResponseData, KclError> {
+        self.send_modeling_cmd_get_response_blocking(id, source_range, cmd)
     }
 }

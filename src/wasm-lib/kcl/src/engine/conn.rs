@@ -144,7 +144,8 @@ impl EngineManager for EngineConnection {
             })?;
 
         // Wait for the response.
-        loop {
+        let current_time = std::time::Instant::now();
+        while current_time.elapsed().as_secs() < 10 {
             if let Some(resp) = self.responses.get(&id) {
                 if let Some(data) = &resp.resp {
                     return Ok(data.clone());
@@ -156,5 +157,10 @@ impl EngineManager for EngineConnection {
                 }
             }
         }
+
+        Err(KclError::Engine(KclErrorDetails {
+            message: format!("Modeling command timed out"),
+            source_ranges: vec![source_range],
+        }))
     }
 }
