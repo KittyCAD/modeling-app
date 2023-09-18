@@ -86,15 +86,15 @@ impl crate::engine::EngineManager for EngineConnection {
             .manager
             .sendModelingCommandFromWasm(id.to_string(), source_range_str, cmd_str);
 
-        let current_time = std::time::Instant::now();
+        let start = js_sys::Date::now();
         let mut value = "".to_string();
-        /* while current_time.elapsed().as_secs() < 10 {
+        while js_sys::Date::now() - start < 10000.0 {
             let resp = self.manager.isResponseReady(id.to_string());
             if !resp.is_empty() {
                 value = resp.to_string();
                 break;
             }
-        }*/
+        }
 
         // Parse the value as a string.
         if value.is_empty() {
