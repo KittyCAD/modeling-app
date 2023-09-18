@@ -54,7 +54,7 @@ export default function ParametricModeling() {
           </figure>
           <p className="my-4">
             We are able to easily calculate the thickness of the material based
-            on the width of the bracket to meet a set safety factor on line 13.
+            on the width of the bracket to meet a set safety factor on line 6.
           </p>
         </section>
         <div className="flex justify-between">
