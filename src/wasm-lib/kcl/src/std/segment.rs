@@ -155,14 +155,20 @@ pub fn segment_angle(args: &mut Args) -> Result<MemoryItem, KclError> {
     let (segment_name, sketch_group) = args.get_segment_name_sketch_group()?;
 
     let result = inner_segment_angle(&segment_name, sketch_group, args)?;
-    args.make_user_val_from_f64(result)
+    let j = serde_json::to_value(&result).map_err(|e| {
+        KclError::Type(KclErrorDetails {
+            message: format!("Could not serialize KCL value {result:?}: {e}"),
+            source_ranges: vec![args.source_range],
+        })
+    })?;
+    args.make_user_val_from_json(j)
 }
 
 /// Returns the angle of the segment.
 #[stdlib {
     name = "segAng",
 }]
-fn inner_segment_angle(segment_name: &str, sketch_group: SketchGroup, args: &mut Args) -> Result<f64, KclError> {
+fn inner_segment_angle(segment_name: &str, sketch_group: SketchGroup, args: &mut Args) -> Result<Angle, KclError> {
     let path = sketch_group.get_path_by_name(segment_name).ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!(
@@ -174,9 +180,7 @@ fn inner_segment_angle(segment_name: &str, sketch_group: SketchGroup, args: &mut
     })?;
     let line = path.get_base();
 
-    let result = Angle::between(line.from.into(), line.to.into());
-
-    Ok(result.degrees())
+    dbg!(Ok(Angle::between(line.from.into(), line.to.into())))
 }
 
 /// Returns the angle to match the given length for x.

@@ -5,7 +5,10 @@ use crate::{
     executor::{Point2d, SourceRange},
 };
 
-#[derive(Clone, Copy, Default, PartialOrd, PartialEq, Debug)]
+use schemars::JsonSchema;
+use serde::{Deserialize, Serialize};
+
+#[derive(Clone, Copy, Default, PartialOrd, PartialEq, Debug, ts_rs::TS, Serialize, Deserialize, JsonSchema)]
 pub struct Angle {
     degrees: f64,
 }

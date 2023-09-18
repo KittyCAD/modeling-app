@@ -297,14 +297,14 @@ pub enum AngledLineData {
     /// An angle and length with a tag.
     AngleWithTag {
         /// The angle of the line.
-        angle: f64,
+        angle: Angle,
         /// The length of the line.
         length: f64,
         /// The tag.
         tag: String,
     },
     /// An angle and length.
-    AngleAndLength([f64; 2]),
+    AngleAndLength(Angle, f64),
 }
 
 /// Draw an angled line.
@@ -327,11 +327,11 @@ fn inner_angled_line(
     let from = sketch_group.get_coords_from_paths()?;
     let (angle, length) = match &data {
         AngledLineData::AngleWithTag { angle, length, .. } => (*angle, *length),
-        AngledLineData::AngleAndLength(angle_and_length) => (angle_and_length[0], angle_and_length[1]),
+        AngledLineData::AngleAndLength(angle, length) => (*angle, *length),
     };
     let to: [f64; 2] = [
-        from.x + length * f64::cos(angle.to_radians()),
-        from.y + length * f64::sin(angle.to_radians()),
+        from.x + length * f64::cos(angle.radians()),
+        from.y + length * f64::sin(angle.radians()),
     ];
 
     let id = uuid::Uuid::new_v4();
@@ -390,10 +390,10 @@ fn inner_angled_line_of_x_length(
 ) -> Result<SketchGroup, KclError> {
     let (angle, length) = match &data {
         AngledLineData::AngleWithTag { angle, length, .. } => (*angle, *length),
-        AngledLineData::AngleAndLength(angle_and_length) => (angle_and_length[0], angle_and_length[1]),
+        AngledLineData::AngleAndLength(angle, length) => (*angle, *length),
     };
 
-    let to = get_y_component(Angle::from_degrees(angle), length);
+    let to = get_y_component(angle, length);
 
     let new_sketch_group = inner_line(
         if let AngledLineData::AngleWithTag { tag, .. } = data {
@@ -485,10 +485,10 @@ fn inner_angled_line_of_y_length(
 ) -> Result<SketchGroup, KclError> {
     let (angle, length) = match &data {
         AngledLineData::AngleWithTag { angle, length, .. } => (*angle, *length),
-        AngledLineData::AngleAndLength(angle_and_length) => (angle_and_length[0], angle_and_length[1]),
+        AngledLineData::AngleAndLength(angle, length) => (*angle, *length),
     };
 
-    let to = get_x_component(Angle::from_degrees(angle), length);
+    let to = get_x_component(angle, length);
 
     let new_sketch_group = inner_line(
         if let AngledLineData::AngleWithTag { tag, .. } = data {
