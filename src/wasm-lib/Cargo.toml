@@ -60,9 +60,3 @@ path = "tests/executor/main.rs"
 [[test]]
 name = "modify"
 path = "tests/modify/main.rs"
-
-[package.metadata.wasm-pack.profile.dev.wasm-bindgen]
-split-linked-modules = false
-
-[package.metadata.wasm-pack.profile.release.wasm-bindgen]
-split-linked-modules = false
