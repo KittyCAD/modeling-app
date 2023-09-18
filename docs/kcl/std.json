@@ -514,10 +514,18 @@
     ],
     "returnValue": {
       "name": "",
-      "type": "number",
+      "type": "Angle",
       "schema": {
-        "type": "number",
-        "format": "double"
+        "type": "object",
+        "required": [
+          "degrees"
+        ],
+        "properties": {
+          "degrees": {
+            "type": "number",
+            "format": "double"
+          }
+        }
       },
       "required": true
     },
@@ -983,10 +991,18 @@
     ],
     "returnValue": {
       "name": "",
-      "type": "number",
+      "type": "Angle",
       "schema": {
-        "type": "number",
-        "format": "double"
+        "type": "object",
+        "required": [
+          "degrees"
+        ],
+        "properties": {
+          "degrees": {
+            "type": "number",
+            "format": "double"
+          }
+        }
       },
       "required": true
     },
@@ -1016,8 +1032,16 @@
               "properties": {
                 "angle": {
                   "description": "The angle of the line.",
-                  "type": "number",
-                  "format": "double"
+                  "type": "object",
+                  "required": [
+                    "degrees"
+                  ],
+                  "properties": {
+                    "degrees": {
+                      "type": "number",
+                      "format": "double"
+                    }
+                  }
                 },
                 "length": {
                   "description": "The length of the line.",
@@ -1033,10 +1057,24 @@
             {
               "description": "An angle and length.",
               "type": "array",
-              "items": {
-                "type": "number",
-                "format": "double"
-              },
+              "items": [
+                {
+                  "type": "object",
+                  "required": [
+                    "degrees"
+                  ],
+                  "properties": {
+                    "degrees": {
+                      "type": "number",
+                      "format": "double"
+                    }
+                  }
+                },
+                {
+                  "type": "number",
+                  "format": "double"
+                }
+              ],
               "maxItems": 2,
               "minItems": 2
             }
@@ -1937,8 +1975,16 @@
               "properties": {
                 "angle": {
                   "description": "The angle of the line.",
-                  "type": "number",
-                  "format": "double"
+                  "type": "object",
+                  "required": [
+                    "degrees"
+                  ],
+                  "properties": {
+                    "degrees": {
+                      "type": "number",
+                      "format": "double"
+                    }
+                  }
                 },
                 "length": {
                   "description": "The length of the line.",
@@ -1954,10 +2000,24 @@
             {
               "description": "An angle and length.",
               "type": "array",
-              "items": {
-                "type": "number",
-                "format": "double"
-              },
+              "items": [
+                {
+                  "type": "object",
+                  "required": [
+                    "degrees"
+                  ],
+                  "properties": {
+                    "degrees": {
+                      "type": "number",
+                      "format": "double"
+                    }
+                  }
+                },
+                {
+                  "type": "number",
+                  "format": "double"
+                }
+              ],
               "maxItems": 2,
               "minItems": 2
             }
@@ -2858,8 +2918,16 @@
               "properties": {
                 "angle": {
                   "description": "The angle of the line.",
-                  "type": "number",
-                  "format": "double"
+                  "type": "object",
+                  "required": [
+                    "degrees"
+                  ],
+                  "properties": {
+                    "degrees": {
+                      "type": "number",
+                      "format": "double"
+                    }
+                  }
                 },
                 "length": {
                   "description": "The length of the line.",
@@ -2875,10 +2943,24 @@
             {
               "description": "An angle and length.",
               "type": "array",
-              "items": {
-                "type": "number",
-                "format": "double"
-              },
+              "items": [
+                {
+                  "type": "object",
+                  "required": [
+                    "degrees"
+                  ],
+                  "properties": {
+                    "degrees": {
+                      "type": "number",
+                      "format": "double"
+                    }
+                  }
+                },
+                {
+                  "type": "number",
+                  "format": "double"
+                }
+              ],
               "maxItems": 2,
               "minItems": 2
             }
@@ -3775,8 +3857,16 @@
           "properties": {
             "angle": {
               "description": "The angle of the line.",
-              "type": "number",
-              "format": "double"
+              "type": "object",
+              "required": [
+                "degrees"
+              ],
+              "properties": {
+                "degrees": {
+                  "type": "number",
+                  "format": "double"
+                }
+              }
             },
             "intersectTag": {
               "description": "The tag of the line to intersect with.",
@@ -4690,8 +4780,16 @@
               "properties": {
                 "angle": {
                   "description": "The angle of the line.",
-                  "type": "number",
-                  "format": "double"
+                  "type": "object",
+                  "required": [
+                    "degrees"
+                  ],
+                  "properties": {
+                    "degrees": {
+                      "type": "number",
+                      "format": "double"
+                    }
+                  }
                 },
                 "tag": {
                   "description": "The tag.",
@@ -4707,10 +4805,24 @@
             {
               "description": "An angle and point to draw to.",
               "type": "array",
-              "items": {
-                "type": "number",
-                "format": "double"
-              },
+              "items": [
+                {
+                  "type": "object",
+                  "required": [
+                    "degrees"
+                  ],
+                  "properties": {
+                    "degrees": {
+                      "type": "number",
+                      "format": "double"
+                    }
+                  }
+                },
+                {
+                  "type": "number",
+                  "format": "double"
+                }
+              ],
               "maxItems": 2,
               "minItems": 2
             }
@@ -5611,8 +5723,16 @@
               "properties": {
                 "angle": {
                   "description": "The angle of the line.",
-                  "type": "number",
-                  "format": "double"
+                  "type": "object",
+                  "required": [
+                    "degrees"
+                  ],
+                  "properties": {
+                    "degrees": {
+                      "type": "number",
+                      "format": "double"
+                    }
+                  }
                 },
                 "tag": {
                   "description": "The tag.",
@@ -5628,10 +5748,24 @@
             {
               "description": "An angle and point to draw to.",
               "type": "array",
-              "items": {
-                "type": "number",
-                "format": "double"
-              },
+              "items": [
+                {
+                  "type": "object",
+                  "required": [
+                    "degrees"
+                  ],
+                  "properties": {
+                    "degrees": {
+                      "type": "number",
+                      "format": "double"
+                    }
+                  }
+                },
+                {
+                  "type": "number",
+                  "format": "double"
+                }
+              ],
               "maxItems": 2,
               "minItems": 2
             }
@@ -13889,10 +14023,18 @@
     ],
     "returnValue": {
       "name": "",
-      "type": "number",
+      "type": "Angle",
       "schema": {
-        "type": "number",
-        "format": "double"
+        "type": "object",
+        "required": [
+          "degrees"
+        ],
+        "properties": {
+          "degrees": {
+            "type": "number",
+            "format": "double"
+          }
+        }
       },
       "required": true
     },

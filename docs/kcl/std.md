@@ -106,7 +106,7 @@ Returns the angle to match the given length for x.
 
 
 ```
-angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup) -> number
+angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup) -> Angle
 ```
 
 #### Arguments
@@ -179,7 +179,12 @@ angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup)
 
 #### Returns
 
-* `number`
+* `Angle`
+```
+{
+	degrees: number,
+}
+```
 
 
 
@@ -190,7 +195,7 @@ Returns the angle to match the given length for y.
 
 
 ```
-angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup) -> number
+angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup) -> Angle
 ```
 
 #### Arguments
@@ -263,7 +268,12 @@ angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup)
 
 #### Returns
 
-* `number`
+* `Angle`
+```
+{
+	degrees: number,
+}
+```
 
 
 
@@ -283,13 +293,15 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 ```
 {
 	// The angle of the line.
-	angle: number,
+	angle: {
+	degrees: number,
+},
 	// The length of the line.
 	length: number,
 	// The tag.
 	tag: string,
 } |
-[number]
+string
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
@@ -439,13 +451,15 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 ```
 {
 	// The angle of the line.
-	angle: number,
+	angle: {
+	degrees: number,
+},
 	// The length of the line.
 	length: number,
 	// The tag.
 	tag: string,
 } |
-[number]
+string
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
@@ -595,13 +609,15 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 ```
 {
 	// The angle of the line.
-	angle: number,
+	angle: {
+	degrees: number,
+},
 	// The length of the line.
 	length: number,
 	// The tag.
 	tag: string,
 } |
-[number]
+string
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
@@ -751,7 +767,9 @@ angledLineThatIntersects(data: AngeledLineThatIntersectsData, sketch_group: Sket
 ```
 {
 	// The angle of the line.
-	angle: number,
+	angle: {
+	degrees: number,
+},
 	// The tag of the line to intersect with.
 	intersectTag: string,
 	// The offset from the intersecting line.
@@ -908,13 +926,15 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 ```
 {
 	// The angle of the line.
-	angle: number,
+	angle: {
+	degrees: number,
+},
 	// The tag.
 	tag: string,
 	// The point to draw to.
 	to: number,
 } |
-[number]
+string
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
@@ -1064,13 +1084,15 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 ```
 {
 	// The angle of the line.
-	angle: number,
+	angle: {
+	degrees: number,
+},
 	// The tag.
 	tag: string,
 	// The point to draw to.
 	to: number,
 } |
-[number]
+string
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
@@ -2680,7 +2702,7 @@ Returns the angle of the segment.
 
 
 ```
-segAng(segment_name: string, sketch_group: SketchGroup) -> number
+segAng(segment_name: string, sketch_group: SketchGroup) -> Angle
 ```
 
 #### Arguments
@@ -2752,7 +2774,12 @@ segAng(segment_name: string, sketch_group: SketchGroup) -> number
 
 #### Returns
 
-* `number`
+* `Angle`
+```
+{
+	degrees: number,
+}
+```
 
 
 
