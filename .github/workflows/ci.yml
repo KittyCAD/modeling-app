@@ -108,7 +108,6 @@ jobs:
           npx wasm-pack build --target web --out-dir pkg
           cd ../../
           cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
-          yarn remove-importmeta
 
       - name: Fix format
         run: yarn fmt
