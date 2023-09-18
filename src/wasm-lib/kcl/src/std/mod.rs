@@ -21,8 +21,9 @@ use crate::{
     executor::{ExtrudeGroup, MemoryItem, Metadata, SketchGroup, SourceRange},
 };
 
-pub type StdFn = fn(&mut Args) -> Result<MemoryItem, KclError>;
-pub type FnMap = HashMap<String, StdFn>;
+pub type StdFn<'a> =
+    fn(&'a mut Args<'a>) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<MemoryItem, KclError>> + 'a>>;
+pub type FnMap<'a> = HashMap<String, StdFn<'a>>;
 
 pub struct StdLib {
     pub fns: HashMap<String, Box<(dyn crate::docs::StdLibFn)>>,
@@ -443,7 +444,7 @@ impl<'a> Args<'a> {
 
 /// Render a model.
 // This never actually gets called so this is fine.
-pub fn show(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub async fn show<'a>(args: &mut Args<'_>) -> Result<MemoryItem, KclError> {
     let sketch_group = args.get_sketch_group()?;
     inner_show(sketch_group);
 
@@ -457,7 +458,7 @@ pub fn show(args: &mut Args) -> Result<MemoryItem, KclError> {
 fn inner_show(_sketch: Box<SketchGroup>) {}
 
 /// Returns the length of the given leg.
-pub fn leg_length(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub async fn leg_length(args: &mut Args<'_>) -> Result<MemoryItem, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
     let result = inner_leg_length(hypotenuse, leg);
     args.make_user_val_from_f64(result)
@@ -472,7 +473,7 @@ fn inner_leg_length(hypotenuse: f64, leg: f64) -> f64 {
 }
 
 /// Returns the angle of the given leg for x.
-pub fn leg_angle_x(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub async fn leg_angle_x(args: &mut Args<'_>) -> Result<MemoryItem, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
     let result = inner_leg_angle_x(hypotenuse, leg);
     args.make_user_val_from_f64(result)
@@ -487,7 +488,7 @@ fn inner_leg_angle_x(hypotenuse: f64, leg: f64) -> f64 {
 }
 
 /// Returns the angle of the given leg for y.
-pub fn leg_angle_y(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub async fn leg_angle_y(args: &mut Args<'_>) -> Result<MemoryItem, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
     let result = inner_leg_angle_y(hypotenuse, leg);
     args.make_user_val_from_f64(result)

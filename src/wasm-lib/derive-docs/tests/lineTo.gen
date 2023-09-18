@@ -7,6 +7,18 @@ pub(crate) struct LineTo {}
 #[allow(non_upper_case_globals, missing_docs)]
 #[doc = "Std lib function: lineTo"]
 pub(crate) const LineTo: LineTo = LineTo {};
+fn boxed_line_to(
+    args: &mut crate::std::Args,
+) -> std::pin::Pin<
+    Box<
+        dyn std::future::Future<
+            Output = anyhow::Result<crate::executor::MemoryItem, crate::errors::KclError>,
+        >,
+    >,
+> {
+    Box::pin(line_to(args))
+}
+
 impl crate::docs::StdLibFn for LineTo {
     fn name(&self) -> String {
         "lineTo".to_string()
@@ -65,7 +77,7 @@ impl crate::docs::StdLibFn for LineTo {
     }
 
     fn std_lib_fn(&self) -> crate::std::StdFn {
-        line_to
+        boxed_line_to
     }
 
     fn clone_box(&self) -> Box<dyn crate::docs::StdLibFn> {

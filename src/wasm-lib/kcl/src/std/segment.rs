@@ -11,7 +11,7 @@ use crate::{
 };
 
 /// Returns the segment end of x.
-pub fn segment_end_x(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub async fn segment_end_x(args: &mut Args<'_>) -> Result<MemoryItem, KclError> {
     let (segment_name, sketch_group) = args.get_segment_name_sketch_group()?;
     let result = inner_segment_end_x(&segment_name, sketch_group, args)?;
 
@@ -37,7 +37,7 @@ fn inner_segment_end_x(segment_name: &str, sketch_group: Box<SketchGroup>, args:
 }
 
 /// Returns the segment end of y.
-pub fn segment_end_y(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub async fn segment_end_y(args: &mut Args<'_>) -> Result<MemoryItem, KclError> {
     let (segment_name, sketch_group) = args.get_segment_name_sketch_group()?;
     let result = inner_segment_end_y(&segment_name, sketch_group, args)?;
 
@@ -63,7 +63,7 @@ fn inner_segment_end_y(segment_name: &str, sketch_group: Box<SketchGroup>, args:
 }
 
 /// Returns the last segment of x.
-pub fn last_segment_x(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub async fn last_segment_x(args: &mut Args<'_>) -> Result<MemoryItem, KclError> {
     let sketch_group = args.get_sketch_group()?;
     let result = inner_last_segment_x(sketch_group, args)?;
 
@@ -93,7 +93,7 @@ fn inner_last_segment_x(sketch_group: Box<SketchGroup>, args: &mut Args) -> Resu
 }
 
 /// Returns the last segment of y.
-pub fn last_segment_y(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub async fn last_segment_y(args: &mut Args<'_>) -> Result<MemoryItem, KclError> {
     let sketch_group = args.get_sketch_group()?;
     let result = inner_last_segment_y(sketch_group, args)?;
 
@@ -123,7 +123,7 @@ fn inner_last_segment_y(sketch_group: Box<SketchGroup>, args: &mut Args) -> Resu
 }
 
 /// Returns the length of the segment.
-pub fn segment_length(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub async fn segment_length(args: &mut Args<'_>) -> Result<MemoryItem, KclError> {
     let (segment_name, sketch_group) = args.get_segment_name_sketch_group()?;
     let result = inner_segment_length(&segment_name, sketch_group, args)?;
     args.make_user_val_from_f64(result)
@@ -151,7 +151,7 @@ fn inner_segment_length(segment_name: &str, sketch_group: Box<SketchGroup>, args
 }
 
 /// Returns the angle of the segment.
-pub fn segment_angle(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub async fn segment_angle(args: &mut Args<'_>) -> Result<MemoryItem, KclError> {
     let (segment_name, sketch_group) = args.get_segment_name_sketch_group()?;
 
     let result = inner_segment_angle(&segment_name, sketch_group, args)?;
@@ -180,7 +180,7 @@ fn inner_segment_angle(segment_name: &str, sketch_group: Box<SketchGroup>, args:
 }
 
 /// Returns the angle to match the given length for x.
-pub fn angle_to_match_length_x(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub async fn angle_to_match_length_x(args: &mut Args<'_>) -> Result<MemoryItem, KclError> {
     let (segment_name, to, sketch_group) = args.get_segment_name_to_number_sketch_group()?;
     let result = inner_angle_to_match_length_x(&segment_name, to, sketch_group, args)?;
     args.make_user_val_from_f64(result)
@@ -235,7 +235,7 @@ fn inner_angle_to_match_length_x(
 }
 
 /// Returns the angle to match the given length for y.
-pub fn angle_to_match_length_y(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub async fn angle_to_match_length_y(args: &mut Args<'_>) -> Result<MemoryItem, KclError> {
     let (segment_name, to, sketch_group) = args.get_segment_name_to_number_sketch_group()?;
     let result = inner_angle_to_match_length_y(&segment_name, to, sketch_group, args)?;
     args.make_user_val_from_f64(result)

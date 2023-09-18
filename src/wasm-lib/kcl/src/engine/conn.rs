@@ -122,20 +122,7 @@ impl EngineConnection {
 
 #[async_trait::async_trait(?Send)]
 impl EngineManager for EngineConnection {
-    /// Send a modeling command.
-    /// Do not wait for the response message.
-    fn send_modeling_cmd(
-        &self,
-        id: uuid::Uuid,
-        source_range: crate::executor::SourceRange,
-        cmd: kittycad::types::ModelingCmd,
-    ) -> Result<(), KclError> {
-        futures::executor::block_on(self.send_modeling_cmd_get_response(id, source_range, cmd))?;
-        Ok(())
-    }
-
-    /// Send a modeling command and wait for the response message.
-    async fn send_modeling_cmd_get_response(
+    async fn send_modeling_cmd(
         &self,
         id: uuid::Uuid,
         source_range: crate::executor::SourceRange,

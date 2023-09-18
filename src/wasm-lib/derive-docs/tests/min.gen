@@ -7,6 +7,18 @@ pub(crate) struct Min {}
 #[allow(non_upper_case_globals, missing_docs)]
 #[doc = "Std lib function: min"]
 pub(crate) const Min: Min = Min {};
+fn boxed_min(
+    args: &mut crate::std::Args,
+) -> std::pin::Pin<
+    Box<
+        dyn std::future::Future<
+            Output = anyhow::Result<crate::executor::MemoryItem, crate::errors::KclError>,
+        >,
+    >,
+> {
+    Box::pin(min(args))
+}
+
 impl crate::docs::StdLibFn for Min {
     fn name(&self) -> String {
         "min".to_string()
@@ -57,7 +69,7 @@ impl crate::docs::StdLibFn for Min {
     }
 
     fn std_lib_fn(&self) -> crate::std::StdFn {
-        min
+        boxed_min
     }
 
     fn clone_box(&self) -> Box<dyn crate::docs::StdLibFn> {

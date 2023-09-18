@@ -118,6 +118,7 @@ fn do_stdlib_inner(
     let fn_name = &ast.sig.ident;
     let fn_name_str = fn_name.to_string().replace("inner_", "");
     let fn_name_ident = format_ident!("{}", fn_name_str);
+    let boxed_fn_name_ident = format_ident!("boxed_{}", fn_name_str);
     let _visibility = &ast.vis;
 
     let (summary_text, description_text) = extract_doc_from_attrs(&ast.attrs);
@@ -204,7 +205,10 @@ fn do_stdlib_inner(
             syn::FnArg::Typed(pat) => pat.ty.as_ref().into_token_stream(),
         };
 
-        let ty_string = ty.to_string().replace('&', "").replace("mut", "").replace(' ', "");
+        let mut ty_string = ty.to_string().replace('&', "").replace("mut", "").replace(' ', "");
+        if ty_string.starts_with("Args") {
+            ty_string = "Args".to_string();
+        }
         let ty_string = ty_string.trim().to_string();
         let ty_ident = if ty_string.starts_with("Vec<") {
             let ty_string = ty_string.trim_start_matches("Vec<").trim_end_matches('>');
@@ -305,6 +309,14 @@ fn do_stdlib_inner(
         #description_doc_comment
         #const_struct
 
+        fn #boxed_fn_name_ident<'a>(
+            args: &'a mut crate::std::Args<'a>,
+        ) -> std::pin::Pin<
+            Box<dyn std::future::Future<Output = anyhow::Result<crate::executor::MemoryItem, crate::errors::KclError>> + 'a>,
+        > {
+            Box::pin(#fn_name_ident(args))
+        }
+
         impl #docs_crate::StdLibFn for #name_ident
         {
             fn name(&self) -> String {
@@ -348,7 +360,7 @@ fn do_stdlib_inner(
             }
 
             fn std_lib_fn(&self) -> crate::std::StdFn {
-                #fn_name_ident
+                #boxed_fn_name_ident
             }
 
             fn clone_box(&self) -> Box<dyn #docs_crate::StdLibFn> {
