@@ -3,7 +3,7 @@ import { ActionButton } from '../../components/ActionButton'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from '../../useStore'
 import { useBackdropHighlight } from 'hooks/useBackdropHighlight'
-import { Themes } from 'lib/theme'
+import { Themes, getSystemTheme } from 'lib/theme'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 
 export default function ParametricModeling() {
@@ -15,6 +15,11 @@ export default function ParametricModeling() {
       context: { theme },
     },
   } = useGlobalStateContext()
+  const getImageTheme = () =>
+    theme === Themes.Light ||
+    (theme === Themes.System && getSystemTheme() === Themes.Light)
+      ? '-dark'
+      : ''
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.INTERACTIVE_NUMBERS)
 
@@ -40,9 +45,7 @@ export default function ParametricModeling() {
           </p>
           <figure className="my-4 w-3/4 mx-auto">
             <img
-              src={`/onboarding-bracket${
-                theme === Themes.Light ? '-dark' : ''
-              }.png`}
+              src={`/onboarding-bracket${getImageTheme()}.png`}
               alt="Bracket"
             />
             <figcaption className="text-small italic text-center">
