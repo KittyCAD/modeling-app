@@ -237,6 +237,47 @@ impl Program {
             }
         }
     }
+
+    /// Replace a variable declaration with the given name with a new one.
+    pub fn replace_variable(&mut self, name: &str, declarator: VariableDeclarator) {
+        for item in &mut self.body {
+            match item {
+                BodyItem::ExpressionStatement(_expression_statement) => {
+                    continue;
+                }
+                BodyItem::VariableDeclaration(ref mut variable_declaration) => {
+                    for declaration in &mut variable_declaration.declarations {
+                        if declaration.id.name == name {
+                            *declaration = declarator;
+                            return;
+                        }
+                    }
+                }
+                BodyItem::ReturnStatement(_return_statement) => continue,
+            }
+        }
+    }
+
+    /// Get the variable declaration with the given name.
+    pub fn get_variable(&self, name: &str) -> Option<&VariableDeclarator> {
+        for item in &self.body {
+            match item {
+                BodyItem::ExpressionStatement(_expression_statement) => {
+                    continue;
+                }
+                BodyItem::VariableDeclaration(variable_declaration) => {
+                    for declaration in &variable_declaration.declarations {
+                        if declaration.id.name == name {
+                            return Some(declaration);
+                        }
+                    }
+                }
+                BodyItem::ReturnStatement(_return_statement) => continue,
+            }
+        }
+
+        None
+    }
 }
 
 pub trait ValueMeta {
@@ -247,7 +288,7 @@ pub trait ValueMeta {
 
 macro_rules! impl_value_meta {
     {$name:ident} => {
-        impl crate::abstract_syntax_tree_types::ValueMeta for $name {
+        impl crate::ast::types::ValueMeta for $name {
             fn start(&self) -> usize {
                 self.start
             }
@@ -426,6 +467,26 @@ impl Value {
             Value::UnaryExpression(ref mut unary_expression) => unary_expression.rename_identifiers(old_name, new_name),
         }
     }
+
+    /// Get the constraint level for a value type.
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        match self {
+            Value::Literal(literal) => literal.get_constraint_level(),
+            Value::Identifier(identifier) => identifier.get_constraint_level(),
+            Value::BinaryExpression(binary_expression) => binary_expression.get_constraint_level(),
+
+            Value::FunctionExpression(function_identifier) => function_identifier.get_constraint_level(),
+            Value::CallExpression(call_expression) => call_expression.get_constraint_level(),
+            Value::PipeExpression(pipe_expression) => pipe_expression.get_constraint_level(),
+            Value::PipeSubstitution(pipe_substitution) => ConstraintLevel::Ignore {
+                source_ranges: vec![pipe_substitution.into()],
+            },
+            Value::ArrayExpression(array_expression) => array_expression.get_constraint_level(),
+            Value::ObjectExpression(object_expression) => object_expression.get_constraint_level(),
+            Value::MemberExpression(member_expression) => member_expression.get_constraint_level(),
+            Value::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
+        }
+    }
 }
 
 impl From<Value> for crate::executor::SourceRange {
@@ -465,6 +526,18 @@ impl From<&BinaryPart> for crate::executor::SourceRange {
 }
 
 impl BinaryPart {
+    /// Get the constraint level.
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        match self {
+            BinaryPart::Literal(literal) => literal.get_constraint_level(),
+            BinaryPart::Identifier(identifier) => identifier.get_constraint_level(),
+            BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_constraint_level(),
+            BinaryPart::CallExpression(call_expression) => call_expression.get_constraint_level(),
+            BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
+            BinaryPart::MemberExpression(member_expression) => member_expression.get_constraint_level(),
+        }
+    }
+
     fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         match &self {
             BinaryPart::Literal(literal) => literal.recast(),
@@ -639,7 +712,7 @@ pub enum NoneCodeValue {
     NewLine,
 }
 
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Default, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct NoneCodeMeta {
@@ -698,7 +771,33 @@ pub struct CallExpression {
 
 impl_value_meta!(CallExpression);
 
+impl From<CallExpression> for Value {
+    fn from(call_expression: CallExpression) -> Self {
+        Value::CallExpression(Box::new(call_expression))
+    }
+}
+
 impl CallExpression {
+    pub fn new(name: &str, arguments: Vec<Value>) -> Result<Self, KclError> {
+        // Create our stdlib.
+        let stdlib = crate::std::StdLib::new();
+        let func = stdlib.get(name).ok_or_else(|| {
+            KclError::UndefinedValue(KclErrorDetails {
+                message: format!("Function {} is not defined", name),
+                source_ranges: vec![],
+            })
+        })?;
+
+        Ok(Self {
+            start: 0,
+            end: 0,
+            callee: Identifier::new(name),
+            arguments,
+            optional: false,
+            function: Function::StdLib { func },
+        })
+    }
+
     fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
         format!(
             "{}({})",
@@ -839,6 +938,23 @@ impl CallExpression {
             arg.rename_identifiers(old_name, new_name);
         }
     }
+
+    /// Return the constraint level for this call expression.
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        if self.arguments.is_empty() {
+            return ConstraintLevel::Ignore {
+                source_ranges: vec![self.into()],
+            };
+        }
+
+        // Iterate over the arguments and get the constraint level for each one.
+        let mut constraint_levels = ConstraintLevels::new();
+        for arg in &self.arguments {
+            constraint_levels.push(arg.get_constraint_level());
+        }
+
+        constraint_levels.get_constraint_level(self.into())
+    }
 }
 
 /// A function declaration.
@@ -879,6 +995,15 @@ pub struct VariableDeclaration {
 impl_value_meta!(VariableDeclaration);
 
 impl VariableDeclaration {
+    pub fn new(declarations: Vec<VariableDeclarator>, kind: VariableKind) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            declarations,
+            kind,
+        }
+    }
+
     /// Returns a value that includes the given character position.
     pub fn get_value_for_position(&self, pos: usize) -> Option<&Value> {
         for declaration in &self.declarations {
@@ -1059,6 +1184,21 @@ pub struct VariableDeclarator {
 
 impl_value_meta!(VariableDeclarator);
 
+impl VariableDeclarator {
+    pub fn new(name: &str, init: Value) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            id: Identifier::new(name),
+            init,
+        }
+    }
+
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        self.init.get_constraint_level()
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
@@ -1071,7 +1211,30 @@ pub struct Literal {
 
 impl_value_meta!(Literal);
 
+impl From<Literal> for Value {
+    fn from(literal: Literal) -> Self {
+        Value::Literal(Box::new(literal))
+    }
+}
+
 impl Literal {
+    pub fn new(value: serde_json::Value) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            raw: value.to_string(),
+            value,
+        }
+    }
+
+    /// Get the constraint level for this literal.
+    /// Literals are always not constrained.
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        ConstraintLevel::None {
+            source_ranges: vec![self.into()],
+        }
+    }
+
     fn recast(&self) -> String {
         if let serde_json::Value::String(value) = &self.value {
             let quote = if self.raw.trim().starts_with('"') { '"' } else { '\'' };
@@ -1116,6 +1279,22 @@ pub struct Identifier {
 impl_value_meta!(Identifier);
 
 impl Identifier {
+    pub fn new(name: &str) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            name: name.to_string(),
+        }
+    }
+
+    /// Get the constraint level for this identifier.
+    /// Identifier are always fully constrained.
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        ConstraintLevel::Full {
+            source_ranges: vec![self.into()],
+        }
+    }
+
     /// Rename all identifiers that have the old name to the new given name.
     fn rename(&mut self, old_name: &str, new_name: &str) {
         if self.name == old_name {
@@ -1134,6 +1313,24 @@ pub struct PipeSubstitution {
 
 impl_value_meta!(PipeSubstitution);
 
+impl PipeSubstitution {
+    pub fn new() -> Self {
+        Self { start: 0, end: 0 }
+    }
+}
+
+impl Default for PipeSubstitution {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl From<PipeSubstitution> for Value {
+    fn from(pipe_substitution: PipeSubstitution) -> Self {
+        Value::PipeSubstitution(Box::new(pipe_substitution))
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
@@ -1145,7 +1342,36 @@ pub struct ArrayExpression {
 
 impl_value_meta!(ArrayExpression);
 
+impl From<ArrayExpression> for Value {
+    fn from(array_expression: ArrayExpression) -> Self {
+        Value::ArrayExpression(Box::new(array_expression))
+    }
+}
+
 impl ArrayExpression {
+    pub fn new(elements: Vec<Value>) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            elements,
+        }
+    }
+
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        if self.elements.is_empty() {
+            return ConstraintLevel::Ignore {
+                source_ranges: vec![self.into()],
+            };
+        }
+
+        let mut constraint_levels = ConstraintLevels::new();
+        for element in &self.elements {
+            constraint_levels.push(element.get_constraint_level());
+        }
+
+        constraint_levels.get_constraint_level(self.into())
+    }
+
     fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
         let flat_recast = format!(
             "[{}]",
@@ -1268,6 +1494,29 @@ pub struct ObjectExpression {
 }
 
 impl ObjectExpression {
+    pub fn new(properties: Vec<ObjectProperty>) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            properties,
+        }
+    }
+
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        if self.properties.is_empty() {
+            return ConstraintLevel::Ignore {
+                source_ranges: vec![self.into()],
+            };
+        }
+
+        let mut constraint_levels = ConstraintLevels::new();
+        for property in &self.properties {
+            constraint_levels.push(property.value.get_constraint_level());
+        }
+
+        constraint_levels.get_constraint_level(self.into())
+    }
+
     fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
         let flat_recast = format!(
             "{{ {} }}",
@@ -1523,6 +1772,14 @@ pub struct MemberExpression {
 impl_value_meta!(MemberExpression);
 
 impl MemberExpression {
+    /// Get the constraint level for a member expression.
+    /// This is always fully constrained.
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        ConstraintLevel::Full {
+            source_ranges: vec![self.into()],
+        }
+    }
+
     fn recast(&self) -> String {
         let key_str = match &self.property {
             LiteralIdentifier::Identifier(identifier) => {
@@ -1672,6 +1929,26 @@ pub struct BinaryExpression {
 impl_value_meta!(BinaryExpression);
 
 impl BinaryExpression {
+    pub fn new(operator: BinaryOperator, left: BinaryPart, right: BinaryPart) -> Self {
+        Self {
+            start: left.start(),
+            end: right.end(),
+            operator,
+            left,
+            right,
+        }
+    }
+
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        let left_constraint_level = self.left.get_constraint_level();
+        let right_constraint_level = self.right.get_constraint_level();
+
+        let mut constraint_levels = ConstraintLevels::new();
+        constraint_levels.push(left_constraint_level);
+        constraint_levels.push(right_constraint_level);
+        constraint_levels.get_constraint_level(self.into())
+    }
+
     pub fn precedence(&self) -> u8 {
         self.operator.precedence()
     }
@@ -1870,6 +2147,19 @@ pub struct UnaryExpression {
 impl_value_meta!(UnaryExpression);
 
 impl UnaryExpression {
+    pub fn new(operator: UnaryOperator, argument: BinaryPart) -> Self {
+        Self {
+            start: 0,
+            end: argument.end(),
+            operator,
+            argument,
+        }
+    }
+
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        self.argument.get_constraint_level()
+    }
+
     fn recast(&self, options: &FormatOptions) -> String {
         format!("{}{}", &self.operator, self.argument.recast(options, 0))
     }
@@ -1944,7 +2234,38 @@ pub struct PipeExpression {
 
 impl_value_meta!(PipeExpression);
 
+impl From<PipeExpression> for Value {
+    fn from(pipe_expression: PipeExpression) -> Self {
+        Value::PipeExpression(Box::new(pipe_expression))
+    }
+}
+
 impl PipeExpression {
+    pub fn new(body: Vec<Value>) -> Self {
+        Self {
+            start: 0,
+            end: 0,
+            body,
+            non_code_meta: Default::default(),
+        }
+    }
+
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        if self.body.is_empty() {
+            return ConstraintLevel::Ignore {
+                source_ranges: vec![self.into()],
+            };
+        }
+
+        // Iterate over all body expressions.
+        let mut constraint_levels = ConstraintLevels::new();
+        for expression in &self.body {
+            constraint_levels.push(expression.get_constraint_level());
+        }
+
+        constraint_levels.get_constraint_level(self.into())
+    }
+
     fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         self.body
             .iter()
@@ -2063,6 +2384,13 @@ pub struct FunctionExpression {
 impl_value_meta!(FunctionExpression);
 
 impl FunctionExpression {
+    /// Function expressions don't really apply.
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        ConstraintLevel::Ignore {
+            source_ranges: vec![self.into()],
+        }
+    }
+
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         // We don't want to end with a new line inside nested functions.
         let mut new_options = options.clone();
@@ -2167,10 +2495,149 @@ impl FormatOptions {
     }
 }
 
+/// The constraint level.
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS, JsonSchema, Display)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+#[display(style = "snake_case")]
+pub enum ConstraintLevel {
+    /// Ignore constraints.
+    /// This is useful for stuff like pipe substitutions where we don't want it to
+    /// factor into the overall constraint level.
+    /// Like empty arrays or objects, etc.
+    #[display("ignore")]
+    Ignore { source_ranges: Vec<SourceRange> },
+    /// No constraints.
+    #[display("none")]
+    None { source_ranges: Vec<SourceRange> },
+    /// Partially constrained.
+    #[display("partial")]
+    Partial {
+        source_ranges: Vec<SourceRange>,
+        levels: ConstraintLevels,
+    },
+    /// Fully constrained.
+    #[display("full")]
+    Full { source_ranges: Vec<SourceRange> },
+}
+
+impl From<ConstraintLevel> for Vec<SourceRange> {
+    fn from(constraint_level: ConstraintLevel) -> Self {
+        match constraint_level {
+            ConstraintLevel::Ignore { source_ranges } => source_ranges,
+            ConstraintLevel::None { source_ranges } => source_ranges,
+            ConstraintLevel::Partial {
+                source_ranges,
+                levels: _,
+            } => source_ranges,
+            ConstraintLevel::Full { source_ranges } => source_ranges,
+        }
+    }
+}
+
+impl PartialEq for ConstraintLevel {
+    fn eq(&self, other: &Self) -> bool {
+        // Just check the variant.
+        std::mem::discriminant(self) == std::mem::discriminant(other)
+    }
+}
+
+impl ConstraintLevel {
+    pub fn update_source_ranges(&self, source_range: SourceRange) -> Self {
+        match self {
+            ConstraintLevel::Ignore { source_ranges: _ } => ConstraintLevel::Ignore {
+                source_ranges: vec![source_range],
+            },
+            ConstraintLevel::None { source_ranges: _ } => ConstraintLevel::None {
+                source_ranges: vec![source_range],
+            },
+            ConstraintLevel::Partial {
+                source_ranges: _,
+                levels,
+            } => ConstraintLevel::Partial {
+                source_ranges: vec![source_range],
+                levels: levels.clone(),
+            },
+            ConstraintLevel::Full { source_ranges: _ } => ConstraintLevel::Full {
+                source_ranges: vec![source_range],
+            },
+        }
+    }
+}
+
+/// A vector of constraint levels.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+pub struct ConstraintLevels(pub Vec<ConstraintLevel>);
+
+impl Default for ConstraintLevels {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl ConstraintLevels {
+    pub fn new() -> Self {
+        Self(vec![])
+    }
+
+    pub fn push(&mut self, constraint_level: ConstraintLevel) {
+        self.0.push(constraint_level);
+    }
+
+    /// Get the overall constraint level.
+    pub fn get_constraint_level(&self, source_range: SourceRange) -> ConstraintLevel {
+        if self.0.is_empty() {
+            return ConstraintLevel::Ignore {
+                source_ranges: vec![source_range],
+            };
+        }
+
+        // Check if all the constraint levels are the same.
+        if self
+            .0
+            .iter()
+            .all(|level| *level == self.0[0] || matches!(level, ConstraintLevel::Ignore { .. }))
+        {
+            self.0[0].clone()
+        } else {
+            ConstraintLevel::Partial {
+                source_ranges: vec![source_range],
+                levels: self.clone(),
+            }
+        }
+    }
+
+    pub fn get_all_partial_or_full_source_ranges(&self) -> Vec<SourceRange> {
+        let mut source_ranges = Vec::new();
+        // Add to our source ranges anything that is not none or ignore.
+        for level in &self.0 {
+            match level {
+                ConstraintLevel::None { source_ranges: _ } => {}
+                ConstraintLevel::Ignore { source_ranges: _ } => {}
+                ConstraintLevel::Partial {
+                    source_ranges: _,
+                    levels,
+                } => {
+                    source_ranges.extend(levels.get_all_partial_or_full_source_ranges());
+                }
+                ConstraintLevel::Full {
+                    source_ranges: full_source_ranges,
+                } => {
+                    source_ranges.extend(full_source_ranges);
+                }
+            }
+        }
+
+        source_ranges
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use super::*;
     use pretty_assertions::assert_eq;
+
+    use super::*;
 
     // We have this as a test so we can ensure it never panics with an unwrap in the server.
     #[test]
@@ -2205,8 +2672,7 @@ show(part001)"#;
     #[test]
     fn test_recast_with_std_and_non_stdlib() {
         let some_program_string = r#"{"body":[{"type":"VariableDeclaration","start":0,"end":0,"declarations":[{"type":"VariableDeclarator","start":0,"end":0,"id":{"type":"Identifier","start":0,"end":0,"name":"part001"},"init":{"type":"PipeExpression","start":0,"end":0,"body":[{"type":"CallExpression","start":0,"end":0,"callee":{"type":"Identifier","start":0,"end":0,"name":"startSketchAt"},"function":{"type":"StdLib","func":{"name":"startSketchAt","summary":"","description":"","tags":[],"returnValue":{"type":"","required":false,"name":"","schema":{}},"args":[],"unpublished":false,"deprecated":false}},"optional":false,"arguments":[{"type":"Literal","start":0,"end":0,"value":"default","raw":"default"}]},{"type":"CallExpression","start":0,"end":0,"callee":{"type":"Identifier","start":0,"end":0,"name":"ry"},"function":{"type":"InMemory"},"optional":false,"arguments":[{"type":"Literal","start":0,"end":0,"value":90,"raw":"90"},{"type":"PipeSubstitution","start":0,"end":0}]},{"type":"CallExpression","start":0,"end":0,"callee":{"type":"Identifier","start":0,"end":0,"name":"line"},"function":{"type":"StdLib","func":{"name":"line","summary":"","description":"","tags":[],"returnValue":{"type":"","required":false,"name":"","schema":{}},"args":[],"unpublished":false,"deprecated":false}},"optional":false,"arguments":[{"type":"Literal","start":0,"end":0,"value":"default","raw":"default"},{"type":"PipeSubstitution","start":0,"end":0}]}],"nonCodeMeta":{"noneCodeNodes":{},"start":null}}}],"kind":"const"},{"type":"ExpressionStatement","start":0,"end":0,"expression":{"type":"CallExpression","start":0,"end":0,"callee":{"type":"Identifier","start":0,"end":0,"name":"show"},"function":{"type":"StdLib","func":{"name":"show","summary":"","description":"","tags":[],"returnValue":{"type":"","required":false,"name":"","schema":{}},"args":[],"unpublished":false,"deprecated":false}},"optional":false,"arguments":[{"type":"Identifier","start":0,"end":0,"name":"part001"}]}}],"start":0,"end":0,"nonCodeMeta":{"noneCodeNodes":{},"start":null}}"#;
-        let some_program: crate::abstract_syntax_tree_types::Program =
-            serde_json::from_str(some_program_string).unwrap();
+        let some_program: crate::ast::types::Program = serde_json::from_str(some_program_string).unwrap();
 
         let recasted = some_program.recast(&Default::default(), 0);
         assert_eq!(

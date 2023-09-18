@@ -15,9 +15,13 @@ interface CommandInfo {
   range: SourceRange
   parentId?: string
 }
+
+type WebSocketResponse = Models['OkWebSocketResponseData_type']
+
 interface ResultCommand extends CommandInfo {
   type: 'result'
   data: any
+  raw: WebSocketResponse
 }
 interface PendingCommand extends CommandInfo {
   type: 'pending'
@@ -36,8 +40,6 @@ interface NewTrackArgs {
   conn: EngineConnection
   mediaStream: MediaStream
 }
-
-type WebSocketResponse = Models['OkWebSocketResponseData_type']
 
 type ClientMetrics = Models['ClientMetrics_type']
 
@@ -652,12 +654,14 @@ export class EngineCommandManager {
         commandType: command.commandType,
         parentId: command.parentId ? command.parentId : undefined,
         data: modelingResponse,
+        raw: message,
       }
       resolve({
         id,
         commandType: command.commandType,
         range: command.range,
         data: modelingResponse,
+        raw: message,
       })
     } else {
       this.artifactMap[id] = {
@@ -665,6 +669,7 @@ export class EngineCommandManager {
         commandType: command?.commandType,
         range: command?.range,
         data: modelingResponse,
+        raw: message,
       }
     }
   }
@@ -873,7 +878,10 @@ export class EngineCommandManager {
     }
     const range: SourceRange = JSON.parse(rangeStr)
 
-    return this.sendModelingCommand({ id, range, command: commandStr })
+    // We only care about the modeling command response.
+    return this.sendModelingCommand({ id, range, command: commandStr }).then(
+      ({ raw }) => JSON.stringify(raw)
+    )
   }
   commandResult(id: string): Promise<any> {
     const command = this.artifactMap[id]
@@ -943,7 +951,6 @@ export class EngineCommandManager {
     pathInfos.forEach(({ originalId, segments }) => {
       const originalArtifact = this.artifactMap[originalId]
       if (!originalArtifact || originalArtifact.type === 'pending') {
-        console.log('problem')
         return
       }
       const pipeExpPath = getNodePathFromSourceRange(
@@ -956,23 +963,20 @@ export class EngineCommandManager {
         'VariableDeclarator'
       ).node
       if (pipeExp.type !== 'VariableDeclarator') {
-        console.log('problem', pipeExp, pipeExpPath, ast)
         return
       }
       const variableName = pipeExp.id.name
       const memoryItem = programMemory.root[variableName]
       if (!memoryItem) {
-        console.log('problem', variableName, programMemory)
         return
       } else if (memoryItem.type !== 'SketchGroup') {
-        console.log('problem', memoryItem, programMemory)
         return
       }
+
       const relevantSegments = segments.filter(
         ({ command_id }: { command_id: string | null }) => command_id
       )
       if (memoryItem.value.length !== relevantSegments.length) {
-        console.log('problem', memoryItem.value, relevantSegments)
         return
       }
       for (let i = 0; i < relevantSegments.length; i++) {
@@ -982,8 +986,10 @@ export class EngineCommandManager {
         const artifact = this.artifactMap[oldId]
         delete this.artifactMap[oldId]
         delete this.sourceRangeMap[oldId]
-        this.artifactMap[engineSegment.command_id] = artifact
-        this.sourceRangeMap[engineSegment.command_id] = artifact.range
+        if (artifact) {
+          this.artifactMap[engineSegment.command_id] = artifact
+          this.sourceRangeMap[engineSegment.command_id] = artifact.range
+        }
       }
     })
   }

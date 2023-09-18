@@ -1310,9 +1310,10 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.1.28"
+version = "0.1.29"
 dependencies = [
  "anyhow",
+ "async-trait",
  "bson",
  "clap",
  "dashmap",
@@ -1338,6 +1339,7 @@ dependencies = [
  "uuid",
  "wasm-bindgen",
  "wasm-bindgen-futures",
+ "web-sys",
 ]
 
 [[package]]
@@ -3441,6 +3443,7 @@ dependencies = [
  "js-sys",
  "kcl-lib",
  "kittycad",
+ "pretty_assertions",
  "reqwest",
  "serde_json",
  "tokio",

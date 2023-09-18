@@ -109,21 +109,17 @@ export const Toolbar = () => {
         {guiMode.mode === 'canEditSketch' && (
           <button
             onClick={() => {
-              console.log('guiMode.pathId', guiMode.pathId)
-              engineCommandManager?.sendSceneCommand({
-                type: 'modeling_cmd_req',
-                cmd_id: uuidv4(),
-                cmd: {
-                  type: 'edit_mode_enter',
-                  target: guiMode.pathId,
-                },
-              })
+              const pathToNode = getNodePathFromSourceRange(
+                ast,
+                selectionRanges.codeBasedSelections[0].range
+              )
               setGuiMode({
                 mode: 'sketch',
-                sketchMode: 'sketchEdit',
-                pathToNode: guiMode.pathToNode,
-                rotation: guiMode.rotation,
-                position: guiMode.position,
+                sketchMode: 'enterSketchEdit',
+                pathToNode: pathToNode,
+                rotation: [0, 0, 0, 1],
+                position: [0, 0, 0],
+                pathId: guiMode.pathId,
               })
             }}
             className="group"
@@ -240,6 +236,7 @@ export const Toolbar = () => {
                           sketchMode: sketchFnName,
                           waitingFirstClick: true,
                           isTooltip: true,
+                          pathId: guiMode.pathId,
                         }),
                   })
                 }}

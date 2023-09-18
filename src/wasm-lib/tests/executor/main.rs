@@ -1,4 +1,5 @@
 use anyhow::Result;
+use kcl_lib::engine::EngineManager;
 
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
@@ -38,13 +39,15 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
     let _ = kcl_lib::executor::execute(program, &mut mem, kcl_lib::executor::BodyType::Root, &mut engine)?;
 
     // Send a snapshot request to the engine.
-    let resp = engine.send_modeling_cmd_get_response(
-        uuid::Uuid::new_v4(),
-        kcl_lib::executor::SourceRange::default(),
-        kittycad::types::ModelingCmd::TakeSnapshot {
-            format: kittycad::types::ImageFormat::Png,
-        },
-    )?;
+    let resp = engine
+        .send_modeling_cmd_get_response(
+            uuid::Uuid::new_v4(),
+            kcl_lib::executor::SourceRange::default(),
+            kittycad::types::ModelingCmd::TakeSnapshot {
+                format: kittycad::types::ImageFormat::Png,
+            },
+        )
+        .await?;
 
     if let kittycad::types::OkWebSocketResponseData::Modeling {
         modeling_response: kittycad::types::OkModelingCmdResponse::TakeSnapshot { data },
@@ -62,7 +65,7 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_execute_with_function_sketch() {
+async fn serial_test_execute_with_function_sketch() {
     let code = r#"fn box = (h, l, w) => {
  const myBox = startSketchAt([0,0])
     |> line([0, l], %)
@@ -83,7 +86,7 @@ show(fnBox)"#;
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_execute_with_angled_line() {
+async fn serial_test_execute_with_angled_line() {
     let code = r#"const part001 = startSketchAt([4.83, 12.56])
   |> line([15.1, 2.48], %)
   |> line({ to: [3.15, -9.85], tag: 'seg01' }, %)
@@ -100,7 +103,7 @@ show(part001)"#;
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_execute_parametric_example() {
+async fn serial_test_execute_parametric_example() {
     let code = r#"const sigmaAllow = 35000 // psi
 const width = 9 // inch
 const p = 150 // Force on shelf - lbs
