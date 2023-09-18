@@ -289,5 +289,6 @@ fn create_start_sketch_at(
 }
 
 fn round_before_recast(num: f64) -> f64 {
-    (num * 100000.0).round() / 100000.0
+    // We use 2 decimal places.
+    (num * 100.0).round() / 100.0
 }
