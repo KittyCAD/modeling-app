@@ -12,6 +12,13 @@ const initialise = async () => {
       ? window.location.origin
       : 'http://localhost:3000'
   const fullUrl = baseUrl + '/wasm_lib_bg.wasm'
+  console.log({
+    baseUrl,
+    fullUrl,
+    window,
+    location: window?.location,
+    origin: window?.location?.origin,
+  })
   const input = await fetch(fullUrl)
   const buffer = await input.arrayBuffer()
   return init(buffer)
