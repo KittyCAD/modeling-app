@@ -30,9 +30,9 @@ export default function InteractiveNumbers() {
           </p>
           <p className="my-4">
             Try changing the value of <code>width</code> on line 3 by holding
-            the <kbd>Alt</kbd> key and dragging the number left and right. You
-            can hold down different modifier keys to change the value by
-            different increments:
+            the <kbd>Alt</kbd> (or <kbd>Option</kbd>) key and dragging the
+            number left and right. You can hold down different modifier keys to
+            change the value by different increments:
             <table className="border-collapse text-sm mx-auto my-4">
               <tbody>
                 <tr>

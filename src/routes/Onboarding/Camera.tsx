@@ -35,7 +35,7 @@ export default function Units() {
       >
         <SettingsSection
           title="Camera Controls"
-          description="How you want to control the camera in the 3D view. Try them out in the 3D view."
+          description="How you want to control the camera in the 3D view. Try them out above and choose the one that feels most comfortable to you."
         >
           <select
             id="camera-controls"
