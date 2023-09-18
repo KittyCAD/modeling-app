@@ -119,7 +119,11 @@ impl<'a> Args<'a> {
     }
 
     pub fn send_modeling_cmd(&mut self, id: uuid::Uuid, cmd: kittycad::types::ModelingCmd) -> Result<(), KclError> {
-        self.engine.send_modeling_cmd(id, self.source_range, cmd)
+        let _ = self
+            .engine
+            .send_modeling_cmd_get_response_blocking(id, self.source_range, cmd)?;
+
+        Ok(())
     }
 
     fn make_user_val_from_json(&self, j: serde_json::Value) -> Result<MemoryItem, KclError> {

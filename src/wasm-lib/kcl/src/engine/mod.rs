@@ -42,6 +42,14 @@ pub trait EngineManager {
         cmd: kittycad::types::ModelingCmd,
     ) -> Result<(), crate::errors::KclError>;
 
+    /// Send a modeling command and wait for the response message, but block.
+    fn send_modeling_cmd_get_response_blocking(
+        &mut self,
+        id: uuid::Uuid,
+        source_range: crate::executor::SourceRange,
+        cmd: kittycad::types::ModelingCmd,
+    ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError>;
+
     /// Send a modeling command and wait for the response message.
     async fn send_modeling_cmd_get_response(
         &mut self,

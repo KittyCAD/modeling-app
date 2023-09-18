@@ -116,6 +116,18 @@ impl EngineManager for EngineConnection {
     }
 
     /// Send a modeling command and wait for the response message.
+    fn send_modeling_cmd_get_response_blocking(
+        &mut self,
+        id: uuid::Uuid,
+        source_range: crate::executor::SourceRange,
+        cmd: kittycad::types::ModelingCmd,
+    ) -> Result<OkWebSocketResponseData, KclError> {
+        let result = futures::executor::block_on(self.send_modeling_cmd_get_response(id, source_range, cmd))?;
+
+        Ok(result)
+    }
+
+    /// Send a modeling command and wait for the response message.
     async fn send_modeling_cmd_get_response(
         &mut self,
         id: uuid::Uuid,

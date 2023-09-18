@@ -26,12 +26,25 @@ impl crate::engine::EngineManager for EngineConnection {
         Ok(())
     }
 
+    fn send_modeling_cmd_get_response_blocking(
+        &mut self,
+        _id: uuid::Uuid,
+        _source_range: crate::executor::SourceRange,
+        _cmd: kittycad::types::ModelingCmd,
+    ) -> Result<OkWebSocketResponseData, KclError> {
+        Ok(OkWebSocketResponseData::Modeling {
+            modeling_response: kittycad::types::OkModelingCmdResponse::Empty {},
+        })
+    }
+
     async fn send_modeling_cmd_get_response(
         &mut self,
         _id: uuid::Uuid,
         _source_range: crate::executor::SourceRange,
         _cmd: kittycad::types::ModelingCmd,
     ) -> Result<OkWebSocketResponseData, KclError> {
-        todo!()
+        Ok(OkWebSocketResponseData::Modeling {
+            modeling_response: kittycad::types::OkModelingCmdResponse::Empty {},
+        })
     }
 }
