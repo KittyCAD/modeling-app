@@ -866,7 +866,7 @@ export class EngineCommandManager {
     id: string,
     rangeStr: string,
     commandStr: string
-  ): any {
+  ): Promise<any> {
     if (id === undefined) {
       throw new Error('id is undefined')
     }
@@ -878,20 +878,20 @@ export class EngineCommandManager {
     }
     const range: SourceRange = JSON.parse(rangeStr)
 
-    // We only care about the modeling command response.
-    this.sendModelingCommand({ id, range, command: commandStr })
-
-    const start = new Date().valueOf()
-    let found = false
-    while (!found && new Date().valueOf() - start < 10000) {
-      const command = this.artifactMap[id]
-      if (command && command.type === 'result') {
-        found = true
-        return JSON.stringify(command.raw)
-      }
+    return this.sendModelingCommand({ id, range, command: commandStr }).then(
+      ({ raw }) => JSON.stringify(raw)
+    )
+  }
+  isResponseReady(id: string): string {
+    const command = this.artifactMap[id]
+    if (!command) {
+      return ''
     }
-
-    return '{}'
+    if (command.type === 'result') {
+      console.log('command.raw', command)
+      return JSON.stringify(command.raw)
+    }
+    return ''
   }
   commandResult(id: string): Promise<any> {
     const command = this.artifactMap[id]

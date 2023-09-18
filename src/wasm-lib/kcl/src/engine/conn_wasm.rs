@@ -18,7 +18,10 @@ extern "C" {
         id: String,
         rangeStr: String,
         cmdStr: String,
-    ) -> JsValue;
+    ) -> js_sys::Promise;
+
+    #[wasm_bindgen(method)]
+    fn isResponseReady(this: &EngineCommandManager, id: String) -> String;
 }
 
 #[derive(Debug, Clone)]
@@ -79,9 +82,68 @@ impl crate::engine::EngineManager for EngineConnection {
             })
         })?;
 
-        let value = self
+        let _ = self
             .manager
             .sendModelingCommandFromWasm(id.to_string(), source_range_str, cmd_str);
+
+        let current_time = std::time::Instant::now();
+        let mut value = "".to_string();
+        /* while current_time.elapsed().as_secs() < 10 {
+            let resp = self.manager.isResponseReady(id.to_string());
+            if !resp.is_empty() {
+                value = resp.to_string();
+                break;
+            }
+        }*/
+
+        // Parse the value as a string.
+        if value.is_empty() {
+            return Err(KclError::Engine(KclErrorDetails {
+                message: format!("Failed to get response from engine: `{:?}`", value),
+                source_ranges: vec![source_range],
+            }));
+        }
+
+        let modeling_result: kittycad::types::OkWebSocketResponseData = serde_json::from_str(&value).map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: format!("Failed to deserialize response from engine: {:?}", e),
+                source_ranges: vec![source_range],
+            })
+        })?;
+
+        Ok(modeling_result)
+    }
+
+    async fn send_modeling_cmd_get_response(
+        &mut self,
+        id: uuid::Uuid,
+        source_range: crate::executor::SourceRange,
+        cmd: kittycad::types::ModelingCmd,
+    ) -> Result<kittycad::types::OkWebSocketResponseData, KclError> {
+        let source_range_str = serde_json::to_string(&source_range).map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: format!("Failed to serialize source range: {:?}", e),
+                source_ranges: vec![source_range],
+            })
+        })?;
+        let ws_msg = WebSocketRequest::ModelingCmdReq { cmd, cmd_id: id };
+        let cmd_str = serde_json::to_string(&ws_msg).map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: format!("Failed to serialize modeling command: {:?}", e),
+                source_ranges: vec![source_range],
+            })
+        })?;
+
+        let promise = self
+            .manager
+            .sendModelingCommandFromWasm(id.to_string(), source_range_str, cmd_str);
+
+        let value = wasm_bindgen_futures::JsFuture::from(promise).await.map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: format!("Failed to wait for promise from engine: {:?}", e),
+                source_ranges: vec![source_range],
+            })
+        })?;
 
         // Parse the value as a string.
         let s = value.as_string().ok_or_else(|| {
@@ -99,14 +161,5 @@ impl crate::engine::EngineManager for EngineConnection {
         })?;
 
         Ok(modeling_result)
-    }
-
-    async fn send_modeling_cmd_get_response(
-        &mut self,
-        id: uuid::Uuid,
-        source_range: crate::executor::SourceRange,
-        cmd: kittycad::types::ModelingCmd,
-    ) -> Result<kittycad::types::OkWebSocketResponseData, KclError> {
-        self.send_modeling_cmd_get_response_blocking(id, source_range, cmd)
     }
 }
