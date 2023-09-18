@@ -416,14 +416,14 @@ pub enum AngledLineToData {
     /// An angle and point with a tag.
     AngleWithTag {
         /// The angle of the line.
-        angle: f64,
+        angle: Angle,
         /// The point to draw to.
         to: f64,
         /// The tag.
         tag: String,
     },
     /// An angle and point to draw to.
-    AngleAndPoint([f64; 2]),
+    AngleAndPoint(Angle, f64),
 }
 
 /// Draw an angled line to a given x coordinate.
@@ -446,11 +446,11 @@ fn inner_angled_line_to_x(
     let from = sketch_group.get_coords_from_paths()?;
     let (angle, x_to) = match &data {
         AngledLineToData::AngleWithTag { angle, to, .. } => (*angle, *to),
-        AngledLineToData::AngleAndPoint(angle_and_to) => (angle_and_to[0], angle_and_to[1]),
+        AngledLineToData::AngleAndPoint(angle, to) => (*angle, *to),
     };
 
     let x_component = x_to - from.x;
-    let y_component = x_component * f64::tan(angle.to_radians());
+    let y_component = x_component * f64::tan(angle.radians());
     let y_to = from.y + y_component;
 
     let new_sketch_group = inner_line_to(
@@ -523,11 +523,11 @@ fn inner_angled_line_to_y(
     let from = sketch_group.get_coords_from_paths()?;
     let (angle, y_to) = match &data {
         AngledLineToData::AngleWithTag { angle, to, .. } => (*angle, *to),
-        AngledLineToData::AngleAndPoint(angle_and_to) => (angle_and_to[0], angle_and_to[1]),
+        AngledLineToData::AngleAndPoint(angle, to) => (*angle, *to),
     };
 
     let y_component = y_to - from.y;
-    let x_component = y_component / f64::tan(angle.to_radians());
+    let x_component = y_component / f64::tan(angle.radians());
     let x_to = from.x + x_component;
 
     let new_sketch_group = inner_line_to(
