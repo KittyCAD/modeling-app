@@ -2,7 +2,7 @@ import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../../components/ActionButton'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
-import { Themes } from 'lib/theme'
+import { Themes, getSystemTheme } from 'lib/theme'
 import { bracket } from 'lib/exampleKcl'
 import { useStore } from 'useStore'
 import {
@@ -128,6 +128,11 @@ export default function Introduction() {
       },
     },
   } = useGlobalStateContext()
+  const getLogoTheme = () =>
+    theme === Themes.Light ||
+    (theme === Themes.System && getSystemTheme() === Themes.Light)
+      ? '-dark'
+      : ''
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.CAMERA)
 
@@ -140,7 +145,7 @@ export default function Introduction() {
       <div className="max-w-3xl bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded">
         <h1 className="text-2xl font-bold flex gap-4 flex-wrap items-center">
           <img
-            src={`/kcma-logomark${theme === Themes.Light ? '-dark' : ''}.svg`}
+            src={`/kcma-logomark${getLogoTheme()}.svg`}
             alt="KittyCAD Modeling App"
             className="max-w-full h-20"
           />
