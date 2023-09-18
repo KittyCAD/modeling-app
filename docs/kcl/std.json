@@ -1,5 +1,61 @@
 [
   {
+    "name": "abs",
+    "summary": "Computes the absolute value of a number.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "acos",
+    "summary": "Computes the arccosine of a number (in radians).",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
     "name": "angleToMatchLengthX",
     "summary": "Returns the angle to match the given length for x.",
     "description": "",
@@ -7474,6 +7530,62 @@
     "deprecated": false
   },
   {
+    "name": "asin",
+    "summary": "Computes the arcsine of a number (in radians).",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "atan",
+    "summary": "Computes the arctangent of a number (in radians).",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
     "name": "bezierCurve",
     "summary": "Draw a bezier curve.",
     "description": "",
@@ -8447,6 +8559,34 @@
     "deprecated": false
   },
   {
+    "name": "ceil",
+    "summary": "Computes the smallest integer greater than or equal to a number.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
     "name": "close",
     "summary": "Close the current sketch.",
     "description": "",
@@ -9351,6 +9491,24 @@
     "deprecated": false
   },
   {
+    "name": "e",
+    "summary": "Return the value of Euler’s number `e`.",
+    "description": "",
+    "tags": [],
+    "args": [],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
     "name": "extrude",
     "summary": "Extrudes by a given amount.",
     "description": "",
@@ -9938,6 +10096,34 @@
             }
           }
         }
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "floor",
+    "summary": "Computes the largest integer less than or equal to a number.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
       },
       "required": true
     },
@@ -13016,8 +13202,160 @@
     "deprecated": false
   },
   {
+    "name": "ln",
+    "summary": "Computes the natural logarithm of the number.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "log",
+    "summary": "Computes the logarithm of the number with respect to an arbitrary base.",
+    "description": "The result might not be correctly rounded owing to implementation details; `log2()` can produce more accurate results for base 2, and `log10()` can produce more accurate results for base 10.",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      },
+      {
+        "name": "base",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "log10",
+    "summary": "Computes the base 10 logarithm of the number.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "log2",
+    "summary": "Computes the base 2 logarithm of the number.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "max",
+    "summary": "Computes the maximum of the given arguments.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "args",
+        "type": "[number]",
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
     "name": "min",
-    "summary": "Returns the minimum of the given arguments.",
+    "summary": "Computes the minimum of the given arguments.",
     "description": "",
     "tags": [],
     "args": [
@@ -13048,10 +13386,47 @@
   },
   {
     "name": "pi",
-    "summary": "Return the value of `pi`.",
+    "summary": "Return the value of `pi`. Archimedes’ constant (π).",
     "description": "",
     "tags": [],
     "args": [],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "pow",
+    "summary": "Computes the number to a power.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      },
+      {
+        "name": "pow",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
     "returnValue": {
       "name": "",
       "type": "number",
@@ -15377,6 +15752,34 @@
     "deprecated": false
   },
   {
+    "name": "sqrt",
+    "summary": "Computes the square root of a number.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "num",
+        "type": "number",
+        "schema": {
+          "type": "number",
+          "format": "double"
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
     "name": "startSketchAt",
     "summary": "Start a sketch at a given point.",
     "description": "",
@@ -15879,6 +16282,24 @@
         "required": true
       }
     ],
+    "returnValue": {
+      "name": "",
+      "type": "number",
+      "schema": {
+        "type": "number",
+        "format": "double"
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "tau",
+    "summary": "Return the value of `tau`. The full circle constant (τ). Equal to 2π.",
+    "description": "",
+    "tags": [],
+    "args": [],
     "returnValue": {
       "name": "",
       "type": "number",

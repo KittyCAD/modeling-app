@@ -6,6 +6,7 @@ use kittycad::types::{ModelingCmd, Point3D};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+use super::utils::Angle;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{BasePath, GeoMeta, MemoryItem, Path, Point2d, Position, Rotation, SketchGroup},
@@ -392,13 +393,13 @@ fn inner_angled_line_of_x_length(
         AngledLineData::AngleAndLength(angle_and_length) => (angle_and_length[0], angle_and_length[1]),
     };
 
-    let to = get_y_component(angle, length);
+    let to = get_y_component(Angle::from_degrees(angle), length);
 
     let new_sketch_group = inner_line(
         if let AngledLineData::AngleWithTag { tag, .. } = data {
-            LineData::PointWithTag { to, tag }
+            LineData::PointWithTag { to: to.into(), tag }
         } else {
-            LineData::Point(to)
+            LineData::Point(to.into())
         },
         sketch_group,
         args,
@@ -487,13 +488,13 @@ fn inner_angled_line_of_y_length(
         AngledLineData::AngleAndLength(angle_and_length) => (angle_and_length[0], angle_and_length[1]),
     };
 
-    let to = get_x_component(angle, length);
+    let to = get_x_component(Angle::from_degrees(angle), length);
 
     let new_sketch_group = inner_line(
         if let AngledLineData::AngleWithTag { tag, .. } = data {
-            LineData::PointWithTag { to, tag }
+            LineData::PointWithTag { to: to.into(), tag }
         } else {
-            LineData::Point(to)
+            LineData::Point(to.into())
         },
         sketch_group,
         args,
@@ -588,16 +589,16 @@ fn inner_angled_line_that_intersects(
 
     let from = sketch_group.get_coords_from_paths()?;
     let to = intersection_with_parallel_line(
-        &[intersect_path.from, intersect_path.to],
+        &[intersect_path.from.into(), intersect_path.to.into()],
         data.offset.unwrap_or_default(),
         data.angle,
-        from.into(),
+        from,
     );
 
     let line_to_data = if let Some(tag) = data.tag {
-        LineToData::PointWithTag { to, tag }
+        LineToData::PointWithTag { to: to.into(), tag }
     } else {
-        LineToData::Point(to)
+        LineToData::Point(to.into())
     };
 
     let new_sketch_group = inner_line_to(line_to_data, sketch_group, args)?;
@@ -766,7 +767,7 @@ pub fn arc(args: &mut Args) -> Result<MemoryItem, KclError> {
     name = "arc",
 }]
 fn inner_arc(data: ArcData, sketch_group: SketchGroup, args: &mut Args) -> Result<SketchGroup, KclError> {
-    let from = sketch_group.get_coords_from_paths()?;
+    let from: Point2d = sketch_group.get_coords_from_paths()?;
 
     let (center, angle_start, angle_end, radius, end) = match &data {
         ArcData::AnglesAndRadiusWithTag {
@@ -775,23 +776,27 @@ fn inner_arc(data: ArcData, sketch_group: SketchGroup, args: &mut Args) -> Resul
             radius,
             ..
         } => {
-            let (center, end) = arc_center_and_end(&from, *angle_start, *angle_end, *radius);
-            (center, *angle_start, *angle_end, *radius, end)
+            let a_start = Angle::from_degrees(*angle_start);
+            let a_end = Angle::from_degrees(*angle_end);
+            let (center, end) = arc_center_and_end(from, a_start, a_end, *radius);
+            (center, a_start, a_end, *radius, end)
         }
         ArcData::AnglesAndRadius {
             angle_start,
             angle_end,
             radius,
         } => {
-            let (center, end) = arc_center_and_end(&from, *angle_start, *angle_end, *radius);
-            (center, *angle_start, *angle_end, *radius, end)
+            let a_start = Angle::from_degrees(*angle_start);
+            let a_end = Angle::from_degrees(*angle_end);
+            let (center, end) = arc_center_and_end(from, a_start, a_end, *radius);
+            (center, a_start, a_end, *radius, end)
         }
         ArcData::CenterToRadiusWithTag { center, to, radius, .. } => {
-            let (angle_start, angle_end) = arc_angles(&from, &center.into(), &to.into(), *radius, args.source_range)?;
+            let (angle_start, angle_end) = arc_angles(from, center.into(), to.into(), *radius, args.source_range)?;
             (center.into(), angle_start, angle_end, *radius, to.into())
         }
         ArcData::CenterToRadius { center, to, radius } => {
-            let (angle_start, angle_end) = arc_angles(&from, &center.into(), &to.into(), *radius, args.source_range)?;
+            let (angle_start, angle_end) = arc_angles(from, center.into(), to.into(), *radius, args.source_range)?;
             (center.into(), angle_start, angle_end, *radius, to.into())
         }
     };
@@ -803,8 +808,8 @@ fn inner_arc(data: ArcData, sketch_group: SketchGroup, args: &mut Args) -> Resul
         ModelingCmd::ExtendPath {
             path: sketch_group.id,
             segment: kittycad::types::PathSegment::Arc {
-                angle_start,
-                angle_end,
+                angle_start: angle_start.degrees(),
+                angle_end: angle_end.degrees(),
                 center: center.into(),
                 radius,
             },

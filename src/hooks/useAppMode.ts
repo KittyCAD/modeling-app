@@ -11,8 +11,9 @@ import { isOverlap } from 'lib/utils'
 
 interface DefaultPlanes {
   xy: string
-  yz: string
-  xz: string
+  // TODO re-enable
+  // yz: string
+  // xz: string
 }
 
 export function useAppMode() {
@@ -36,40 +37,67 @@ export function useAppMode() {
       guiMode.sketchMode === 'selectFace' &&
       engineCommandManager
     ) {
-      if (!defaultPlanes) {
-        const xy = createPlane(engineCommandManager, {
-          x_axis: { x: 1, y: 0, z: 0 },
-          y_axis: { x: 0, y: 1, z: 0 },
-          color: { r: 0.7, g: 0.28, b: 0.28, a: 0.4 },
-        })
-        const yz = createPlane(engineCommandManager, {
-          x_axis: { x: 0, y: 1, z: 0 },
-          y_axis: { x: 0, y: 0, z: 1 },
-          color: { r: 0.28, g: 0.7, b: 0.28, a: 0.4 },
-        })
-        const xz = createPlane(engineCommandManager, {
-          x_axis: { x: 1, y: 0, z: 0 },
-          y_axis: { x: 0, y: 0, z: 1 },
-          color: { r: 0.28, g: 0.28, b: 0.7, a: 0.4 },
-        })
-        setDefaultPlanes({ xy, yz, xz })
-      } else {
-        hideDefaultPlanes(engineCommandManager, defaultPlanes)
+      const createAndShowPlanes = async () => {
+        let localDefaultPlanes: DefaultPlanes
+        if (!defaultPlanes) {
+          localDefaultPlanes = await initDefaultPlanes(engineCommandManager)
+          setDefaultPlanes(localDefaultPlanes)
+        } else {
+          localDefaultPlanes = defaultPlanes
+        }
+        setDefaultPlanesHidden(engineCommandManager, localDefaultPlanes, false)
       }
+      createAndShowPlanes()
     }
-    if (guiMode.mode !== 'sketch' && defaultPlanes) {
-      Object.values(defaultPlanes).forEach((planeId) => {
-        engineCommandManager?.sendSceneCommand({
+    if (
+      guiMode.mode === 'sketch' &&
+      guiMode.sketchMode === 'enterSketchEdit' &&
+      engineCommandManager
+    ) {
+      const enableSketchMode = async () => {
+        let localDefaultPlanes: DefaultPlanes
+        if (!defaultPlanes) {
+          localDefaultPlanes = await initDefaultPlanes(engineCommandManager)
+          setDefaultPlanes(localDefaultPlanes)
+        } else {
+          localDefaultPlanes = defaultPlanes
+        }
+        setDefaultPlanesHidden(engineCommandManager, localDefaultPlanes, true)
+        // TODO figure out the plane to use based on the sketch
+        // maybe it's easier to make a new plane than rely on the defaults
+        await engineCommandManager?.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
-            type: 'object_visible',
-            object_id: planeId,
-            hidden: true,
+            type: 'sketch_mode_enable',
+            plane_id: localDefaultPlanes.xy,
+            ortho: true,
+            animated: !isReducedMotion(),
           },
         })
+        const proms: any[] = []
+        proms.push(
+          engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'edit_mode_enter',
+              target: guiMode.pathId,
+            },
+          })
+        )
+        await Promise.all(proms)
+      }
+      enableSketchMode()
+      setGuiMode({
+        ...guiMode,
+        sketchMode: 'sketchEdit',
       })
-    } else if (guiMode.mode === 'default') {
+    }
+    if (guiMode.mode !== 'sketch' && defaultPlanes) {
+      setDefaultPlanesHidden(engineCommandManager, defaultPlanes, true)
+    }
+    if (guiMode.mode === 'default') {
       const pathId =
         engineCommandManager &&
         isCursorInSketchCommandRange(
@@ -128,7 +156,7 @@ export function useAppMode() {
             },
           }
         )
-        hideDefaultPlanes(engineCommandManager, defaultPlanes)
+        setDefaultPlanesHidden(engineCommandManager, defaultPlanes, true)
         const sketchUuid = uuidv4()
         const proms: any[] = []
         proms.push(
@@ -158,6 +186,7 @@ export function useAppMode() {
           rotation: [0, 0, 0, 1],
           position: [0, 0, 0],
           pathToNode: [],
+          pathId: sketchUuid,
         })
 
         console.log('sketchModeResponse', sketchModeResponse)
@@ -167,7 +196,7 @@ export function useAppMode() {
   }, [engineCommandManager, defaultPlanes])
 }
 
-function createPlane(
+async function createPlane(
   engineCommandManager: EngineCommandManager,
   {
     x_axis,
@@ -180,7 +209,7 @@ function createPlane(
   }
 ) {
   const planeId = uuidv4()
-  engineCommandManager?.sendSceneCommand({
+  await engineCommandManager?.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd: {
       type: 'make_plane',
@@ -192,7 +221,7 @@ function createPlane(
     },
     cmd_id: planeId,
   })
-  engineCommandManager?.sendSceneCommand({
+  await engineCommandManager?.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd: {
       type: 'plane_set_color',
@@ -204,9 +233,10 @@ function createPlane(
   return planeId
 }
 
-function hideDefaultPlanes(
-  engineCommandManager: EngineCommandManager,
-  defaultPlanes: DefaultPlanes
+function setDefaultPlanesHidden(
+  engineCommandManager: EngineCommandManager | undefined,
+  defaultPlanes: DefaultPlanes,
+  hidden: boolean
 ) {
   Object.values(defaultPlanes).forEach((planeId) => {
     engineCommandManager?.sendSceneCommand({
@@ -215,10 +245,32 @@ function hideDefaultPlanes(
       cmd: {
         type: 'object_visible',
         object_id: planeId,
-        hidden: true,
+        hidden: hidden,
       },
     })
   })
+}
+
+async function initDefaultPlanes(
+  engineCommandManager: EngineCommandManager
+): Promise<DefaultPlanes> {
+  const xy = await createPlane(engineCommandManager, {
+    x_axis: { x: 1, y: 0, z: 0 },
+    y_axis: { x: 0, y: 1, z: 0 },
+    color: { r: 0.7, g: 0.28, b: 0.28, a: 0.4 },
+  })
+  // TODO re-enable
+  // const yz = createPlane(engineCommandManager, {
+  //   x_axis: { x: 0, y: 1, z: 0 },
+  //   y_axis: { x: 0, y: 0, z: 1 },
+  //   color: { r: 0.28, g: 0.7, b: 0.28, a: 0.4 },
+  // })
+  // const xz = createPlane(engineCommandManager, {
+  //   x_axis: { x: 1, y: 0, z: 0 },
+  //   y_axis: { x: 0, y: 0, z: 1 },
+  //   color: { r: 0.28, g: 0.28, b: 0.7, a: 0.4 },
+  // })
+  return { xy }
 }
 
 function isCursorInSketchCommandRange(
@@ -229,15 +281,17 @@ function isCursorInSketchCommandRange(
     ([id, artifact]) =>
       selectionRanges.codeBasedSelections.some(
         (selection) =>
-          Array.isArray(selection.range) &&
-          Array.isArray(artifact.range) &&
+          Array.isArray(selection?.range) &&
+          Array.isArray(artifact?.range) &&
           isOverlap(selection.range, artifact.range) &&
           (artifact.commandType === 'start_path' ||
             artifact.commandType === 'extend_path' ||
-            'close_path')
+            artifact.commandType === 'close_path')
       )
   )
-  return overlapingEntries.length === 1 && overlapingEntries[0][1].parentId
+  return overlapingEntries.length && overlapingEntries[0][1].parentId
     ? overlapingEntries[0][1].parentId
-    : false
+    : overlapingEntries.find(
+        ([, artifact]) => artifact.commandType === 'start_path'
+      )?.[0] || false
 }

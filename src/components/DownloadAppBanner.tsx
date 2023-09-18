@@ -40,12 +40,12 @@ const DownloadAppBanner = () => {
           </code>
           , and isn't backed up anywhere! Visit{' '}
           <a
-            href="https://github.com/KittyCAD/modeling-app/releases"
+            href="https://kittycad.io/modeling-app/download"
             rel="noopener noreferrer"
             target="_blank"
             className="text-warn-80 dark:text-warn-80 dark:hover:text-warn-70 underline"
           >
-            our GitHub repository
+            our website
           </a>{' '}
           to download the app for the best experience.
         </p>

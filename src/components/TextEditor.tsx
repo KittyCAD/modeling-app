@@ -50,7 +50,7 @@ export const TextEditor = ({
   const pathParams = useParams()
   const {
     code,
-    defferedSetCode,
+    deferredSetCode,
     editorView,
     engineCommandManager,
     formatCode,
@@ -60,10 +60,9 @@ export const TextEditor = ({
     setEditorView,
     setIsLSPServerReady,
     setSelectionRanges,
-    sourceRangeMap,
   } = useStore((s) => ({
     code: s.code,
-    defferedSetCode: s.defferedSetCode,
+    deferredSetCode: s.deferredSetCode,
     editorView: s.editorView,
     engineCommandManager: s.engineCommandManager,
     formatCode: s.formatCode,
@@ -73,7 +72,6 @@ export const TextEditor = ({
     setEditorView: s.setEditorView,
     setIsLSPServerReady: s.setIsLSPServerReady,
     setSelectionRanges: s.setSelectionRanges,
-    sourceRangeMap: s.sourceRangeMap,
   }))
 
   const {
@@ -126,7 +124,7 @@ export const TextEditor = ({
 
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
-    defferedSetCode(value)
+    deferredSetCode(value)
     if (isTauri() && pathParams.id) {
       // Save the file to disk
       // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
@@ -174,11 +172,11 @@ export const TextEditor = ({
     )
     const idBasedSelections = codeBasedSelections
       .map(({ type, range }) => {
-        const hasOverlap = Object.entries(sourceRangeMap).filter(
-          ([_, sourceRange]) => {
-            return isOverlap(sourceRange, range)
-          }
-        )
+        const hasOverlap = Object.entries(
+          engineCommandManager?.sourceRangeMap || {}
+        ).filter(([_, sourceRange]) => {
+          return isOverlap(sourceRange, range)
+        })
         if (hasOverlap.length) {
           return {
             type,

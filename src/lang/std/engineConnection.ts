@@ -15,9 +15,13 @@ interface CommandInfo {
   range: SourceRange
   parentId?: string
 }
+
+type WebSocketResponse = Models['OkWebSocketResponseData_type']
+
 interface ResultCommand extends CommandInfo {
   type: 'result'
   data: any
+  raw: WebSocketResponse
 }
 interface PendingCommand extends CommandInfo {
   type: 'pending'
@@ -36,8 +40,6 @@ interface NewTrackArgs {
   conn: EngineConnection
   mediaStream: MediaStream
 }
-
-type WebSocketResponse = Models['OkWebSocketResponseData_type']
 
 type ClientMetrics = Models['ClientMetrics_type']
 
@@ -395,8 +397,6 @@ export class EngineConnection {
 
           let videoTrack = mediaStream.getVideoTracks()[0]
           this.pc?.getStats(videoTrack).then((videoTrackStats) => {
-            // TODO(paultag): this needs type information from the KittyCAD typescript
-            // library once it's updated
             let client_metrics: ClientMetrics = {
               rtc_frames_decoded: 0,
               rtc_frames_dropped: 0,
@@ -424,12 +424,13 @@ export class EngineConnection {
                   videoTrackReport.framesReceived
                 client_metrics.rtc_frames_per_second =
                   videoTrackReport.framesPerSecond || 0
-                client_metrics.rtc_freeze_count = videoTrackReport.freezeCount
+                client_metrics.rtc_freeze_count =
+                  videoTrackReport.freezeCount || 0
                 client_metrics.rtc_jitter_sec = videoTrackReport.jitter
                 client_metrics.rtc_keyframes_decoded =
                   videoTrackReport.keyFramesDecoded
                 client_metrics.rtc_total_freezes_duration_sec =
-                  videoTrackReport.totalFreezesDuration
+                  videoTrackReport.totalFreezesDuration || 0
               } else if (videoTrackReport.type === 'transport') {
                 // videoTrackReport.bytesReceived,
                 // videoTrackReport.bytesSent,
@@ -474,6 +475,13 @@ export class EngineConnection {
     })
 
     this.onConnectionStarted(this)
+  }
+  unreliableSend(message: object | string) {
+    // TODO(paultag): Add in logic to determine the connection state and
+    // take actions if needed?
+    this.unreliableDataChannel?.send(
+      typeof message === 'string' ? message : JSON.stringify(message)
+    )
   }
   send(message: object | string) {
     // TODO(paultag): Add in logic to determine the connection state and
@@ -646,12 +654,14 @@ export class EngineCommandManager {
         commandType: command.commandType,
         parentId: command.parentId ? command.parentId : undefined,
         data: modelingResponse,
+        raw: message,
       }
       resolve({
         id,
         commandType: command.commandType,
         range: command.range,
         data: modelingResponse,
+        raw: message,
       })
     } else {
       this.artifactMap[id] = {
@@ -659,6 +669,7 @@ export class EngineCommandManager {
         commandType: command?.commandType,
         range: command?.range,
         data: modelingResponse,
+        raw: message,
       }
     }
   }
@@ -778,9 +789,7 @@ export class EngineCommandManager {
     ) {
       cmd.sequence = this.outSequence
       this.outSequence++
-      this.engineConnection?.unreliableDataChannel?.send(
-        JSON.stringify(command)
-      )
+      this.engineConnection?.unreliableSend(command)
       return Promise.resolve()
     } else if (
       cmd.type === 'highlight_set_entity' &&
@@ -788,9 +797,7 @@ export class EngineCommandManager {
     ) {
       cmd.sequence = this.outSequence
       this.outSequence++
-      this.engineConnection?.unreliableDataChannel?.send(
-        JSON.stringify(command)
-      )
+      this.engineConnection?.unreliableSend(command)
       return Promise.resolve()
     } else if (
       cmd.type === 'mouse_move' &&
@@ -798,9 +805,7 @@ export class EngineCommandManager {
     ) {
       cmd.sequence = this.outSequence
       this.outSequence++
-      this.engineConnection?.unreliableDataChannel?.send(
-        JSON.stringify(command)
-      )
+      this.engineConnection?.unreliableSend(command)
       return Promise.resolve()
     }
     // since it's not mouse drag or highlighting send over TCP and keep track of the command
@@ -873,7 +878,10 @@ export class EngineCommandManager {
     }
     const range: SourceRange = JSON.parse(rangeStr)
 
-    return this.sendModelingCommand({ id, range, command: commandStr })
+    // We only care about the modeling command response.
+    return this.sendModelingCommand({ id, range, command: commandStr }).then(
+      ({ raw }) => JSON.stringify(raw)
+    )
   }
   commandResult(id: string): Promise<any> {
     const command = this.artifactMap[id]
@@ -908,14 +916,14 @@ export class EngineCommandManager {
   }
   private async fixIdMappings(ast: Program, programMemory: ProgramMemory) {
     /* This is a temporary solution since the cmd_ids that are sent through when
-    sending 'extend_path' ids are not used as the segment ids. 
+    sending 'extend_path' ids are not used as the segment ids.
 
     We have a way to back fill them with 'path_get_info', however this relies on one
     the sketchGroup array and the segements array returned from the server to be in
     the same length and order. plus it's super hacky, we first use the path_id to get
     the source range of the pipe expression then use the name of the variable to get
     the sketchGroup from programMemory.
-    
+
     I feel queezy about relying on all these steps to always line up.
     We have also had to pollute this EngineCommandManager class with knowledge of both the ast and programMemory
     We should get the cmd_ids to match with the segment ids and delete this method.
@@ -943,7 +951,6 @@ export class EngineCommandManager {
     pathInfos.forEach(({ originalId, segments }) => {
       const originalArtifact = this.artifactMap[originalId]
       if (!originalArtifact || originalArtifact.type === 'pending') {
-        console.log('problem')
         return
       }
       const pipeExpPath = getNodePathFromSourceRange(
@@ -956,23 +963,20 @@ export class EngineCommandManager {
         'VariableDeclarator'
       ).node
       if (pipeExp.type !== 'VariableDeclarator') {
-        console.log('problem', pipeExp, pipeExpPath, ast)
         return
       }
       const variableName = pipeExp.id.name
       const memoryItem = programMemory.root[variableName]
       if (!memoryItem) {
-        console.log('problem', variableName, programMemory)
         return
       } else if (memoryItem.type !== 'SketchGroup') {
-        console.log('problem', memoryItem, programMemory)
         return
       }
+
       const relevantSegments = segments.filter(
         ({ command_id }: { command_id: string | null }) => command_id
       )
       if (memoryItem.value.length !== relevantSegments.length) {
-        console.log('problem', memoryItem.value, relevantSegments)
         return
       }
       for (let i = 0; i < relevantSegments.length; i++) {
@@ -982,8 +986,10 @@ export class EngineCommandManager {
         const artifact = this.artifactMap[oldId]
         delete this.artifactMap[oldId]
         delete this.sourceRangeMap[oldId]
-        this.artifactMap[engineSegment.command_id] = artifact
-        this.sourceRangeMap[engineSegment.command_id] = artifact.range
+        if (artifact) {
+          this.artifactMap[engineSegment.command_id] = artifact
+          this.sourceRangeMap[engineSegment.command_id] = artifact.range
+        }
       }
     })
   }

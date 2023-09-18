@@ -9,7 +9,7 @@ import {
   getConstraintLevelFromSourceRange,
 } from './sketchcombos'
 import { initPromise } from '../rust'
-import { Selections, TooTip } from '../../useStore'
+import { Selections, ToolTip } from '../../useStore'
 import { enginelessExecutor } from '../../lib/testHelpers'
 import { recast } from '../../lang/recast'
 
@@ -68,7 +68,7 @@ function getConstraintTypeFromSourceHelper(
     Value,
     Value
   ]
-  const fnName = (ast.body[0] as any).expression.callee.name as TooTip
+  const fnName = (ast.body[0] as any).expression.callee.name as ToolTip
   return getConstraintType(args, fnName)
 }
 function getConstraintTypeFromSourceHelper2(
@@ -76,7 +76,7 @@ function getConstraintTypeFromSourceHelper2(
 ): ReturnType<typeof getConstraintType> {
   const ast = parser_wasm(code)
   const arg = (ast.body[0] as any).expression.arguments[0] as Value
-  const fnName = (ast.body[0] as any).expression.callee.name as TooTip
+  const fnName = (ast.body[0] as any).expression.callee.name as ToolTip
   return getConstraintType(arg, fnName)
 }
 

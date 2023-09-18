@@ -1,11 +1,15 @@
 import { Menu } from '@headlessui/react'
 import { PropsWithChildren } from 'react'
-import { faEllipsis } from '@fortawesome/free-solid-svg-icons'
+import {
+  faArrowUpRightFromSquare,
+  faEllipsis,
+} from '@fortawesome/free-solid-svg-icons'
 import { ActionIcon } from './ActionIcon'
 import { useStore } from 'useStore'
 import styles from './CodeMenu.module.css'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
 import { editorShortcutMeta } from './TextEditor'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 export const CodeMenu = ({ children }: PropsWithChildren) => {
   const { formatCode } = useStore((s) => ({
@@ -52,6 +56,24 @@ export const CodeMenu = ({ children }: PropsWithChildren) => {
               </button>
             </Menu.Item>
           )}
+          <Menu.Item>
+            <a
+              className={styles.button}
+              href="https://github.com/KittyCAD/modeling-app/blob/main/docs/kcl/std.md"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span>Read the KCL docs</span>
+              <small>
+                On GitHub
+                <FontAwesomeIcon
+                  icon={faArrowUpRightFromSquare}
+                  className="ml-1 align-text-top"
+                  width={12}
+                />
+              </small>
+            </a>
+          </Menu.Item>
         </Menu.Items>
       </div>
     </Menu>

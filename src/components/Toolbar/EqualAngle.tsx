@@ -12,6 +12,8 @@ import {
   getTransformInfos,
 } from '../../lang/std/sketchcombos'
 import { updateCursors } from '../../lang/util'
+import { ActionIcon } from 'components/ActionIcon'
+import { sketchButtonClassnames } from 'Toolbar'
 
 export const EqualAngle = () => {
   const { guiMode, selectionRanges, ast, programMemory, updateAst, setCursor } =
@@ -82,14 +84,22 @@ export const EqualAngle = () => {
             transformInfos,
             programMemory,
           })
-        updateAst(modifiedAst, {
+        updateAst(modifiedAst, true, {
           callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
         })
       }}
       disabled={!enableEqual}
-      title="yo dawg"
+      title="Parallel (or equal angle)"
+      className="group"
     >
-      parallel
+      <ActionIcon
+        icon="parallel"
+        className="!p-0.5"
+        bgClassName={sketchButtonClassnames.background}
+        iconClassName={sketchButtonClassnames.icon}
+        size="md"
+      />
+      Parallel
     </button>
   )
 }
