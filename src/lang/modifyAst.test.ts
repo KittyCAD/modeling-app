@@ -106,7 +106,7 @@ describe('Testing addSketchTo', () => {
         body: [],
         start: 0,
         end: 0,
-        nonCodeMeta: { noneCodeNodes: {}, start: null },
+        nonCodeMeta: { nonCodeNodes: {}, start: null },
       },
       'yz'
     )

@@ -23,7 +23,7 @@ pub struct Program {
     pub start: usize,
     pub end: usize,
     pub body: Vec<BodyItem>,
-    pub non_code_meta: NoneCodeMeta,
+    pub non_code_meta: NonCodeMeta,
 }
 
 impl Program {
@@ -81,7 +81,7 @@ impl Program {
                     "\n".to_string()
                 };
 
-                let custom_white_space_or_comment = match self.non_code_meta.none_code_nodes.get(&index) {
+                let custom_white_space_or_comment = match self.non_code_meta.non_code_nodes.get(&index) {
                     Some(custom_white_space_or_comment) => custom_white_space_or_comment.format(&indentation),
                     None => String::new(),
                 };
@@ -640,26 +640,26 @@ impl BinaryPart {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
-pub struct NoneCodeNode {
+pub struct NonCodeNode {
     pub start: usize,
     pub end: usize,
-    pub value: NoneCodeValue,
+    pub value: NonCodeValue,
 }
 
-impl NoneCodeNode {
+impl NonCodeNode {
     pub fn value(&self) -> String {
         match &self.value {
-            NoneCodeValue::InlineComment { value } => value.clone(),
-            NoneCodeValue::BlockComment { value } => value.clone(),
-            NoneCodeValue::NewLineBlockComment { value } => value.clone(),
-            NoneCodeValue::NewLine => "\n\n".to_string(),
+            NonCodeValue::InlineComment { value } => value.clone(),
+            NonCodeValue::BlockComment { value } => value.clone(),
+            NonCodeValue::NewLineBlockComment { value } => value.clone(),
+            NonCodeValue::NewLine => "\n\n".to_string(),
         }
     }
 
     pub fn format(&self, indentation: &str) -> String {
         match &self.value {
-            NoneCodeValue::InlineComment { value } => format!(" // {}\n", value),
-            NoneCodeValue::BlockComment { value } => {
+            NonCodeValue::InlineComment { value } => format!(" // {}\n", value),
+            NonCodeValue::BlockComment { value } => {
                 let add_start_new_line = if self.start == 0 { "" } else { "\n" };
                 if value.contains('\n') {
                     format!("{}{}/* {} */\n", add_start_new_line, indentation, value)
@@ -667,7 +667,7 @@ impl NoneCodeNode {
                     format!("{}{}// {}\n", add_start_new_line, indentation, value)
                 }
             }
-            NoneCodeValue::NewLineBlockComment { value } => {
+            NonCodeValue::NewLineBlockComment { value } => {
                 let add_start_new_line = if self.start == 0 { "" } else { "\n\n" };
                 if value.contains('\n') {
                     format!("{}{}/* {} */\n", add_start_new_line, indentation, value)
@@ -675,7 +675,7 @@ impl NoneCodeNode {
                     format!("{}{}// {}\n", add_start_new_line, indentation, value)
                 }
             }
-            NoneCodeValue::NewLine => "\n\n".to_string(),
+            NonCodeValue::NewLine => "\n\n".to_string(),
         }
     }
 }
@@ -683,7 +683,7 @@ impl NoneCodeNode {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
-pub enum NoneCodeValue {
+pub enum NonCodeValue {
     /// An inline comment.
     /// An example of this is the following: `1 + 1 // This is an inline comment`.
     InlineComment {
@@ -715,32 +715,32 @@ pub enum NoneCodeValue {
 #[derive(Debug, Default, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
-pub struct NoneCodeMeta {
-    pub none_code_nodes: HashMap<usize, NoneCodeNode>,
-    pub start: Option<NoneCodeNode>,
+pub struct NonCodeMeta {
+    pub non_code_nodes: HashMap<usize, NonCodeNode>,
+    pub start: Option<NonCodeNode>,
 }
 
-// implement Deserialize manually because we to force the keys of none_code_nodes to be usize
-// and by default the ts type { [statementIndex: number]: NoneCodeNode } serializes to a string i.e. "0", "1", etc.
-impl<'de> Deserialize<'de> for NoneCodeMeta {
-    fn deserialize<D>(deserializer: D) -> Result<NoneCodeMeta, D::Error>
+// implement Deserialize manually because we to force the keys of non_code_nodes to be usize
+// and by default the ts type { [statementIndex: number]: NonCodeNode } serializes to a string i.e. "0", "1", etc.
+impl<'de> Deserialize<'de> for NonCodeMeta {
+    fn deserialize<D>(deserializer: D) -> Result<NonCodeMeta, D::Error>
     where
         D: serde::Deserializer<'de>,
     {
         #[derive(Deserialize)]
         #[serde(rename_all = "camelCase")]
-        struct NoneCodeMetaHelper {
-            none_code_nodes: HashMap<String, NoneCodeNode>,
-            start: Option<NoneCodeNode>,
+        struct NonCodeMetaHelper {
+            non_code_nodes: HashMap<String, NonCodeNode>,
+            start: Option<NonCodeNode>,
         }
 
-        let helper = NoneCodeMetaHelper::deserialize(deserializer)?;
-        let mut none_code_nodes = HashMap::new();
-        for (key, value) in helper.none_code_nodes {
-            none_code_nodes.insert(key.parse().map_err(serde::de::Error::custom)?, value);
+        let helper = NonCodeMetaHelper::deserialize(deserializer)?;
+        let mut non_code_nodes = HashMap::new();
+        for (key, value) in helper.non_code_nodes {
+            non_code_nodes.insert(key.parse().map_err(serde::de::Error::custom)?, value);
         }
-        Ok(NoneCodeMeta {
-            none_code_nodes,
+        Ok(NonCodeMeta {
+            non_code_nodes,
             start: helper.start,
         })
     }
@@ -2231,7 +2231,7 @@ pub struct PipeExpression {
     pub start: usize,
     pub end: usize,
     pub body: Vec<Value>,
-    pub non_code_meta: NoneCodeMeta,
+    pub non_code_meta: NonCodeMeta,
 }
 
 impl_value_meta!(PipeExpression);
@@ -2276,7 +2276,7 @@ impl PipeExpression {
                 let indentation = options.get_indentation(indentation_level + 1);
                 let mut s = statement.recast(options, indentation_level + 1, true);
                 let non_code_meta = self.non_code_meta.clone();
-                if let Some(non_code_meta_value) = non_code_meta.none_code_nodes.get(&index) {
+                if let Some(non_code_meta_value) = non_code_meta.non_code_nodes.get(&index) {
                     s += non_code_meta_value.format(&indentation).trim_end_matches('\n')
                 }
 
@@ -2673,7 +2673,7 @@ show(part001)"#;
 
     #[test]
     fn test_recast_with_std_and_non_stdlib() {
-        let some_program_string = r#"{"body":[{"type":"VariableDeclaration","start":0,"end":0,"declarations":[{"type":"VariableDeclarator","start":0,"end":0,"id":{"type":"Identifier","start":0,"end":0,"name":"part001"},"init":{"type":"PipeExpression","start":0,"end":0,"body":[{"type":"CallExpression","start":0,"end":0,"callee":{"type":"Identifier","start":0,"end":0,"name":"startSketchAt"},"function":{"type":"StdLib","func":{"name":"startSketchAt","summary":"","description":"","tags":[],"returnValue":{"type":"","required":false,"name":"","schema":{}},"args":[],"unpublished":false,"deprecated":false}},"optional":false,"arguments":[{"type":"Literal","start":0,"end":0,"value":"default","raw":"default"}]},{"type":"CallExpression","start":0,"end":0,"callee":{"type":"Identifier","start":0,"end":0,"name":"ry"},"function":{"type":"InMemory"},"optional":false,"arguments":[{"type":"Literal","start":0,"end":0,"value":90,"raw":"90"},{"type":"PipeSubstitution","start":0,"end":0}]},{"type":"CallExpression","start":0,"end":0,"callee":{"type":"Identifier","start":0,"end":0,"name":"line"},"function":{"type":"StdLib","func":{"name":"line","summary":"","description":"","tags":[],"returnValue":{"type":"","required":false,"name":"","schema":{}},"args":[],"unpublished":false,"deprecated":false}},"optional":false,"arguments":[{"type":"Literal","start":0,"end":0,"value":"default","raw":"default"},{"type":"PipeSubstitution","start":0,"end":0}]}],"nonCodeMeta":{"noneCodeNodes":{},"start":null}}}],"kind":"const"},{"type":"ExpressionStatement","start":0,"end":0,"expression":{"type":"CallExpression","start":0,"end":0,"callee":{"type":"Identifier","start":0,"end":0,"name":"show"},"function":{"type":"StdLib","func":{"name":"show","summary":"","description":"","tags":[],"returnValue":{"type":"","required":false,"name":"","schema":{}},"args":[],"unpublished":false,"deprecated":false}},"optional":false,"arguments":[{"type":"Identifier","start":0,"end":0,"name":"part001"}]}}],"start":0,"end":0,"nonCodeMeta":{"noneCodeNodes":{},"start":null}}"#;
+        let some_program_string = r#"{"body":[{"type":"VariableDeclaration","start":0,"end":0,"declarations":[{"type":"VariableDeclarator","start":0,"end":0,"id":{"type":"Identifier","start":0,"end":0,"name":"part001"},"init":{"type":"PipeExpression","start":0,"end":0,"body":[{"type":"CallExpression","start":0,"end":0,"callee":{"type":"Identifier","start":0,"end":0,"name":"startSketchAt"},"function":{"type":"StdLib","func":{"name":"startSketchAt","summary":"","description":"","tags":[],"returnValue":{"type":"","required":false,"name":"","schema":{}},"args":[],"unpublished":false,"deprecated":false}},"optional":false,"arguments":[{"type":"Literal","start":0,"end":0,"value":"default","raw":"default"}]},{"type":"CallExpression","start":0,"end":0,"callee":{"type":"Identifier","start":0,"end":0,"name":"ry"},"function":{"type":"InMemory"},"optional":false,"arguments":[{"type":"Literal","start":0,"end":0,"value":90,"raw":"90"},{"type":"PipeSubstitution","start":0,"end":0}]},{"type":"CallExpression","start":0,"end":0,"callee":{"type":"Identifier","start":0,"end":0,"name":"line"},"function":{"type":"StdLib","func":{"name":"line","summary":"","description":"","tags":[],"returnValue":{"type":"","required":false,"name":"","schema":{}},"args":[],"unpublished":false,"deprecated":false}},"optional":false,"arguments":[{"type":"Literal","start":0,"end":0,"value":"default","raw":"default"},{"type":"PipeSubstitution","start":0,"end":0}]}],"nonCodeMeta":{"nonCodeNodes":{},"start":null}}}],"kind":"const"},{"type":"ExpressionStatement","start":0,"end":0,"expression":{"type":"CallExpression","start":0,"end":0,"callee":{"type":"Identifier","start":0,"end":0,"name":"show"},"function":{"type":"StdLib","func":{"name":"show","summary":"","description":"","tags":[],"returnValue":{"type":"","required":false,"name":"","schema":{}},"args":[],"unpublished":false,"deprecated":false}},"optional":false,"arguments":[{"type":"Identifier","start":0,"end":0,"name":"part001"}]}}],"start":0,"end":0,"nonCodeMeta":{"nonCodeNodes":{},"start":null}}"#;
         let some_program: crate::ast::types::Program = serde_json::from_str(some_program_string).unwrap();
 
         let recasted = some_program.recast(&Default::default(), 0);
@@ -2889,7 +2889,7 @@ const things = "things"
         let some_program_string = r#"let b = {
   "end": 141,
   "start": 125,
-  "type": "NoneCodeNode",
+  "type": "NonCodeNode",
   "value": "
  // a comment
    "
