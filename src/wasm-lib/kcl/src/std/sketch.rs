@@ -549,7 +549,7 @@ fn inner_angled_line_to_y(
 // TODO: make sure the docs on the args below are correct.
 pub struct AngeledLineThatIntersectsData {
     /// The angle of the line.
-    pub angle: f64,
+    pub angle: Angle,
     /// The tag of the line to intersect with.
     pub intersect_tag: String,
     /// The offset from the intersecting line.

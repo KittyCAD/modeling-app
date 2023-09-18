@@ -128,10 +128,10 @@ pub fn distance_between_points(point_a: Point2d, point_b: Point2d) -> f64 {
     ((y2 - y1).powi(2) + (x2 - x1).powi(2)).sqrt()
 }
 
-pub fn calculate_intersection_of_two_lines(line1: &[Point2d; 2], line2_angle: f64, line2_point: Point2d) -> Point2d {
+pub fn calculate_intersection_of_two_lines(line1: &[Point2d; 2], line2_angle: Angle, line2_point: Point2d) -> Point2d {
     let line2_point_b = Point2d {
-        x: line2_point.x + f64::cos(line2_angle.to_radians()) * 10.0,
-        y: line2_point.y + f64::sin(line2_angle.to_radians()) * 10.0,
+        x: line2_point.x + f64::cos(line2_angle.radians()) * 10.0,
+        y: line2_point.y + f64::sin(line2_angle.radians()) * 10.0,
     };
     intersect(line1[0], line1[1], line2_point, line2_point_b)
 }
@@ -162,7 +162,7 @@ pub fn intersect(p1: Point2d, p2: Point2d, p3: Point2d, p4: Point2d) -> Point2d 
 pub fn intersection_with_parallel_line(
     line1: &[Point2d; 2],
     line1_offset: f64,
-    line2_angle: f64,
+    line2_angle: Angle,
     line2_point: Point2d,
 ) -> Point2d {
     calculate_intersection_of_two_lines(&offset_line(line1_offset, line1[0], line1[1]), line2_angle, line2_point)

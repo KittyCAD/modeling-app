@@ -155,7 +155,7 @@ pub fn segment_angle(args: &mut Args) -> Result<MemoryItem, KclError> {
     let (segment_name, sketch_group) = args.get_segment_name_sketch_group()?;
 
     let result = inner_segment_angle(&segment_name, sketch_group, args)?;
-    let j = serde_json::to_value(&result).map_err(|e| {
+    let j = serde_json::to_value(result).map_err(|e| {
         KclError::Type(KclErrorDetails {
             message: format!("Could not serialize KCL value {result:?}: {e}"),
             source_ranges: vec![args.source_range],
