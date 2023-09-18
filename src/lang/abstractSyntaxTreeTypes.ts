@@ -33,5 +33,5 @@ export type SyntaxType =
   | 'PipeExpression'
   | 'PipeSubstitution'
   | 'Literal'
-  | 'NoneCodeNode'
+  | 'NonCodeNode'
   | 'UnaryExpression'
