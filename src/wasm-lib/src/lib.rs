@@ -18,8 +18,7 @@ pub async fn execute_wasm(
     manager: kcl_lib::engine::conn_wasm::EngineCommandManager,
 ) -> Result<JsValue, String> {
     // deserialize the ast from a stringified json
-    let program: kcl_lib::abstract_syntax_tree_types::Program =
-        serde_json::from_str(program_str).map_err(|e| e.to_string())?;
+    let program: kcl_lib::ast::types::Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
     let mut mem: kcl_lib::executor::ProgramMemory = serde_json::from_str(memory_str).map_err(|e| e.to_string())?;
 
     let mut engine = kcl_lib::engine::EngineConnection::new(manager)
@@ -31,6 +30,36 @@ pub async fn execute_wasm(
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
     JsValue::from_serde(&memory).map_err(|e| e.to_string())
+}
+
+// wasm_bindgen wrapper for execute
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen]
+pub async fn modify_ast_for_sketch(
+    manager: kcl_lib::engine::conn_wasm::EngineCommandManager,
+    program_str: &str,
+    sketch_name: &str,
+    sketch_id: &str,
+) -> Result<JsValue, String> {
+    // deserialize the ast from a stringified json
+    let mut program: kcl_lib::ast::types::Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
+
+    let mut engine = kcl_lib::engine::EngineConnection::new(manager)
+        .await
+        .map_err(|e| format!("{:?}", e))?;
+
+    let _ = kcl_lib::ast::modify::modify_ast_for_sketch(
+        &mut engine,
+        &mut program,
+        sketch_name,
+        uuid::Uuid::parse_str(sketch_id).map_err(|e| e.to_string())?,
+    )
+    .await
+    .map_err(String::from)?;
+
+    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
+    // gloo-serialize crate instead.
+    JsValue::from_serde(&program).map_err(|e| e.to_string())
 }
 
 #[wasm_bindgen]
@@ -73,8 +102,7 @@ pub fn parse_js(js: &str) -> Result<JsValue, String> {
 #[wasm_bindgen]
 pub fn recast_wasm(json_str: &str) -> Result<JsValue, JsError> {
     // deserialize the ast from a stringified json
-    let program: kcl_lib::abstract_syntax_tree_types::Program =
-        serde_json::from_str(json_str).map_err(JsError::from)?;
+    let program: kcl_lib::ast::types::Program = serde_json::from_str(json_str).map_err(JsError::from)?;
 
     // Use the default options until we integrate into the UI the ability to change them.
     let result = program.recast(&Default::default(), 0);

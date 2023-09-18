@@ -9,7 +9,10 @@ use futures::{SinkExt, StreamExt};
 use kittycad::types::{OkWebSocketResponseData, WebSocketRequest, WebSocketResponse};
 use tokio_tungstenite::tungstenite::Message as WsMsg;
 
-use crate::errors::{KclError, KclErrorDetails};
+use crate::{
+    engine::EngineManager,
+    errors::{KclError, KclErrorDetails},
+};
 
 #[derive(Debug)]
 pub struct EngineConnection {
@@ -70,7 +73,7 @@ impl EngineConnection {
                     }
                     Err(e) => {
                         println!("got ws error: {:?}", e);
-                        continue;
+                        return Err(e);
                     }
                 }
             }
@@ -89,10 +92,13 @@ impl EngineConnection {
 
         Ok(())
     }
+}
 
+#[async_trait::async_trait(?Send)]
+impl EngineManager for EngineConnection {
     /// Send a modeling command.
     /// Do not wait for the response message.
-    pub fn send_modeling_cmd(
+    fn send_modeling_cmd(
         &mut self,
         id: uuid::Uuid,
         source_range: crate::executor::SourceRange,
@@ -110,13 +116,20 @@ impl EngineConnection {
     }
 
     /// Send a modeling command and wait for the response message.
-    pub fn send_modeling_cmd_get_response(
+    async fn send_modeling_cmd_get_response(
         &mut self,
         id: uuid::Uuid,
         source_range: crate::executor::SourceRange,
         cmd: kittycad::types::ModelingCmd,
     ) -> Result<OkWebSocketResponseData, KclError> {
-        self.send_modeling_cmd(id, source_range, cmd)?;
+        self.tcp_send(WebSocketRequest::ModelingCmdReq { cmd, cmd_id: id })
+            .await
+            .map_err(|e| {
+                KclError::Engine(KclErrorDetails {
+                    message: format!("Failed to send modeling command: {}", e),
+                    source_ranges: vec![source_range],
+                })
+            })?;
 
         // Wait for the response.
         loop {

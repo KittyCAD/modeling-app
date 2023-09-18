@@ -15,8 +15,8 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    abstract_syntax_tree_types::parse_json_number_as_f64,
-    engine::EngineConnection,
+    ast::types::parse_json_number_as_f64,
+    engine::{EngineConnection, EngineManager},
     errors::{KclError, KclErrorDetails},
     executor::{ExtrudeGroup, MemoryItem, Metadata, SketchGroup, SourceRange},
 };
@@ -518,8 +518,9 @@ pub enum Primitive {
 
 #[cfg(test)]
 mod tests {
-    use crate::std::StdLib;
     use itertools::Itertools;
+
+    use crate::std::StdLib;
 
     #[test]
     fn test_generate_stdlib_markdown_docs() {

@@ -21,6 +21,10 @@ import {
 } from 'lang/std/sketch'
 import { getNodeFromPath } from 'lang/queryAst'
 import { Program, VariableDeclarator } from 'lang/abstractSyntaxTreeTypes'
+import { modify_ast_for_sketch } from '../wasm-lib/pkg/wasm_lib'
+import { KCLError } from 'lang/errors'
+import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
+import { rangeTypeFix } from 'lang/abstractSyntaxTree'
 
 export const Stream = ({ className = '' }) => {
   const [isLoading, setIsLoading] = useState(true)
@@ -211,14 +215,9 @@ export const Stream = ({ className = '' }) => {
       }
     }
     engineCommandManager?.sendSceneCommand(command).then(async (resp) => {
-      if (command?.cmd?.type !== 'mouse_click' || !ast) return
-      if (
-        !(
-          guiMode.mode === 'sketch' &&
-          guiMode.sketchMode === ('sketch_line' as any as 'line')
-        )
-      )
-        return
+      if (!(guiMode.mode === 'sketch')) return
+
+      if (guiMode.sketchMode === 'selectFace') return
 
       // Check if the sketch group already exists.
       const varDec = getNodeFromPath<VariableDeclarator>(
@@ -230,6 +229,56 @@ export const Stream = ({ className = '' }) => {
       const sketchGroup = programMemory.root[variableName]
       const isEditingExistingSketch =
         sketchGroup?.type === 'SketchGroup' && sketchGroup.value.length
+      let sketchGroupId = ''
+      if (sketchGroup && sketchGroup.type === 'SketchGroup') {
+        sketchGroupId = sketchGroup.id
+      }
+
+      if (
+        guiMode.sketchMode === ('move' as any as 'line') &&
+        command.cmd.type === 'handle_mouse_drag_end'
+      ) {
+        // Let's get the updated ast.
+        if (sketchGroupId === '') return
+
+        console.log('guiMode.pathId', guiMode.pathId)
+
+        // We have a problem if we do not have an id for the sketch group.
+        if (
+          guiMode.pathId === undefined ||
+          guiMode.pathId === null ||
+          guiMode.pathId === ''
+        )
+          return
+
+        let engineId = guiMode.pathId
+
+        try {
+          const updatedAst: Program = await modify_ast_for_sketch(
+            engineCommandManager,
+            JSON.stringify(ast),
+            variableName,
+            engineId
+          )
+
+          updateAst(updatedAst, false)
+        } catch (e: any) {
+          const parsed: RustKclError = JSON.parse(e.toString())
+          const kclError = new KCLError(
+            parsed.kind,
+            parsed.msg,
+            rangeTypeFix(parsed.sourceRanges)
+          )
+
+          console.log(kclError)
+          throw kclError
+        }
+        return
+      }
+
+      if (command?.cmd?.type !== 'mouse_click' || !ast) return
+
+      if (!(guiMode.sketchMode === ('sketch_line' as any as 'line'))) return
 
       if (
         resp?.data?.data?.entities_modified?.length &&
@@ -256,6 +305,16 @@ export const Stream = ({ className = '' }) => {
         )
         const _modifiedAst = _addStartSketch.modifiedAst
         const _pathToNode = _addStartSketch.pathToNode
+
+        // We need to update the guiMode with the right pathId so that we can
+        // move lines later and send the right sketch id to the engine.
+        for (const [id, artifact] of Object.entries(
+          engineCommandManager.artifactMap
+        )) {
+          if (artifact.commandType === 'start_path') {
+            guiMode.pathId = id
+          }
+        }
 
         setGuiMode({
           ...guiMode,
@@ -315,9 +374,12 @@ export const Stream = ({ className = '' }) => {
           engineCommandManager?.sendSceneCommand({
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
-            cmd: {
-              type: 'sketch_mode_disable',
-            },
+            cmd: { type: 'edit_mode_exit' },
+          })
+          engineCommandManager?.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: { type: 'default_camera_disable_sketch_mode' },
           })
           updateAst(_modifiedAst, true)
         }

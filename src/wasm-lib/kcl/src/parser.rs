@@ -1,7 +1,7 @@
 use std::{collections::HashMap, str::FromStr};
 
 use crate::{
-    abstract_syntax_tree_types::{
+    ast::types::{
         ArrayExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression, ExpressionStatement,
         FunctionExpression, Identifier, Literal, LiteralIdentifier, MemberExpression, MemberObject, NoneCodeMeta,
         NoneCodeNode, NoneCodeValue, ObjectExpression, ObjectKeyInfo, ObjectProperty, PipeExpression, PipeSubstitution,
@@ -1251,9 +1251,9 @@ impl Parser {
         let closing_brace_token = self.get_token(closing_brace_index)?;
         let args = self.make_arguments(brace_token.index, vec![])?;
         let function = if let Some(stdlib_fn) = self.stdlib.get(&callee.name) {
-            crate::abstract_syntax_tree_types::Function::StdLib { func: stdlib_fn }
+            crate::ast::types::Function::StdLib { func: stdlib_fn }
         } else {
-            crate::abstract_syntax_tree_types::Function::InMemory
+            crate::ast::types::Function::InMemory
         };
         Ok(CallExpressionResult {
             expression: CallExpression {
@@ -1790,7 +1790,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::abstract_syntax_tree_types::BinaryOperator;
+    use crate::ast::types::BinaryOperator;
 
     #[test]
     fn test_make_identifier() {
