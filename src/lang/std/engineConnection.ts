@@ -887,7 +887,7 @@ export class EngineCommandManager {
       const command = this.artifactMap[id]
       if (command && command.type === 'result') {
         found = true
-        return JSON.stringify(command.data)
+        return JSON.stringify(command.raw)
       }
     }
 
