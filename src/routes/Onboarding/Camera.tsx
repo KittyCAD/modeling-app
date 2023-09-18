@@ -9,6 +9,7 @@ import {
   cameraMouseDragGuards,
   cameraSystems,
 } from 'lib/cameraControls'
+import { useLocation } from 'react-router-dom'
 
 export default function Units() {
   const { buttonDownInStream } = useStore((s) => ({
@@ -24,6 +25,7 @@ export default function Units() {
       },
     },
   } = useGlobalStateContext()
+  const location = useLocation()
 
   return (
     <div className="fixed grid justify-center items-end inset-0 z-50 pointer-events-none">
@@ -72,7 +74,11 @@ export default function Units() {
         <div className="flex justify-between">
           <ActionButton
             Element="button"
-            onClick={() => dismiss('../../')}
+            onClick={() =>
+              dismiss(
+                location.pathname.slice(0, location.pathname.lastIndexOf('/'))
+              )
+            }
             icon={{
               icon: faXmark,
               bgClassName: 'bg-destroy-80',

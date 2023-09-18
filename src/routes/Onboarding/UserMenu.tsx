@@ -2,6 +2,7 @@ import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../../components/ActionButton'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from '../../useStore'
+import { useLocation } from 'react-router-dom'
 
 export default function UserMenu() {
   const { buttonDownInStream } = useStore((s) => ({
@@ -9,6 +10,7 @@ export default function UserMenu() {
   }))
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.PROJECT_MENU)
+  const location = useLocation()
 
   return (
     <div className="fixed grid justify-center items-start inset-0 z-50 pointer-events-none">
@@ -28,7 +30,11 @@ export default function UserMenu() {
         <div className="flex justify-between">
           <ActionButton
             Element="button"
-            onClick={() => dismiss('../../')}
+            onClick={() =>
+              dismiss(
+                location.pathname.slice(0, location.pathname.lastIndexOf('/'))
+              )
+            }
             icon={{
               icon: faXmark,
               bgClassName: 'bg-destroy-80',

@@ -127,7 +127,11 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                     // since /settings is a nested route the sidebar doesn't close
                     // automatically when navigating to it
                     close()
-                    navigate(location.pathname + paths.SETTINGS)
+                    navigate(
+                      (location.pathname.endsWith('/')
+                        ? location.pathname.slice(0, -1)
+                        : location.pathname) + paths.SETTINGS
+                    )
                   }}
                 >
                   Settings

@@ -3,6 +3,7 @@ import { ActionButton } from '../../components/ActionButton'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from '../../useStore'
 import { useBackdropHighlight } from 'hooks/useBackdropHighlight'
+import { useLocation } from 'react-router-dom'
 
 export default function InteractiveNumbers() {
   const { buttonDownInStream } = useStore((s) => ({
@@ -10,6 +11,7 @@ export default function InteractiveNumbers() {
   }))
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.COMMAND_K)
+  const location = useLocation()
 
   return (
     <div className="fixed grid justify-end items-center inset-0 z-50 pointer-events-none">
@@ -33,43 +35,43 @@ export default function InteractiveNumbers() {
             the <kbd>Alt</kbd> (or <kbd>Option</kbd>) key and dragging the
             number left and right. You can hold down different modifier keys to
             change the value by different increments:
-            <table className="border-collapse text-sm mx-auto my-4">
-              <tbody>
-                <tr>
-                  <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70">
-                    <kbd>Alt + Shift + Cmd/Win</kbd>
-                  </td>
-                  <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70 text-right">
-                    0.01
-                  </td>
-                </tr>
-                <tr>
-                  <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70">
-                    <kbd>Alt + Cmd/Win</kbd>
-                  </td>
-                  <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70 text-right">
-                    0.1
-                  </td>
-                </tr>
-                <tr>
-                  <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70">
-                    <kbd>Alt</kbd>
-                  </td>
-                  <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70 text-right">
-                    1
-                  </td>
-                </tr>
-                <tr>
-                  <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70">
-                    <kbd>Alt + Shift</kbd>
-                  </td>
-                  <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70 text-right">
-                    10
-                  </td>
-                </tr>
-              </tbody>
-            </table>
           </p>
+          <table className="border-collapse text-sm mx-auto my-4">
+            <tbody>
+              <tr>
+                <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70">
+                  <kbd>Alt + Shift + Cmd/Win</kbd>
+                </td>
+                <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70 text-right">
+                  0.01
+                </td>
+              </tr>
+              <tr>
+                <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70">
+                  <kbd>Alt + Cmd/Win</kbd>
+                </td>
+                <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70 text-right">
+                  0.1
+                </td>
+              </tr>
+              <tr>
+                <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70">
+                  <kbd>Alt</kbd>
+                </td>
+                <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70 text-right">
+                  1
+                </td>
+              </tr>
+              <tr>
+                <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70">
+                  <kbd>Alt + Shift</kbd>
+                </td>
+                <td className="border border-solid w-1/2 py-1 px-2 border-chalkboard-40 dark:border-chalkboard-70 text-right">
+                  10
+                </td>
+              </tr>
+            </tbody>
+          </table>
           <p className="my-4">
             Our code editor is built with{' '}
             <a
@@ -100,7 +102,11 @@ export default function InteractiveNumbers() {
         <div className="flex justify-between">
           <ActionButton
             Element="button"
-            onClick={() => dismiss('../../')}
+            onClick={() =>
+              dismiss(
+                location.pathname.slice(0, location.pathname.lastIndexOf('/'))
+              )
+            }
             icon={{
               icon: faXmark,
               bgClassName: 'bg-destroy-80',

@@ -12,16 +12,17 @@ import {
   interpolateProjectNameWithIndex,
 } from 'lib/tauriFS'
 import { isTauri } from 'lib/isTauri'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { paths } from 'Router'
 import { useEffect } from 'react'
 
 function OnboardingWithNewFile() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const lastSlashIndex = location.pathname.lastIndexOf('/')
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.INDEX)
-  const { setCode, code } = useStore((s) => ({
-    code: s.code,
+  const { setCode } = useStore((s) => ({
     setCode: s.setCode,
   }))
   const {
@@ -52,7 +53,9 @@ function OnboardingWithNewFile() {
             <div className="flex justify-between mt-6">
               <ActionButton
                 Element="button"
-                onClick={() => dismiss('../')}
+                onClick={() =>
+                  dismiss(location.pathname.slice(0, lastSlashIndex))
+                }
                 icon={{
                   icon: faXmark,
                   bgClassName: 'bg-destroy-80',
@@ -90,7 +93,9 @@ function OnboardingWithNewFile() {
             <div className="flex justify-between mt-6">
               <ActionButton
                 Element="button"
-                onClick={() => dismiss('../')}
+                onClick={() =>
+                  dismiss(location.pathname.slice(0, lastSlashIndex))
+                }
                 icon={{
                   icon: faXmark,
                   bgClassName: 'bg-destroy-80',
@@ -117,6 +122,7 @@ function OnboardingWithNewFile() {
 }
 
 export default function Introduction() {
+  const location = useLocation()
   const { setCode, code } = useStore((s) => ({
     code: s.code,
     setCode: s.setCode,
@@ -178,7 +184,11 @@ export default function Introduction() {
         <div className="flex justify-between mt-6">
           <ActionButton
             Element="button"
-            onClick={() => dismiss('../')}
+            onClick={() =>
+              dismiss(
+                location.pathname.slice(0, location.pathname.lastIndexOf('/'))
+              )
+            }
             icon={{
               icon: faXmark,
               bgClassName: 'bg-destroy-80',

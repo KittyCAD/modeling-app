@@ -28,7 +28,9 @@ export const Settings = () => {
   const loaderData = useRouteLoaderData(paths.FILE) as IndexLoaderData
   const navigate = useNavigate()
   const location = useLocation()
-  useHotkeys('esc', () => navigate('../'))
+  useHotkeys('esc', () =>
+    navigate(location.pathname.slice(0, location.pathname.lastIndexOf('/')))
+  )
   const {
     settings: {
       send,
@@ -66,7 +68,7 @@ export const Settings = () => {
       <AppHeader showToolbar={false} project={loaderData?.project}>
         <ActionButton
           Element="link"
-          to={'../'}
+          to={location.pathname.replace(paths.SETTINGS, '')}
           icon={{
             icon: faXmark,
             bgClassName: 'bg-destroy-80',

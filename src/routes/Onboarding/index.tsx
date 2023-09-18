@@ -1,5 +1,5 @@
 import { useHotkeys } from 'react-hotkeys-hook'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import Introduction from './Introduction'
 import Camera from './Camera'
 import Sketching from './Sketching'
@@ -89,14 +89,16 @@ export function useNextClick(newStatus: string) {
     settings: { send },
   } = useGlobalStateContext()
   const navigate = useNavigate()
+  const location = useLocation()
+  const lastSlashIndex = location.pathname.lastIndexOf('/')
 
   return useCallback(() => {
     send({
       type: 'Set Onboarding Status',
       data: { onboardingStatus: newStatus },
     })
-    navigate((newStatus !== onboardingPaths.CAMERA ? '..' : '.') + newStatus)
-  }, [newStatus, send, navigate])
+    navigate(location.pathname.slice(0, lastSlashIndex) + newStatus)
+  }, [location, lastSlashIndex, newStatus, send, navigate])
 }
 
 export function useDismiss() {
@@ -118,8 +120,10 @@ export function useDismiss() {
 }
 
 const Onboarding = () => {
+  const location = useLocation()
   const dismiss = useDismiss()
-  useHotkeys('esc', () => dismiss('../'))
+  const lastSlashIndex = location.pathname.lastIndexOf('/')
+  useHotkeys('esc', () => dismiss(location.pathname.slice(0, lastSlashIndex)))
 
   return (
     <>
