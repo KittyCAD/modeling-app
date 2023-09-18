@@ -1964,7 +1964,9 @@ impl BinaryExpression {
 
         let should_wrap_right = match &self.right {
             BinaryPart::BinaryExpression(bin_exp) => {
-                self.precedence() > bin_exp.precedence() || self.operator == BinaryOperator::Sub
+                self.precedence() > bin_exp.precedence()
+                    || self.operator == BinaryOperator::Sub
+                    || self.operator == BinaryOperator::Div
             }
             _ => false,
         };
@@ -3060,6 +3062,22 @@ show(firstExtrude)
     #[tokio::test(flavor = "multi_thread")]
     async fn test_recast_math_start_negative() {
         let some_program_string = r#"const myVar = -5 + 6"#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted.trim(), some_program_string);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_recast_math_nested_parens() {
+        let some_program_string = r#"const distance = 5
+const p = 3
+const FOS = 2
+const sigmaAllow = 8
+const width = 20
+const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
         let tokens = crate::tokeniser::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
