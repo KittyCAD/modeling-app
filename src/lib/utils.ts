@@ -98,14 +98,3 @@ export function getNormalisedCoordinates({
     y: Math.round((browserY / height) * streamHeight),
   }
 }
-
-export function dotDotSlash(count: number = 1): string {
-  // since we can't use relative paths (../) for windows
-  if (window.location.pathname === '/') return ''
-  const path = window.location.pathname.slice(
-    0,
-    window.location.pathname.lastIndexOf('/')
-  )
-  if (count <= 1) return path
-  return dotDotSlash(count - 1)
-}

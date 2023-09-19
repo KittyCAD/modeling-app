@@ -3,8 +3,7 @@ import { ActionButton } from '../../components/ActionButton'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from 'useStore'
 import { useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
-import { dotDotSlash } from 'lib/utils'
+import { useDotDotSlash } from 'hooks/useDotDotSlash'
 
 export default function Sketching() {
   const { setCode, buttonDownInStream } = useStore((s) => ({
@@ -17,7 +16,7 @@ export default function Sketching() {
   useEffect(() => {
     setCode('')
   }, [setCode])
-  const location = useLocation()
+  const dotDotSlash = useDotDotSlash()
 
   return (
     <div className="fixed grid justify-center items-end inset-0 z-50 pointer-events-none">

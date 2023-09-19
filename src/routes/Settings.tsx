@@ -23,12 +23,13 @@ import {
   cameraMouseDragGuards,
 } from 'lib/cameraControls'
 import { UnitSystem } from 'machines/settingsMachine'
-import { dotDotSlash } from 'lib/utils'
+import { useDotDotSlash } from 'hooks/useDotDotSlash'
 
 export const Settings = () => {
   const loaderData = useRouteLoaderData(paths.FILE) as IndexLoaderData
   const navigate = useNavigate()
   const location = useLocation()
+  const dotDotSlash = useDotDotSlash()
   useHotkeys('esc', () => navigate(dotDotSlash()))
   const {
     settings: {

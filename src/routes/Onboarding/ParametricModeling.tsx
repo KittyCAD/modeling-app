@@ -5,8 +5,7 @@ import { useStore } from '../../useStore'
 import { useBackdropHighlight } from 'hooks/useBackdropHighlight'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
-import { useLocation } from 'react-router-dom'
-import { dotDotSlash } from 'lib/utils'
+import { useDotDotSlash } from 'hooks/useDotDotSlash'
 
 export default function ParametricModeling() {
   const { buttonDownInStream } = useStore((s) => ({
@@ -24,7 +23,7 @@ export default function ParametricModeling() {
       : ''
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.INTERACTIVE_NUMBERS)
-  const location = useLocation()
+  const dotDotSlash = useDotDotSlash()
 
   return (
     <div className="fixed grid justify-end items-center inset-0 z-50 pointer-events-none">

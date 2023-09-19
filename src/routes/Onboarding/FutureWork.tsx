@@ -4,15 +4,14 @@ import { useDismiss } from '.'
 import { useEffect } from 'react'
 import { useStore } from 'useStore'
 import { bracket } from 'lib/exampleKcl'
-import { useLocation } from 'react-router-dom'
-import { dotDotSlash } from 'lib/utils'
+import { useDotDotSlash } from 'hooks/useDotDotSlash'
 
 export default function FutureWork() {
   const dismiss = useDismiss()
   const { setCode } = useStore((s) => ({
     setCode: s.setCode,
   }))
-  const location = useLocation()
+  const dotDotSlash = useDotDotSlash()
 
   useEffect(() => {
     setCode(bracket)

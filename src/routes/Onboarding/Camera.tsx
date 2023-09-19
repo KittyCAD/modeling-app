@@ -9,8 +9,7 @@ import {
   cameraMouseDragGuards,
   cameraSystems,
 } from 'lib/cameraControls'
-import { useLocation } from 'react-router-dom'
-import { dotDotSlash } from 'lib/utils'
+import { useDotDotSlash } from 'hooks/useDotDotSlash'
 
 export default function Units() {
   const { buttonDownInStream } = useStore((s) => ({
@@ -26,7 +25,7 @@ export default function Units() {
       },
     },
   } = useGlobalStateContext()
-  const location = useLocation()
+  const dotDotSlash = useDotDotSlash()
 
   return (
     <div className="fixed grid justify-center items-end inset-0 z-50 pointer-events-none">

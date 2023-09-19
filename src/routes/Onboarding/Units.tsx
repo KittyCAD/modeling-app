@@ -6,7 +6,7 @@ import { Toggle } from '../../components/Toggle/Toggle'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { UnitSystem } from 'machines/settingsMachine'
-import { dotDotSlash } from 'lib/utils'
+import { useDotDotSlash } from 'hooks/useDotDotSlash'
 
 export default function Units() {
   const dismiss = useDismiss()
@@ -17,6 +17,7 @@ export default function Units() {
       context: { unitSystem, baseUnit },
     },
   } = useGlobalStateContext()
+  const dotDotSlash = useDotDotSlash()
 
   return (
     <div className="fixed grid place-content-center inset-0 bg-chalkboard-110/50 z-50">

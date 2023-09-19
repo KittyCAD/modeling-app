@@ -2,8 +2,7 @@ import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../../components/ActionButton'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from '../../useStore'
-import { useLocation } from 'react-router-dom'
-import { dotDotSlash } from 'lib/utils'
+import { useDotDotSlash } from 'hooks/useDotDotSlash'
 
 export default function Streaming() {
   const { buttonDownInStream } = useStore((s) => ({
@@ -11,7 +10,7 @@ export default function Streaming() {
   }))
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.EDITOR)
-  const location = useLocation()
+  const dotDotSlash = useDotDotSlash()
 
   return (
     <div className="fixed grid justify-start items-center inset-0 z-50 pointer-events-none">

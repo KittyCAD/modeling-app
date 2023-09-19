@@ -15,7 +15,7 @@ import { isTauri } from 'lib/isTauri'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { paths } from 'Router'
 import { useEffect } from 'react'
-import { dotDotSlash } from 'lib/utils'
+import { useDotDotSlash } from 'hooks/useDotDotSlash'
 
 function OnboardingWithNewFile() {
   const navigate = useNavigate()
@@ -123,7 +123,6 @@ function OnboardingWithNewFile() {
 }
 
 export default function Introduction() {
-  const location = useLocation()
   const { setCode, code } = useStore((s) => ({
     code: s.code,
     setCode: s.setCode,
@@ -142,6 +141,7 @@ export default function Introduction() {
       : ''
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.CAMERA)
+  const dotDotSlash = useDotDotSlash()
 
   useEffect(() => {
     if (code === '') setCode(bracket)
