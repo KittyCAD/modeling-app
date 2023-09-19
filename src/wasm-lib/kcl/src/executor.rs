@@ -101,8 +101,8 @@ impl ProgramReturn {
 #[serde(tag = "type")]
 pub enum MemoryItem {
     UserVal(UserVal),
-    SketchGroup(SketchGroup),
-    ExtrudeGroup(ExtrudeGroup),
+    SketchGroup(Box<SketchGroup>),
+    ExtrudeGroup(Box<ExtrudeGroup>),
     #[ts(skip)]
     ExtrudeTransform(ExtrudeTransform),
     #[ts(skip)]

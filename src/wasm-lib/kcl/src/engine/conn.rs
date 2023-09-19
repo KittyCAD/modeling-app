@@ -104,7 +104,14 @@ impl EngineManager for EngineConnection {
         source_range: crate::executor::SourceRange,
         cmd: kittycad::types::ModelingCmd,
     ) -> Result<(), KclError> {
-        futures::executor::block_on(self.send_modeling_cmd_get_response(id, source_range, cmd))?;
+        futures::executor::block_on(self.tcp_send(WebSocketRequest::ModelingCmdReq { cmd, cmd_id: id })).map_err(
+            |e| {
+                KclError::Engine(KclErrorDetails {
+                    message: format!("Failed to send modeling command: {}", e),
+                    source_ranges: vec![source_range],
+                })
+            },
+        )?;
         Ok(())
     }
 

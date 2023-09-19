@@ -3408,4 +3408,14 @@ thing(false)
             r#"syntax: KclErrorDetails { source_ranges: [SourceRange([0, 2])], message: "Expected a `let` variable kind, found: `fn`" }"#
         );
     }
+
+    #[test]
+    fn test_parse_pipes_on_pipes() {
+        let code = include_str!("../../tests/executor/inputs/pipes_on_pipes.kcl");
+        println!("code: {}", code);
+
+        let tokens = crate::tokeniser::lexer(code);
+        let parser = crate::parser::Parser::new(tokens);
+        parser.ast().unwrap();
+    }
 }

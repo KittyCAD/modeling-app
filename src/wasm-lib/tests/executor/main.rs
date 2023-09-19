@@ -145,3 +145,11 @@ async fn serial_test_execute_engine_error_return() {
         r#"engine: KclErrorDetails { source_ranges: [SourceRange([193, 206])], message: "Modeling command failed: Some([ApiError { error_code: BadRequest, message: \"The path is not closed.  Solid2D construction requires a closed path!\" }])" }"#,
     );
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_execute_pipes_on_pipes() {
+    let code = include_str!("inputs/pipes_on_pipes.kcl");
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/pipes_on_pipes.png", &result, 1.0);
+}

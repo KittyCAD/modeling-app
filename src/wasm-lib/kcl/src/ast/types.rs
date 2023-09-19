@@ -871,6 +871,11 @@ impl CallExpression {
 
         match &self.function {
             Function::StdLib { func } => {
+                let source_range: SourceRange = self.into();
+                println!(
+                    "Calling stdlib function: {}, source_range: {:?}, args: {:?}",
+                    fn_name, source_range, fn_args
+                );
                 // Attempt to call the function.
                 let mut args = crate::std::Args::new(fn_args, self.into(), engine);
                 let result = func.std_lib_fn()(&mut args)?;
