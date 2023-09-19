@@ -1,3 +1,5 @@
+#![recursion_limit = "1024"]
+
 pub mod ast;
 pub mod docs;
 pub mod engine;

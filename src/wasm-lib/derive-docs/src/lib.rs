@@ -212,6 +212,12 @@ fn do_stdlib_inner(
             quote! {
                Vec<#ty_ident>
             }
+        } else if ty_string.starts_with("Box<") {
+            let ty_string = ty_string.trim_start_matches("Box<").trim_end_matches('>');
+            let ty_ident = format_ident!("{}", ty_string);
+            quote! {
+               #ty_ident
+            }
         } else {
             let ty_ident = format_ident!("{}", ty_string);
             quote! {
@@ -250,7 +256,15 @@ fn do_stdlib_inner(
         .replace("Result < ", "")
         .replace(", KclError >", "");
     let return_type = if !ret_ty_string.is_empty() {
-        let ret_ty_string = ret_ty_string.trim().to_string();
+        let ret_ty_string = if ret_ty_string.starts_with("Box <") {
+            ret_ty_string
+                .trim_start_matches("Box <")
+                .trim_end_matches('>')
+                .trim()
+                .to_string()
+        } else {
+            ret_ty_string.trim().to_string()
+        };
         let ret_ty_ident = format_ident!("{}", ret_ty_string);
         let ret_ty_string = clean_type(&ret_ty_string);
         quote! {
@@ -475,6 +489,9 @@ fn clean_type(t: &str) -> String {
     if t.starts_with("Vec<") {
         t = t.replace("Vec<", "[").replace('>', "]");
     }
+    if t.starts_with("Box<") {
+        t = t.replace("Box<", "").replace('>', "");
+    }
 
     if t == "f64" {
         return "number".to_string();
@@ -563,5 +580,27 @@ mod tests {
 
         assert!(errors.is_empty());
         expectorate::assert_contents("tests/show.gen", &openapitor::types::get_text_fmt(&item).unwrap());
+    }
+
+    #[test]
+    fn test_stdlib_box() {
+        let (item, errors) = do_stdlib(
+            quote! {
+                name = "show",
+            },
+            quote! {
+                fn inner_show(
+                    /// The args to do shit to.
+                    args: Box<f64>
+                ) -> Box<f64> {
+                    args
+                }
+            },
+        )
+        .unwrap();
+        let _expected = quote! {};
+
+        assert!(errors.is_empty());
+        expectorate::assert_contents("tests/box.gen", &openapitor::types::get_text_fmt(&item).unwrap());
     }
 }

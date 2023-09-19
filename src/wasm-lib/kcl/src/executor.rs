@@ -101,8 +101,8 @@ impl ProgramReturn {
 #[serde(tag = "type")]
 pub enum MemoryItem {
     UserVal(UserVal),
-    SketchGroup(SketchGroup),
-    ExtrudeGroup(ExtrudeGroup),
+    SketchGroup(Box<SketchGroup>),
+    ExtrudeGroup(Box<ExtrudeGroup>),
     #[ts(skip)]
     ExtrudeTransform(ExtrudeTransform),
     #[ts(skip)]
@@ -598,6 +598,10 @@ pub fn execute(
                             Value::Identifier(identifier) => {
                                 let memory_item = memory.get(&identifier.name, identifier.into())?;
                                 args.push(memory_item.clone());
+                            }
+                            Value::CallExpression(call_expr) => {
+                                let result = call_expr.execute(memory, &mut pipe_info, engine)?;
+                                args.push(result);
                             }
                             // We do nothing for the rest.
                             _ => (),

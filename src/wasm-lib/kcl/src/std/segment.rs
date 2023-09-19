@@ -22,7 +22,7 @@ pub fn segment_end_x(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "segEndX",
 }]
-fn inner_segment_end_x(segment_name: &str, sketch_group: SketchGroup, args: &mut Args) -> Result<f64, KclError> {
+fn inner_segment_end_x(segment_name: &str, sketch_group: Box<SketchGroup>, args: &mut Args) -> Result<f64, KclError> {
     let line = sketch_group.get_base_by_name_or_start(segment_name).ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!(
@@ -48,7 +48,7 @@ pub fn segment_end_y(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "segEndY",
 }]
-fn inner_segment_end_y(segment_name: &str, sketch_group: SketchGroup, args: &mut Args) -> Result<f64, KclError> {
+fn inner_segment_end_y(segment_name: &str, sketch_group: Box<SketchGroup>, args: &mut Args) -> Result<f64, KclError> {
     let line = sketch_group.get_base_by_name_or_start(segment_name).ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!(
@@ -74,7 +74,7 @@ pub fn last_segment_x(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "lastSegX",
 }]
-fn inner_last_segment_x(sketch_group: SketchGroup, args: &mut Args) -> Result<f64, KclError> {
+fn inner_last_segment_x(sketch_group: Box<SketchGroup>, args: &mut Args) -> Result<f64, KclError> {
     let last_line = sketch_group
         .value
         .last()
@@ -104,7 +104,7 @@ pub fn last_segment_y(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "lastSegY",
 }]
-fn inner_last_segment_y(sketch_group: SketchGroup, args: &mut Args) -> Result<f64, KclError> {
+fn inner_last_segment_y(sketch_group: Box<SketchGroup>, args: &mut Args) -> Result<f64, KclError> {
     let last_line = sketch_group
         .value
         .last()
@@ -133,7 +133,7 @@ pub fn segment_length(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "segLen",
 }]
-fn inner_segment_length(segment_name: &str, sketch_group: SketchGroup, args: &mut Args) -> Result<f64, KclError> {
+fn inner_segment_length(segment_name: &str, sketch_group: Box<SketchGroup>, args: &mut Args) -> Result<f64, KclError> {
     let path = sketch_group.get_path_by_name(segment_name).ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!(
@@ -162,7 +162,7 @@ pub fn segment_angle(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "segAng",
 }]
-fn inner_segment_angle(segment_name: &str, sketch_group: SketchGroup, args: &mut Args) -> Result<f64, KclError> {
+fn inner_segment_angle(segment_name: &str, sketch_group: Box<SketchGroup>, args: &mut Args) -> Result<f64, KclError> {
     let path = sketch_group.get_path_by_name(segment_name).ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!(
@@ -193,7 +193,7 @@ pub fn angle_to_match_length_x(args: &mut Args) -> Result<MemoryItem, KclError> 
 fn inner_angle_to_match_length_x(
     segment_name: &str,
     to: f64,
-    sketch_group: SketchGroup,
+    sketch_group: Box<SketchGroup>,
     args: &mut Args,
 ) -> Result<f64, KclError> {
     let path = sketch_group.get_path_by_name(segment_name).ok_or_else(|| {
@@ -248,7 +248,7 @@ pub fn angle_to_match_length_y(args: &mut Args) -> Result<MemoryItem, KclError> 
 fn inner_angle_to_match_length_y(
     segment_name: &str,
     to: f64,
-    sketch_group: SketchGroup,
+    sketch_group: Box<SketchGroup>,
     args: &mut Args,
 ) -> Result<f64, KclError> {
     let path = sketch_group.get_path_by_name(segment_name).ok_or_else(|| {
