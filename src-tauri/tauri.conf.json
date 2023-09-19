@@ -36,6 +36,9 @@
           "https://api.dev.kittycad.io/*"
         ]
       },
+      "os": {
+        "all": true
+      },
       "shell": {
         "open": true
       },
