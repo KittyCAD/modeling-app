@@ -4,12 +4,14 @@ import { useDismiss } from '.'
 import { useEffect } from 'react'
 import { useStore } from 'useStore'
 import { bracket } from 'lib/exampleKcl'
+import { useDotDotSlash } from 'hooks/useDotDotSlash'
 
 export default function FutureWork() {
   const dismiss = useDismiss()
   const { deferredSetCode } = useStore((s) => ({
     deferredSetCode: s.deferredSetCode,
   }))
+  const dotDotSlash = useDotDotSlash()
 
   useEffect(() => {
     deferredSetCode(bracket)
@@ -34,7 +36,7 @@ export default function FutureWork() {
         <div className="flex justify-between mt-6">
           <ActionButton
             Element="button"
-            onClick={() => dismiss('../../')}
+            onClick={() => dismiss(dotDotSlash(2))}
             icon={{
               icon: faXmark,
               bgClassName: 'bg-destroy-80',
@@ -47,7 +49,7 @@ export default function FutureWork() {
           </ActionButton>
           <ActionButton
             Element="button"
-            onClick={() => dismiss('../../')}
+            onClick={() => dismiss(dotDotSlash(2))}
             icon={{ icon: faArrowRight }}
           >
             Finish
