@@ -24,9 +24,11 @@ export const MemoryPanel = ({
     <CollapsiblePanel {...props}>
       <div className="h-full relative">
         <div className="absolute inset-0 flex flex-col items-start">
-          <div className="overflow-y-auto h-full console-tile w-full"
-               style={{ marginBottom: 36 }}> 
-               {/* 36px is the height of PanelHeader */}
+          <div
+            className="overflow-y-auto h-full console-tile w-full"
+            style={{ marginBottom: 36 }}
+          >
+            {/* 36px is the height of PanelHeader */}
             <ReactJson
               src={ProcessedMemory}
               collapsed={1}
