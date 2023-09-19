@@ -12,15 +12,14 @@ import {
   interpolateProjectNameWithIndex,
 } from 'lib/tauriFS'
 import { isTauri } from 'lib/isTauri'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { paths } from 'Router'
 import { useEffect } from 'react'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
 
 function OnboardingWithNewFile() {
   const navigate = useNavigate()
-  const location = useLocation()
-  const lastSlashIndex = location.pathname.lastIndexOf('/')
+  const dotDotSlash = useDotDotSlash()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.INDEX)
   const { setCode } = useStore((s) => ({
@@ -55,7 +54,7 @@ function OnboardingWithNewFile() {
               <ActionButton
                 Element="button"
                 onClick={() =>
-                  dismiss(location.pathname.slice(0, lastSlashIndex))
+                  dismiss(dotDotSlash())
                 }
                 icon={{
                   icon: faXmark,
@@ -95,7 +94,7 @@ function OnboardingWithNewFile() {
               <ActionButton
                 Element="button"
                 onClick={() =>
-                  dismiss(location.pathname.slice(0, lastSlashIndex))
+                  dismiss(dotDotSlash())
                 }
                 icon={{
                   icon: faXmark,
