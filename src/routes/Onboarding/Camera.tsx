@@ -26,7 +26,7 @@ export default function Units() {
   } = useGlobalStateContext()
 
   return (
-    <div className="fixed grid justify-center items-end inset-0 z-50 pointer-events-none">
+    <div className="fixed inset-0 z-50 grid items-end justify-start px-4 pointer-events-none">
       <div
         className={
           'max-w-2xl flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
@@ -36,10 +36,11 @@ export default function Units() {
         <SettingsSection
           title="Camera Controls"
           description="How you want to control the camera in the 3D view. Try them out above and choose the one that feels most comfortable to you."
+          className="my-4 last-of-type:mb-12"
         >
           <select
             id="camera-controls"
-            className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
+            className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
             value={cameraControls}
             onChange={(e) => {
               send({
@@ -54,7 +55,7 @@ export default function Units() {
               </option>
             ))}
           </select>
-          <ul className="text-sm my-2 mx-4 leading-relaxed">
+          <ul className="mx-4 my-2 text-sm leading-relaxed">
             <li>
               <strong>Pan:</strong>{' '}
               {cameraMouseDragGuards[cameraControls].pan.description}
