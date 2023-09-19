@@ -4,6 +4,7 @@ import withBaseURL from '../lib/withBaseURL'
 import { CommandBarMeta } from '../lib/commands'
 import { isTauri } from 'lib/isTauri'
 import { invoke } from '@tauri-apps/api'
+import { VITE_KC_API_BASE_URL } from 'env'
 
 const SKIP_AUTH =
   import.meta.env.VITE_KC_SKIP_AUTH === 'true' && import.meta.env.DEV
@@ -132,6 +133,7 @@ async function getUser(context: UserContext) {
         .catch((err) => console.error('error from Browser getUser', err))
     : invoke<Models['User_type'] | Record<'error_code', unknown>>('get_user', {
         token: context.token,
+        hostname: VITE_KC_API_BASE_URL,
       }).catch((err) => console.error('error from Tauri getUser', err))
 
   const user = await userPromise
