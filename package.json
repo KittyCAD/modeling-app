@@ -57,7 +57,7 @@
     "zustand": "^4.1.4"
   },
   "scripts": {
-    "start": "vite",
+    "start": "BROWSER=none vite",
     "build": "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && source \"$HOME/.cargo/env\" && curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh -s -- -y && yarn build:wasm && vite build",
     "build:local": "vite build",
     "build:both": "vite build",
