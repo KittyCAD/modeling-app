@@ -5,6 +5,7 @@ import { useEffect } from 'react'
 import { useStore } from 'useStore'
 import { bracket } from 'lib/exampleKcl'
 import { useLocation } from 'react-router-dom'
+import { dotDotSlash } from 'lib/utils'
 
 export default function FutureWork() {
   const dismiss = useDismiss()
@@ -36,11 +37,7 @@ export default function FutureWork() {
         <div className="flex justify-between mt-6">
           <ActionButton
             Element="button"
-            onClick={() =>
-              dismiss(
-                location.pathname.slice(0, location.pathname.lastIndexOf('/'))
-              )
-            }
+            onClick={() => dismiss(dotDotSlash(2))}
             icon={{
               icon: faXmark,
               bgClassName: 'bg-destroy-80',
@@ -53,11 +50,7 @@ export default function FutureWork() {
           </ActionButton>
           <ActionButton
             Element="button"
-            onClick={() =>
-              dismiss(
-                location.pathname.slice(0, location.pathname.lastIndexOf('/'))
-              )
-            }
+            onClick={() => dismiss(dotDotSlash(2))}
             icon={{ icon: faArrowRight }}
           >
             Finish

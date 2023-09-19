@@ -6,6 +6,7 @@ import { Toggle } from '../../components/Toggle/Toggle'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { UnitSystem } from 'machines/settingsMachine'
+import { dotDotSlash } from 'lib/utils'
 
 export default function Units() {
   const dismiss = useDismiss()
@@ -66,11 +67,7 @@ export default function Units() {
         <div className="flex justify-between mt-6">
           <ActionButton
             Element="button"
-            onClick={() =>
-              dismiss(
-                location.pathname.slice(0, location.pathname.lastIndexOf('/'))
-              )
-            }
+            onClick={() => dismiss(dotDotSlash(2))}
             icon={{
               icon: faXmark,
               bgClassName: 'bg-destroy-80',

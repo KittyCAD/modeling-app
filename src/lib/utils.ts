@@ -99,9 +99,13 @@ export function getNormalisedCoordinates({
   }
 }
 
-export function relativeJumpBacks(count: number = 1): string {
+export function dotDotSlash(count: number = 1): string {
+  // since we can't use relative paths (../) for windows
   if (window.location.pathname === '/') return ''
-  const path = window.location.pathname.slice(0, window.location.pathname.lastIndexOf('/'))
+  const path = window.location.pathname.slice(
+    0,
+    window.location.pathname.lastIndexOf('/')
+  )
   if (count <= 1) return path
-  return relativeJumpBacks(count - 1)
+  return dotDotSlash(count - 1)
 }

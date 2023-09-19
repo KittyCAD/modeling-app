@@ -4,6 +4,7 @@ import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from 'useStore'
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
+import { dotDotSlash } from 'lib/utils'
 
 export default function Sketching() {
   const { setCode, buttonDownInStream } = useStore((s) => ({
@@ -40,11 +41,7 @@ export default function Sketching() {
         <div className="flex justify-between mt-6">
           <ActionButton
             Element="button"
-            onClick={() =>
-              dismiss(
-                location.pathname.slice(0, location.pathname.lastIndexOf('/'))
-              )
-            }
+            onClick={() => dismiss(dotDotSlash(2))}
             icon={{
               icon: faXmark,
               bgClassName: 'bg-destroy-80',

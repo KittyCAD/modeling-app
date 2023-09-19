@@ -113,6 +113,7 @@ export function useDismiss() {
         type: 'Set Onboarding Status',
         data: { onboardingStatus: 'dismissed' },
       })
+      console.log('yoyo', window.location.pathname, path)
       navigate(path)
     },
     [send, navigate]

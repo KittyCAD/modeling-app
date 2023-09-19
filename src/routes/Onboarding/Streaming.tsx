@@ -3,6 +3,7 @@ import { ActionButton } from '../../components/ActionButton'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from '../../useStore'
 import { useLocation } from 'react-router-dom'
+import { dotDotSlash } from 'lib/utils'
 
 export default function Streaming() {
   const { buttonDownInStream } = useStore((s) => ({
@@ -43,11 +44,7 @@ export default function Streaming() {
         <div className="flex justify-between">
           <ActionButton
             Element="button"
-            onClick={() =>
-              dismiss(
-                location.pathname.slice(0, location.pathname.lastIndexOf('/'))
-              )
-            }
+            onClick={() => dismiss(dotDotSlash(2))}
             icon={{
               icon: faXmark,
               bgClassName: 'bg-destroy-80',

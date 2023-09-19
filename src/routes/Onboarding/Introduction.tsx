@@ -15,6 +15,7 @@ import { isTauri } from 'lib/isTauri'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { paths } from 'Router'
 import { useEffect } from 'react'
+import { dotDotSlash } from 'lib/utils'
 
 function OnboardingWithNewFile() {
   const navigate = useNavigate()
@@ -184,11 +185,7 @@ export default function Introduction() {
         <div className="flex justify-between mt-6">
           <ActionButton
             Element="button"
-            onClick={() =>
-              dismiss(
-                location.pathname.slice(0, location.pathname.lastIndexOf('/'))
-              )
-            }
+            onClick={() => dismiss(dotDotSlash())}
             icon={{
               icon: faXmark,
               bgClassName: 'bg-destroy-80',

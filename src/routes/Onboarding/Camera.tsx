@@ -10,6 +10,7 @@ import {
   cameraSystems,
 } from 'lib/cameraControls'
 import { useLocation } from 'react-router-dom'
+import { dotDotSlash } from 'lib/utils'
 
 export default function Units() {
   const { buttonDownInStream } = useStore((s) => ({
@@ -74,11 +75,7 @@ export default function Units() {
         <div className="flex justify-between">
           <ActionButton
             Element="button"
-            onClick={() =>
-              dismiss(
-                location.pathname.slice(0, location.pathname.lastIndexOf('/'))
-              )
-            }
+            onClick={() => dismiss(dotDotSlash(2))}
             icon={{
               icon: faXmark,
               bgClassName: 'bg-destroy-80',
