@@ -53,9 +53,7 @@ function OnboardingWithNewFile() {
             <div className="flex justify-between mt-6">
               <ActionButton
                 Element="button"
-                onClick={() =>
-                  dismiss(dotDotSlash())
-                }
+                onClick={() => dismiss(dotDotSlash())}
                 icon={{
                   icon: faXmark,
                   bgClassName: 'bg-destroy-80',
@@ -93,9 +91,7 @@ function OnboardingWithNewFile() {
             <div className="flex justify-between mt-6">
               <ActionButton
                 Element="button"
-                onClick={() =>
-                  dismiss(dotDotSlash())
-                }
+                onClick={() => dismiss(dotDotSlash())}
                 icon={{
                   icon: faXmark,
                   bgClassName: 'bg-destroy-80',
