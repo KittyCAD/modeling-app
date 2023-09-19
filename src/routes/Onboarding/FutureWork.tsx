@@ -4,14 +4,12 @@ import { useDismiss } from '.'
 import { useEffect } from 'react'
 import { useStore } from 'useStore'
 import { bracket } from 'lib/exampleKcl'
-import { useLocation } from 'react-router-dom'
 
 export default function FutureWork() {
   const dismiss = useDismiss()
   const { setCode } = useStore((s) => ({
     setCode: s.setCode,
   }))
-  const location = useLocation()
 
   useEffect(() => {
     setCode(bracket)
@@ -36,11 +34,7 @@ export default function FutureWork() {
         <div className="flex justify-between mt-6">
           <ActionButton
             Element="button"
-            onClick={() =>
-              dismiss(
-                location.pathname.slice(0, location.pathname.lastIndexOf('/'))
-              )
-            }
+            onClick={dismiss}
             icon={{
               icon: faXmark,
               bgClassName: 'bg-destroy-80',
@@ -53,11 +47,7 @@ export default function FutureWork() {
           </ActionButton>
           <ActionButton
             Element="button"
-            onClick={() =>
-              dismiss(
-                location.pathname.slice(0, location.pathname.lastIndexOf('/'))
-              )
-            }
+            onClick={dismiss}
             icon={{ icon: faArrowRight }}
           >
             Finish

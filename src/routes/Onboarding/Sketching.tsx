@@ -3,7 +3,6 @@ import { ActionButton } from '../../components/ActionButton'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from 'useStore'
 import { useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
 
 export default function Sketching() {
   const { setCode, buttonDownInStream } = useStore((s) => ({
@@ -16,7 +15,6 @@ export default function Sketching() {
   useEffect(() => {
     setCode('')
   }, [setCode])
-  const location = useLocation()
 
   return (
     <div className="fixed grid justify-center items-end inset-0 z-50 pointer-events-none">
@@ -40,11 +38,7 @@ export default function Sketching() {
         <div className="flex justify-between mt-6">
           <ActionButton
             Element="button"
-            onClick={() =>
-              dismiss(
-                location.pathname.slice(0, location.pathname.lastIndexOf('/'))
-              )
-            }
+            onClick={dismiss}
             icon={{
               icon: faXmark,
               bgClassName: 'bg-destroy-80',

@@ -269,7 +269,12 @@ export const Settings = () => {
                   type: 'Set Onboarding Status',
                   data: { onboardingStatus: '' },
                 })
-                navigate('..' + paths.ONBOARDING.INDEX)
+                navigate(
+                  paths.FILE +
+                    '/' +
+                    encodeURIComponent(loaderData?.project?.path || '') +
+                    paths.ONBOARDING.INDEX
+                )
               }}
               icon={{ icon: faArrowRotateBack }}
             >

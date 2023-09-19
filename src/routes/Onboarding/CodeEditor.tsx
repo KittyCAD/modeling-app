@@ -3,7 +3,6 @@ import { ActionButton } from '../../components/ActionButton'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from '../../useStore'
 import { useBackdropHighlight } from 'hooks/useBackdropHighlight'
-import { useLocation } from 'react-router-dom'
 
 export default function CodeEditor() {
   const { buttonDownInStream } = useStore((s) => ({
@@ -11,7 +10,6 @@ export default function CodeEditor() {
   }))
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.PARAMETRIC_MODELING)
-  const location = useLocation()
 
   return (
     <div className="fixed grid justify-end items-center inset-0 z-50 pointer-events-none">
@@ -62,11 +60,7 @@ export default function CodeEditor() {
         <div className="flex justify-between">
           <ActionButton
             Element="button"
-            onClick={() =>
-              dismiss(
-                location.pathname.slice(0, location.pathname.lastIndexOf('/'))
-              )
-            }
+            onClick={dismiss}
             icon={{
               icon: faXmark,
               bgClassName: 'bg-destroy-80',

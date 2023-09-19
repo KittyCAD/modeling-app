@@ -2,7 +2,6 @@ import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../../components/ActionButton'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from '../../useStore'
-import { useLocation } from 'react-router-dom'
 
 export default function Streaming() {
   const { buttonDownInStream } = useStore((s) => ({
@@ -10,7 +9,6 @@ export default function Streaming() {
   }))
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.EDITOR)
-  const location = useLocation()
 
   return (
     <div className="fixed grid justify-start items-center inset-0 z-50 pointer-events-none">
@@ -43,11 +41,7 @@ export default function Streaming() {
         <div className="flex justify-between">
           <ActionButton
             Element="button"
-            onClick={() =>
-              dismiss(
-                location.pathname.slice(0, location.pathname.lastIndexOf('/'))
-              )
-            }
+            onClick={dismiss}
             icon={{
               icon: faXmark,
               bgClassName: 'bg-destroy-80',

@@ -12,18 +12,16 @@ import {
   interpolateProjectNameWithIndex,
 } from 'lib/tauriFS'
 import { isTauri } from 'lib/isTauri'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { paths } from 'Router'
 import { useEffect } from 'react'
 
 function OnboardingWithNewFile() {
   const navigate = useNavigate()
-  const location = useLocation()
-  const lastSlashIndex = location.pathname.lastIndexOf('/')
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.INDEX)
-  const { setCode } = useStore((s) => ({
-    setCode: s.setCode,
+  const { deferredSetCode } = useStore((s) => ({
+    deferredSetCode: s.deferredSetCode,
   }))
   const {
     settings: {
@@ -53,9 +51,7 @@ function OnboardingWithNewFile() {
             <div className="flex justify-between mt-6">
               <ActionButton
                 Element="button"
-                onClick={() =>
-                  dismiss(location.pathname.slice(0, lastSlashIndex))
-                }
+                onClick={dismiss}
                 icon={{
                   icon: faXmark,
                   bgClassName: 'bg-destroy-80',
@@ -69,7 +65,7 @@ function OnboardingWithNewFile() {
               <ActionButton
                 Element="button"
                 onClick={() => {
-                  setCode(bracket)
+                  deferredSetCode(bracket)
                   next()
                 }}
                 icon={{ icon: faArrowRight }}
@@ -93,9 +89,7 @@ function OnboardingWithNewFile() {
             <div className="flex justify-between mt-6">
               <ActionButton
                 Element="button"
-                onClick={() =>
-                  dismiss(location.pathname.slice(0, lastSlashIndex))
-                }
+                onClick={dismiss}
                 icon={{
                   icon: faXmark,
                   bgClassName: 'bg-destroy-80',
@@ -122,10 +116,9 @@ function OnboardingWithNewFile() {
 }
 
 export default function Introduction() {
-  const location = useLocation()
-  const { setCode, code } = useStore((s) => ({
+  const { deferredSetCode, code } = useStore((s) => ({
     code: s.code,
-    setCode: s.setCode,
+    deferredSetCode: s.deferredSetCode,
   }))
   const {
     settings: {
@@ -143,8 +136,8 @@ export default function Introduction() {
   const next = useNextClick(onboardingPaths.CAMERA)
 
   useEffect(() => {
-    if (code === '') setCode(bracket)
-  }, [code, setCode])
+    if (code === '') deferredSetCode(bracket)
+  }, [code, deferredSetCode])
 
   return !(code !== '' && code !== bracket) ? (
     <div className="fixed grid place-content-center inset-0 bg-chalkboard-110/50 z-50">
@@ -184,11 +177,7 @@ export default function Introduction() {
         <div className="flex justify-between mt-6">
           <ActionButton
             Element="button"
-            onClick={() =>
-              dismiss(
-                location.pathname.slice(0, location.pathname.lastIndexOf('/'))
-              )
-            }
+            onClick={dismiss}
             icon={{
               icon: faXmark,
               bgClassName: 'bg-destroy-80',

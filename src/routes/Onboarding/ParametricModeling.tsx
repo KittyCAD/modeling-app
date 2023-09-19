@@ -5,7 +5,6 @@ import { useStore } from '../../useStore'
 import { useBackdropHighlight } from 'hooks/useBackdropHighlight'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
-import { useLocation } from 'react-router-dom'
 
 export default function ParametricModeling() {
   const { buttonDownInStream } = useStore((s) => ({
@@ -23,7 +22,6 @@ export default function ParametricModeling() {
       : ''
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.INTERACTIVE_NUMBERS)
-  const location = useLocation()
 
   return (
     <div className="fixed grid justify-end items-center inset-0 z-50 pointer-events-none">
@@ -62,11 +60,7 @@ export default function ParametricModeling() {
         <div className="flex justify-between">
           <ActionButton
             Element="button"
-            onClick={() =>
-              dismiss(
-                location.pathname.slice(0, location.pathname.lastIndexOf('/'))
-              )
-            }
+            onClick={dismiss}
             icon={{
               icon: faXmark,
               bgClassName: 'bg-destroy-80',

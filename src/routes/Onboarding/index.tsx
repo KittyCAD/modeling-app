@@ -1,5 +1,5 @@
 import { useHotkeys } from 'react-hotkeys-hook'
-import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Outlet, useRouteLoaderData, useNavigate } from 'react-router-dom'
 import Introduction from './Introduction'
 import Camera from './Camera'
 import Sketching from './Sketching'
@@ -15,6 +15,7 @@ import UserMenu from './UserMenu'
 import ProjectMenu from './ProjectMenu'
 import Export from './Export'
 import FutureWork from './FutureWork'
+import { IndexLoaderData, paths } from 'Router'
 
 export const onboardingPaths = {
   INDEX: '/',
@@ -89,41 +90,44 @@ export function useNextClick(newStatus: string) {
     settings: { send },
   } = useGlobalStateContext()
   const navigate = useNavigate()
-  const location = useLocation()
-  const lastSlashIndex = location.pathname.lastIndexOf('/')
+  const { project } = useRouteLoaderData(paths.FILE) as IndexLoaderData
 
   return useCallback(() => {
     send({
       type: 'Set Onboarding Status',
       data: { onboardingStatus: newStatus },
     })
-    navigate(location.pathname.slice(0, lastSlashIndex) + newStatus)
-  }, [location, lastSlashIndex, newStatus, send, navigate])
+    navigate(
+      paths.FILE +
+        '/' +
+        encodeURIComponent(project?.path || '') +
+        paths.ONBOARDING.INDEX.slice(0, -1) +
+        newStatus
+    )
+  }, [project, newStatus, send, navigate])
 }
 
 export function useDismiss() {
+  const routeData = useRouteLoaderData(paths.FILE) as IndexLoaderData
   const {
     settings: { send },
   } = useGlobalStateContext()
   const navigate = useNavigate()
 
-  return useCallback(
-    (path: string) => {
-      send({
-        type: 'Set Onboarding Status',
-        data: { onboardingStatus: 'dismissed' },
-      })
-      navigate(path)
-    },
-    [send, navigate]
-  )
+  return useCallback(() => {
+    send({
+      type: 'Set Onboarding Status',
+      data: { onboardingStatus: 'dismissed' },
+    })
+    navigate(
+      paths.FILE + '/' + encodeURIComponent(routeData?.project?.path || '')
+    )
+  }, [send, navigate, routeData])
 }
 
 const Onboarding = () => {
-  const location = useLocation()
   const dismiss = useDismiss()
-  const lastSlashIndex = location.pathname.lastIndexOf('/')
-  useHotkeys('esc', () => dismiss(location.pathname.slice(0, lastSlashIndex)))
+  useHotkeys('esc', dismiss)
 
   return (
     <>
