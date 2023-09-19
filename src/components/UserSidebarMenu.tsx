@@ -2,7 +2,7 @@ import { Popover, Transition } from '@headlessui/react'
 import { ActionButton } from './ActionButton'
 import { faBars, faGear, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment, useState } from 'react'
 import { paths } from '../Router'
 import makeUrlPathRelative from '../lib/makeUrlPathRelative'
@@ -12,6 +12,7 @@ import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 type User = Models['User_type']
 
 const UserSidebarMenu = ({ user }: { user?: User }) => {
+  const location = useLocation()
   const displayedName = getDisplayName(user)
   const [imageLoadFailed, setImageLoadFailed] = useState(false)
   const navigate = useNavigate()
@@ -126,7 +127,11 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                     // since /settings is a nested route the sidebar doesn't close
                     // automatically when navigating to it
                     close()
-                    navigate(makeUrlPathRelative(paths.SETTINGS))
+                    navigate(
+                      (location.pathname.endsWith('/')
+                        ? location.pathname.slice(0, -1)
+                        : location.pathname) + paths.SETTINGS
+                    )
                   }}
                 >
                   Settings

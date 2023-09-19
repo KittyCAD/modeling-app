@@ -3,6 +3,7 @@ import { ActionButton } from '../../components/ActionButton'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from '../../useStore'
 import { isTauri } from 'lib/isTauri'
+import { useDotDotSlash } from 'hooks/useDotDotSlash'
 
 export default function ProjectMenu() {
   const { buttonDownInStream } = useStore((s) => ({
@@ -10,6 +11,7 @@ export default function ProjectMenu() {
   }))
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.EXPORT)
+  const dotDotSlash = useDotDotSlash()
 
   return (
     <div className="fixed grid justify-center items-start inset-0 z-50 pointer-events-none">
@@ -31,7 +33,7 @@ export default function ProjectMenu() {
         <div className="flex justify-between">
           <ActionButton
             Element="button"
-            onClick={() => dismiss('../../')}
+            onClick={() => dismiss(dotDotSlash(2))}
             icon={{
               icon: faXmark,
               bgClassName: 'bg-destroy-80',

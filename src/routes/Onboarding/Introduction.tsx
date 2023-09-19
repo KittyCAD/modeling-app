@@ -15,13 +15,14 @@ import { isTauri } from 'lib/isTauri'
 import { useNavigate } from 'react-router-dom'
 import { paths } from 'Router'
 import { useEffect } from 'react'
+import { useDotDotSlash } from 'hooks/useDotDotSlash'
 
 function OnboardingWithNewFile() {
   const navigate = useNavigate()
+  const dotDotSlash = useDotDotSlash()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.INDEX)
-  const { setCode, code } = useStore((s) => ({
-    code: s.code,
+  const { setCode } = useStore((s) => ({
     setCode: s.setCode,
   }))
   const {
@@ -52,7 +53,7 @@ function OnboardingWithNewFile() {
             <div className="flex justify-between mt-6">
               <ActionButton
                 Element="button"
-                onClick={() => dismiss('../')}
+                onClick={() => dismiss(dotDotSlash())}
                 icon={{
                   icon: faXmark,
                   bgClassName: 'bg-destroy-80',
@@ -90,7 +91,7 @@ function OnboardingWithNewFile() {
             <div className="flex justify-between mt-6">
               <ActionButton
                 Element="button"
-                onClick={() => dismiss('../')}
+                onClick={() => dismiss(dotDotSlash())}
                 icon={{
                   icon: faXmark,
                   bgClassName: 'bg-destroy-80',
@@ -135,6 +136,7 @@ export default function Introduction() {
       : ''
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.CAMERA)
+  const dotDotSlash = useDotDotSlash()
 
   useEffect(() => {
     if (code === '') setCode(bracket)
@@ -178,7 +180,7 @@ export default function Introduction() {
         <div className="flex justify-between mt-6">
           <ActionButton
             Element="button"
-            onClick={() => dismiss('../')}
+            onClick={() => dismiss(dotDotSlash())}
             icon={{
               icon: faXmark,
               bgClassName: 'bg-destroy-80',
