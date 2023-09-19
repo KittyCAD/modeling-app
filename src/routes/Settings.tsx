@@ -23,6 +23,7 @@ import {
   cameraMouseDragGuards,
 } from 'lib/cameraControls'
 import { UnitSystem } from 'machines/settingsMachine'
+import { relativeJumpBacks } from 'lib/utils'
 
 export const Settings = () => {
   const loaderData = useRouteLoaderData(paths.FILE) as IndexLoaderData
@@ -269,7 +270,7 @@ export const Settings = () => {
                   type: 'Set Onboarding Status',
                   data: { onboardingStatus: '' },
                 })
-                navigate('..' + paths.ONBOARDING.INDEX)
+                navigate(relativeJumpBacks(1) + paths.ONBOARDING.INDEX)
               }}
               icon={{ icon: faArrowRotateBack }}
             >

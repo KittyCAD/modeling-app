@@ -98,3 +98,10 @@ export function getNormalisedCoordinates({
     y: Math.round((browserY / height) * streamHeight),
   }
 }
+
+export function relativeJumpBacks(count: number = 1): string {
+  if (window.location.pathname === '/') return ''
+  const path = window.location.pathname.slice(0, window.location.pathname.lastIndexOf('/'))
+  if (count <= 1) return path
+  return relativeJumpBacks(count - 1)
+}
