@@ -179,7 +179,7 @@ impl<'a> Args<'a> {
         Ok((numbers[0], numbers[1]))
     }
 
-    fn get_segment_name_sketch_group(&self) -> Result<(String, SketchGroup), KclError> {
+    fn get_segment_name_sketch_group(&self) -> Result<(String, Box<SketchGroup>), KclError> {
         // Iterate over our args, the first argument should be a UserVal with a string value.
         // The second argument should be a SketchGroup.
         let first_value = self
@@ -221,7 +221,7 @@ impl<'a> Args<'a> {
         Ok((segment_name, sketch_group))
     }
 
-    fn get_sketch_group(&self) -> Result<SketchGroup, KclError> {
+    fn get_sketch_group(&self) -> Result<Box<SketchGroup>, KclError> {
         let first_value = self.args.first().ok_or_else(|| {
             KclError::Type(KclErrorDetails {
                 message: format!("Expected a SketchGroup as the first argument, found `{:?}`", self.args),
@@ -263,7 +263,7 @@ impl<'a> Args<'a> {
         Ok(data)
     }
 
-    fn get_data_and_sketch_group<T: serde::de::DeserializeOwned>(&self) -> Result<(T, SketchGroup), KclError> {
+    fn get_data_and_sketch_group<T: serde::de::DeserializeOwned>(&self) -> Result<(T, Box<SketchGroup>), KclError> {
         let first_value = self
             .args
             .first()
@@ -301,7 +301,7 @@ impl<'a> Args<'a> {
         Ok((data, sketch_group))
     }
 
-    fn get_segment_name_to_number_sketch_group(&self) -> Result<(String, f64, SketchGroup), KclError> {
+    fn get_segment_name_to_number_sketch_group(&self) -> Result<(String, f64, Box<SketchGroup>), KclError> {
         // Iterate over our args, the first argument should be a UserVal with a string value.
         // The second argument should be a number.
         // The third argument should be a SketchGroup.
@@ -357,7 +357,7 @@ impl<'a> Args<'a> {
         Ok((segment_name, to_number, sketch_group))
     }
 
-    fn get_number_sketch_group(&self) -> Result<(f64, SketchGroup), KclError> {
+    fn get_number_sketch_group(&self) -> Result<(f64, Box<SketchGroup>), KclError> {
         // Iterate over our args, the first argument should be a number.
         // The second argument should be a SketchGroup.
         let first_value = self
@@ -392,7 +392,7 @@ impl<'a> Args<'a> {
         Ok((number, sketch_group))
     }
 
-    fn get_path_name_extrude_group(&self) -> Result<(String, ExtrudeGroup), KclError> {
+    fn get_path_name_extrude_group(&self) -> Result<(String, Box<ExtrudeGroup>), KclError> {
         // Iterate over our args, the first argument should be a UserVal with a string value.
         // The second argument should be a ExtrudeGroup.
         let first_value = self
@@ -454,7 +454,7 @@ pub fn show(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "show",
 }]
-fn inner_show(_sketch: SketchGroup) {}
+fn inner_show(_sketch: Box<SketchGroup>) {}
 
 /// Returns the length of the given leg.
 pub fn leg_length(args: &mut Args) -> Result<MemoryItem, KclError> {

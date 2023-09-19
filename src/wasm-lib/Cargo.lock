@@ -593,26 +593,12 @@ checksum = "f2696e8a945f658fd14dc3b87242e6b80cd0f36ff04ea560fa39082368847946"
 
 [[package]]
 name = "derive-docs"
-version = "0.1.3"
+version = "0.1.4"
 dependencies = [
  "convert_case",
  "expectorate",
  "openapitor",
  "pretty_assertions",
- "proc-macro2",
- "quote",
- "serde",
- "serde_tokenstream",
- "syn 2.0.37",
-]
-
-[[package]]
-name = "derive-docs"
-version = "0.1.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5fe5c5ea065cfabc5a7c5e8ed616e369fbf108c4be01e0e5609bc9846a732664"
-dependencies = [
- "convert_case",
  "proc-macro2",
  "quote",
  "serde",
@@ -1302,7 +1288,7 @@ dependencies = [
  "bson",
  "clap",
  "dashmap",
- "derive-docs 0.1.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive-docs",
  "expectorate",
  "futures",
  "itertools 0.11.0",
