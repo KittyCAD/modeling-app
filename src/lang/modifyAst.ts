@@ -537,7 +537,7 @@ export function createPipeExpression(
     start: 0,
     end: 0,
     body,
-    nonCodeMeta: { noneCodeNodes: {}, start: null },
+    nonCodeMeta: { nonCodeNodes: {}, start: null },
   }
 }
 

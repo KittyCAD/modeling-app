@@ -6,16 +6,16 @@ import { useEffect } from 'react'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
 
 export default function Sketching() {
-  const { setCode, buttonDownInStream } = useStore((s) => ({
-    setCode: s.setCode,
+  const { deferredSetCode, buttonDownInStream } = useStore((s) => ({
+    deferredSetCode: s.deferredSetCode,
     buttonDownInStream: s.buttonDownInStream,
   }))
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.FUTURE_WORK)
 
   useEffect(() => {
-    setCode('')
-  }, [setCode])
+    deferredSetCode('')
+  }, [deferredSetCode])
   const dotDotSlash = useDotDotSlash()
 
   return (

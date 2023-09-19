@@ -8,14 +8,14 @@ import { useDotDotSlash } from 'hooks/useDotDotSlash'
 
 export default function FutureWork() {
   const dismiss = useDismiss()
-  const { setCode } = useStore((s) => ({
-    setCode: s.setCode,
+  const { deferredSetCode } = useStore((s) => ({
+    deferredSetCode: s.deferredSetCode,
   }))
   const dotDotSlash = useDotDotSlash()
 
   useEffect(() => {
-    setCode(bracket)
-  }, [setCode])
+    deferredSetCode(bracket)
+  }, [deferredSetCode])
 
   return (
     <div className="fixed grid justify-center items-center inset-0 bg-chalkboard-100/50 z-50">

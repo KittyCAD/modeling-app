@@ -322,7 +322,7 @@ export const useStore = create<StoreState>()(
           end: 0,
           body: [],
           nonCodeMeta: {
-            noneCodeNodes: {},
+            nonCodeNodes: {},
             start: null,
           },
         },
@@ -554,7 +554,7 @@ async function executeCode({
         end: 0,
         body: [],
         nonCodeMeta: {
-          noneCodeNodes: {},
+          nonCodeNodes: {},
           start: null,
         },
       },
