@@ -23,14 +23,14 @@ import {
   cameraMouseDragGuards,
 } from 'lib/cameraControls'
 import { UnitSystem } from 'machines/settingsMachine'
+import { useDotDotSlash } from 'hooks/useDotDotSlash'
 
 export const Settings = () => {
   const loaderData = useRouteLoaderData(paths.FILE) as IndexLoaderData
   const navigate = useNavigate()
   const location = useLocation()
-  useHotkeys('esc', () =>
-    navigate(location.pathname.slice(0, location.pathname.lastIndexOf('/')))
-  )
+  const dotDotSlash = useDotDotSlash()
+  useHotkeys('esc', () => navigate(dotDotSlash()))
   const {
     settings: {
       send,
@@ -269,12 +269,7 @@ export const Settings = () => {
                   type: 'Set Onboarding Status',
                   data: { onboardingStatus: '' },
                 })
-                navigate(
-                  paths.FILE +
-                    '/' +
-                    encodeURIComponent(loaderData?.project?.path || '') +
-                    paths.ONBOARDING.INDEX
-                )
+                navigate(dotDotSlash() + paths.ONBOARDING.INDEX)
               }}
               icon={{ icon: faArrowRotateBack }}
             >

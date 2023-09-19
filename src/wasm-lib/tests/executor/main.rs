@@ -127,3 +127,21 @@ show(bracket)"#;
     let result = execute_and_snapshot(code).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/parametric.png", &result, 1.0);
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_execute_engine_error_return() {
+    let code = r#"const part001 = startSketchAt([5.5229, 5.25217])
+  |> line([10.50433, -1.19122], %)
+  |> line([8.01362, -5.48731], %)
+  |> line([-1.02877, -6.76825], %)
+  |> line([-11.53311, 2.81559], %)
+  |> extrude(4, %)
+"#;
+
+    let result = execute_and_snapshot(code).await;
+    assert!(result.is_err());
+    assert_eq!(
+        result.err().unwrap().to_string(),
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([193, 206])], message: "Modeling command failed: Some([ApiError { error_code: BadRequest, message: \"The path is not closed.  Solid2D construction requires a closed path!\" }])" }"#,
+    );
+}

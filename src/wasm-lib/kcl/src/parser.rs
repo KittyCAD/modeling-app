@@ -3,8 +3,8 @@ use std::{collections::HashMap, str::FromStr};
 use crate::{
     ast::types::{
         ArrayExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression, ExpressionStatement,
-        FunctionExpression, Identifier, Literal, LiteralIdentifier, MemberExpression, MemberObject, NoneCodeMeta,
-        NoneCodeNode, NoneCodeValue, ObjectExpression, ObjectKeyInfo, ObjectProperty, PipeExpression, PipeSubstitution,
+        FunctionExpression, Identifier, Literal, LiteralIdentifier, MemberExpression, MemberObject, NonCodeMeta,
+        NonCodeNode, NonCodeValue, ObjectExpression, ObjectKeyInfo, ObjectProperty, PipeExpression, PipeSubstitution,
         Program, ReturnStatement, UnaryExpression, UnaryOperator, Value, VariableDeclaration, VariableDeclarator,
         VariableKind,
     },
@@ -26,7 +26,7 @@ struct TokenReturn {
 struct TokenReturnWithNonCode {
     token: Option<Token>,
     index: usize,
-    non_code_node: Option<NoneCodeNode>,
+    non_code_node: Option<NonCodeNode>,
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -57,7 +57,7 @@ struct ArrayReturn {
 struct PipeBodyReturn {
     body: Vec<Value>,
     last_index: usize,
-    non_code_meta: NoneCodeMeta,
+    non_code_meta: NonCodeMeta,
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -136,7 +136,7 @@ struct ReturnStatementResult {
 struct BodyResult {
     body: Vec<BodyItem>,
     last_index: usize,
-    non_code_meta: NoneCodeMeta,
+    non_code_meta: NonCodeMeta,
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -183,8 +183,8 @@ impl Parser {
         let body = self.make_body(
             0,
             vec![],
-            NoneCodeMeta {
-                none_code_nodes: HashMap::new(),
+            NonCodeMeta {
+                non_code_nodes: HashMap::new(),
                 start: None,
             },
         )?;
@@ -269,7 +269,7 @@ impl Parser {
         Ok(index + 1)
     }
 
-    fn make_none_code_node(&self, index: usize) -> Result<(Option<NoneCodeNode>, usize), KclError> {
+    fn make_non_code_node(&self, index: usize) -> Result<(Option<NonCodeNode>, usize), KclError> {
         let end_index = self.find_end_of_non_code_node(index)?;
         let start_index = self.find_start_of_non_code_node(index)?;
         let non_code_tokens = self.tokens[index..end_index].to_vec();
@@ -286,10 +286,10 @@ impl Parser {
                 .contains("\n\n")
         {
             return Ok((
-                Some(NoneCodeNode {
+                Some(NonCodeNode {
                     start: self.tokens[start_index].start,
                     end: self.tokens[end_index - 1].end,
-                    value: NoneCodeValue::NewLine,
+                    value: NonCodeValue::NewLine,
                 }),
                 end_index - 1,
             ));
@@ -330,17 +330,17 @@ impl Parser {
         let is_new_line_comment =
             start_end_string.starts_with('\n') || start_end_string.contains('\n') || start_index == 0 || index == 0;
 
-        let node = NoneCodeNode {
+        let node = NonCodeNode {
             start: self.tokens[start_index].start,
             end: self.tokens[end_index - 1].end,
             value: if start_end_string.starts_with("\n\n") && is_new_line_comment {
                 // Preserve if they want a whitespace line before the comment.
                 // But let's just allow one.
-                NoneCodeValue::NewLineBlockComment { value: full_string }
+                NonCodeValue::NewLineBlockComment { value: full_string }
             } else if is_new_line_comment {
-                NoneCodeValue::BlockComment { value: full_string }
+                NonCodeValue::BlockComment { value: full_string }
             } else {
-                NoneCodeValue::InlineComment { value: full_string }
+                NonCodeValue::InlineComment { value: full_string }
             },
         };
         Ok((Some(node), end_index - 1))
@@ -366,7 +366,7 @@ impl Parser {
         };
 
         if is_not_code_token(token) {
-            let non_code_node = self.make_none_code_node(new_index)?;
+            let non_code_node = self.make_non_code_node(new_index)?;
             let new_new_index = non_code_node.1 + 1;
             let bonus_non_code_node = non_code_node.0;
 
@@ -1027,13 +1027,13 @@ impl Parser {
         &self,
         index: usize,
         previous_values: Vec<Value>,
-        previous_non_code_meta: Option<NoneCodeMeta>,
+        previous_non_code_meta: Option<NonCodeMeta>,
     ) -> Result<PipeBodyReturn, KclError> {
         let non_code_meta = match previous_non_code_meta {
             Some(meta) => meta,
-            None => NoneCodeMeta {
+            None => NonCodeMeta {
                 start: None,
-                none_code_nodes: HashMap::new(),
+                non_code_nodes: HashMap::new(),
             },
         };
         let current_token = self.get_token(index)?;
@@ -1060,10 +1060,10 @@ impl Parser {
                 non_code_meta,
             });
         }
-        let mut _non_code_meta: NoneCodeMeta;
+        let mut _non_code_meta: NonCodeMeta;
         if let Some(node) = next_pipe.non_code_node {
             _non_code_meta = non_code_meta;
-            _non_code_meta.none_code_nodes.insert(previous_values.len(), node);
+            _non_code_meta.non_code_nodes.insert(previous_values.len(), node);
         } else {
             _non_code_meta = non_code_meta;
         }
@@ -1587,7 +1587,7 @@ impl Parser {
         &self,
         token_index: usize,
         previous_body: Vec<BodyItem>,
-        previous_non_code_meta: NoneCodeMeta,
+        previous_non_code_meta: NonCodeMeta,
     ) -> Result<BodyResult, KclError> {
         let mut non_code_meta = previous_non_code_meta;
         if self.tokens.is_empty() {
@@ -1620,7 +1620,7 @@ impl Parser {
                 if previous_body.is_empty() {
                     non_code_meta.start = next_token.non_code_node;
                 } else {
-                    non_code_meta.none_code_nodes.insert(previous_body.len(), node.clone());
+                    non_code_meta.non_code_nodes.insert(previous_body.len(), node.clone());
                 }
             }
             return self.make_body(next_token.index, previous_body, non_code_meta);
@@ -1628,14 +1628,14 @@ impl Parser {
 
         let next = self.next_meaningful_token(token_index, None)?;
         if let Some(node) = &next.non_code_node {
-            non_code_meta.none_code_nodes.insert(previous_body.len(), node.clone());
+            non_code_meta.non_code_nodes.insert(previous_body.len(), node.clone());
         }
 
         if token.token_type == TokenType::Keyword && VariableKind::from_str(&token.value).is_ok() {
             let declaration = self.make_variable_declaration(token_index)?;
             let next_thing = self.next_meaningful_token(declaration.last_index, None)?;
             if let Some(node) = &next_thing.non_code_node {
-                non_code_meta.none_code_nodes.insert(previous_body.len(), node.clone());
+                non_code_meta.non_code_nodes.insert(previous_body.len(), node.clone());
             }
             let mut _previous_body = previous_body;
             _previous_body.push(BodyItem::VariableDeclaration(VariableDeclaration {
@@ -1656,7 +1656,7 @@ impl Parser {
             let statement = self.make_return_statement(token_index)?;
             let next_thing = self.next_meaningful_token(statement.last_index, None)?;
             if let Some(node) = &next_thing.non_code_node {
-                non_code_meta.none_code_nodes.insert(previous_body.len(), node.clone());
+                non_code_meta.non_code_nodes.insert(previous_body.len(), node.clone());
             }
             let mut _previous_body = previous_body;
             _previous_body.push(BodyItem::ReturnStatement(ReturnStatement {
@@ -1680,7 +1680,7 @@ impl Parser {
                 let expression = self.make_expression_statement(token_index)?;
                 let next_thing = self.next_meaningful_token(expression.last_index, None)?;
                 if let Some(node) = &next_thing.non_code_node {
-                    non_code_meta.none_code_nodes.insert(previous_body.len(), node.clone());
+                    non_code_meta.non_code_nodes.insert(previous_body.len(), node.clone());
                 }
                 let mut _previous_body = previous_body;
                 _previous_body.push(BodyItem::ExpressionStatement(ExpressionStatement {
@@ -1703,7 +1703,7 @@ impl Parser {
                 && next_thing_token.token_type == TokenType::Operator
             {
                 if let Some(node) = &next_thing.non_code_node {
-                    non_code_meta.none_code_nodes.insert(previous_body.len(), node.clone());
+                    non_code_meta.non_code_nodes.insert(previous_body.len(), node.clone());
                 }
                 let expression = self.make_expression_statement(token_index)?;
                 let mut _previous_body = previous_body;
@@ -1734,8 +1734,8 @@ impl Parser {
             BodyResult {
                 body: vec![],
                 last_index: next_token_index,
-                non_code_meta: NoneCodeMeta {
-                    none_code_nodes: HashMap::new(),
+                non_code_meta: NonCodeMeta {
+                    non_code_nodes: HashMap::new(),
                     start: None,
                 },
             }
@@ -1743,8 +1743,8 @@ impl Parser {
             self.make_body(
                 next_token_index,
                 vec![],
-                NoneCodeMeta {
-                    none_code_nodes: HashMap::new(),
+                NonCodeMeta {
+                    non_code_nodes: HashMap::new(),
                     start: None,
                 },
             )?
@@ -1870,16 +1870,16 @@ mod tests {
         );
     }
     #[test]
-    fn test_make_none_code_node() {
+    fn test_make_non_code_node() {
         let tokens = crate::tokeniser::lexer("log(5, \"hello\", aIdentifier)");
         let parser = Parser::new(tokens);
         let index = 4;
         let expected_output = (None, 4);
-        assert_eq!(parser.make_none_code_node(index).unwrap(), expected_output);
+        assert_eq!(parser.make_non_code_node(index).unwrap(), expected_output);
 
         let index = 7;
         let expected_output = (None, 7);
-        assert_eq!(parser.make_none_code_node(index).unwrap(), expected_output);
+        assert_eq!(parser.make_non_code_node(index).unwrap(), expected_output);
         let tokens = crate::tokeniser::lexer(
             r#"
 const yo = { a: { b: { c: '123' } } }
@@ -1889,28 +1889,28 @@ const key = 'c'"#,
         let parser = Parser::new(tokens);
         let index = 0;
         let expected_output = (None, 0);
-        assert_eq!(parser.make_none_code_node(index).unwrap(), expected_output);
+        assert_eq!(parser.make_non_code_node(index).unwrap(), expected_output);
 
         let index = 2;
         let expected_output = (None, 2);
-        assert_eq!(parser.make_none_code_node(index).unwrap(), expected_output);
+        assert_eq!(parser.make_non_code_node(index).unwrap(), expected_output);
 
         let index = 2;
         let expected_output = (None, 2);
-        assert_eq!(parser.make_none_code_node(index).unwrap(), expected_output);
+        assert_eq!(parser.make_non_code_node(index).unwrap(), expected_output);
 
         let index = 29;
         let expected_output = (
-            Some(NoneCodeNode {
+            Some(NonCodeNode {
                 start: 38,
                 end: 60,
-                value: NoneCodeValue::BlockComment {
+                value: NonCodeValue::BlockComment {
                     value: "this is a comment".to_string(),
                 },
             }),
             31,
         );
-        assert_eq!(parser.make_none_code_node(index).unwrap(), expected_output);
+        assert_eq!(parser.make_non_code_node(index).unwrap(), expected_output);
         let tokens = crate::tokeniser::lexer(
             r#"const mySketch = startSketchAt([0,0])
   |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
@@ -1923,16 +1923,16 @@ const key = 'c'"#,
         let parser = Parser::new(tokens);
         let index = 57;
         let expected_output = (
-            Some(NoneCodeNode {
+            Some(NonCodeNode {
                 start: 106,
                 end: 166,
-                value: NoneCodeValue::BlockComment {
+                value: NonCodeValue::BlockComment {
                     value: "this is\n      a comment\n      spanning a few lines".to_string(),
                 },
             }),
             59,
         );
-        assert_eq!(parser.make_none_code_node(index).unwrap(), expected_output);
+        assert_eq!(parser.make_non_code_node(index).unwrap(), expected_output);
     }
 
     #[test]
@@ -2905,8 +2905,8 @@ show(mySk1)"#;
             .make_body(
                 0,
                 vec![],
-                NoneCodeMeta {
-                    none_code_nodes: HashMap::new(),
+                NonCodeMeta {
+                    non_code_nodes: HashMap::new(),
                     start: None,
                 },
             )
@@ -2943,8 +2943,8 @@ show(mySk1)"#;
                     })),
                 })),
             })],
-            non_code_meta: NoneCodeMeta {
-                none_code_nodes: Default::default(),
+            non_code_meta: NonCodeMeta {
+                non_code_nodes: Default::default(),
                 start: None,
             },
         };
@@ -3278,8 +3278,8 @@ e
                 }],
                 kind: VariableKind::Const,
             })],
-            non_code_meta: NoneCodeMeta {
-                none_code_nodes: Default::default(),
+            non_code_meta: NonCodeMeta {
+                non_code_nodes: Default::default(),
                 start: None,
             },
         };

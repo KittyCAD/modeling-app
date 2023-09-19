@@ -100,7 +100,7 @@ export function useNextClick(newStatus: string) {
     navigate(
       paths.FILE +
         '/' +
-        encodeURIComponent(project?.path || '') +
+        encodeURIComponent(project?.path || 'new') +
         paths.ONBOARDING.INDEX.slice(0, -1) +
         newStatus
     )
@@ -120,7 +120,7 @@ export function useDismiss() {
       data: { onboardingStatus: 'dismissed' },
     })
     navigate(
-      paths.FILE + '/' + encodeURIComponent(routeData?.project?.path || '')
+      paths.FILE + '/' + encodeURIComponent(routeData?.project?.path || 'new')
     )
   }, [send, navigate, routeData])
 }

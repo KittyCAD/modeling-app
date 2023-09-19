@@ -3,6 +3,7 @@ import { ActionButton } from '../../components/ActionButton'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from '../../useStore'
 import { useBackdropHighlight } from 'hooks/useBackdropHighlight'
+import { useDotDotSlash } from 'hooks/useDotDotSlash'
 
 export default function InteractiveNumbers() {
   const { buttonDownInStream } = useStore((s) => ({
@@ -10,6 +11,7 @@ export default function InteractiveNumbers() {
   }))
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.COMMAND_K)
+  const dotDotSlash = useDotDotSlash()
 
   return (
     <div className="fixed grid justify-end items-center inset-0 z-50 pointer-events-none">
