@@ -3410,6 +3410,30 @@ thing(false)
     }
 
     #[test]
+    fn test_member_expression_sketch_group() {
+        let some_program_string = r#"fn cube = (pos, scale) => {
+  const sg = startSketchAt(pos)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+
+const b1 = cube([0,0], 10)
+const b2 = cube([3,3], 4)
+
+const pt1 = b1[0]
+const pt2 = b2[0]
+
+show(b1)
+show(b2)"#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        parser.ast().unwrap();
+    }
+
+    #[test]
     #[ignore] // ignore until more stack fixes
     fn test_parse_pipes_on_pipes() {
         let code = include_str!("../../tests/executor/inputs/pipes_on_pipes.kcl");

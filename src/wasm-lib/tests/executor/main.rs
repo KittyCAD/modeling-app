@@ -173,3 +173,31 @@ async fn serial_test_execute_pipes_on_pipes() {
     let result = execute_and_snapshot(code).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/pipes_on_pipes.png", &result, 1.0);
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_member_expression_sketch_group() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchAt(pos)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+
+const b1 = cube([0,0], 10)
+const b2 = cube([3,3], 4)
+
+const pt1 = b1.value[0]
+const pt2 = b2.value[0]
+
+show(b1)
+show(b2)"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/member_expression_sketch_group.png",
+        &result,
+        1.0,
+    );
+}

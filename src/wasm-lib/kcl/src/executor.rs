@@ -159,10 +159,12 @@ impl MemoryItem {
         if let MemoryItem::UserVal(user_val) = self {
             Ok(user_val.value.clone())
         } else {
-            Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Not a user value: {:?}", self),
-                source_ranges: self.clone().into(),
-            }))
+            serde_json::to_value(self).map_err(|err| {
+                KclError::Semantic(KclErrorDetails {
+                    message: format!("Cannot convert memory item to json value: {:?}", err),
+                    source_ranges: self.clone().into(),
+                })
+            })
         }
     }
 
