@@ -130,6 +130,7 @@ const router = createBrowserRouter(
       path: paths.INDEX,
       loader: () =>
         isTauri() ? redirect(paths.HOME) : redirect(paths.FILE + '/new'),
+      errorElement: <ErrorPage />,
     },
     {
       path: paths.FILE + '/:id',
@@ -140,7 +141,6 @@ const router = createBrowserRouter(
           {!isTauri() && import.meta.env.PROD && <DownloadAppBanner />}
         </Auth>
       ),
-      errorElement: <ErrorPage />,
       id: paths.FILE,
       loader: async ({
         request,
