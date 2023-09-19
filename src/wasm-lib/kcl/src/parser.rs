@@ -777,6 +777,7 @@ impl Parser {
                 });
             }
         }
+
         if current_token.token_type == TokenType::Word
             || current_token.token_type == TokenType::Number
             || current_token.token_type == TokenType::String
@@ -1249,7 +1250,15 @@ impl Parser {
             })
         })?;
         let closing_brace_token = self.get_token(closing_brace_index)?;
-        let args = self.make_arguments(brace_token.index, vec![])?;
+        // Account for if we have no args.
+        let args = if brace_token.index + 1 == closing_brace_index {
+            ArgumentsReturn {
+                arguments: vec![],
+                last_index: closing_brace_index,
+            }
+        } else {
+            self.make_arguments(brace_token.index, vec![])?
+        };
         let function = if let Some(stdlib_fn) = self.stdlib.get(&callee.name) {
             crate::ast::types::Function::StdLib { func: stdlib_fn }
         } else {
@@ -3410,10 +3419,42 @@ thing(false)
     }
 
     #[test]
+    fn test_member_expression_sketch_group() {
+        let some_program_string = r#"fn cube = (pos, scale) => {
+  const sg = startSketchAt(pos)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+
+const b1 = cube([0,0], 10)
+const b2 = cube([3,3], 4)
+
+const pt1 = b1[0]
+const pt2 = b2[0]
+
+show(b1)
+show(b2)"#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        parser.ast().unwrap();
+    }
+
+    #[test]
+    fn test_math_with_stdlib() {
+        let some_program_string = r#"const d2r = pi() / 2
+let other_thing = 2 * cos(3)"#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        parser.ast().unwrap();
+    }
+
+    #[test]
     #[ignore] // ignore until more stack fixes
     fn test_parse_pipes_on_pipes() {
         let code = include_str!("../../tests/executor/inputs/pipes_on_pipes.kcl");
-        println!("code: {}", code);
 
         let tokens = crate::tokeniser::lexer(code);
         let parser = crate::parser::Parser::new(tokens);

@@ -159,10 +159,12 @@ impl MemoryItem {
         if let MemoryItem::UserVal(user_val) = self {
             Ok(user_val.value.clone())
         } else {
-            Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Not a user value: {:?}", self),
-                source_ranges: self.clone().into(),
-            }))
+            serde_json::to_value(self).map_err(|err| {
+                KclError::Semantic(KclErrorDetails {
+                    message: format!("Cannot convert memory item to json value: {:?}", err),
+                    source_ranges: self.clone().into(),
+                })
+            })
         }
     }
 
@@ -1173,6 +1175,16 @@ show(thisBox)
         let memory = parse_execute(ast).await.unwrap();
         assert_eq!(
             serde_json::json!(1.0),
+            memory.root.get("myVar").unwrap().get_json_value().unwrap()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_execute_with_pi() {
+        let ast = r#"const myVar = pi() * 2"#;
+        let memory = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            serde_json::json!(std::f64::consts::TAU),
             memory.root.get("myVar").unwrap().get_json_value().unwrap()
         );
     }
