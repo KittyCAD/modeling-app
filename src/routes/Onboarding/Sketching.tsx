@@ -3,7 +3,6 @@ import { ActionButton } from '../../components/ActionButton'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from 'useStore'
 import { useEffect } from 'react'
-import { useDotDotSlash } from 'hooks/useDotDotSlash'
 
 export default function Sketching() {
   const { deferredSetCode, buttonDownInStream } = useStore((s) => ({
@@ -16,7 +15,6 @@ export default function Sketching() {
   useEffect(() => {
     deferredSetCode('')
   }, [deferredSetCode])
-  const dotDotSlash = useDotDotSlash()
 
   return (
     <div className="fixed grid justify-center items-end inset-0 z-50 pointer-events-none">
@@ -40,7 +38,7 @@ export default function Sketching() {
         <div className="flex justify-between mt-6">
           <ActionButton
             Element="button"
-            onClick={() => dismiss(dotDotSlash(2))}
+            onClick={dismiss}
             icon={{
               icon: faXmark,
               bgClassName: 'bg-destroy-80',

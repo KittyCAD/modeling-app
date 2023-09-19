@@ -2,7 +2,6 @@ import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../../components/ActionButton'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from '../../useStore'
-import { useDotDotSlash } from 'hooks/useDotDotSlash'
 
 export default function UserMenu() {
   const { buttonDownInStream } = useStore((s) => ({
@@ -10,7 +9,6 @@ export default function UserMenu() {
   }))
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.PROJECT_MENU)
-  const dotDotSlash = useDotDotSlash()
 
   return (
     <div className="fixed grid justify-center items-start inset-0 z-50 pointer-events-none">
@@ -30,7 +28,7 @@ export default function UserMenu() {
         <div className="flex justify-between">
           <ActionButton
             Element="button"
-            onClick={() => dismiss(dotDotSlash(2))}
+            onClick={dismiss}
             icon={{
               icon: faXmark,
               bgClassName: 'bg-destroy-80',

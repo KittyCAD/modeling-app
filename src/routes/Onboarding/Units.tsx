@@ -6,7 +6,6 @@ import { Toggle } from '../../components/Toggle/Toggle'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { UnitSystem } from 'machines/settingsMachine'
-import { useDotDotSlash } from 'hooks/useDotDotSlash'
 
 export default function Units() {
   const dismiss = useDismiss()
@@ -17,7 +16,6 @@ export default function Units() {
       context: { unitSystem, baseUnit },
     },
   } = useGlobalStateContext()
-  const dotDotSlash = useDotDotSlash()
 
   return (
     <div className="fixed grid place-content-center inset-0 bg-chalkboard-110/50 z-50">
@@ -68,7 +66,7 @@ export default function Units() {
         <div className="flex justify-between mt-6">
           <ActionButton
             Element="button"
-            onClick={() => dismiss(dotDotSlash(2))}
+            onClick={dismiss}
             icon={{
               icon: faXmark,
               bgClassName: 'bg-destroy-80',
