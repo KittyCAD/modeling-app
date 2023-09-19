@@ -89,7 +89,10 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
 ///This command returns the KittyCAD user info given a token.
 /// The string returned from this method is the user info as a json string.
 #[tauri::command]
-async fn get_user(token: Option<String>, hostname: &str) -> Result<kittycad::types::User, InvokeError> {
+async fn get_user(
+    token: Option<String>,
+    hostname: &str,
+) -> Result<kittycad::types::User, InvokeError> {
     // Use the host passed in if it's set.
     // Otherwise, use the default host.
     let host = if hostname.is_empty() {
