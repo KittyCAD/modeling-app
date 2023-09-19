@@ -599,6 +599,10 @@ pub fn execute(
                                 let memory_item = memory.get(&identifier.name, identifier.into())?;
                                 args.push(memory_item.clone());
                             }
+                            Value::CallExpression(call_expr) => {
+                                let result = call_expr.execute(memory, &mut pipe_info, engine)?;
+                                args.push(result);
+                            }
                             // We do nothing for the rest.
                             _ => (),
                         }
