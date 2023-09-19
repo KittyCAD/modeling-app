@@ -90,15 +90,16 @@ export function useNextClick(newStatus: string) {
   } = useGlobalStateContext()
   const navigate = useNavigate()
   const location = useLocation()
-  const lastSlashIndex = location.pathname.lastIndexOf('/')
+  const [_, file, filePath, onboarding, onboardingPath] =
+    location.pathname.split('/')
 
   return useCallback(() => {
     send({
       type: 'Set Onboarding Status',
       data: { onboardingStatus: newStatus },
     })
-    navigate(location.pathname.slice(0, lastSlashIndex) + newStatus)
-  }, [location, lastSlashIndex, newStatus, send, navigate])
+    navigate(`/${[file, filePath, onboarding].join('/')}${newStatus}`)
+  }, [location, file, filePath, onboarding, newStatus, send, navigate])
 }
 
 export function useDismiss() {
