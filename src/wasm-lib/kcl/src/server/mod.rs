@@ -3,6 +3,7 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
+#[cfg(feature = "cli")]
 use clap::Parser;
 use dashmap::DashMap;
 use tower_lsp::{jsonrpc::Result as RpcResult, lsp_types::*, Client, LanguageServer};
@@ -10,14 +11,15 @@ use tower_lsp::{jsonrpc::Result as RpcResult, lsp_types::*, Client, LanguageServ
 use crate::{ast::types::VariableKind, executor::SourceRange, parser::PIPE_OPERATOR};
 
 /// A subcommand for running the server.
-#[derive(Parser, Clone, Debug)]
+#[derive(Clone, Debug)]
+#[cfg_attr(feature = "cli", derive(Parser))]
 pub struct Server {
     /// Port that the server should listen
-    #[clap(long, default_value = "8080")]
+    #[cfg_attr(feature = "cli", clap(long, default_value = "8080"))]
     pub socket: i32,
 
     /// Listen over stdin and stdout instead of a tcp socket.
-    #[clap(short, long, default_value = "false")]
+    #[cfg_attr(feature = "cli", clap(short, long, default_value = "false"))]
     pub stdio: bool,
 }
 
