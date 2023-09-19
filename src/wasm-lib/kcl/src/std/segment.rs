@@ -7,7 +7,7 @@ use schemars::JsonSchema;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{MemoryItem, SketchGroup},
-    std::{utils::get_angle, Args},
+    std::{utils::Angle, Args},
 };
 
 /// Returns the segment end of x.
@@ -174,9 +174,9 @@ fn inner_segment_angle(segment_name: &str, sketch_group: SketchGroup, args: &mut
     })?;
     let line = path.get_base();
 
-    let result = get_angle(&line.from, &line.to);
+    let result = Angle::between(line.from.into(), line.to.into());
 
-    Ok(result)
+    Ok(result.degrees())
 }
 
 /// Returns the angle to match the given length for x.
@@ -230,7 +230,7 @@ fn inner_angle_to_match_length_x(
     if diff > length {
         Ok(0.0)
     } else {
-        Ok(angle_r * 180.0 / std::f64::consts::PI)
+        Ok(angle_r.to_degrees())
     }
 }
 
@@ -285,6 +285,6 @@ fn inner_angle_to_match_length_y(
     if diff > length {
         Ok(0.0)
     } else {
-        Ok(angle_r * 180.0 / std::f64::consts::PI)
+        Ok(angle_r.to_degrees())
     }
 }

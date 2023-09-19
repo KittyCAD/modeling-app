@@ -24,6 +24,9 @@ import {
   StateFrom,
 } from 'xstate'
 import { useCommandsContext } from 'hooks/useCommandsContext'
+import { invoke } from '@tauri-apps/api'
+import { isTauri } from 'lib/isTauri'
+import { VITE_KC_API_BASE_URL } from 'env'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -108,6 +111,7 @@ export const GlobalStateProvider = ({
     actions: {
       goToSignInPage: () => {
         navigate(paths.SIGN_IN)
+
         logout()
       },
       goToIndexPage: () => {
@@ -149,10 +153,12 @@ export const GlobalStateProvider = ({
 export default GlobalStateProvider
 
 export function logout() {
-  const url = withBaseUrl('/logout')
   localStorage.removeItem(TOKEN_PERSIST_KEY)
-  return fetch(url, {
-    method: 'POST',
-    credentials: 'include',
-  })
+  return (
+    !isTauri() &&
+    fetch(withBaseUrl('/logout'), {
+      method: 'POST',
+      credentials: 'include',
+    })
+  )
 }

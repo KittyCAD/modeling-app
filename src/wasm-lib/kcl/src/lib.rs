@@ -1,4 +1,4 @@
-pub mod abstract_syntax_tree_types;
+pub mod ast;
 pub mod docs;
 pub mod engine;
 pub mod errors;

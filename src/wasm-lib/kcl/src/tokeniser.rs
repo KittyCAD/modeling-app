@@ -137,12 +137,12 @@ impl From<&Token> for crate::executor::SourceRange {
 }
 
 lazy_static! {
-    static ref NUMBER: Regex = Regex::new(r"^-?\d+(\.\d+)?").unwrap();
+    static ref NUMBER: Regex = Regex::new(r"^(\d+(\.\d*)?|\.\d+)\b").unwrap();
     static ref WHITESPACE: Regex = Regex::new(r"\s+").unwrap();
     static ref WORD: Regex = Regex::new(r"^[a-zA-Z_][a-zA-Z0-9_]*").unwrap();
     // TODO: these should be generated using our struct types for these.
     static ref KEYWORD: Regex =
-        Regex::new(r"^(if|else|for|while|return|break|continue|fn|let|true|false|nil|and|or|not|var|const)\b").unwrap();
+        Regex::new(r"^(if|else|for|while|return|break|continue|fn|let|mut|loop|true|false|nil|and|or|not|var|const)\b").unwrap();
     static ref OPERATOR: Regex = Regex::new(r"^(>=|<=|==|=>|!= |\|>|\*|\+|-|/|%|=|<|>|\||\^)").unwrap();
     static ref STRING: Regex = Regex::new(r#"^"([^"\\]|\\.)*"|'([^'\\]|\\.)*'"#).unwrap();
     static ref BLOCK_START: Regex = Regex::new(r"^\{").unwrap();
@@ -394,19 +394,18 @@ mod tests {
     fn is_number_test() {
         assert!(is_number("1"));
         assert!(is_number("1 abc"));
-        assert!(is_number("1abc"));
         assert!(is_number("1.1"));
         assert!(is_number("1.1 abc"));
         assert!(!is_number("a"));
 
         assert!(is_number("1"));
+        assert!(is_number(".1"));
         assert!(is_number("5?"));
         assert!(is_number("5 + 6"));
         assert!(is_number("5 + a"));
-        assert!(is_number("-5"));
         assert!(is_number("5.5"));
-        assert!(is_number("-5.5"));
 
+        assert!(!is_number("1abc"));
         assert!(!is_number("a"));
         assert!(!is_number("?"));
         assert!(!is_number("?5"));
@@ -720,5 +719,26 @@ mod tests {
     fn test_token_type_to_semantic_token_type() {
         let semantic_types = TokenType::to_semantic_token_types().unwrap();
         assert!(!semantic_types.is_empty());
+    }
+
+    #[test]
+    fn test_lexer_negative_word() {
+        assert_eq!(
+            lexer("-legX"),
+            vec![
+                Token {
+                    token_type: TokenType::Operator,
+                    value: "-".to_string(),
+                    start: 0,
+                    end: 1,
+                },
+                Token {
+                    token_type: TokenType::Word,
+                    value: "legX".to_string(),
+                    start: 1,
+                    end: 5,
+                },
+            ]
+        );
     }
 }

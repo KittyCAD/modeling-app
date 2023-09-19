@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "kittycad-modeling",
-    "version": "0.6.1"
+    "version": "0.8.1"
   },
   "tauri": {
     "allowlist": {
@@ -71,9 +71,9 @@
       "shortDescription": "",
       "targets": "all",
       "windows": {
-        "certificateThumbprint": null,
+        "certificateThumbprint": "F4C9A52FF7BC26EE5E054946F6B11DEEA94C748D",
         "digestAlgorithm": "sha256",
-        "timestampUrl": ""
+        "timestampUrl": "http://timestamp.digicert.com"
       }
     },
     "security": {

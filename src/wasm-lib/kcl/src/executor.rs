@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
-    abstract_syntax_tree_types::{BodyItem, Function, FunctionExpression, Value},
+    ast::types::{BodyItem, Function, FunctionExpression, Value},
     engine::EngineConnection,
     errors::{KclError, KclErrorDetails},
 };
@@ -348,7 +348,7 @@ impl SourceRange {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct Point2d {
     pub x: f64,
@@ -376,6 +376,16 @@ impl From<Point2d> for [f64; 2] {
 impl From<Point2d> for kittycad::types::Point2D {
     fn from(p: Point2d) -> Self {
         Self { x: p.x, y: p.y }
+    }
+}
+
+impl Point2d {
+    pub const ZERO: Self = Self { x: 0.0, y: 0.0 };
+    pub fn scale(self, scalar: f64) -> Self {
+        Self {
+            x: self.x * scalar,
+            y: self.y * scalar,
+        }
     }
 }
 
@@ -568,7 +578,7 @@ impl Default for PipeInfo {
 
 /// Execute a AST's program.
 pub fn execute(
-    program: crate::abstract_syntax_tree_types::Program,
+    program: crate::ast::types::Program,
     memory: &mut ProgramMemory,
     options: BodyType,
     engine: &mut EngineConnection,
@@ -813,16 +823,16 @@ show(part001)"#,
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_fn_definitions() {
-        let ast = r#"const def = (x) => {
+        let ast = r#"fn def = (x) => {
   return x
 }
-const ghi = (x) => {
+fn ghi = (x) => {
   return x
 }
-const jkl = (x) => {
+fn jkl = (x) => {
   return x
 }
-const hmm = (x) => {
+fn hmm = (x) => {
   return x
 }
 
@@ -990,7 +1000,7 @@ show(firstExtrude)"#;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_with_function_sketch() {
-        let ast = r#"const box = (h, l, w) => {
+        let ast = r#"fn box = (h, l, w) => {
  const myBox = startSketchAt([0,0])
     |> line([0, l], %)
     |> line([w, 0], %)
@@ -1010,7 +1020,7 @@ show(fnBox)"#;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_member_of_object_with_function_period() {
-        let ast = r#"const box = (obj) => {
+        let ast = r#"fn box = (obj) => {
  let myBox = startSketchAt(obj.start)
     |> line([0, obj.l], %)
     |> line([obj.w, 0], %)
@@ -1030,7 +1040,7 @@ show(thisBox)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_member_of_object_with_function_brace() {
-        let ast = r#"const box = (obj) => {
+        let ast = r#"fn box = (obj) => {
  let myBox = startSketchAt(obj["start"])
     |> line([0, obj["l"]], %)
     |> line([obj["w"], 0], %)
@@ -1050,7 +1060,7 @@ show(thisBox)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_member_of_object_with_function_mix_period_brace() {
-        let ast = r#"const box = (obj) => {
+        let ast = r#"fn box = (obj) => {
  let myBox = startSketchAt(obj["start"])
     |> line([0, obj["l"]], %)
     |> line([obj["w"], 0], %)
@@ -1071,7 +1081,7 @@ show(thisBox)
     #[tokio::test(flavor = "multi_thread")]
     #[ignore] // ignore til we get loops
     async fn test_execute_with_function_sketch_loop_objects() {
-        let ast = r#"const box = (obj) => {
+        let ast = r#"fn box = (obj) => {
  let myBox = startSketchAt(obj.start)
     |> line([0, obj.l], %)
     |> line([obj.w, 0], %)
@@ -1093,7 +1103,7 @@ for var in [{start: [0,0], l: 6, w: 10, h: 3}, {start: [-10,-10], l: 3, w: 5, h:
     #[tokio::test(flavor = "multi_thread")]
     #[ignore] // ignore til we get loops
     async fn test_execute_with_function_sketch_loop_array() {
-        let ast = r#"const box = (h, l, w, start) => {
+        let ast = r#"fn box = (h, l, w, start) => {
  const myBox = startSketchAt([0,0])
     |> line([0, l], %)
     |> line([w, 0], %)
@@ -1115,7 +1125,7 @@ for var in [[3, 6, 10, [0,0]], [1.5, 3, 5, [-10,-10]]] {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_member_of_array_with_function() {
-        let ast = r#"const box = (array) => {
+        let ast = r#"fn box = (array) => {
  let myBox = startSketchAt(array[0])
     |> line([0, array[1]], %)
     |> line([array[2], 0], %)
@@ -1161,5 +1171,87 @@ show(thisBox)
             serde_json::json!(1.0),
             memory.root.get("myVar").unwrap().get_json_value().unwrap()
         );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_define_decimal_without_leading_zero() {
+        let ast = r#"let thing = .4 + 7"#;
+        let memory = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            serde_json::json!(7.4),
+            memory.root.get("thing").unwrap().get_json_value().unwrap()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_negative_variable_in_binary_expression() {
+        let ast = r#"const sigmaAllow = 35000 // psi
+const width = 1 // inch
+
+const p = 150 // lbs
+const distance = 6 // inches
+const FOS = 2
+
+const leg1 = 5 // inches
+const leg2 = 8 // inches
+
+const thickness_squared = distance * p * FOS * 6 / sigmaAllow
+const thickness = 0.56 // inches. App does not support square root function yet
+
+const bracket = startSketchAt([0,0])
+  |> line([0, leg1], %)
+  |> line([leg2, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-leg2 + thickness, 0], %)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_doubly_nested_parens() {
+        let ast = r#"const sigmaAllow = 35000 // psi
+const width = 4 // inch
+const p = 150 // Force on shelf - lbs
+const distance = 6 // inches
+const FOS = 2
+const leg1 = 5 // inches
+const leg2 = 8 // inches
+const thickness_squared = (distance * p * FOS * 6 / (sigmaAllow - width))
+const thickness = 0.32 // inches. App does not support square root function yet
+const bracket = startSketchAt([0,0])
+    |> line([0, leg1], %)
+  |> line([leg2, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-1 * leg2 + thickness, 0], %)
+  |> line([0, -1 * leg1 + thickness], %)
+  |> close(%)
+  |> extrude(width, %)
+show(bracket)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_nested_parens_one_less() {
+        let ast = r#"const sigmaAllow = 35000 // psi
+const width = 4 // inch
+const p = 150 // Force on shelf - lbs
+const distance = 6 // inches
+const FOS = 2
+const leg1 = 5 // inches
+const leg2 = 8 // inches
+const thickness_squared = distance * p * FOS * 6 / (sigmaAllow - width)
+const thickness = 0.32 // inches. App does not support square root function yet
+const bracket = startSketchAt([0,0])
+    |> line([0, leg1], %)
+  |> line([leg2, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-1 * leg2 + thickness, 0], %)
+  |> line([0, -1 * leg1 + thickness], %)
+  |> close(%)
+  |> extrude(width, %)
+show(bracket)
+"#;
+        parse_execute(ast).await.unwrap();
     }
 }

@@ -1,10 +1,10 @@
 use std::{collections::HashMap, str::FromStr};
 
 use crate::{
-    abstract_syntax_tree_types::{
+    ast::types::{
         ArrayExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression, ExpressionStatement,
-        FunctionExpression, Identifier, Literal, LiteralIdentifier, MemberExpression, MemberObject, NoneCodeMeta,
-        NoneCodeNode, NoneCodeValue, ObjectExpression, ObjectKeyInfo, ObjectProperty, PipeExpression, PipeSubstitution,
+        FunctionExpression, Identifier, Literal, LiteralIdentifier, MemberExpression, MemberObject, NonCodeMeta,
+        NonCodeNode, NonCodeValue, ObjectExpression, ObjectKeyInfo, ObjectProperty, PipeExpression, PipeSubstitution,
         Program, ReturnStatement, UnaryExpression, UnaryOperator, Value, VariableDeclaration, VariableDeclarator,
         VariableKind,
     },
@@ -26,7 +26,7 @@ struct TokenReturn {
 struct TokenReturnWithNonCode {
     token: Option<Token>,
     index: usize,
-    non_code_node: Option<NoneCodeNode>,
+    non_code_node: Option<NonCodeNode>,
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -57,7 +57,7 @@ struct ArrayReturn {
 struct PipeBodyReturn {
     body: Vec<Value>,
     last_index: usize,
-    non_code_meta: NoneCodeMeta,
+    non_code_meta: NonCodeMeta,
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -103,9 +103,9 @@ pub struct ParamsResult {
 }
 
 #[derive(Debug, PartialEq, Clone)]
-struct UnaryExpressionResult {
-    expression: UnaryExpression,
-    last_index: usize,
+pub struct UnaryExpressionResult {
+    pub expression: UnaryExpression,
+    pub last_index: usize,
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -136,7 +136,7 @@ struct ReturnStatementResult {
 struct BodyResult {
     body: Vec<BodyItem>,
     last_index: usize,
-    non_code_meta: NoneCodeMeta,
+    non_code_meta: NonCodeMeta,
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -183,8 +183,8 @@ impl Parser {
         let body = self.make_body(
             0,
             vec![],
-            NoneCodeMeta {
-                none_code_nodes: HashMap::new(),
+            NonCodeMeta {
+                non_code_nodes: HashMap::new(),
                 start: None,
             },
         )?;
@@ -269,7 +269,7 @@ impl Parser {
         Ok(index + 1)
     }
 
-    fn make_none_code_node(&self, index: usize) -> Result<(Option<NoneCodeNode>, usize), KclError> {
+    fn make_non_code_node(&self, index: usize) -> Result<(Option<NonCodeNode>, usize), KclError> {
         let end_index = self.find_end_of_non_code_node(index)?;
         let start_index = self.find_start_of_non_code_node(index)?;
         let non_code_tokens = self.tokens[index..end_index].to_vec();
@@ -286,10 +286,10 @@ impl Parser {
                 .contains("\n\n")
         {
             return Ok((
-                Some(NoneCodeNode {
+                Some(NonCodeNode {
                     start: self.tokens[start_index].start,
                     end: self.tokens[end_index - 1].end,
-                    value: NoneCodeValue::NewLine,
+                    value: NonCodeValue::NewLine,
                 }),
                 end_index - 1,
             ));
@@ -330,17 +330,17 @@ impl Parser {
         let is_new_line_comment =
             start_end_string.starts_with('\n') || start_end_string.contains('\n') || start_index == 0 || index == 0;
 
-        let node = NoneCodeNode {
+        let node = NonCodeNode {
             start: self.tokens[start_index].start,
             end: self.tokens[end_index - 1].end,
             value: if start_end_string.starts_with("\n\n") && is_new_line_comment {
                 // Preserve if they want a whitespace line before the comment.
                 // But let's just allow one.
-                NoneCodeValue::NewLineBlockComment { value: full_string }
+                NonCodeValue::NewLineBlockComment { value: full_string }
             } else if is_new_line_comment {
-                NoneCodeValue::BlockComment { value: full_string }
+                NonCodeValue::BlockComment { value: full_string }
             } else {
-                NoneCodeValue::InlineComment { value: full_string }
+                NonCodeValue::InlineComment { value: full_string }
             },
         };
         Ok((Some(node), end_index - 1))
@@ -366,7 +366,7 @@ impl Parser {
         };
 
         if is_not_code_token(token) {
-            let non_code_node = self.make_none_code_node(new_index)?;
+            let non_code_node = self.make_non_code_node(new_index)?;
             let new_new_index = non_code_node.1 + 1;
             let bonus_non_code_node = non_code_node.0;
 
@@ -427,7 +427,7 @@ impl Parser {
         }
         let current_token = self.get_token(index)?;
         let very_next_token = self.get_token(index + 1)?;
-        if (current_token.token_type == TokenType::Word || current_token.token_type == TokenType::Keyword)
+        if (current_token.token_type == TokenType::Word)
             && very_next_token.token_type == TokenType::Brace
             && very_next_token.value == "("
         {
@@ -622,16 +622,12 @@ impl Parser {
                 key_token.index
             };
             if let Some(key_token_token) = key_token.token {
-                let key = if key_token_token.token_type == TokenType::Word
-                    || key_token_token.token_type == TokenType::Keyword
-                {
+                let key = if key_token_token.token_type == TokenType::Word {
                     LiteralIdentifier::Identifier(Box::new(self.make_identifier(key_token.index)?))
                 } else {
                     LiteralIdentifier::Literal(Box::new(self.make_literal(key_token.index)?))
                 };
-                let computed = is_braced
-                    && (key_token_token.token_type == TokenType::Word
-                        || key_token_token.token_type == TokenType::Keyword);
+                let computed = is_braced && key_token_token.token_type == TokenType::Word;
                 let mut new_previous_keys = previous_keys;
                 new_previous_keys.push(ObjectKeyInfo {
                     key,
@@ -735,7 +731,9 @@ impl Parser {
 
         let maybe_operator = self.next_meaningful_token(index, None)?;
         if let Some(maybe_operator_token) = maybe_operator.token {
-            if maybe_operator_token.token_type == TokenType::Number {
+            if maybe_operator_token.token_type == TokenType::Number
+                || maybe_operator_token.token_type == TokenType::Word
+            {
                 return self.find_end_of_binary_expression(maybe_operator.index);
             } else if maybe_operator_token.token_type != TokenType::Operator
                 || maybe_operator_token.value == PIPE_OPERATOR
@@ -755,7 +753,6 @@ impl Parser {
 
     fn make_value(&self, index: usize) -> Result<ValueReturn, KclError> {
         let current_token = self.get_token(index)?;
-        println!("make_value: {:?}", current_token);
         let next = self.next_meaningful_token(index, None)?;
         if let Some(next_token) = &next.token {
             if next_token.token_type == TokenType::Brace && next_token.value == "(" {
@@ -883,10 +880,12 @@ impl Parser {
                         last_index: function_expression.last_index,
                     })
                 } else {
-                    return Err(KclError::Unimplemented(KclErrorDetails {
-                        source_ranges: vec![current_token.into()],
-                        message: "expression with braces".to_string(),
-                    }));
+                    // This is likely a binary expression that starts with a parenthesis.
+                    let binary_expression = self.make_binary_expression(index)?;
+                    Ok(ValueReturn {
+                        value: Value::BinaryExpression(Box::new(binary_expression.expression)),
+                        last_index: binary_expression.last_index,
+                    })
                 }
             } else {
                 return Err(KclError::Unimplemented(KclErrorDetails {
@@ -1028,13 +1027,13 @@ impl Parser {
         &self,
         index: usize,
         previous_values: Vec<Value>,
-        previous_non_code_meta: Option<NoneCodeMeta>,
+        previous_non_code_meta: Option<NonCodeMeta>,
     ) -> Result<PipeBodyReturn, KclError> {
         let non_code_meta = match previous_non_code_meta {
             Some(meta) => meta,
-            None => NoneCodeMeta {
+            None => NonCodeMeta {
                 start: None,
-                none_code_nodes: HashMap::new(),
+                non_code_nodes: HashMap::new(),
             },
         };
         let current_token = self.get_token(index)?;
@@ -1061,10 +1060,10 @@ impl Parser {
                 non_code_meta,
             });
         }
-        let mut _non_code_meta: NoneCodeMeta;
+        let mut _non_code_meta: NonCodeMeta;
         if let Some(node) = next_pipe.non_code_node {
             _non_code_meta = non_code_meta;
-            _non_code_meta.none_code_nodes.insert(previous_values.len(), node);
+            _non_code_meta.non_code_nodes.insert(previous_values.len(), node);
         } else {
             _non_code_meta = non_code_meta;
         }
@@ -1137,8 +1136,7 @@ impl Parser {
                     _previous_args.push(Value::ObjectExpression(Box::new(object_expression.expression)));
                     return self.make_arguments(next_comma_or_brace_token_index, _previous_args);
                 }
-                if (argument_token_token.token_type == TokenType::Keyword
-                    || argument_token_token.token_type == TokenType::Word
+                if (argument_token_token.token_type == TokenType::Word
                     || argument_token_token.token_type == TokenType::Number
                     || argument_token_token.token_type == TokenType::String)
                     && next_brace_or_comma_token.token_type == TokenType::Operator
@@ -1170,8 +1168,7 @@ impl Parser {
                     _previous_args.push(value);
                     return self.make_arguments(next_brace_or_comma.index, _previous_args);
                 }
-                if (argument_token_token.token_type == TokenType::Keyword
-                    || argument_token_token.token_type == TokenType::Word)
+                if argument_token_token.token_type == TokenType::Word
                     && next_brace_or_comma_token.token_type == TokenType::Brace
                     && next_brace_or_comma_token.value == "("
                 {
@@ -1254,9 +1251,9 @@ impl Parser {
         let closing_brace_token = self.get_token(closing_brace_index)?;
         let args = self.make_arguments(brace_token.index, vec![])?;
         let function = if let Some(stdlib_fn) = self.stdlib.get(&callee.name) {
-            crate::abstract_syntax_tree_types::Function::StdLib { func: stdlib_fn }
+            crate::ast::types::Function::StdLib { func: stdlib_fn }
         } else {
-            crate::abstract_syntax_tree_types::Function::InMemory
+            crate::ast::types::Function::InMemory
         };
         Ok(CallExpressionResult {
             expression: CallExpression {
@@ -1292,6 +1289,19 @@ impl Parser {
         previous_declarators: Vec<VariableDeclarator>,
     ) -> Result<VariableDeclaratorsReturn, KclError> {
         let current_token = self.get_token(index)?;
+
+        // Make sure they are not assigning a variable to a reserved keyword.
+        // Or a stdlib function.
+        if current_token.token_type == TokenType::Keyword || self.stdlib.fns.contains_key(&current_token.value) {
+            return Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![current_token.into()],
+                message: format!(
+                    "Cannot assign a variable to a reserved keyword: {}",
+                    current_token.value
+                ),
+            }));
+        }
+
         let assignment = self.next_meaningful_token(index, None)?;
         let Some(assignment_token) = assignment.token else {
             return Err(KclError::Unimplemented(KclErrorDetails {
@@ -1334,17 +1344,40 @@ impl Parser {
     fn make_variable_declaration(&self, index: usize) -> Result<VariableDeclarationResult, KclError> {
         let current_token = self.get_token(index)?;
         let declaration_start_token = self.next_meaningful_token(index, None)?;
+        let kind = VariableKind::from_str(&current_token.value).map_err(|_| {
+            KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![current_token.into()],
+                message: format!("Unexpected token: {}", current_token.value),
+            })
+        })?;
         let variable_declarators_result = self.make_variable_declarators(declaration_start_token.index, vec![])?;
+
+        // Check if we have a fn variable kind but are not assigning a function.
+        if !variable_declarators_result.declarations.is_empty() {
+            if let Some(declarator) = variable_declarators_result.declarations.get(0) {
+                if let Value::FunctionExpression(_) = declarator.init {
+                    if kind != VariableKind::Fn {
+                        return Err(KclError::Syntax(KclErrorDetails {
+                            source_ranges: vec![current_token.into()],
+                            message: format!("Expected a `fn` variable kind, found: `{}`", current_token.value),
+                        }));
+                    }
+                } else {
+                    // If we have anything other than a function, make sure we are not using the `fn` variable kind.
+                    if kind == VariableKind::Fn {
+                        return Err(KclError::Syntax(KclErrorDetails {
+                            source_ranges: vec![current_token.into()],
+                            message: format!("Expected a `let` variable kind, found: `{}`", current_token.value),
+                        }));
+                    }
+                }
+            }
+        }
         Ok(VariableDeclarationResult {
             declaration: VariableDeclaration {
                 start: current_token.start,
                 end: variable_declarators_result.declarations[variable_declarators_result.declarations.len() - 1].end,
-                kind: VariableKind::from_str(&current_token.value).map_err(|_| {
-                    KclError::Syntax(KclErrorDetails {
-                        source_ranges: vec![current_token.into()],
-                        message: format!("Unexpected token: {}", current_token.value),
-                    })
-                })?,
+                kind,
                 declarations: variable_declarators_result.declarations,
             },
             last_index: variable_declarators_result.last_index,
@@ -1354,30 +1387,42 @@ impl Parser {
     fn make_params(&self, index: usize, previous_params: Vec<Identifier>) -> Result<ParamsResult, KclError> {
         let brace_or_comma_token = self.get_token(index)?;
         let argument = self.next_meaningful_token(index, None)?;
-        if let Some(argument_token) = argument.token {
-            let should_finish_recursion = (argument_token.token_type == TokenType::Brace
-                && argument_token.value == ")")
-                || (brace_or_comma_token.token_type == TokenType::Brace && brace_or_comma_token.value == ")");
-            if should_finish_recursion {
-                return Ok(ParamsResult {
-                    params: previous_params,
-                    last_index: index,
-                });
-            }
-            let next_brace_or_comma_token = self.next_meaningful_token(argument.index, None)?;
-            let identifier = self.make_identifier(argument.index)?;
-            let mut _previous_params = previous_params;
-            _previous_params.push(identifier);
-            self.make_params(next_brace_or_comma_token.index, _previous_params)
-        } else {
-            Err(KclError::Unimplemented(KclErrorDetails {
+        let Some(argument_token) = argument.token else {
+            return Err(KclError::Unimplemented(KclErrorDetails {
                 source_ranges: vec![brace_or_comma_token.into()],
-                message: format!("Unexpected token {}", brace_or_comma_token.value),
-            }))
+                message: format!("expected a function parameter, found: {}", brace_or_comma_token.value),
+            }));
+        };
+
+        let should_finish_recursion = (argument_token.token_type == TokenType::Brace && argument_token.value == ")")
+            || (brace_or_comma_token.token_type == TokenType::Brace && brace_or_comma_token.value == ")");
+        if should_finish_recursion {
+            return Ok(ParamsResult {
+                params: previous_params,
+                last_index: index,
+            });
         }
+
+        // Make sure they are not assigning a variable to a reserved keyword.
+        // Or a stdlib function.
+        if argument_token.token_type == TokenType::Keyword || self.stdlib.fns.contains_key(&argument_token.value) {
+            return Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![argument_token.clone().into()],
+                message: format!(
+                    "Cannot assign a variable to a reserved keyword: {}",
+                    argument_token.value
+                ),
+            }));
+        }
+
+        let next_brace_or_comma_token = self.next_meaningful_token(argument.index, None)?;
+        let identifier = self.make_identifier(argument.index)?;
+        let mut _previous_params = previous_params;
+        _previous_params.push(identifier);
+        self.make_params(next_brace_or_comma_token.index, _previous_params)
     }
 
-    fn make_unary_expression(&self, index: usize) -> Result<UnaryExpressionResult, KclError> {
+    pub fn make_unary_expression(&self, index: usize) -> Result<UnaryExpressionResult, KclError> {
         let current_token = self.get_token(index)?;
         let next_token = self.next_meaningful_token(index, None)?;
         if next_token.token.is_none() {
@@ -1542,7 +1587,7 @@ impl Parser {
         &self,
         token_index: usize,
         previous_body: Vec<BodyItem>,
-        previous_non_code_meta: NoneCodeMeta,
+        previous_non_code_meta: NonCodeMeta,
     ) -> Result<BodyResult, KclError> {
         let mut non_code_meta = previous_non_code_meta;
         if self.tokens.is_empty() {
@@ -1575,7 +1620,7 @@ impl Parser {
                 if previous_body.is_empty() {
                     non_code_meta.start = next_token.non_code_node;
                 } else {
-                    non_code_meta.none_code_nodes.insert(previous_body.len(), node.clone());
+                    non_code_meta.non_code_nodes.insert(previous_body.len(), node.clone());
                 }
             }
             return self.make_body(next_token.index, previous_body, non_code_meta);
@@ -1583,14 +1628,14 @@ impl Parser {
 
         let next = self.next_meaningful_token(token_index, None)?;
         if let Some(node) = &next.non_code_node {
-            non_code_meta.none_code_nodes.insert(previous_body.len(), node.clone());
+            non_code_meta.non_code_nodes.insert(previous_body.len(), node.clone());
         }
 
         if token.token_type == TokenType::Keyword && VariableKind::from_str(&token.value).is_ok() {
             let declaration = self.make_variable_declaration(token_index)?;
             let next_thing = self.next_meaningful_token(declaration.last_index, None)?;
             if let Some(node) = &next_thing.non_code_node {
-                non_code_meta.none_code_nodes.insert(previous_body.len(), node.clone());
+                non_code_meta.non_code_nodes.insert(previous_body.len(), node.clone());
             }
             let mut _previous_body = previous_body;
             _previous_body.push(BodyItem::VariableDeclaration(VariableDeclaration {
@@ -1611,7 +1656,7 @@ impl Parser {
             let statement = self.make_return_statement(token_index)?;
             let next_thing = self.next_meaningful_token(statement.last_index, None)?;
             if let Some(node) = &next_thing.non_code_node {
-                non_code_meta.none_code_nodes.insert(previous_body.len(), node.clone());
+                non_code_meta.non_code_nodes.insert(previous_body.len(), node.clone());
             }
             let mut _previous_body = previous_body;
             _previous_body.push(BodyItem::ReturnStatement(ReturnStatement {
@@ -1628,14 +1673,14 @@ impl Parser {
         }
 
         if let Some(next_token) = next.token {
-            if (token.token_type == TokenType::Keyword || token.token_type == TokenType::Word)
+            if token.token_type == TokenType::Word
                 && next_token.token_type == TokenType::Brace
                 && next_token.value == "("
             {
                 let expression = self.make_expression_statement(token_index)?;
                 let next_thing = self.next_meaningful_token(expression.last_index, None)?;
                 if let Some(node) = &next_thing.non_code_node {
-                    non_code_meta.none_code_nodes.insert(previous_body.len(), node.clone());
+                    non_code_meta.non_code_nodes.insert(previous_body.len(), node.clone());
                 }
                 let mut _previous_body = previous_body;
                 _previous_body.push(BodyItem::ExpressionStatement(ExpressionStatement {
@@ -1654,13 +1699,11 @@ impl Parser {
 
         let next_thing = self.next_meaningful_token(token_index, None)?;
         if let Some(next_thing_token) = next_thing.token {
-            if (token.token_type == TokenType::Number
-                || token.token_type == TokenType::Word
-                || token.token_type == TokenType::Keyword)
+            if (token.token_type == TokenType::Number || token.token_type == TokenType::Word)
                 && next_thing_token.token_type == TokenType::Operator
             {
                 if let Some(node) = &next_thing.non_code_node {
-                    non_code_meta.none_code_nodes.insert(previous_body.len(), node.clone());
+                    non_code_meta.non_code_nodes.insert(previous_body.len(), node.clone());
                 }
                 let expression = self.make_expression_statement(token_index)?;
                 let mut _previous_body = previous_body;
@@ -1691,8 +1734,8 @@ impl Parser {
             BodyResult {
                 body: vec![],
                 last_index: next_token_index,
-                non_code_meta: NoneCodeMeta {
-                    none_code_nodes: HashMap::new(),
+                non_code_meta: NonCodeMeta {
+                    non_code_nodes: HashMap::new(),
                     start: None,
                 },
             }
@@ -1700,8 +1743,8 @@ impl Parser {
             self.make_body(
                 next_token_index,
                 vec![],
-                NoneCodeMeta {
-                    none_code_nodes: HashMap::new(),
+                NonCodeMeta {
+                    non_code_nodes: HashMap::new(),
                     start: None,
                 },
             )?
@@ -1747,7 +1790,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::abstract_syntax_tree_types::BinaryOperator;
+    use crate::ast::types::BinaryOperator;
 
     #[test]
     fn test_make_identifier() {
@@ -1827,16 +1870,16 @@ mod tests {
         );
     }
     #[test]
-    fn test_make_none_code_node() {
+    fn test_make_non_code_node() {
         let tokens = crate::tokeniser::lexer("log(5, \"hello\", aIdentifier)");
         let parser = Parser::new(tokens);
         let index = 4;
         let expected_output = (None, 4);
-        assert_eq!(parser.make_none_code_node(index).unwrap(), expected_output);
+        assert_eq!(parser.make_non_code_node(index).unwrap(), expected_output);
 
         let index = 7;
         let expected_output = (None, 7);
-        assert_eq!(parser.make_none_code_node(index).unwrap(), expected_output);
+        assert_eq!(parser.make_non_code_node(index).unwrap(), expected_output);
         let tokens = crate::tokeniser::lexer(
             r#"
 const yo = { a: { b: { c: '123' } } }
@@ -1846,28 +1889,28 @@ const key = 'c'"#,
         let parser = Parser::new(tokens);
         let index = 0;
         let expected_output = (None, 0);
-        assert_eq!(parser.make_none_code_node(index).unwrap(), expected_output);
+        assert_eq!(parser.make_non_code_node(index).unwrap(), expected_output);
 
         let index = 2;
         let expected_output = (None, 2);
-        assert_eq!(parser.make_none_code_node(index).unwrap(), expected_output);
+        assert_eq!(parser.make_non_code_node(index).unwrap(), expected_output);
 
         let index = 2;
         let expected_output = (None, 2);
-        assert_eq!(parser.make_none_code_node(index).unwrap(), expected_output);
+        assert_eq!(parser.make_non_code_node(index).unwrap(), expected_output);
 
         let index = 29;
         let expected_output = (
-            Some(NoneCodeNode {
+            Some(NonCodeNode {
                 start: 38,
                 end: 60,
-                value: NoneCodeValue::BlockComment {
+                value: NonCodeValue::BlockComment {
                     value: "this is a comment".to_string(),
                 },
             }),
             31,
         );
-        assert_eq!(parser.make_none_code_node(index).unwrap(), expected_output);
+        assert_eq!(parser.make_non_code_node(index).unwrap(), expected_output);
         let tokens = crate::tokeniser::lexer(
             r#"const mySketch = startSketchAt([0,0])
   |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
@@ -1880,16 +1923,16 @@ const key = 'c'"#,
         let parser = Parser::new(tokens);
         let index = 57;
         let expected_output = (
-            Some(NoneCodeNode {
+            Some(NonCodeNode {
                 start: 106,
                 end: 166,
-                value: NoneCodeValue::BlockComment {
+                value: NonCodeValue::BlockComment {
                     value: "this is\n      a comment\n      spanning a few lines".to_string(),
                 },
             }),
             59,
         );
-        assert_eq!(parser.make_none_code_node(index).unwrap(), expected_output);
+        assert_eq!(parser.make_non_code_node(index).unwrap(), expected_output);
     }
 
     #[test]
@@ -2702,6 +2745,12 @@ show(mySk1)"#;
         let tokens = crate::tokeniser::lexer(code);
         let parser = Parser::new(tokens);
         let _end = parser.find_end_of_binary_expression(0).unwrap();
+        // with call expression at the end of binary expression
+        let code = "-legX + 2, ";
+        let tokens = crate::tokeniser::lexer(code);
+        let parser = Parser::new(tokens.clone());
+        let end = parser.find_end_of_binary_expression(0).unwrap();
+        assert_eq!(tokens[end].value, "2");
     }
 
     #[test]
@@ -2856,8 +2905,8 @@ show(mySk1)"#;
             .make_body(
                 0,
                 vec![],
-                NoneCodeMeta {
-                    none_code_nodes: HashMap::new(),
+                NonCodeMeta {
+                    non_code_nodes: HashMap::new(),
                     start: None,
                 },
             )
@@ -2894,8 +2943,8 @@ show(mySk1)"#;
                     })),
                 })),
             })],
-            non_code_meta: NoneCodeMeta {
-                none_code_nodes: Default::default(),
+            non_code_meta: NonCodeMeta {
+                non_code_nodes: Default::default(),
                 start: None,
             },
         };
@@ -3035,6 +3084,20 @@ const secondExtrude = startSketchAt([0,0])
     #[test]
     fn test_parse_parens_unicode() {
         let tokens = crate::tokeniser::lexer("(ޜ");
+        let parser = Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_parse_negative_in_array_binary_expression() {
+        let tokens = crate::tokeniser::lexer(
+            r#"const leg1 = 5
+const thickness = 0.56
+
+const bracket = [-leg2 + thickness, 0]
+"#,
+        );
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_ok());
@@ -3215,12 +3278,134 @@ e
                 }],
                 kind: VariableKind::Const,
             })],
-            non_code_meta: NoneCodeMeta {
-                none_code_nodes: Default::default(),
+            non_code_meta: NonCodeMeta {
+                non_code_nodes: Default::default(),
                 start: None,
             },
         };
 
         assert_eq!(result, expected_result);
+    }
+
+    #[test]
+    fn test_error_keyword_in_variable() {
+        let some_program_string = r#"const let = "thing""#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert_eq!(
+            result.err().unwrap().to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([6, 9])], message: "Cannot assign a variable to a reserved keyword: let" }"#
+        );
+    }
+
+    #[test]
+    fn test_error_keyword_in_fn_name() {
+        let some_program_string = r#"fn let = () {}"#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert_eq!(
+            result.err().unwrap().to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([3, 6])], message: "Cannot assign a variable to a reserved keyword: let" }"#
+        );
+    }
+
+    #[test]
+    fn test_error_stdlib_in_fn_name() {
+        let some_program_string = r#"fn cos = () {}"#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert_eq!(
+            result.err().unwrap().to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([3, 6])], message: "Cannot assign a variable to a reserved keyword: cos" }"#
+        );
+    }
+
+    #[test]
+    fn test_error_keyword_in_fn_args() {
+        let some_program_string = r#"fn thing = (let) => {
+    return 1
+}"#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert_eq!(
+            result.err().unwrap().to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([12, 15])], message: "Cannot assign a variable to a reserved keyword: let" }"#
+        );
+    }
+
+    #[test]
+    fn test_error_stdlib_in_fn_args() {
+        let some_program_string = r#"fn thing = (cos) => {
+    return 1
+}"#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert_eq!(
+            result.err().unwrap().to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([12, 15])], message: "Cannot assign a variable to a reserved keyword: cos" }"#
+        );
+    }
+
+    #[test]
+    fn test_keyword_ok_in_fn_args_return() {
+        let some_program_string = r#"fn thing = (param) => {
+    return true
+}
+
+thing(false)
+"#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        parser.ast().unwrap();
+    }
+
+    #[test]
+    fn test_error_define_function_as_var() {
+        for name in ["var", "let", "const"] {
+            let some_program_string = format!(
+                r#"{} thing = (param) => {{
+    return true
+}}
+
+thing(false)
+"#,
+                name
+            );
+            let tokens = crate::tokeniser::lexer(&some_program_string);
+            let parser = crate::parser::Parser::new(tokens);
+            let result = parser.ast();
+            assert!(result.is_err());
+            assert_eq!(
+                result.err().unwrap().to_string(),
+                format!(
+                    r#"syntax: KclErrorDetails {{ source_ranges: [SourceRange([0, {}])], message: "Expected a `fn` variable kind, found: `{}`" }}"#,
+                    name.len(),
+                    name
+                )
+            );
+        }
+    }
+
+    #[test]
+    fn test_error_define_var_as_function() {
+        let some_program_string = r#"fn thing = "thing""#;
+        let tokens = crate::tokeniser::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let result = parser.ast();
+        assert!(result.is_err());
+        assert_eq!(
+            result.err().unwrap().to_string(),
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([0, 2])], message: "Expected a `let` variable kind, found: `fn`" }"#
+        );
     }
 }

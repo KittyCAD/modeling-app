@@ -6,6 +6,7 @@ use std::io::Read;
 use anyhow::Result;
 use oauth2::TokenResponse;
 use tauri::{InvokeError, Manager};
+const DEFAULT_HOST: &str = "https://api.kittycad.io";
 
 /// This command returns the a json string parse from a toml file at the path.
 #[tauri::command]
@@ -85,6 +86,47 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
     Ok(token)
 }
 
+///This command returns the KittyCAD user info given a token.
+/// The string returned from this method is the user info as a json string.
+#[tauri::command]
+async fn get_user(
+    token: Option<String>,
+    hostname: &str,
+) -> Result<kittycad::types::User, InvokeError> {
+    // Use the host passed in if it's set.
+    // Otherwise, use the default host.
+    let host = if hostname.is_empty() {
+        DEFAULT_HOST.to_string()
+    } else {
+        hostname.to_string()
+    };
+
+    // Change the baseURL to the one we want.
+    let mut baseurl = host.to_string();
+    if !host.starts_with("http://") && !host.starts_with("https://") {
+        baseurl = format!("https://{host}");
+        if host.starts_with("localhost") {
+            baseurl = format!("http://{host}")
+        }
+    }
+    println!("Getting user info...");
+
+    // use kittycad library to fetch the user info from /user/me
+    let mut client = kittycad::Client::new(token.unwrap());
+
+    if baseurl != DEFAULT_HOST {
+        client.set_base_url(&baseurl);
+    }
+
+    let user_info: kittycad::types::User = client
+        .users()
+        .get_self()
+        .await
+        .map_err(|e| InvokeError::from_anyhow(e.into()))?;
+
+    Ok(user_info)
+}
+
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
@@ -97,7 +139,12 @@ fn main() {
             }
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![login, read_toml, read_txt_file])
+        .invoke_handler(tauri::generate_handler![
+            get_user,
+            login,
+            read_toml,
+            read_txt_file
+        ])
         .plugin(tauri_plugin_fs_extra::init())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

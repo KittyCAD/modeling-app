@@ -1,6 +1,7 @@
 //! Functions implemented for language execution.
 
 pub mod extrude;
+pub mod math;
 pub mod segment;
 pub mod sketch;
 pub mod utils;
@@ -14,8 +15,8 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    abstract_syntax_tree_types::parse_json_number_as_f64,
-    engine::EngineConnection,
+    ast::types::parse_json_number_as_f64,
+    engine::{EngineConnection, EngineManager},
     errors::{KclError, KclErrorDetails},
     executor::{ExtrudeGroup, MemoryItem, Metadata, SketchGroup, SourceRange},
 };
@@ -31,7 +32,6 @@ impl StdLib {
     pub fn new() -> Self {
         let internal_fns: Vec<Box<(dyn crate::docs::StdLibFn)>> = vec![
             Box::new(Show),
-            Box::new(Min),
             Box::new(LegLen),
             Box::new(LegAngX),
             Box::new(LegAngY),
@@ -61,6 +61,26 @@ impl StdLib {
             Box::new(crate::std::sketch::Close),
             Box::new(crate::std::sketch::Arc),
             Box::new(crate::std::sketch::BezierCurve),
+            Box::new(crate::std::math::Cos),
+            Box::new(crate::std::math::Sin),
+            Box::new(crate::std::math::Tan),
+            Box::new(crate::std::math::Acos),
+            Box::new(crate::std::math::Asin),
+            Box::new(crate::std::math::Atan),
+            Box::new(crate::std::math::Pi),
+            Box::new(crate::std::math::E),
+            Box::new(crate::std::math::Tau),
+            Box::new(crate::std::math::Sqrt),
+            Box::new(crate::std::math::Abs),
+            Box::new(crate::std::math::Floor),
+            Box::new(crate::std::math::Ceil),
+            Box::new(crate::std::math::Min),
+            Box::new(crate::std::math::Max),
+            Box::new(crate::std::math::Pow),
+            Box::new(crate::std::math::Log),
+            Box::new(crate::std::math::Log2),
+            Box::new(crate::std::math::Log10),
+            Box::new(crate::std::math::Ln),
         ];
 
         let mut fns = HashMap::new();
@@ -120,6 +140,21 @@ impl<'a> Args<'a> {
                 })
             },
         )?))
+    }
+
+    fn get_number(&self) -> Result<f64, KclError> {
+        let first_value = self
+            .args
+            .first()
+            .ok_or_else(|| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Expected a number as the first argument, found `{:?}`", self.args),
+                    source_ranges: vec![self.source_range],
+                })
+            })?
+            .get_json_value()?;
+
+        parse_json_number_as_f64(&first_value, self.source_range)
     }
 
     fn get_number_array(&self) -> Result<Vec<f64>, KclError> {
@@ -406,29 +441,6 @@ impl<'a> Args<'a> {
     }
 }
 
-/// Returns the minimum of the given arguments.
-pub fn min(args: &mut Args) -> Result<MemoryItem, KclError> {
-    let nums = args.get_number_array()?;
-    let result = inner_min(nums);
-
-    args.make_user_val_from_f64(result)
-}
-
-/// Returns the minimum of the given arguments.
-#[stdlib {
-    name = "min",
-}]
-fn inner_min(args: Vec<f64>) -> f64 {
-    let mut min = std::f64::MAX;
-    for arg in args.iter() {
-        if *arg < min {
-            min = *arg;
-        }
-    }
-
-    min
-}
-
 /// Render a model.
 // This never actually gets called so this is fine.
 pub fn show(args: &mut Args) -> Result<MemoryItem, KclError> {
@@ -471,7 +483,7 @@ pub fn leg_angle_x(args: &mut Args) -> Result<MemoryItem, KclError> {
     name = "legAngX",
 }]
 fn inner_leg_angle_x(hypotenuse: f64, leg: f64) -> f64 {
-    (leg.min(hypotenuse) / hypotenuse).acos() * 180.0 / std::f64::consts::PI
+    (leg.min(hypotenuse) / hypotenuse).acos().to_degrees()
 }
 
 /// Returns the angle of the given leg for y.
@@ -486,7 +498,7 @@ pub fn leg_angle_y(args: &mut Args) -> Result<MemoryItem, KclError> {
     name = "legAngY",
 }]
 fn inner_leg_angle_y(hypotenuse: f64, leg: f64) -> f64 {
-    (leg.min(hypotenuse) / hypotenuse).asin() * 180.0 / std::f64::consts::PI
+    (leg.min(hypotenuse) / hypotenuse).asin().to_degrees()
 }
 
 /// The primitive types that can be used in a KCL file.
@@ -506,8 +518,9 @@ pub enum Primitive {
 
 #[cfg(test)]
 mod tests {
-    use crate::std::StdLib;
     use itertools::Itertools;
+
+    use crate::std::StdLib;
 
     #[test]
     fn test_generate_stdlib_markdown_docs() {
@@ -591,7 +604,7 @@ mod tests {
             buf.push_str(&fn_docs);
         }
 
-        expectorate::assert_contents("../../../docs/kcl.md", &buf);
+        expectorate::assert_contents("../../../docs/kcl/std.md", &buf);
     }
 
     #[test]
@@ -606,7 +619,7 @@ mod tests {
         }
 
         expectorate::assert_contents(
-            "../../../docs/kcl.json",
+            "../../../docs/kcl/std.json",
             &serde_json::to_string_pretty(&json_data).unwrap(),
         );
     }

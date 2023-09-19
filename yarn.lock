@@ -1207,7 +1207,7 @@
     "@codemirror/view" "^6.0.0"
     crelt "^1.0.5"
 
-"@codemirror/state@^6.0.0", "@codemirror/state@^6.1.1", "@codemirror/state@^6.1.4", "@codemirror/state@^6.2.0":
+"@codemirror/state@^6.0.0", "@codemirror/state@^6.1.1", "@codemirror/state@^6.1.4", "@codemirror/state@^6.2.0", "@codemirror/state@^6.2.1":
   version "6.2.1"
   resolved "https://registry.yarnpkg.com/@codemirror/state/-/state-6.2.1.tgz#6dc8d8e5abb26b875e3164191872d69a5e85bd73"
   integrity sha512-RupHSZ8+OjNT38zU9fKH2sv+Dnlr8Eb8sl4NOnnqz95mCFTZUaiRP8Xv5MeeaG0px2b8Bnfe7YGwCV3nsBhbuw==
@@ -1628,6 +1628,13 @@
   version "1.7.2"
   resolved "https://registry.yarnpkg.com/@remix-run/router/-/router-1.7.2.tgz#cba1cf0a04bc04cb66027c51fa600e9cbc388bc8"
   integrity sha512-7Lcn7IqGMV+vizMPoEl5F0XDshcdDYtMI6uJLQdQz5CfZAwy3vvGKYSUk789qndt5dEC4HfSjviSYlSoHGL2+A==
+
+"@replit/codemirror-interact@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/@replit/codemirror-interact/-/codemirror-interact-6.3.0.tgz#977432c0b8f1a2995b93b1d5acaac27dbbb30c37"
+  integrity sha512-kB7ukZaZZkeKEiN5KLFOq9snxnFZRBjICLkKu5bqfPrPJXYDBmirzzpZE1dPX6qtNH5jTE3m3I1lJ+ltxk08fA==
+  dependencies:
+    "@codemirror/state" "^6.2.1"
 
 "@rollup/pluginutils@^4.2.1":
   version "4.2.1"

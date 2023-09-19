@@ -106,7 +106,7 @@ describe('Testing addSketchTo', () => {
         body: [],
         start: 0,
         end: 0,
-        nonCodeMeta: { noneCodeNodes: {}, start: null },
+        nonCodeMeta: { nonCodeNodes: {}, start: null },
       },
       'yz'
     )
@@ -176,7 +176,7 @@ show(part001)`
 })
 
 describe('Testing moveValueIntoNewVariable', () => {
-  const fn = (fnName: string) => `const ${fnName} = (x) => {
+  const fn = (fnName: string) => `fn ${fnName} = (x) => {
   return x
 }
 `

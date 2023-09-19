@@ -14,7 +14,17 @@ import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
 import { Models } from '@kittycad/lib'
 import { addStartSketch } from 'lang/modifyAst'
-import { addNewSketchLn } from 'lang/std/sketch'
+import {
+  addCloseToPipe,
+  addNewSketchLn,
+  compareVec2Epsilon,
+} from 'lang/std/sketch'
+import { getNodeFromPath } from 'lang/queryAst'
+import { Program, VariableDeclarator } from 'lang/abstractSyntaxTreeTypes'
+import { modify_ast_for_sketch } from '../wasm-lib/pkg/wasm_lib'
+import { KCLError } from 'lang/errors'
+import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
+import { rangeTypeFix } from 'lang/abstractSyntaxTree'
 
 export const Stream = ({ className = '' }) => {
   const [isLoading, setIsLoading] = useState(true)
@@ -204,23 +214,83 @@ export const Stream = ({ className = '' }) => {
         window: { x, y },
       }
     }
-    engineCommandManager?.sendSceneCommand(command).then(async ({ data }) => {
-      if (command.cmd.type !== 'mouse_click' || !ast) return
-      if (
-        !(
-          guiMode.mode === 'sketch' &&
-          guiMode.sketchMode === ('sketch_line' as any as 'line')
-        )
-      )
-        return
+    engineCommandManager?.sendSceneCommand(command).then(async (resp) => {
+      if (!(guiMode.mode === 'sketch')) return
 
-      if (data?.data?.entities_modified?.length && guiMode.waitingFirstClick) {
+      if (guiMode.sketchMode === 'selectFace') return
+
+      // Check if the sketch group already exists.
+      const varDec = getNodeFromPath<VariableDeclarator>(
+        ast,
+        guiMode.pathToNode,
+        'VariableDeclarator'
+      ).node
+      const variableName = varDec?.id?.name
+      const sketchGroup = programMemory.root[variableName]
+      const isEditingExistingSketch =
+        sketchGroup?.type === 'SketchGroup' && sketchGroup.value.length
+      let sketchGroupId = ''
+      if (sketchGroup && sketchGroup.type === 'SketchGroup') {
+        sketchGroupId = sketchGroup.id
+      }
+
+      if (
+        guiMode.sketchMode === ('move' as any as 'line') &&
+        command.cmd.type === 'handle_mouse_drag_end'
+      ) {
+        // Let's get the updated ast.
+        if (sketchGroupId === '') return
+
+        console.log('guiMode.pathId', guiMode.pathId)
+
+        // We have a problem if we do not have an id for the sketch group.
+        if (
+          guiMode.pathId === undefined ||
+          guiMode.pathId === null ||
+          guiMode.pathId === ''
+        )
+          return
+
+        let engineId = guiMode.pathId
+
+        try {
+          const updatedAst: Program = await modify_ast_for_sketch(
+            engineCommandManager,
+            JSON.stringify(ast),
+            variableName,
+            engineId
+          )
+
+          updateAst(updatedAst, false)
+        } catch (e: any) {
+          const parsed: RustKclError = JSON.parse(e.toString())
+          const kclError = new KCLError(
+            parsed.kind,
+            parsed.msg,
+            rangeTypeFix(parsed.sourceRanges)
+          )
+
+          console.log(kclError)
+          throw kclError
+        }
+        return
+      }
+
+      if (command?.cmd?.type !== 'mouse_click' || !ast) return
+
+      if (!(guiMode.sketchMode === ('sketch_line' as any as 'line'))) return
+
+      if (
+        resp?.data?.data?.entities_modified?.length &&
+        guiMode.waitingFirstClick &&
+        !isEditingExistingSketch
+      ) {
         const curve = await engineCommandManager?.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
             type: 'curve_get_control_points',
-            curve_id: data?.data?.entities_modified[0],
+            curve_id: resp?.data?.data?.entities_modified[0],
           },
         })
         const coords: { x: number; y: number }[] =
@@ -236,34 +306,83 @@ export const Stream = ({ className = '' }) => {
         const _modifiedAst = _addStartSketch.modifiedAst
         const _pathToNode = _addStartSketch.pathToNode
 
+        // We need to update the guiMode with the right pathId so that we can
+        // move lines later and send the right sketch id to the engine.
+        for (const [id, artifact] of Object.entries(
+          engineCommandManager.artifactMap
+        )) {
+          if (artifact.commandType === 'start_path') {
+            guiMode.pathId = id
+          }
+        }
+
         setGuiMode({
           ...guiMode,
           pathToNode: _pathToNode,
           waitingFirstClick: false,
         })
-        updateAst(_modifiedAst)
+        updateAst(_modifiedAst, false)
       } else if (
-        data?.data?.entities_modified?.length &&
-        !guiMode.waitingFirstClick
+        resp?.data?.data?.entities_modified?.length &&
+        (!guiMode.waitingFirstClick || isEditingExistingSketch)
       ) {
         const curve = await engineCommandManager?.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
             type: 'curve_get_control_points',
-            curve_id: data?.data?.entities_modified[0],
+            curve_id: resp?.data?.data?.entities_modified[0],
           },
         })
         const coords: { x: number; y: number }[] =
           curve.data.data.control_points
-        const _modifiedAst = addNewSketchLn({
-          node: ast,
-          programMemory,
-          to: [coords[1].x, coords[1].y],
-          fnName: 'line',
-          pathToNode: guiMode.pathToNode,
-        }).modifiedAst
-        updateAst(_modifiedAst)
+
+        const { node: varDec } = getNodeFromPath<VariableDeclarator>(
+          ast,
+          guiMode.pathToNode,
+          'VariableDeclarator'
+        )
+        const variableName = varDec.id.name
+        const sketchGroup = programMemory.root[variableName]
+        if (!sketchGroup || sketchGroup.type !== 'SketchGroup') return
+        const initialCoords = sketchGroup.value[0].from
+
+        const isClose = compareVec2Epsilon(initialCoords, [
+          coords[1].x,
+          coords[1].y,
+        ])
+
+        let _modifiedAst: Program
+        if (!isClose) {
+          _modifiedAst = addNewSketchLn({
+            node: ast,
+            programMemory,
+            to: [coords[1].x, coords[1].y],
+            fnName: 'line',
+            pathToNode: guiMode.pathToNode,
+          }).modifiedAst
+          updateAst(_modifiedAst, false)
+        } else {
+          _modifiedAst = addCloseToPipe({
+            node: ast,
+            programMemory,
+            pathToNode: guiMode.pathToNode,
+          })
+          setGuiMode({
+            mode: 'default',
+          })
+          engineCommandManager?.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: { type: 'edit_mode_exit' },
+          })
+          engineCommandManager?.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: { type: 'default_camera_disable_sketch_mode' },
+          })
+          updateAst(_modifiedAst, true)
+        }
       }
     })
     setDidDragInStream(false)
