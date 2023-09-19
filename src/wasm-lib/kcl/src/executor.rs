@@ -1184,7 +1184,7 @@ show(thisBox)
         let ast = r#"const myVar = pi() * 2"#;
         let memory = parse_execute(ast).await.unwrap();
         assert_eq!(
-            serde_json::json!(6.283185307179586),
+            serde_json::json!(std::f64::consts::TAU),
             memory.root.get("myVar").unwrap().get_json_value().unwrap()
         );
     }
