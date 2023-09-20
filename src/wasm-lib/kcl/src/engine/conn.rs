@@ -59,25 +59,23 @@ struct ToEngineReq {
 }
 
 impl EngineConnection {
-    /// Start waiting for incoming engine requests, and send them over the WebSocket to the engine.
+    /// Start waiting for incoming engine requests, and send each one over the WebSocket to the engine.
     async fn start_write_actor(mut tcp_write: WebSocketTcpWrite, mut engine_req_rx: mpsc::Receiver<ToEngineReq>) {
         while let Some(req) = engine_req_rx.recv().await {
-            let msg = match serde_json::to_string(&req.req) {
-                Ok(x) => x,
-                Err(e) => {
-                    let _ = req.request_sent.send(Err(anyhow!("could not serialize json: {e}")));
-                    continue;
-                }
-            };
-            if let Err(e) = tcp_write.send(WsMsg::Text(msg)).await {
-                let _ = req
-                    .request_sent
-                    .send(Err(anyhow!("could not send json over websocket: {e}")));
-                continue;
-            }
-
-            let _ = req.request_sent.send(Ok(()));
+            let ToEngineReq { req, request_sent } = req;
+            let res = Self::inner_send_to_engine(req, &mut tcp_write).await;
+            let _ = request_sent.send(res);
         }
+    }
+
+    /// Send the given `request` to the engine via the WebSocket connection `tcp_write`.
+    async fn inner_send_to_engine(request: WebSocketRequest, tcp_write: &mut WebSocketTcpWrite) -> Result<()> {
+        let msg = serde_json::to_string(&request).map_err(|e| anyhow!("could not serialize json: {e}"))?;
+        tcp_write
+            .send(WsMsg::Text(msg))
+            .await
+            .map_err(|e| anyhow!("could not send json over websocket: {e}"))?;
+        Ok(())
     }
 
     pub async fn new(ws: reqwest::Upgraded) -> Result<EngineConnection> {
