@@ -6,7 +6,7 @@ use kittycad::types::OkWebSocketResponseData;
 
 use crate::errors::KclError;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct EngineConnection {}
 
 impl EngineConnection {
