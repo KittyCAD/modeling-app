@@ -4,6 +4,7 @@ use kcl_lib::engine::EngineManager;
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
 async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
+    env_logger::init();
     let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
     let http_client = reqwest::Client::builder()
         .user_agent(user_agent)
@@ -15,13 +16,15 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
         // For file conversions we need this to be long.
         .timeout(std::time::Duration::from_secs(600))
         .connect_timeout(std::time::Duration::from_secs(60))
+        .connection_verbose(true)
         .tcp_keepalive(std::time::Duration::from_secs(600))
         .http1_only();
 
     let token = std::env::var("KITTYCAD_API_TOKEN").expect("KITTYCAD_API_TOKEN not set");
 
     // Create the client.
-    let client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
+    let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
+    client.set_base_url("http://system76-pc:8080");
 
     let ws = client
         .modeling()
@@ -38,6 +41,7 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
     let engine = kcl_lib::engine::EngineConnection::new(ws).await?;
     let _ = kcl_lib::executor::execute(program, &mut mem, kcl_lib::executor::BodyType::Root, &engine).await?;
 
+    println!("Waiting for snapshot to be ready...");
     // Send a snapshot request to the engine.
     let resp = engine
         .send_modeling_cmd(
@@ -166,12 +170,19 @@ async fn serial_test_execute_engine_error_return() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-#[ignore] // ignore until more stack fixes
 async fn serial_test_execute_pipes_on_pipes() {
     let code = include_str!("inputs/pipes_on_pipes.kcl");
 
     let result = execute_and_snapshot(code).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/pipes_on_pipes.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_execute_kittycad_svg() {
+    let code = include_str!("inputs/kittycad_svg.kcl");
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/kittycad_svg.png", &result, 1.0);
 }
 
 #[tokio::test(flavor = "multi_thread")]

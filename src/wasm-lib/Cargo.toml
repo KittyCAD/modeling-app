@@ -19,6 +19,7 @@ wasm-bindgen-futures = "0.4.37"
 
 [dev-dependencies]
 anyhow = "1"
+env_logger = "0.10.0"
 image = "0.24.7"
 kittycad = "0.2.25"
 pretty_assertions = "1.4.0"
