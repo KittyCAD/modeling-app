@@ -10,6 +10,7 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use derive_docs::stdlib;
+use kittycad::types::OkWebSocketResponseData;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -118,7 +119,11 @@ impl Args {
         }
     }
 
-    pub async fn send_modeling_cmd(&self, id: uuid::Uuid, cmd: kittycad::types::ModelingCmd) -> Result<(), KclError> {
+    pub async fn send_modeling_cmd(
+        &self,
+        id: uuid::Uuid,
+        cmd: kittycad::types::ModelingCmd,
+    ) -> Result<OkWebSocketResponseData, KclError> {
         self.engine.send_modeling_cmd(id, self.source_range, cmd).await
     }
 
