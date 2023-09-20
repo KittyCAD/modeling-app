@@ -68,12 +68,12 @@ export class EngineConnection {
   constructor({
     url,
     token,
-    onWebsocketOpen = () => {},
-    onNewTrack = () => {},
-    onEngineConnectionOpen = () => {},
-    onConnectionStarted = () => {},
-    onClose = () => {},
-    onDataChannelOpen = () => {},
+    onWebsocketOpen = () => { },
+    onNewTrack = () => { },
+    onEngineConnectionOpen = () => { },
+    onConnectionStarted = () => { },
+    onClose = () => { },
+    onDataChannelOpen = () => { },
   }: {
     url: string
     token?: string
@@ -364,8 +364,10 @@ export class EngineConnection {
       // fix responsiveness for clients that had a weird network hiccup.
       const connectionTimeoutMs = VITE_KC_CONNECTION_TIMEOUT_MS
 
+      console.log('setting timeout for connection')
       setTimeout(() => {
         if (this.isReady()) {
+          console.log('timeout fired but we were ready')
           return
         }
         console.log('engine connection timeout on connection, retrying')
@@ -531,8 +533,8 @@ export class EngineCommandManager {
   outSequence = 1
   inSequence = 1
   engineConnection?: EngineConnection
-  waitForReady: Promise<void> = new Promise(() => {})
-  private resolveReady = () => {}
+  waitForReady: Promise<void> = new Promise(() => { })
+  private resolveReady = () => { }
 
   subscriptions: {
     [event: string]: {
@@ -561,6 +563,7 @@ export class EngineCommandManager {
       this.resolveReady = resolve
     })
     const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}`
+    console.log('new eng conn')
     this.engineConnection = new EngineConnection({
       url,
       token,
@@ -777,7 +780,6 @@ export class EngineCommandManager {
       lastMessage = command.cmd.type
     }
     if (!this.engineConnection?.isReady()) {
-      console.log('socket not ready')
       return Promise.resolve()
     }
     if (command.type !== 'modeling_cmd_req') return Promise.resolve()
@@ -824,7 +826,6 @@ export class EngineCommandManager {
     this.sourceRangeMap[id] = range
 
     if (!this.engineConnection?.isReady()) {
-      console.log('socket not ready')
       return Promise.resolve()
     }
     this.engineConnection?.send(command)
@@ -842,7 +843,7 @@ export class EngineCommandManager {
     command: Models['ModelingCmd_type'],
     range?: SourceRange
   ) {
-    let resolve: (val: any) => void = () => {}
+    let resolve: (val: any) => void = () => { }
     const promise = new Promise((_resolve, reject) => {
       resolve = _resolve
     })
