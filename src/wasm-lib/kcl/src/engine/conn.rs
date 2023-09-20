@@ -23,12 +23,12 @@ pub struct EngineConnection {
     responses: Arc<DashMap<uuid::Uuid, WebSocketResponse>>,
 }
 
-impl Drop for EngineConnection {
+/*impl Drop for EngineConnection {
     fn drop(&mut self) {
         // Drop the read handle.
         self.tcp_read_handle.abort();
     }
-}
+}*/
 
 pub struct TcpRead {
     stream: futures::stream::SplitStream<tokio_tungstenite::WebSocketStream<reqwest::Upgraded>>,
@@ -179,7 +179,7 @@ impl EngineManager for EngineConnection {
         }
 
         Err(KclError::Engine(KclErrorDetails {
-            message: format!("Modeling command timed out: {:?}", cmd),
+            message: format!("Modeling command timed out `{}`: {:?}", id, cmd),
             source_ranges: vec![source_range],
         }))
     }
