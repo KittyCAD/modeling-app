@@ -54,4 +54,4 @@ jobs:
       - name: Run clippy
         run: |
           cd "${{ matrix.dir }}"
-          cargo clippy --all --tests -- -D warnings
+          cargo clippy --all --tests --benches -- -D warnings
