@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react'
+import { useRef, useLayoutEffect } from 'react'
 import { _executor } from '../lang/executor'
 import { useStore } from '../useStore'
 import { EngineCommandManager } from '../lang/std/engineConnection'
@@ -28,6 +28,7 @@ export function useSetupEngineManager(
   const quadWidth = Math.round(width / 4) * 4
   const height = streamHeight ? streamHeight : 0
   const quadHeight = Math.round(height / 4) * 4
+  const eng = useRef(null)
 
   useLayoutEffect(() => {
     setStreamDimensions({
@@ -35,19 +36,21 @@ export function useSetupEngineManager(
       streamHeight: quadHeight,
     })
     if (!width || !height) return
-    const eng = new EngineCommandManager({
-      setMediaStream,
-      setIsStreamReady,
-      width: quadWidth,
-      height: quadHeight,
-      token,
-    })
-    setEngineCommandManager(eng)
-    eng.waitForReady.then(() => {
+    if (eng.current === null) {
+      eng.current = new EngineCommandManager({
+        setMediaStream,
+        setIsStreamReady,
+        width: quadWidth,
+        height: quadHeight,
+        token,
+      })
+    }
+    setEngineCommandManager(eng.current)
+    eng.current.waitForReady.then(() => {
       executeCode()
     })
     return () => {
-      eng?.tearDown()
+      eng.current?.tearDown()
     }
   }, [quadWidth, quadHeight])
 }
