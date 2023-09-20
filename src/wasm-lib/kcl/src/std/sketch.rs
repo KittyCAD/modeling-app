@@ -217,7 +217,7 @@ fn inner_line(data: LineData, sketch_group: Box<SketchGroup>, args: &mut Args) -
                     y: delta[1],
                     z: 0.0,
                 },
-                relative: true
+                relative: true,
             },
         },
     )?;
@@ -360,10 +360,7 @@ fn inner_angled_line(
     ];
     let relative = true;
 
-    let to: [f64; 2] = [
-        from.x + delta[0],
-        from.y + delta[1],
-    ];
+    let to: [f64; 2] = [from.x + delta[0], from.y + delta[1]];
 
     let id = uuid::Uuid::new_v4();
 
@@ -970,7 +967,7 @@ fn inner_bezier_curve(
                     y: delta[1],
                     z: 0.0,
                 },
-                relative: relative
+                relative: relative,
             },
         },
     )?;
