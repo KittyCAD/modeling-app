@@ -17,18 +17,12 @@ use crate::{
 
 type WebSocketTcpWrite = futures::stream::SplitSink<tokio_tungstenite::WebSocketStream<reqwest::Upgraded>, WsMsg>;
 #[derive(Debug, Clone)]
+#[allow(dead_code)] // for the TcpReadHandle
 pub struct EngineConnection {
     engine_req_tx: mpsc::Sender<ToEngineReq>,
-    tcp_read_handle: Arc<tokio::task::JoinHandle<Result<()>>>,
     responses: Arc<DashMap<uuid::Uuid, WebSocketResponse>>,
+    tcp_read_handle: Arc<TcpReadHandle>,
 }
-
-/*impl Drop for EngineConnection {
-    fn drop(&mut self) {
-        // Drop the read handle.
-        self.tcp_read_handle.abort();
-    }
-}*/
 
 pub struct TcpRead {
     stream: futures::stream::SplitStream<tokio_tungstenite::WebSocketStream<reqwest::Upgraded>>,
@@ -45,6 +39,18 @@ impl TcpRead {
             other => anyhow::bail!("Unexpected websocket message from server: {}", other),
         };
         Ok(msg)
+    }
+}
+
+#[derive(Debug)]
+pub struct TcpReadHandle {
+    handle: Arc<tokio::task::JoinHandle<Result<()>>>,
+}
+
+impl Drop for TcpReadHandle {
+    fn drop(&mut self) {
+        // Drop the read handle.
+        self.handle.abort();
     }
 }
 
@@ -114,7 +120,9 @@ impl EngineConnection {
 
         Ok(EngineConnection {
             engine_req_tx,
-            tcp_read_handle: Arc::new(tcp_read_handle),
+            tcp_read_handle: Arc::new(TcpReadHandle {
+                handle: Arc::new(tcp_read_handle),
+            }),
             responses,
         })
     }
