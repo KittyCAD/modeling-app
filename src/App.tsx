@@ -38,7 +38,7 @@ export function App() {
   const streamRef = useRef<HTMLDivElement>(null)
   useHotKeyListener()
   const {
-    deferredSetCode,
+    setCode,
     engineCommandManager,
     buttonDownInStream,
     openPanes,
@@ -51,7 +51,7 @@ export function App() {
   } = useStore((s) => ({
     guiMode: s.guiMode,
     setGuiMode: s.setGuiMode,
-    deferredSetCode: s.deferredSetCode,
+    setCode: s.setCode,
     engineCommandManager: s.engineCommandManager,
     buttonDownInStream: s.buttonDownInStream,
     openPanes: s.openPanes,
@@ -142,15 +142,15 @@ export function App() {
   // on mount, and overwrite any locally-stored code
   useEffect(() => {
     if (isTauri() && loadedCode !== null) {
-      deferredSetCode(loadedCode)
+      setCode(loadedCode)
     }
     return () => {
       // Clear code on unmount if in desktop app
       if (isTauri()) {
-        deferredSetCode('')
+        setCode('')
       }
     }
-  }, [loadedCode, deferredSetCode])
+  }, [loadedCode, setCode])
 
   useSetupEngineManager(streamRef, token)
   useEngineConnectionSubscriptions()
