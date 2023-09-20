@@ -11,7 +11,7 @@ use crate::{
 };
 
 /// Extrudes by a given amount.
-pub async fn extrude(args: &mut Args<'_>) -> Result<MemoryItem, KclError> {
+pub async fn extrude(args: &Args) -> Result<MemoryItem, KclError> {
     let (length, sketch_group) = args.get_number_sketch_group()?;
 
     let result = inner_extrude(length, sketch_group, args)?;
@@ -23,7 +23,7 @@ pub async fn extrude(args: &mut Args<'_>) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "extrude"
 }]
-fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: &mut Args) -> Result<Box<ExtrudeGroup>, KclError> {
+fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: &Args) -> Result<Box<ExtrudeGroup>, KclError> {
     let id = uuid::Uuid::new_v4();
 
     let cmd = kittycad::types::ModelingCmd::Extrude {
@@ -46,7 +46,7 @@ fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: &mut Args) -
 }
 
 /// Returns the extrude wall transform.
-pub async fn get_extrude_wall_transform(args: &mut Args<'_>) -> Result<MemoryItem, KclError> {
+pub async fn get_extrude_wall_transform(args: &Args) -> Result<MemoryItem, KclError> {
     let (surface_name, extrude_group) = args.get_path_name_extrude_group()?;
     let result = inner_get_extrude_wall_transform(&surface_name, *extrude_group, args)?;
     Ok(MemoryItem::ExtrudeTransform(result))
@@ -59,7 +59,7 @@ pub async fn get_extrude_wall_transform(args: &mut Args<'_>) -> Result<MemoryIte
 fn inner_get_extrude_wall_transform(
     surface_name: &str,
     extrude_group: ExtrudeGroup,
-    args: &mut Args<'_>,
+    args: &Args,
 ) -> Result<ExtrudeTransform, KclError> {
     let surface = extrude_group.get_path_by_name(surface_name).ok_or_else(|| {
         KclError::Type(KclErrorDetails {

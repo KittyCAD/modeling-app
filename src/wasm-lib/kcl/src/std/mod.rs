@@ -119,7 +119,7 @@ impl<'a> Args<'a> {
         }
     }
 
-    pub fn send_modeling_cmd(&mut self, id: uuid::Uuid, cmd: kittycad::types::ModelingCmd) -> Result<(), KclError> {
+    pub fn send_modeling_cmd(&self, id: uuid::Uuid, cmd: kittycad::types::ModelingCmd) -> Result<(), KclError> {
         self.engine.send_modeling_cmd(id, self.source_range, cmd)
     }
 
@@ -444,7 +444,7 @@ impl<'a> Args<'a> {
 
 /// Render a model.
 // This never actually gets called so this is fine.
-pub async fn show<'a>(args: &mut Args<'_>) -> Result<MemoryItem, KclError> {
+pub async fn show<'a>(args: &Args) -> Result<MemoryItem, KclError> {
     let sketch_group = args.get_sketch_group()?;
     inner_show(sketch_group);
 
@@ -458,7 +458,7 @@ pub async fn show<'a>(args: &mut Args<'_>) -> Result<MemoryItem, KclError> {
 fn inner_show(_sketch: Box<SketchGroup>) {}
 
 /// Returns the length of the given leg.
-pub async fn leg_length(args: &mut Args<'_>) -> Result<MemoryItem, KclError> {
+pub async fn leg_length(args: &Args) -> Result<MemoryItem, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
     let result = inner_leg_length(hypotenuse, leg);
     args.make_user_val_from_f64(result)
@@ -473,7 +473,7 @@ fn inner_leg_length(hypotenuse: f64, leg: f64) -> f64 {
 }
 
 /// Returns the angle of the given leg for x.
-pub async fn leg_angle_x(args: &mut Args<'_>) -> Result<MemoryItem, KclError> {
+pub async fn leg_angle_x(args: &Args) -> Result<MemoryItem, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
     let result = inner_leg_angle_x(hypotenuse, leg);
     args.make_user_val_from_f64(result)
@@ -488,7 +488,7 @@ fn inner_leg_angle_x(hypotenuse: f64, leg: f64) -> f64 {
 }
 
 /// Returns the angle of the given leg for y.
-pub async fn leg_angle_y(args: &mut Args<'_>) -> Result<MemoryItem, KclError> {
+pub async fn leg_angle_y(args: &Args) -> Result<MemoryItem, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
     let result = inner_leg_angle_y(hypotenuse, leg);
     args.make_user_val_from_f64(result)
