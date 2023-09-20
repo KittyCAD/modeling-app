@@ -3,6 +3,55 @@ import { _executor } from '../lang/executor'
 import { useStore } from '../useStore'
 import { EngineCommandManager } from '../lang/std/engineConnection'
 
+class EngineCommandManagerSingleton {
+  width: number
+  height: number
+  engineCommandManager?: EngineCommandManager
+
+  constructor() {
+    this.width = 0
+    this.height = 0
+  }
+
+  get({
+    setMediaStream,
+    setIsStreamReady,
+    width,
+    height,
+    token,
+  }: {
+    setMediaStream: (stream: MediaStream) => void
+    setIsStreamReady: (isStreamReady: boolean) => void
+    width: number
+    height: number
+    token?: string
+  }): EngineCommandManager {
+    if (
+      this.engineCommandManager !== undefined &&
+      this.width == width &&
+      this.height == height
+    ) {
+      return this.engineCommandManager
+    }
+
+    const ecm = new EngineCommandManager({
+      setMediaStream,
+      setIsStreamReady,
+      width: width,
+      height: height,
+      token,
+    })
+
+    this.engineCommandManager = ecm
+    this.width = width
+    this.height = height
+
+    return ecm
+  }
+}
+
+const engineManagerSingleton = new EngineCommandManagerSingleton()
+
 export function useSetupEngineManager(
   streamRef: React.RefObject<HTMLDivElement>,
   token?: string
@@ -35,7 +84,7 @@ export function useSetupEngineManager(
       streamHeight: quadHeight,
     })
     if (!width || !height) return
-    const eng = new EngineCommandManager({
+    const eng = engineManagerSingleton.get({
       setMediaStream,
       setIsStreamReady,
       width: quadWidth,
