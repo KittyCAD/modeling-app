@@ -86,6 +86,25 @@ show(fnBox)"#;
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn serial_test_execute_with_function_sketch_with_position() {
+    let code = r#"fn box = (p, h, l, w) => {
+ const myBox = startSketchAt(p)
+    |> line([0, l], %)
+    |> line([w, 0], %)
+    |> line([0, -l], %)
+    |> close(%)
+    |> extrude(h, %)
+
+  return myBox
+}
+
+show(box([0,0], 3, 6, 10))"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/function_sketch_with_position.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_execute_with_angled_line() {
     let code = r#"const part001 = startSketchAt([4.83, 12.56])
   |> line([15.1, 2.48], %)
@@ -143,5 +162,42 @@ async fn serial_test_execute_engine_error_return() {
     assert_eq!(
         result.err().unwrap().to_string(),
         r#"engine: KclErrorDetails { source_ranges: [SourceRange([193, 206])], message: "Modeling command failed: Some([ApiError { error_code: BadRequest, message: \"The path is not closed.  Solid2D construction requires a closed path!\" }])" }"#,
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+#[ignore] // ignore until more stack fixes
+async fn serial_test_execute_pipes_on_pipes() {
+    let code = include_str!("inputs/pipes_on_pipes.kcl");
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/pipes_on_pipes.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_member_expression_sketch_group() {
+    let code = r#"fn cube = (pos, scale) => {
+  const sg = startSketchAt(pos)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+
+const b1 = cube([0,0], 10)
+const b2 = cube([3,3], 4)
+
+const pt1 = b1.value[0]
+const pt2 = b2.value[0]
+
+show(b1)
+show(b2)"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/member_expression_sketch_group.png",
+        &result,
+        1.0,
     );
 }

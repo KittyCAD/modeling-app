@@ -1,6 +1,6 @@
 {
   "name": "untitled-app",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "private": true,
   "dependencies": {
     "@codemirror/autocomplete": "^6.9.0",
@@ -65,7 +65,7 @@
     "pretest": "yarn remove-importmeta",
     "test": "vitest --mode development",
     "test:nowatch": "vitest run --mode development",
-    "test:rust": "(cd src/wasm-lib && cargo test --all && cargo clippy --all --tests)",
+    "test:rust": "(cd src/wasm-lib && cargo test --all && cargo clippy --all --tests --benches)",
     "test:cov": "vitest run --coverage --mode development",
     "simpleserver:ci": "yarn pretest && http-server ./public --cors -p 3000 &",
     "simpleserver": "yarn pretest && http-server ./public --cors -p 3000",

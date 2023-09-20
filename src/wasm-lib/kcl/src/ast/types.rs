@@ -871,6 +871,11 @@ impl CallExpression {
 
         match &self.function {
             Function::StdLib { func } => {
+                /* let source_range: SourceRange = self.into();
+                println!(
+                    "Calling stdlib function: {}, source_range: {:?}, args: {:?}",
+                    fn_name, source_range, fn_args
+                );*/
                 // Attempt to call the function.
                 let mut args = crate::std::Args::new(fn_args, self.into(), engine);
                 let result = func.std_lib_fn()(&mut args)?;
@@ -1815,10 +1820,11 @@ impl MemberExpression {
                 let value = memory.get(&identifier.name, identifier.into())?;
                 value.clone()
             }
-        }
-        .get_json_value()?;
+        };
 
-        if let serde_json::Value::Array(array) = array {
+        let array_json = array.get_json_value()?;
+
+        if let serde_json::Value::Array(array) = array_json {
             if let Some(value) = array.get(index) {
                 Ok(MemoryItem::UserVal(UserVal {
                     value: value.clone(),
@@ -1866,10 +1872,11 @@ impl MemberExpression {
                 let value = memory.get(&identifier.name, identifier.into())?;
                 value.clone()
             }
-        }
-        .get_json_value()?;
+        };
 
-        if let serde_json::Value::Object(map) = object {
+        let object_json = object.get_json_value()?;
+
+        if let serde_json::Value::Object(map) = object_json {
             if let Some(value) = map.get(&property_name) {
                 Ok(MemoryItem::UserVal(UserVal {
                     value: value.clone(),

@@ -34,7 +34,7 @@ pub enum LineToData {
 
 /// Draw a line to a point.
 pub fn line_to(args: &mut Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (LineToData, SketchGroup) = args.get_data_and_sketch_group()?;
+    let (data, sketch_group): (LineToData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
 
     let new_sketch_group = inner_line_to(data, sketch_group, args)?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
@@ -44,7 +44,11 @@ pub fn line_to(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "lineTo",
 }]
-fn inner_line_to(data: LineToData, sketch_group: SketchGroup, args: &mut Args) -> Result<SketchGroup, KclError> {
+fn inner_line_to(
+    data: LineToData,
+    sketch_group: Box<SketchGroup>,
+    args: &mut Args,
+) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
     let to = match data {
         LineToData::PointWithTag { to, .. } => to,
@@ -108,7 +112,7 @@ pub enum AxisLineToData {
 
 /// Draw a line to a point on the x-axis.
 pub fn x_line_to(args: &mut Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (AxisLineToData, SketchGroup) = args.get_data_and_sketch_group()?;
+    let (data, sketch_group): (AxisLineToData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
 
     let new_sketch_group = inner_x_line_to(data, sketch_group, args)?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
@@ -118,7 +122,11 @@ pub fn x_line_to(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "xLineTo",
 }]
-fn inner_x_line_to(data: AxisLineToData, sketch_group: SketchGroup, args: &mut Args) -> Result<SketchGroup, KclError> {
+fn inner_x_line_to(
+    data: AxisLineToData,
+    sketch_group: Box<SketchGroup>,
+    args: &mut Args,
+) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
 
     let line_to_data = match data {
@@ -133,7 +141,7 @@ fn inner_x_line_to(data: AxisLineToData, sketch_group: SketchGroup, args: &mut A
 
 /// Draw a line to a point on the y-axis.
 pub fn y_line_to(args: &mut Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (AxisLineToData, SketchGroup) = args.get_data_and_sketch_group()?;
+    let (data, sketch_group): (AxisLineToData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
 
     let new_sketch_group = inner_y_line_to(data, sketch_group, args)?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
@@ -143,7 +151,11 @@ pub fn y_line_to(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "yLineTo",
 }]
-fn inner_y_line_to(data: AxisLineToData, sketch_group: SketchGroup, args: &mut Args) -> Result<SketchGroup, KclError> {
+fn inner_y_line_to(
+    data: AxisLineToData,
+    sketch_group: Box<SketchGroup>,
+    args: &mut Args,
+) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
 
     let line_to_data = match data {
@@ -173,7 +185,7 @@ pub enum LineData {
 
 /// Draw a line.
 pub fn line(args: &mut Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (LineData, SketchGroup) = args.get_data_and_sketch_group()?;
+    let (data, sketch_group): (LineData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
 
     let new_sketch_group = inner_line(data, sketch_group, args)?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
@@ -183,7 +195,7 @@ pub fn line(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "line",
 }]
-fn inner_line(data: LineData, sketch_group: SketchGroup, args: &mut Args) -> Result<SketchGroup, KclError> {
+fn inner_line(data: LineData, sketch_group: Box<SketchGroup>, args: &mut Args) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
     let inner_args = match &data {
         LineData::PointWithTag { to, .. } => *to,
@@ -250,7 +262,7 @@ pub enum AxisLineData {
 
 /// Draw a line on the x-axis.
 pub fn x_line(args: &mut Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (AxisLineData, SketchGroup) = args.get_data_and_sketch_group()?;
+    let (data, sketch_group): (AxisLineData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
 
     let new_sketch_group = inner_x_line(data, sketch_group, args)?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
@@ -260,7 +272,11 @@ pub fn x_line(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "xLine",
 }]
-fn inner_x_line(data: AxisLineData, sketch_group: SketchGroup, args: &mut Args) -> Result<SketchGroup, KclError> {
+fn inner_x_line(
+    data: AxisLineData,
+    sketch_group: Box<SketchGroup>,
+    args: &mut Args,
+) -> Result<Box<SketchGroup>, KclError> {
     let line_data = match data {
         AxisLineData::LengthWithTag { length, tag } => LineData::PointWithTag { to: [length, 0.0], tag },
         AxisLineData::Length(length) => LineData::Point([length, 0.0]),
@@ -272,7 +288,7 @@ fn inner_x_line(data: AxisLineData, sketch_group: SketchGroup, args: &mut Args) 
 
 /// Draw a line on the y-axis.
 pub fn y_line(args: &mut Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (AxisLineData, SketchGroup) = args.get_data_and_sketch_group()?;
+    let (data, sketch_group): (AxisLineData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
 
     let new_sketch_group = inner_y_line(data, sketch_group, args)?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
@@ -282,7 +298,11 @@ pub fn y_line(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "yLine",
 }]
-fn inner_y_line(data: AxisLineData, sketch_group: SketchGroup, args: &mut Args) -> Result<SketchGroup, KclError> {
+fn inner_y_line(
+    data: AxisLineData,
+    sketch_group: Box<SketchGroup>,
+    args: &mut Args,
+) -> Result<Box<SketchGroup>, KclError> {
     let line_data = match data {
         AxisLineData::LengthWithTag { length, tag } => LineData::PointWithTag { to: [0.0, length], tag },
         AxisLineData::Length(length) => LineData::Point([0.0, length]),
@@ -312,7 +332,7 @@ pub enum AngledLineData {
 
 /// Draw an angled line.
 pub fn angled_line(args: &mut Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (AngledLineData, SketchGroup) = args.get_data_and_sketch_group()?;
+    let (data, sketch_group): (AngledLineData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
 
     let new_sketch_group = inner_angled_line(data, sketch_group, args)?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
@@ -324,9 +344,9 @@ pub fn angled_line(args: &mut Args) -> Result<MemoryItem, KclError> {
 }]
 fn inner_angled_line(
     data: AngledLineData,
-    sketch_group: SketchGroup,
+    sketch_group: Box<SketchGroup>,
     args: &mut Args,
-) -> Result<SketchGroup, KclError> {
+) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
     let (angle, length) = match &data {
         AngledLineData::AngleWithTag { angle, length, .. } => (*angle, *length),
@@ -385,7 +405,7 @@ fn inner_angled_line(
 
 /// Draw an angled line of a given x length.
 pub fn angled_line_of_x_length(args: &mut Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (AngledLineData, SketchGroup) = args.get_data_and_sketch_group()?;
+    let (data, sketch_group): (AngledLineData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
 
     let new_sketch_group = inner_angled_line_of_x_length(data, sketch_group, args)?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
@@ -397,9 +417,9 @@ pub fn angled_line_of_x_length(args: &mut Args) -> Result<MemoryItem, KclError> 
 }]
 fn inner_angled_line_of_x_length(
     data: AngledLineData,
-    sketch_group: SketchGroup,
+    sketch_group: Box<SketchGroup>,
     args: &mut Args,
-) -> Result<SketchGroup, KclError> {
+) -> Result<Box<SketchGroup>, KclError> {
     let (angle, length) = match &data {
         AngledLineData::AngleWithTag { angle, length, .. } => (*angle, *length),
         AngledLineData::AngleAndLength(angle_and_length) => (angle_and_length[0], angle_and_length[1]),
@@ -440,7 +460,7 @@ pub enum AngledLineToData {
 
 /// Draw an angled line to a given x coordinate.
 pub fn angled_line_to_x(args: &mut Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (AngledLineToData, SketchGroup) = args.get_data_and_sketch_group()?;
+    let (data, sketch_group): (AngledLineToData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
 
     let new_sketch_group = inner_angled_line_to_x(data, sketch_group, args)?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
@@ -452,9 +472,9 @@ pub fn angled_line_to_x(args: &mut Args) -> Result<MemoryItem, KclError> {
 }]
 fn inner_angled_line_to_x(
     data: AngledLineToData,
-    sketch_group: SketchGroup,
+    sketch_group: Box<SketchGroup>,
     args: &mut Args,
-) -> Result<SketchGroup, KclError> {
+) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
     let (angle, x_to) = match &data {
         AngledLineToData::AngleWithTag { angle, to, .. } => (*angle, *to),
@@ -479,7 +499,7 @@ fn inner_angled_line_to_x(
 
 /// Draw an angled line of a given y length.
 pub fn angled_line_of_y_length(args: &mut Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (AngledLineData, SketchGroup) = args.get_data_and_sketch_group()?;
+    let (data, sketch_group): (AngledLineData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
 
     let new_sketch_group = inner_angled_line_of_y_length(data, sketch_group, args)?;
 
@@ -492,9 +512,9 @@ pub fn angled_line_of_y_length(args: &mut Args) -> Result<MemoryItem, KclError> 
 }]
 fn inner_angled_line_of_y_length(
     data: AngledLineData,
-    sketch_group: SketchGroup,
+    sketch_group: Box<SketchGroup>,
     args: &mut Args,
-) -> Result<SketchGroup, KclError> {
+) -> Result<Box<SketchGroup>, KclError> {
     let (angle, length) = match &data {
         AngledLineData::AngleWithTag { angle, length, .. } => (*angle, *length),
         AngledLineData::AngleAndLength(angle_and_length) => (angle_and_length[0], angle_and_length[1]),
@@ -517,7 +537,7 @@ fn inner_angled_line_of_y_length(
 
 /// Draw an angled line to a given y coordinate.
 pub fn angled_line_to_y(args: &mut Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (AngledLineToData, SketchGroup) = args.get_data_and_sketch_group()?;
+    let (data, sketch_group): (AngledLineToData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
 
     let new_sketch_group = inner_angled_line_to_y(data, sketch_group, args)?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
@@ -529,9 +549,9 @@ pub fn angled_line_to_y(args: &mut Args) -> Result<MemoryItem, KclError> {
 }]
 fn inner_angled_line_to_y(
     data: AngledLineToData,
-    sketch_group: SketchGroup,
+    sketch_group: Box<SketchGroup>,
     args: &mut Args,
-) -> Result<SketchGroup, KclError> {
+) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
     let (angle, y_to) = match &data {
         AngledLineToData::AngleWithTag { angle, to, .. } => (*angle, *to),
@@ -572,7 +592,7 @@ pub struct AngeledLineThatIntersectsData {
 
 /// Draw an angled line that intersects with a given line.
 pub fn angled_line_that_intersects(args: &mut Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (AngeledLineThatIntersectsData, SketchGroup) = args.get_data_and_sketch_group()?;
+    let (data, sketch_group): (AngeledLineThatIntersectsData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
     let new_sketch_group = inner_angled_line_that_intersects(data, sketch_group, args)?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
@@ -583,9 +603,9 @@ pub fn angled_line_that_intersects(args: &mut Args) -> Result<MemoryItem, KclErr
 }]
 fn inner_angled_line_that_intersects(
     data: AngeledLineThatIntersectsData,
-    sketch_group: SketchGroup,
+    sketch_group: Box<SketchGroup>,
     args: &mut Args,
-) -> Result<SketchGroup, KclError> {
+) -> Result<Box<SketchGroup>, KclError> {
     let intersect_path = sketch_group
         .get_path_by_name(&data.intersect_tag)
         .ok_or_else(|| {
@@ -629,7 +649,7 @@ pub fn start_sketch_at(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "startSketchAt",
 }]
-fn inner_start_sketch_at(data: LineData, args: &mut Args) -> Result<SketchGroup, KclError> {
+fn inner_start_sketch_at(data: LineData, args: &mut Args) -> Result<Box<SketchGroup>, KclError> {
     let to = match &data {
         LineData::PointWithTag { to, .. } => *to,
         LineData::Point(to) => *to,
@@ -673,7 +693,7 @@ fn inner_start_sketch_at(data: LineData, args: &mut Args) -> Result<SketchGroup,
         start: current_path,
         meta: vec![args.source_range.into()],
     };
-    Ok(sketch_group)
+    Ok(Box::new(sketch_group))
 }
 
 /// Close the current sketch.
@@ -689,7 +709,7 @@ pub fn close(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "close",
 }]
-fn inner_close(sketch_group: SketchGroup, args: &mut Args) -> Result<SketchGroup, KclError> {
+fn inner_close(sketch_group: Box<SketchGroup>, args: &mut Args) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
     let to: Point2d = sketch_group.start.from.into();
 
@@ -768,7 +788,7 @@ pub enum ArcData {
 
 /// Draw an arc.
 pub fn arc(args: &mut Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (ArcData, SketchGroup) = args.get_data_and_sketch_group()?;
+    let (data, sketch_group): (ArcData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
 
     let new_sketch_group = inner_arc(data, sketch_group, args)?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
@@ -778,7 +798,7 @@ pub fn arc(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "arc",
 }]
-fn inner_arc(data: ArcData, sketch_group: SketchGroup, args: &mut Args) -> Result<SketchGroup, KclError> {
+fn inner_arc(data: ArcData, sketch_group: Box<SketchGroup>, args: &mut Args) -> Result<Box<SketchGroup>, KclError> {
     let from: Point2d = sketch_group.get_coords_from_paths()?;
 
     let (center, angle_start, angle_end, radius, end) = match &data {
@@ -900,7 +920,7 @@ pub enum BezierData {
 
 /// Draw a bezier curve.
 pub fn bezier_curve(args: &mut Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (BezierData, SketchGroup) = args.get_data_and_sketch_group()?;
+    let (data, sketch_group): (BezierData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
 
     let new_sketch_group = inner_bezier_curve(data, sketch_group, args)?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
@@ -910,7 +930,11 @@ pub fn bezier_curve(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "bezierCurve",
 }]
-fn inner_bezier_curve(data: BezierData, sketch_group: SketchGroup, args: &mut Args) -> Result<SketchGroup, KclError> {
+fn inner_bezier_curve(
+    data: BezierData,
+    sketch_group: Box<SketchGroup>,
+    args: &mut Args,
+) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
 
     let (to, control1, control2) = match &data {
