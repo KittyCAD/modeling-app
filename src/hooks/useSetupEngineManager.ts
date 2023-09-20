@@ -28,7 +28,7 @@ export function useSetupEngineManager(
   const quadWidth = Math.round(width / 4) * 4
   const height = streamHeight ? streamHeight : 0
   const quadHeight = Math.round(height / 4) * 4
-  const eng = useRef<EngineCommandManager|null>(null)
+  const eng = useRef<EngineCommandManager | null>(null)
 
   useLayoutEffect(() => {
     setStreamDimensions({
