@@ -18,7 +18,7 @@ impl EngineConnection {
 #[async_trait::async_trait(?Send)]
 impl crate::engine::EngineManager for EngineConnection {
     fn send_modeling_cmd(
-        &mut self,
+        &self,
         _id: uuid::Uuid,
         _source_range: crate::executor::SourceRange,
         _cmd: kittycad::types::ModelingCmd,
@@ -27,7 +27,7 @@ impl crate::engine::EngineManager for EngineConnection {
     }
 
     async fn send_modeling_cmd_get_response(
-        &mut self,
+        &self,
         _id: uuid::Uuid,
         _source_range: crate::executor::SourceRange,
         _cmd: kittycad::types::ModelingCmd,
