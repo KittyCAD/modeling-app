@@ -88,7 +88,11 @@ impl EngineConnection {
         let ws_stream = tokio_tungstenite::WebSocketStream::from_raw_socket(
             ws,
             tokio_tungstenite::tungstenite::protocol::Role::Client,
-            None,
+            Some(tokio_tungstenite::tungstenite::protocol::WebSocketConfig {
+                //write_buffer_size: 0,
+                max_write_buffer_size: 1024 * 256,
+                ..Default::default()
+            }),
         )
         .await;
 
