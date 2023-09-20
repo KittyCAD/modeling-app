@@ -37,13 +37,9 @@ async fn setup(code: &str, name: &str) -> Result<(EngineConnection, Program, uui
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
     let mut mem: kcl_lib::executor::ProgramMemory = Default::default();
-    let mut engine = kcl_lib::engine::EngineConnection::new(ws).await?;
-    let memory = kcl_lib::executor::execute(
-        program.clone(),
-        &mut mem,
-        kcl_lib::executor::BodyType::Root,
-        &mut engine,
-    )?;
+    let engine = kcl_lib::engine::EngineConnection::new(ws).await?;
+    let memory =
+        kcl_lib::executor::execute(program.clone(), &mut mem, kcl_lib::executor::BodyType::Root, &engine).await?;
 
     // We need to get the sketch ID.
     // Get the sketch group ID from memory.
@@ -53,38 +49,44 @@ async fn setup(code: &str, name: &str) -> Result<(EngineConnection, Program, uui
     let sketch_id = sketch_group.id;
 
     let plane_id = uuid::Uuid::new_v4();
-    engine.send_modeling_cmd(
-        plane_id,
-        SourceRange::default(),
-        ModelingCmd::MakePlane {
-            clobber: false,
-            origin: Point3D { x: 0.0, y: 0.0, z: 0.0 },
-            size: 60.0,
-            x_axis: Point3D { x: 1.0, y: 0.0, z: 0.0 },
-            y_axis: Point3D { x: 0.0, y: 1.0, z: 0.0 },
-        },
-    )?;
+    engine
+        .send_modeling_cmd(
+            plane_id,
+            SourceRange::default(),
+            ModelingCmd::MakePlane {
+                clobber: false,
+                origin: Point3D { x: 0.0, y: 0.0, z: 0.0 },
+                size: 60.0,
+                x_axis: Point3D { x: 1.0, y: 0.0, z: 0.0 },
+                y_axis: Point3D { x: 0.0, y: 1.0, z: 0.0 },
+            },
+        )
+        .await?;
 
     // Enter sketch mode.
     // We can't get control points without being in sketch mode.
     // You can however get path info without sketch mode.
-    engine.send_modeling_cmd(
-        uuid::Uuid::new_v4(),
-        SourceRange::default(),
-        ModelingCmd::SketchModeEnable {
-            animated: false,
-            ortho: true,
-            plane_id,
-        },
-    )?;
+    engine
+        .send_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            SourceRange::default(),
+            ModelingCmd::SketchModeEnable {
+                animated: false,
+                ortho: true,
+                plane_id,
+            },
+        )
+        .await?;
 
     // Enter edit mode.
     // We can't get control points of an existing sketch without being in edit mode.
-    engine.send_modeling_cmd(
-        uuid::Uuid::new_v4(),
-        SourceRange::default(),
-        ModelingCmd::EditModeEnter { target: sketch_id },
-    )?;
+    engine
+        .send_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            SourceRange::default(),
+            ModelingCmd::EditModeEnter { target: sketch_id },
+        )
+        .await?;
 
     Ok((engine, program, sketch_id))
 }

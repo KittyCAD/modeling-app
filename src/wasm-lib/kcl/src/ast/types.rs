@@ -576,7 +576,7 @@ impl BinaryPart {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
-        engine: &mut EngineConnection,
+        engine: &EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
         // stop the execution of the pipe.
@@ -818,7 +818,7 @@ impl CallExpression {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
-        engine: &mut EngineConnection,
+        engine: &EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         let fn_name = self.callee.name.clone();
 
@@ -885,8 +885,8 @@ impl CallExpression {
                     fn_name, source_range, fn_args
                 );*/
                 // Attempt to call the function.
-                let mut args = crate::std::Args::new(fn_args, self.into(), engine);
-                let result = func.std_lib_fn()(&mut args).await?;
+                let args = crate::std::Args::new(fn_args, self.into(), engine.clone());
+                let result = func.std_lib_fn()(args).await?;
                 if pipe_info.is_in_pipe {
                     pipe_info.index += 1;
                     pipe_info.previous_results.push(result);
@@ -896,14 +896,16 @@ impl CallExpression {
                 }
             }
             Function::InMemory => {
-                let mem = memory.clone();
-                let func = mem.get(&fn_name, self.into())?;
-                let result = func.call_fn(fn_args, mem, engine).await?.ok_or_else(|| {
-                    KclError::UndefinedValue(KclErrorDetails {
-                        message: format!("Result of function {} is undefined", fn_name),
-                        source_ranges: vec![self.into()],
-                    })
-                })?;
+                let func = memory.get(&fn_name, self.into())?;
+                let result = func
+                    .call_fn(fn_args, memory.clone(), engine.clone())
+                    .await?
+                    .ok_or_else(|| {
+                        KclError::UndefinedValue(KclErrorDetails {
+                            message: format!("Result of function {} is undefined", fn_name),
+                            source_ranges: vec![self.into()],
+                        })
+                    })?;
 
                 let result = result.get_value()?;
 
@@ -1437,7 +1439,7 @@ impl ArrayExpression {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
-        engine: &mut EngineConnection,
+        engine: &EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         let mut results = Vec::with_capacity(self.elements.len());
 
@@ -1587,7 +1589,7 @@ impl ObjectExpression {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
-        engine: &mut EngineConnection,
+        engine: &EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         let mut object = Map::new();
         for property in &self.properties {
@@ -2028,7 +2030,7 @@ impl BinaryExpression {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
-        engine: &mut EngineConnection,
+        engine: &EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
         // stop the execution of the pipe.
@@ -2198,7 +2200,7 @@ impl UnaryExpression {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
-        engine: &mut EngineConnection,
+        engine: &EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
         // stop the execution of the pipe.
@@ -2336,7 +2338,7 @@ impl PipeExpression {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
-        engine: &mut EngineConnection,
+        engine: &EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         // Reset the previous results.
         pipe_info.previous_results = vec![];
@@ -2358,7 +2360,7 @@ async fn execute_pipe_body(
     body: &[Value],
     pipe_info: &mut PipeInfo,
     source_range: SourceRange,
-    engine: &mut EngineConnection,
+    engine: &EngineConnection,
 ) -> Result<MemoryItem, KclError> {
     if pipe_info.index == body.len() {
         pipe_info.is_in_pipe = false;

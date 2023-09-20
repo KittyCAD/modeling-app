@@ -108,7 +108,7 @@ pub enum MemoryItem {
     #[ts(skip)]
     Function {
         #[serde(skip)]
-        func: Option<MemoryFunction<'static>>,
+        func: Option<MemoryFunction>,
         expression: Box<FunctionExpression>,
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
@@ -134,24 +134,23 @@ pub struct ExtrudeTransform {
     pub meta: Vec<Metadata>,
 }
 
-pub type MemoryFunction<'a> =
+pub type MemoryFunction =
     fn(
         s: Vec<MemoryItem>,
         memory: ProgramMemory,
-        expression: &'a FunctionExpression,
-        metadata: &'a [Metadata],
-        engine: &'a mut EngineConnection,
-    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>> + 'a>>;
+        expression: Box<FunctionExpression>,
+        metadata: Vec<Metadata>,
+        engine: EngineConnection,
+    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>>>>;
 
 fn force_memory_function<
-    F: for<'a> Fn(
+    F: Fn(
         Vec<MemoryItem>,
         ProgramMemory,
-        &'a FunctionExpression,
-        &'a [Metadata],
-        &'a mut EngineConnection,
-    )
-        -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>> + 'a>>,
+        Box<FunctionExpression>,
+        Vec<Metadata>,
+        EngineConnection,
+    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>>>>,
 >(
     f: F,
 ) -> F {
@@ -188,11 +187,11 @@ impl MemoryItem {
         &self,
         args: Vec<MemoryItem>,
         memory: ProgramMemory,
-        mut engine: EngineConnection,
+        engine: EngineConnection,
     ) -> Result<Option<ProgramReturn>, KclError> {
         if let MemoryItem::Function { func, expression, meta } = &self {
             if let Some(func) = func {
-                func(args, memory, expression, meta, &mut engine).await
+                func(args, memory, expression.clone(), meta.clone(), engine).await
             } else {
                 Err(KclError::Semantic(KclErrorDetails {
                     message: format!("Not a function: {:?}", expression),
@@ -201,7 +200,7 @@ impl MemoryItem {
             }
         } else {
             Err(KclError::Semantic(KclErrorDetails {
-                message: format!("not a function"),
+                message: "not a in memory function".to_string(),
                 source_ranges: vec![],
             }))
         }
@@ -599,7 +598,7 @@ pub async fn execute(
     program: crate::ast::types::Program,
     memory: &mut ProgramMemory,
     options: BodyType,
-    engine: &mut EngineConnection,
+    engine: &EngineConnection,
 ) -> Result<ProgramMemory, KclError> {
     let mut pipe_info = PipeInfo::default();
 
@@ -618,7 +617,7 @@ pub async fn execute(
                                 args.push(memory_item.clone());
                             }
                             Value::CallExpression(call_expr) => {
-                                let result = call_expr.execute(memory, &mut pipe_info, engine)?;
+                                let result = call_expr.execute(memory, &mut pipe_info, engine).await?;
                                 args.push(result);
                             }
                             // We do nothing for the rest.
@@ -636,7 +635,7 @@ pub async fn execute(
 
                         memory.return_ = Some(ProgramReturn::Arguments(call_expr.arguments.clone()));
                     } else if let Some(func) = memory.clone().root.get(&fn_name) {
-                        let result = func.call_fn(args.clone(), memory.clone(), engine).await?;
+                        let result = func.call_fn(args.clone(), memory.clone(), engine.clone()).await?;
 
                         memory.return_ = result;
                     } else {
@@ -666,12 +665,12 @@ pub async fn execute(
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::FunctionExpression(function_expression) => {
-                            let memFunc = force_memory_function(
+                            let mem_func = force_memory_function(
                                 |args: Vec<MemoryItem>,
                                  memory: ProgramMemory,
-                                 function_expression: &'_ FunctionExpression,
-                                 _metadata: &'_ [Metadata],
-                                 engine: &'_ mut EngineConnection| {
+                                 function_expression: Box<FunctionExpression>,
+                                 _metadata: Vec<Metadata>,
+                                 engine: EngineConnection| {
                                     Box::pin(async move {
                                         let mut fn_memory = memory.clone();
 
@@ -682,7 +681,7 @@ pub async fn execute(
                                                     function_expression.params.len(),
                                                     args.len()
                                                 ),
-                                                source_ranges: vec![function_expression.into()],
+                                                source_ranges: vec![(&function_expression).into()],
                                             }));
                                         }
 
@@ -699,7 +698,7 @@ pub async fn execute(
                                             function_expression.body.clone(),
                                             &mut fn_memory,
                                             BodyType::Block,
-                                            engine,
+                                            &engine,
                                         )
                                         .await?;
 
@@ -712,7 +711,7 @@ pub async fn execute(
                                 MemoryItem::Function {
                                     expression: function_expression.clone(),
                                     meta: vec![metadata],
-                                    func: Some(memFunc),
+                                    func: Some(mem_func),
                                 },
                                 source_range,
                             )?;
@@ -809,8 +808,8 @@ mod tests {
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast()?;
         let mut mem: ProgramMemory = Default::default();
-        let mut engine = EngineConnection::new().await?;
-        let memory = execute(program, &mut mem, BodyType::Root, &mut engine).await?;
+        let engine = EngineConnection::new().await?;
+        let memory = execute(program, &mut mem, BodyType::Root, &engine).await?;
 
         Ok(memory)
     }

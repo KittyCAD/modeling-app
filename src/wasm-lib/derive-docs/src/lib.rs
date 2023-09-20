@@ -303,7 +303,7 @@ fn do_stdlib_inner(
         #const_struct
 
         fn #boxed_fn_name_ident(
-            args: &crate::std::Args,
+            args: crate::std::Args,
         ) -> std::pin::Pin<
             Box<dyn std::future::Future<Output = anyhow::Result<crate::executor::MemoryItem, crate::errors::KclError>>>,
         > {

@@ -95,7 +95,7 @@ pub async fn modify_ast_for_sketch(
     let mut control_points = Vec::new();
     for segment in &path_info.segments {
         if let Some(command_id) = &segment.command_id {
-            let h = engine.send_modeling_cmd_get_response(
+            let h = engine.send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 SourceRange::default(),
                 ModelingCmd::CurveGetControlPoints { curve_id: *command_id },
