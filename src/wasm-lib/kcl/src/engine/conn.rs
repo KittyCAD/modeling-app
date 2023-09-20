@@ -161,7 +161,8 @@ impl EngineManager for EngineConnection {
 
         // Wait for the response.
         loop {
-            if let Some(resp) = self.responses.get(&id) {
+            // We pop off the responses to cleanup our mappings.
+            if let Some((_, resp)) = self.responses.remove(&id) {
                 return if let Some(data) = &resp.resp {
                     Ok(data.clone())
                 } else {
