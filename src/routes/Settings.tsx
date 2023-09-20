@@ -64,7 +64,7 @@ export const Settings = () => {
   }
 
   return (
-    <div className="body-bg fixed inset-0 z-40 overflow-auto">
+    <div className="fixed inset-0 z-40 overflow-auto body-bg">
       <AppHeader showToolbar={false} project={loaderData?.project}>
         <ActionButton
           Element="link"
@@ -80,9 +80,9 @@ export const Settings = () => {
           Close
         </ActionButton>
       </AppHeader>
-      <div className="my-24 max-w-5xl mx-auto">
+      <div className="max-w-5xl mx-auto my-24">
         <h1 className="text-4xl font-bold">User Settings</h1>
-        <p className="mt-6 max-w-2xl">
+        <p className="max-w-2xl mt-6">
           Don't see the feature you want? Check to see if it's on{' '}
           <a
             href="https://github.com/KittyCAD/modeling-app/discussions"
@@ -100,7 +100,7 @@ export const Settings = () => {
         >
           <select
             id="camera-controls"
-            className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
+            className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
             value={cameraControls}
             onChange={(e) => {
               send({
@@ -115,7 +115,7 @@ export const Settings = () => {
               </option>
             ))}
           </select>
-          <ul className="text-sm my-2 mx-4 leading-relaxed">
+          <ul className="mx-4 my-2 text-sm leading-relaxed">
             <li>
               <strong>Pan:</strong>{' '}
               {cameraMouseDragGuards[cameraControls].pan.description}
@@ -136,7 +136,7 @@ export const Settings = () => {
               title="Default Directory"
               description="Where newly-created projects are saved on your local computer"
             >
-              <div className="w-full flex gap-4 p-1 rounded border border-chalkboard-30">
+              <div className="flex w-full gap-4 p-1 border rounded border-chalkboard-30">
                 <input
                   className="flex-1 px-2 bg-transparent"
                   value={defaultDirectory}
@@ -163,7 +163,7 @@ export const Settings = () => {
               description="Name template for new projects. Use $n to include an incrementing index"
             >
               <input
-                className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
+                className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
                 defaultValue={defaultProjectName}
                 onBlur={(e) => {
                   const newValue = e.target.value.trim() || DEFAULT_PROJECT_NAME
@@ -207,7 +207,7 @@ export const Settings = () => {
         >
           <select
             id="base-unit"
-            className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
+            className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
             value={baseUnit}
             onChange={(e) => {
               send({
@@ -241,7 +241,7 @@ export const Settings = () => {
         >
           <select
             id="settings-theme"
-            className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
+            className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
             value={theme}
             onChange={(e) => {
               send({
@@ -285,15 +285,22 @@ export const Settings = () => {
 interface SettingsSectionProps extends React.PropsWithChildren {
   title: string
   description?: string
+  className?: string
 }
 
 export function SettingsSection({
   title,
   description,
+  className,
   children,
 }: SettingsSectionProps) {
   return (
-    <section className="my-16 last-of-type:mb-24 grid grid-cols-2 gap-12 items-start">
+    <section
+      className={
+        'my-16 last-of-type:mb-24 grid grid-cols-2 gap-12 items-start ' +
+        className
+      }
+    >
       <div className="w-80">
         <h2 className="text-2xl">{title}</h2>
         <p className="mt-2 text-sm">{description}</p>

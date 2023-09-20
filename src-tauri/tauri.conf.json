@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "kittycad-modeling",
-    "version": "0.8.1"
+    "version": "0.8.2"
   },
   "tauri": {
     "allowlist": {
@@ -35,6 +35,9 @@
           "https://kittycad.io/*",
           "https://api.dev.kittycad.io/*"
         ]
+      },
+      "os": {
+        "all": true
       },
       "shell": {
         "open": true

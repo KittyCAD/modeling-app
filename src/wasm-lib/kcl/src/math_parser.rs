@@ -422,9 +422,8 @@ impl ReversePolishNotation {
                 {
                     let closing_brace = self.parser.find_closing_brace(1, 0, "")?;
                     let mut new_stack = stack;
-                    new_stack.push(MathExpression::CallExpression(Box::new(
-                        self.parser.make_call_expression(0)?.expression,
-                    )));
+                    let call_expression = self.parser.make_call_expression(0)?;
+                    new_stack.push(MathExpression::CallExpression(Box::new(call_expression.expression)));
                     return self.build_tree(&reverse_polish_notation_tokens[closing_brace + 1..], new_stack);
                 }
                 if reverse_polish_notation_tokens[1].token_type == TokenType::Period

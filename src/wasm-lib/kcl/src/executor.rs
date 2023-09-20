@@ -101,8 +101,8 @@ impl ProgramReturn {
 #[serde(tag = "type")]
 pub enum MemoryItem {
     UserVal(UserVal),
-    SketchGroup(SketchGroup),
-    ExtrudeGroup(ExtrudeGroup),
+    SketchGroup(Box<SketchGroup>),
+    ExtrudeGroup(Box<ExtrudeGroup>),
     #[ts(skip)]
     ExtrudeTransform(ExtrudeTransform),
     #[ts(skip)]
@@ -159,10 +159,12 @@ impl MemoryItem {
         if let MemoryItem::UserVal(user_val) = self {
             Ok(user_val.value.clone())
         } else {
-            Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Not a user value: {:?}", self),
-                source_ranges: self.clone().into(),
-            }))
+            serde_json::to_value(self).map_err(|err| {
+                KclError::Semantic(KclErrorDetails {
+                    message: format!("Cannot convert memory item to json value: {:?}", err),
+                    source_ranges: self.clone().into(),
+                })
+            })
         }
     }
 
@@ -598,6 +600,10 @@ pub fn execute(
                             Value::Identifier(identifier) => {
                                 let memory_item = memory.get(&identifier.name, identifier.into())?;
                                 args.push(memory_item.clone());
+                            }
+                            Value::CallExpression(call_expr) => {
+                                let result = call_expr.execute(memory, &mut pipe_info, engine)?;
+                                args.push(result);
                             }
                             // We do nothing for the rest.
                             _ => (),
@@ -1174,6 +1180,16 @@ show(thisBox)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_execute_with_pi() {
+        let ast = r#"const myVar = pi() * 2"#;
+        let memory = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            serde_json::json!(std::f64::consts::TAU),
+            memory.root.get("myVar").unwrap().get_json_value().unwrap()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_math_define_decimal_without_leading_zero() {
         let ast = r#"let thing = .4 + 7"#;
         let memory = parse_execute(ast).await.unwrap();
@@ -1181,6 +1197,22 @@ show(thisBox)
             serde_json::json!(7.4),
             memory.root.get("thing").unwrap().get_json_value().unwrap()
         );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_zero_param_fn() {
+        let ast = r#"const sigmaAllow = 35000 // psi
+const leg1 = 5 // inches
+const leg2 = 8 // inches
+fn thickness = () => { return 0.56 }
+
+const bracket = startSketchAt([0,0])
+  |> line([0, leg1], %)
+  |> line([leg2, 0], %)
+  |> line([0, -thickness()], %)
+  |> line([-leg2 + thickness(), 0], %)
+"#;
+        parse_execute(ast).await.unwrap();
     }
 
     #[tokio::test(flavor = "multi_thread")]

@@ -23,7 +23,7 @@ pub fn extrude(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "extrude"
 }]
-fn inner_extrude(length: f64, sketch_group: SketchGroup, args: &mut Args) -> Result<ExtrudeGroup, KclError> {
+fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: &mut Args) -> Result<Box<ExtrudeGroup>, KclError> {
     let id = uuid::Uuid::new_v4();
 
     let cmd = kittycad::types::ModelingCmd::Extrude {
@@ -33,7 +33,7 @@ fn inner_extrude(length: f64, sketch_group: SketchGroup, args: &mut Args) -> Res
     };
     args.send_modeling_cmd(id, cmd)?;
 
-    Ok(ExtrudeGroup {
+    Ok(Box::new(ExtrudeGroup {
         id,
         // TODO, this is just an empty array now, should be deleted. This
         // comment was originally in the JS code.
@@ -42,13 +42,13 @@ fn inner_extrude(length: f64, sketch_group: SketchGroup, args: &mut Args) -> Res
         position: sketch_group.position,
         rotation: sketch_group.rotation,
         meta: sketch_group.meta,
-    })
+    }))
 }
 
 /// Returns the extrude wall transform.
 pub fn get_extrude_wall_transform(args: &mut Args) -> Result<MemoryItem, KclError> {
     let (surface_name, extrude_group) = args.get_path_name_extrude_group()?;
-    let result = inner_get_extrude_wall_transform(&surface_name, extrude_group, args)?;
+    let result = inner_get_extrude_wall_transform(&surface_name, *extrude_group, args)?;
     Ok(MemoryItem::ExtrudeTransform(result))
 }
 

@@ -2,6 +2,8 @@ import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../../components/ActionButton'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from '../../useStore'
+import { Platform, platform } from '@tauri-apps/api/os'
+import { useEffect, useState } from 'react'
 
 export default function CmdK() {
   const { buttonDownInStream } = useStore((s) => ({
@@ -9,9 +11,17 @@ export default function CmdK() {
   }))
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.USER_MENU)
+  const [platformName, setPlatformName] = useState<Platform | ''>('')
+
+  useEffect(() => {
+    async function getPlatform() {
+      setPlatformName(await platform())
+    }
+    getPlatform()
+  }, [setPlatformName])
 
   return (
-    <div className="fixed grid justify-center items-end inset-0 z-50 pointer-events-none">
+    <div className="fixed inset-0 z-50 grid items-end justify-center pointer-events-none">
       <div
         className={
           'max-w-full xl:max-w-4xl flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
@@ -20,8 +30,17 @@ export default function CmdK() {
       >
         <h2 className="text-2xl">Command Bar</h2>
         <p className="my-4">
-          Press <kbd>Cmd/Win</kbd> + <kbd>K</kbd> to open the command bar. Try
-          changing your theme with it.
+          Press{' '}
+          {platformName === 'win32' ? (
+            <>
+              <kbd>Win</kbd> + <kbd>/</kbd>
+            </>
+          ) : (
+            <>
+              <kbd>OS</kbd> + <kbd>K</kbd>
+            </>
+          )}{' '}
+          to open the command bar. Try changing your theme with it.
         </p>
         <p className="my-4">
           We are working on a command bar that will allow you to quickly see and
