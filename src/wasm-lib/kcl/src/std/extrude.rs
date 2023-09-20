@@ -14,7 +14,7 @@ use crate::{
 pub async fn extrude(args: &Args) -> Result<MemoryItem, KclError> {
     let (length, sketch_group) = args.get_number_sketch_group()?;
 
-    let result = inner_extrude(length, sketch_group, args)?;
+    let result = inner_extrude(length, sketch_group, args).await?;
 
     Ok(MemoryItem::ExtrudeGroup(result))
 }
@@ -23,7 +23,11 @@ pub async fn extrude(args: &Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "extrude"
 }]
-fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: &Args) -> Result<Box<ExtrudeGroup>, KclError> {
+async fn inner_extrude(
+    length: f64,
+    sketch_group: Box<SketchGroup>,
+    args: &Args,
+) -> Result<Box<ExtrudeGroup>, KclError> {
     let id = uuid::Uuid::new_v4();
 
     let cmd = kittycad::types::ModelingCmd::Extrude {
@@ -31,7 +35,7 @@ fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: &Args) -> Re
         distance: length,
         cap: true,
     };
-    args.send_modeling_cmd(id, cmd)?;
+    args.send_modeling_cmd(id, cmd).await?;
 
     Ok(Box::new(ExtrudeGroup {
         id,
@@ -60,7 +64,7 @@ fn inner_get_extrude_wall_transform(
     surface_name: &str,
     extrude_group: ExtrudeGroup,
     args: &Args,
-) -> Result<ExtrudeTransform, KclError> {
+) -> Result<Box<ExtrudeTransform>, KclError> {
     let surface = extrude_group.get_path_by_name(surface_name).ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!(
@@ -71,9 +75,9 @@ fn inner_get_extrude_wall_transform(
         })
     })?;
 
-    Ok(ExtrudeTransform {
+    Ok(Box::new(ExtrudeTransform {
         position: surface.get_position(),
         rotation: surface.get_rotation(),
         meta: extrude_group.meta,
-    })
+    }))
 }

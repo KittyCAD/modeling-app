@@ -71,7 +71,7 @@ pub async fn modify_ast_for_sketch(
 
     // Let's get the path info.
     let resp = engine
-        .send_modeling_cmd_get_response(
+        .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             SourceRange::default(),
             ModelingCmd::PathGetInfo { path_id: sketch_id },

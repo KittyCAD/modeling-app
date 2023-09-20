@@ -104,7 +104,7 @@ pub enum MemoryItem {
     SketchGroup(Box<SketchGroup>),
     ExtrudeGroup(Box<ExtrudeGroup>),
     #[ts(skip)]
-    ExtrudeTransform(ExtrudeTransform),
+    ExtrudeTransform(Box<ExtrudeTransform>),
     #[ts(skip)]
     Function {
         #[serde(skip)]

@@ -21,9 +21,8 @@ use crate::{
     executor::{ExtrudeGroup, MemoryItem, Metadata, SketchGroup, SourceRange},
 };
 
-pub type StdFn<'a> =
-    fn(&'a mut Args<'a>) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<MemoryItem, KclError>> + 'a>>;
-pub type FnMap<'a> = HashMap<String, StdFn<'a>>;
+pub type StdFn = fn(&Args) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<MemoryItem, KclError>>>>;
+pub type FnMap = HashMap<String, StdFn>;
 
 pub struct StdLib {
     pub fns: HashMap<String, Box<(dyn crate::docs::StdLibFn)>>,
@@ -104,14 +103,14 @@ impl Default for StdLib {
 }
 
 #[derive(Debug)]
-pub struct Args<'a> {
+pub struct Args {
     pub args: Vec<MemoryItem>,
     pub source_range: SourceRange,
-    engine: &'a mut EngineConnection,
+    engine: EngineConnection,
 }
 
-impl<'a> Args<'a> {
-    pub fn new(args: Vec<MemoryItem>, source_range: SourceRange, engine: &'a mut EngineConnection) -> Self {
+impl Args {
+    pub fn new(args: Vec<MemoryItem>, source_range: SourceRange, engine: EngineConnection) -> Self {
         Self {
             args,
             source_range,
@@ -119,8 +118,8 @@ impl<'a> Args<'a> {
         }
     }
 
-    pub fn send_modeling_cmd(&self, id: uuid::Uuid, cmd: kittycad::types::ModelingCmd) -> Result<(), KclError> {
-        self.engine.send_modeling_cmd(id, self.source_range, cmd)
+    pub async fn send_modeling_cmd(&self, id: uuid::Uuid, cmd: kittycad::types::ModelingCmd) -> Result<(), KclError> {
+        self.engine.send_modeling_cmd(id, self.source_range, cmd).await
     }
 
     fn make_user_val_from_json(&self, j: serde_json::Value) -> Result<MemoryItem, KclError> {

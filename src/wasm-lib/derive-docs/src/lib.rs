@@ -79,13 +79,6 @@ fn do_stdlib_inner(
         ));
     }
 
-    if ast.sig.asyncness.is_some() {
-        errors.push(Error::new_spanned(
-            &ast.sig.fn_token,
-            "stdlib functions must not be async",
-        ));
-    }
-
     if ast.sig.unsafety.is_some() {
         errors.push(Error::new_spanned(
             &ast.sig.unsafety,
@@ -309,10 +302,10 @@ fn do_stdlib_inner(
         #description_doc_comment
         #const_struct
 
-        fn #boxed_fn_name_ident<'a>(
-            args: &'a mut crate::std::Args<'a>,
+        fn #boxed_fn_name_ident(
+            args: &crate::std::Args,
         ) -> std::pin::Pin<
-            Box<dyn std::future::Future<Output = anyhow::Result<crate::executor::MemoryItem, crate::errors::KclError>> + 'a>,
+            Box<dyn std::future::Future<Output = anyhow::Result<crate::executor::MemoryItem, crate::errors::KclError>>>,
         > {
             Box::pin(#fn_name_ident(args))
         }
