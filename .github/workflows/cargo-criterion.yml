@@ -30,8 +30,8 @@ jobs:
           cargo install cargo-criterion
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2.6.1
-      - name: cargo criterion
+      - name: Benchmark kcl library
         shell: bash
         run: |-
-          cargo criterion
+          cd src/wasm-lib/kcl; cargo criterion
 
