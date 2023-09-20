@@ -1200,6 +1200,22 @@ show(thisBox)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_zero_param_fn() {
+        let ast = r#"const sigmaAllow = 35000 // psi
+const leg1 = 5 // inches
+const leg2 = 8 // inches
+fn thickness = () => { return 0.56 }
+
+const bracket = startSketchAt([0,0])
+  |> line([0, leg1], %)
+  |> line([leg2, 0], %)
+  |> line([0, -thickness()], %)
+  |> line([-leg2 + thickness(), 0], %)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_math_negative_variable_in_binary_expression() {
         let ast = r#"const sigmaAllow = 35000 // psi
 const width = 1 // inch
