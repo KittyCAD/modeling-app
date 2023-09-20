@@ -32,7 +32,7 @@ use anyhow::Result;
 pub use conn_mock::EngineConnection;
 
 #[async_trait::async_trait(?Send)]
-pub trait EngineManager {
+pub trait EngineManager: Clone {
     /// Send a modeling command.
     /// Do not wait for the response message.
     fn send_modeling_cmd(
