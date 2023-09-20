@@ -1,5 +1,6 @@
 //! Functions for setting up our WebSocket and WebRTC connections for communications with the
 //! engine.
+use std::sync::Arc;
 
 use anyhow::Result;
 use kittycad::types::WebSocketRequest;
@@ -23,12 +24,14 @@ extern "C" {
 
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
-    manager: EngineCommandManager,
+    manager: Arc<EngineCommandManager>,
 }
 
 impl EngineConnection {
     pub async fn new(manager: EngineCommandManager) -> Result<EngineConnection, JsValue> {
-        Ok(EngineConnection { manager })
+        Ok(EngineConnection {
+            manager: Arc::new(manager),
+        })
     }
 }
 
