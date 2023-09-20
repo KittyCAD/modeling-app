@@ -8,7 +8,7 @@ pub(crate) struct LineTo {}
 #[doc = "Std lib function: lineTo"]
 pub(crate) const LineTo: LineTo = LineTo {};
 fn boxed_line_to(
-    args: &mut crate::std::Args,
+    args: crate::std::Args,
 ) -> std::pin::Pin<
     Box<
         dyn std::future::Future<

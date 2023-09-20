@@ -23,6 +23,8 @@ impl crate::engine::EngineManager for EngineConnection {
         _source_range: crate::executor::SourceRange,
         _cmd: kittycad::types::ModelingCmd,
     ) -> Result<OkWebSocketResponseData, KclError> {
-        todo!()
+        Ok(OkWebSocketResponseData::Modeling {
+            modeling_response: kittycad::types::OkModelingCmdResponse::Empty {},
+        })
     }
 }
