@@ -133,7 +133,10 @@ impl EngineManager for EngineConnection {
         // Send the request to the engine, via the actor.
         self.engine_req_tx
             .send(ToEngineReq {
-                req: WebSocketRequest::ModelingCmdReq { cmd, cmd_id: id },
+                req: WebSocketRequest::ModelingCmdReq {
+                    cmd: cmd.clone(),
+                    cmd_id: id,
+                },
                 request_sent: tx,
             })
             .await
@@ -160,7 +163,8 @@ impl EngineManager for EngineConnection {
             })?;
 
         // Wait for the response.
-        loop {
+        let current_time = std::time::Instant::now();
+        while current_time.elapsed().as_secs() < 60 {
             // We pop off the responses to cleanup our mappings.
             if let Some((_, resp)) = self.responses.remove(&id) {
                 return if let Some(data) = &resp.resp {
@@ -173,5 +177,10 @@ impl EngineManager for EngineConnection {
                 };
             }
         }
+
+        Err(KclError::Engine(KclErrorDetails {
+            message: format!("Modeling command timed out: {:?}", cmd),
+            source_ranges: vec![source_range],
+        }))
     }
 }
