@@ -3366,6 +3366,19 @@ e
     }
 
     #[test]
+    fn zero_param_function() {
+        let program = r#"
+        fn firstPrimeNumber = () => {
+            return 2
+        }
+        firstPrimeNumber()
+        "#;
+        let tokens = crate::tokeniser::lexer(program);
+        let parser = crate::parser::Parser::new(tokens);
+        let _ast = parser.ast().unwrap();
+    }
+
+    #[test]
     fn test_keyword_ok_in_fn_args_return() {
         let some_program_string = r#"fn thing = (param) => {
     return true
