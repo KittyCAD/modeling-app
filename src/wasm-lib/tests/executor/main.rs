@@ -4,7 +4,6 @@ use kcl_lib::engine::EngineManager;
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
 async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
-    env_logger::init();
     let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
     let http_client = reqwest::Client::builder()
         .user_agent(user_agent)
@@ -23,8 +22,7 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
     let token = std::env::var("KITTYCAD_API_TOKEN").expect("KITTYCAD_API_TOKEN not set");
 
     // Create the client.
-    let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
-    client.set_base_url("http://system76-pc:8080");
+    let client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
 
     let ws = client
         .modeling()
@@ -41,7 +39,6 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
     let engine = kcl_lib::engine::EngineConnection::new(ws).await?;
     let _ = kcl_lib::executor::execute(program, &mut mem, kcl_lib::executor::BodyType::Root, &engine).await?;
 
-    println!("Waiting for snapshot to be ready...");
     // Send a snapshot request to the engine.
     let resp = engine
         .send_modeling_cmd(
