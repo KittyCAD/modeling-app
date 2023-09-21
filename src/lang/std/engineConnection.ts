@@ -118,10 +118,12 @@ export class EngineConnection {
     let connectInterval = setInterval(() => {
       if (this.dead) {
         clearInterval(connectInterval)
+        return
       }
       if (this.isReady()) {
         return
       }
+      console.log('connecting via retry')
       this.connect()
     }, connectionTimeoutMs)
   }
@@ -152,6 +154,7 @@ export class EngineConnection {
   // This will attempt the full handshake, and retry if the connection
   // did not establish.
   connect() {
+    console.log('connect was called')
     if (this.isConnecting() || this.isReady()) {
       return
     }
@@ -502,6 +505,17 @@ export class EngineConnection {
       })
     })
 
+    const connectionTimeoutMs = VITE_KC_CONNECTION_TIMEOUT_MS
+
+    console.log('timeout set')
+    setTimeout(() => {
+      if (this.isReady()) {
+        return
+      }
+      console.log('engine connection timeout on connection, closing')
+      this.close()
+    }, connectionTimeoutMs)
+
     this.onConnectionStarted(this)
   }
   unreliableSend(message: object | string) {
@@ -806,7 +820,6 @@ export class EngineCommandManager {
       lastMessage = command.cmd.type
     }
     if (!this.engineConnection?.isReady()) {
-      console.log('socket not ready')
       return Promise.resolve()
     }
     if (command.type !== 'modeling_cmd_req') return Promise.resolve()
@@ -853,7 +866,6 @@ export class EngineCommandManager {
     this.sourceRangeMap[id] = range
 
     if (!this.engineConnection?.isReady()) {
-      console.log('socket not ready')
       return Promise.resolve()
     }
     this.engineConnection?.send(command)
