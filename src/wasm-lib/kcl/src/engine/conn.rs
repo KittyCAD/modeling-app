@@ -89,7 +89,7 @@ impl EngineConnection {
             ws,
             tokio_tungstenite::tungstenite::protocol::Role::Client,
             Some(tokio_tungstenite::tungstenite::protocol::WebSocketConfig {
-                //write_buffer_size: 0,
+                write_buffer_size: 1024 * 128,
                 max_write_buffer_size: 1024 * 256,
                 ..Default::default()
             }),
