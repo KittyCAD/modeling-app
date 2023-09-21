@@ -5,6 +5,9 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("parse + lex big kitt", |b| {
         b.iter(|| lex_and_parse(include_str!("../../tests/executor/inputs/kittycad_svg.kcl")))
     });
+    c.bench_function("parse + lex pipes_on_pipes", |b| {
+        b.iter(|| lex_and_parse(include_str!("../../tests/executor/inputs/pipes_on_pipes.kcl")))
+    });
 }
 
 fn lex_and_parse(program: &str) {
