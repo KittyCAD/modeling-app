@@ -571,11 +571,12 @@ impl BinaryPart {
         }
     }
 
-    pub fn get_result(
+    #[async_recursion::async_recursion(?Send)]
+    pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
-        engine: &mut EngineConnection,
+        engine: &EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
         // stop the execution of the pipe.
@@ -590,11 +591,13 @@ impl BinaryPart {
                 Ok(value.clone())
             }
             BinaryPart::BinaryExpression(binary_expression) => {
-                binary_expression.get_result(memory, &mut new_pipe_info, engine)
+                binary_expression.get_result(memory, &mut new_pipe_info, engine).await
             }
-            BinaryPart::CallExpression(call_expression) => call_expression.execute(memory, &mut new_pipe_info, engine),
+            BinaryPart::CallExpression(call_expression) => {
+                call_expression.execute(memory, &mut new_pipe_info, engine).await
+            }
             BinaryPart::UnaryExpression(unary_expression) => {
-                unary_expression.get_result(memory, &mut new_pipe_info, engine)
+                unary_expression.get_result(memory, &mut new_pipe_info, engine).await
             }
             BinaryPart::MemberExpression(member_expression) => member_expression.get_result(memory),
         }
@@ -810,11 +813,12 @@ impl CallExpression {
         )
     }
 
-    pub fn execute(
+    #[async_recursion::async_recursion(?Send)]
+    pub async fn execute(
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
-        engine: &mut EngineConnection,
+        engine: &EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         let fn_name = self.callee.name.clone();
 
@@ -828,7 +832,7 @@ impl CallExpression {
                     value.clone()
                 }
                 Value::BinaryExpression(binary_expression) => {
-                    binary_expression.get_result(memory, pipe_info, engine)?
+                    binary_expression.get_result(memory, pipe_info, engine).await?
                 }
                 Value::CallExpression(call_expression) => {
                     // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
@@ -836,11 +840,15 @@ impl CallExpression {
                     // THIS IS IMPORTANT.
                     let mut new_pipe_info = pipe_info.clone();
                     new_pipe_info.is_in_pipe = false;
-                    call_expression.execute(memory, &mut new_pipe_info, engine)?
+                    call_expression.execute(memory, &mut new_pipe_info, engine).await?
                 }
-                Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, engine)?,
-                Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, engine)?,
-                Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, engine)?,
+                Value::UnaryExpression(unary_expression) => {
+                    unary_expression.get_result(memory, pipe_info, engine).await?
+                }
+                Value::ObjectExpression(object_expression) => {
+                    object_expression.execute(memory, pipe_info, engine).await?
+                }
+                Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, engine).await?,
                 Value::PipeExpression(pipe_expression) => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: format!("PipeExpression not implemented here: {:?}", pipe_expression),
@@ -871,31 +879,28 @@ impl CallExpression {
 
         match &self.function {
             Function::StdLib { func } => {
-                /* let source_range: SourceRange = self.into();
-                println!(
-                    "Calling stdlib function: {}, source_range: {:?}, args: {:?}",
-                    fn_name, source_range, fn_args
-                );*/
                 // Attempt to call the function.
-                let mut args = crate::std::Args::new(fn_args, self.into(), engine);
-                let result = func.std_lib_fn()(&mut args)?;
+                let args = crate::std::Args::new(fn_args, self.into(), engine.clone());
+                let result = func.std_lib_fn()(args).await?;
                 if pipe_info.is_in_pipe {
                     pipe_info.index += 1;
                     pipe_info.previous_results.push(result);
-                    execute_pipe_body(memory, &pipe_info.body.clone(), pipe_info, self.into(), engine)
+                    execute_pipe_body(memory, &pipe_info.body.clone(), pipe_info, self.into(), engine).await
                 } else {
                     Ok(result)
                 }
             }
             Function::InMemory => {
-                let mem = memory.clone();
-                let func = mem.get(&fn_name, self.into())?;
-                let result = func.call_fn(&fn_args, &mem, engine)?.ok_or_else(|| {
-                    KclError::UndefinedValue(KclErrorDetails {
-                        message: format!("Result of function {} is undefined", fn_name),
-                        source_ranges: vec![self.into()],
-                    })
-                })?;
+                let func = memory.get(&fn_name, self.into())?;
+                let result = func
+                    .call_fn(fn_args, memory.clone(), engine.clone())
+                    .await?
+                    .ok_or_else(|| {
+                        KclError::UndefinedValue(KclErrorDetails {
+                            message: format!("Result of function {} is undefined", fn_name),
+                            source_ranges: vec![self.into()],
+                        })
+                    })?;
 
                 let result = result.get_value()?;
 
@@ -903,7 +908,7 @@ impl CallExpression {
                     pipe_info.index += 1;
                     pipe_info.previous_results.push(result);
 
-                    execute_pipe_body(memory, &pipe_info.body.clone(), pipe_info, self.into(), engine)
+                    execute_pipe_body(memory, &pipe_info.body.clone(), pipe_info, self.into(), engine).await
                 } else {
                     Ok(result)
                 }
@@ -1424,11 +1429,12 @@ impl ArrayExpression {
         None
     }
 
-    pub fn execute(
+    #[async_recursion::async_recursion(?Send)]
+    pub async fn execute(
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
-        engine: &mut EngineConnection,
+        engine: &EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         let mut results = Vec::with_capacity(self.elements.len());
 
@@ -1440,7 +1446,7 @@ impl ArrayExpression {
                     value.clone()
                 }
                 Value::BinaryExpression(binary_expression) => {
-                    binary_expression.get_result(memory, pipe_info, engine)?
+                    binary_expression.get_result(memory, pipe_info, engine).await?
                 }
                 Value::CallExpression(call_expression) => {
                     // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
@@ -1448,12 +1454,16 @@ impl ArrayExpression {
                     // THIS IS IMPORTANT.
                     let mut new_pipe_info = pipe_info.clone();
                     new_pipe_info.is_in_pipe = false;
-                    call_expression.execute(memory, &mut new_pipe_info, engine)?
+                    call_expression.execute(memory, &mut new_pipe_info, engine).await?
                 }
-                Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, engine)?,
-                Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, engine)?,
-                Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, engine)?,
-                Value::PipeExpression(pipe_expression) => pipe_expression.get_result(memory, pipe_info, engine)?,
+                Value::UnaryExpression(unary_expression) => {
+                    unary_expression.get_result(memory, pipe_info, engine).await?
+                }
+                Value::ObjectExpression(object_expression) => {
+                    object_expression.execute(memory, pipe_info, engine).await?
+                }
+                Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, engine).await?,
+                Value::PipeExpression(pipe_expression) => pipe_expression.get_result(memory, pipe_info, engine).await?,
                 Value::PipeSubstitution(pipe_substitution) => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: format!("PipeSubstitution not implemented here: {:?}", pipe_substitution),
@@ -1569,11 +1579,12 @@ impl ObjectExpression {
         None
     }
 
-    pub fn execute(
+    #[async_recursion::async_recursion(?Send)]
+    pub async fn execute(
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
-        engine: &mut EngineConnection,
+        engine: &EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         let mut object = Map::new();
         for property in &self.properties {
@@ -1584,7 +1595,7 @@ impl ObjectExpression {
                     value.clone()
                 }
                 Value::BinaryExpression(binary_expression) => {
-                    binary_expression.get_result(memory, pipe_info, engine)?
+                    binary_expression.get_result(memory, pipe_info, engine).await?
                 }
                 Value::CallExpression(call_expression) => {
                     // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
@@ -1592,12 +1603,16 @@ impl ObjectExpression {
                     // THIS IS IMPORTANT.
                     let mut new_pipe_info = pipe_info.clone();
                     new_pipe_info.is_in_pipe = false;
-                    call_expression.execute(memory, &mut new_pipe_info, engine)?
+                    call_expression.execute(memory, &mut new_pipe_info, engine).await?
                 }
-                Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, engine)?,
-                Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, engine)?,
-                Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, engine)?,
-                Value::PipeExpression(pipe_expression) => pipe_expression.get_result(memory, pipe_info, engine)?,
+                Value::UnaryExpression(unary_expression) => {
+                    unary_expression.get_result(memory, pipe_info, engine).await?
+                }
+                Value::ObjectExpression(object_expression) => {
+                    object_expression.execute(memory, pipe_info, engine).await?
+                }
+                Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, engine).await?,
+                Value::PipeExpression(pipe_expression) => pipe_expression.get_result(memory, pipe_info, engine).await?,
                 Value::PipeSubstitution(pipe_substitution) => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: format!("PipeSubstitution not implemented here: {:?}", pipe_substitution),
@@ -2005,11 +2020,12 @@ impl BinaryExpression {
         None
     }
 
-    pub fn get_result(
+    #[async_recursion::async_recursion(?Send)]
+    pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
-        engine: &mut EngineConnection,
+        engine: &EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
         // stop the execution of the pipe.
@@ -2019,11 +2035,13 @@ impl BinaryExpression {
 
         let left_json_value = self
             .left
-            .get_result(memory, &mut new_pipe_info, engine)?
+            .get_result(memory, &mut new_pipe_info, engine)
+            .await?
             .get_json_value()?;
         let right_json_value = self
             .right
-            .get_result(memory, &mut new_pipe_info, engine)?
+            .get_result(memory, &mut new_pipe_info, engine)
+            .await?
             .get_json_value()?;
 
         // First check if we are doing string concatenation.
@@ -2173,11 +2191,11 @@ impl UnaryExpression {
         format!("{}{}", &self.operator, self.argument.recast(options, 0))
     }
 
-    pub fn get_result(
+    pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
-        engine: &mut EngineConnection,
+        engine: &EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
         // stop the execution of the pipe.
@@ -2188,7 +2206,8 @@ impl UnaryExpression {
         let num = parse_json_number_as_f64(
             &self
                 .argument
-                .get_result(memory, &mut new_pipe_info, engine)?
+                .get_result(memory, &mut new_pipe_info, engine)
+                .await?
                 .get_json_value()?,
             self.into(),
         )?;
@@ -2310,16 +2329,16 @@ impl PipeExpression {
         None
     }
 
-    pub fn get_result(
+    pub async fn get_result(
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
-        engine: &mut EngineConnection,
+        engine: &EngineConnection,
     ) -> Result<MemoryItem, KclError> {
         // Reset the previous results.
         pipe_info.previous_results = vec![];
         pipe_info.index = 0;
-        execute_pipe_body(memory, &self.body, pipe_info, self.into(), engine)
+        execute_pipe_body(memory, &self.body, pipe_info, self.into(), engine).await
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -2330,12 +2349,13 @@ impl PipeExpression {
     }
 }
 
-fn execute_pipe_body(
+#[async_recursion::async_recursion(?Send)]
+async fn execute_pipe_body(
     memory: &mut ProgramMemory,
     body: &[Value],
     pipe_info: &mut PipeInfo,
     source_range: SourceRange,
-    engine: &mut EngineConnection,
+    engine: &EngineConnection,
 ) -> Result<MemoryItem, KclError> {
     if pipe_info.index == body.len() {
         pipe_info.is_in_pipe = false;
@@ -2360,15 +2380,15 @@ fn execute_pipe_body(
 
     match expression {
         Value::BinaryExpression(binary_expression) => {
-            let result = binary_expression.get_result(memory, pipe_info, engine)?;
+            let result = binary_expression.get_result(memory, pipe_info, engine).await?;
             pipe_info.previous_results.push(result);
             pipe_info.index += 1;
-            execute_pipe_body(memory, body, pipe_info, source_range, engine)
+            execute_pipe_body(memory, body, pipe_info, source_range, engine).await
         }
         Value::CallExpression(call_expression) => {
             pipe_info.is_in_pipe = true;
             pipe_info.body = body.to_vec();
-            call_expression.execute(memory, pipe_info, engine)
+            call_expression.execute(memory, pipe_info, engine).await
         }
         _ => {
             // Return an error this should not happen.

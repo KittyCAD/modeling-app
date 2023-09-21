@@ -5,6 +5,9 @@ import {
   EngineCommand,
 } from '../lang/std/engineConnection'
 import { SourceRange } from 'lang/executor'
+import { Models } from '@kittycad/lib'
+
+type WebSocketResponse = Models['OkWebSocketResponseData_type']
 
 class MockEngineCommandManager {
   constructor(mockParams: {
@@ -23,7 +26,13 @@ class MockEngineCommandManager {
     range: SourceRange
     command: EngineCommand
   }): Promise<any> {
-    return Promise.resolve()
+    const response: WebSocketResponse = {
+      type: 'modeling',
+      data: {
+        modeling_response: { type: 'empty' },
+      },
+    }
+    return Promise.resolve(JSON.stringify(response))
   }
   sendModelingCommandFromWasm(
     id: string,

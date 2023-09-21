@@ -23,6 +23,10 @@ interface ResultCommand extends CommandInfo {
   data: any
   raw: WebSocketResponse
 }
+interface FailedCommand extends CommandInfo {
+  type: 'failed'
+  errors: Models['FailureWebSocketResponse_type']['errors']
+}
 interface PendingCommand extends CommandInfo {
   type: 'pending'
   promise: Promise<any>
@@ -30,7 +34,7 @@ interface PendingCommand extends CommandInfo {
 }
 
 export interface ArtifactMap {
-  [key: string]: ResultCommand | PendingCommand
+  [key: string]: ResultCommand | PendingCommand | FailedCommand
 }
 export interface SourceRangeMap {
   [key: string]: SourceRange
@@ -664,6 +668,8 @@ export class EngineCommandManager {
               message.request_id
             ) {
               this.handleModelingCommand(message.resp, message.request_id)
+            } else if (!message.success && message.request_id) {
+              this.handleFailedModelingCommand(message)
             }
           }
         })
@@ -717,6 +723,38 @@ export class EngineCommandManager {
         range: command?.range,
         data: modelingResponse,
         raw: message,
+      }
+    }
+  }
+  handleFailedModelingCommand({
+    request_id,
+    errors,
+  }: Models['FailureWebSocketResponse_type']) {
+    const id = request_id
+    if (!id) return
+    const command = this.artifactMap[id]
+    if (command && command.type === 'pending') {
+      const resolve = command.resolve
+      this.artifactMap[id] = {
+        type: 'failed',
+        range: command.range,
+        commandType: command.commandType,
+        parentId: command.parentId ? command.parentId : undefined,
+        errors,
+      }
+      resolve({
+        id,
+        commandType: command.commandType,
+        range: command.range,
+        errors,
+      })
+    } else {
+      this.artifactMap[id] = {
+        type: 'failed',
+        range: command.range,
+        commandType: command.commandType,
+        parentId: command.parentId ? command.parentId : undefined,
+        errors,
       }
     }
   }
@@ -935,6 +973,8 @@ export class EngineCommandManager {
     }
     if (command.type === 'result') {
       return command.data
+    } else if (command.type === 'failed') {
+      return Promise.resolve(command.errors)
     }
     return command.promise
   }

@@ -33,17 +33,8 @@ pub use conn_mock::EngineConnection;
 
 #[async_trait::async_trait(?Send)]
 pub trait EngineManager: Clone {
-    /// Send a modeling command.
-    /// Do not wait for the response message.
-    fn send_modeling_cmd(
-        &self,
-        id: uuid::Uuid,
-        source_range: crate::executor::SourceRange,
-        cmd: kittycad::types::ModelingCmd,
-    ) -> Result<(), crate::errors::KclError>;
-
     /// Send a modeling command and wait for the response message.
-    async fn send_modeling_cmd_get_response(
+    async fn send_modeling_cmd(
         &self,
         id: uuid::Uuid,
         source_range: crate::executor::SourceRange,

@@ -7,6 +7,18 @@ pub(crate) struct Show {}
 #[allow(non_upper_case_globals, missing_docs)]
 #[doc = "Std lib function: show"]
 pub(crate) const Show: Show = Show {};
+fn boxed_show(
+    args: crate::std::Args,
+) -> std::pin::Pin<
+    Box<
+        dyn std::future::Future<
+            Output = anyhow::Result<crate::executor::MemoryItem, crate::errors::KclError>,
+        >,
+    >,
+> {
+    Box::pin(show(args))
+}
+
 impl crate::docs::StdLibFn for Show {
     fn name(&self) -> String {
         "show".to_string()
@@ -57,7 +69,7 @@ impl crate::docs::StdLibFn for Show {
     }
 
     fn std_lib_fn(&self) -> crate::std::StdFn {
-        show
+        boxed_show
     }
 
     fn clone_box(&self) -> Box<dyn crate::docs::StdLibFn> {

@@ -22,7 +22,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+.idea
+.vscode
 src/wasm-lib/.idea
+src/wasm-lib/.vscode
 
 # rust
 src/wasm-lib/target

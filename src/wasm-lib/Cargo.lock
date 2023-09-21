@@ -149,6 +149,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "async-recursion"
+version = "1.0.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5fd55a5ba1179988837d24ab4c7cc8ed6efdeff578ede0416b4225a5fca35bd0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.37",
+]
+
+[[package]]
 name = "async-trait"
 version = "0.1.73"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -224,6 +235,20 @@ dependencies = [
  "num-bigint",
  "num-integer",
  "num-traits",
+]
+
+[[package]]
+name = "bigdecimal"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "454bca3db10617b88b566f205ed190aedb0e0e6dd4cad61d3988a72e8c5594cb"
+dependencies = [
+ "autocfg",
+ "libm",
+ "num-bigint",
+ "num-integer",
+ "num-traits",
+ "serde",
 ]
 
 [[package]]
@@ -1362,9 +1387,10 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.1.30"
+version = "0.1.31"
 dependencies = [
  "anyhow",
+ "async-recursion",
  "async-trait",
  "bson",
  "clap",
@@ -1397,13 +1423,14 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.2.25"
+version = "0.2.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d9cf962b1e81a0b4eb923a727e761b40672cbacc7f5f0b75e13579d346352bc7"
+checksum = "e2623ee601ce203476229df3f9d3a14664cb43e3f7455e9ac8ed91aacaa6163d"
 dependencies = [
  "anyhow",
  "async-trait",
  "base64 0.21.4",
+ "bigdecimal 0.4.1",
  "bytes",
  "chrono",
  "data-encoding",
@@ -1464,6 +1491,12 @@ dependencies = [
  "cfg-if",
  "winapi",
 ]
+
+[[package]]
+name = "libm"
+version = "0.2.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f7012b1bbb0719e1097c47611d3898568c546d597c2e74d66f6087edd5233ff4"
 
 [[package]]
 name = "linked-hash-map"
@@ -2429,7 +2462,8 @@ version = "0.8.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1f7b0ce13155372a76ee2e1c5ffba1fe61ede73fbea5630d61eee6fac4929c0c"
 dependencies = [
- "bigdecimal",
+ "bigdecimal 0.3.1",
+ "bigdecimal 0.4.1",
  "bytes",
  "chrono",
  "dyn-clone",

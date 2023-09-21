@@ -1,5 +1,6 @@
 //! Functions for setting up our WebSocket and WebRTC connections for communications with the
 //! engine.
+use std::sync::Arc;
 
 use anyhow::Result;
 use kittycad::types::WebSocketRequest;
@@ -23,43 +24,20 @@ extern "C" {
 
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
-    manager: EngineCommandManager,
+    manager: Arc<EngineCommandManager>,
 }
 
 impl EngineConnection {
     pub async fn new(manager: EngineCommandManager) -> Result<EngineConnection, JsValue> {
-        Ok(EngineConnection { manager })
+        Ok(EngineConnection {
+            manager: Arc::new(manager),
+        })
     }
 }
 
 #[async_trait::async_trait(?Send)]
 impl crate::engine::EngineManager for EngineConnection {
-    fn send_modeling_cmd(
-        &self,
-        id: uuid::Uuid,
-        source_range: crate::executor::SourceRange,
-        cmd: kittycad::types::ModelingCmd,
-    ) -> Result<(), KclError> {
-        let source_range_str = serde_json::to_string(&source_range).map_err(|e| {
-            KclError::Engine(KclErrorDetails {
-                message: format!("Failed to serialize source range: {:?}", e),
-                source_ranges: vec![source_range],
-            })
-        })?;
-        let ws_msg = WebSocketRequest::ModelingCmdReq { cmd, cmd_id: id };
-        let cmd_str = serde_json::to_string(&ws_msg).map_err(|e| {
-            KclError::Engine(KclErrorDetails {
-                message: format!("Failed to serialize modeling command: {:?}", e),
-                source_ranges: vec![source_range],
-            })
-        })?;
-        let _ = self
-            .manager
-            .sendModelingCommandFromWasm(id.to_string(), source_range_str, cmd_str);
-        Ok(())
-    }
-
-    async fn send_modeling_cmd_get_response(
+    async fn send_modeling_cmd(
         &self,
         id: uuid::Uuid,
         source_range: crate::executor::SourceRange,

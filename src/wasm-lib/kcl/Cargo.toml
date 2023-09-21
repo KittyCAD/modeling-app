@@ -1,7 +1,7 @@
 [package]
 name = "kcl-lib"
 description = "KittyCAD Language"
-version = "0.1.30"
+version = "0.1.31"
 edition = "2021"
 license = "MIT"
 
@@ -9,6 +9,7 @@ license = "MIT"
 
 [dependencies]
 anyhow = { version = "1.0.75", features = ["backtrace"] }
+async-recursion = "1.0.5"
 async-trait = "0.1.73"
 clap = { version = "4.4.3", features = ["cargo", "derive", "env", "unicode"], optional = true }
 dashmap = "5.5.3"

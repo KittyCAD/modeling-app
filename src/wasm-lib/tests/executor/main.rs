@@ -15,6 +15,7 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
         // For file conversions we need this to be long.
         .timeout(std::time::Duration::from_secs(600))
         .connect_timeout(std::time::Duration::from_secs(60))
+        .connection_verbose(true)
         .tcp_keepalive(std::time::Duration::from_secs(600))
         .http1_only();
 
@@ -35,12 +36,12 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
     let mut mem: kcl_lib::executor::ProgramMemory = Default::default();
-    let mut engine = kcl_lib::engine::EngineConnection::new(ws).await?;
-    let _ = kcl_lib::executor::execute(program, &mut mem, kcl_lib::executor::BodyType::Root, &mut engine)?;
+    let engine = kcl_lib::engine::EngineConnection::new(ws).await?;
+    let _ = kcl_lib::executor::execute(program, &mut mem, kcl_lib::executor::BodyType::Root, &engine).await?;
 
     // Send a snapshot request to the engine.
     let resp = engine
-        .send_modeling_cmd_get_response(
+        .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             kcl_lib::executor::SourceRange::default(),
             kittycad::types::ModelingCmd::TakeSnapshot {
@@ -172,6 +173,14 @@ async fn serial_test_execute_pipes_on_pipes() {
 
     let result = execute_and_snapshot(code).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/pipes_on_pipes.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_execute_kittycad_svg() {
+    let code = include_str!("inputs/kittycad_svg.kcl");
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/kittycad_svg.png", &result, 1.0);
 }
 
 #[tokio::test(flavor = "multi_thread")]

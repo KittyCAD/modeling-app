@@ -21,11 +21,12 @@ pub async fn execute_wasm(
     let program: kcl_lib::ast::types::Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
     let mut mem: kcl_lib::executor::ProgramMemory = serde_json::from_str(memory_str).map_err(|e| e.to_string())?;
 
-    let mut engine = kcl_lib::engine::EngineConnection::new(manager)
+    let engine = kcl_lib::engine::EngineConnection::new(manager)
         .await
         .map_err(|e| format!("{:?}", e))?;
 
-    let memory = kcl_lib::executor::execute(program, &mut mem, kcl_lib::executor::BodyType::Root, &mut engine)
+    let memory = kcl_lib::executor::execute(program, &mut mem, kcl_lib::executor::BodyType::Root, &engine)
+        .await
         .map_err(String::from)?;
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
