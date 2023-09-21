@@ -228,17 +228,6 @@ checksum = "9ba43ea6f343b788c8764558649e08df62f86c6ef251fdaeb1ffd010a9ae50a2"
 
 [[package]]
 name = "bigdecimal"
-version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a6773ddc0eafc0e509fb60e48dff7f450f8e674a0686ae8605e8d9901bd5eefa"
-dependencies = [
- "num-bigint",
- "num-integer",
- "num-traits",
-]
-
-[[package]]
-name = "bigdecimal"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "454bca3db10617b88b566f205ed190aedb0e0e6dd4cad61d3988a72e8c5594cb"
@@ -1430,7 +1419,7 @@ dependencies = [
  "anyhow",
  "async-trait",
  "base64 0.21.4",
- "bigdecimal 0.4.1",
+ "bigdecimal",
  "bytes",
  "chrono",
  "data-encoding",
@@ -1730,7 +1719,7 @@ checksum = "0ab1bc2a289d34bd04a330323ac98a1b4bc82c9d9fcb1e66b63caa84da26b575"
 [[package]]
 name = "openapitor"
 version = "0.0.9"
-source = "git+https://github.com/KittyCAD/kittycad.rs?branch=main#0d121f6881da91b4a30bee18bbfe50e4a2096073"
+source = "git+https://github.com/KittyCAD/kittycad.rs?branch=main#61a16059b3eaf8793a2a2e1edbc0d770f284fea3"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -2462,8 +2451,7 @@ version = "0.8.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1f7b0ce13155372a76ee2e1c5ffba1fe61ede73fbea5630d61eee6fac4929c0c"
 dependencies = [
- "bigdecimal 0.3.1",
- "bigdecimal 0.4.1",
+ "bigdecimal",
  "bytes",
  "chrono",
  "dyn-clone",
