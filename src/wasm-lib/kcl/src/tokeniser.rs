@@ -370,22 +370,22 @@ fn return_token_at_index(str_from_index: &[u8], start_index: usize) -> Option<To
     None
 }
 
-fn recursively_tokenise(s: &[u8], current_index: usize, previous_tokens: Vec<Token>) -> Vec<Token> {
-    if current_index >= s.len() {
-        return previous_tokens;
-    }
-    let token = return_token_at_index(&s[current_index..], current_index);
-    let Some(token) = token else {
-        return recursively_tokenise(s, current_index + 1, previous_tokens);
-    };
-    let mut new_tokens = previous_tokens;
-    let token_length = token.value.len();
-    new_tokens.push(token);
-    recursively_tokenise(s, current_index + token_length, new_tokens)
-}
-
 pub fn lexer(s: &str) -> Vec<Token> {
-    recursively_tokenise(s.as_bytes(), 0, Vec::new())
+    let mut current_index = 0;
+    let mut tokens = Vec::new();
+    let n = s.len();
+    let b = s.as_bytes();
+    while current_index < n {
+        let token = return_token_at_index(&b[current_index..], current_index);
+        let Some(token) = token else {
+            current_index += 1;
+            continue;
+        };
+        let token_length = token.value.len();
+        tokens.push(token);
+        current_index += token_length;
+    }
+    tokens
 }
 
 #[cfg(test)]
