@@ -50,7 +50,7 @@ export const MemoryPanel = ({
 
 export const processMemory = (programMemory: ProgramMemory) => {
   const processedMemory: any = {}
-  Object.keys(programMemory.root).forEach((key) => {
+  Object.keys(programMemory?.root || {}).forEach((key) => {
     const val = programMemory.root[key]
     if (typeof val.value !== 'function') {
       if (val.type === 'SketchGroup') {

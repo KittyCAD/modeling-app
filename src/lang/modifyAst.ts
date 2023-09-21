@@ -321,7 +321,7 @@ export function extrudeSketch(
     [0, 'index'],
   ]
   return {
-    modifiedAst: addToShow(_node, name),
+    modifiedAst: node,
     pathToNode: [...pathToNode.slice(0, -1), [showCallIndex, 'index']],
     pathToExtrudeArg,
   }
