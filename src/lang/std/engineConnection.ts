@@ -54,6 +54,7 @@ export class EngineConnection {
   private ready: boolean
   private connecting: boolean
   private dead: boolean
+  private failedConnTimeout: number | null
 
   readonly url: string
   private readonly token?: string
@@ -91,6 +92,7 @@ export class EngineConnection {
     this.ready = false
     this.connecting = false
     this.dead = false
+    this.failedConnTimeout = null
     this.onWebsocketOpen = onWebsocketOpen
     this.onDataChannelOpen = onDataChannelOpen
     this.onEngineConnectionOpen = onEngineConnectionOpen
@@ -494,8 +496,13 @@ export class EngineConnection {
 
     const connectionTimeoutMs = VITE_KC_CONNECTION_TIMEOUT_MS
 
+    if (this.failedConnTimeout) {
+      console.log('clearing timeout before set')
+      clearTimeout(this.failedConnTimeout)
+      this.failedConnTimeout = null
+    }
     console.log('timeout set')
-    setTimeout(() => {
+    this.failedConnTimeout = setTimeout(() => {
       if (this.isReady()) {
         return
       }
@@ -527,6 +534,11 @@ export class EngineConnection {
     this.pc = undefined
     this.unreliableDataChannel = undefined
     this.webrtcStatsCollector = undefined
+    if (this.failedConnTimeout) {
+      console.log('closed timeout in close')
+      clearTimeout(this.failedConnTimeout)
+      this.failedConnTimeout = null
+    }
 
     this.onClose(this)
     this.ready = false
