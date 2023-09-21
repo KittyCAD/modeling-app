@@ -71,7 +71,7 @@ pub async fn modify_ast_for_sketch(
 
     // Let's get the path info.
     let resp = engine
-        .send_modeling_cmd_get_response(
+        .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             SourceRange::default(),
             ModelingCmd::PathGetInfo { path_id: sketch_id },
@@ -88,47 +88,6 @@ pub async fn modify_ast_for_sketch(
         }));
     };
 
-    /* // Let's try to get the children of the sketch.
-    let resp = engine
-        .send_modeling_cmd_get_response(
-            uuid::Uuid::new_v4(),
-            SourceRange::default(),
-            ModelingCmd::EntityGetAllChildUuids { entity_id: sketch_id },
-        )
-        .await?;
-    let kittycad::types::OkWebSocketResponseData::Modeling {
-        modeling_response: kittycad::types::OkModelingCmdResponse::EntityGetAllChildUuids { data: children_info },
-    } = &resp
-    else {
-        return Err(KclError::Engine(KclErrorDetails {
-            message: format!("Get child info response was not as expected: {:?}", resp),
-            source_ranges: vec![SourceRange::default()],
-        }));
-    };
-
-    println!("children_info: {:#?}", children_info);
-
-    // Let's try to get the parent id.
-    let resp = engine
-        .send_modeling_cmd_get_response(
-            uuid::Uuid::new_v4(),
-            SourceRange::default(),
-            ModelingCmd::EntityGetParentId { entity_id: sketch_id },
-        )
-        .await?;
-
-    let kittycad::types::OkWebSocketResponseData::Modeling {
-        modeling_response: kittycad::types::OkModelingCmdResponse::EntityGetParentId { data: parent_info },
-    } = &resp
-    else {
-        return Err(KclError::Engine(KclErrorDetails {
-            message: format!("Get parent id response was not as expected: {:?}", resp),
-            source_ranges: vec![SourceRange::default()],
-        }));
-    };
-
-    println!("parent_info: {:#?}", parent_info);*/
-
     // Now let's get the control points for all the segments.
     // TODO: We should probably await all these at once so we aren't going one by one.
     // But I guess this is fine for now.
@@ -136,7 +95,7 @@ pub async fn modify_ast_for_sketch(
     let mut control_points = Vec::new();
     for segment in &path_info.segments {
         if let Some(command_id) = &segment.command_id {
-            let h = engine.send_modeling_cmd_get_response(
+            let h = engine.send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 SourceRange::default(),
                 ModelingCmd::CurveGetControlPoints { curve_id: *command_id },

@@ -17,17 +17,11 @@ use crate::{
 
 type WebSocketTcpWrite = futures::stream::SplitSink<tokio_tungstenite::WebSocketStream<reqwest::Upgraded>, WsMsg>;
 #[derive(Debug, Clone)]
+#[allow(dead_code)] // for the TcpReadHandle
 pub struct EngineConnection {
     engine_req_tx: mpsc::Sender<ToEngineReq>,
-    tcp_read_handle: Arc<tokio::task::JoinHandle<Result<()>>>,
     responses: Arc<DashMap<uuid::Uuid, WebSocketResponse>>,
-}
-
-impl Drop for EngineConnection {
-    fn drop(&mut self) {
-        // Drop the read handle.
-        self.tcp_read_handle.abort();
-    }
+    tcp_read_handle: Arc<TcpReadHandle>,
 }
 
 pub struct TcpRead {
@@ -45,6 +39,18 @@ impl TcpRead {
             other => anyhow::bail!("Unexpected websocket message from server: {}", other),
         };
         Ok(msg)
+    }
+}
+
+#[derive(Debug)]
+pub struct TcpReadHandle {
+    handle: Arc<tokio::task::JoinHandle<Result<()>>>,
+}
+
+impl Drop for TcpReadHandle {
+    fn drop(&mut self) {
+        // Drop the read handle.
+        self.handle.abort();
     }
 }
 
@@ -114,7 +120,9 @@ impl EngineConnection {
 
         Ok(EngineConnection {
             engine_req_tx,
-            tcp_read_handle: Arc::new(tcp_read_handle),
+            tcp_read_handle: Arc::new(TcpReadHandle {
+                handle: Arc::new(tcp_read_handle),
+            }),
             responses,
         })
     }
@@ -122,20 +130,7 @@ impl EngineConnection {
 
 #[async_trait::async_trait(?Send)]
 impl EngineManager for EngineConnection {
-    /// Send a modeling command.
-    /// Do not wait for the response message.
-    fn send_modeling_cmd(
-        &self,
-        id: uuid::Uuid,
-        source_range: crate::executor::SourceRange,
-        cmd: kittycad::types::ModelingCmd,
-    ) -> Result<(), KclError> {
-        futures::executor::block_on(self.send_modeling_cmd_get_response(id, source_range, cmd))?;
-        Ok(())
-    }
-
-    /// Send a modeling command and wait for the response message.
-    async fn send_modeling_cmd_get_response(
+    async fn send_modeling_cmd(
         &self,
         id: uuid::Uuid,
         source_range: crate::executor::SourceRange,
@@ -146,7 +141,10 @@ impl EngineManager for EngineConnection {
         // Send the request to the engine, via the actor.
         self.engine_req_tx
             .send(ToEngineReq {
-                req: WebSocketRequest::ModelingCmdReq { cmd, cmd_id: id },
+                req: WebSocketRequest::ModelingCmdReq {
+                    cmd: cmd.clone(),
+                    cmd_id: id,
+                },
                 request_sent: tx,
             })
             .await
@@ -173,8 +171,10 @@ impl EngineManager for EngineConnection {
             })?;
 
         // Wait for the response.
-        loop {
-            if let Some(resp) = self.responses.get(&id) {
+        let current_time = std::time::Instant::now();
+        while current_time.elapsed().as_secs() < 60 {
+            // We pop off the responses to cleanup our mappings.
+            if let Some((_, resp)) = self.responses.remove(&id) {
                 return if let Some(data) = &resp.resp {
                     Ok(data.clone())
                 } else {
@@ -185,5 +185,10 @@ impl EngineManager for EngineConnection {
                 };
             }
         }
+
+        Err(KclError::Engine(KclErrorDetails {
+            message: format!("Modeling command timed out `{}`: {:?}", id, cmd),
+            source_ranges: vec![source_range],
+        }))
     }
 }

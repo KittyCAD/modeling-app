@@ -104,7 +104,7 @@ pub enum MemoryItem {
     SketchGroup(Box<SketchGroup>),
     ExtrudeGroup(Box<ExtrudeGroup>),
     #[ts(skip)]
-    ExtrudeTransform(ExtrudeTransform),
+    ExtrudeTransform(Box<ExtrudeTransform>),
     #[ts(skip)]
     Function {
         #[serde(skip)]
@@ -134,13 +134,28 @@ pub struct ExtrudeTransform {
     pub meta: Vec<Metadata>,
 }
 
-pub type MemoryFunction = fn(
-    s: &[MemoryItem],
-    memory: &ProgramMemory,
-    expression: &FunctionExpression,
-    metadata: &[Metadata],
-    engine: &mut EngineConnection,
-) -> Result<Option<ProgramReturn>, KclError>;
+pub type MemoryFunction =
+    fn(
+        s: Vec<MemoryItem>,
+        memory: ProgramMemory,
+        expression: Box<FunctionExpression>,
+        metadata: Vec<Metadata>,
+        engine: EngineConnection,
+    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>>>>;
+
+fn force_memory_function<
+    F: Fn(
+        Vec<MemoryItem>,
+        ProgramMemory,
+        Box<FunctionExpression>,
+        Vec<Metadata>,
+        EngineConnection,
+    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>>>>,
+>(
+    f: F,
+) -> F {
+    f
+}
 
 impl From<MemoryItem> for Vec<SourceRange> {
     fn from(item: MemoryItem) -> Self {
@@ -168,24 +183,24 @@ impl MemoryItem {
         }
     }
 
-    pub fn call_fn(
+    pub async fn call_fn(
         &self,
-        args: &[MemoryItem],
-        memory: &ProgramMemory,
-        engine: &mut EngineConnection,
+        args: Vec<MemoryItem>,
+        memory: ProgramMemory,
+        engine: EngineConnection,
     ) -> Result<Option<ProgramReturn>, KclError> {
-        if let MemoryItem::Function { func, expression, meta } = self {
+        if let MemoryItem::Function { func, expression, meta } = &self {
             if let Some(func) = func {
-                func(args, memory, expression, meta, engine)
+                func(args, memory, expression.clone(), meta.clone(), engine).await
             } else {
                 Err(KclError::Semantic(KclErrorDetails {
-                    message: format!("Not a function: {:?}", self),
+                    message: format!("Not a function: {:?}", expression),
                     source_ranges: vec![],
                 }))
             }
         } else {
             Err(KclError::Semantic(KclErrorDetails {
-                message: format!("not a function: {:?}", self),
+                message: "not a in memory function".to_string(),
                 source_ranges: vec![],
             }))
         }
@@ -579,11 +594,11 @@ impl Default for PipeInfo {
 }
 
 /// Execute a AST's program.
-pub fn execute(
+pub async fn execute(
     program: crate::ast::types::Program,
     memory: &mut ProgramMemory,
     options: BodyType,
-    engine: &mut EngineConnection,
+    engine: &EngineConnection,
 ) -> Result<ProgramMemory, KclError> {
     let mut pipe_info = PipeInfo::default();
 
@@ -602,7 +617,7 @@ pub fn execute(
                                 args.push(memory_item.clone());
                             }
                             Value::CallExpression(call_expr) => {
-                                let result = call_expr.execute(memory, &mut pipe_info, engine)?;
+                                let result = call_expr.execute(memory, &mut pipe_info, engine).await?;
                                 args.push(result);
                             }
                             // We do nothing for the rest.
@@ -620,7 +635,7 @@ pub fn execute(
 
                         memory.return_ = Some(ProgramReturn::Arguments(call_expr.arguments.clone()));
                     } else if let Some(func) = memory.clone().root.get(&fn_name) {
-                        let result = func.call_fn(&args, memory, engine)?;
+                        let result = func.call_fn(args.clone(), memory.clone(), engine.clone()).await?;
 
                         memory.return_ = result;
                     } else {
@@ -646,22 +661,27 @@ pub fn execute(
                             memory.add(&var_name, value.clone(), source_range)?;
                         }
                         Value::BinaryExpression(binary_expression) => {
-                            let result = binary_expression.get_result(memory, &mut pipe_info, engine)?;
+                            let result = binary_expression.get_result(memory, &mut pipe_info, engine).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::FunctionExpression(function_expression) => {
-                            memory.add(
-                                &var_name,
-                                MemoryItem::Function{
-                                    expression: function_expression.clone(),
-                                    meta: vec![metadata],
-                                    func: Some(|args: &[MemoryItem], memory: &ProgramMemory, function_expression: &FunctionExpression, _metadata: &[Metadata], engine: &mut EngineConnection| -> Result<Option<ProgramReturn>, KclError> {
+                            let mem_func = force_memory_function(
+                                |args: Vec<MemoryItem>,
+                                 memory: ProgramMemory,
+                                 function_expression: Box<FunctionExpression>,
+                                 _metadata: Vec<Metadata>,
+                                 engine: EngineConnection| {
+                                    Box::pin(async move {
                                         let mut fn_memory = memory.clone();
 
                                         if args.len() != function_expression.params.len() {
                                             return Err(KclError::Semantic(KclErrorDetails {
-                                                message: format!("Expected {} arguments, got {}", function_expression.params.len(), args.len()),
-                                                source_ranges: vec![function_expression.into()],
+                                                message: format!(
+                                                    "Expected {} arguments, got {}",
+                                                    function_expression.params.len(),
+                                                    args.len()
+                                                ),
+                                                source_ranges: vec![(&function_expression).into()],
                                             }));
                                         }
 
@@ -674,20 +694,34 @@ pub fn execute(
                                             )?;
                                         }
 
-                                        let result = execute(function_expression.body.clone(), &mut fn_memory, BodyType::Block, engine)?;
+                                        let result = execute(
+                                            function_expression.body.clone(),
+                                            &mut fn_memory,
+                                            BodyType::Block,
+                                            &engine,
+                                        )
+                                        .await?;
 
                                         Ok(result.return_)
                                     })
+                                },
+                            );
+                            memory.add(
+                                &var_name,
+                                MemoryItem::Function {
+                                    expression: function_expression.clone(),
+                                    meta: vec![metadata],
+                                    func: Some(mem_func),
                                 },
                                 source_range,
                             )?;
                         }
                         Value::CallExpression(call_expression) => {
-                            let result = call_expression.execute(memory, &mut pipe_info, engine)?;
+                            let result = call_expression.execute(memory, &mut pipe_info, engine).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::PipeExpression(pipe_expression) => {
-                            let result = pipe_expression.get_result(memory, &mut pipe_info, engine)?;
+                            let result = pipe_expression.get_result(memory, &mut pipe_info, engine).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::PipeSubstitution(pipe_substitution) => {
@@ -700,11 +734,11 @@ pub fn execute(
                             }));
                         }
                         Value::ArrayExpression(array_expression) => {
-                            let result = array_expression.execute(memory, &mut pipe_info, engine)?;
+                            let result = array_expression.execute(memory, &mut pipe_info, engine).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::ObjectExpression(object_expression) => {
-                            let result = object_expression.execute(memory, &mut pipe_info, engine)?;
+                            let result = object_expression.execute(memory, &mut pipe_info, engine).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::MemberExpression(member_expression) => {
@@ -712,7 +746,7 @@ pub fn execute(
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::UnaryExpression(unary_expression) => {
-                            let result = unary_expression.get_result(memory, &mut pipe_info, engine)?;
+                            let result = unary_expression.get_result(memory, &mut pipe_info, engine).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                     }
@@ -720,11 +754,11 @@ pub fn execute(
             }
             BodyItem::ReturnStatement(return_statement) => match &return_statement.argument {
                 Value::BinaryExpression(bin_expr) => {
-                    let result = bin_expr.get_result(memory, &mut pipe_info, engine)?;
+                    let result = bin_expr.get_result(memory, &mut pipe_info, engine).await?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::UnaryExpression(unary_expr) => {
-                    let result = unary_expr.get_result(memory, &mut pipe_info, engine)?;
+                    let result = unary_expr.get_result(memory, &mut pipe_info, engine).await?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::Identifier(identifier) => {
@@ -735,15 +769,15 @@ pub fn execute(
                     memory.return_ = Some(ProgramReturn::Value(literal.into()));
                 }
                 Value::ArrayExpression(array_expr) => {
-                    let result = array_expr.execute(memory, &mut pipe_info, engine)?;
+                    let result = array_expr.execute(memory, &mut pipe_info, engine).await?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::ObjectExpression(obj_expr) => {
-                    let result = obj_expr.execute(memory, &mut pipe_info, engine)?;
+                    let result = obj_expr.execute(memory, &mut pipe_info, engine).await?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::CallExpression(call_expr) => {
-                    let result = call_expr.execute(memory, &mut pipe_info, engine)?;
+                    let result = call_expr.execute(memory, &mut pipe_info, engine).await?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::MemberExpression(member_expr) => {
@@ -751,7 +785,7 @@ pub fn execute(
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::PipeExpression(pipe_expr) => {
-                    let result = pipe_expr.get_result(memory, &mut pipe_info, engine)?;
+                    let result = pipe_expr.get_result(memory, &mut pipe_info, engine).await?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::PipeSubstitution(_) => {}
@@ -774,8 +808,8 @@ mod tests {
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast()?;
         let mut mem: ProgramMemory = Default::default();
-        let mut engine = EngineConnection::new().await?;
-        let memory = execute(program, &mut mem, BodyType::Root, &mut engine)?;
+        let engine = EngineConnection::new().await?;
+        let memory = execute(program, &mut mem, BodyType::Root, &engine).await?;
 
         Ok(memory)
     }
