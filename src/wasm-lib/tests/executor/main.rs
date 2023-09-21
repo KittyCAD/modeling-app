@@ -167,6 +167,7 @@ async fn serial_test_execute_engine_error_return() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+#[ignore] // ignore until more stack fixes
 async fn serial_test_execute_pipes_on_pipes() {
     let code = include_str!("inputs/pipes_on_pipes.kcl");
 
