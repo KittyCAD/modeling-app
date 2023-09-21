@@ -189,10 +189,10 @@ fn is_block_start(character: &str) -> bool {
 fn is_block_end(character: &str) -> bool {
     BLOCK_END.is_match(character)
 }
-fn is_paran_start(character: &str) -> bool {
+fn is_paren_start(character: &str) -> bool {
     PARAN_START.is_match(character)
 }
-fn is_paran_end(character: &str) -> bool {
+fn is_paren_end(character: &str) -> bool {
     PARAN_END.is_match(character)
 }
 fn is_array_start(character: &str) -> bool {
@@ -261,14 +261,14 @@ fn return_token_at_index(s: &str, start_index: usize) -> Option<Token> {
             start_index,
         ));
     }
-    if is_paran_end(str_from_index) {
+    if is_paren_end(str_from_index) {
         return Some(make_token(
             TokenType::Brace,
             &match_first(str_from_index, &PARAN_END)?,
             start_index,
         ));
     }
-    if is_paran_start(str_from_index) {
+    if is_paren_start(str_from_index) {
         return Some(make_token(
             TokenType::Brace,
             &match_first(str_from_index, &PARAN_START)?,
@@ -510,32 +510,32 @@ mod tests {
     }
 
     #[test]
-    fn is_paran_start_test() {
-        assert!(is_paran_start("("));
-        assert!(is_paran_start("( "));
-        assert!(is_paran_start("(5"));
-        assert!(is_paran_start("(5 "));
-        assert!(is_paran_start("(5 + 5"));
-        assert!(is_paran_start("(5 + 5)"));
-        assert!(is_paran_start("(5 + 5) "));
+    fn is_paren_start_test() {
+        assert!(is_paren_start("("));
+        assert!(is_paren_start("( "));
+        assert!(is_paren_start("(5"));
+        assert!(is_paren_start("(5 "));
+        assert!(is_paren_start("(5 + 5"));
+        assert!(is_paren_start("(5 + 5)"));
+        assert!(is_paren_start("(5 + 5) "));
 
-        assert!(!is_paran_start("5"));
-        assert!(!is_paran_start("5 + 5"));
-        assert!(!is_paran_start("5( + 5)"));
-        assert!(!is_paran_start(" ( + 5)"));
+        assert!(!is_paren_start("5"));
+        assert!(!is_paren_start("5 + 5"));
+        assert!(!is_paren_start("5( + 5)"));
+        assert!(!is_paren_start(" ( + 5)"));
     }
 
     #[test]
-    fn is_paran_end_test() {
-        assert!(is_paran_end(")"));
-        assert!(is_paran_end(") "));
-        assert!(is_paran_end(")5"));
-        assert!(is_paran_end(")5 "));
+    fn is_paren_end_test() {
+        assert!(is_paren_end(")"));
+        assert!(is_paren_end(") "));
+        assert!(is_paren_end(")5"));
+        assert!(is_paren_end(")5 "));
 
-        assert!(!is_paran_end("5"));
-        assert!(!is_paran_end("5 + 5"));
-        assert!(!is_paran_end("5) + 5"));
-        assert!(!is_paran_end(" ) + 5"));
+        assert!(!is_paren_end("5"));
+        assert!(!is_paren_end("5 + 5"));
+        assert!(!is_paren_end("5) + 5"));
+        assert!(!is_paren_end(" ) + 5"));
     }
 
     #[test]
