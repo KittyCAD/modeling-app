@@ -389,19 +389,6 @@ export class EngineConnection {
           })
         })
       }
-
-      // TODO(paultag): This ought to be both controllable, as well as something
-      // like exponential backoff to have some grace on the backend, as well as
-      // fix responsiveness for clients that had a weird network hiccup.
-      const connectionTimeoutMs = VITE_KC_CONNECTION_TIMEOUT_MS
-
-      setTimeout(() => {
-        if (this.isReady()) {
-          return
-        }
-        console.log('engine connection timeout on connection, closing')
-        this.close()
-      }, connectionTimeoutMs)
     })
 
     this.pc.addEventListener('track', (event) => {
