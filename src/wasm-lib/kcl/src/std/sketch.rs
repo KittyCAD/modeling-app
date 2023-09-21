@@ -390,7 +390,7 @@ fn inner_angled_line(
                     y: delta[1],
                     z: 0.0,
                 },
-                relative: relative,
+                relative,
             },
         },
     )?;
@@ -967,7 +967,7 @@ fn inner_bezier_curve(
                     y: delta[1],
                     z: 0.0,
                 },
-                relative: relative,
+                relative,
             },
         },
     )?;
