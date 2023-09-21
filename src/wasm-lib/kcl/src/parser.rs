@@ -3077,8 +3077,10 @@ const secondExtrude = startSketchAt([0,0])
     fn test_parse_greater_bang() {
         let tokens = crate::tokeniser::lexer(">!");
         let parser = Parser::new(tokens);
-        let result = parser.ast();
-        assert!(result.is_ok());
+        let err = parser.ast().unwrap_err();
+        // TODO: Better errors when program cannot tokenize.
+        // https://github.com/KittyCAD/modeling-app/issues/696
+        assert!(err.to_string().contains("file is empty"));
     }
 
     #[test]
@@ -3095,7 +3097,9 @@ const secondExtrude = startSketchAt([0,0])
         let tokens = crate::tokeniser::lexer("(ޜ");
         let parser = Parser::new(tokens);
         let result = parser.ast();
-        assert!(result.is_ok());
+        // TODO: Better errors when program cannot tokenize.
+        // https://github.com/KittyCAD/modeling-app/issues/696
+        assert!(result.is_err());
     }
 
     #[test]
@@ -3136,9 +3140,11 @@ z(-[["#,
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
+        // TODO: Better errors when program cannot tokenize.
+        // https://github.com/KittyCAD/modeling-app/issues/696
         assert_eq!(
             result.err().unwrap().to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([0, 1])], message: "missing a closing brace for the function call" }"#
+            r#"semantic: KclErrorDetails { source_ranges: [], message: "file is empty" }"#
         );
     }
 
@@ -3148,7 +3154,12 @@ z(-[["#,
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
-        assert!(result.err().unwrap().to_string().contains("unexpected end"));
+        // TODO: Better errors when program cannot tokenize.
+        // https://github.com/KittyCAD/modeling-app/issues/696
+        assert_eq!(
+            result.err().unwrap().to_string(),
+            r#"semantic: KclErrorDetails { source_ranges: [], message: "file is empty" }"#
+        );
     }
 
     #[test]

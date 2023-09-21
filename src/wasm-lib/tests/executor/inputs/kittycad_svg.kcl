@@ -306,5 +306,5 @@ const svg = startSketchAt([0, 0])
 |> lineTo([13.44, -10.92], %) // HorizontalLineRelative
 |> lineTo([13.44, -13.44], %) // VerticalLineHorizonal
 |> lineTo([14.28, -13.44], %) // HorizontalLineRelative
-|> close(%);
-show(svg);
+|> close(%)
+show(svg)
