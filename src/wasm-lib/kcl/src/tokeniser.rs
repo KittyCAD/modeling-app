@@ -44,6 +44,7 @@ pub enum TokenType {
     Function,
 }
 
+/// Most KCL tokens correspond to LSP semantic tokens (but not all).
 impl TryFrom<TokenType> for SemanticTokenType {
     type Error = anyhow::Error;
     fn try_from(token_type: TokenType) -> Result<Self> {
@@ -70,7 +71,7 @@ impl TryFrom<TokenType> for SemanticTokenType {
 
 impl TokenType {
     // This is for the lsp server.
-    pub fn to_semantic_token_types() -> Result<Vec<SemanticTokenType>> {
+    pub fn all_semantic_token_types() -> Result<Vec<SemanticTokenType>> {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = true;
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
@@ -119,7 +120,9 @@ impl TokenType {
 pub struct Token {
     #[serde(rename = "type")]
     pub token_type: TokenType,
+    /// Offset in the source code where this token begins.
     pub start: usize,
+    /// Offset in the source code where this token ends.
     pub end: usize,
     pub value: String,
 }
@@ -717,7 +720,7 @@ mod tests {
     // We have this as a test so we can ensure it never panics with an unwrap in the server.
     #[test]
     fn test_token_type_to_semantic_token_type() {
-        let semantic_types = TokenType::to_semantic_token_types().unwrap();
+        let semantic_types = TokenType::all_semantic_token_types().unwrap();
         assert!(!semantic_types.is_empty());
     }
 
