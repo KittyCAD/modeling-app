@@ -15,6 +15,7 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
         // For file conversions we need this to be long.
         .timeout(std::time::Duration::from_secs(600))
         .connect_timeout(std::time::Duration::from_secs(60))
+        .connection_verbose(true)
         .tcp_keepalive(std::time::Duration::from_secs(600))
         .http1_only();
 
@@ -172,6 +173,14 @@ async fn serial_test_execute_pipes_on_pipes() {
 
     let result = execute_and_snapshot(code).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/pipes_on_pipes.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_execute_kittycad_svg() {
+    let code = include_str!("inputs/kittycad_svg.kcl");
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/kittycad_svg.png", &result, 1.0);
 }
 
 #[tokio::test(flavor = "multi_thread")]
