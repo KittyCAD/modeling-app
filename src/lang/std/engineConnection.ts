@@ -44,7 +44,7 @@ interface NewTrackArgs {
 // This looks funny, I know. This is needed because node and the browser
 // disagree as to the type. In a browser it's a number, but in node it's a
 // "Timeout".
-type Timeout = ReturnType<typeof setTimeout>;
+type Timeout = ReturnType<typeof setTimeout>
 
 type ClientMetrics = Models['ClientMetrics_type']
 
