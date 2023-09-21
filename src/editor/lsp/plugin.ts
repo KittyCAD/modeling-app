@@ -13,6 +13,7 @@ import {
   CompletionItemKind,
   CompletionTriggerKind,
 } from 'vscode-languageserver-protocol'
+import debounce from 'debounce-promise'
 
 import type {
   Completion,
@@ -53,14 +54,11 @@ export class LanguageServerPlugin implements PluginValue {
   private languageId: string
   private documentVersion: number
 
-  private changesTimeout: number
-
   constructor(private view: EditorView, private allowHTMLContent: boolean) {
     this.client = this.view.state.facet(client)
     this.documentUri = this.view.state.facet(documentUri)
     this.languageId = this.view.state.facet(languageId)
     this.documentVersion = 0
-    this.changesTimeout = 0
 
     this.client.attachPlugin(this)
 
@@ -71,12 +69,10 @@ export class LanguageServerPlugin implements PluginValue {
 
   update({ docChanged }: ViewUpdate) {
     if (!docChanged) return
-    if (this.changesTimeout) clearTimeout(this.changesTimeout)
-    this.changesTimeout = window.setTimeout(() => {
-      this.sendChange({
-        documentText: this.view.state.doc.toString(),
-      })
-    }, changesDelay)
+
+    this.sendChange({
+      documentText: this.view.state.doc.toString(),
+    })
   }
 
   destroy() {
@@ -99,14 +95,34 @@ export class LanguageServerPlugin implements PluginValue {
 
   async sendChange({ documentText }: { documentText: string }) {
     if (!this.client.ready) return
+
+    console.log(documentText.length)
+
+    if (documentText.length > 5000) {
+      // Clear out the text it thinks we have, large documents will throw a stack error.
+      // This is obviously not a good fix but it works for now til we figure
+      // out the stack limits in wasm and also rewrite the parser.
+      // Since this is only for hover and completions it will be fine,
+      // completions will still work for stdlib but hover will not.
+      // That seems like a fine trade-off for a working editor for the time
+      // being.
+      documentText = ''
+    }
+
     try {
-      await this.client.textDocumentDidChange({
-        textDocument: {
-          uri: this.documentUri,
-          version: this.documentVersion++,
+      debounce(
+        () => {
+          return this.client.textDocumentDidChange({
+            textDocument: {
+              uri: this.documentUri,
+              version: this.documentVersion++,
+            },
+            contentChanges: [{ text: documentText }],
+          })
         },
-        contentChanges: [{ text: documentText }],
-      })
+        changesDelay,
+        { leading: true }
+      )
     } catch (e) {
       console.error(e)
     }
