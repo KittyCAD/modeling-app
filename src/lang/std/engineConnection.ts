@@ -45,6 +45,11 @@ interface NewTrackArgs {
   mediaStream: MediaStream
 }
 
+// This looks funny, I know. This is needed because node and the browser
+// disagree as to the type. In a browser it's a number, but in node it's a
+// "Timeout".
+type Timeout = ReturnType<typeof setTimeout>
+
 type ClientMetrics = Models['ClientMetrics_type']
 
 // EngineConnection encapsulates the connection(s) to the Engine
@@ -56,6 +61,9 @@ export class EngineConnection {
   unreliableDataChannel?: RTCDataChannel
 
   private ready: boolean
+  private connecting: boolean
+  private dead: boolean
+  private failedConnTimeout: Timeout | null
 
   readonly url: string
   private readonly token?: string
@@ -91,6 +99,9 @@ export class EngineConnection {
     this.url = url
     this.token = token
     this.ready = false
+    this.connecting = false
+    this.dead = false
+    this.failedConnTimeout = null
     this.onWebsocketOpen = onWebsocketOpen
     this.onDataChannelOpen = onDataChannelOpen
     this.onEngineConnectionOpen = onEngineConnectionOpen
@@ -101,7 +112,10 @@ export class EngineConnection {
     // TODO(paultag): This ought to be tweakable.
     const pingIntervalMs = 10000
 
-    setInterval(() => {
+    let pingInterval = setInterval(() => {
+      if (this.dead) {
+        clearInterval(pingInterval)
+      }
       if (this.isReady()) {
         // When we're online, every 10 seconds, we'll attempt to put a 'ping'
         // command through the WebSocket connection. This will help both ends
@@ -110,6 +124,24 @@ export class EngineConnection {
         this.send({ type: 'ping' })
       }
     }, pingIntervalMs)
+
+    const connectionTimeoutMs = VITE_KC_CONNECTION_TIMEOUT_MS
+    let connectInterval = setInterval(() => {
+      if (this.dead) {
+        clearInterval(connectInterval)
+        return
+      }
+      if (this.isReady()) {
+        return
+      }
+      console.log('connecting via retry')
+      this.connect()
+    }, connectionTimeoutMs)
+  }
+  // isConnecting will return true when connect has been called, but the full
+  // WebRTC is not online.
+  isConnecting() {
+    return this.connecting
   }
   // isReady will return true only when the WebRTC *and* WebSocket connection
   // are connected. During setup, the WebSocket connection comes online first,
@@ -117,6 +149,10 @@ export class EngineConnection {
   // is not "Ready" until both are connected.
   isReady() {
     return this.ready
+  }
+  tearDown() {
+    this.dead = true
+    this.close()
   }
   // shouldTrace will return true when Sentry should be used to instrument
   // the Engine.
@@ -129,8 +165,10 @@ export class EngineConnection {
   // This will attempt the full handshake, and retry if the connection
   // did not establish.
   connect() {
-    // TODO(paultag): make this safe to call multiple times, and figure out
-    // when a connection is in progress (state: connecting or something).
+    console.log('connect was called')
+    if (this.isConnecting() || this.isReady()) {
+      return
+    }
 
     // Information on the connect transaction
 
@@ -362,20 +400,6 @@ export class EngineConnection {
           })
         })
       }
-
-      // TODO(paultag): This ought to be both controllable, as well as something
-      // like exponential backoff to have some grace on the backend, as well as
-      // fix responsiveness for clients that had a weird network hiccup.
-      const connectionTimeoutMs = VITE_KC_CONNECTION_TIMEOUT_MS
-
-      setTimeout(() => {
-        if (this.isReady()) {
-          return
-        }
-        console.log('engine connection timeout on connection, retrying')
-        this.close()
-        this.connect()
-      }, connectionTimeoutMs)
     })
 
     this.pc.addEventListener('track', (event) => {
@@ -465,6 +489,7 @@ export class EngineConnection {
 
         this.onEngineConnectionOpen(this)
         this.ready = true
+        this.connecting = false
       })
 
       this.unreliableDataChannel.addEventListener('close', (event) => {
@@ -477,6 +502,22 @@ export class EngineConnection {
         this.close()
       })
     })
+
+    const connectionTimeoutMs = VITE_KC_CONNECTION_TIMEOUT_MS
+
+    if (this.failedConnTimeout) {
+      console.log('clearing timeout before set')
+      clearTimeout(this.failedConnTimeout)
+      this.failedConnTimeout = null
+    }
+    console.log('timeout set')
+    this.failedConnTimeout = setTimeout(() => {
+      if (this.isReady()) {
+        return
+      }
+      console.log('engine connection timeout on connection, closing')
+      this.close()
+    }, connectionTimeoutMs)
 
     this.onConnectionStarted(this)
   }
@@ -502,9 +543,15 @@ export class EngineConnection {
     this.pc = undefined
     this.unreliableDataChannel = undefined
     this.webrtcStatsCollector = undefined
+    if (this.failedConnTimeout) {
+      console.log('closed timeout in close')
+      clearTimeout(this.failedConnTimeout)
+      this.failedConnTimeout = null
+    }
 
     this.onClose(this)
     this.ready = false
+    this.connecting = false
   }
 }
 
@@ -712,7 +759,7 @@ export class EngineCommandManager {
     }
   }
   tearDown() {
-    this.engineConnection?.close()
+    this.engineConnection?.tearDown()
   }
   startNewSession() {
     this.artifactMap = {}
@@ -815,7 +862,6 @@ export class EngineCommandManager {
       lastMessage = command.cmd.type
     }
     if (!this.engineConnection?.isReady()) {
-      console.log('socket not ready')
       return Promise.resolve()
     }
     if (command.type !== 'modeling_cmd_req') return Promise.resolve()
@@ -862,7 +908,6 @@ export class EngineCommandManager {
     this.sourceRangeMap[id] = range
 
     if (!this.engineConnection?.isReady()) {
-      console.log('socket not ready')
       return Promise.resolve()
     }
     this.engineConnection?.send(command)
