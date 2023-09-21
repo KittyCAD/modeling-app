@@ -149,7 +149,7 @@ pub async fn lsp_run(config: ServerConfig) -> Result<(), JsValue> {
     let stdlib_signatures = get_signatures_from_stdlib(&stdlib).map_err(|e| e.to_string())?;
     // We can unwrap here because we know the tokeniser is valid, since
     // we have a test for it.
-    let token_types = kcl_lib::tokeniser::TokenType::to_semantic_token_types().unwrap();
+    let token_types = kcl_lib::tokeniser::TokenType::all_semantic_token_types().unwrap();
 
     let (service, socket) = LspService::new(|client| Backend {
         client,
