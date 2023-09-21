@@ -3,7 +3,7 @@ use std::str::FromStr;
 use anyhow::Result;
 use lazy_static::lazy_static;
 use parse_display::{Display, FromStr};
-use regex::Regex;
+use regex::bytes::Regex;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::SemanticTokenType;
@@ -162,66 +162,68 @@ lazy_static! {
     static ref BLOCKCOMMENT: Regex = Regex::new(r"^/\*[\s\S]*?\*/").unwrap();
 }
 
-fn is_number(character: &str) -> bool {
+fn is_number(character: &[u8]) -> bool {
     NUMBER.is_match(character)
 }
-fn is_whitespace(character: &str) -> bool {
+fn is_whitespace(character: &[u8]) -> bool {
     WHITESPACE.is_match(character)
 }
-fn is_word(character: &str) -> bool {
+fn is_word(character: &[u8]) -> bool {
     WORD.is_match(character)
 }
-fn is_keyword(character: &str) -> bool {
+fn is_keyword(character: &[u8]) -> bool {
     KEYWORD.is_match(character)
 }
-fn is_string(character: &str) -> bool {
+fn is_string(character: &[u8]) -> bool {
     match STRING.find(character) {
         Some(m) => m.start() == 0,
         None => false,
     }
 }
-fn is_operator(character: &str) -> bool {
+fn is_operator(character: &[u8]) -> bool {
     OPERATOR.is_match(character)
 }
-fn is_block_start(character: &str) -> bool {
+fn is_block_start(character: &[u8]) -> bool {
     BLOCK_START.is_match(character)
 }
-fn is_block_end(character: &str) -> bool {
+fn is_block_end(character: &[u8]) -> bool {
     BLOCK_END.is_match(character)
 }
-fn is_paren_start(character: &str) -> bool {
+fn is_paren_start(character: &[u8]) -> bool {
     PARAN_START.is_match(character)
 }
-fn is_paren_end(character: &str) -> bool {
+fn is_paren_end(character: &[u8]) -> bool {
     PARAN_END.is_match(character)
 }
-fn is_array_start(character: &str) -> bool {
+fn is_array_start(character: &[u8]) -> bool {
     ARRAY_START.is_match(character)
 }
-fn is_array_end(character: &str) -> bool {
+fn is_array_end(character: &[u8]) -> bool {
     ARRAY_END.is_match(character)
 }
-fn is_comma(character: &str) -> bool {
+fn is_comma(character: &[u8]) -> bool {
     COMMA.is_match(character)
 }
-fn is_colon(character: &str) -> bool {
+fn is_colon(character: &[u8]) -> bool {
     COLON.is_match(character)
 }
-fn is_double_period(character: &str) -> bool {
+fn is_double_period(character: &[u8]) -> bool {
     DOUBLE_PERIOD.is_match(character)
 }
-fn is_period(character: &str) -> bool {
+fn is_period(character: &[u8]) -> bool {
     PERIOD.is_match(character)
 }
-fn is_line_comment(character: &str) -> bool {
+fn is_line_comment(character: &[u8]) -> bool {
     LINECOMMENT.is_match(character)
 }
-fn is_block_comment(character: &str) -> bool {
+fn is_block_comment(character: &[u8]) -> bool {
     BLOCKCOMMENT.is_match(character)
 }
 
-fn match_first(s: &str, regex: &Regex) -> Option<String> {
-    regex.find(s).map(|the_match| the_match.as_str().to_string())
+fn match_first(s: &[u8], regex: &Regex) -> Option<String> {
+    regex
+        .find(s)
+        .map(|the_match| String::from_utf8_lossy(the_match.as_bytes()).into())
 }
 
 fn make_token(token_type: TokenType, value: &str, start: usize) -> Token {
@@ -233,8 +235,7 @@ fn make_token(token_type: TokenType, value: &str, start: usize) -> Token {
     }
 }
 
-fn return_token_at_index(s: &str, start_index: usize) -> Option<Token> {
-    let str_from_index = &s.chars().skip(start_index).collect::<String>();
+fn return_token_at_index(str_from_index: &[u8], start_index: usize) -> Option<Token> {
     if is_string(str_from_index) {
         return Some(make_token(
             TokenType::String,
@@ -369,11 +370,11 @@ fn return_token_at_index(s: &str, start_index: usize) -> Option<Token> {
     None
 }
 
-fn recursively_tokenise(s: &str, current_index: usize, previous_tokens: Vec<Token>) -> Vec<Token> {
+fn recursively_tokenise(s: &[u8], current_index: usize, previous_tokens: Vec<Token>) -> Vec<Token> {
     if current_index >= s.len() {
         return previous_tokens;
     }
-    let token = return_token_at_index(s, current_index);
+    let token = return_token_at_index(&s[current_index..], current_index);
     let Some(token) = token else {
         return recursively_tokenise(s, current_index + 1, previous_tokens);
     };
@@ -384,7 +385,7 @@ fn recursively_tokenise(s: &str, current_index: usize, previous_tokens: Vec<Toke
 }
 
 pub fn lexer(s: &str) -> Vec<Token> {
-    recursively_tokenise(s, 0, Vec::new())
+    recursively_tokenise(s.as_bytes(), 0, Vec::new())
 }
 
 #[cfg(test)]
@@ -395,192 +396,193 @@ mod tests {
 
     #[test]
     fn is_number_test() {
-        assert!(is_number("1"));
-        assert!(is_number("1 abc"));
-        assert!(is_number("1.1"));
-        assert!(is_number("1.1 abc"));
-        assert!(!is_number("a"));
+        assert!(is_number("1".as_bytes()));
+        assert!(is_number("1 abc".as_bytes()));
+        assert!(is_number("1.1".as_bytes()));
+        assert!(is_number("1.1 abc".as_bytes()));
+        assert!(!is_number("a".as_bytes()));
 
-        assert!(is_number("1"));
-        assert!(is_number(".1"));
-        assert!(is_number("5?"));
-        assert!(is_number("5 + 6"));
-        assert!(is_number("5 + a"));
-        assert!(is_number("5.5"));
+        assert!(is_number("1".as_bytes()));
+        assert!(is_number(".1".as_bytes()));
+        assert!(is_number("5?".as_bytes()));
+        assert!(is_number("5 + 6".as_bytes()));
+        assert!(is_number("5 + a".as_bytes()));
+        assert!(is_number("5.5".as_bytes()));
 
-        assert!(!is_number("1abc"));
-        assert!(!is_number("a"));
-        assert!(!is_number("?"));
-        assert!(!is_number("?5"));
+        assert!(!is_number("1abc".as_bytes()));
+        assert!(!is_number("a".as_bytes()));
+        assert!(!is_number("?".as_bytes()));
+        assert!(!is_number("?5".as_bytes()));
     }
 
     #[test]
     fn is_whitespace_test() {
-        assert!(is_whitespace(" "));
-        assert!(is_whitespace("  "));
-        assert!(is_whitespace(" a"));
-        assert!(is_whitespace("a "));
+        assert!(is_whitespace(" ".as_bytes()));
+        assert!(is_whitespace("  ".as_bytes()));
+        assert!(is_whitespace(" a".as_bytes()));
+        assert!(is_whitespace("a ".as_bytes()));
 
-        assert!(!is_whitespace("a"));
-        assert!(!is_whitespace("?"));
+        assert!(!is_whitespace("a".as_bytes()));
+        assert!(!is_whitespace("?".as_bytes()));
     }
 
     #[test]
     fn is_word_test() {
-        assert!(is_word("a"));
-        assert!(is_word("a "));
-        assert!(is_word("a5"));
-        assert!(is_word("a5a"));
+        assert!(is_word("a".as_bytes()));
+        assert!(is_word("a ".as_bytes()));
+        assert!(is_word("a5".as_bytes()));
+        assert!(is_word("a5a".as_bytes()));
 
-        assert!(!is_word("5"));
-        assert!(!is_word("5a"));
-        assert!(!is_word("5a5"));
+        assert!(!is_word("5".as_bytes()));
+        assert!(!is_word("5a".as_bytes()));
+        assert!(!is_word("5a5".as_bytes()));
     }
 
     #[test]
     fn is_string_test() {
-        assert!(is_string("\"\""));
-        assert!(is_string("\"a\""));
-        assert!(is_string("\"a\" "));
-        assert!(is_string("\"a\"5"));
-        assert!(is_string("'a'5"));
-        assert!(is_string("\"with escaped \\\" backslash\""));
+        assert!(is_string("\"\"".as_bytes()));
+        assert!(is_string("\"a\"".as_bytes()));
+        assert!(is_string("\"a\" ".as_bytes()));
+        assert!(is_string("\"a\"5".as_bytes()));
+        assert!(is_string("'a'5".as_bytes()));
+        assert!(is_string("\"with escaped \\\" backslash\"".as_bytes()));
 
-        assert!(!is_string("\""));
-        assert!(!is_string("\"a"));
-        assert!(!is_string("a\""));
-        assert!(!is_string(" \"a\""));
-        assert!(!is_string("5\"a\""));
-        assert!(!is_string("a + 'str'"));
-        assert!(is_string("'c'"));
+        assert!(!is_string("\"".as_bytes()));
+        assert!(!is_string("\"a".as_bytes()));
+        assert!(!is_string("a\"".as_bytes()));
+        assert!(!is_string(" \"a\"".as_bytes()));
+        assert!(!is_string("5\"a\"".as_bytes()));
+        assert!(!is_string("a + 'str'".as_bytes()));
+        assert!(is_string("'c'".as_bytes()));
     }
 
     #[test]
     fn is_operator_test() {
-        assert!(is_operator("+"));
-        assert!(is_operator("+ "));
-        assert!(is_operator("-"));
-        assert!(is_operator("<="));
-        assert!(is_operator("<= "));
-        assert!(is_operator(">="));
-        assert!(is_operator(">= "));
-        assert!(is_operator("> "));
-        assert!(is_operator("< "));
-        assert!(is_operator("| "));
-        assert!(is_operator("|> "));
-        assert!(is_operator("^ "));
-        assert!(is_operator("% "));
-        assert!(is_operator("+* "));
+        assert!(is_operator("+".as_bytes()));
+        assert!(is_operator("+ ".as_bytes()));
+        assert!(is_operator("-".as_bytes()));
+        assert!(is_operator("<=".as_bytes()));
+        assert!(is_operator("<= ".as_bytes()));
+        assert!(is_operator(">=".as_bytes()));
+        assert!(is_operator(">= ".as_bytes()));
+        assert!(is_operator("> ".as_bytes()));
+        assert!(is_operator("< ".as_bytes()));
+        assert!(is_operator("| ".as_bytes()));
+        assert!(is_operator("|> ".as_bytes()));
+        assert!(is_operator("^ ".as_bytes()));
+        assert!(is_operator("% ".as_bytes()));
+        assert!(is_operator("+* ".as_bytes()));
 
-        assert!(!is_operator("5 + 5"));
-        assert!(!is_operator("a"));
-        assert!(!is_operator("a+"));
-        assert!(!is_operator("a+5"));
-        assert!(!is_operator("5a+5"));
-        assert!(!is_operator(", newVar"));
-        assert!(!is_operator(","));
+        assert!(!is_operator("5 + 5".as_bytes()));
+        assert!(!is_operator("a".as_bytes()));
+        assert!(!is_operator("a+".as_bytes()));
+        assert!(!is_operator("a+5".as_bytes()));
+        assert!(!is_operator("5a+5".as_bytes()));
+        assert!(!is_operator(", newVar".as_bytes()));
+        assert!(!is_operator(",".as_bytes()));
     }
 
     #[test]
     fn is_block_start_test() {
-        assert!(is_block_start("{"));
-        assert!(is_block_start("{ "));
-        assert!(is_block_start("{5"));
-        assert!(is_block_start("{a"));
-        assert!(is_block_start("{5 "));
+        assert!(is_block_start("{".as_bytes()));
+        assert!(is_block_start("{ ".as_bytes()));
+        assert!(is_block_start("{5".as_bytes()));
+        assert!(is_block_start("{a".as_bytes()));
+        assert!(is_block_start("{5 ".as_bytes()));
 
-        assert!(!is_block_start("5"));
-        assert!(!is_block_start("5 + 5"));
-        assert!(!is_block_start("5{ + 5"));
-        assert!(!is_block_start("a{ + 5"));
-        assert!(!is_block_start(" { + 5"));
+        assert!(!is_block_start("5".as_bytes()));
+        assert!(!is_block_start("5 + 5".as_bytes()));
+        assert!(!is_block_start("5{ + 5".as_bytes()));
+        assert!(!is_block_start("a{ + 5".as_bytes()));
+        assert!(!is_block_start(" { + 5".as_bytes()));
     }
 
     #[test]
     fn is_block_end_test() {
-        assert!(is_block_end("}"));
-        assert!(is_block_end("} "));
-        assert!(is_block_end("}5"));
-        assert!(is_block_end("}5 "));
+        assert!(is_block_end("}".as_bytes()));
+        assert!(is_block_end("} ".as_bytes()));
+        assert!(is_block_end("}5".as_bytes()));
+        assert!(is_block_end("}5 ".as_bytes()));
 
-        assert!(!is_block_end("5"));
-        assert!(!is_block_end("5 + 5"));
-        assert!(!is_block_end("5} + 5"));
-        assert!(!is_block_end(" } + 5"));
+        assert!(!is_block_end("5".as_bytes()));
+        assert!(!is_block_end("5 + 5".as_bytes()));
+        assert!(!is_block_end("5} + 5".as_bytes()));
+        assert!(!is_block_end(" } + 5".as_bytes()));
     }
 
     #[test]
     fn is_paren_start_test() {
-        assert!(is_paren_start("("));
-        assert!(is_paren_start("( "));
-        assert!(is_paren_start("(5"));
-        assert!(is_paren_start("(5 "));
-        assert!(is_paren_start("(5 + 5"));
-        assert!(is_paren_start("(5 + 5)"));
-        assert!(is_paren_start("(5 + 5) "));
+        assert!(is_paren_start("(".as_bytes()));
+        assert!(is_paren_start("( ".as_bytes()));
+        assert!(is_paren_start("(5".as_bytes()));
+        assert!(is_paren_start("(5 ".as_bytes()));
+        assert!(is_paren_start("(5 + 5".as_bytes()));
+        assert!(is_paren_start("(5 + 5)".as_bytes()));
+        assert!(is_paren_start("(5 + 5) ".as_bytes()));
 
-        assert!(!is_paren_start("5"));
-        assert!(!is_paren_start("5 + 5"));
-        assert!(!is_paren_start("5( + 5)"));
-        assert!(!is_paren_start(" ( + 5)"));
+        assert!(!is_paren_start("5".as_bytes()));
+        assert!(!is_paren_start("5 + 5".as_bytes()));
+        assert!(!is_paren_start("5( + 5)".as_bytes()));
+        assert!(!is_paren_start(" ( + 5)".as_bytes()));
     }
 
     #[test]
     fn is_paren_end_test() {
-        assert!(is_paren_end(")"));
-        assert!(is_paren_end(") "));
-        assert!(is_paren_end(")5"));
-        assert!(is_paren_end(")5 "));
+        assert!(is_paren_end(")".as_bytes()));
+        assert!(is_paren_end(") ".as_bytes()));
+        assert!(is_paren_end(")5".as_bytes()));
+        assert!(is_paren_end(")5 ".as_bytes()));
 
-        assert!(!is_paren_end("5"));
-        assert!(!is_paren_end("5 + 5"));
-        assert!(!is_paren_end("5) + 5"));
-        assert!(!is_paren_end(" ) + 5"));
+        assert!(!is_paren_end("5".as_bytes()));
+        assert!(!is_paren_end("5 + 5".as_bytes()));
+        assert!(!is_paren_end("5) + 5".as_bytes()));
+        assert!(!is_paren_end(" ) + 5".as_bytes()));
     }
 
     #[test]
     fn is_comma_test() {
-        assert!(is_comma(","));
-        assert!(is_comma(", "));
-        assert!(is_comma(",5"));
-        assert!(is_comma(",5 "));
+        assert!(is_comma(",".as_bytes()));
+        assert!(is_comma(", ".as_bytes()));
+        assert!(is_comma(",5".as_bytes()));
+        assert!(is_comma(",5 ".as_bytes()));
 
-        assert!(!is_comma("5"));
-        assert!(!is_comma("5 + 5"));
-        assert!(!is_comma("5, + 5"));
-        assert!(!is_comma(" , + 5"));
+        assert!(!is_comma("5".as_bytes()));
+        assert!(!is_comma("5 + 5".as_bytes()));
+        assert!(!is_comma("5, + 5".as_bytes()));
+        assert!(!is_comma(" , + 5".as_bytes()));
     }
 
     #[test]
     fn is_line_comment_test() {
-        assert!(is_line_comment("//"));
-        assert!(is_line_comment("// "));
-        assert!(is_line_comment("//5"));
-        assert!(is_line_comment("//5 "));
+        assert!(is_line_comment("//".as_bytes()));
+        assert!(is_line_comment("// ".as_bytes()));
+        assert!(is_line_comment("//5".as_bytes()));
+        assert!(is_line_comment("//5 ".as_bytes()));
 
-        assert!(!is_line_comment("5"));
-        assert!(!is_line_comment("5 + 5"));
-        assert!(!is_line_comment("5// + 5"));
-        assert!(!is_line_comment(" // + 5"));
+        assert!(!is_line_comment("5".as_bytes()));
+        assert!(!is_line_comment("5 + 5".as_bytes()));
+        assert!(!is_line_comment("5// + 5".as_bytes()));
+        assert!(!is_line_comment(" // + 5".as_bytes()));
     }
 
     #[test]
     fn is_block_comment_test() {
-        assert!(is_block_comment("/*  */"));
-        assert!(is_block_comment("/***/"));
-        assert!(is_block_comment("/*5*/"));
-        assert!(is_block_comment("/*5 */"));
+        assert!(is_block_comment("/*  */".as_bytes()));
+        assert!(is_block_comment("/***/".as_bytes()));
+        assert!(is_block_comment("/*5*/".as_bytes()));
+        assert!(is_block_comment("/*5 */".as_bytes()));
 
-        assert!(!is_block_comment("/*"));
-        assert!(!is_block_comment("5"));
-        assert!(!is_block_comment("5 + 5"));
-        assert!(!is_block_comment("5/* + 5"));
-        assert!(!is_block_comment(" /* + 5"));
+        assert!(!is_block_comment("/*".as_bytes()));
+        assert!(!is_block_comment("5".as_bytes()));
+        assert!(!is_block_comment("5 + 5".as_bytes()));
+        assert!(!is_block_comment("5/* + 5".as_bytes()));
+        assert!(!is_block_comment(" /* + 5".as_bytes()));
         assert!(!is_block_comment(
             r#"  /* and
    here
    */
    "#
+            .as_bytes()
         ));
     }
 
@@ -600,7 +602,7 @@ mod tests {
     #[test]
     fn return_token_at_index_test() {
         assert_eq!(
-            return_token_at_index("const", 0),
+            return_token_at_index("const".as_bytes(), 0),
             Some(Token {
                 token_type: TokenType::Keyword,
                 value: "const".to_string(),
@@ -609,7 +611,7 @@ mod tests {
             })
         );
         assert_eq!(
-            return_token_at_index("  4554", 2),
+            return_token_at_index("4554".as_bytes(), 2),
             Some(Token {
                 token_type: TokenType::Number,
                 value: "4554".to_string(),
