@@ -136,7 +136,7 @@ console.log(
   '- ' +
     Array.from(
       document.querySelectorAll('[data-hovercard-type="pull_request"]')
-    ).map((a) => `(${a.innerText})[${a.href}]`).join(`
+    ).map((a) => `[${a.innerText}](${a.href})`).join(`
 - `)
 )
 ```
