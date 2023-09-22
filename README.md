@@ -123,13 +123,24 @@ Before you submit a contribution PR to this repo, please ensure that:
 
 ## Release a new version
 
-1. Bump the versions in the .json files by creating a `Bump to v{x}.{y}.{z}` PR, committing the changes from
+1. Bump the versions in the .json files by creating a `Cut release v{x}.{y}.{z}` PR, committing the changes from
 
 ```bash
 VERSION=x.y.z yarn run bump-jsons
 ```
 
-The PR may serve as a place to discuss the human-readable changelog and extra QA.
+The PR may serve as a place to discuss the human-readable changelog and extra QA. A quick way of getting PR's merged since the last bump is to [use this PR filter](https://github.com/KittyCAD/modeling-app/pulls?q=is%3Apr+sort%3Aupdated-desc+is%3Amerged+), open up the browser console and past in the following
+
+```typescript
+console.log(
+  '- ' +
+    Array.from(
+      document.querySelectorAll('[data-hovercard-type="pull_request"]')
+    ).map((a) => `[${a.innerText}](${a.href})`).join(`
+- `)
+)
+```
+grab the md list and delete any that are older than the last bump
 
 2. Merge the PR
 
