@@ -123,7 +123,7 @@ Before you submit a contribution PR to this repo, please ensure that:
 
 ## Release a new version
 
-1. Bump the versions in the .json files by creating a `Bump to v{x}.{y}.{z}` PR, committing the changes from
+1. Bump the versions in the .json files by creating a `Cut release v{x}.{y}.{z}` PR, committing the changes from
 
 ```bash
 VERSION=x.y.z yarn run bump-jsons
