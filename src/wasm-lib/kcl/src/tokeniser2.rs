@@ -3,7 +3,7 @@ use winnow::{
     combinator::{alt, opt, peek, preceded, repeat, terminated},
     error::{ContextError, ParseError},
     prelude::*,
-    token::{none_of, one_of, take_till1, take_until0},
+    token::{any, none_of, one_of, take_till1, take_until0},
     Located,
 };
 
@@ -14,22 +14,18 @@ pub fn lexer(i: &str) -> Result<Vec<Token>, ParseError<Located<&str>, ContextErr
 }
 
 pub fn token(i: &mut Located<&str>) -> PResult<Token> {
-    alt((
-        string,
-        line_comment,
-        block_comment,
-        brace_start,
-        brace_end,
-        comma,
-        operator,
-        number,
-        keyword,
-        word,
-        colon,
-        double_period,
-        period,
-        whitespace,
-    ))
+    winnow::combinator::dispatch! {peek(any);
+        '"' | '\'' => string,
+        '/' => alt((line_comment, block_comment, operator)),
+        '{' | '(' | '[' => brace_start,
+        '}' | ')' | ']' => brace_end,
+        ',' => comma,
+        '0'..='9' => number,
+        ':' => colon,
+        '.' => alt((number, double_period, period)),
+        ' ' | '\t' | '\n' => whitespace,
+        _ => alt((operator, keyword, word))
+    }
     .parse_next(i)
 }
 
