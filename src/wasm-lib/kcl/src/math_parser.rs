@@ -10,7 +10,7 @@ use crate::{
     },
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
-    parser::{is_not_code_token, Parser},
+    parser::Parser,
     tokeniser::{Token, TokenType},
 };
 
@@ -334,7 +334,7 @@ impl ReversePolishNotation {
             return rpn.parse();
         }
 
-        if is_not_code_token(current_token) {
+        if !current_token.is_code_token() {
             let rpn = ReversePolishNotation::new(&self.parser.tokens[1..], &self.previous_postfix, &self.operators);
             return rpn.parse();
         }

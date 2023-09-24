@@ -249,7 +249,7 @@ impl Parser {
         }
 
         let current_token = self.get_token(index)?;
-        if is_not_code_token(current_token) {
+        if !current_token.is_code_token() {
             return self.find_end_of_non_code_node(index + 1);
         }
 
@@ -262,7 +262,7 @@ impl Parser {
         }
 
         let current_token = self.get_token(index)?;
-        if is_not_code_token(current_token) {
+        if !current_token.is_code_token() {
             return self.find_start_of_non_code_node(index - 1);
         }
 
@@ -365,7 +365,7 @@ impl Parser {
             });
         };
 
-        if is_not_code_token(token) {
+        if !token.is_code_token() {
             let non_code_node = self.make_non_code_node(new_index)?;
             let new_new_index = non_code_node.1 + 1;
             let bonus_non_code_node = non_code_node.0;
@@ -1623,7 +1623,7 @@ impl Parser {
             });
         }
 
-        if is_not_code_token(token) {
+        if !token.is_code_token() {
             let next_token = self.next_meaningful_token(token_index, Some(0))?;
             if let Some(node) = &next_token.non_code_node {
                 if previous_body.is_empty() {
@@ -1786,12 +1786,6 @@ impl Parser {
             last_index: block.last_index,
         })
     }
-}
-
-pub fn is_not_code_token(token: &Token) -> bool {
-    token.token_type == TokenType::Whitespace
-        || token.token_type == TokenType::LineComment
-        || token.token_type == TokenType::BlockComment
 }
 
 #[cfg(test)]
@@ -1991,67 +1985,81 @@ const key = 'c'"#,
     }
 
     #[test]
+    fn test_is_code_token() {
+        let tokens = [
+            Token {
+                token_type: TokenType::Word,
+                start: 0,
+                end: 3,
+                value: "log".to_string(),
+            },
+            Token {
+                token_type: TokenType::Brace,
+                start: 3,
+                end: 4,
+                value: "(".to_string(),
+            },
+            Token {
+                token_type: TokenType::Number,
+                start: 4,
+                end: 5,
+                value: "5".to_string(),
+            },
+            Token {
+                token_type: TokenType::Comma,
+                start: 5,
+                end: 6,
+                value: ",".to_string(),
+            },
+            Token {
+                token_type: TokenType::String,
+                start: 7,
+                end: 14,
+                value: "\"hello\"".to_string(),
+            },
+            Token {
+                token_type: TokenType::Word,
+                start: 16,
+                end: 27,
+                value: "aIdentifier".to_string(),
+            },
+            Token {
+                token_type: TokenType::Brace,
+                start: 27,
+                end: 28,
+                value: ")".to_string(),
+            },
+        ];
+        for (i, token) in tokens.iter().enumerate() {
+            assert!(token.is_code_token(), "failed test {i}: {token:?}")
+        }
+    }
+
+    #[test]
     fn test_is_not_code_token() {
-        assert!(!is_not_code_token(&Token {
-            token_type: TokenType::Word,
-            start: 0,
-            end: 3,
-            value: "log".to_string(),
-        }));
-        assert!(!is_not_code_token(&Token {
-            token_type: TokenType::Brace,
-            start: 3,
-            end: 4,
-            value: "(".to_string(),
-        }));
-        assert!(!is_not_code_token(&Token {
-            token_type: TokenType::Number,
-            start: 4,
-            end: 5,
-            value: "5".to_string(),
-        }));
-        assert!(!is_not_code_token(&Token {
-            token_type: TokenType::Comma,
-            start: 5,
-            end: 6,
-            value: ",".to_string(),
-        }));
-        assert!(is_not_code_token(&Token {
-            token_type: TokenType::Whitespace,
-            start: 6,
-            end: 7,
-            value: " ".to_string(),
-        }));
-        assert!(!is_not_code_token(&Token {
-            token_type: TokenType::String,
-            start: 7,
-            end: 14,
-            value: "\"hello\"".to_string(),
-        }));
-        assert!(!is_not_code_token(&Token {
-            token_type: TokenType::Word,
-            start: 16,
-            end: 27,
-            value: "aIdentifier".to_string(),
-        }));
-        assert!(!is_not_code_token(&Token {
-            token_type: TokenType::Brace,
-            start: 27,
-            end: 28,
-            value: ")".to_string(),
-        }));
-        assert!(is_not_code_token(&Token {
-            token_type: TokenType::BlockComment,
-            start: 28,
-            end: 30,
-            value: "/* abte */".to_string(),
-        }));
-        assert!(is_not_code_token(&Token {
-            token_type: TokenType::LineComment,
-            start: 30,
-            end: 33,
-            value: "// yoyo a line".to_string(),
-        }));
+        let tokens = [
+            Token {
+                token_type: TokenType::Whitespace,
+                start: 6,
+                end: 7,
+                value: " ".to_string(),
+            },
+            Token {
+                token_type: TokenType::BlockComment,
+                start: 28,
+                end: 30,
+                value: "/* abte */".to_string(),
+            },
+            Token {
+                token_type: TokenType::LineComment,
+                start: 30,
+                end: 33,
+                value: "// yoyo a line".to_string(),
+            },
+        ];
+        for (i, token) in tokens.iter().enumerate() {
+            assert!(!token.is_code_token(), "failed test {i}: {token:?}")
+        }
     }
 
     #[test]
