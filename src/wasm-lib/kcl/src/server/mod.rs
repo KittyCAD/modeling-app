@@ -34,7 +34,7 @@ pub struct Backend {
     /// The types of tokens the server supports.
     pub token_types: Vec<SemanticTokenType>,
     /// Token maps.
-    pub token_map: DashMap<String, Vec<crate::tokeniser::Token>>,
+    pub token_map: DashMap<String, Vec<crate::token::Token>>,
     /// AST maps.
     pub ast_map: DashMap<String, crate::ast::types::Program>,
     /// Current code.
@@ -56,7 +56,7 @@ impl Backend {
         // Lets update the tokens.
         self.current_code_map
             .insert(params.uri.to_string(), params.text.clone());
-        let tokens = crate::tokeniser::lexer(&params.text);
+        let tokens = crate::token::lexer(&params.text);
         self.token_map.insert(params.uri.to_string(), tokens.clone());
 
         // Update the semantic tokens map.
@@ -69,9 +69,7 @@ impl Backend {
                 continue;
             };
 
-            if token.token_type == crate::tokeniser::TokenType::Word
-                && self.stdlib_completions.contains_key(&token.value)
-            {
+            if token.token_type == crate::token::TokenType::Word && self.stdlib_completions.contains_key(&token.value) {
                 // This is a stdlib function.
                 token_type = SemanticTokenType::FUNCTION;
             }
@@ -549,7 +547,7 @@ impl LanguageServer for Backend {
         // Parse the ast.
         // I don't know if we need to do this again since it should be updated in the context.
         // But I figure better safe than sorry since this will write back out to the file.
-        let tokens = crate::tokeniser::lexer(&current_code);
+        let tokens = crate::token::lexer(&current_code);
         let parser = crate::parser::Parser::new(tokens);
         let Ok(ast) = parser.ast() else {
             return Ok(None);
@@ -581,7 +579,7 @@ impl LanguageServer for Backend {
         // Parse the ast.
         // I don't know if we need to do this again since it should be updated in the context.
         // But I figure better safe than sorry since this will write back out to the file.
-        let tokens = crate::tokeniser::lexer(&current_code);
+        let tokens = crate::token::lexer(&current_code);
         let parser = crate::parser::Parser::new(tokens);
         let Ok(mut ast) = parser.ast() else {
             return Ok(None);

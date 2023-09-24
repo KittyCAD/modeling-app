@@ -10,7 +10,7 @@ use crate::{
     },
     errors::{KclError, KclErrorDetails},
     math_parser::MathParser,
-    tokeniser::{Token, TokenType},
+    token::{Token, TokenType},
 };
 
 pub const PIPE_SUBSTITUTION_OPERATOR: &str = "%";
@@ -1797,7 +1797,7 @@ mod tests {
 
     #[test]
     fn test_make_identifier() {
-        let tokens = crate::tokeniser::lexer("a");
+        let tokens = crate::token::lexer("a");
         let parser = Parser::new(tokens);
         let identifier = parser.make_identifier(0).unwrap();
         assert_eq!(
@@ -1812,7 +1812,7 @@ mod tests {
 
     #[test]
     fn test_make_identifier_with_const_myvar_equals_5_and_index_2() {
-        let tokens = crate::tokeniser::lexer("const myVar = 5");
+        let tokens = crate::token::lexer("const myVar = 5");
         let parser = Parser::new(tokens);
         let identifier = parser.make_identifier(2).unwrap();
         assert_eq!(
@@ -1827,7 +1827,7 @@ mod tests {
 
     #[test]
     fn test_make_identifier_multiline() {
-        let tokens = crate::tokeniser::lexer("const myVar = 5\nconst newVar = myVar + 1");
+        let tokens = crate::token::lexer("const myVar = 5\nconst newVar = myVar + 1");
         let parser = Parser::new(tokens);
         let identifier = parser.make_identifier(2).unwrap();
         assert_eq!(
@@ -1851,7 +1851,7 @@ mod tests {
 
     #[test]
     fn test_make_identifier_call_expression() {
-        let tokens = crate::tokeniser::lexer("log(5, \"hello\", aIdentifier)");
+        let tokens = crate::token::lexer("log(5, \"hello\", aIdentifier)");
         let parser = Parser::new(tokens);
         let identifier = parser.make_identifier(0).unwrap();
         assert_eq!(
@@ -1874,7 +1874,7 @@ mod tests {
     }
     #[test]
     fn test_make_non_code_node() {
-        let tokens = crate::tokeniser::lexer("log(5, \"hello\", aIdentifier)");
+        let tokens = crate::token::lexer("log(5, \"hello\", aIdentifier)");
         let parser = Parser::new(tokens);
         let index = 4;
         let expected_output = (None, 4);
@@ -1883,7 +1883,7 @@ mod tests {
         let index = 7;
         let expected_output = (None, 7);
         assert_eq!(parser.make_non_code_node(index).unwrap(), expected_output);
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"
 const yo = { a: { b: { c: '123' } } }
 // this is a comment
@@ -1914,7 +1914,7 @@ const key = 'c'"#,
             31,
         );
         assert_eq!(parser.make_non_code_node(index).unwrap(), expected_output);
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"const mySketch = startSketchAt([0,0])
   |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
   |> lineTo([1, 1], %) /* this is
@@ -1940,7 +1940,7 @@ const key = 'c'"#,
 
     #[test]
     fn test_collect_object_keys() {
-        let tokens = crate::tokeniser::lexer("const prop = yo.one[\"two\"]");
+        let tokens = crate::token::lexer("const prop = yo.one[\"two\"]");
         let parser = Parser::new(tokens);
         let keys_info = parser.collect_object_keys(6, None, false).unwrap();
         assert_eq!(keys_info.len(), 2);
@@ -1960,7 +1960,7 @@ const key = 'c'"#,
 
     #[test]
     fn test_make_literal_call_expression() {
-        let tokens = crate::tokeniser::lexer("log(5, \"hello\", aIdentifier)");
+        let tokens = crate::token::lexer("log(5, \"hello\", aIdentifier)");
         let parser = Parser::new(tokens);
         let literal = parser.make_literal(2).unwrap();
         assert_eq!(
@@ -2065,7 +2065,7 @@ const key = 'c'"#,
     #[test]
     fn test_next_meaningful_token() {
         let _offset = 1;
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"const mySketch = startSketchAt([0,0])
   |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
   |> lineTo([1, 1], %) /* this is
@@ -2451,7 +2451,7 @@ const key = 'c'"#,
 
     #[test]
     fn test_find_closing_brace() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"const mySketch = startSketchAt([0,0])
 |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
 |> lineTo([1, 1], %) /* this is
@@ -2468,16 +2468,16 @@ const key = 'c'"#,
         assert_eq!(parser.find_closing_brace(90, 0, "").unwrap(), 92);
 
         let basic = "( hey )";
-        let parser = Parser::new(crate::tokeniser::lexer(basic));
+        let parser = Parser::new(crate::token::lexer(basic));
         assert_eq!(parser.find_closing_brace(0, 0, "").unwrap(), 4);
 
         let handles_non_zero_index = "(indexForBracketToRightOfThisIsTwo(shouldBeFour)AndNotThisSix)";
-        let parser = Parser::new(crate::tokeniser::lexer(handles_non_zero_index));
+        let parser = Parser::new(crate::token::lexer(handles_non_zero_index));
         assert_eq!(parser.find_closing_brace(2, 0, "").unwrap(), 4);
         assert_eq!(parser.find_closing_brace(0, 0, "").unwrap(), 6);
 
         let handles_nested = "{a{b{c(}d]}eathou athoeu tah u} thatOneToTheLeftIsLast }";
-        let parser = Parser::new(crate::tokeniser::lexer(handles_nested));
+        let parser = Parser::new(crate::token::lexer(handles_nested));
         assert_eq!(parser.find_closing_brace(0, 0, "").unwrap(), 18);
 
         // TODO expect error when not started on a brace
@@ -2485,7 +2485,7 @@ const key = 'c'"#,
 
     #[test]
     fn test_is_call_expression() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"const mySketch = startSketchAt([0,0])
 |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
 |> lineTo([1, 1], %) /* this is
@@ -2506,7 +2506,7 @@ const key = 'c'"#,
 
     #[test]
     fn test_find_next_declaration_keyword() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"const mySketch = startSketchAt([0,0])
 |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
 |> lineTo([1, 1], %) /* this is
@@ -2521,7 +2521,7 @@ const key = 'c'"#,
             TokenReturn { token: None, index: 92 }
         );
 
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"const myVar = 5
 const newVar = myVar + 1
 "#,
@@ -2551,7 +2551,7 @@ const newVar = myVar + 1
   lineTo(2, 3)
 } |> rx(45, %)
 "#;
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens);
         assert_eq!(
             parser.has_pipe_operator(0, None).unwrap(),
@@ -2570,7 +2570,7 @@ const newVar = myVar + 1
   lineTo(2, 3)
 } |> rx(45, %) |> rx(45, %)
 "#;
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens);
         assert_eq!(
             parser.has_pipe_operator(0, None).unwrap(),
@@ -2592,7 +2592,7 @@ const newVar = myVar + 1
 const yo = myFunc(9()
   |> rx(45, %)
 "#;
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens);
         assert_eq!(
             parser.has_pipe_operator(0, None).unwrap(),
@@ -2604,7 +2604,7 @@ const yo = myFunc(9()
         );
 
         let code = "const myVar2 = 5 + 1 |> myFn(%)";
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens);
         assert_eq!(
             parser.has_pipe_operator(1, None).unwrap(),
@@ -2626,7 +2626,7 @@ const yo = myFunc(9()
   lineTo(1,1)
 } |> rx(90, %)
 show(mySk1)"#;
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens.clone());
         let token_with_my_path_index = tokens.iter().position(|token| token.value == "myPath").unwrap();
         // loop through getting the token and it's index
@@ -2666,7 +2666,7 @@ show(mySk1)"#;
 
     #[test]
     fn test_make_member_expression() {
-        let tokens = crate::tokeniser::lexer("const prop = yo.one[\"two\"]");
+        let tokens = crate::token::lexer("const prop = yo.one[\"two\"]");
         let parser = Parser::new(tokens);
         let member_expression_return = parser.make_member_expression(6).unwrap();
         let member_expression = member_expression_return.expression;
@@ -2708,13 +2708,13 @@ show(mySk1)"#;
     #[test]
     fn test_find_end_of_binary_expression() {
         let code = "1 + 2 * 3\nconst yo = 5";
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens.clone());
         let end = parser.find_end_of_binary_expression(0).unwrap();
         assert_eq!(tokens[end].value, "3");
 
         let code = "(1 + 25) / 5 - 3\nconst yo = 5";
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens.clone());
         let end = parser.find_end_of_binary_expression(0).unwrap();
         assert_eq!(tokens[end].value, "3");
@@ -2723,48 +2723,48 @@ show(mySk1)"#;
         assert_eq!(end_starting_at_the_5, end);
         // whole thing wrapped
         let code = "((1 + 2) / 5 - 3)\nconst yo = 5";
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens.clone());
         let end = parser.find_end_of_binary_expression(0).unwrap();
         assert_eq!(tokens[end].end, code.find("3)").unwrap() + 2);
         // whole thing wrapped but given index after the first brace
         let code = "((1 + 2) / 5 - 3)\nconst yo = 5";
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens.clone());
         let end = parser.find_end_of_binary_expression(1).unwrap();
         assert_eq!(tokens[end].value, "3");
         // given the index of a small wrapped section i.e. `1 + 2` in ((1 + 2) / 5 - 3)'
         let code = "((1 + 2) / 5 - 3)\nconst yo = 5";
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens.clone());
         let end = parser.find_end_of_binary_expression(2).unwrap();
         assert_eq!(tokens[end].value, "2");
         // lots of silly nesting
         let code = "(1 + 2) / (5 - (3))\nconst yo = 5";
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens.clone());
         let end = parser.find_end_of_binary_expression(0).unwrap();
         assert_eq!(tokens[end].end, code.find("))").unwrap() + 2);
         // with pipe operator at the end
         let code = "(1 + 2) / (5 - (3))\n  |> fn(%)";
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens.clone());
         let end = parser.find_end_of_binary_expression(0).unwrap();
         assert_eq!(tokens[end].end, code.find("))").unwrap() + 2);
         // with call expression at the start of binary expression
         let code = "yo(2) + 3\n  |> fn(%)";
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens.clone());
         let end = parser.find_end_of_binary_expression(0).unwrap();
         assert_eq!(tokens[end].value, "3");
         // with call expression at the end of binary expression
         let code = "3 + yo(2)\n  |> fn(%)";
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens);
         let _end = parser.find_end_of_binary_expression(0).unwrap();
         // with call expression at the end of binary expression
         let code = "-legX + 2, ";
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens.clone());
         let end = parser.find_end_of_binary_expression(0).unwrap();
         assert_eq!(tokens[end].value, "2");
@@ -2773,7 +2773,7 @@ show(mySk1)"#;
     #[test]
     fn test_make_array_expression() {
         // input_index: 6, output_index: 14, output: {"type":"ArrayExpression","start":11,"end":26,"elements":[{"type":"Literal","start":12,"end":15,"value":"1","raw":"\"1\""},{"type":"Literal","start":17,"end":18,"value":2,"raw":"2"},{"type":"Identifier","start":20,"end":25,"name":"three"}]}
-        let tokens = crate::tokeniser::lexer("const yo = [\"1\", 2, three]");
+        let tokens = crate::token::lexer("const yo = [\"1\", 2, three]");
         let parser = Parser::new(tokens);
         let array_expression = parser.make_array_expression(6).unwrap();
         let expression = array_expression.expression;
@@ -2812,7 +2812,7 @@ show(mySk1)"#;
 
     #[test]
     fn test_make_call_expression() {
-        let tokens = crate::tokeniser::lexer("foo(\"a\", a, 3)");
+        let tokens = crate::token::lexer("foo(\"a\", a, 3)");
         let parser = Parser::new(tokens);
         let result = parser.make_call_expression(0).unwrap();
         assert_eq!(result.last_index, 9);
@@ -2846,7 +2846,7 @@ show(mySk1)"#;
 
     #[test]
     fn test_make_variable_declaration() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"const yo = startSketch([0, 0])
   |> lineTo([1, myVar], %)
   |> foo(myVar2, %)
@@ -2916,7 +2916,7 @@ show(mySk1)"#;
 
     #[test]
     fn test_make_body() {
-        let tokens = crate::tokeniser::lexer("const myVar = 5");
+        let tokens = crate::token::lexer("const myVar = 5");
         let parser = Parser::new(tokens);
         let body = parser
             .make_body(
@@ -2934,7 +2934,7 @@ show(mySk1)"#;
     #[test]
     fn test_abstract_syntax_tree() {
         let code = "5 +6";
-        let parser = Parser::new(crate::tokeniser::lexer(code));
+        let parser = Parser::new(crate::token::lexer(code));
         let result = parser.ast().unwrap();
         let expected_result = Program {
             start: 0,
@@ -2972,7 +2972,7 @@ show(mySk1)"#;
     #[test]
     fn test_empty_file() {
         let some_program_string = r#""#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string);
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
@@ -2981,7 +2981,7 @@ show(mySk1)"#;
 
     #[test]
     fn test_parse_half_pipe_small() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             "const secondExtrude = startSketchAt([0,0])
   |",
         );
@@ -2993,14 +2993,14 @@ show(mySk1)"#;
 
     #[test]
     fn test_parse_member_expression_double_nested_braces() {
-        let tokens = crate::tokeniser::lexer(r#"const prop = yo["one"][two]"#);
+        let tokens = crate::token::lexer(r#"const prop = yo["one"][two]"#);
         let parser = Parser::new(tokens);
         parser.ast().unwrap();
     }
 
     #[test]
     fn test_parse_member_expression_binary_expression_period_number_first() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"const obj = { a: 1, b: 2 }
 const height = 1 - obj.a"#,
         );
@@ -3010,7 +3010,7 @@ const height = 1 - obj.a"#,
 
     #[test]
     fn test_parse_member_expression_binary_expression_brace_number_first() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"const obj = { a: 1, b: 2 }
 const height = 1 - obj["a"]"#,
         );
@@ -3020,7 +3020,7 @@ const height = 1 - obj["a"]"#,
 
     #[test]
     fn test_parse_member_expression_binary_expression_brace_number_second() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"const obj = { a: 1, b: 2 }
 const height = obj["a"] - 1"#,
         );
@@ -3030,7 +3030,7 @@ const height = obj["a"] - 1"#,
 
     #[test]
     fn test_parse_member_expression_binary_expression_in_array_number_first() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"const obj = { a: 1, b: 2 }
 const height = [1 - obj["a"], 0]"#,
         );
@@ -3040,7 +3040,7 @@ const height = [1 - obj["a"], 0]"#,
 
     #[test]
     fn test_parse_member_expression_binary_expression_in_array_number_second() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"const obj = { a: 1, b: 2 }
 const height = [obj["a"] - 1, 0]"#,
         );
@@ -3050,7 +3050,7 @@ const height = [obj["a"] - 1, 0]"#,
 
     #[test]
     fn test_parse_member_expression_binary_expression_in_array_number_second_missing_space() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"const obj = { a: 1, b: 2 }
 const height = [obj["a"] -1, 0]"#,
         );
@@ -3060,7 +3060,7 @@ const height = [obj["a"] -1, 0]"#,
 
     #[test]
     fn test_parse_half_pipe() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             "const height = 10
 
 const firstExtrude = startSketchAt([0,0])
@@ -3083,7 +3083,7 @@ const secondExtrude = startSketchAt([0,0])
 
     #[test]
     fn test_parse_greater_bang() {
-        let tokens = crate::tokeniser::lexer(">!");
+        let tokens = crate::token::lexer(">!");
         let parser = Parser::new(tokens);
         let err = parser.ast().unwrap_err();
         // TODO: Better errors when program cannot tokenize.
@@ -3093,7 +3093,7 @@ const secondExtrude = startSketchAt([0,0])
 
     #[test]
     fn test_parse_z_percent_parens() {
-        let tokens = crate::tokeniser::lexer("z%)");
+        let tokens = crate::token::lexer("z%)");
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
@@ -3102,7 +3102,7 @@ const secondExtrude = startSketchAt([0,0])
 
     #[test]
     fn test_parse_parens_unicode() {
-        let tokens = crate::tokeniser::lexer("(ޜ");
+        let tokens = crate::token::lexer("(ޜ");
         let parser = Parser::new(tokens);
         let result = parser.ast();
         // TODO: Better errors when program cannot tokenize.
@@ -3112,7 +3112,7 @@ const secondExtrude = startSketchAt([0,0])
 
     #[test]
     fn test_parse_negative_in_array_binary_expression() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"const leg1 = 5
 const thickness = 0.56
 
@@ -3126,7 +3126,7 @@ const bracket = [-leg2 + thickness, 0]
 
     #[test]
     fn test_parse_nested_open_brackets() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"
 z(-[["#,
         );
@@ -3141,7 +3141,7 @@ z(-[["#,
 
     #[test]
     fn test_parse_weird_new_line_function() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"z
  (--#"#,
         );
@@ -3158,7 +3158,7 @@ z(-[["#,
 
     #[test]
     fn test_parse_weird_lots_of_fancy_brackets() {
-        let tokens = crate::tokeniser::lexer(r#"zz({{{{{{{{)iegAng{{{{{{{##"#);
+        let tokens = crate::token::lexer(r#"zz({{{{{{{{)iegAng{{{{{{{##"#);
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
@@ -3172,7 +3172,7 @@ z(-[["#,
 
     #[test]
     fn test_parse_weird_close_before_open() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"fn)n
 e
 ["#,
@@ -3189,7 +3189,7 @@ e
 
     #[test]
     fn test_parse_weird_close_before_nada() {
-        let tokens = crate::tokeniser::lexer(r#"fn)n-"#);
+        let tokens = crate::token::lexer(r#"fn)n-"#);
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
@@ -3198,7 +3198,7 @@ e
 
     #[test]
     fn test_parse_weird_lots_of_slashes() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"J///////////o//+///////////P++++*++++++P///////˟
 ++4"#,
         );
@@ -3215,7 +3215,7 @@ e
     #[test]
     fn test_parse_expand_array() {
         let code = "const myArray = [0..10]";
-        let parser = Parser::new(crate::tokeniser::lexer(code));
+        let parser = Parser::new(crate::token::lexer(code));
         let result = parser.ast().unwrap();
         let expected_result = Program {
             start: 0,
@@ -3318,7 +3318,7 @@ e
     #[test]
     fn test_error_keyword_in_variable() {
         let some_program_string = r#"const let = "thing""#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string);
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
@@ -3331,7 +3331,7 @@ e
     #[test]
     fn test_error_keyword_in_fn_name() {
         let some_program_string = r#"fn let = () {}"#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string);
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
@@ -3344,7 +3344,7 @@ e
     #[test]
     fn test_error_stdlib_in_fn_name() {
         let some_program_string = r#"fn cos = () {}"#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string);
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
@@ -3359,7 +3359,7 @@ e
         let some_program_string = r#"fn thing = (let) => {
     return 1
 }"#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string);
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
@@ -3374,7 +3374,7 @@ e
         let some_program_string = r#"fn thing = (cos) => {
     return 1
 }"#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string);
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
@@ -3392,7 +3392,7 @@ e
         }
         firstPrimeNumber()
         "#;
-        let tokens = crate::tokeniser::lexer(program);
+        let tokens = crate::token::lexer(program);
         let parser = Parser::new(tokens);
         let _ast = parser.ast().unwrap();
     }
@@ -3405,7 +3405,7 @@ e
 
 thing(false)
 "#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string);
         let parser = Parser::new(tokens);
         parser.ast().unwrap();
     }
@@ -3422,7 +3422,7 @@ thing(false)
 "#,
                 name
             );
-            let tokens = crate::tokeniser::lexer(&some_program_string);
+            let tokens = crate::token::lexer(&some_program_string);
             let parser = Parser::new(tokens);
             let result = parser.ast();
             assert!(result.is_err());
@@ -3440,7 +3440,7 @@ thing(false)
     #[test]
     fn test_error_define_var_as_function() {
         let some_program_string = r#"fn thing = "thing""#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string);
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
@@ -3469,7 +3469,7 @@ const pt2 = b2[0]
 
 show(b1)
 show(b2)"#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string);
         let parser = Parser::new(tokens);
         parser.ast().unwrap();
     }
@@ -3478,7 +3478,7 @@ show(b2)"#;
     fn test_math_with_stdlib() {
         let some_program_string = r#"const d2r = pi() / 2
 let other_thing = 2 * cos(3)"#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string);
         let parser = Parser::new(tokens);
         parser.ast().unwrap();
     }
@@ -3488,7 +3488,7 @@ let other_thing = 2 * cos(3)"#;
     fn test_parse_pipes_on_pipes() {
         let code = include_str!("../../tests/executor/inputs/pipes_on_pipes.kcl");
 
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens);
         parser.ast().unwrap();
     }

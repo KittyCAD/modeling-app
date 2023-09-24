@@ -11,7 +11,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
     parser::Parser,
-    tokeniser::{Token, TokenType},
+    token::{Token, TokenType},
 };
 
 #[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Clone, ts_rs::TS)]
@@ -704,7 +704,7 @@ mod test {
 
     #[test]
     fn test_parse_expression() {
-        let tokens = crate::tokeniser::lexer("1 + 2");
+        let tokens = crate::token::lexer("1 + 2");
         let mut parser = MathParser::new(&tokens);
         let result = parser.parse().unwrap();
         assert_eq!(
@@ -731,7 +731,7 @@ mod test {
 
     #[test]
     fn test_parse_expression_add_no_spaces() {
-        let tokens = crate::tokeniser::lexer("1+2");
+        let tokens = crate::token::lexer("1+2");
         let mut parser = MathParser::new(&tokens);
         let result = parser.parse().unwrap();
         assert_eq!(
@@ -758,7 +758,7 @@ mod test {
 
     #[test]
     fn test_parse_expression_sub_no_spaces() {
-        let tokens = crate::tokeniser::lexer("1 -2");
+        let tokens = crate::token::lexer("1 -2");
         let mut parser = MathParser::new(&tokens);
         let result = parser.parse().unwrap();
         assert_eq!(
@@ -785,7 +785,7 @@ mod test {
 
     #[test]
     fn test_parse_expression_plus_followed_by_star() {
-        let tokens = crate::tokeniser::lexer("1 + 2 * 3");
+        let tokens = crate::token::lexer("1 + 2 * 3");
         let mut parser = MathParser::new(&tokens);
         let result = parser.parse().unwrap();
         assert_eq!(
@@ -823,7 +823,7 @@ mod test {
 
     #[test]
     fn test_parse_expression_with_parentheses() {
-        let tokens = crate::tokeniser::lexer("1 * ( 2 + 3 )");
+        let tokens = crate::token::lexer("1 * ( 2 + 3 )");
         let mut parser = MathParser::new(&tokens);
         let result = parser.parse().unwrap();
         assert_eq!(
@@ -861,7 +861,7 @@ mod test {
 
     #[test]
     fn test_parse_expression_parens_in_middle() {
-        let tokens = crate::tokeniser::lexer("1 * ( 2 + 3 ) / 4");
+        let tokens = crate::token::lexer("1 * ( 2 + 3 ) / 4");
         let mut parser = MathParser::new(&tokens);
         let result = parser.parse().unwrap();
         assert_eq!(
@@ -910,7 +910,7 @@ mod test {
 
     #[test]
     fn test_parse_expression_parans_and_predence() {
-        let tokens = crate::tokeniser::lexer("1 + ( 2 + 3 ) / 4");
+        let tokens = crate::token::lexer("1 + ( 2 + 3 ) / 4");
         let mut parser = MathParser::new(&tokens);
         let result = parser.parse().unwrap();
         assert_eq!(
@@ -958,7 +958,7 @@ mod test {
     }
     #[test]
     fn test_parse_expression_nested() {
-        let tokens = crate::tokeniser::lexer("1 * (( 2 + 3 ) / 4 + 5 )");
+        let tokens = crate::token::lexer("1 * (( 2 + 3 ) / 4 + 5 )");
         let mut parser = MathParser::new(&tokens);
         let result = parser.parse().unwrap();
         assert_eq!(
@@ -1017,7 +1017,7 @@ mod test {
     }
     #[test]
     fn test_parse_expression_redundant_braces() {
-        let tokens = crate::tokeniser::lexer("1 * ((( 2 + 3 )))");
+        let tokens = crate::token::lexer("1 * ((( 2 + 3 )))");
         let mut parser = MathParser::new(&tokens);
         let result = parser.parse().unwrap();
         assert_eq!(
@@ -1055,7 +1055,7 @@ mod test {
 
     #[test]
     fn test_reverse_polish_notation_simple() {
-        let parser = ReversePolishNotation::new(&crate::tokeniser::lexer("1 + 2"), &[], &[]);
+        let parser = ReversePolishNotation::new(&crate::token::lexer("1 + 2"), &[], &[]);
         let result = parser.parse().unwrap();
         assert_eq!(
             result,
@@ -1084,7 +1084,7 @@ mod test {
 
     #[test]
     fn test_reverse_polish_notation_complex() {
-        let parser = ReversePolishNotation::new(&crate::tokeniser::lexer("1 + 2 * 3"), &[], &[]);
+        let parser = ReversePolishNotation::new(&crate::token::lexer("1 + 2 * 3"), &[], &[]);
         let result = parser.parse().unwrap();
         assert_eq!(
             result,
@@ -1125,7 +1125,7 @@ mod test {
 
     #[test]
     fn test_reverse_polish_notation_complex_with_parentheses() {
-        let parser = ReversePolishNotation::new(&crate::tokeniser::lexer("1 * ( 2 + 3 )"), &[], &[]);
+        let parser = ReversePolishNotation::new(&crate::token::lexer("1 * ( 2 + 3 )"), &[], &[]);
         let result = parser.parse().unwrap();
         assert_eq!(
             result,
@@ -1179,7 +1179,7 @@ mod test {
     #[test]
     fn test_parse_expression_redundant_braces_around_literal() {
         let code = "2 + (((3)))";
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let mut parser = MathParser::new(&tokens);
         let result = parser.parse().unwrap();
         assert_eq!(
@@ -1274,7 +1274,7 @@ mod test {
     #[test]
     fn test_parse_expression_braces_around_lots_of_math() {
         let code = "(distance * p * FOS * 6 / (sigmaAllow * width))";
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let mut parser = MathParser::new(&tokens);
         let result = parser.parse();
         assert!(result.is_ok());
@@ -1283,7 +1283,7 @@ mod test {
     #[test]
     fn test_parse_expression_braces_around_internals_lots_of_math() {
         let code = "distance * p * FOS * 6 / (sigmaAllow * width)";
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let mut parser = MathParser::new(&tokens);
         let result = parser.parse();
         assert!(result.is_ok());

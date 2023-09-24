@@ -33,7 +33,7 @@ async fn setup(code: &str, name: &str) -> Result<(EngineConnection, Program, uui
         .commands_ws(None, None, None, None, Some(false))
         .await?;
 
-    let tokens = kcl_lib::tokeniser::lexer(code);
+    let tokens = kcl_lib::token::lexer(code);
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
     let mut mem: kcl_lib::executor::ProgramMemory = Default::default();

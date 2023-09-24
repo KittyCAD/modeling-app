@@ -6,6 +6,8 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::SemanticTokenType;
 
+mod tokeniser;
+
 /// The types of tokens.
 #[derive(Debug, PartialEq, Eq, Copy, Clone, Deserialize, Serialize, ts_rs::TS, JsonSchema, FromStr, Display)]
 #[ts(export)]
@@ -155,42 +157,17 @@ impl From<&Token> for crate::executor::SourceRange {
 }
 
 pub fn lexer(s: &str) -> Vec<Token> {
-    super::tokeniser2::lexer(s).unwrap_or_default()
+    tokeniser::lexer(s).unwrap_or_default()
 }
 
 #[cfg(test)]
 mod tests {
-    use pretty_assertions::assert_eq;
-
     use super::*;
-
-    #[test]
 
     // We have this as a test so we can ensure it never panics with an unwrap in the server.
     #[test]
     fn test_token_type_to_semantic_token_type() {
         let semantic_types = TokenType::all_semantic_token_types().unwrap();
         assert!(!semantic_types.is_empty());
-    }
-
-    #[test]
-    fn test_lexer_negative_word() {
-        assert_eq!(
-            lexer("-legX"),
-            vec![
-                Token {
-                    token_type: TokenType::Operator,
-                    value: "-".to_string(),
-                    start: 0,
-                    end: 1,
-                },
-                Token {
-                    token_type: TokenType::Word,
-                    value: "legX".to_string(),
-                    start: 1,
-                    end: 5,
-                },
-            ]
-        );
     }
 }

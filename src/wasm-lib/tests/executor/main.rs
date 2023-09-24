@@ -32,7 +32,7 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
     // Create a temporary file to write the output to.
     let output_file = std::env::temp_dir().join(format!("kcl_output_{}.png", uuid::Uuid::new_v4()));
 
-    let tokens = kcl_lib::tokeniser::lexer(code);
+    let tokens = kcl_lib::token::lexer(code);
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast()?;
     let mut mem: kcl_lib::executor::ProgramMemory = Default::default();
