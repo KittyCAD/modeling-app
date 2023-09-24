@@ -134,6 +134,12 @@ impl Token {
             token_type,
         }
     }
+    pub fn is_code_token(&self) -> bool {
+        !matches!(
+            self.token_type,
+            TokenType::Whitespace | TokenType::LineComment | TokenType::BlockComment
+        )
+    }
 }
 
 impl From<Token> for crate::executor::SourceRange {

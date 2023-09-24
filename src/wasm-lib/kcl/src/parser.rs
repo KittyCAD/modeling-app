@@ -249,7 +249,7 @@ impl Parser {
         }
 
         let current_token = self.get_token(index)?;
-        if is_not_code_token(current_token) {
+        if !current_token.is_code_token() {
             return self.find_end_of_non_code_node(index + 1);
         }
 
@@ -262,7 +262,7 @@ impl Parser {
         }
 
         let current_token = self.get_token(index)?;
-        if is_not_code_token(current_token) {
+        if !current_token.is_code_token() {
             return self.find_start_of_non_code_node(index - 1);
         }
 
@@ -365,7 +365,7 @@ impl Parser {
             });
         };
 
-        if is_not_code_token(token) {
+        if !token.is_code_token() {
             let non_code_node = self.make_non_code_node(new_index)?;
             let new_new_index = non_code_node.1 + 1;
             let bonus_non_code_node = non_code_node.0;
@@ -1623,7 +1623,7 @@ impl Parser {
             });
         }
 
-        if is_not_code_token(token) {
+        if !token.is_code_token() {
             let next_token = self.next_meaningful_token(token_index, Some(0))?;
             if let Some(node) = &next_token.non_code_node {
                 if previous_body.is_empty() {
@@ -1786,12 +1786,6 @@ impl Parser {
             last_index: block.last_index,
         })
     }
-}
-
-pub fn is_not_code_token(token: &Token) -> bool {
-    token.token_type == TokenType::Whitespace
-        || token.token_type == TokenType::LineComment
-        || token.token_type == TokenType::BlockComment
 }
 
 #[cfg(test)]
@@ -1991,67 +1985,81 @@ const key = 'c'"#,
     }
 
     #[test]
+    fn test_is_code_token() {
+        let tokens = [
+            Token {
+                token_type: TokenType::Word,
+                start: 0,
+                end: 3,
+                value: "log".to_string(),
+            },
+            Token {
+                token_type: TokenType::Brace,
+                start: 3,
+                end: 4,
+                value: "(".to_string(),
+            },
+            Token {
+                token_type: TokenType::Number,
+                start: 4,
+                end: 5,
+                value: "5".to_string(),
+            },
+            Token {
+                token_type: TokenType::Comma,
+                start: 5,
+                end: 6,
+                value: ",".to_string(),
+            },
+            Token {
+                token_type: TokenType::String,
+                start: 7,
+                end: 14,
+                value: "\"hello\"".to_string(),
+            },
+            Token {
+                token_type: TokenType::Word,
+                start: 16,
+                end: 27,
+                value: "aIdentifier".to_string(),
+            },
+            Token {
+                token_type: TokenType::Brace,
+                start: 27,
+                end: 28,
+                value: ")".to_string(),
+            },
+        ];
+        for (i, token) in tokens.iter().enumerate() {
+            assert!(token.is_code_token(), "failed test {i}: {token:?}")
+        }
+    }
+
+    #[test]
     fn test_is_not_code_token() {
-        assert!(!is_not_code_token(&Token {
-            token_type: TokenType::Word,
-            start: 0,
-            end: 3,
-            value: "log".to_string(),
-        }));
-        assert!(!is_not_code_token(&Token {
-            token_type: TokenType::Brace,
-            start: 3,
-            end: 4,
-            value: "(".to_string(),
-        }));
-        assert!(!is_not_code_token(&Token {
-            token_type: TokenType::Number,
-            start: 4,
-            end: 5,
-            value: "5".to_string(),
-        }));
-        assert!(!is_not_code_token(&Token {
-            token_type: TokenType::Comma,
-            start: 5,
-            end: 6,
-            value: ",".to_string(),
-        }));
-        assert!(is_not_code_token(&Token {
-            token_type: TokenType::Whitespace,
-            start: 6,
-            end: 7,
-            value: " ".to_string(),
-        }));
-        assert!(!is_not_code_token(&Token {
-            token_type: TokenType::String,
-            start: 7,
-            end: 14,
-            value: "\"hello\"".to_string(),
-        }));
-        assert!(!is_not_code_token(&Token {
-            token_type: TokenType::Word,
-            start: 16,
-            end: 27,
-            value: "aIdentifier".to_string(),
-        }));
-        assert!(!is_not_code_token(&Token {
-            token_type: TokenType::Brace,
-            start: 27,
-            end: 28,
-            value: ")".to_string(),
-        }));
-        assert!(is_not_code_token(&Token {
-            token_type: TokenType::BlockComment,
-            start: 28,
-            end: 30,
-            value: "/* abte */".to_string(),
-        }));
-        assert!(is_not_code_token(&Token {
-            token_type: TokenType::LineComment,
-            start: 30,
-            end: 33,
-            value: "// yoyo a line".to_string(),
-        }));
+        let tokens = [
+            Token {
+                token_type: TokenType::Whitespace,
+                start: 6,
+                end: 7,
+                value: " ".to_string(),
+            },
+            Token {
+                token_type: TokenType::BlockComment,
+                start: 28,
+                end: 30,
+                value: "/* abte */".to_string(),
+            },
+            Token {
+                token_type: TokenType::LineComment,
+                start: 30,
+                end: 33,
+                value: "// yoyo a line".to_string(),
+            },
+        ];
+        for (i, token) in tokens.iter().enumerate() {
+            assert!(!token.is_code_token(), "failed test {i}: {token:?}")
+        }
     }
 
     #[test]
@@ -2713,13 +2721,13 @@ show(mySk1)"#;
         let index_of_5 = code.find('5').unwrap();
         let end_starting_at_the_5 = parser.find_end_of_binary_expression(index_of_5).unwrap();
         assert_eq!(end_starting_at_the_5, end);
-        // whole thing wraped
+        // whole thing wrapped
         let code = "((1 + 2) / 5 - 3)\nconst yo = 5";
         let tokens = crate::tokeniser::lexer(code);
         let parser = Parser::new(tokens.clone());
         let end = parser.find_end_of_binary_expression(0).unwrap();
         assert_eq!(tokens[end].end, code.find("3)").unwrap() + 2);
-        // whole thing wraped but given index after the first brace
+        // whole thing wrapped but given index after the first brace
         let code = "((1 + 2) / 5 - 3)\nconst yo = 5";
         let tokens = crate::tokeniser::lexer(code);
         let parser = Parser::new(tokens.clone());
@@ -2965,7 +2973,7 @@ show(mySk1)"#;
     fn test_empty_file() {
         let some_program_string = r#""#;
         let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
         assert!(result.err().unwrap().to_string().contains("file is empty"));
@@ -3311,7 +3319,7 @@ e
     fn test_error_keyword_in_variable() {
         let some_program_string = r#"const let = "thing""#;
         let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
         assert_eq!(
@@ -3324,7 +3332,7 @@ e
     fn test_error_keyword_in_fn_name() {
         let some_program_string = r#"fn let = () {}"#;
         let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
         assert_eq!(
@@ -3337,7 +3345,7 @@ e
     fn test_error_stdlib_in_fn_name() {
         let some_program_string = r#"fn cos = () {}"#;
         let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
         assert_eq!(
@@ -3352,7 +3360,7 @@ e
     return 1
 }"#;
         let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
         assert_eq!(
@@ -3367,7 +3375,7 @@ e
     return 1
 }"#;
         let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
         assert_eq!(
@@ -3385,7 +3393,7 @@ e
         firstPrimeNumber()
         "#;
         let tokens = crate::tokeniser::lexer(program);
-        let parser = crate::parser::Parser::new(tokens);
+        let parser = Parser::new(tokens);
         let _ast = parser.ast().unwrap();
     }
 
@@ -3398,7 +3406,7 @@ e
 thing(false)
 "#;
         let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let parser = Parser::new(tokens);
         parser.ast().unwrap();
     }
 
@@ -3415,7 +3423,7 @@ thing(false)
                 name
             );
             let tokens = crate::tokeniser::lexer(&some_program_string);
-            let parser = crate::parser::Parser::new(tokens);
+            let parser = Parser::new(tokens);
             let result = parser.ast();
             assert!(result.is_err());
             assert_eq!(
@@ -3433,7 +3441,7 @@ thing(false)
     fn test_error_define_var_as_function() {
         let some_program_string = r#"fn thing = "thing""#;
         let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
         assert_eq!(
@@ -3462,7 +3470,7 @@ const pt2 = b2[0]
 show(b1)
 show(b2)"#;
         let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let parser = Parser::new(tokens);
         parser.ast().unwrap();
     }
 
@@ -3471,7 +3479,7 @@ show(b2)"#;
         let some_program_string = r#"const d2r = pi() / 2
 let other_thing = 2 * cos(3)"#;
         let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let parser = Parser::new(tokens);
         parser.ast().unwrap();
     }
 
@@ -3481,7 +3489,7 @@ let other_thing = 2 * cos(3)"#;
         let code = include_str!("../../tests/executor/inputs/pipes_on_pipes.kcl");
 
         let tokens = crate::tokeniser::lexer(code);
-        let parser = crate::parser::Parser::new(tokens);
+        let parser = Parser::new(tokens);
         parser.ast().unwrap();
     }
 }
