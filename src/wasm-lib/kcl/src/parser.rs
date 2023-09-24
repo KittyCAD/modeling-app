@@ -2721,13 +2721,13 @@ show(mySk1)"#;
         let index_of_5 = code.find('5').unwrap();
         let end_starting_at_the_5 = parser.find_end_of_binary_expression(index_of_5).unwrap();
         assert_eq!(end_starting_at_the_5, end);
-        // whole thing wraped
+        // whole thing wrapped
         let code = "((1 + 2) / 5 - 3)\nconst yo = 5";
         let tokens = crate::tokeniser::lexer(code);
         let parser = Parser::new(tokens.clone());
         let end = parser.find_end_of_binary_expression(0).unwrap();
         assert_eq!(tokens[end].end, code.find("3)").unwrap() + 2);
-        // whole thing wraped but given index after the first brace
+        // whole thing wrapped but given index after the first brace
         let code = "((1 + 2) / 5 - 3)\nconst yo = 5";
         let tokens = crate::tokeniser::lexer(code);
         let parser = Parser::new(tokens.clone());
@@ -2973,7 +2973,7 @@ show(mySk1)"#;
     fn test_empty_file() {
         let some_program_string = r#""#;
         let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
         assert!(result.err().unwrap().to_string().contains("file is empty"));
@@ -3319,7 +3319,7 @@ e
     fn test_error_keyword_in_variable() {
         let some_program_string = r#"const let = "thing""#;
         let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
         assert_eq!(
@@ -3332,7 +3332,7 @@ e
     fn test_error_keyword_in_fn_name() {
         let some_program_string = r#"fn let = () {}"#;
         let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
         assert_eq!(
@@ -3345,7 +3345,7 @@ e
     fn test_error_stdlib_in_fn_name() {
         let some_program_string = r#"fn cos = () {}"#;
         let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
         assert_eq!(
@@ -3360,7 +3360,7 @@ e
     return 1
 }"#;
         let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
         assert_eq!(
@@ -3375,7 +3375,7 @@ e
     return 1
 }"#;
         let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
         assert_eq!(
@@ -3393,7 +3393,7 @@ e
         firstPrimeNumber()
         "#;
         let tokens = crate::tokeniser::lexer(program);
-        let parser = crate::parser::Parser::new(tokens);
+        let parser = Parser::new(tokens);
         let _ast = parser.ast().unwrap();
     }
 
@@ -3406,7 +3406,7 @@ e
 thing(false)
 "#;
         let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let parser = Parser::new(tokens);
         parser.ast().unwrap();
     }
 
@@ -3423,7 +3423,7 @@ thing(false)
                 name
             );
             let tokens = crate::tokeniser::lexer(&some_program_string);
-            let parser = crate::parser::Parser::new(tokens);
+            let parser = Parser::new(tokens);
             let result = parser.ast();
             assert!(result.is_err());
             assert_eq!(
@@ -3441,7 +3441,7 @@ thing(false)
     fn test_error_define_var_as_function() {
         let some_program_string = r#"fn thing = "thing""#;
         let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
         assert_eq!(
@@ -3470,7 +3470,7 @@ const pt2 = b2[0]
 show(b1)
 show(b2)"#;
         let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let parser = Parser::new(tokens);
         parser.ast().unwrap();
     }
 
@@ -3479,7 +3479,7 @@ show(b2)"#;
         let some_program_string = r#"const d2r = pi() / 2
 let other_thing = 2 * cos(3)"#;
         let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let parser = Parser::new(tokens);
         parser.ast().unwrap();
     }
 
@@ -3489,7 +3489,7 @@ let other_thing = 2 * cos(3)"#;
         let code = include_str!("../../tests/executor/inputs/pipes_on_pipes.kcl");
 
         let tokens = crate::tokeniser::lexer(code);
-        let parser = crate::parser::Parser::new(tokens);
+        let parser = Parser::new(tokens);
         parser.ast().unwrap();
     }
 }
