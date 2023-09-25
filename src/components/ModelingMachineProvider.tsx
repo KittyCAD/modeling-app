@@ -96,6 +96,8 @@ export const ModelingMachineProvider = ({
         send: modelingSend,
       }}
     >
+      {/* TODO maybe pass reff down to children/app.ts or render app.tsx directly?
+      since realistically it won't ever have generic children that isn't app.tsx */}
       <div className="h-screen overflow-hidden select-none" ref={streamRef}>
         {children}
       </div>
