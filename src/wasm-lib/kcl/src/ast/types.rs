@@ -891,7 +891,6 @@ impl CallExpression {
                 }
             }
             Function::InMemory => {
-                println!("fn_args: {:?}", fn_args);
                 let func = memory.get(&fn_name, self.into())?;
                 let result = func
                     .call_fn(fn_args, memory.clone(), engine.clone())

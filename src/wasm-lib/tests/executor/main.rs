@@ -246,7 +246,8 @@ fn box = (sk1, sk2, scale) => {
 
 box(0, 0, 5)
 box(10, 23, 8)
-let thing = box(-12, -15, 10)"#;
+let thing = box(-12, -15, 10)
+box(-20, -5, 10)"#;
 
     let result = execute_and_snapshot(code).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/negative_args.png", &result, 1.0);
