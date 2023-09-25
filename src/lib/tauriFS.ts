@@ -36,7 +36,7 @@ export async function initializeProjectDirectory(directory: string) {
   try {
     docDirectory = await documentDir()
   } catch (e) {
-    console.log(e)
+    console.log('error', e)
     docDirectory = await homeDir() // seems to work better on Linux
   }
 

@@ -240,9 +240,6 @@ export const Stream = ({ className = '' }) => {
       ) {
         // Let's get the updated ast.
         if (sketchGroupId === '') return
-
-        console.log('guiMode.pathId', guiMode.pathId)
-
         // We have a problem if we do not have an id for the sketch group.
         if (
           guiMode.pathId === undefined ||

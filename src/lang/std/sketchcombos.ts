@@ -1279,7 +1279,7 @@ export function getTransformInfos(
     }) as TransformInfo[]
     return theTransforms
   } catch (error) {
-    console.log(error)
+    console.log('error', error)
     return []
   }
 }

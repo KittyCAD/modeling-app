@@ -216,7 +216,6 @@ export function App() {
       } else if (interactionGuards.zoom.dragCallback(eWithButton)) {
         interaction = 'zoom'
       } else {
-        console.log('none')
         return
       }
 

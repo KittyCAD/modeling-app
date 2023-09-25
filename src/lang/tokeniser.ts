@@ -11,7 +11,7 @@ export async function asyncLexer(str: string): Promise<Token[]> {
     return tokens
   } catch (e) {
     // TODO: do something real with the error.
-    console.log('lexer', e)
+    console.log('lexer error', e)
     throw e
   }
 }
@@ -22,7 +22,7 @@ export function lexer(str: string): Token[] {
     return tokens
   } catch (e) {
     // TODO: do something real with the error.
-    console.log('lexer', e)
+    console.log('lexer error', e)
     throw e
   }
 }

@@ -1691,7 +1691,6 @@ describe('parsing errors', () => {
     let _theError
     try {
       const result = expect(parser_wasm(code))
-      console.log('result', result)
     } catch (e) {
       _theError = e
     }

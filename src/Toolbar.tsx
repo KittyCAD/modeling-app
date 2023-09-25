@@ -64,10 +64,6 @@ export const Toolbar = () => {
   }))
   useAppMode()
 
-  useEffect(() => {
-    console.log('guiMode', guiMode)
-  }, [guiMode])
-
   function ToolbarButtons({ className }: React.HTMLAttributes<HTMLElement>) {
     return (
       <span className={styles.toolbarButtons + ' ' + className}>

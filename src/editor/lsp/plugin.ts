@@ -96,8 +96,6 @@ export class LanguageServerPlugin implements PluginValue {
   async sendChange({ documentText }: { documentText: string }) {
     if (!this.client.ready) return
 
-    console.log(documentText.length)
-
     if (documentText.length > 5000) {
       // Clear out the text it thinks we have, large documents will throw a stack error.
       // This is obviously not a good fix but it works for now til we figure

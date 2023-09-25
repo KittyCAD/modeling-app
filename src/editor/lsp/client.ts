@@ -109,7 +109,6 @@ export default class Client extends jsrpc.JSONRPCServerAndClient {
         }
       }
       messageString += message
-      // console.log(messageString)
       return
     })
 
