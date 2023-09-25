@@ -598,20 +598,16 @@ export class EngineCommandManager {
   constructor({
     setMediaStream,
     setIsStreamReady,
-    width,
-    height,
     token,
   }: {
     setMediaStream: (stream: MediaStream) => void
     setIsStreamReady: (isStreamReady: boolean) => void
-    width: number
-    height: number
     token?: string
   }) {
     this.waitForReady = new Promise((resolve) => {
       this.resolveReady = resolve
     })
-    const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}`
+    const url = `${VITE_KC_API_WS_MODELING_URL}`
     this.engineConnection = new EngineConnection({
       url,
       token,
@@ -688,6 +684,25 @@ export class EngineCommandManager {
     })
 
     this.engineConnection?.connect()
+  }
+  handleResize({
+    streamWidth,
+    streamHeight,
+  }: {
+    streamWidth: number
+    streamHeight: number
+  }) {
+    console.log('handleResize', streamWidth, streamHeight)
+    /*const resizeCmd: EngineCommand = {
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'resize',
+        width: streamWidth,
+        height: streamHeight,
+      },
+    }
+    this.engineConnection?.send(resizeCmd)*/
   }
   handleModelingCommand(message: WebSocketResponse, id: string) {
     if (message.type !== 'modeling') {

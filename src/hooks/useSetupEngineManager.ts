@@ -29,25 +29,23 @@ export function useSetupEngineManager(
   const height = streamHeight ? streamHeight : 0
   const quadHeight = Math.round(height / 4) * 4
 
+  // Load the engine command manager once with the initial width and height,
+  // then we do not want to reload it.
+  const eng = new EngineCommandManager({
+    setMediaStream,
+    setIsStreamReady,
+    token,
+  })
+  setEngineCommandManager(eng)
+  eng.waitForReady.then(() => {
+    executeCode()
+  })
+
   useLayoutEffect(() => {
     setStreamDimensions({
       streamWidth: quadWidth,
       streamHeight: quadHeight,
     })
-    if (!width || !height) return
-    const eng = new EngineCommandManager({
-      setMediaStream,
-      setIsStreamReady,
-      width: quadWidth,
-      height: quadHeight,
-      token,
-    })
-    setEngineCommandManager(eng)
-    eng.waitForReady.then(() => {
-      executeCode()
-    })
-    return () => {
-      eng?.tearDown()
-    }
+    return () => {}
   }, [quadWidth, quadHeight])
 }

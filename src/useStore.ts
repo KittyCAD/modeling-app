@@ -454,7 +454,13 @@ export const useStore = create<StoreState>()(
         fileId: '',
         setFileId: (fileId) => set({ fileId }),
         streamDimensions: { streamWidth: 1280, streamHeight: 720 },
-        setStreamDimensions: (streamDimensions) => set({ streamDimensions }),
+        setStreamDimensions: (streamDimensions) => {
+          set({ streamDimensions })
+          // We want to update the stream dimensions in the engine command manager.
+          if (get().engineCommandManager) {
+            get().engineCommandManager?.handleResize(streamDimensions)
+          }
+        },
         isExecuting: false,
         setIsExecuting: (isExecuting) => set({ isExecuting }),
 
