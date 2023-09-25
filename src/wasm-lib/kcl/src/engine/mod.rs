@@ -1,10 +1,5 @@
 //! Functions for managing engine communications.
 
-#[cfg(target_arch = "wasm32")]
-#[cfg(not(test))]
-#[cfg(feature = "engine")]
-use wasm_bindgen::prelude::*;
-
 #[cfg(not(target_arch = "wasm32"))]
 #[cfg(not(test))]
 #[cfg(feature = "engine")]
@@ -31,37 +26,18 @@ pub use conn_mock::EngineConnection;
 #[cfg(not(feature = "engine"))]
 #[cfg(not(test))]
 pub mod conn_mock;
+use anyhow::Result;
 #[cfg(not(feature = "engine"))]
 #[cfg(not(test))]
 pub use conn_mock::EngineConnection;
 
-#[cfg(target_arch = "wasm32")]
-#[cfg(not(test))]
-#[derive(Debug)]
-#[wasm_bindgen]
-pub struct EngineManager {
-    connection: EngineConnection,
-}
-#[cfg(target_arch = "wasm32")]
-#[cfg(not(test))]
-#[cfg(feature = "engine")]
-#[wasm_bindgen]
-impl EngineManager {
-    #[wasm_bindgen(constructor)]
-    pub async fn new(manager: conn_wasm::EngineCommandManager) -> EngineManager {
-        EngineManager {
-            // This unwrap is safe because the connection is always created.
-            connection: EngineConnection::new(manager).await.unwrap(),
-        }
-    }
-
-    pub fn send_modeling_cmd(&mut self, id_str: &str, cmd_str: &str) -> Result<(), String> {
-        let id = uuid::Uuid::parse_str(id_str).map_err(|e| e.to_string())?;
-        let cmd = serde_json::from_str(cmd_str).map_err(|e| e.to_string())?;
-        self.connection
-            .send_modeling_cmd(id, crate::executor::SourceRange::default(), cmd)
-            .map_err(String::from)?;
-
-        Ok(())
-    }
+#[async_trait::async_trait(?Send)]
+pub trait EngineManager: Clone {
+    /// Send a modeling command and wait for the response message.
+    async fn send_modeling_cmd(
+        &self,
+        id: uuid::Uuid,
+        source_range: crate::executor::SourceRange,
+        cmd: kittycad::types::ModelingCmd,
+    ) -> Result<kittycad::types::OkWebSocketResponseData, crate::errors::KclError>;
 }

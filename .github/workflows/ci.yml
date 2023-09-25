@@ -4,16 +4,15 @@ on:
   pull_request:
   push:
     branches:
-        - main
+      - main
   release:
     types: [published]
 
 jobs:
-
   check-format:
     runs-on: 'ubuntu-20.04'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
@@ -25,7 +24,7 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
@@ -33,19 +32,17 @@ jobs:
       - run: yarn install
       - uses: Swatinem/rust-cache@v2
         with:
-          workspaces: "./src/wasm-lib"
+          workspaces: './src/wasm-lib'
 
       - run: yarn build:wasm
       - run: yarn tsc
-
 
   build-test-web:
     runs-on: ubuntu-20.04
     outputs:
       version: ${{ steps.export_version.outputs.version }}
     steps:
-
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v3
         with:
@@ -56,7 +53,7 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
         with:
-          workspaces: "./src/wasm-lib"
+          workspaces: './src/wasm-lib'
 
       - run: yarn build:wasm
 
@@ -69,7 +66,6 @@ jobs:
       - id: export_version
         run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
 
-
   build-apps:
     needs: [check-format, build-test-web, check-types]
     runs-on: ${{ matrix.os }}
@@ -77,8 +73,7 @@ jobs:
       matrix:
         os: [macos-latest, ubuntu-20.04, windows-latest]
     steps:
-
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: install ubuntu system dependencies
         if: matrix.os == 'ubuntu-20.04'
@@ -104,7 +99,7 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
         with:
-          workspaces: "./src/wasm-lib"
+          workspaces: './src/wasm-lib'
 
       - name: wasm prep
         shell: bash
@@ -114,18 +109,6 @@ jobs:
           cd ../../
           cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
 
-      - name: macos sed
-        if: matrix.os == 'macos-latest'
-        shell: bash
-        run: |
-          sed -i '' 's/import.meta.url//g' "./src/wasm-lib/pkg/wasm_lib.js"
-
-      - name: ubuntu and windows sed
-        if: matrix.os != 'macos-latest'
-        shell: bash
-        run: |
-          sed -i 's/import.meta.url//g' "./src/wasm-lib/pkg/wasm_lib.js"
-
       - name: Fix format
         run: yarn fmt
 
@@ -134,11 +117,42 @@ jobs:
         run: |
           rustup target add aarch64-apple-darwin
 
-      - name: Build the app for the current platform (no upload)
+      - name: Prepare Windows certificate and variables
+        if: matrix.os == 'windows-latest'
+        run: |
+          echo "${{secrets.SM_CLIENT_CERT_FILE_B64 }}" | base64 --decode > /d/Certificate_pkcs12.p12
+          cat /d/Certificate_pkcs12.p12
+          echo "::set-output name=version::${GITHUB_REF#refs/tags/v}"
+          echo "SM_HOST=${{ secrets.SM_HOST }}" >> "$GITHUB_ENV"
+          echo "SM_API_KEY=${{ secrets.SM_API_KEY }}" >> "$GITHUB_ENV"
+          echo "SM_CLIENT_CERT_FILE=D:\\Certificate_pkcs12.p12" >> "$GITHUB_ENV"
+          echo "SM_CLIENT_CERT_PASSWORD=${{ secrets.SM_CLIENT_CERT_PASSWORD }}" >> "$GITHUB_ENV"
+          echo "C:\Program Files (x86)\Windows Kits\10\App Certification Kit" >> $GITHUB_PATH
+          echo "C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools" >> $GITHUB_PATH
+          echo "C:\Program Files\DigiCert\DigiCert One Signing Manager Tools" >> $GITHUB_PATH
+        shell: bash
+
+      - name: Setup Windows certicate with SSM KSP
+        if: matrix.os == 'windows-latest'
+        run: |
+          curl -X GET  https://one.digicert.com/signingmanager/api-ui/v1/releases/smtools-windows-x64.msi/download -H "x-api-key:%SM_API_KEY%" -o smtools-windows-x64.msi
+          msiexec /i smtools-windows-x64.msi /quiet /qn
+          smksp_registrar.exe list
+          smctl.exe keypair ls
+          C:\Windows\System32\certutil.exe -csp "DigiCert Signing Manager KSP" -key -user
+          smksp_cert_sync.exe
+        shell: cmd
+
+      - name: Build and sign the app for the current platform
         uses: tauri-apps/tauri-action@v0
         env:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
         with:
           args: ${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }}
 
@@ -146,68 +160,15 @@ jobs:
         with:
           path: ${{ matrix.os == 'macos-latest' && 'src-tauri/target/universal-apple-darwin/release/bundle/*/*' || 'src-tauri/target/release/bundle/*/*' }}
 
-
-  sign-windows-msi:
-    runs-on: windows-latest
-    if: github.event_name == 'release'
-    needs: [build-test-web, build-apps]
-    env:
-      VERSION_NO_V: ${{ needs.build-test-web.outputs.version }}
-    steps:
-
-      - uses: actions/download-artifact@v3
-
-      - name: Setup Certificate 
-        run: | 
-          echo "${{secrets.SM_CLIENT_CERT_FILE_B64 }}" | base64 --decode > /d/Certificate_pkcs12.p12 
-          cat /d/Certificate_pkcs12.p12 
-        shell: bash 
-
-      - name: Set variables 
-        id: variables 
-        run: | 
-          echo "::set-output name=version::${GITHUB_REF#refs/tags/v}" 
-          echo "SM_HOST=${{ secrets.SM_HOST }}" >> "$GITHUB_ENV" 
-          echo "SM_API_KEY=${{ secrets.SM_API_KEY }}" >> "$GITHUB_ENV" 
-          echo "SM_CLIENT_CERT_FILE=D:\\Certificate_pkcs12.p12" >> "$GITHUB_ENV" 
-          echo "SM_CLIENT_CERT_PASSWORD=${{ secrets.SM_CLIENT_CERT_PASSWORD }}" >> "$GITHUB_ENV" 
-          echo "C:\Program Files (x86)\Windows Kits\10\App Certification Kit" >> $GITHUB_PATH 
-          echo "C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools" >> $GITHUB_PATH 
-          echo "C:\Program Files\DigiCert\DigiCert One Signing Manager Tools" >> $GITHUB_PATH 
-        shell: bash 
-
-      - name: Setup SSM KSP on windows latest 
-        run: | 
-          curl -X GET  https://one.digicert.com/signingmanager/api-ui/v1/releases/smtools-windows-x64.msi/download -H "x-api-key:%SM_API_KEY%" -o smtools-windows-x64.msi 
-          msiexec /i smtools-windows-x64.msi /quiet /qn 
-          smksp_registrar.exe list 
-          smctl.exe keypair ls 
-          C:\Windows\System32\certutil.exe -csp "DigiCert Signing Manager KSP" -key -user 
-          smksp_cert_sync.exe 
-        shell: cmd 
-
-      - name: Signing using Signtool 
-        run: | 
-          signtool.exe sign /sha1 ${{ secrets.SM_CODE_SIGNING_CERT_SHA1_HASH }} /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 "artifact\msi\*.msi"
-          signtool.exe verify /v /pa "artifact\msi\*.msi"
-      
-      # TODO: for the updater, investigate if we need to also replace what's in the .zip, and what to do about the .sig file
-
-      - uses: actions/upload-artifact@v3
-        with:
-          path:  artifact/*
-
-
   publish-apps-release:
     runs-on: ubuntu-20.04
     if: github.event_name == 'release'
-    needs: [build-test-web, build-apps, sign-windows-msi]
+    needs: [build-test-web, build-apps]
     env:
       VERSION_NO_V: ${{ needs.build-test-web.outputs.version }}
       PUB_DATE: ${{ github.event.release.created_at }}
       NOTES: ${{ github.event.release.body }}
     steps:
-
       - uses: actions/download-artifact@v3
 
       - name: Generate the update static endpoint

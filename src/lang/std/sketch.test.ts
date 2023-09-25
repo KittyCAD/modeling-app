@@ -117,6 +117,7 @@ show(mySketch001)
       {
         mode: 'sketch',
         sketchMode: 'sketchEdit',
+        pathId: '',
         rotation: [0, 0, 0, 1],
         position: [0, 0, 0],
         pathToNode: [

@@ -1,16 +1,16 @@
 use std::{collections::HashMap, str::FromStr};
 
 use crate::{
-    abstract_syntax_tree_types::{
+    ast::types::{
         ArrayExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression, ExpressionStatement,
-        FunctionExpression, Identifier, Literal, LiteralIdentifier, MemberExpression, MemberObject, NoneCodeMeta,
-        NoneCodeNode, NoneCodeValue, ObjectExpression, ObjectKeyInfo, ObjectProperty, PipeExpression, PipeSubstitution,
+        FunctionExpression, Identifier, Literal, LiteralIdentifier, MemberExpression, MemberObject, NonCodeMeta,
+        NonCodeNode, NonCodeValue, ObjectExpression, ObjectKeyInfo, ObjectProperty, PipeExpression, PipeSubstitution,
         Program, ReturnStatement, UnaryExpression, UnaryOperator, Value, VariableDeclaration, VariableDeclarator,
         VariableKind,
     },
     errors::{KclError, KclErrorDetails},
     math_parser::MathParser,
-    tokeniser::{Token, TokenType},
+    token::{Token, TokenType},
 };
 
 pub const PIPE_SUBSTITUTION_OPERATOR: &str = "%";
@@ -26,7 +26,7 @@ struct TokenReturn {
 struct TokenReturnWithNonCode {
     token: Option<Token>,
     index: usize,
-    non_code_node: Option<NoneCodeNode>,
+    non_code_node: Option<NonCodeNode>,
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -57,7 +57,7 @@ struct ArrayReturn {
 struct PipeBodyReturn {
     body: Vec<Value>,
     last_index: usize,
-    non_code_meta: NoneCodeMeta,
+    non_code_meta: NonCodeMeta,
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -103,9 +103,9 @@ pub struct ParamsResult {
 }
 
 #[derive(Debug, PartialEq, Clone)]
-struct UnaryExpressionResult {
-    expression: UnaryExpression,
-    last_index: usize,
+pub struct UnaryExpressionResult {
+    pub expression: UnaryExpression,
+    pub last_index: usize,
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -136,7 +136,7 @@ struct ReturnStatementResult {
 struct BodyResult {
     body: Vec<BodyItem>,
     last_index: usize,
-    non_code_meta: NoneCodeMeta,
+    non_code_meta: NonCodeMeta,
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -183,8 +183,8 @@ impl Parser {
         let body = self.make_body(
             0,
             vec![],
-            NoneCodeMeta {
-                none_code_nodes: HashMap::new(),
+            NonCodeMeta {
+                non_code_nodes: HashMap::new(),
                 start: None,
             },
         )?;
@@ -249,7 +249,7 @@ impl Parser {
         }
 
         let current_token = self.get_token(index)?;
-        if is_not_code_token(current_token) {
+        if !current_token.is_code_token() {
             return self.find_end_of_non_code_node(index + 1);
         }
 
@@ -262,14 +262,14 @@ impl Parser {
         }
 
         let current_token = self.get_token(index)?;
-        if is_not_code_token(current_token) {
+        if !current_token.is_code_token() {
             return self.find_start_of_non_code_node(index - 1);
         }
 
         Ok(index + 1)
     }
 
-    fn make_none_code_node(&self, index: usize) -> Result<(Option<NoneCodeNode>, usize), KclError> {
+    fn make_non_code_node(&self, index: usize) -> Result<(Option<NonCodeNode>, usize), KclError> {
         let end_index = self.find_end_of_non_code_node(index)?;
         let start_index = self.find_start_of_non_code_node(index)?;
         let non_code_tokens = self.tokens[index..end_index].to_vec();
@@ -286,10 +286,10 @@ impl Parser {
                 .contains("\n\n")
         {
             return Ok((
-                Some(NoneCodeNode {
+                Some(NonCodeNode {
                     start: self.tokens[start_index].start,
                     end: self.tokens[end_index - 1].end,
-                    value: NoneCodeValue::NewLine,
+                    value: NonCodeValue::NewLine,
                 }),
                 end_index - 1,
             ));
@@ -330,17 +330,17 @@ impl Parser {
         let is_new_line_comment =
             start_end_string.starts_with('\n') || start_end_string.contains('\n') || start_index == 0 || index == 0;
 
-        let node = NoneCodeNode {
+        let node = NonCodeNode {
             start: self.tokens[start_index].start,
             end: self.tokens[end_index - 1].end,
             value: if start_end_string.starts_with("\n\n") && is_new_line_comment {
                 // Preserve if they want a whitespace line before the comment.
                 // But let's just allow one.
-                NoneCodeValue::NewLineBlockComment { value: full_string }
+                NonCodeValue::NewLineBlockComment { value: full_string }
             } else if is_new_line_comment {
-                NoneCodeValue::BlockComment { value: full_string }
+                NonCodeValue::BlockComment { value: full_string }
             } else {
-                NoneCodeValue::InlineComment { value: full_string }
+                NonCodeValue::InlineComment { value: full_string }
             },
         };
         Ok((Some(node), end_index - 1))
@@ -365,8 +365,8 @@ impl Parser {
             });
         };
 
-        if is_not_code_token(token) {
-            let non_code_node = self.make_none_code_node(new_index)?;
+        if !token.is_code_token() {
+            let non_code_node = self.make_non_code_node(new_index)?;
             let new_new_index = non_code_node.1 + 1;
             let bonus_non_code_node = non_code_node.0;
 
@@ -731,7 +731,9 @@ impl Parser {
 
         let maybe_operator = self.next_meaningful_token(index, None)?;
         if let Some(maybe_operator_token) = maybe_operator.token {
-            if maybe_operator_token.token_type == TokenType::Number {
+            if maybe_operator_token.token_type == TokenType::Number
+                || maybe_operator_token.token_type == TokenType::Word
+            {
                 return self.find_end_of_binary_expression(maybe_operator.index);
             } else if maybe_operator_token.token_type != TokenType::Operator
                 || maybe_operator_token.value == PIPE_OPERATOR
@@ -775,6 +777,7 @@ impl Parser {
                 });
             }
         }
+
         if current_token.token_type == TokenType::Word
             || current_token.token_type == TokenType::Number
             || current_token.token_type == TokenType::String
@@ -878,10 +881,12 @@ impl Parser {
                         last_index: function_expression.last_index,
                     })
                 } else {
-                    return Err(KclError::Unimplemented(KclErrorDetails {
-                        source_ranges: vec![current_token.into()],
-                        message: "expression with braces".to_string(),
-                    }));
+                    // This is likely a binary expression that starts with a parenthesis.
+                    let binary_expression = self.make_binary_expression(index)?;
+                    Ok(ValueReturn {
+                        value: Value::BinaryExpression(Box::new(binary_expression.expression)),
+                        last_index: binary_expression.last_index,
+                    })
                 }
             } else {
                 return Err(KclError::Unimplemented(KclErrorDetails {
@@ -1023,13 +1028,13 @@ impl Parser {
         &self,
         index: usize,
         previous_values: Vec<Value>,
-        previous_non_code_meta: Option<NoneCodeMeta>,
+        previous_non_code_meta: Option<NonCodeMeta>,
     ) -> Result<PipeBodyReturn, KclError> {
         let non_code_meta = match previous_non_code_meta {
             Some(meta) => meta,
-            None => NoneCodeMeta {
+            None => NonCodeMeta {
                 start: None,
-                none_code_nodes: HashMap::new(),
+                non_code_nodes: HashMap::new(),
             },
         };
         let current_token = self.get_token(index)?;
@@ -1056,10 +1061,10 @@ impl Parser {
                 non_code_meta,
             });
         }
-        let mut _non_code_meta: NoneCodeMeta;
+        let mut _non_code_meta: NonCodeMeta;
         if let Some(node) = next_pipe.non_code_node {
             _non_code_meta = non_code_meta;
-            _non_code_meta.none_code_nodes.insert(previous_values.len(), node);
+            _non_code_meta.non_code_nodes.insert(previous_values.len(), node);
         } else {
             _non_code_meta = non_code_meta;
         }
@@ -1245,11 +1250,19 @@ impl Parser {
             })
         })?;
         let closing_brace_token = self.get_token(closing_brace_index)?;
-        let args = self.make_arguments(brace_token.index, vec![])?;
-        let function = if let Some(stdlib_fn) = self.stdlib.get(&callee.name) {
-            crate::abstract_syntax_tree_types::Function::StdLib { func: stdlib_fn }
+        // Account for if we have no args.
+        let args = if brace_token.index + 1 == closing_brace_index {
+            ArgumentsReturn {
+                arguments: vec![],
+                last_index: closing_brace_index,
+            }
         } else {
-            crate::abstract_syntax_tree_types::Function::InMemory
+            self.make_arguments(brace_token.index, vec![])?
+        };
+        let function = if let Some(stdlib_fn) = self.stdlib.get(&callee.name) {
+            crate::ast::types::Function::StdLib { func: stdlib_fn }
+        } else {
+            crate::ast::types::Function::InMemory
         };
         Ok(CallExpressionResult {
             expression: CallExpression {
@@ -1418,7 +1431,7 @@ impl Parser {
         self.make_params(next_brace_or_comma_token.index, _previous_params)
     }
 
-    fn make_unary_expression(&self, index: usize) -> Result<UnaryExpressionResult, KclError> {
+    pub fn make_unary_expression(&self, index: usize) -> Result<UnaryExpressionResult, KclError> {
         let current_token = self.get_token(index)?;
         let next_token = self.next_meaningful_token(index, None)?;
         if next_token.token.is_none() {
@@ -1583,7 +1596,7 @@ impl Parser {
         &self,
         token_index: usize,
         previous_body: Vec<BodyItem>,
-        previous_non_code_meta: NoneCodeMeta,
+        previous_non_code_meta: NonCodeMeta,
     ) -> Result<BodyResult, KclError> {
         let mut non_code_meta = previous_non_code_meta;
         if self.tokens.is_empty() {
@@ -1610,13 +1623,13 @@ impl Parser {
             });
         }
 
-        if is_not_code_token(token) {
+        if !token.is_code_token() {
             let next_token = self.next_meaningful_token(token_index, Some(0))?;
             if let Some(node) = &next_token.non_code_node {
                 if previous_body.is_empty() {
                     non_code_meta.start = next_token.non_code_node;
                 } else {
-                    non_code_meta.none_code_nodes.insert(previous_body.len(), node.clone());
+                    non_code_meta.non_code_nodes.insert(previous_body.len(), node.clone());
                 }
             }
             return self.make_body(next_token.index, previous_body, non_code_meta);
@@ -1624,14 +1637,14 @@ impl Parser {
 
         let next = self.next_meaningful_token(token_index, None)?;
         if let Some(node) = &next.non_code_node {
-            non_code_meta.none_code_nodes.insert(previous_body.len(), node.clone());
+            non_code_meta.non_code_nodes.insert(previous_body.len(), node.clone());
         }
 
         if token.token_type == TokenType::Keyword && VariableKind::from_str(&token.value).is_ok() {
             let declaration = self.make_variable_declaration(token_index)?;
             let next_thing = self.next_meaningful_token(declaration.last_index, None)?;
             if let Some(node) = &next_thing.non_code_node {
-                non_code_meta.none_code_nodes.insert(previous_body.len(), node.clone());
+                non_code_meta.non_code_nodes.insert(previous_body.len(), node.clone());
             }
             let mut _previous_body = previous_body;
             _previous_body.push(BodyItem::VariableDeclaration(VariableDeclaration {
@@ -1652,7 +1665,7 @@ impl Parser {
             let statement = self.make_return_statement(token_index)?;
             let next_thing = self.next_meaningful_token(statement.last_index, None)?;
             if let Some(node) = &next_thing.non_code_node {
-                non_code_meta.none_code_nodes.insert(previous_body.len(), node.clone());
+                non_code_meta.non_code_nodes.insert(previous_body.len(), node.clone());
             }
             let mut _previous_body = previous_body;
             _previous_body.push(BodyItem::ReturnStatement(ReturnStatement {
@@ -1676,7 +1689,7 @@ impl Parser {
                 let expression = self.make_expression_statement(token_index)?;
                 let next_thing = self.next_meaningful_token(expression.last_index, None)?;
                 if let Some(node) = &next_thing.non_code_node {
-                    non_code_meta.none_code_nodes.insert(previous_body.len(), node.clone());
+                    non_code_meta.non_code_nodes.insert(previous_body.len(), node.clone());
                 }
                 let mut _previous_body = previous_body;
                 _previous_body.push(BodyItem::ExpressionStatement(ExpressionStatement {
@@ -1699,7 +1712,7 @@ impl Parser {
                 && next_thing_token.token_type == TokenType::Operator
             {
                 if let Some(node) = &next_thing.non_code_node {
-                    non_code_meta.none_code_nodes.insert(previous_body.len(), node.clone());
+                    non_code_meta.non_code_nodes.insert(previous_body.len(), node.clone());
                 }
                 let expression = self.make_expression_statement(token_index)?;
                 let mut _previous_body = previous_body;
@@ -1730,8 +1743,8 @@ impl Parser {
             BodyResult {
                 body: vec![],
                 last_index: next_token_index,
-                non_code_meta: NoneCodeMeta {
-                    none_code_nodes: HashMap::new(),
+                non_code_meta: NonCodeMeta {
+                    non_code_nodes: HashMap::new(),
                     start: None,
                 },
             }
@@ -1739,8 +1752,8 @@ impl Parser {
             self.make_body(
                 next_token_index,
                 vec![],
-                NoneCodeMeta {
-                    none_code_nodes: HashMap::new(),
+                NonCodeMeta {
+                    non_code_nodes: HashMap::new(),
                     start: None,
                 },
             )?
@@ -1775,22 +1788,16 @@ impl Parser {
     }
 }
 
-pub fn is_not_code_token(token: &Token) -> bool {
-    token.token_type == TokenType::Whitespace
-        || token.token_type == TokenType::LineComment
-        || token.token_type == TokenType::BlockComment
-}
-
 #[cfg(test)]
 mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::abstract_syntax_tree_types::BinaryOperator;
+    use crate::ast::types::BinaryOperator;
 
     #[test]
     fn test_make_identifier() {
-        let tokens = crate::tokeniser::lexer("a");
+        let tokens = crate::token::lexer("a");
         let parser = Parser::new(tokens);
         let identifier = parser.make_identifier(0).unwrap();
         assert_eq!(
@@ -1805,7 +1812,7 @@ mod tests {
 
     #[test]
     fn test_make_identifier_with_const_myvar_equals_5_and_index_2() {
-        let tokens = crate::tokeniser::lexer("const myVar = 5");
+        let tokens = crate::token::lexer("const myVar = 5");
         let parser = Parser::new(tokens);
         let identifier = parser.make_identifier(2).unwrap();
         assert_eq!(
@@ -1820,7 +1827,7 @@ mod tests {
 
     #[test]
     fn test_make_identifier_multiline() {
-        let tokens = crate::tokeniser::lexer("const myVar = 5\nconst newVar = myVar + 1");
+        let tokens = crate::token::lexer("const myVar = 5\nconst newVar = myVar + 1");
         let parser = Parser::new(tokens);
         let identifier = parser.make_identifier(2).unwrap();
         assert_eq!(
@@ -1844,7 +1851,7 @@ mod tests {
 
     #[test]
     fn test_make_identifier_call_expression() {
-        let tokens = crate::tokeniser::lexer("log(5, \"hello\", aIdentifier)");
+        let tokens = crate::token::lexer("log(5, \"hello\", aIdentifier)");
         let parser = Parser::new(tokens);
         let identifier = parser.make_identifier(0).unwrap();
         assert_eq!(
@@ -1866,17 +1873,17 @@ mod tests {
         );
     }
     #[test]
-    fn test_make_none_code_node() {
-        let tokens = crate::tokeniser::lexer("log(5, \"hello\", aIdentifier)");
+    fn test_make_non_code_node() {
+        let tokens = crate::token::lexer("log(5, \"hello\", aIdentifier)");
         let parser = Parser::new(tokens);
         let index = 4;
         let expected_output = (None, 4);
-        assert_eq!(parser.make_none_code_node(index).unwrap(), expected_output);
+        assert_eq!(parser.make_non_code_node(index).unwrap(), expected_output);
 
         let index = 7;
         let expected_output = (None, 7);
-        assert_eq!(parser.make_none_code_node(index).unwrap(), expected_output);
-        let tokens = crate::tokeniser::lexer(
+        assert_eq!(parser.make_non_code_node(index).unwrap(), expected_output);
+        let tokens = crate::token::lexer(
             r#"
 const yo = { a: { b: { c: '123' } } }
 // this is a comment
@@ -1885,29 +1892,29 @@ const key = 'c'"#,
         let parser = Parser::new(tokens);
         let index = 0;
         let expected_output = (None, 0);
-        assert_eq!(parser.make_none_code_node(index).unwrap(), expected_output);
+        assert_eq!(parser.make_non_code_node(index).unwrap(), expected_output);
 
         let index = 2;
         let expected_output = (None, 2);
-        assert_eq!(parser.make_none_code_node(index).unwrap(), expected_output);
+        assert_eq!(parser.make_non_code_node(index).unwrap(), expected_output);
 
         let index = 2;
         let expected_output = (None, 2);
-        assert_eq!(parser.make_none_code_node(index).unwrap(), expected_output);
+        assert_eq!(parser.make_non_code_node(index).unwrap(), expected_output);
 
         let index = 29;
         let expected_output = (
-            Some(NoneCodeNode {
+            Some(NonCodeNode {
                 start: 38,
                 end: 60,
-                value: NoneCodeValue::BlockComment {
+                value: NonCodeValue::BlockComment {
                     value: "this is a comment".to_string(),
                 },
             }),
             31,
         );
-        assert_eq!(parser.make_none_code_node(index).unwrap(), expected_output);
-        let tokens = crate::tokeniser::lexer(
+        assert_eq!(parser.make_non_code_node(index).unwrap(), expected_output);
+        let tokens = crate::token::lexer(
             r#"const mySketch = startSketchAt([0,0])
   |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
   |> lineTo([1, 1], %) /* this is
@@ -1919,21 +1926,21 @@ const key = 'c'"#,
         let parser = Parser::new(tokens);
         let index = 57;
         let expected_output = (
-            Some(NoneCodeNode {
+            Some(NonCodeNode {
                 start: 106,
                 end: 166,
-                value: NoneCodeValue::BlockComment {
+                value: NonCodeValue::BlockComment {
                     value: "this is\n      a comment\n      spanning a few lines".to_string(),
                 },
             }),
             59,
         );
-        assert_eq!(parser.make_none_code_node(index).unwrap(), expected_output);
+        assert_eq!(parser.make_non_code_node(index).unwrap(), expected_output);
     }
 
     #[test]
     fn test_collect_object_keys() {
-        let tokens = crate::tokeniser::lexer("const prop = yo.one[\"two\"]");
+        let tokens = crate::token::lexer("const prop = yo.one[\"two\"]");
         let parser = Parser::new(tokens);
         let keys_info = parser.collect_object_keys(6, None, false).unwrap();
         assert_eq!(keys_info.len(), 2);
@@ -1953,7 +1960,7 @@ const key = 'c'"#,
 
     #[test]
     fn test_make_literal_call_expression() {
-        let tokens = crate::tokeniser::lexer("log(5, \"hello\", aIdentifier)");
+        let tokens = crate::token::lexer("log(5, \"hello\", aIdentifier)");
         let parser = Parser::new(tokens);
         let literal = parser.make_literal(2).unwrap();
         assert_eq!(
@@ -1978,73 +1985,87 @@ const key = 'c'"#,
     }
 
     #[test]
+    fn test_is_code_token() {
+        let tokens = [
+            Token {
+                token_type: TokenType::Word,
+                start: 0,
+                end: 3,
+                value: "log".to_string(),
+            },
+            Token {
+                token_type: TokenType::Brace,
+                start: 3,
+                end: 4,
+                value: "(".to_string(),
+            },
+            Token {
+                token_type: TokenType::Number,
+                start: 4,
+                end: 5,
+                value: "5".to_string(),
+            },
+            Token {
+                token_type: TokenType::Comma,
+                start: 5,
+                end: 6,
+                value: ",".to_string(),
+            },
+            Token {
+                token_type: TokenType::String,
+                start: 7,
+                end: 14,
+                value: "\"hello\"".to_string(),
+            },
+            Token {
+                token_type: TokenType::Word,
+                start: 16,
+                end: 27,
+                value: "aIdentifier".to_string(),
+            },
+            Token {
+                token_type: TokenType::Brace,
+                start: 27,
+                end: 28,
+                value: ")".to_string(),
+            },
+        ];
+        for (i, token) in tokens.iter().enumerate() {
+            assert!(token.is_code_token(), "failed test {i}: {token:?}")
+        }
+    }
+
+    #[test]
     fn test_is_not_code_token() {
-        assert!(!is_not_code_token(&Token {
-            token_type: TokenType::Word,
-            start: 0,
-            end: 3,
-            value: "log".to_string(),
-        }));
-        assert!(!is_not_code_token(&Token {
-            token_type: TokenType::Brace,
-            start: 3,
-            end: 4,
-            value: "(".to_string(),
-        }));
-        assert!(!is_not_code_token(&Token {
-            token_type: TokenType::Number,
-            start: 4,
-            end: 5,
-            value: "5".to_string(),
-        }));
-        assert!(!is_not_code_token(&Token {
-            token_type: TokenType::Comma,
-            start: 5,
-            end: 6,
-            value: ",".to_string(),
-        }));
-        assert!(is_not_code_token(&Token {
-            token_type: TokenType::Whitespace,
-            start: 6,
-            end: 7,
-            value: " ".to_string(),
-        }));
-        assert!(!is_not_code_token(&Token {
-            token_type: TokenType::String,
-            start: 7,
-            end: 14,
-            value: "\"hello\"".to_string(),
-        }));
-        assert!(!is_not_code_token(&Token {
-            token_type: TokenType::Word,
-            start: 16,
-            end: 27,
-            value: "aIdentifier".to_string(),
-        }));
-        assert!(!is_not_code_token(&Token {
-            token_type: TokenType::Brace,
-            start: 27,
-            end: 28,
-            value: ")".to_string(),
-        }));
-        assert!(is_not_code_token(&Token {
-            token_type: TokenType::BlockComment,
-            start: 28,
-            end: 30,
-            value: "/* abte */".to_string(),
-        }));
-        assert!(is_not_code_token(&Token {
-            token_type: TokenType::LineComment,
-            start: 30,
-            end: 33,
-            value: "// yoyo a line".to_string(),
-        }));
+        let tokens = [
+            Token {
+                token_type: TokenType::Whitespace,
+                start: 6,
+                end: 7,
+                value: " ".to_string(),
+            },
+            Token {
+                token_type: TokenType::BlockComment,
+                start: 28,
+                end: 30,
+                value: "/* abte */".to_string(),
+            },
+            Token {
+                token_type: TokenType::LineComment,
+                start: 30,
+                end: 33,
+                value: "// yoyo a line".to_string(),
+            },
+        ];
+        for (i, token) in tokens.iter().enumerate() {
+            assert!(!token.is_code_token(), "failed test {i}: {token:?}")
+        }
     }
 
     #[test]
     fn test_next_meaningful_token() {
         let _offset = 1;
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"const mySketch = startSketchAt([0,0])
   |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
   |> lineTo([1, 1], %) /* this is
@@ -2430,7 +2451,7 @@ const key = 'c'"#,
 
     #[test]
     fn test_find_closing_brace() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"const mySketch = startSketchAt([0,0])
 |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
 |> lineTo([1, 1], %) /* this is
@@ -2447,16 +2468,16 @@ const key = 'c'"#,
         assert_eq!(parser.find_closing_brace(90, 0, "").unwrap(), 92);
 
         let basic = "( hey )";
-        let parser = Parser::new(crate::tokeniser::lexer(basic));
+        let parser = Parser::new(crate::token::lexer(basic));
         assert_eq!(parser.find_closing_brace(0, 0, "").unwrap(), 4);
 
         let handles_non_zero_index = "(indexForBracketToRightOfThisIsTwo(shouldBeFour)AndNotThisSix)";
-        let parser = Parser::new(crate::tokeniser::lexer(handles_non_zero_index));
+        let parser = Parser::new(crate::token::lexer(handles_non_zero_index));
         assert_eq!(parser.find_closing_brace(2, 0, "").unwrap(), 4);
         assert_eq!(parser.find_closing_brace(0, 0, "").unwrap(), 6);
 
         let handles_nested = "{a{b{c(}d]}eathou athoeu tah u} thatOneToTheLeftIsLast }";
-        let parser = Parser::new(crate::tokeniser::lexer(handles_nested));
+        let parser = Parser::new(crate::token::lexer(handles_nested));
         assert_eq!(parser.find_closing_brace(0, 0, "").unwrap(), 18);
 
         // TODO expect error when not started on a brace
@@ -2464,7 +2485,7 @@ const key = 'c'"#,
 
     #[test]
     fn test_is_call_expression() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"const mySketch = startSketchAt([0,0])
 |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
 |> lineTo([1, 1], %) /* this is
@@ -2485,7 +2506,7 @@ const key = 'c'"#,
 
     #[test]
     fn test_find_next_declaration_keyword() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"const mySketch = startSketchAt([0,0])
 |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
 |> lineTo([1, 1], %) /* this is
@@ -2500,7 +2521,7 @@ const key = 'c'"#,
             TokenReturn { token: None, index: 92 }
         );
 
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"const myVar = 5
 const newVar = myVar + 1
 "#,
@@ -2530,7 +2551,7 @@ const newVar = myVar + 1
   lineTo(2, 3)
 } |> rx(45, %)
 "#;
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens);
         assert_eq!(
             parser.has_pipe_operator(0, None).unwrap(),
@@ -2549,7 +2570,7 @@ const newVar = myVar + 1
   lineTo(2, 3)
 } |> rx(45, %) |> rx(45, %)
 "#;
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens);
         assert_eq!(
             parser.has_pipe_operator(0, None).unwrap(),
@@ -2571,7 +2592,7 @@ const newVar = myVar + 1
 const yo = myFunc(9()
   |> rx(45, %)
 "#;
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens);
         assert_eq!(
             parser.has_pipe_operator(0, None).unwrap(),
@@ -2583,7 +2604,7 @@ const yo = myFunc(9()
         );
 
         let code = "const myVar2 = 5 + 1 |> myFn(%)";
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens);
         assert_eq!(
             parser.has_pipe_operator(1, None).unwrap(),
@@ -2605,7 +2626,7 @@ const yo = myFunc(9()
   lineTo(1,1)
 } |> rx(90, %)
 show(mySk1)"#;
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens.clone());
         let token_with_my_path_index = tokens.iter().position(|token| token.value == "myPath").unwrap();
         // loop through getting the token and it's index
@@ -2645,7 +2666,7 @@ show(mySk1)"#;
 
     #[test]
     fn test_make_member_expression() {
-        let tokens = crate::tokeniser::lexer("const prop = yo.one[\"two\"]");
+        let tokens = crate::token::lexer("const prop = yo.one[\"two\"]");
         let parser = Parser::new(tokens);
         let member_expression_return = parser.make_member_expression(6).unwrap();
         let member_expression = member_expression_return.expression;
@@ -2687,66 +2708,72 @@ show(mySk1)"#;
     #[test]
     fn test_find_end_of_binary_expression() {
         let code = "1 + 2 * 3\nconst yo = 5";
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens.clone());
         let end = parser.find_end_of_binary_expression(0).unwrap();
         assert_eq!(tokens[end].value, "3");
 
         let code = "(1 + 25) / 5 - 3\nconst yo = 5";
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens.clone());
         let end = parser.find_end_of_binary_expression(0).unwrap();
         assert_eq!(tokens[end].value, "3");
         let index_of_5 = code.find('5').unwrap();
         let end_starting_at_the_5 = parser.find_end_of_binary_expression(index_of_5).unwrap();
         assert_eq!(end_starting_at_the_5, end);
-        // whole thing wraped
+        // whole thing wrapped
         let code = "((1 + 2) / 5 - 3)\nconst yo = 5";
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens.clone());
         let end = parser.find_end_of_binary_expression(0).unwrap();
         assert_eq!(tokens[end].end, code.find("3)").unwrap() + 2);
-        // whole thing wraped but given index after the first brace
+        // whole thing wrapped but given index after the first brace
         let code = "((1 + 2) / 5 - 3)\nconst yo = 5";
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens.clone());
         let end = parser.find_end_of_binary_expression(1).unwrap();
         assert_eq!(tokens[end].value, "3");
         // given the index of a small wrapped section i.e. `1 + 2` in ((1 + 2) / 5 - 3)'
         let code = "((1 + 2) / 5 - 3)\nconst yo = 5";
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens.clone());
         let end = parser.find_end_of_binary_expression(2).unwrap();
         assert_eq!(tokens[end].value, "2");
         // lots of silly nesting
         let code = "(1 + 2) / (5 - (3))\nconst yo = 5";
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens.clone());
         let end = parser.find_end_of_binary_expression(0).unwrap();
         assert_eq!(tokens[end].end, code.find("))").unwrap() + 2);
         // with pipe operator at the end
         let code = "(1 + 2) / (5 - (3))\n  |> fn(%)";
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens.clone());
         let end = parser.find_end_of_binary_expression(0).unwrap();
         assert_eq!(tokens[end].end, code.find("))").unwrap() + 2);
         // with call expression at the start of binary expression
         let code = "yo(2) + 3\n  |> fn(%)";
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens.clone());
         let end = parser.find_end_of_binary_expression(0).unwrap();
         assert_eq!(tokens[end].value, "3");
         // with call expression at the end of binary expression
         let code = "3 + yo(2)\n  |> fn(%)";
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens);
         let _end = parser.find_end_of_binary_expression(0).unwrap();
+        // with call expression at the end of binary expression
+        let code = "-legX + 2, ";
+        let tokens = crate::token::lexer(code);
+        let parser = Parser::new(tokens.clone());
+        let end = parser.find_end_of_binary_expression(0).unwrap();
+        assert_eq!(tokens[end].value, "2");
     }
 
     #[test]
     fn test_make_array_expression() {
         // input_index: 6, output_index: 14, output: {"type":"ArrayExpression","start":11,"end":26,"elements":[{"type":"Literal","start":12,"end":15,"value":"1","raw":"\"1\""},{"type":"Literal","start":17,"end":18,"value":2,"raw":"2"},{"type":"Identifier","start":20,"end":25,"name":"three"}]}
-        let tokens = crate::tokeniser::lexer("const yo = [\"1\", 2, three]");
+        let tokens = crate::token::lexer("const yo = [\"1\", 2, three]");
         let parser = Parser::new(tokens);
         let array_expression = parser.make_array_expression(6).unwrap();
         let expression = array_expression.expression;
@@ -2785,7 +2812,7 @@ show(mySk1)"#;
 
     #[test]
     fn test_make_call_expression() {
-        let tokens = crate::tokeniser::lexer("foo(\"a\", a, 3)");
+        let tokens = crate::token::lexer("foo(\"a\", a, 3)");
         let parser = Parser::new(tokens);
         let result = parser.make_call_expression(0).unwrap();
         assert_eq!(result.last_index, 9);
@@ -2819,7 +2846,7 @@ show(mySk1)"#;
 
     #[test]
     fn test_make_variable_declaration() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"const yo = startSketch([0, 0])
   |> lineTo([1, myVar], %)
   |> foo(myVar2, %)
@@ -2889,14 +2916,14 @@ show(mySk1)"#;
 
     #[test]
     fn test_make_body() {
-        let tokens = crate::tokeniser::lexer("const myVar = 5");
+        let tokens = crate::token::lexer("const myVar = 5");
         let parser = Parser::new(tokens);
         let body = parser
             .make_body(
                 0,
                 vec![],
-                NoneCodeMeta {
-                    none_code_nodes: HashMap::new(),
+                NonCodeMeta {
+                    non_code_nodes: HashMap::new(),
                     start: None,
                 },
             )
@@ -2907,7 +2934,7 @@ show(mySk1)"#;
     #[test]
     fn test_abstract_syntax_tree() {
         let code = "5 +6";
-        let parser = Parser::new(crate::tokeniser::lexer(code));
+        let parser = Parser::new(crate::token::lexer(code));
         let result = parser.ast().unwrap();
         let expected_result = Program {
             start: 0,
@@ -2933,8 +2960,8 @@ show(mySk1)"#;
                     })),
                 })),
             })],
-            non_code_meta: NoneCodeMeta {
-                none_code_nodes: Default::default(),
+            non_code_meta: NonCodeMeta {
+                non_code_nodes: Default::default(),
                 start: None,
             },
         };
@@ -2945,8 +2972,8 @@ show(mySk1)"#;
     #[test]
     fn test_empty_file() {
         let some_program_string = r#""#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
         assert!(result.err().unwrap().to_string().contains("file is empty"));
@@ -2954,7 +2981,7 @@ show(mySk1)"#;
 
     #[test]
     fn test_parse_half_pipe_small() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             "const secondExtrude = startSketchAt([0,0])
   |",
         );
@@ -2966,14 +2993,14 @@ show(mySk1)"#;
 
     #[test]
     fn test_parse_member_expression_double_nested_braces() {
-        let tokens = crate::tokeniser::lexer(r#"const prop = yo["one"][two]"#);
+        let tokens = crate::token::lexer(r#"const prop = yo["one"][two]"#);
         let parser = Parser::new(tokens);
         parser.ast().unwrap();
     }
 
     #[test]
     fn test_parse_member_expression_binary_expression_period_number_first() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"const obj = { a: 1, b: 2 }
 const height = 1 - obj.a"#,
         );
@@ -2983,7 +3010,7 @@ const height = 1 - obj.a"#,
 
     #[test]
     fn test_parse_member_expression_binary_expression_brace_number_first() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"const obj = { a: 1, b: 2 }
 const height = 1 - obj["a"]"#,
         );
@@ -2993,7 +3020,7 @@ const height = 1 - obj["a"]"#,
 
     #[test]
     fn test_parse_member_expression_binary_expression_brace_number_second() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"const obj = { a: 1, b: 2 }
 const height = obj["a"] - 1"#,
         );
@@ -3003,7 +3030,7 @@ const height = obj["a"] - 1"#,
 
     #[test]
     fn test_parse_member_expression_binary_expression_in_array_number_first() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"const obj = { a: 1, b: 2 }
 const height = [1 - obj["a"], 0]"#,
         );
@@ -3013,7 +3040,7 @@ const height = [1 - obj["a"], 0]"#,
 
     #[test]
     fn test_parse_member_expression_binary_expression_in_array_number_second() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"const obj = { a: 1, b: 2 }
 const height = [obj["a"] - 1, 0]"#,
         );
@@ -3023,7 +3050,7 @@ const height = [obj["a"] - 1, 0]"#,
 
     #[test]
     fn test_parse_member_expression_binary_expression_in_array_number_second_missing_space() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"const obj = { a: 1, b: 2 }
 const height = [obj["a"] -1, 0]"#,
         );
@@ -3033,7 +3060,7 @@ const height = [obj["a"] -1, 0]"#,
 
     #[test]
     fn test_parse_half_pipe() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             "const height = 10
 
 const firstExtrude = startSketchAt([0,0])
@@ -3056,15 +3083,17 @@ const secondExtrude = startSketchAt([0,0])
 
     #[test]
     fn test_parse_greater_bang() {
-        let tokens = crate::tokeniser::lexer(">!");
+        let tokens = crate::token::lexer(">!");
         let parser = Parser::new(tokens);
-        let result = parser.ast();
-        assert!(result.is_ok());
+        let err = parser.ast().unwrap_err();
+        // TODO: Better errors when program cannot tokenize.
+        // https://github.com/KittyCAD/modeling-app/issues/696
+        assert!(err.to_string().contains("file is empty"));
     }
 
     #[test]
     fn test_parse_z_percent_parens() {
-        let tokens = crate::tokeniser::lexer("z%)");
+        let tokens = crate::token::lexer("z%)");
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
@@ -3073,7 +3102,23 @@ const secondExtrude = startSketchAt([0,0])
 
     #[test]
     fn test_parse_parens_unicode() {
-        let tokens = crate::tokeniser::lexer("(ޜ");
+        let tokens = crate::token::lexer("(ޜ");
+        let parser = Parser::new(tokens);
+        let result = parser.ast();
+        // TODO: Better errors when program cannot tokenize.
+        // https://github.com/KittyCAD/modeling-app/issues/696
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_parse_negative_in_array_binary_expression() {
+        let tokens = crate::token::lexer(
+            r#"const leg1 = 5
+const thickness = 0.56
+
+const bracket = [-leg2 + thickness, 0]
+"#,
+        );
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_ok());
@@ -3081,7 +3126,7 @@ const secondExtrude = startSketchAt([0,0])
 
     #[test]
     fn test_parse_nested_open_brackets() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"
 z(-[["#,
         );
@@ -3096,31 +3141,38 @@ z(-[["#,
 
     #[test]
     fn test_parse_weird_new_line_function() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"z
  (--#"#,
         );
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
+        // TODO: Better errors when program cannot tokenize.
+        // https://github.com/KittyCAD/modeling-app/issues/696
         assert_eq!(
             result.err().unwrap().to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([0, 1])], message: "missing a closing brace for the function call" }"#
+            r#"semantic: KclErrorDetails { source_ranges: [], message: "file is empty" }"#
         );
     }
 
     #[test]
     fn test_parse_weird_lots_of_fancy_brackets() {
-        let tokens = crate::tokeniser::lexer(r#"zz({{{{{{{{)iegAng{{{{{{{##"#);
+        let tokens = crate::token::lexer(r#"zz({{{{{{{{)iegAng{{{{{{{##"#);
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
-        assert!(result.err().unwrap().to_string().contains("unexpected end"));
+        // TODO: Better errors when program cannot tokenize.
+        // https://github.com/KittyCAD/modeling-app/issues/696
+        assert_eq!(
+            result.err().unwrap().to_string(),
+            r#"semantic: KclErrorDetails { source_ranges: [], message: "file is empty" }"#
+        );
     }
 
     #[test]
     fn test_parse_weird_close_before_open() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"fn)n
 e
 ["#,
@@ -3137,7 +3189,7 @@ e
 
     #[test]
     fn test_parse_weird_close_before_nada() {
-        let tokens = crate::tokeniser::lexer(r#"fn)n-"#);
+        let tokens = crate::token::lexer(r#"fn)n-"#);
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
@@ -3146,7 +3198,7 @@ e
 
     #[test]
     fn test_parse_weird_lots_of_slashes() {
-        let tokens = crate::tokeniser::lexer(
+        let tokens = crate::token::lexer(
             r#"J///////////o//+///////////P++++*++++++P///////˟
 ++4"#,
         );
@@ -3163,7 +3215,7 @@ e
     #[test]
     fn test_parse_expand_array() {
         let code = "const myArray = [0..10]";
-        let parser = Parser::new(crate::tokeniser::lexer(code));
+        let parser = Parser::new(crate::token::lexer(code));
         let result = parser.ast().unwrap();
         let expected_result = Program {
             start: 0,
@@ -3254,8 +3306,8 @@ e
                 }],
                 kind: VariableKind::Const,
             })],
-            non_code_meta: NoneCodeMeta {
-                none_code_nodes: Default::default(),
+            non_code_meta: NonCodeMeta {
+                non_code_nodes: Default::default(),
                 start: None,
             },
         };
@@ -3266,8 +3318,8 @@ e
     #[test]
     fn test_error_keyword_in_variable() {
         let some_program_string = r#"const let = "thing""#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
         assert_eq!(
@@ -3279,8 +3331,8 @@ e
     #[test]
     fn test_error_keyword_in_fn_name() {
         let some_program_string = r#"fn let = () {}"#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
         assert_eq!(
@@ -3292,8 +3344,8 @@ e
     #[test]
     fn test_error_stdlib_in_fn_name() {
         let some_program_string = r#"fn cos = () {}"#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
         assert_eq!(
@@ -3307,8 +3359,8 @@ e
         let some_program_string = r#"fn thing = (let) => {
     return 1
 }"#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
         assert_eq!(
@@ -3322,14 +3374,27 @@ e
         let some_program_string = r#"fn thing = (cos) => {
     return 1
 }"#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
         assert_eq!(
             result.err().unwrap().to_string(),
             r#"syntax: KclErrorDetails { source_ranges: [SourceRange([12, 15])], message: "Cannot assign a variable to a reserved keyword: cos" }"#
         );
+    }
+
+    #[test]
+    fn zero_param_function() {
+        let program = r#"
+        fn firstPrimeNumber = () => {
+            return 2
+        }
+        firstPrimeNumber()
+        "#;
+        let tokens = crate::token::lexer(program);
+        let parser = Parser::new(tokens);
+        let _ast = parser.ast().unwrap();
     }
 
     #[test]
@@ -3340,8 +3405,8 @@ e
 
 thing(false)
 "#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = Parser::new(tokens);
         parser.ast().unwrap();
     }
 
@@ -3357,8 +3422,8 @@ thing(false)
 "#,
                 name
             );
-            let tokens = crate::tokeniser::lexer(&some_program_string);
-            let parser = crate::parser::Parser::new(tokens);
+            let tokens = crate::token::lexer(&some_program_string);
+            let parser = Parser::new(tokens);
             let result = parser.ast();
             assert!(result.is_err());
             assert_eq!(
@@ -3375,13 +3440,56 @@ thing(false)
     #[test]
     fn test_error_define_var_as_function() {
         let some_program_string = r#"fn thing = "thing""#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
-        let parser = crate::parser::Parser::new(tokens);
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
         assert_eq!(
             result.err().unwrap().to_string(),
             r#"syntax: KclErrorDetails { source_ranges: [SourceRange([0, 2])], message: "Expected a `let` variable kind, found: `fn`" }"#
         );
+    }
+
+    #[test]
+    fn test_member_expression_sketch_group() {
+        let some_program_string = r#"fn cube = (pos, scale) => {
+  const sg = startSketchAt(pos)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+
+  return sg
+}
+
+const b1 = cube([0,0], 10)
+const b2 = cube([3,3], 4)
+
+const pt1 = b1[0]
+const pt2 = b2[0]
+
+show(b1)
+show(b2)"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = Parser::new(tokens);
+        parser.ast().unwrap();
+    }
+
+    #[test]
+    fn test_math_with_stdlib() {
+        let some_program_string = r#"const d2r = pi() / 2
+let other_thing = 2 * cos(3)"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = Parser::new(tokens);
+        parser.ast().unwrap();
+    }
+
+    #[test]
+    #[ignore] // ignore until more stack fixes
+    fn test_parse_pipes_on_pipes() {
+        let code = include_str!("../../tests/executor/inputs/pipes_on_pipes.kcl");
+
+        let tokens = crate::token::lexer(code);
+        let parser = Parser::new(tokens);
+        parser.ast().unwrap();
     }
 }

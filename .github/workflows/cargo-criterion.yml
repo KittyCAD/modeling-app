@@ -1,0 +1,37 @@
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**.rs'
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+      - '**/rust-toolchain.toml'
+      - .github/workflows/cargo-criterion.yml
+  pull_request:
+    paths:
+      - '**.rs'
+      - '**/Cargo.toml'
+      - '**/Cargo.lock'
+      - '**/rust-toolchain.toml'
+      - .github/workflows/cargo-criterion.yml
+  workflow_dispatch:
+permissions: read-all
+name: cargo criterion
+jobs:
+  cargocriterion:
+    name: cargo criterion
+    runs-on: ubuntu-latest-8-cores
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install dependencies
+        run: |
+          cargo install cargo-criterion
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2.6.1
+      - name: Benchmark kcl library
+        shell: bash
+        run: |-
+          cd src/wasm-lib/kcl; cargo criterion
+

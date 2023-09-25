@@ -12,11 +12,13 @@ export function useSetupEngineManager(
     setMediaStream,
     setIsStreamReady,
     setStreamDimensions,
+    executeCode,
   } = useStore((s) => ({
     setEngineCommandManager: s.setEngineCommandManager,
     setMediaStream: s.setMediaStream,
     setIsStreamReady: s.setIsStreamReady,
     setStreamDimensions: s.setStreamDimensions,
+    executeCode: s.executeCode,
   }))
 
   const streamWidth = streamRef?.current?.offsetWidth
@@ -41,6 +43,9 @@ export function useSetupEngineManager(
       token,
     })
     setEngineCommandManager(eng)
+    eng.waitForReady.then(() => {
+      executeCode()
+    })
     return () => {
       eng?.tearDown()
     }

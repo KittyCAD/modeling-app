@@ -62,7 +62,7 @@ export const CommandBarProvider = ({
 
 const CommandBar = () => {
   const { commands, commandBarOpen, setCommandBarOpen } = useCommandsContext()
-  useHotkeys('meta+k', () => {
+  useHotkeys(['meta+k', 'meta+/'], () => {
     if (commands.length === 0) return
     setCommandBarOpen(!commandBarOpen)
   })
@@ -221,10 +221,10 @@ const CommandBar = () => {
           <Combobox
             value={selectedCommand}
             onChange={handleCommandSelection}
-            className="rounded relative mx-auto p-2 bg-chalkboard-10 dark:bg-chalkboard-100 border dark:border-chalkboard-70 max-w-xl w-full shadow-lg"
+            className="relative w-full max-w-xl p-2 mx-auto border rounded shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70"
             as="div"
           >
-            <div className="flex gap-2 items-center">
+            <div className="flex items-center gap-2">
               <ActionIcon icon={faSearch} size="xl" className="rounded-sm" />
               <div>
                 {inSubCommand && (
@@ -235,7 +235,7 @@ const CommandBar = () => {
                 )}
                 <Combobox.Input
                   onChange={(event) => setQuery(event.target.value)}
-                  className="bg-transparent focus:outline-none w-full"
+                  className="w-full bg-transparent focus:outline-none"
                   onKeyDown={(event) => {
                     if (event.metaKey && event.key === 'k')
                       setCommandBarOpen(false)
@@ -264,12 +264,12 @@ const CommandBar = () => {
                 />
               </div>
             </div>
-            <Combobox.Options static className="max-h-96 overflow-y-auto">
+            <Combobox.Options static className="overflow-y-auto max-h-96">
               {filteredCommands?.map((commandResult) => (
                 <Combobox.Option
                   key={commandResult.item.name}
                   value={commandResult}
-                  className="my-2 first:mt-4 last:mb-4 ui-active:bg-liquid-10 dark:ui-active:bg-liquid-90 py-1 px-2"
+                  className="px-2 py-1 my-2 first:mt-4 last:mb-4 ui-active:bg-liquid-10 dark:ui-active:bg-liquid-90"
                 >
                   <p>{commandResult.item.name}</p>
                   {(commandResult.item as SubCommand).description && (

@@ -31,6 +31,14 @@ body.dark {
   @apply text-chalkboard-10;
 }
 
+select {
+  @apply bg-chalkboard-20;
+}
+
+.dark select {
+  @apply bg-chalkboard-90;
+}
+
 ::-webkit-scrollbar {
   @apply w-2 h-2 rounded-sm;
   @apply bg-chalkboard-20;

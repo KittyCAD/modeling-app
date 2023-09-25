@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
-    abstract_syntax_tree_types::{BodyItem, Function, FunctionExpression, Value},
+    ast::types::{BodyItem, Function, FunctionExpression, Value},
     engine::EngineConnection,
     errors::{KclError, KclErrorDetails},
 };
@@ -101,10 +101,10 @@ impl ProgramReturn {
 #[serde(tag = "type")]
 pub enum MemoryItem {
     UserVal(UserVal),
-    SketchGroup(SketchGroup),
-    ExtrudeGroup(ExtrudeGroup),
+    SketchGroup(Box<SketchGroup>),
+    ExtrudeGroup(Box<ExtrudeGroup>),
     #[ts(skip)]
-    ExtrudeTransform(ExtrudeTransform),
+    ExtrudeTransform(Box<ExtrudeTransform>),
     #[ts(skip)]
     Function {
         #[serde(skip)]
@@ -134,13 +134,28 @@ pub struct ExtrudeTransform {
     pub meta: Vec<Metadata>,
 }
 
-pub type MemoryFunction = fn(
-    s: &[MemoryItem],
-    memory: &ProgramMemory,
-    expression: &FunctionExpression,
-    metadata: &[Metadata],
-    engine: &mut EngineConnection,
-) -> Result<Option<ProgramReturn>, KclError>;
+pub type MemoryFunction =
+    fn(
+        s: Vec<MemoryItem>,
+        memory: ProgramMemory,
+        expression: Box<FunctionExpression>,
+        metadata: Vec<Metadata>,
+        engine: EngineConnection,
+    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>>>>;
+
+fn force_memory_function<
+    F: Fn(
+        Vec<MemoryItem>,
+        ProgramMemory,
+        Box<FunctionExpression>,
+        Vec<Metadata>,
+        EngineConnection,
+    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>>>>,
+>(
+    f: F,
+) -> F {
+    f
+}
 
 impl From<MemoryItem> for Vec<SourceRange> {
     fn from(item: MemoryItem) -> Self {
@@ -159,31 +174,33 @@ impl MemoryItem {
         if let MemoryItem::UserVal(user_val) = self {
             Ok(user_val.value.clone())
         } else {
-            Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Not a user value: {:?}", self),
-                source_ranges: self.clone().into(),
-            }))
+            serde_json::to_value(self).map_err(|err| {
+                KclError::Semantic(KclErrorDetails {
+                    message: format!("Cannot convert memory item to json value: {:?}", err),
+                    source_ranges: self.clone().into(),
+                })
+            })
         }
     }
 
-    pub fn call_fn(
+    pub async fn call_fn(
         &self,
-        args: &[MemoryItem],
-        memory: &ProgramMemory,
-        engine: &mut EngineConnection,
+        args: Vec<MemoryItem>,
+        memory: ProgramMemory,
+        engine: EngineConnection,
     ) -> Result<Option<ProgramReturn>, KclError> {
-        if let MemoryItem::Function { func, expression, meta } = self {
+        if let MemoryItem::Function { func, expression, meta } = &self {
             if let Some(func) = func {
-                func(args, memory, expression, meta, engine)
+                func(args, memory, expression.clone(), meta.clone(), engine).await
             } else {
                 Err(KclError::Semantic(KclErrorDetails {
-                    message: format!("Not a function: {:?}", self),
+                    message: format!("Not a function: {:?}", expression),
                     source_ranges: vec![],
                 }))
             }
         } else {
             Err(KclError::Semantic(KclErrorDetails {
-                message: format!("not a function: {:?}", self),
+                message: "not a in memory function".to_string(),
                 source_ranges: vec![],
             }))
         }
@@ -348,7 +365,7 @@ impl SourceRange {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct Point2d {
     pub x: f64,
@@ -376,6 +393,16 @@ impl From<Point2d> for [f64; 2] {
 impl From<Point2d> for kittycad::types::Point2D {
     fn from(p: Point2d) -> Self {
         Self { x: p.x, y: p.y }
+    }
+}
+
+impl Point2d {
+    pub const ZERO: Self = Self { x: 0.0, y: 0.0 };
+    pub fn scale(self, scalar: f64) -> Self {
+        Self {
+            x: self.x * scalar,
+            y: self.y * scalar,
+        }
     }
 }
 
@@ -567,11 +594,11 @@ impl Default for PipeInfo {
 }
 
 /// Execute a AST's program.
-pub fn execute(
-    program: crate::abstract_syntax_tree_types::Program,
+pub async fn execute(
+    program: crate::ast::types::Program,
     memory: &mut ProgramMemory,
     options: BodyType,
-    engine: &mut EngineConnection,
+    engine: &EngineConnection,
 ) -> Result<ProgramMemory, KclError> {
     let mut pipe_info = PipeInfo::default();
 
@@ -589,6 +616,10 @@ pub fn execute(
                                 let memory_item = memory.get(&identifier.name, identifier.into())?;
                                 args.push(memory_item.clone());
                             }
+                            Value::CallExpression(call_expr) => {
+                                let result = call_expr.execute(memory, &mut pipe_info, engine).await?;
+                                args.push(result);
+                            }
                             // We do nothing for the rest.
                             _ => (),
                         }
@@ -604,7 +635,7 @@ pub fn execute(
 
                         memory.return_ = Some(ProgramReturn::Arguments(call_expr.arguments.clone()));
                     } else if let Some(func) = memory.clone().root.get(&fn_name) {
-                        let result = func.call_fn(&args, memory, engine)?;
+                        let result = func.call_fn(args.clone(), memory.clone(), engine.clone()).await?;
 
                         memory.return_ = result;
                     } else {
@@ -630,22 +661,27 @@ pub fn execute(
                             memory.add(&var_name, value.clone(), source_range)?;
                         }
                         Value::BinaryExpression(binary_expression) => {
-                            let result = binary_expression.get_result(memory, &mut pipe_info, engine)?;
+                            let result = binary_expression.get_result(memory, &mut pipe_info, engine).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::FunctionExpression(function_expression) => {
-                            memory.add(
-                                &var_name,
-                                MemoryItem::Function{
-                                    expression: function_expression.clone(),
-                                    meta: vec![metadata],
-                                    func: Some(|args: &[MemoryItem], memory: &ProgramMemory, function_expression: &FunctionExpression, _metadata: &[Metadata], engine: &mut EngineConnection| -> Result<Option<ProgramReturn>, KclError> {
+                            let mem_func = force_memory_function(
+                                |args: Vec<MemoryItem>,
+                                 memory: ProgramMemory,
+                                 function_expression: Box<FunctionExpression>,
+                                 _metadata: Vec<Metadata>,
+                                 engine: EngineConnection| {
+                                    Box::pin(async move {
                                         let mut fn_memory = memory.clone();
 
                                         if args.len() != function_expression.params.len() {
                                             return Err(KclError::Semantic(KclErrorDetails {
-                                                message: format!("Expected {} arguments, got {}", function_expression.params.len(), args.len()),
-                                                source_ranges: vec![function_expression.into()],
+                                                message: format!(
+                                                    "Expected {} arguments, got {}",
+                                                    function_expression.params.len(),
+                                                    args.len()
+                                                ),
+                                                source_ranges: vec![(&function_expression).into()],
                                             }));
                                         }
 
@@ -658,20 +694,34 @@ pub fn execute(
                                             )?;
                                         }
 
-                                        let result = execute(function_expression.body.clone(), &mut fn_memory, BodyType::Block, engine)?;
+                                        let result = execute(
+                                            function_expression.body.clone(),
+                                            &mut fn_memory,
+                                            BodyType::Block,
+                                            &engine,
+                                        )
+                                        .await?;
 
                                         Ok(result.return_)
                                     })
+                                },
+                            );
+                            memory.add(
+                                &var_name,
+                                MemoryItem::Function {
+                                    expression: function_expression.clone(),
+                                    meta: vec![metadata],
+                                    func: Some(mem_func),
                                 },
                                 source_range,
                             )?;
                         }
                         Value::CallExpression(call_expression) => {
-                            let result = call_expression.execute(memory, &mut pipe_info, engine)?;
+                            let result = call_expression.execute(memory, &mut pipe_info, engine).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::PipeExpression(pipe_expression) => {
-                            let result = pipe_expression.get_result(memory, &mut pipe_info, engine)?;
+                            let result = pipe_expression.get_result(memory, &mut pipe_info, engine).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::PipeSubstitution(pipe_substitution) => {
@@ -684,11 +734,11 @@ pub fn execute(
                             }));
                         }
                         Value::ArrayExpression(array_expression) => {
-                            let result = array_expression.execute(memory, &mut pipe_info, engine)?;
+                            let result = array_expression.execute(memory, &mut pipe_info, engine).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::ObjectExpression(object_expression) => {
-                            let result = object_expression.execute(memory, &mut pipe_info, engine)?;
+                            let result = object_expression.execute(memory, &mut pipe_info, engine).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::MemberExpression(member_expression) => {
@@ -696,7 +746,7 @@ pub fn execute(
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::UnaryExpression(unary_expression) => {
-                            let result = unary_expression.get_result(memory, &mut pipe_info, engine)?;
+                            let result = unary_expression.get_result(memory, &mut pipe_info, engine).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                     }
@@ -704,11 +754,11 @@ pub fn execute(
             }
             BodyItem::ReturnStatement(return_statement) => match &return_statement.argument {
                 Value::BinaryExpression(bin_expr) => {
-                    let result = bin_expr.get_result(memory, &mut pipe_info, engine)?;
+                    let result = bin_expr.get_result(memory, &mut pipe_info, engine).await?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::UnaryExpression(unary_expr) => {
-                    let result = unary_expr.get_result(memory, &mut pipe_info, engine)?;
+                    let result = unary_expr.get_result(memory, &mut pipe_info, engine).await?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::Identifier(identifier) => {
@@ -719,15 +769,15 @@ pub fn execute(
                     memory.return_ = Some(ProgramReturn::Value(literal.into()));
                 }
                 Value::ArrayExpression(array_expr) => {
-                    let result = array_expr.execute(memory, &mut pipe_info, engine)?;
+                    let result = array_expr.execute(memory, &mut pipe_info, engine).await?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::ObjectExpression(obj_expr) => {
-                    let result = obj_expr.execute(memory, &mut pipe_info, engine)?;
+                    let result = obj_expr.execute(memory, &mut pipe_info, engine).await?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::CallExpression(call_expr) => {
-                    let result = call_expr.execute(memory, &mut pipe_info, engine)?;
+                    let result = call_expr.execute(memory, &mut pipe_info, engine).await?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::MemberExpression(member_expr) => {
@@ -735,7 +785,7 @@ pub fn execute(
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::PipeExpression(pipe_expr) => {
-                    let result = pipe_expr.get_result(memory, &mut pipe_info, engine)?;
+                    let result = pipe_expr.get_result(memory, &mut pipe_info, engine).await?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::PipeSubstitution(_) => {}
@@ -754,12 +804,12 @@ mod tests {
     use super::*;
 
     pub async fn parse_execute(code: &str) -> Result<ProgramMemory> {
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast()?;
         let mut mem: ProgramMemory = Default::default();
-        let mut engine = EngineConnection::new().await?;
-        let memory = execute(program, &mut mem, BodyType::Root, &mut engine)?;
+        let engine = EngineConnection::new().await?;
+        let memory = execute(program, &mut mem, BodyType::Root, &engine).await?;
 
         Ok(memory)
     }
@@ -1164,6 +1214,16 @@ show(thisBox)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_execute_with_pi() {
+        let ast = r#"const myVar = pi() * 2"#;
+        let memory = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            serde_json::json!(std::f64::consts::TAU),
+            memory.root.get("myVar").unwrap().get_json_value().unwrap()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_math_define_decimal_without_leading_zero() {
         let ast = r#"let thing = .4 + 7"#;
         let memory = parse_execute(ast).await.unwrap();
@@ -1171,5 +1231,93 @@ show(thisBox)
             serde_json::json!(7.4),
             memory.root.get("thing").unwrap().get_json_value().unwrap()
         );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_zero_param_fn() {
+        let ast = r#"const sigmaAllow = 35000 // psi
+const leg1 = 5 // inches
+const leg2 = 8 // inches
+fn thickness = () => { return 0.56 }
+
+const bracket = startSketchAt([0,0])
+  |> line([0, leg1], %)
+  |> line([leg2, 0], %)
+  |> line([0, -thickness()], %)
+  |> line([-leg2 + thickness(), 0], %)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_negative_variable_in_binary_expression() {
+        let ast = r#"const sigmaAllow = 35000 // psi
+const width = 1 // inch
+
+const p = 150 // lbs
+const distance = 6 // inches
+const FOS = 2
+
+const leg1 = 5 // inches
+const leg2 = 8 // inches
+
+const thickness_squared = distance * p * FOS * 6 / sigmaAllow
+const thickness = 0.56 // inches. App does not support square root function yet
+
+const bracket = startSketchAt([0,0])
+  |> line([0, leg1], %)
+  |> line([leg2, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-leg2 + thickness, 0], %)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_doubly_nested_parens() {
+        let ast = r#"const sigmaAllow = 35000 // psi
+const width = 4 // inch
+const p = 150 // Force on shelf - lbs
+const distance = 6 // inches
+const FOS = 2
+const leg1 = 5 // inches
+const leg2 = 8 // inches
+const thickness_squared = (distance * p * FOS * 6 / (sigmaAllow - width))
+const thickness = 0.32 // inches. App does not support square root function yet
+const bracket = startSketchAt([0,0])
+    |> line([0, leg1], %)
+  |> line([leg2, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-1 * leg2 + thickness, 0], %)
+  |> line([0, -1 * leg1 + thickness], %)
+  |> close(%)
+  |> extrude(width, %)
+show(bracket)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_nested_parens_one_less() {
+        let ast = r#"const sigmaAllow = 35000 // psi
+const width = 4 // inch
+const p = 150 // Force on shelf - lbs
+const distance = 6 // inches
+const FOS = 2
+const leg1 = 5 // inches
+const leg2 = 8 // inches
+const thickness_squared = distance * p * FOS * 6 / (sigmaAllow - width)
+const thickness = 0.32 // inches. App does not support square root function yet
+const bracket = startSketchAt([0,0])
+    |> line([0, leg1], %)
+  |> line([leg2, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-1 * leg2 + thickness, 0], %)
+  |> line([0, -1 * leg1 + thickness], %)
+  |> close(%)
+  |> extrude(width, %)
+show(bracket)
+"#;
+        parse_execute(ast).await.unwrap();
     }
 }

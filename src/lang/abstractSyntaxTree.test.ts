@@ -139,54 +139,6 @@ const newVar = myVar + 1
       },
     ])
   })
-  test('using std function "log"', () => {
-    const code = `log(5, "hello", aIdentifier)`
-    const { body } = parser_wasm(code)
-    expect(body).toEqual([
-      {
-        type: 'ExpressionStatement',
-        start: 0,
-        end: 28,
-        expression: {
-          type: 'CallExpression',
-          start: 0,
-          end: 28,
-          callee: {
-            type: 'Identifier',
-            start: 0,
-            end: 3,
-            name: 'log',
-          },
-          arguments: [
-            {
-              type: 'Literal',
-              start: 4,
-              end: 5,
-              value: 5,
-              raw: '5',
-            },
-            {
-              type: 'Literal',
-              start: 7,
-              end: 14,
-              value: 'hello',
-              raw: '"hello"',
-            },
-            {
-              type: 'Identifier',
-              start: 16,
-              end: 27,
-              name: 'aIdentifier',
-            },
-          ],
-          function: {
-            type: 'InMemory',
-          },
-          optional: false,
-        },
-      },
-    ])
-  })
 })
 
 describe('testing function declaration', () => {
@@ -1560,7 +1512,7 @@ const yo = { a: { b: { c: '123' } } }
 // this is a comment
 const key = 'c'`
     const nonCodeMetaInstance = {
-      type: 'NoneCodeNode',
+      type: 'NonCodeNode',
       start: code.indexOf('\n// this is a comment'),
       end: code.indexOf('const key'),
       value: {
@@ -1569,17 +1521,17 @@ const key = 'c'`
       },
     }
     const { nonCodeMeta } = parser_wasm(code)
-    expect(nonCodeMeta.noneCodeNodes[0]).toEqual(nonCodeMetaInstance)
+    expect(nonCodeMeta.nonCodeNodes[0]).toEqual(nonCodeMetaInstance)
 
     // extra whitespace won't change it's position (0) or value (NB the start end would have changed though)
     const codeWithExtraStartWhitespace = '\n\n\n' + code
     const { nonCodeMeta: nonCodeMeta2 } = parser_wasm(
       codeWithExtraStartWhitespace
     )
-    expect(nonCodeMeta2.noneCodeNodes[0].value).toStrictEqual(
+    expect(nonCodeMeta2.nonCodeNodes[0].value).toStrictEqual(
       nonCodeMetaInstance.value
     )
-    expect(nonCodeMeta2.noneCodeNodes[0].start).not.toBe(
+    expect(nonCodeMeta2.nonCodeNodes[0].start).not.toBe(
       nonCodeMetaInstance.start
     )
   })
@@ -1596,9 +1548,9 @@ const key = 'c'`
     const { body } = parser_wasm(code)
     const indexOfSecondLineToExpression = 2
     const sketchNonCodeMeta = (body as any)[0].declarations[0].init.nonCodeMeta
-      .noneCodeNodes
+      .nonCodeNodes
     expect(sketchNonCodeMeta[indexOfSecondLineToExpression]).toEqual({
-      type: 'NoneCodeNode',
+      type: 'NonCodeNode',
       start: 106,
       end: 166,
       value: {
@@ -1619,9 +1571,9 @@ const key = 'c'`
 
     const { body } = parser_wasm(code)
     const sketchNonCodeMeta = (body[0] as any).declarations[0].init.nonCodeMeta
-      .noneCodeNodes
+      .nonCodeNodes
     expect(sketchNonCodeMeta[3]).toEqual({
-      type: 'NoneCodeNode',
+      type: 'NonCodeNode',
       start: 125,
       end: 141,
       value: {
@@ -1739,7 +1691,6 @@ describe('parsing errors', () => {
     let _theError
     try {
       const result = expect(parser_wasm(code))
-      console.log('result', result)
     } catch (e) {
       _theError = e
     }

@@ -1,4 +1,6 @@
-pub mod abstract_syntax_tree_types;
+#![recursion_limit = "1024"]
+
+pub mod ast;
 pub mod docs;
 pub mod engine;
 pub mod errors;
@@ -7,4 +9,4 @@ pub mod math_parser;
 pub mod parser;
 pub mod server;
 pub mod std;
-pub mod tokeniser;
+pub mod token;

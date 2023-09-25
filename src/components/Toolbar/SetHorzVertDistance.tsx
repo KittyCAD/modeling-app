@@ -21,17 +21,28 @@ import { GetInfoModal } from '../SetHorVertDistanceModal'
 import { createLiteral, createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { updateCursors } from '../../lang/util'
+import { ActionIcon } from 'components/ActionIcon'
+import { sketchButtonClassnames } from 'Toolbar'
 
 const getModalInfo = create(GetInfoModal as any)
+
+type ButtonType =
+  | 'setHorzDistance'
+  | 'setVertDistance'
+  | 'alignEndsHorizontally'
+  | 'alignEndsVertically'
+
+const buttonLabels: Record<ButtonType, string> = {
+  setHorzDistance: 'Set Horizontal Distance',
+  setVertDistance: 'Set Vertical Distance',
+  alignEndsHorizontally: 'Align Ends Horizontally',
+  alignEndsVertically: 'Align Ends Vertically',
+}
 
 export const SetHorzVertDistance = ({
   buttonType,
 }: {
-  buttonType:
-    | 'setHorzDistance'
-    | 'setVertDistance'
-    | 'alignEndsHorizontally'
-    | 'alignEndsVertically'
+  buttonType: ButtonType
 }) => {
   const { guiMode, selectionRanges, ast, programMemory, updateAst, setCursor } =
     useStore((s) => ({
@@ -137,7 +148,7 @@ export const SetHorzVertDistance = ({
               constraint === 'setHorzDistance' ? 'xDis' : 'yDis',
           } as any))
         if (segName === tagInfo?.tag && value === valueUsedInTransform) {
-          updateAst(modifiedAst, {
+          updateAst(modifiedAst, true, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
         } else {
@@ -163,14 +174,15 @@ export const SetHorzVertDistance = ({
             )
             _modifiedAst.body = newBody
           }
-          updateAst(_modifiedAst, {
+          updateAst(_modifiedAst, true, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
         }
       }}
       disabled={!enable}
+      title={buttonLabels[buttonType]}
     >
-      {buttonType}
+      {buttonLabels[buttonType]}
     </button>
   )
 }

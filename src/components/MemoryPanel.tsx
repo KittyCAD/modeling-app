@@ -24,7 +24,11 @@ export const MemoryPanel = ({
     <CollapsiblePanel {...props}>
       <div className="h-full relative">
         <div className="absolute inset-0 flex flex-col items-start">
-          <div className=" h-full console-tile w-full">
+          <div
+            className="overflow-y-auto h-full console-tile w-full"
+            style={{ marginBottom: 36 }}
+          >
+            {/* 36px is the height of PanelHeader */}
             <ReactJson
               src={ProcessedMemory}
               collapsed={1}
@@ -46,7 +50,7 @@ export const MemoryPanel = ({
 
 export const processMemory = (programMemory: ProgramMemory) => {
   const processedMemory: any = {}
-  Object.keys(programMemory.root).forEach((key) => {
+  Object.keys(programMemory?.root || {}).forEach((key) => {
     const val = programMemory.root[key]
     if (typeof val.value !== 'function') {
       if (val.type === 'SketchGroup') {
