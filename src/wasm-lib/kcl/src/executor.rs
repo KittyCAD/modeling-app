@@ -677,9 +677,10 @@ pub async fn execute(
                                         if args.len() != function_expression.params.len() {
                                             return Err(KclError::Semantic(KclErrorDetails {
                                                 message: format!(
-                                                    "Expected {} arguments, got {}",
+                                                    "Expected {} arguments, got {}: {:?}",
                                                     function_expression.params.len(),
-                                                    args.len()
+                                                    args.len(),
+                                                    args
                                                 ),
                                                 source_ranges: vec![(&function_expression).into()],
                                             }));
