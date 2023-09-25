@@ -30,6 +30,7 @@ import { isOverlap, roundOff } from 'lib/utils'
 import { kclErrToDiagnostic } from 'lang/errors'
 import { CSSRuleObject } from 'tailwindcss/types/config'
 import interact from '@replit/codemirror-interact'
+import { engineCommandManager } from '../lang/std/engineConnection'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -52,7 +53,6 @@ export const TextEditor = ({
     code,
     deferredSetCode,
     editorView,
-    engineCommandManager,
     formatCode,
     isLSPServerReady,
     selectionRanges,
@@ -64,7 +64,6 @@ export const TextEditor = ({
     code: s.code,
     deferredSetCode: s.deferredSetCode,
     editorView: s.editorView,
-    engineCommandManager: s.engineCommandManager,
     formatCode: s.formatCode,
     isLSPServerReady: s.isLSPServerReady,
     selectionRanges: s.selectionRanges,
@@ -173,7 +172,7 @@ export const TextEditor = ({
     const idBasedSelections = codeBasedSelections
       .map(({ type, range }) => {
         const hasOverlap = Object.entries(
-          engineCommandManager?.sourceRangeMap || {}
+          engineCommandManager.sourceRangeMap || {}
         ).filter(([_, sourceRange]) => {
           return isOverlap(sourceRange, range)
         })
@@ -186,7 +185,7 @@ export const TextEditor = ({
       })
       .filter(Boolean) as any
 
-    engineCommandManager?.cusorsSelected({
+    engineCommandManager.cusorsSelected({
       otherSelections: [],
       idBasedSelections,
     })

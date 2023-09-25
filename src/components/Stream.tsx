@@ -25,6 +25,7 @@ import { modify_ast_for_sketch } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from 'lang/errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
 import { rangeTypeFix } from 'lang/abstractSyntaxTree'
+import { engineCommandManager } from '../lang/std/engineConnection'
 
 export const Stream = ({ className = '' }) => {
   const [isLoading, setIsLoading] = useState(true)
@@ -32,7 +33,6 @@ export const Stream = ({ className = '' }) => {
   const videoRef = useRef<HTMLVideoElement>(null)
   const {
     mediaStream,
-    engineCommandManager,
     setButtonDownInStream,
     didDragInStream,
     setDidDragInStream,
@@ -45,7 +45,6 @@ export const Stream = ({ className = '' }) => {
     programMemory,
   } = useStore((s) => ({
     mediaStream: s.mediaStream,
-    engineCommandManager: s.engineCommandManager,
     setButtonDownInStream: s.setButtonDownInStream,
     fileId: s.fileId,
     didDragInStream: s.didDragInStream,
@@ -73,7 +72,7 @@ export const Stream = ({ className = '' }) => {
     if (!videoRef.current) return
     if (!mediaStream) return
     videoRef.current.srcObject = mediaStream
-  }, [mediaStream, engineCommandManager])
+  }, [mediaStream])
 
   const handleMouseDown: MouseEventHandler<HTMLVideoElement> = (e) => {
     if (!videoRef.current) return
@@ -107,7 +106,7 @@ export const Stream = ({ className = '' }) => {
     }
 
     if (guiMode.mode === 'sketch' && guiMode.sketchMode === ('move' as any)) {
-      engineCommandManager?.sendSceneCommand({
+      engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
           type: 'handle_mouse_drag_start',
@@ -121,7 +120,7 @@ export const Stream = ({ className = '' }) => {
         guiMode.sketchMode === ('sketch_line' as any)
       )
     ) {
-      engineCommandManager?.sendSceneCommand({
+      engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
           type: 'camera_drag_start',
@@ -139,7 +138,7 @@ export const Stream = ({ className = '' }) => {
   const handleScroll: WheelEventHandler<HTMLVideoElement> = (e) => {
     if (!cameraMouseDragGuards[cameraControls].zoom.scrollCallback(e)) return
 
-    engineCommandManager?.sendSceneCommand({
+    engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd: {
         type: 'default_camera_zoom',
@@ -177,7 +176,7 @@ export const Stream = ({ className = '' }) => {
     }
 
     if (!didDragInStream) {
-      engineCommandManager?.sendSceneCommand({
+      engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
           type: 'select_with_point',
@@ -214,7 +213,7 @@ export const Stream = ({ className = '' }) => {
         window: { x, y },
       }
     }
-    engineCommandManager?.sendSceneCommand(command).then(async (resp) => {
+    engineCommandManager.sendSceneCommand(command).then(async (resp) => {
       if (!(guiMode.mode === 'sketch')) return
 
       if (guiMode.sketchMode === 'selectFace') return
@@ -282,7 +281,7 @@ export const Stream = ({ className = '' }) => {
         guiMode.waitingFirstClick &&
         !isEditingExistingSketch
       ) {
-        const curve = await engineCommandManager?.sendSceneCommand({
+        const curve = await engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
@@ -323,7 +322,7 @@ export const Stream = ({ className = '' }) => {
         resp?.data?.data?.entities_modified?.length &&
         (!guiMode.waitingFirstClick || isEditingExistingSketch)
       ) {
-        const curve = await engineCommandManager?.sendSceneCommand({
+        const curve = await engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
@@ -368,12 +367,12 @@ export const Stream = ({ className = '' }) => {
           setGuiMode({
             mode: 'default',
           })
-          engineCommandManager?.sendSceneCommand({
+          engineCommandManager.sendSceneCommand({
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
             cmd: { type: 'edit_mode_exit' },
           })
-          engineCommandManager?.sendSceneCommand({
+          engineCommandManager.sendSceneCommand({
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
             cmd: { type: 'default_camera_disable_sketch_mode' },

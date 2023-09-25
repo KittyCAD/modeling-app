@@ -1,14 +1,9 @@
 import { useEffect } from 'react'
 import { useStore } from 'useStore'
+import { engineCommandManager } from '../lang/std/engineConnection'
 
 export function useEngineConnectionSubscriptions() {
-  const {
-    engineCommandManager,
-    setCursor2,
-    setHighlightRange,
-    highlightRange,
-  } = useStore((s) => ({
-    engineCommandManager: s.engineCommandManager,
+  const { setCursor2, setHighlightRange, highlightRange } = useStore((s) => ({
     setCursor2: s.setCursor2,
     setHighlightRange: s.setHighlightRange,
     highlightRange: s.highlightRange,

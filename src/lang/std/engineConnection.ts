@@ -595,19 +595,34 @@ export class EngineCommandManager {
       [localUnsubscribeId: string]: (a: any) => void
     }
   } = {} as any
-  constructor({
+
+  constructor() {
+    this.engineConnection = undefined
+  }
+
+  start({
     setMediaStream,
     setIsStreamReady,
+    width,
+    height,
     token,
   }: {
     setMediaStream: (stream: MediaStream) => void
     setIsStreamReady: (isStreamReady: boolean) => void
+    width: number
+    height: number
     token?: string
   }) {
+    // If we already have an engine connection, just need to resize the stream.
+    if (this.engineConnection) {
+      this.handleResize({ streamWidth: width, streamHeight: height })
+      return
+    }
+
     this.waitForReady = new Promise((resolve) => {
       this.resolveReady = resolve
     })
-    const url = `${VITE_KC_API_WS_MODELING_URL}`
+    const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}`
     this.engineConnection = new EngineConnection({
       url,
       token,
@@ -697,7 +712,7 @@ export class EngineCommandManager {
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
       cmd: {
-        type: 'resize',
+        type: 'reconfigure_stream',
         width: streamWidth,
         height: streamHeight,
       },
@@ -705,6 +720,10 @@ export class EngineCommandManager {
     this.engineConnection?.send(resizeCmd)*/
   }
   handleModelingCommand(message: WebSocketResponse, id: string) {
+    if (this.engineConnection === undefined) {
+      return
+    }
+
     if (message.type !== 'modeling') {
       return
     }
@@ -869,6 +888,9 @@ export class EngineCommandManager {
     })
   }
   sendSceneCommand(command: EngineCommand): Promise<any> {
+    if (this.engineConnection === undefined) {
+      return Promise.resolve()
+    }
     if (
       command.type === 'modeling_cmd_req' &&
       command.cmd.type !== lastMessage
@@ -920,6 +942,9 @@ export class EngineCommandManager {
     range: SourceRange
     command: EngineCommand | string
   }): Promise<any> {
+    if (this.engineConnection === undefined) {
+      return Promise.resolve()
+    }
     this.sourceRangeMap[id] = range
 
     if (!this.engineConnection?.isReady()) {
@@ -965,6 +990,9 @@ export class EngineCommandManager {
     rangeStr: string,
     commandStr: string
   ): Promise<any> {
+    if (this.engineConnection === undefined) {
+      return Promise.resolve()
+    }
     if (id === undefined) {
       throw new Error('id is undefined')
     }
@@ -1015,6 +1043,9 @@ export class EngineCommandManager {
     }
   }
   private async fixIdMappings(ast: Program, programMemory: ProgramMemory) {
+    if (this.engineConnection === undefined) {
+      return
+    }
     /* This is a temporary solution since the cmd_ids that are sent through when
     sending 'extend_path' ids are not used as the segment ids.
 
@@ -1094,3 +1125,5 @@ export class EngineCommandManager {
     })
   }
 }
+
+export const engineCommandManager = new EngineCommandManager()

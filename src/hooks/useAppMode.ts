@@ -8,6 +8,7 @@ import { ArtifactMap, EngineCommandManager } from 'lang/std/engineConnection'
 import { Models } from '@kittycad/lib/dist/types/src'
 import { isReducedMotion } from 'lang/util'
 import { isOverlap } from 'lib/utils'
+import { engineCommandManager } from '../lang/std/engineConnection'
 
 interface DefaultPlanes {
   xy: string
@@ -17,19 +18,13 @@ interface DefaultPlanes {
 }
 
 export function useAppMode() {
-  const {
-    guiMode,
-    setGuiMode,
-    selectionRanges,
-    engineCommandManager,
-    selectionRangeTypeMap,
-  } = useStore((s) => ({
-    guiMode: s.guiMode,
-    setGuiMode: s.setGuiMode,
-    selectionRanges: s.selectionRanges,
-    engineCommandManager: s.engineCommandManager,
-    selectionRangeTypeMap: s.selectionRangeTypeMap,
-  }))
+  const { guiMode, setGuiMode, selectionRanges, selectionRangeTypeMap } =
+    useStore((s) => ({
+      guiMode: s.guiMode,
+      setGuiMode: s.setGuiMode,
+      selectionRanges: s.selectionRanges,
+      selectionRangeTypeMap: s.selectionRangeTypeMap,
+    }))
   const [defaultPlanes, setDefaultPlanes] = useState<DefaultPlanes | null>(null)
   useEffect(() => {
     if (
@@ -65,7 +60,7 @@ export function useAppMode() {
         setDefaultPlanesHidden(engineCommandManager, localDefaultPlanes, true)
         // TODO figure out the plane to use based on the sketch
         // maybe it's easier to make a new plane than rely on the defaults
-        await engineCommandManager?.sendSceneCommand({
+        await engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
@@ -135,7 +130,7 @@ export function useAppMode() {
   ])
 
   useEffect(() => {
-    const unSub = engineCommandManager?.subscribeTo({
+    const unSub = engineCommandManager.subscribeTo({
       event: 'select_with_point',
       callback: async ({ data }) => {
         if (!data.entity_id) return
@@ -144,18 +139,16 @@ export function useAppMode() {
           // user clicked something else in the scene
           return
         }
-        const sketchModeResponse = await engineCommandManager?.sendSceneCommand(
-          {
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'sketch_mode_enable',
-              plane_id: data.entity_id,
-              ortho: true,
-              animated: !isReducedMotion(),
-            },
-          }
-        )
+        const sketchModeResponse = await engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'sketch_mode_enable',
+            plane_id: data.entity_id,
+            ortho: true,
+            animated: !isReducedMotion(),
+          },
+        })
         setDefaultPlanesHidden(engineCommandManager, defaultPlanes, true)
         const sketchUuid = uuidv4()
         const proms: any[] = []
@@ -208,7 +201,7 @@ async function createPlane(
   }
 ) {
   const planeId = uuidv4()
-  await engineCommandManager?.sendSceneCommand({
+  await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd: {
       type: 'make_plane',
@@ -220,7 +213,7 @@ async function createPlane(
     },
     cmd_id: planeId,
   })
-  await engineCommandManager?.sendSceneCommand({
+  await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd: {
       type: 'plane_set_color',
@@ -233,12 +226,12 @@ async function createPlane(
 }
 
 function setDefaultPlanesHidden(
-  engineCommandManager: EngineCommandManager | undefined,
+  engineCommandManager: EngineCommandManager,
   defaultPlanes: DefaultPlanes,
   hidden: boolean
 ) {
   Object.values(defaultPlanes).forEach((planeId) => {
-    engineCommandManager?.sendSceneCommand({
+    engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
       cmd: {

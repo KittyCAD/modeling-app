@@ -31,6 +31,7 @@ import { TextEditor } from 'components/TextEditor'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
 import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
+import { engineCommandManager } from './lang/std/engineConnection'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
@@ -39,7 +40,6 @@ export function App() {
   useHotKeyListener()
   const {
     setCode,
-    engineCommandManager,
     buttonDownInStream,
     openPanes,
     setOpenPanes,
@@ -52,7 +52,6 @@ export function App() {
     guiMode: s.guiMode,
     setGuiMode: s.setGuiMode,
     setCode: s.setCode,
-    engineCommandManager: s.engineCommandManager,
     buttonDownInStream: s.buttonDownInStream,
     openPanes: s.openPanes,
     setOpenPanes: s.setOpenPanes,
@@ -91,12 +90,12 @@ export function App() {
       if (guiMode.sketchMode === 'sketchEdit') {
         // TODO: share this with Toolbar's "Exit sketch" button
         // exiting sketch should be done consistently across all exits
-        engineCommandManager?.sendSceneCommand({
+        engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: { type: 'edit_mode_exit' },
         })
-        engineCommandManager?.sendSceneCommand({
+        engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: { type: 'default_camera_disable_sketch_mode' },
@@ -107,7 +106,7 @@ export function App() {
         // when exiting sketch mode in the future
         executeAst()
       } else {
-        engineCommandManager?.sendSceneCommand({
+        engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
@@ -156,7 +155,7 @@ export function App() {
   useEngineConnectionSubscriptions()
 
   const debounceSocketSend = throttle<EngineCommand>((message) => {
-    engineCommandManager?.sendSceneCommand(message)
+    engineCommandManager.sendSceneCommand(message)
   }, 16)
   const handleMouseMove: MouseEventHandler<HTMLDivElement> = (e) => {
     e.nativeEvent.preventDefault()

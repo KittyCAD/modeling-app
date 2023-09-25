@@ -19,6 +19,7 @@ import { KCLError } from './lang/errors'
 import { deferExecution } from 'lib/utils'
 import { _executor } from './lang/executor'
 import { bracket } from 'lib/exampleKcl'
+import { engineCommandManager } from './lang/std/engineConnection'
 
 export type Selection = {
   type: 'default' | 'line-end' | 'line-mid'
@@ -162,8 +163,6 @@ export interface StoreState {
   setProgramMemory: (programMemory: ProgramMemory) => void
   isShiftDown: boolean
   setIsShiftDown: (isShiftDown: boolean) => void
-  engineCommandManager?: EngineCommandManager
-  setEngineCommandManager: (engineCommandManager: EngineCommandManager) => void
   mediaStream?: MediaStream
   setMediaStream: (mediaStream: MediaStream) => void
   isStreamReady: boolean
@@ -226,7 +225,7 @@ export const useStore = create<StoreState>()(
           const result = await executeCode({
             code: code || get().code,
             lastAst: get().ast,
-            engineCommandManager: get().engineCommandManager,
+            engineCommandManager: engineCommandManager,
           })
           if (!result.isChange) {
             return
@@ -332,8 +331,6 @@ export const useStore = create<StoreState>()(
         executeAst: async (ast) => {
           const _ast = ast || get().ast
           if (!get().isStreamReady) return
-          const engineCommandManager = get().engineCommandManager!
-          if (!engineCommandManager) return
 
           set({ isExecuting: true })
           const { logs, errors, programMemory } = await executeAst({
@@ -350,8 +347,6 @@ export const useStore = create<StoreState>()(
         executeAstMock: async (ast) => {
           const _ast = ast || get().ast
           if (!get().isStreamReady) return
-          const engineCommandManager = get().engineCommandManager!
-          if (!engineCommandManager) return
 
           const { logs, errors, programMemory } = await executeAst({
             ast: _ast,
@@ -435,8 +430,6 @@ export const useStore = create<StoreState>()(
         setProgramMemory: (programMemory) => set({ programMemory }),
         isShiftDown: false,
         setIsShiftDown: (isShiftDown) => set({ isShiftDown }),
-        setEngineCommandManager: (engineCommandManager) =>
-          set({ engineCommandManager }),
         setMediaStream: (mediaStream) => set({ mediaStream }),
         isStreamReady: false,
         setIsStreamReady: (isStreamReady) => set({ isStreamReady }),
@@ -456,10 +449,6 @@ export const useStore = create<StoreState>()(
         streamDimensions: { streamWidth: 1280, streamHeight: 720 },
         setStreamDimensions: (streamDimensions) => {
           set({ streamDimensions })
-          // We want to update the stream dimensions in the engine command manager.
-          if (get().engineCommandManager) {
-            get().engineCommandManager?.handleResize(streamDimensions)
-          }
         },
         isExecuting: false,
         setIsExecuting: (isExecuting) => set({ isExecuting }),
@@ -525,7 +514,7 @@ async function executeCode({
 }: {
   code: string
   lastAst: Program
-  engineCommandManager?: EngineCommandManager
+  engineCommandManager: EngineCommandManager
 }): Promise<
   | {
       logs: string[]
@@ -545,7 +534,7 @@ async function executeCode({
     if (e instanceof KCLError) {
       errors = [e]
       logs = []
-      if (e.msg === 'file is empty') engineCommandManager?.endSession()
+      if (e.msg === 'file is empty') engineCommandManager.endSession()
     }
     return {
       isChange: true,
@@ -568,7 +557,7 @@ async function executeCode({
   }
   // Check if the ast we have is equal to the ast in the storage.
   // If it is, we don't need to update the ast.
-  if (!engineCommandManager || JSON.stringify(ast) === JSON.stringify(lastAst))
+  if (JSON.stringify(ast) === JSON.stringify(lastAst))
     return { isChange: false }
 
   const { logs, errors, programMemory } = await executeAst({
