@@ -227,3 +227,28 @@ show(body)"#;
     let result = execute_and_snapshot(code).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/close_arc.png", &result, 1.0);
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_negative_args() {
+    let code = r#"const width = 5
+const height = 10
+const length = 12
+
+fn box = (sk1, sk2, scale) => {
+  const boxSketch = startSketchAt([sk1, sk2])
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+    |> close(%)
+    |> extrude(scale, %)
+  return boxSketch
+}
+
+box(0, 0, 5)
+box(10, 23, 8)
+let thing = box(-12, -15, 10)
+box(-20, -5, 10)"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/negative_args.png", &result, 1.0);
+}
