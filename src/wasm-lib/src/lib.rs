@@ -84,13 +84,13 @@ pub fn deserialize_files(data: &[u8]) -> Result<JsValue, JsError> {
 // test for this function and by extension lexer are done in javascript land src/lang/tokeniser.test.ts
 #[wasm_bindgen]
 pub fn lexer_js(js: &str) -> Result<JsValue, JsError> {
-    let tokens = kcl_lib::tokeniser::lexer(js);
+    let tokens = kcl_lib::token::lexer(js);
     Ok(JsValue::from_serde(&tokens)?)
 }
 
 #[wasm_bindgen]
 pub fn parse_js(js: &str) -> Result<JsValue, String> {
-    let tokens = kcl_lib::tokeniser::lexer(js);
+    let tokens = kcl_lib::token::lexer(js);
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast().map_err(String::from)?;
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
@@ -149,7 +149,7 @@ pub async fn lsp_run(config: ServerConfig) -> Result<(), JsValue> {
     let stdlib_signatures = get_signatures_from_stdlib(&stdlib).map_err(|e| e.to_string())?;
     // We can unwrap here because we know the tokeniser is valid, since
     // we have a test for it.
-    let token_types = kcl_lib::tokeniser::TokenType::all_semantic_token_types().unwrap();
+    let token_types = kcl_lib::token::TokenType::all_semantic_token_types().unwrap();
 
     let (service, socket) = LspService::new(|client| Backend {
         client,

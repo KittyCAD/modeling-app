@@ -166,7 +166,7 @@ pub async fn modify_ast_for_sketch(
     let recasted = program.recast(&FormatOptions::default(), 0);
 
     // Re-parse the ast so we get the correct source ranges.
-    let tokens = crate::tokeniser::lexer(&recasted);
+    let tokens = crate::token::lexer(&recasted);
     let parser = crate::parser::Parser::new(tokens);
     *program = parser.ast()?;
 

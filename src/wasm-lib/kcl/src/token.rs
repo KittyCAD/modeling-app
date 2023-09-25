@@ -6,6 +6,8 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::SemanticTokenType;
 
+mod tokeniser;
+
 /// The types of tokens.
 #[derive(Debug, PartialEq, Eq, Copy, Clone, Deserialize, Serialize, ts_rs::TS, JsonSchema, FromStr, Display)]
 #[ts(export)]
@@ -155,138 +157,17 @@ impl From<&Token> for crate::executor::SourceRange {
 }
 
 pub fn lexer(s: &str) -> Vec<Token> {
-    super::tokeniser2::lexer(s).unwrap_or_default()
+    tokeniser::lexer(s).unwrap_or_default()
 }
 
 #[cfg(test)]
 mod tests {
-    use pretty_assertions::assert_eq;
-
     use super::*;
-
-    #[test]
-    fn lexer_test() {
-        assert_eq!(
-            lexer("const a=5"),
-            vec![
-                Token {
-                    token_type: TokenType::Keyword,
-                    value: "const".to_string(),
-                    start: 0,
-                    end: 5,
-                },
-                Token {
-                    token_type: TokenType::Whitespace,
-                    value: " ".to_string(),
-                    start: 5,
-                    end: 6,
-                },
-                Token {
-                    token_type: TokenType::Word,
-                    value: "a".to_string(),
-                    start: 6,
-                    end: 7,
-                },
-                Token {
-                    token_type: TokenType::Operator,
-                    value: "=".to_string(),
-                    start: 7,
-                    end: 8,
-                },
-                Token {
-                    token_type: TokenType::Number,
-                    value: "5".to_string(),
-                    start: 8,
-                    end: 9,
-                },
-            ]
-        );
-        assert_eq!(
-            lexer("54 + 22500 + 6"),
-            vec![
-                Token {
-                    token_type: TokenType::Number,
-                    value: "54".to_string(),
-                    start: 0,
-                    end: 2,
-                },
-                Token {
-                    token_type: TokenType::Whitespace,
-                    value: " ".to_string(),
-                    start: 2,
-                    end: 3,
-                },
-                Token {
-                    token_type: TokenType::Operator,
-                    value: "+".to_string(),
-                    start: 3,
-                    end: 4,
-                },
-                Token {
-                    token_type: TokenType::Whitespace,
-                    value: " ".to_string(),
-                    start: 4,
-                    end: 5,
-                },
-                Token {
-                    token_type: TokenType::Number,
-                    value: "22500".to_string(),
-                    start: 5,
-                    end: 10,
-                },
-                Token {
-                    token_type: TokenType::Whitespace,
-                    value: " ".to_string(),
-                    start: 10,
-                    end: 11,
-                },
-                Token {
-                    token_type: TokenType::Operator,
-                    value: "+".to_string(),
-                    start: 11,
-                    end: 12,
-                },
-                Token {
-                    token_type: TokenType::Whitespace,
-                    value: " ".to_string(),
-                    start: 12,
-                    end: 13,
-                },
-                Token {
-                    token_type: TokenType::Number,
-                    value: "6".to_string(),
-                    start: 13,
-                    end: 14,
-                },
-            ]
-        );
-    }
 
     // We have this as a test so we can ensure it never panics with an unwrap in the server.
     #[test]
     fn test_token_type_to_semantic_token_type() {
         let semantic_types = TokenType::all_semantic_token_types().unwrap();
         assert!(!semantic_types.is_empty());
-    }
-
-    #[test]
-    fn test_lexer_negative_word() {
-        assert_eq!(
-            lexer("-legX"),
-            vec![
-                Token {
-                    token_type: TokenType::Operator,
-                    value: "-".to_string(),
-                    start: 0,
-                    end: 1,
-                },
-                Token {
-                    token_type: TokenType::Word,
-                    value: "legX".to_string(),
-                    start: 1,
-                    end: 5,
-                },
-            ]
-        );
     }
 }

@@ -13,11 +13,11 @@ pub fn bench_lex_parse(c: &mut Criterion) {
 }
 
 fn lex(program: &str) {
-    black_box(kcl_lib::tokeniser::lexer(program));
+    black_box(kcl_lib::token::lexer(program));
 }
 
 fn lex_and_parse(program: &str) {
-    let tokens = kcl_lib::tokeniser::lexer(program);
+    let tokens = kcl_lib::token::lexer(program);
     let parser = kcl_lib::parser::Parser::new(tokens);
     black_box(parser.ast().unwrap());
 }

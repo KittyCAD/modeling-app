@@ -2691,7 +2691,7 @@ fn ghi = (x) => {
 }
 
 show(part001)"#;
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
         let symbols = program.get_lsp_symbols(code);
@@ -2719,7 +2719,7 @@ show(part001)
         let some_program_string = r#"const part001 = startSketchAt([0.0, 5.0])
               |> line([0.4900857016, -0.0240763666], %)
     |> line([0.6804562304, 0.9087880491], %)"#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -2738,7 +2738,7 @@ show(part001)
         let some_program_string = r#"const part001 = startSketchAt([0.0, 5.0])
               |> line([0.4900857016, -0.0240763666], %) // hello world
     |> line([0.6804562304, 0.9087880491], %)"#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -2757,7 +2757,7 @@ show(part001)
               |> line([0.4900857016, -0.0240763666], %)
         // hello world
     |> line([0.6804562304, 0.9087880491], %)"#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -2783,7 +2783,7 @@ show(part001)
   // this is also a comment
     return things
 }"#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -2820,7 +2820,7 @@ const mySk1 = startSketchAt([0, 0])
   |> ry(45, %)
   |> rx(45, %)
 // one more for good measure"#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -2859,7 +2859,7 @@ a comment between pipe expression statements */
   |> line([-0.42, -1.72], %)
 
 show(part001)"#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -2885,7 +2885,7 @@ const yo = [
   "  hey oooooo really long long long"
 ]
 "#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -2903,7 +2903,7 @@ const key = 'c'
 const things = "things"
 
 // this is also a comment"#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -2921,7 +2921,7 @@ const things = "things"
  // a comment
    "
 }"#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -2946,7 +2946,7 @@ const part001 = startSketchAt([0, 0])
        -angleToMatchLengthY('seg01', myVar, %),
        myVar
      ], %) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper"#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -2972,7 +2972,7 @@ const part001 = startSketchAt([0, 0])
          myVar
       ], %) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper
 "#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3003,7 +3003,7 @@ fn ghi = (part001) => {
 }
 
 show(part001)"#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let mut program = parser.ast().unwrap();
         program.rename_symbol("mySuperCoolPart", 6);
@@ -3034,7 +3034,7 @@ show(mySuperCoolPart)
         let some_program_string = r#"fn ghi = (x, y, z) => {
   return x
 }"#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let mut program = parser.ast().unwrap();
         program.rename_symbol("newName", 10);
@@ -3063,7 +3063,7 @@ const firstExtrude = startSketchAt([0,0])
   |> extrude(h, %)
 
 show(firstExtrude)"#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3089,7 +3089,7 @@ show(firstExtrude)
     #[tokio::test(flavor = "multi_thread")]
     async fn test_recast_math_start_negative() {
         let some_program_string = r#"const myVar = -5 + 6"#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 
@@ -3105,7 +3105,7 @@ const FOS = 2
 const sigmaAllow = 8
 const width = 20
 const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
-        let tokens = crate::tokeniser::lexer(some_program_string);
+        let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast().unwrap();
 

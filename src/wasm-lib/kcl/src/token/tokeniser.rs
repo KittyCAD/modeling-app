@@ -7,7 +7,7 @@ use winnow::{
     Located,
 };
 
-use crate::tokeniser::{Token, TokenType};
+use crate::token::{Token, TokenType};
 
 pub fn lexer(i: &str) -> Result<Vec<Token>, ParseError<Located<&str>, ContextError>> {
     repeat(0.., token).parse(Located::new(i))
@@ -1432,14 +1432,33 @@ const things = "things"
 
     #[test]
     fn test_kitt() {
-        let program = include_str!("../../tests/executor/inputs/kittycad_svg.kcl");
+        let program = include_str!("../../../tests/executor/inputs/kittycad_svg.kcl");
         let actual = lexer(program).unwrap();
         assert_eq!(actual.len(), 5088);
     }
     #[test]
     fn test_pipes_on_pipes() {
-        let program = include_str!("../../tests/executor/inputs/pipes_on_pipes.kcl");
+        let program = include_str!("../../../tests/executor/inputs/pipes_on_pipes.kcl");
         let actual = lexer(program).unwrap();
         assert_eq!(actual.len(), 17836);
+    }
+    #[test]
+    fn test_lexer_negative_word() {
+        let actual = lexer("-legX").unwrap();
+        let expected = vec![
+            Token {
+                token_type: TokenType::Operator,
+                value: "-".to_string(),
+                start: 0,
+                end: 1,
+            },
+            Token {
+                token_type: TokenType::Word,
+                value: "legX".to_string(),
+                start: 1,
+                end: 5,
+            },
+        ];
+        assert_tokens(expected, actual);
     }
 }
