@@ -214,7 +214,7 @@ show(b2)"#;
 #[tokio::test(flavor = "multi_thread")]
 async fn test_close_arc() {
     let code = r#"const center = [0,0]
-const radius = 1
+const radius = 40
 const height = 3
 
 const body = startSketchAt([center[0]+radius, center[1]])
