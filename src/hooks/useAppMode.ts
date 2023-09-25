@@ -178,8 +178,7 @@ export function useAppMode() {
             },
           })
         )
-        const res = await Promise.all(proms)
-        console.log('res', res)
+        await Promise.all(proms)
         setGuiMode({
           mode: 'sketch',
           sketchMode: 'sketchEdit',

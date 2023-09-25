@@ -7,7 +7,7 @@ export const recast = (ast: Program): string => {
     return s
   } catch (e) {
     // TODO: do something real with the error.
-    console.log('recast', e)
+    console.log('recast error', e)
     throw e
   }
 }

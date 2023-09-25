@@ -39,6 +39,6 @@ export async function exportSave(data: ArrayBuffer) {
     }
   } catch (e) {
     // TODO: do something real with the error.
-    console.log('export', e)
+    console.log('export error', e)
   }
 }

@@ -133,7 +133,7 @@ export const SetAbsDistance = ({ buttonType }: { buttonType: ButtonType }) => {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
         } catch (e) {
-          console.log('e', e)
+          console.log('error', e)
         }
       }}
       disabled={!enableAngLen}

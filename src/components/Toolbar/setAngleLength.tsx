@@ -147,7 +147,7 @@ export const SetAngleLength = ({
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
         } catch (e) {
-          console.log('e', e)
+          console.log('erorr', e)
         }
       }}
       disabled={!enableAngLen}

@@ -70,13 +70,12 @@ export const DebugPanel = ({ className, ...props }: CollapsiblePanelProps) => {
             className="w-16"
             type="checkbox"
             checked={sketchModeCmd.ortho}
-            onChange={(a) => {
-              console.log(a, (a as any).checked)
+            onChange={(a) =>
               setSketchModeCmd({
                 ...sketchModeCmd,
                 ortho: a.target.checked,
               })
-            }}
+            }
           />
         </div>
         <ActionButton
