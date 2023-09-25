@@ -210,3 +210,20 @@ show(b2)"#;
         1.0,
     );
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_close_arc() {
+    let code = r#"const center = [0,0]
+const radius = 40
+const height = 3
+
+const body = startSketchAt([center[0]+radius, center[1]])
+      |> arc({angle_end: 360, angle_start: 0, radius: radius}, %)
+      |> close(%)
+      |> extrude(height, %)
+
+show(body)"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/close_arc.png", &result, 1.0);
+}
