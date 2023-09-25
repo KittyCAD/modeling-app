@@ -3484,11 +3484,29 @@ let other_thing = 2 * cos(3)"#;
     }
 
     #[test]
-    #[ignore] // ignore until more stack fixes
     fn test_parse_pipes_on_pipes() {
         let code = include_str!("../../tests/executor/inputs/pipes_on_pipes.kcl");
 
         let tokens = crate::token::lexer(code);
+        let parser = Parser::new(tokens);
+        parser.ast().unwrap();
+    }
+
+    #[test]
+    fn test_negative_arguments() {
+        let some_program_string = r#"fn box = (p, h, l, w) => {
+ const myBox = startSketchAt(p)
+    |> line([0, l], %)
+    |> line([w, 0], %)
+    |> line([0, -l], %)
+    |> close(%)
+    |> extrude(h, %)
+
+  return myBox
+}
+let myBox = box([0,0], -3, -16, -10)
+show(myBox)"#;
+        let tokens = crate::token::lexer(some_program_string);
         let parser = Parser::new(tokens);
         parser.ast().unwrap();
     }
