@@ -4,6 +4,7 @@ import { describe, test, vi } from 'vitest'
 import { BrowserRouter } from 'react-router-dom'
 import { GlobalStateProvider } from './components/GlobalStateProvider'
 import CommandBarProvider from 'components/CommandBar'
+import ModelingMachineProvider from 'components/ModelingMachineProvider'
 
 let listener: ((rect: any) => void) | undefined = undefined
 ;(global as any).ResizeObserver = class ResizeObserver {
@@ -45,7 +46,9 @@ function TestWrap({ children }: { children: React.ReactNode }) {
   return (
     <BrowserRouter>
       <CommandBarProvider>
-        <GlobalStateProvider>{children}</GlobalStateProvider>
+        <GlobalStateProvider>
+          <ModelingMachineProvider>{children}</ModelingMachineProvider>
+        </GlobalStateProvider>
       </CommandBarProvider>
     </BrowserRouter>
   )
