@@ -78,6 +78,7 @@ export const ModelingMachineProvider = ({
       createExtrude: async () => {},
       createFillet: async () => {},
     },
+    devTools: true,
   })
 
   // useStateMachineCommands({

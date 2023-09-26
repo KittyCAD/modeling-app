@@ -4,6 +4,11 @@ import reportWebVitals from './reportWebVitals'
 import { Toaster } from 'react-hot-toast'
 import { Router } from './Router'
 import { HotkeysProvider } from 'react-hotkeys-hook'
+import { inspect } from '@xstate/inspect'
+
+inspect({
+  iframe: false,
+})
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
