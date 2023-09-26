@@ -9,8 +9,7 @@ use tower_lsp::lsp_types::SemanticTokenType;
 mod tokeniser;
 
 /// The types of tokens.
-#[derive(Debug, PartialEq, Eq, Copy, Clone, Deserialize, Serialize, ts_rs::TS, JsonSchema, FromStr, Display)]
-#[ts(export)]
+#[derive(Debug, PartialEq, Eq, Copy, Clone, Deserialize, Serialize, JsonSchema, FromStr, Display)]
 #[serde(rename_all = "camelCase")]
 #[display(style = "camelCase")]
 pub enum TokenType {
@@ -115,8 +114,7 @@ impl TokenType {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Clone, ts_rs::TS)]
-#[ts(export)]
+#[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Clone)]
 pub struct Token {
     #[serde(rename = "type")]
     pub token_type: TokenType,
