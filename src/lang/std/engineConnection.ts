@@ -613,10 +613,12 @@ export class EngineCommandManager {
     height: number
     token?: string
   }) {
-    if (width === 0 || height === 0) { return }
+    if (width === 0 || height === 0) {
+      return
+    }
 
     // If we already have an engine connection, just need to resize the stream.
-    if (this.engineConnection !== undefined) {
+    if (this.engineConnection) {
       this.handleResize({ streamWidth: width, streamHeight: height })
       return
     }
@@ -709,11 +711,11 @@ export class EngineCommandManager {
     streamWidth: number
     streamHeight: number
   }) {
-      if (!this.engineConnection?.isReady()) {
-          return
-      }
-
     console.log('handleResize', streamWidth, streamHeight)
+    if (!this.engineConnection?.isReady()) {
+      return
+    }
+
     /*const resizeCmd: EngineCommand = {
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
