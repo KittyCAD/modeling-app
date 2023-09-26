@@ -879,6 +879,69 @@ async fn inner_arc(data: ArcData, sketch_group: Box<SketchGroup>, args: Args) ->
     Ok(new_sketch_group)
 }
 
+/// Data to draw a tangental arc.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct TangentalArcData {
+    /// Radius of the arc.
+    /// Not to be confused with Raiders of the Lost Ark.
+    pub radius: f64,
+    /// Offset of the arc.
+    pub offset: kittycad::types::Angle,
+}
+
+/// Draw a tangental arc.
+pub async fn tangental_arc(args: Args) -> Result<MemoryItem, KclError> {
+    let (data, sketch_group): (TangentalArcData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
+
+    let new_sketch_group = inner_tangental_arc(data, sketch_group, args).await?;
+    Ok(MemoryItem::SketchGroup(new_sketch_group))
+}
+
+/// Draw an arc.
+#[stdlib {
+    name = "tangentalArc",
+}]
+async fn inner_tangental_arc(
+    data: TangentalArcData,
+    sketch_group: Box<SketchGroup>,
+    args: Args,
+) -> Result<Box<SketchGroup>, KclError> {
+    let from: Point2d = sketch_group.get_coords_from_paths()?;
+
+    let id = uuid::Uuid::new_v4();
+
+    args.send_modeling_cmd(
+        id,
+        ModelingCmd::ExtendPath {
+            path: sketch_group.id,
+            segment: kittycad::types::PathSegment::TangentialArc {
+                radius: data.radius,
+                offset: data.offset,
+            },
+        },
+    )
+    .await?;
+
+    // TODO: calculate the end point.
+    let current_path = Path::ToPoint {
+        base: BasePath {
+            from: from.into(),
+            to: end.into(),
+            name: "".to_string(),
+            geo_meta: GeoMeta {
+                id,
+                metadata: args.source_range.into(),
+            },
+        },
+    };
+
+    let mut new_sketch_group = sketch_group.clone();
+    new_sketch_group.value.push(current_path);
+
+    Ok(new_sketch_group)
+}
+
 /// Data to draw a bezier curve.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
