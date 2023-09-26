@@ -3,13 +3,15 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
+use kittycad::types::{Color, ModelingCmd, Point3D};
+use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
     ast::types::{BodyItem, Function, FunctionExpression, Value},
-    engine::EngineConnection,
+    engine::{EngineConnection, EngineManager},
     errors::{KclError, KclErrorDetails},
 };
 
@@ -101,6 +103,7 @@ impl ProgramReturn {
 #[serde(tag = "type")]
 pub enum MemoryItem {
     UserVal(UserVal),
+    Plane(Box<Plane>),
     SketchGroup(Box<SketchGroup>),
     ExtrudeGroup(Box<ExtrudeGroup>),
     #[ts(skip)]
@@ -113,6 +116,194 @@ pub enum MemoryItem {
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
+}
+
+/// A plane.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct Plane {
+    /// The id of the plane.
+    pub id: uuid::Uuid,
+    // The code for the plane either a string or custom.
+    pub value: PlaneType,
+    /// Origin of the plane.
+    pub origin: Point3d,
+    /// What should the plane’s X axis be?
+    pub x_axis: Point3d,
+    /// What should the plane’s Y axis be?
+    pub y_axis: Point3d,
+    #[serde(rename = "__meta")]
+    pub meta: Vec<Metadata>,
+}
+
+/// Type for a plane.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+#[display(style = "camelCase")]
+pub enum PlaneType {
+    #[serde(rename = "XY", alias = "xy")]
+    #[display("XY")]
+    XY,
+    #[serde(rename = "XZ", alias = "xz")]
+    #[display("XZ")]
+    XZ,
+    #[serde(rename = "YZ", alias = "yz")]
+    #[display("YZ")]
+    YZ,
+    /// A custom plane.
+    #[serde(rename = "Custom")]
+    #[display("Custom")]
+    Custom,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct DefaultPlanes {
+    pub xy: uuid::Uuid,
+    pub xz: uuid::Uuid,
+    pub yz: uuid::Uuid,
+}
+
+impl DefaultPlanes {
+    pub async fn new(engine: &EngineConnection) -> Result<Self, KclError> {
+        // Create new default planes.
+        let default_size = 60.0;
+        let default_origin = Point3D { x: 0.0, y: 0.0, z: 0.0 };
+
+        // Create xy plane.
+        let xy = uuid::Uuid::new_v4();
+        engine
+            .send_modeling_cmd(
+                xy,
+                SourceRange::default(),
+                ModelingCmd::MakePlane {
+                    clobber: false,
+                    origin: default_origin.clone(),
+                    size: default_size,
+                    x_axis: Point3D { x: 1.0, y: 0.0, z: 0.0 },
+                    y_axis: Point3D { x: 0.0, y: 1.0, z: 0.0 },
+                },
+            )
+            .await?;
+        // Set the color.
+        engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                SourceRange::default(),
+                ModelingCmd::PlaneSetColor {
+                    color: Color {
+                        r: 0.7,
+                        g: 0.28,
+                        b: 0.28,
+                        a: 0.4,
+                    },
+                    plane_id: xy,
+                },
+            )
+            .await?;
+        // Set it as hidden.
+        engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                SourceRange::default(),
+                ModelingCmd::ObjectVisible {
+                    hidden: true,
+                    object_id: xy,
+                },
+            )
+            .await?;
+
+        // Create yz plane.
+        let yz = uuid::Uuid::new_v4();
+        engine
+            .send_modeling_cmd(
+                yz,
+                SourceRange::default(),
+                ModelingCmd::MakePlane {
+                    clobber: false,
+                    origin: default_origin.clone(),
+                    size: default_size,
+                    x_axis: Point3D { x: 0.0, y: 1.0, z: 0.0 },
+                    y_axis: Point3D { x: 0.0, y: 0.0, z: 1.0 },
+                },
+            )
+            .await?;
+        // Set the color.
+        engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                SourceRange::default(),
+                ModelingCmd::PlaneSetColor {
+                    color: Color {
+                        r: 0.28,
+                        g: 0.7,
+                        b: 0.28,
+                        a: 0.4,
+                    },
+                    plane_id: yz,
+                },
+            )
+            .await?;
+        // Set it as hidden.
+        engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                SourceRange::default(),
+                ModelingCmd::ObjectVisible {
+                    hidden: true,
+                    object_id: yz,
+                },
+            )
+            .await?;
+
+        // Create xz plane.
+        let xz = uuid::Uuid::new_v4();
+        engine
+            .send_modeling_cmd(
+                xz,
+                SourceRange::default(),
+                ModelingCmd::MakePlane {
+                    clobber: false,
+                    origin: default_origin,
+                    size: default_size,
+                    x_axis: Point3D { x: 1.0, y: 0.0, z: 0.0 },
+                    y_axis: Point3D { x: 0.0, y: 0.0, z: 1.0 },
+                },
+            )
+            .await?;
+        // Set the color.
+        engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                SourceRange::default(),
+                ModelingCmd::PlaneSetColor {
+                    color: Color {
+                        r: 0.28,
+                        g: 0.28,
+                        b: 0.7,
+                        a: 0.4,
+                    },
+                    plane_id: xz,
+                },
+            )
+            .await?;
+        // Set it as hidden.
+        engine
+            .send_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                SourceRange::default(),
+                ModelingCmd::ObjectVisible {
+                    hidden: true,
+                    object_id: xz,
+                },
+            )
+            .await?;
+
+        Ok(Self { xy, xz, yz })
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -140,7 +331,7 @@ pub type MemoryFunction =
         memory: ProgramMemory,
         expression: Box<FunctionExpression>,
         metadata: Vec<Metadata>,
-        engine: EngineConnection,
+        ctx: ExecutorContext,
     ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>>>>;
 
 fn force_memory_function<
@@ -149,7 +340,7 @@ fn force_memory_function<
         ProgramMemory,
         Box<FunctionExpression>,
         Vec<Metadata>,
-        EngineConnection,
+        ExecutorContext,
     ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>>>>,
 >(
     f: F,
@@ -165,6 +356,7 @@ impl From<MemoryItem> for Vec<SourceRange> {
             MemoryItem::ExtrudeGroup(e) => e.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::ExtrudeTransform(e) => e.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::Function { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
+            MemoryItem::Plane(p) => p.meta.iter().map(|m| m.source_range).collect(),
         }
     }
 }
@@ -187,11 +379,11 @@ impl MemoryItem {
         &self,
         args: Vec<MemoryItem>,
         memory: ProgramMemory,
-        engine: EngineConnection,
+        ctx: ExecutorContext,
     ) -> Result<Option<ProgramReturn>, KclError> {
         if let MemoryItem::Function { func, expression, meta } = &self {
             if let Some(func) = func {
-                func(args, memory, expression.clone(), meta.clone(), engine).await
+                func(args, memory, expression.clone(), meta.clone(), ctx).await
             } else {
                 Err(KclError::Semantic(KclErrorDetails {
                     message: format!("Not a function: {:?}", expression),
@@ -222,6 +414,8 @@ pub struct SketchGroup {
     pub position: Position,
     /// The rotation of the sketch group.
     pub rotation: Rotation,
+    /// The plane id of the sketch group.
+    pub plane_id: Option<uuid::Uuid>,
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
@@ -414,6 +608,18 @@ pub struct Point3d {
     pub z: f64,
 }
 
+impl Point3d {
+    pub fn new(x: f64, y: f64, z: f64) -> Self {
+        Self { x, y, z }
+    }
+}
+
+impl From<Point3d> for kittycad::types::Point3D {
+    fn from(p: Point3d) -> Self {
+        Self { x: p.x, y: p.y, z: p.z }
+    }
+}
+
 /// Metadata.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -593,12 +799,19 @@ impl Default for PipeInfo {
     }
 }
 
+/// The executor context.
+#[derive(Debug, Clone)]
+pub struct ExecutorContext {
+    pub engine: EngineConnection,
+    pub planes: DefaultPlanes,
+}
+
 /// Execute a AST's program.
 pub async fn execute(
     program: crate::ast::types::Program,
     memory: &mut ProgramMemory,
     options: BodyType,
-    engine: &EngineConnection,
+    ctx: &ExecutorContext,
 ) -> Result<ProgramMemory, KclError> {
     let mut pipe_info = PipeInfo::default();
 
@@ -617,23 +830,23 @@ pub async fn execute(
                                 args.push(memory_item.clone());
                             }
                             Value::CallExpression(call_expr) => {
-                                let result = call_expr.execute(memory, &mut pipe_info, engine).await?;
+                                let result = call_expr.execute(memory, &mut pipe_info, ctx).await?;
                                 args.push(result);
                             }
                             Value::BinaryExpression(binary_expression) => {
-                                let result = binary_expression.get_result(memory, &mut pipe_info, engine).await?;
+                                let result = binary_expression.get_result(memory, &mut pipe_info, ctx).await?;
                                 args.push(result);
                             }
                             Value::UnaryExpression(unary_expression) => {
-                                let result = unary_expression.get_result(memory, &mut pipe_info, engine).await?;
+                                let result = unary_expression.get_result(memory, &mut pipe_info, ctx).await?;
                                 args.push(result);
                             }
                             Value::ObjectExpression(object_expression) => {
-                                let result = object_expression.execute(memory, &mut pipe_info, engine).await?;
+                                let result = object_expression.execute(memory, &mut pipe_info, ctx).await?;
                                 args.push(result);
                             }
                             Value::ArrayExpression(array_expression) => {
-                                let result = array_expression.execute(memory, &mut pipe_info, engine).await?;
+                                let result = array_expression.execute(memory, &mut pipe_info, ctx).await?;
                                 args.push(result);
                             }
                             // We do nothing for the rest.
@@ -651,7 +864,7 @@ pub async fn execute(
 
                         memory.return_ = Some(ProgramReturn::Arguments(call_expr.arguments.clone()));
                     } else if let Some(func) = memory.clone().root.get(&fn_name) {
-                        let result = func.call_fn(args.clone(), memory.clone(), engine.clone()).await?;
+                        let result = func.call_fn(args.clone(), memory.clone(), ctx.clone()).await?;
 
                         memory.return_ = result;
                     } else {
@@ -677,7 +890,7 @@ pub async fn execute(
                             memory.add(&var_name, value.clone(), source_range)?;
                         }
                         Value::BinaryExpression(binary_expression) => {
-                            let result = binary_expression.get_result(memory, &mut pipe_info, engine).await?;
+                            let result = binary_expression.get_result(memory, &mut pipe_info, ctx).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::FunctionExpression(function_expression) => {
@@ -686,7 +899,7 @@ pub async fn execute(
                                  memory: ProgramMemory,
                                  function_expression: Box<FunctionExpression>,
                                  _metadata: Vec<Metadata>,
-                                 engine: EngineConnection| {
+                                 ctx: ExecutorContext| {
                                     Box::pin(async move {
                                         let mut fn_memory = memory.clone();
 
@@ -714,7 +927,7 @@ pub async fn execute(
                                             function_expression.body.clone(),
                                             &mut fn_memory,
                                             BodyType::Block,
-                                            &engine,
+                                            &ctx,
                                         )
                                         .await?;
 
@@ -733,11 +946,11 @@ pub async fn execute(
                             )?;
                         }
                         Value::CallExpression(call_expression) => {
-                            let result = call_expression.execute(memory, &mut pipe_info, engine).await?;
+                            let result = call_expression.execute(memory, &mut pipe_info, ctx).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::PipeExpression(pipe_expression) => {
-                            let result = pipe_expression.get_result(memory, &mut pipe_info, engine).await?;
+                            let result = pipe_expression.get_result(memory, &mut pipe_info, ctx).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::PipeSubstitution(pipe_substitution) => {
@@ -750,11 +963,11 @@ pub async fn execute(
                             }));
                         }
                         Value::ArrayExpression(array_expression) => {
-                            let result = array_expression.execute(memory, &mut pipe_info, engine).await?;
+                            let result = array_expression.execute(memory, &mut pipe_info, ctx).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::ObjectExpression(object_expression) => {
-                            let result = object_expression.execute(memory, &mut pipe_info, engine).await?;
+                            let result = object_expression.execute(memory, &mut pipe_info, ctx).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::MemberExpression(member_expression) => {
@@ -762,7 +975,7 @@ pub async fn execute(
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::UnaryExpression(unary_expression) => {
-                            let result = unary_expression.get_result(memory, &mut pipe_info, engine).await?;
+                            let result = unary_expression.get_result(memory, &mut pipe_info, ctx).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                     }
@@ -770,11 +983,11 @@ pub async fn execute(
             }
             BodyItem::ReturnStatement(return_statement) => match &return_statement.argument {
                 Value::BinaryExpression(bin_expr) => {
-                    let result = bin_expr.get_result(memory, &mut pipe_info, engine).await?;
+                    let result = bin_expr.get_result(memory, &mut pipe_info, ctx).await?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::UnaryExpression(unary_expr) => {
-                    let result = unary_expr.get_result(memory, &mut pipe_info, engine).await?;
+                    let result = unary_expr.get_result(memory, &mut pipe_info, ctx).await?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::Identifier(identifier) => {
@@ -785,15 +998,15 @@ pub async fn execute(
                     memory.return_ = Some(ProgramReturn::Value(literal.into()));
                 }
                 Value::ArrayExpression(array_expr) => {
-                    let result = array_expr.execute(memory, &mut pipe_info, engine).await?;
+                    let result = array_expr.execute(memory, &mut pipe_info, ctx).await?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::ObjectExpression(obj_expr) => {
-                    let result = obj_expr.execute(memory, &mut pipe_info, engine).await?;
+                    let result = obj_expr.execute(memory, &mut pipe_info, ctx).await?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::CallExpression(call_expr) => {
-                    let result = call_expr.execute(memory, &mut pipe_info, engine).await?;
+                    let result = call_expr.execute(memory, &mut pipe_info, ctx).await?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::MemberExpression(member_expr) => {
@@ -801,7 +1014,7 @@ pub async fn execute(
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::PipeExpression(pipe_expr) => {
-                    let result = pipe_expr.get_result(memory, &mut pipe_info, engine).await?;
+                    let result = pipe_expr.get_result(memory, &mut pipe_info, ctx).await?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::PipeSubstitution(_) => {}
@@ -825,7 +1038,9 @@ mod tests {
         let program = parser.ast()?;
         let mut mem: ProgramMemory = Default::default();
         let engine = EngineConnection::new().await?;
-        let memory = execute(program, &mut mem, BodyType::Root, &engine).await?;
+        let planes = DefaultPlanes::new(&engine).await?;
+        let ctx = ExecutorContext { engine, planes };
+        let memory = execute(program, &mut mem, BodyType::Root, &ctx).await?;
 
         Ok(memory)
     }
@@ -849,7 +1064,8 @@ const newVar = myVar + 1"#;
     async fn test_execute_angled_line_that_intersects() {
         let ast_fn = |offset: &str| -> String {
             format!(
-                r#"const part001 = startSketchAt([0, 0])
+                r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   |> lineTo({{to:[2, 2], tag: "yo"}}, %)
   |> lineTo([3, 1], %)
   |> angledLineThatIntersects({{
@@ -896,7 +1112,8 @@ const yo = 5 + 6
 
 const abc = 3
 const identifierGuy = 5
-const part001 = startSketchAt([-1.2, 4.83])
+const part001 = startSketchOn('XY')
+|> startProfileAt([-1.2, 4.83], %)
 |> line([2.8, 0], %)
 |> angledLine([100 + 100, 3.01], %)
 |> angledLine([abc, 3.02], %)
@@ -913,7 +1130,8 @@ show(part001)"#;
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_with_pipe_substitutions_unary() {
         let ast = r#"const myVar = 3
-const part001 = startSketchAt([0, 0])
+const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   |> line({ to: [3, 4], tag: 'seg01' }, %)
   |> line([
   min(segLen('seg01', %), myVar),
@@ -928,7 +1146,8 @@ show(part001)"#;
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_with_pipe_substitutions() {
         let ast = r#"const myVar = 3
-const part001 = startSketchAt([0, 0])
+const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   |> line({ to: [3, 4], tag: 'seg01' }, %)
   |> line([
   min(segLen('seg01', %), myVar),
@@ -951,7 +1170,8 @@ const halfArmAngle = armAngle / 2
 const arrExpShouldNotBeIncluded = [1, 2, 3]
 const objExpShouldNotBeIncluded = { a: 1, b: 2, c: 3 }
 
-const part001 = startSketchAt([0, 0])
+const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   |> yLineTo(1, %)
   |> xLine(3.84, %) // selection-range-7ish-before-this
 
@@ -972,7 +1192,8 @@ fn thing = () => {
   return -8
 }
 
-const firstExtrude = startSketchAt([0,0])
+const firstExtrude = startSketchOn('XY')
+  |> startProfileAt([0,0], %)
   |> line([0, l], %)
   |> line([w, 0], %)
   |> line([0, thing()], %)
@@ -994,7 +1215,8 @@ fn thing = (x) => {
   return -x
 }
 
-const firstExtrude = startSketchAt([0,0])
+const firstExtrude = startSketchOn('XY')
+  |> startProfileAt([0,0], %)
   |> line([0, l], %)
   |> line([w, 0], %)
   |> line([0, thing(8)], %)
@@ -1016,7 +1238,8 @@ fn thing = (x) => {
   return [0, -x]
 }
 
-const firstExtrude = startSketchAt([0,0])
+const firstExtrude = startSketchOn('XY')
+  |> startProfileAt([0,0], %)
   |> line([0, l], %)
   |> line([w, 0], %)
   |> line(thing(8), %)
@@ -1042,7 +1265,8 @@ fn thing = (x) => {
   return other_thing(x)
 }
 
-const firstExtrude = startSketchAt([0,0])
+const firstExtrude = startSketchOn('XY')
+  |> startProfileAt([0,0], %)
   |> line([0, l], %)
   |> line([w, 0], %)
   |> line([0, thing(8)], %)
@@ -1057,7 +1281,8 @@ show(firstExtrude)"#;
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_with_function_sketch() {
         let ast = r#"fn box = (h, l, w) => {
- const myBox = startSketchAt([0,0])
+ const myBox = startSketchOn('XY')
+    |> startProfileAt([0,0], %)
     |> line([0, l], %)
     |> line([w, 0], %)
     |> line([0, -l], %)
@@ -1077,7 +1302,8 @@ show(fnBox)"#;
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_member_of_object_with_function_period() {
         let ast = r#"fn box = (obj) => {
- let myBox = startSketchAt(obj.start)
+ let myBox = startSketchOn('XY')
+    |> startProfileAt(obj.start, %)
     |> line([0, obj.l], %)
     |> line([obj.w, 0], %)
     |> line([0, -obj.l], %)
@@ -1097,7 +1323,8 @@ show(thisBox)
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_member_of_object_with_function_brace() {
         let ast = r#"fn box = (obj) => {
- let myBox = startSketchAt(obj["start"])
+ let myBox = startSketchOn('XY')
+    |> startProfileAt(obj["start"], %)
     |> line([0, obj["l"]], %)
     |> line([obj["w"], 0], %)
     |> line([0, -obj["l"]], %)
@@ -1117,7 +1344,8 @@ show(thisBox)
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_member_of_object_with_function_mix_period_brace() {
         let ast = r#"fn box = (obj) => {
- let myBox = startSketchAt(obj["start"])
+ let myBox = startSketchOn('XY')
+    |> startProfileAt(obj["start"], %)
     |> line([0, obj["l"]], %)
     |> line([obj["w"], 0], %)
     |> line([10 - obj["w"], -obj.l], %)
@@ -1138,7 +1366,8 @@ show(thisBox)
     #[ignore] // ignore til we get loops
     async fn test_execute_with_function_sketch_loop_objects() {
         let ast = r#"fn box = (obj) => {
- let myBox = startSketchAt(obj.start)
+let myBox = startSketchOn('XY')
+    |> startProfileAt(obj.start, %)
     |> line([0, obj.l], %)
     |> line([obj.w, 0], %)
     |> line([0, -obj.l], %)
@@ -1160,7 +1389,8 @@ for var in [{start: [0,0], l: 6, w: 10, h: 3}, {start: [-10,-10], l: 3, w: 5, h:
     #[ignore] // ignore til we get loops
     async fn test_execute_with_function_sketch_loop_array() {
         let ast = r#"fn box = (h, l, w, start) => {
- const myBox = startSketchAt([0,0])
+ const myBox = startSketchOn('XY')
+    |> startProfileAt([0,0], %)
     |> line([0, l], %)
     |> line([w, 0], %)
     |> line([0, -l], %)
@@ -1182,7 +1412,8 @@ for var in [[3, 6, 10, [0,0]], [1.5, 3, 5, [-10,-10]]] {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_member_of_array_with_function() {
         let ast = r#"fn box = (array) => {
- let myBox = startSketchAt(array[0])
+ let myBox =startSketchOn('XY')
+    |> startProfileAt(array[0], %)
     |> line([0, array[1]], %)
     |> line([array[2], 0], %)
     |> line([0, -array[1]], %)
@@ -1256,7 +1487,8 @@ const leg1 = 5 // inches
 const leg2 = 8 // inches
 fn thickness = () => { return 0.56 }
 
-const bracket = startSketchAt([0,0])
+const bracket = startSketchOn('XY')
+  |> startProfileAt([0,0], %)
   |> line([0, leg1], %)
   |> line([leg2, 0], %)
   |> line([0, -thickness()], %)
@@ -1280,7 +1512,8 @@ const leg2 = 8 // inches
 const thickness_squared = distance * p * FOS * 6 / sigmaAllow
 const thickness = 0.56 // inches. App does not support square root function yet
 
-const bracket = startSketchAt([0,0])
+const bracket = startSketchOn('XY')
+  |> startProfileAt([0,0], %)
   |> line([0, leg1], %)
   |> line([leg2, 0], %)
   |> line([0, -thickness], %)
@@ -1300,7 +1533,8 @@ const leg1 = 5 // inches
 const leg2 = 8 // inches
 const thickness_squared = (distance * p * FOS * 6 / (sigmaAllow - width))
 const thickness = 0.32 // inches. App does not support square root function yet
-const bracket = startSketchAt([0,0])
+const bracket = startSketchOn('XY')
+  |> startProfileAt([0,0], %)
     |> line([0, leg1], %)
   |> line([leg2, 0], %)
   |> line([0, -thickness], %)
@@ -1324,7 +1558,8 @@ const leg1 = 5 // inches
 const leg2 = 8 // inches
 const thickness_squared = distance * p * FOS * 6 / (sigmaAllow - width)
 const thickness = 0.32 // inches. App does not support square root function yet
-const bracket = startSketchAt([0,0])
+const bracket = startSketchOn('XY')
+  |> startProfileAt([0,0], %)
     |> line([0, leg1], %)
   |> line([leg2, 0], %)
   |> line([0, -thickness], %)

@@ -10,9 +10,8 @@ use serde_json::Map;
 use tower_lsp::lsp_types::{CompletionItem, CompletionItemKind, DocumentSymbol, Range as LspRange, SymbolKind};
 
 use crate::{
-    engine::EngineConnection,
     errors::{KclError, KclErrorDetails},
-    executor::{MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange, UserVal},
+    executor::{ExecutorContext, MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange, UserVal},
     parser::PIPE_OPERATOR,
 };
 
@@ -631,7 +630,7 @@ impl BinaryPart {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
-        engine: &EngineConnection,
+        ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
         // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
         // stop the execution of the pipe.
@@ -646,13 +645,13 @@ impl BinaryPart {
                 Ok(value.clone())
             }
             BinaryPart::BinaryExpression(binary_expression) => {
-                binary_expression.get_result(memory, &mut new_pipe_info, engine).await
+                binary_expression.get_result(memory, &mut new_pipe_info, ctx).await
             }
             BinaryPart::CallExpression(call_expression) => {
-                call_expression.execute(memory, &mut new_pipe_info, engine).await
+                call_expression.execute(memory, &mut new_pipe_info, ctx).await
             }
             BinaryPart::UnaryExpression(unary_expression) => {
-                unary_expression.get_result(memory, &mut new_pipe_info, engine).await
+                unary_expression.get_result(memory, &mut new_pipe_info, ctx).await
             }
             BinaryPart::MemberExpression(member_expression) => member_expression.get_result(memory),
         }
@@ -879,7 +878,7 @@ impl CallExpression {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
-        engine: &EngineConnection,
+        ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
         let fn_name = self.callee.name.clone();
 
@@ -893,7 +892,7 @@ impl CallExpression {
                     value.clone()
                 }
                 Value::BinaryExpression(binary_expression) => {
-                    binary_expression.get_result(memory, pipe_info, engine).await?
+                    binary_expression.get_result(memory, pipe_info, ctx).await?
                 }
                 Value::CallExpression(call_expression) => {
                     // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
@@ -901,15 +900,11 @@ impl CallExpression {
                     // THIS IS IMPORTANT.
                     let mut new_pipe_info = pipe_info.clone();
                     new_pipe_info.is_in_pipe = false;
-                    call_expression.execute(memory, &mut new_pipe_info, engine).await?
+                    call_expression.execute(memory, &mut new_pipe_info, ctx).await?
                 }
-                Value::UnaryExpression(unary_expression) => {
-                    unary_expression.get_result(memory, pipe_info, engine).await?
-                }
-                Value::ObjectExpression(object_expression) => {
-                    object_expression.execute(memory, pipe_info, engine).await?
-                }
-                Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, engine).await?,
+                Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, ctx).await?,
+                Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, ctx).await?,
+                Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, ctx).await?,
                 Value::PipeExpression(pipe_expression) => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: format!("PipeExpression not implemented here: {:?}", pipe_expression),
@@ -941,12 +936,12 @@ impl CallExpression {
         match &self.function {
             Function::StdLib { func } => {
                 // Attempt to call the function.
-                let args = crate::std::Args::new(fn_args, self.into(), engine.clone());
+                let args = crate::std::Args::new(fn_args, self.into(), ctx.clone());
                 let result = func.std_lib_fn()(args).await?;
                 if pipe_info.is_in_pipe {
                     pipe_info.index += 1;
                     pipe_info.previous_results.push(result);
-                    execute_pipe_body(memory, &pipe_info.body.clone(), pipe_info, self.into(), engine).await
+                    execute_pipe_body(memory, &pipe_info.body.clone(), pipe_info, self.into(), ctx).await
                 } else {
                     Ok(result)
                 }
@@ -954,7 +949,7 @@ impl CallExpression {
             Function::InMemory => {
                 let func = memory.get(&fn_name, self.into())?;
                 let result = func
-                    .call_fn(fn_args, memory.clone(), engine.clone())
+                    .call_fn(fn_args, memory.clone(), ctx.clone())
                     .await?
                     .ok_or_else(|| {
                         KclError::UndefinedValue(KclErrorDetails {
@@ -969,7 +964,7 @@ impl CallExpression {
                     pipe_info.index += 1;
                     pipe_info.previous_results.push(result);
 
-                    execute_pipe_body(memory, &pipe_info.body.clone(), pipe_info, self.into(), engine).await
+                    execute_pipe_body(memory, &pipe_info.body.clone(), pipe_info, self.into(), ctx).await
                 } else {
                     Ok(result)
                 }
@@ -1507,7 +1502,7 @@ impl ArrayExpression {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
-        engine: &EngineConnection,
+        ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
         let mut results = Vec::with_capacity(self.elements.len());
 
@@ -1519,7 +1514,7 @@ impl ArrayExpression {
                     value.clone()
                 }
                 Value::BinaryExpression(binary_expression) => {
-                    binary_expression.get_result(memory, pipe_info, engine).await?
+                    binary_expression.get_result(memory, pipe_info, ctx).await?
                 }
                 Value::CallExpression(call_expression) => {
                     // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
@@ -1527,16 +1522,12 @@ impl ArrayExpression {
                     // THIS IS IMPORTANT.
                     let mut new_pipe_info = pipe_info.clone();
                     new_pipe_info.is_in_pipe = false;
-                    call_expression.execute(memory, &mut new_pipe_info, engine).await?
+                    call_expression.execute(memory, &mut new_pipe_info, ctx).await?
                 }
-                Value::UnaryExpression(unary_expression) => {
-                    unary_expression.get_result(memory, pipe_info, engine).await?
-                }
-                Value::ObjectExpression(object_expression) => {
-                    object_expression.execute(memory, pipe_info, engine).await?
-                }
-                Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, engine).await?,
-                Value::PipeExpression(pipe_expression) => pipe_expression.get_result(memory, pipe_info, engine).await?,
+                Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, ctx).await?,
+                Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, ctx).await?,
+                Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, ctx).await?,
+                Value::PipeExpression(pipe_expression) => pipe_expression.get_result(memory, pipe_info, ctx).await?,
                 Value::PipeSubstitution(pipe_substitution) => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: format!("PipeSubstitution not implemented here: {:?}", pipe_substitution),
@@ -1663,7 +1654,7 @@ impl ObjectExpression {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
-        engine: &EngineConnection,
+        ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
         let mut object = Map::new();
         for property in &self.properties {
@@ -1674,7 +1665,7 @@ impl ObjectExpression {
                     value.clone()
                 }
                 Value::BinaryExpression(binary_expression) => {
-                    binary_expression.get_result(memory, pipe_info, engine).await?
+                    binary_expression.get_result(memory, pipe_info, ctx).await?
                 }
                 Value::CallExpression(call_expression) => {
                     // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
@@ -1682,16 +1673,12 @@ impl ObjectExpression {
                     // THIS IS IMPORTANT.
                     let mut new_pipe_info = pipe_info.clone();
                     new_pipe_info.is_in_pipe = false;
-                    call_expression.execute(memory, &mut new_pipe_info, engine).await?
+                    call_expression.execute(memory, &mut new_pipe_info, ctx).await?
                 }
-                Value::UnaryExpression(unary_expression) => {
-                    unary_expression.get_result(memory, pipe_info, engine).await?
-                }
-                Value::ObjectExpression(object_expression) => {
-                    object_expression.execute(memory, pipe_info, engine).await?
-                }
-                Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, engine).await?,
-                Value::PipeExpression(pipe_expression) => pipe_expression.get_result(memory, pipe_info, engine).await?,
+                Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, ctx).await?,
+                Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, ctx).await?,
+                Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, ctx).await?,
+                Value::PipeExpression(pipe_expression) => pipe_expression.get_result(memory, pipe_info, ctx).await?,
                 Value::PipeSubstitution(pipe_substitution) => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: format!("PipeSubstitution not implemented here: {:?}", pipe_substitution),
@@ -2109,7 +2096,7 @@ impl BinaryExpression {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
-        engine: &EngineConnection,
+        ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
         // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
         // stop the execution of the pipe.
@@ -2119,12 +2106,12 @@ impl BinaryExpression {
 
         let left_json_value = self
             .left
-            .get_result(memory, &mut new_pipe_info, engine)
+            .get_result(memory, &mut new_pipe_info, ctx)
             .await?
             .get_json_value()?;
         let right_json_value = self
             .right
-            .get_result(memory, &mut new_pipe_info, engine)
+            .get_result(memory, &mut new_pipe_info, ctx)
             .await?
             .get_json_value()?;
 
@@ -2283,7 +2270,7 @@ impl UnaryExpression {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
-        engine: &EngineConnection,
+        ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
         // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
         // stop the execution of the pipe.
@@ -2294,7 +2281,7 @@ impl UnaryExpression {
         let num = parse_json_number_as_f64(
             &self
                 .argument
-                .get_result(memory, &mut new_pipe_info, engine)
+                .get_result(memory, &mut new_pipe_info, ctx)
                 .await?
                 .get_json_value()?,
             self.into(),
@@ -2427,12 +2414,12 @@ impl PipeExpression {
         &self,
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
-        engine: &EngineConnection,
+        ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
         // Reset the previous results.
         pipe_info.previous_results = vec![];
         pipe_info.index = 0;
-        execute_pipe_body(memory, &self.body, pipe_info, self.into(), engine).await
+        execute_pipe_body(memory, &self.body, pipe_info, self.into(), ctx).await
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -2449,7 +2436,7 @@ async fn execute_pipe_body(
     body: &[Value],
     pipe_info: &mut PipeInfo,
     source_range: SourceRange,
-    engine: &EngineConnection,
+    ctx: &ExecutorContext,
 ) -> Result<MemoryItem, KclError> {
     if pipe_info.index == body.len() {
         pipe_info.is_in_pipe = false;
@@ -2474,15 +2461,15 @@ async fn execute_pipe_body(
 
     match expression {
         Value::BinaryExpression(binary_expression) => {
-            let result = binary_expression.get_result(memory, pipe_info, engine).await?;
+            let result = binary_expression.get_result(memory, pipe_info, ctx).await?;
             pipe_info.previous_results.push(result);
             pipe_info.index += 1;
-            execute_pipe_body(memory, body, pipe_info, source_range, engine).await
+            execute_pipe_body(memory, body, pipe_info, source_range, ctx).await
         }
         Value::CallExpression(call_expression) => {
             pipe_info.is_in_pipe = true;
             pipe_info.body = body.to_vec();
-            call_expression.execute(memory, pipe_info, engine).await
+            call_expression.execute(memory, pipe_info, ctx).await
         }
         _ => {
             // Return an error this should not happen.
@@ -2775,7 +2762,8 @@ mod tests {
 
     #[test]
     fn test_get_lsp_symbols() {
-        let code = r#"const part001 = startSketchAt([0.0000000000, 5.0000000000])
+        let code = r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([0.0000000000, 5.0000000000], %)
     |> line([0.4900857016, -0.0240763666], %)
 
 const part002 = "part002"
@@ -2797,24 +2785,9 @@ show(part001)"#;
     }
 
     #[test]
-    fn test_recast_with_std_and_non_stdlib() {
-        let some_program_string = r#"{"body":[{"type":"VariableDeclaration","start":0,"end":0,"declarations":[{"type":"VariableDeclarator","start":0,"end":0,"id":{"type":"Identifier","start":0,"end":0,"name":"part001"},"init":{"type":"PipeExpression","start":0,"end":0,"body":[{"type":"CallExpression","start":0,"end":0,"callee":{"type":"Identifier","start":0,"end":0,"name":"startSketchAt"},"function":{"type":"StdLib","func":{"name":"startSketchAt","summary":"","description":"","tags":[],"returnValue":{"type":"","required":false,"name":"","schema":{}},"args":[],"unpublished":false,"deprecated":false}},"optional":false,"arguments":[{"type":"Literal","start":0,"end":0,"value":"default","raw":"default"}]},{"type":"CallExpression","start":0,"end":0,"callee":{"type":"Identifier","start":0,"end":0,"name":"ry"},"function":{"type":"InMemory"},"optional":false,"arguments":[{"type":"Literal","start":0,"end":0,"value":90,"raw":"90"},{"type":"PipeSubstitution","start":0,"end":0}]},{"type":"CallExpression","start":0,"end":0,"callee":{"type":"Identifier","start":0,"end":0,"name":"line"},"function":{"type":"StdLib","func":{"name":"line","summary":"","description":"","tags":[],"returnValue":{"type":"","required":false,"name":"","schema":{}},"args":[],"unpublished":false,"deprecated":false}},"optional":false,"arguments":[{"type":"Literal","start":0,"end":0,"value":"default","raw":"default"},{"type":"PipeSubstitution","start":0,"end":0}]}],"nonCodeMeta":{"nonCodeNodes":{},"start":null}}}],"kind":"const"},{"type":"ExpressionStatement","start":0,"end":0,"expression":{"type":"CallExpression","start":0,"end":0,"callee":{"type":"Identifier","start":0,"end":0,"name":"show"},"function":{"type":"StdLib","func":{"name":"show","summary":"","description":"","tags":[],"returnValue":{"type":"","required":false,"name":"","schema":{}},"args":[],"unpublished":false,"deprecated":false}},"optional":false,"arguments":[{"type":"Identifier","start":0,"end":0,"name":"part001"}]}}],"start":0,"end":0,"nonCodeMeta":{"nonCodeNodes":{},"start":null}}"#;
-        let some_program: crate::ast::types::Program = serde_json::from_str(some_program_string).unwrap();
-
-        let recasted = some_program.recast(&Default::default(), 0);
-        assert_eq!(
-            recasted,
-            r#"const part001 = startSketchAt('default')
-  |> ry(90, %)
-  |> line('default', %)
-show(part001)
-"#
-        );
-    }
-
-    #[test]
     fn test_recast_with_bad_indentation() {
-        let some_program_string = r#"const part001 = startSketchAt([0.0, 5.0])
+        let some_program_string = r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([0.0, 5.0], %)
               |> line([0.4900857016, -0.0240763666], %)
     |> line([0.6804562304, 0.9087880491], %)"#;
         let tokens = crate::token::lexer(some_program_string);
@@ -2824,7 +2797,8 @@ show(part001)
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"const part001 = startSketchAt([0.0, 5.0])
+            r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([0.0, 5.0], %)
   |> line([0.4900857016, -0.0240763666], %)
   |> line([0.6804562304, 0.9087880491], %)
 "#
@@ -2833,7 +2807,8 @@ show(part001)
 
     #[test]
     fn test_recast_with_bad_indentation_and_inline_comment() {
-        let some_program_string = r#"const part001 = startSketchAt([0.0, 5.0])
+        let some_program_string = r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([0.0, 5.0], %)
               |> line([0.4900857016, -0.0240763666], %) // hello world
     |> line([0.6804562304, 0.9087880491], %)"#;
         let tokens = crate::token::lexer(some_program_string);
@@ -2843,7 +2818,8 @@ show(part001)
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"const part001 = startSketchAt([0.0, 5.0])
+            r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([0.0, 5.0], %)
   |> line([0.4900857016, -0.0240763666], %) // hello world
   |> line([0.6804562304, 0.9087880491], %)
 "#
@@ -2851,7 +2827,8 @@ show(part001)
     }
     #[test]
     fn test_recast_with_bad_indentation_and_line_comment() {
-        let some_program_string = r#"const part001 = startSketchAt([0.0, 5.0])
+        let some_program_string = r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([0.0, 5.0], %)
               |> line([0.4900857016, -0.0240763666], %)
         // hello world
     |> line([0.6804562304, 0.9087880491], %)"#;
@@ -2862,7 +2839,8 @@ show(part001)
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"const part001 = startSketchAt([0.0, 5.0])
+            r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([0.0, 5.0], %)
   |> line([0.4900857016, -0.0240763666], %)
   // hello world
   |> line([0.6804562304, 0.9087880491], %)
@@ -2904,7 +2882,8 @@ show(part001)
     #[test]
     fn test_recast_lots_of_comments() {
         let some_program_string = r#"// comment at start
-const mySk1 = startSketchAt([0, 0])
+const mySk1 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   |> lineTo([1, 1], %)
   // comment here
   |> lineTo({ to: [0, 1], tag: 'myTag' }, %)
@@ -2926,7 +2905,8 @@ const mySk1 = startSketchAt([0, 0])
         assert_eq!(
             recasted,
             r#"// comment at start
-const mySk1 = startSketchAt([0, 0])
+const mySk1 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   |> lineTo([1, 1], %)
   // comment here
   |> lineTo({ to: [0, 1], tag: 'myTag' }, %)
@@ -2946,7 +2926,8 @@ a comment between pipe expression statements */
 
     #[test]
     fn test_recast_multiline_object() {
-        let some_program_string = r#"const part001 = startSketchAt([-0.01, -0.08])
+        let some_program_string = r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([-0.01, -0.08], %)
   |> line({ to: [0.62, 4.15], tag: 'seg01' }, %)
   |> line([2.77, -1.24], %)
   |> angledLineThatIntersects({
@@ -3034,7 +3015,8 @@ const myVar2 = 5
 const myVar3 = 6
 const myAng = 40
 const myAng2 = 134
-const part001 = startSketchAt([0, 0])
+const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   |> line({ to: [1, 3.82], tag: 'seg01' }, %) // ln-should-get-tag
   |> angledLineToX([
        -angleToMatchLengthX('seg01', myVar, %),
@@ -3059,7 +3041,8 @@ const myVar2 = 5
 const myVar3 = 6
 const myAng = 40
 const myAng2 = 134
-const part001 = startSketchAt([0, 0])
+const part001 = startSketchOn('XY')
+   |> startProfileAt([0, 0], %)
    |> line({ to: [1, 3.82], tag: 'seg01' }, %) // ln-should-get-tag
    |> angledLineToX([
          -angleToMatchLengthX('seg01', myVar, %),
@@ -3087,7 +3070,8 @@ const part001 = startSketchAt([0, 0])
 
     #[test]
     fn test_recast_after_rename_std() {
-        let some_program_string = r#"const part001 = startSketchAt([0.0000000000, 5.0000000000])
+        let some_program_string = r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([0.0000000000, 5.0000000000], %)
     |> line([0.4900857016, -0.0240763666], %)
 
 const part002 = "part002"
@@ -3109,7 +3093,8 @@ show(part001)"#;
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"const mySuperCoolPart = startSketchAt([0.0, 5.0])
+            r#"const mySuperCoolPart = startSketchOn('XY')
+  |> startProfileAt([0.0, 5.0], %)
   |> line([0.4900857016, -0.0240763666], %)
 
 const part002 = "part002"
@@ -3153,7 +3138,8 @@ show(mySuperCoolPart)
 const l = 8
 const h = 10
 
-const firstExtrude = startSketchAt([0,0])
+const firstExtrude = startSketchOn('XY')
+  |> startProfileAt([0,0], %)
   |> line([0, l], %)
   |> line([w, 0], %)
   |> line([0, -l], %)
@@ -3172,7 +3158,8 @@ show(firstExtrude)"#;
 const l = 8
 const h = 10
 
-const firstExtrude = startSketchAt([0, 0])
+const firstExtrude = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   |> line([0, l], %)
   |> line([w, 0], %)
   |> line([0, -l], %)

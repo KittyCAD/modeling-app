@@ -20,6 +20,8 @@ import { KCLError } from './lang/errors'
 import { deferExecution } from 'lib/utils'
 import { bracket } from 'lib/exampleKcl'
 import { engineCommandManager } from './lang/std/engineConnection'
+import { DefaultPlanes } from './wasm-lib/kcl/bindings/DefaultPlanes'
+import { initDefaultPlanes, setDefaultPlanesHidden } from './hooks/useAppMode'
 
 export type Selection = {
   type: 'default' | 'line-end' | 'line-mid'
@@ -182,6 +184,10 @@ export interface StoreState {
   }) => void
   isExecuting: boolean
   setIsExecuting: (isExecuting: boolean) => void
+  defaultPlanes: DefaultPlanes | null
+  setDefaultPlanes: (defaultPlanes: DefaultPlanes) => void
+  currentPlane: string | null
+  setCurrentPlane: (currentPlane: string) => void
 
   showHomeMenu: boolean
   setHomeShowMenu: (showMenu: boolean) => void
@@ -222,10 +228,17 @@ export const useStore = create<StoreState>()(
           }
         },
         executeCode: async (code, force) => {
+          if (!get().defaultPlanes) {
+            let defaultPlanes = await initDefaultPlanes(engineCommandManager)
+            get().setDefaultPlanes(defaultPlanes)
+            setDefaultPlanesHidden(engineCommandManager, defaultPlanes, true)
+          }
+
           const result = await executeCode({
             code: code || get().code,
             lastAst: get().ast,
             engineCommandManager: engineCommandManager,
+            defaultPlanes: get().defaultPlanes!,
             force,
           })
           if (!result.isChange) {
@@ -332,11 +345,17 @@ export const useStore = create<StoreState>()(
         executeAst: async (ast) => {
           const _ast = ast || get().ast
           if (!get().isStreamReady) return
+          if (!get().defaultPlanes) {
+            let defaultPlanes = await initDefaultPlanes(engineCommandManager)
+            get().setDefaultPlanes(defaultPlanes)
+            setDefaultPlanesHidden(engineCommandManager, defaultPlanes, true)
+          }
 
           set({ isExecuting: true })
           const { logs, errors, programMemory } = await executeAst({
             ast: _ast,
             engineCommandManager,
+            defaultPlanes: get().defaultPlanes!,
           })
           set({
             programMemory,
@@ -349,10 +368,17 @@ export const useStore = create<StoreState>()(
           const _ast = ast || get().ast
           if (!get().isStreamReady) return
 
+          if (!get().defaultPlanes) {
+            let defaultPlanes = await initDefaultPlanes(engineCommandManager)
+            get().setDefaultPlanes(defaultPlanes)
+            setDefaultPlanesHidden(engineCommandManager, defaultPlanes, true)
+          }
+
           const { logs, errors, programMemory } = await executeAst({
             ast: _ast,
             engineCommandManager,
             useFakeExecutor: true,
+            defaultPlanes: get().defaultPlanes!,
           })
           set({
             programMemory,
@@ -453,6 +479,10 @@ export const useStore = create<StoreState>()(
         },
         isExecuting: false,
         setIsExecuting: (isExecuting) => set({ isExecuting }),
+        defaultPlanes: null,
+        setDefaultPlanes: (defaultPlanes) => set({ defaultPlanes }),
+        currentPlane: null,
+        setCurrentPlane: (currentPlane) => set({ currentPlane }),
 
         // tauri specific app settings
         defaultDir: {
@@ -512,11 +542,13 @@ async function executeCode({
   engineCommandManager,
   code,
   lastAst,
+  defaultPlanes,
   force,
 }: {
   code: string
   lastAst: Program
   engineCommandManager: EngineCommandManager
+  defaultPlanes: DefaultPlanes
   force?: boolean
 }): Promise<
   | {
@@ -566,6 +598,7 @@ async function executeCode({
   const { logs, errors, programMemory } = await executeAst({
     ast,
     engineCommandManager,
+    defaultPlanes,
   })
   return {
     ast,
@@ -579,10 +612,12 @@ async function executeCode({
 async function executeAst({
   ast,
   engineCommandManager,
+  defaultPlanes,
   useFakeExecutor = false,
 }: {
   ast: Program
   engineCommandManager: EngineCommandManager
+  defaultPlanes: DefaultPlanes
   useFakeExecutor?: boolean
 }): Promise<{
   logs: string[]
@@ -605,7 +640,8 @@ async function executeAst({
             root: defaultProgramMemory,
             return: null,
           },
-          engineCommandManager
+          engineCommandManager,
+          defaultPlanes
         ))
 
     await engineCommandManager.waitForAllCommands(ast, programMemory)

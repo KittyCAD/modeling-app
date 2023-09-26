@@ -1918,28 +1918,6 @@ const key = 'c'"#,
             31,
         );
         assert_eq!(parser.make_non_code_node(index).unwrap(), expected_output);
-        let tokens = crate::token::lexer(
-            r#"const mySketch = startSketchAt([0,0])
-  |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
-  |> lineTo([1, 1], %) /* this is
-      a comment
-      spanning a few lines */
-  |> lineTo({ to: [1,0], tag: "rightPath" }, %)
-  |> close(%)"#,
-        );
-        let parser = Parser::new(tokens);
-        let index = 57;
-        let expected_output = (
-            Some(NonCodeNode {
-                start: 106,
-                end: 166,
-                value: NonCodeValue::BlockComment {
-                    value: "this is\n      a comment\n      spanning a few lines".to_string(),
-                },
-            }),
-            59,
-        );
-        assert_eq!(parser.make_non_code_node(index).unwrap(), expected_output);
     }
 
     #[test]
@@ -2070,7 +2048,8 @@ const key = 'c'"#,
     fn test_next_meaningful_token() {
         let _offset = 1;
         let tokens = crate::token::lexer(
-            r#"const mySketch = startSketchAt([0,0])
+            r#"const mySketch = startSketchOn('XY')
+  |> startProfileAt([0,0], %)
   |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
   |> lineTo([1, 1], %) /* this is
       a comment
@@ -2082,10 +2061,10 @@ const key = 'c'"#,
         let index = 17;
         let expected_output = TokenReturnWithNonCode {
             token: Some(Token {
-                token_type: TokenType::Brace,
-                start: 49,
-                end: 50,
-                value: "(".to_string(),
+                token_type: TokenType::Number,
+                start: 60,
+                end: 61,
+                value: "0".to_string(),
             }),
             index: 18,
             non_code_node: None,
@@ -2095,9 +2074,9 @@ const key = 'c'"#,
         let expected_output = TokenReturnWithNonCode {
             token: Some(Token {
                 token_type: TokenType::Brace,
-                start: 50,
-                end: 51,
-                value: "{".to_string(),
+                start: 61,
+                end: 62,
+                value: "]".to_string(),
             }),
             index: 19,
             non_code_node: None,
@@ -2106,10 +2085,10 @@ const key = 'c'"#,
         let index = 21;
         let expected_output = TokenReturnWithNonCode {
             token: Some(Token {
-                token_type: TokenType::Colon,
-                start: 54,
-                end: 55,
-                value: ":".to_string(),
+                token_type: TokenType::Operator,
+                start: 64,
+                end: 65,
+                value: "%".to_string(),
             }),
             index: 22,
             non_code_node: None,
@@ -2118,10 +2097,10 @@ const key = 'c'"#,
         let index = 24;
         let expected_output = TokenReturnWithNonCode {
             token: Some(Token {
-                token_type: TokenType::Number,
-                start: 57,
-                end: 58,
-                value: "0".to_string(),
+                token_type: TokenType::Operator,
+                start: 69,
+                end: 71,
+                value: "|>".to_string(),
             }),
             index: 25,
             non_code_node: None,
@@ -2130,324 +2109,12 @@ const key = 'c'"#,
         let index = 25;
         let expected_output = TokenReturnWithNonCode {
             token: Some(Token {
-                token_type: TokenType::Comma,
-                start: 58,
-                end: 59,
-                value: ",".to_string(),
+                token_type: TokenType::Word,
+                start: 72,
+                end: 78,
+                value: "lineTo".to_string(),
             }),
-            index: 26,
-            non_code_node: None,
-        };
-        assert_eq!(parser.next_meaningful_token(index, None).unwrap(), expected_output);
-        let index = 28;
-        let expected_output = TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Brace,
-                start: 61,
-                end: 62,
-                value: "]".to_string(),
-            }),
-            index: 29,
-            non_code_node: None,
-        };
-        assert_eq!(parser.next_meaningful_token(index, None).unwrap(), expected_output);
-        let index = 29;
-        let expected_output = TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Comma,
-                start: 62,
-                end: 63,
-                value: ",".to_string(),
-            }),
-            index: 30,
-            non_code_node: None,
-        };
-        assert_eq!(parser.next_meaningful_token(index, None).unwrap(), expected_output);
-        let index = 32;
-        let expected_output = TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Colon,
-                start: 67,
-                end: 68,
-                value: ":".to_string(),
-            }),
-            index: 33,
-            non_code_node: None,
-        };
-        assert_eq!(parser.next_meaningful_token(index, None).unwrap(), expected_output);
-        let index = 37;
-        let expected_output = TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Comma,
-                start: 79,
-                end: 80,
-                value: ",".to_string(),
-            }),
-            index: 38,
-            non_code_node: None,
-        };
-        assert_eq!(parser.next_meaningful_token(index, None).unwrap(), expected_output);
-        let index = 40;
-        let expected_output = TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Brace,
-                start: 82,
-                end: 83,
-                value: ")".to_string(),
-            }),
-            index: 41,
-            non_code_node: None,
-        };
-        assert_eq!(parser.next_meaningful_token(index, None).unwrap(), expected_output);
-        let index = 45;
-        let expected_output = TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Brace,
-                start: 95,
-                end: 96,
-                value: "(".to_string(),
-            }),
-            index: 46,
-            non_code_node: None,
-        };
-        assert_eq!(parser.next_meaningful_token(index, None).unwrap(), expected_output);
-        let index = 46;
-        let expected_output = TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Brace,
-                start: 96,
-                end: 97,
-                value: "[".to_string(),
-            }),
-            index: 47,
-            non_code_node: None,
-        };
-        assert_eq!(parser.next_meaningful_token(index, None).unwrap(), expected_output);
-        let index = 47;
-        let expected_output = TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Number,
-                start: 97,
-                end: 98,
-                value: "1".to_string(),
-            }),
-            index: 48,
-            non_code_node: None,
-        };
-        assert_eq!(parser.next_meaningful_token(index, None).unwrap(), expected_output);
-        let index = 48;
-        let expected_output = TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Comma,
-                start: 98,
-                end: 99,
-                value: ",".to_string(),
-            }),
-            index: 49,
-            non_code_node: None,
-        };
-        assert_eq!(parser.next_meaningful_token(index, None).unwrap(), expected_output);
-        let index = 51;
-        let expected_output = TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Brace,
-                start: 101,
-                end: 102,
-                value: "]".to_string(),
-            }),
-            index: 52,
-            non_code_node: None,
-        };
-        assert_eq!(parser.next_meaningful_token(index, None).unwrap(), expected_output);
-        let index = 52;
-        let expected_output = TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Comma,
-                start: 102,
-                end: 103,
-                value: ",".to_string(),
-            }),
-            index: 53,
-            non_code_node: None,
-        };
-        assert_eq!(parser.next_meaningful_token(index, None).unwrap(), expected_output);
-        let index = 55;
-        let expected_output = TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Brace,
-                start: 105,
-                end: 106,
-                value: ")".to_string(),
-            }),
-            index: 56,
-            non_code_node: None,
-        };
-        assert_eq!(parser.next_meaningful_token(index, None).unwrap(), expected_output);
-        let index = 62;
-        let expected_output = TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Brace,
-                start: 175,
-                end: 176,
-                value: "(".to_string(),
-            }),
-            index: 63,
-            non_code_node: None,
-        };
-        assert_eq!(parser.next_meaningful_token(index, None).unwrap(), expected_output);
-        let index = 63;
-        let expected_output = TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Brace,
-                start: 176,
-                end: 177,
-                value: "{".to_string(),
-            }),
-            index: 64,
-            non_code_node: None,
-        };
-        assert_eq!(parser.next_meaningful_token(index, None).unwrap(), expected_output);
-        let index = 66;
-        let expected_output = TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Colon,
-                start: 180,
-                end: 181,
-                value: ":".to_string(),
-            }),
-            index: 67,
-            non_code_node: None,
-        };
-        assert_eq!(parser.next_meaningful_token(index, None).unwrap(), expected_output);
-        let index = 69;
-        let expected_output = TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Number,
-                start: 183,
-                end: 184,
-                value: "1".to_string(),
-            }),
-            index: 70,
-            non_code_node: None,
-        };
-        assert_eq!(parser.next_meaningful_token(index, None).unwrap(), expected_output);
-        let index = 70;
-        let expected_output = TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Comma,
-                start: 184,
-                end: 185,
-                value: ",".to_string(),
-            }),
-            index: 71,
-            non_code_node: None,
-        };
-        assert_eq!(parser.next_meaningful_token(index, None).unwrap(), expected_output);
-        let index = 71;
-        let expected_output = TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Number,
-                start: 185,
-                end: 186,
-                value: "0".to_string(),
-            }),
-            index: 72,
-            non_code_node: None,
-        };
-        assert_eq!(parser.next_meaningful_token(index, None).unwrap(), expected_output);
-        let index = 72;
-        let expected_output = TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Brace,
-                start: 186,
-                end: 187,
-                value: "]".to_string(),
-            }),
-            index: 73,
-            non_code_node: None,
-        };
-        assert_eq!(parser.next_meaningful_token(index, None).unwrap(), expected_output);
-        let index = 73;
-        let expected_output = TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Comma,
-                start: 187,
-                end: 188,
-                value: ",".to_string(),
-            }),
-            index: 74,
-            non_code_node: None,
-        };
-        assert_eq!(parser.next_meaningful_token(index, None).unwrap(), expected_output);
-        let index = 76;
-        let expected_output = TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Colon,
-                start: 192,
-                end: 193,
-                value: ":".to_string(),
-            }),
-            index: 77,
-            non_code_node: None,
-        };
-        assert_eq!(parser.next_meaningful_token(index, None).unwrap(), expected_output);
-        let index = 81;
-        let expected_output = TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Comma,
-                start: 207,
-                end: 208,
-                value: ",".to_string(),
-            }),
-            index: 82,
-            non_code_node: None,
-        };
-        assert_eq!(parser.next_meaningful_token(index, None).unwrap(), expected_output);
-        let index = 84;
-        let expected_output = TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Brace,
-                start: 210,
-                end: 211,
-                value: ")".to_string(),
-            }),
-            index: 85,
-            non_code_node: None,
-        };
-        assert_eq!(parser.next_meaningful_token(index, None).unwrap(), expected_output);
-        let index = 89;
-        let expected_output = TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Brace,
-                start: 222,
-                end: 223,
-                value: "(".to_string(),
-            }),
-            index: 90,
-            non_code_node: None,
-        };
-        assert_eq!(parser.next_meaningful_token(index, None).unwrap(), expected_output);
-        let index = 90;
-        let expected_output = TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Operator,
-                start: 223,
-                end: 224,
-                value: "%".to_string(),
-            }),
-            index: 91,
-            non_code_node: None,
-        };
-        assert_eq!(parser.next_meaningful_token(index, None).unwrap(), expected_output);
-        let index = 91;
-        let expected_output = TokenReturnWithNonCode {
-            token: Some(Token {
-                token_type: TokenType::Brace,
-                start: 224,
-                end: 225,
-                value: ")".to_string(),
-            }),
-            index: 92,
+            index: 27,
             non_code_node: None,
         };
         assert_eq!(parser.next_meaningful_token(index, None).unwrap(), expected_output);
@@ -2456,7 +2123,8 @@ const key = 'c'"#,
     #[test]
     fn test_find_closing_brace() {
         let tokens = crate::token::lexer(
-            r#"const mySketch = startSketchAt([0,0])
+            r#"const mySketch = startSketchOn('XY')
+  |> startProfileAt([0,0], %)
 |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
 |> lineTo([1, 1], %) /* this is
   a comment
@@ -2465,11 +2133,10 @@ const key = 'c'"#,
 |> close(%)"#,
         );
         let parser = Parser::new(tokens);
-        assert_eq!(parser.find_closing_brace(7, 0, "").unwrap(), 13);
-        assert_eq!(parser.find_closing_brace(18, 0, "").unwrap(), 41);
-        assert_eq!(parser.find_closing_brace(46, 0, "").unwrap(), 56);
-        assert_eq!(parser.find_closing_brace(63, 0, "").unwrap(), 85);
-        assert_eq!(parser.find_closing_brace(90, 0, "").unwrap(), 92);
+        assert_eq!(parser.find_closing_brace(7, 0, "").unwrap(), 9);
+        assert_eq!(parser.find_closing_brace(14, 0, "").unwrap(), 23);
+        assert_eq!(parser.find_closing_brace(29, 0, "").unwrap(), 47);
+        assert_eq!(parser.find_closing_brace(57, 0, "").unwrap(), 62);
 
         let basic = "( hey )";
         let parser = Parser::new(crate::token::lexer(basic));
@@ -2490,7 +2157,8 @@ const key = 'c'"#,
     #[test]
     fn test_is_call_expression() {
         let tokens = crate::token::lexer(
-            r#"const mySketch = startSketchAt([0,0])
+            r#"const mySketch = startSketchOn('XY')
+  |> startProfileAt([0,0], %)
 |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
 |> lineTo([1, 1], %) /* this is
   a comment
@@ -2501,8 +2169,8 @@ const key = 'c'"#,
         let parser = Parser::new(tokens);
 
         assert_eq!(parser.is_call_expression(4).unwrap(), None);
-        assert_eq!(parser.is_call_expression(6).unwrap(), Some(13));
-        assert_eq!(parser.is_call_expression(15).unwrap(), None);
+        assert_eq!(parser.is_call_expression(6).unwrap(), Some(9));
+        assert_eq!(parser.is_call_expression(9).unwrap(), None);
         assert_eq!(parser.is_call_expression(43).unwrap(), None);
         assert_eq!(parser.is_call_expression(60).unwrap(), None);
         assert_eq!(parser.is_call_expression(87).unwrap(), None);
@@ -2511,7 +2179,8 @@ const key = 'c'"#,
     #[test]
     fn test_find_next_declaration_keyword() {
         let tokens = crate::token::lexer(
-            r#"const mySketch = startSketchAt([0,0])
+            r#"const mySketch = startSketchOn('XY')
+  |> startProfileAt([0,0], %)
 |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
 |> lineTo([1, 1], %) /* this is
   a comment
@@ -2522,7 +2191,10 @@ const key = 'c'"#,
         let parser = Parser::new(tokens);
         assert_eq!(
             parser.find_next_declaration_keyword(4).unwrap(),
-            TokenReturn { token: None, index: 92 }
+            TokenReturn {
+                token: None,
+                index: 102
+            }
         );
 
         let tokens = crate::token::lexer(
@@ -2986,7 +2658,8 @@ show(mySk1)"#;
     #[test]
     fn test_parse_half_pipe_small() {
         let tokens = crate::token::lexer(
-            "const secondExtrude = startSketchAt([0,0])
+            "const secondExtrude = startSketchOn('XY')
+  |> startProfileAt([0,0], %)
   |",
         );
         let parser = Parser::new(tokens);
@@ -3067,7 +2740,8 @@ const height = [obj["a"] -1, 0]"#,
         let tokens = crate::token::lexer(
             "const height = 10
 
-const firstExtrude = startSketchAt([0,0])
+const firstExtrude = startSketchOn('XY')
+  |> startProfileAt([0,0], %)
   |> line([0, 8], %)
   |> line([20, 0], %)
   |> line([0, -8], %)
@@ -3076,7 +2750,8 @@ const firstExtrude = startSketchAt([0,0])
 
 show(firstExtrude)
 
-const secondExtrude = startSketchAt([0,0])
+const secondExtrude = startSketchOn('XY')
+  |> startProfileAt([0,0], %)
   |",
         );
         let parser = Parser::new(tokens);
@@ -3457,7 +3132,8 @@ thing(false)
     #[test]
     fn test_member_expression_sketch_group() {
         let some_program_string = r#"fn cube = (pos, scale) => {
-  const sg = startSketchAt(pos)
+  const sg = startSketchOn('XY')
+  |> startProfileAt(pos, %)
     |> line([0, scale], %)
     |> line([scale, 0], %)
     |> line([0, -scale], %)
@@ -3499,7 +3175,8 @@ let other_thing = 2 * cos(3)"#;
     #[test]
     fn test_negative_arguments() {
         let some_program_string = r#"fn box = (p, h, l, w) => {
- const myBox = startSketchAt(p)
+ const myBox = startSketchOn('XY')
+    |> startProfileAt(p, %)
     |> line([0, l], %)
     |> line([w, 0], %)
     |> line([0, -l], %)

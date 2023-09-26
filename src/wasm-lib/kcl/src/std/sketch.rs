@@ -9,7 +9,9 @@ use serde::{Deserialize, Serialize};
 use super::utils::Angle;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{BasePath, GeoMeta, MemoryItem, Path, Point2d, Position, Rotation, SketchGroup},
+    executor::{
+        BasePath, GeoMeta, MemoryItem, Path, Plane, PlaneType, Point2d, Point3d, Position, Rotation, SketchGroup,
+    },
     std::{
         utils::{arc_angles, arc_center_and_end, get_x_component, get_y_component, intersection_with_parallel_line},
         Args,
@@ -641,19 +643,132 @@ async fn inner_angled_line_that_intersects(
     Ok(new_sketch_group)
 }
 
-/// Start a sketch at a given point.
-pub async fn start_sketch_at(args: Args) -> Result<MemoryItem, KclError> {
-    let data: LineData = args.get_data()?;
+/// Data for a plane.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub enum PlaneData {
+    #[serde(rename = "XY", alias = "xy")]
+    XY,
+    #[serde(rename = "XZ", alias = "xz")]
+    XZ,
+    #[serde(rename = "YZ", alias = "yz")]
+    YZ,
+    /// A defined plane.
+    Plane {
+        /// Origin of the plane.
+        origin: Box<Point3d>,
+        /// What should the plane’s X axis be?
+        x_axis: Box<Point3d>,
+        /// What should the plane’s Y axis be?
+        y_axis: Box<Point3d>,
+    },
+}
 
-    let sketch_group = inner_start_sketch_at(data, args).await?;
-    Ok(MemoryItem::SketchGroup(sketch_group))
+impl From<PlaneData> for Plane {
+    fn from(value: PlaneData) -> Self {
+        let id = uuid::Uuid::new_v4();
+        match value {
+            PlaneData::XY => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(1.0, 0.0, 0.0),
+                y_axis: Point3d::new(0.0, 1.0, 0.0),
+                value: PlaneType::XY,
+                meta: vec![],
+            },
+            PlaneData::XZ => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(1.0, 0.0, 0.0),
+                y_axis: Point3d::new(0.0, 0.0, 1.0),
+                value: PlaneType::XZ,
+                meta: vec![],
+            },
+            PlaneData::YZ => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(0.0, 1.0, 0.0),
+                y_axis: Point3d::new(0.0, 0.0, 1.0),
+                value: PlaneType::YZ,
+                meta: vec![],
+            },
+            PlaneData::Plane { origin, x_axis, y_axis } => Plane {
+                id,
+                origin: *origin,
+                x_axis: *x_axis,
+                y_axis: *y_axis,
+                value: PlaneType::Custom,
+                meta: vec![],
+            },
+        }
+    }
+}
+
+/// Start a sketch on a specific plane.
+pub async fn start_sketch_on(args: Args) -> Result<MemoryItem, KclError> {
+    let data: PlaneData = args.get_data()?;
+
+    let plane = inner_start_sketch_on(data, args).await?;
+    Ok(MemoryItem::Plane(plane))
 }
 
 /// Start a sketch at a given point.
 #[stdlib {
-    name = "startSketchAt",
+    name = "startSketchOn",
 }]
-async fn inner_start_sketch_at(data: LineData, args: Args) -> Result<Box<SketchGroup>, KclError> {
+async fn inner_start_sketch_on(data: PlaneData, args: Args) -> Result<Box<Plane>, KclError> {
+    let mut plane: Plane = data.clone().into();
+
+    plane.id = match data {
+        PlaneData::XY => args.ctx.planes.xy,
+        PlaneData::XZ => args.ctx.planes.xz,
+        PlaneData::YZ => args.ctx.planes.yz,
+        PlaneData::Plane { origin, x_axis, y_axis } => {
+            let id = uuid::Uuid::new_v4();
+            // Create the plane.
+            args.send_modeling_cmd(
+                id,
+                ModelingCmd::MakePlane {
+                    clobber: false,
+                    origin: (*origin).into(),
+                    size: 60.0,
+                    x_axis: (*x_axis).into(),
+                    y_axis: (*y_axis).into(),
+                },
+            )
+            .await?;
+            id
+        }
+    };
+
+    // Enter sketch mode on the plane.
+    args.send_modeling_cmd(
+        uuid::Uuid::new_v4(),
+        ModelingCmd::SketchModeEnable {
+            animated: false,
+            ortho: false,
+            plane_id: plane.id,
+        },
+    )
+    .await?;
+
+    Ok(Box::new(plane))
+}
+
+/// Start a profile at a given point.
+pub async fn start_profile_at(args: Args) -> Result<MemoryItem, KclError> {
+    let (data, plane): (LineData, Box<Plane>) = args.get_data_and_plane()?;
+
+    let sketch_group = inner_start_profile_at(data, plane, args).await?;
+    Ok(MemoryItem::SketchGroup(sketch_group))
+}
+
+/// Start a profile at a given point.
+#[stdlib {
+    name = "startProfileAt",
+}]
+async fn inner_start_profile_at(data: LineData, plane: Box<Plane>, args: Args) -> Result<Box<SketchGroup>, KclError> {
     let to = match &data {
         LineData::PointWithTag { to, .. } => *to,
         LineData::Point(to) => *to,
@@ -694,6 +809,7 @@ async fn inner_start_sketch_at(data: LineData, args: Args) -> Result<Box<SketchG
         id: path_id,
         position: Position([0.0, 0.0, 0.0]),
         rotation: Rotation([0.0, 0.0, 0.0, 1.0]),
+        plane_id: Some(plane.id),
         value: vec![],
         start: current_path,
         meta: vec![args.source_range.into()],
@@ -727,6 +843,13 @@ async fn inner_close(sketch_group: Box<SketchGroup>, args: Args) -> Result<Box<S
         },
     )
     .await?;
+
+    // Exit sketch mode, since if we were in a plane we'd want to disable the sketch mode after.
+    if sketch_group.plane_id.is_some() {
+        // We were on a plane, disable the sketch mode.
+        args.send_modeling_cmd(uuid::Uuid::new_v4(), ModelingCmd::SketchModeDisable {})
+            .await?;
+    }
 
     let mut new_sketch_group = sketch_group.clone();
     new_sketch_group.value.push(Path::ToPoint {
@@ -1199,7 +1322,7 @@ mod tests {
 
     use pretty_assertions::assert_eq;
 
-    use crate::std::sketch::LineData;
+    use crate::std::sketch::{LineData, PlaneData};
 
     #[test]
     fn test_deserialize_line_data() {
@@ -1220,5 +1343,16 @@ mod tests {
                 tag: "thing".to_string()
             }
         );
+    }
+
+    #[test]
+    fn test_deserialize_plane_data() {
+        let data = PlaneData::XY;
+        let mut str_json = serde_json::to_string(&data).unwrap();
+        assert_eq!(str_json, "\"XY\"");
+
+        str_json = "\"YZ\"".to_string();
+        let data: PlaneData = serde_json::from_str(&str_json).unwrap();
+        assert_eq!(data, PlaneData::YZ);
     }
 }

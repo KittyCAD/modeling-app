@@ -96,7 +96,8 @@ describe('testing changeSketchArguments', () => {
   const lineAfterChange = 'lineTo([2, 3], %)'
   test('changeSketchArguments', async () => {
     // Enable rotations #152
-    const genCode = (line: string) => `const mySketch001 = startSketchAt([0, 0])
+    const genCode = (line: string) => `const mySketch001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   |> ${line}
   |> lineTo([0.46, -5.82], %)
 // |> rx(45, %)
@@ -137,7 +138,8 @@ describe('testing addNewSketchLn', () => {
   test('addNewSketchLn', async () => {
     // Enable rotations #152
     const code = `
-const mySketch001 = startSketchAt([0, 0])
+const mySketch001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   // |> rx(45, %)
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)
@@ -145,7 +147,7 @@ show(mySketch001)`
     const ast = parse(code)
     const programMemory = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(lineToChange)
-    expect(sourceStart).toBe(66)
+    expect(sourceStart).toBe(95)
     let { modifiedAst } = addNewSketchLn({
       node: ast,
       programMemory,
@@ -160,7 +162,8 @@ show(mySketch001)`
       ],
     })
     // Enable rotations #152
-    let expectedCode = `const mySketch001 = startSketchAt([0, 0])
+    let expectedCode = `const mySketch001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   // |> rx(45, %)
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)
@@ -181,7 +184,8 @@ show(mySketch001)
       ],
     })
 
-    expectedCode = `const mySketch001 = startSketchAt([0, 0])
+    expectedCode = `const mySketch001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   // |> rx(45, %)
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)
@@ -196,7 +200,8 @@ describe('testing addTagForSketchOnFace', () => {
   it('needs to be in it', async () => {
     const originalLine = 'lineTo([-1.59, -1.54], %)'
     // Enable rotations #152
-    const genCode = (line: string) => `const mySketch001 = startSketchAt([0, 0])
+    const genCode = (line: string) => `const mySketch001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   // |> rx(45, %)
   |> ${line}
   |> lineTo([0.46, -5.82], %)

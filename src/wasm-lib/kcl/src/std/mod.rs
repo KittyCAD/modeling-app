@@ -17,9 +17,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     ast::types::parse_json_number_as_f64,
-    engine::{EngineConnection, EngineManager},
+    engine::EngineManager,
     errors::{KclError, KclErrorDetails},
-    executor::{ExtrudeGroup, MemoryItem, Metadata, SketchGroup, SourceRange},
+    executor::{ExecutorContext, ExtrudeGroup, MemoryItem, Metadata, Plane, SketchGroup, SourceRange},
 };
 
 pub type StdFn = fn(Args) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<MemoryItem, KclError>>>>;
@@ -58,7 +58,8 @@ impl StdLib {
             Box::new(crate::std::sketch::AngledLineOfXLength),
             Box::new(crate::std::sketch::AngledLineOfYLength),
             Box::new(crate::std::sketch::AngledLineThatIntersects),
-            Box::new(crate::std::sketch::StartSketchAt),
+            Box::new(crate::std::sketch::StartSketchOn),
+            Box::new(crate::std::sketch::StartProfileAt),
             Box::new(crate::std::sketch::Close),
             Box::new(crate::std::sketch::Arc),
             Box::new(crate::std::sketch::TangentalArc),
@@ -109,15 +110,15 @@ impl Default for StdLib {
 pub struct Args {
     pub args: Vec<MemoryItem>,
     pub source_range: SourceRange,
-    engine: EngineConnection,
+    pub ctx: ExecutorContext,
 }
 
 impl Args {
-    pub fn new(args: Vec<MemoryItem>, source_range: SourceRange, engine: EngineConnection) -> Self {
+    pub fn new(args: Vec<MemoryItem>, source_range: SourceRange, ctx: ExecutorContext) -> Self {
         Self {
             args,
             source_range,
-            engine,
+            ctx,
         }
     }
 
@@ -126,7 +127,7 @@ impl Args {
         id: uuid::Uuid,
         cmd: kittycad::types::ModelingCmd,
     ) -> Result<OkWebSocketResponseData, KclError> {
-        self.engine.send_modeling_cmd(id, self.source_range, cmd).await
+        self.ctx.engine.send_modeling_cmd(id, self.source_range, cmd).await
     }
 
     fn make_user_val_from_json(&self, j: serde_json::Value) -> Result<MemoryItem, KclError> {
@@ -306,6 +307,44 @@ impl Args {
         };
 
         Ok((data, sketch_group))
+    }
+
+    fn get_data_and_plane<T: serde::de::DeserializeOwned>(&self) -> Result<(T, Box<Plane>), KclError> {
+        let first_value = self
+            .args
+            .first()
+            .ok_or_else(|| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Expected a struct as the first argument, found `{:?}`", self.args),
+                    source_ranges: vec![self.source_range],
+                })
+            })?
+            .get_json_value()?;
+
+        let data: T = serde_json::from_value(first_value).map_err(|e| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Failed to deserialize struct from JSON: {}", e),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let second_value = self.args.get(1).ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Expected a Plane as the second argument, found `{:?}`", self.args),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let plane = if let MemoryItem::Plane(p) = second_value {
+            p.clone()
+        } else {
+            return Err(KclError::Type(KclErrorDetails {
+                message: format!("Expected a Plane as the second argument, found `{:?}`", self.args),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+
+        Ok((data, plane))
     }
 
     fn get_segment_name_to_number_sketch_group(&self) -> Result<(String, f64, Box<SketchGroup>), KclError> {

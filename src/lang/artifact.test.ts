@@ -7,7 +7,8 @@ describe('testing artifacts', () => {
   // Enable rotations #152
   test('sketch artifacts', async () => {
     const code = `
-const mySketch001 = startSketchAt([0, 0])
+const mySketch001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)
   // |> rx(45, %)
@@ -27,7 +28,7 @@ show(mySketch001)`
           name: '',
           __geoMeta: {
             id: expect.any(String),
-            sourceRange: [21, 42],
+            sourceRange: [46, 71],
           },
         },
         value: [
@@ -37,7 +38,7 @@ show(mySketch001)`
             to: [-1.59, -1.54],
             from: [0, 0],
             __geoMeta: {
-              sourceRange: [48, 73],
+              sourceRange: [77, 102],
               id: expect.any(String),
             },
           },
@@ -47,7 +48,7 @@ show(mySketch001)`
             from: [-1.59, -1.54],
             name: '',
             __geoMeta: {
-              sourceRange: [79, 103],
+              sourceRange: [108, 132],
               id: expect.any(String),
             },
           },
@@ -55,14 +56,16 @@ show(mySketch001)`
         position: [0, 0, 0],
         rotation: [0, 0, 0, 1],
         id: expect.any(String),
-        __meta: [{ sourceRange: [21, 42] }],
+        planeId: expect.any(String),
+        __meta: [{ sourceRange: [46, 71] }],
       },
     ])
   })
   test('extrude artifacts', async () => {
     // Enable rotations #152
     const code = `
-const mySketch001 = startSketchAt([0, 0])
+const mySketch001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)
   // |> rx(45, %)
@@ -82,7 +85,7 @@ show(mySketch001)`
         height: 2,
         position: [0, 0, 0],
         rotation: [0, 0, 0, 1],
-        __meta: [{ sourceRange: [21, 42] }],
+        __meta: [{ sourceRange: [46, 71] }],
       },
     ])
   })
@@ -90,7 +93,8 @@ show(mySketch001)`
     // Enable rotations #152
     // TODO #153 in order for getExtrudeWallTransform to work we need to query the engine for the location of a face.
     const code = `
-const sk1 = startSketchAt([0, 0])
+const sk1 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   |> lineTo([-2.5, 0], %)
   |> lineTo({ to: [0, 10], tag: "p" }, %)
   |> lineTo([2.5, 0], %)
@@ -99,7 +103,8 @@ const sk1 = startSketchAt([0, 0])
   // |> ry(5, %)
 const theExtrude = extrude(2, sk1)
 // const theTransf = getExtrudeWallTransform('p', theExtrude)
-const sk2 = startSketchAt([0, 0])
+const sk2 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   |> lineTo([-2.5, 0], %)
   |> lineTo({ to: [0, 3], tag: "p" }, %)
   |> lineTo([2.5, 0], %)
@@ -122,7 +127,7 @@ show(theExtrude, sk2)`
         height: 2,
         position: [0, 0, 0],
         rotation: [0, 0, 0, 1],
-        __meta: [{ sourceRange: [13, 34] }],
+        __meta: [{ sourceRange: [38, 63] }],
       },
       {
         type: 'ExtrudeGroup',
@@ -131,7 +136,7 @@ show(theExtrude, sk2)`
         height: 2,
         position: [0, 0, 0],
         rotation: [0, 0, 0, 1],
-        __meta: [{ sourceRange: [302, 323] }],
+        __meta: [{ sourceRange: [356, 381] }],
       },
     ])
   })

@@ -14,12 +14,14 @@ describe('processMemory', () => {
   }
   const otherVar = myFn(5)
 
-  const theExtrude = startSketchAt([0, 0])
+  const theExtrude = startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
     |> lineTo([-2.4, myVar], %)
     |> lineTo([-0.76, otherVar], %)
     |> extrude(4, %)
 
-  const theSketch = startSketchAt([0, 0])
+  const theSketch = startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
     |> lineTo([-3.35, 0.17], %)
     |> lineTo([0.98, 5.16], %)
     |> lineTo([2.15, 4.32], %)

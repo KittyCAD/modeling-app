@@ -122,6 +122,12 @@
               "type": "string",
               "format": "uuid"
             },
+            "planeId": {
+              "description": "The plane id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "position": {
               "description": "The position of the sketch group.",
               "type": "array",
@@ -590,6 +596,12 @@
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
+            },
+            "planeId": {
+              "description": "The plane id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -1088,6 +1100,12 @@
               "type": "string",
               "format": "uuid"
             },
+            "planeId": {
+              "description": "The plane id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "position": {
               "description": "The position of the sketch group.",
               "type": "array",
@@ -1521,6 +1539,12 @@
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
+          },
+          "planeId": {
+            "description": "The plane id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -2009,6 +2033,12 @@
               "type": "string",
               "format": "uuid"
             },
+            "planeId": {
+              "description": "The plane id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "position": {
               "description": "The position of the sketch group.",
               "type": "array",
@@ -2442,6 +2472,12 @@
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
+          },
+          "planeId": {
+            "description": "The plane id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -2930,6 +2966,12 @@
               "type": "string",
               "format": "uuid"
             },
+            "planeId": {
+              "description": "The plane id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "position": {
               "description": "The position of the sketch group.",
               "type": "array",
@@ -3363,6 +3405,12 @@
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
+          },
+          "planeId": {
+            "description": "The plane id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -3841,6 +3889,12 @@
               "type": "string",
               "format": "uuid"
             },
+            "planeId": {
+              "description": "The plane id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "position": {
               "description": "The position of the sketch group.",
               "type": "array",
@@ -4274,6 +4328,12 @@
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
+          },
+          "planeId": {
+            "description": "The plane id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -4762,6 +4822,12 @@
               "type": "string",
               "format": "uuid"
             },
+            "planeId": {
+              "description": "The plane id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "position": {
               "description": "The position of the sketch group.",
               "type": "array",
@@ -5195,6 +5261,12 @@
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
+          },
+          "planeId": {
+            "description": "The plane id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -5683,6 +5755,12 @@
               "type": "string",
               "format": "uuid"
             },
+            "planeId": {
+              "description": "The plane id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "position": {
               "description": "The position of the sketch group.",
               "type": "array",
@@ -6116,6 +6194,12 @@
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
+          },
+          "planeId": {
+            "description": "The plane id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -6703,6 +6787,12 @@
               "type": "string",
               "format": "uuid"
             },
+            "planeId": {
+              "description": "The plane id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "position": {
               "description": "The position of the sketch group.",
               "type": "array",
@@ -7136,6 +7226,12 @@
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
+          },
+          "planeId": {
+            "description": "The plane id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -7732,6 +7828,12 @@
               "type": "string",
               "format": "uuid"
             },
+            "planeId": {
+              "description": "The plane id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "position": {
               "description": "The position of the sketch group.",
               "type": "array",
@@ -8165,6 +8267,12 @@
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
+          },
+          "planeId": {
+            "description": "The plane id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -8636,6 +8744,12 @@
               "type": "string",
               "format": "uuid"
             },
+            "planeId": {
+              "description": "The plane id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "position": {
               "description": "The position of the sketch group.",
               "type": "array",
@@ -9069,6 +9183,12 @@
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
+          },
+          "planeId": {
+            "description": "The plane id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -9566,6 +9686,12 @@
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
+            },
+            "planeId": {
+              "description": "The plane id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -10396,6 +10522,12 @@
               "type": "string",
               "format": "uuid"
             },
+            "planeId": {
+              "description": "The plane id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "position": {
               "description": "The position of the sketch group.",
               "type": "array",
@@ -10847,6 +10979,12 @@
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
+            },
+            "planeId": {
+              "description": "The plane id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -11455,6 +11593,12 @@
               "type": "string",
               "format": "uuid"
             },
+            "planeId": {
+              "description": "The plane id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "position": {
               "description": "The position of the sketch group.",
               "type": "array",
@@ -11888,6 +12032,12 @@
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
+          },
+          "planeId": {
+            "description": "The plane id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -12375,6 +12525,12 @@
               "type": "string",
               "format": "uuid"
             },
+            "planeId": {
+              "description": "The plane id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "position": {
               "description": "The position of the sketch group.",
               "type": "array",
@@ -12808,6 +12964,12 @@
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
+          },
+          "planeId": {
+            "description": "The plane id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -13497,6 +13659,12 @@
               "type": "string",
               "format": "uuid"
             },
+            "planeId": {
+              "description": "The plane id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "position": {
               "description": "The position of the sketch group.",
               "type": "array",
@@ -13956,6 +14124,12 @@
               "description": "The id of the sketch group.",
               "type": "string",
               "format": "uuid"
+            },
+            "planeId": {
+              "description": "The plane id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
             },
             "position": {
               "description": "The position of the sketch group.",
@@ -14417,6 +14591,12 @@
               "type": "string",
               "format": "uuid"
             },
+            "planeId": {
+              "description": "The plane id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "position": {
               "description": "The position of the sketch group.",
               "type": "array",
@@ -14877,6 +15057,12 @@
               "type": "string",
               "format": "uuid"
             },
+            "planeId": {
+              "description": "The plane id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "position": {
               "description": "The position of the sketch group.",
               "type": "array",
@@ -15329,6 +15515,12 @@
               "type": "string",
               "format": "uuid"
             },
+            "planeId": {
+              "description": "The plane id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "position": {
               "description": "The position of the sketch group.",
               "type": "array",
@@ -15780,8 +15972,8 @@
     "deprecated": false
   },
   {
-    "name": "startSketchAt",
-    "summary": "Start a sketch at a given point.",
+    "name": "startProfileAt",
+    "summary": "Start a profile at a given point.",
     "description": "",
     "tags": [],
     "args": [
@@ -15826,6 +16018,142 @@
               "minItems": 2
             }
           ]
+        },
+        "required": true
+      },
+      {
+        "name": "plane",
+        "type": "Plane",
+        "schema": {
+          "description": "A plane.",
+          "type": "object",
+          "required": [
+            "__meta",
+            "id",
+            "origin",
+            "value",
+            "xAxis",
+            "yAxis"
+          ],
+          "properties": {
+            "__meta": {
+              "type": "array",
+              "items": {
+                "description": "Metadata.",
+                "type": "object",
+                "required": [
+                  "sourceRange"
+                ],
+                "properties": {
+                  "sourceRange": {
+                    "description": "The source range.",
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "format": "uint",
+                      "minimum": 0.0
+                    },
+                    "maxItems": 2,
+                    "minItems": 2
+                  }
+                }
+              }
+            },
+            "id": {
+              "description": "The id of the plane.",
+              "type": "string",
+              "format": "uuid"
+            },
+            "origin": {
+              "description": "Origin of the plane.",
+              "type": "object",
+              "required": [
+                "x",
+                "y",
+                "z"
+              ],
+              "properties": {
+                "x": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "y": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "z": {
+                  "type": "number",
+                  "format": "double"
+                }
+              }
+            },
+            "value": {
+              "description": "Type for a plane.",
+              "oneOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "XY",
+                    "XZ",
+                    "YZ"
+                  ]
+                },
+                {
+                  "description": "A custom plane.",
+                  "type": "string",
+                  "enum": [
+                    "Custom"
+                  ]
+                }
+              ]
+            },
+            "xAxis": {
+              "description": "What should the plane’s X axis be?",
+              "type": "object",
+              "required": [
+                "x",
+                "y",
+                "z"
+              ],
+              "properties": {
+                "x": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "y": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "z": {
+                  "type": "number",
+                  "format": "double"
+                }
+              }
+            },
+            "yAxis": {
+              "description": "What should the plane’s Y axis be?",
+              "type": "object",
+              "required": [
+                "x",
+                "y",
+                "z"
+              ],
+              "properties": {
+                "x": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "y": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "z": {
+                  "type": "number",
+                  "format": "double"
+                }
+              }
+            }
+          }
         },
         "required": true
       }
@@ -15873,6 +16201,12 @@
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
+          },
+          "planeId": {
+            "description": "The plane id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -16257,6 +16591,259 @@
                   }
                 }
               ]
+            }
+          }
+        }
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "startSketchOn",
+    "summary": "Start a sketch at a given point.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "data",
+        "type": "PlaneData",
+        "schema": {
+          "description": "Data for a plane.",
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": [
+                "XY",
+                "XZ",
+                "YZ"
+              ]
+            },
+            {
+              "description": "A defined plane.",
+              "type": "object",
+              "required": [
+                "plane"
+              ],
+              "properties": {
+                "plane": {
+                  "type": "object",
+                  "required": [
+                    "origin",
+                    "x_axis",
+                    "y_axis"
+                  ],
+                  "properties": {
+                    "origin": {
+                      "description": "Origin of the plane.",
+                      "type": "object",
+                      "required": [
+                        "x",
+                        "y",
+                        "z"
+                      ],
+                      "properties": {
+                        "x": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "y": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "z": {
+                          "type": "number",
+                          "format": "double"
+                        }
+                      }
+                    },
+                    "x_axis": {
+                      "description": "What should the plane’s X axis be?",
+                      "type": "object",
+                      "required": [
+                        "x",
+                        "y",
+                        "z"
+                      ],
+                      "properties": {
+                        "x": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "y": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "z": {
+                          "type": "number",
+                          "format": "double"
+                        }
+                      }
+                    },
+                    "y_axis": {
+                      "description": "What should the plane’s Y axis be?",
+                      "type": "object",
+                      "required": [
+                        "x",
+                        "y",
+                        "z"
+                      ],
+                      "properties": {
+                        "x": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "y": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "z": {
+                          "type": "number",
+                          "format": "double"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          ]
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "Plane",
+      "schema": {
+        "description": "A plane.",
+        "type": "object",
+        "required": [
+          "__meta",
+          "id",
+          "origin",
+          "value",
+          "xAxis",
+          "yAxis"
+        ],
+        "properties": {
+          "__meta": {
+            "type": "array",
+            "items": {
+              "description": "Metadata.",
+              "type": "object",
+              "required": [
+                "sourceRange"
+              ],
+              "properties": {
+                "sourceRange": {
+                  "description": "The source range.",
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "format": "uint",
+                    "minimum": 0.0
+                  },
+                  "maxItems": 2,
+                  "minItems": 2
+                }
+              }
+            }
+          },
+          "id": {
+            "description": "The id of the plane.",
+            "type": "string",
+            "format": "uuid"
+          },
+          "origin": {
+            "description": "Origin of the plane.",
+            "type": "object",
+            "required": [
+              "x",
+              "y",
+              "z"
+            ],
+            "properties": {
+              "x": {
+                "type": "number",
+                "format": "double"
+              },
+              "y": {
+                "type": "number",
+                "format": "double"
+              },
+              "z": {
+                "type": "number",
+                "format": "double"
+              }
+            }
+          },
+          "value": {
+            "description": "Type for a plane.",
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "XY",
+                  "XZ",
+                  "YZ"
+                ]
+              },
+              {
+                "description": "A custom plane.",
+                "type": "string",
+                "enum": [
+                  "Custom"
+                ]
+              }
+            ]
+          },
+          "xAxis": {
+            "description": "What should the plane’s X axis be?",
+            "type": "object",
+            "required": [
+              "x",
+              "y",
+              "z"
+            ],
+            "properties": {
+              "x": {
+                "type": "number",
+                "format": "double"
+              },
+              "y": {
+                "type": "number",
+                "format": "double"
+              },
+              "z": {
+                "type": "number",
+                "format": "double"
+              }
+            }
+          },
+          "yAxis": {
+            "description": "What should the plane’s Y axis be?",
+            "type": "object",
+            "required": [
+              "x",
+              "y",
+              "z"
+            ],
+            "properties": {
+              "x": {
+                "type": "number",
+                "format": "double"
+              },
+              "y": {
+                "type": "number",
+                "format": "double"
+              },
+              "z": {
+                "type": "number",
+                "format": "double"
+              }
             }
           }
         }
@@ -18255,6 +18842,12 @@
               "type": "string",
               "format": "uuid"
             },
+            "planeId": {
+              "description": "The plane id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "position": {
               "description": "The position of the sketch group.",
               "type": "array",
@@ -18688,6 +19281,12 @@
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
+          },
+          "planeId": {
+            "description": "The plane id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -19165,6 +19764,12 @@
               "type": "string",
               "format": "uuid"
             },
+            "planeId": {
+              "description": "The plane id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "position": {
               "description": "The position of the sketch group.",
               "type": "array",
@@ -19598,6 +20203,12 @@
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
+          },
+          "planeId": {
+            "description": "The plane id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -20075,6 +20686,12 @@
               "type": "string",
               "format": "uuid"
             },
+            "planeId": {
+              "description": "The plane id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "position": {
               "description": "The position of the sketch group.",
               "type": "array",
@@ -20508,6 +21125,12 @@
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
+          },
+          "planeId": {
+            "description": "The plane id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",
@@ -20985,6 +21608,12 @@
               "type": "string",
               "format": "uuid"
             },
+            "planeId": {
+              "description": "The plane id of the sketch group.",
+              "type": "string",
+              "format": "uuid",
+              "nullable": true
+            },
             "position": {
               "description": "The position of the sketch group.",
               "type": "array",
@@ -21418,6 +22047,12 @@
             "description": "The id of the sketch group.",
             "type": "string",
             "format": "uuid"
+          },
+          "planeId": {
+            "description": "The plane id of the sketch group.",
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
           },
           "position": {
             "description": "The position of the sketch group.",

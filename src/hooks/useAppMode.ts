@@ -2,30 +2,37 @@
 // Once we have xState this should be removed
 
 import { useStore, Selections } from 'useStore'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { ArtifactMap, EngineCommandManager } from 'lang/std/engineConnection'
 import { Models } from '@kittycad/lib/dist/types/src'
 import { isReducedMotion } from 'lang/util'
 import { isOverlap } from 'lib/utils'
 import { engineCommandManager } from '../lang/std/engineConnection'
-
-interface DefaultPlanes {
-  xy: string
-  // TODO re-enable
-  // yz: string
-  // xz: string
-}
+import { DefaultPlanes } from '../wasm-lib/kcl/bindings/DefaultPlanes'
+import { getNodeFromPath } from '../lang/queryAst'
+import { CallExpression, PipeExpression } from '../lang/wasm'
 
 export function useAppMode() {
-  const { guiMode, setGuiMode, selectionRanges, selectionRangeTypeMap } =
-    useStore((s) => ({
-      guiMode: s.guiMode,
-      setGuiMode: s.setGuiMode,
-      selectionRanges: s.selectionRanges,
-      selectionRangeTypeMap: s.selectionRangeTypeMap,
-    }))
-  const [defaultPlanes, setDefaultPlanes] = useState<DefaultPlanes | null>(null)
+  const {
+    guiMode,
+    setGuiMode,
+    selectionRanges,
+    selectionRangeTypeMap,
+    defaultPlanes,
+    setDefaultPlanes,
+    setCurrentPlane,
+    ast,
+  } = useStore((s) => ({
+    guiMode: s.guiMode,
+    setGuiMode: s.setGuiMode,
+    selectionRanges: s.selectionRanges,
+    selectionRangeTypeMap: s.selectionRangeTypeMap,
+    defaultPlanes: s.defaultPlanes,
+    setDefaultPlanes: s.setDefaultPlanes,
+    setCurrentPlane: s.setCurrentPlane,
+    ast: s.ast,
+  }))
   useEffect(() => {
     if (
       guiMode.mode === 'sketch' &&
@@ -58,14 +65,36 @@ export function useAppMode() {
           localDefaultPlanes = defaultPlanes
         }
         setDefaultPlanesHidden(engineCommandManager, localDefaultPlanes, true)
-        // TODO figure out the plane to use based on the sketch
-        // maybe it's easier to make a new plane than rely on the defaults
+
+        const pipeExpression = getNodeFromPath<PipeExpression>(
+          ast,
+          guiMode.pathToNode,
+          'PipeExpression'
+        ).node
+        if (pipeExpression.type !== 'PipeExpression') return /// bad bad bad
+        const sketchCallExpression = pipeExpression.body.find(
+          (e) =>
+            e.type === 'CallExpression' && e.callee.name === 'startSketchOn'
+        ) as CallExpression
+        if (!sketchCallExpression) return // also bad bad bad
+        const firstArg = sketchCallExpression.arguments[0]
+        let planeId = ''
+        if (firstArg.type === 'Literal' && firstArg.value) {
+          const planeStr = firstArg.value.toString().toLowerCase()
+          if (planeStr === 'xy' || planeStr === 'xz' || planeStr === 'yz')
+            planeId = localDefaultPlanes[planeStr]
+        }
+
+        if (!planeId) return // they are on some non default plane, which we don't support yet
+
+        setCurrentPlane(planeId)
+
         await engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
             type: 'sketch_mode_enable',
-            plane_id: localDefaultPlanes.xy,
+            plane_id: planeId,
             ortho: true,
             animated: !isReducedMotion(),
           },
@@ -139,6 +168,7 @@ export function useAppMode() {
           // user clicked something else in the scene
           return
         }
+        setCurrentPlane(data.entity_id)
         const sketchModeResponse = await engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
@@ -225,7 +255,7 @@ async function createPlane(
   return planeId
 }
 
-function setDefaultPlanesHidden(
+export function setDefaultPlanesHidden(
   engineCommandManager: EngineCommandManager,
   defaultPlanes: DefaultPlanes,
   hidden: boolean
@@ -243,7 +273,7 @@ function setDefaultPlanesHidden(
   })
 }
 
-async function initDefaultPlanes(
+export async function initDefaultPlanes(
   engineCommandManager: EngineCommandManager
 ): Promise<DefaultPlanes> {
   const xy = await createPlane(engineCommandManager, {
@@ -251,35 +281,35 @@ async function initDefaultPlanes(
     y_axis: { x: 0, y: 1, z: 0 },
     color: { r: 0.7, g: 0.28, b: 0.28, a: 0.4 },
   })
-  // TODO re-enable
-  // const yz = createPlane(engineCommandManager, {
-  //   x_axis: { x: 0, y: 1, z: 0 },
-  //   y_axis: { x: 0, y: 0, z: 1 },
-  //   color: { r: 0.28, g: 0.7, b: 0.28, a: 0.4 },
-  // })
-  // const xz = createPlane(engineCommandManager, {
-  //   x_axis: { x: 1, y: 0, z: 0 },
-  //   y_axis: { x: 0, y: 0, z: 1 },
-  //   color: { r: 0.28, g: 0.28, b: 0.7, a: 0.4 },
-  // })
-  return { xy }
+  const yz = await createPlane(engineCommandManager, {
+    x_axis: { x: 0, y: 1, z: 0 },
+    y_axis: { x: 0, y: 0, z: 1 },
+    color: { r: 0.28, g: 0.7, b: 0.28, a: 0.4 },
+  })
+  const xz = await createPlane(engineCommandManager, {
+    x_axis: { x: 1, y: 0, z: 0 },
+    y_axis: { x: 0, y: 0, z: 1 },
+    color: { r: 0.28, g: 0.28, b: 0.7, a: 0.4 },
+  })
+  return { xy, yz, xz }
 }
 
 function isCursorInSketchCommandRange(
   artifactMap: ArtifactMap,
   selectionRanges: Selections
 ): string | false {
-  const overlapingEntries = Object.entries(artifactMap || {}).filter(
-    ([id, artifact]) =>
-      selectionRanges.codeBasedSelections.some(
-        (selection) =>
-          Array.isArray(selection?.range) &&
-          Array.isArray(artifact?.range) &&
-          isOverlap(selection.range, artifact.range) &&
-          (artifact.commandType === 'start_path' ||
-            artifact.commandType === 'extend_path' ||
-            artifact.commandType === 'close_path')
-      )
+  const overlapingEntries: [string, ArtifactMap[string]][] = Object.entries(
+    artifactMap
+  ).filter(([id, artifact]: [string, ArtifactMap[string]]) =>
+    selectionRanges.codeBasedSelections.some(
+      (selection) =>
+        Array.isArray(selection?.range) &&
+        Array.isArray(artifact?.range) &&
+        isOverlap(selection.range, artifact.range) &&
+        (artifact.commandType === 'start_path' ||
+          artifact.commandType === 'extend_path' ||
+          artifact.commandType === 'close_path')
+    )
   )
   return overlapingEntries.length && overlapingEntries[0][1].parentId
     ? overlapingEntries[0][1].parentId

@@ -32,21 +32,26 @@ import { isLiteralArrayOrStatic } from './std/sketchcombos'
 
 export function addStartSketch(
   node: Program,
+  axis: 'xy' | 'xz' | 'yz',
   start: [number, number],
   end: [number, number]
 ): { modifiedAst: Program; id: string; pathToNode: PathToNode } {
   const _node = { ...node }
   const _name = findUniqueName(node, 'part')
 
-  const startSketchAt = createCallExpression('startSketchAt', [
+  const startSketchOn = createCallExpressionStdLib('startSketchOn', [
+    createLiteral(axis.toUpperCase()),
+  ])
+  const startProfileAt = createCallExpressionStdLib('startProfileAt', [
     createArrayExpression([createLiteral(start[0]), createLiteral(start[1])]),
+    createPipeSubstitution(),
   ])
   const initialLineTo = createCallExpression('line', [
     createArrayExpression([createLiteral(end[0]), createLiteral(end[1])]),
     createPipeSubstitution(),
   ])
 
-  const pipeBody = [startSketchAt, initialLineTo]
+  const pipeBody = [startSketchOn, startProfileAt, initialLineTo]
 
   const variableDeclaration = createVariableDeclaration(
     _name,
@@ -79,11 +84,11 @@ export function addSketchTo(
   const _node = { ...node }
   const _name = name || findUniqueName(node, 'part')
 
-  const startSketchAt = createCallExpressionStdLib('startSketchAt', [
-    createLiteral('default'),
+  const startSketchOn = createCallExpressionStdLib('startSketchOn', [
+    createLiteral(axis.toUpperCase()),
   ])
-  const rotate = createCallExpression(axis === 'xz' ? 'rx' : 'ry', [
-    createLiteral(90),
+  const startProfileAt = createCallExpressionStdLib('startProfileAt', [
+    createLiteral('default'),
     createPipeSubstitution(),
   ])
   const initialLineTo = createCallExpressionStdLib('line', [
@@ -91,10 +96,7 @@ export function addSketchTo(
     createPipeSubstitution(),
   ])
 
-  const pipeBody =
-    axis !== 'xy'
-      ? [startSketchAt, rotate, initialLineTo]
-      : [startSketchAt, initialLineTo]
+  const pipeBody = [startSketchOn, startProfileAt, initialLineTo]
 
   const variableDeclaration = createVariableDeclaration(
     _name,
