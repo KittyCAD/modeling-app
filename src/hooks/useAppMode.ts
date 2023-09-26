@@ -265,7 +265,7 @@ async function initDefaultPlanes(
   return { xy }
 }
 
-function isCursorInSketchCommandRange(
+export function isCursorInSketchCommandRange(
   artifactMap: ArtifactMap,
   selectionRanges: Selections
 ): string | false {

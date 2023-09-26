@@ -1,13 +1,18 @@
 import { Program } from 'lang/abstractSyntaxTreeTypes'
 import { ProgramMemory } from 'lang/executor'
+import { engineCommandManager } from 'lang/std/engineConnection'
+import { DefaultPlanes } from 'lang/std/engineConnectionManagerUtils'
+import { isReducedMotion } from 'lang/util'
 import { Axis, Selection, Selections } from 'useStore'
 import { assign, createMachine } from 'xstate'
+import { v4 as uuidv4 } from 'uuid'
+import { isCursorInSketchCommandRange } from 'hooks/useAppMode'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
 export const modelingMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogC0AFgCMAOgBMogOwyAzAE5hNABw0ZAVlGKANCACeQyQDZh4zTMWj5GmqfnDN8gL4v9aDDnzjsETGAEAMpg7AAEsFhg5JzctAxIICxssTyJAgiimuZOkqqSMjRqipKKcvpGCIKiqibiwrVqkjSiwpJiCm4e6Fh4UL7+gQAicFExYSx47PG8yRxcaaAZgvKqivUaJquywtYyohWIojbiqqr7NZprps2u7iCevT5+AQQjkQHjkDAziXOpvGWSnkUk0JhMVkkmmkbRMmkOVWE5mkighNHk7WaZzu3S8fQGr3eY3CJD42Fgv2YrHm3EBQhkpVBpm0q2EMi2qgRImROjRGLaahkqi6Dx63n6L0CIU+4UmuGm9Fm1IB6SE8kK4hku1MilUlgh4JkCNWIJMzQhThKiiukhFj3FBKlxLC3zAlKSyoWdKq8hMqnEinRtgaohoELB8MMiE0zikpUkpnR1sDijtYvxkuCztJ5Pd-y9qqq4PWKgjZ2yUJ0COcdXRNEUvvyMYxqfu9ozgyzMrCADMSJQ857aYWVpp1udRAVA1kTMckQiGTRxGHWtaYyYaA1NGm8c9OwBReVgABOEQA1qFyAALQcpAtLRBagNOIW7RuqRxcmz+hob-ItNoOhxUVdwlA8j1PWAL3Ya8qFEBIqTvYcHwQBll1sDRdhMZRRD9eQuTWKQVDkK5Wm0GMZB3J4wNefcAEcAFdsCYF0+HYY8GIwW8aUWfhEATGQ42tWRClwxRUWrfJ6jkK1hHkMckyoh1M3opiWLANiOK4+ClSQ3iMmkCRagxGpZDWdQJKjBAtiXBtBTBUw2VKJSO0JUZuz7AdFT+Id9LVBtxHBMQwTKLUCjZL8ynEWx1CFPYrEott0z3V5pWiElMEwbiVRQlZwWXMMxBKVZ1FKBE1kEqEtm0JxWlKEwXJS4Z3PSsISEy7L7z4n0oq0JErmyXZWiNKzRyXHQ1AafYqukRqaMCVTmN7bBMtCTrkO6yRHGi0ydAaTc1xGyprHWXVQ0sesdVtJLQMdAhFpYnsVoCaYdJ8vTvT204N1kbCajEYyEXE00NFw2dVDEDdEtxajxCCaDrwICBuDAXxcAAN1QC9xCIY8wBIdgwHPS8b28xCeO9VZBODaxVCyPIIS1BE5zjFQij9cSamUOa4YRq9iDISgsrJj0PsLSczlBeRhuaY5wq5K46jKetCnkdUIfOHn4ZJ8QAEkD0YpbvCJ9hUFQYWENFinxehSRxEnMR1QxZ2si5dVTvky65FacF0S1vm9c7NLxjlBVLfzDaMkDEEwS50plAKNQv0IrZarMaWkTphqbth7WYKvQPUudSIoAAWzAeV1r8hBrAkTc5JoaFZFaedRr9TVoRjc4rgaNpRH9nX9bcj5WtDqvvUaCxxLhfrrSFTlRvd6LwTNVY4V5LUB-zwvmpH8YS-LyuRYj6u9QkEo5F9JxG9WSQFZOaXShaWxZG3HOHTz68d4IZASAvCIwBlwruEdGJ5ODkHauPG2Y56hTk3CFRw+ErJWFOI3doatSiOH1FvL+Q9Ai-3-gfYBYQryoGPNgAAXtwdgkDj6+U+hWU4VwGxOA3C0D8bsQRq3TuqS4vpZw4ILgAGTwETAAKmbTASMUZo0xtjXG+NCZhGNlAlCWRcKBWUNfMGrJIyVBEFCAMZxlAtD9LOZwgjxAiNwOIyR4gAByqAwgAAVUBTFgAQAAghACAEw3FH3DvQ8W1ochrAbCvNQSgFb1ntrYEJF97BIksdY2x5txCuKmGEbxGAIBeJ8X4qYqjNrMgDFCa0RQtS1AhNE9YNh6zZASe0YQyTRFhAkWkkIQD5RZJ8ZAPJvix50LFihMpMdLDtE0PUjmR0hCTNqXEhpicmktJsW0uxnTD7hGyX0ogqBS5MBekTFRQzrYjPZBILIYZnDqA1iYN2ux7YxiuEUQMqdubv3xPuTSnFAjIxsbIrGqMFEEyJhpdiPyikZFZMua0pRmxjlREzKyvoQR6gSscBkvpSjQxArDL54KMD3UNupb5XETk5W6rqU6BRsiCg-HLBEEIJBQjkpMhQ0htDXRhg6fFWkFrEtYgSt0b1yYUoyAaU4id0QzgTGCRl+xQRyTkAUdodNgLth8Lyn539g7hE8m6clXUMh6lqZYMc3sFnCAXLUAMjgwZlPREkj5mrSWo11QsMIAAlfGEADBZnCBAckNCKAGsCcM7qDsQStD1LKjc8ZrW1gcHqX09ZsI4o1f0T+V4wi4CcfqrsrV9WQsQMIDcy5WiCmOM3TcMyfR232B0P6ZwV5gh5gAMWeqEaR-y8ByKBXjEFy1Vph10qcza4l6hjkcNYByeorVWVDDaxcJRSoRi0O2zt7AiVqSHS9YtNchSBQGkKWcWCWjMw0OOcxg0-RFG0Bu4d26lpPWHXBMNY7xU2taMNV8H5rB3wXZe76WQb3qBrQ+l6OrnSun3RVIizaDQlHBAvSoxwIbluOGGBkepNbOv6B24dcNiQeu9SQX1-qwjHjI9gBiFJDWRyOAUJWkylA2CxUiO5C7-oYdDBCPIVx03JXw5uojMoSM+r9bql00BQ2jrFUcWQ6wlCTOkJifYKHGPWlteoEySg41v3uLmjA8BEgZrk0a+kcgmTr1ZOyVYBEzCaj2uEtNuE37ctcmAczDGqiMh0BhSZ0IPxyHOAiUoyImVaPULbZpeHeYk286fdEpTL5mEC7fLkchqaomqhoLUVLLF4MS59DCUh9jTrEKWyw879EsvqBx9klgdCJlix5nwWarGtPaZgYr4sY322tKsRu6nKxcnTlIDkpRJzsmTCs1JmAHFOIyfKEzoqLOZEDONQb0WRvaDdicJwEZS2Z2lrhObay0lDBRr1kZ1glynYcE0PYSD9FIkEuoNoDIk1FDO3FjrKSLsLeW1s3pEAbubVwiCVE0tVjTlMXotUB31zZDMA0U72c2uZoDgD7rRGukg5yeDgypaJBqzDGY15DYEc+iR0d1H9LfuY-EFqjARPEBmn9PkQo0qHJVWrOqe20hwZ5AxB+VruKeWup3mz1CCrxnZGcFaW21rNCBXOHZ3CawbAY4l58qX7ruBeokzL0MGotSTjNGYD88kauPhQSasMRQ0dFHVUJ5nUvSO+pN0VJzWRxLZFwgoPQyC9Rq7kFsTX1hfSCJzXm-sXn3ofv4jGKeZQ0tyXMuUReII0EMjKPyBO7ndc+AIy9GXHJ7aVZC2j-9QMnCajyPkWWUfsIQdCNLxP8nULYSIsoYLNVsLU+OMoJhlopqlqhEXjN4hS-t4N7gI3ZHKhrZ86buodMGwYjy6nIf3G71olkO0FWbf2DiE98vq2XfWhKCkDUDEWosIJlt5kPfjcD8MhUGUNwbggA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogC0AFgCMAOgBMogOwyAzAE5hNABw0ZAVlGKANCACeQyQDZh4zTMWj5GmqfnDN8gL4v9aDDnzjsETGAEAMpg7AAEsFhg5JzctAxIICxssTyJAgiqkuLqMpKK8jImWpL5wvpGCNLiwooORTZmqq7uIJ5YeFC+-oEAInBRMWEseOzxvMkcXGmgGYLyqoo1GiYLsrWyohWIojY5qjK7qpqLppI0LR7oHT5+AQT9kQFDkDDjiZOpvHNK8lKaJmKdU00mEpk02wQInM0kUxQukjBamabiuXk63Xuj0G4RIfGwsHezFYU243yEeSWkhBJm0C2ERQWkOhUh08PkiPOB1UqLa128XTugRCz3CI1wY3oExJX3SQkKNHEMlqpkUxyKRWKkIWfxM52KTjqihOkl57QFmOFOLCrzARKSMum5Kh8hMqnEigutmEqlENGKAIhhkQmmcUnypRMF2NnsUZv5GKFwWteIJ9s+TrlUMBSxUgdUxzB2j0wYQzhM4guNAKbupzny8fRtx6ydFYQAZiRKOnHWSs-NNEsDqJJFYaKIAbthOVS3lFf7RLVQwCaD7NI2boKWwBRCVgABOEQA1qFyAALHspTOzRCAj3VmSLRzCBWLZk6GQ1R-q0QmP00jcLSTXd2APY9TwvUQEmJK8+xvBBDhqRFHFpLIDnyLZS0EMwlV9TQNFqQ4zF2QDEx3ABHABXbAmBtPh2H3SiMEvUkZn4RBSk-UpjVkGRxxMRQ4UhE0vysMp5EHaNSObe5tyomi6IYpi7Sg6VYLYjJpAkVRVmkX1HzVasTEhVZFQKNQtD1MxKWkrcsQGNtO27KUPl7DT5QKcRATEAFFDkMFlRkd8-PEWxckWXi-Nsy1W2iXFMEwFjZXg+Y7xof0xDqBZ1HySFFi4gEJMXbQwThaKk2xNsSASpLr3Yl0Qq0acTk0adrAZZkJMVHQ1B9Q5qT1URyoo6jaPbbAEtCWq4PqyRHFC0RfR0H1V2NSxIWsJY1X-Pi6gE01WnNMjZPksaJoCMZVNc9TnWWnIo1kATFrEHT5A2zyoyIv9VDET7oqCE92HPYgyEoRKXJg1jbskAt-nkRc512UcZ0qQQTgrPyHy9R8+v+wHz3EAGIIASRGhTvDAMJ2FQVBwegh0bqzCdSnEEcxEKDlOYnTqrA9Lq6jkRdAQuPGIMJ-Gz1J+4RTi4ZUFGab3IQT0-knU5BICtR30WLzHG0Mx4enX0TFFoGz3FkmWxloZIigABbMAJUV51rAkVcXxoEFNmnFGhDdJUQVDA4Th9MEhsOhMfCJs2LbNqW+gc2XxUlemMxmjIdMVQc4Vaw1LALHmlldQE5p04sDVNgno-PeOHkTm2wHtx2U7UqGs2OCQBYUMx8OcLJmTpBb8nHWxZHXCOmy6avzen2vkBIE8Ikbh2JTCAA3A9OHIarnaZ0Nc1HT0nAExw3tnIdPeQjkCicIpK5niW54XynbZX8Iz1QfdsAAL24dgd4hgzNu8EJxghyCcG+K5xzNE6n8eQroXyFEWuWP899xAABk8CUwACo00wAQCA3AwC+FwGvVAJ5xBEH3GAEgoEwgU13iA-WXllBOH4qsH6QZUZFg9AWZQ-EdITkuHySescCaYNwDgvB4gAByqAwgAAV5YSlgAQAAghACAcsFaALTkrHQrUaiLBrMLZoJZUb4SWDYasrUBb2GnGgiRUjabiCUaMMIGiMAQHUZo7RTtdFuWdJGTQHpqTGnSsqHSWosKWNZrYY0Ko+KImEI4rBYRcEuJCE3VenjIA+K0cnRhs1Byq0sIiSxAJ8oD2rHEmxiT7EpInpuMR5snHpOkVkt+HjNF5KIKgO2TALqUwYQExm8FRx-lZvhWkCxeo6U6rUKZQd0qelWLURpaJmnbnooxDABCiEkLIRQqhNC6FgB2cpIpGR6SVmNPkUMElBIGm1KscBVhDiyDmnqKKTSLTbKUnsuSo1FK7LtKM4B9U1RbVHK1CyzQkYmUQtSF8+EFDSG0AdTZfyLmAtOiCy5V1IbJXqsUCsWQ+IXAnHqAaiKJDIsKHkPIPobDRX+aC8QtdrbhCcmC1OgT26DimVoPyhx4mtUhI+DGjhfx6kks+VlOLiFcumGEAASjQiABhkzhAgASf+FBeWt2JRkNmfxFzHFKCuCMEqdKVgcMcV0RkflYoxNPMIuB5E8tikMHlVyQyPiVIUUyixaS0kwqjCspgdAjg5H6AoSgNkiOaQAMXOqEfZkjDnkOISc2hlNxqTRbtdCFmlBI1BKRsAEMNxWlj9LaucdQcqBi0NFVNhaCBAoUgWi6frlYBtQvnP8etxyQj9LzQRoZpxunStoVtab2Adrxd2qahKgHGtvLaxcCMcZmJHKOjQQ4-yTuENO1cMg52Fo5Vba0tpe35SkD6KJRQ9pulHc9Ssuw-TFGrQcC9F1CY4hVeqkgmrtVhH3CB7AlFCTgvXQgEcRQPT4SUDYV0yTjK1vfeOXY-o8jHF-b8jEbb-3Ku4GqjVWquU2mgIa4tcHdi8yUPhaQnJDiqFHfcvm6hY1KCjNSNwrQPUYHgIkI6+AjV1TmHIAq4IbA-UZOxrCvp3TBusNWMoJxhoBAk+nYwVjzKe0vs0OQBxIRlCkMUZaK0QSInvjppW3HQlyAQb3BYkhmQKAkNY6wqxATrHHi6qOEsWnx3s7dWwipRw2HWULSwvsoTIpqFOoolgdCmFXKkyR7TaZhaZha1mxpZmpayNoZkBtdbVl+gmylmXnGYFkfItxKjcsgM9N1Qr6hivUnDfKPYThAwnqNvDX8tXsv1d6EQlrs01MLRHMGjCChmTTk-OoAKkZZn8VGxk+rTXwi5IgFNzSv4-hwnhgsT0fpfxcN638frtJBs+mGybQjQWxZtO2wB7Je2ekHbo5JjiJ6JDwP9G6AS-oCjXZdH10M92zCPd2M9wLXQ2XKUO7eGGORRzpXhlWmlpZywBxfGYccIr+MveR4qq92m-u6YQohMprVnBGhszakJbo5CrF-BFV0CqAVKsA2R4Dmq0fwbsEqMQZwmjwJrZUOQQ5JJRlXM0bHvP2VC8qES-78HMpKl2NnVqv4FDmMQI+NnBxGRc+sDz8nLT3Weq7GAEXpgKzwKyJjPyKH3NYV2F5XiQsrCTkKH+0IIuOGszEAyHdnuNpOFCke4oWgq2I6TRaYjoQqeO5p0rZ9D7lDGZKgJSHuxlDgMNH1E9dZg-sAA6KIDFGRdjrJToeB5wOd6zfT9Ssnt4SfJUM6lPRH53iHVw3l8VJFocmVLUal8WjjmBnT3plD4BMuCAA */
     id: 'Modeling',
 
     tsTypes: {} as import('./modelingMachine.typegen').Typegen0,
@@ -17,11 +22,12 @@ export const modelingMachine = createMachine(
       guiMode: 'default',
       selection: [] as string[],
       ast: null as Program | null,
+      defaultPlanes: new DefaultPlanes(engineCommandManager) as DefaultPlanes,
       selectionRanges: {
         otherSelections: [],
         codeBasedSelections: [],
       } as Selections,
-      programMemory: { root: {}, pendingMemory: {} } as ProgramMemory,
+      programMemory: { root: {}, return: null } as ProgramMemory,
       // TODO: migrate engineCommandManager from useStore
       // engineCommandManager?: EngineCommandManager
     },
@@ -62,7 +68,8 @@ export const modelingMachine = createMachine(
         | { type: 'Make segment horizontal' }
         | { type: 'Make segment vertical' }
         | { type: 'Complete line' }
-        | { type: 'Set distance' },
+        | { type: 'Set distance' }
+        | { type: 'Set Default Planes'; data: DefaultPlanes },
     },
 
     states: {
@@ -149,6 +156,7 @@ export const modelingMachine = createMachine(
             {
               target: 'Sketch',
               cond: 'Selection is one face',
+              actions: ['sketch mode enabled', 'edit mode enter'],
             },
             'Sketch no face',
           ],
@@ -207,12 +215,12 @@ export const modelingMachine = createMachine(
 
       Sketch: {
         states: {
-          Idle: {
+          SketchIdle: {
             on: {
               'Equip line tool': 'Line Tool',
 
               'Select point': {
-                target: 'Idle',
+                target: 'SketchIdle',
                 internal: true,
                 actions: [
                   'Update code selection cursors',
@@ -221,7 +229,7 @@ export const modelingMachine = createMachine(
               },
 
               'Select segment': {
-                target: 'Idle',
+                target: 'SketchIdle',
                 internal: true,
                 actions: [
                   'Update code selection cursors',
@@ -230,7 +238,7 @@ export const modelingMachine = createMachine(
               },
 
               'Deselect point': {
-                target: 'Idle',
+                target: 'SketchIdle',
                 internal: true,
                 cond: 'Selection contains point',
                 actions: [
@@ -240,7 +248,7 @@ export const modelingMachine = createMachine(
               },
 
               'Deselect segment': {
-                target: 'Idle',
+                target: 'SketchIdle',
                 internal: true,
                 cond: 'Selection contains line',
                 actions: [
@@ -251,13 +259,13 @@ export const modelingMachine = createMachine(
 
               'Make segment vertical': {
                 cond: 'Can make selection vertical',
-                target: 'Idle',
+                target: 'SketchIdle',
                 internal: true,
                 actions: ['Make selection vertical'],
               },
 
               'Make segment horizontal': {
-                target: 'Idle',
+                target: 'SketchIdle',
                 internal: true,
                 cond: 'Can make selection horizontal',
                 actions: ['Make selection horizontal'],
@@ -310,22 +318,22 @@ export const modelingMachine = createMachine(
             invoke: {
               src: 'createLine',
               id: 'Create line',
-              onDone: 'Idle',
+              onDone: 'SketchIdle',
             },
           },
         },
 
-        initial: 'Idle',
+        initial: 'SketchIdle',
 
         on: {
-          Cancel: '.Idle',
+          Cancel: '.SketchIdle',
         },
 
-        invoke: {
-          src: 'createSketch',
-          id: 'Create sketch',
-          onDone: 'idle',
-        },
+        // invoke: {
+        //   src: 'createSketch',
+        //   id: 'Create sketch',
+        //   onDone: 'idle',
+        // },
       },
 
       Extrude: {
@@ -367,8 +375,13 @@ export const modelingMachine = createMachine(
 
       'Sketch no face': {
         on: {
-          'Select face': 'Sketch',
+          'Select face': {
+            target: 'Sketch',
+            actions: ['sketch mode enabled', 'hide default planes'],
+          },
         },
+
+        entry: 'show default planes',
       },
 
       Fillet: {
@@ -461,6 +474,36 @@ export const modelingMachine = createMachine(
           codeBasedSelections: [],
         }),
       }),
+      'sketch mode enabled': ({ defaultPlanes }) => {
+        engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'sketch_mode_enable',
+            plane_id: defaultPlanes.xy,
+            ortho: true,
+            animated: !isReducedMotion(),
+          },
+        })
+      },
+      'edit mode enter': ({ selectionRanges }) => {
+        const pathId = isCursorInSketchCommandRange(
+          engineCommandManager.artifactMap,
+          selectionRanges
+        )
+        pathId &&
+          engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'edit_mode_enter',
+              target: pathId,
+            },
+          })
+      },
+      'hide default planes': ({ defaultPlanes }) => {
+        defaultPlanes.hidePlanes()
+      },
     },
   }
 )

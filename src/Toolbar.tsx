@@ -10,15 +10,16 @@ import { SetHorzVertDistance } from './components/Toolbar/SetHorzVertDistance'
 import { SetAngleLength } from './components/Toolbar/setAngleLength'
 import { SetAbsDistance } from './components/Toolbar/SetAbsDistance'
 import { SetAngleBetween } from './components/Toolbar/SetAngleBetween'
-import { Fragment, useEffect } from 'react'
+import { Fragment, useMemo } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faX } from '@fortawesome/free-solid-svg-icons'
 import { Popover, Transition } from '@headlessui/react'
 import styles from './Toolbar.module.css'
 import { v4 as uuidv4 } from 'uuid'
-import { useAppMode } from 'hooks/useAppMode'
+import { isCursorInSketchCommandRange, useAppMode } from 'hooks/useAppMode'
 import { ActionIcon } from 'components/ActionIcon'
 import { engineCommandManager } from './lang/std/engineConnection'
+import { useModelingContext } from 'hooks/useModelingContext'
 
 export const sketchButtonClassnames = {
   background:
@@ -62,6 +63,15 @@ export const Toolbar = () => {
     executeAst: s.executeAst,
   }))
   useAppMode()
+  const { state, send } = useModelingContext()
+  const pathId = useMemo(
+    () =>
+      isCursorInSketchCommandRange(
+        engineCommandManager.artifactMap,
+        selectionRanges
+      ),
+    [engineCommandManager.artifactMap, selectionRanges]
+  )
 
   function ToolbarButtons({ className }: React.HTMLAttributes<HTMLElement>) {
     return (
@@ -78,6 +88,32 @@ export const Toolbar = () => {
           >
             <ActionIcon icon="sketch" className="!p-0.5" size="md" />
             Start Sketch
+          </button>
+        )}
+        {state.nextEvents.includes('Enter sketch') && (
+          <button
+            onClick={() => {
+              send({
+                type: 'Enter sketch',
+              })
+            }}
+            className="group"
+          >
+            <ActionIcon icon="sketch" className="!p-0.5" size="md" />
+            Start Sketch v2
+          </button>
+        )}
+        {state.nextEvents.includes('Enter sketch') && pathId && (
+          <button
+            onClick={() => {
+              send({
+                type: 'Enter sketch',
+              })
+            }}
+            className="group"
+          >
+            <ActionIcon icon="sketch" className="!p-0.5" size="md" />
+            Edit Sketch v2
           </button>
         )}
         {guiMode.mode === 'canEditExtrude' && (

@@ -18,11 +18,6 @@ export interface Typegen0 {
       data: unknown
       __tip: 'See the XState TS docs to learn how to strongly type this.'
     }
-    'done.invoke.Create sketch': {
-      type: 'done.invoke.Create sketch'
-      data: unknown
-      __tip: 'See the XState TS docs to learn how to strongly type this.'
-    }
     'error.platform.Create extrude': {
       type: 'error.platform.Create extrude'
       data: unknown
@@ -35,17 +30,12 @@ export interface Typegen0 {
       type: 'error.platform.Create line'
       data: unknown
     }
-    'error.platform.Create sketch': {
-      type: 'error.platform.Create sketch'
-      data: unknown
-    }
     'xstate.init': { type: 'xstate.init' }
   }
   invokeSrcNameMap: {
     createExtrude: 'done.invoke.Create extrude'
     createFillet: 'done.invoke.Create fillet'
     createLine: 'done.invoke.Create line'
-    createSketch: 'done.invoke.Create sketch'
   }
   missingImplementations: {
     actions:
@@ -53,6 +43,7 @@ export interface Typegen0 {
       | 'Make selection vertical'
       | 'Modify AST'
       | 'Update code selection cursors'
+      | 'show default planes'
     delays: never
     guards:
       | 'Can make selection horizontal'
@@ -66,7 +57,7 @@ export interface Typegen0 {
       | 'Selection is not empty'
       | 'Selection is one face'
       | 'Selection is one or more edges'
-    services: 'createExtrude' | 'createFillet' | 'createLine' | 'createSketch'
+    services: 'createExtrude' | 'createFillet' | 'createLine'
   }
   eventsCausingActions: {
     'Add to code-based selection':
@@ -108,6 +99,10 @@ export interface Typegen0 {
       | 'Select face'
       | 'Select point'
       | 'Select segment'
+    'edit mode enter': 'Enter sketch'
+    'hide default planes': 'Select face'
+    'show default planes': 'Enter sketch'
+    'sketch mode enabled': 'Enter sketch' | 'Select face'
   }
   eventsCausingDelays: {}
   eventsCausingGuards: {
@@ -127,7 +122,6 @@ export interface Typegen0 {
     createExtrude: 'Equip extrude'
     createFillet: 'Equip fillet'
     createLine: 'Equip line tool'
-    createSketch: 'Enter sketch' | 'Select face'
   }
   matchesStates:
     | 'Extrude'
@@ -140,19 +134,19 @@ export interface Typegen0 {
     | 'Fillet.Selection Ready'
     | 'Sketch'
     | 'Sketch no face'
-    | 'Sketch.Idle'
     | 'Sketch.Line Tool'
     | 'Sketch.Line Tool.Done'
     | 'Sketch.Line Tool.No Points'
     | 'Sketch.Line Tool.Point Added'
     | 'Sketch.Line Tool.Segment Added'
+    | 'Sketch.SketchIdle'
     | 'idle'
     | {
         Extrude?: 'Idle' | 'Ready' | 'Selection Ready'
         Fillet?: 'Idle' | 'Ready' | 'Selection Ready'
         Sketch?:
-          | 'Idle'
           | 'Line Tool'
+          | 'SketchIdle'
           | {
               'Line Tool'?:
                 | 'Done'

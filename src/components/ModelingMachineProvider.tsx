@@ -1,5 +1,5 @@
 import { useMachine } from '@xstate/react'
-import React, { createContext, useRef } from 'react'
+import React, { createContext, useEffect, useRef } from 'react'
 import {
   AnyStateMachine,
   ContextFrom,
@@ -9,8 +9,9 @@ import {
 } from 'xstate'
 import { modelingMachine } from 'machines/modelingMachine'
 import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
-import { useCodeEval } from 'hooks/useCodeEval'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { isCursorInSketchCommandRange } from 'hooks/useAppMode'
+import { engineCommandManager } from 'lang/std/engineConnection'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -34,7 +35,6 @@ export const ModelingMachineProvider = ({
   } = useGlobalStateContext()
   const streamRef = useRef<HTMLDivElement>(null)
   useSetupEngineManager(streamRef, token)
-  useCodeEval()
 
   // const { commands } = useCommandsContext()
 
@@ -58,6 +58,9 @@ export const ModelingMachineProvider = ({
       'Make selection horizontal': () => {},
       'Make selection vertical': () => {},
       'Update code selection cursors': () => {},
+      'show default planes': () => {
+        modelingState.context.defaultPlanes?.showPlanes()
+      },
     },
     guards: {
       'Can make selection horizontal': () => true,
@@ -69,17 +72,30 @@ export const ModelingMachineProvider = ({
       'Selection contains point': () => true,
       'Selection is empty': () => true,
       'Selection is not empty': () => true,
-      'Selection is one face': () => true,
+      'Selection is one face': ({ selectionRanges }) => {
+        return !!isCursorInSketchCommandRange(
+          engineCommandManager.artifactMap,
+          selectionRanges
+        )
+      },
       'Selection is one or more edges': () => true,
     },
     services: {
-      createSketch: async () => {},
+      // createSketch: async () => {},
       createLine: async () => {},
       createExtrude: async () => {},
       createFillet: async () => {},
     },
     devTools: true,
   })
+
+  useEffect(() => {
+    modelingState.context.defaultPlanes?.onPlaneSelected((plane_id: string) => {
+      if (modelingState.nextEvents.includes('Select face')) {
+        modelingSend('Select face')
+      }
+    })
+  }, [modelingState.context.defaultPlanes, modelingSend])
 
   // useStateMachineCommands({
   //   state: settingsState,
