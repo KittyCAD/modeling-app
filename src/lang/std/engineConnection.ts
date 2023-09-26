@@ -716,16 +716,17 @@ export class EngineCommandManager {
       return
     }
 
-    /*const resizeCmd: EngineCommand = {
+    const resizeCmd: EngineCommand = {
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
       cmd: {
         type: 'reconfigure_stream',
         width: streamWidth,
         height: streamHeight,
+        fps: 60,
       },
     }
-    this.engineConnection?.send(resizeCmd)*/
+    this.engineConnection?.send(resizeCmd)
   }
   handleModelingCommand(message: WebSocketResponse, id: string) {
     if (this.engineConnection === undefined) {
