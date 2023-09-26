@@ -582,8 +582,10 @@ export class EngineCommandManager {
   outSequence = 1
   inSequence = 1
   engineConnection?: EngineConnection
-  waitForReady: Promise<void> = new Promise(() => {})
   private resolveReady = () => {}
+  waitForReady: Promise<void> = new Promise((resolve) => {
+    this.resolveReady = resolve
+  })
 
   subscriptions: {
     [event: string]: {
@@ -623,9 +625,6 @@ export class EngineCommandManager {
       return
     }
 
-    this.waitForReady = new Promise((resolve) => {
-      this.resolveReady = resolve
-    })
     const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}`
     this.engineConnection = new EngineConnection({
       url,
