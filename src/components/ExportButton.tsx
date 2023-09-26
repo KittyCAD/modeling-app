@@ -1,11 +1,11 @@
 import { v4 as uuidv4 } from 'uuid'
-import { useStore } from '../useStore'
 import { faFileExport, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from './ActionButton'
 import Modal from 'react-modal'
 import React from 'react'
 import { useFormik } from 'formik'
 import { Models } from '@kittycad/lib'
+import { engineCommandManager } from '../lang/std/engineConnection'
 
 type OutputFormat = Models['OutputFormat_type']
 
@@ -18,10 +18,6 @@ interface ExportButtonProps extends React.PropsWithChildren {
 }
 
 export const ExportButton = ({ children, className }: ExportButtonProps) => {
-  const { engineCommandManager } = useStore((s) => ({
-    engineCommandManager: s.engineCommandManager,
-  }))
-
   const [modalIsOpen, setIsOpen] = React.useState(false)
 
   const defaultType = 'gltf'
@@ -66,7 +62,7 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
           },
         }
       }
-      engineCommandManager?.sendSceneCommand({
+      engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
           type: 'export',

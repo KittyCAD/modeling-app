@@ -18,6 +18,7 @@ import styles from './Toolbar.module.css'
 import { v4 as uuidv4 } from 'uuid'
 import { useAppMode } from 'hooks/useAppMode'
 import { ActionIcon } from 'components/ActionIcon'
+import { engineCommandManager } from './lang/std/engineConnection'
 
 export const sketchButtonClassnames = {
   background:
@@ -50,7 +51,6 @@ export const Toolbar = () => {
     ast,
     updateAst,
     programMemory,
-    engineCommandManager,
     executeAst,
   } = useStore((s) => ({
     guiMode: s.guiMode,
@@ -59,7 +59,6 @@ export const Toolbar = () => {
     ast: s.ast,
     updateAst: s.updateAst,
     programMemory: s.programMemory,
-    engineCommandManager: s.engineCommandManager,
     executeAst: s.executeAst,
   }))
   useAppMode()
@@ -169,12 +168,12 @@ export const Toolbar = () => {
         {guiMode.mode === 'sketch' && (
           <button
             onClick={() => {
-              engineCommandManager?.sendSceneCommand({
+              engineCommandManager.sendSceneCommand({
                 type: 'modeling_cmd_req',
                 cmd_id: uuidv4(),
                 cmd: { type: 'edit_mode_exit' },
               })
-              engineCommandManager?.sendSceneCommand({
+              engineCommandManager.sendSceneCommand({
                 type: 'modeling_cmd_req',
                 cmd_id: uuidv4(),
                 cmd: { type: 'default_camera_disable_sketch_mode' },
@@ -210,7 +209,7 @@ export const Toolbar = () => {
               <button
                 key={sketchFnName}
                 onClick={() => {
-                  engineCommandManager?.sendSceneCommand({
+                  engineCommandManager.sendSceneCommand({
                     type: 'modeling_cmd_req',
                     cmd_id: uuidv4(),
                     cmd: {

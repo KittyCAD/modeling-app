@@ -856,26 +856,6 @@ async fn inner_arc(data: ArcData, sketch_group: Box<SketchGroup>, args: Args) ->
     )
     .await?;
 
-    // TODO:  Dont do this (move path pen) - mike
-    // lets review what the needs are here and see if any existing arc endpoints can accomplish this
-
-    // Move the path pen to the end of the arc.
-    // Since that is where we want to draw the next path.
-    // TODO: the engine should automatically move the pen to the end of the arc.
-    // This just seems inefficient.
-    args.send_modeling_cmd(
-        id,
-        ModelingCmd::MovePathPen {
-            path: sketch_group.id,
-            to: Point3D {
-                x: end.x,
-                y: end.y,
-                z: 0.0,
-            },
-        },
-    )
-    .await?;
-
     let current_path = Path::ToPoint {
         base: BasePath {
             from: from.into(),

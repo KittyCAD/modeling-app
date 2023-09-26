@@ -620,6 +620,22 @@ pub async fn execute(
                                 let result = call_expr.execute(memory, &mut pipe_info, engine).await?;
                                 args.push(result);
                             }
+                            Value::BinaryExpression(binary_expression) => {
+                                let result = binary_expression.get_result(memory, &mut pipe_info, engine).await?;
+                                args.push(result);
+                            }
+                            Value::UnaryExpression(unary_expression) => {
+                                let result = unary_expression.get_result(memory, &mut pipe_info, engine).await?;
+                                args.push(result);
+                            }
+                            Value::ObjectExpression(object_expression) => {
+                                let result = object_expression.execute(memory, &mut pipe_info, engine).await?;
+                                args.push(result);
+                            }
+                            Value::ArrayExpression(array_expression) => {
+                                let result = array_expression.execute(memory, &mut pipe_info, engine).await?;
+                                args.push(result);
+                            }
                             // We do nothing for the rest.
                             _ => (),
                         }
@@ -679,7 +695,7 @@ pub async fn execute(
                                                 message: format!(
                                                     "Expected {} arguments, got {}",
                                                     function_expression.params.len(),
-                                                    args.len()
+                                                    args.len(),
                                                 ),
                                                 source_ranges: vec![(&function_expression).into()],
                                             }));

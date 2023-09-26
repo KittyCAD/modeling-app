@@ -75,11 +75,12 @@ export async function executor(
   ast: Program,
   pm: ProgramMemory = { root: {}, return: null }
 ): Promise<ProgramMemory> {
-  const engineCommandManager = new EngineCommandManager({
+  const engineCommandManager = new EngineCommandManager()
+  engineCommandManager.start({
     setIsStreamReady: () => {},
     setMediaStream: () => {},
-    width: 100,
-    height: 100,
+    width: 0,
+    height: 0,
   })
   await engineCommandManager.waitForReady
   engineCommandManager.startNewSession()
