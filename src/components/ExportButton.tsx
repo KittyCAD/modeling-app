@@ -30,6 +30,8 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
 
   const defaultType = 'gltf'
   const [type, setType] = React.useState(defaultType)
+  const defaultStorage = 'embedded'
+  const [storage, setStorage] = React.useState(defaultStorage)
 
   function openModal() {
     setIsOpen(true)
@@ -42,7 +44,7 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
   // Default to gltf and embedded.
   const initialValues: OutputFormat = {
     type: defaultType,
-    storage: 'embedded',
+    storage: defaultStorage,
     presentation: 'pretty',
   }
   const formik = useFormik({
@@ -72,6 +74,14 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
       }
       if (values.type === 'obj' || values.type === 'stl') {
         values.units = baseUnit
+      }
+      if (
+        values.type === 'ply' ||
+        values.type === 'stl' ||
+        values.type === 'gltf'
+      ) {
+        // Set the storage type.
+        values.storage = storage
       }
       engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
@@ -118,6 +128,18 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
                 name="type"
                 onChange={(e) => {
                   setType(e.target.value)
+                  if (e.target.value === 'gltf') {
+                    // Set default to embedded.
+                    setStorage('embedded')
+                  } else if (e.target.value === 'ply') {
+                    // Set default to ascii.
+                    setStorage('ascii')
+                  } else if (e.target.value === 'stl') {
+                    // Set default to ascii.
+                    setStorage('ascii')
+                  } else {
+                    setStorage('')
+                  }
                   formik.handleChange(e)
                 }}
                 className="bg-chalkboard-20 dark:bg-chalkboard-90 w-full"
@@ -135,10 +157,10 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
                 <select
                   id="storage"
                   name="storage"
-                  onChange={formik.handleChange}
-                  value={
-                    'storage' in formik.values ? formik.values.storage : ''
-                  }
+                  onChange={(e) => {
+                    setStorage(e.target.value)
+                    formik.handleChange(e)
+                  }}
                   className="bg-chalkboard-20 dark:bg-chalkboard-90 w-full"
                 >
                   {type === 'gltf' && (
