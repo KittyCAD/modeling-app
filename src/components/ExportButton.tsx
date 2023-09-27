@@ -81,6 +81,7 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
         values.type === 'gltf'
       ) {
         // Set the storage type.
+        // @ts-ignore
         values.storage = storage
       }
       engineCommandManager.sendSceneCommand({
