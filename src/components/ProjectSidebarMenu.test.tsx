@@ -2,6 +2,8 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
 import { ProjectWithEntryPointMetadata } from '../Router'
+import { GlobalStateProvider } from './GlobalStateProvider'
+import CommandBarProvider from './CommandBar'
 
 const now = new Date()
 const projectWellFormed = {
@@ -38,7 +40,11 @@ describe('ProjectSidebarMenu tests', () => {
   test('Renders the project name', () => {
     render(
       <BrowserRouter>
-        <ProjectSidebarMenu project={projectWellFormed} />
+        <CommandBarProvider>
+          <GlobalStateProvider>
+            <ProjectSidebarMenu project={projectWellFormed} />
+          </GlobalStateProvider>
+        </CommandBarProvider>
       </BrowserRouter>
     )
 
@@ -55,7 +61,11 @@ describe('ProjectSidebarMenu tests', () => {
   test('Renders app name if given no project', () => {
     render(
       <BrowserRouter>
-        <ProjectSidebarMenu />
+        <CommandBarProvider>
+          <GlobalStateProvider>
+            <ProjectSidebarMenu />
+          </GlobalStateProvider>
+        </CommandBarProvider>
       </BrowserRouter>
     )
 
@@ -69,7 +79,14 @@ describe('ProjectSidebarMenu tests', () => {
   test('Renders as a link if set to do so', () => {
     render(
       <BrowserRouter>
-        <ProjectSidebarMenu project={projectWellFormed} renderAsLink={true} />
+        <CommandBarProvider>
+          <GlobalStateProvider>
+            <ProjectSidebarMenu
+              project={projectWellFormed}
+              renderAsLink={true}
+            />
+          </GlobalStateProvider>
+        </CommandBarProvider>
       </BrowserRouter>
     )
 
