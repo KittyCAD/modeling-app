@@ -9,6 +9,9 @@ import { engineCommandManager } from '../lang/std/engineConnection'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 
 type OutputFormat = Models['OutputFormat_type']
+type OutputTypeKey = OutputFormat['type']
+type ExtractStorageTypes<T> = T extends { storage: infer U } ? U : never
+type StorageUnion = ExtractStorageTypes<OutputFormat>
 
 interface ExportButtonProps extends React.PropsWithChildren {
   className?: {
@@ -29,9 +32,9 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
   } = useGlobalStateContext()
 
   const defaultType = 'gltf'
-  const [type, setType] = React.useState(defaultType)
+  const [type, setType] = React.useState<OutputTypeKey>(defaultType)
   const defaultStorage = 'embedded'
-  const [storage, setStorage] = React.useState(defaultStorage)
+  const [storage, setStorage] = React.useState<StorageUnion>(defaultStorage)
 
   function openModal() {
     setIsOpen(true)
@@ -81,7 +84,6 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
         values.type === 'gltf'
       ) {
         // Set the storage type.
-        // @ts-ignore
         values.storage = storage
       }
       engineCommandManager.sendSceneCommand({
@@ -128,7 +130,7 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
                 id="type"
                 name="type"
                 onChange={(e) => {
-                  setType(e.target.value)
+                  setType(e.target.value as OutputTypeKey)
                   if (e.target.value === 'gltf') {
                     // Set default to embedded.
                     setStorage('embedded')
@@ -138,8 +140,6 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
                   } else if (e.target.value === 'stl') {
                     // Set default to ascii.
                     setStorage('ascii')
-                  } else {
-                    setStorage('')
                   }
                   formik.handleChange(e)
                 }}
@@ -159,7 +159,7 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
                   id="storage"
                   name="storage"
                   onChange={(e) => {
-                    setStorage(e.target.value)
+                    setStorage(e.target.value as StorageUnion)
                     formik.handleChange(e)
                   }}
                   className="bg-chalkboard-20 dark:bg-chalkboard-90 w-full"
