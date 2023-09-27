@@ -6,6 +6,7 @@ import React from 'react'
 import { useFormik } from 'formik'
 import { Models } from '@kittycad/lib'
 import { engineCommandManager } from '../lang/std/engineConnection'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 
 type OutputFormat = Models['OutputFormat_type']
 
@@ -19,6 +20,13 @@ interface ExportButtonProps extends React.PropsWithChildren {
 
 export const ExportButton = ({ children, className }: ExportButtonProps) => {
   const [modalIsOpen, setIsOpen] = React.useState(false)
+  const {
+    settings: {
+      state: {
+        context: { baseUnit },
+      },
+    },
+  } = useGlobalStateContext()
 
   const defaultType = 'gltf'
   const [type, setType] = React.useState(defaultType)
@@ -62,6 +70,9 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
           },
         }
       }
+      if (values.type === 'obj' || values.type === 'stl') {
+        values.units = baseUnit
+      }
       engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
@@ -71,6 +82,7 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
           // in the scene to export. In that case, you'd pass the IDs thru here.
           entity_ids: [],
           format: values,
+          source_unit: baseUnit,
         },
         cmd_id: uuidv4(),
       })
