@@ -7,6 +7,8 @@ on:
       - main
   release:
     types: [published]
+  # schedule:
+  #   - cron: '0 0 * * *'
 
 jobs:
   check-format:
@@ -63,6 +65,10 @@ jobs:
 
       - run: yarn test:cov
 
+      - name: Set nightly version
+        # if: github.event_name == 'schedule'
+        run: VERSION=$(date +'%Y.%m.%d') yarn bump-jsons
+
       - id: export_version
         run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
 
@@ -88,6 +94,12 @@ jobs:
           cache: 'yarn' # Set this to npm, yarn or pnpm.
 
       - run: yarn install
+
+      - name: Set nightly version
+        # if: github.event_name == 'schedule'
+        env:
+          VERSION: ${{ needs.build-test-web.outputs.version }}
+        run: yarn bump-jsons
 
       - name: Rust setup
         uses: dtolnay/rust-toolchain@stable
