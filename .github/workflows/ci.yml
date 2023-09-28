@@ -67,7 +67,7 @@ jobs:
 
       - name: Set nightly version
         # if: github.event_name == 'schedule'
-        run: VERSION=$(date +'%Y.%m.%d') yarn bump-jsons
+        run: VERSION=$(date +'%Y.%-m.%-d') yarn bump-jsons
 
       - id: export_version
         run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
