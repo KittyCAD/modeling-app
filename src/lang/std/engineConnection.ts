@@ -356,6 +356,11 @@ export class EngineConnection {
             if (this.shouldTrace()) {
               iceSpan.resolve?.()
             }
+          } else if (this.pc?.iceConnectionState === 'failed') {
+            // failed is a terminal state; let's explicitly kill the
+            // connection to the server at this point.
+            console.log('failed to negotiate ice connection; restarting')
+            this.close()
           }
         })
 
