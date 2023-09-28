@@ -99,6 +99,7 @@ jobs:
         # if: github.event_name == 'schedule'
         env:
           VERSION: ${{ needs.build-test-web.outputs.version }}
+        shell: bash
         run: yarn bump-jsons
 
       - name: Rust setup
