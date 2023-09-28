@@ -100,7 +100,10 @@ jobs:
         env:
           VERSION: ${{ needs.build-test-web.outputs.version }}
         shell: bash
-        run: yarn bump-jsons
+        run: |
+          yarn bump-jsons
+          cat package.json
+          cat src-tauri/tauri.conf.json
 
       - name: Rust setup
         uses: dtolnay/rust-toolchain@stable
