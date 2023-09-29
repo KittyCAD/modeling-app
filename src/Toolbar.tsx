@@ -99,8 +99,7 @@ export const Toolbar = () => {
             Exit Sketch v2
           </button>
         )}
-        {(state.nextEvents.includes('Equip tool') ||
-          state.matches('Sketch.Line Tool')) && (
+        {state.matches('Sketch') && (
           <button
             onClick={() => {
               state.matches('Sketch.Line Tool')
@@ -116,6 +115,25 @@ export const Toolbar = () => {
           >
             <ActionIcon icon="line" className="!p-0.5" size="md" />
             Line
+          </button>
+        )}
+        {state.matches('Sketch') && (
+          <button
+            onClick={() => {
+              console.log('yo', state.matches('Sketch.Move Tool'))
+              state.matches('Sketch.Move Tool')
+                ? send('CancelSketch')
+                : send('Equip move tool')
+            }}
+            className={
+              'group ' +
+              (state.matches('Sketch.Move Tool')
+                ? '!text-fern-70 !bg-fern-10 !dark:text-fern-20 !border-fern-50'
+                : '')
+            }
+          >
+            <ActionIcon icon="move" className="!p-0.5" size="md" />
+            Move
           </button>
         )}
         {guiMode.mode === 'canEditExtrude' && (
