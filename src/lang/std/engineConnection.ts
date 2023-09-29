@@ -491,9 +491,11 @@ export class EngineConnection {
 
         this.onDataChannelOpen(this)
 
-        this.onEngineConnectionOpen(this)
         this.ready = true
         this.connecting = false
+        // Do this after we set the connection is ready to avoid errors when
+        // we try to send messages before the connection is ready.
+        this.onEngineConnectionOpen(this)
       })
 
       this.unreliableDataChannel.addEventListener('close', (event) => {
@@ -586,6 +588,9 @@ export class EngineCommandManager {
   outSequence = 1
   inSequence = 1
   engineConnection?: EngineConnection
+  // Folks should realize that wait for ready does not get called _everytime_
+  // the connection resets and restarts, it only gets called the first time.
+  // Be careful what you put here.
   waitForReady: Promise<void> = new Promise(() => {})
   private resolveReady = () => {}
 
@@ -641,6 +646,11 @@ export class EngineCommandManager {
         setIsStreamReady(true)
 
         // Make the axis gizmo.
+        // We do this after the connection opened to avoid a race condition.
+        // Connected opened is the last thing that happens when the stream
+        // is ready.
+        // We also do this here because we want to ensure we create the gizmo
+        // and execute the code everytime the stream is restarted.
         const gizmoId = uuidv4()
         this.sendSceneCommand({
           type: 'modeling_cmd_req',
@@ -648,15 +658,15 @@ export class EngineCommandManager {
           cmd: {
             type: 'make_axes_gizmo',
             clobber: false,
-            // If true, axes gizmo will be placed in the corner of the screen. If false, it will be placed at the origin of the scene.
+            // If true, axes gizmo will be placed in the corner of the screen.
+            // If false, it will be placed at the origin of the scene.
             gizmo_mode: true,
           },
-        }).then((result) => {
-          console.log('make_axes_gizmo result', result)
-          // We execute the code here to make sure if the stream was to
-          // restart in a session, we want to make sure to execute the code.
-          executeCode()
         })
+
+        // We execute the code here to make sure if the stream was to
+        // restart in a session, we want to make sure to execute the code.
+        executeCode()
       },
       onClose: () => {
         setIsStreamReady(false)
@@ -753,10 +763,6 @@ export class EngineCommandManager {
     this.engineConnection?.send(resizeCmd)
   }
   handleModelingCommand(message: WebSocketResponse, id: string) {
-    if (this.engineConnection === undefined) {
-      return
-    }
-
     if (message.type !== 'modeling') {
       return
     }
@@ -924,15 +930,17 @@ export class EngineCommandManager {
     if (this.engineConnection === undefined) {
       return Promise.resolve()
     }
+
+    if (!this.engineConnection?.isReady()) {
+      return Promise.resolve()
+    }
+
     if (
       command.type === 'modeling_cmd_req' &&
       command.cmd.type !== lastMessage
     ) {
       console.log('sending command', command.cmd.type)
       lastMessage = command.cmd.type
-    }
-    if (!this.engineConnection?.isReady()) {
-      return Promise.resolve()
     }
     if (command.type !== 'modeling_cmd_req') return Promise.resolve()
     const cmd = command.cmd
