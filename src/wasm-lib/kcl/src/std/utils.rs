@@ -10,6 +10,15 @@ pub struct Angle {
     degrees: f64,
 }
 
+impl From<kittycad::types::Angle> for Angle {
+    fn from(angle: kittycad::types::Angle) -> Self {
+        match angle.unit {
+            kittycad::types::UnitAngle::Degrees => Self::from_degrees(angle.value),
+            kittycad::types::UnitAngle::Radians => Self::from_radians(angle.value),
+        }
+    }
+}
+
 impl Angle {
     const ZERO: Self = Self { degrees: 0.0 };
     /// Make an angle of the given degrees.
