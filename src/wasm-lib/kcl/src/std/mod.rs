@@ -61,6 +61,8 @@ impl StdLib {
             Box::new(crate::std::sketch::StartSketchAt),
             Box::new(crate::std::sketch::Close),
             Box::new(crate::std::sketch::Arc),
+            Box::new(crate::std::sketch::TangentalArc),
+            Box::new(crate::std::sketch::TangentalArcTo),
             Box::new(crate::std::sketch::BezierCurve),
             Box::new(crate::std::math::Cos),
             Box::new(crate::std::math::Sin),

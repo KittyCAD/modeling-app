@@ -1,11 +1,10 @@
-import { parser_wasm } from './abstractSyntaxTree'
+import { parse, recast, initPromise } from './wasm'
 import {
   findAllPreviousVariables,
   isNodeSafeToReplace,
   isTypeInValue,
   getNodePathFromSourceRange,
 } from './queryAst'
-import { initPromise } from './rust'
 import { enginelessExecutor } from '../lib/testHelpers'
 import {
   createArrayExpression,
@@ -13,7 +12,6 @@ import {
   createLiteral,
   createPipeSubstitution,
 } from './modifyAst'
-import { recast } from './recast'
 
 beforeAll(() => initPromise)
 
@@ -36,7 +34,7 @@ const variableBelowShouldNotBeIncluded = 3
 
 show(part001)`
     const rangeStart = code.indexOf('// selection-range-7ish-before-this') - 7
-    const ast = parser_wasm(code)
+    const ast = parse(code)
     const programMemory = await enginelessExecutor(ast)
 
     const { variables, bodyPath, insertIndex } = findAllPreviousVariables(
@@ -70,7 +68,7 @@ const yo = 5 + 6
 const yo2 = hmm([identifierGuy + 5])
 show(part001)`
   it('find a safe binaryExpression', () => {
-    const ast = parser_wasm(code)
+    const ast = parse(code)
     const rangeStart = code.indexOf('100 + 100') + 2
     const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart])
     expect(result.isSafe).toBe(true)
@@ -84,7 +82,7 @@ show(part001)`
     expect(outCode).toContain(`angledLine([replaceName, 3.09], %)`)
   })
   it('find a safe Identifier', () => {
-    const ast = parser_wasm(code)
+    const ast = parse(code)
     const rangeStart = code.indexOf('abc')
     const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart])
     expect(result.isSafe).toBe(true)
@@ -92,7 +90,7 @@ show(part001)`
     expect(code.slice(result.value.start, result.value.end)).toBe('abc')
   })
   it('find a safe CallExpression', () => {
-    const ast = parser_wasm(code)
+    const ast = parse(code)
     const rangeStart = code.indexOf('def')
     const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart])
     expect(result.isSafe).toBe(true)
@@ -106,7 +104,7 @@ show(part001)`
     expect(outCode).toContain(`angledLine([replaceName, 3.09], %)`)
   })
   it('find an UNsafe CallExpression, as it has a PipeSubstitution', () => {
-    const ast = parser_wasm(code)
+    const ast = parse(code)
     const rangeStart = code.indexOf('ghi')
     const range: [number, number] = [rangeStart, rangeStart]
     const result = isNodeSafeToReplace(ast, range)
@@ -115,7 +113,7 @@ show(part001)`
     expect(code.slice(result.value.start, result.value.end)).toBe('ghi(%)')
   })
   it('find an UNsafe Identifier, as it is a callee', () => {
-    const ast = parser_wasm(code)
+    const ast = parse(code)
     const rangeStart = code.indexOf('ine([2.8,')
     const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart])
     expect(result.isSafe).toBe(false)
@@ -125,7 +123,7 @@ show(part001)`
     )
   })
   it("find a safe BinaryExpression that's assigned to a variable", () => {
-    const ast = parser_wasm(code)
+    const ast = parse(code)
     const rangeStart = code.indexOf('5 + 6') + 1
     const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart])
     expect(result.isSafe).toBe(true)
@@ -139,7 +137,7 @@ show(part001)`
     expect(outCode).toContain(`const yo = replaceName`)
   })
   it('find a safe BinaryExpression that has a CallExpression within', () => {
-    const ast = parser_wasm(code)
+    const ast = parse(code)
     const rangeStart = code.indexOf('jkl') + 1
     const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart])
     expect(result.isSafe).toBe(true)
@@ -155,7 +153,7 @@ show(part001)`
     expect(outCode).toContain(`angledLine([replaceName, 3.09], %)`)
   })
   it('find a safe BinaryExpression within a CallExpression', () => {
-    const ast = parser_wasm(code)
+    const ast = parse(code)
     const rangeStart = code.indexOf('identifierGuy') + 1
     const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart])
     expect(result.isSafe).toBe(true)
@@ -203,7 +201,7 @@ show(part001)`
   it('finds the second line when cursor is put at the end', () => {
     const searchLn = `line([0.94, 2.61], %)`
     const sourceIndex = code.indexOf(searchLn) + searchLn.length
-    const ast = parser_wasm(code)
+    const ast = parse(code)
     const result = getNodePathFromSourceRange(ast, [sourceIndex, sourceIndex])
     expect(result).toEqual([
       ['body', ''],
@@ -218,7 +216,7 @@ show(part001)`
   it('finds the last line when cursor is put at the end', () => {
     const searchLn = `line([-0.21, -1.4], %)`
     const sourceIndex = code.indexOf(searchLn) + searchLn.length
-    const ast = parser_wasm(code)
+    const ast = parse(code)
     const result = getNodePathFromSourceRange(ast, [sourceIndex, sourceIndex])
     const expected = [
       ['body', ''],

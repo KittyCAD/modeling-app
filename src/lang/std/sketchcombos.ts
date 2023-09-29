@@ -6,7 +6,9 @@ import {
   Value,
   BinaryPart,
   VariableDeclarator,
-} from '../abstractSyntaxTreeTypes'
+  PathToNode,
+  ProgramMemory,
+} from '../wasm'
 import {
   getNodeFromPath,
   getNodeFromPathCurry,
@@ -25,10 +27,8 @@ import {
   giveSketchFnCallTag,
 } from '../modifyAst'
 import { createFirstArg, getFirstArg, replaceSketchLine } from './sketch'
-import { PathToNode, ProgramMemory } from '../executor'
 import { getSketchSegmentFromSourceRange } from './sketchConstraints'
 import { getAngle, roundOff, normaliseAngle } from '../../lib/utils'
-import { MemoryItem } from 'wasm-lib/kcl/bindings/MemoryItem'
 
 type LineInputsType =
   | 'xAbsolute'

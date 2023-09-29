@@ -2,6 +2,7 @@ import { assign, createMachine } from 'xstate'
 import { CommandBarMeta } from '../lib/commands'
 import { Themes, getSystemTheme, setThemeClass } from '../lib/theme'
 import { CameraSystem, cameraSystems } from 'lib/cameraControls'
+import { Models } from '@kittycad/lib'
 
 export const DEFAULT_PROJECT_NAME = 'project-$nnn'
 
@@ -11,11 +12,11 @@ export enum UnitSystem {
 }
 
 export const baseUnits = {
-  imperial: ['in', 'ft'],
+  imperial: ['in', 'ft', 'yd'],
   metric: ['mm', 'cm', 'm'],
 } as const
 
-export type BaseUnit = 'in' | 'ft' | 'mm' | 'cm' | 'm'
+export type BaseUnit = Models['UnitLength_type']
 
 export const baseUnitsUnion = Object.values(baseUnits).flatMap((v) => v)
 

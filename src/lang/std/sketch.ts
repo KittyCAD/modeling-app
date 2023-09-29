@@ -4,9 +4,6 @@ import {
   SketchGroup,
   SourceRange,
   PathToNode,
-  MemoryItem,
-} from '../executor'
-import {
   Program,
   PipeExpression,
   CallExpression,
@@ -14,7 +11,7 @@ import {
   Value,
   Literal,
   VariableDeclaration,
-} from '../abstractSyntaxTreeTypes'
+} from '../wasm'
 import {
   getNodeFromPath,
   getNodeFromPathCurry,
@@ -38,7 +35,6 @@ import {
   findUniqueName,
 } from '../modifyAst'
 import { roundOff, getLength, getAngle } from '../../lib/utils'
-import { getSketchSegmentFromSourceRange } from './sketchConstraints'
 import { perpendicularDistance } from 'sketch-helpers'
 
 export type Coords2d = [number, number]

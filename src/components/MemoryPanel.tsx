@@ -2,7 +2,7 @@ import ReactJson from 'react-json-view'
 import { CollapsiblePanel, CollapsiblePanelProps } from './CollapsiblePanel'
 import { useStore } from '../useStore'
 import { useMemo } from 'react'
-import { ProgramMemory, Path, ExtrudeSurface } from '../lang/executor'
+import { ProgramMemory, Path, ExtrudeSurface } from '../lang/wasm'
 import { Themes } from '../lib/theme'
 
 interface MemoryPanelProps extends CollapsiblePanelProps {

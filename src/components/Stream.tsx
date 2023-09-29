@@ -20,11 +20,14 @@ import {
   compareVec2Epsilon,
 } from 'lang/std/sketch'
 import { getNodeFromPath } from 'lang/queryAst'
-import { Program, VariableDeclarator } from 'lang/abstractSyntaxTreeTypes'
-import { modify_ast_for_sketch } from '../wasm-lib/pkg/wasm_lib'
+import {
+  Program,
+  VariableDeclarator,
+  rangeTypeFix,
+  modifyAstForSketch,
+} from 'lang/wasm'
 import { KCLError } from 'lang/errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
-import { rangeTypeFix } from 'lang/abstractSyntaxTree'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { kclManager } from 'lang/KclSinglton'

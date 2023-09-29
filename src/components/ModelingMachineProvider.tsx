@@ -16,11 +16,8 @@ import { engineCommandManager } from 'lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
 import { addStartSketch } from 'lang/modifyAst'
 import { roundOff } from 'lib/utils'
-import { useStore } from 'useStore'
-import { recast } from 'lang/recast'
-import { parser_wasm } from 'lang/abstractSyntaxTree'
+import { recast, parse, Program, VariableDeclarator } from 'lang/wasm'
 import { getNodeFromPath } from 'lang/queryAst'
-import { Program, VariableDeclarator } from 'lang/abstractSyntaxTreeTypes'
 import {
   addCloseToPipe,
   addNewSketchLn,
@@ -109,7 +106,7 @@ export const ModelingMachineProvider = ({
         const _modifiedAst = _addStartSketch.modifiedAst
         const _pathToNode = _addStartSketch.pathToNode
         const newCode = recast(_modifiedAst)
-        const astWithUpdatedSource = parser_wasm(newCode)
+        const astWithUpdatedSource = parse(newCode)
 
         kclManager.executeAstMock(astWithUpdatedSource, true)
 

@@ -1,6 +1,6 @@
 {
   "name": "untitled-app",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "private": true,
   "dependencies": {
     "@codemirror/autocomplete": "^6.9.0",
@@ -10,7 +10,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@headlessui/react": "^1.7.13",
     "@headlessui/tailwindcss": "^0.2.0",
-    "@kittycad/lib": "^0.0.39",
+    "@kittycad/lib": "^0.0.40",
     "@lezer/javascript": "^1.4.7",
     "@open-rpc/client-js": "^1.8.1",
     "@react-hook/resize-observer": "^1.2.6",
@@ -117,7 +117,7 @@
     "eslint-plugin-css-modules": "^2.11.0",
     "happy-dom": "^10.8.0",
     "husky": "^8.0.3",
-    "postcss": "^8.4.19",
+    "postcss": "^8.4.31",
     "prettier": "^2.8.0",
     "setimmediate": "^1.0.5",
     "tailwindcss": "^3.2.4",

@@ -1,5 +1,4 @@
-import { Program } from 'lang/abstractSyntaxTreeTypes'
-import { PathToNode } from 'lang/executor'
+import { PathToNode } from 'lang/wasm'
 import { engineCommandManager } from 'lang/std/engineConnection'
 import { DefaultPlanes } from 'lang/std/engineConnectionManagerUtils'
 import { isReducedMotion } from 'lang/util'

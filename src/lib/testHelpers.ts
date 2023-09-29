@@ -1,10 +1,8 @@
-import { Program } from '../lang/abstractSyntaxTreeTypes'
-import { ProgramMemory, _executor } from '../lang/executor'
+import { Program, ProgramMemory, _executor, SourceRange } from '../lang/wasm'
 import {
   EngineCommandManager,
   EngineCommand,
 } from '../lang/std/engineConnection'
-import { SourceRange } from 'lang/executor'
 import { Models } from '@kittycad/lib'
 
 type WebSocketResponse = Models['OkWebSocketResponseData_type']
@@ -81,6 +79,7 @@ export async function executor(
     setMediaStream: () => {},
     width: 0,
     height: 0,
+    executeCode: () => {},
   })
   await engineCommandManager.waitForReady
   engineCommandManager.startNewSession()

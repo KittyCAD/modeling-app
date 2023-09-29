@@ -1,14 +1,11 @@
 import { executeAst } from 'useStore'
-import { Program } from './abstractSyntaxTreeTypes'
 import { KCLError } from './errors'
-import { ProgramMemory } from './executor'
 import {
   EngineCommandManager,
   engineCommandManager,
 } from './std/engineConnection'
-import { recast } from './recast'
 import { deferExecution } from 'lib/utils'
-import { parser_wasm } from './abstractSyntaxTree'
+import { parse, Program, ProgramMemory, recast } from 'lang/wasm'
 import { bracket } from 'lib/exampleKcl'
 
 const PERSIST_CODE_TOKEN = 'persistCode'
@@ -16,7 +13,7 @@ const PERSIST_CODE_TOKEN = 'persistCode'
 class KclManager {
   _code = bracket
   private _defferer = deferExecution((code: string) => {
-    const ast = parser_wasm(code)
+    const ast = parse(code)
     this.executeAst(ast)
   }, 600)
   private _ast: Program = {
@@ -86,7 +83,7 @@ class KclManager {
   async executeAstMock(ast: Program = this._ast, updateCode = false) {
     // this._isExecutingCallback(true)
     const newCode = recast(ast)
-    const newAst = parser_wasm(newCode)
+    const newAst = parse(newCode)
     await engineCommandManager.waitForReady
     if (updateCode) {
       this.setCode(recast(ast))
