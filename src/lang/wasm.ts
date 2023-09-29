@@ -3,6 +3,7 @@ import init, {
   recast_wasm,
   execute_wasm,
   lexer_wasm,
+  modify_ast_for_sketch_wasm,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
@@ -182,5 +183,33 @@ export function lexer(str: string): Token[] {
     // TODO: do something real with the error.
     console.log('lexer error', e)
     throw e
+  }
+}
+
+export const modifyAstForSketch = async (
+  engineCommandManager: EngineCommandManager,
+  ast: Program,
+  variableName: string,
+  engineId: string
+): Promise<Program> => {
+  try {
+    const updatedAst: Program = await modify_ast_for_sketch_wasm(
+      engineCommandManager,
+      JSON.stringify(ast),
+      variableName,
+      engineId
+    )
+
+    return updatedAst
+  } catch (e: any) {
+    const parsed: RustKclError = JSON.parse(e.toString())
+    const kclError = new KCLError(
+      parsed.kind,
+      parsed.msg,
+      rangeTypeFix(parsed.sourceRanges)
+    )
+
+    console.log(kclError)
+    throw kclError
   }
 }

@@ -36,7 +36,7 @@ pub async fn execute_wasm(
 // wasm_bindgen wrapper for execute
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
-pub async fn modify_ast_for_sketch(
+pub async fn modify_ast_for_sketch_wasm(
     manager: kcl_lib::engine::conn_wasm::EngineCommandManager,
     program_str: &str,
     sketch_name: &str,

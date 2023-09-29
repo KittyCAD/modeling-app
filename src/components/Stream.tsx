@@ -20,8 +20,12 @@ import {
   compareVec2Epsilon,
 } from 'lang/std/sketch'
 import { getNodeFromPath } from 'lang/queryAst'
-import { Program, VariableDeclarator, rangeTypeFix } from 'lang/wasm'
-import { modify_ast_for_sketch } from '../wasm-lib/pkg/wasm_lib'
+import {
+  Program,
+  VariableDeclarator,
+  rangeTypeFix,
+  modifyAstForSketch,
+} from 'lang/wasm'
 import { KCLError } from 'lang/errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
 import { engineCommandManager } from '../lang/std/engineConnection'
@@ -248,26 +252,14 @@ export const Stream = ({ className = '' }) => {
 
         let engineId = guiMode.pathId
 
-        try {
-          const updatedAst: Program = await modify_ast_for_sketch(
-            engineCommandManager,
-            JSON.stringify(ast),
-            variableName,
-            engineId
-          )
+        const updatedAst: Program = await modifyAstForSketch(
+          engineCommandManager,
+          ast,
+          variableName,
+          engineId
+        )
 
-          updateAst(updatedAst, false)
-        } catch (e: any) {
-          const parsed: RustKclError = JSON.parse(e.toString())
-          const kclError = new KCLError(
-            parsed.kind,
-            parsed.msg,
-            rangeTypeFix(parsed.sourceRanges)
-          )
-
-          console.log(kclError)
-          throw kclError
-        }
+        updateAst(updatedAst, false)
         return
       }
 
