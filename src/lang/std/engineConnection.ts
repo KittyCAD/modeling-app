@@ -621,7 +621,7 @@ export class EngineCommandManager {
     setIsStreamReady: (isStreamReady: boolean) => void
     width: number
     height: number
-    executeCode: () => void
+    executeCode: (code?: string, force?: boolean) => void
     token?: string
   }) {
     if (width === 0 || height === 0) {
@@ -666,7 +666,10 @@ export class EngineCommandManager {
 
         // We execute the code here to make sure if the stream was to
         // restart in a session, we want to make sure to execute the code.
-        executeCode()
+        // We force it to re-execute the code because we want to make sure
+        // the code is executed everytime the stream is restarted.
+        // We pass undefined for the code so it reads from the current state.
+        executeCode(undefined, true)
       },
       onClose: () => {
         setIsStreamReady(false)
