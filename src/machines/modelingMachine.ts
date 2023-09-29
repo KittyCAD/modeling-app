@@ -8,6 +8,7 @@ import { assign, createMachine } from 'xstate'
 import { v4 as uuidv4 } from 'uuid'
 import { isCursorInSketchCommandRange } from 'hooks/useAppMode'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
+import { kclManager } from 'lang/KclSinglton'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -21,15 +22,6 @@ export const modelingMachine = createMachine(
     preserveActionOrder: true,
 
     context: {
-      ast: {
-        start: 0,
-        end: 0,
-        body: [],
-        nonCodeMeta: {
-          nonCodeNodes: {},
-          start: null,
-        },
-      } as Program,
       guiMode: 'default',
       selection: [] as string[],
       defaultPlanes: new DefaultPlanes(engineCommandManager) as DefaultPlanes,
@@ -565,13 +557,9 @@ export const modelingMachine = createMachine(
         }),
       'reset sketchPathToNode': assign({ sketchPathToNode: null }),
       'set sketchPathToNode': assign({
-        sketchPathToNode: ({ ast, selectionRanges }) => {
-          if (!ast) {
-            console.error("shouldn't happed, how'd we get here?")
-            return null
-          }
+        sketchPathToNode: ({ selectionRanges }) => {
           const sourceRange = selectionRanges.codeBasedSelections[0].range
-          return getNodePathFromSourceRange(ast, sourceRange)
+          return getNodePathFromSourceRange(kclManager.ast, sourceRange)
         },
       }),
       'set tool': () =>

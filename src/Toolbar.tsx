@@ -75,27 +75,13 @@ export const Toolbar = () => {
   function ToolbarButtons({ className }: React.HTMLAttributes<HTMLElement>) {
     return (
       <span className={styles.toolbarButtons + ' ' + className}>
-        {guiMode.mode === 'default' && (
-          <button
-            onClick={() => {
-              setGuiMode({
-                mode: 'sketch',
-                sketchMode: 'selectFace',
-              })
-            }}
-            className="group"
-          >
-            <ActionIcon icon="sketch" className="!p-0.5" size="md" />
-            Start Sketch
-          </button>
-        )}
         {state.nextEvents.includes('Enter sketch') && (
           <button
             onClick={() => send({ type: 'Enter sketch' })}
             className="group"
           >
             <ActionIcon icon="sketch" className="!p-0.5" size="md" />
-            Start Sketch v2
+            Start Sketch
           </button>
         )}
         {state.nextEvents.includes('Enter sketch') && pathId && (
@@ -104,7 +90,7 @@ export const Toolbar = () => {
             className="group"
           >
             <ActionIcon icon="sketch" className="!p-0.5" size="md" />
-            Edit Sketch v2
+            Edit Sketch
           </button>
         )}
         {state.nextEvents.includes('Cancel') && !state.matches('idle') && (
@@ -150,28 +136,6 @@ export const Toolbar = () => {
           >
             <ActionIcon icon="sketch" className="!p-0.5" size="md" />
             Sketch on Face
-          </button>
-        )}
-        {guiMode.mode === 'canEditSketch' && (
-          <button
-            onClick={() => {
-              const pathToNode = getNodePathFromSourceRange(
-                kclManager.ast,
-                selectionRanges.codeBasedSelections[0].range
-              )
-              setGuiMode({
-                mode: 'sketch',
-                sketchMode: 'enterSketchEdit',
-                pathToNode: pathToNode,
-                rotation: [0, 0, 0, 1],
-                position: [0, 0, 0],
-                pathId: guiMode.pathId,
-              })
-            }}
-            className="group"
-          >
-            <ActionIcon icon="sketch" className="!p-0.5" size="md" />
-            Edit Sketch
           </button>
         )}
         {guiMode.mode === 'canEditSketch' && (
