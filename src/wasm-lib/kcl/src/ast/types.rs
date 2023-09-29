@@ -258,6 +258,23 @@ impl Program {
         }
     }
 
+    /// Replace a value with the new value, use the source range for matching the exact value.
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+        for item in &mut self.body {
+            match item {
+                BodyItem::ExpressionStatement(ref mut expression_statement) => expression_statement
+                    .expression
+                    .replace_value(source_range, new_value.clone()),
+                BodyItem::VariableDeclaration(ref mut variable_declaration) => {
+                    variable_declaration.replace_value(source_range, new_value.clone())
+                }
+                BodyItem::ReturnStatement(ref mut return_statement) => {
+                    return_statement.argument.replace_value(source_range, new_value.clone())
+                }
+            }
+        }
+    }
+
     /// Get the variable declaration with the given name.
     pub fn get_variable(&self, name: &str) -> Option<&VariableDeclarator> {
         for item in &self.body {
@@ -390,6 +407,27 @@ impl Value {
             Value::PipeExpression(pipe_exp) => pipe_exp.recast(options, indentation_level),
             Value::UnaryExpression(unary_exp) => unary_exp.recast(options),
             Value::PipeSubstitution(_) => crate::parser::PIPE_SUBSTITUTION_OPERATOR.to_string(),
+        }
+    }
+
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+        if source_range == self.clone().into() {
+            *self = new_value;
+            return;
+        }
+
+        match self {
+            Value::BinaryExpression(ref mut bin_exp) => bin_exp.replace_value(source_range, new_value),
+            Value::ArrayExpression(ref mut array_exp) => array_exp.replace_value(source_range, new_value),
+            Value::ObjectExpression(ref mut obj_exp) => obj_exp.replace_value(source_range, new_value),
+            Value::MemberExpression(_) => {}
+            Value::Literal(_) => {}
+            Value::FunctionExpression(ref mut func_exp) => func_exp.replace_value(source_range, new_value),
+            Value::CallExpression(ref mut call_exp) => call_exp.replace_value(source_range, new_value),
+            Value::Identifier(_) => {}
+            Value::PipeExpression(ref mut pipe_exp) => pipe_exp.replace_value(source_range, new_value),
+            Value::UnaryExpression(ref mut unary_exp) => unary_exp.replace_value(source_range, new_value),
+            Value::PipeSubstitution(_) => {}
         }
     }
 
@@ -535,6 +573,23 @@ impl BinaryPart {
             BinaryPart::CallExpression(call_expression) => call_expression.get_constraint_level(),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
             BinaryPart::MemberExpression(member_expression) => member_expression.get_constraint_level(),
+        }
+    }
+
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+        match self {
+            BinaryPart::Literal(_) => {}
+            BinaryPart::Identifier(_) => {}
+            BinaryPart::BinaryExpression(ref mut binary_expression) => {
+                binary_expression.replace_value(source_range, new_value)
+            }
+            BinaryPart::CallExpression(ref mut call_expression) => {
+                call_expression.replace_value(source_range, new_value)
+            }
+            BinaryPart::UnaryExpression(ref mut unary_expression) => {
+                unary_expression.replace_value(source_range, new_value)
+            }
+            BinaryPart::MemberExpression(_) => {}
         }
     }
 
@@ -801,6 +856,12 @@ impl CallExpression {
         })
     }
 
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+        for arg in &mut self.arguments {
+            arg.replace_value(source_range, new_value.clone());
+        }
+    }
+
     fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
         format!(
             "{}({})",
@@ -1011,6 +1072,12 @@ impl VariableDeclaration {
             end: 0,
             declarations,
             kind,
+        }
+    }
+
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+        for declaration in &mut self.declarations {
+            declaration.init.replace_value(source_range, new_value.clone());
         }
     }
 
@@ -1367,6 +1434,12 @@ impl ArrayExpression {
         }
     }
 
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+        for element in &mut self.elements {
+            element.replace_value(source_range, new_value.clone());
+        }
+    }
+
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         if self.elements.is_empty() {
             return ConstraintLevel::Ignore {
@@ -1514,6 +1587,12 @@ impl ObjectExpression {
             start: 0,
             end: 0,
             properties,
+        }
+    }
+
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+        for property in &mut self.properties {
+            property.value.replace_value(source_range, new_value.clone());
         }
     }
 
@@ -1961,6 +2040,11 @@ impl BinaryExpression {
         }
     }
 
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+        self.left.replace_value(source_range, new_value.clone());
+        self.right.replace_value(source_range, new_value);
+    }
+
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         let left_constraint_level = self.left.get_constraint_level();
         let right_constraint_level = self.right.get_constraint_level();
@@ -2183,6 +2267,10 @@ impl UnaryExpression {
         }
     }
 
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+        self.argument.replace_value(source_range, new_value);
+    }
+
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         self.argument.get_constraint_level()
     }
@@ -2275,6 +2363,12 @@ impl PipeExpression {
             end: 0,
             body,
             non_code_meta: Default::default(),
+        }
+    }
+
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+        for value in &mut self.body {
+            value.replace_value(source_range, new_value.clone());
         }
     }
 
@@ -2418,6 +2512,10 @@ impl FunctionExpression {
         ConstraintLevel::Ignore {
             source_ranges: vec![self.into()],
         }
+    }
+
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
+        self.body.replace_value(source_range, new_value);
     }
 
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {

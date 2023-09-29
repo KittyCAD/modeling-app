@@ -1,5 +1,5 @@
 import { isOverlap, roundOff } from './utils'
-import { SourceRange } from '../lang/executor'
+import { SourceRange } from '../lang/wasm'
 
 describe('testing isOverlapping', () => {
   testBothOrders([0, 3], [3, 10])
