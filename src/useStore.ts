@@ -157,7 +157,7 @@ export interface StoreState {
   code: string
   setCode: (code: string) => void
   deferredSetCode: (code: string) => void
-  executeCode: (code?: string) => void
+  executeCode: (code?: string, force?: boolean) => void
   formatCode: () => void
   programMemory: ProgramMemory
   setProgramMemory: (programMemory: ProgramMemory) => void
@@ -221,11 +221,12 @@ export const useStore = create<StoreState>()(
             editorView.dispatch({ effects: addLineHighlight.of(selection) })
           }
         },
-        executeCode: async (code) => {
+        executeCode: async (code, force) => {
           const result = await executeCode({
             code: code || get().code,
             lastAst: get().ast,
             engineCommandManager: engineCommandManager,
+            force,
           })
           if (!result.isChange) {
             return
@@ -511,10 +512,12 @@ async function executeCode({
   engineCommandManager,
   code,
   lastAst,
+  force,
 }: {
   code: string
   lastAst: Program
   engineCommandManager: EngineCommandManager
+  force?: boolean
 }): Promise<
   | {
       logs: string[]
@@ -557,7 +560,7 @@ async function executeCode({
   }
   // Check if the ast we have is equal to the ast in the storage.
   // If it is, we don't need to update the ast.
-  if (JSON.stringify(ast) === JSON.stringify(lastAst))
+  if (JSON.stringify(ast) === JSON.stringify(lastAst) && !force)
     return { isChange: false }
 
   const { logs, errors, programMemory } = await executeAst({

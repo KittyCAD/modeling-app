@@ -3,6 +3,7 @@ import { _executor } from '../lang/wasm'
 import { useStore } from '../useStore'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { deferExecution } from 'lib/utils'
+import { v4 as uuidv4 } from 'uuid'
 
 export function useSetupEngineManager(
   streamRef: React.RefObject<HTMLDivElement>,
@@ -12,14 +13,14 @@ export function useSetupEngineManager(
     setMediaStream,
     setIsStreamReady,
     setStreamDimensions,
-    executeCode,
     streamDimensions,
+    executeCode,
   } = useStore((s) => ({
     setMediaStream: s.setMediaStream,
     setIsStreamReady: s.setIsStreamReady,
     setStreamDimensions: s.setStreamDimensions,
-    executeCode: s.executeCode,
     streamDimensions: s.streamDimensions,
+    executeCode: s.executeCode,
   }))
 
   const streamWidth = streamRef?.current?.offsetWidth
@@ -40,10 +41,8 @@ export function useSetupEngineManager(
         setIsStreamReady,
         width: quadWidth,
         height: quadHeight,
+        executeCode,
         token,
-      })
-      engineCommandManager.waitForReady.then(() => {
-        executeCode()
       })
       setStreamDimensions({
         streamWidth: quadWidth,
