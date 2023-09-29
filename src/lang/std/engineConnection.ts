@@ -639,11 +639,12 @@ export class EngineCommandManager {
       onEngineConnectionOpen: () => {
         this.resolveReady()
         setIsStreamReady(true)
-        executeCode()
+
         // Make the axis gizmo.
+        const gizmoId = uuidv4()
         this.sendSceneCommand({
           type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
+          cmd_id: gizmoId,
           cmd: {
             type: 'make_axes_gizmo',
             clobber: false,
@@ -652,6 +653,9 @@ export class EngineCommandManager {
           },
         }).then((result) => {
           console.log('make_axes_gizmo result', result)
+          // We execute the code here to make sure if the stream was to
+          // restart in a session, we want to make sure to execute the code.
+          executeCode()
         })
       },
       onClose: () => {
