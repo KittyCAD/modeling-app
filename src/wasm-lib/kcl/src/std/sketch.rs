@@ -1045,7 +1045,7 @@ async fn inner_tangental_arc_to(
         TangentalArcToData::Point(to) => to,
     };
 
-    let delta = [from.x - to[0], from.y - to[1]];
+    let delta = [to[0] - from.x, to[1] - from.y];
 
     let id = uuid::Uuid::new_v4();
 
