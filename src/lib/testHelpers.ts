@@ -79,6 +79,7 @@ export async function executor(
     setMediaStream: () => {},
     width: 0,
     height: 0,
+    executeCode: () => {},
   })
   await engineCommandManager.waitForReady
   engineCommandManager.startNewSession()

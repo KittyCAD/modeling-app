@@ -609,12 +609,14 @@ export class EngineCommandManager {
     setIsStreamReady,
     width,
     height,
+    executeCode,
     token,
   }: {
     setMediaStream: (stream: MediaStream) => void
     setIsStreamReady: (isStreamReady: boolean) => void
     width: number
     height: number
+    executeCode: () => void
     token?: string
   }) {
     if (width === 0 || height === 0) {
@@ -637,6 +639,20 @@ export class EngineCommandManager {
       onEngineConnectionOpen: () => {
         this.resolveReady()
         setIsStreamReady(true)
+        executeCode()
+        // Make the axis gizmo.
+        this.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'make_axes_gizmo',
+            clobber: false,
+            // If true, axes gizmo will be placed in the corner of the screen. If false, it will be placed at the origin of the scene.
+            gizmo_mode: true,
+          },
+        }).then((result) => {
+          console.log('make_axes_gizmo result', result)
+        })
       },
       onClose: () => {
         setIsStreamReady(false)
