@@ -6,7 +6,7 @@ import {
   getXComponent,
   addCloseToPipe,
 } from './sketch'
-import { parse, recast } from '../wasm'
+import { parse, recast, initPromise } from '../wasm'
 import { getNodePathFromSourceRange } from '../queryAst'
 import { enginelessExecutor } from '../../lib/testHelpers'
 
@@ -24,6 +24,8 @@ const eachQuad: [number, [number, number]][] = [
   [585, [-1, -1]],
   [675, [1, -1]],
 ]
+
+beforeAll(() => initPromise)
 
 describe('testing getYComponent', () => {
   it('should return the vertical component of a vector correctly when given angles in each quadrant (and with angles < 0, or > 360)', () => {

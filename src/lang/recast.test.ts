@@ -1,5 +1,7 @@
-import { parse, Program, recast } from './wasm'
+import { parse, Program, recast, initPromise } from './wasm'
 import fs from 'node:fs'
+
+beforeAll(() => initPromise)
 
 describe('recast', () => {
   it('recasts a simple program', () => {

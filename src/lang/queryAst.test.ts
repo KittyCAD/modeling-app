@@ -1,4 +1,4 @@
-import { parse, recast } from './wasm'
+import { parse, recast, initPromise } from './wasm'
 import {
   findAllPreviousVariables,
   isNodeSafeToReplace,
@@ -12,6 +12,8 @@ import {
   createLiteral,
   createPipeSubstitution,
 } from './modifyAst'
+
+beforeAll(() => initPromise)
 
 describe('findAllPreviousVariables', () => {
   it('should find all previous variables', async () => {

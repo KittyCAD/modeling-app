@@ -1,4 +1,4 @@
-import { parse, Value, recast } from '../wasm'
+import { parse, Value, recast, initPromise } from '../wasm'
 import {
   getConstraintType,
   getTransformInfos,
@@ -9,6 +9,8 @@ import {
 } from './sketchcombos'
 import { Selections, ToolTip } from '../../useStore'
 import { enginelessExecutor } from '../../lib/testHelpers'
+
+beforeAll(() => initPromise)
 
 describe('testing getConstraintType', () => {
   const helper = getConstraintTypeFromSourceHelper

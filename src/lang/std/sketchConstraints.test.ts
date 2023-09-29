@@ -1,4 +1,4 @@
-import { parse, SketchGroup, recast } from '../wasm'
+import { parse, SketchGroup, recast, initPromise } from '../wasm'
 import {
   ConstraintType,
   getTransformInfos,
@@ -7,6 +7,8 @@ import {
 import { getSketchSegmentFromSourceRange } from './sketchConstraints'
 import { Selection } from '../../useStore'
 import { enginelessExecutor } from '../../lib/testHelpers'
+
+beforeAll(() => initPromise)
 
 // testing helper function
 async function testingSwapSketchFnCall({

@@ -1,4 +1,4 @@
-import { parse, recast } from './wasm'
+import { parse, recast, initPromise } from './wasm'
 import {
   createLiteral,
   createIdentifier,
@@ -14,6 +14,8 @@ import {
   moveValueIntoNewVariable,
 } from './modifyAst'
 import { enginelessExecutor } from '../lib/testHelpers'
+
+beforeAll(() => initPromise)
 
 describe('Testing createLiteral', () => {
   it('should create a literal', () => {

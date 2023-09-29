@@ -1,5 +1,7 @@
 import { getNodePathFromSourceRange, getNodeFromPath } from './queryAst'
-import { Identifier, parse } from './wasm'
+import { Identifier, parse, initPromise } from './wasm'
+
+beforeAll(() => initPromise)
 
 describe('testing getNodePathFromSourceRange', () => {
   it('test it gets the right path for a `lineTo` CallExpression within a SketchExpression', () => {

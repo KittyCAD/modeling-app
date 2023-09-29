@@ -1,8 +1,10 @@
 import fs from 'node:fs'
 
-import { parse, ProgramMemory, SketchGroup } from './wasm'
+import { parse, ProgramMemory, SketchGroup, initPromise } from './wasm'
 import { enginelessExecutor } from '../lib/testHelpers'
 import { KCLError } from './errors'
+
+beforeAll(() => initPromise)
 
 describe('test executor', () => {
   it('test assigning two variables, the second summing with the first', async () => {
