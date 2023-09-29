@@ -7,3 +7,6 @@ coverage
 target
 src/wasm-lib/pkg
 src/wasm-lib/kcl/bindings
+
+# XState generated files
+src/machines/modelingMachine.typegen.ts
