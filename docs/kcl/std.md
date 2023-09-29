@@ -3255,7 +3255,14 @@ tangentalArc(data: TangentalArcData, sketch_group: SketchGroup) -> SketchGroup
 	offset: number,
 	// Radius of the arc. Not to be confused with Raiders of the Lost Ark.
 	radius: number,
-}
+} |
+{
+	// The tag.
+	tag: string,
+	// Where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.
+	to: [number],
+} |
+[number]
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```

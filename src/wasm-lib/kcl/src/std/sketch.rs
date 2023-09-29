@@ -882,13 +882,24 @@ async fn inner_arc(data: ArcData, sketch_group: Box<SketchGroup>, args: Args) ->
 /// Data to draw a tangental arc.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, JsonSchema, ts_rs::TS)]
 #[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub struct TangentalArcData {
-    /// Radius of the arc.
-    /// Not to be confused with Raiders of the Lost Ark.
-    pub radius: f64,
-    /// Offset of the arc, in degrees.
-    pub offset: f64,
+#[serde(rename_all = "camelCase", untagged)]
+pub enum TangentalArcData {
+    RadiusAndOffset {
+        /// Radius of the arc.
+        /// Not to be confused with Raiders of the Lost Ark.
+        radius: f64,
+        /// Offset of the arc, in degrees.
+        offset: f64,
+    },
+    /// A point with a tag.
+    PointWithTag {
+        /// Where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.
+        to: [f64; 2],
+        /// The tag.
+        tag: String,
+    },
+    /// A point where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.
+    Point([f64; 2]),
 }
 
 /// Draw a tangental arc.
@@ -910,32 +921,77 @@ async fn inner_tangental_arc(
 ) -> Result<Box<SketchGroup>, KclError> {
     let from: Point2d = sketch_group.get_coords_from_paths()?;
 
-    // Calculate the end point from the angle and radius.
-    let end_angle = Angle::from_degrees(data.offset);
-    let start_angle = Angle::from_degrees(0.0);
-    let (_, end) = arc_center_and_end(from, start_angle, end_angle, data.radius);
-
     let id = uuid::Uuid::new_v4();
 
-    args.send_modeling_cmd(
-        id,
-        ModelingCmd::ExtendPath {
-            path: sketch_group.id,
-            segment: kittycad::types::PathSegment::TangentialArc {
-                radius: data.radius,
-                offset: kittycad::types::Angle {
-                    unit: kittycad::types::UnitAngle::Degrees,
-                    value: data.offset,
+    let to = match &data {
+        TangentalArcData::RadiusAndOffset { radius, offset } => {
+            // Calculate the end point from the angle and radius.
+            let end_angle = Angle::from_degrees(*offset);
+            let start_angle = Angle::from_degrees(0.0);
+            let (_, to) = arc_center_and_end(from, start_angle, end_angle, *radius);
+
+            args.send_modeling_cmd(
+                id,
+                ModelingCmd::ExtendPath {
+                    path: sketch_group.id,
+                    segment: kittycad::types::PathSegment::TangentialArc {
+                        radius: *radius,
+                        offset: kittycad::types::Angle {
+                            unit: kittycad::types::UnitAngle::Degrees,
+                            value: *offset,
+                        },
+                    },
                 },
-            },
-        },
-    )
-    .await?;
+            )
+            .await?;
+            to.into()
+        }
+        TangentalArcData::PointWithTag { to, .. } => {
+            args.send_modeling_cmd(
+                id,
+                ModelingCmd::ExtendPath {
+                    path: sketch_group.id,
+                    segment: kittycad::types::PathSegment::TangentialArcTo {
+                        angle_snap_increment: None,
+                        to: kittycad::types::Point3D {
+                            x: to[0],
+                            y: to[1],
+                            z: 0.0,
+                        },
+                    },
+                },
+            )
+            .await?;
+
+            *to
+        }
+        TangentalArcData::Point(to) => {
+            args.send_modeling_cmd(
+                id,
+                ModelingCmd::ExtendPath {
+                    path: sketch_group.id,
+                    segment: kittycad::types::PathSegment::TangentialArcTo {
+                        angle_snap_increment: None,
+                        to: kittycad::types::Point3D {
+                            x: to[0],
+                            y: to[1],
+                            z: 0.0,
+                        },
+                    },
+                },
+            )
+            .await?;
+
+            *to
+        }
+    };
+
+    let to = [from.x + to[0], from.y + to[1]];
 
     let current_path = Path::ToPoint {
         base: BasePath {
             from: from.into(),
-            to: end.into(),
+            to,
             name: "".to_string(),
             geo_meta: GeoMeta {
                 id,
@@ -989,6 +1045,8 @@ async fn inner_tangental_arc_to(
         TangentalArcToData::Point(to) => to,
     };
 
+    let delta = [from.x - to[0], from.y - to[1]];
+
     let id = uuid::Uuid::new_v4();
 
     args.send_modeling_cmd(
@@ -998,8 +1056,8 @@ async fn inner_tangental_arc_to(
             segment: kittycad::types::PathSegment::TangentialArcTo {
                 angle_snap_increment: None,
                 to: kittycad::types::Point3D {
-                    x: to[0],
-                    y: to[1],
+                    x: delta[0],
+                    y: delta[1],
                     z: 0.0,
                 },
             },

@@ -267,11 +267,24 @@ async fn test_basic_tangental_arc() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn test_basic_tangental_arc_with_point() {
+    let code = r#"const boxSketch = startSketchAt([0, 0])
+    |> line([0, 10], %)
+    |> tangentalArc([-5, 5], %)
+    |> line([5, -15], %)
+    |> extrude(10, %)
+"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/tangental_arc_with_point.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn test_basic_tangental_arc_to() {
     let code = r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
     |> tangentalArcTo([-5, 15], %)
-    |> line([5, -25], %)
+    |> line([5, -15], %)
     |> extrude(10, %)
 "#;
 

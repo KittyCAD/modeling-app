@@ -16305,23 +16305,61 @@
         "type": "TangentalArcData",
         "schema": {
           "description": "Data to draw a tangental arc.",
-          "type": "object",
-          "required": [
-            "offset",
-            "radius"
-          ],
-          "properties": {
-            "offset": {
-              "description": "Offset of the arc, in degrees.",
-              "type": "number",
-              "format": "double"
+          "anyOf": [
+            {
+              "type": "object",
+              "required": [
+                "offset",
+                "radius"
+              ],
+              "properties": {
+                "offset": {
+                  "description": "Offset of the arc, in degrees.",
+                  "type": "number",
+                  "format": "double"
+                },
+                "radius": {
+                  "description": "Radius of the arc. Not to be confused with Raiders of the Lost Ark.",
+                  "type": "number",
+                  "format": "double"
+                }
+              }
             },
-            "radius": {
-              "description": "Radius of the arc. Not to be confused with Raiders of the Lost Ark.",
-              "type": "number",
-              "format": "double"
+            {
+              "description": "A point with a tag.",
+              "type": "object",
+              "required": [
+                "tag",
+                "to"
+              ],
+              "properties": {
+                "tag": {
+                  "description": "The tag.",
+                  "type": "string"
+                },
+                "to": {
+                  "description": "Where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.",
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "format": "double"
+                  },
+                  "maxItems": 2,
+                  "minItems": 2
+                }
+              }
+            },
+            {
+              "description": "A point where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.",
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxItems": 2,
+              "minItems": 2
             }
-          }
+          ]
         },
         "required": true
       },
