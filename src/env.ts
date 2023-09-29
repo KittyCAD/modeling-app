@@ -1,8 +1,5 @@
-// all web app environment variables are defined here, jest doesn't like import.meta.env so centralising them here
-// allows us to mock them in one place, see src/setupTests.ts, it pulls the variable names and valuse from .env.development
-// note the exported variable name must match the env var name for the jest mocks to work
-// i.e. const VITE_MY_VAR = import.meta.env.VITE_MY_VAR
-// Maybe this file should be generated in a GHA from .env.development?
+// env vars were centralised so they could be mocked in jest
+// but isn't needed anymore with vite, so is now just a convention
 
 export const VITE_KC_API_WS_MODELING_URL = import.meta.env
   .VITE_KC_API_WS_MODELING_URL
@@ -12,3 +9,4 @@ export const VITE_KC_CONNECTION_TIMEOUT_MS = import.meta.env
   .VITE_KC_CONNECTION_TIMEOUT_MS
 export const VITE_KC_SENTRY_DSN = import.meta.env.VITE_KC_SENTRY_DSN
 export const TEST = import.meta.env.TEST
+export const DEV = import.meta.env.DEV

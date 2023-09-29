@@ -6,12 +6,27 @@ import {
   InterpreterFrom,
   Prop,
   StateFrom,
+  assign,
 } from 'xstate'
 import { modelingMachine } from 'machines/modelingMachine'
 import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { isCursorInSketchCommandRange } from 'hooks/useAppMode'
 import { engineCommandManager } from 'lang/std/engineConnection'
+import { v4 as uuidv4 } from 'uuid'
+import { addStartSketch } from 'lang/modifyAst'
+import { roundOff } from 'lib/utils'
+import { useStore } from 'useStore'
+import { recast } from 'lang/recast'
+import { parser_wasm } from 'lang/abstractSyntaxTree'
+import { getNodeFromPath } from 'lang/queryAst'
+import { Program, VariableDeclarator } from 'lang/abstractSyntaxTreeTypes'
+import {
+  addCloseToPipe,
+  addNewSketchLn,
+  compareVec2Epsilon,
+} from 'lang/std/sketch'
+import { kclManager } from 'lang/KclSinglton'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -61,6 +76,97 @@ export const ModelingMachineProvider = ({
       'show default planes': () => {
         modelingState.context.defaultPlanes?.showPlanes()
       },
+      'create path': async () => {
+        const sketchUuid = uuidv4()
+        const proms = [
+          engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: sketchUuid,
+            cmd: {
+              type: 'start_path',
+            },
+          }),
+          engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'edit_mode_enter',
+              target: sketchUuid,
+            },
+          }),
+        ]
+        await Promise.all(proms)
+      },
+      'AST start new sketch': assign((_, { data: coords }) => {
+        const _addStartSketch = addStartSketch(
+          kclManager.ast,
+          [roundOff(coords[0].x), roundOff(coords[0].y)],
+          [
+            roundOff(coords[1].x - coords[0].x),
+            roundOff(coords[1].y - coords[0].y),
+          ]
+        )
+        const _modifiedAst = _addStartSketch.modifiedAst
+        const _pathToNode = _addStartSketch.pathToNode
+        const newCode = recast(_modifiedAst)
+        const astWithUpdatedSource = parser_wasm(newCode)
+
+        kclManager.executeAstMock(astWithUpdatedSource, true)
+
+        return {
+          sketchPathToNode: _pathToNode,
+        }
+      }),
+      'AST add line segment': ({ sketchPathToNode }, { data: coords }) => {
+        if (!sketchPathToNode) return
+        const lastCoord = coords[coords.length - 1]
+
+        const { node: varDec } = getNodeFromPath<VariableDeclarator>(
+          kclManager.ast,
+          sketchPathToNode,
+          'VariableDeclarator'
+        )
+        const variableName = varDec.id.name
+        const sketchGroup = kclManager.programMemory.root[variableName]
+        if (!sketchGroup || sketchGroup.type !== 'SketchGroup') return
+        const initialCoords = sketchGroup.value[0].from
+
+        const isClose = compareVec2Epsilon(initialCoords, [
+          lastCoord.x,
+          lastCoord.y,
+        ])
+
+        let _modifiedAst: Program
+        if (!isClose) {
+          _modifiedAst = addNewSketchLn({
+            node: kclManager.ast,
+            programMemory: kclManager.programMemory,
+            to: [lastCoord.x, lastCoord.y],
+            fnName: 'line',
+            pathToNode: sketchPathToNode,
+          }).modifiedAst
+          kclManager.executeAstMock(_modifiedAst, true)
+          // kclManager.updateAst(_modifiedAst, false)
+        } else {
+          _modifiedAst = addCloseToPipe({
+            node: kclManager.ast,
+            programMemory: kclManager.programMemory,
+            pathToNode: sketchPathToNode,
+          })
+          engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: { type: 'edit_mode_exit' },
+          })
+          engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: { type: 'default_camera_disable_sketch_mode' },
+          })
+          kclManager.executeAstMock(_modifiedAst, true)
+          // updateAst(_modifiedAst, true)
+        }
+      },
     },
     guards: {
       'Can make selection horizontal': () => true,
@@ -82,7 +188,6 @@ export const ModelingMachineProvider = ({
     },
     services: {
       // createSketch: async () => {},
-      createLine: async () => {},
       createExtrude: async () => {},
       createFillet: async () => {},
     },

@@ -11,6 +11,7 @@ import {
 import { findAllPreviousVariables, PrevVariable } from '../lang/queryAst'
 import { useStore } from '../useStore'
 import { engineCommandManager } from '../lang/std/engineConnection'
+import { kclManager } from 'lang/KclSinglton'
 
 export const AvailableVars = ({
   onVarClick,
@@ -93,8 +94,7 @@ export function useCalc({
   newVariableInsertIndex: number
   setNewVariableName: (a: string) => void
 } {
-  const { ast, programMemory, selectionRange } = useStore((s) => ({
-    ast: s.ast,
+  const { programMemory, selectionRange } = useStore((s) => ({
     programMemory: s.programMemory,
     selectionRange: s.selectionRanges.codeBasedSelections[0].range,
   }))
@@ -117,9 +117,7 @@ export function useCalc({
       inputRef.current &&
         inputRef.current.setSelectionRange(0, String(value).length)
     }, 100)
-    if (ast) {
-      setNewVariableName(findUniqueName(ast, valueName))
-    }
+    setNewVariableName(findUniqueName(kclManager.ast, valueName))
   }, [])
 
   useEffect(() => {
@@ -132,10 +130,14 @@ export function useCalc({
   }, [newVariableName])
 
   useEffect(() => {
-    if (!ast || !programMemory || !selectionRange) return
-    const varInfo = findAllPreviousVariables(ast, programMemory, selectionRange)
+    if (!programMemory || !selectionRange) return
+    const varInfo = findAllPreviousVariables(
+      kclManager.ast,
+      programMemory,
+      selectionRange
+    )
     setAvailableVarInfo(varInfo)
-  }, [ast, programMemory, selectionRange])
+  }, [kclManager.ast, programMemory, selectionRange])
 
   useEffect(() => {
     try {

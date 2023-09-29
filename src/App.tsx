@@ -31,13 +31,13 @@ import { TextEditor } from 'components/TextEditor'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
 import { engineCommandManager } from './lang/std/engineConnection'
+import { kclManager } from 'lang/KclSinglton'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
 
   useHotKeyListener()
   const {
-    setCode,
     buttonDownInStream,
     openPanes,
     setOpenPanes,
@@ -49,7 +49,6 @@ export function App() {
   } = useStore((s) => ({
     guiMode: s.guiMode,
     setGuiMode: s.setGuiMode,
-    setCode: s.setCode,
     buttonDownInStream: s.buttonDownInStream,
     openPanes: s.openPanes,
     setOpenPanes: s.setOpenPanes,
@@ -136,15 +135,15 @@ export function App() {
   // on mount, and overwrite any locally-stored code
   useEffect(() => {
     if (isTauri() && loadedCode !== null) {
-      setCode(loadedCode)
+      kclManager.setCode(loadedCode)
     }
     return () => {
       // Clear code on unmount if in desktop app
       if (isTauri()) {
-        setCode('')
+        kclManager.setCode('')
       }
     }
-  }, [loadedCode, setCode])
+  }, [loadedCode, kclManager.setCode])
 
   useEngineConnectionSubscriptions()
 

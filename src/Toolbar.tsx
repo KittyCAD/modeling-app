@@ -20,6 +20,7 @@ import { isCursorInSketchCommandRange, useAppMode } from 'hooks/useAppMode'
 import { ActionIcon } from 'components/ActionIcon'
 import { engineCommandManager } from './lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
+import { kclManager } from 'lang/KclSinglton'
 
 export const sketchButtonClassnames = {
   background:
@@ -49,7 +50,6 @@ export const Toolbar = () => {
     setGuiMode,
     guiMode,
     selectionRanges,
-    ast,
     updateAst,
     programMemory,
     executeAst,
@@ -57,7 +57,6 @@ export const Toolbar = () => {
     guiMode: s.guiMode,
     setGuiMode: s.setGuiMode,
     selectionRanges: s.selectionRanges,
-    ast: s.ast,
     updateAst: s.updateAst,
     programMemory: s.programMemory,
     executeAst: s.executeAst,
@@ -92,11 +91,7 @@ export const Toolbar = () => {
         )}
         {state.nextEvents.includes('Enter sketch') && (
           <button
-            onClick={() => {
-              send({
-                type: 'Enter sketch',
-              })
-            }}
+            onClick={() => send({ type: 'Enter sketch' })}
             className="group"
           >
             <ActionIcon icon="sketch" className="!p-0.5" size="md" />
@@ -105,27 +100,47 @@ export const Toolbar = () => {
         )}
         {state.nextEvents.includes('Enter sketch') && pathId && (
           <button
-            onClick={() => {
-              send({
-                type: 'Enter sketch',
-              })
-            }}
+            onClick={() => send({ type: 'Enter sketch' })}
             className="group"
           >
             <ActionIcon icon="sketch" className="!p-0.5" size="md" />
             Edit Sketch v2
           </button>
         )}
+        {state.nextEvents.includes('Cancel') && !state.matches('idle') && (
+          <button onClick={() => send({ type: 'Cancel' })} className="group">
+            <ActionIcon icon="exit" className="!p-0.5" size="md" />
+            Exit Sketch v2
+          </button>
+        )}
+        {(state.nextEvents.includes('Equip tool') ||
+          state.matches('Sketch.Line Tool')) && (
+          <button
+            onClick={() => {
+              state.matches('Sketch.Line Tool')
+                ? send('CancelSketch')
+                : send('Equip tool')
+            }}
+            className={
+              'group ' +
+              (state.matches('Sketch.Line Tool')
+                ? '!text-fern-70 !bg-fern-10 !dark:text-fern-20 !border-fern-50'
+                : '')
+            }
+          >
+            <ActionIcon icon="line" className="!p-0.5" size="md" />
+            Line
+          </button>
+        )}
         {guiMode.mode === 'canEditExtrude' && (
           <button
             onClick={() => {
-              if (!ast) return
               const pathToNode = getNodePathFromSourceRange(
-                ast,
+                kclManager.ast,
                 selectionRanges.codeBasedSelections[0].range
               )
               const { modifiedAst } = sketchOnExtrudedFace(
-                ast,
+                kclManager.ast,
                 pathToNode,
                 programMemory
               )
@@ -141,7 +156,7 @@ export const Toolbar = () => {
           <button
             onClick={() => {
               const pathToNode = getNodePathFromSourceRange(
-                ast,
+                kclManager.ast,
                 selectionRanges.codeBasedSelections[0].range
               )
               setGuiMode({
@@ -163,13 +178,12 @@ export const Toolbar = () => {
           <>
             <button
               onClick={() => {
-                if (!ast) return
                 const pathToNode = getNodePathFromSourceRange(
-                  ast,
+                  kclManager.ast,
                   selectionRanges.codeBasedSelections[0].range
                 )
                 const { modifiedAst, pathToExtrudeArg } = extrudeSketch(
-                  ast,
+                  kclManager.ast,
                   pathToNode
                 )
                 updateAst(modifiedAst, true, { focusPath: pathToExtrudeArg })
@@ -181,13 +195,12 @@ export const Toolbar = () => {
             </button>
             <button
               onClick={() => {
-                if (!ast) return
                 const pathToNode = getNodePathFromSourceRange(
-                  ast,
+                  kclManager.ast,
                   selectionRanges.codeBasedSelections[0].range
                 )
                 const { modifiedAst, pathToExtrudeArg } = extrudeSketch(
-                  ast,
+                  kclManager.ast,
                   pathToNode,
                   false
                 )

@@ -14,12 +14,12 @@ import {
 import { updateCursors } from '../../lang/util'
 import { ActionIcon } from 'components/ActionIcon'
 import { sketchButtonClassnames } from 'Toolbar'
+import { kclManager } from 'lang/KclSinglton'
 
 export const EqualLength = () => {
-  const { guiMode, selectionRanges, ast, programMemory, updateAst, setCursor } =
+  const { guiMode, selectionRanges, programMemory, updateAst, setCursor } =
     useStore((s) => ({
       guiMode: s.guiMode,
-      ast: s.ast,
       updateAst: s.updateAst,
       selectionRanges: s.selectionRanges,
       programMemory: s.programMemory,
@@ -28,17 +28,16 @@ export const EqualLength = () => {
   const [enableEqual, setEnableEqual] = useState(false)
   const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
   useEffect(() => {
-    if (!ast) return
     const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
-      getNodePathFromSourceRange(ast, range)
+      getNodePathFromSourceRange(kclManager.ast, range)
     )
     const nodes = paths.map(
-      (pathToNode) => getNodeFromPath<Value>(ast, pathToNode).node
+      (pathToNode) => getNodeFromPath<Value>(kclManager.ast, pathToNode).node
     )
     const varDecs = paths.map(
       (pathToNode) =>
         getNodeFromPath<VariableDeclarator>(
-          ast,
+          kclManager.ast,
           pathToNode,
           'VariableDeclarator'
         )?.node
@@ -46,7 +45,7 @@ export const EqualLength = () => {
     const primaryLine = varDecs[0]
     const secondaryVarDecs = varDecs.slice(1)
     const isOthersLinkedToPrimary = secondaryVarDecs.every((secondary) =>
-      isSketchVariablesLinked(secondary, primaryLine, ast)
+      isSketchVariablesLinked(secondary, primaryLine, kclManager.ast)
     )
     const isAllTooltips = nodes.every(
       (node) =>
@@ -59,7 +58,7 @@ export const EqualLength = () => {
         ...selectionRanges,
         codeBasedSelections: selectionRanges.codeBasedSelections.slice(1),
       },
-      ast,
+      kclManager.ast,
       'equalLength'
     )
     setTransformInfos(theTransforms)
@@ -76,10 +75,10 @@ export const EqualLength = () => {
   return (
     <button
       onClick={() => {
-        if (!(transformInfos && ast)) return
+        if (!transformInfos) return
         const { modifiedAst, pathToNodeMap } =
           transformSecondarySketchLinesTagFirst({
-            ast,
+            ast: kclManager.ast,
             selectionRanges,
             transformInfos,
             programMemory,

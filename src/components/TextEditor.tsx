@@ -32,6 +32,7 @@ import { CSSRuleObject } from 'tailwindcss/types/config'
 import { useModelingContext } from 'hooks/useModelingContext'
 import interact from '@replit/codemirror-interact'
 import { engineCommandManager } from '../lang/std/engineConnection'
+import { kclManager } from 'lang/KclSinglton'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -51,8 +52,6 @@ export const TextEditor = ({
 }) => {
   const pathParams = useParams()
   const {
-    code,
-    deferredSetCode,
     editorView,
     formatCode,
     isLSPServerReady,
@@ -62,8 +61,6 @@ export const TextEditor = ({
     setIsLSPServerReady,
     setSelectionRanges,
   } = useStore((s) => ({
-    code: s.code,
-    deferredSetCode: s.deferredSetCode,
     editorView: s.editorView,
     formatCode: s.formatCode,
     isLSPServerReady: s.isLSPServerReady,
@@ -129,7 +126,7 @@ export const TextEditor = ({
 
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
-    deferredSetCode(value)
+    kclManager.setCode(value, true)
     if (isTauri() && pathParams.id) {
       // Save the file to disk
       // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
@@ -297,7 +294,7 @@ export const TextEditor = ({
     >
       <ReactCodeMirror
         className="h-full"
-        value={code}
+        value={kclManager.code}
         extensions={editorExtensions}
         onChange={onChange}
         onUpdate={onUpdate}

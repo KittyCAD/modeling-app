@@ -20,6 +20,7 @@ import {
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { normaliseAngle } from '../../lib/utils'
 import { updateCursors } from '../../lang/util'
+import { kclManager } from 'lang/KclSinglton'
 
 const getModalInfo = create(SetAngleLengthModal as any)
 
@@ -35,10 +36,9 @@ export const SetAngleLength = ({
 }: {
   angleOrLength: ButtonType
 }) => {
-  const { guiMode, selectionRanges, ast, programMemory, updateAst, setCursor } =
+  const { guiMode, selectionRanges, programMemory, updateAst, setCursor } =
     useStore((s) => ({
       guiMode: s.guiMode,
-      ast: s.ast,
       updateAst: s.updateAst,
       selectionRanges: s.selectionRanges,
       programMemory: s.programMemory,
@@ -47,13 +47,13 @@ export const SetAngleLength = ({
   const [enableAngLen, setEnableAngLen] = useState(false)
   const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
   useEffect(() => {
-    if (!ast) return
     const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
-      getNodePathFromSourceRange(ast, range)
+      getNodePathFromSourceRange(kclManager.ast, range)
     )
     const nodes = paths.map(
       (pathToNode) =>
-        getNodeFromPath<Value>(ast, pathToNode, 'CallExpression').node
+        getNodeFromPath<Value>(kclManager.ast, pathToNode, 'CallExpression')
+          .node
     )
     const isAllTooltips = nodes.every(
       (node) =>
@@ -61,7 +61,11 @@ export const SetAngleLength = ({
         toolTips.includes(node.callee.name as any)
     )
 
-    const theTransforms = getTransformInfos(selectionRanges, ast, angleOrLength)
+    const theTransforms = getTransformInfos(
+      selectionRanges,
+      kclManager.ast,
+      angleOrLength
+    )
     setTransformInfos(theTransforms)
 
     const _enableHorz = isAllTooltips && theTransforms.every(Boolean)
@@ -72,9 +76,9 @@ export const SetAngleLength = ({
   return (
     <button
       onClick={async () => {
-        if (!(transformInfos && ast)) return
+        if (!transformInfos) return
         const { valueUsedInTransform } = transformAstSketchLines({
-          ast: JSON.parse(JSON.stringify(ast)),
+          ast: JSON.parse(JSON.stringify(kclManager.ast)),
           selectionRanges,
           transformInfos,
           programMemory,
@@ -126,7 +130,7 @@ export const SetAngleLength = ({
 
           const { modifiedAst: _modifiedAst, pathToNodeMap } =
             transformAstSketchLines({
-              ast: JSON.parse(JSON.stringify(ast)),
+              ast: JSON.parse(JSON.stringify(kclManager.ast)),
               selectionRanges,
               transformInfos,
               programMemory,

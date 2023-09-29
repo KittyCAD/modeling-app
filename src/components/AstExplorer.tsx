@@ -1,18 +1,19 @@
+import { kclManager } from 'lang/KclSinglton'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 import { useEffect, useRef, useState } from 'react'
 import { useStore } from 'useStore'
 
 export function AstExplorer() {
-  const { ast, setHighlightRange, selectionRanges } = useStore((s) => ({
-    ast: s.ast,
+  const { setHighlightRange, selectionRanges } = useStore((s) => ({
     setHighlightRange: s.setHighlightRange,
     selectionRanges: s.selectionRanges,
   }))
   const pathToNode = getNodePathFromSourceRange(
-    ast,
+    // TODO maybe need to have callback to make sure it stays in sync
+    kclManager.ast,
     selectionRanges.codeBasedSelections?.[0]?.range
   )
-  const node = getNodeFromPath(ast, pathToNode).node
+  const node = getNodeFromPath(kclManager.ast, pathToNode).node
   const [filterKeys, setFilterKeys] = useState<string[]>(['start', 'end'])
 
   return (
@@ -46,7 +47,11 @@ export function AstExplorer() {
         }}
       >
         <pre className=" text-xs overflow-y-auto" style={{ width: '300px' }}>
-          <DisplayObj obj={ast} filterKeys={filterKeys} node={node} />
+          <DisplayObj
+            obj={kclManager.ast}
+            filterKeys={filterKeys}
+            node={node}
+          />
         </pre>
       </div>
     </div>

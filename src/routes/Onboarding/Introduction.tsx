@@ -4,7 +4,6 @@ import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { bracket } from 'lib/exampleKcl'
-import { useStore } from 'useStore'
 import {
   createNewProject,
   getNextProjectIndex,
@@ -15,14 +14,12 @@ import { isTauri } from 'lib/isTauri'
 import { useNavigate } from 'react-router-dom'
 import { paths } from 'Router'
 import { useEffect } from 'react'
+import { kclManager } from 'lang/KclSinglton'
 
 function OnboardingWithNewFile() {
   const navigate = useNavigate()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.INDEX)
-  const { deferredSetCode } = useStore((s) => ({
-    deferredSetCode: s.deferredSetCode,
-  }))
   const {
     settings: {
       context: { defaultDirectory, defaultProjectName },
@@ -65,7 +62,7 @@ function OnboardingWithNewFile() {
               <ActionButton
                 Element="button"
                 onClick={() => {
-                  deferredSetCode(bracket)
+                  kclManager.setCode(bracket)
                   next()
                 }}
                 icon={{ icon: faArrowRight }}
@@ -116,10 +113,6 @@ function OnboardingWithNewFile() {
 }
 
 export default function Introduction() {
-  const { deferredSetCode, code } = useStore((s) => ({
-    code: s.code,
-    deferredSetCode: s.deferredSetCode,
-  }))
   const {
     settings: {
       state: {
@@ -136,10 +129,10 @@ export default function Introduction() {
   const next = useNextClick(onboardingPaths.CAMERA)
 
   useEffect(() => {
-    if (code === '') deferredSetCode(bracket)
-  }, [code, deferredSetCode])
+    if (kclManager.code === '') kclManager.setCode(bracket)
+  }, [kclManager.code, kclManager.setCode])
 
-  return !(code !== '' && code !== bracket) ? (
+  return !(kclManager.code !== '' && kclManager.code !== bracket) ? (
     <div className="fixed grid place-content-center inset-0 bg-chalkboard-110/50 z-50">
       <div className="max-w-3xl bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded">
         <h1 className="text-2xl font-bold flex gap-4 flex-wrap items-center">

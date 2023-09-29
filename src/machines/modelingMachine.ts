@@ -1,5 +1,5 @@
 import { Program } from 'lang/abstractSyntaxTreeTypes'
-import { ProgramMemory } from 'lang/executor'
+import { PathToNode } from 'lang/executor'
 import { engineCommandManager } from 'lang/std/engineConnection'
 import { DefaultPlanes } from 'lang/std/engineConnectionManagerUtils'
 import { isReducedMotion } from 'lang/util'
@@ -7,29 +7,37 @@ import { Axis, Selection, Selections } from 'useStore'
 import { assign, createMachine } from 'xstate'
 import { v4 as uuidv4 } from 'uuid'
 import { isCursorInSketchCommandRange } from 'hooks/useAppMode'
+import { getNodePathFromSourceRange } from 'lang/queryAst'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
 export const modelingMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogC0AFgCMAOgBMogOwyAzAE5hNABw0ZAVlGKANCACeQyQDZh4zTMWj5GmqfnDN8gL4v9aDDnzjsETGAEAMpg7AAEsFhg5JzctAxIICxssTyJAgiqkuLqMpKK8jImWpL5wvpGCNLiwooORTZmqq7uIJ5YeFC+-oEAInBRMWEseOzxvMkcXGmgGYLyqoo1GiYLsrWyohWIojY5qjK7qpqLppI0LR7oHT5+AQT9kQFDkDDjiZOpvHNK8lKaJmKdU00mEpk02wQInM0kUxQukjBamabiuXk63Xuj0G4RIfGwsHezFYU243yEeSWkhBJm0C2ERQWkOhUh08PkiPOB1UqLa128XTugRCz3CI1wY3oExJX3SQkKNHEMlqpkUxyKRWKkIWfxM52KTjqihOkl57QFmOFOLCrzARKSMum5Kh8hMqnEigutmEqlENGKAIhhkQmmcUnypRMF2NnsUZv5GKFwWteIJ9s+TrlUMBSxUgdUxzB2j0wYQzhM4guNAKbupzny8fRtx6ydFYQAZiRKOnHWSs-NNEsDqJJFYaKIAbthOVS3lFf7RLVQwCaD7NI2boKWwBRCVgABOEQA1qFyAALHspTOzRCAj3VmSLRzCBWLZk6GQ1R-q0QmP00jcLSTXd2APY9TwvUQEmJK8+xvBBDhqRFHFpLIDnyLZS0EMwlV9TQNFqQ4zF2QDEx3ABHABXbAmBtPh2H3SiMEvUkZn4RBSk-UpjVkGRxxMRQ4UhE0vysMp5EHaNSObe5tyomi6IYpi7Sg6VYLYjJpAkVRVmkX1HzVasTEhVZFQKNQtD1MxKWkrcsQGNtO27KUPl7DT5QKcRATEAFFDkMFlRkd8-PEWxckWXi-Nsy1W2iXFMEwFjZXg+Y7xof0xDqBZ1HySFFi4gEJMXbQwThaKk2xNsSASpLr3Yl0Qq0acTk0adrAZZkJMVHQ1B9Q5qT1URyoo6jaPbbAEtCWq4PqyRHFC0RfR0H1V2NSxIWsJY1X-Pi6gE01WnNMjZPksaJoCMZVNc9TnWWnIo1kATFrEHT5A2zyoyIv9VDET7oqCE92HPYgyEoRKXJg1jbskAt-nkRc512UcZ0qQQTgrPyHy9R8+v+wHz3EAGIIASRGhTvDAMJ2FQVBwegh0bqzCdSnEEcxEKDlOYnTqrA9Lq6jkRdAQuPGIMJ-Gz1J+4RTi4ZUFGab3IQT0-knU5BICtR30WLzHG0Mx4enX0TFFoGz3FkmWxloZIigABbMAJUV51rAkVcXxoEFNmnFGhDdJUQVDA4Th9MEhsOhMfCJs2LbNqW+gc2XxUlemMxmjIdMVQc4Vaw1LALHmlldQE5p04sDVNgno-PeOHkTm2wHtx2U7UqGs2OCQBYUMx8OcLJmTpBb8nHWxZHXCOmy6avzen2vkBIE8Ikbh2JTCAA3A9OHIarnaZ0Nc1HT0nAExw3tnIdPeQjkCicIpK5niW54XynbZX8Iz1QfdsAAL24dgd4hgzNu8EJxghyCcG+K5xzNE6n8eQroXyFEWuWP899xAABk8CUwACo00wAQCA3AwC+FwGvVAJ5xBEH3GAEgoEwgU13iA-WXllBOH4qsH6QZUZFg9AWZQ-EdITkuHySescCaYNwDgvB4gAByqAwgAAV5YSlgAQAAghACAcsFaALTkrHQrUaiLBrMLZoJZUb4SWDYasrUBb2GnGgiRUjabiCUaMMIGiMAQHUZo7RTtdFuWdJGTQHpqTGnSsqHSWosKWNZrYY0Ko+KImEI4rBYRcEuJCE3VenjIA+K0cnRhs1Byq0sIiSxAJ8oD2rHEmxiT7EpInpuMR5snHpOkVkt+HjNF5KIKgO2TALqUwYQExm8FRx-lZvhWkCxeo6U6rUKZQd0qelWLURpaJmnbnooxDABCiEkLIRQqhNC6FgB2cpIpGR6SVmNPkUMElBIGm1KscBVhDiyDmnqKKTSLTbKUnsuSo1FK7LtKM4B9U1RbVHK1CyzQkYmUQtSF8+EFDSG0AdTZfyLmAtOiCy5V1IbJXqsUCsWQ+IXAnHqAaiKJDIsKHkPIPobDRX+aC8QtdrbhCcmC1OgT26DimVoPyhx4mtUhI+DGjhfx6kks+VlOLiFcumGEAASjQiABhkzhAgASf+FBeWt2JRkNmfxFzHFKCuCMEqdKVgcMcV0RkflYoxNPMIuB5E8tikMHlVyQyPiVIUUyixaS0kwqjCspgdAjg5H6AoSgNkiOaQAMXOqEfZkjDnkOISc2hlNxqTRbtdCFmlBI1BKRsAEMNxWlj9LaucdQcqBi0NFVNhaCBAoUgWi6frlYBtQvnP8etxyQj9LzQRoZpxunStoVtab2Adrxd2qahKgHGtvLaxcCMcZmJHKOjQQ4-yTuENO1cMg52Fo5Vba0tpe35SkD6KJRQ9pulHc9Ssuw-TFGrQcC9F1CY4hVeqkgmrtVhH3CB7AlFCTgvXQgEcRQPT4SUDYV0yTjK1vfeOXY-o8jHF-b8jEbb-3Ku4GqjVWquU2mgIa4tcHdi8yUPhaQnJDiqFHfcvm6hY1KCjNSNwrQPUYHgIkI6+AjV1TmHIAq4IbA-UZOxrCvp3TBusNWMoJxhoBAk+nYwVjzKe0vs0OQBxIRlCkMUZaK0QSInvjppW3HQlyAQb3BYkhmQKAkNY6wqxATrHHi6qOEsWnx3s7dWwipRw2HWULSwvsoTIpqFOoolgdCmFXKkyR7TaZhaZha1mxpZmpayNoZkBtdbVl+gmylmXnGYFkfItxKjcsgM9N1Qr6hivUnDfKPYThAwnqNvDX8tXsv1d6EQlrs01MLRHMGjCChmTTk-OoAKkZZn8VGxk+rTXwi5IgFNzSv4-hwnhgsT0fpfxcN638frtJBs+mGybQjQWxZtO2wB7Je2ekHbo5JjiJ6JDwP9G6AS-oCjXZdH10M92zCPd2M9wLXQ2XKUO7eGGORRzpXhlWmlpZywBxfGYccIr+MveR4qq92m-u6YQohMprVnBGhszakJbo5CrF-BFV0CqAVKsA2R4Dmq0fwbsEqMQZwmjwJrZUOQQ5JJRlXM0bHvP2VC8qES-78HMpKl2NnVqv4FDmMQI+NnBxGRc+sDz8nLT3Weq7GAEXpgKzwKyJjPyKH3NYV2F5XiQsrCTkKH+0IIuOGszEAyHdnuNpOFCke4oWgq2I6TRaYjoQqeO5p0rZ9D7lDGZKgJSHuxlDgMNH1E9dZg-sAA6KIDFGRdjrJToeB5wOd6zfT9Ssnt4SfJUM6lPRH53iHVw3l8VJFocmVLUal8WjjmBnT3plD4BMuCAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogBMNAHQBWGgEYAbNICc0gCzTJAdkU0xAGhABPRAFpFgueIAca1UoDMY1WMVWAvk51oMOfCOwRMYAgDKYOwABLBYYOSc3LQMSCAsbNE88QIIZtIiknKKZoIaNJr2NKo6+giStiLW9rUSgmKSUi5u6Fh4UN6+-gAicBFRISx47LG8iRxcKaBpBtZmphpW82qKcmqSZYiSlSJmZqo7ZmILgtLC1i0g7u1ePn4EfeF+g5AwY-ETybyz1nLWIgaslUcgagkkxmk2j0hkUikB2Wkqho1nywn2l1c1zank6916-ReoRIfGwsA+zFYk24P0MqhMgLEZ0a80c0nmWwQRnh4IUyNRxhoBzMVxuuK6DyCRKGqBGFISVO+qUMNVE6lB8mOVisSM58wB5xoSMUYlBchOglFOI6Ev8UsioTeYHlXymtK51mkZhEchR1houSaSLEUM5YjEAMEJij0hR5t9citHht+MCA2JpPJ9HGirdyq5skWmih+wcDWyYc9IhRNH+XoaEZMSdueO6aelADMSJQXbmafm5qa9odBCCpCGdnDOfTREaIebw7HcmJm+LUwBRXDsMAAJzCAGtguQABa9pJ5maIWQ+2uqBbWOGqhacgzZVQiRylw4qTRnVcpttN23PdYEPdgTyoSQ4kpc9+0vBBDhEVRUQUDRwTjJkXz+D8H3+fY0J2S0sTFACHnXABHABXbAmBCMA+HYHdKIwM9qWmfghFHQETEaVRkRkOQFDDPIPz4s1FFsX0-n-O5AKomi6IYpiWKgnNYPYtJwUkPZ2XBCw7zkMxa2kTl2VEf4hXsc4lHpRNiOtWSHiedMQi7Hts0+PsNJVf4RFkRRJBDOQ+OMdRShhLk32qIUSgWSxgpk1tJRckhMEwVilXguZr0KJRskEeYjJMTkFnfIFbAhRpjAURLbUeQkHRCVL0o8mC2PdOZgqQhwTWOOF1kcLCJCyX0zFyEcQ3BWqN3k2iO2wNLggyi8OIQAr4WsSQLGyXIAwXcLynWUxDKaOxazOUFprk6i5oWvxRlUzz1PdHadKkKx1jGrb2U5QSDRKGQVC+2NVFqgIwJPYgyEoTBwaPU9WoVZ780qZCfRkLazHmYKzhMiKjAyLIgykwzBJDRQwYh48RDh8DjwASTbe1BmGLdlrg1b42rE1jGOWxrE2uROVECQMhxs59nkWtKfhmmqcZ5LpXCKAAFswDZxHXQ5tIFEyJk7yWC1f05SRwWqX0oVyQTjiFaQZbpuX4YVglnka1nRk1rz3XWTIhUFwpcr+IX8a20wowfJphC9FQkXtk9Hbp536tdwZlbVjXoKR9r819d8AtNw5BMCwSsIKrJ5C9KwJICtZMVaZMvFp+Om4ZttkBIQ8wjAVX1dCAA3XdOHIVL2e8ioVHhdYIQ0HYAwDTkLp9XITU1KwjIyOPqZbpP287tPe5CY9UB3bAAC9uHYEfPeR+Di+9B98n4qQSlBE2Qz2I0xP+YLDJNTeE5PEnCiN0QjsFQKgFqmctZj0CnxPyJQkSCAyNVUcL5Q5IU+iCHYm1-Q1Xsg3ToLcRAABk8BgBCAAFXAZgEQAAFWUW4QgAEEIAYAgAQFhEAZRymvtneCDRUQYKRNPHiIYsIqG6o4NYNBRz5yIvXFsADqakNwOQqhECabd3TqEThkAOGsO4RnNSfDVpIK2h+QodgIzKFkKg-GkkkK2GEA0EoSC7D-xUWo6hmie6MN0ewogqAVZMHuuQzwzpeGZVWv6TQH5sHalkFtI0L5hCTz+hJLGJxwzyOxAQpRJCyGUO8UEXxOjWF6OAQpVRAB3UB1DR7ujMWHdkIN-hV2hOUAw8gPxKCUEg+QTQZEeMKeomh9NcAcAIA0-Mel4QBSZKaVEMiZEdMMFGasutNDZE0EaGxwzVFFI0eMyZkEoFexmVGWc4ZXF8VZKsrkBxurmi2vkKWUZQb4MUUQzxhyaEADlUAhHoSMWA+iuHu2mfw6MSFApGgWUyW2Q0ASmkOJ6OERoHwU0+eKdcSlmL+AgNwMA3hcB91QIeEQRAdxgBINuRSjF8WQuiWNDZTIFyST5IoPU7I9h2GCjseknoTAfIUTivFGACCVNovRBlLFIkrR1gsH0o4HCWSxoRUyiEGgSQkMhcEjQckkS8Li2V-gpX0uUs6R6bUolpCRJkPIyIUSBXOECTV2ltU1HpPSQMddcmKJNZakQSdmahDchEs5N9VrHFMLAlFqLawOGnITf4AVbGmhRHCWqgb8WaKJFMEIAAlGlEBdBplCBAMkl8KARuMba7Y+QAQQmOFGEMMjX4RTvL7M48wIyxgUAlbFNoW4hFwIC8N7ZGrhqZWkOw3pkLLCFAoEMjQXyZDONkU2qImj-D+Fi0VNoABid1ggEEJaoklZKKVUppXS+ai0PaRpMZpQSH5FlrBdW4rlEUmiExnKCIqK77C1WPQ+yVs1XInsfXWhViBgrehLHOlQD4JCbB-S-HSgUepeksZIEDUHwMgPvfdU5MHtZXkJhCCEfExpY3WIIE2GGMhYbhDhgMIr-XilA-dYNTMXJOhnYgUqgJcgZHtRqL0JstrwikLPRBxwDj4YfXmh0Bbi0kFLeWkIO4NPYEolmJ99aKijkyOaOMlQhWsakyy2TQZ6QKY40azo3HggqaiGpktZbQ10WgLWp6z7thqFMH8eoptQpbRNjxH08wUTgj+LGBoLgsRjowPAeITmyNjwMHxMqTIoSVDGssMwa6JFyZyAVqMimh2OTAJljqDJsgxIkEyLGNGDpCByICYRORdpMnyJvOr+YY1xILtkdYppg6dLsAaYmMZmNRn-tvbog3b62DEJI-C+1vpro2lIZQJhKgZsHQexuVMCkHNGSt0xhRTD2FGjUAWKg0OdP6oyRwotgoyL4iuarhCzs-NGSIHoRKrtpE2g4cQhcMhzxUAx+xKI-K7U9Dd5Z+7OPDv+yM7xwK-HlIgKDoQJoyoJknOoBLaDukmHK3R3DAV9leI0SU7RzC8cE7WsidbppKg+1yIVawFOw6CQCjTrZdPfv5IB94457A2fCDsE8v2yFPQ7Ap++NQRoCr8zGrz+nvyRAAqBQw9gaWbWwbWrjYcAYNDW11hT7003ChamOHy7N4rav+aM+cb0jrCjg9dWIiKfbJE1F9BN5QP2TudBzRgXjfg2d8W0nYbVEYzR9eTetyuywZBxU9K701bnkhFs82zpoyIkIBTOGcXnthv3lDEryi2hRee+7z0G9TpaS8BVuzsCbDgZDIUm4gO8GeDhZ69OsXP4uR1jtct2d3pvyNrSxuXZE+RlC1mUM97YpghShWMKOVPeHxcuZlx7s37JvRUccAbOjptfommqBPWMjqwQimP1B2P8+s5GY+iJnIrWqp5B7kdhOs+pTRxp9twwlMeNQ0PMNNygF8YEEE9hGslk+J2QTRrMZNix+IfVbxoDXN28EDv8zcIRsI9JUR1A1hXVa9AsbMcD3p8h8CksgA */
     id: 'Modeling',
 
     tsTypes: {} as import('./modelingMachine.typegen').Typegen0,
     predictableActionArguments: true,
+    preserveActionOrder: true,
 
     context: {
+      ast: {
+        start: 0,
+        end: 0,
+        body: [],
+        nonCodeMeta: {
+          nonCodeNodes: {},
+          start: null,
+        },
+      } as Program,
       guiMode: 'default',
       selection: [] as string[],
-      ast: null as Program | null,
       defaultPlanes: new DefaultPlanes(engineCommandManager) as DefaultPlanes,
       selectionRanges: {
         otherSelections: [],
         codeBasedSelections: [],
       } as Selections,
-      programMemory: { root: {}, return: null } as ProgramMemory,
-      // TODO: migrate engineCommandManager from useStore
-      // engineCommandManager?: EngineCommandManager
+      sketchPathToNode: null as PathToNode | null, // maybe too specific, and we should have a generic pathToNode, but being specific seems less risky when I'm not sure
     },
 
     schema: {
@@ -62,14 +70,17 @@ export const modelingMachine = createMachine(
         | { type: 'Sketch no face' }
         | { type: 'Toggle gui mode' }
         | { type: 'Cancel' }
-        | { type: 'Add point' }
-        | { type: 'Equip line tool' }
+        | { type: 'CancelSketch' }
+        | { type: 'Add point'; data: { x: number; y: number }[] }
+        | { type: 'Equip tool' }
         | { type: 'Set radius' }
         | { type: 'Make segment horizontal' }
         | { type: 'Make segment vertical' }
         | { type: 'Complete line' }
         | { type: 'Set distance' }
-        | { type: 'Set Default Planes'; data: DefaultPlanes },
+        | { type: 'Equip new tool' }
+        | { type: 'Set Default Planes'; data: DefaultPlanes }
+        | { type: 'update_code'; data: string },
     },
 
     states: {
@@ -156,7 +167,11 @@ export const modelingMachine = createMachine(
             {
               target: 'Sketch',
               cond: 'Selection is one face',
-              actions: ['sketch mode enabled', 'edit mode enter'],
+              actions: [
+                'sketch mode enabled',
+                'edit mode enter',
+                'set sketchPathToNode',
+              ],
             },
             'Sketch no face',
           ],
@@ -217,8 +232,6 @@ export const modelingMachine = createMachine(
         states: {
           SketchIdle: {
             on: {
-              'Equip line tool': 'Line Tool',
-
               'Select point': {
                 target: 'SketchIdle',
                 internal: true,
@@ -270,20 +283,18 @@ export const modelingMachine = createMachine(
                 cond: 'Can make selection horizontal',
                 actions: ['Make selection horizontal'],
               },
+
+              'Equip tool': {
+                target: 'Line Tool',
+                actions: 'set tool',
+              },
             },
+
+            entry: 'equip select',
           },
 
           'Line Tool': {
             states: {
-              'No Points': {
-                on: {
-                  'Add point': {
-                    target: 'Point Added',
-                    actions: ['Modify AST', 'Update code selection cursors'],
-                  },
-                },
-              },
-
               Done: {
                 type: 'final',
               },
@@ -292,7 +303,7 @@ export const modelingMachine = createMachine(
                 on: {
                   'Add point': {
                     target: 'Segment Added',
-                    actions: ['Modify AST', 'Update code selection cursors'],
+                    actions: ['AST start new sketch'],
                   },
                 },
               },
@@ -302,38 +313,55 @@ export const modelingMachine = createMachine(
                   'Add point': {
                     target: 'Segment Added',
                     internal: true,
-                    actions: ['Modify AST', 'Update code selection cursors'],
+                    actions: ['AST add line segment'],
                   },
 
                   'Complete line': {
                     target: 'Done',
                     actions: ['Modify AST', 'Update code selection cursors'],
                   },
+
+                  'Equip new tool': {
+                    target: 'Segment Added',
+                    internal: true,
+                    actions: 'set tool',
+                  },
+                },
+              },
+
+              Init: {
+                always: [
+                  {
+                    target: 'Segment Added',
+                    cond: 'is editing existing sketch',
+                  },
+                  'No Points',
+                ],
+              },
+
+              'No Points': {
+                on: {
+                  'Add point': 'Point Added',
                 },
               },
             },
 
-            initial: 'No Points',
-
-            invoke: {
-              src: 'createLine',
-              id: 'Create line',
-              onDone: 'SketchIdle',
-            },
+            // invoke: [
+            //   {
+            //     src: 'createLine',
+            //     id: 'Create line',
+            //     onDone: 'SketchIdle',
+            //   },
+            // ],
+            initial: 'Init',
           },
         },
 
         initial: 'SketchIdle',
 
         on: {
-          Cancel: '.SketchIdle',
+          CancelSketch: '.SketchIdle',
         },
-
-        // invoke: {
-        //   src: 'createSketch',
-        //   id: 'Create sketch',
-        //   onDone: 'idle',
-        // },
       },
 
       Extrude: {
@@ -377,7 +405,12 @@ export const modelingMachine = createMachine(
         on: {
           'Select face': {
             target: 'Sketch',
-            actions: ['sketch mode enabled', 'hide default planes'],
+            actions: [
+              'sketch mode enabled',
+              'hide default planes',
+              'reset sketchPathToNode',
+              'create path',
+            ],
           },
         },
 
@@ -430,10 +463,23 @@ export const modelingMachine = createMachine(
     initial: 'idle',
 
     on: {
-      Cancel: '.idle',
+      Cancel: {
+        target: 'idle',
+        // TODO what if we're existing extrude equiped, should these actions still be fired?
+        // mabye cancel needs to have a guard for if else logic?
+        actions: [
+          'edit_mode_exit',
+          'default_camera_disable_sketch_mode',
+          'reset sketchPathToNode',
+        ],
+      },
     },
   },
   {
+    guards: {
+      'is editing existing sketch': ({ sketchPathToNode }) =>
+        !!sketchPathToNode,
+    },
     actions: {
       'Set selection': assign({
         selectionRanges: (_, event) => event.data,
@@ -475,6 +521,7 @@ export const modelingMachine = createMachine(
         }),
       }),
       'sketch mode enabled': ({ defaultPlanes }) => {
+        // TODO we're always assuming that they want to sketch on the xy plane!
         engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
@@ -504,6 +551,47 @@ export const modelingMachine = createMachine(
       'hide default planes': ({ defaultPlanes }) => {
         defaultPlanes.hidePlanes()
       },
+      edit_mode_exit: () =>
+        engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: { type: 'edit_mode_exit' },
+        }),
+      default_camera_disable_sketch_mode: () =>
+        engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: { type: 'default_camera_disable_sketch_mode' },
+        }),
+      'reset sketchPathToNode': assign({ sketchPathToNode: null }),
+      'set sketchPathToNode': assign({
+        sketchPathToNode: ({ ast, selectionRanges }) => {
+          if (!ast) {
+            console.error("shouldn't happed, how'd we get here?")
+            return null
+          }
+          const sourceRange = selectionRanges.codeBasedSelections[0].range
+          return getNodePathFromSourceRange(ast, sourceRange)
+        },
+      }),
+      'set tool': () =>
+        engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'set_tool',
+            tool: 'sketch_line',
+          },
+        }),
+      'equip select': () =>
+        engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'set_tool',
+            tool: 'select',
+          },
+        }),
     },
   }
 )

@@ -3,6 +3,7 @@
 export interface Typegen0 {
   '@@xstate/typegen': true
   internalEvents: {
+    '': { type: '' }
     'done.invoke.Create extrude': {
       type: 'done.invoke.Create extrude'
       data: unknown
@@ -10,11 +11,6 @@ export interface Typegen0 {
     }
     'done.invoke.Create fillet': {
       type: 'done.invoke.Create fillet'
-      data: unknown
-      __tip: 'See the XState TS docs to learn how to strongly type this.'
-    }
-    'done.invoke.Create line': {
-      type: 'done.invoke.Create line'
       data: unknown
       __tip: 'See the XState TS docs to learn how to strongly type this.'
     }
@@ -26,23 +22,21 @@ export interface Typegen0 {
       type: 'error.platform.Create fillet'
       data: unknown
     }
-    'error.platform.Create line': {
-      type: 'error.platform.Create line'
-      data: unknown
-    }
     'xstate.init': { type: 'xstate.init' }
   }
   invokeSrcNameMap: {
     createExtrude: 'done.invoke.Create extrude'
     createFillet: 'done.invoke.Create fillet'
-    createLine: 'done.invoke.Create line'
   }
   missingImplementations: {
     actions:
+      | 'AST add line segment'
+      | 'AST start new sketch'
       | 'Make selection horizontal'
       | 'Make selection vertical'
       | 'Modify AST'
       | 'Update code selection cursors'
+      | 'create path'
       | 'show default planes'
     delays: never
     guards:
@@ -57,9 +51,11 @@ export interface Typegen0 {
       | 'Selection is not empty'
       | 'Selection is one face'
       | 'Selection is one or more edges'
-    services: 'createExtrude' | 'createFillet' | 'createLine'
+    services: 'createExtrude' | 'createFillet'
   }
   eventsCausingActions: {
+    'AST add line segment': 'Add point'
+    'AST start new sketch': 'Add point'
     'Add to code-based selection':
       | 'Deselect point'
       | 'Deselect segment'
@@ -76,7 +72,6 @@ export interface Typegen0 {
     'Make selection horizontal': 'Make segment horizontal'
     'Make selection vertical': 'Make segment vertical'
     'Modify AST':
-      | 'Add point'
       | 'Complete line'
       | 'done.invoke.Create extrude'
       | 'done.invoke.Create fillet'
@@ -87,7 +82,6 @@ export interface Typegen0 {
     'Remove from other selection': 'Deselect axis'
     'Set selection': 'Set selection'
     'Update code selection cursors':
-      | 'Add point'
       | 'Complete line'
       | 'Deselect all'
       | 'Deselect axis'
@@ -99,8 +93,24 @@ export interface Typegen0 {
       | 'Select face'
       | 'Select point'
       | 'Select segment'
+    'create path': 'Select face'
+    default_camera_disable_sketch_mode: 'Cancel'
     'edit mode enter': 'Enter sketch'
+    edit_mode_exit: 'Cancel'
+    'equip select':
+      | 'CancelSketch'
+      | 'Deselect point'
+      | 'Deselect segment'
+      | 'Enter sketch'
+      | 'Make segment horizontal'
+      | 'Make segment vertical'
+      | 'Select face'
+      | 'Select point'
+      | 'Select segment'
     'hide default planes': 'Select face'
+    'reset sketchPathToNode': 'Cancel' | 'Select face'
+    'set sketchPathToNode': 'Enter sketch'
+    'set tool': 'Equip new tool' | 'Equip tool'
     'show default planes': 'Enter sketch'
     'sketch mode enabled': 'Enter sketch' | 'Select face'
   }
@@ -117,11 +127,11 @@ export interface Typegen0 {
     'Selection is not empty': 'Deselect all'
     'Selection is one face': 'Enter sketch' | 'Equip extrude'
     'Selection is one or more edges': 'Equip fillet'
+    'is editing existing sketch': ''
   }
   eventsCausingServices: {
     createExtrude: 'Equip extrude'
     createFillet: 'Equip fillet'
-    createLine: 'Equip line tool'
   }
   matchesStates:
     | 'Extrude'
@@ -136,6 +146,7 @@ export interface Typegen0 {
     | 'Sketch no face'
     | 'Sketch.Line Tool'
     | 'Sketch.Line Tool.Done'
+    | 'Sketch.Line Tool.Init'
     | 'Sketch.Line Tool.No Points'
     | 'Sketch.Line Tool.Point Added'
     | 'Sketch.Line Tool.Segment Added'
@@ -150,6 +161,7 @@ export interface Typegen0 {
           | {
               'Line Tool'?:
                 | 'Done'
+                | 'Init'
                 | 'No Points'
                 | 'Point Added'
                 | 'Segment Added'

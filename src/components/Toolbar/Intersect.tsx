@@ -21,14 +21,14 @@ import { GetInfoModal } from '../SetHorVertDistanceModal'
 import { createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { updateCursors } from '../../lang/util'
+import { kclManager } from 'lang/KclSinglton'
 
 const getModalInfo = create(GetInfoModal as any)
 
 export const Intersect = () => {
-  const { guiMode, selectionRanges, ast, programMemory, updateAst, setCursor } =
+  const { guiMode, selectionRanges, programMemory, updateAst, setCursor } =
     useStore((s) => ({
       guiMode: s.guiMode,
-      ast: s.ast,
       updateAst: s.updateAst,
       selectionRanges: s.selectionRanges,
       programMemory: s.programMemory,
@@ -39,7 +39,6 @@ export const Intersect = () => {
   const [forecdSelectionRanges, setForcedSelectionRanges] =
     useState<typeof selectionRanges>()
   useEffect(() => {
-    if (!ast) return
     if (selectionRanges.codeBasedSelections.length < 2) {
       setEnable(false)
       setForcedSelectionRanges({ ...selectionRanges })
@@ -49,7 +48,7 @@ export const Intersect = () => {
     const previousSegment =
       selectionRanges.codeBasedSelections.length > 1 &&
       isLinesParallelAndConstrained(
-        ast,
+        kclManager.ast,
         programMemory,
         selectionRanges.codeBasedSelections[0],
         selectionRanges.codeBasedSelections[1]
@@ -74,15 +73,15 @@ export const Intersect = () => {
     setForcedSelectionRanges(_forcedSelectionRanges)
 
     const paths = _forcedSelectionRanges.codeBasedSelections.map(({ range }) =>
-      getNodePathFromSourceRange(ast, range)
+      getNodePathFromSourceRange(kclManager.ast, range)
     )
     const nodes = paths.map(
-      (pathToNode) => getNodeFromPath<Value>(ast, pathToNode).node
+      (pathToNode) => getNodeFromPath<Value>(kclManager.ast, pathToNode).node
     )
     const varDecs = paths.map(
       (pathToNode) =>
         getNodeFromPath<VariableDeclarator>(
-          ast,
+          kclManager.ast,
           pathToNode,
           'VariableDeclarator'
         )?.node
@@ -90,7 +89,7 @@ export const Intersect = () => {
     const primaryLine = varDecs[0]
     const secondaryVarDecs = varDecs.slice(1)
     const isOthersLinkedToPrimary = secondaryVarDecs.every((secondary) =>
-      isSketchVariablesLinked(secondary, primaryLine, ast)
+      isSketchVariablesLinked(secondary, primaryLine, kclManager.ast)
     )
     const isAllTooltips = nodes.every(
       (node) =>
@@ -107,7 +106,7 @@ export const Intersect = () => {
         codeBasedSelections:
           _forcedSelectionRanges.codeBasedSelections.slice(1),
       },
-      ast,
+      kclManager.ast,
       'intersect'
     )
     setTransformInfos(theTransforms)
@@ -125,10 +124,10 @@ export const Intersect = () => {
   return (
     <button
       onClick={async () => {
-        if (!(transformInfos && ast && forecdSelectionRanges)) return
+        if (!(transformInfos && forecdSelectionRanges)) return
         const { modifiedAst, tagInfo, valueUsedInTransform, pathToNodeMap } =
           transformSecondarySketchLinesTagFirst({
-            ast: JSON.parse(JSON.stringify(ast)),
+            ast: JSON.parse(JSON.stringify(kclManager.ast)),
             selectionRanges: forecdSelectionRanges,
             transformInfos,
             programMemory,
@@ -166,7 +165,7 @@ export const Intersect = () => {
           )
           const { modifiedAst: _modifiedAst, pathToNodeMap } =
             transformSecondarySketchLinesTagFirst({
-              ast,
+              ast: kclManager.ast,
               selectionRanges: forecdSelectionRanges,
               transformInfos,
               programMemory,
