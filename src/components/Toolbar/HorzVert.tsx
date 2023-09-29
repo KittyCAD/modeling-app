@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { toolTips, useStore } from '../../useStore'
-import { Value } from '../../lang/abstractSyntaxTreeTypes'
+import { Value } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,

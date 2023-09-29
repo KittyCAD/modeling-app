@@ -83,13 +83,13 @@ pub fn deserialize_files(data: &[u8]) -> Result<JsValue, JsError> {
 // wasm_bindgen wrapper for lexer
 // test for this function and by extension lexer are done in javascript land src/lang/tokeniser.test.ts
 #[wasm_bindgen]
-pub fn lexer_js(js: &str) -> Result<JsValue, JsError> {
+pub fn lexer_wasm(js: &str) -> Result<JsValue, JsError> {
     let tokens = kcl_lib::token::lexer(js);
     Ok(JsValue::from_serde(&tokens)?)
 }
 
 #[wasm_bindgen]
-pub fn parse_js(js: &str) -> Result<JsValue, String> {
+pub fn parse_wasm(js: &str) -> Result<JsValue, String> {
     let tokens = kcl_lib::token::lexer(js);
     let parser = kcl_lib::parser::Parser::new(tokens);
     let program = parser.ast().map_err(String::from)?;

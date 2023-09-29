@@ -1,7 +1,12 @@
-import { ProgramMemory, Path, SourceRange } from '../executor'
-import { Program, Value } from '../abstractSyntaxTreeTypes'
+import {
+  ProgramMemory,
+  Path,
+  SourceRange,
+  Program,
+  Value,
+  PathToNode,
+} from '../wasm'
 import { ToolTip } from '../../useStore'
-import { PathToNode } from '../executor'
 import { EngineCommandManager } from './engineConnection'
 
 export interface InternalFirstArg {

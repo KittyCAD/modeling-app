@@ -1,4 +1,9 @@
-import { ProgramMemory, SourceRange } from 'lang/executor'
+import {
+  ProgramMemory,
+  SourceRange,
+  Program,
+  VariableDeclarator,
+} from 'lang/wasm'
 import { Selections } from 'useStore'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_CONNECTION_TIMEOUT_MS } from 'env'
 import { Models } from '@kittycad/lib'
@@ -6,7 +11,6 @@ import { exportSave } from 'lib/exportSave'
 import { v4 as uuidv4 } from 'uuid'
 import * as Sentry from '@sentry/react'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
-import { Program, VariableDeclarator } from 'lang/abstractSyntaxTreeTypes'
 
 let lastMessage = ''
 

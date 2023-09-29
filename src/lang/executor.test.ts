@@ -1,13 +1,8 @@
 import fs from 'node:fs'
 
-import { parser_wasm } from './abstractSyntaxTree'
-import { ProgramMemory, SketchGroup } from './executor'
-import { initPromise } from './rust'
+import { parse, ProgramMemory, SketchGroup } from './wasm'
 import { enginelessExecutor } from '../lib/testHelpers'
-import { vi } from 'vitest'
 import { KCLError } from './errors'
-
-beforeAll(() => initPromise)
 
 describe('test executor', () => {
   it('test assigning two variables, the second summing with the first', async () => {
@@ -403,7 +398,7 @@ async function exe(
   code: string,
   programMemory: ProgramMemory = { root: {}, return: null }
 ) {
-  const ast = parser_wasm(code)
+  const ast = parse(code)
 
   const result = await enginelessExecutor(ast, programMemory)
   return result

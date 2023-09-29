@@ -3,8 +3,10 @@ import {
   Program,
   VariableDeclarator,
   CallExpression,
-} from '../abstractSyntaxTreeTypes'
-import { SketchGroup, SourceRange, Path } from '../executor'
+  SketchGroup,
+  SourceRange,
+  Path,
+} from '../wasm'
 
 export function getSketchSegmentFromSourceRange(
   sketchGroup: SketchGroup,

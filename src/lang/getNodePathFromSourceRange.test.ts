@@ -1,9 +1,5 @@
 import { getNodePathFromSourceRange, getNodeFromPath } from './queryAst'
-import { parser_wasm } from './abstractSyntaxTree'
-import { initPromise } from './rust'
-import { Identifier } from './abstractSyntaxTreeTypes'
-
-beforeAll(() => initPromise)
+import { Identifier, parse } from './wasm'
 
 describe('testing getNodePathFromSourceRange', () => {
   it('test it gets the right path for a `lineTo` CallExpression within a SketchExpression', () => {
@@ -21,7 +17,7 @@ const sk3 = startSketchAt([0, 0])
       lineToSubstringIndex + subStr.length,
     ]
 
-    const ast = parser_wasm(code)
+    const ast = parse(code)
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
     const { node } = getNodeFromPath<any>(ast, nodePath)
 
@@ -46,7 +42,7 @@ const b1 = cube([0,0], 10)`
       subStrIndex + 'pos'.length,
     ]
 
-    const ast = parser_wasm(code)
+    const ast = parse(code)
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
     const node = getNodeFromPath<Identifier>(ast, nodePath).node
 
@@ -80,7 +76,7 @@ const b1 = cube([0,0], 10)`
       subStrIndex + 'scale'.length,
     ]
 
-    const ast = parser_wasm(code)
+    const ast = parse(code)
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
     const node = getNodeFromPath<Identifier>(ast, nodePath).node
     expect(nodePath).toEqual([

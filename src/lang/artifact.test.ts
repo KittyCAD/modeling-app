@@ -1,8 +1,5 @@
-import { parser_wasm } from './abstractSyntaxTree'
-import { initPromise } from './rust'
+import { parse } from './wasm'
 import { enginelessExecutor } from '../lib/testHelpers'
-
-beforeAll(() => initPromise)
 
 describe('testing artifacts', () => {
   // Enable rotations #152
@@ -13,7 +10,7 @@ const mySketch001 = startSketchAt([0, 0])
   |> lineTo([0.46, -5.82], %)
   // |> rx(45, %)
 show(mySketch001)`
-    const programMemory = await enginelessExecutor(parser_wasm(code))
+    const programMemory = await enginelessExecutor(parse(code))
     // @ts-ignore
     const shown = programMemory?.return?.map(
       // @ts-ignore
@@ -69,7 +66,7 @@ const mySketch001 = startSketchAt([0, 0])
   // |> rx(45, %)
   |> extrude(2, %)
 show(mySketch001)`
-    const programMemory = await enginelessExecutor(parser_wasm(code))
+    const programMemory = await enginelessExecutor(parse(code))
     // @ts-ignore
     const shown = programMemory?.return?.map(
       // @ts-ignore
@@ -109,7 +106,7 @@ const sk2 = startSketchAt([0, 0])
 
 
 show(theExtrude, sk2)`
-    const programMemory = await enginelessExecutor(parser_wasm(code))
+    const programMemory = await enginelessExecutor(parse(code))
     // @ts-ignore
     const geos = programMemory?.return?.map(
       // @ts-ignore

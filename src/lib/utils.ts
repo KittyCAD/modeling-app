@@ -1,4 +1,4 @@
-import { SourceRange } from '../lang/executor'
+import { SourceRange } from '../lang/wasm'
 
 export function isOverlap(a: SourceRange, b: SourceRange) {
   const [startingRange, secondRange] = a[0] < b[0] ? [a, b] : [b, a]

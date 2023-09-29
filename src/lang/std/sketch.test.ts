@@ -6,13 +6,9 @@ import {
   getXComponent,
   addCloseToPipe,
 } from './sketch'
-import { parser_wasm } from '../abstractSyntaxTree'
+import { parse, recast } from '../wasm'
 import { getNodePathFromSourceRange } from '../queryAst'
-import { recast } from '../recast'
 import { enginelessExecutor } from '../../lib/testHelpers'
-import { initPromise } from '../rust'
-
-beforeAll(() => initPromise)
 
 const eachQuad: [number, [number, number]][] = [
   [-315, [1, 1]],
@@ -106,7 +102,7 @@ show(mySketch001)
 `
     const code = genCode(lineToChange)
     const expectedCode = genCode(lineAfterChange)
-    const ast = parser_wasm(code)
+    const ast = parse(code)
     const programMemory = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(lineToChange)
     const { modifiedAst } = changeSketchArguments(
@@ -144,7 +140,7 @@ const mySketch001 = startSketchAt([0, 0])
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)
 show(mySketch001)`
-    const ast = parser_wasm(code)
+    const ast = parse(code)
     const programMemory = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(lineToChange)
     expect(sourceStart).toBe(66)
@@ -205,7 +201,7 @@ describe('testing addTagForSketchOnFace', () => {
 show(mySketch001)
 `
     const code = genCode(originalLine)
-    const ast = parser_wasm(code)
+    const ast = parse(code)
     const programMemory = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(originalLine)
     const sourceRange: [number, number] = [
