@@ -32,6 +32,7 @@ import { Themes, getSystemTheme } from 'lib/theme'
 import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
 import { engineCommandManager } from './lang/std/engineConnection'
 import { kclManager } from 'lang/KclSinglton'
+import { useModelingContext } from 'hooks/useModelingContext'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
@@ -62,6 +63,7 @@ export function App() {
       context: { showDebugPanel, onboardingStatus, cameraControls, theme },
     },
   } = useGlobalStateContext()
+  const { state } = useModelingContext()
 
   const editorTheme = theme === Themes.System ? getSystemTheme() : theme
 
@@ -162,10 +164,7 @@ export function App() {
 
     const newCmdId = uuidv4()
     if (buttonDownInStream === undefined) {
-      if (
-        guiMode.mode === 'sketch' &&
-        guiMode.sketchMode === ('sketch_line' as any)
-      ) {
+      if (state.matches('Sketch.Line Tool')) {
         debounceSocketSend({
           type: 'modeling_cmd_req',
           cmd_id: newCmdId,
@@ -185,7 +184,7 @@ export function App() {
         })
       }
     } else {
-      if (guiMode.mode === 'sketch' && guiMode.sketchMode === ('move' as any)) {
+      if (state.matches('Sketch.Move Tool')) {
         debounceSocketSend({
           type: 'modeling_cmd_req',
           cmd_id: newCmdId,

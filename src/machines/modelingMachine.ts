@@ -356,7 +356,7 @@ export const modelingMachine = createMachine(
           },
 
           'Move Tool': {
-            entry: 'set too move',
+            entry: 'set tool move',
           },
         },
 
@@ -575,7 +575,7 @@ export const modelingMachine = createMachine(
           return getNodePathFromSourceRange(kclManager.ast, sourceRange)
         },
       }),
-      'set tool': () =>
+      'set tool line': () =>
         engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
@@ -593,7 +593,7 @@ export const modelingMachine = createMachine(
             tool: 'select',
           },
         }),
-      'set too move': () =>
+      'set tool move': () =>
         engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),

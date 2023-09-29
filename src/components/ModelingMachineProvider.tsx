@@ -170,6 +170,7 @@ export const ModelingMachineProvider = ({
       'sketch exit execute': () => {
         kclManager.executeAst()
       },
+      'set tool': () => {}, // TODO
     },
     guards: {
       'Can make selection horizontal': () => true,

@@ -17,7 +17,7 @@
 "createFillet": "done.invoke.Create fillet";
         };
         missingImplementations: {
-          actions: "AST add line segment" | "AST start new sketch" | "Make selection horizontal" | "Make selection vertical" | "Modify AST" | "Update code selection cursors" | "create path" | "set tool line" | "show default planes" | "sketch exit execute";
+          actions: "AST add line segment" | "AST start new sketch" | "Make selection horizontal" | "Make selection vertical" | "Modify AST" | "Update code selection cursors" | "create path" | "set tool" | "show default planes" | "sketch exit execute";
           delays: never;
           guards: "Can make selection horizontal" | "Can make selection vertical" | "Selection contains axis" | "Selection contains edge" | "Selection contains face" | "Selection contains line" | "Selection contains point" | "Selection is empty" | "Selection is not empty" | "Selection is one face" | "Selection is one or more edges";
           services: "createExtrude" | "createFillet";
@@ -43,9 +43,9 @@
 "hide default planes": "Select face";
 "reset sketchPathToNode": "Cancel" | "Select face";
 "set sketchPathToNode": "Enter sketch";
-"set too move": "Equip move tool";
 "set tool": "Equip new tool";
 "set tool line": "Equip tool";
+"set tool move": "Equip move tool";
 "show default planes": "Enter sketch";
 "sketch exit execute": "Cancel" | "Complete line" | "xstate.stop";
 "sketch mode enabled": "Enter sketch" | "Select face";
