@@ -7,28 +7,14 @@ import {
 } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { useStore } from '../useStore'
-import { getNormalisedCoordinates, roundOff } from '../lib/utils'
+import { getNormalisedCoordinates } from '../lib/utils'
 import Loading from './Loading'
 import { cameraMouseDragGuards } from 'lib/cameraControls'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
 import { Models } from '@kittycad/lib'
-import { addStartSketch } from 'lang/modifyAst'
-import {
-  addCloseToPipe,
-  addNewSketchLn,
-  compareVec2Epsilon,
-} from 'lang/std/sketch'
 import { getNodeFromPath } from 'lang/queryAst'
-import {
-  Program,
-  VariableDeclarator,
-  rangeTypeFix,
-  modifyAstForSketch,
-  recast,
-} from 'lang/wasm'
-import { KCLError } from 'lang/errors'
-import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
+import { Program, VariableDeclarator, modifyAstForSketch } from 'lang/wasm'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { kclManager } from 'lang/KclSinglton'
