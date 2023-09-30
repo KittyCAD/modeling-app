@@ -3059,6 +3059,21 @@ const height = [obj["a"] -1, 0]"#,
     }
 
     #[test]
+    fn test_comment_in_pipe() {
+        let tokens = crate::token::lexer(r#"const x = y() |> /*hi*/ z(%)"#);
+        let mut body = Parser::new(tokens).ast().unwrap().body;
+        let BodyItem::VariableDeclaration(mut item) = body.remove(0) else {
+            panic!("expected vardec");
+        };
+        let val = item.declarations.remove(0).init;
+        let Value::PipeExpression(pipe) = val else {
+            panic!("expected pipe");
+        };
+        let noncode = dbg!(pipe.non_code_meta);
+        assert_eq!(noncode.non_code_nodes.len(), 1);
+    }
+
+    #[test]
     fn test_parse_half_pipe() {
         let tokens = crate::token::lexer(
             "const height = 10
