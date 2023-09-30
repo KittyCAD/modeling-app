@@ -403,7 +403,7 @@ describe('testing pipe operator special', () => {
             id: { type: 'Identifier', start: 6, end: 14, name: 'mySketch' },
             init: {
               type: 'PipeExpression',
-              start: 15,
+              start: 17,
               end: 145,
               body: [
                 {
@@ -644,7 +644,7 @@ describe('testing pipe operator special', () => {
             },
             init: {
               type: 'PipeExpression',
-              start: 12,
+              start: 14,
               end: 36,
               body: [
                 {
