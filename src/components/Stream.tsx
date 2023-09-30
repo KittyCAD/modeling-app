@@ -25,6 +25,7 @@ import {
   VariableDeclarator,
   rangeTypeFix,
   modifyAstForSketch,
+  recast,
 } from 'lang/wasm'
 import { KCLError } from 'lang/errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
@@ -56,7 +57,7 @@ export const Stream = ({ className = '' }) => {
       context: { cameraControls },
     },
   } = useGlobalStateContext()
-  const { send, state } = useModelingContext()
+  const { send, state, context } = useModelingContext()
   const [isExecuting, setIsExecuting] = useState(false)
   useEffect(() => {
     kclManager.onSetExecute(setIsExecuting)
@@ -225,7 +226,22 @@ export const Stream = ({ className = '' }) => {
         type: 'handle_mouse_drag_end',
         window: { x, y },
       }
-      engineCommandManager.sendSceneCommand(command)
+      engineCommandManager.sendSceneCommand(command).then(async () => {
+        if (!context.sketchPathToNode) return
+        const varDec = getNodeFromPath<VariableDeclarator>(
+          kclManager.ast,
+          context.sketchPathToNode,
+          'VariableDeclarator'
+        ).node
+        const variableName = varDec?.id?.name
+        const updatedAst: Program = await modifyAstForSketch(
+          engineCommandManager,
+          kclManager.ast,
+          variableName,
+          context.sketchEnginePathId
+        )
+        kclManager.executeAstMock(updatedAst, true)
+      })
     }
 
     setDidDragInStream(false)

@@ -11,7 +11,7 @@ import { bracket } from 'lib/exampleKcl'
 const PERSIST_CODE_TOKEN = 'persistCode'
 
 class KclManager {
-  _code = bracket
+  private _code = bracket
   private _defferer = deferExecution((code: string) => {
     const ast = parse(code)
     this.executeAst(ast)
@@ -33,6 +33,7 @@ class KclManager {
   kclErrors: KCLError[] = []
   engineCommandManager: EngineCommandManager
   private _isExecutingCallback: (a: boolean) => void = () => {}
+  private _codeCallBack: (a: string) => void = () => {}
 
   get ast() {
     return this._ast
@@ -59,9 +60,13 @@ class KclManager {
     } else {
       this._code = storedCode || bracket
     }
+    this._codeCallBack(this._code)
   }
   onSetExecute(callBack: (a: boolean) => void) {
     this._isExecutingCallback = callBack
+  }
+  onSetCode(callBack: (a: string) => void) {
+    this._codeCallBack = callBack
   }
 
   async executeAst(ast: Program = this._ast, updateCode = false) {
@@ -78,6 +83,7 @@ class KclManager {
     this._ast = { ...ast }
     if (updateCode) {
       this._code = recast(ast)
+      this._codeCallBack(this._code)
     }
   }
   async executeAstMock(ast: Program = this._ast, updateCode = false) {
@@ -102,6 +108,7 @@ class KclManager {
   }
   setCode(code: string, execute = false) {
     this._code = code
+    this._codeCallBack(code)
     localStorage.setItem(PERSIST_CODE_TOKEN, code)
     if (execute) {
       if (code.trim()) {

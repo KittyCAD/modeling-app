@@ -29,6 +29,7 @@ export const modelingMachine = createMachine(
         codeBasedSelections: [],
       } as Selections,
       sketchPathToNode: null as PathToNode | null, // maybe too specific, and we should have a generic pathToNode, but being specific seems less risky when I'm not sure
+      sketchEnginePathId: '' as string,
     },
 
     schema: {
@@ -567,12 +568,25 @@ export const modelingMachine = createMachine(
           cmd_id: uuidv4(),
           cmd: { type: 'default_camera_disable_sketch_mode' },
         }),
-      'reset sketchPathToNode': assign({ sketchPathToNode: null }),
-      'set sketchPathToNode': assign({
-        sketchPathToNode: ({ selectionRanges }) => {
-          const sourceRange = selectionRanges.codeBasedSelections[0].range
-          return getNodePathFromSourceRange(kclManager.ast, sourceRange)
-        },
+      'reset sketchPathToNode': assign({
+        sketchPathToNode: null,
+        sketchEnginePathId: '',
+      }),
+      'set sketchPathToNode': assign(({ selectionRanges }) => {
+        const sourceRange = selectionRanges.codeBasedSelections[0].range
+        const sketchPathToNode = getNodePathFromSourceRange(
+          kclManager.ast,
+          sourceRange
+        )
+        const sketchEnginePathId =
+          isCursorInSketchCommandRange(
+            engineCommandManager.artifactMap,
+            selectionRanges
+          ) || ''
+        return {
+          sketchPathToNode,
+          sketchEnginePathId,
+        }
       }),
       'set tool line': () =>
         engineCommandManager.sendSceneCommand({

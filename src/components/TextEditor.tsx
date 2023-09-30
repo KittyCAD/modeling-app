@@ -11,7 +11,7 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
 import { Themes } from 'lib/theme'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { linter, lintGutter } from '@codemirror/lint'
 import { Selections, useStore } from 'useStore'
 import { LanguageServerClient } from 'editor/lsp'
@@ -70,6 +70,8 @@ export const TextEditor = ({
     setIsLSPServerReady: s.setIsLSPServerReady,
     setSelectionRanges: s.setSelectionRanges,
   }))
+  const [code, setCode] = useState(kclManager.code)
+  kclManager.onSetCode(setCode)
 
   const {
     context: { selectionRanges: machineSelectionRanges },
@@ -294,7 +296,7 @@ export const TextEditor = ({
     >
       <ReactCodeMirror
         className="h-full"
-        value={kclManager.code}
+        value={code}
         extensions={editorExtensions}
         onChange={onChange}
         onUpdate={onUpdate}
