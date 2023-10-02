@@ -1,6 +1,11 @@
 import { Popover, Transition } from '@headlessui/react'
 import { ActionButton } from './ActionButton'
-import { faBars, faBug, faGear, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+import {
+  faBars,
+  faBug,
+  faGear,
+  faSignOutAlt,
+} from '@fortawesome/free-solid-svg-icons'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment, useState } from 'react'
