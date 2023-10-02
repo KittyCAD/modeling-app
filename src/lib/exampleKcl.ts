@@ -1,19 +1,27 @@
-export const bracket = `// Material: 6061-T6 Aluminum
-const sigmaAllow = 35000 // psi
-const width = 9 // inch
+export const bracket = `const sigmaAllow = 15000 // psi
+const width = 11 // inch
 const p = 150 // Force on shelf - lbs
-const distance = 6 // inches
+const distance = 12 // inches
 const FOS = 2
+const thickness = sqrt(distance * p * FOS * 6 / ( sigmaAllow * width ))
+const filletR = thickness * 2
+const shelfMountL = 9
+const wallMountL = 8
 
-const leg1 = 5 // inches
-const leg2 = 8 // inches
-const thickness = sqrt(distance * p * FOS * 6 / sigmaAllow / width) // inches
 const bracket = startSketchAt([0, 0])
-  |> line([0, leg1], %)
-  |> line([leg2, 0], %)
+  |> line([0, wallMountL], %)
+  |> tangentalArc({
+    radius: filletR,
+    offset: 90
+  }, %)
+  |> line([-shelfMountL, 0], %)
   |> line([0, -thickness], %)
-  |> line([-leg2 + thickness, 0], %)
-  |> line([0, -leg1 + thickness], %)
+  |> line([shelfMountL, 0], %)
+  |> tangentalArc({
+    radius: filletR - thickness,
+    offset: -90
+  }, %)
+  |> line([0, -wallMountL], %)
   |> close(%)
   |> extrude(width, %)
 
