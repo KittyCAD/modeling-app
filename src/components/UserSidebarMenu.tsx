@@ -1,6 +1,11 @@
 import { Popover, Transition } from '@headlessui/react'
 import { ActionButton } from './ActionButton'
-import { faBars, faGear, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+import {
+  faBars,
+  faBug,
+  faGear,
+  faSignOutAlt,
+} from '@fortawesome/free-solid-svg-icons'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment, useState } from 'react'
@@ -143,6 +148,14 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                   className="border-transparent dark:border-transparent dark:hover:border-liquid-60"
                 >
                   Request a feature
+                </ActionButton>
+                <ActionButton
+                  Element="externalLink"
+                  to="https://github.com/KittyCAD/modeling-app/issues/new"
+                  icon={{ icon: faBug }}
+                  className="border-transparent dark:border-transparent dark:hover:border-liquid-60"
+                >
+                  Report a bug
                 </ActionButton>
                 <ActionButton
                   Element="button"
