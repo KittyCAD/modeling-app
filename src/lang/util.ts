@@ -1,6 +1,5 @@
 import { Selections, StoreState } from '../useStore'
-import { Program } from './abstractSyntaxTreeTypes'
-import { PathToNode } from './executor'
+import { Program, PathToNode } from './wasm'
 import { getNodeFromPath } from './queryAst'
 
 export function updateCursors(

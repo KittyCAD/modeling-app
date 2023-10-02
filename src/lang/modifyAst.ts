@@ -14,14 +14,15 @@ import {
   ObjectExpression,
   UnaryExpression,
   BinaryExpression,
-} from './abstractSyntaxTreeTypes'
+  PathToNode,
+  ProgramMemory,
+} from './wasm'
 import {
   findAllPreviousVariables,
   getNodeFromPath,
   getNodePathFromSourceRange,
   isNodeSafeToReplace,
 } from './queryAst'
-import { PathToNode, ProgramMemory } from './executor'
 import {
   addTagForSketchOnFace,
   getFirstArg,

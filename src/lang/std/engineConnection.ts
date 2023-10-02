@@ -1,4 +1,9 @@
-import { ProgramMemory, SourceRange } from 'lang/executor'
+import {
+  ProgramMemory,
+  SourceRange,
+  Program,
+  VariableDeclarator,
+} from 'lang/wasm'
 import { Selections } from 'useStore'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_CONNECTION_TIMEOUT_MS } from 'env'
 import { Models } from '@kittycad/lib'
@@ -6,7 +11,6 @@ import { exportSave } from 'lib/exportSave'
 import { v4 as uuidv4 } from 'uuid'
 import * as Sentry from '@sentry/react'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
-import { Program, VariableDeclarator } from 'lang/abstractSyntaxTreeTypes'
 
 let lastMessage = ''
 
@@ -492,9 +496,11 @@ export class EngineConnection {
 
         this.onDataChannelOpen(this)
 
-        this.onEngineConnectionOpen(this)
         this.ready = true
         this.connecting = false
+        // Do this after we set the connection is ready to avoid errors when
+        // we try to send messages before the connection is ready.
+        this.onEngineConnectionOpen(this)
       })
 
       this.unreliableDataChannel.addEventListener('close', (event) => {
@@ -587,6 +593,9 @@ export class EngineCommandManager {
   outSequence = 1
   inSequence = 1
   engineConnection?: EngineConnection
+  // Folks should realize that wait for ready does not get called _everytime_
+  // the connection resets and restarts, it only gets called the first time.
+  // Be careful what you put here.
   waitForReady: Promise<void> = new Promise(() => {})
   private resolveReady = () => {}
 
@@ -610,12 +619,14 @@ export class EngineCommandManager {
     setIsStreamReady,
     width,
     height,
+    executeCode,
     token,
   }: {
     setMediaStream: (stream: MediaStream) => void
     setIsStreamReady: (isStreamReady: boolean) => void
     width: number
     height: number
+    executeCode: (code?: string, force?: boolean) => void
     token?: string
   }) {
     if (width === 0 || height === 0) {
@@ -638,6 +649,32 @@ export class EngineCommandManager {
       onEngineConnectionOpen: () => {
         this.resolveReady()
         setIsStreamReady(true)
+
+        // Make the axis gizmo.
+        // We do this after the connection opened to avoid a race condition.
+        // Connected opened is the last thing that happens when the stream
+        // is ready.
+        // We also do this here because we want to ensure we create the gizmo
+        // and execute the code everytime the stream is restarted.
+        const gizmoId = uuidv4()
+        this.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: gizmoId,
+          cmd: {
+            type: 'make_axes_gizmo',
+            clobber: false,
+            // If true, axes gizmo will be placed in the corner of the screen.
+            // If false, it will be placed at the origin of the scene.
+            gizmo_mode: true,
+          },
+        })
+
+        // We execute the code here to make sure if the stream was to
+        // restart in a session, we want to make sure to execute the code.
+        // We force it to re-execute the code because we want to make sure
+        // the code is executed everytime the stream is restarted.
+        // We pass undefined for the code so it reads from the current state.
+        executeCode(undefined, true)
       },
       onClose: () => {
         setIsStreamReady(false)
@@ -734,10 +771,6 @@ export class EngineCommandManager {
     this.engineConnection?.send(resizeCmd)
   }
   handleModelingCommand(message: WebSocketResponse, id: string) {
-    if (this.engineConnection === undefined) {
-      return
-    }
-
     if (message.type !== 'modeling') {
       return
     }
@@ -905,15 +938,17 @@ export class EngineCommandManager {
     if (this.engineConnection === undefined) {
       return Promise.resolve()
     }
+
+    if (!this.engineConnection?.isReady()) {
+      return Promise.resolve()
+    }
+
     if (
       command.type === 'modeling_cmd_req' &&
       command.cmd.type !== lastMessage
     ) {
       console.log('sending command', command.cmd.type)
       lastMessage = command.cmd.type
-    }
-    if (!this.engineConnection?.isReady()) {
-      return Promise.resolve()
     }
     if (command.type !== 'modeling_cmd_req') return Promise.resolve()
     const cmd = command.cmd

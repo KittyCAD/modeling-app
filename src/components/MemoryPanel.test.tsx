@@ -1,7 +1,6 @@
 import { processMemory } from './MemoryPanel'
-import { parser_wasm } from '../lang/abstractSyntaxTree'
 import { enginelessExecutor } from '../lib/testHelpers'
-import { initPromise } from '../lang/rust'
+import { initPromise, parse } from '../lang/wasm'
 
 beforeAll(() => initPromise)
 
@@ -26,7 +25,7 @@ describe('processMemory', () => {
     |> lineTo([2.15, 4.32], %)
     // |> rx(90, %)
   show(theExtrude, theSketch)`
-    const ast = parser_wasm(code)
+    const ast = parse(code)
     const programMemory = await enginelessExecutor(ast, {
       root: {},
       return: null,

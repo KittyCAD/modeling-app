@@ -1,8 +1,5 @@
-import { recast } from './recast'
-import { parser_wasm } from './abstractSyntaxTree'
-import { Program } from './abstractSyntaxTreeTypes'
+import { parse, Program, recast, initPromise } from './wasm'
 import fs from 'node:fs'
-import { initPromise } from './rust'
 
 beforeAll(() => initPromise)
 
@@ -366,6 +363,6 @@ describe('it recasts binary expression using brackets where needed', () => {
 // helpers
 
 function code2ast(code: string): { ast: Program } {
-  const ast = parser_wasm(code)
+  const ast = parse(code)
   return { ast }
 }
