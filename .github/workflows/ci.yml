@@ -69,14 +69,15 @@ jobs:
         # if: github.event_name == 'schedule'
         run: VERSION=$(date +'%-y.%-m.%-d') yarn bump-jsons
 
-      - id: export_version
-        run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
-
       - uses: actions/upload-artifact@v3
+        # if: github.event_name == 'schedule'
         with:
           path: |
             package.json
             src-tauri/tauri.conf.json
+
+      - id: export_version
+        run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
 
   build-apps:
     needs: [check-format, build-test-web, check-types]
