@@ -43,8 +43,6 @@ jobs:
     runs-on: ubuntu-20.04
     outputs:
       version: ${{ steps.export_version.outputs.version }}
-      package_json: ${{ steps.export_package_json.outputs.package_json }}
-      taufi_conf_json: ${{ steps.export_taufi_conf_json.outputs.taufi_conf_json }}
     steps:
       - uses: actions/checkout@v4
 
@@ -73,11 +71,12 @@ jobs:
 
       - id: export_version
         run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
-      - id: export_package_json
-        run: echo "package_json=`cat package.json`" >> "$GITHUB_OUTPUT"
 
-      - id: export_taufi_conf_json
-        run: echo "taufi_conf_json=`cat src-tauri/tauri.conf.json`" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v3
+        with:
+          path: |
+            package.json
+            src-tauri/tauri.conf.json
 
   build-apps:
     needs: [check-format, build-test-web, check-types]
@@ -87,6 +86,15 @@ jobs:
         os: [macos-latest, ubuntu-20.04, windows-latest]
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v3
+
+      - name: Copy updated .json files
+        # if: github.event_name == 'schedule'
+        run: |
+          ls -l artifact
+          cp artifact/package.json package.json
+          cp artifact/src-tauri/tauri.conf.json src-tauri/tauri.conf.json
 
       - name: install ubuntu system dependencies
         if: matrix.os == 'ubuntu-20.04'
@@ -101,17 +109,6 @@ jobs:
           cache: 'yarn' # Set this to npm, yarn or pnpm.
 
       - run: yarn install
-
-      - name: Set nightly version
-        # if: github.event_name == 'schedule'
-        env:
-          VERSION: ${{ needs.build-test-web.outputs.version }}
-        shell: bash
-        run: |
-          echo "${{ needs.build-test-web.outputs.package_json }}" > package.json
-          echo "${{ needs.build-test-web.outputs.taufi_conf_json }}" > src-tauri/tauri.conf.json
-          cat package.json
-          cat src-tauri/tauri.conf.json
 
       - name: Rust setup
         uses: dtolnay/rust-toolchain@stable
