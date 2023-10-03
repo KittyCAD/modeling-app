@@ -68,6 +68,13 @@ jobs:
     outputs:
       version: ${{ steps.export_version.outputs.version }}
     steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+          
       - name: Set nightly version
         # if: github.event_name == 'schedule'
         run: |
