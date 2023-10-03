@@ -9,7 +9,7 @@ import {
 import { findAllPreviousVariables, PrevVariable } from '../lang/queryAst'
 import { useStore } from '../useStore'
 import { engineCommandManager } from '../lang/std/engineConnection'
-import { kclManager } from 'lang/KclSinglton'
+import { kclManager, useKclContext } from 'lang/KclSinglton'
 
 export const AvailableVars = ({
   onVarClick,
@@ -92,10 +92,10 @@ export function useCalc({
   newVariableInsertIndex: number
   setNewVariableName: (a: string) => void
 } {
-  const { programMemory, selectionRange } = useStore((s) => ({
-    programMemory: s.programMemory,
+  const { selectionRange } = useStore((s) => ({
     selectionRange: s.selectionRanges.codeBasedSelections[0].range,
   }))
+  const { programMemory } = useKclContext()
   const inputRef = useRef<HTMLInputElement>(null)
   const [availableVarInfo, setAvailableVarInfo] = useState<
     ReturnType<typeof findAllPreviousVariables>

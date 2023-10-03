@@ -9,14 +9,10 @@ import { useStore } from 'useStore'
 const getModalInfo = create(SetVarNameModal as any)
 
 export function useConvertToVariable() {
-  const { guiMode, selectionRanges, programMemory, updateAst } = useStore(
-    (s) => ({
-      guiMode: s.guiMode,
-      updateAst: s.updateAst,
-      selectionRanges: s.selectionRanges,
-      programMemory: s.programMemory,
-    })
-  )
+  const { guiMode, selectionRanges } = useStore((s) => ({
+    guiMode: s.guiMode,
+    selectionRanges: s.selectionRanges,
+  }))
   const [enable, setEnabled] = useState(false)
   useEffect(() => {
     const { isSafe, value } = isNodeSafeToReplace(
@@ -38,12 +34,12 @@ export function useConvertToVariable() {
 
       const { modifiedAst: _modifiedAst } = moveValueIntoNewVariable(
         kclManager.ast,
-        programMemory,
+        kclManager.programMemory,
         selectionRanges.codeBasedSelections[0].range,
         variableName
       )
 
-      updateAst(_modifiedAst, true)
+      kclManager.updateAst(_modifiedAst, true)
     } catch (e) {
       console.log('error', e)
     }

@@ -22,14 +22,11 @@ import { kclManager } from 'lang/KclSinglton'
 const getModalInfo = create(GetInfoModal as any)
 
 export const Intersect = () => {
-  const { guiMode, selectionRanges, programMemory, updateAst, setCursor } =
-    useStore((s) => ({
-      guiMode: s.guiMode,
-      updateAst: s.updateAst,
-      selectionRanges: s.selectionRanges,
-      programMemory: s.programMemory,
-      setCursor: s.setCursor,
-    }))
+  const { guiMode, selectionRanges, setCursor } = useStore((s) => ({
+    guiMode: s.guiMode,
+    selectionRanges: s.selectionRanges,
+    setCursor: s.setCursor,
+  }))
   const [enable, setEnable] = useState(false)
   const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
   const [forecdSelectionRanges, setForcedSelectionRanges] =
@@ -45,7 +42,7 @@ export const Intersect = () => {
       selectionRanges.codeBasedSelections.length > 1 &&
       isLinesParallelAndConstrained(
         kclManager.ast,
-        programMemory,
+        kclManager.programMemory,
         selectionRanges.codeBasedSelections[0],
         selectionRanges.codeBasedSelections[1]
       )
@@ -126,7 +123,7 @@ export const Intersect = () => {
             ast: JSON.parse(JSON.stringify(kclManager.ast)),
             selectionRanges: forecdSelectionRanges,
             transformInfos,
-            programMemory,
+            programMemory: kclManager.programMemory,
           })
         const {
           segName,
@@ -149,7 +146,7 @@ export const Intersect = () => {
           initialVariableName: 'offset',
         } as any)
         if (segName === tagInfo?.tag && value === valueUsedInTransform) {
-          updateAst(modifiedAst, true, {
+          kclManager.updateAst(modifiedAst, true, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
         } else {
@@ -164,7 +161,7 @@ export const Intersect = () => {
               ast: kclManager.ast,
               selectionRanges: forecdSelectionRanges,
               transformInfos,
-              programMemory,
+              programMemory: kclManager.programMemory,
               forceSegName: segName,
               forceValueUsedInTransform: finalValue,
             })
@@ -177,7 +174,7 @@ export const Intersect = () => {
             )
             _modifiedAst.body = newBody
           }
-          updateAst(_modifiedAst, true, {
+          kclManager.updateAst(_modifiedAst, true, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
         }

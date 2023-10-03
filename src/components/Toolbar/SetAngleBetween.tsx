@@ -21,14 +21,11 @@ import { kclManager } from 'lang/KclSinglton'
 const getModalInfo = create(GetInfoModal as any)
 
 export const SetAngleBetween = () => {
-  const { guiMode, selectionRanges, programMemory, updateAst, setCursor } =
-    useStore((s) => ({
-      guiMode: s.guiMode,
-      updateAst: s.updateAst,
-      selectionRanges: s.selectionRanges,
-      programMemory: s.programMemory,
-      setCursor: s.setCursor,
-    }))
+  const { guiMode, selectionRanges, setCursor } = useStore((s) => ({
+    guiMode: s.guiMode,
+    selectionRanges: s.selectionRanges,
+    setCursor: s.setCursor,
+  }))
   const [enable, setEnable] = useState(false)
   const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
   useEffect(() => {
@@ -85,7 +82,7 @@ export const SetAngleBetween = () => {
             ast: JSON.parse(JSON.stringify(kclManager.ast)),
             selectionRanges,
             transformInfos,
-            programMemory,
+            programMemory: kclManager.programMemory,
           })
         const {
           segName,
@@ -108,7 +105,7 @@ export const SetAngleBetween = () => {
           initialVariableName: 'angle',
         } as any)
         if (segName === tagInfo?.tag && value === valueUsedInTransform) {
-          updateAst(modifiedAst, true, {
+          kclManager.updateAst(modifiedAst, true, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
         } else {
@@ -123,7 +120,7 @@ export const SetAngleBetween = () => {
               ast: kclManager.ast,
               selectionRanges,
               transformInfos,
-              programMemory,
+              programMemory: kclManager.programMemory,
               forceSegName: segName,
               forceValueUsedInTransform: finalValue,
             })
@@ -136,7 +133,7 @@ export const SetAngleBetween = () => {
             )
             _modifiedAst.body = newBody
           }
-          updateAst(_modifiedAst, true, {
+          kclManager.updateAst(_modifiedAst, true, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
         }

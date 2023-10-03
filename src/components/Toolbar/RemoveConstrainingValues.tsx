@@ -14,14 +14,11 @@ import { updateCursors } from '../../lang/util'
 import { kclManager } from 'lang/KclSinglton'
 
 export const RemoveConstrainingValues = () => {
-  const { guiMode, selectionRanges, programMemory, updateAst, setCursor } =
-    useStore((s) => ({
-      guiMode: s.guiMode,
-      updateAst: s.updateAst,
-      selectionRanges: s.selectionRanges,
-      programMemory: s.programMemory,
-      setCursor: s.setCursor,
-    }))
+  const { guiMode, selectionRanges, setCursor } = useStore((s) => ({
+    guiMode: s.guiMode,
+    selectionRanges: s.selectionRanges,
+    setCursor: s.setCursor,
+  }))
   const [enableHorz, setEnableHorz] = useState(false)
   const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
   useEffect(() => {
@@ -61,10 +58,10 @@ export const RemoveConstrainingValues = () => {
           ast: kclManager.ast,
           selectionRanges,
           transformInfos,
-          programMemory,
+          programMemory: kclManager.programMemory,
           referenceSegName: '',
         })
-        updateAst(modifiedAst, true, {
+        kclManager.updateAst(modifiedAst, true, {
           callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
         })
       }}

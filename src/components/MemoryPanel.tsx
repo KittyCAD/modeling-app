@@ -1,9 +1,9 @@
 import ReactJson from 'react-json-view'
 import { CollapsiblePanel, CollapsiblePanelProps } from './CollapsiblePanel'
-import { useStore } from '../useStore'
 import { useMemo } from 'react'
 import { ProgramMemory, Path, ExtrudeSurface } from '../lang/wasm'
 import { Themes } from '../lib/theme'
+import { useKclContext } from 'lang/KclSinglton'
 
 interface MemoryPanelProps extends CollapsiblePanelProps {
   theme?: Exclude<Themes, Themes.System>
@@ -13,9 +13,7 @@ export const MemoryPanel = ({
   theme = Themes.Light,
   ...props
 }: MemoryPanelProps) => {
-  const { programMemory } = useStore((s) => ({
-    programMemory: s.programMemory,
-  }))
+  const { programMemory } = useKclContext()
   const ProcessedMemory = useMemo(
     () => processMemory(programMemory),
     [programMemory]

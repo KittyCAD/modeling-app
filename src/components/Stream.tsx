@@ -17,7 +17,7 @@ import { getNodeFromPath } from 'lang/queryAst'
 import { Program, VariableDeclarator, modifyAstForSketch } from 'lang/wasm'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
-import { kclManager } from 'lang/KclSinglton'
+import { kclManager, useKclContext } from 'lang/KclSinglton'
 
 export const Stream = ({ className = '' }) => {
   const [isLoading, setIsLoading] = useState(true)
@@ -44,10 +44,7 @@ export const Stream = ({ className = '' }) => {
     },
   } = useGlobalStateContext()
   const { send, state, context } = useModelingContext()
-  const [isExecuting, setIsExecuting] = useState(false)
-  useEffect(() => {
-    kclManager.onSetExecute(setIsExecuting)
-  }, [kclManager.onSetExecute])
+  const { isExecuting } = useKclContext()
 
   useEffect(() => {
     if (

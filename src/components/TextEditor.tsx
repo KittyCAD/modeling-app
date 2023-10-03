@@ -32,7 +32,7 @@ import { CSSRuleObject } from 'tailwindcss/types/config'
 import { useModelingContext } from 'hooks/useModelingContext'
 import interact from '@replit/codemirror-interact'
 import { engineCommandManager } from '../lang/std/engineConnection'
-import { kclManager } from 'lang/KclSinglton'
+import { kclManager, useKclContext } from 'lang/KclSinglton'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -53,7 +53,6 @@ export const TextEditor = ({
   const pathParams = useParams()
   const {
     editorView,
-    formatCode,
     isLSPServerReady,
     selectionRanges,
     selectionRangeTypeMap,
@@ -62,7 +61,6 @@ export const TextEditor = ({
     setSelectionRanges,
   } = useStore((s) => ({
     editorView: s.editorView,
-    formatCode: s.formatCode,
     isLSPServerReady: s.isLSPServerReady,
     selectionRanges: s.selectionRanges,
     selectionRangeTypeMap: s.selectionRangeTypeMap,
@@ -70,8 +68,7 @@ export const TextEditor = ({
     setIsLSPServerReady: s.setIsLSPServerReady,
     setSelectionRanges: s.setSelectionRanges,
   }))
-  const [code, setCode] = useState(kclManager.code)
-  kclManager.onSetCode(setCode)
+  const { code, errors } = useKclContext()
 
   const {
     context: { selectionRanges: machineSelectionRanges },
@@ -223,7 +220,7 @@ export const TextEditor = ({
         {
           key: editorShortcutMeta.formatCode.codeMirror,
           run: () => {
-            formatCode()
+            kclManager.format()
             return true
           },
         },
@@ -247,7 +244,7 @@ export const TextEditor = ({
       extensions.push(
         lintGutter(),
         linter((_view) => {
-          return kclErrToDiagnostic(useStore.getState().kclErrors)
+          return kclErrToDiagnostic(errors)
         }),
         interact({
           rules: [

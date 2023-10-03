@@ -39,14 +39,11 @@ export const SetHorzVertDistance = ({
 }: {
   buttonType: ButtonType
 }) => {
-  const { guiMode, selectionRanges, programMemory, updateAst, setCursor } =
-    useStore((s) => ({
-      guiMode: s.guiMode,
-      updateAst: s.updateAst,
-      selectionRanges: s.selectionRanges,
-      programMemory: s.programMemory,
-      setCursor: s.setCursor,
-    }))
+  const { guiMode, selectionRanges, setCursor } = useStore((s) => ({
+    guiMode: s.guiMode,
+    selectionRanges: s.selectionRanges,
+    setCursor: s.setCursor,
+  }))
   const constraint: ConstraintType =
     buttonType === 'setHorzDistance' || buttonType === 'setVertDistance'
       ? buttonType
@@ -116,7 +113,7 @@ export const SetHorzVertDistance = ({
             ast: JSON.parse(JSON.stringify(kclManager.ast)),
             selectionRanges,
             transformInfos,
-            programMemory,
+            programMemory: kclManager.programMemory,
           })
         const {
           segName,
@@ -141,7 +138,7 @@ export const SetHorzVertDistance = ({
               constraint === 'setHorzDistance' ? 'xDis' : 'yDis',
           } as any))
         if (segName === tagInfo?.tag && value === valueUsedInTransform) {
-          updateAst(modifiedAst, true, {
+          kclManager.updateAst(modifiedAst, true, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
         } else {
@@ -154,7 +151,7 @@ export const SetHorzVertDistance = ({
               ast: kclManager.ast,
               selectionRanges,
               transformInfos,
-              programMemory,
+              programMemory: kclManager.programMemory,
               forceSegName: segName,
               forceValueUsedInTransform: finalValue,
             })
@@ -167,7 +164,7 @@ export const SetHorzVertDistance = ({
             )
             _modifiedAst.body = newBody
           }
-          updateAst(_modifiedAst, true, {
+          kclManager.updateAst(_modifiedAst, true, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
         }

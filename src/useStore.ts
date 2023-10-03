@@ -5,19 +5,16 @@ import {
   parse,
   Program,
   _executor,
-  recast,
   ProgramMemory,
   Position,
   PathToNode,
   Rotation,
   SourceRange,
 } from './lang/wasm'
-import { getNodeFromPath } from './lang/queryAst'
 import { enginelessExecutor } from './lib/testHelpers'
 import { EditorSelection } from '@codemirror/state'
 import { EngineCommandManager } from './lang/std/engineConnection'
 import { KCLError } from './lang/errors'
-import { engineCommandManager } from './lang/std/engineConnection'
 import { kclManager } from 'lang/KclSinglton'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
@@ -140,32 +137,6 @@ export interface StoreState {
   guiMode: GuiModes
   lastGuiMode: GuiModes
   setGuiMode: (guiMode: GuiModes) => void
-  logs: string[]
-  addLog: (log: string) => void
-  setLogs: (logs: string[]) => void
-  kclErrors: KCLError[]
-  addKCLError: (err: KCLError) => void
-  setErrors: (errors: KCLError[]) => void
-  resetKCLErrors: () => void
-  executeAst: (ast?: Program) => void
-  executeAstMock: (ast?: Program) => void
-  updateAst: (
-    ast: Program,
-    execute: boolean,
-    optionalParams?: {
-      focusPath?: PathToNode
-      callBack?: (ast: Program) => void
-    }
-  ) => void
-  updateAstAsync: (
-    ast: Program,
-    reexecute: boolean,
-    focusPath?: PathToNode
-  ) => void
-  executeCode: (code?: string, force?: boolean) => void
-  formatCode: () => void
-  programMemory: ProgramMemory
-  setProgramMemory: (programMemory: ProgramMemory) => void
   isShiftDown: boolean
   setIsShiftDown: (isShiftDown: boolean) => void
   mediaStream?: MediaStream
@@ -199,8 +170,6 @@ export interface StoreState {
   setHomeMenuItems: (items: { name: string; path: string }[]) => void
 }
 
-let pendingAstUpdates: number[] = []
-
 export const useStore = create<StoreState>()(
   persist(
     (set, get) => {
@@ -216,22 +185,6 @@ export const useStore = create<StoreState>()(
           if (editorView) {
             editorView.dispatch({ effects: addLineHighlight.of(selection) })
           }
-        },
-        executeCode: async (code, force) => {
-          const result = await executeCode({
-            code: code || '',
-            lastAst: kclManager.ast,
-            engineCommandManager: engineCommandManager,
-            force,
-          })
-          if (!result.isChange) {
-            return
-          }
-          set({
-            logs: result.logs,
-            kclErrors: result.errors,
-            programMemory: result.programMemory,
-          })
         },
         setCursor: (selections) => {
           const { editorView } = get()
@@ -290,116 +243,6 @@ export const useStore = create<StoreState>()(
         setGuiMode: (guiMode) => {
           set({ guiMode })
         },
-        logs: [],
-        addLog: (log) => {
-          if (Array.isArray(log)) {
-            const cleanLog: any = log.map(({ __geoMeta, ...rest }) => rest)
-            set((state) => ({ logs: [...state.logs, cleanLog] }))
-          } else {
-            set((state) => ({ logs: [...state.logs, log] }))
-          }
-        },
-        setLogs: (logs) => {
-          set({ logs })
-        },
-        kclErrors: [],
-        addKCLError: (e) => {
-          set((state) => ({ kclErrors: [...state.kclErrors, e] }))
-        },
-        resetKCLErrors: () => {
-          set({ kclErrors: [] })
-        },
-        setErrors: (errors) => {
-          set({ kclErrors: errors })
-        },
-        executeAst: async (ast) => {
-          const _ast = ast || kclManager.ast
-          if (!get().isStreamReady) return
-
-          const { logs, errors, programMemory } = await executeAst({
-            ast: _ast,
-            engineCommandManager,
-          })
-          set({
-            programMemory,
-            logs,
-            kclErrors: errors,
-          })
-        },
-        executeAstMock: async (ast) => {
-          const _ast = ast || kclManager.ast
-          if (!get().isStreamReady) return
-
-          const { logs, errors, programMemory } = await executeAst({
-            ast: _ast,
-            engineCommandManager,
-            useFakeExecutor: true,
-          })
-          set({
-            programMemory,
-            logs,
-            kclErrors: errors,
-          })
-        },
-        updateAst: async (
-          ast,
-          reexecute,
-          { focusPath, callBack = () => {} } = {}
-        ) => {
-          const newCode = recast(ast)
-          const astWithUpdatedSource = parse(newCode)
-          callBack(astWithUpdatedSource)
-
-          kclManager.setCode(newCode)
-          if (focusPath) {
-            const { node } = getNodeFromPath<any>(
-              astWithUpdatedSource,
-              focusPath
-            )
-            const { start, end } = node
-            if (!start || !end) return
-            setTimeout(() => {
-              get().setCursor({
-                codeBasedSelections: [
-                  {
-                    type: 'default',
-                    range: [start, end],
-                  },
-                ],
-                otherSelections: [],
-              })
-            })
-          }
-
-          if (reexecute) {
-            // Call execute on the set ast.
-            get().executeAst(astWithUpdatedSource)
-          } else {
-            // When we don't re-execute, we still want to update the program
-            // memory with the new ast. So we will hit the mock executor
-            // instead.
-            get().executeAstMock(astWithUpdatedSource)
-          }
-        },
-        updateAstAsync: async (ast, reexecute, focusPath) => {
-          // clear any pending updates
-          pendingAstUpdates.forEach((id) => clearTimeout(id))
-          pendingAstUpdates = []
-          // setup a new update
-          pendingAstUpdates.push(
-            setTimeout(() => {
-              get().updateAst(ast, reexecute, { focusPath })
-            }, 100) as unknown as number
-          )
-        },
-        formatCode: async () => {
-          const code = kclManager.code
-          const ast = parse(code)
-          const newCode = recast(ast)
-          kclManager.setCode(newCode)
-        },
-        programMemory: { root: {}, return: null },
-        setProgramMemory: (programMemory) => set({ programMemory }),
         isShiftDown: false,
         setIsShiftDown: (isShiftDown) => set({ isShiftDown }),
         setMediaStream: (mediaStream) => set({ mediaStream }),

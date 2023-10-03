@@ -36,14 +36,11 @@ export const SetAngleLength = ({
 }: {
   angleOrLength: ButtonType
 }) => {
-  const { guiMode, selectionRanges, programMemory, updateAst, setCursor } =
-    useStore((s) => ({
-      guiMode: s.guiMode,
-      updateAst: s.updateAst,
-      selectionRanges: s.selectionRanges,
-      programMemory: s.programMemory,
-      setCursor: s.setCursor,
-    }))
+  const { guiMode, selectionRanges, setCursor } = useStore((s) => ({
+    guiMode: s.guiMode,
+    selectionRanges: s.selectionRanges,
+    setCursor: s.setCursor,
+  }))
   const [enableAngLen, setEnableAngLen] = useState(false)
   const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
   useEffect(() => {
@@ -81,7 +78,7 @@ export const SetAngleLength = ({
           ast: JSON.parse(JSON.stringify(kclManager.ast)),
           selectionRanges,
           transformInfos,
-          programMemory,
+          programMemory: kclManager.programMemory,
           referenceSegName: '',
         })
         try {
@@ -133,7 +130,7 @@ export const SetAngleLength = ({
               ast: JSON.parse(JSON.stringify(kclManager.ast)),
               selectionRanges,
               transformInfos,
-              programMemory,
+              programMemory: kclManager.programMemory,
               referenceSegName: '',
               forceValueUsedInTransform: finalValue,
             })
@@ -147,7 +144,7 @@ export const SetAngleLength = ({
             _modifiedAst.body = newBody
           }
 
-          updateAst(_modifiedAst, true, {
+          kclManager.updateAst(_modifiedAst, true, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
         } catch (e) {

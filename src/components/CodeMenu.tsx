@@ -5,16 +5,13 @@ import {
   faEllipsis,
 } from '@fortawesome/free-solid-svg-icons'
 import { ActionIcon } from './ActionIcon'
-import { useStore } from 'useStore'
 import styles from './CodeMenu.module.css'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
 import { editorShortcutMeta } from './TextEditor'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { kclManager } from 'lang/KclSinglton'
 
 export const CodeMenu = ({ children }: PropsWithChildren) => {
-  const { formatCode } = useStore((s) => ({
-    formatCode: s.formatCode,
-  }))
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
     useConvertToVariable()
 
@@ -41,7 +38,10 @@ export const CodeMenu = ({ children }: PropsWithChildren) => {
         </Menu.Button>
         <Menu.Items className="absolute right-0 left-auto w-72 flex flex-col gap-1 divide-y divide-chalkboard-20 dark:divide-chalkboard-70 align-stretch px-0 py-1 bg-chalkboard-10 dark:bg-chalkboard-90 rounded-sm shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50">
           <Menu.Item>
-            <button onClick={() => formatCode()} className={styles.button}>
+            <button
+              onClick={() => kclManager.format()}
+              className={styles.button}
+            >
               <span>Format code</span>
               <small>{editorShortcutMeta.formatCode.display}</small>
             </button>

@@ -46,20 +46,10 @@ const sketchFnLabels: Record<ToolTip | 'sketch_line' | 'move', string> = {
 }
 
 export const Toolbar = () => {
-  const {
-    setGuiMode,
-    guiMode,
-    selectionRanges,
-    updateAst,
-    programMemory,
-    executeAst,
-  } = useStore((s) => ({
+  const { setGuiMode, guiMode, selectionRanges } = useStore((s) => ({
     guiMode: s.guiMode,
     setGuiMode: s.setGuiMode,
     selectionRanges: s.selectionRanges,
-    updateAst: s.updateAst,
-    programMemory: s.programMemory,
-    executeAst: s.executeAst,
   }))
   useAppMode()
   const { state, send } = useModelingContext()
@@ -146,9 +136,9 @@ export const Toolbar = () => {
               const { modifiedAst } = sketchOnExtrudedFace(
                 kclManager.ast,
                 pathToNode,
-                programMemory
+                kclManager.programMemory
               )
-              updateAst(modifiedAst, true)
+              kclManager.updateAst(modifiedAst, true)
             }}
             className="group"
           >
@@ -168,7 +158,10 @@ export const Toolbar = () => {
                   kclManager.ast,
                   pathToNode
                 )
-                updateAst(modifiedAst, true, { focusPath: pathToExtrudeArg })
+                // TODO not handling focusPath correctly I think
+                kclManager.updateAst(modifiedAst, true, {
+                  focusPath: pathToExtrudeArg,
+                })
               }}
               className="group"
             >
@@ -186,7 +179,10 @@ export const Toolbar = () => {
                   pathToNode,
                   false
                 )
-                updateAst(modifiedAst, true, { focusPath: pathToExtrudeArg })
+                // TODO not handling focusPath correctly I think
+                kclManager.updateAst(modifiedAst, true, {
+                  focusPath: pathToExtrudeArg,
+                })
               }}
               className="group"
             >
@@ -196,35 +192,6 @@ export const Toolbar = () => {
           </>
         )}
 
-        {guiMode.mode === 'sketch' && (
-          <button
-            onClick={() => {
-              engineCommandManager.sendSceneCommand({
-                type: 'modeling_cmd_req',
-                cmd_id: uuidv4(),
-                cmd: { type: 'edit_mode_exit' },
-              })
-              engineCommandManager.sendSceneCommand({
-                type: 'modeling_cmd_req',
-                cmd_id: uuidv4(),
-                cmd: { type: 'default_camera_disable_sketch_mode' },
-              })
-
-              setGuiMode({ mode: 'default' })
-              executeAst()
-            }}
-            className="group"
-          >
-            <ActionIcon
-              icon="exit"
-              className="!p-0.5"
-              bgClassName={sketchButtonClassnames.background}
-              iconClassName={sketchButtonClassnames.icon}
-              size="md"
-            />
-            Exit sketch
-          </button>
-        )}
         {toolTips
           .filter(
             // (sketchFnName) => !['angledLineThatIntersects'].includes(sketchFnName)

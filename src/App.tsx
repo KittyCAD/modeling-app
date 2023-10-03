@@ -46,7 +46,6 @@ export function App() {
     streamDimensions,
     guiMode,
     setGuiMode,
-    executeAst,
   } = useStore((s) => ({
     guiMode: s.guiMode,
     setGuiMode: s.setGuiMode,
@@ -55,7 +54,6 @@ export function App() {
     setOpenPanes: s.setOpenPanes,
     didDragInStream: s.didDragInStream,
     streamDimensions: s.streamDimensions,
-    executeAst: s.executeAst,
   }))
 
   const {
@@ -100,7 +98,7 @@ export function App() {
         // this is necessary to get the UI back into a consistent
         // state right now, hopefully won't need to rerender
         // when exiting sketch mode in the future
-        executeAst()
+        kclManager.executeAst()
       } else {
         engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
