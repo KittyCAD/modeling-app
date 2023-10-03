@@ -16295,6 +16295,1865 @@
     "deprecated": false
   },
   {
+    "name": "tangentalArc",
+    "summary": "Draw an arc.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "data",
+        "type": "TangentalArcData",
+        "schema": {
+          "description": "Data to draw a tangental arc.",
+          "anyOf": [
+            {
+              "type": "object",
+              "required": [
+                "offset",
+                "radius"
+              ],
+              "properties": {
+                "offset": {
+                  "description": "Offset of the arc, in degrees.",
+                  "type": "number",
+                  "format": "double"
+                },
+                "radius": {
+                  "description": "Radius of the arc. Not to be confused with Raiders of the Lost Ark.",
+                  "type": "number",
+                  "format": "double"
+                }
+              }
+            },
+            {
+              "description": "A point with a tag.",
+              "type": "object",
+              "required": [
+                "tag",
+                "to"
+              ],
+              "properties": {
+                "tag": {
+                  "description": "The tag.",
+                  "type": "string"
+                },
+                "to": {
+                  "description": "Where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.",
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "format": "double"
+                  },
+                  "maxItems": 2,
+                  "minItems": 2
+                }
+              }
+            },
+            {
+              "description": "A point where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.",
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxItems": 2,
+              "minItems": 2
+            }
+          ]
+        },
+        "required": true
+      },
+      {
+        "name": "sketch_group",
+        "type": "SketchGroup",
+        "schema": {
+          "description": "A sketch group is a collection of paths.",
+          "type": "object",
+          "required": [
+            "__meta",
+            "id",
+            "position",
+            "rotation",
+            "start",
+            "value"
+          ],
+          "properties": {
+            "__meta": {
+              "description": "Metadata.",
+              "type": "array",
+              "items": {
+                "description": "Metadata.",
+                "type": "object",
+                "required": [
+                  "sourceRange"
+                ],
+                "properties": {
+                  "sourceRange": {
+                    "description": "The source range.",
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "format": "uint",
+                      "minimum": 0.0
+                    },
+                    "maxItems": 2,
+                    "minItems": 2
+                  }
+                }
+              }
+            },
+            "id": {
+              "description": "The id of the sketch group.",
+              "type": "string",
+              "format": "uuid"
+            },
+            "position": {
+              "description": "The position of the sketch group.",
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "rotation": {
+              "description": "The rotation of the sketch group.",
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxItems": 4,
+              "minItems": 4
+            },
+            "start": {
+              "description": "The starting path.",
+              "type": "object",
+              "required": [
+                "__geoMeta",
+                "from",
+                "name",
+                "to"
+              ],
+              "properties": {
+                "__geoMeta": {
+                  "description": "Metadata.",
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "sourceRange"
+                  ],
+                  "properties": {
+                    "id": {
+                      "description": "The id of the geometry.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sourceRange": {
+                      "description": "The source range.",
+                      "type": "array",
+                      "items": {
+                        "type": "integer",
+                        "format": "uint",
+                        "minimum": 0.0
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    }
+                  }
+                },
+                "from": {
+                  "description": "The from point.",
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "format": "double"
+                  },
+                  "maxItems": 2,
+                  "minItems": 2
+                },
+                "name": {
+                  "description": "The name of the path.",
+                  "type": "string"
+                },
+                "to": {
+                  "description": "The to point.",
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "format": "double"
+                  },
+                  "maxItems": 2,
+                  "minItems": 2
+                }
+              }
+            },
+            "value": {
+              "description": "The paths in the sketch group.",
+              "type": "array",
+              "items": {
+                "description": "A path.",
+                "oneOf": [
+                  {
+                    "description": "A path that goes to a point.",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "toPoint"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "description": "A path that is horizontal.",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type",
+                      "x"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "horizontal"
+                        ]
+                      },
+                      "x": {
+                        "description": "The x coordinate.",
+                        "type": "number",
+                        "format": "double"
+                      }
+                    }
+                  },
+                  {
+                    "description": "An angled line to.",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "angledLineTo"
+                        ]
+                      },
+                      "x": {
+                        "description": "The x coordinate.",
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                      },
+                      "y": {
+                        "description": "The y coordinate.",
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                      }
+                    }
+                  },
+                  {
+                    "description": "A base path.",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "base"
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "SketchGroup",
+      "schema": {
+        "description": "A sketch group is a collection of paths.",
+        "type": "object",
+        "required": [
+          "__meta",
+          "id",
+          "position",
+          "rotation",
+          "start",
+          "value"
+        ],
+        "properties": {
+          "__meta": {
+            "description": "Metadata.",
+            "type": "array",
+            "items": {
+              "description": "Metadata.",
+              "type": "object",
+              "required": [
+                "sourceRange"
+              ],
+              "properties": {
+                "sourceRange": {
+                  "description": "The source range.",
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "format": "uint",
+                    "minimum": 0.0
+                  },
+                  "maxItems": 2,
+                  "minItems": 2
+                }
+              }
+            }
+          },
+          "id": {
+            "description": "The id of the sketch group.",
+            "type": "string",
+            "format": "uuid"
+          },
+          "position": {
+            "description": "The position of the sketch group.",
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "maxItems": 3,
+            "minItems": 3
+          },
+          "rotation": {
+            "description": "The rotation of the sketch group.",
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "maxItems": 4,
+            "minItems": 4
+          },
+          "start": {
+            "description": "The starting path.",
+            "type": "object",
+            "required": [
+              "__geoMeta",
+              "from",
+              "name",
+              "to"
+            ],
+            "properties": {
+              "__geoMeta": {
+                "description": "Metadata.",
+                "type": "object",
+                "required": [
+                  "id",
+                  "sourceRange"
+                ],
+                "properties": {
+                  "id": {
+                    "description": "The id of the geometry.",
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "sourceRange": {
+                    "description": "The source range.",
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "format": "uint",
+                      "minimum": 0.0
+                    },
+                    "maxItems": 2,
+                    "minItems": 2
+                  }
+                }
+              },
+              "from": {
+                "description": "The from point.",
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "maxItems": 2,
+                "minItems": 2
+              },
+              "name": {
+                "description": "The name of the path.",
+                "type": "string"
+              },
+              "to": {
+                "description": "The to point.",
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "maxItems": 2,
+                "minItems": 2
+              }
+            }
+          },
+          "value": {
+            "description": "The paths in the sketch group.",
+            "type": "array",
+            "items": {
+              "description": "A path.",
+              "oneOf": [
+                {
+                  "description": "A path that goes to a point.",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "toPoint"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "description": "A path that is horizontal.",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type",
+                    "x"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "horizontal"
+                      ]
+                    },
+                    "x": {
+                      "description": "The x coordinate.",
+                      "type": "number",
+                      "format": "double"
+                    }
+                  }
+                },
+                {
+                  "description": "An angled line to.",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "angledLineTo"
+                      ]
+                    },
+                    "x": {
+                      "description": "The x coordinate.",
+                      "type": "number",
+                      "format": "double",
+                      "nullable": true
+                    },
+                    "y": {
+                      "description": "The y coordinate.",
+                      "type": "number",
+                      "format": "double",
+                      "nullable": true
+                    }
+                  }
+                },
+                {
+                  "description": "A base path.",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "base"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
+    "name": "tangentalArcTo",
+    "summary": "Draw an arc.",
+    "description": "",
+    "tags": [],
+    "args": [
+      {
+        "name": "data",
+        "type": "TangentalArcToData",
+        "schema": {
+          "description": "Data to draw a tangental arc to a specific point.",
+          "anyOf": [
+            {
+              "description": "A point with a tag.",
+              "type": "object",
+              "required": [
+                "tag",
+                "to"
+              ],
+              "properties": {
+                "tag": {
+                  "description": "The tag.",
+                  "type": "string"
+                },
+                "to": {
+                  "description": "Where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.",
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "format": "double"
+                  },
+                  "maxItems": 2,
+                  "minItems": 2
+                }
+              }
+            },
+            {
+              "description": "A point where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.",
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxItems": 2,
+              "minItems": 2
+            }
+          ]
+        },
+        "required": true
+      },
+      {
+        "name": "sketch_group",
+        "type": "SketchGroup",
+        "schema": {
+          "description": "A sketch group is a collection of paths.",
+          "type": "object",
+          "required": [
+            "__meta",
+            "id",
+            "position",
+            "rotation",
+            "start",
+            "value"
+          ],
+          "properties": {
+            "__meta": {
+              "description": "Metadata.",
+              "type": "array",
+              "items": {
+                "description": "Metadata.",
+                "type": "object",
+                "required": [
+                  "sourceRange"
+                ],
+                "properties": {
+                  "sourceRange": {
+                    "description": "The source range.",
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "format": "uint",
+                      "minimum": 0.0
+                    },
+                    "maxItems": 2,
+                    "minItems": 2
+                  }
+                }
+              }
+            },
+            "id": {
+              "description": "The id of the sketch group.",
+              "type": "string",
+              "format": "uuid"
+            },
+            "position": {
+              "description": "The position of the sketch group.",
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxItems": 3,
+              "minItems": 3
+            },
+            "rotation": {
+              "description": "The rotation of the sketch group.",
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              },
+              "maxItems": 4,
+              "minItems": 4
+            },
+            "start": {
+              "description": "The starting path.",
+              "type": "object",
+              "required": [
+                "__geoMeta",
+                "from",
+                "name",
+                "to"
+              ],
+              "properties": {
+                "__geoMeta": {
+                  "description": "Metadata.",
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "sourceRange"
+                  ],
+                  "properties": {
+                    "id": {
+                      "description": "The id of the geometry.",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "sourceRange": {
+                      "description": "The source range.",
+                      "type": "array",
+                      "items": {
+                        "type": "integer",
+                        "format": "uint",
+                        "minimum": 0.0
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    }
+                  }
+                },
+                "from": {
+                  "description": "The from point.",
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "format": "double"
+                  },
+                  "maxItems": 2,
+                  "minItems": 2
+                },
+                "name": {
+                  "description": "The name of the path.",
+                  "type": "string"
+                },
+                "to": {
+                  "description": "The to point.",
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "format": "double"
+                  },
+                  "maxItems": 2,
+                  "minItems": 2
+                }
+              }
+            },
+            "value": {
+              "description": "The paths in the sketch group.",
+              "type": "array",
+              "items": {
+                "description": "A path.",
+                "oneOf": [
+                  {
+                    "description": "A path that goes to a point.",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "toPoint"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "description": "A path that is horizontal.",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type",
+                      "x"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "horizontal"
+                        ]
+                      },
+                      "x": {
+                        "description": "The x coordinate.",
+                        "type": "number",
+                        "format": "double"
+                      }
+                    }
+                  },
+                  {
+                    "description": "An angled line to.",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "angledLineTo"
+                        ]
+                      },
+                      "x": {
+                        "description": "The x coordinate.",
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                      },
+                      "y": {
+                        "description": "The y coordinate.",
+                        "type": "number",
+                        "format": "double",
+                        "nullable": true
+                      }
+                    }
+                  },
+                  {
+                    "description": "A base path.",
+                    "type": "object",
+                    "required": [
+                      "__geoMeta",
+                      "from",
+                      "name",
+                      "to",
+                      "type"
+                    ],
+                    "properties": {
+                      "__geoMeta": {
+                        "description": "Metadata.",
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "sourceRange"
+                        ],
+                        "properties": {
+                          "id": {
+                            "description": "The id of the geometry.",
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "sourceRange": {
+                            "description": "The source range.",
+                            "type": "array",
+                            "items": {
+                              "type": "integer",
+                              "format": "uint",
+                              "minimum": 0.0
+                            },
+                            "maxItems": 2,
+                            "minItems": 2
+                          }
+                        }
+                      },
+                      "from": {
+                        "description": "The from point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "name": {
+                        "description": "The name of the path.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "The to point.",
+                        "type": "array",
+                        "items": {
+                          "type": "number",
+                          "format": "double"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "base"
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "required": true
+      }
+    ],
+    "returnValue": {
+      "name": "",
+      "type": "SketchGroup",
+      "schema": {
+        "description": "A sketch group is a collection of paths.",
+        "type": "object",
+        "required": [
+          "__meta",
+          "id",
+          "position",
+          "rotation",
+          "start",
+          "value"
+        ],
+        "properties": {
+          "__meta": {
+            "description": "Metadata.",
+            "type": "array",
+            "items": {
+              "description": "Metadata.",
+              "type": "object",
+              "required": [
+                "sourceRange"
+              ],
+              "properties": {
+                "sourceRange": {
+                  "description": "The source range.",
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "format": "uint",
+                    "minimum": 0.0
+                  },
+                  "maxItems": 2,
+                  "minItems": 2
+                }
+              }
+            }
+          },
+          "id": {
+            "description": "The id of the sketch group.",
+            "type": "string",
+            "format": "uuid"
+          },
+          "position": {
+            "description": "The position of the sketch group.",
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "maxItems": 3,
+            "minItems": 3
+          },
+          "rotation": {
+            "description": "The rotation of the sketch group.",
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "maxItems": 4,
+            "minItems": 4
+          },
+          "start": {
+            "description": "The starting path.",
+            "type": "object",
+            "required": [
+              "__geoMeta",
+              "from",
+              "name",
+              "to"
+            ],
+            "properties": {
+              "__geoMeta": {
+                "description": "Metadata.",
+                "type": "object",
+                "required": [
+                  "id",
+                  "sourceRange"
+                ],
+                "properties": {
+                  "id": {
+                    "description": "The id of the geometry.",
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "sourceRange": {
+                    "description": "The source range.",
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "format": "uint",
+                      "minimum": 0.0
+                    },
+                    "maxItems": 2,
+                    "minItems": 2
+                  }
+                }
+              },
+              "from": {
+                "description": "The from point.",
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "maxItems": 2,
+                "minItems": 2
+              },
+              "name": {
+                "description": "The name of the path.",
+                "type": "string"
+              },
+              "to": {
+                "description": "The to point.",
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "maxItems": 2,
+                "minItems": 2
+              }
+            }
+          },
+          "value": {
+            "description": "The paths in the sketch group.",
+            "type": "array",
+            "items": {
+              "description": "A path.",
+              "oneOf": [
+                {
+                  "description": "A path that goes to a point.",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "toPoint"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "description": "A path that is horizontal.",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type",
+                    "x"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "horizontal"
+                      ]
+                    },
+                    "x": {
+                      "description": "The x coordinate.",
+                      "type": "number",
+                      "format": "double"
+                    }
+                  }
+                },
+                {
+                  "description": "An angled line to.",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "angledLineTo"
+                      ]
+                    },
+                    "x": {
+                      "description": "The x coordinate.",
+                      "type": "number",
+                      "format": "double",
+                      "nullable": true
+                    },
+                    "y": {
+                      "description": "The y coordinate.",
+                      "type": "number",
+                      "format": "double",
+                      "nullable": true
+                    }
+                  }
+                },
+                {
+                  "description": "A base path.",
+                  "type": "object",
+                  "required": [
+                    "__geoMeta",
+                    "from",
+                    "name",
+                    "to",
+                    "type"
+                  ],
+                  "properties": {
+                    "__geoMeta": {
+                      "description": "Metadata.",
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "sourceRange"
+                      ],
+                      "properties": {
+                        "id": {
+                          "description": "The id of the geometry.",
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "sourceRange": {
+                          "description": "The source range.",
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "uint",
+                            "minimum": 0.0
+                          },
+                          "maxItems": 2,
+                          "minItems": 2
+                        }
+                      }
+                    },
+                    "from": {
+                      "description": "The from point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "name": {
+                      "description": "The name of the path.",
+                      "type": "string"
+                    },
+                    "to": {
+                      "description": "The to point.",
+                      "type": "array",
+                      "items": {
+                        "type": "number",
+                        "format": "double"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "base"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "required": true
+    },
+    "unpublished": false,
+    "deprecated": false
+  },
+  {
     "name": "tau",
     "summary": "Return the value of `tau`. The full circle constant (τ). Equal to 2π.",
     "description": "",

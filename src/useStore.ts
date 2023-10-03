@@ -1,23 +1,23 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { addLineHighlight, EditorView } from './editor/highlightextension'
-import { parser_wasm } from './lang/abstractSyntaxTree'
-import { Program } from './lang/abstractSyntaxTreeTypes'
-import { getNodeFromPath } from './lang/queryAst'
-import { enginelessExecutor } from './lib/testHelpers'
 import {
+  parse,
+  Program,
+  _executor,
+  recast,
   ProgramMemory,
   Position,
   PathToNode,
   Rotation,
   SourceRange,
-} from './lang/executor'
-import { recast } from './lang/recast'
+} from './lang/wasm'
+import { getNodeFromPath } from './lang/queryAst'
+import { enginelessExecutor } from './lib/testHelpers'
 import { EditorSelection } from '@codemirror/state'
 import { EngineCommandManager } from './lang/std/engineConnection'
 import { KCLError } from './lang/errors'
 import { deferExecution } from 'lib/utils'
-import { _executor } from './lang/executor'
 import { bracket } from 'lib/exampleKcl'
 import { engineCommandManager } from './lang/std/engineConnection'
 
@@ -157,7 +157,7 @@ export interface StoreState {
   code: string
   setCode: (code: string) => void
   deferredSetCode: (code: string) => void
-  executeCode: (code?: string) => void
+  executeCode: (code?: string, force?: boolean) => void
   formatCode: () => void
   programMemory: ProgramMemory
   setProgramMemory: (programMemory: ProgramMemory) => void
@@ -221,11 +221,12 @@ export const useStore = create<StoreState>()(
             editorView.dispatch({ effects: addLineHighlight.of(selection) })
           }
         },
-        executeCode: async (code) => {
+        executeCode: async (code, force) => {
           const result = await executeCode({
             code: code || get().code,
             lastAst: get().ast,
             engineCommandManager: engineCommandManager,
+            force,
           })
           if (!result.isChange) {
             return
@@ -366,7 +367,7 @@ export const useStore = create<StoreState>()(
           { focusPath, callBack = () => {} } = {}
         ) => {
           const newCode = recast(ast)
-          const astWithUpdatedSource = parser_wasm(newCode)
+          const astWithUpdatedSource = parse(newCode)
           callBack(astWithUpdatedSource)
 
           set({
@@ -422,7 +423,7 @@ export const useStore = create<StoreState>()(
         },
         formatCode: async () => {
           const code = get().code
-          const ast = parser_wasm(code)
+          const ast = parse(code)
           const newCode = recast(ast)
           set({ code: newCode, ast })
         },
@@ -511,10 +512,12 @@ async function executeCode({
   engineCommandManager,
   code,
   lastAst,
+  force,
 }: {
   code: string
   lastAst: Program
   engineCommandManager: EngineCommandManager
+  force?: boolean
 }): Promise<
   | {
       logs: string[]
@@ -527,7 +530,7 @@ async function executeCode({
 > {
   let ast: Program
   try {
-    ast = parser_wasm(code)
+    ast = parse(code)
   } catch (e) {
     let errors: KCLError[] = []
     let logs: string[] = [JSON.stringify(e)]
@@ -557,7 +560,7 @@ async function executeCode({
   }
   // Check if the ast we have is equal to the ast in the storage.
   // If it is, we don't need to update the ast.
-  if (JSON.stringify(ast) === JSON.stringify(lastAst))
+  if (JSON.stringify(ast) === JSON.stringify(lastAst) && !force)
     return { isChange: false }
 
   const { logs, errors, programMemory } = await executeAst({

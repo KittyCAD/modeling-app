@@ -1,11 +1,7 @@
 import { useState, useEffect } from 'react'
 import { create } from 'react-modal-promise'
 import { toolTips, useStore } from '../../useStore'
-import {
-  BinaryPart,
-  Value,
-  VariableDeclarator,
-} from '../../lang/abstractSyntaxTreeTypes'
+import { BinaryPart, Value, VariableDeclarator } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -21,8 +17,6 @@ import { GetInfoModal } from '../SetHorVertDistanceModal'
 import { createLiteral, createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { updateCursors } from '../../lang/util'
-import { ActionIcon } from 'components/ActionIcon'
-import { sketchButtonClassnames } from 'Toolbar'
 
 const getModalInfo = create(GetInfoModal as any)
 

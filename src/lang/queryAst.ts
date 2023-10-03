@@ -1,4 +1,3 @@
-import { PathToNode, ProgramMemory, SketchGroup, SourceRange } from './executor'
 import { Selection, ToolTip } from '../useStore'
 import {
   BinaryExpression,
@@ -10,7 +9,11 @@ import {
   VariableDeclaration,
   ReturnStatement,
   ArrayExpression,
-} from './abstractSyntaxTreeTypes'
+  PathToNode,
+  ProgramMemory,
+  SketchGroup,
+  SourceRange,
+} from './wasm'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
 import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
 import { getAngle } from '../lib/utils'

@@ -1,11 +1,7 @@
 import { useState, useEffect } from 'react'
 import { create } from 'react-modal-promise'
 import { toolTips, useStore } from '../../useStore'
-import {
-  BinaryPart,
-  Value,
-  VariableDeclarator,
-} from '../../lang/abstractSyntaxTreeTypes'
+import { BinaryPart, Value, VariableDeclarator } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,

@@ -1,5 +1,4 @@
-import { lexer, asyncLexer } from './tokeniser'
-import { initPromise } from './rust'
+import { lexer, initPromise } from './wasm'
 
 beforeAll(() => initPromise)
 
@@ -10,9 +9,9 @@ describe('testing lexer', () => {
     const code3 = `const yo = 45 /* this is a comment
 const ya = 6 */
 const yi=45`
-    expect(await asyncLexer(code)).toEqual(lexer(code))
-    expect(await asyncLexer(code2)).toEqual(lexer(code2))
-    expect(await asyncLexer(code3)).toEqual(lexer(code3))
+    expect(lexer(code)).toEqual(lexer(code))
+    expect(lexer(code2)).toEqual(lexer(code2))
+    expect(lexer(code3)).toEqual(lexer(code3))
   })
   it('test lexer', () => {
     expect(stringSummaryLexer('1  + 2')).toEqual([

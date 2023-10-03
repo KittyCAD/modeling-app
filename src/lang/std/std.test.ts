@@ -1,6 +1,5 @@
-import { parser_wasm } from '../abstractSyntaxTree'
+import { parse, initPromise } from '../wasm'
 import { enginelessExecutor } from '../../lib/testHelpers'
-import { initPromise } from '../rust'
 
 beforeAll(() => initPromise)
 
@@ -17,9 +16,9 @@ describe('testing angledLineThatIntersects', () => {
 }, %)
 const intersect = segEndX('yo2', part001)
 show(part001)`
-    const { root } = await enginelessExecutor(parser_wasm(code('-1')))
+    const { root } = await enginelessExecutor(parse(code('-1')))
     expect(root.intersect.value).toBe(1 + Math.sqrt(2))
-    const { root: noOffset } = await enginelessExecutor(parser_wasm(code('0')))
+    const { root: noOffset } = await enginelessExecutor(parse(code('0')))
     expect(noOffset.intersect.value).toBeCloseTo(1)
   })
 })
