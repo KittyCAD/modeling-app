@@ -126,6 +126,30 @@ export const Toolbar = () => {
             Move
           </button>
         )}
+        {state.matches('Sketch.SketchIdle') &&
+          state.nextEvents
+            .filter((eventName) => eventName.includes('Make segment'))
+            .map((eventName) => (
+              <button
+                key={eventName}
+                onClick={() => send(eventName)}
+                className="group"
+                disabled={
+                  !state.nextEvents
+                    .filter((event) => state.can(event as any))
+                    .includes(eventName)
+                }
+                title={eventName}
+              >
+                <ActionIcon
+                  icon={'line'} // TODO
+                  bgClassName={sketchButtonClassnames.background}
+                  iconClassName={sketchButtonClassnames.icon}
+                  size="md"
+                />
+                {eventName.replace('Make segment ', '')}
+              </button>
+            ))}
         {guiMode.mode === 'canEditExtrude' && (
           <button
             onClick={() => {

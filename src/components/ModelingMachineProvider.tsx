@@ -64,8 +64,6 @@ export const ModelingMachineProvider = ({
     // context: persistedSettings,
     actions: {
       'Modify AST': () => {},
-      'Make selection horizontal': () => {},
-      'Make selection vertical': () => {},
       'Update code selection cursors': () => {},
       'show default planes': () => {
         modelingState.context.defaultPlanes?.showPlanes()
@@ -167,8 +165,6 @@ export const ModelingMachineProvider = ({
       'set tool': () => {}, // TODO
     },
     guards: {
-      'Can make selection horizontal': () => true,
-      'Can make selection vertical': () => true,
       'Selection contains axis': () => true,
       'Selection contains edge': () => true,
       'Selection contains face': () => true,

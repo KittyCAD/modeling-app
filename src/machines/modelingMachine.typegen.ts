@@ -17,9 +17,9 @@
 "createFillet": "done.invoke.Create fillet";
         };
         missingImplementations: {
-          actions: "AST add line segment" | "AST start new sketch" | "Make selection horizontal" | "Make selection vertical" | "Modify AST" | "Update code selection cursors" | "create path" | "set tool" | "show default planes" | "sketch exit execute";
+          actions: "AST add line segment" | "AST start new sketch" | "Modify AST" | "Update code selection cursors" | "create path" | "set tool" | "show default planes" | "sketch exit execute";
           delays: never;
-          guards: "Can make selection horizontal" | "Can make selection vertical" | "Selection contains axis" | "Selection contains edge" | "Selection contains face" | "Selection contains line" | "Selection contains point" | "Selection is empty" | "Selection is not empty" | "Selection is one face" | "Selection is one or more edges";
+          guards: "Selection contains axis" | "Selection contains edge" | "Selection contains face" | "Selection contains line" | "Selection contains point" | "Selection is empty" | "Selection is not empty" | "Selection is one face" | "Selection is one or more edges";
           services: "createExtrude" | "createFillet";
         };
         eventsCausingActions: {
@@ -39,8 +39,8 @@
 "default_camera_disable_sketch_mode": "Cancel";
 "edit mode enter": "Enter sketch";
 "edit_mode_exit": "Cancel";
-"equip select": "CancelSketch" | "Deselect point" | "Deselect segment" | "Enter sketch" | "Make segment horizontal" | "Make segment vertical" | "Select face" | "Select point" | "Select segment";
-"hide default planes": "Select face";
+"equip select": "CancelSketch" | "Deselect point" | "Deselect segment" | "Enter sketch" | "Make segment horizontal" | "Make segment vertical" | "Select face" | "Select point" | "Select segment" | "Set selection";
+"hide default planes": "Cancel" | "Select face" | "xstate.stop";
 "reset sketchPathToNode": "Cancel" | "Select face";
 "set sketchPathToNode": "Enter sketch";
 "set tool": "Equip new tool";
