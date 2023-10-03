@@ -41,8 +41,6 @@ jobs:
 
   build-test-web:
     runs-on: ubuntu-20.04
-    outputs:
-      version: ${{ steps.export_version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
 
@@ -65,9 +63,17 @@ jobs:
 
       - run: yarn test:cov
 
+  prepare-json-files:
+    runs-on: ubuntu-20.04  # seperate job on Ubuntu for easy string manipulations (compared to Windows)
+    outputs:
+      version: ${{ steps.export_version.outputs.version }}
+    steps:
       - name: Set nightly version
         # if: github.event_name == 'schedule'
-        run: VERSION=$(date +'%-y.%-m.%-d') yarn bump-jsons
+        run: |
+          VERSION=$(date +'%-y.%-m.%-d') yarn bump-jsons
+          echo "$(jq --arg url 'https://dl.kittycad.io/releases/modeling-app/test/nightly/last_update.json' \
+            '.tauri.updater.endpoints[]=$url' src-tauri/tauri.conf.json --indent 2)" > src-tauri/tauri.conf.json
 
       - uses: actions/upload-artifact@v3
         # if: github.event_name == 'schedule'
@@ -80,7 +86,7 @@ jobs:
         run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
 
   build-apps:
-    needs: [check-format, build-test-web, check-types]
+    needs: [check-format, build-test-web, prepare-json-files, check-types]
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -185,9 +191,9 @@ jobs:
   publish-apps-release:
     runs-on: ubuntu-20.04
     if: github.event_name == 'release'
-    needs: [build-test-web, build-apps]
+    needs: [build-test-web, prepare-json-files, build-apps]
     env:
-      VERSION_NO_V: ${{ needs.build-test-web.outputs.version }}
+      VERSION_NO_V: ${{ needs.prepare-json-files.outputs.version }}
       PUB_DATE: ${{ github.event.release.created_at }}
       NOTES: ${{ github.event.release.body }}
     steps:
@@ -301,9 +307,9 @@ jobs:
   publish-apps-nightly:
     runs-on: ubuntu-20.04
     # if: github.event_name == 'schedule'
-    needs: [build-test-web, build-apps]
+    needs: [build-test-web, prepare-json-files, build-apps]
     env:
-      VERSION_NO_V: ${{ needs.build-test-web.outputs.version }}
+      VERSION_NO_V: ${{ needs.prepare-json-files.outputs.version }}
       PUB_DATE: ${{ github.event.repository.updated_at }}
       NOTES: Nightly build
     steps:
