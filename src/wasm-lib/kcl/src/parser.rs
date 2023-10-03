@@ -1283,7 +1283,11 @@ impl Parser {
         let end_token = self.get_token(pipe_body_result.last_index)?;
         Ok(PipeExpressionResult {
             expression: PipeExpression {
-                start: current_token.start,
+                start: pipe_body_result
+                    .body
+                    .first()
+                    .map(|v| v.start())
+                    .unwrap_or(current_token.start),
                 end: end_token.end,
                 body: pipe_body_result.body,
                 non_code_meta: pipe_body_result.non_code_meta,

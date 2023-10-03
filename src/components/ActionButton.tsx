@@ -23,10 +23,7 @@ type ActionButtonAsLink = BaseActionButtonProps &
   }
 
 type ActionButtonAsExternal = BaseActionButtonProps &
-  Omit<
-    React.AnchorHTMLAttributes<HTMLAnchorElement>,
-    keyof BaseActionButtonProps
-  > & {
+  Omit<LinkProps, keyof BaseActionButtonProps> & {
     Element: 'externalLink'
   }
 
@@ -69,12 +66,17 @@ export const ActionButton = (props: ActionButtonProps) => {
       )
     }
     case 'externalLink': {
-      const { Element, icon, children, className, ...rest } = props
+      const { Element, to, icon, children, className, ...rest } = props
       return (
-        <a className={classNames} {...rest}>
+        <Link
+          to={to || paths.INDEX}
+          className={classNames}
+          {...rest}
+          target="_blank"
+        >
           {icon && <ActionIcon {...icon} />}
           {children}
-        </a>
+        </Link>
       )
     }
     default: {
