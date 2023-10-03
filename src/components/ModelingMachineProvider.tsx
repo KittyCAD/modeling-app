@@ -40,11 +40,8 @@ export const ModelingMachineProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const {
-    auth: {
-      context: { token },
-    },
-  } = useGlobalStateContext()
+  const { auth } = useGlobalStateContext()
+  const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)
   useSetupEngineManager(streamRef, token)
 

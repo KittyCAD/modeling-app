@@ -70,15 +70,11 @@ export const TextEditor = ({
   }))
   const { code, errors } = useKclContext()
 
-  const {
-    context: { selectionRanges: machineSelectionRanges },
-    send,
-  } = useModelingContext()
+  const { context: { selectionRanges: machineSelectionRanges } = {}, send } =
+    useModelingContext()
 
   const {
-    settings: {
-      context: { textWrapping },
-    },
+    settings: { context: { textWrapping } = {} },
   } = useGlobalStateContext()
   const { setCommandBarOpen } = useCommandsContext()
   const { enable: convertEnabled, handleClick: convertCallback } =
@@ -197,13 +193,14 @@ export const TextEditor = ({
       codeBasedSelections,
     })
 
-    send({
-      type: 'Set selection',
-      data: {
-        ...machineSelectionRanges,
-        codeBasedSelections,
-      },
-    })
+    machineSelectionRanges &&
+      send({
+        type: 'Set selection',
+        data: {
+          ...machineSelectionRanges,
+          codeBasedSelections,
+        },
+      })
   }
 
   const editorExtensions = useMemo(() => {

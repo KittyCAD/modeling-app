@@ -56,11 +56,9 @@ export function App() {
     streamDimensions: s.streamDimensions,
   }))
 
-  const {
-    settings: {
-      context: { showDebugPanel, onboardingStatus, cameraControls, theme },
-    },
-  } = useGlobalStateContext()
+  const { settings } = useGlobalStateContext()
+  const { showDebugPanel, onboardingStatus, cameraControls, theme } =
+    settings?.context || {}
   const { state } = useModelingContext()
 
   const editorTheme = theme === Themes.System ? getSystemTheme() : theme
