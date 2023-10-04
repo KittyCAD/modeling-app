@@ -316,7 +316,6 @@ export const Stream = ({ className = '' }) => {
         // Do not support starting a new sketch on a non-default plane.
         if (!currentAxis) return
 
-
         // We need the normal for the plane we are on.
         const plane = await engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
@@ -326,7 +325,6 @@ export const Stream = ({ className = '' }) => {
           },
         })
         console.log('plane', plane)
-
 
         const _addStartSketch = addStartSketch(
           ast,

@@ -1431,5 +1431,13 @@ mod tests {
         str_json = "\"YZ\"".to_string();
         let data: PlaneData = serde_json::from_str(&str_json).unwrap();
         assert_eq!(data, PlaneData::YZ);
+
+        str_json = "\"-YZ\"".to_string();
+        let data: PlaneData = serde_json::from_str(&str_json).unwrap();
+        assert_eq!(data, PlaneData::NegYZ);
+
+        str_json = "\"-xz\"".to_string();
+        let data: PlaneData = serde_json::from_str(&str_json).unwrap();
+        assert_eq!(data, PlaneData::NegXZ);
     }
 }

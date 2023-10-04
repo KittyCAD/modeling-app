@@ -357,6 +357,7 @@ fn box = (sk1, sk2, scale, plane) => {
 
 box(0, 0, 5, 'XY')
 box(10, 23, 8, 'XZ')
+box(30, 43, 18, '-XY')
 let thing = box(-12, -15, 10, 'YZ')
 box(-20, -5, 10, 'XY')"#;
 
