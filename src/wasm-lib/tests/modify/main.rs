@@ -75,6 +75,7 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
                 animated: false,
                 ortho: true,
                 plane_id,
+                disable_camera_with_plane: Some(Point3D { x: 0.0, y: 0.0, z: 1.0 }),
             },
         )
         .await?;

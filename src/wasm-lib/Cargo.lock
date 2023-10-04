@@ -1404,7 +1404,7 @@ dependencies = [
  "futures",
  "itertools 0.11.0",
  "js-sys",
- "kittycad 0.2.29",
+ "kittycad",
  "lazy_static",
  "parse-display",
  "pretty_assertions",
@@ -1426,9 +1426,8 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.2.28"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "35b2f9302648dbb06fd7121687f9505fc3179eba84111a06d76b246e3158f5dc"
+version = "0.2.29"
+source = "git+https://github.com/kittycad/kittycad.rs?branch=planes-stuff#0cc3f5970066c6d97573cfe4358f7623c0518018"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1457,29 +1456,6 @@ dependencies = [
  "serde_urlencoded",
  "thiserror",
  "tracing",
- "url",
- "uuid",
-]
-
-[[package]]
-name = "kittycad"
-version = "0.2.29"
-source = "git+https://github.com/kittycad/kittycad.rs?branch=planes-stuff#0cc3f5970066c6d97573cfe4358f7623c0518018"
-dependencies = [
- "anyhow",
- "base64 0.21.4",
- "bigdecimal",
- "bytes",
- "chrono",
- "data-encoding",
- "itertools 0.10.5",
- "parse-display",
- "phonenumber",
- "schemars",
- "serde",
- "serde_bytes",
- "serde_json",
- "thiserror",
  "url",
  "uuid",
 ]
@@ -3615,7 +3591,7 @@ dependencies = [
  "image",
  "js-sys",
  "kcl-lib",
- "kittycad 0.2.28",
+ "kittycad",
  "pretty_assertions",
  "reqwest",
  "serde_json",
