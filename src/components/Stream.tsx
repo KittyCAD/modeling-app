@@ -324,7 +324,7 @@ export const Stream = ({ className = '' }) => {
           }
         } else if (currentPlane === defaultPlanes?.yz) {
           if (z_axis.x === -1) {
-            currentAxis = '-yx'
+            currentAxis = '-yz'
           } else {
             currentAxis = 'yz'
           }
