@@ -330,7 +330,7 @@ jobs:
           WINDOWS_SIG=`cat artifact/msi/*.msi.zip.sig`
           RELEASE_DIR=https://dl.kittycad.io/releases/modeling-app/test/nightly/${VERSION_NO_V}
           jq --null-input \
-            --arg version "v${VERSION_NO_V}" \
+            --arg version "${VERSION_NO_V}" \
             --arg pub_date "${PUB_DATE}" \
             --arg notes "${NOTES}" \
             --arg darwin_sig "$DARWIN_SIG" \
@@ -368,7 +368,7 @@ jobs:
         run: |
           RELEASE_DIR=https://dl.kittycad.io/releases/modeling-app/test/nightly/${VERSION_NO_V}
           jq --null-input \
-            --arg version "v${VERSION_NO_V}" \
+            --arg version "${VERSION_NO_V}" \
             --arg pub_date "${PUB_DATE}" \
             --arg notes "${NOTES}" \
             --arg darwin_url "$RELEASE_DIR/dmg/KittyCAD%20Modeling_${VERSION_NO_V}_universal.dmg" \
