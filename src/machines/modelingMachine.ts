@@ -14,6 +14,7 @@ import {
   applyConstraintHorzVert,
 } from 'components/Toolbar/HorzVert'
 import { horzVertDistanceInfo } from 'components/Toolbar/SetHorzVertDistance'
+import { angleBetweenInfo } from 'components/Toolbar/SetAngleBetween'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -21,7 +22,7 @@ const constraintActions: ConstraintType[] = ['vertical', 'horizontal']
 
 export const modelingMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogAsAJgA0IAJ6IAjAGYaAVgB0gwQE5Zm2dOkAOYQtkBfI+LQYc+JdgiYwBAMph2AAlhYw5Tt1oMkIFjZvHn8BBEEFXSUabQMANlk1AHZBRKTxKQRpYTjpJTikyI043TVpAsETM3QsPChrW3sAETgPLxcWPHZfXkCOLhDQMNk45QUaJN0J1QUFQSmFDJk5KJy1OLjUueFhNWEqkHNaqxs7Ahb3O3bIGB7-PuDeYY3oybkkmkFRwSTkpayaNJBEpdAktoC9mV9qZDjVLPVTs1WldXCQ+NhYHdmKx+twnohZElhEpCjQyXthElRiM4v9SnkIkTFCUtsYYUd4Q0zk4UR1UF0sQEcY9QkIaFF5qlSqC5skaLTJIgqVFFDRkmC1IIgboDhy6lz7DzPK4bmBBQ8BvjwuKVLopWoZep0oqEJtgW7dNIJnI5lrdXD9YjHG1UejMfResLLaLwrJiXE1YkDBD5Wp-nMotIynE1AphECFCU2dULIHGsHeQAzEiUc1RvExwQ2yWySKAhTrOPOzIiYGTWYaSlJKl5-2lk7lgCiuHYYAATm4ANbOcgACzrQWjQ0QBVkrxird0k0pukWLuEcfySU04tmOhSlLHxwRU5n86XK-X0j82M3De3rrXvumiRMe-b-NkEQkh2wgRJ6F7jHET6ckGk4AI4AK7YEwLhgHw7BzhhGAbrigz8DuQETAeoH6OBLpfEkShers8r6JqKQ6uyAYTmc6FYTheEEURZrfpGf5kWEu7AYeYGnum0iMQm8iKKkNAXhoyFlmcFwhi41a1hG9z1hJBIfPkca0YkoFfP88h5ISxSJCI+g5ppPGGrpJCYJgJEigBWp7jsoyTCIZKzGemTCJ8Sh7HEsF2lKCjMW5L7acixouF5PmGb+pFWrInoqJsugOWpOgKpkhV5mSMR6FqXwxClBoEHx2F6dg3nOL5W7kYBe5USBR60XJLoLExMQ1U2nxqU1qGYW1lYdXY3SiUZ4lWlJA0ycNEWIKeygJrsSTlBN2iVFx471A4y7sGuxBkJQmDXZ+3X-r1BjaDFuilK24pqMkhgQRMxLlJEozCFM9JJE1z23auSiw2uACS5ZGu0nQzq9JkILsmwkrsBUOjV0gKN2SovHaebXiksgiLMMM3WuCOM6uKPcrp7hQAAtmAmM5UK60xrjfYE9KxMVTul6FFsR5yHsPwM5+zOfmzSKXBlGPdPzFpvWEuz5tBENJrjgLptFCzaAmJSTMWsKXcrcMO8j5Y6bynM83zP4C3lQtlP1dqgtkWa47ZRJKIkJOQ+o+ifEhF3Pk78OI6z5bICQy5uGA3O864ABu86cOQXlY1aENTDFap6DS+h2hLWRHSohigokMT6OoiuO8nqsEGnGfuznLirqgc7YAAXtw7DF9rxml6CwKaOoWpqh8BiCBBWYHf9cw1VF6zQ-HnLJ4n3etTh7CoKg2Vezr2NagYIJgjmcVUiT-yqCqGgpJsOhfAYHdM13Kc80cJc1QPnFw59L4l0bECRiExjrS2HLKdeXoVA21yKedQewFD-yTizbuThXDqy8AMaBAE7J7hGDsU8CYyT6H+NmJiCZjo-CSuKHQuDj7liINwWABESB4EHsPMeE8vIuAgBiSeFAzTT0FgBI2UQHRElpqedYhY14uiBOsaI8gmxxiirMHYnDAFnB4bgPhc4BG4BcPnOchcxESL4Q9GR18Z5C32koQsJMtTZH+rRCCiRMxsSUheAq0ISwJyPgAGTwGAFwAAVC+mAWrAJcKA8BkCr5iR9v5CI88LIxDinsL0u0EAaDUExQklJl7v0KJwmJuA4mJMvkoAACvyGcLgACCEAMAQAID0iAfIBSyJyb1cYDoSSghjnaHQYgXQfD3OUZIqgqRKUUPU2JCSkkIyzh7VwgzIADN6cMz22S-LjIbpMEo8p4Gk1KXFZQWY4yJmHLkIEmzGnbJaU4bOnTDn9J4VzJgy04mWBcecnqYRZQVMSN-H42Qwr-BKBUnM2ghrzE+HsT5TSdm-P2d03pRzT4uEaQAdwgUksh4zLZKByCorB2D5mZDzFEFI5ICrXNbDgg++polbOaZgJQSNcAcAINSsIMwGSlEMJqOKrZ0x2nyDmamz8nT7wiYfFmSgGm4paSKsVVBVq5QuZKiI0rcxOXlaUokUQ4XaDkICQof9eVWH5V8wVSgAByqAXDtK6LAY5QzNYSqEPoYk2gyQkzJMOb6-wiRxCYl8S2ZRQojE4QACWEePGcDjJHOLSegLyBAIDcDANYXAudUDLiUDAdgABaIeI8c2T0wPWvAlZUChoQAVeY+RSYUhSIYTYEFDDEimETNiIg6muqutqrNzbRGYHEfm6RhaIDFvnHOYeSgQUkHYJ2ucXNa3OEbdmpd7bcCdu7b22FBhZblGvNoCC8xlBqVGGqXMsERg8s1Xy7VAA1Au2Ai7LscVIyg67i2lsaRWqtNa631tsfYttHau2jNNQSDxCZ5j0p0BoWQL6FIkh-fmblLdbZ6jdYB4DoGV1OLXaAjdySt07r3Qe4ex7EPIZA15S916MNQqw7MfInwXIOoIwEsyF5wZAhGArWdShJz4UIhgEtZa4PVvLUQOcYB91xMEqpiFa0xmSUoos7aJ5SlyC1HSmCUrcx7E4n+qwymhJqZJYZ4S3avRAXGGSSk2YIY2RdB+kEhgVLXnlPmX9dsE5uaMyk-iuEVPeeNd7TDAI-M71+OUYLdcIvjWUnMeQ6lKPcXqAl4SwrUa6X0sZk1QmsjqGUBDbIoIDAKViOmeQ41dhamvPePQTUqsYF2SiAYLgABKemIASGDK4cDzifOehoHS0o4ofggWvBollhJw55mKBoco0hcGkt9fVisGV6vdpi2y9Yag1LrCmDG9euYQS7AHDXGLTUABiS1nDqdg3geD2ndP6fap1LWri5G9U2hZmiVmga-AO7sYptzUh-YB+wJLC1sc+d854ya+YCOlIdFEU8pW1QxACnHFz9R-tQ9xzhRaUOjUw9M8sCYROyQiGeQq0aJQisxAi7vUoWOoc1fZryU0PnCyBXgklL0BRNS6DpELr08hWxU4dGoCXy1xvGkmzNkgc2FsuEsRIjC4YOeZb0CVA7ClYITA2BZBh31ws65p3IOncXOSM4N2jYI03ZvzaD7haADWMtNad8oT0owsyqEgsOBhmhPdYo+BMWZJgYS4BqPAfwVGoCQt1ogetdd63KGSH434PjPiwVO4pxEJfb5xU8S3AoKryi00I5okYSyWKV2+nJ8r9tk4t9LvMPc5ONDjFKADXvkV9v0gHDsH4w5PjGPwY0CfvsPf-R-uqFXlJkeJohtLRFakF44u+ZgXf-ltAVN1x2PMj+9Bv1s87xQmpppJXCX7-9JWXVW-JQJoMte-cZQoRNMKFhBMUmY6eNe+e1PQHINrVsG-T1f1f5IlCACAyVXMZQWvOKXYRFXIRAxNTYBIeKEcWWDAvFPZAeAFPAxAQwOQJiY7efCIMKG1HIfIZNag0YWgxTd1PVIVA1dgZg2MAoL6RzV-LMd-BZKKOlXGJSWYVsVQOglpH1P1DpdgAvRrUvcIHMCnBeIcMoSIZlJUXgyglNIEKKdNYQ7VNAcBQVSQ1QVIfIKYDeR7CYUmIGUEGKG2SIX0MwzNc9XNMDVdSDJjLySQ2mQwcOVRGIamcYMmZrPYcOKKew1SY6RqRwpWIDOxXjSIhjaIotO-EzTLWmIXZURZNSJKUoOud4d0NiUmQEHICoEbVLDASQ5iMYHLILWuWyd7Q6OVF+ckf-IvJTbo8tVWXonxKZbIG2HYC8coHrNbdZFSUrJyLo9zctIPY3UPXohIWFJKDsIpAmHrRiSnGqBIeUJBXYozJQE3ObXozsGKBMOVdFSIXbFg5fCLMkO4goKkM7PPPSGsMASQzUPIIEeUadKKL4EdTRXeaCbBdsIkIkfXZwXo7-HnevfnG1NPdZPRR-KhLE9gKXSEyomPH4CpN4b9BSIkL9dXKIdZbXNSNUcXRTAPZwQ3EhbgEPU3TIAw7GBSbIFQIEL0fQQkTBX4spUoA7L3WmH3ck54o46kwwqKLMTxL4B0XeLeP4F0XXRUjkx7ZUhwkwIAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogAsAJgA0IAJ6IAjAGYaAVgB0gwQE5Zm2dOkAOYQtkBfI+LQYc+JdgiYwBAMph2AAlhYw5Tt1oMkIFjZvHn8BBEEFXSUabQMANlk1AHZBRKTxKQRpYTjpJTikyI043TVpAsETM3QsPChrW3sAETgPLxcWPHZfXkCOLhDQMNk45QUaJN0J1QUFQSmFDJk5KJy1OLjUueFhNWEqkHNaqxs7Ahb3O3bIGB7-PuDeYY3oybkkmkFRwSTkpayaNJBEpdAktoC9mV9qZDjVLPVTs1WldXCQ+NhYHdmKx+twnohZElhEpCjQyXthElRiM4v9SnkIkTFCUtsYYUd4Q0zk4UR1UF0sQEcY9QkJFEpyr8NNI1KUkuVaZIhMIaCopkltHt5Do2dULHUufYeZ5XDcwIKHgN8eEaFF5qlSqC5n8lQhNsD3bppBM5HNBNIDhyDYjHG1UejMfResKraLwrJiXEaBo9uMZTQ4mp-nMojLymoFMIgQoSrrYfqTo1Q7yAGYkSgWmN4uOCW35MkiEbyDSA-5U2Qg9bSSJJkqFXSBuHBqsAUVw7DAACc3ABrZzkAAWjaCsaGiAKA4mMVkkUmlN0i1dwgT+Q18gvCh0KUpk4rCNn86Xq-XW+kfmxO7Nnuboaq8x6nvokyXpk2QRCSCh7BEXrXuMcSvsc75nDOACOACu2BMC4YB8Owi64Rg264oM-D7qBeibIC6gJhEsh0hmShFrIPxFpEvEKOhnIhjh+GEcRpHkeaf7RoB1FhAeEqgq2QIaMILF0iWJK+h8hQaPx7JTpWZwXGGLh1g2Ub3E2skEh8+QJpBiSnl8-zakohLFIkIj6JmAnTtyJkkJgmCUSKwH+gOOyjJMIhkrM0GICqwJ7HEqm6KosgXt60J6hhhrnMiJouIFwUWQBVHWhlDKbLo7k0EW5R0nkhZkjEej+l8MS+YZ9jCQRpnYEFzghbuNFupm8GJIk9WFKxrqMkohiUrMySJLKaH6W+eW9YRNYDXY3RSZZMnWhsagTSm02GNmbYxJSlLSFSKW-GWQZWA4a7sJuxBkJQmDvT+w1AaNBjaEosqlCetpqMkV2ut6RISqMTrCFM9JJF19T-Z9G5KFjm4AJJVsa7SdPOgPWQguybCSuwZbKLXDukrqPSCESUoSqQiLMGO4x9m68z+hP+by7hQAAtmAZOlUKx1xlTwJEhojoM4qmQJMShRbLo8pTT8PN4zjBtC0ilyFaT3TS5aQNhLsRbwSjU1U72rrjMCCzaKO2s1frfOG77xv5ab7SixLUv-jL5Vy2Uh5paC2QylTLkI4kw6o+o+ifOtOWcgbAvYwHyAkGubhgOLkuuAAbkunDkIF5PWijUxg8meg0voaWqzIuxJCohigokMT6OoPs-nnBNVoXxch+XLgbqgi7YAAXtw7B15bVkN4pblcWo-rJh8BiCP8OgFvk0NzC1KrrOjG25bnRuznhfXsKgqAleHVsU-6D0SnIqcJAWEQ-wyhxERhmcGORtAiBHtjMeG4A7bRcGLVAVcXAvzfvXFsQIe4THlJrJImssxwx0KqH4NVcgXnUKmGB-MH7+VcEHYImDgLagHCMHYF4kxkn0MA8oYD5Q-EfLaHQNC-aCyrEQbgsBSIkDwLPeeS8V6BRcBADEq8KDmnXrLYCDsoiyiJFxC86wSxHzhuoUBMRPi3RVLMHYoi4EB0kbgaRi5ZG4BcFXRcNdlGqOkT9TRH8N5ywfAtXIcwdC7FlJSY+iRcz6HWLdTQ+h7F0PsE4lxbiir4DsMw4GewoiahPBlGIpZ4pZAQnkIEWVOz1U0PYgAMngMALgAAqr9MAEEQcg1B6D37SUjmFCIwJNAoxKbbb0ZSUwSkJJSfeqhtZ6WzgaXOjTcDNLaW-JQAAFfk84XAAEEIAYAgAQQ5EA+QCi0QM0a4xZQklBBnNKES+wxERskVQj1LGLPLHfX2ShVnrPabjUuodXBnMgKco5Fyw79NCjc7u9ySgZlwQoFIZSUrEkLAmEGuwZTawaU01pQKnBlz2eCk5kixZMH2s0ywATYUjTCM6M6iRNjYOyLFf4JQzqZm0F7eYnw9gErWUSzZJLQUHKORCxBayADuaD2m5KZR7DiYI0rQ1TGIF2w4VCAnVLMVaqRhWAs2fjXAHACBKqED8Bk2lkonh0NINiyhpjyE1Ifbmt8c5-IBaKzASgzUWqoIdMqcKwgzAZKUQwu8Uonj7CjNy6xtByEBIUAwxq-VKAAHKoBcDsrosBIXnPNla8I+hiTaDJMOMkBDdC6HjaAoECR8xAhVCMexAAJBRy95w+LUf4pB6BAoEAgNwMA1hcAV1QGuJQMB2AAFo54Lx7avTA868A1lQKWjK8x8ioopGikYpiYKLRBMmVGuwRCFE7d2pRmAVH9o0YOiAw6lyLnnkoalJB2CbsXGLWdzhF23t7WujdW6rlhoJOqtyBhtY6APNoY+8wXU5FuQWVSIxvmvUxn8gAatXbAtd72+PUZQZ9w7R1rInVOmdc752eO8aB3Am7t0hKTPMSBJ9NBIZ-hqUYnEDVqE6l65ZeGCNEYfX4p9yCX0dLfR+r9P757-rowxwjgV13MfA4E7Ro0MqzHbBx5tMpuNw0JKqa8-GgRHpvkst6fz9nZOaTJijY7qPTvHXRsgUA7CaZYxBxlUHcgLUSRER8MpO5ZASFEfdqEEIYrrfYxzPnnNDrk4ud9i5P2YG-b+lTgHvO+bA6xlKYNhy5FTTKMpw49j5FbNDco2C0g8xnCRMiGAR1ubwDR8dRBFxgG-c0sS7X6VHWuXJUCR5NAQXPNVrieQDCIQiFV-JLW2sSU6U-US62KIBetl3eQurFAEMSmsLVmRd55BqvMj2Ko5CVBE1YVr4kOuIOGxJYNOnxsHdIbFE7nwzt0jtradKGVcjNuyj8zkz2RsBqJiZMyo3Q2Bai4WBSrdBPykiEDvIIPzPlHiO2x79QYcSWBSiAYLgABKA2IASFDK4Ej-jS0RZ7noJNrYeLY9dO3beqRqQJCrROYncCXC4FzYj6shVEelp4lEX4mY6rrCmDW4+VWQS7GWu3HiPMABie1nCdao91jzSg+sDYXP1QaFsvuQYQPKUBpI6qgkUF8LiwCND5GvCUpGXNbNQ4NPr63m2RJW-2iz68GtNjRsiMmEsTqXZUlvDNdQOR9Cor1wb9gIe+q7Wt59hl+2siR5JNHxyUwCy5H+GFsGS0mIGHC4oTP1u4fC0KmaFnJQYuMntLvVsyZq8Gb2IQhMswSFYYMvUIP+1ycmkpzTkgdOGcuFcao3CkZbco5VG2cHOwm2diIZkVFoCCgp+Sun-32GlDT+cLPrw8-af0+JqaaASOI5270I+aIXpAQlEboYMpQsPIU-EsGZf0JNEwGEcXDAeAfwbDQvCmedSLedZQZIDVTyOtOPX4HmREBA60L4TFAeAoTMB3LiWaGCLsCUXYckPQL0VIF6SfOBPAuWeYAccGXSKGGGcghKQkQcVOHICYe6B7OzHDUeVJZgnRcGMGMoZSR6X4aJOGCYUBFGTWDlOqTQYQgPezUeX1DZTACQ0aVIGUMGKNdDTUPQavSkZuB6D4coDQoTLOLQ0Q2BXQoFJoMdAwplQoCxY7JtY7eUeNZQVlPlHIFGX0DNPQ7ZXZMFKVCATwoQAsZQX4Ag3FFUKvZmHIOrdWeYKkU8AMEXFZQlSI8VGecleIhAQwOQCUaUUoXecYRQMpIkE-N3VKXIuDCIoFQNdgco-nHuWUAsMwvMetDIizKmJME8AA1QDozZHNPNaI2A5HIvL4O5GqLiSkX4fghtLIj2MoGKInEQuBJQNAVBPQno9KfIKYFbGtVFY+W0UBZIGqXiVQdYtQG9ZdO9STUjVLWTcoriQwNyIxGIDUUkJmGCVPGDOqGIVIH0YTA43OfDLxdTYjR9MjFzfQsbO3LiEoUvbWSxAwdnSLd4D0eJVFQEHICoJLJzcjdExYimQxVUEsWYEoFKVsDQ4+BCDWDMeQFUeJQkBgzaUnDAconQfQI7VFJkEQTMc7fcUEBaNKTDNFMoL0NbF7cdY2YUksKIEoPQSkCrIsBIHHOU0HOOCHFU2HZ-B-RfTIWk60B6dYDiIAsLCvbBIHKIa7EQBwtI3eM0snBfOncoosFUEEXIdQEsDMTUspXnd06glKcBTQq-A2MXCXesMAcoy7CUVsTYO6TOTYY+K+eCVMQEVFO6ZvfaYUtqUvFiAsCvePFyO2K9P0ITOtKKUs2-dUjElHcocUT4VFVsExITOQQfUBBs+vMfCZVs9gO-YIanR-YUmqHuAoF3EsQ+JMQAghCUAhQwVPP-DPEXG-Scv0609-LfIEN2HQH4XeBZUYNctnTcneNPAwG+EwIAA */
     id: 'Modeling',
 
     tsTypes: {} as import('./modelingMachine.typegen').Typegen0,
@@ -83,7 +84,8 @@ export const modelingMachine = createMachine(
         | { type: 'Set Default Planes'; data: DefaultPlanes }
         | { type: 'update_code'; data: string }
         | { type: 'Constrain horizontal distance' }
-        | { type: 'Constrain vertical distance' },
+        | { type: 'Constrain vertical distance' }
+        | { type: 'Constrain angle' },
     },
 
     states: {
@@ -308,6 +310,10 @@ export const modelingMachine = createMachine(
                 target: 'Vertical distance modal',
                 cond: 'Can constrain vertical distance',
               },
+              'Constrain angle': {
+                target: 'Angle modal',
+                cond: 'Can constrain angle',
+              },
             },
 
             entry: 'equip select',
@@ -396,6 +402,14 @@ export const modelingMachine = createMachine(
             invoke: {
               src: 'Get vertical info',
               id: 'get-vertical-info',
+              onDone: 'SketchIdle',
+              onError: 'SketchIdle',
+            },
+          },
+          'Angle modal': {
+            invoke: {
+              src: 'Get angle info',
+              id: 'get-angle-info',
               onDone: 'SketchIdle',
               onError: 'SketchIdle',
             },
@@ -536,6 +550,8 @@ export const modelingMachine = createMachine(
       'Can constrain vertical distance': ({ selectionRanges }) =>
         horzVertDistanceInfo({ selectionRanges, constraint: 'setHorzDistance' })
           .enabled,
+      'Can constrain angle': ({ selectionRanges }) =>
+        angleBetweenInfo({ selectionRanges }).enabled,
     },
     actions: {
       'Set selection': assign({

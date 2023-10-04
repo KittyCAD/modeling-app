@@ -25,6 +25,7 @@ import {
 } from 'lang/std/sketch'
 import { kclManager } from 'lang/KclSinglton'
 import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
+import { applyConstraintAngleBetween } from './Toolbar/SetAngleBetween'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -200,6 +201,16 @@ export const ModelingMachineProvider = ({
         const { modifiedAst, pathToNodeMap } =
           await applyConstraintHorzVertDistance({
             constraint: 'setVertDistance',
+            selectionRanges,
+          })
+        kclManager.updateAst(modifiedAst, true, {
+          // todo handle cursor
+          // callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
+        })
+      },
+      'Get angle info': async ({ selectionRanges }) => {
+        const { modifiedAst, pathToNodeMap } =
+          await applyConstraintAngleBetween({
             selectionRanges,
           })
         kclManager.updateAst(modifiedAst, true, {

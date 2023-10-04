@@ -7,17 +7,20 @@
           "": { type: "" };
 "done.invoke.Create extrude": { type: "done.invoke.Create extrude"; data: unknown; __tip: "See the XState TS docs to learn how to strongly type this." };
 "done.invoke.Create fillet": { type: "done.invoke.Create fillet"; data: unknown; __tip: "See the XState TS docs to learn how to strongly type this." };
+"done.invoke.get-angle-info": { type: "done.invoke.get-angle-info"; data: unknown; __tip: "See the XState TS docs to learn how to strongly type this." };
 "done.invoke.get-horizontal-info": { type: "done.invoke.get-horizontal-info"; data: unknown; __tip: "See the XState TS docs to learn how to strongly type this." };
 "done.invoke.get-vertical-info": { type: "done.invoke.get-vertical-info"; data: unknown; __tip: "See the XState TS docs to learn how to strongly type this." };
 "error.platform.Create extrude": { type: "error.platform.Create extrude"; data: unknown };
 "error.platform.Create fillet": { type: "error.platform.Create fillet"; data: unknown };
+"error.platform.get-angle-info": { type: "error.platform.get-angle-info"; data: unknown };
 "error.platform.get-horizontal-info": { type: "error.platform.get-horizontal-info"; data: unknown };
 "error.platform.get-vertical-info": { type: "error.platform.get-vertical-info"; data: unknown };
 "xstate.init": { type: "xstate.init" };
 "xstate.stop": { type: "xstate.stop" };
         };
         invokeSrcNameMap: {
-          "Get horizontal info": "done.invoke.get-horizontal-info";
+          "Get angle info": "done.invoke.get-angle-info";
+"Get horizontal info": "done.invoke.get-horizontal-info";
 "Get vertical info": "done.invoke.get-vertical-info";
 "createExtrude": "done.invoke.Create extrude";
 "createFillet": "done.invoke.Create fillet";
@@ -26,7 +29,7 @@
           actions: "AST add line segment" | "AST start new sketch" | "Modify AST" | "Update code selection cursors" | "create path" | "set tool" | "show default planes" | "sketch exit execute";
           delays: never;
           guards: "Selection contains axis" | "Selection contains edge" | "Selection contains face" | "Selection contains line" | "Selection contains point" | "Selection is empty" | "Selection is not empty" | "Selection is one face" | "Selection is one or more edges";
-          services: "Get horizontal info" | "Get vertical info" | "createExtrude" | "createFillet";
+          services: "Get angle info" | "Get horizontal info" | "Get vertical info" | "createExtrude" | "createFillet";
         };
         eventsCausingActions: {
           "AST add line segment": "Add point";
@@ -45,7 +48,7 @@
 "default_camera_disable_sketch_mode": "Cancel";
 "edit mode enter": "Enter sketch";
 "edit_mode_exit": "Cancel";
-"equip select": "CancelSketch" | "Deselect point" | "Deselect segment" | "Enter sketch" | "Make segment horizontal" | "Make segment vertical" | "Select face" | "Select point" | "Select segment" | "Set selection" | "done.invoke.get-horizontal-info" | "done.invoke.get-vertical-info" | "error.platform.get-horizontal-info" | "error.platform.get-vertical-info";
+"equip select": "CancelSketch" | "Deselect point" | "Deselect segment" | "Enter sketch" | "Make segment horizontal" | "Make segment vertical" | "Select face" | "Select point" | "Select segment" | "Set selection" | "done.invoke.get-angle-info" | "done.invoke.get-horizontal-info" | "done.invoke.get-vertical-info" | "error.platform.get-angle-info" | "error.platform.get-horizontal-info" | "error.platform.get-vertical-info";
 "hide default planes": "Cancel" | "Select face" | "xstate.stop";
 "reset sketchPathToNode": "Cancel" | "Select face";
 "set sketchPathToNode": "Enter sketch";
@@ -60,7 +63,8 @@
           
         };
         eventsCausingGuards: {
-          "Can constrain horizontal distance": "Constrain horizontal distance";
+          "Can constrain angle": "Constrain angle";
+"Can constrain horizontal distance": "Constrain horizontal distance";
 "Can constrain vertical distance": "Constrain vertical distance";
 "Can make selection horizontal": "Make segment horizontal";
 "Can make selection vertical": "Make segment vertical";
@@ -76,14 +80,15 @@
 "is editing existing sketch": "";
         };
         eventsCausingServices: {
-          "Get horizontal info": "Constrain horizontal distance";
+          "Get angle info": "Constrain angle";
+"Get horizontal info": "Constrain horizontal distance";
 "Get vertical info": "Constrain vertical distance";
 "createExtrude": "Equip extrude";
 "createFillet": "Equip fillet";
         };
-        matchesStates: "Extrude" | "Extrude.Idle" | "Extrude.Ready" | "Extrude.Selection Ready" | "Fillet" | "Fillet.Idle" | "Fillet.Ready" | "Fillet.Selection Ready" | "Sketch" | "Sketch no face" | "Sketch.Horizontal distance modal" | "Sketch.Line Tool" | "Sketch.Line Tool.Done" | "Sketch.Line Tool.Init" | "Sketch.Line Tool.No Points" | "Sketch.Line Tool.Point Added" | "Sketch.Line Tool.Segment Added" | "Sketch.Move Tool" | "Sketch.SketchIdle" | "Sketch.Vertical distance modal" | "idle" | { "Extrude"?: "Idle" | "Ready" | "Selection Ready";
+        matchesStates: "Extrude" | "Extrude.Idle" | "Extrude.Ready" | "Extrude.Selection Ready" | "Fillet" | "Fillet.Idle" | "Fillet.Ready" | "Fillet.Selection Ready" | "Sketch" | "Sketch no face" | "Sketch.Angle modal" | "Sketch.Horizontal distance modal" | "Sketch.Line Tool" | "Sketch.Line Tool.Done" | "Sketch.Line Tool.Init" | "Sketch.Line Tool.No Points" | "Sketch.Line Tool.Point Added" | "Sketch.Line Tool.Segment Added" | "Sketch.Move Tool" | "Sketch.SketchIdle" | "Sketch.Vertical distance modal" | "idle" | { "Extrude"?: "Idle" | "Ready" | "Selection Ready";
 "Fillet"?: "Idle" | "Ready" | "Selection Ready";
-"Sketch"?: "Horizontal distance modal" | "Line Tool" | "Move Tool" | "SketchIdle" | "Vertical distance modal" | { "Line Tool"?: "Done" | "Init" | "No Points" | "Point Added" | "Segment Added"; }; };
+"Sketch"?: "Angle modal" | "Horizontal distance modal" | "Line Tool" | "Move Tool" | "SketchIdle" | "Vertical distance modal" | { "Line Tool"?: "Done" | "Init" | "No Points" | "Point Added" | "Segment Added"; }; };
         tags: never;
       }
   
