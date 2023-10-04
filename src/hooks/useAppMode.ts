@@ -101,7 +101,6 @@ export function useAppMode() {
             plane_id: planeId,
             ortho: true,
             animated: !isReducedMotion(),
-            disable_camera_with_plane: null,
           },
         })
         const proms: any[] = []
@@ -182,7 +181,6 @@ export function useAppMode() {
             plane_id: data.entity_id,
             ortho: true,
             animated: !isReducedMotion(),
-            disable_camera_with_plane: null,
           },
         })
         setDefaultPlanesHidden(engineCommandManager, defaultPlanes, true)
