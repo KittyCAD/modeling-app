@@ -258,6 +258,7 @@ export const Stream = ({ className = '' }) => {
         onPlay={() => setIsLoading(false)}
         onMouseMoveCapture={handleMouseMove}
         className={`w-full cursor-pointer h-full ${isExecuting && 'blur-md'}`}
+        disablePictureInPicture
         style={{ transitionDuration: '200ms', transitionProperty: 'filter' }}
       />
       {isLoading && (
