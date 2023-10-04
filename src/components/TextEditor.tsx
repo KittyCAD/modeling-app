@@ -73,9 +73,8 @@ export const TextEditor = ({
   const { context: { selectionRanges: machineSelectionRanges } = {}, send } =
     useModelingContext()
 
-  const {
-    settings: { context: { textWrapping } = {} },
-  } = useGlobalStateContext()
+  const { settings: { context: { textWrapping } = {} } = {} } =
+    useGlobalStateContext()
   const { setCommandBarOpen } = useCommandsContext()
   const { enable: convertEnabled, handleClick: convertCallback } =
     useConvertToVariable()
