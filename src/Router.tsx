@@ -96,6 +96,8 @@ export const paths = {
   ) as typeof onboardingPaths,
 }
 
+export const BROWSER_FILE_NAME = 'new'
+
 export type IndexLoaderData = {
   code: string | null
   project?: ProjectWithEntryPointMetadata
@@ -131,7 +133,9 @@ const router = createBrowserRouter(
     {
       path: paths.INDEX,
       loader: () =>
-        isTauri() ? redirect(paths.HOME) : redirect(paths.FILE + '/new'),
+        isTauri()
+          ? redirect(paths.HOME)
+          : redirect(paths.FILE + '/' + BROWSER_FILE_NAME),
       errorElement: <ErrorPage />,
     },
     {
@@ -173,7 +177,7 @@ const router = createBrowserRouter(
           )
         }
 
-        if (params.id && params.id !== 'new') {
+        if (params.id && params.id !== BROWSER_FILE_NAME) {
           // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
           const code = await readTextFile(params.id + '/' + PROJECT_ENTRYPOINT)
           const entrypoint_metadata = await metadata(
@@ -218,7 +222,7 @@ const router = createBrowserRouter(
       ),
       loader: async () => {
         if (!isTauri()) {
-          return redirect(paths.FILE + '/new')
+          return redirect(paths.FILE + '/' + BROWSER_FILE_NAME)
         }
         const fetchedStorage = localStorage?.getItem(SETTINGS_PERSIST_KEY)
         const persistedSettings = JSON.parse(fetchedStorage || '{}') as Partial<

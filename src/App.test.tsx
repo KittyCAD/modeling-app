@@ -1,10 +1,16 @@
 import { render, screen } from '@testing-library/react'
 import { App } from './App'
 import { describe, test, vi } from 'vitest'
-import { BrowserRouter } from 'react-router-dom'
+import {
+  Route,
+  RouterProvider,
+  createMemoryRouter,
+  createRoutesFromElements,
+} from 'react-router-dom'
 import { GlobalStateProvider } from './components/GlobalStateProvider'
 import CommandBarProvider from 'components/CommandBar'
 import ModelingMachineProvider from 'components/ModelingMachineProvider'
+import { BROWSER_FILE_NAME } from 'Router'
 
 let listener: ((rect: any) => void) | undefined = undefined
 ;(global as any).ResizeObserver = class ResizeObserver {
@@ -25,7 +31,7 @@ describe('App tests', () => {
       >
       return {
         ...actual,
-        useParams: () => ({ id: 'new' }),
+        useParams: () => ({ id: BROWSER_FILE_NAME }),
         useLoaderData: () => ({ code: null }),
       }
     })
@@ -42,14 +48,26 @@ describe('App tests', () => {
 })
 
 function TestWrap({ children }: { children: React.ReactNode }) {
-  // wrap in router and xState context
-  return (
-    <BrowserRouter>
-      <CommandBarProvider>
-        <GlobalStateProvider>
-          <ModelingMachineProvider>{children}</ModelingMachineProvider>
-        </GlobalStateProvider>
-      </CommandBarProvider>
-    </BrowserRouter>
+  // We have to use a memory router in the testing environment,
+  // and we have to use the createMemoryRouter function instead of <MemoryRouter /> as of react-router v6.4:
+  // https://reactrouter.com/en/6.16.0/routers/picking-a-router#using-v64-data-apis
+  const router = createMemoryRouter(
+    createRoutesFromElements(
+      <Route
+        path="/file/:id"
+        element={
+          <CommandBarProvider>
+            <GlobalStateProvider>
+              <ModelingMachineProvider>{children}</ModelingMachineProvider>
+            </GlobalStateProvider>
+          </CommandBarProvider>
+        }
+      />
+    ),
+    {
+      initialEntries: ['/file/new'],
+      initialIndex: 0,
+    }
   )
+  return <RouterProvider router={router} />
 }

@@ -10,7 +10,7 @@ import { SetHorzVertDistance } from './components/Toolbar/SetHorzVertDistance'
 import { SetAngleLength } from './components/Toolbar/setAngleLength'
 import { SetAbsDistance } from './components/Toolbar/SetAbsDistance'
 import { SetAngleBetween } from './components/Toolbar/SetAngleBetween'
-import { Fragment, useMemo } from 'react'
+import { Fragment, WheelEvent, useRef, useMemo } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faX } from '@fortawesome/free-solid-svg-icons'
 import { Popover, Transition } from '@headlessui/react'
@@ -53,6 +53,7 @@ export const Toolbar = () => {
   }))
   useAppMode()
   const { state, send } = useModelingContext()
+  const toolbarButtonsRef = useRef<HTMLSpanElement>(null)
   const pathId = useMemo(
     () =>
       isCursorInSketchCommandRange(
@@ -62,9 +63,22 @@ export const Toolbar = () => {
     [engineCommandManager.artifactMap, selectionRanges]
   )
 
+  function handleToolbarButtonsWheelEvent(ev: WheelEvent<HTMLSpanElement>) {
+    const span = toolbarButtonsRef.current
+    if (!span) {
+      return
+    }
+
+    span.scrollLeft = span.scrollLeft += ev.deltaY
+  }
+
   function ToolbarButtons({ className }: React.HTMLAttributes<HTMLElement>) {
     return (
-      <span className={styles.toolbarButtons + ' ' + className}>
+      <span
+        ref={toolbarButtonsRef}
+        onWheel={handleToolbarButtonsWheelEvent}
+        className={styles.toolbarButtons + ' ' + className}
+      >
         {state.nextEvents.includes('Enter sketch') && (
           <button
             onClick={() => send({ type: 'Enter sketch' })}

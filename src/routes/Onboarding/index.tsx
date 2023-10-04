@@ -1,5 +1,5 @@
 import { useHotkeys } from 'react-hotkeys-hook'
-import { Outlet, useRouteLoaderData, useNavigate } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import Introduction from './Introduction'
 import Camera from './Camera'
 import Sketching from './Sketching'
@@ -15,7 +15,8 @@ import UserMenu from './UserMenu'
 import ProjectMenu from './ProjectMenu'
 import Export from './Export'
 import FutureWork from './FutureWork'
-import { IndexLoaderData, paths } from 'Router'
+import { paths } from 'Router'
+import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 
 export const onboardingPaths = {
   INDEX: '/',
@@ -86,29 +87,23 @@ export const onboardingRoutes = [
 ]
 
 export function useNextClick(newStatus: string) {
+  const filePath = useAbsoluteFilePath()
   const {
     settings: { send },
   } = useGlobalStateContext()
   const navigate = useNavigate()
-  const { project } = useRouteLoaderData(paths.FILE) as IndexLoaderData
 
   return useCallback(() => {
     send({
       type: 'Set Onboarding Status',
       data: { onboardingStatus: newStatus },
     })
-    navigate(
-      paths.FILE +
-        '/' +
-        encodeURIComponent(project?.path || 'new') +
-        paths.ONBOARDING.INDEX.slice(0, -1) +
-        newStatus
-    )
-  }, [project, newStatus, send, navigate])
+    navigate(filePath + paths.ONBOARDING.INDEX.slice(0, -1) + newStatus)
+  }, [filePath, newStatus, send, navigate])
 }
 
 export function useDismiss() {
-  const routeData = useRouteLoaderData(paths.FILE) as IndexLoaderData
+  const filePath = useAbsoluteFilePath()
   const {
     settings: { send },
   } = useGlobalStateContext()
@@ -119,10 +114,8 @@ export function useDismiss() {
       type: 'Set Onboarding Status',
       data: { onboardingStatus: 'dismissed' },
     })
-    navigate(
-      paths.FILE + '/' + encodeURIComponent(routeData?.project?.path || 'new')
-    )
-  }, [send, navigate, routeData])
+    navigate(filePath)
+  }, [send, navigate, filePath])
 }
 
 const Onboarding = () => {
