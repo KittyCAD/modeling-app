@@ -42,8 +42,10 @@ export function useAppMode() {
       const createAndShowPlanes = async () => {
         let localDefaultPlanes: DefaultPlanes
         if (!defaultPlanes) {
-          localDefaultPlanes = await initDefaultPlanes(engineCommandManager)
-          setDefaultPlanes(localDefaultPlanes)
+          const newDefaultPlanes = await initDefaultPlanes(engineCommandManager)
+          if (!newDefaultPlanes) return
+          setDefaultPlanes(newDefaultPlanes)
+          localDefaultPlanes = newDefaultPlanes
         } else {
           localDefaultPlanes = defaultPlanes
         }
@@ -59,8 +61,10 @@ export function useAppMode() {
       const enableSketchMode = async () => {
         let localDefaultPlanes: DefaultPlanes
         if (!defaultPlanes) {
-          localDefaultPlanes = await initDefaultPlanes(engineCommandManager)
-          setDefaultPlanes(localDefaultPlanes)
+          const newDefaultPlanes = await initDefaultPlanes(engineCommandManager)
+          if (!newDefaultPlanes) return
+          setDefaultPlanes(newDefaultPlanes)
+          localDefaultPlanes = newDefaultPlanes
         } else {
           localDefaultPlanes = defaultPlanes
         }
@@ -275,7 +279,10 @@ export function setDefaultPlanesHidden(
 
 export async function initDefaultPlanes(
   engineCommandManager: EngineCommandManager
-): Promise<DefaultPlanes> {
+): Promise<DefaultPlanes | null> {
+  if (!engineCommandManager.engineConnection?.isReady()) {
+    return null
+  }
   const xy = await createPlane(engineCommandManager, {
     x_axis: { x: 1, y: 0, z: 0 },
     y_axis: { x: 0, y: 1, z: 0 },

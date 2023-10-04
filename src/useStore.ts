@@ -230,6 +230,7 @@ export const useStore = create<StoreState>()(
         executeCode: async (code, force) => {
           if (!get().defaultPlanes) {
             let defaultPlanes = await initDefaultPlanes(engineCommandManager)
+            if (!defaultPlanes) return
             get().setDefaultPlanes(defaultPlanes)
             setDefaultPlanesHidden(engineCommandManager, defaultPlanes, true)
           }
@@ -347,6 +348,7 @@ export const useStore = create<StoreState>()(
           if (!get().isStreamReady) return
           if (!get().defaultPlanes) {
             let defaultPlanes = await initDefaultPlanes(engineCommandManager)
+            if (!defaultPlanes) return
             get().setDefaultPlanes(defaultPlanes)
             setDefaultPlanesHidden(engineCommandManager, defaultPlanes, true)
           }
@@ -370,6 +372,7 @@ export const useStore = create<StoreState>()(
 
           if (!get().defaultPlanes) {
             let defaultPlanes = await initDefaultPlanes(engineCommandManager)
+            if (!defaultPlanes) return
             get().setDefaultPlanes(defaultPlanes)
             setDefaultPlanesHidden(engineCommandManager, defaultPlanes, true)
           }
