@@ -195,6 +195,7 @@ export function horzVertDistanceInfo({
 export async function applyConstraintHorzVertDistance({
   selectionRanges,
   constraint,
+  // TODO align will always be false (covered by synconous applyConstraintHorzVertAlign), remove it
   isAlign = false,
 }: {
   selectionRanges: Selections
@@ -277,5 +278,36 @@ export async function applyConstraintHorzVertDistance({
     //   callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
     // })
   }
-  throw new Error('should not get here')
+}
+
+export function applyConstraintHorzVertAlign({
+  selectionRanges,
+  constraint,
+}: {
+  selectionRanges: Selections
+  constraint: 'setHorzDistance' | 'setVertDistance'
+}): {
+  modifiedAst: Program
+  pathToNodeMap: PathToNodeMap
+} {
+  const transformInfos = horzVertDistanceInfo({
+    selectionRanges,
+    constraint,
+  }).transforms
+  let finalValue = createLiteral(0)
+  const { modifiedAst, pathToNodeMap } = transformSecondarySketchLinesTagFirst({
+    ast: kclManager.ast,
+    selectionRanges,
+    transformInfos,
+    programMemory: kclManager.programMemory,
+    forceValueUsedInTransform: finalValue,
+  })
+  return {
+    modifiedAst: modifiedAst,
+    pathToNodeMap,
+  }
+  // TODO handle cursor stuff
+  // kclManager.updateAst(_modifiedAst, true, {
+  //   callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
+  // })
 }

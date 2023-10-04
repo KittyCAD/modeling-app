@@ -37,6 +37,8 @@
 "Add to code-based selection": "Deselect point" | "Deselect segment" | "Select all" | "Select edge" | "Select face" | "Select point" | "Select segment";
 "Add to other selection": "Select axis";
 "Clear selection": "Deselect all" | "done.invoke.Create extrude" | "done.invoke.Create fillet";
+"Constrain horizontally align": "Constrain horizontally align";
+"Constrain vertically align": "Constrain vertically align";
 "Make selection horizontal": "Make segment horizontal";
 "Make selection vertical": "Make segment vertical";
 "Modify AST": "Complete line" | "done.invoke.Create extrude" | "done.invoke.Create fillet";
@@ -48,7 +50,7 @@
 "default_camera_disable_sketch_mode": "Cancel";
 "edit mode enter": "Enter sketch";
 "edit_mode_exit": "Cancel";
-"equip select": "CancelSketch" | "Deselect point" | "Deselect segment" | "Enter sketch" | "Make segment horizontal" | "Make segment vertical" | "Select face" | "Select point" | "Select segment" | "Set selection" | "done.invoke.get-angle-info" | "done.invoke.get-horizontal-info" | "done.invoke.get-vertical-info" | "error.platform.get-angle-info" | "error.platform.get-horizontal-info" | "error.platform.get-vertical-info";
+"equip select": "CancelSketch" | "Constrain horizontally align" | "Constrain vertically align" | "Deselect point" | "Deselect segment" | "Enter sketch" | "Make segment horizontal" | "Make segment vertical" | "Select face" | "Select point" | "Select segment" | "Set selection" | "done.invoke.get-angle-info" | "done.invoke.get-horizontal-info" | "done.invoke.get-vertical-info" | "error.platform.get-angle-info" | "error.platform.get-horizontal-info" | "error.platform.get-vertical-info";
 "hide default planes": "Cancel" | "Select face" | "xstate.stop";
 "reset sketchPathToNode": "Cancel" | "Select face";
 "set sketchPathToNode": "Enter sketch";
@@ -65,7 +67,9 @@
         eventsCausingGuards: {
           "Can constrain angle": "Constrain angle";
 "Can constrain horizontal distance": "Constrain horizontal distance";
+"Can constrain horizontally align": "Constrain horizontally align";
 "Can constrain vertical distance": "Constrain vertical distance";
+"Can constrain vertically align": "Constrain vertically align";
 "Can make selection horizontal": "Make segment horizontal";
 "Can make selection vertical": "Make segment vertical";
 "Selection contains axis": "Deselect axis";

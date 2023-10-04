@@ -13,7 +13,10 @@ import {
   horzVertInfo,
   applyConstraintHorzVert,
 } from 'components/Toolbar/HorzVert'
-import { horzVertDistanceInfo } from 'components/Toolbar/SetHorzVertDistance'
+import {
+  applyConstraintHorzVertAlign,
+  horzVertDistanceInfo,
+} from 'components/Toolbar/SetHorzVertDistance'
 import { angleBetweenInfo } from 'components/Toolbar/SetAngleBetween'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
@@ -22,7 +25,7 @@ const constraintActions: ConstraintType[] = ['vertical', 'horizontal']
 
 export const modelingMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogAsAJgA0IAJ6IAjAGYaAVgB0gwQE5Zm2dOkAOYQtkBfI+LQYc+JdgiYwBAMph2AAlhYw5Tt1oMkIFjZvHn8BBEEFXSUabQMANlk1AHZBRKTxKQRpYTjpJTikyI043TVpAsETM3QsPChrW3sAETgPLxcWPHZfXkCOLhDQMNk45QUaJN0J1QUFQSmFDJk5KJy1OLjUueFhNWEqkHNaqxs7Ahb3O3bIGB7-PuDeYY3oybkkmkFRwSTkpayaNJBEpdAktoC9mV9qZDjVLPVTs1WldXCQ+NhYHdmKx+twnohZElhEpCjQyXthElRiM4v9SnkIkTFCUtsYYUd4Q0zk4UR1UF0sQEcY9QkJFEpyr8NNI1KUkuVaZIhMIaCopkltHt5Do2dULHUufYeZ5XDcwIKHgN8eEaFF5qlSqC5n8lQhNsD3bppBM5HNBNIDhyDYjHG1UejMfResKraLwrJiXEaBo9uMZTQ4mp-nMojLymoFMIgQoSrrYfqTo1Q7yAGYkSgWmN4uOCW35MkiEbyDSA-5U2Qg9bSSJJkqFXSBuHBqsAUVw7DAACc3ABrZzkAAWjaCsaGiAKA4mMVkkUmlN0i1dwgT+Q18gvCh0KUpk4rCNn86Xq-XW+kfmxO7Nnuboaq8x6nvokyXpk2QRCSCh7BEXrXuMcSvsc75nDOACOACu2BMC4YB8Owi64Rg264oM-D7qBeibIC6gJhEsh0hmShFrIPxFpEvEKOhnIhjh+GEcRpHkeaf7RoB1FhAeEqgq2QIaMILF0iWJK+h8hQaPx7JTpWZwXGGLh1g2Ub3E2skEh8+QJpBiSnl8-zakohLFIkIj6JmAnTtyJkkJgmCUSKwH+gOOyjJMIhkrM0GICqwJ7HEqm6KosgXt60J6hhhrnMiJouIFwUWQBVHWhlDKbLo7k0EW5R0nkhZkjEej+l8MS+YZ9jCQRpnYEFzghbuNFupm8GJIk9WFKxrqMkohiUrMySJLKaH6W+eW9YRNYDXY3RSZZMnWhsagTSm02GNmbYxJSlLSFSKW-GWQZWA4a7sJuxBkJQmDvT+w1AaNBjaEosqlCetpqMkV2ut6RISqMTrCFM9JJF19T-Z9G5KFjm4AJJVsa7SdPOgPWQguybCSuwZbKLXDukrqPSCESUoSqQiLMGO4x9m68z+hP+by7hQAAtmAZOlUKx1xlTwJEhojoM4qmQJMShRbLo8pTT8PN4zjBtC0ilyFaT3TS5aQNhLsRbwSjU1U72rrjMCCzaKO2s1frfOG77xv5ab7SixLUv-jL5Vy2Uh5paC2QylTLkI4kw6o+o+ifOtOWcgbAvYwHyAkGubhgOLkuuAAbkunDkIF5PWijUxg8meg0voaWqzIuxJCohigokMT6OoPs-nnBNVoXxch+XLgbqgi7YAAXtw7B15bVkN4pblcWo-rJh8BiCP8OgFvk0NzC1KrrOjG25bnRuznhfXsKgqAleHVsU-6D0SnIqcJAWEQ-wyhxERhmcGORtAiBHtjMeG4A7bRcGLVAVcXAvzfvXFsQIe4THlJrJImssxwx0KqH4NVcgXnUKmGB-MH7+VcEHYImDgLagHCMHYF4kxkn0MA8oYD5Q-EfLaHQNC-aCyrEQbgsBSIkDwLPeeS8V6BRcBADEq8KDmnXrLYCDsoiyiJFxC86wSxHzhuoUBMRPi3RVLMHYoi4EB0kbgaRi5ZG4BcFXRcNdlGqOkT9TRH8N5ywfAtXIcwdC7FlJSY+iRcz6HWLdTQ+h7F0PsE4lxbiir4DsMw4GewoiahPBlGIpZ4pZAQnkIEWVOz1U0PYgAMngMALgAAqr9MAEEQcg1B6D37SUjmFCIwJNAoxKbbb0ZSUwSkJJSfeqhtZ6WzgaXOjTcDNLaW-JQAAFfk84XAAEEIAYAgAQQ5EA+QCi0QM0a4xZQklBBnNKES+wxERskVQj1LGLPLHfX2ShVnrPabjUuodXBnMgKco5Fyw79NCjc7u9ySgZlwQoFIZSUrEkLAmEGuwZTawaU01pQKnBlz2eCk5kixZMH2s0ywATYUjTCM6M6iRNjYOyLFf4JQzqZm0F7eYnw9gErWUSzZJLQUHKORCxBayADuaD2m5KZR7DiYI0rQ1TGIF2w4VCAnVLMVaqRhWAs2fjXAHACBKqED8Bk2lkonh0NINiyhpjyE1Ifbmt8c5-IBaKzASgzUWqoIdMqcKwgzAZKUQwu8Uonj7CjNy6xtByEBIUAwxq-VKAAHKoBcDsrosBIXnPNla8I+hiTaDJMOMkBDdC6HjaAoECR8xAhVCMexAAJBRy95w+LUf4pB6BAoEAgNwMA1hcAV1QGuJQMB2AAFo54Lx7avTA868A1lQKWjK8x8ioopGikYpiYKLRBMmVGuwRCFE7d2pRmAVH9o0YOiAw6lyLnnkoalJB2CbsXGLWdzhF23t7WujdW6rlhoJOqtyBhtY6APNoY+8wXU5FuQWVSIxvmvUxn8gAatXbAtd72+PUZQZ9w7R1rInVOmdc752eO8aB3Am7t0hKTPMSBJ9NBIZ-hqUYnEDVqE6l65ZeGCNEYfX4p9yCX0dLfR+r9P757-rowxwjgV13MfA4E7Ro0MqzHbBx5tMpuNw0JKqa8-GgRHpvkst6fz9nZOaTJijY7qPTvHXRsgUA7CaZYxBxlUHcgLUSRER8MpO5ZASFEfdqEEIYrrfYxzPnnNDrk4ud9i5P2YG-b+lTgHvO+bA6xlKYNhy5FTTKMpw49j5FbNDco2C0g8xnCRMiGAR1ubwDR8dRBFxgG-c0sS7X6VHWuXJUCR5NAQXPNVrieQDCIQiFV-JLW2sSU6U-US62KIBetl3eQurFAEMSmsLVmRd55BqvMj2Ko5CVBE1YVr4kOuIOGxJYNOnxsHdIbFE7nwzt0jtradKGVcjNuyj8zkz2RsBqJiZMyo3Q2Bai4WBSrdBPykiEDvIIPzPlHiO2x79QYcSWBSiAYLgABKA2IASFDK4Ej-jS0RZ7noJNrYeLY9dO3beqRqQJCrROYncCXC4FzYj6shVEelp4lEX4mY6rrCmDW4+VWQS7GWu3HiPMABie1nCdao91jzSg+sDYXP1QaFsvuQYQPKUBpI6qgkUF8LiwCND5GvCUpGXNbNQ4NPr63m2RJW-2iz68GtNjRsiMmEsTqXZUlvDNdQOR9Cor1wb9gIe+q7Wt59hl+2siR5JNHxyUwCy5H+GFsGS0mIGHC4oTP1u4fC0KmaFnJQYuMntLvVsyZq8Gb2IQhMswSFYYMvUIP+1ycmkpzTkgdOGcuFcao3CkZbco5VG2cHOwm2diIZkVFoCCgp+Sun-32GlDT+cLPrw8-af0+JqaaASOI5270I+aIXpAQlEboYMpQsPIU-EsGZf0JNEwGEcXDAeAfwbDQvCmedSLedZQZIDVTyOtOPX4HmREBA60L4TFAeAoTMB3LiWaGCLsCUXYckPQL0VIF6SfOBPAuWeYAccGXSKGGGcghKQkQcVOHICYe6B7OzHDUeVJZgnRcGMGMoZSR6X4aJOGCYUBFGTWDlOqTQYQgPezUeX1DZTACQ0aVIGUMGKNdDTUPQavSkZuB6D4coDQoTLOLQ0Q2BXQoFJoMdAwplQoCxY7JtY7eUeNZQVlPlHIFGX0DNPQ7ZXZMFKVCATwoQAsZQX4Ag3FFUKvZmHIOrdWeYKkU8AMEXFZQlSI8VGecleIhAQwOQCUaUUoXecYRQMpIkE-N3VKXIuDCIoFQNdgco-nHuWUAsMwvMetDIizKmJME8AA1QDozZHNPNaI2A5HIvL4O5GqLiSkX4fghtLIj2MoGKInEQuBJQNAVBPQno9KfIKYFbGtVFY+W0UBZIGqXiVQdYtQG9ZdO9STUjVLWTcoriQwNyIxGIDUUkJmGCVPGDOqGIVIH0YTA43OfDLxdTYjR9MjFzfQsbO3LiEoUvbWSxAwdnSLd4D0eJVFQEHICoJLJzcjdExYimQxVUEsWYEoFKVsDQ4+BCDWDMeQFUeJQkBgzaUnDAconQfQI7VFJkEQTMc7fcUEBaNKTDNFMoL0NbF7cdY2YUksKIEoPQSkCrIsBIHHOU0HOOCHFU2HZ-B-RfTIWk60B6dYDiIAsLCvbBIHKIa7EQBwtI3eM0snBfOncoosFUEEXIdQEsDMTUspXnd06glKcBTQq-A2MXCXesMAcoy7CUVsTYO6TOTYY+K+eCVMQEVFO6ZvfaYUtqUvFiAsCvePFyO2K9P0ITOtKKUs2-dUjElHcocUT4VFVsExITOQQfUBBs+vMfCZVs9gO-YIanR-YUmqHuAoF3EsQ+JMQAghCUAhQwVPP-DPEXG-Scv0609-LfIEN2HQH4XeBZUYNctnTcneNPAwG+EwIAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogAsAJgA0IAJ6IAjAGYaAVgB0gwQE5Zm2dOkAOYQtkBfI+LQYc+JdgiYwBAMph2AAlhYw5Tt1oMkIFjZvHn8BBEEFXSUabQMANlk1AHZBRKTxKQRpYTjpJTikyI043TVpAsETM3QsPChrW3sAETgPLxcWPHZfXkCOLhDQMNk45QUaJN0J1QUFQSmFDJk5KJy1OLjUueFhNWEqkHNaqxs7Ahb3O3bIGB7-PuDeYY3oybkkmkFRwSTkpayaNJBEpdAktoC9mV9qZDjVLPVTs1WldXCQ+NhYHdmKx+twnohZElhEpCjQyXthElRiM4v9SnkIkTFCUtsYYUd4Q0zk4UR1UF0sQEcY9QkJFEpyr8NNI1KUkuVaZIhMIaCopkltHt5Do2dULHUufYeZ5XDcwIKHgN8eEaFF5qlSqC5n8lQhNsD3bppBM5HNBNIDhyDYjHG1UejMfResKraLwrJiXEaBo9uMZTQ4mp-nMojLymoFMIgQoSrrYfqTo1Q7yAGYkSgWmN4uOCW35MkiEbyDSA-5U2Qg9bSSJJkqFXSBuHBqsAUVw7DAACc3ABrZzkAAWjaCsaGiAKA4mMVkkUmlN0i1dwgT+Q18gvCh0KUpk4rCNn86Xq-XW+kfmxO7Nnuboaq8x6nvokyXpk2QRCSCh7BEXrXuMcSvsc75nDOACOACu2BMC4YB8Owi64Rg264oM-D7qBeibIC6gJhEsh0hmShFrIPxFpEvEKOhnIhjh+GEcRpHkeaf7RoB1FhAeEqgq2QIaMILF0iWJK+h8hQaPx7JTpWZwXGGLh1g2Ub3E2skEh8+QJpBiSnl8-zakohLFIkIj6JmAnTtyJkkJgmCUSKwH+gOOyjJMIhkrM0GICqwJ7HEqm6KosgXt60J6hhhrnMiJouIFwUWQBVHWhlDKbLo7k0EW5R0nkhZkjEej+l8MS+YZ9jCQRpnYEFzghbuNFupm8GJIk9WFKxrqMkohiUrMySJLKaH6W+eW9YRNYDXY3RSZZMnWhsagTSm02GNmbYxJSlLSFSKW-GWQZWA4a7sJuxBkJQmDvT+w1AaNBjaEosqlCetpqMkV2ut6RISqMTrCFM9JJF19T-Z9G5KFjm4AJJVsa7SdPOgPWQguybCSuwZbKLXDukrqPSCESUoSqQiLMGO4x9m68z+hP+by7hQAAtmAZOlUKx1xlTwJEhojoM4qmQJMShRbLo8pTT8PN4zjBtC0ilyFaT3TS5aQNhLsRbwSjU1U72rrjMCCzaKO2s1frfOG77xv5ab7SixLUv-jL5Vy2Uh5paC2QylTLkI4kw6o+o+ifOtOWcgbAvYwH20uOwqCoCV4dWxT-oPRKcipwkBYiP8ZRxIjGbgzk2giD7P55wTs54X1YuoAAbmARcl2X0mR2FQJJK88qa0kmtZnDOiqj8NW5Be6ipt32O9xuAdOK4QfBOTFWAgOIw7BeSZkvoTflK38o-I+to6Hv-NG1WyAkGubhgHFpLVwo9FycHIIFc+ctdBTDBsmPQNJ9BpVVjIXYc8WKgkSDEfQ6hP5+0Fj-P+Y8Q7AJcBuVAi5sAAC9uDsEgZbKy1oUbU00Oof0yYPgGEEP8HQBZ8jQzmC1FU6x0YbVyrnb+ZwiDcFgKREgeAyEUOobQwKLgIAYjoRQc0DDZbAQdmdFUExmGFA2IWHhd4QQpRKDsGIqgLx4IPgHaRuBZGLnkbgFwoDwGqPUbIn62jy6MOgbMEkpIuJqAiNDBqcMEgt0BIWSaGZzwvQMpjX2jiqzONce4oq+A7BQL0XsKIi00pUhlJma8PCkFgzvLdYc5I9LZwNBI-2mSZFyIUeQyhND5zFQkEVHAUBcAFOBheYkkR5icSppseKWRWzr3UCUJMa1PgTjETndJkj7BZI6R4rx2AIFBX6YFbAQyRk21BGdYcexhzjAzLDGC4wzopC7B8QRzCHEABk8BjwACoTwIIXIeo9x6l3OUICIwJNAoxiClG5igm6JAlISSkHC7GFC+T8lw-zS5KAAAr8nnC4AAghADAEACCkogHyAUOjp6jSeVESY1jbRVzEMzGIiNkiqEejERQmLcB-InrjQBodXBUsgJSslNKw5T1Cgy1h0QCwCNRlSdlasDAqE1ESBQRILwpAFUK3FTggFEolRS6RYsmD7THpYAJcqRphFmCqDi8x74aDVf8TMqoZQeyXsOLihrsXCpNWKklZLJWF0FQAd1BZPI69KnUJkTNcnitoprZhdSqR8bK2GfCDTizASh8a4A4AQcF4QfgMm0slE8OhpBsWUNMeQmouHc3Wc09J3zBXBtxSWstVBDplXlWEGYDJSiGAiSlE8fYUZuXWNoOQgJCgGALcKgAcqgFwBKuiwCldS82FbJnEm0GSepExJi6FnS3IECR8xAhVCMBxAAJJRPS6GYDURo-xLgh4QECgQCA3AwDWFwMPVAa4lAwHYAAWi6co3pmAYN4BrKgCtGV5gghfuUEs7xZowSXqqTYKptaUgXtkF9b6VGft8Zoygv70AAaXIuChShrUkHYKhxcYsoPODg1RxDyHcCofQ2lM6k6Rjp1YeYnYIIIIQ0MPZBxAA1Jc3iaPfq0Qx-9mBAPAdA+ByD0GYP7MOUJkTdKR0EgfCCBBKpsi-H9EzGCowxglCmMeJBGwVNqYOT4zT9G-1McXCxxcbHMAca4zx4zpnArmbQ5Zx11mQlehqvZykESHo8KTFEDMMCOy+o2Nlcs4j0nEryWPILumgOCoMxBkDxmyBQDsPF0TuRNIFAdp1z4zmZDaxblXKCuqoSNJKxsnu5XmuVcY7p5jrH2OcYodFvjTWWsoYS4E3Ro0MoJAlLsb0iRtbKqqfIFQGpUUIX7FnMbBoZwkTIhgPTtW8CGZA0QRcYAONjzEg9+1CarMgUPB8TQEFzyzLkP6DiCFVIRBlNDtZTSrB3fEo9wuP2JIVuyKd+ZuqmQiAqU3SHNU7Ee3s4GjtSP7sSUBQPUSVOKJDojgDrH69YpL0SmsdViB9B5FZakHb5RYg82R794tRMTJmT+8OpLWRRjEj0Ag2YaRU50jtqywkgIUolifRT+oIuJIipRAMFwAAlT7EAJChlcLR-xmOREKQXa2HikRVdRFYSMQwCQz0I5u29X2LhcBbsl9WQqkuK08SZesNQdV1geYmDwuHIJdjLSQTxHmAAxPazgnsgZe-VpQ73PsLn6oNC2m3E2IHlC3UkdVQSKC+FxJuGh8jXlhUjLmojEf1Ez6XmnIkS-7Ux9eDWMzHJTALLkbMVJbwzXUDkfQuqM9Z-YH3vqu1S+DvL8z4fJJR8FnH7h-4ERlB7GXgmWYa9RuvW78vsXwtCpmkx+5hajJ7QRPmSvTIx+wZLSYgYR83oV+qSSgPe+0huJoxuZuJAFuVuLgbi6iuEkYW+MuhiUQuQKURYXwnYn+iAuqLcBQs+yUC+nevuN+pe4BXgkB5uluxMpo0AUuTOMuegj40QXomuSCF4M6LsdsBB2uRI-oC6JgMIgeGA8A-g1+Dq1siAMGKCCAMGJ+UoyyhIaUGU2aPMiIkhlcKUC0WCBQmYVeXE+GMgXYe20e8CMCQImgeCmhTC8wA44MukUMMMRhlMhIg4cgsoZ4RQhgDiWyNhUcMCYMZQykj0vwlIPCEwLcKMms2QZI145OXeB8Sg3aRqmA-hYUmoYME6BY14eYV6c0N4byD0HwMe4wQBm0ucKRvaRaTQwG6RDKZ4YMMyCQkQiglSzMmqiQCQNInwdUvwa6uKO6ZqEaEA9Ro6BYygjmGBUIGYDaHR+BDeqUVIp4AYuuSRVRhaIqpq4qIxYxuB2gA4vqeg0MEQsUsyRICx6s8wyx2sqxiRlRWKmx-a7Aex8YBQWRyqCSeRs6qoOw6wSYJ4hgfoAxRam626hK7AYh0uUh4QmYUQNUXEZGZQkQXOCAFx+QDe96MUOu9x6SaAIKharxqgqQ+QUwcOZhhQvWAIoINSNUvEqgSJlG3S1GX6fiWmVWrxXEhgC00MaQSuj4uq5ip2w4qUqkcgo45RpWPcqmYCfmGmbJgWM2nJXwUQsoRYseVcso3CMS2QC0IpJ4AifBDik2dg2mgUypsCS80eKUqgHY7RMENUqohgF4bBSMmg121+Sg+uGArxOg+gKgbOeOnOXqNJEyzoCYwOqgwu9OIGxsvpJYaBqWlIuQdUguquTUaU-Occd6xWnp3pIGtBVB0BmQ0JFMD06wUOmBsw4+s8ruIIXEIg1pKomYlQax+ZSgUBFurxRYLqcc6gJY9yJQsy1SxOjZSSbcrZuJP4AeQe9YYArxmWEorYxGeOGw2pMEwi8EqY8SRIRIS+pevpbUu+LE++yYh+roCYDI7MnWKJZJ+5YBcZ-2TBSYTar+zI6gl8R+GkIgZ+-+l+95zgFBwQpu1BvpNUc8BQdeJYXCL5U+c8xRhgc+1ii+axoBgFnZJZjBMJmBbsOgPwES2sJYswcFEoS8iFRBBgoiJgQAA */
     id: 'Modeling',
 
     tsTypes: {} as import('./modelingMachine.typegen').Typegen0,
@@ -76,16 +79,19 @@ export const modelingMachine = createMachine(
         | { type: 'Equip tool' }
         | { type: 'Equip move tool' }
         | { type: 'Set radius' }
-        | { type: 'Make segment horizontal' }
-        | { type: 'Make segment vertical' }
         | { type: 'Complete line' }
         | { type: 'Set distance' }
         | { type: 'Equip new tool' }
         | { type: 'Set Default Planes'; data: DefaultPlanes }
         | { type: 'update_code'; data: string }
+        | { type: 'Make segment horizontal' }
+        | { type: 'Make segment vertical' }
         | { type: 'Constrain horizontal distance' }
         | { type: 'Constrain vertical distance' }
-        | { type: 'Constrain angle' },
+        | { type: 'Constrain angle' }
+        | { type: 'Constrain horizontally align' }
+        | { type: 'Constrain vertically align' },
+      // ,
     },
 
     states: {
@@ -275,6 +281,19 @@ export const modelingMachine = createMachine(
                 ],
               },
 
+              'Equip tool': {
+                target: 'Line Tool',
+                actions: 'set tool line',
+              },
+
+              'Equip move tool': 'Move Tool',
+
+              'Set selection': {
+                target: 'SketchIdle',
+                internal: true,
+                actions: 'Set selection',
+              },
+
               'Make segment vertical': {
                 cond: 'Can make selection vertical',
                 target: 'SketchIdle',
@@ -289,19 +308,6 @@ export const modelingMachine = createMachine(
                 actions: ['Make selection horizontal'],
               },
 
-              'Equip tool': {
-                target: 'Line Tool',
-                actions: 'set tool line',
-              },
-
-              'Equip move tool': 'Move Tool',
-
-              'Set selection': {
-                target: 'SketchIdle',
-                internal: true,
-                actions: 'Set selection',
-              },
-
               'Constrain horizontal distance': {
                 target: 'Horizontal distance modal',
                 cond: 'Can constrain horizontal distance',
@@ -313,6 +319,18 @@ export const modelingMachine = createMachine(
               'Constrain angle': {
                 target: 'Angle modal',
                 cond: 'Can constrain angle',
+              },
+              'Constrain horizontally align': {
+                cond: 'Can constrain horizontally align',
+                target: 'SketchIdle',
+                internal: true,
+                actions: ['Constrain horizontally align'],
+              },
+              'Constrain vertically align': {
+                cond: 'Can constrain vertically align',
+                target: 'SketchIdle',
+                internal: true,
+                actions: ['Constrain vertically align'],
               },
             },
 
@@ -548,10 +566,16 @@ export const modelingMachine = createMachine(
         horzVertDistanceInfo({ selectionRanges, constraint: 'setHorzDistance' })
           .enabled,
       'Can constrain vertical distance': ({ selectionRanges }) =>
-        horzVertDistanceInfo({ selectionRanges, constraint: 'setHorzDistance' })
+        horzVertDistanceInfo({ selectionRanges, constraint: 'setVertDistance' })
           .enabled,
       'Can constrain angle': ({ selectionRanges }) =>
         angleBetweenInfo({ selectionRanges }).enabled,
+      'Can constrain horizontally align': ({ selectionRanges }) =>
+        horzVertDistanceInfo({ selectionRanges, constraint: 'setHorzDistance' })
+          .enabled,
+      'Can constrain vertically align': ({ selectionRanges }) =>
+        horzVertDistanceInfo({ selectionRanges, constraint: 'setHorzDistance' })
+          .enabled,
     },
     actions: {
       'Set selection': assign({
@@ -702,6 +726,26 @@ export const modelingMachine = createMachine(
           kclManager.ast,
           kclManager.programMemory
         )
+        kclManager.updateAst(modifiedAst, true, {
+          // TODO re implement cursor shit
+          // callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
+        })
+      },
+      'Constrain horizontally align': ({ selectionRanges }) => {
+        const { modifiedAst, pathToNodeMap } = applyConstraintHorzVertAlign({
+          selectionRanges,
+          constraint: 'setVertDistance',
+        })
+        kclManager.updateAst(modifiedAst, true, {
+          // TODO re implement cursor shit
+          // callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
+        })
+      },
+      'Constrain vertically align': ({ selectionRanges }) => {
+        const { modifiedAst, pathToNodeMap } = applyConstraintHorzVertAlign({
+          selectionRanges,
+          constraint: 'setHorzDistance',
+        })
         kclManager.updateAst(modifiedAst, true, {
           // TODO re implement cursor shit
           // callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
