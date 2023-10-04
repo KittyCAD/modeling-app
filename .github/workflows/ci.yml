@@ -197,12 +197,16 @@ jobs:
 
   publish-apps-release:
     runs-on: ubuntu-20.04
-    if: github.event_name == 'release'
+    # TODO: change true to github.event_name == 'schedule'
+    if: ${{ github.event_name == 'release' || true }}
     needs: [build-test-web, prepare-json-files, build-apps]
     env:
       VERSION_NO_V: ${{ needs.prepare-json-files.outputs.version }}
-      PUB_DATE: ${{ github.event.release.created_at }}
-      NOTES: ${{ github.event.release.body }}
+      VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-json-files.outputs.version) || needs.prepare-json-files.outputs.version }}
+      PUB_DATE: ${{ github.event_name == 'release' && github.event.release.created_at || github.event.repository.updated_at }}
+      NOTES: ${{ github.event_name == 'release' && github.event.release.body || 'Nightly build' }}
+      # TODO: remove test from nightly
+      BUCKET_DIR: ${{ github.event_name == 'release' && 'dl.kittycad.io/releases/modeling-app' || 'dl.kittycad.io/releases/modeling-app/test/nightly' }}
     steps:
       - uses: actions/download-artifact@v3
 
@@ -212,9 +216,9 @@ jobs:
           DARWIN_SIG=`cat artifact/macos/*.app.tar.gz.sig`
           LINUX_SIG=`cat artifact/appimage/*.AppImage.tar.gz.sig`
           WINDOWS_SIG=`cat artifact/msi/*.msi.zip.sig`
-          RELEASE_DIR=https://dl.kittycad.io/releases/modeling-app/v${VERSION_NO_V}
+          RELEASE_DIR=https://${BUCKET_DIR}/${VERSION}
           jq --null-input \
-            --arg version "v${VERSION_NO_V}" \
+            --arg version "${VERSION}" \
             --arg pub_date "${PUB_DATE}" \
             --arg notes "${NOTES}" \
             --arg darwin_sig "$DARWIN_SIG" \
@@ -250,9 +254,9 @@ jobs:
 
       - name: Generate the download static endpoint
         run: |
-          RELEASE_DIR=https://dl.kittycad.io/releases/modeling-app/v${VERSION_NO_V}
+          RELEASE_DIR=https://${BUCKET_DIR}/${VERSION}
           jq --null-input \
-            --arg version "v${VERSION_NO_V}" \
+            --arg version "${VERSION}" \
             --arg pub_date "${PUB_DATE}" \
             --arg notes "${NOTES}" \
             --arg darwin_url "$RELEASE_DIR/dmg/KittyCAD%20Modeling_${VERSION_NO_V}_universal.dmg" \
@@ -287,137 +291,33 @@ jobs:
           project_id: kittycadapi
 
       - name: Upload release files to public bucket
+        # TODO: remove if safe
+        if: ${{ github.event_name == 'release' }}
         uses: google-github-actions/upload-cloud-storage@v1.0.3
         with:
           path: artifact
           glob: '*/*itty*'
           parent: false
-          destination: dl.kittycad.io/releases/modeling-app/v${{ env.VERSION_NO_V }}
+          destination: ${{ env.BUCKET_DIR }}/${{ env.VERSION }}
 
       - name: Upload update endpoint to public bucket
+        # TODO: remove if safe
+        if: ${{ github.event_name == 'release' }}
         uses: google-github-actions/upload-cloud-storage@v1.0.3
         with:
           path: last_update.json
-          destination: dl.kittycad.io/releases/modeling-app
+          destination: ${{ env.BUCKET_DIR }}
 
       - name: Upload download endpoint to public bucket
+        # TODO: remove if safe
+        if: ${{ github.event_name == 'release' }}
         uses: google-github-actions/upload-cloud-storage@v1.0.3
         with:
           path: last_download.json
-          destination: dl.kittycad.io/releases/modeling-app
+          destination: ${{ env.BUCKET_DIR }}
 
       - name: Upload release files to Github
+        if: ${{ github.event_name == 'release' }}
         uses: softprops/action-gh-release@v1
         with:
           files: artifact/*/*itty*
-
-  publish-apps-nightly:
-    runs-on: ubuntu-20.04
-    # if: github.event_name == 'schedule'
-    needs: [build-test-web, prepare-json-files, build-apps]
-    env:
-      VERSION_NO_V: ${{ needs.prepare-json-files.outputs.version }}
-      PUB_DATE: ${{ github.event.repository.updated_at }}
-      NOTES: Nightly build
-    steps:
-      - uses: actions/download-artifact@v3
-
-      - name: Generate the update static endpoint
-        run: |
-          ls -l artifact/*/*itty*
-          DARWIN_SIG=`cat artifact/macos/*.app.tar.gz.sig`
-          LINUX_SIG=`cat artifact/appimage/*.AppImage.tar.gz.sig`
-          WINDOWS_SIG=`cat artifact/msi/*.msi.zip.sig`
-          RELEASE_DIR=https://dl.kittycad.io/releases/modeling-app/test/nightly/${VERSION_NO_V}
-          jq --null-input \
-            --arg version "${VERSION_NO_V}" \
-            --arg pub_date "${PUB_DATE}" \
-            --arg notes "${NOTES}" \
-            --arg darwin_sig "$DARWIN_SIG" \
-            --arg darwin_url "$RELEASE_DIR/macos/KittyCAD%20Modeling.app.tar.gz" \
-            --arg linux_sig "$LINUX_SIG" \
-            --arg linux_url "$RELEASE_DIR/appimage/kittycad-modeling_${VERSION_NO_V}_amd64.AppImage.tar.gz" \
-            --arg windows_sig "$WINDOWS_SIG" \
-            --arg windows_url "$RELEASE_DIR/msi/KittyCAD%20Modeling_${VERSION_NO_V}_x64_en-US.msi.zip" \
-            '{
-              "version": $version,
-              "pub_date": $pub_date,
-              "notes": $notes,
-              "platforms": {
-                "darwin-x86_64": {
-                  "signature": $darwin_sig,
-                  "url": $darwin_url
-                },
-                "darwin-aarch64": {
-                  "signature": $darwin_sig,
-                  "url": $darwin_url
-                },
-                "linux-x86_64": {
-                  "signature": $linux_sig,
-                  "url": $linux_url
-                },
-                "windows-x86_64": {
-                  "signature": $windows_sig,
-                  "url": $windows_url
-                }
-              }
-            }' > last_update.json
-            cat last_update.json
-
-      - name: Generate the download static endpoint
-        run: |
-          RELEASE_DIR=https://dl.kittycad.io/releases/modeling-app/test/nightly/${VERSION_NO_V}
-          jq --null-input \
-            --arg version "${VERSION_NO_V}" \
-            --arg pub_date "${PUB_DATE}" \
-            --arg notes "${NOTES}" \
-            --arg darwin_url "$RELEASE_DIR/dmg/KittyCAD%20Modeling_${VERSION_NO_V}_universal.dmg" \
-            --arg linux_url "$RELEASE_DIR/appimage/kittycad-modeling_${VERSION_NO_V}_amd64.AppImage" \
-            --arg windows_url "$RELEASE_DIR/msi/KittyCAD%20Modeling_${VERSION_NO_V}_x64_en-US.msi" \
-            '{
-              "version": $version,
-              "pub_date": $pub_date,
-              "notes": $notes,
-              "platforms": {
-                "dmg-universal": {
-                  "url": $darwin_url
-                },
-                "appimage-x86_64": {
-                  "url": $linux_url
-                },
-                "msi-x86_64": {
-                  "url": $windows_url
-                }
-              }
-            }' > last_download.json
-            cat last_download.json
-
-      - name: Authenticate to Google Cloud
-        uses: 'google-github-actions/auth@v1.1.1'
-        with:
-          credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
-
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1.1.1
-        with:
-          project_id: kittycadapi
-
-      - name: Upload release files to public bucket
-        uses: google-github-actions/upload-cloud-storage@v1.0.3
-        with:
-          path: artifact
-          glob: '*/*itty*'
-          parent: false
-          destination: dl.kittycad.io/releases/modeling-app/test/nightly/${{ env.VERSION_NO_V }}
-
-      - name: Upload update endpoint to public bucket
-        uses: google-github-actions/upload-cloud-storage@v1.0.3
-        with:
-          path: last_update.json
-          destination: dl.kittycad.io/releases/modeling-app/test/nightly
-
-      - name: Upload download endpoint to public bucket
-        uses: google-github-actions/upload-cloud-storage@v1.0.3
-        with:
-          path: last_download.json
-          destination: dl.kittycad.io/releases/modeling-app/test/nightly
