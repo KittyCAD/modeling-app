@@ -643,17 +643,49 @@ async fn inner_angled_line_that_intersects(
     Ok(new_sketch_group)
 }
 
+/// Start a sketch at a given point.
+pub async fn start_sketch_at(args: Args) -> Result<MemoryItem, KclError> {
+    let data: LineData = args.get_data()?;
+
+    let sketch_group = inner_start_sketch_at(data, args).await?;
+    Ok(MemoryItem::SketchGroup(sketch_group))
+}
+
+/// Start a sketch at a given point on the 'XY' plane.
+#[stdlib {
+    name = "startSketchAt",
+}]
+async fn inner_start_sketch_at(data: LineData, args: Args) -> Result<Box<SketchGroup>, KclError> {
+    // Let's assume it's the XY plane for now, this is just for backwards compatibility.
+    let xy_plane = PlaneData::XY;
+    let plane = inner_start_sketch_on(xy_plane, args.clone()).await?;
+    let sketch_group = inner_start_profile_at(data, plane, args).await?;
+    Ok(sketch_group)
+}
+
 /// Data for a plane.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub enum PlaneData {
+    /// The XY plane.
     #[serde(rename = "XY", alias = "xy")]
     XY,
+    /// The opposite side of the XY plane.
+    #[serde(rename = "-XY", alias = "-xy")]
+    NegXY,
+    /// The XZ plane.
     #[serde(rename = "XZ", alias = "xz")]
     XZ,
+    /// The opposite side of the XZ plane.
+    #[serde(rename = "-XZ", alias = "-xz")]
+    NegXZ,
+    /// The YZ plane.
     #[serde(rename = "YZ", alias = "yz")]
     YZ,
+    /// The opposite side of the YZ plane.
+    #[serde(rename = "-YZ", alias = "-yz")]
+    NegYZ,
     /// A defined plane.
     Plane {
         /// Origin of the plane.
@@ -662,6 +694,8 @@ pub enum PlaneData {
         x_axis: Box<Point3d>,
         /// What should the plane’s Y axis be?
         y_axis: Box<Point3d>,
+        /// The z-axis (normal).
+        z_axis: Box<Point3d>,
     },
 }
 
@@ -674,6 +708,16 @@ impl From<PlaneData> for Plane {
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(1.0, 0.0, 0.0),
                 y_axis: Point3d::new(0.0, 1.0, 0.0),
+                z_axis: Point3d::new(0.0, 0.0, 0.0),
+                value: PlaneType::XY,
+                meta: vec![],
+            },
+            PlaneData::NegXY => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(1.0, 0.0, 0.0),
+                y_axis: Point3d::new(0.0, 1.0, 0.0),
+                z_axis: Point3d::new(0.0, 0.0, 0.0),
                 value: PlaneType::XY,
                 meta: vec![],
             },
@@ -682,6 +726,16 @@ impl From<PlaneData> for Plane {
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(1.0, 0.0, 0.0),
                 y_axis: Point3d::new(0.0, 0.0, 1.0),
+                z_axis: Point3d::new(0.0, 0.0, 0.0),
+                value: PlaneType::XZ,
+                meta: vec![],
+            },
+            PlaneData::NegXZ => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(1.0, 0.0, 0.0),
+                y_axis: Point3d::new(0.0, 0.0, 1.0),
+                z_axis: Point3d::new(0.0, 0.0, 0.0),
                 value: PlaneType::XZ,
                 meta: vec![],
             },
@@ -690,14 +744,30 @@ impl From<PlaneData> for Plane {
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(0.0, 1.0, 0.0),
                 y_axis: Point3d::new(0.0, 0.0, 1.0),
+                z_axis: Point3d::new(0.0, 0.0, 0.0),
                 value: PlaneType::YZ,
                 meta: vec![],
             },
-            PlaneData::Plane { origin, x_axis, y_axis } => Plane {
+            PlaneData::NegYZ => Plane {
+                id,
+                origin: Point3d::new(0.0, 0.0, 0.0),
+                x_axis: Point3d::new(0.0, 1.0, 0.0),
+                y_axis: Point3d::new(0.0, 0.0, 1.0),
+                z_axis: Point3d::new(0.0, 0.0, 0.0),
+                value: PlaneType::YZ,
+                meta: vec![],
+            },
+            PlaneData::Plane {
+                origin,
+                x_axis,
+                y_axis,
+                z_axis,
+            } => Plane {
                 id,
                 origin: *origin,
                 x_axis: *x_axis,
                 y_axis: *y_axis,
+                z_axis: *z_axis,
                 value: PlaneType::Custom,
                 meta: vec![],
             },
@@ -721,10 +791,15 @@ async fn inner_start_sketch_on(data: PlaneData, args: Args) -> Result<Box<Plane>
     let mut plane: Plane = data.clone().into();
 
     plane.id = match data {
-        PlaneData::XY => args.ctx.planes.xy,
-        PlaneData::XZ => args.ctx.planes.xz,
-        PlaneData::YZ => args.ctx.planes.yz,
-        PlaneData::Plane { origin, x_axis, y_axis } => {
+        PlaneData::XY | PlaneData::NegXY => args.ctx.planes.xy,
+        PlaneData::XZ | PlaneData::NegXZ => args.ctx.planes.xz,
+        PlaneData::YZ | PlaneData::NegYZ => args.ctx.planes.yz,
+        PlaneData::Plane {
+            origin,
+            x_axis,
+            y_axis,
+            z_axis: _,
+        } => {
             let id = uuid::Uuid::new_v4();
             // Create the plane.
             args.send_modeling_cmd(
@@ -749,6 +824,8 @@ async fn inner_start_sketch_on(data: PlaneData, args: Args) -> Result<Box<Plane>
             animated: false,
             ortho: false,
             plane_id: plane.id,
+            // We pass in the normal for the plane here.
+            disable_camera_with_plane: Some(plane.z_axis.clone().into()),
         },
     )
     .await?;

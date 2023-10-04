@@ -49,6 +49,7 @@
 	* [`sin`](#sin)
 	* [`sqrt`](#sqrt)
 	* [`startProfileAt`](#startProfileAt)
+	* [`startSketchAt`](#startSketchAt)
 	* [`startSketchOn`](#startSketchOn)
 	* [`tan`](#tan)
 	* [`tangentalArc`](#tangentalArc)
@@ -3238,7 +3239,106 @@ string,
 	y: number,
 	z: number,
 },
+	// The z-axis (normal).
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
+```
+
+#### Returns
+
+* `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+
+
+### startSketchAt
+
+Start a sketch at a given point on the 'XY' plane.
+
+
+
+```
+startSketchAt(data: LineData) -> SketchGroup
+```
+
+#### Arguments
+
+* `data`: `LineData` - Data to draw a line.
+```
+{
+	// The tag.
+	tag: string,
+	// The to point.
+	to: [number],
+} |
+[number]
 ```
 
 #### Returns
@@ -3326,6 +3426,11 @@ startSketchOn(data: PlaneData) -> Plane
 * `data`: `PlaneData` - Data for a plane.
 ```
 string |
+string |
+string |
+string |
+string |
+string |
 {
 	plane: {
 	// Origin of the plane.
@@ -3342,6 +3447,12 @@ string |
 },
 	// What should the plane’s Y axis be?
 	y_axis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The z-axis (normal).
+	z_axis: {
 	x: number,
 	y: number,
 	z: number,
@@ -3374,6 +3485,12 @@ string,
 },
 	// What should the plane’s Y axis be?
 	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The z-axis (normal).
+	zAxis: {
 	x: number,
 	y: number,
 	z: number,
@@ -3436,6 +3553,8 @@ tangentalArc(data: TangentalArcData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -3502,6 +3621,8 @@ tangentalArc(data: TangentalArcData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -3590,6 +3711,8 @@ tangentalArcTo(data: TangentalArcToData, sketch_group: SketchGroup) -> SketchGro
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -3656,6 +3779,8 @@ tangentalArcTo(data: TangentalArcToData, sketch_group: SketchGroup) -> SketchGro
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.

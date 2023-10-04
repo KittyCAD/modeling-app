@@ -133,6 +133,8 @@ pub struct Plane {
     pub x_axis: Point3d,
     /// What should the plane’s Y axis be?
     pub y_axis: Point3d,
+    /// The z-axis (normal).
+    pub z_axis: Point3d,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
