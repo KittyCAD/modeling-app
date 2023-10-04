@@ -47,11 +47,9 @@ export const ErrorPage = () => {
             Clear storage
           </ActionButton>
           <ActionButton
-            Element="link"
+            Element="externalLink"
             icon={{ icon: faBug }}
-            target="_blank"
-            rel="noopener noreferrer"
-            to="https://discord.com/channels/915388055236509727/1138967922614743060"
+            to="https://github.com/KittyCAD/modeling-app/issues/new"
           >
             Report Bug
           </ActionButton>
