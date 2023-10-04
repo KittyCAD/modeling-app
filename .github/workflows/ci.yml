@@ -9,6 +9,7 @@ on:
     types: [published]
   # schedule:
   #   - cron: '0 0 * * *'
+  # Will checkout the last commit from the default branch (main as of 2023-10-04)
 
 jobs:
   check-format:
@@ -204,7 +205,7 @@ jobs:
       VERSION_NO_V: ${{ needs.prepare-json-files.outputs.version }}
       VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-json-files.outputs.version) || needs.prepare-json-files.outputs.version }}
       PUB_DATE: ${{ github.event_name == 'release' && github.event.release.created_at || github.event.repository.updated_at }}
-      NOTES: ${{ github.event_name == 'release' && github.event.release.body || 'Nightly build' }}
+      NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Nightly build, commit {0}', github.sha) }}
       # TODO: remove test from nightly
       BUCKET_DIR: ${{ github.event_name == 'release' && 'dl.kittycad.io/releases/modeling-app' || 'dl.kittycad.io/releases/modeling-app/test/nightly' }}
     steps:
