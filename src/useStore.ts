@@ -21,7 +21,7 @@ import { deferExecution } from 'lib/utils'
 import { bracket } from 'lib/exampleKcl'
 import { engineCommandManager } from './lang/std/engineConnection'
 import { DefaultPlanes } from './wasm-lib/kcl/bindings/DefaultPlanes'
-import { initDefaultPlanes, setDefaultPlanesHidden } from './hooks/useAppMode'
+import { initDefaultPlanes } from './hooks/useAppMode'
 
 export type Selection = {
   type: 'default' | 'line-end' | 'line-mid'
@@ -229,10 +229,12 @@ export const useStore = create<StoreState>()(
         },
         executeCode: async (code, force) => {
           if (!get().defaultPlanes) {
-            let defaultPlanes = await initDefaultPlanes(engineCommandManager)
+            let defaultPlanes = await initDefaultPlanes(
+              engineCommandManager,
+              true
+            )
             if (!defaultPlanes) return
             get().setDefaultPlanes(defaultPlanes)
-            setDefaultPlanesHidden(engineCommandManager, defaultPlanes, true)
           }
 
           const result = await executeCode({
@@ -347,10 +349,12 @@ export const useStore = create<StoreState>()(
           const _ast = ast || get().ast
           if (!get().isStreamReady) return
           if (!get().defaultPlanes) {
-            let defaultPlanes = await initDefaultPlanes(engineCommandManager)
+            let defaultPlanes = await initDefaultPlanes(
+              engineCommandManager,
+              true
+            )
             if (!defaultPlanes) return
             get().setDefaultPlanes(defaultPlanes)
-            setDefaultPlanesHidden(engineCommandManager, defaultPlanes, true)
           }
 
           set({ isExecuting: true })
@@ -371,10 +375,12 @@ export const useStore = create<StoreState>()(
           if (!get().isStreamReady) return
 
           if (!get().defaultPlanes) {
-            let defaultPlanes = await initDefaultPlanes(engineCommandManager)
+            let defaultPlanes = await initDefaultPlanes(
+              engineCommandManager,
+              true
+            )
             if (!defaultPlanes) return
             get().setDefaultPlanes(defaultPlanes)
-            setDefaultPlanesHidden(engineCommandManager, defaultPlanes, true)
           }
 
           const { logs, errors, programMemory } = await executeAst({

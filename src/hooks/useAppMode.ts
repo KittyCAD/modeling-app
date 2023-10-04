@@ -265,20 +265,29 @@ export function setDefaultPlanesHidden(
   hidden: boolean
 ) {
   Object.values(defaultPlanes).forEach((planeId) => {
-    engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'object_visible',
-        object_id: planeId,
-        hidden: hidden,
-      },
-    })
+    hidePlane(engineCommandManager, planeId, hidden)
+  })
+}
+
+function hidePlane(
+  engineCommandManager: EngineCommandManager,
+  planeId: string,
+  hidden: boolean
+) {
+  engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'object_visible',
+      object_id: planeId,
+      hidden: hidden,
+    },
   })
 }
 
 export async function initDefaultPlanes(
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: EngineCommandManager,
+  hidePlanes?: boolean
 ): Promise<DefaultPlanes | null> {
   if (!engineCommandManager.engineConnection?.isReady()) {
     return null
@@ -288,16 +297,25 @@ export async function initDefaultPlanes(
     y_axis: { x: 0, y: 1, z: 0 },
     color: { r: 0.7, g: 0.28, b: 0.28, a: 0.4 },
   })
+  if (hidePlanes) {
+    hidePlane(engineCommandManager, xy, true)
+  }
   const yz = await createPlane(engineCommandManager, {
     x_axis: { x: 0, y: 1, z: 0 },
     y_axis: { x: 0, y: 0, z: 1 },
     color: { r: 0.28, g: 0.7, b: 0.28, a: 0.4 },
   })
+  if (hidePlanes) {
+    hidePlane(engineCommandManager, yz, true)
+  }
   const xz = await createPlane(engineCommandManager, {
     x_axis: { x: 1, y: 0, z: 0 },
     y_axis: { x: 0, y: 0, z: 1 },
     color: { r: 0.28, g: 0.28, b: 0.7, a: 0.4 },
   })
+  if (hidePlanes) {
+    hidePlane(engineCommandManager, xz, true)
+  }
   return { xy, yz, xz }
 }
 
