@@ -292,8 +292,6 @@ jobs:
           project_id: kittycadapi
 
       - name: Upload release files to public bucket
-        # TODO: remove if safe
-        if: ${{ github.event_name == 'release' }}
         uses: google-github-actions/upload-cloud-storage@v1.0.3
         with:
           path: artifact
@@ -302,16 +300,12 @@ jobs:
           destination: ${{ env.BUCKET_DIR }}/${{ env.VERSION }}
 
       - name: Upload update endpoint to public bucket
-        # TODO: remove if safe
-        if: ${{ github.event_name == 'release' }}
         uses: google-github-actions/upload-cloud-storage@v1.0.3
         with:
           path: last_update.json
           destination: ${{ env.BUCKET_DIR }}
 
       - name: Upload download endpoint to public bucket
-        # TODO: remove if safe
-        if: ${{ github.event_name == 'release' }}
         uses: google-github-actions/upload-cloud-storage@v1.0.3
         with:
           path: last_download.json
