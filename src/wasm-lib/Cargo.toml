@@ -22,7 +22,7 @@ anyhow = "1"
 image = "0.24.7"
 kittycad = "0.2.27"
 pretty_assertions = "1.4.0"
-reqwest = { version = "0.11.21", default-features = false }
+reqwest = { version = "0.11.22", default-features = false }
 tokio = { version = "1.32.0", features = ["rt-multi-thread", "macros", "time"] }
 twenty-twenty = "0.6.1"
 uuid = { version = "1.4.1", features = ["v4", "js", "serde"] }
