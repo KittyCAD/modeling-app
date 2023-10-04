@@ -30,7 +30,7 @@ export const HorzVert = ({
   const [enableHorz, setEnableHorz] = useState(false)
   const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
   useEffect(() => {
-    const { enabled, transforms } = HorzVertInfo(selectionRanges, horOrVert)
+    const { enabled, transforms } = horzVertInfo(selectionRanges, horOrVert)
     setTransformInfos(transforms)
     setEnableHorz(enabled)
   }, [guiMode, selectionRanges])
@@ -67,7 +67,7 @@ export const HorzVert = ({
   )
 }
 
-export function HorzVertInfo(
+export function horzVertInfo(
   selectionRanges: Selections,
   horOrVert: 'vertical' | 'horizontal'
 ) {
@@ -101,7 +101,7 @@ export function applyConstraintHorzVert(
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
 } {
-  const transformInfos = HorzVertInfo(selectionRanges, horOrVert).transforms
+  const transformInfos = horzVertInfo(selectionRanges, horOrVert).transforms
   return transformAstSketchLines({
     ast,
     selectionRanges,

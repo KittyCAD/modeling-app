@@ -128,7 +128,11 @@ export const Toolbar = () => {
         )}
         {state.matches('Sketch.SketchIdle') &&
           state.nextEvents
-            .filter((eventName) => eventName.includes('Make segment'))
+            .filter(
+              (eventName) =>
+                eventName.includes('Make segment') ||
+                eventName.includes('Constrain')
+            )
             .map((eventName) => (
               <button
                 key={eventName}
@@ -147,7 +151,9 @@ export const Toolbar = () => {
                   iconClassName={sketchButtonClassnames.icon}
                   size="md"
                 />
-                {eventName.replace('Make segment ', '')}
+                {eventName
+                  .replace('Make segment ', '')
+                  .replace('Constrain ', '')}
               </button>
             ))}
         {guiMode.mode === 'canEditExtrude' && (

@@ -24,6 +24,7 @@ import {
   compareVec2Epsilon,
 } from 'lang/std/sketch'
 import { kclManager } from 'lang/KclSinglton'
+import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -184,6 +185,28 @@ export const ModelingMachineProvider = ({
       // createSketch: async () => {},
       createExtrude: async () => {},
       createFillet: async () => {},
+      'Get horizontal info': async ({ selectionRanges }) => {
+        const { modifiedAst, pathToNodeMap } =
+          await applyConstraintHorzVertDistance({
+            constraint: 'setHorzDistance',
+            selectionRanges,
+          })
+        kclManager.updateAst(modifiedAst, true, {
+          // todo handle cursor
+          // callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
+        })
+      },
+      'Get vertical info': async ({ selectionRanges }) => {
+        const { modifiedAst, pathToNodeMap } =
+          await applyConstraintHorzVertDistance({
+            constraint: 'setVertDistance',
+            selectionRanges,
+          })
+        kclManager.updateAst(modifiedAst, true, {
+          // todo handle cursor
+          // callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
+        })
+      },
     },
     devTools: true,
   })
