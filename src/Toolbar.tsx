@@ -10,7 +10,7 @@ import { SetHorzVertDistance } from './components/Toolbar/SetHorzVertDistance'
 import { SetAngleLength } from './components/Toolbar/setAngleLength'
 import { SetAbsDistance } from './components/Toolbar/SetAbsDistance'
 import { SetAngleBetween } from './components/Toolbar/SetAngleBetween'
-import { Fragment, useEffect } from 'react'
+import { Fragment, WheelEvent, useRef } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faX } from '@fortawesome/free-solid-svg-icons'
 import { Popover, Transition } from '@headlessui/react'
@@ -62,10 +62,24 @@ export const Toolbar = () => {
     executeAst: s.executeAst,
   }))
   useAppMode()
+  const toolbarButtonsRef = useRef<HTMLSpanElement>(null)
+
+  function handleToolbarButtonsWheelEvent(ev: WheelEvent<HTMLSpanElement>) {
+    const span = toolbarButtonsRef.current
+    if (!span) {
+      return
+    }
+
+    span.scrollLeft = span.scrollLeft += ev.deltaY
+  }
 
   function ToolbarButtons({ className }: React.HTMLAttributes<HTMLElement>) {
     return (
-      <span className={styles.toolbarButtons + ' ' + className}>
+      <span
+        ref={toolbarButtonsRef}
+        onWheel={handleToolbarButtonsWheelEvent}
+        className={styles.toolbarButtons + ' ' + className}
+      >
         {guiMode.mode === 'default' && (
           <button
             onClick={() => {
