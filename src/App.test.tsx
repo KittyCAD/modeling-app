@@ -4,6 +4,7 @@ import { describe, test, vi } from 'vitest'
 import { BrowserRouter } from 'react-router-dom'
 import { GlobalStateProvider } from './components/GlobalStateProvider'
 import CommandBarProvider from 'components/CommandBar'
+import { BROWSER_FILE_NAME } from 'Router'
 
 let listener: ((rect: any) => void) | undefined = undefined
 ;(global as any).ResizeObserver = class ResizeObserver {
@@ -24,7 +25,7 @@ describe('App tests', () => {
       >
       return {
         ...actual,
-        useParams: () => ({ id: 'new' }),
+        useParams: () => ({ id: BROWSER_FILE_NAME }),
         useLoaderData: () => ({ code: null }),
       }
     })
