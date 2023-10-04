@@ -84,9 +84,17 @@ export function useAppMode() {
         const firstArg = sketchCallExpression.arguments[0]
         let planeId = ''
         if (firstArg.type === 'Literal' && firstArg.value) {
-          const planeStr = firstArg.value.toString().toLowerCase()
-          if (planeStr === 'xy' || planeStr === 'xz' || planeStr === 'yz')
-            planeId = localDefaultPlanes[planeStr]
+          const planeStrCleaned = firstArg.value
+            .toString()
+            .toLowerCase()
+            .replace('-', '')
+          if (
+            planeStrCleaned === 'xy' ||
+            planeStrCleaned === 'xz' ||
+            planeStrCleaned === 'yz'
+          ) {
+            planeId = localDefaultPlanes[planeStrCleaned]
+          }
         }
 
         if (!planeId) return // they are on some non default plane, which we don't support yet
