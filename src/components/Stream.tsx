@@ -303,19 +303,6 @@ export const Stream = ({ className = '' }) => {
         const coords: { x: number; y: number }[] =
           curve.data.data.control_points
 
-        // Get the current axis.
-        let currentAxis: 'xy' | 'xz' | 'yz' | null = null
-        if (currentPlane === defaultPlanes?.xy) {
-          currentAxis = 'xy'
-        } else if (currentPlane === defaultPlanes?.yz) {
-          currentAxis = 'yz'
-        } else if (currentPlane === defaultPlanes?.xz) {
-          currentAxis = 'xz'
-        }
-
-        // Do not support starting a new sketch on a non-default plane.
-        if (!currentAxis) return
-
         // We need the normal for the plane we are on.
         const plane = await engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
@@ -324,7 +311,33 @@ export const Stream = ({ className = '' }) => {
             type: 'get_sketch_mode_plane',
           },
         })
-        console.log('plane', plane)
+        const z_axis = plane.data.data.z_axis
+
+        // Get the current axis.
+        let currentAxis: 'xy' | 'xz' | 'yz' | '-xy' | '-xz' | '-yz' | null =
+          null
+        if (currentPlane === defaultPlanes?.xy) {
+          if (z_axis.z === -1) {
+            currentAxis = '-xy'
+          } else {
+            currentAxis = 'xy'
+          }
+        } else if (currentPlane === defaultPlanes?.yz) {
+          if (z_axis.x === -1) {
+            currentAxis = '-yx'
+          } else {
+            currentAxis = 'yz'
+          }
+        } else if (currentPlane === defaultPlanes?.xz) {
+          if (z_axis.y === -1) {
+            currentAxis = '-xz'
+          } else {
+            currentAxis = 'xz'
+          }
+        }
+
+        // Do not support starting a new sketch on a non-default plane.
+        if (!currentAxis) return
 
         const _addStartSketch = addStartSketch(
           ast,

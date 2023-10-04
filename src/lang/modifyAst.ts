@@ -32,7 +32,7 @@ import { isLiteralArrayOrStatic } from './std/sketchcombos'
 
 export function addStartSketch(
   node: Program,
-  axis: 'xy' | 'xz' | 'yz',
+  axis: 'xy' | 'xz' | 'yz' | '-xy' | '-xz' | '-yz',
   start: [number, number],
   end: [number, number]
 ): { modifiedAst: Program; id: string; pathToNode: PathToNode } {
