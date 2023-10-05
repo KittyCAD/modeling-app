@@ -535,3 +535,24 @@ export function doesPipeHave({
       expression.callee.name === calleeName
   )
 }
+
+export function hasExtrudeSketchGroup({
+  ast,
+  selection,
+  programMemory,
+}: {
+  ast: Program
+  selection: Selection
+  programMemory: ProgramMemory
+}): boolean {
+  const pathToNode = getNodePathFromSourceRange(ast, selection.range)
+  const varDec = getNodeFromPath<VariableDeclaration>(
+    ast,
+    pathToNode,
+    'VariableDeclaration'
+  ).node
+  if (varDec.type !== 'VariableDeclaration') return false
+  const varName = varDec.declarations[0].id.name
+  const varValue = programMemory?.root[varName]
+  return varValue?.type === 'ExtrudeGroup' || varValue?.type === 'SketchGroup'
+}
