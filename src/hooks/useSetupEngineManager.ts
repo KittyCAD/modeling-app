@@ -28,6 +28,10 @@ export function useSetupEngineManager(
 
   const hasSetNonZeroDimensions = useRef<boolean>(false)
 
+  useEffect(() => {
+    executeCode()
+  }, [])
+
   useLayoutEffect(() => {
     // Load the engine command manager once with the initial width and height,
     // then we do not want to reload it.

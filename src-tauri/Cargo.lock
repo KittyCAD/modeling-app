@@ -84,7 +84,7 @@ dependencies = [
  "tauri-build",
  "tauri-plugin-fs-extra",
  "tokio",
- "toml 0.8.1",
+ "toml 0.8.2",
 ]
 
 [[package]]
@@ -3712,9 +3712,9 @@ dependencies = [
 
 [[package]]
 name = "tauri"
-version = "1.5.0"
+version = "1.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "72aee3277d0a0df01472cc704ab5934a51a1f25348838df17bfb3c5cb727880c"
+checksum = "0238c5063bf9613054149a1b6bce4935922e532b7d8211f36989a490a79806be"
 dependencies = [
  "anyhow",
  "base64 0.21.2",
@@ -3828,7 +3828,7 @@ dependencies = [
 [[package]]
 name = "tauri-plugin-fs-extra"
 version = "0.0.0"
-source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v1#9b96996b5a90a6a57d587ce4312975f13a4d8bc2"
+source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v1#fa32d1afa97f52f74d814c5619b8d95da3268e3e"
 dependencies = [
  "log",
  "serde",
@@ -4078,14 +4078,14 @@ dependencies = [
 
 [[package]]
 name = "toml"
-version = "0.8.1"
+version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1bc1433177506450fe920e46a4f9812d0c211f5dd556da10e731a0a3dfa151f0"
+checksum = "185d8ab0dfbb35cf1399a6344d8484209c088f75f8f68230da55d48d95d43e3d"
 dependencies = [
  "serde",
  "serde_spanned",
  "toml_datetime",
- "toml_edit 0.20.1",
+ "toml_edit 0.20.2",
 ]
 
 [[package]]
@@ -4112,9 +4112,9 @@ dependencies = [
 
 [[package]]
 name = "toml_edit"
-version = "0.20.1"
+version = "0.20.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ca676d9ba1a322c1b64eb8045a5ec5c0cfb0c9d08e15e9ff622589ad5221c8fe"
+checksum = "396e4d48bbb2b7554c944bde63101b5ae446cff6ec4a24227428f15eb72ef338"
 dependencies = [
  "indexmap 2.0.0",
  "serde",

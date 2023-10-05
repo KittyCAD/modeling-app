@@ -1,6 +1,11 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import UserSidebarMenu from './UserSidebarMenu'
-import { BrowserRouter } from 'react-router-dom'
+import {
+  Route,
+  RouterProvider,
+  createMemoryRouter,
+  createRoutesFromElements,
+} from 'react-router-dom'
 import { Models } from '@kittycad/lib'
 import { GlobalStateProvider } from './GlobalStateProvider'
 import CommandBarProvider from './CommandBar'
@@ -93,11 +98,24 @@ describe('UserSidebarMenu tests', () => {
 
 function TestWrap({ children }: { children: React.ReactNode }) {
   // wrap in router and xState context
-  return (
-    <BrowserRouter>
-      <CommandBarProvider>
-        <GlobalStateProvider>{children}</GlobalStateProvider>
-      </CommandBarProvider>
-    </BrowserRouter>
+  // We have to use a memory router in the testing environment,
+  // and we have to use the createMemoryRouter function instead of <MemoryRouter /> as of react-router v6.4:
+  // https://reactrouter.com/en/6.16.0/routers/picking-a-router#using-v64-data-apis
+  const router = createMemoryRouter(
+    createRoutesFromElements(
+      <Route
+        path="/file/:id"
+        element={
+          <CommandBarProvider>
+            <GlobalStateProvider>{children}</GlobalStateProvider>
+          </CommandBarProvider>
+        }
+      />
+    ),
+    {
+      initialEntries: ['/file/new'],
+      initialIndex: 0,
+    }
   )
+  return <RouterProvider router={router} />
 }
