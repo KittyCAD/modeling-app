@@ -7,8 +7,9 @@ on:
       - main
   release:
     types: [published]
-  # schedule:
-  #   - cron: '0 0 * * *'
+  schedule:
+    - cron: '0 4 * * *'
+  # Daily at 04:00 AM UTC
   # Will checkout the last commit from the default branch (main as of 2023-10-04)
 
 jobs:
@@ -198,16 +199,14 @@ jobs:
 
   publish-apps-release:
     runs-on: ubuntu-20.04
-    # TODO: change true to github.event_name == 'schedule'
-    if: ${{ github.event_name == 'release' || true }}
+    if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
     needs: [build-test-web, prepare-json-files, build-apps]
     env:
       VERSION_NO_V: ${{ needs.prepare-json-files.outputs.version }}
       VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-json-files.outputs.version) || needs.prepare-json-files.outputs.version }}
       PUB_DATE: ${{ github.event_name == 'release' && github.event.release.created_at || github.event.repository.updated_at }}
       NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Nightly build, commit {0}', github.sha) }}
-      # TODO: remove test from nightly
-      BUCKET_DIR: ${{ github.event_name == 'release' && 'dl.kittycad.io/releases/modeling-app' || 'dl.kittycad.io/releases/modeling-app/test/nightly' }}
+      BUCKET_DIR: ${{ github.event_name == 'release' && 'dl.kittycad.io/releases/modeling-app' || 'dl.kittycad.io/releases/modeling-app/nightly' }}
     steps:
       - uses: actions/download-artifact@v3
 
