@@ -91,11 +91,14 @@ export function useCalc({
   newVariableInsertIndex: number
   setNewVariableName: (a: string) => void
 } {
-  const { ast, programMemory, selectionRange } = useStore((s) => ({
-    ast: s.ast,
-    programMemory: s.programMemory,
-    selectionRange: s.selectionRanges.codeBasedSelections[0].range,
-  }))
+  const { ast, programMemory, selectionRange, defaultPlanes } = useStore(
+    (s) => ({
+      ast: s.ast,
+      programMemory: s.programMemory,
+      selectionRange: s.selectionRanges.codeBasedSelections[0].range,
+      defaultPlanes: s.defaultPlanes,
+    })
+  )
   const inputRef = useRef<HTMLInputElement>(null)
   const [availableVarInfo, setAvailableVarInfo] = useState<
     ReturnType<typeof findAllPreviousVariables>
@@ -143,19 +146,22 @@ export function useCalc({
       availableVarInfo.variables.forEach(({ key, value }) => {
         _programMem.root[key] = { type: 'userVal', value, __meta: [] }
       })
-      executor(ast, _programMem, engineCommandManager).then((programMemory) => {
-        const resultDeclaration = ast.body.find(
-          (a) =>
-            a.type === 'VariableDeclaration' &&
-            a.declarations?.[0]?.id?.name === '__result__'
-        )
-        const init =
-          resultDeclaration?.type === 'VariableDeclaration' &&
-          resultDeclaration?.declarations?.[0]?.init
-        const result = programMemory?.root?.__result__?.value
-        setCalcResult(typeof result === 'number' ? String(result) : 'NAN')
-        init && setValueNode(init)
-      })
+      if (!defaultPlanes) return
+      executor(ast, _programMem, engineCommandManager, defaultPlanes!).then(
+        (programMemory) => {
+          const resultDeclaration = ast.body.find(
+            (a) =>
+              a.type === 'VariableDeclaration' &&
+              a.declarations?.[0]?.id?.name === '__result__'
+          )
+          const init =
+            resultDeclaration?.type === 'VariableDeclaration' &&
+            resultDeclaration?.declarations?.[0]?.init
+          const result = programMemory?.root?.__result__?.value
+          setCalcResult(typeof result === 'number' ? String(result) : 'NAN')
+          init && setValueNode(init)
+        }
+      )
     } catch (e) {
       setCalcResult('NAN')
       setValueNode(null)

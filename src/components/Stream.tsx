@@ -46,6 +46,8 @@ export const Stream = ({ className = '' }) => {
     updateAst,
     setGuiMode,
     programMemory,
+    defaultPlanes,
+    currentPlane,
   } = useStore((s) => ({
     mediaStream: s.mediaStream,
     setButtonDownInStream: s.setButtonDownInStream,
@@ -59,6 +61,8 @@ export const Stream = ({ className = '' }) => {
     updateAst: s.updateAst,
     setGuiMode: s.setGuiMode,
     programMemory: s.programMemory,
+    defaultPlanes: s.defaultPlanes,
+    currentPlane: s.currentPlane,
   }))
   const {
     settings: {
@@ -252,10 +256,26 @@ export const Stream = ({ className = '' }) => {
 
         let engineId = guiMode.pathId
 
+        // Get the current plane string for plane we are on.
+        let currentPlaneString = ''
+        if (currentPlane === defaultPlanes?.xy) {
+          currentPlaneString = 'XY'
+        } else if (currentPlane === defaultPlanes?.yz) {
+          currentPlaneString = 'YZ'
+        } else if (currentPlane === defaultPlanes?.xz) {
+          currentPlaneString = 'XZ'
+        }
+
+        // Do not supporting editing/moving lines on a non-default plane.
+        // Eventually we can support this but for now we will just throw an
+        // error.
+        if (currentPlaneString === '') return
+
         const updatedAst: Program = await modifyAstForSketch(
           engineCommandManager,
           ast,
           variableName,
+          currentPlaneString,
           engineId
         )
 
@@ -282,8 +302,46 @@ export const Stream = ({ className = '' }) => {
         })
         const coords: { x: number; y: number }[] =
           curve.data.data.control_points
+
+        // We need the normal for the plane we are on.
+        const plane = await engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'get_sketch_mode_plane',
+          },
+        })
+        const z_axis = plane.data.data.z_axis
+
+        // Get the current axis.
+        let currentAxis: 'xy' | 'xz' | 'yz' | '-xy' | '-xz' | '-yz' | null =
+          null
+        if (currentPlane === defaultPlanes?.xy) {
+          if (z_axis.z === -1) {
+            currentAxis = '-xy'
+          } else {
+            currentAxis = 'xy'
+          }
+        } else if (currentPlane === defaultPlanes?.yz) {
+          if (z_axis.x === -1) {
+            currentAxis = '-yz'
+          } else {
+            currentAxis = 'yz'
+          }
+        } else if (currentPlane === defaultPlanes?.xz) {
+          if (z_axis.y === -1) {
+            currentAxis = '-xz'
+          } else {
+            currentAxis = 'xz'
+          }
+        }
+
+        // Do not support starting a new sketch on a non-default plane.
+        if (!currentAxis) return
+
         const _addStartSketch = addStartSketch(
           ast,
+          currentAxis,
           [roundOff(coords[0].x), roundOff(coords[0].y)],
           [
             roundOff(coords[1].x - coords[0].x),

@@ -4,6 +4,7 @@ import {
   EngineCommand,
 } from '../lang/std/engineConnection'
 import { Models } from '@kittycad/lib'
+import { v4 as uuidv4 } from 'uuid'
 
 type WebSocketResponse = Models['OkWebSocketResponseData_type']
 
@@ -64,7 +65,11 @@ export async function enginelessExecutor(
   }) as any as EngineCommandManager
   await mockEngineCommandManager.waitForReady
   mockEngineCommandManager.startNewSession()
-  const programMemory = await _executor(ast, pm, mockEngineCommandManager)
+  const programMemory = await _executor(ast, pm, mockEngineCommandManager, {
+    xy: uuidv4(),
+    yz: uuidv4(),
+    xz: uuidv4(),
+  })
   await mockEngineCommandManager.waitForAllCommands()
   return programMemory
 }
@@ -83,7 +88,11 @@ export async function executor(
   })
   await engineCommandManager.waitForReady
   engineCommandManager.startNewSession()
-  const programMemory = await _executor(ast, pm, engineCommandManager)
+  const programMemory = await _executor(ast, pm, engineCommandManager, {
+    xy: uuidv4(),
+    yz: uuidv4(),
+    xz: uuidv4(),
+  })
   await engineCommandManager.waitForAllCommands(ast, programMemory)
   return programMemory
 }
