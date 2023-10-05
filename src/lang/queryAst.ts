@@ -13,6 +13,7 @@ import {
   ProgramMemory,
   SketchGroup,
   SourceRange,
+  PipeExpression,
 } from './wasm'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
 import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
@@ -510,4 +511,27 @@ export function isLinesParallelAndConstrained(
       sourceRange: [0, 0],
     }
   }
+}
+
+export function doesPipeHave({
+  ast,
+  selection,
+  calleeName,
+}: {
+  calleeName: string
+  ast: Program
+  selection: Selection
+}): boolean {
+  const pathToNode = getNodePathFromSourceRange(ast, selection.range)
+  const pipeExpression = getNodeFromPath<PipeExpression>(
+    ast,
+    pathToNode,
+    'PipeExpression'
+  ).node
+  if (pipeExpression.type !== 'PipeExpression') return false
+  return pipeExpression.body.some(
+    (expression) =>
+      expression.type === 'CallExpression' &&
+      expression.callee.name === calleeName
+  )
 }
