@@ -236,10 +236,12 @@ async function createPlane(
     x_axis,
     y_axis,
     color,
+    hidden,
   }: {
     x_axis: Models['Point3d_type']
     y_axis: Models['Point3d_type']
     color: Models['Color_type']
+    hidden: boolean
   }
 ) {
   const planeId = uuidv4()
@@ -252,6 +254,7 @@ async function createPlane(
       x_axis,
       y_axis,
       clobber: false,
+      hide: hidden,
     },
     cmd_id: planeId,
   })
@@ -304,6 +307,7 @@ export async function initDefaultPlanes(
     x_axis: { x: 1, y: 0, z: 0 },
     y_axis: { x: 0, y: 1, z: 0 },
     color: { r: 0.7, g: 0.28, b: 0.28, a: 0.4 },
+    hidden: hidePlanes ? true : false,
   })
   if (hidePlanes) {
     hidePlane(engineCommandManager, xy, true)
@@ -312,6 +316,7 @@ export async function initDefaultPlanes(
     x_axis: { x: 0, y: 1, z: 0 },
     y_axis: { x: 0, y: 0, z: 1 },
     color: { r: 0.28, g: 0.7, b: 0.28, a: 0.4 },
+    hidden: hidePlanes ? true : false,
   })
   if (hidePlanes) {
     hidePlane(engineCommandManager, yz, true)
@@ -320,10 +325,8 @@ export async function initDefaultPlanes(
     x_axis: { x: 1, y: 0, z: 0 },
     y_axis: { x: 0, y: 0, z: 1 },
     color: { r: 0.28, g: 0.28, b: 0.7, a: 0.4 },
+    hidden: hidePlanes ? true : false,
   })
-  if (hidePlanes) {
-    hidePlane(engineCommandManager, xz, true)
-  }
   return { xy, yz, xz }
 }
 
