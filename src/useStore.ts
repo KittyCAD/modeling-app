@@ -23,7 +23,7 @@ import { engineCommandManager } from './lang/std/engineConnection'
 
 export type Selection = {
   type: 'default' | 'line-end' | 'line-mid'
-  range?: SourceRange
+  range: SourceRange
 }
 export type Selections = {
   otherSelections: ('y-axis' | 'x-axis' | 'z-axis')[]

@@ -15,8 +15,8 @@ import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 let lastMessage = ''
 
 interface CommandInfo {
-  commandType?: CommandTypes
-  range?: SourceRange
+  commandType: CommandTypes
+  range: SourceRange
   parentId?: string
 }
 
@@ -725,7 +725,11 @@ export class EngineCommandManager {
               message.request_id
             ) {
               this.handleModelingCommand(message.resp, message.request_id)
-            } else if (!message.success && message.request_id) {
+            } else if (
+              !message.success &&
+              message.request_id &&
+              this.artifactMap[message.request_id]
+            ) {
               this.handleFailedModelingCommand(message)
             }
           }
@@ -832,9 +836,9 @@ export class EngineCommandManager {
     } else {
       this.artifactMap[id] = {
         type: 'failed',
-        range: command?.range,
-        commandType: command?.commandType,
-        parentId: command?.parentId,
+        range: command.range,
+        commandType: command.commandType,
+        parentId: command.parentId ? command.parentId : undefined,
         errors,
       }
     }
@@ -1168,9 +1172,7 @@ export class EngineCommandManager {
         delete this.sourceRangeMap[oldId]
         if (artifact) {
           this.artifactMap[engineSegment.command_id] = artifact
-          this.sourceRangeMap[engineSegment.command_id] = artifact.range ?? [
-            0, 0,
-          ]
+          this.sourceRangeMap[engineSegment.command_id] = artifact.range
         }
       }
     })
