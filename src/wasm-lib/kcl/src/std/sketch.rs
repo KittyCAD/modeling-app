@@ -810,6 +810,7 @@ async fn inner_start_sketch_on(data: PlaneData, args: Args) -> Result<Box<Plane>
                     size: 60.0,
                     x_axis: (*x_axis).into(),
                     y_axis: (*y_axis).into(),
+                    hide: true,
                 },
             )
             .await?;

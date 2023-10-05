@@ -187,6 +187,7 @@ impl DefaultPlanes {
                     size: default_size,
                     x_axis: Point3D { x: 1.0, y: 0.0, z: 0.0 },
                     y_axis: Point3D { x: 0.0, y: 1.0, z: 0.0 },
+                    hide: true,
                 },
             )
             .await?;
@@ -206,17 +207,6 @@ impl DefaultPlanes {
                 },
             )
             .await?;
-        // Set it as hidden.
-        engine
-            .send_modeling_cmd(
-                uuid::Uuid::new_v4(),
-                SourceRange::default(),
-                ModelingCmd::ObjectVisible {
-                    hidden: true,
-                    object_id: xy,
-                },
-            )
-            .await?;
 
         // Create yz plane.
         let yz = uuid::Uuid::new_v4();
@@ -230,6 +220,7 @@ impl DefaultPlanes {
                     size: default_size,
                     x_axis: Point3D { x: 0.0, y: 1.0, z: 0.0 },
                     y_axis: Point3D { x: 0.0, y: 0.0, z: 1.0 },
+                    hide: true,
                 },
             )
             .await?;
@@ -249,17 +240,6 @@ impl DefaultPlanes {
                 },
             )
             .await?;
-        // Set it as hidden.
-        engine
-            .send_modeling_cmd(
-                uuid::Uuid::new_v4(),
-                SourceRange::default(),
-                ModelingCmd::ObjectVisible {
-                    hidden: true,
-                    object_id: yz,
-                },
-            )
-            .await?;
 
         // Create xz plane.
         let xz = uuid::Uuid::new_v4();
@@ -273,6 +253,7 @@ impl DefaultPlanes {
                     size: default_size,
                     x_axis: Point3D { x: 1.0, y: 0.0, z: 0.0 },
                     y_axis: Point3D { x: 0.0, y: 0.0, z: 1.0 },
+                    hide: true,
                 },
             )
             .await?;
@@ -289,17 +270,6 @@ impl DefaultPlanes {
                         a: 0.4,
                     },
                     plane_id: xz,
-                },
-            )
-            .await?;
-        // Set it as hidden.
-        engine
-            .send_modeling_cmd(
-                uuid::Uuid::new_v4(),
-                SourceRange::default(),
-                ModelingCmd::ObjectVisible {
-                    hidden: true,
-                    object_id: xz,
                 },
             )
             .await?;
