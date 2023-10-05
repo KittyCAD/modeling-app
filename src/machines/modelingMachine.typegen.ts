@@ -97,9 +97,9 @@
 "createExtrude": "Equip extrude";
 "createFillet": "Equip fillet";
         };
-        matchesStates: "Extrude" | "Extrude.Idle" | "Extrude.Ready" | "Extrude.Selection Ready" | "Fillet" | "Fillet.Idle" | "Fillet.Ready" | "Fillet.Selection Ready" | "Sketch" | "Sketch no face" | "Sketch.Angle modal" | "Sketch.Horizontal distance modal" | "Sketch.Length modal" | "Sketch.Line Tool" | "Sketch.Line Tool.Done" | "Sketch.Line Tool.Init" | "Sketch.Line Tool.No Points" | "Sketch.Line Tool.Point Added" | "Sketch.Line Tool.Segment Added" | "Sketch.Move Tool" | "Sketch.SketchIdle" | "Sketch.Vertical distance modal" | "idle" | { "Extrude"?: "Idle" | "Ready" | "Selection Ready";
+        matchesStates: "Extrude" | "Extrude.Idle" | "Extrude.Ready" | "Extrude.Selection Ready" | "Fillet" | "Fillet.Idle" | "Fillet.Ready" | "Fillet.Selection Ready" | "Sketch" | "Sketch no face" | "Sketch.Await angle info" | "Sketch.Await horizontal distance info" | "Sketch.Await length info" | "Sketch.Await vertical distance info" | "Sketch.Line Tool" | "Sketch.Line Tool.Done" | "Sketch.Line Tool.Init" | "Sketch.Line Tool.No Points" | "Sketch.Line Tool.Point Added" | "Sketch.Line Tool.Segment Added" | "Sketch.Move Tool" | "Sketch.SketchIdle" | "idle" | { "Extrude"?: "Idle" | "Ready" | "Selection Ready";
 "Fillet"?: "Idle" | "Ready" | "Selection Ready";
-"Sketch"?: "Angle modal" | "Horizontal distance modal" | "Length modal" | "Line Tool" | "Move Tool" | "SketchIdle" | "Vertical distance modal" | { "Line Tool"?: "Done" | "Init" | "No Points" | "Point Added" | "Segment Added"; }; };
+"Sketch"?: "Await angle info" | "Await horizontal distance info" | "Await length info" | "Await vertical distance info" | "Line Tool" | "Move Tool" | "SketchIdle" | { "Line Tool"?: "Done" | "Init" | "No Points" | "Point Added" | "Segment Added"; }; };
         tags: never;
       }
   
