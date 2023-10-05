@@ -345,8 +345,8 @@ const height = 10
 const length = 12
 
 fn box = (sk1, sk2, scale, plane) => {
-  const boxsketch = startsketchon(plane)
-    |> startprofileat([sk1, sk2], %)
+  const boxsketch = startSketchOn(plane)
+    |> startProfileAt([sk1, sk2], %)
     |> line([0, scale], %)
     |> line([scale, 0], %)
     |> line([0, -scale], %)
