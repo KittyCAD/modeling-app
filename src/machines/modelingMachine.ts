@@ -68,8 +68,6 @@ export const modelingMachine = createMachine(
             type: 'Deselect point'
             data: Selection & { type: 'point' | 'line-end' | 'line-mid' }
           }
-        | { type: 'Equip extrude' }
-        | { type: 'Equip fillet' }
         | { type: 'Enter sketch' }
         | { type: 'Select all'; data: Selection & { type: 'all ' } }
         | { type: 'Select edge'; data: Selection & { type: 'edge' } }
@@ -201,17 +199,6 @@ export const modelingMachine = createMachine(
             'Sketch no face',
           ],
 
-          'Equip extrude': [
-            {
-              target: 'Extrude',
-              cond: 'Selection is empty',
-            },
-            {
-              target: 'Extrude',
-              cond: 'Selection is one face',
-            },
-          ],
-
           'Deselect face': {
             target: 'idle',
             internal: true,
@@ -239,17 +226,6 @@ export const modelingMachine = createMachine(
             ],
             cond: 'Selection is not empty',
           },
-
-          'Equip fillet': [
-            {
-              target: 'Fillet',
-              cond: 'Selection is empty',
-            },
-            {
-              target: 'Fillet',
-              cond: 'Selection is one or more edges',
-            },
-          ],
 
           'extrude intent': [
             {
@@ -488,43 +464,6 @@ export const modelingMachine = createMachine(
         exit: 'sketch exit execute',
       },
 
-      Extrude: {
-        states: {
-          Idle: {
-            on: {
-              'Select face': 'Selection Ready',
-            },
-          },
-          'Selection Ready': {
-            on: {
-              'Set distance': 'Ready',
-            },
-          },
-          Ready: {},
-        },
-
-        initial: 'Idle',
-
-        on: {
-          'Equip extrude': [
-            {
-              target: '.Selection Ready',
-              cond: 'Selection is one face',
-            },
-            '.Idle',
-          ],
-        },
-
-        invoke: {
-          src: 'createExtrude',
-          id: 'Create extrude',
-          onDone: {
-            target: 'idle',
-            actions: ['Modify AST', 'Clear selection'],
-          },
-        },
-      },
-
       'Sketch no face': {
         on: {
           'Select face': {
@@ -539,48 +478,6 @@ export const modelingMachine = createMachine(
 
         entry: 'show default planes',
         exit: 'hide default planes',
-      },
-
-      Fillet: {
-        states: {
-          Idle: {
-            on: {
-              'Select edge': 'Selection Ready',
-            },
-          },
-          'Selection Ready': {
-            on: {
-              'Set radius': 'Ready',
-
-              'Select edge': {
-                target: 'Selection Ready',
-                internal: true,
-              },
-            },
-          },
-          Ready: {},
-        },
-
-        initial: 'Ready',
-
-        on: {
-          'Equip fillet': [
-            {
-              target: '.Selection Ready',
-              cond: 'Selection is one or more edges',
-            },
-            '.Idle',
-          ],
-        },
-
-        invoke: {
-          src: 'createFillet',
-          id: 'Create fillet',
-          onDone: {
-            target: 'idle',
-            actions: ['Modify AST', 'Clear selection'],
-          },
-        },
       },
 
       'awaiting selection': {
