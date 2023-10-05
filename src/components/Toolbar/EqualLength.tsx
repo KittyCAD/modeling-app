@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { toolTips, useStore } from '../../useStore'
-import { Value, VariableDeclarator } from '../../lang/wasm'
+import { Selections, toolTips, useStore } from '../../useStore'
+import { Program, Value, VariableDeclarator } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -10,6 +10,7 @@ import {
   TransformInfo,
   transformSecondarySketchLinesTagFirst,
   getTransformInfos,
+  PathToNodeMap,
 } from '../../lang/std/sketchcombos'
 import { updateCursors } from '../../lang/util'
 import { ActionIcon } from 'components/ActionIcon'
@@ -25,47 +26,10 @@ export const EqualLength = () => {
   const [enableEqual, setEnableEqual] = useState(false)
   const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
   useEffect(() => {
-    const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
-      getNodePathFromSourceRange(kclManager.ast, range)
-    )
-    const nodes = paths.map(
-      (pathToNode) => getNodeFromPath<Value>(kclManager.ast, pathToNode).node
-    )
-    const varDecs = paths.map(
-      (pathToNode) =>
-        getNodeFromPath<VariableDeclarator>(
-          kclManager.ast,
-          pathToNode,
-          'VariableDeclarator'
-        )?.node
-    )
-    const primaryLine = varDecs[0]
-    const secondaryVarDecs = varDecs.slice(1)
-    const isOthersLinkedToPrimary = secondaryVarDecs.every((secondary) =>
-      isSketchVariablesLinked(secondary, primaryLine, kclManager.ast)
-    )
-    const isAllTooltips = nodes.every(
-      (node) =>
-        node?.type === 'CallExpression' &&
-        toolTips.includes(node.callee.name as any)
-    )
+    const { enabled, transforms } = setEqualLengthInfo({ selectionRanges })
 
-    const theTransforms = getTransformInfos(
-      {
-        ...selectionRanges,
-        codeBasedSelections: selectionRanges.codeBasedSelections.slice(1),
-      },
-      kclManager.ast,
-      'equalLength'
-    )
-    setTransformInfos(theTransforms)
-
-    const _enableEqual =
-      !!secondaryVarDecs.length &&
-      isAllTooltips &&
-      isOthersLinkedToPrimary &&
-      theTransforms.every(Boolean)
-    setEnableEqual(_enableEqual)
+    setTransformInfos(transforms)
+    setEnableEqual(enabled)
   }, [guiMode, selectionRanges])
   if (guiMode.mode !== 'sketch') return null
 
@@ -98,4 +62,73 @@ export const EqualLength = () => {
       Equal Length
     </button>
   )
+}
+
+export function setEqualLengthInfo({
+  selectionRanges,
+}: {
+  selectionRanges: Selections
+}) {
+  const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
+    getNodePathFromSourceRange(kclManager.ast, range)
+  )
+  const nodes = paths.map(
+    (pathToNode) => getNodeFromPath<Value>(kclManager.ast, pathToNode).node
+  )
+  const varDecs = paths.map(
+    (pathToNode) =>
+      getNodeFromPath<VariableDeclarator>(
+        kclManager.ast,
+        pathToNode,
+        'VariableDeclarator'
+      )?.node
+  )
+  const primaryLine = varDecs[0]
+  const secondaryVarDecs = varDecs.slice(1)
+  const isOthersLinkedToPrimary = secondaryVarDecs.every((secondary) =>
+    isSketchVariablesLinked(secondary, primaryLine, kclManager.ast)
+  )
+  const isAllTooltips = nodes.every(
+    (node) =>
+      node?.type === 'CallExpression' &&
+      toolTips.includes(node.callee.name as any)
+  )
+
+  const transforms = getTransformInfos(
+    {
+      ...selectionRanges,
+      codeBasedSelections: selectionRanges.codeBasedSelections.slice(1),
+    },
+    kclManager.ast,
+    'equalLength'
+  )
+
+  const enabled =
+    !!secondaryVarDecs.length &&
+    isAllTooltips &&
+    isOthersLinkedToPrimary &&
+    transforms.every(Boolean)
+
+  return { enabled, transforms }
+}
+
+export function applyConstraintEqualLength({
+  selectionRanges,
+}: {
+  selectionRanges: Selections
+}): {
+  modifiedAst: Program
+  pathToNodeMap: PathToNodeMap
+} {
+  const { enabled, transforms } = setEqualLengthInfo({ selectionRanges })
+  const { modifiedAst, pathToNodeMap } = transformSecondarySketchLinesTagFirst({
+    ast: kclManager.ast,
+    selectionRanges,
+    transformInfos: transforms,
+    programMemory: kclManager.programMemory,
+  })
+  return { modifiedAst, pathToNodeMap }
+  // kclManager.updateAst(modifiedAst, true, {
+  //   // callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
+  // })
 }
