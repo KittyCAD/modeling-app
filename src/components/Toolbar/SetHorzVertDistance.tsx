@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { create } from 'react-modal-promise'
 import { toolTips, useStore } from '../../useStore'
 import { BinaryPart, Value, VariableDeclarator } from '../../lang/wasm'
 import {
@@ -13,12 +12,12 @@ import {
   getTransformInfos,
   ConstraintType,
 } from '../../lang/std/sketchcombos'
-import { GetInfoModal } from '../SetHorVertDistanceModal'
+import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
 import { createLiteral, createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { updateCursors } from '../../lang/util'
 
-const getModalInfo = create(GetInfoModal)
+const getModalInfo = createInfoModal(GetInfoModal)
 
 type ButtonType =
   | 'setHorzDistance'
@@ -119,38 +118,46 @@ export const SetHorzVertDistance = ({
             transformInfos,
             programMemory,
           })
-        const {
-          segName,
-          value,
-          valueNode,
-          variableName,
-          newVariableInsertIndex,
-          sign,
-        }: {
-          segName: string
-          value: number
-          valueNode: Value
-          variableName?: string
-          newVariableInsertIndex: number
-          sign: number
-        } = await (!isAlign &&
-          getModalInfo({
+
+        if (!isAlign) {
+          const {
+            segName,
+            value,
+            valueNode,
+            variableName,
+            newVariableInsertIndex,
+            sign,
+          } = await getModalInfo({
             segName: tagInfo?.tag,
             isSegNameEditable: !tagInfo?.isTagExisting,
             value: valueUsedInTransform,
             initialVariableName:
               constraint === 'setHorzDistance' ? 'xDis' : 'yDis',
-          }))
-        if (segName === tagInfo?.tag && value === valueUsedInTransform) {
-          updateAst(modifiedAst, true, {
-            callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
-        } else {
-          let finalValue = isAlign
-            ? createLiteral(0)
-            : removeDoubleNegatives(valueNode as BinaryPart, sign, variableName)
-          // transform again but forcing certain values
-          const { modifiedAst: _modifiedAst, pathToNodeMap } =
+
+          if (
+            segName === tagInfo?.tag &&
+            value ===
+              (valueUsedInTransform === undefined
+                ? ''
+                : String(Math.abs(valueUsedInTransform)))
+          ) {
+            updateAst(modifiedAst, true, {
+              callBack: updateCursors(
+                setCursor,
+                selectionRanges,
+                pathToNodeMap
+              ),
+            })
+          }
+
+          const finalValue = removeDoubleNegatives(
+            valueNode as BinaryPart,
+            sign,
+            variableName
+          )
+
+          const { modifiedAst: _modifiedAst, pathToNodeMap: _pathToNodeMap } =
             transformSecondarySketchLinesTagFirst({
               ast,
               selectionRanges,
@@ -159,6 +166,7 @@ export const SetHorzVertDistance = ({
               forceSegName: segName,
               forceValueUsedInTransform: finalValue,
             })
+
           if (variableName) {
             const newBody = [..._modifiedAst.body]
             newBody.splice(
@@ -168,8 +176,24 @@ export const SetHorzVertDistance = ({
             )
             _modifiedAst.body = newBody
           }
+
           updateAst(_modifiedAst, true, {
-            callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
+            callBack: updateCursors(setCursor, selectionRanges, _pathToNodeMap),
+          })
+        } else {
+          const finalValue = createLiteral(0)
+
+          const { modifiedAst: _modifiedAst, pathToNodeMap: _pathToNodeMap } =
+            transformSecondarySketchLinesTagFirst({
+              ast,
+              selectionRanges,
+              transformInfos,
+              programMemory,
+              forceValueUsedInTransform: finalValue,
+            })
+
+          updateAst(_modifiedAst, true, {
+            callBack: updateCursors(setCursor, selectionRanges, _pathToNodeMap),
           })
         }
       }}

@@ -1,11 +1,13 @@
-import { SetVarNameModal } from 'components/SetVarNameModal'
+import {
+  SetVarNameModal,
+  createSetVarNameModal,
+} from 'components/SetVarNameModal'
 import { moveValueIntoNewVariable } from 'lang/modifyAst'
 import { isNodeSafeToReplace } from 'lang/queryAst'
 import { useEffect, useState } from 'react'
-import { create } from 'react-modal-promise'
 import { useStore } from 'useStore'
 
-const getModalInfo = create(SetVarNameModal)
+const getModalInfo = createSetVarNameModal(SetVarNameModal)
 
 export function useConvertToVariable() {
   const { guiMode, selectionRanges, ast, programMemory, updateAst } = useStore(

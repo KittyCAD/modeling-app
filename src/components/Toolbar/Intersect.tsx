@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { create } from 'react-modal-promise'
 import { toolTips, useStore } from '../../useStore'
 import { BinaryPart, Value, VariableDeclarator } from '../../lang/wasm'
 import {
@@ -13,12 +12,12 @@ import {
   transformSecondarySketchLinesTagFirst,
   getTransformInfos,
 } from '../../lang/std/sketchcombos'
-import { GetInfoModal } from '../SetHorVertDistanceModal'
+import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
 import { createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { updateCursors } from '../../lang/util'
 
-const getModalInfo = create(GetInfoModal)
+const getModalInfo = createInfoModal(GetInfoModal)
 
 export const Intersect = () => {
   const { guiMode, selectionRanges, ast, programMemory, updateAst, setCursor } =
@@ -142,7 +141,13 @@ export const Intersect = () => {
           value: valueUsedInTransform,
           initialVariableName: 'offset',
         })
-        if (segName === tagInfo?.tag && value === valueUsedInTransform) {
+        if (
+          segName === tagInfo?.tag &&
+          value ===
+            (valueUsedInTransform === undefined
+              ? ''
+              : String(Math.abs(valueUsedInTransform)))
+        ) {
           updateAst(modifiedAst, true, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
