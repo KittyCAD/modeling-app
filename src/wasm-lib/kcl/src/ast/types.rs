@@ -1,6 +1,6 @@
 //! Data types for the AST.
 
-use std::collections::HashMap;
+use std::{collections::HashMap, fmt::Write};
 
 use anyhow::Result;
 use parse_display::{Display, FromStr};
@@ -28,73 +28,74 @@ pub struct Program {
 impl Program {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         let indentation = options.get_indentation(indentation_level);
-        let result = self
-            .body
-            .iter()
-            .map(|statement| match statement.clone() {
-                BodyItem::ExpressionStatement(expression_statement) => {
-                    expression_statement
-                        .expression
-                        .recast(options, indentation_level, false)
-                }
-                BodyItem::VariableDeclaration(variable_declaration) => variable_declaration
-                    .declarations
-                    .iter()
-                    .map(|declaration| {
-                        format!(
-                            "{}{} {} = {}",
-                            indentation,
-                            variable_declaration.kind,
-                            declaration.id.name,
-                            declaration.init.recast(options, 0, false)
-                        )
-                    })
-                    .collect::<String>(),
-                BodyItem::ReturnStatement(return_statement) => {
-                    format!(
-                        "{}return {}",
-                        indentation,
-                        return_statement.argument.recast(options, 0, false)
-                    )
-                }
-            })
-            .enumerate()
-            .map(|(index, recast_str)| {
-                let start_string = if index == 0 {
-                    // We need to indent.
-                    if let Some(start) = self.non_code_meta.start.clone() {
-                        start.format(&indentation)
-                    } else {
-                        indentation.to_string()
+        let result =
+            self.body
+                .iter()
+                .map(|statement| match statement.clone() {
+                    BodyItem::ExpressionStatement(expression_statement) => {
+                        expression_statement
+                            .expression
+                            .recast(options, indentation_level, false)
                     }
-                } else {
-                    // Do nothing, we already applied the indentation elsewhere.
-                    String::new()
-                };
+                    BodyItem::VariableDeclaration(variable_declaration) => variable_declaration
+                        .declarations
+                        .iter()
+                        .fold(String::new(), |mut output, declaration| {
+                            let _ = write!(
+                                output,
+                                "{}{} {} = {}",
+                                indentation,
+                                variable_declaration.kind,
+                                declaration.id.name,
+                                declaration.init.recast(options, 0, false)
+                            );
+                            output
+                        }),
+                    BodyItem::ReturnStatement(return_statement) => {
+                        format!(
+                            "{}return {}",
+                            indentation,
+                            return_statement.argument.recast(options, 0, false)
+                        )
+                    }
+                })
+                .enumerate()
+                .fold(String::new(), |mut output, (index, recast_str)| {
+                    let start_string = if index == 0 {
+                        // We need to indent.
+                        if let Some(start) = self.non_code_meta.start.clone() {
+                            start.format(&indentation)
+                        } else {
+                            indentation.to_string()
+                        }
+                    } else {
+                        // Do nothing, we already applied the indentation elsewhere.
+                        String::new()
+                    };
 
-                // determine the value of the end string
-                // basically if we are inside a nested function we want to end with a new line
-                let maybe_line_break: String = if index == self.body.len() - 1 && indentation_level == 0 {
-                    String::new()
-                } else {
-                    "\n".to_string()
-                };
+                    // determine the value of the end string
+                    // basically if we are inside a nested function we want to end with a new line
+                    let maybe_line_break: String = if index == self.body.len() - 1 && indentation_level == 0 {
+                        String::new()
+                    } else {
+                        "\n".to_string()
+                    };
 
-                let custom_white_space_or_comment = match self.non_code_meta.non_code_nodes.get(&index) {
-                    Some(custom_white_space_or_comment) => custom_white_space_or_comment.format(&indentation),
-                    None => String::new(),
-                };
-                let end_string = if custom_white_space_or_comment.is_empty() {
-                    maybe_line_break
-                } else {
-                    custom_white_space_or_comment
-                };
+                    let custom_white_space_or_comment = match self.non_code_meta.non_code_nodes.get(&index) {
+                        Some(custom_white_space_or_comment) => custom_white_space_or_comment.format(&indentation),
+                        None => String::new(),
+                    };
+                    let end_string = if custom_white_space_or_comment.is_empty() {
+                        maybe_line_break
+                    } else {
+                        custom_white_space_or_comment
+                    };
 
-                format!("{}{}{}", start_string, recast_str, end_string)
-            })
-            .collect::<String>()
-            .trim()
-            .to_string();
+                    let _ = write!(output, "{}{}{}", start_string, recast_str, end_string);
+                    output
+                })
+                .trim()
+                .to_string();
 
         // Insert a final new line if the user wants it.
         if options.insert_final_newline {
