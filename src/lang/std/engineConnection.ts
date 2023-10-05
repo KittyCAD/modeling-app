@@ -832,9 +832,9 @@ export class EngineCommandManager {
     } else {
       this.artifactMap[id] = {
         type: 'failed',
-        range: command !== undefined ? command.range : undefined,
-        commandType: command !== undefined ? command.commandType : undefined,
-        parentId: command !== undefined ? command.parentId : undefined,
+        range: command?.range,
+        commandType: command?.commandType,
+        parentId: command?.parentId,
         errors,
       }
     }
@@ -1168,7 +1168,7 @@ export class EngineCommandManager {
         delete this.sourceRangeMap[oldId]
         if (artifact) {
           this.artifactMap[engineSegment.command_id] = artifact
-          this.sourceRangeMap[engineSegment.command_id] = artifact.range
+          this.sourceRangeMap[engineSegment.command_id] = artifact.range ?? [0,0]
         }
       }
     })
