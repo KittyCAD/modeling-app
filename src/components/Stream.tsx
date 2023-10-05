@@ -20,14 +20,7 @@ import {
   compareVec2Epsilon,
 } from 'lang/std/sketch'
 import { getNodeFromPath } from 'lang/queryAst'
-import {
-  Program,
-  VariableDeclarator,
-  rangeTypeFix,
-  modifyAstForSketch,
-} from 'lang/wasm'
-import { KCLError } from 'lang/errors'
-import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
+import { Program, VariableDeclarator, modifyAstForSketch } from 'lang/wasm'
 import { engineCommandManager } from '../lang/std/engineConnection'
 
 export const Stream = ({ className = '' }) => {

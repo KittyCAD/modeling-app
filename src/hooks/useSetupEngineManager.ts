@@ -1,9 +1,7 @@
 import { useLayoutEffect, useEffect, useRef } from 'react'
-import { _executor } from '../lang/wasm'
 import { useStore } from '../useStore'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { deferExecution } from 'lib/utils'
-import { v4 as uuidv4 } from 'uuid'
 
 export function useSetupEngineManager(
   streamRef: React.RefObject<HTMLDivElement>,

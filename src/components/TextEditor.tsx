@@ -182,6 +182,7 @@ export const TextEditor = ({
             id: hasOverlap[0][0],
           }
         }
+        return undefined
       })
       .filter(Boolean) as any
 
