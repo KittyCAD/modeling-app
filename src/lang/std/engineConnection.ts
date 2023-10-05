@@ -725,7 +725,11 @@ export class EngineCommandManager {
               message.request_id
             ) {
               this.handleModelingCommand(message.resp, message.request_id)
-            } else if (!message.success && message.request_id) {
+            } else if (
+              !message.success &&
+              message.request_id &&
+              this.artifactMap[message.request_id]
+            ) {
               this.handleFailedModelingCommand(message)
             }
           }
