@@ -6,7 +6,11 @@ import { Axis, Selection, Selections } from 'useStore'
 import { assign, createMachine } from 'xstate'
 import { v4 as uuidv4 } from 'uuid'
 import { isCursorInSketchCommandRange } from 'hooks/useAppMode'
-import { getNodePathFromSourceRange } from 'lang/queryAst'
+import {
+  doesPipeHave,
+  getNodePathFromSourceRange,
+  hasExtrudeSketchGroup,
+} from 'lang/queryAst'
 import { kclManager } from 'lang/KclSinglton'
 import { ConstraintType } from 'lang/std/sketchcombos'
 import {
@@ -23,6 +27,7 @@ import {
   applyConstraintEqualLength,
   setEqualLengthInfo,
 } from 'components/Toolbar/EqualLength'
+import { extrudeSketch } from 'lang/modifyAst'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -30,7 +35,7 @@ const constraintActions: ConstraintType[] = ['vertical', 'horizontal']
 
 export const modelingMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogAsAJgA0IAJ6IAjAGYaAVgB0gwQE5Zm2dOkAOYQtkBfI+LQYc+JdgiYwBAMph2AAlhYw5Tt1oMkIFjZvHn8BBEEFXSUabQMANlk1AHZBRKTxKQRpYTjpJTikyI043TVpAsETM3QsPChrW3sAETgPLxcWPHZfXkCOLhDQMNk45QUaJN0J1QUFQSmFDJk5KJy1OLjUueFhNWEqkHNaqxs7Ahb3O3bIGB7-PuDeYY3oybkkmkFRwSTkpayaNJBEpdAktoC9mV9qZDjVLPVTs1WldXCQ+NhYHdmKx+twnohZElhEpCjQyXthElRiM4v9SnkIkTFCUtsYYUd4Q0zk4UR1UF0sQEcY9QkJFEpyr8NNI1KUkuVaZIhMIaCopkltHt5Do2dULHUufYeZ5XDcwIKHgN8eEaFF5qlSqC5n8lQhNsD3bppBM5HNBNIDhyDYjHG1UejMfResKraLwrJiXEaBo9uMZTQ4mp-nMojLymoFMIgQoSrrYfqTo1Q7yAGYkSgWmN4uOCW35MkiEbyDSA-5U2Qg9bSSJJkqFXSBuHBqsAUVw7DAACc3ABrZzkAAWjaCsaGiAKA4mMVkkUmlN0i1dwgT+Q18gvCh0KUpk4rCNn86Xq-XW+kfmxO7Nnuboaq8x6nvokyXpk2QRCSCh7BEXrXuMcSvsc75nDOACOACu2BMC4YB8Owi64Rg264oM-D7qBeibIC6gJhEsh0hmShFrIPxFpEvEKOhnIhjh+GEcRpHkeaf7RoB1FhAeEqgq2QIaMILF0iWJK+h8hQaPx7JTpWZwXGGLh1g2Ub3E2skEh8+QJpBiSnl8-zakohLFIkIj6JmAnTtyJkkJgmCUSKwH+gOOyjJMIhkrM0GICqwJ7HEqm6KosgXt60J6hhhrnMiJouIFwUWQBVHWhlDKbLo7k0EW5R0nkhZkjEej+l8MS+YZ9jCQRpnYEFzghbuNFupm8GJIk9WFKxrqMkohiUrMySJLKaH6W+eW9YRNYDXY3RSZZMnWhsagTSm02GNmbYxJSlLSFSKW-GWQZWA4a7sJuxBkJQmDvT+w1AaNBjaEosqlCetpqMkV2ut6RISqMTrCFM9JJF19T-Z9G5KFjm4AJJVsa7SdPOgPWQguybCSuwZbKLXDukrqPSCESUoSqQiLMGO4x9m68z+hP+by7hQAAtmAZOlUKx1xlTwJEhojoM4qmQJMShRbLo8pTT8PN4zjBtC0ilyFaT3TS5aQNhLsRbwSjU1U72rrjMCCzaKO2s1frfOG77xv5ab7SixLUv-jL5Vy2Uh5paC2QylTLkI4kw6o+o+ifOtOWcgbAvYwH20uOwqCoCV4dWxT-oPRKcipwkBYiP8ZRxIjGbgzk2giD7P55wTs54X1YuoAAbmARcl2X0mR2FQJJK88qa0kmtZnDOiqj8NW5Be6ipt32O9xuAdOK4QfBOTFWAgOIw7BeSZkvoTflK38o-I+to6Hv-NG1WyAkGubhgHFpLVwo9FycHIIFc+ctdBTDBsmPQNJ9BpVVjIXYc8WKgkSDEfQ6hP5+0Fj-P+Y8Q7AJcBuVAi5sAAC9uDsEgZbKy1oUbU00Oof0yYPgGEEP8HQBZ8jQzmC1FU6x0YbVyrnb+ZwiDcFgKREgeAyEUOobQwKLgIAYjoRQc0DDZbAQdmdD4Ss5DJllLNGC+hlC5HmNeDKoIyh6WzgaCR-sqzSNwLIxc8jcAuFAeA1R6jZE-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-B-UW0iitNYktNoipQYFVBchCwcEeZERljK4YdEMMwqRkg3dUgeEuwJRdhyQ9AvQ588FDimFm8wYYFdIoYYYalKZCRBxN1NgKgOxMUfkwBnio4YEwYyhlJHolkcCAR1CUZNYKs6pWFR1g1MAwSwpNQ3jU1CxNQ9B-hUgNZD0RgYoTwyhdDoDc4g1x0Q0mhFNMT7UzwwY7kEgok8TUNlBEgEgaRPg6pud29qTQMQ0KMq0Z0IBGSwh1BHDfgnNdgKtVDmYch8huDUpCttYtcxChTCMJ0w1SFq1JSqjtABwB09BoYIhYp7l5kVT1Z5h1T5Q0TaTb1wN2BDT4wCgcSEI8S8wgClTVQdh1gkwTxDA-RHSiNSNyMDV2AFit8iivhZRG8uJmd7EH4lSajuDuMySs49CdccY0BBUb03TVBUh8gphs8WNgieFbQW5kgapeJVBkyedhNktfMJNAlmsjM3SuI5gJRxk0wvZNA4S9A7YMCnNyStj1gmy6swEgUVt2y1t0suz4yVAMDQjX5HxNhJtPgOIDwh1UYMwoC3M3sat8cvtCdFzY9t8uIvQOJtZ5RxgUgRhkcdgOIMCiQrt4YCgpyDdOzLyiiuJ1CMxy8UhqUYZlddgFoll1hARshwYl9C9QS-yKYdB9BK9Ksx9a9e1QQGV0o9BthbR4Lo9vDELYzkKSwogShhyWU6o3cT8mpZ9NA44uNlloDb8V9Oi2jMjMhSLrQHp1gM80lZhlDZ5gDG8GyMCUo25z0cyO9l8lMMi383Six9045pTRxyL7kkExKRAJKVRMxpKqTfZYD4D6wSLeiiiG8gQMxmVEoNhaUYJhF4JUxARgi7omj9o3SUKFZrCokVD7DMgEwGQloE5IJXl3KUjjZPKkwf1GRWwSx1BL5CSNJmVnQ4i3DFBwqvCOLuBn92jPKao54ChOCSwuFoq1C54HpNDkodDMqlAFLuLzKKY0k3YaVZSVVRh7lgiKqGcuJqqRCZijAgA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogAsAJgA0IAJ6IAjAGYaAVgB0gwQE5Zm2dOkAOYQtkBfI+LQYc+JdgiYwBAMph2AAlhYw5Tt1oMkIFjZvHn8BBEEFXSUabQMANlk1AHZBRKTxKQRpYTjpJTikyI043TVpAsETM3QsPChrW3sAETgPLxcWPHZfXkCOLhDQMNk45QUaJN0J1QUFQSmFDJk5KJy1OLjUueFhNWEqkHNaqxs7Ahb3O3bIGB7-PuDeYY3oybkkmkFRwSTkpayaNJBEpdAktoC9mV9qZDjVLPVTs1WldXCQ+NhYHdmKx+twnohZElhEpCjQyXthElRiM4v9SnkIkTFCUtsYYUd4Q0zk4UR1UF0sQEcY9QkJFEpyr8NNI1KUkuVaZIhMIaCopkltHt5Do2dULHUufYeZ5XDcwIKHgN8eEaFF5qlSqC5n8lQhNsD3bppBM5HNBNIDhyDYjHG1UejMfResKraLwrJiXEaBo9uMZTQ4mp-nMojLymoFMIgQoSrrYfqTo1Q7yAGYkSgWmN4uOCW35MkiEbyDSA-5U2Qg9bSSJJkqFXSBuHBqsAUVw7DAACc3ABrZzkAAWjaCsaGiAKA4mMVkkUmlN0i1dwgT+Q18gvCh0KUpk4rCNn86Xq-XW+kfmxO7Nnuboaq8x6nvokyXpk2QRCSCh7BEXrXuMcSvsc75nDOACOACu2BMC4YB8Owi64Rg264oM-CIF6qqaMmw6FpmJbSH2oE7MOMQahqyRJOhnIhjh+GEcRpHkeaf7RoB1FhF6cTRGotqJLsszSOkroXnk3olLMraFl8ZZBpWZwXGGLh1g2Ub3E2skEh8+QJpBiSnl8-zakohLFIkIj6JmAnTty5kkJgmCUSKwH+gOOyjJMIhkrM0GICqwJ7HEwj2g6j40NCeoYYa5zIiaLghWF1kAVR1qyF6KibLoXk5ToiqZDVhZkjEej+l8MQBSZ9jCQRFnYKFzjhbuNFupm8GJCpT6GP8jJKIYlKzMkiSymh7JTn1BADYRNbDXY3RSTZMnWhsajTSmRbqfNrrjFEMSUpS6kbJSGi9Zh9hiWRGAuF0YDzmNQETeoxJyOlsg-LMuwRII-zDroSRKGoyRI6k8zVUCn0FT9En-Z+QMnRVEWg2Ug7ukWKqAt6SVZPMeSEjpKm2vMuXlvlDhruwm7EGQlCYFzP7A3ZCAGNoKO6KUJ62qjhSyAjEzg6MTrCFM9L8Vtb5KELPMbjr3ObgAklWxrtJ0QPlUKZ1xrsmwkrs1Wyu1w4aZkVIKboESUoSGMGAoOO65uBs-ibQW8u4UAALaA90VuWiDYR28CRIaI6LvNfuN6FFsSNyIhmt5ZyQf6yXYdIpcxUW3H-7W5Vtt7HkhRqypdu9vdnwgoo2ijkj9WB4bpeD+XhWV+0kcx5btcJ6LuxyNEXugtkMp2+5RKeWUkSs7KKWbUXBolyHesj3tLjsKgqBldPtnWv66kSnIiMJAWIj-GUCnlBmsp+doIgDz+R9jazjwoNKOqAABuYAz4XyvtJeukUgTIwmPKHOSQc5ZldDob0KhJgjD0M6VM-89aAI3CPJwrgx7BBFlVQEA4Rg7AvEmMk+g37lAlEmeU0NvRegDFrTmg8SEj2QCQNcbgwDR1ji4SBi5ODkBCtQ22UtVRKTKPVDY+gvaZyyLsZGERqrPxiPodQRDg5lyrMI0RE9JEblQIubAAAvbg7B5Hxxvoo+2mh1D+mTB8Aw8NMEymUJmF+7UVTrELhzYuAizFnCINwWApESB4BcDYuxjj5whRcBADEziKDmlcTbYCLdLofDTnIZMsoFaYP0EEoE+hNBS0zMOExQ9Q5VjibgBJi4km4CkUuWRmTskJP5vk6+hSJpqxLEoFuY4t7di0epSkJIDxTHUMOIslQ+FRIATE+wHSuk9JKvgOwCiimQmiP6cYOU5iAhiAjPYqoiR+lUGSAwOQWmCPafExJyS7D4HYFuAp8CJlamiNeNWtpbSIP+CqHQS0SxEnSh7X47NjL1EPrs4g3zunJNSQ4pxpUJAlRwFAXApyJkXmJJENmcg7abDpkCMkKh1AlCTBtT4E4tkH2icPL5nSfm9OkQM0KRKQrYFJeSpOoJLrDkbrMMk1IEbjBKakBIHwblqz3pE7lOzeWxOxYcsAeFMl-KgACyVyUpbRTvsOEoBYdD+JgrkYE1KVgiCpN6VF210UCIADJ4CgQAFRgbtEBhEwGQOgZfC14Q4aeScjEdKjdFBv0SBKQklIfGqCRgHLlVhD7+twEGmBSgAAK-J5wuAAIIQAwBAAgNaIB8gFEC0mYRlVREmCUFUXsdBiFdB8Ac+YUg-A2DERQHzC3FsvjrcRk9XCNsgA22tzap5wLbYgQwUNFIIQLOrKk-bMjpWUKkGUTyiQXhSJOgNLhg0zqcBIyti761xKjkwI6UDLCjPXeNdtbVpnzGYRoA9-xMyqhlD3NBw4obXqLbektD753VtrUu0+RaADuUbYGnWBe2hMiZZVFgeipbMKppmKCBH2rxnxYPTswEoI2uAOAEBjaoeUOCJhpRPFguk4ppjyE1H42YtH4MzsY8xqgxM64btjY+NUBYfKQzphejeCQdSAmbrm-e+a-U3rvfRgAcqgFw5auiwGXU26urH9DEm0GSLiyCpZ9hyBKQy+YgQqhGB8qt6GkmuDxek5xmAsk5JGQTGsqACAQG4GAawuBwGoDXEoGA7AAC0AWCWYFS3gCLMbqrqE8lML+gSmkI1BLZtQIg1ZfAykCIy3qSFKB835lJtj8UZOC0M3JlBwuRaXIuWxSh30kHYBFxcUdkvOHS21wLIVsu4Fy6239BILyqg5Rp3IVJIhlaBPkb0PZsiKEKGobzvmOB9JkdgORnXQt5N61FmLcWEtJZS6loVV25s5dQHlxhnk1hEgPQYdYCMUjIwTMmS5KEdGnZa+967IXhl3a+wQfrg3hujdsRN17cPPsLe+0txOK2pkJkzAD9KQOFnBJBGE-0SZuofTzT6gBzXztkCgHYe70Wi1PcS7F17bO7DzcW2M3DK30rTPFnRQEhZKT3JKOwlSBRNgjE5dppnxCWeomOVA5HqPFxDcwCNsbWOpsC7AEL-HIuZP6IHGqwob0dhoPuTsCXcwnwaN+DD87pqAWc8e3gZ7fOps+43Bbn7SZPIlmfpvNBjrkoTFqfKTRI5ARe9cCH+7euDdG8x5NtLIew8E9FvovIOVuqJG9J8KGMLjzTPKCeAoiLRg4xnCRX69guexYD7zpQRBFxgBG1AvGFEi-WlpcCLqMR-S-EiCeBG-s6+jGvJVj1my1dKFb+JDAoaRJETbxJGN2QXPi3lLkZMpXXTrDGK2VGGNNjkhb-v7fp9h+SSt8t+m4wQRMVj7TjhdJ6p2xNAV4tIwRH8t9YsyFzJLJv0cMZN1JCgSRNAD0UhyhHw6RrwJQAdgCVQMp3lGcN8n9YszZggXAAAlAfCACQUMVwLrEZGNMJR5S5XIHYKGDQOkeQFQR3FuFUEoW0FpFwXAYzGA6sYqGAhgxGEkdYJSO2IrCYBGQJanAsBCDRIjHGAAMUOmcAe2527ySz7wHwXCGhGhrh-UJwQFP3gleVBEUEMjjwQFRlt2vETRVhEAUAiTRSUE0JMJ30GgOhMMP3BWWT0T3WTFYmzCpFvHljBm7XcI0K0PYF8P2gSMk3f3MOyGznpRcimALFyAWlmBRhWnUATDUlpniJMIY1NnMjNEPxKCiDmHcPtEq1bGTHyOUD2HQRKMfDKIIO8KOlnRRAGHIMoOoPIRcG6WyVwkjDSNnmYT23JyBE2GXwiIUkb0MBiJqQ8Iaz6OcAGJNCGIoJICoNEOuGgFgJJg-3wVLzonKA0QvDn3uiLCiJLAzX9HWHq21hIDO04HwDEUGO4BoL+P2J8FHzjB0AzBRihmHBlCilyKVVGDBV9FKAo2bhxk3E8BXDqCBK8AGBY1BOAiYiiATAhkzEmRLEPRkARWmXlChipAzCmA2DRI3AxKxMoVxNSLMNFiYiCSHDKALGvCpARiQhUA7AzBmi9jiIOCEIwHgH8DRU5OtFSy0VS3aKKyfCRWmBLBxkRAVJbHF0MCUiV2SHr1SARi7AlF2HJD0C9FSA+P4R-F1KKUxklmlgejljukyAFMHE-kiHqmqh4g+V2UdJBSlhRjKCBGSA2BRTdhkAmAUjVhzkOxyk8RE302DLCFPUullALH5M1D0AWk4PqmvAKAVWqjVlTJLSaBi3TM3TPBRnpQSC3kLCqXdgMFU00DHVbHegrJnVMyfRQwgBrPCGUKkJqznl4LYgHRc02ASAyiRhVnlB7Po0Q0kWfSHMMHnggz0FvyuVmGc1WMMjnK2zziXIYyY3YCHNVWRmzIQmbLzF0Gc1VB2HWCTBPEMD9FPKMxMwrXYFlIuPMK+FlBBE8UpF+ERgpIsOnLcyaXii8wIMPjQEjTTLgI-1UFSHyCmECSUgTxjIBFBBRlwUiD9FApO3goEU11azSUywR26x1zxyHKhjmAlEhTTD7mQLKyeKUhqxPG-hZTTwu2FRorCy+wYsApUCUi9hXzUk2BB07hyB4iT0hRKH4rN161EpqgTPlHGBSBGGd2JEtKJB2GyipC2O1kPgoozxEpQvMNpIUgzAyJSHtWSDplwMuncMhCTD7W-nAPbyHPd2mUMFP32wvyPS9iWhpLQW7BGFTwIM33b0qLsD8tJOmWQJzGXkfBbNokwIKHehKC3Jyh8okj2JxO4GGKOMyH-K5L5K7lbABw0XUFwvqmUUdweTPXtEKowCUEOKoKHJ2FUBUDkCq3VnGF0s0k4IpBRQhBSC9gEKEIsnrDACHMq20lbCWKZC+BkswTCXglTGlwBy9W1h2IvOsq5M6mCINK3lyMnMyG0DBxyHeiRj5KpHKP6PLiSr40ZH0k2CUjkHyIUndWdC6PBK021SsCOuKtIO6oquk0uPqmRgKBsPJLmCTDpncORgQPWLSk2Jet2Kht6qBGBB4R+EqxzVGFRrQSwOiKxoMFMvyi+L81ZLDHGhnmtHRnrI+AvD2C9ARSVSRjDMmB0sxhtKZJZN+LZJBhZrBO0BPVVkMEUEBFNMwUiFszpJeW5vSk2RMCAA */
     id: 'Modeling',
 
     tsTypes: {} as import('./modelingMachine.typegen').Typegen0,
@@ -97,7 +102,8 @@ export const modelingMachine = createMachine(
         | { type: 'Constrain horizontally align' }
         | { type: 'Constrain vertically align' }
         | { type: 'Constrain length' }
-        | { type: 'Constrain equal length' },
+        | { type: 'Constrain equal length' }
+        | { type: 'extrude intent' },
       // ,
     },
 
@@ -109,6 +115,7 @@ export const modelingMachine = createMachine(
             internal: true,
             actions: 'Set selection',
           },
+
           'Deselect point': {
             target: 'idle',
             internal: true,
@@ -241,6 +248,19 @@ export const modelingMachine = createMachine(
             {
               target: 'Fillet',
               cond: 'Selection is one or more edges',
+            },
+          ],
+
+          'extrude intent': [
+            {
+              target: 'awaiting selection',
+              cond: 'has no selection',
+            },
+            {
+              target: 'idle',
+              cond: 'has valid extrude selection',
+              internal: true,
+              actions: 'AST extrude',
             },
           ],
         },
@@ -562,6 +582,29 @@ export const modelingMachine = createMachine(
           },
         },
       },
+
+      'awaiting selection': {
+        on: {
+          'Set selection': {
+            target: 'checking selection',
+            actions: 'Set selection',
+          },
+        },
+      },
+
+      'checking selection': {
+        always: [
+          {
+            target: 'idle',
+            cond: 'has valid extrude selection',
+            actions: 'AST extrude',
+          },
+          {
+            target: 'idle',
+            actions: 'toast extrude failed',
+          },
+        ],
+      },
     },
 
     initial: 'idle',
@@ -605,6 +648,33 @@ export const modelingMachine = createMachine(
           .enabled,
       'Can constrain equal length': ({ selectionRanges }) =>
         setEqualLengthInfo({ selectionRanges }).enabled,
+      'has no selection': ({ selectionRanges }) => {
+        if (selectionRanges?.codeBasedSelections?.length < 1) return true
+        const selection = selectionRanges?.codeBasedSelections?.[0] || {}
+
+        return (
+          selectionRanges.codeBasedSelections.length === 1 &&
+          !hasExtrudeSketchGroup({
+            ast: kclManager.ast,
+            programMemory: kclManager.programMemory,
+            selection,
+          })
+        )
+      },
+      'has valid extrude selection': ({ selectionRanges }) => {
+        if (selectionRanges.codeBasedSelections.length !== 1) return false
+        const isSketchPipe = isCursorInSketchCommandRange(
+          engineCommandManager.artifactMap,
+          selectionRanges
+        )
+        const common = {
+          selection: selectionRanges.codeBasedSelections[0],
+          ast: kclManager.ast,
+        }
+        const hasClose = doesPipeHave({ calleeName: 'close', ...common })
+        const hasExtrude = doesPipeHave({ calleeName: 'extrude', ...common })
+        return !!isSketchPipe && hasClose && !hasExtrude
+      },
     },
     actions: {
       'Set selection': assign({
@@ -787,6 +857,20 @@ export const modelingMachine = createMachine(
         kclManager.updateAst(modifiedAst, true, {
           // TODO re implement cursor shit
           // callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
+        })
+      },
+      'AST extrude': ({ selectionRanges }) => {
+        const pathToNode = getNodePathFromSourceRange(
+          kclManager.ast,
+          selectionRanges.codeBasedSelections[0].range
+        )
+        const { modifiedAst, pathToExtrudeArg } = extrudeSketch(
+          kclManager.ast,
+          pathToNode
+        )
+        // TODO not handling focusPath correctly I think
+        kclManager.updateAst(modifiedAst, true, {
+          focusPath: pathToExtrudeArg,
         })
       },
     },

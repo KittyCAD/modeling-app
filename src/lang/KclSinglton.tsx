@@ -210,6 +210,7 @@ class KclManager {
     const newCode = recast(ast)
     const astWithUpdatedSource = parse(newCode)
     optionalParams?.callBack?.(astWithUpdatedSource)
+    let returnVal: Selections | null = null
 
     this.code = newCode
     if (optionalParams?.focusPath) {
@@ -219,7 +220,7 @@ class KclManager {
       )
       const { start, end } = node
       if (!start || !end) return null
-      return {
+      returnVal = {
         codeBasedSelections: [
           {
             type: 'default',
@@ -239,7 +240,7 @@ class KclManager {
       // instead.
       this.executeAstMock(astWithUpdatedSource)
     }
-    return null
+    return returnVal
   }
 }
 

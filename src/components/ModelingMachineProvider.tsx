@@ -27,6 +27,7 @@ import { kclManager } from 'lang/KclSinglton'
 import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
 import { applyConstraintAngleBetween } from './Toolbar/SetAngleBetween'
 import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
+import { toast } from 'react-hot-toast'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -166,6 +167,11 @@ export const ModelingMachineProvider = ({
         kclManager.executeAst()
       },
       'set tool': () => {}, // TODO
+      'toast extrude failed': () => {
+        toast.error(
+          'Extrude failed, sketches need to be closed, or not already extruded'
+        )
+      },
     },
     guards: {
       'Selection contains axis': () => true,

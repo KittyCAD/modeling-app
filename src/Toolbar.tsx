@@ -190,50 +190,20 @@ export const Toolbar = () => {
             Sketch on Face
           </button>
         )}
-        {guiMode.mode === 'canEditSketch' && (
-          <>
-            <button
-              onClick={() => {
-                const pathToNode = getNodePathFromSourceRange(
-                  kclManager.ast,
-                  selectionRanges.codeBasedSelections[0].range
-                )
-                const { modifiedAst, pathToExtrudeArg } = extrudeSketch(
-                  kclManager.ast,
-                  pathToNode
-                )
-                // TODO not handling focusPath correctly I think
-                kclManager.updateAst(modifiedAst, true, {
-                  focusPath: pathToExtrudeArg,
-                })
-              }}
-              className="group"
-            >
-              <ActionIcon icon="extrude" className="!p-0.5" size="md" />
-              Extrude
-            </button>
-            <button
-              onClick={() => {
-                const pathToNode = getNodePathFromSourceRange(
-                  kclManager.ast,
-                  selectionRanges.codeBasedSelections[0].range
-                )
-                const { modifiedAst, pathToExtrudeArg } = extrudeSketch(
-                  kclManager.ast,
-                  pathToNode,
-                  false
-                )
-                // TODO not handling focusPath correctly I think
-                kclManager.updateAst(modifiedAst, true, {
-                  focusPath: pathToExtrudeArg,
-                })
-              }}
-              className="group"
-            >
-              <ActionIcon icon="extrude" className="!p-0.5" size="md" />
-              Extrude as new
-            </button>
-          </>
+        {state.matches('idle') && (
+          <button
+            onClick={() => send('extrude intent')}
+            disabled={!state.can('extrude intent')}
+            className="group"
+            title={
+              state.can('extrude intent')
+                ? 'extrude'
+                : 'sketches need to be closed, or not already extruded'
+            }
+          >
+            <ActionIcon icon="extrude" className="!p-0.5" size="md" />
+            Extrude
+          </button>
         )}
 
         {toolTips

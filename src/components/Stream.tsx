@@ -38,11 +38,8 @@ export const Stream = ({ className = '' }) => {
     streamDimensions: s.streamDimensions,
     guiMode: s.guiMode,
   }))
-  const {
-    settings: {
-      context: { cameraControls },
-    },
-  } = useGlobalStateContext()
+  const { settings } = useGlobalStateContext()
+  const cameraControls = settings?.context?.cameraControls
   const { send, state, context } = useModelingContext()
   const { isExecuting } = useKclContext()
 
@@ -189,7 +186,9 @@ export const Stream = ({ className = '' }) => {
       })
     } else if (
       !didDragInStream &&
-      (state.matches('Sketch.SketchIdle') || state.matches('idle'))
+      (state.matches('Sketch.SketchIdle') ||
+        state.matches('idle') ||
+        state.matches('awaiting selection'))
     ) {
       command.cmd = {
         type: 'select_with_point',
