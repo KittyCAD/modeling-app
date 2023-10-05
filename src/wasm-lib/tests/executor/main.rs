@@ -404,14 +404,19 @@ const part001 = startSketchOn('XY')
 const part002 = startSketchOn('-XZ')
   |> startProfileAt([-9.35, 19.18], %)
   |> line([32.14, -2.47], %)
+  |> line([8.39, -3.73], %)
   |> close(%)
+
 const part003 = startSketchOn('-XZ')
   |> startProfileAt([13.82, 16.51], %)
   |> line([-6.24, -30.82], %)
+  |> line([8.39, -3.73], %)
   |> close(%)
+
 const part004 = startSketchOn('YZ')
   |> startProfileAt([19.04, 20.22], %)
   |> line([9.44, -30.16], %)
+  |> line([8.39, -3.73], %)
   |> close(%)
 "#;
 
