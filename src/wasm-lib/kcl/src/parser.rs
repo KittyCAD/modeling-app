@@ -552,7 +552,7 @@ impl Parser {
         _previous_keys: Option<Vec<ObjectKeyInfo>>,
         has_opening_brace: bool,
     ) -> Result<Vec<ObjectKeyInfo>, KclError> {
-        let previous_keys = _previous_keys.unwrap_or(vec![]);
+        let previous_keys = _previous_keys.unwrap_or_default();
         let next_token = self.next_meaningful_token(index, None)?;
         if next_token.index == self.tokens.len() - 1 {
             return Ok(previous_keys);
