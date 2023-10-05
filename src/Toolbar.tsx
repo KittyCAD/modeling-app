@@ -1,4 +1,4 @@
-import { useStore, toolTips } from './useStore'
+import { useStore, toolTips, ToolTip } from './useStore'
 import { extrudeSketch, sketchOnExtrudedFace } from './lang/modifyAst'
 import { getNodePathFromSourceRange } from './lang/queryAst'
 import { HorzVert } from './components/Toolbar/HorzVert'
@@ -10,11 +10,38 @@ import { SetHorzVertDistance } from './components/Toolbar/SetHorzVertDistance'
 import { SetAngleLength } from './components/Toolbar/setAngleLength'
 import { SetAbsDistance } from './components/Toolbar/SetAbsDistance'
 import { SetAngleBetween } from './components/Toolbar/SetAngleBetween'
-import { Fragment, useEffect } from 'react'
+import { Fragment, WheelEvent, useRef } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faX } from '@fortawesome/free-solid-svg-icons'
 import { Popover, Transition } from '@headlessui/react'
 import styles from './Toolbar.module.css'
+import { v4 as uuidv4 } from 'uuid'
+import { useAppMode } from 'hooks/useAppMode'
+import { ActionIcon } from 'components/ActionIcon'
+import { engineCommandManager } from './lang/std/engineConnection'
+
+export const sketchButtonClassnames = {
+  background:
+    'bg-chalkboard-100 group-hover:bg-chalkboard-90 hover:bg-chalkboard-90 dark:bg-fern-20 dark:group-hover:bg-fern-10 dark:hover:bg-fern-10 group-disabled:bg-chalkboard-50 dark:group-disabled:bg-chalkboard-60 group-hover:group-disabled:bg-chalkboard-50 dark:group-hover:group-disabled:bg-chalkboard-50',
+  icon: 'text-fern-20 h-auto group-hover:text-fern-10 hover:text-fern-10 dark:text-chalkboard-100 dark:group-hover:text-chalkboard-100 dark:hover:text-chalkboard-100 group-disabled:bg-chalkboard-60 hover:group-disabled:text-inherit',
+}
+
+const sketchFnLabels: Record<ToolTip | 'sketch_line' | 'move', string> = {
+  sketch_line: 'Line',
+  line: 'Line',
+  move: 'Move',
+  angledLine: 'Angled Line',
+  angledLineThatIntersects: 'Angled Line That Intersects',
+  angledLineOfXLength: 'Angled Line Of X Length',
+  angledLineOfYLength: 'Angled Line Of Y Length',
+  angledLineToX: 'Angled Line To X',
+  angledLineToY: 'Angled Line To Y',
+  lineTo: 'Line to Point',
+  xLine: 'Horizontal Line',
+  yLine: 'Vertical Line',
+  xLineTo: 'Horizontal Line to Point',
+  yLineTo: 'Vertical Line to Point',
+}
 
 export const Toolbar = () => {
   const {
@@ -24,6 +51,7 @@ export const Toolbar = () => {
     ast,
     updateAst,
     programMemory,
+    executeAst,
   } = useStore((s) => ({
     guiMode: s.guiMode,
     setGuiMode: s.setGuiMode,
@@ -31,15 +59,27 @@ export const Toolbar = () => {
     ast: s.ast,
     updateAst: s.updateAst,
     programMemory: s.programMemory,
+    executeAst: s.executeAst,
   }))
+  useAppMode()
+  const toolbarButtonsRef = useRef<HTMLSpanElement>(null)
 
-  useEffect(() => {
-    console.log('guiMode', guiMode)
-  }, [guiMode])
+  function handleToolbarButtonsWheelEvent(ev: WheelEvent<HTMLSpanElement>) {
+    const span = toolbarButtonsRef.current
+    if (!span) {
+      return
+    }
 
-  function ToolbarButtons() {
+    span.scrollLeft = span.scrollLeft += ev.deltaY
+  }
+
+  function ToolbarButtons({ className }: React.HTMLAttributes<HTMLElement>) {
     return (
-      <>
+      <span
+        ref={toolbarButtonsRef}
+        onWheel={handleToolbarButtonsWheelEvent}
+        className={styles.toolbarButtons + ' ' + className}
+      >
         {guiMode.mode === 'default' && (
           <button
             onClick={() => {
@@ -48,7 +88,9 @@ export const Toolbar = () => {
                 sketchMode: 'selectFace',
               })
             }}
+            className="group"
           >
+            <ActionIcon icon="sketch" className="!p-0.5" size="md" />
             Start Sketch
           </button>
         )}
@@ -65,24 +107,33 @@ export const Toolbar = () => {
                 pathToNode,
                 programMemory
               )
-              updateAst(modifiedAst)
+              updateAst(modifiedAst, true)
             }}
+            className="group"
           >
-            SketchOnFace
+            <ActionIcon icon="sketch" className="!p-0.5" size="md" />
+            Sketch on Face
           </button>
         )}
-        {(guiMode.mode === 'canEditSketch' || false) && (
+        {guiMode.mode === 'canEditSketch' && (
           <button
             onClick={() => {
+              const pathToNode = getNodePathFromSourceRange(
+                ast,
+                selectionRanges.codeBasedSelections[0].range
+              )
               setGuiMode({
                 mode: 'sketch',
-                sketchMode: 'sketchEdit',
-                pathToNode: guiMode.pathToNode,
-                rotation: guiMode.rotation,
-                position: guiMode.position,
+                sketchMode: 'enterSketchEdit',
+                pathToNode: pathToNode,
+                rotation: [0, 0, 0, 1],
+                position: [0, 0, 0],
+                pathId: guiMode.pathId,
               })
             }}
+            className="group"
           >
+            <ActionIcon icon="sketch" className="!p-0.5" size="md" />
             Edit Sketch
           </button>
         )}
@@ -99,10 +150,12 @@ export const Toolbar = () => {
                   ast,
                   pathToNode
                 )
-                updateAst(modifiedAst, { focusPath: pathToExtrudeArg })
+                updateAst(modifiedAst, true, { focusPath: pathToExtrudeArg })
               }}
+              className="group"
             >
-              ExtrudeSketch
+              <ActionIcon icon="extrude" className="!p-0.5" size="md" />
+              Extrude
             </button>
             <button
               onClick={() => {
@@ -116,23 +169,49 @@ export const Toolbar = () => {
                   pathToNode,
                   false
                 )
-                updateAst(modifiedAst, { focusPath: pathToExtrudeArg })
+                updateAst(modifiedAst, true, { focusPath: pathToExtrudeArg })
               }}
+              className="group"
             >
-              ExtrudeSketch (w/o pipe)
+              <ActionIcon icon="extrude" className="!p-0.5" size="md" />
+              Extrude as new
             </button>
           </>
         )}
 
         {guiMode.mode === 'sketch' && (
-          <button onClick={() => setGuiMode({ mode: 'default' })}>
+          <button
+            onClick={() => {
+              engineCommandManager.sendSceneCommand({
+                type: 'modeling_cmd_req',
+                cmd_id: uuidv4(),
+                cmd: { type: 'edit_mode_exit' },
+              })
+              engineCommandManager.sendSceneCommand({
+                type: 'modeling_cmd_req',
+                cmd_id: uuidv4(),
+                cmd: { type: 'default_camera_disable_sketch_mode' },
+              })
+
+              setGuiMode({ mode: 'default' })
+              executeAst()
+            }}
+            className="group"
+          >
+            <ActionIcon
+              icon="exit"
+              className="!p-0.5"
+              bgClassName={sketchButtonClassnames.background}
+              iconClassName={sketchButtonClassnames.icon}
+              size="md"
+            />
             Exit sketch
           </button>
         )}
         {toolTips
           .filter(
             // (sketchFnName) => !['angledLineThatIntersects'].includes(sketchFnName)
-            (sketchFnName) => ['line'].includes(sketchFnName)
+            (sketchFnName) => ['sketch_line', 'move'].includes(sketchFnName)
           )
           .map((sketchFnName) => {
             if (
@@ -143,7 +222,18 @@ export const Toolbar = () => {
             return (
               <button
                 key={sketchFnName}
-                onClick={() =>
+                onClick={() => {
+                  engineCommandManager.sendSceneCommand({
+                    type: 'modeling_cmd_req',
+                    cmd_id: uuidv4(),
+                    cmd: {
+                      type: 'set_tool',
+                      tool:
+                        guiMode.sketchMode === sketchFnName
+                          ? 'select'
+                          : (sketchFnName as any),
+                    },
+                  })
                   setGuiMode({
                     ...guiMode,
                     ...(guiMode.sketchMode === sketchFnName
@@ -153,13 +243,27 @@ export const Toolbar = () => {
                         }
                       : {
                           sketchMode: sketchFnName,
+                          waitingFirstClick: true,
                           isTooltip: true,
+                          pathId: guiMode.pathId,
                         }),
                   })
+                }}
+                className={
+                  'group ' +
+                  (guiMode.sketchMode === sketchFnName
+                    ? '!text-fern-70 !bg-fern-10 !dark:text-fern-20 !border-fern-50'
+                    : '')
                 }
               >
-                {sketchFnName}
-                {guiMode.sketchMode === sketchFnName && '✅'}
+                <ActionIcon
+                  icon={sketchFnName.includes('line') ? 'line' : 'move'}
+                  className="!p-0.5"
+                  bgClassName={sketchButtonClassnames.background}
+                  iconClassName={sketchButtonClassnames.icon}
+                  size="md"
+                />
+                {sketchFnLabels[sketchFnName]}
               </button>
             )
           })}
@@ -180,7 +284,7 @@ export const Toolbar = () => {
         <Intersect />
         <RemoveConstrainingValues />
         <SetAngleBetween />
-      </>
+      </span>
     )
   }
 
@@ -190,7 +294,7 @@ export const Toolbar = () => {
         <span className={styles.toolbarCap + ' ' + styles.label}>
           {guiMode.mode === 'sketch' ? '2D' : '3D'}
         </span>
-        <menu className="flex flex-1 gap-2 py-0.5 overflow-hidden whitespace-nowrap">
+        <menu className="flex-1 gap-2 py-0.5 overflow-hidden whitespace-nowrap">
           <ToolbarButtons />
         </menu>
         <Popover.Button
@@ -231,7 +335,7 @@ export const Toolbar = () => {
             </Popover.Button>
           </section>
           <section>
-            <ToolbarButtons />
+            <ToolbarButtons className="flex-wrap" />
           </section>
         </Popover.Panel>
       </Transition>

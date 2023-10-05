@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
-    abstract_syntax_tree_types::{BodyItem, Function, FunctionExpression, Value},
+    ast::types::{BodyItem, Function, FunctionExpression, Value},
     engine::EngineConnection,
     errors::{KclError, KclErrorDetails},
 };
@@ -98,16 +98,14 @@ impl ProgramReturn {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type", rename_all = "camelCase")]
+#[serde(tag = "type")]
 pub enum MemoryItem {
-    UserVal {
-        value: serde_json::Value,
-        #[serde(rename = "__meta")]
-        meta: Vec<Metadata>,
-    },
-    SketchGroup(SketchGroup),
-    ExtrudeGroup(ExtrudeGroup),
-    ExtrudeTransform(ExtrudeTransform),
+    UserVal(UserVal),
+    SketchGroup(Box<SketchGroup>),
+    ExtrudeGroup(Box<ExtrudeGroup>),
+    #[ts(skip)]
+    ExtrudeTransform(Box<ExtrudeTransform>),
+    #[ts(skip)]
     Function {
         #[serde(skip)]
         func: Option<MemoryFunction>,
@@ -119,7 +117,16 @@ pub enum MemoryItem {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(rename_all = "camelCase")]
+#[serde(tag = "type", rename_all = "camelCase")]
+pub struct UserVal {
+    pub value: serde_json::Value,
+    #[serde(rename = "__meta")]
+    pub meta: Vec<Metadata>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub struct ExtrudeTransform {
     pub position: Position,
     pub rotation: Rotation,
@@ -127,18 +134,33 @@ pub struct ExtrudeTransform {
     pub meta: Vec<Metadata>,
 }
 
-pub type MemoryFunction = fn(
-    s: &[MemoryItem],
-    memory: &ProgramMemory,
-    expression: &FunctionExpression,
-    metadata: &[Metadata],
-    engine: &mut EngineConnection,
-) -> Result<Option<ProgramReturn>, KclError>;
+pub type MemoryFunction =
+    fn(
+        s: Vec<MemoryItem>,
+        memory: ProgramMemory,
+        expression: Box<FunctionExpression>,
+        metadata: Vec<Metadata>,
+        engine: EngineConnection,
+    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>>>>;
+
+fn force_memory_function<
+    F: Fn(
+        Vec<MemoryItem>,
+        ProgramMemory,
+        Box<FunctionExpression>,
+        Vec<Metadata>,
+        EngineConnection,
+    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<ProgramReturn>, KclError>>>>,
+>(
+    f: F,
+) -> F {
+    f
+}
 
 impl From<MemoryItem> for Vec<SourceRange> {
     fn from(item: MemoryItem) -> Self {
         match item {
-            MemoryItem::UserVal { meta, .. } => meta.iter().map(|m| m.source_range).collect(),
+            MemoryItem::UserVal(u) => u.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::SketchGroup(s) => s.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::ExtrudeGroup(e) => e.meta.iter().map(|m| m.source_range).collect(),
             MemoryItem::ExtrudeTransform(e) => e.meta.iter().map(|m| m.source_range).collect(),
@@ -149,34 +171,36 @@ impl From<MemoryItem> for Vec<SourceRange> {
 
 impl MemoryItem {
     pub fn get_json_value(&self) -> Result<serde_json::Value, KclError> {
-        if let MemoryItem::UserVal { value, .. } = self {
-            Ok(value.clone())
+        if let MemoryItem::UserVal(user_val) = self {
+            Ok(user_val.value.clone())
         } else {
-            Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Not a user value: {:?}", self),
-                source_ranges: self.clone().into(),
-            }))
+            serde_json::to_value(self).map_err(|err| {
+                KclError::Semantic(KclErrorDetails {
+                    message: format!("Cannot convert memory item to json value: {:?}", err),
+                    source_ranges: self.clone().into(),
+                })
+            })
         }
     }
 
-    pub fn call_fn(
+    pub async fn call_fn(
         &self,
-        args: &[MemoryItem],
-        memory: &ProgramMemory,
-        engine: &mut EngineConnection,
+        args: Vec<MemoryItem>,
+        memory: ProgramMemory,
+        engine: EngineConnection,
     ) -> Result<Option<ProgramReturn>, KclError> {
-        if let MemoryItem::Function { func, expression, meta } = self {
+        if let MemoryItem::Function { func, expression, meta } = &self {
             if let Some(func) = func {
-                func(args, memory, expression, meta, engine)
+                func(args, memory, expression.clone(), meta.clone(), engine).await
             } else {
                 Err(KclError::Semantic(KclErrorDetails {
-                    message: format!("Not a function: {:?}", self),
+                    message: format!("Not a function: {:?}", expression),
                     source_ranges: vec![],
                 }))
             }
         } else {
             Err(KclError::Semantic(KclErrorDetails {
-                message: format!("not a function: {:?}", self),
+                message: "not a in memory function".to_string(),
                 source_ranges: vec![],
             }))
         }
@@ -186,7 +210,7 @@ impl MemoryItem {
 /// A sketch group is a collection of paths.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(rename_all = "camelCase")]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub struct SketchGroup {
     /// The id of the sketch group.
     pub id: uuid::Uuid,
@@ -238,7 +262,7 @@ impl SketchGroup {
 /// An extrude group is a collection of extrude surfaces.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(rename_all = "camelCase")]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub struct ExtrudeGroup {
     /// The id of the extrude group.
     pub id: uuid::Uuid,
@@ -276,15 +300,15 @@ pub enum BodyType {
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-pub struct Position(pub [f64; 3]);
+pub struct Position(#[ts(type = "[number, number, number]")] pub [f64; 3]);
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-pub struct Rotation(pub [f64; 4]);
+pub struct Rotation(#[ts(type = "[number, number, number, number]")] pub [f64; 4]);
 
 #[derive(Debug, Default, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema, Hash, Eq)]
 #[ts(export)]
-pub struct SourceRange(pub [usize; 2]);
+pub struct SourceRange(#[ts(type = "[number, number]")] pub [usize; 2]);
 
 impl SourceRange {
     /// Create a new source range.
@@ -341,7 +365,7 @@ impl SourceRange {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct Point2d {
     pub x: f64,
@@ -369,6 +393,16 @@ impl From<Point2d> for [f64; 2] {
 impl From<Point2d> for kittycad::types::Point2D {
     fn from(p: Point2d) -> Self {
         Self { x: p.x, y: p.y }
+    }
+}
+
+impl Point2d {
+    pub const ZERO: Self = Self { x: 0.0, y: 0.0 };
+    pub fn scale(self, scalar: f64) -> Self {
+        Self {
+            x: self.x * scalar,
+            y: self.y * scalar,
+        }
     }
 }
 
@@ -401,8 +435,10 @@ impl From<SourceRange> for Metadata {
 #[serde(rename_all = "camelCase")]
 pub struct BasePath {
     /// The from point.
+    #[ts(type = "[number, number]")]
     pub from: [f64; 2],
     /// The to point.
+    #[ts(type = "[number, number]")]
     pub to: [f64; 2],
     /// The name of the path.
     pub name: String,
@@ -558,11 +594,11 @@ impl Default for PipeInfo {
 }
 
 /// Execute a AST's program.
-pub fn execute(
-    program: crate::abstract_syntax_tree_types::Program,
+pub async fn execute(
+    program: crate::ast::types::Program,
     memory: &mut ProgramMemory,
     options: BodyType,
-    engine: &mut EngineConnection,
+    engine: &EngineConnection,
 ) -> Result<ProgramMemory, KclError> {
     let mut pipe_info = PipeInfo::default();
 
@@ -580,6 +616,26 @@ pub fn execute(
                                 let memory_item = memory.get(&identifier.name, identifier.into())?;
                                 args.push(memory_item.clone());
                             }
+                            Value::CallExpression(call_expr) => {
+                                let result = call_expr.execute(memory, &mut pipe_info, engine).await?;
+                                args.push(result);
+                            }
+                            Value::BinaryExpression(binary_expression) => {
+                                let result = binary_expression.get_result(memory, &mut pipe_info, engine).await?;
+                                args.push(result);
+                            }
+                            Value::UnaryExpression(unary_expression) => {
+                                let result = unary_expression.get_result(memory, &mut pipe_info, engine).await?;
+                                args.push(result);
+                            }
+                            Value::ObjectExpression(object_expression) => {
+                                let result = object_expression.execute(memory, &mut pipe_info, engine).await?;
+                                args.push(result);
+                            }
+                            Value::ArrayExpression(array_expression) => {
+                                let result = array_expression.execute(memory, &mut pipe_info, engine).await?;
+                                args.push(result);
+                            }
                             // We do nothing for the rest.
                             _ => (),
                         }
@@ -595,7 +651,9 @@ pub fn execute(
 
                         memory.return_ = Some(ProgramReturn::Arguments(call_expr.arguments.clone()));
                     } else if let Some(func) = memory.clone().root.get(&fn_name) {
-                        func.call_fn(&args, memory, engine)?;
+                        let result = func.call_fn(args.clone(), memory.clone(), engine.clone()).await?;
+
+                        memory.return_ = result;
                     } else {
                         return Err(KclError::Semantic(KclErrorDetails {
                             message: format!("No such name {} defined", fn_name),
@@ -619,22 +677,27 @@ pub fn execute(
                             memory.add(&var_name, value.clone(), source_range)?;
                         }
                         Value::BinaryExpression(binary_expression) => {
-                            let result = binary_expression.get_result(memory, &mut pipe_info, engine)?;
+                            let result = binary_expression.get_result(memory, &mut pipe_info, engine).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::FunctionExpression(function_expression) => {
-                            memory.add(
-                                &var_name,
-                                MemoryItem::Function{
-                                    expression: function_expression.clone(),
-                                    meta: vec![metadata],
-                                    func: Some(|args: &[MemoryItem], memory: &ProgramMemory, function_expression: &FunctionExpression, _metadata: &[Metadata], engine: &mut EngineConnection| -> Result<Option<ProgramReturn>, KclError> {
+                            let mem_func = force_memory_function(
+                                |args: Vec<MemoryItem>,
+                                 memory: ProgramMemory,
+                                 function_expression: Box<FunctionExpression>,
+                                 _metadata: Vec<Metadata>,
+                                 engine: EngineConnection| {
+                                    Box::pin(async move {
                                         let mut fn_memory = memory.clone();
 
                                         if args.len() != function_expression.params.len() {
                                             return Err(KclError::Semantic(KclErrorDetails {
-                                                message: format!("Expected {} arguments, got {}", function_expression.params.len(), args.len()),
-                                                source_ranges: vec![function_expression.into()],
+                                                message: format!(
+                                                    "Expected {} arguments, got {}",
+                                                    function_expression.params.len(),
+                                                    args.len(),
+                                                ),
+                                                source_ranges: vec![(&function_expression).into()],
                                             }));
                                         }
 
@@ -647,20 +710,34 @@ pub fn execute(
                                             )?;
                                         }
 
-                                        let result = execute(function_expression.body.clone(), &mut fn_memory, BodyType::Block, engine)?;
+                                        let result = execute(
+                                            function_expression.body.clone(),
+                                            &mut fn_memory,
+                                            BodyType::Block,
+                                            &engine,
+                                        )
+                                        .await?;
 
                                         Ok(result.return_)
                                     })
+                                },
+                            );
+                            memory.add(
+                                &var_name,
+                                MemoryItem::Function {
+                                    expression: function_expression.clone(),
+                                    meta: vec![metadata],
+                                    func: Some(mem_func),
                                 },
                                 source_range,
                             )?;
                         }
                         Value::CallExpression(call_expression) => {
-                            let result = call_expression.execute(memory, &mut pipe_info, engine)?;
+                            let result = call_expression.execute(memory, &mut pipe_info, engine).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::PipeExpression(pipe_expression) => {
-                            let result = pipe_expression.get_result(memory, &mut pipe_info, engine)?;
+                            let result = pipe_expression.get_result(memory, &mut pipe_info, engine).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::PipeSubstitution(pipe_substitution) => {
@@ -673,11 +750,11 @@ pub fn execute(
                             }));
                         }
                         Value::ArrayExpression(array_expression) => {
-                            let result = array_expression.execute(memory, &mut pipe_info, engine)?;
+                            let result = array_expression.execute(memory, &mut pipe_info, engine).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::ObjectExpression(object_expression) => {
-                            let result = object_expression.execute(memory, &mut pipe_info, engine)?;
+                            let result = object_expression.execute(memory, &mut pipe_info, engine).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::MemberExpression(member_expression) => {
@@ -685,7 +762,7 @@ pub fn execute(
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::UnaryExpression(unary_expression) => {
-                            let result = unary_expression.get_result(memory, &mut pipe_info, engine)?;
+                            let result = unary_expression.get_result(memory, &mut pipe_info, engine).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                     }
@@ -693,14 +770,42 @@ pub fn execute(
             }
             BodyItem::ReturnStatement(return_statement) => match &return_statement.argument {
                 Value::BinaryExpression(bin_expr) => {
-                    let result = bin_expr.get_result(memory, &mut pipe_info, engine)?;
+                    let result = bin_expr.get_result(memory, &mut pipe_info, engine).await?;
+                    memory.return_ = Some(ProgramReturn::Value(result));
+                }
+                Value::UnaryExpression(unary_expr) => {
+                    let result = unary_expr.get_result(memory, &mut pipe_info, engine).await?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::Identifier(identifier) => {
                     let value = memory.get(&identifier.name, identifier.into())?.clone();
                     memory.return_ = Some(ProgramReturn::Value(value));
                 }
-                _ => (),
+                Value::Literal(literal) => {
+                    memory.return_ = Some(ProgramReturn::Value(literal.into()));
+                }
+                Value::ArrayExpression(array_expr) => {
+                    let result = array_expr.execute(memory, &mut pipe_info, engine).await?;
+                    memory.return_ = Some(ProgramReturn::Value(result));
+                }
+                Value::ObjectExpression(obj_expr) => {
+                    let result = obj_expr.execute(memory, &mut pipe_info, engine).await?;
+                    memory.return_ = Some(ProgramReturn::Value(result));
+                }
+                Value::CallExpression(call_expr) => {
+                    let result = call_expr.execute(memory, &mut pipe_info, engine).await?;
+                    memory.return_ = Some(ProgramReturn::Value(result));
+                }
+                Value::MemberExpression(member_expr) => {
+                    let result = member_expr.get_result(memory)?;
+                    memory.return_ = Some(ProgramReturn::Value(result));
+                }
+                Value::PipeExpression(pipe_expr) => {
+                    let result = pipe_expr.get_result(memory, &mut pipe_info, engine).await?;
+                    memory.return_ = Some(ProgramReturn::Value(result));
+                }
+                Value::PipeSubstitution(_) => {}
+                Value::FunctionExpression(_) => {}
             },
         }
     }
@@ -715,12 +820,12 @@ mod tests {
     use super::*;
 
     pub async fn parse_execute(code: &str) -> Result<ProgramMemory> {
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let parser = crate::parser::Parser::new(tokens);
         let program = parser.ast()?;
         let mut mem: ProgramMemory = Default::default();
-        let mut engine = EngineConnection::new().await?;
-        let memory = execute(program, &mut mem, BodyType::Root, &mut engine)?;
+        let engine = EngineConnection::new().await?;
+        let memory = execute(program, &mut mem, BodyType::Root, &engine).await?;
 
         Ok(memory)
     }
@@ -774,16 +879,16 @@ show(part001)"#,
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_fn_definitions() {
-        let ast = r#"const def = (x) => {
+        let ast = r#"fn def = (x) => {
   return x
 }
-const ghi = (x) => {
+fn ghi = (x) => {
   return x
 }
-const jkl = (x) => {
+fn jkl = (x) => {
   return x
 }
-const hmm = (x) => {
+fn hmm = (x) => {
   return x
 }
 
@@ -854,6 +959,381 @@ const variableBelowShouldNotBeIncluded = 3
 
 show(part001)"#;
 
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_with_function_literal_in_pipe() {
+        let ast = r#"const w = 20
+const l = 8
+const h = 10
+
+fn thing = () => {
+  return -8
+}
+
+const firstExtrude = startSketchAt([0,0])
+  |> line([0, l], %)
+  |> line([w, 0], %)
+  |> line([0, thing()], %)
+  |> close(%)
+  |> extrude(h, %)
+
+show(firstExtrude)"#;
+
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_with_function_unary_in_pipe() {
+        let ast = r#"const w = 20
+const l = 8
+const h = 10
+
+fn thing = (x) => {
+  return -x
+}
+
+const firstExtrude = startSketchAt([0,0])
+  |> line([0, l], %)
+  |> line([w, 0], %)
+  |> line([0, thing(8)], %)
+  |> close(%)
+  |> extrude(h, %)
+
+show(firstExtrude)"#;
+
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_with_function_array_in_pipe() {
+        let ast = r#"const w = 20
+const l = 8
+const h = 10
+
+fn thing = (x) => {
+  return [0, -x]
+}
+
+const firstExtrude = startSketchAt([0,0])
+  |> line([0, l], %)
+  |> line([w, 0], %)
+  |> line(thing(8), %)
+  |> close(%)
+  |> extrude(h, %)
+
+show(firstExtrude)"#;
+
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_with_function_call_in_pipe() {
+        let ast = r#"const w = 20
+const l = 8
+const h = 10
+
+fn other_thing = (y) => {
+  return -y
+}
+
+fn thing = (x) => {
+  return other_thing(x)
+}
+
+const firstExtrude = startSketchAt([0,0])
+  |> line([0, l], %)
+  |> line([w, 0], %)
+  |> line([0, thing(8)], %)
+  |> close(%)
+  |> extrude(h, %)
+
+show(firstExtrude)"#;
+
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_execute_with_function_sketch() {
+        let ast = r#"fn box = (h, l, w) => {
+ const myBox = startSketchAt([0,0])
+    |> line([0, l], %)
+    |> line([w, 0], %)
+    |> line([0, -l], %)
+    |> close(%)
+    |> extrude(h, %)
+
+  return myBox
+}
+
+const fnBox = box(3, 6, 10)
+
+show(fnBox)"#;
+
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_member_of_object_with_function_period() {
+        let ast = r#"fn box = (obj) => {
+ let myBox = startSketchAt(obj.start)
+    |> line([0, obj.l], %)
+    |> line([obj.w, 0], %)
+    |> line([0, -obj.l], %)
+    |> close(%)
+    |> extrude(obj.h, %)
+
+  return myBox
+}
+
+const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
+
+show(thisBox)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_member_of_object_with_function_brace() {
+        let ast = r#"fn box = (obj) => {
+ let myBox = startSketchAt(obj["start"])
+    |> line([0, obj["l"]], %)
+    |> line([obj["w"], 0], %)
+    |> line([0, -obj["l"]], %)
+    |> close(%)
+    |> extrude(obj["h"], %)
+
+  return myBox
+}
+
+const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
+
+show(thisBox)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_member_of_object_with_function_mix_period_brace() {
+        let ast = r#"fn box = (obj) => {
+ let myBox = startSketchAt(obj["start"])
+    |> line([0, obj["l"]], %)
+    |> line([obj["w"], 0], %)
+    |> line([10 - obj["w"], -obj.l], %)
+    |> close(%)
+    |> extrude(obj["h"], %)
+
+  return myBox
+}
+
+const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
+
+show(thisBox)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    #[ignore] // ignore til we get loops
+    async fn test_execute_with_function_sketch_loop_objects() {
+        let ast = r#"fn box = (obj) => {
+ let myBox = startSketchAt(obj.start)
+    |> line([0, obj.l], %)
+    |> line([obj.w, 0], %)
+    |> line([0, -obj.l], %)
+    |> close(%)
+    |> extrude(obj.h, %)
+
+  return myBox
+}
+
+for var in [{start: [0,0], l: 6, w: 10, h: 3}, {start: [-10,-10], l: 3, w: 5, h: 1.5}] {
+  const thisBox = box(var)
+  show(thisBox)
+}"#;
+
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    #[ignore] // ignore til we get loops
+    async fn test_execute_with_function_sketch_loop_array() {
+        let ast = r#"fn box = (h, l, w, start) => {
+ const myBox = startSketchAt([0,0])
+    |> line([0, l], %)
+    |> line([w, 0], %)
+    |> line([0, -l], %)
+    |> close(%)
+    |> extrude(h, %)
+
+  return myBox
+}
+
+
+for var in [[3, 6, 10, [0,0]], [1.5, 3, 5, [-10,-10]]] {
+  const thisBox = box(var[0], var[1], var[2], var[3])
+  show(thisBox)
+}"#;
+
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_member_of_array_with_function() {
+        let ast = r#"fn box = (array) => {
+ let myBox = startSketchAt(array[0])
+    |> line([0, array[1]], %)
+    |> line([array[2], 0], %)
+    |> line([0, -array[1]], %)
+    |> close(%)
+    |> extrude(array[3], %)
+
+  return myBox
+}
+
+const thisBox = box([[0,0], 6, 10, 3])
+
+show(thisBox)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_execute_with_functions() {
+        let ast = r#"const myVar = 2 + min(100, -1 + legLen(5, 3))"#;
+        let memory = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            serde_json::json!(5.0),
+            memory.root.get("myVar").unwrap().get_json_value().unwrap()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_execute() {
+        let ast = r#"const myVar = 1 + 2 * (3 - 4) / -5 + 6"#;
+        let memory = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            serde_json::json!(7.4),
+            memory.root.get("myVar").unwrap().get_json_value().unwrap()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_execute_start_negative() {
+        let ast = r#"const myVar = -5 + 6"#;
+        let memory = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            serde_json::json!(1.0),
+            memory.root.get("myVar").unwrap().get_json_value().unwrap()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_execute_with_pi() {
+        let ast = r#"const myVar = pi() * 2"#;
+        let memory = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            serde_json::json!(std::f64::consts::TAU),
+            memory.root.get("myVar").unwrap().get_json_value().unwrap()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_define_decimal_without_leading_zero() {
+        let ast = r#"let thing = .4 + 7"#;
+        let memory = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            serde_json::json!(7.4),
+            memory.root.get("thing").unwrap().get_json_value().unwrap()
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_zero_param_fn() {
+        let ast = r#"const sigmaAllow = 35000 // psi
+const leg1 = 5 // inches
+const leg2 = 8 // inches
+fn thickness = () => { return 0.56 }
+
+const bracket = startSketchAt([0,0])
+  |> line([0, leg1], %)
+  |> line([leg2, 0], %)
+  |> line([0, -thickness()], %)
+  |> line([-leg2 + thickness(), 0], %)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_negative_variable_in_binary_expression() {
+        let ast = r#"const sigmaAllow = 35000 // psi
+const width = 1 // inch
+
+const p = 150 // lbs
+const distance = 6 // inches
+const FOS = 2
+
+const leg1 = 5 // inches
+const leg2 = 8 // inches
+
+const thickness_squared = distance * p * FOS * 6 / sigmaAllow
+const thickness = 0.56 // inches. App does not support square root function yet
+
+const bracket = startSketchAt([0,0])
+  |> line([0, leg1], %)
+  |> line([leg2, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-leg2 + thickness, 0], %)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_doubly_nested_parens() {
+        let ast = r#"const sigmaAllow = 35000 // psi
+const width = 4 // inch
+const p = 150 // Force on shelf - lbs
+const distance = 6 // inches
+const FOS = 2
+const leg1 = 5 // inches
+const leg2 = 8 // inches
+const thickness_squared = (distance * p * FOS * 6 / (sigmaAllow - width))
+const thickness = 0.32 // inches. App does not support square root function yet
+const bracket = startSketchAt([0,0])
+    |> line([0, leg1], %)
+  |> line([leg2, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-1 * leg2 + thickness, 0], %)
+  |> line([0, -1 * leg1 + thickness], %)
+  |> close(%)
+  |> extrude(width, %)
+show(bracket)
+"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_math_nested_parens_one_less() {
+        let ast = r#"const sigmaAllow = 35000 // psi
+const width = 4 // inch
+const p = 150 // Force on shelf - lbs
+const distance = 6 // inches
+const FOS = 2
+const leg1 = 5 // inches
+const leg2 = 8 // inches
+const thickness_squared = distance * p * FOS * 6 / (sigmaAllow - width)
+const thickness = 0.32 // inches. App does not support square root function yet
+const bracket = startSketchAt([0,0])
+    |> line([0, leg1], %)
+  |> line([leg2, 0], %)
+  |> line([0, -thickness], %)
+  |> line([-1 * leg2 + thickness, 0], %)
+  |> line([0, -1 * leg1 + thickness], %)
+  |> close(%)
+  |> extrude(width, %)
+show(bracket)
+"#;
         parse_execute(ast).await.unwrap();
     }
 }

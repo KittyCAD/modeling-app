@@ -1,10 +1,7 @@
 import fs from 'node:fs'
 
-import { parser_wasm } from './abstractSyntaxTree'
-import { ProgramMemory } from './executor'
-import { initPromise } from './rust'
+import { parse, ProgramMemory, SketchGroup, initPromise } from './wasm'
 import { enginelessExecutor } from '../lib/testHelpers'
-import { vi } from 'vitest'
 import { KCLError } from './errors'
 
 beforeAll(() => initPromise)
@@ -117,10 +114,10 @@ show(mySketch)
   //   ].join('\n')
   //   const { root } = await exe(code)
   //   expect(root.mySk1.value).toHaveLength(3)
-  //   expect(root?.rotated?.type).toBe('sketchGroup')
+  //   expect(root?.rotated?.type).toBe('SketchGroup')
   //   if (
-  //     root?.mySk1?.type !== 'sketchGroup' ||
-  //     root?.rotated?.type !== 'sketchGroup'
+  //     root?.mySk1?.type !== 'SketchGroup' ||
+  //     root?.rotated?.type !== 'SketchGroup'
   //   )
   //     throw new Error('not a sketch group')
   //   expect(root.mySk1.rotation).toEqual([0, 0, 0, 1])
@@ -143,7 +140,7 @@ show(mySketch)
     ].join('\n')
     const { root } = await exe(code)
     expect(root.mySk1).toEqual({
-      type: 'sketchGroup',
+      type: 'SketchGroup',
       start: {
         to: [0, 0],
         from: [0, 0],
@@ -199,7 +196,7 @@ show(mySketch)
     // TODO path to node is probably wrong here, zero indexes are not correct
     expect(root).toEqual({
       three: {
-        type: 'userVal',
+        type: 'UserVal',
         value: 3,
         __meta: [
           {
@@ -208,7 +205,7 @@ show(mySketch)
         ],
       },
       yo: {
-        type: 'userVal',
+        type: 'UserVal',
         value: [1, '2', 3, 9],
         __meta: [
           {
@@ -225,7 +222,7 @@ show(mySketch)
     ].join('\n')
     const { root } = await exe(code)
     expect(root.yo).toEqual({
-      type: 'userVal',
+      type: 'UserVal',
       value: { aStr: 'str', anum: 2, identifier: 3, binExp: 9 },
       __meta: [
         {
@@ -240,7 +237,7 @@ show(mySketch)
     )
     const { root } = await exe(code)
     expect(root.myVar).toEqual({
-      type: 'userVal',
+      type: 'UserVal',
       value: '123',
       __meta: [
         {
@@ -338,7 +335,7 @@ describe('testing math operators', () => {
     const { root } = await exe(code)
     const sketch = root.part001
     // result of `-legLen(5, min(3, 999))` should be -4
-    const yVal = sketch.value?.[0]?.to?.[1]
+    const yVal = (sketch as SketchGroup).value?.[0]?.to?.[1]
     expect(yVal).toBe(-4)
   })
   it('test that % substitution feeds down CallExp->ArrExp->UnaryExp->CallExp', async () => {
@@ -356,8 +353,8 @@ describe('testing math operators', () => {
     const { root } = await exe(code)
     const sketch = root.part001
     // expect -legLen(segLen('seg01', %), myVar) to equal -4 setting the y value back to 0
-    expect(sketch.value?.[1]?.from).toEqual([3, 4])
-    expect(sketch.value?.[1]?.to).toEqual([6, 0])
+    expect((sketch as SketchGroup).value?.[1]?.from).toEqual([3, 4])
+    expect((sketch as SketchGroup).value?.[1]?.to).toEqual([6, 0])
     const removedUnaryExp = code.replace(
       `-legLen(segLen('seg01', %), myVar)`,
       `legLen(segLen('seg01', %), myVar)`
@@ -366,7 +363,9 @@ describe('testing math operators', () => {
     const removedUnaryExpRootSketch = removedUnaryExpRoot.part001
 
     // without the minus sign, the y value should be 8
-    expect(removedUnaryExpRootSketch.value?.[1]?.to).toEqual([6, 8])
+    expect((removedUnaryExpRootSketch as SketchGroup).value?.[1]?.to).toEqual([
+      6, 8,
+    ])
   })
   it('with nested callExpression and binaryExpression', async () => {
     const code = 'const myVar = 2 + min(100, -1 + legLen(5, 3))'
@@ -397,8 +396,11 @@ show(theExtrude)`
 
 // helpers
 
-async function exe(code: string, programMemory: ProgramMemory = { root: {} }) {
-  const ast = parser_wasm(code)
+async function exe(
+  code: string,
+  programMemory: ProgramMemory = { root: {}, return: null }
+) {
+  const ast = parse(code)
 
   const result = await enginelessExecutor(ast, programMemory)
   return result

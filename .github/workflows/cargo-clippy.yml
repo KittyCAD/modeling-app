@@ -24,7 +24,7 @@ jobs:
       matrix:
         dir: ['src/wasm-lib']
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install latest rust
         uses: actions-rs/toolchain@v1
         with:
@@ -40,7 +40,18 @@ jobs:
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2.6.1
 
+      - name: Install ffmpeg
+        run: |
+          sudo apt update
+          sudo apt install \
+            ffmpeg \
+            libavformat-dev \
+            libavutil-dev \
+            libclang-dev \
+            libswscale-dev \
+            --no-install-recommends
+
       - name: Run clippy
         run: |
           cd "${{ matrix.dir }}"
-          cargo clippy --all --tests -- -D warnings
+          cargo clippy --all --tests --benches -- -D warnings

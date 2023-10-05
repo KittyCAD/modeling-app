@@ -4,13 +4,14 @@ use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    abstract_syntax_tree_types::{
-        BinaryExpression, BinaryOperator, BinaryPart, CallExpression, Identifier, Literal, ValueMeta,
+    ast::types::{
+        BinaryExpression, BinaryOperator, BinaryPart, CallExpression, Identifier, Literal, MemberExpression,
+        UnaryExpression, ValueMeta,
     },
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
-    parser::{is_not_code_token, Parser},
-    tokeniser::{Token, TokenType},
+    parser::Parser,
+    token::{Token, TokenType},
 };
 
 #[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Clone, ts_rs::TS)]
@@ -40,7 +41,7 @@ pub struct ParenthesisToken {
     pub end: usize,
 }
 
-crate::abstract_syntax_tree_types::impl_value_meta!(ParenthesisToken);
+crate::ast::types::impl_value_meta!(ParenthesisToken);
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
@@ -55,7 +56,7 @@ pub struct ExtendedBinaryExpression {
     pub end_extended: Option<usize>,
 }
 
-crate::abstract_syntax_tree_types::impl_value_meta!(ExtendedBinaryExpression);
+crate::ast::types::impl_value_meta!(ExtendedBinaryExpression);
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
@@ -69,7 +70,7 @@ pub struct ExtendedLiteral {
     pub end_extended: Option<usize>,
 }
 
-crate::abstract_syntax_tree_types::impl_value_meta!(ExtendedLiteral);
+crate::ast::types::impl_value_meta!(ExtendedLiteral);
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
@@ -81,6 +82,8 @@ pub enum MathExpression {
     BinaryExpression(Box<BinaryExpression>),
     ExtendedBinaryExpression(Box<ExtendedBinaryExpression>),
     ParenthesisToken(Box<ParenthesisToken>),
+    MemberExpression(Box<MemberExpression>),
+    UnaryExpression(Box<UnaryExpression>),
 }
 
 impl MathExpression {
@@ -92,6 +95,8 @@ impl MathExpression {
             MathExpression::BinaryExpression(binary_expression) => binary_expression.start(),
             MathExpression::ExtendedBinaryExpression(extended_binary_expression) => extended_binary_expression.start(),
             MathExpression::ParenthesisToken(parenthesis_token) => parenthesis_token.start(),
+            MathExpression::MemberExpression(member_expression) => member_expression.start(),
+            MathExpression::UnaryExpression(unary_expression) => unary_expression.start(),
         }
     }
 
@@ -103,6 +108,8 @@ impl MathExpression {
             MathExpression::BinaryExpression(binary_expression) => binary_expression.end(),
             MathExpression::ExtendedBinaryExpression(extended_binary_expression) => extended_binary_expression.end(),
             MathExpression::ParenthesisToken(parenthesis_token) => parenthesis_token.end(),
+            MathExpression::MemberExpression(member_expression) => member_expression.end(),
+            MathExpression::UnaryExpression(unary_expression) => unary_expression.end(),
         }
     }
 }
@@ -133,7 +140,7 @@ impl ReversePolishNotation {
         }
 
         let current_token = self.parser.get_token(0)?;
-        if current_token.token_type == TokenType::Word || current_token.token_type == TokenType::Keyword {
+        if current_token.token_type == TokenType::Word {
             if let Ok(next) = self.parser.get_token(1) {
                 if next.token_type == TokenType::Brace && next.value == "(" {
                     let closing_brace = self.parser.find_closing_brace(1, 0, "")?;
@@ -144,6 +151,24 @@ impl ReversePolishNotation {
                             .iter()
                             .cloned()
                             .chain(self.parser.tokens[0..closing_brace + 1].iter().cloned())
+                            .collect::<Vec<Token>>(),
+                        &self.operators,
+                    );
+                    return rpn.parse();
+                }
+                if (current_token.token_type == TokenType::Word)
+                    && (next.token_type == TokenType::Period
+                        || (next.token_type == TokenType::Brace && next.value == "["))
+                {
+                    // Find the end of the binary expression, ie the member expression.
+                    let end = self.parser.make_member_expression(0)?.last_index;
+                    let rpn = ReversePolishNotation::new(
+                        &self.parser.tokens[end + 1..],
+                        &self
+                            .previous_postfix
+                            .iter()
+                            .cloned()
+                            .chain(self.parser.tokens[0..end + 1].iter().cloned())
                             .collect::<Vec<Token>>(),
                         &self.operators,
                     );
@@ -164,7 +189,6 @@ impl ReversePolishNotation {
             return rpn.parse();
         } else if current_token.token_type == TokenType::Number
             || current_token.token_type == TokenType::Word
-            || current_token.token_type == TokenType::Keyword
             || current_token.token_type == TokenType::String
         {
             let rpn = ReversePolishNotation::new(
@@ -180,6 +204,36 @@ impl ReversePolishNotation {
             return rpn.parse();
         } else if let Ok(binop) = BinaryOperator::from_str(current_token.value.as_str()) {
             if !self.operators.is_empty() {
+                if binop == BinaryOperator::Sub {
+                    // We need to check if we have a "sub" and if the previous token is a word or
+                    // number or string, then we need to treat it as a negative number.
+                    // This oddity only applies to the "-" operator.
+                    if let Some(prevtoken) = self.previous_postfix.last() {
+                        if prevtoken.token_type == TokenType::Operator {
+                            // Get the next token and see if it is a number.
+                            if let Ok(nexttoken) = self.parser.get_token(1) {
+                                if nexttoken.token_type == TokenType::Number || nexttoken.token_type == TokenType::Word
+                                {
+                                    // We have a negative number/ word or string.
+                                    // Change the value of the token to be the negative number/ word or string.
+                                    let mut new_token = nexttoken.clone();
+                                    new_token.value = format!("-{}", nexttoken.value);
+                                    let rpn = ReversePolishNotation::new(
+                                        &self.parser.tokens[2..],
+                                        &self
+                                            .previous_postfix
+                                            .iter()
+                                            .cloned()
+                                            .chain(vec![new_token.clone()])
+                                            .collect::<Vec<Token>>(),
+                                        &self.operators,
+                                    );
+                                    return rpn.parse();
+                                }
+                            }
+                        }
+                    }
+                }
                 if let Ok(prevbinop) = BinaryOperator::from_str(self.operators[self.operators.len() - 1].value.as_str())
                 {
                     if prevbinop.precedence() >= binop.precedence() {
@@ -192,6 +246,29 @@ impl ReversePolishNotation {
                                 .chain(vec![self.operators[self.operators.len() - 1].clone()])
                                 .collect::<Vec<Token>>(),
                             &self.operators[0..self.operators.len() - 1],
+                        );
+                        return rpn.parse();
+                    }
+                }
+            } else if self.previous_postfix.is_empty()
+                && current_token.token_type == TokenType::Operator
+                && current_token.value == "-"
+            {
+                if let Ok(nexttoken) = self.parser.get_token(1) {
+                    if nexttoken.token_type == TokenType::Number || nexttoken.token_type == TokenType::Word {
+                        // We have a negative number/ word or string.
+                        // Change the value of the token to be the negative number/ word or string.
+                        let mut new_token = nexttoken.clone();
+                        new_token.value = format!("-{}", nexttoken.value);
+                        let rpn = ReversePolishNotation::new(
+                            &self.parser.tokens[2..],
+                            &self
+                                .previous_postfix
+                                .iter()
+                                .cloned()
+                                .chain(vec![new_token.clone()])
+                                .collect::<Vec<Token>>(),
+                            &self.operators,
                         );
                         return rpn.parse();
                     }
@@ -257,7 +334,7 @@ impl ReversePolishNotation {
             return rpn.parse();
         }
 
-        if is_not_code_token(current_token) {
+        if !current_token.is_code_token() {
             let rpn = ReversePolishNotation::new(&self.parser.tokens[1..], &self.previous_postfix, &self.operators);
             return rpn.parse();
         }
@@ -299,7 +376,7 @@ impl ReversePolishNotation {
                     return Err(KclError::InvalidExpression(KclErrorDetails {
                         source_ranges: vec![SourceRange([a.start(), a.end()])],
                         message: format!("{:?}", a),
-                    }))
+                    }));
                 }
             };
         }
@@ -338,24 +415,49 @@ impl ReversePolishNotation {
                 start_extended: None,
             })));
             return self.build_tree(&reverse_polish_notation_tokens[1..], new_stack);
-        } else if current_token.token_type == TokenType::Word || current_token.token_type == TokenType::Keyword {
+        } else if current_token.token_type == TokenType::Word {
             if reverse_polish_notation_tokens.len() > 1 {
                 if reverse_polish_notation_tokens[1].token_type == TokenType::Brace
                     && reverse_polish_notation_tokens[1].value == "("
                 {
                     let closing_brace = self.parser.find_closing_brace(1, 0, "")?;
                     let mut new_stack = stack;
-                    new_stack.push(MathExpression::CallExpression(Box::new(
-                        self.parser.make_call_expression(0)?.expression,
-                    )));
+                    let call_expression = self.parser.make_call_expression(0)?;
+                    new_stack.push(MathExpression::CallExpression(Box::new(call_expression.expression)));
                     return self.build_tree(&reverse_polish_notation_tokens[closing_brace + 1..], new_stack);
                 }
+                if reverse_polish_notation_tokens[1].token_type == TokenType::Period
+                    || (reverse_polish_notation_tokens[1].token_type == TokenType::Brace
+                        && reverse_polish_notation_tokens[1].value == "[")
+                {
+                    let mut new_stack = stack;
+                    let member_expression = self.parser.make_member_expression(0)?;
+                    new_stack.push(MathExpression::MemberExpression(Box::new(member_expression.expression)));
+                    return self.build_tree(
+                        &reverse_polish_notation_tokens[member_expression.last_index + 1..],
+                        new_stack,
+                    );
+                }
                 let mut new_stack = stack;
-                new_stack.push(MathExpression::Identifier(Box::new(Identifier {
-                    name: current_token.value.clone(),
-                    start: current_token.start,
-                    end: current_token.end,
-                })));
+                if current_token.value.starts_with('-') {
+                    let expression = UnaryExpression {
+                        start: current_token.start,
+                        end: current_token.end,
+                        operator: crate::ast::types::UnaryOperator::Neg,
+                        argument: BinaryPart::Identifier(Box::new(Identifier {
+                            name: current_token.value.trim_start_matches('-').to_string(),
+                            start: current_token.start + 1,
+                            end: current_token.end,
+                        })),
+                    };
+                    new_stack.push(MathExpression::UnaryExpression(Box::new(expression)));
+                } else {
+                    new_stack.push(MathExpression::Identifier(Box::new(Identifier {
+                        name: current_token.value.clone(),
+                        start: current_token.start,
+                        end: current_token.end,
+                    })));
+                }
                 return self.build_tree(&reverse_polish_notation_tokens[1..], new_stack);
             }
         } else if current_token.token_type == TokenType::Brace && current_token.value == "(" {
@@ -396,7 +498,7 @@ impl ReversePolishNotation {
                     return Err(KclError::InvalidExpression(KclErrorDetails {
                         source_ranges: vec![current_token.into()],
                         message: format!("{:?}", a),
-                    }))
+                    }));
                 }
             };
             let paran = match &stack[stack.len() - 2] {
@@ -445,7 +547,7 @@ impl ReversePolishNotation {
                     return Err(KclError::InvalidExpression(KclErrorDetails {
                         source_ranges: vec![current_token.into()],
                         message: format!("{:?}", a),
-                    }))
+                    }));
                 }
             };
             let mut new_stack = stack[0..stack.len() - 2].to_vec();
@@ -483,6 +585,14 @@ impl ReversePolishNotation {
             MathExpression::Identifier(ident) => (BinaryPart::Identifier(ident.clone()), ident.start),
             MathExpression::CallExpression(call) => (BinaryPart::CallExpression(call.clone()), call.start),
             MathExpression::BinaryExpression(bin_exp) => (BinaryPart::BinaryExpression(bin_exp.clone()), bin_exp.start),
+            MathExpression::MemberExpression(member_expression) => (
+                BinaryPart::MemberExpression(member_expression.clone()),
+                member_expression.start,
+            ),
+            MathExpression::UnaryExpression(unary_expression) => (
+                BinaryPart::UnaryExpression(unary_expression.clone()),
+                unary_expression.start,
+            ),
             a => {
                 return Err(KclError::InvalidExpression(KclErrorDetails {
                     source_ranges: vec![current_token.into()],
@@ -513,6 +623,14 @@ impl ReversePolishNotation {
             MathExpression::Identifier(ident) => (BinaryPart::Identifier(ident.clone()), ident.end),
             MathExpression::CallExpression(call) => (BinaryPart::CallExpression(call.clone()), call.end),
             MathExpression::BinaryExpression(bin_exp) => (BinaryPart::BinaryExpression(bin_exp.clone()), bin_exp.end),
+            MathExpression::MemberExpression(member_expression) => (
+                BinaryPart::MemberExpression(member_expression.clone()),
+                member_expression.end,
+            ),
+            MathExpression::UnaryExpression(unary_expression) => (
+                BinaryPart::UnaryExpression(unary_expression.clone()),
+                unary_expression.end,
+            ),
             a => {
                 return Err(KclError::InvalidExpression(KclErrorDetails {
                     source_ranges: vec![current_token.into()],
@@ -521,13 +639,7 @@ impl ReversePolishNotation {
             }
         };
 
-        let right_end = match right.0.clone() {
-            BinaryPart::BinaryExpression(_bin_exp) => right.1,
-            BinaryPart::Literal(lit) => lit.end,
-            BinaryPart::Identifier(ident) => ident.end,
-            BinaryPart::CallExpression(call) => call.end,
-            BinaryPart::UnaryExpression(unary_exp) => unary_exp.end,
-        };
+        let right_end = right.0.clone().end();
 
         let tree = BinaryExpression {
             operator: BinaryOperator::from_str(&current_token.value.clone()).map_err(|err| {
@@ -562,25 +674,13 @@ impl MathParser {
     pub fn parse(&mut self) -> Result<BinaryExpression, KclError> {
         let rpn = self.rpn.parse()?;
         let tree_with_maybe_bad_top_level_start_end = self.rpn.build_tree(&rpn, vec![])?;
-        let left_start = match tree_with_maybe_bad_top_level_start_end.clone().left {
-            BinaryPart::BinaryExpression(bin_exp) => bin_exp.start,
-            BinaryPart::Literal(lit) => lit.start,
-            BinaryPart::Identifier(ident) => ident.start,
-            BinaryPart::CallExpression(call) => call.start,
-            BinaryPart::UnaryExpression(unary_exp) => unary_exp.start,
-        };
+        let left_start = tree_with_maybe_bad_top_level_start_end.clone().left.start();
         let min_start = if left_start < tree_with_maybe_bad_top_level_start_end.start {
             left_start
         } else {
             tree_with_maybe_bad_top_level_start_end.start
         };
-        let right_end = match tree_with_maybe_bad_top_level_start_end.clone().right {
-            BinaryPart::BinaryExpression(bin_exp) => bin_exp.end,
-            BinaryPart::Literal(lit) => lit.end,
-            BinaryPart::Identifier(ident) => ident.end,
-            BinaryPart::CallExpression(call) => call.end,
-            BinaryPart::UnaryExpression(unary_exp) => unary_exp.end,
-        };
+        let right_end = tree_with_maybe_bad_top_level_start_end.clone().right.end();
         let max_end = if right_end > tree_with_maybe_bad_top_level_start_end.end {
             right_end
         } else {
@@ -604,7 +704,7 @@ mod test {
 
     #[test]
     fn test_parse_expression() {
-        let tokens = crate::tokeniser::lexer("1 + 2");
+        let tokens = crate::token::lexer("1 + 2");
         let mut parser = MathParser::new(&tokens);
         let result = parser.parse().unwrap();
         assert_eq!(
@@ -630,8 +730,62 @@ mod test {
     }
 
     #[test]
+    fn test_parse_expression_add_no_spaces() {
+        let tokens = crate::token::lexer("1+2");
+        let mut parser = MathParser::new(&tokens);
+        let result = parser.parse().unwrap();
+        assert_eq!(
+            result,
+            BinaryExpression {
+                operator: BinaryOperator::Add,
+                start: 0,
+                end: 3,
+                left: BinaryPart::Literal(Box::new(Literal {
+                    value: serde_json::Value::Number(serde_json::Number::from(1)),
+                    raw: "1".to_string(),
+                    start: 0,
+                    end: 1,
+                })),
+                right: BinaryPart::Literal(Box::new(Literal {
+                    value: serde_json::Value::Number(serde_json::Number::from(2)),
+                    raw: "2".to_string(),
+                    start: 2,
+                    end: 3,
+                })),
+            }
+        );
+    }
+
+    #[test]
+    fn test_parse_expression_sub_no_spaces() {
+        let tokens = crate::token::lexer("1 -2");
+        let mut parser = MathParser::new(&tokens);
+        let result = parser.parse().unwrap();
+        assert_eq!(
+            result,
+            BinaryExpression {
+                operator: BinaryOperator::Sub,
+                start: 0,
+                end: 4,
+                left: BinaryPart::Literal(Box::new(Literal {
+                    value: serde_json::Value::Number(serde_json::Number::from(1)),
+                    raw: "1".to_string(),
+                    start: 0,
+                    end: 1,
+                })),
+                right: BinaryPart::Literal(Box::new(Literal {
+                    value: serde_json::Value::Number(serde_json::Number::from(2)),
+                    raw: "2".to_string(),
+                    start: 3,
+                    end: 4,
+                })),
+            }
+        );
+    }
+
+    #[test]
     fn test_parse_expression_plus_followed_by_star() {
-        let tokens = crate::tokeniser::lexer("1 + 2 * 3");
+        let tokens = crate::token::lexer("1 + 2 * 3");
         let mut parser = MathParser::new(&tokens);
         let result = parser.parse().unwrap();
         assert_eq!(
@@ -669,7 +823,7 @@ mod test {
 
     #[test]
     fn test_parse_expression_with_parentheses() {
-        let tokens = crate::tokeniser::lexer("1 * ( 2 + 3 )");
+        let tokens = crate::token::lexer("1 * ( 2 + 3 )");
         let mut parser = MathParser::new(&tokens);
         let result = parser.parse().unwrap();
         assert_eq!(
@@ -707,7 +861,7 @@ mod test {
 
     #[test]
     fn test_parse_expression_parens_in_middle() {
-        let tokens = crate::tokeniser::lexer("1 * ( 2 + 3 ) / 4");
+        let tokens = crate::token::lexer("1 * ( 2 + 3 ) / 4");
         let mut parser = MathParser::new(&tokens);
         let result = parser.parse().unwrap();
         assert_eq!(
@@ -756,7 +910,7 @@ mod test {
 
     #[test]
     fn test_parse_expression_parans_and_predence() {
-        let tokens = crate::tokeniser::lexer("1 + ( 2 + 3 ) / 4");
+        let tokens = crate::token::lexer("1 + ( 2 + 3 ) / 4");
         let mut parser = MathParser::new(&tokens);
         let result = parser.parse().unwrap();
         assert_eq!(
@@ -804,7 +958,7 @@ mod test {
     }
     #[test]
     fn test_parse_expression_nested() {
-        let tokens = crate::tokeniser::lexer("1 * (( 2 + 3 ) / 4 + 5 )");
+        let tokens = crate::token::lexer("1 * (( 2 + 3 ) / 4 + 5 )");
         let mut parser = MathParser::new(&tokens);
         let result = parser.parse().unwrap();
         assert_eq!(
@@ -863,7 +1017,7 @@ mod test {
     }
     #[test]
     fn test_parse_expression_redundant_braces() {
-        let tokens = crate::tokeniser::lexer("1 * ((( 2 + 3 )))");
+        let tokens = crate::token::lexer("1 * ((( 2 + 3 )))");
         let mut parser = MathParser::new(&tokens);
         let result = parser.parse().unwrap();
         assert_eq!(
@@ -901,7 +1055,7 @@ mod test {
 
     #[test]
     fn test_reverse_polish_notation_simple() {
-        let parser = ReversePolishNotation::new(&crate::tokeniser::lexer("1 + 2"), &[], &[]);
+        let parser = ReversePolishNotation::new(&crate::token::lexer("1 + 2"), &[], &[]);
         let result = parser.parse().unwrap();
         assert_eq!(
             result,
@@ -930,7 +1084,7 @@ mod test {
 
     #[test]
     fn test_reverse_polish_notation_complex() {
-        let parser = ReversePolishNotation::new(&crate::tokeniser::lexer("1 + 2 * 3"), &[], &[]);
+        let parser = ReversePolishNotation::new(&crate::token::lexer("1 + 2 * 3"), &[], &[]);
         let result = parser.parse().unwrap();
         assert_eq!(
             result,
@@ -971,7 +1125,7 @@ mod test {
 
     #[test]
     fn test_reverse_polish_notation_complex_with_parentheses() {
-        let parser = ReversePolishNotation::new(&crate::tokeniser::lexer("1 * ( 2 + 3 )"), &[], &[]);
+        let parser = ReversePolishNotation::new(&crate::token::lexer("1 * ( 2 + 3 )"), &[], &[]);
         let result = parser.parse().unwrap();
         assert_eq!(
             result,
@@ -1025,7 +1179,7 @@ mod test {
     #[test]
     fn test_parse_expression_redundant_braces_around_literal() {
         let code = "2 + (((3)))";
-        let tokens = crate::tokeniser::lexer(code);
+        let tokens = crate::token::lexer(code);
         let mut parser = MathParser::new(&tokens);
         let result = parser.parse().unwrap();
         assert_eq!(
@@ -1115,5 +1269,23 @@ mod test {
         let mut parser = ReversePolishNotation::new(&[], &[], &[]);
         let output = parser.build_tree(&input_tokens, vec![]).unwrap();
         assert_eq!(output, expected_output);
+    }
+
+    #[test]
+    fn test_parse_expression_braces_around_lots_of_math() {
+        let code = "(distance * p * FOS * 6 / (sigmaAllow * width))";
+        let tokens = crate::token::lexer(code);
+        let mut parser = MathParser::new(&tokens);
+        let result = parser.parse();
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_parse_expression_braces_around_internals_lots_of_math() {
+        let code = "distance * p * FOS * 6 / (sigmaAllow * width)";
+        let tokens = crate::token::lexer(code);
+        let mut parser = MathParser::new(&tokens);
+        let result = parser.parse();
+        assert!(result.is_ok());
     }
 }

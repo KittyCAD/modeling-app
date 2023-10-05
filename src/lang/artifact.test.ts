@@ -1,5 +1,4 @@
-import { parser_wasm } from './abstractSyntaxTree'
-import { initPromise } from './rust'
+import { parse, initPromise } from './wasm'
 import { enginelessExecutor } from '../lib/testHelpers'
 
 beforeAll(() => initPromise)
@@ -13,7 +12,7 @@ const mySketch001 = startSketchAt([0, 0])
   |> lineTo([0.46, -5.82], %)
   // |> rx(45, %)
 show(mySketch001)`
-    const programMemory = await enginelessExecutor(parser_wasm(code))
+    const programMemory = await enginelessExecutor(parse(code))
     // @ts-ignore
     const shown = programMemory?.return?.map(
       // @ts-ignore
@@ -21,7 +20,7 @@ show(mySketch001)`
     )
     expect(shown).toEqual([
       {
-        type: 'sketchGroup',
+        type: 'SketchGroup',
         start: {
           to: [0, 0],
           from: [0, 0],
@@ -69,7 +68,7 @@ const mySketch001 = startSketchAt([0, 0])
   // |> rx(45, %)
   |> extrude(2, %)
 show(mySketch001)`
-    const programMemory = await enginelessExecutor(parser_wasm(code))
+    const programMemory = await enginelessExecutor(parse(code))
     // @ts-ignore
     const shown = programMemory?.return?.map(
       // @ts-ignore
@@ -77,7 +76,7 @@ show(mySketch001)`
     )
     expect(shown).toEqual([
       {
-        type: 'extrudeGroup',
+        type: 'ExtrudeGroup',
         id: expect.any(String),
         value: [],
         height: 2,
@@ -109,7 +108,7 @@ const sk2 = startSketchAt([0, 0])
 
 
 show(theExtrude, sk2)`
-    const programMemory = await enginelessExecutor(parser_wasm(code))
+    const programMemory = await enginelessExecutor(parse(code))
     // @ts-ignore
     const geos = programMemory?.return?.map(
       // @ts-ignore
@@ -117,7 +116,7 @@ show(theExtrude, sk2)`
     )
     expect(geos).toEqual([
       {
-        type: 'extrudeGroup',
+        type: 'ExtrudeGroup',
         id: expect.any(String),
         value: [],
         height: 2,
@@ -126,7 +125,7 @@ show(theExtrude, sk2)`
         __meta: [{ sourceRange: [13, 34] }],
       },
       {
-        type: 'extrudeGroup',
+        type: 'ExtrudeGroup',
         id: expect.any(String),
         value: [],
         height: 2,

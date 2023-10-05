@@ -5,6 +5,8 @@
 ## Table of Contents
 
 * [Functions](#functions)
+	* [`abs`](#abs)
+	* [`acos`](#acos)
 	* [`angleToMatchLengthX`](#angleToMatchLengthX)
 	* [`angleToMatchLengthY`](#angleToMatchLengthY)
 	* [`angledLine`](#angledLine)
@@ -14,9 +16,15 @@
 	* [`angledLineToX`](#angledLineToX)
 	* [`angledLineToY`](#angledLineToY)
 	* [`arc`](#arc)
+	* [`asin`](#asin)
+	* [`atan`](#atan)
 	* [`bezierCurve`](#bezierCurve)
+	* [`ceil`](#ceil)
 	* [`close`](#close)
+	* [`cos`](#cos)
+	* [`e`](#e)
 	* [`extrude`](#extrude)
+	* [`floor`](#floor)
 	* [`getExtrudeWallTransform`](#getExtrudeWallTransform)
 	* [`lastSegX`](#lastSegX)
 	* [`lastSegY`](#lastSegY)
@@ -25,13 +33,26 @@
 	* [`legLen`](#legLen)
 	* [`line`](#line)
 	* [`lineTo`](#lineTo)
+	* [`ln`](#ln)
+	* [`log`](#log)
+	* [`log10`](#log10)
+	* [`log2`](#log2)
+	* [`max`](#max)
 	* [`min`](#min)
+	* [`pi`](#pi)
+	* [`pow`](#pow)
 	* [`segAng`](#segAng)
 	* [`segEndX`](#segEndX)
 	* [`segEndY`](#segEndY)
 	* [`segLen`](#segLen)
 	* [`show`](#show)
+	* [`sin`](#sin)
+	* [`sqrt`](#sqrt)
 	* [`startSketchAt`](#startSketchAt)
+	* [`tan`](#tan)
+	* [`tangentalArc`](#tangentalArc)
+	* [`tangentalArcTo`](#tangentalArcTo)
+	* [`tau`](#tau)
 	* [`xLine`](#xLine)
 	* [`xLineTo`](#xLineTo)
 	* [`yLine`](#yLine)
@@ -39,6 +60,46 @@
 
 
 ## Functions
+
+### abs
+
+Computes the absolute value of a number.
+
+
+
+```
+abs(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
+### acos
+
+Computes the arccosine of a number (in radians).
+
+
+
+```
+acos(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
 
 ### angleToMatchLengthX
 
@@ -1328,6 +1389,46 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 
 
 
+### asin
+
+Computes the arcsine of a number (in radians).
+
+
+
+```
+asin(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
+### atan
+
+Computes the arctangent of a number (in radians).
+
+
+
+```
+atan(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
 ### bezierCurve
 
 Draw a bezier curve.
@@ -1493,6 +1594,26 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 
 
 
+### ceil
+
+Computes the smallest integer greater than or equal to a number.
+
+
+
+```
+ceil(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
 ### close
 
 Close the current sketch.
@@ -1637,6 +1758,45 @@ close(sketch_group: SketchGroup) -> SketchGroup
 
 
 
+### cos
+
+Computes the sine of a number (in radians).
+
+
+
+```
+cos(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
+### e
+
+Return the value of Euler’s number `e`.
+
+
+
+```
+e() -> number
+```
+
+#### Arguments
+
+
+#### Returns
+
+* `number`
+
+
+
 ### extrude
 
 Extrudes by a given amount.
@@ -1743,6 +1903,26 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 }],
 }
 ```
+
+
+
+### floor
+
+Computes the largest integer less than or equal to a number.
+
+
+
+```
+floor(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
 
 
 
@@ -2044,11 +2224,9 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 	// The tag.
 	tag: string,
 	// The to point.
-	to: [number] |
-string,
+	to: [number],
 } |
-[number] |
-string
+[number]
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
@@ -2336,9 +2514,110 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 
 
 
+### ln
+
+Computes the natural logarithm of the number.
+
+
+
+```
+ln(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
+### log
+
+Computes the logarithm of the number with respect to an arbitrary base.
+
+The result might not be correctly rounded owing to implementation details; `log2()` can produce more accurate results for base 2, and `log10()` can produce more accurate results for base 10.
+
+```
+log(num: number, base: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+* `base`: `number`
+
+#### Returns
+
+* `number`
+
+
+
+### log10
+
+Computes the base 10 logarithm of the number.
+
+
+
+```
+log10(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
+### log2
+
+Computes the base 2 logarithm of the number.
+
+
+
+```
+log2(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
+### max
+
+Computes the maximum of the given arguments.
+
+
+
+```
+max(args: [number]) -> number
+```
+
+#### Arguments
+
+* `args`: `[number]`
+
+#### Returns
+
+* `number`
+
+
+
 ### min
 
-Returns the minimum of the given arguments.
+Computes the minimum of the given arguments.
 
 
 
@@ -2349,6 +2628,46 @@ min(args: [number]) -> number
 #### Arguments
 
 * `args`: `[number]`
+
+#### Returns
+
+* `number`
+
+
+
+### pi
+
+Return the value of `pi`. Archimedes’ constant (π).
+
+
+
+```
+pi() -> number
+```
+
+#### Arguments
+
+
+#### Returns
+
+* `number`
+
+
+
+### pow
+
+Computes the number to a power.
+
+
+
+```
+pow(num: number, pow: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+* `pow`: `number`
 
 #### Returns
 
@@ -2766,6 +3085,46 @@ show(sketch: SketchGroup)
 
 
 
+### sin
+
+Computes the sine of a number (in radians).
+
+
+
+```
+sin(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
+### sqrt
+
+Computes the square root of a number.
+
+
+
+```
+sqrt(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
 ### startSketchAt
 
 Start a sketch at a given point.
@@ -2784,11 +3143,9 @@ startSketchAt(data: LineData) -> SketchGroup
 	// The tag.
 	tag: string,
 	// The to point.
-	to: [number] |
-string,
+	to: [number],
 } |
-[number] |
-string
+[number]
 ```
 
 #### Returns
@@ -2856,6 +3213,359 @@ string
 }],
 }
 ```
+
+
+
+### tan
+
+Computes the tangent of a number (in radians).
+
+
+
+```
+tan(num: number) -> number
+```
+
+#### Arguments
+
+* `num`: `number`
+
+#### Returns
+
+* `number`
+
+
+
+### tangentalArc
+
+Draw an arc.
+
+
+
+```
+tangentalArc(data: TangentalArcData, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Arguments
+
+* `data`: `TangentalArcData` - Data to draw a tangental arc.
+```
+{
+	// Offset of the arc, in degrees.
+	offset: number,
+	// Radius of the arc. Not to be confused with Raiders of the Lost Ark.
+	radius: number,
+} |
+{
+	// The tag.
+	tag: string,
+	// Where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.
+	to: [number],
+} |
+[number]
+```
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+#### Returns
+
+* `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+
+
+### tangentalArcTo
+
+Draw an arc.
+
+
+
+```
+tangentalArcTo(data: TangentalArcToData, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Arguments
+
+* `data`: `TangentalArcToData` - Data to draw a tangental arc to a specific point.
+```
+{
+	// The tag.
+	tag: string,
+	// Where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.
+	to: [number],
+} |
+[number]
+```
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+#### Returns
+
+* `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+
+
+### tau
+
+Return the value of `tau`. The full circle constant (τ). Equal to 2π.
+
+
+
+```
+tau() -> number
+```
+
+#### Arguments
+
+
+#### Returns
+
+* `number`
 
 
 

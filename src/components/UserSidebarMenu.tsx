@@ -1,17 +1,23 @@
 import { Popover, Transition } from '@headlessui/react'
 import { ActionButton } from './ActionButton'
-import { faBars, faGear, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+import {
+  faBars,
+  faBug,
+  faGear,
+  faSignOutAlt,
+} from '@fortawesome/free-solid-svg-icons'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import { Fragment, useState } from 'react'
 import { paths } from '../Router'
-import makeUrlPathRelative from '../lib/makeUrlPathRelative'
 import { Models } from '@kittycad/lib'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
+import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 
 type User = Models['User_type']
 
 const UserSidebarMenu = ({ user }: { user?: User }) => {
+  const filePath = useAbsoluteFilePath()
   const displayedName = getDisplayName(user)
   const [imageLoadFailed, setImageLoadFailed] = useState(false)
   const navigate = useNavigate()
@@ -38,7 +44,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
     <Popover className="relative">
       {user?.image && !imageLoadFailed ? (
         <Popover.Button
-          className="border-0 rounded-full w-fit p-0 focus:outline-none group"
+          className="border-0 rounded-full w-fit min-w-max p-0 focus:outline-none group"
           data-testid="user-sidebar-toggle"
         >
           <div className="rounded-full border border-chalkboard-70/50 hover:border-liquid-50 group-focus:border-liquid-50 overflow-hidden">
@@ -126,18 +132,26 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                     // since /settings is a nested route the sidebar doesn't close
                     // automatically when navigating to it
                     close()
-                    navigate(makeUrlPathRelative(paths.SETTINGS))
+                    navigate(filePath + paths.SETTINGS)
                   }}
                 >
                   Settings
                 </ActionButton>
                 <ActionButton
-                  Element="link"
+                  Element="externalLink"
                   to="https://github.com/KittyCAD/modeling-app/discussions"
                   icon={{ icon: faGithub }}
                   className="border-transparent dark:border-transparent dark:hover:border-liquid-60"
                 >
                   Request a feature
+                </ActionButton>
+                <ActionButton
+                  Element="externalLink"
+                  to="https://github.com/KittyCAD/modeling-app/issues/new"
+                  icon={{ icon: faBug }}
+                  className="border-transparent dark:border-transparent dark:hover:border-liquid-60"
+                >
+                  Report a bug
                 </ActionButton>
                 <ActionButton
                   Element="button"

@@ -46,9 +46,9 @@ export function useConvertToVariable() {
         variableName
       )
 
-      updateAst(_modifiedAst)
+      updateAst(_modifiedAst, true)
     } catch (e) {
-      console.log('e', e)
+      console.log('error', e)
     }
   }
 

@@ -1,13 +1,17 @@
 import { v4 as uuidv4 } from 'uuid'
-import { useStore } from '../useStore'
 import { faFileExport, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from './ActionButton'
 import Modal from 'react-modal'
 import React from 'react'
 import { useFormik } from 'formik'
 import { Models } from '@kittycad/lib'
+import { engineCommandManager } from '../lang/std/engineConnection'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 
 type OutputFormat = Models['OutputFormat_type']
+type OutputTypeKey = OutputFormat['type']
+type ExtractStorageTypes<T> = T extends { storage: infer U } ? U : never
+type StorageUnion = ExtractStorageTypes<OutputFormat>
 
 interface ExportButtonProps extends React.PropsWithChildren {
   className?: {
@@ -18,14 +22,19 @@ interface ExportButtonProps extends React.PropsWithChildren {
 }
 
 export const ExportButton = ({ children, className }: ExportButtonProps) => {
-  const { engineCommandManager } = useStore((s) => ({
-    engineCommandManager: s.engineCommandManager,
-  }))
-
   const [modalIsOpen, setIsOpen] = React.useState(false)
+  const {
+    settings: {
+      state: {
+        context: { baseUnit },
+      },
+    },
+  } = useGlobalStateContext()
 
   const defaultType = 'gltf'
-  const [type, setType] = React.useState(defaultType)
+  const [type, setType] = React.useState<OutputTypeKey>(defaultType)
+  const defaultStorage = 'embedded'
+  const [storage, setStorage] = React.useState<StorageUnion>(defaultStorage)
 
   function openModal() {
     setIsOpen(true)
@@ -38,7 +47,7 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
   // Default to gltf and embedded.
   const initialValues: OutputFormat = {
     type: defaultType,
-    storage: 'embedded',
+    storage: defaultStorage,
     presentation: 'pretty',
   }
   const formik = useFormik({
@@ -66,7 +75,18 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
           },
         }
       }
-      engineCommandManager?.sendSceneCommand({
+      if (values.type === 'obj' || values.type === 'stl') {
+        values.units = baseUnit
+      }
+      if (
+        values.type === 'ply' ||
+        values.type === 'stl' ||
+        values.type === 'gltf'
+      ) {
+        // Set the storage type.
+        values.storage = storage
+      }
+      engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
           type: 'export',
@@ -75,6 +95,7 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
           // in the scene to export. In that case, you'd pass the IDs thru here.
           entity_ids: [],
           format: values,
+          source_unit: baseUnit,
         },
         cmd_id: uuidv4(),
       })
@@ -109,7 +130,17 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
                 id="type"
                 name="type"
                 onChange={(e) => {
-                  setType(e.target.value)
+                  setType(e.target.value as OutputTypeKey)
+                  if (e.target.value === 'gltf') {
+                    // Set default to embedded.
+                    setStorage('embedded')
+                  } else if (e.target.value === 'ply') {
+                    // Set default to ascii.
+                    setStorage('ascii')
+                  } else if (e.target.value === 'stl') {
+                    // Set default to ascii.
+                    setStorage('ascii')
+                  }
                   formik.handleChange(e)
                 }}
                 className="bg-chalkboard-20 dark:bg-chalkboard-90 w-full"
@@ -127,10 +158,10 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
                 <select
                   id="storage"
                   name="storage"
-                  onChange={formik.handleChange}
-                  value={
-                    'storage' in formik.values ? formik.values.storage : ''
-                  }
+                  onChange={(e) => {
+                    setStorage(e.target.value as StorageUnion)
+                    formik.handleChange(e)
+                  }}
                   className="bg-chalkboard-20 dark:bg-chalkboard-90 w-full"
                 >
                   {type === 'gltf' && (

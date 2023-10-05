@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { create } from 'react-modal-promise'
 import { toolTips, useStore } from '../../useStore'
-import { Value } from '../../lang/abstractSyntaxTreeTypes'
+import { Value } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -22,11 +22,16 @@ import { updateCursors } from '../../lang/util'
 
 const getModalInfo = create(SetAngleLengthModal as any)
 
-export const SetAbsDistance = ({
-  buttonType,
-}: {
-  buttonType: 'xAbs' | 'yAbs' | 'snapToYAxis' | 'snapToXAxis'
-}) => {
+type ButtonType = 'xAbs' | 'yAbs' | 'snapToYAxis' | 'snapToXAxis'
+
+const buttonLabels: Record<ButtonType, string> = {
+  xAbs: 'Set distance from X Axis',
+  yAbs: 'Set distance from Y Axis',
+  snapToYAxis: 'Snap To Y Axis',
+  snapToXAxis: 'Snap To X Axis',
+}
+
+export const SetAbsDistance = ({ buttonType }: { buttonType: ButtonType }) => {
   const { guiMode, selectionRanges, ast, programMemory, updateAst, setCursor } =
     useStore((s) => ({
       guiMode: s.guiMode,
@@ -124,16 +129,17 @@ export const SetAbsDistance = ({
             _modifiedAst.body = newBody
           }
 
-          updateAst(_modifiedAst, {
+          updateAst(_modifiedAst, true, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
         } catch (e) {
-          console.log('e', e)
+          console.log('error', e)
         }
       }}
       disabled={!enableAngLen}
+      title={buttonLabels[buttonType]}
     >
-      {buttonType}
+      {buttonLabels[buttonType]}
     </button>
   )
 }

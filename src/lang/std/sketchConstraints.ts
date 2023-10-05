@@ -1,10 +1,12 @@
-import { TooTip, toolTips } from '../../useStore'
+import { ToolTip, toolTips } from '../../useStore'
 import {
   Program,
   VariableDeclarator,
   CallExpression,
-} from '../abstractSyntaxTreeTypes'
-import { SketchGroup, SourceRange } from '../executor'
+  SketchGroup,
+  SourceRange,
+  Path,
+} from '../wasm'
 
 export function getSketchSegmentFromSourceRange(
   sketchGroup: SketchGroup,
@@ -20,10 +22,10 @@ export function getSketchSegmentFromSourceRange(
     startSourceRange[1] >= rangeEnd &&
     sketchGroup.start
   )
-    return { segment: sketchGroup.start, index: -1 }
+    return { segment: { ...sketchGroup.start, type: 'base' }, index: -1 }
 
   const lineIndex = sketchGroup.value.findIndex(
-    ({ __geoMeta: { sourceRange } }) =>
+    ({ __geoMeta: { sourceRange } }: Path) =>
       sourceRange[0] <= rangeStart && sourceRange[1] >= rangeEnd
   )
   const line = sketchGroup.value[lineIndex]
@@ -67,7 +69,10 @@ export function isSketchVariablesLinked(
     return false
   const firstCallExp = // first in pipe expression or just the call expression
     init?.type === 'CallExpression' ? init : (init?.body[0] as CallExpression)
-  if (!firstCallExp || !toolTips.includes(firstCallExp?.callee?.name as TooTip))
+  if (
+    !firstCallExp ||
+    !toolTips.includes(firstCallExp?.callee?.name as ToolTip)
+  )
     return false
   // convention for sketch fns is that the second argument is the sketch group
   const secondArg = firstCallExp?.arguments[1]

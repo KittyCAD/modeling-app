@@ -1,4 +1,4 @@
-import { parser_wasm } from './abstractSyntaxTree'
+import { parse, recast, initPromise } from './wasm'
 import {
   createLiteral,
   createIdentifier,
@@ -13,8 +13,6 @@ import {
   giveSketchFnCallTag,
   moveValueIntoNewVariable,
 } from './modifyAst'
-import { recast } from './recast'
-import { initPromise } from './rust'
 import { enginelessExecutor } from '../lib/testHelpers'
 
 beforeAll(() => initPromise)
@@ -106,7 +104,7 @@ describe('Testing addSketchTo', () => {
         body: [],
         start: 0,
         end: 0,
-        nonCodeMeta: { noneCodeNodes: {}, start: null },
+        nonCodeMeta: { nonCodeNodes: {}, start: null },
       },
       'yz'
     )
@@ -114,7 +112,8 @@ describe('Testing addSketchTo', () => {
     expect(str).toBe(`const part001 = startSketchAt('default')
   |> ry(90, %)
   |> line('default', %)
-show(part001)`)
+show(part001)
+`)
   })
 })
 
@@ -125,7 +124,7 @@ function giveSketchFnCallTagTestHelper(
   // giveSketchFnCallTag inputs and outputs an ast, which is very verbose for testing
   // this wrapper changes the input and output to code
   // making it more of an integration test, but easier to read the test intention is the goal
-  const ast = parser_wasm(code)
+  const ast = parse(code)
   const start = code.indexOf(searchStr)
   const range: [number, number] = [start, start + searchStr.length]
   const { modifiedAst, tag, isTagExisting } = giveSketchFnCallTag(ast, range)
@@ -175,11 +174,14 @@ show(part001)`
 })
 
 describe('Testing moveValueIntoNewVariable', () => {
-  const fn = (fnName: string) => `const ${fnName} = (x) => {
+  const fn = (fnName: string) => `fn ${fnName} = (x) => {
   return x
 }
 `
-  const code = `${fn('def')}${fn('ghi')}${fn('jkl')}${fn('hmm')}
+  const code = `${fn('def')}${fn('jkl')}${fn('hmm')}
+fn ghi = (x) => {
+    return 2
+}
 const abc = 3
 const identifierGuy = 5
 const yo = 5 + 6
@@ -193,7 +195,7 @@ const part001 = startSketchAt([-1.2, 4.83])
 const yo2 = hmm([identifierGuy + 5])
 show(part001)`
   it('should move a binary expression into a new variable', async () => {
-    const ast = parser_wasm(code)
+    const ast = parse(code)
     const programMemory = await enginelessExecutor(ast)
     const startIndex = code.indexOf('100 + 100') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
@@ -207,7 +209,7 @@ show(part001)`
     expect(newCode).toContain(`angledLine([newVar, 3.09], %)`)
   })
   it('should move a value into a new variable', async () => {
-    const ast = parser_wasm(code)
+    const ast = parse(code)
     const programMemory = await enginelessExecutor(ast)
     const startIndex = code.indexOf('2.8') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
@@ -221,7 +223,7 @@ show(part001)`
     expect(newCode).toContain(`line([newVar, 0], %)`)
   })
   it('should move a callExpression into a new variable', async () => {
-    const ast = parser_wasm(code)
+    const ast = parse(code)
     const programMemory = await enginelessExecutor(ast)
     const startIndex = code.indexOf('def(')
     const { modifiedAst } = moveValueIntoNewVariable(
@@ -235,7 +237,7 @@ show(part001)`
     expect(newCode).toContain(`angledLine([newVar, 3.09], %)`)
   })
   it('should move a binary expression with call expression into a new variable', async () => {
-    const ast = parser_wasm(code)
+    const ast = parse(code)
     const programMemory = await enginelessExecutor(ast)
     const startIndex = code.indexOf('jkl(') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
@@ -249,7 +251,7 @@ show(part001)`
     expect(newCode).toContain(`angledLine([newVar, 3.09], %)`)
   })
   it('should move a identifier into a new variable', async () => {
-    const ast = parser_wasm(code)
+    const ast = parse(code)
     const programMemory = await enginelessExecutor(ast)
     const startIndex = code.indexOf('identifierGuy +') + 1
     const { modifiedAst } = moveValueIntoNewVariable(

@@ -1,7 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import { parser_wasm } from '../lang/abstractSyntaxTree'
-import { BinaryPart, Value } from '../lang/abstractSyntaxTreeTypes'
-import { executor } from '../lang/executor'
+import { parse, BinaryPart, Value, executor } from '../lang/wasm'
 import {
   createIdentifier,
   createLiteral,
@@ -10,6 +8,7 @@ import {
 } from '../lang/modifyAst'
 import { findAllPreviousVariables, PrevVariable } from '../lang/queryAst'
 import { useStore } from '../useStore'
+import { engineCommandManager } from '../lang/std/engineConnection'
 
 export const AvailableVars = ({
   onVarClick,
@@ -92,14 +91,11 @@ export function useCalc({
   newVariableInsertIndex: number
   setNewVariableName: (a: string) => void
 } {
-  const { ast, programMemory, selectionRange, engineCommandManager } = useStore(
-    (s) => ({
-      ast: s.ast,
-      programMemory: s.programMemory,
-      selectionRange: s.selectionRanges.codeBasedSelections[0].range,
-      engineCommandManager: s.engineCommandManager,
-    })
-  )
+  const { ast, programMemory, selectionRange } = useStore((s) => ({
+    ast: s.ast,
+    programMemory: s.programMemory,
+    selectionRange: s.selectionRanges.codeBasedSelections[0].range,
+  }))
   const inputRef = useRef<HTMLInputElement>(null)
   const [availableVarInfo, setAvailableVarInfo] = useState<
     ReturnType<typeof findAllPreviousVariables>
@@ -140,11 +136,10 @@ export function useCalc({
   }, [ast, programMemory, selectionRange])
 
   useEffect(() => {
-    if (!engineCommandManager) return
     try {
       const code = `const __result__ = ${value}\nshow(__result__)`
-      const ast = parser_wasm(code)
-      const _programMem: any = { root: {} }
+      const ast = parse(code)
+      const _programMem: any = { root: {}, return: null }
       availableVarInfo.variables.forEach(({ key, value }) => {
         _programMem.root[key] = { type: 'userVal', value, __meta: [] }
       })

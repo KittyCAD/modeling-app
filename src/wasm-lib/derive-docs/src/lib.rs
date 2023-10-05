@@ -79,13 +79,6 @@ fn do_stdlib_inner(
         ));
     }
 
-    if ast.sig.asyncness.is_some() {
-        errors.push(Error::new_spanned(
-            &ast.sig.fn_token,
-            "stdlib functions must not be async",
-        ));
-    }
-
     if ast.sig.unsafety.is_some() {
         errors.push(Error::new_spanned(
             &ast.sig.unsafety,
@@ -118,6 +111,7 @@ fn do_stdlib_inner(
     let fn_name = &ast.sig.ident;
     let fn_name_str = fn_name.to_string().replace("inner_", "");
     let fn_name_ident = format_ident!("{}", fn_name_str);
+    let boxed_fn_name_ident = format_ident!("boxed_{}", fn_name_str);
     let _visibility = &ast.vis;
 
     let (summary_text, description_text) = extract_doc_from_attrs(&ast.attrs);
@@ -204,13 +198,22 @@ fn do_stdlib_inner(
             syn::FnArg::Typed(pat) => pat.ty.as_ref().into_token_stream(),
         };
 
-        let ty_string = ty.to_string().replace('&', "").replace("mut", "").replace(' ', "");
+        let mut ty_string = ty.to_string().replace('&', "").replace("mut", "").replace(' ', "");
+        if ty_string.starts_with("Args") {
+            ty_string = "Args".to_string();
+        }
         let ty_string = ty_string.trim().to_string();
         let ty_ident = if ty_string.starts_with("Vec<") {
             let ty_string = ty_string.trim_start_matches("Vec<").trim_end_matches('>');
             let ty_ident = format_ident!("{}", ty_string);
             quote! {
                Vec<#ty_ident>
+            }
+        } else if ty_string.starts_with("Box<") {
+            let ty_string = ty_string.trim_start_matches("Box<").trim_end_matches('>');
+            let ty_ident = format_ident!("{}", ty_string);
+            quote! {
+               #ty_ident
             }
         } else {
             let ty_ident = format_ident!("{}", ty_string);
@@ -250,7 +253,15 @@ fn do_stdlib_inner(
         .replace("Result < ", "")
         .replace(", KclError >", "");
     let return_type = if !ret_ty_string.is_empty() {
-        let ret_ty_string = ret_ty_string.trim().to_string();
+        let ret_ty_string = if ret_ty_string.starts_with("Box <") {
+            ret_ty_string
+                .trim_start_matches("Box <")
+                .trim_end_matches('>')
+                .trim()
+                .to_string()
+        } else {
+            ret_ty_string.trim().to_string()
+        };
         let ret_ty_ident = format_ident!("{}", ret_ty_string);
         let ret_ty_string = clean_type(&ret_ty_string);
         quote! {
@@ -290,6 +301,14 @@ fn do_stdlib_inner(
         #[allow(non_upper_case_globals, missing_docs)]
         #description_doc_comment
         #const_struct
+
+        fn #boxed_fn_name_ident(
+            args: crate::std::Args,
+        ) -> std::pin::Pin<
+            Box<dyn std::future::Future<Output = anyhow::Result<crate::executor::MemoryItem, crate::errors::KclError>>>,
+        > {
+            Box::pin(#fn_name_ident(args))
+        }
 
         impl #docs_crate::StdLibFn for #name_ident
         {
@@ -334,7 +353,7 @@ fn do_stdlib_inner(
             }
 
             fn std_lib_fn(&self) -> crate::std::StdFn {
-                #fn_name_ident
+                #boxed_fn_name_ident
             }
 
             fn clone_box(&self) -> Box<dyn #docs_crate::StdLibFn> {
@@ -475,6 +494,9 @@ fn clean_type(t: &str) -> String {
     if t.starts_with("Vec<") {
         t = t.replace("Vec<", "[").replace('>', "]");
     }
+    if t.starts_with("Box<") {
+        t = t.replace("Box<", "").replace('>', "");
+    }
 
     if t == "f64" {
         return "number".to_string();
@@ -563,5 +585,27 @@ mod tests {
 
         assert!(errors.is_empty());
         expectorate::assert_contents("tests/show.gen", &openapitor::types::get_text_fmt(&item).unwrap());
+    }
+
+    #[test]
+    fn test_stdlib_box() {
+        let (item, errors) = do_stdlib(
+            quote! {
+                name = "show",
+            },
+            quote! {
+                fn inner_show(
+                    /// The args to do shit to.
+                    args: Box<f64>
+                ) -> Box<f64> {
+                    args
+                }
+            },
+        )
+        .unwrap();
+        let _expected = quote! {};
+
+        assert!(errors.is_empty());
+        expectorate::assert_contents("tests/box.gen", &openapitor::types::get_text_fmt(&item).unwrap());
     }
 }

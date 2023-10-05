@@ -110,7 +110,6 @@ export default class Client extends jsrpc.JSONRPCServerAndClient {
       }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       messageString += message
-      // console.log(messageString)
       return
     })
 

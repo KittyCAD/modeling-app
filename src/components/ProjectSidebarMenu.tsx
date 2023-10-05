@@ -16,8 +16,8 @@ const ProjectSidebarMenu = ({
 }) => {
   return renderAsLink ? (
     <Link
-      to={'../'}
-      className="flex items-center gap-4 my-2"
+      to={paths.HOME}
+      className="h-9 max-h-min min-w-max border-0 p-0.5 pr-2 flex items-center gap-4 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-energy-50"
       data-testid="project-sidebar-link"
     >
       <img
@@ -26,7 +26,7 @@ const ProjectSidebarMenu = ({
         className="h-9 w-auto"
       />
       <span
-        className="text-sm text-chalkboard-110 dark:text-chalkboard-20 min-w-max"
+        className="text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap hidden lg:block"
         data-testid="project-sidebar-link-name"
       >
         {project?.name ? project.name : 'KittyCAD Modeling App'}
@@ -35,15 +35,15 @@ const ProjectSidebarMenu = ({
   ) : (
     <Popover className="relative">
       <Popover.Button
-        className="border-0 p-0.5 pr-2 flex items-center gap-4 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-energy-50"
+        className="h-9 max-h-min min-w-max border-0 p-0.5 pr-2 flex items-center gap-4 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-energy-50"
         data-testid="project-sidebar-toggle"
       >
         <img
           src="/kitt-8bit-winking.svg"
           alt="KittyCAD App"
-          className="h-9 w-auto"
+          className="h-full w-auto"
         />
-        <span className="text-sm text-chalkboard-110 dark:text-chalkboard-20 min-w-max">
+        <span className="text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap hidden lg:block">
           {isTauri() && project?.name ? project.name : 'KittyCAD Modeling App'}
         </span>
       </Popover.Button>

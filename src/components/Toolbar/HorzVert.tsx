@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { toolTips, useStore } from '../../useStore'
-import { Value } from '../../lang/abstractSyntaxTreeTypes'
+import { Value } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -11,6 +11,8 @@ import {
   transformAstSketchLines,
 } from '../../lang/std/sketchcombos'
 import { updateCursors } from '../../lang/util'
+import { ActionIcon } from 'components/ActionIcon'
+import { sketchButtonClassnames } from 'Toolbar'
 
 export const HorzVert = ({
   horOrVert,
@@ -61,14 +63,22 @@ export const HorzVert = ({
           programMemory,
           referenceSegName: '',
         })
-        updateAst(modifiedAst, {
+        updateAst(modifiedAst, true, {
           callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
         })
       }}
       disabled={!enableHorz}
-      title="yo dawg"
+      className="group"
+      title={horOrVert === 'horizontal' ? 'Horizontal' : 'Vertical'}
     >
-      {horOrVert === 'horizontal' ? 'Horz' : 'Vert'}
+      <ActionIcon
+        icon={horOrVert === 'horizontal' ? 'horizontal' : 'vertical'}
+        className="!p-0.5"
+        bgClassName={sketchButtonClassnames.background}
+        iconClassName={sketchButtonClassnames.icon}
+        size="md"
+      />
+      {horOrVert === 'horizontal' ? 'Horizontal' : 'Vertical'}
     </button>
   )
 }

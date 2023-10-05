@@ -1,4 +1,4 @@
-import { SourceRange } from '../lang/executor'
+import { SourceRange } from '../lang/wasm'
 
 export function isOverlap(a: SourceRange, b: SourceRange) {
   const [startingRange, secondRange] = a[0] < b[0] ? [a, b] : [b, a]
@@ -57,7 +57,7 @@ export function throttle<T>(
 }
 
 // takes a function and executes it after the wait time, if the function is called again before the wait time is up, the timer is reset
-export function defferExecution<T>(func: (args: T) => any, wait: number) {
+export function deferExecution<T>(func: (args: T) => any, wait: number) {
   let timeout: ReturnType<typeof setTimeout> | null
   let latestArgs: T
 
@@ -66,7 +66,7 @@ export function defferExecution<T>(func: (args: T) => any, wait: number) {
     func(latestArgs)
   }
 
-  function deffered(args: T) {
+  function deferred(args: T) {
     latestArgs = args
     if (timeout) {
       clearTimeout(timeout)
@@ -74,7 +74,7 @@ export function defferExecution<T>(func: (args: T) => any, wait: number) {
     timeout = setTimeout(later, wait)
   }
 
-  return deffered
+  return deferred
 }
 
 export function getNormalisedCoordinates({

@@ -1,14 +1,6 @@
-import {
-  useRef,
-  useEffect,
-  useLayoutEffect,
-  useCallback,
-  MouseEventHandler,
-} from 'react'
+import { useRef, useEffect, useCallback, MouseEventHandler } from 'react'
 import { DebugPanel } from './components/DebugPanel'
 import { v4 as uuidv4 } from 'uuid'
-import { asyncParser } from './lang/abstractSyntaxTree'
-import { _executor } from './lang/executor'
 import { PaneType, useStore } from './useStore'
 import { Logs, KCLErrors } from './components/Logs'
 import { CollapsiblePanel } from './components/CollapsiblePanel'
@@ -16,13 +8,9 @@ import { MemoryPanel } from './components/MemoryPanel'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
 import { Stream } from './components/Stream'
 import ModalContainer from 'react-modal-promise'
-import {
-  EngineCommand,
-  EngineCommandManager,
-} from './lang/std/engineConnection'
+import { EngineCommand } from './lang/std/engineConnection'
 import { throttle } from './lib/utils'
 import { AppHeader } from './components/AppHeader'
-import { KCLError } from './lang/errors'
 import { Resizable } from 're-resizable'
 import {
   faCode,
@@ -41,6 +29,9 @@ import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/mod
 import { CodeMenu } from 'components/CodeMenu'
 import { TextEditor } from 'components/TextEditor'
 import { Themes, getSystemTheme } from 'lib/theme'
+import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
+import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
+import { engineCommandManager } from './lang/std/engineConnection'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
@@ -48,57 +39,25 @@ export function App() {
   const streamRef = useRef<HTMLDivElement>(null)
   useHotKeyListener()
   const {
-    addLog,
-    addKCLError,
     setCode,
-    setAst,
-    setError,
-    setProgramMemory,
-    resetLogs,
-    resetKCLErrors,
-    setArtifactMap,
-    engineCommandManager,
-    setEngineCommandManager,
-    highlightRange,
-    setHighlightRange,
-    setCursor2,
-    setMediaStream,
-    setIsStreamReady,
-    isStreamReady,
     buttonDownInStream,
     openPanes,
     setOpenPanes,
     didDragInStream,
-    setStreamDimensions,
     streamDimensions,
-    setIsExecuting,
-    defferedCode,
+    guiMode,
+    setGuiMode,
+    executeAst,
   } = useStore((s) => ({
-    addLog: s.addLog,
-    defferedCode: s.defferedCode,
+    guiMode: s.guiMode,
+    setGuiMode: s.setGuiMode,
     setCode: s.setCode,
-    setAst: s.setAst,
-    setError: s.setError,
-    setProgramMemory: s.setProgramMemory,
-    resetLogs: s.resetLogs,
-    resetKCLErrors: s.resetKCLErrors,
-    setArtifactMap: s.setArtifactNSourceRangeMaps,
-    engineCommandManager: s.engineCommandManager,
-    setEngineCommandManager: s.setEngineCommandManager,
-    highlightRange: s.highlightRange,
-    setHighlightRange: s.setHighlightRange,
-    setCursor2: s.setCursor2,
-    setMediaStream: s.setMediaStream,
-    isStreamReady: s.isStreamReady,
-    setIsStreamReady: s.setIsStreamReady,
     buttonDownInStream: s.buttonDownInStream,
-    addKCLError: s.addKCLError,
     openPanes: s.openPanes,
     setOpenPanes: s.setOpenPanes,
     didDragInStream: s.didDragInStream,
-    setStreamDimensions: s.setStreamDimensions,
     streamDimensions: s.streamDimensions,
-    setIsExecuting: s.setIsExecuting,
+    executeAst: s.executeAst,
   }))
 
   const {
@@ -125,13 +84,58 @@ export function App() {
   useHotkeys('shift + l', () => togglePane('logs'))
   useHotkeys('shift + e', () => togglePane('kclErrors'))
   useHotkeys('shift + d', () => togglePane('debug'))
+  useHotkeys('esc', () => {
+    if (guiMode.mode === 'sketch') {
+      if (guiMode.sketchMode === 'selectFace') return
+      if (guiMode.sketchMode === 'sketchEdit') {
+        // TODO: share this with Toolbar's "Exit sketch" button
+        // exiting sketch should be done consistently across all exits
+        engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: { type: 'edit_mode_exit' },
+        })
+        engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: { type: 'default_camera_disable_sketch_mode' },
+        })
+        setGuiMode({ mode: 'default' })
+        // this is necessary to get the UI back into a consistent
+        // state right now, hopefully won't need to rerender
+        // when exiting sketch mode in the future
+        executeAst()
+      } else {
+        engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'set_tool',
+            tool: 'select',
+          },
+        })
+        setGuiMode({
+          mode: 'sketch',
+          sketchMode: 'sketchEdit',
+          rotation: guiMode.rotation,
+          position: guiMode.position,
+          pathToNode: guiMode.pathToNode,
+          pathId: guiMode.pathId,
+          // todo: ...guiMod is adding isTooltip: true, will probably just fix with xstate migtaion
+        })
+      }
+    } else {
+      setGuiMode({ mode: 'default' })
+    }
+  })
 
-  const paneOpacity =
-    onboardingStatus === onboardingPaths.CAMERA
-      ? 'opacity-20'
-      : didDragInStream
-      ? 'opacity-40'
-      : ''
+  const paneOpacity = [onboardingPaths.CAMERA, onboardingPaths.STREAMING].some(
+    (p) => p === onboardingStatus
+  )
+    ? 'opacity-20'
+    : didDragInStream
+    ? 'opacity-40'
+    : ''
 
   // Use file code loaded from disk
   // on mount, and overwrite any locally-stored code
@@ -147,142 +151,11 @@ export function App() {
     }
   }, [loadedCode, setCode])
 
-  const streamWidth = streamRef?.current?.offsetWidth
-  const streamHeight = streamRef?.current?.offsetHeight
-
-  const width = streamWidth ? streamWidth : 0
-  const quadWidth = Math.round(width / 4) * 4
-  const height = streamHeight ? streamHeight : 0
-  const quadHeight = Math.round(height / 4) * 4
-
-  useLayoutEffect(() => {
-    setStreamDimensions({
-      streamWidth: quadWidth,
-      streamHeight: quadHeight,
-    })
-    if (!width || !height) return
-    const eng = new EngineCommandManager({
-      setMediaStream,
-      setIsStreamReady,
-      width: quadWidth,
-      height: quadHeight,
-      token,
-    })
-    setEngineCommandManager(eng)
-    return () => {
-      eng?.tearDown()
-    }
-  }, [
-    height,
-    setEngineCommandManager,
-    setIsStreamReady,
-    setMediaStream,
-    setStreamDimensions,
-    token,
-    width,
-  ])
-
-  useEffect(() => {
-    if (!isStreamReady) return
-    if (!engineCommandManager) return
-    let unsubFn: any[] = []
-    const asyncWrap = async () => {
-      try {
-        if (!defferedCode) {
-          setAst(null)
-          return
-        }
-        const _ast = await asyncParser(defferedCode)
-        setAst(_ast)
-        resetLogs()
-        resetKCLErrors()
-        engineCommandManager.endSession()
-        engineCommandManager.startNewSession()
-        setIsExecuting(true)
-        const programMemory = await _executor(
-          _ast,
-          {
-            root: {
-              _0: {
-                type: 'userVal',
-                value: 0,
-                __meta: [],
-              },
-              _90: {
-                type: 'userVal',
-                value: 90,
-                __meta: [],
-              },
-              _180: {
-                type: 'userVal',
-                value: 180,
-                __meta: [],
-              },
-              _270: {
-                type: 'userVal',
-                value: 270,
-                __meta: [],
-              },
-            },
-          },
-          engineCommandManager
-        )
-
-        const { artifactMap, sourceRangeMap } =
-          await engineCommandManager.waitForAllCommands()
-        setIsExecuting(false)
-
-        setArtifactMap({ artifactMap, sourceRangeMap })
-        const unSubHover = engineCommandManager.subscribeToUnreliable({
-          event: 'highlight_set_entity',
-          callback: ({ data }) => {
-            if (data?.entity_id) {
-              const sourceRange = sourceRangeMap[data.entity_id]
-              setHighlightRange(sourceRange)
-            } else if (
-              !highlightRange ||
-              (highlightRange[0] !== 0 && highlightRange[1] !== 0)
-            ) {
-              setHighlightRange([0, 0])
-            }
-          },
-        })
-        const unSubClick = engineCommandManager.subscribeTo({
-          event: 'select_with_point',
-          callback: ({ data }) => {
-            if (!data?.entity_id) {
-              setCursor2()
-              return
-            }
-            const sourceRange = sourceRangeMap[data.entity_id]
-            setCursor2({ range: sourceRange, type: 'default' })
-          },
-        })
-        unsubFn.push(unSubHover, unSubClick)
-        if (programMemory !== undefined) {
-          setProgramMemory(programMemory)
-        }
-
-        setError()
-      } catch (e: any) {
-        setIsExecuting(false)
-        if (e instanceof KCLError) {
-          addKCLError(e)
-        } else {
-          setError('problem')
-          console.log(e)
-          addLog(e)
-        }
-      }
-    }
-    asyncWrap()
-    return () => {
-      unsubFn.forEach((fn) => fn())
-    }
-  }, [defferedCode, isStreamReady, engineCommandManager])
+  useSetupEngineManager(streamRef, token)
+  useEngineConnectionSubscriptions()
 
   const debounceSocketSend = throttle<EngineCommand>((message) => {
-    engineCommandManager?.sendSceneCommand(message)
+    engineCommandManager.sendSceneCommand(message)
   }, 16)
   const handleMouseMove: MouseEventHandler<HTMLDivElement> = (e) => {
     e.nativeEvent.preventDefault()
@@ -295,8 +168,41 @@ export function App() {
     })
 
     const newCmdId = uuidv4()
-
-    if (buttonDownInStream) {
+    if (buttonDownInStream === undefined) {
+      if (
+        guiMode.mode === 'sketch' &&
+        guiMode.sketchMode === ('sketch_line' as any)
+      ) {
+        debounceSocketSend({
+          type: 'modeling_cmd_req',
+          cmd_id: newCmdId,
+          cmd: {
+            type: 'mouse_move',
+            window: { x, y },
+          },
+        })
+      } else {
+        debounceSocketSend({
+          type: 'modeling_cmd_req',
+          cmd: {
+            type: 'highlight_set_entity',
+            selected_at_window: { x, y },
+          },
+          cmd_id: newCmdId,
+        })
+      }
+    } else {
+      if (guiMode.mode === 'sketch' && guiMode.sketchMode === ('move' as any)) {
+        debounceSocketSend({
+          type: 'modeling_cmd_req',
+          cmd_id: newCmdId,
+          cmd: {
+            type: 'handle_mouse_drag_move',
+            window: { x, y },
+          },
+        })
+        return
+      }
       const interactionGuards = cameraMouseDragGuards[cameraControls]
       let interaction: CameraDragInteractionType_type
 
@@ -311,21 +217,13 @@ export function App() {
       } else {
         return
       }
+
       debounceSocketSend({
         type: 'modeling_cmd_req',
         cmd: {
           type: 'camera_drag_move',
           interaction,
           window: { x, y },
-        },
-        cmd_id: newCmdId,
-      })
-    } else {
-      debounceSocketSend({
-        type: 'modeling_cmd_req',
-        cmd: {
-          type: 'highlight_set_entity',
-          selected_at_window: { x, y },
         },
         cmd_id: newCmdId,
       })
@@ -357,11 +255,11 @@ export function App() {
           paneOpacity
         }
         defaultSize={{
-          width: '400px',
+          width: '550px',
           height: 'auto',
         }}
         minWidth={200}
-        maxWidth={600}
+        maxWidth={800}
         minHeight={'auto'}
         maxHeight={'auto'}
         handleClasses={{
@@ -369,7 +267,7 @@ export function App() {
             'hover:bg-liquid-30/40 dark:hover:bg-liquid-10/40 bg-transparent transition-colors duration-100 transition-ease-out delay-100',
         }}
       >
-        <div className="h-full flex flex-col justify-between">
+        <div id="code-pane" className="h-full flex flex-col justify-between">
           <CollapsiblePanel
             title="Code"
             icon={faCode}

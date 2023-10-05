@@ -1,7 +1,12 @@
-import { ProgramMemory, Path, SourceRange } from '../executor'
-import { Program, Value } from '../abstractSyntaxTreeTypes'
-import { TooTip } from '../../useStore'
-import { PathToNode } from '../executor'
+import {
+  ProgramMemory,
+  Path,
+  SourceRange,
+  Program,
+  Value,
+  PathToNode,
+} from '../wasm'
+import { ToolTip } from '../../useStore'
 import { EngineCommandManager } from './engineConnection'
 
 export interface InternalFirstArg {
@@ -45,7 +50,7 @@ export type TransformCallback = (
 }
 
 export type SketchCallTransfromMap = {
-  [key in TooTip]: TransformCallback
+  [key in ToolTip]: TransformCallback
 }
 
 export interface SketchLineHelper {

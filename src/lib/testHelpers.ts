@@ -1,10 +1,11 @@
-import { Program } from '../lang/abstractSyntaxTreeTypes'
-import { ProgramMemory, _executor } from '../lang/executor'
+import { Program, ProgramMemory, _executor, SourceRange } from '../lang/wasm'
 import {
   EngineCommandManager,
   EngineCommand,
 } from '../lang/std/engineConnection'
-import { SourceRange } from 'lang/executor'
+import { Models } from '@kittycad/lib'
+
+type WebSocketResponse = Models['OkWebSocketResponseData_type']
 
 class MockEngineCommandManager {
   constructor(mockParams: {
@@ -23,7 +24,13 @@ class MockEngineCommandManager {
     range: SourceRange
     command: EngineCommand
   }): Promise<any> {
-    return Promise.resolve()
+    const response: WebSocketResponse = {
+      type: 'modeling',
+      data: {
+        modeling_response: { type: 'empty' },
+      },
+    }
+    return Promise.resolve(JSON.stringify(response))
   }
   sendModelingCommandFromWasm(
     id: string,
@@ -49,7 +56,7 @@ class MockEngineCommandManager {
 
 export async function enginelessExecutor(
   ast: Program,
-  pm: ProgramMemory = { root: {} }
+  pm: ProgramMemory = { root: {}, return: null }
 ): Promise<ProgramMemory> {
   const mockEngineCommandManager = new MockEngineCommandManager({
     setIsStreamReady: () => {},
@@ -64,17 +71,19 @@ export async function enginelessExecutor(
 
 export async function executor(
   ast: Program,
-  pm: ProgramMemory = { root: {} }
+  pm: ProgramMemory = { root: {}, return: null }
 ): Promise<ProgramMemory> {
-  const engineCommandManager = new EngineCommandManager({
+  const engineCommandManager = new EngineCommandManager()
+  engineCommandManager.start({
     setIsStreamReady: () => {},
     setMediaStream: () => {},
-    width: 100,
-    height: 100,
+    width: 0,
+    height: 0,
+    executeCode: () => {},
   })
   await engineCommandManager.waitForReady
   engineCommandManager.startNewSession()
   const programMemory = await _executor(ast, pm, engineCommandManager)
-  await engineCommandManager.waitForAllCommands()
+  await engineCommandManager.waitForAllCommands(ast, programMemory)
   return programMemory
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { toolTips, useStore } from '../../useStore'
-import { Value } from '../../lang/abstractSyntaxTreeTypes'
+import { Value } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -65,14 +65,14 @@ export const RemoveConstrainingValues = () => {
           programMemory,
           referenceSegName: '',
         })
-        updateAst(modifiedAst, {
+        updateAst(modifiedAst, true, {
           callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
         })
       }}
       disabled={!enableHorz}
-      title="yo dawg"
+      title="Remove Constraining Values"
     >
-      RemoveConstrainingValues
+      Remove Constraining Values
     </button>
   )
 }

@@ -1,6 +1,7 @@
 //! Functions implemented for language execution.
 
 pub mod extrude;
+pub mod math;
 pub mod segment;
 pub mod sketch;
 pub mod utils;
@@ -9,18 +10,19 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use derive_docs::stdlib;
+use kittycad::types::OkWebSocketResponseData;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    abstract_syntax_tree_types::parse_json_number_as_f64,
-    engine::EngineConnection,
+    ast::types::parse_json_number_as_f64,
+    engine::{EngineConnection, EngineManager},
     errors::{KclError, KclErrorDetails},
     executor::{ExtrudeGroup, MemoryItem, Metadata, SketchGroup, SourceRange},
 };
 
-pub type StdFn = fn(&mut Args) -> Result<MemoryItem, KclError>;
+pub type StdFn = fn(Args) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<MemoryItem, KclError>>>>;
 pub type FnMap = HashMap<String, StdFn>;
 
 pub struct StdLib {
@@ -31,7 +33,6 @@ impl StdLib {
     pub fn new() -> Self {
         let internal_fns: Vec<Box<(dyn crate::docs::StdLibFn)>> = vec![
             Box::new(Show),
-            Box::new(Min),
             Box::new(LegLen),
             Box::new(LegAngX),
             Box::new(LegAngY),
@@ -60,7 +61,29 @@ impl StdLib {
             Box::new(crate::std::sketch::StartSketchAt),
             Box::new(crate::std::sketch::Close),
             Box::new(crate::std::sketch::Arc),
+            Box::new(crate::std::sketch::TangentalArc),
+            Box::new(crate::std::sketch::TangentalArcTo),
             Box::new(crate::std::sketch::BezierCurve),
+            Box::new(crate::std::math::Cos),
+            Box::new(crate::std::math::Sin),
+            Box::new(crate::std::math::Tan),
+            Box::new(crate::std::math::Acos),
+            Box::new(crate::std::math::Asin),
+            Box::new(crate::std::math::Atan),
+            Box::new(crate::std::math::Pi),
+            Box::new(crate::std::math::E),
+            Box::new(crate::std::math::Tau),
+            Box::new(crate::std::math::Sqrt),
+            Box::new(crate::std::math::Abs),
+            Box::new(crate::std::math::Floor),
+            Box::new(crate::std::math::Ceil),
+            Box::new(crate::std::math::Min),
+            Box::new(crate::std::math::Max),
+            Box::new(crate::std::math::Pow),
+            Box::new(crate::std::math::Log),
+            Box::new(crate::std::math::Log2),
+            Box::new(crate::std::math::Log10),
+            Box::new(crate::std::math::Ln),
         ];
 
         let mut fns = HashMap::new();
@@ -82,15 +105,15 @@ impl Default for StdLib {
     }
 }
 
-#[derive(Debug)]
-pub struct Args<'a> {
+#[derive(Debug, Clone)]
+pub struct Args {
     pub args: Vec<MemoryItem>,
     pub source_range: SourceRange,
-    engine: &'a mut EngineConnection,
+    engine: EngineConnection,
 }
 
-impl<'a> Args<'a> {
-    pub fn new(args: Vec<MemoryItem>, source_range: SourceRange, engine: &'a mut EngineConnection) -> Self {
+impl Args {
+    pub fn new(args: Vec<MemoryItem>, source_range: SourceRange, engine: EngineConnection) -> Self {
         Self {
             args,
             source_range,
@@ -98,17 +121,21 @@ impl<'a> Args<'a> {
         }
     }
 
-    pub fn send_modeling_cmd(&mut self, id: uuid::Uuid, cmd: kittycad::types::ModelingCmd) -> Result<(), KclError> {
-        self.engine.send_modeling_cmd(id, self.source_range, cmd)
+    pub async fn send_modeling_cmd(
+        &self,
+        id: uuid::Uuid,
+        cmd: kittycad::types::ModelingCmd,
+    ) -> Result<OkWebSocketResponseData, KclError> {
+        self.engine.send_modeling_cmd(id, self.source_range, cmd).await
     }
 
     fn make_user_val_from_json(&self, j: serde_json::Value) -> Result<MemoryItem, KclError> {
-        Ok(MemoryItem::UserVal {
+        Ok(MemoryItem::UserVal(crate::executor::UserVal {
             value: j,
             meta: vec![Metadata {
                 source_range: self.source_range,
             }],
-        })
+        }))
     }
 
     fn make_user_val_from_f64(&self, f: f64) -> Result<MemoryItem, KclError> {
@@ -120,6 +147,21 @@ impl<'a> Args<'a> {
                 })
             },
         )?))
+    }
+
+    fn get_number(&self) -> Result<f64, KclError> {
+        let first_value = self
+            .args
+            .first()
+            .ok_or_else(|| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Expected a number as the first argument, found `{:?}`", self.args),
+                    source_ranges: vec![self.source_range],
+                })
+            })?
+            .get_json_value()?;
+
+        parse_json_number_as_f64(&first_value, self.source_range)
     }
 
     fn get_number_array(&self) -> Result<Vec<f64>, KclError> {
@@ -144,7 +186,7 @@ impl<'a> Args<'a> {
         Ok((numbers[0], numbers[1]))
     }
 
-    fn get_segment_name_sketch_group(&self) -> Result<(String, SketchGroup), KclError> {
+    fn get_segment_name_sketch_group(&self) -> Result<(String, Box<SketchGroup>), KclError> {
         // Iterate over our args, the first argument should be a UserVal with a string value.
         // The second argument should be a SketchGroup.
         let first_value = self
@@ -186,7 +228,7 @@ impl<'a> Args<'a> {
         Ok((segment_name, sketch_group))
     }
 
-    fn get_sketch_group(&self) -> Result<SketchGroup, KclError> {
+    fn get_sketch_group(&self) -> Result<Box<SketchGroup>, KclError> {
         let first_value = self.args.first().ok_or_else(|| {
             KclError::Type(KclErrorDetails {
                 message: format!("Expected a SketchGroup as the first argument, found `{:?}`", self.args),
@@ -228,7 +270,7 @@ impl<'a> Args<'a> {
         Ok(data)
     }
 
-    fn get_data_and_sketch_group<T: serde::de::DeserializeOwned>(&self) -> Result<(T, SketchGroup), KclError> {
+    fn get_data_and_sketch_group<T: serde::de::DeserializeOwned>(&self) -> Result<(T, Box<SketchGroup>), KclError> {
         let first_value = self
             .args
             .first()
@@ -266,7 +308,7 @@ impl<'a> Args<'a> {
         Ok((data, sketch_group))
     }
 
-    fn get_segment_name_to_number_sketch_group(&self) -> Result<(String, f64, SketchGroup), KclError> {
+    fn get_segment_name_to_number_sketch_group(&self) -> Result<(String, f64, Box<SketchGroup>), KclError> {
         // Iterate over our args, the first argument should be a UserVal with a string value.
         // The second argument should be a number.
         // The third argument should be a SketchGroup.
@@ -322,7 +364,7 @@ impl<'a> Args<'a> {
         Ok((segment_name, to_number, sketch_group))
     }
 
-    fn get_number_sketch_group(&self) -> Result<(f64, SketchGroup), KclError> {
+    fn get_number_sketch_group(&self) -> Result<(f64, Box<SketchGroup>), KclError> {
         // Iterate over our args, the first argument should be a number.
         // The second argument should be a SketchGroup.
         let first_value = self
@@ -357,7 +399,7 @@ impl<'a> Args<'a> {
         Ok((number, sketch_group))
     }
 
-    fn get_path_name_extrude_group(&self) -> Result<(String, ExtrudeGroup), KclError> {
+    fn get_path_name_extrude_group(&self) -> Result<(String, Box<ExtrudeGroup>), KclError> {
         // Iterate over our args, the first argument should be a UserVal with a string value.
         // The second argument should be a ExtrudeGroup.
         let first_value = self
@@ -406,32 +448,9 @@ impl<'a> Args<'a> {
     }
 }
 
-/// Returns the minimum of the given arguments.
-pub fn min(args: &mut Args) -> Result<MemoryItem, KclError> {
-    let nums = args.get_number_array()?;
-    let result = inner_min(nums);
-
-    args.make_user_val_from_f64(result)
-}
-
-/// Returns the minimum of the given arguments.
-#[stdlib {
-    name = "min",
-}]
-fn inner_min(args: Vec<f64>) -> f64 {
-    let mut min = std::f64::MAX;
-    for arg in args.iter() {
-        if *arg < min {
-            min = *arg;
-        }
-    }
-
-    min
-}
-
 /// Render a model.
 // This never actually gets called so this is fine.
-pub fn show(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub async fn show<'a>(args: Args) -> Result<MemoryItem, KclError> {
     let sketch_group = args.get_sketch_group()?;
     inner_show(sketch_group);
 
@@ -442,10 +461,10 @@ pub fn show(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "show",
 }]
-fn inner_show(_sketch: SketchGroup) {}
+fn inner_show(_sketch: Box<SketchGroup>) {}
 
 /// Returns the length of the given leg.
-pub fn leg_length(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub async fn leg_length(args: Args) -> Result<MemoryItem, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
     let result = inner_leg_length(hypotenuse, leg);
     args.make_user_val_from_f64(result)
@@ -460,7 +479,7 @@ fn inner_leg_length(hypotenuse: f64, leg: f64) -> f64 {
 }
 
 /// Returns the angle of the given leg for x.
-pub fn leg_angle_x(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub async fn leg_angle_x(args: Args) -> Result<MemoryItem, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
     let result = inner_leg_angle_x(hypotenuse, leg);
     args.make_user_val_from_f64(result)
@@ -471,11 +490,11 @@ pub fn leg_angle_x(args: &mut Args) -> Result<MemoryItem, KclError> {
     name = "legAngX",
 }]
 fn inner_leg_angle_x(hypotenuse: f64, leg: f64) -> f64 {
-    (leg.min(hypotenuse) / hypotenuse).acos() * 180.0 / std::f64::consts::PI
+    (leg.min(hypotenuse) / hypotenuse).acos().to_degrees()
 }
 
 /// Returns the angle of the given leg for y.
-pub fn leg_angle_y(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub async fn leg_angle_y(args: Args) -> Result<MemoryItem, KclError> {
     let (hypotenuse, leg) = args.get_hypotenuse_leg()?;
     let result = inner_leg_angle_y(hypotenuse, leg);
     args.make_user_val_from_f64(result)
@@ -486,7 +505,7 @@ pub fn leg_angle_y(args: &mut Args) -> Result<MemoryItem, KclError> {
     name = "legAngY",
 }]
 fn inner_leg_angle_y(hypotenuse: f64, leg: f64) -> f64 {
-    (leg.min(hypotenuse) / hypotenuse).asin() * 180.0 / std::f64::consts::PI
+    (leg.min(hypotenuse) / hypotenuse).asin().to_degrees()
 }
 
 /// The primitive types that can be used in a KCL file.
@@ -506,8 +525,9 @@ pub enum Primitive {
 
 #[cfg(test)]
 mod tests {
-    use crate::std::StdLib;
     use itertools::Itertools;
+
+    use crate::std::StdLib;
 
     #[test]
     fn test_generate_stdlib_markdown_docs() {
@@ -591,7 +611,7 @@ mod tests {
             buf.push_str(&fn_docs);
         }
 
-        expectorate::assert_contents("../../../docs/kcl.md", &buf);
+        expectorate::assert_contents("../../../docs/kcl/std.md", &buf);
     }
 
     #[test]
@@ -606,7 +626,7 @@ mod tests {
         }
 
         expectorate::assert_contents(
-            "../../../docs/kcl.json",
+            "../../../docs/kcl/std.json",
             &serde_json::to_string_pretty(&json_data).unwrap(),
         );
     }

@@ -2,23 +2,29 @@
 //! engine.
 
 use anyhow::Result;
+use kittycad::types::OkWebSocketResponseData;
 
 use crate::errors::KclError;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct EngineConnection {}
 
 impl EngineConnection {
     pub async fn new() -> Result<EngineConnection> {
         Ok(EngineConnection {})
     }
+}
 
-    pub fn send_modeling_cmd(
-        &mut self,
+#[async_trait::async_trait(?Send)]
+impl crate::engine::EngineManager for EngineConnection {
+    async fn send_modeling_cmd(
+        &self,
         _id: uuid::Uuid,
         _source_range: crate::executor::SourceRange,
         _cmd: kittycad::types::ModelingCmd,
-    ) -> Result<(), KclError> {
-        Ok(())
+    ) -> Result<OkWebSocketResponseData, KclError> {
+        Ok(OkWebSocketResponseData::Modeling {
+            modeling_response: kittycad::types::OkModelingCmdResponse::Empty {},
+        })
     }
 }

@@ -26,7 +26,7 @@ jobs:
       matrix:
         dir: ['src/wasm-lib']
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install latest rust
         uses: actions-rs/toolchain@v1
         with:
@@ -41,11 +41,22 @@ jobs:
       - uses: taiki-e/install-action@nextest
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2.6.1
+      - name: Install ffmpeg
+        run: |
+          sudo apt update
+          sudo apt install \
+            ffmpeg \
+            libavformat-dev \
+            libavutil-dev \
+            libclang-dev \
+            libswscale-dev \
+            --no-install-recommends
       - name: cargo test
         shell: bash
         run: |-
           cd "${{ matrix.dir }}"
-          cargo test --all
+          cargo nextest run --workspace --no-fail-fast -P ci
         env:
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN}}
+          RUST_MIN_STACK: 10485760000
 

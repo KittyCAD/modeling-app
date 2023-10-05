@@ -1,19 +1,35 @@
-import { SourceRange } from 'lang/executor'
+import {
+  ProgramMemory,
+  SourceRange,
+  Program,
+  VariableDeclarator,
+} from 'lang/wasm'
 import { Selections } from 'useStore'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_CONNECTION_TIMEOUT_MS } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
 import { v4 as uuidv4 } from 'uuid'
 import * as Sentry from '@sentry/react'
+import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
+
+let lastMessage = ''
 
 interface CommandInfo {
   commandType: CommandTypes
   range: SourceRange
   parentId?: string
 }
+
+type WebSocketResponse = Models['OkWebSocketResponseData_type']
+
 interface ResultCommand extends CommandInfo {
   type: 'result'
   data: any
+  raw: WebSocketResponse
+}
+interface FailedCommand extends CommandInfo {
+  type: 'failed'
+  errors: Models['FailureWebSocketResponse_type']['errors']
 }
 interface PendingCommand extends CommandInfo {
   type: 'pending'
@@ -22,7 +38,7 @@ interface PendingCommand extends CommandInfo {
 }
 
 export interface ArtifactMap {
-  [key: string]: ResultCommand | PendingCommand
+  [key: string]: ResultCommand | PendingCommand | FailedCommand
 }
 export interface SourceRangeMap {
   [key: string]: SourceRange
@@ -33,7 +49,10 @@ interface NewTrackArgs {
   mediaStream: MediaStream
 }
 
-type WebSocketResponse = Models['OkWebSocketResponseData_type']
+// This looks funny, I know. This is needed because node and the browser
+// disagree as to the type. In a browser it's a number, but in node it's a
+// "Timeout".
+type Timeout = ReturnType<typeof setTimeout>
 
 type ClientMetrics = Models['ClientMetrics_type']
 
@@ -46,6 +65,9 @@ export class EngineConnection {
   unreliableDataChannel?: RTCDataChannel
 
   private ready: boolean
+  private connecting: boolean
+  private dead: boolean
+  private failedConnTimeout: Timeout | null
 
   readonly url: string
   private readonly token?: string
@@ -81,6 +103,9 @@ export class EngineConnection {
     this.url = url
     this.token = token
     this.ready = false
+    this.connecting = false
+    this.dead = false
+    this.failedConnTimeout = null
     this.onWebsocketOpen = onWebsocketOpen
     this.onDataChannelOpen = onDataChannelOpen
     this.onEngineConnectionOpen = onEngineConnectionOpen
@@ -91,7 +116,10 @@ export class EngineConnection {
     // TODO(paultag): This ought to be tweakable.
     const pingIntervalMs = 10000
 
-    setInterval(() => {
+    let pingInterval = setInterval(() => {
+      if (this.dead) {
+        clearInterval(pingInterval)
+      }
       if (this.isReady()) {
         // When we're online, every 10 seconds, we'll attempt to put a 'ping'
         // command through the WebSocket connection. This will help both ends
@@ -100,6 +128,24 @@ export class EngineConnection {
         this.send({ type: 'ping' })
       }
     }, pingIntervalMs)
+
+    const connectionTimeoutMs = VITE_KC_CONNECTION_TIMEOUT_MS
+    let connectInterval = setInterval(() => {
+      if (this.dead) {
+        clearInterval(connectInterval)
+        return
+      }
+      if (this.isReady()) {
+        return
+      }
+      console.log('connecting via retry')
+      this.connect()
+    }, connectionTimeoutMs)
+  }
+  // isConnecting will return true when connect has been called, but the full
+  // WebRTC is not online.
+  isConnecting() {
+    return this.connecting
   }
   // isReady will return true only when the WebRTC *and* WebSocket connection
   // are connected. During setup, the WebSocket connection comes online first,
@@ -107,6 +153,10 @@ export class EngineConnection {
   // is not "Ready" until both are connected.
   isReady() {
     return this.ready
+  }
+  tearDown() {
+    this.dead = true
+    this.close()
   }
   // shouldTrace will return true when Sentry should be used to instrument
   // the Engine.
@@ -119,8 +169,10 @@ export class EngineConnection {
   // This will attempt the full handshake, and retry if the connection
   // did not establish.
   connect() {
-    // TODO(paultag): make this safe to call multiple times, and figure out
-    // when a connection is in progress (state: connecting or something).
+    console.log('connect was called')
+    if (this.isConnecting() || this.isReady()) {
+      return
+    }
 
     // Information on the connect transaction
 
@@ -308,6 +360,11 @@ export class EngineConnection {
             if (this.shouldTrace()) {
               iceSpan.resolve?.()
             }
+          } else if (this.pc?.iceConnectionState === 'failed') {
+            // failed is a terminal state; let's explicitly kill the
+            // connection to the server at this point.
+            console.log('failed to negotiate ice connection; restarting')
+            this.close()
           }
         })
 
@@ -352,20 +409,6 @@ export class EngineConnection {
           })
         })
       }
-
-      // TODO(paultag): This ought to be both controllable, as well as something
-      // like exponential backoff to have some grace on the backend, as well as
-      // fix responsiveness for clients that had a weird network hiccup.
-      const connectionTimeoutMs = VITE_KC_CONNECTION_TIMEOUT_MS
-
-      setTimeout(() => {
-        if (this.isReady()) {
-          return
-        }
-        console.log('engine connection timeout on connection, retrying')
-        this.close()
-        this.connect()
-      }, connectionTimeoutMs)
     })
 
     this.pc.addEventListener('track', (event) => {
@@ -391,8 +434,6 @@ export class EngineConnection {
 
           let videoTrack = mediaStream.getVideoTracks()[0]
           this.pc?.getStats(videoTrack).then((videoTrackStats) => {
-            // TODO(paultag): this needs type information from the KittyCAD typescript
-            // library once it's updated
             let client_metrics: ClientMetrics = {
               rtc_frames_decoded: 0,
               rtc_frames_dropped: 0,
@@ -420,12 +461,13 @@ export class EngineConnection {
                   videoTrackReport.framesReceived
                 client_metrics.rtc_frames_per_second =
                   videoTrackReport.framesPerSecond || 0
-                client_metrics.rtc_freeze_count = videoTrackReport.freezeCount
+                client_metrics.rtc_freeze_count =
+                  videoTrackReport.freezeCount || 0
                 client_metrics.rtc_jitter_sec = videoTrackReport.jitter
                 client_metrics.rtc_keyframes_decoded =
                   videoTrackReport.keyFramesDecoded
                 client_metrics.rtc_total_freezes_duration_sec =
-                  videoTrackReport.totalFreezesDuration
+                  videoTrackReport.totalFreezesDuration || 0
               } else if (videoTrackReport.type === 'transport') {
                 // videoTrackReport.bytesReceived,
                 // videoTrackReport.bytesSent,
@@ -454,8 +496,11 @@ export class EngineConnection {
 
         this.onDataChannelOpen(this)
 
-        this.onEngineConnectionOpen(this)
         this.ready = true
+        this.connecting = false
+        // Do this after we set the connection is ready to avoid errors when
+        // we try to send messages before the connection is ready.
+        this.onEngineConnectionOpen(this)
       })
 
       this.unreliableDataChannel.addEventListener('close', (event) => {
@@ -469,7 +514,30 @@ export class EngineConnection {
       })
     })
 
+    const connectionTimeoutMs = VITE_KC_CONNECTION_TIMEOUT_MS
+
+    if (this.failedConnTimeout) {
+      console.log('clearing timeout before set')
+      clearTimeout(this.failedConnTimeout)
+      this.failedConnTimeout = null
+    }
+    console.log('timeout set')
+    this.failedConnTimeout = setTimeout(() => {
+      if (this.isReady()) {
+        return
+      }
+      console.log('engine connection timeout on connection, closing')
+      this.close()
+    }, connectionTimeoutMs)
+
     this.onConnectionStarted(this)
+  }
+  unreliableSend(message: object | string) {
+    // TODO(paultag): Add in logic to determine the connection state and
+    // take actions if needed?
+    this.unreliableDataChannel?.send(
+      typeof message === 'string' ? message : JSON.stringify(message)
+    )
   }
   send(message: object | string) {
     // TODO(paultag): Add in logic to determine the connection state and
@@ -486,9 +554,15 @@ export class EngineConnection {
     this.pc = undefined
     this.unreliableDataChannel = undefined
     this.webrtcStatsCollector = undefined
+    if (this.failedConnTimeout) {
+      console.log('closed timeout in close')
+      clearTimeout(this.failedConnTimeout)
+      this.failedConnTimeout = null
+    }
 
     this.onClose(this)
     this.ready = false
+    this.connecting = false
   }
 }
 
@@ -519,6 +593,9 @@ export class EngineCommandManager {
   outSequence = 1
   inSequence = 1
   engineConnection?: EngineConnection
+  // Folks should realize that wait for ready does not get called _everytime_
+  // the connection resets and restarts, it only gets called the first time.
+  // Be careful what you put here.
   waitForReady: Promise<void> = new Promise(() => {})
   private resolveReady = () => {}
 
@@ -532,19 +609,36 @@ export class EngineCommandManager {
       [localUnsubscribeId: string]: (a: any) => void
     }
   } = {} as any
-  constructor({
+
+  constructor() {
+    this.engineConnection = undefined
+  }
+
+  start({
     setMediaStream,
     setIsStreamReady,
     width,
     height,
+    executeCode,
     token,
   }: {
     setMediaStream: (stream: MediaStream) => void
     setIsStreamReady: (isStreamReady: boolean) => void
     width: number
     height: number
+    executeCode: (code?: string, force?: boolean) => void
     token?: string
   }) {
+    if (width === 0 || height === 0) {
+      return
+    }
+
+    // If we already have an engine connection, just need to resize the stream.
+    if (this.engineConnection) {
+      this.handleResize({ streamWidth: width, streamHeight: height })
+      return
+    }
+
     this.waitForReady = new Promise((resolve) => {
       this.resolveReady = resolve
     })
@@ -555,6 +649,32 @@ export class EngineCommandManager {
       onEngineConnectionOpen: () => {
         this.resolveReady()
         setIsStreamReady(true)
+
+        // Make the axis gizmo.
+        // We do this after the connection opened to avoid a race condition.
+        // Connected opened is the last thing that happens when the stream
+        // is ready.
+        // We also do this here because we want to ensure we create the gizmo
+        // and execute the code everytime the stream is restarted.
+        const gizmoId = uuidv4()
+        this.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: gizmoId,
+          cmd: {
+            type: 'make_axes_gizmo',
+            clobber: false,
+            // If true, axes gizmo will be placed in the corner of the screen.
+            // If false, it will be placed at the origin of the scene.
+            gizmo_mode: true,
+          },
+        })
+
+        // We execute the code here to make sure if the stream was to
+        // restart in a session, we want to make sure to execute the code.
+        // We force it to re-execute the code because we want to make sure
+        // the code is executed everytime the stream is restarted.
+        // We pass undefined for the code so it reads from the current state.
+        executeCode(undefined, true)
       },
       onClose: () => {
         setIsStreamReady(false)
@@ -605,6 +725,12 @@ export class EngineCommandManager {
               message.request_id
             ) {
               this.handleModelingCommand(message.resp, message.request_id)
+            } else if (
+              !message.success &&
+              message.request_id &&
+              this.artifactMap[message.request_id]
+            ) {
+              this.handleFailedModelingCommand(message)
             }
           }
         })
@@ -624,6 +750,30 @@ export class EngineCommandManager {
 
     this.engineConnection?.connect()
   }
+  handleResize({
+    streamWidth,
+    streamHeight,
+  }: {
+    streamWidth: number
+    streamHeight: number
+  }) {
+    console.log('handleResize', streamWidth, streamHeight)
+    if (!this.engineConnection?.isReady()) {
+      return
+    }
+
+    const resizeCmd: EngineCommand = {
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'reconfigure_stream',
+        width: streamWidth,
+        height: streamHeight,
+        fps: 60,
+      },
+    }
+    this.engineConnection?.send(resizeCmd)
+  }
   handleModelingCommand(message: WebSocketResponse, id: string) {
     if (message.type !== 'modeling') {
       return
@@ -642,12 +792,14 @@ export class EngineCommandManager {
         commandType: command.commandType,
         parentId: command.parentId ? command.parentId : undefined,
         data: modelingResponse,
+        raw: message,
       }
       resolve({
         id,
         commandType: command.commandType,
         range: command.range,
         data: modelingResponse,
+        raw: message,
       })
     } else {
       this.artifactMap[id] = {
@@ -655,11 +807,44 @@ export class EngineCommandManager {
         commandType: command?.commandType,
         range: command?.range,
         data: modelingResponse,
+        raw: message,
+      }
+    }
+  }
+  handleFailedModelingCommand({
+    request_id,
+    errors,
+  }: Models['FailureWebSocketResponse_type']) {
+    const id = request_id
+    if (!id) return
+    const command = this.artifactMap[id]
+    if (command && command.type === 'pending') {
+      const resolve = command.resolve
+      this.artifactMap[id] = {
+        type: 'failed',
+        range: command.range,
+        commandType: command.commandType,
+        parentId: command.parentId ? command.parentId : undefined,
+        errors,
+      }
+      resolve({
+        id,
+        commandType: command.commandType,
+        range: command.range,
+        errors,
+      })
+    } else {
+      this.artifactMap[id] = {
+        type: 'failed',
+        range: command.range,
+        commandType: command.commandType,
+        parentId: command.parentId ? command.parentId : undefined,
+        errors,
       }
     }
   }
   tearDown() {
-    this.engineConnection?.close()
+    this.engineConnection?.tearDown()
   }
   startNewSession() {
     this.artifactMap = {}
@@ -754,21 +939,31 @@ export class EngineCommandManager {
     })
   }
   sendSceneCommand(command: EngineCommand): Promise<any> {
-    if (!this.engineConnection?.isReady()) {
-      console.log('socket not ready')
+    if (this.engineConnection === undefined) {
       return Promise.resolve()
+    }
+
+    if (!this.engineConnection?.isReady()) {
+      return Promise.resolve()
+    }
+
+    if (
+      command.type === 'modeling_cmd_req' &&
+      command.cmd.type !== lastMessage
+    ) {
+      console.log('sending command', command.cmd.type)
+      lastMessage = command.cmd.type
     }
     if (command.type !== 'modeling_cmd_req') return Promise.resolve()
     const cmd = command.cmd
     if (
-      cmd.type === 'camera_drag_move' &&
+      (cmd.type === 'camera_drag_move' ||
+        cmd.type === 'handle_mouse_drag_move') &&
       this.engineConnection?.unreliableDataChannel
     ) {
       cmd.sequence = this.outSequence
       this.outSequence++
-      this.engineConnection?.unreliableDataChannel?.send(
-        JSON.stringify(command)
-      )
+      this.engineConnection?.unreliableSend(command)
       return Promise.resolve()
     } else if (
       cmd.type === 'highlight_set_entity' &&
@@ -776,9 +971,7 @@ export class EngineCommandManager {
     ) {
       cmd.sequence = this.outSequence
       this.outSequence++
-      this.engineConnection?.unreliableDataChannel?.send(
-        JSON.stringify(command)
-      )
+      this.engineConnection?.unreliableSend(command)
       return Promise.resolve()
     } else if (
       cmd.type === 'mouse_move' &&
@@ -786,9 +979,7 @@ export class EngineCommandManager {
     ) {
       cmd.sequence = this.outSequence
       this.outSequence++
-      this.engineConnection?.unreliableDataChannel?.send(
-        JSON.stringify(command)
-      )
+      this.engineConnection?.unreliableSend(command)
       return Promise.resolve()
     }
     // since it's not mouse drag or highlighting send over TCP and keep track of the command
@@ -804,10 +995,12 @@ export class EngineCommandManager {
     range: SourceRange
     command: EngineCommand | string
   }): Promise<any> {
+    if (this.engineConnection === undefined) {
+      return Promise.resolve()
+    }
     this.sourceRangeMap[id] = range
 
     if (!this.engineConnection?.isReady()) {
-      console.log('socket not ready')
       return Promise.resolve()
     }
     this.engineConnection?.send(command)
@@ -850,6 +1043,9 @@ export class EngineCommandManager {
     rangeStr: string,
     commandStr: string
   ): Promise<any> {
+    if (this.engineConnection === undefined) {
+      return Promise.resolve()
+    }
     if (id === undefined) {
       throw new Error('id is undefined')
     }
@@ -861,7 +1057,10 @@ export class EngineCommandManager {
     }
     const range: SourceRange = JSON.parse(rangeStr)
 
-    return this.sendModelingCommand({ id, range, command: commandStr })
+    // We only care about the modeling command response.
+    return this.sendModelingCommand({ id, range, command: commandStr }).then(
+      ({ raw }) => JSON.stringify(raw)
+    )
   }
   commandResult(id: string): Promise<any> {
     const command = this.artifactMap[id]
@@ -870,10 +1069,15 @@ export class EngineCommandManager {
     }
     if (command.type === 'result') {
       return command.data
+    } else if (command.type === 'failed') {
+      return Promise.resolve(command.errors)
     }
     return command.promise
   }
-  async waitForAllCommands(): Promise<{
+  async waitForAllCommands(
+    ast?: Program,
+    programMemory?: ProgramMemory
+  ): Promise<{
     artifactMap: ArtifactMap
     sourceRangeMap: SourceRangeMap
   }> {
@@ -882,9 +1086,97 @@ export class EngineCommandManager {
     ) as PendingCommand[]
     const proms = pendingCommands.map(({ promise }) => promise)
     await Promise.all(proms)
+    if (ast && programMemory) {
+      await this.fixIdMappings(ast, programMemory)
+    }
+
     return {
       artifactMap: this.artifactMap,
       sourceRangeMap: this.sourceRangeMap,
     }
   }
+  private async fixIdMappings(ast: Program, programMemory: ProgramMemory) {
+    if (this.engineConnection === undefined) {
+      return
+    }
+    /* This is a temporary solution since the cmd_ids that are sent through when
+    sending 'extend_path' ids are not used as the segment ids.
+
+    We have a way to back fill them with 'path_get_info', however this relies on one
+    the sketchGroup array and the segements array returned from the server to be in
+    the same length and order. plus it's super hacky, we first use the path_id to get
+    the source range of the pipe expression then use the name of the variable to get
+    the sketchGroup from programMemory.
+
+    I feel queezy about relying on all these steps to always line up.
+    We have also had to pollute this EngineCommandManager class with knowledge of both the ast and programMemory
+    We should get the cmd_ids to match with the segment ids and delete this method.
+    */
+    const pathInfoProms = []
+    for (const [id, artifact] of Object.entries(this.artifactMap)) {
+      if (artifact.commandType === 'start_path') {
+        pathInfoProms.push(
+          this.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'path_get_info',
+              path_id: id,
+            },
+          }).then(({ data }) => ({
+            originalId: id,
+            segments: data?.data?.segments,
+          }))
+        )
+      }
+    }
+
+    const pathInfos = await Promise.all(pathInfoProms)
+    pathInfos.forEach(({ originalId, segments }) => {
+      const originalArtifact = this.artifactMap[originalId]
+      if (!originalArtifact || originalArtifact.type === 'pending') {
+        return
+      }
+      const pipeExpPath = getNodePathFromSourceRange(
+        ast,
+        originalArtifact.range
+      )
+      const pipeExp = getNodeFromPath<VariableDeclarator>(
+        ast,
+        pipeExpPath,
+        'VariableDeclarator'
+      ).node
+      if (pipeExp.type !== 'VariableDeclarator') {
+        return
+      }
+      const variableName = pipeExp.id.name
+      const memoryItem = programMemory.root[variableName]
+      if (!memoryItem) {
+        return
+      } else if (memoryItem.type !== 'SketchGroup') {
+        return
+      }
+
+      const relevantSegments = segments.filter(
+        ({ command_id }: { command_id: string | null }) => command_id
+      )
+      if (memoryItem.value.length !== relevantSegments.length) {
+        return
+      }
+      for (let i = 0; i < relevantSegments.length; i++) {
+        const engineSegment = relevantSegments[i]
+        const memorySegment = memoryItem.value[i]
+        const oldId = memorySegment.__geoMeta.id
+        const artifact = this.artifactMap[oldId]
+        delete this.artifactMap[oldId]
+        delete this.sourceRangeMap[oldId]
+        if (artifact) {
+          this.artifactMap[engineSegment.command_id] = artifact
+          this.sourceRangeMap[engineSegment.command_id] = artifact.range
+        }
+      }
+    })
+  }
 }
+
+export const engineCommandManager = new EngineCommandManager()

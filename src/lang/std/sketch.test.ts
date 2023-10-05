@@ -4,14 +4,11 @@ import {
   addNewSketchLn,
   getYComponent,
   getXComponent,
+  addCloseToPipe,
 } from './sketch'
-import { parser_wasm } from '../abstractSyntaxTree'
+import { parse, recast, initPromise } from '../wasm'
 import { getNodePathFromSourceRange } from '../queryAst'
-import { recast } from '../recast'
 import { enginelessExecutor } from '../../lib/testHelpers'
-import { initPromise } from '../rust'
-
-beforeAll(() => initPromise)
 
 const eachQuad: [number, [number, number]][] = [
   [-315, [1, 1]],
@@ -27,6 +24,8 @@ const eachQuad: [number, [number, number]][] = [
   [585, [-1, -1]],
   [675, [1, -1]],
 ]
+
+beforeAll(() => initPromise)
 
 describe('testing getYComponent', () => {
   it('should return the vertical component of a vector correctly when given angles in each quadrant (and with angles < 0, or > 360)', () => {
@@ -101,10 +100,11 @@ describe('testing changeSketchArguments', () => {
   |> ${line}
   |> lineTo([0.46, -5.82], %)
 // |> rx(45, %)
-show(mySketch001)`
+show(mySketch001)
+`
     const code = genCode(lineToChange)
     const expectedCode = genCode(lineAfterChange)
-    const ast = parser_wasm(code)
+    const ast = parse(code)
     const programMemory = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(lineToChange)
     const { modifiedAst } = changeSketchArguments(
@@ -115,6 +115,7 @@ show(mySketch001)`
       {
         mode: 'sketch',
         sketchMode: 'sketchEdit',
+        pathId: '',
         rotation: [0, 0, 0, 1],
         position: [0, 0, 0],
         pathToNode: [
@@ -141,11 +142,11 @@ const mySketch001 = startSketchAt([0, 0])
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)
 show(mySketch001)`
-    const ast = parser_wasm(code)
+    const ast = parse(code)
     const programMemory = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(lineToChange)
     expect(sourceStart).toBe(66)
-    const { modifiedAst } = addNewSketchLn({
+    let { modifiedAst } = addNewSketchLn({
       node: ast,
       programMemory,
       to: [2, 3],
@@ -159,12 +160,34 @@ show(mySketch001)`
       ],
     })
     // Enable rotations #152
-    const expectedCode = `const mySketch001 = startSketchAt([0, 0])
+    let expectedCode = `const mySketch001 = startSketchAt([0, 0])
   // |> rx(45, %)
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)
   |> lineTo([2, 3], %)
-show(mySketch001)`
+show(mySketch001)
+`
+    expect(recast(modifiedAst)).toBe(expectedCode)
+
+    modifiedAst = addCloseToPipe({
+      node: ast,
+      programMemory,
+      pathToNode: [
+        ['body', ''],
+        [0, 'index'],
+        ['declarations', 'VariableDeclaration'],
+        [0, 'index'],
+        ['init', 'VariableDeclarator'],
+      ],
+    })
+
+    expectedCode = `const mySketch001 = startSketchAt([0, 0])
+  // |> rx(45, %)
+  |> lineTo([-1.59, -1.54], %)
+  |> lineTo([0.46, -5.82], %)
+  |> close(%)
+show(mySketch001)
+`
     expect(recast(modifiedAst)).toBe(expectedCode)
   })
 })
@@ -177,9 +200,10 @@ describe('testing addTagForSketchOnFace', () => {
   // |> rx(45, %)
   |> ${line}
   |> lineTo([0.46, -5.82], %)
-show(mySketch001)`
+show(mySketch001)
+`
     const code = genCode(originalLine)
-    const ast = parser_wasm(code)
+    const ast = parse(code)
     const programMemory = await enginelessExecutor(ast)
     const sourceStart = code.indexOf(originalLine)
     const sourceRange: [number, number] = [

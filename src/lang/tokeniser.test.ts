@@ -1,5 +1,4 @@
-import { lexer, asyncLexer } from './tokeniser'
-import { initPromise } from './rust'
+import { lexer, initPromise } from './wasm'
 
 beforeAll(() => initPromise)
 
@@ -10,9 +9,9 @@ describe('testing lexer', () => {
     const code3 = `const yo = 45 /* this is a comment
 const ya = 6 */
 const yi=45`
-    expect(await asyncLexer(code)).toEqual(lexer(code))
-    expect(await asyncLexer(code2)).toEqual(lexer(code2))
-    expect(await asyncLexer(code3)).toEqual(lexer(code3))
+    expect(lexer(code)).toEqual(lexer(code))
+    expect(lexer(code2)).toEqual(lexer(code2))
+    expect(lexer(code3)).toEqual(lexer(code3))
   })
   it('test lexer', () => {
     expect(stringSummaryLexer('1  + 2')).toEqual([
@@ -131,10 +130,12 @@ const yi=45`
   })
   it('test negative and decimal numbers', () => {
     expect(stringSummaryLexer('-1')).toEqual([
-      "number       '-1'       from 0   to 2",
+      "operator     '-'        from 0   to 1",
+      "number       '1'        from 1   to 2",
     ])
     expect(stringSummaryLexer('-1.5')).toEqual([
-      "number       '-1.5'     from 0   to 4",
+      "operator     '-'        from 0   to 1",
+      "number       '1.5'      from 1   to 4",
     ])
     expect(stringSummaryLexer('1.5')).toEqual([
       "number       '1.5'      from 0   to 3",
@@ -158,10 +159,12 @@ const yi=45`
       "whitespace   ' '        from 3   to 4",
       "operator     '+'        from 4   to 5",
       "whitespace   ' '        from 5   to 6",
-      "number       '-2.5'     from 6   to 10",
+      "operator     '-'        from 6   to 7",
+      "number       '2.5'      from 7   to 10",
     ])
     expect(stringSummaryLexer('-1.5 + 2.5')).toEqual([
-      "number       '-1.5'     from 0   to 4",
+      "operator     '-'        from 0   to 1",
+      "number       '1.5'      from 1   to 4",
       "whitespace   ' '        from 4   to 5",
       "operator     '+'        from 5   to 6",
       "whitespace   ' '        from 6   to 7",

@@ -1,12 +1,14 @@
 import { TransformCallback } from './stdTypes'
-import { Selections, toolTips, TooTip, Selection } from '../../useStore'
+import { Selections, toolTips, ToolTip, Selection } from '../../useStore'
 import {
   CallExpression,
   Program,
   Value,
   BinaryPart,
   VariableDeclarator,
-} from '../abstractSyntaxTreeTypes'
+  PathToNode,
+  ProgramMemory,
+} from '../wasm'
 import {
   getNodeFromPath,
   getNodeFromPathCurry,
@@ -25,7 +27,6 @@ import {
   giveSketchFnCallTag,
 } from '../modifyAst'
 import { createFirstArg, getFirstArg, replaceSketchLine } from './sketch'
-import { PathToNode, ProgramMemory } from '../executor'
 import { getSketchSegmentFromSourceRange } from './sketchConstraints'
 import { getAngle, roundOff, normaliseAngle } from '../../lib/utils'
 
@@ -53,7 +54,7 @@ export type ConstraintType =
   | 'setAngleBetween'
 
 function createCallWrapper(
-  a: TooTip,
+  a: ToolTip,
   val: [Value, Value] | Value,
   tag?: Value,
   valueUsedInTransform?: number
@@ -100,7 +101,7 @@ function intersectCallWrapper({
 }
 
 export type TransformInfo = {
-  tooltip: TooTip
+  tooltip: ToolTip
   createNode: (a: {
     varValA: Value // x / angle
     varValB: Value // y / length or x y for angledLineOfXlength etc
@@ -111,7 +112,7 @@ export type TransformInfo = {
 }
 
 type TransformMap = {
-  [key in TooTip]?: {
+  [key in ToolTip]?: {
     [key in LineInputsType | 'free']?: {
       [key in ConstraintType]?: TransformInfo
     }
@@ -1094,12 +1095,12 @@ export function getRemoveConstraintsTransform(
   sketchFnExp: CallExpression,
   constraintType: ConstraintType
 ): TransformInfo | false {
-  let name = sketchFnExp.callee.name as TooTip
+  let name = sketchFnExp.callee.name as ToolTip
   if (!toolTips.includes(name)) {
     return false
   }
   const xyLineMap: {
-    [key in TooTip]?: TooTip
+    [key in ToolTip]?: ToolTip
   } = {
     xLine: 'line',
     yLine: 'line',
@@ -1136,27 +1137,18 @@ export function getRemoveConstraintsTransform(
 
   // check if the function is locked down and so can't be transformed
   const firstArg = getFirstArg(sketchFnExp)
-  if (Array.isArray(firstArg.val)) {
-    const [a, b] = firstArg.val
-    if (a?.type !== 'Literal' || b?.type !== 'Literal') {
-      return transformInfo
-    }
-  } else {
-    if (firstArg.val?.type !== 'Literal') {
-      return transformInfo
-    }
+  if (isNotLiteralArrayOrStatic(firstArg.val)) {
+    return transformInfo
   }
 
   // check if the function has no constraints
   const isTwoValFree =
-    Array.isArray(firstArg.val) &&
-    firstArg.val?.[0]?.type === 'Literal' &&
-    firstArg.val?.[1]?.type === 'Literal'
+    Array.isArray(firstArg.val) && isLiteralArrayOrStatic(firstArg.val)
   if (isTwoValFree) {
     return false
   }
   const isOneValFree =
-    !Array.isArray(firstArg.val) && firstArg.val?.type === 'Literal'
+    !Array.isArray(firstArg.val) && isLiteralArrayOrStatic(firstArg.val)
   if (isOneValFree) {
     return transformInfo
   }
@@ -1175,37 +1167,24 @@ function getTransformMapPath(
   constraintType: ConstraintType
 ):
   | {
-      toolTip: TooTip
+      toolTip: ToolTip
       lineInputType: LineInputsType | 'free'
       constraintType: ConstraintType
     }
   | false {
-  const name = sketchFnExp.callee.name as TooTip
+  const name = sketchFnExp.callee.name as ToolTip
   if (!toolTips.includes(name)) {
     return false
   }
 
   // check if the function is locked down and so can't be transformed
   const firstArg = getFirstArg(sketchFnExp)
-  if (Array.isArray(firstArg.val)) {
-    const [a, b] = firstArg.val
-    if (a?.type !== 'Literal' && b?.type !== 'Literal') {
-      return false
-    }
-  } else {
-    if (firstArg.val?.type !== 'Literal') {
-      return false
-    }
+  if (isNotLiteralArrayOrStatic(firstArg.val)) {
+    return false
   }
 
   // check if the function has no constraints
-  const isTwoValFree =
-    Array.isArray(firstArg.val) &&
-    firstArg.val?.[0]?.type === 'Literal' &&
-    firstArg.val?.[1]?.type === 'Literal'
-  const isOneValFree =
-    !Array.isArray(firstArg.val) && firstArg.val?.type === 'Literal'
-  if (isTwoValFree || isOneValFree) {
+  if (isLiteralArrayOrStatic(firstArg.val)) {
     const info = transformMap?.[name]?.free?.[constraintType]
     if (info)
       return {
@@ -1246,7 +1225,7 @@ export function getTransformInfo(
 
 export function getConstraintType(
   val: Value | [Value, Value] | [Value, Value, Value],
-  fnName: TooTip
+  fnName: ToolTip
 ): LineInputsType | null {
   // this function assumes that for two val sketch functions that one arg is locked down not both
   // and for one val sketch functions that the arg is NOT locked down
@@ -1259,7 +1238,7 @@ export function getConstraintType(
     if (fnName === 'xLineTo') return 'yAbsolute'
     if (fnName === 'yLineTo') return 'xAbsolute'
   } else {
-    const isFirstArgLockedDown = val?.[0]?.type !== 'Literal'
+    const isFirstArgLockedDown = isNotLiteralArrayOrStatic(val[0])
     if (fnName === 'line')
       return isFirstArgLockedDown ? 'xRelative' : 'yRelative'
     if (fnName === 'lineTo')
@@ -1300,7 +1279,7 @@ export function getTransformInfos(
     }) as TransformInfo[]
     return theTransforms
   } catch (error) {
-    console.log(error)
+    console.log('error', error)
     return []
   }
 }
@@ -1452,7 +1431,7 @@ export function transformAstSketchLines({
 
     const varName = varDec.id.name
     const sketchGroup = programMemory.root?.[varName]
-    if (!sketchGroup || sketchGroup.type !== 'sketchGroup')
+    if (!sketchGroup || sketchGroup.type !== 'SketchGroup')
       throw new Error('not a sketch group')
     const seg = getSketchSegmentFromSourceRange(sketchGroup, range).segment
     const referencedSegment = referencedSegmentRange
@@ -1466,7 +1445,7 @@ export function transformAstSketchLines({
         programMemory,
         sourceRange: range,
         referencedSegment,
-        fnName: transformTo || (callExp.callee.name as TooTip),
+        fnName: transformTo || (callExp.callee.name as ToolTip),
         to,
         from,
         createCallback: callBack({
@@ -1532,29 +1511,52 @@ export function getConstraintLevelFromSourceRange(
     getNodePathFromSourceRange(ast, cursorRange),
     'CallExpression'
   )
-  const name = sketchFnExp?.callee?.name as TooTip
+  const name = sketchFnExp?.callee?.name as ToolTip
   if (!toolTips.includes(name)) return 'free'
 
   const firstArg = getFirstArg(sketchFnExp)
 
   // check if the function is fully constrained
-  if (Array.isArray(firstArg.val)) {
-    const [a, b] = firstArg.val
-    if (a?.type !== 'Literal' && b?.type !== 'Literal') return 'full'
-  } else {
-    if (firstArg.val?.type !== 'Literal') return 'full'
+  if (isNotLiteralArrayOrStatic(firstArg.val)) {
+    return 'full'
   }
 
   // check if the function has no constraints
   const isTwoValFree =
-    Array.isArray(firstArg.val) &&
-    firstArg.val?.[0]?.type === 'Literal' &&
-    firstArg.val?.[1]?.type === 'Literal'
+    Array.isArray(firstArg.val) && isLiteralArrayOrStatic(firstArg.val)
   const isOneValFree =
-    !Array.isArray(firstArg.val) && firstArg.val?.type === 'Literal'
+    !Array.isArray(firstArg.val) && isLiteralArrayOrStatic(firstArg.val)
 
   if (isTwoValFree) return 'free'
   if (isOneValFree) return 'partial'
 
   return 'partial'
+}
+
+export function isLiteralArrayOrStatic(
+  val: Value | [Value, Value] | [Value, Value, Value] | undefined
+): boolean {
+  if (!val) return false
+
+  if (Array.isArray(val)) {
+    const [a, b] = val
+    return isLiteralArrayOrStatic(a) && isLiteralArrayOrStatic(b)
+  }
+  return (
+    val.type === 'Literal' ||
+    (val.type === 'UnaryExpression' && val.argument.type === 'Literal')
+  )
+}
+
+export function isNotLiteralArrayOrStatic(
+  val: Value | [Value, Value] | [Value, Value, Value]
+): boolean {
+  if (Array.isArray(val)) {
+    const [a, b] = val
+    return isNotLiteralArrayOrStatic(a) && isNotLiteralArrayOrStatic(b)
+  }
+  return (
+    (val.type !== 'Literal' && val.type !== 'UnaryExpression') ||
+    (val.type === 'UnaryExpression' && val.argument.type !== 'Literal')
+  )
 }

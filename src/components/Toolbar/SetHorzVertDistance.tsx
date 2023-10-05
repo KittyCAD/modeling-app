@@ -1,11 +1,7 @@
 import { useState, useEffect } from 'react'
 import { create } from 'react-modal-promise'
 import { toolTips, useStore } from '../../useStore'
-import {
-  BinaryPart,
-  Value,
-  VariableDeclarator,
-} from '../../lang/abstractSyntaxTreeTypes'
+import { BinaryPart, Value, VariableDeclarator } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -24,14 +20,23 @@ import { updateCursors } from '../../lang/util'
 
 const getModalInfo = create(GetInfoModal as any)
 
+type ButtonType =
+  | 'setHorzDistance'
+  | 'setVertDistance'
+  | 'alignEndsHorizontally'
+  | 'alignEndsVertically'
+
+const buttonLabels: Record<ButtonType, string> = {
+  setHorzDistance: 'Set Horizontal Distance',
+  setVertDistance: 'Set Vertical Distance',
+  alignEndsHorizontally: 'Align Ends Horizontally',
+  alignEndsVertically: 'Align Ends Vertically',
+}
+
 export const SetHorzVertDistance = ({
   buttonType,
 }: {
-  buttonType:
-    | 'setHorzDistance'
-    | 'setVertDistance'
-    | 'alignEndsHorizontally'
-    | 'alignEndsVertically'
+  buttonType: ButtonType
 }) => {
   const { guiMode, selectionRanges, ast, programMemory, updateAst, setCursor } =
     useStore((s) => ({
@@ -137,7 +142,7 @@ export const SetHorzVertDistance = ({
               constraint === 'setHorzDistance' ? 'xDis' : 'yDis',
           } as any))
         if (segName === tagInfo?.tag && value === valueUsedInTransform) {
-          updateAst(modifiedAst, {
+          updateAst(modifiedAst, true, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
         } else {
@@ -163,14 +168,15 @@ export const SetHorzVertDistance = ({
             )
             _modifiedAst.body = newBody
           }
-          updateAst(_modifiedAst, {
+          updateAst(_modifiedAst, true, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
         }
       }}
       disabled={!enable}
+      title={buttonLabels[buttonType]}
     >
-      {buttonType}
+      {buttonLabels[buttonType]}
     </button>
   )
 }

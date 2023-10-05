@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { toolTips, useStore } from '../../useStore'
-import { Value, VariableDeclarator } from '../../lang/abstractSyntaxTreeTypes'
+import { Value, VariableDeclarator } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -12,6 +12,8 @@ import {
   getTransformInfos,
 } from '../../lang/std/sketchcombos'
 import { updateCursors } from '../../lang/util'
+import { ActionIcon } from 'components/ActionIcon'
+import { sketchButtonClassnames } from 'Toolbar'
 
 export const EqualLength = () => {
   const { guiMode, selectionRanges, ast, programMemory, updateAst, setCursor } =
@@ -82,14 +84,22 @@ export const EqualLength = () => {
             transformInfos,
             programMemory,
           })
-        updateAst(modifiedAst, {
+        updateAst(modifiedAst, true, {
           callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
         })
       }}
       disabled={!enableEqual}
-      title="yo dawg"
+      className="group"
+      title="Equal Length"
     >
-      EqualLength
+      <ActionIcon
+        icon="equal"
+        className="!p-0.5"
+        bgClassName={sketchButtonClassnames.background}
+        iconClassName={sketchButtonClassnames.icon}
+        size="md"
+      />
+      Equal Length
     </button>
   )
 }

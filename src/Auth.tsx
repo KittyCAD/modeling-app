@@ -6,9 +6,9 @@ export const Auth = ({ children }: React.PropsWithChildren) => {
   const {
     auth: { state },
   } = useGlobalStateContext()
-  const isLoggedIn = state.matches('checkIfLoggedIn')
+  const isLoggingIn = state.matches('checkIfLoggedIn')
 
-  return isLoggedIn ? (
+  return isLoggingIn ? (
     <Loading>Loading KittyCAD Modeling App...</Loading>
   ) : (
     <>{children}</>

@@ -1,11 +1,7 @@
 import { useState, useEffect } from 'react'
 import { create } from 'react-modal-promise'
 import { toolTips, useStore } from '../../useStore'
-import {
-  BinaryPart,
-  Value,
-  VariableDeclarator,
-} from '../../lang/abstractSyntaxTreeTypes'
+import { BinaryPart, Value, VariableDeclarator } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -154,7 +150,7 @@ export const Intersect = () => {
           initialVariableName: 'offset',
         } as any)
         if (segName === tagInfo?.tag && value === valueUsedInTransform) {
-          updateAst(modifiedAst, {
+          updateAst(modifiedAst, true, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
         } else {
@@ -182,14 +178,15 @@ export const Intersect = () => {
             )
             _modifiedAst.body = newBody
           }
-          updateAst(_modifiedAst, {
+          updateAst(_modifiedAst, true, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
         }
       }}
       disabled={!enable}
+      title="Set Perpendicular Distance"
     >
-      perpendicularDistance
+      Set Perpendicular Distance
     </button>
   )
 }

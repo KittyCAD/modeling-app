@@ -1,11 +1,12 @@
 import { CollapsiblePanel, CollapsiblePanelProps } from './CollapsiblePanel'
-import { useStore } from '../useStore'
 import { v4 as uuidv4 } from 'uuid'
 import { EngineCommand } from '../lang/std/engineConnection'
 import { useState } from 'react'
 import { ActionButton } from '../components/ActionButton'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import { isReducedMotion } from 'lang/util'
+import { AstExplorer } from './AstExplorer'
+import { engineCommandManager } from '../lang/std/engineConnection'
 
 type SketchModeCmd = Extract<
   Extract<EngineCommand, { type: 'modeling_cmd_req' }>['cmd'],
@@ -13,9 +14,6 @@ type SketchModeCmd = Extract<
 >
 
 export const DebugPanel = ({ className, ...props }: CollapsiblePanelProps) => {
-  const { engineCommandManager } = useStore((s) => ({
-    engineCommandManager: s.engineCommandManager,
-  }))
   const [sketchModeCmd, setSketchModeCmd] = useState<SketchModeCmd>({
     type: 'default_camera_enable_sketch_mode',
     origin: { x: 0, y: 0, z: 0 },
@@ -29,7 +27,11 @@ export const DebugPanel = ({ className, ...props }: CollapsiblePanelProps) => {
   return (
     <CollapsiblePanel
       {...props}
-      className={'!absolute !h-auto bottom-5 right-5 ' + className}
+      className={
+        '!absolute overflow-hidden !h-auto bottom-5 right-5 ' + className
+      }
+      // header height, top-5, and bottom-5
+      style={{ maxHeight: 'calc(100% - 3rem - 1.25rem - 1.25rem)' }}
     >
       <section className="p-4 flex flex-col gap-4">
         <Xyz
@@ -65,19 +67,18 @@ export const DebugPanel = ({ className, ...props }: CollapsiblePanelProps) => {
             className="w-16"
             type="checkbox"
             checked={sketchModeCmd.ortho}
-            onChange={(a) => {
-              console.log(a, (a as any).checked)
+            onChange={(a) =>
               setSketchModeCmd({
                 ...sketchModeCmd,
                 ortho: a.target.checked,
               })
-            }}
+            }
           />
         </div>
         <ActionButton
           Element="button"
           onClick={() => {
-            engineCommandManager?.sendSceneCommand({
+            engineCommandManager.sendSceneCommand({
               type: 'modeling_cmd_req',
               cmd: sketchModeCmd,
               cmd_id: uuidv4(),
@@ -94,6 +95,9 @@ export const DebugPanel = ({ className, ...props }: CollapsiblePanelProps) => {
         >
           Send sketch mode command
         </ActionButton>
+        <div style={{ height: '400px' }} className="overflow-y-auto">
+          <AstExplorer />
+        </div>
       </section>
     </CollapsiblePanel>
   )

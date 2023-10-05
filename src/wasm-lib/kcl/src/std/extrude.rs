@@ -11,10 +11,10 @@ use crate::{
 };
 
 /// Extrudes by a given amount.
-pub fn extrude(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub async fn extrude(args: Args) -> Result<MemoryItem, KclError> {
     let (length, sketch_group) = args.get_number_sketch_group()?;
 
-    let result = inner_extrude(length, sketch_group, args)?;
+    let result = inner_extrude(length, sketch_group, args).await?;
 
     Ok(MemoryItem::ExtrudeGroup(result))
 }
@@ -23,7 +23,7 @@ pub fn extrude(args: &mut Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "extrude"
 }]
-fn inner_extrude(length: f64, sketch_group: SketchGroup, args: &mut Args) -> Result<ExtrudeGroup, KclError> {
+async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) -> Result<Box<ExtrudeGroup>, KclError> {
     let id = uuid::Uuid::new_v4();
 
     let cmd = kittycad::types::ModelingCmd::Extrude {
@@ -31,9 +31,9 @@ fn inner_extrude(length: f64, sketch_group: SketchGroup, args: &mut Args) -> Res
         distance: length,
         cap: true,
     };
-    args.send_modeling_cmd(id, cmd)?;
+    args.send_modeling_cmd(id, cmd).await?;
 
-    Ok(ExtrudeGroup {
+    Ok(Box::new(ExtrudeGroup {
         id,
         // TODO, this is just an empty array now, should be deleted. This
         // comment was originally in the JS code.
@@ -42,13 +42,13 @@ fn inner_extrude(length: f64, sketch_group: SketchGroup, args: &mut Args) -> Res
         position: sketch_group.position,
         rotation: sketch_group.rotation,
         meta: sketch_group.meta,
-    })
+    }))
 }
 
 /// Returns the extrude wall transform.
-pub fn get_extrude_wall_transform(args: &mut Args) -> Result<MemoryItem, KclError> {
+pub async fn get_extrude_wall_transform(args: Args) -> Result<MemoryItem, KclError> {
     let (surface_name, extrude_group) = args.get_path_name_extrude_group()?;
-    let result = inner_get_extrude_wall_transform(&surface_name, extrude_group, args)?;
+    let result = inner_get_extrude_wall_transform(&surface_name, *extrude_group, args)?;
     Ok(MemoryItem::ExtrudeTransform(result))
 }
 
@@ -59,8 +59,8 @@ pub fn get_extrude_wall_transform(args: &mut Args) -> Result<MemoryItem, KclErro
 fn inner_get_extrude_wall_transform(
     surface_name: &str,
     extrude_group: ExtrudeGroup,
-    args: &mut Args,
-) -> Result<ExtrudeTransform, KclError> {
+    args: Args,
+) -> Result<Box<ExtrudeTransform>, KclError> {
     let surface = extrude_group.get_path_by_name(surface_name).ok_or_else(|| {
         KclError::Type(KclErrorDetails {
             message: format!(
@@ -71,9 +71,9 @@ fn inner_get_extrude_wall_transform(
         })
     })?;
 
-    Ok(ExtrudeTransform {
+    Ok(Box::new(ExtrudeTransform {
         position: surface.get_position(),
         rotation: surface.get_rotation(),
         meta: extrude_group.meta,
-    })
+    }))
 }

@@ -1,47 +1,71 @@
-## Kurt demo project
+![KittyCAD Modeling App](/public/kcma-logomark.png)
+
+## KittyCAD Modeling App
 
 live at [app.kittycad.io](https://app.kittycad.io/)
 
-Not sure what to call this, it's both a language/interpreter and a UI that uses the language as the source of truth model the user build with direct-manipulation with the UI.
+A CAD application from the future, brought to you by the [KittyCAD team](https://kittycad.io).
 
-It might make sense to split this repo up at some point, but not the lang and the UI are all togther in a react app
+The KittyCAD modeling app is our take on what a modern modelling experience can be. It is applying several lessons learned in the decades since most major CAD tools came into existence:
 
-Originally Presented on 10/01/2023
+- All artifacts—including parts and assemblies—should be represented as human-readable code. At the end of the day, your CAD project should be "plain text"
+  - This makes version control—which is a solved problem in software engineering—trivial for CAD
+- All GUI (or point-and-click) interactions should be actions performed on this code representation under the hood
+  - This unlocks a hybrid approach to modeling. Whether you point-and-click as you always have or you write your own KCL code, you are performing the same action in KittyCAD Modeling App
+- Everything graphics _has_ to be built for the GPU
+  - Most CAD applications have had to retrofit support for GPUs, but our geometry engine is made for GPUs (primarily Nvidia's Vulkan), getting the order of magnitude rendering performance boost with it
+- Make the resource-intensive pieces of an application auto-scaling
+  - One of the bottlenecks of today's hardware design tools is that they all rely on the local machine's resources to do the hardest parts, which include geometry rendering and analysis. Our geometry engine parallelizes rendering and just sends video frames back to the app (seriously, inspect source, it's just a `<video>` element), and our API will offload analysis as we build it in
 
-[Video](https://drive.google.com/file/d/183_wjqGdzZ8EEZXSqZ3eDcJocYPCyOdC/view?pli=1)
+We are excited about what a small team of people could build in a short time with our API. We welcome you to try our API, build your own applications, or contribute to ours!
 
-[demo-slides.pdf](https://github.com/KittyCAD/Eng/files/10398178/demo.pdf)
+KittyCAD Modeling App is a _hybrid_ user interface for CAD modeling. You can point-and-click to design parts (and soon assemblies), but everything you make is really just [`kcl` code](https://github.com/KittyCAD/kcl-experiments) under the hood. All of your CAD models can be checked into source control such as GitHub and responsibly versioned, rolled back, and more.
 
-## To run, there are a couple steps since we're compiling rust to WASM, you'll need to have rust stuff installed, then
+The 3D view in KittyCAD Modeling App is just a video stream from our hosted geometry engine. The app sends new modeling commands to the engine via WebSockets, which returns back video frames of the view within the engine.
+
+## Tools
+
+- UI
+  - [React](https://react.dev/)
+  - [Headless UI](https://headlessui.com/)
+  - [TailwindCSS](https://tailwindcss.com/)
+- Networking
+  - WebSockets (via [KittyCAD TS client](https://github.com/KittyCAD/kittycad.ts))
+- Code Editor
+  - [CodeMirror](https://codemirror.net/)
+  - Custom WASM LSP Server
+- Modeling
+  - [KittyCAD TypeScript client](https://github.com/KittyCAD/kittycad.ts)
+
+[Original demo video](https://drive.google.com/file/d/183_wjqGdzZ8EEZXSqZ3eDcJocYPCyOdC/view?pli=1)
+
+[Original demo slides](https://github.com/KittyCAD/Eng/files/10398178/demo.pdf)
+
+## Get started
+
+We recommend downloading the latest application binary from [our Releases page](https://github.com/KittyCAD/modeling-app/releases). If you don't see your platform or architecture supported there, please file an issue.
+
+## Running a development build
+
+First, [install Rust via `rustup`](https://www.rust-lang.org/tools/install). This project uses a lot of Rust compiled to [WASM](https://webassembly.org/) within it. Then, run:
 
 ```
 yarn install
 ```
-then
+
+followed by:
+
 ```
 yarn build:wasm
 ```
+
 That will build the WASM binary and put in the `public` dir (though gitignored)
 
-finally
+finally, to run the web app only, run:
+
 ```
 yarn start
 ```
-
-and `yarn test` you would have need to have built the WASM previously. The tests need to download the binary from a server, so if you've already got `yarn start` running, that will work, otherwise running
-```
-yarn simpleserver
-```
-in one terminal
-and 
-```
-yarn test
-```
-in another.
-
-If you want to edit the rust files, you can cd into `src/wasm-lib` and then use the usual rust commands, `cargo build`, `cargo test`, when you want to bring the changes back to the web-app, a fresh `yarn build:wasm` in the root will be needed.
-
-Worth noting that the integration of the WASM into this project is very hacky because I'm really pushing create-react-app further than what's practical, but focusing on features atm rather than the setup.
 
 ## Developing in Chrome
 
@@ -52,12 +76,26 @@ enable third-party cookies. You can enable third-party cookies by clicking on
 the eye with a slash through it in the URL bar, and clicking on "Enable
 Third-Party Cookies".
 
+## Running tests
+
+First, start the dev server following "Running a development build" above.
+
+Then in another terminal tab, run:
+
+```
+yarn test
+```
+
+Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testing Library E2E](https://testing-library.com/docs/react-testing-library/intro/) tests, in interactive mode by default.
+
 ## Tauri
 
 To spin up up tauri dev, `yarn install` and `yarn build:wasm` need to have been done before hand then
+
 ```
 yarn tauri dev
 ```
+
 Will spin up the web app before opening up the tauri dev desktop app. Note that it's probably a good idea to close the browser tab that gets opened since at the time of writting they can conflict.
 
 The dev instance automatically opens up the browser devtools which can be disabled by [commenting it out](https://github.com/KittyCAD/modeling-app/blob/main/src-tauri/src/main.rs#L92.)
@@ -67,19 +105,42 @@ To build, run `yarn tauri build`, or `yarn tauri build --debug` to keep access t
 Note that these became separate apps on Macos, so make sure you open the right one after a build 😉
 ![image](https://github.com/KittyCAD/modeling-app/assets/29681384/a08762c5-8d16-42d8-a02f-a5efc9ae5551)
 
-
 <img width="1232" alt="image" src="https://user-images.githubusercontent.com/29681384/211947063-46164bb4-7bdd-45cb-9a76-2f40c71a24aa.png">
 
 <img width="1232" alt="image (1)" src="https://user-images.githubusercontent.com/29681384/211947073-e76b4933-bef5-4636-bc4d-e930ac8e290f.png">
 
+## Before submitting a PR
+
+Before you submit a contribution PR to this repo, please ensure that:
+
+- There is a corresponding issue for the changes you want to make, so that discussion of approach can be had before work begins.
+- You have separated out refactoring commits from feature commits as much as possible
+- You have run all of the following commands locally:
+  - `yarn fmt`
+  - `yarn tsc`
+  - `yarn test`
+  - Here they are all together: `yarn fmt && yarn tsc && yarn test`
+
 ## Release a new version
 
-1. Bump the versions in the .json files by creating a `Bump to v{x}.{y}.{z}` PR, committing the changes from
+1. Bump the versions in the .json files by creating a `Cut release v{x}.{y}.{z}` PR, committing the changes from
 
 ```bash
 VERSION=x.y.z yarn run bump-jsons
 ```
-The PR may serve as a place to discuss the human-readable changelog and extra QA.
+
+The PR may serve as a place to discuss the human-readable changelog and extra QA. A quick way of getting PR's merged since the last bump is to [use this PR filter](https://github.com/KittyCAD/modeling-app/pulls?q=is%3Apr+sort%3Aupdated-desc+is%3Amerged+), open up the browser console and past in the following
+
+```typescript
+console.log(
+  '- ' +
+    Array.from(
+      document.querySelectorAll('[data-hovercard-type="pull_request"]')
+    ).map((a) => `[${a.innerText}](${a.href})`).join(`
+- `)
+)
+```
+grab the md list and delete any that are older than the last bump
 
 2. Merge the PR
 
@@ -105,5 +166,5 @@ $ cargo fuzz list
 $ cargo +nightly fuzz run parser
 ```
 
-For more information on fuzzing you can check out 
+For more information on fuzzing you can check out
 [this guide](https://rust-fuzz.github.io/book/cargo-fuzz.html).

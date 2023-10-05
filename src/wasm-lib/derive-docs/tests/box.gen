@@ -1,0 +1,82 @@
+#[allow(non_camel_case_types, missing_docs)]
+#[doc = "Std lib function: show"]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, schemars :: JsonSchema, ts_rs :: TS)]
+#[ts(export)]
+pub(crate) struct Show {}
+
+#[allow(non_upper_case_globals, missing_docs)]
+#[doc = "Std lib function: show"]
+pub(crate) const Show: Show = Show {};
+fn boxed_show(
+    args: crate::std::Args,
+) -> std::pin::Pin<
+    Box<
+        dyn std::future::Future<
+            Output = anyhow::Result<crate::executor::MemoryItem, crate::errors::KclError>,
+        >,
+    >,
+> {
+    Box::pin(show(args))
+}
+
+impl crate::docs::StdLibFn for Show {
+    fn name(&self) -> String {
+        "show".to_string()
+    }
+
+    fn summary(&self) -> String {
+        "".to_string()
+    }
+
+    fn description(&self) -> String {
+        "".to_string()
+    }
+
+    fn tags(&self) -> Vec<String> {
+        vec![]
+    }
+
+    fn args(&self) -> Vec<crate::docs::StdLibFnArg> {
+        let mut settings = schemars::gen::SchemaSettings::openapi3();
+        settings.inline_subschemas = true;
+        let mut generator = schemars::gen::SchemaGenerator::new(settings);
+        vec![crate::docs::StdLibFnArg {
+            name: "args".to_string(),
+            type_: "number".to_string(),
+            schema: f64::json_schema(&mut generator),
+            required: true,
+        }]
+    }
+
+    fn return_value(&self) -> Option<crate::docs::StdLibFnArg> {
+        let mut settings = schemars::gen::SchemaSettings::openapi3();
+        settings.inline_subschemas = true;
+        let mut generator = schemars::gen::SchemaGenerator::new(settings);
+        Some(crate::docs::StdLibFnArg {
+            name: "".to_string(),
+            type_: "number".to_string(),
+            schema: f64::json_schema(&mut generator),
+            required: true,
+        })
+    }
+
+    fn unpublished(&self) -> bool {
+        false
+    }
+
+    fn deprecated(&self) -> bool {
+        false
+    }
+
+    fn std_lib_fn(&self) -> crate::std::StdFn {
+        boxed_show
+    }
+
+    fn clone_box(&self) -> Box<dyn crate::docs::StdLibFn> {
+        Box::new(self.clone())
+    }
+}
+
+fn inner_show(#[doc = r" The args to do shit to."] args: Box<f64>) -> Box<f64> {
+    args
+}

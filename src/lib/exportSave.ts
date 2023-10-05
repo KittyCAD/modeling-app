@@ -25,7 +25,7 @@ export async function exportSave(data: ArrayBuffer) {
         }
 
         // Write the file.
-        await writeBinaryFile(filePath, uintArray)
+        await writeBinaryFile(filePath, file.contents)
       } else {
         // Download the file to the user's computer.
         // Now we need to download the files to the user's downloads folder.
@@ -39,6 +39,6 @@ export async function exportSave(data: ArrayBuffer) {
     }
   } catch (e) {
     // TODO: do something real with the error.
-    console.log('export', e)
+    console.log('export error', e)
   }
 }

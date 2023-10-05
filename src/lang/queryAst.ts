@@ -1,5 +1,4 @@
-import { PathToNode, ProgramMemory, SketchGroup, SourceRange } from './executor'
-import { Selection, TooTip } from '../useStore'
+import { Selection, ToolTip } from '../useStore'
 import {
   BinaryExpression,
   Program,
@@ -10,7 +9,11 @@ import {
   VariableDeclaration,
   ReturnStatement,
   ArrayExpression,
-} from './abstractSyntaxTreeTypes'
+  PathToNode,
+  ProgramMemory,
+  SketchGroup,
+  SourceRange,
+} from './wasm'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
 import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
 import { getAngle } from '../lib/utils'
@@ -239,7 +242,29 @@ function moreNodePathFromSourceRange(
     }
     return path
   }
-  console.error('not implemented')
+  if (_node.type === 'FunctionExpression' && isInRange) {
+    for (let i = 0; i < _node.params.length; i++) {
+      const param = _node.params[i]
+      if (param.start <= start && param.end >= end) {
+        path.push(['params', 'FunctionExpression'])
+        path.push([i, 'index'])
+        return moreNodePathFromSourceRange(param, sourceRange, path)
+      }
+    }
+    if (_node.body.start <= start && _node.body.end >= end) {
+      path.push(['body', 'FunctionExpression'])
+      const fnBody = _node.body.body
+      for (let i = 0; i < fnBody.length; i++) {
+        const statement = fnBody[i]
+        if (statement.start <= start && statement.end >= end) {
+          path.push(['body', 'FunctionExpression'])
+          path.push([i, 'index'])
+          return moreNodePathFromSourceRange(statement, sourceRange, path)
+        }
+      }
+    }
+  }
+  console.error('not implemented: ' + node.type)
   return path
 }
 
@@ -457,7 +482,7 @@ export function isLinesParallelAndConstrained(
     const secondaryFirstArg = getFirstArg(secondaryNode)
     const constraintType = getConstraintType(
       secondaryFirstArg.val,
-      secondaryNode.callee.name as TooTip
+      secondaryNode.callee.name as ToolTip
     )
     const constraintLevel = getConstraintLevelFromSourceRange(
       secondaryLine.range,

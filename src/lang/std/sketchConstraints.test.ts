@@ -1,12 +1,9 @@
-import { parser_wasm } from '../abstractSyntaxTree'
-import { SketchGroup } from '../executor'
+import { parse, SketchGroup, recast, initPromise } from '../wasm'
 import {
   ConstraintType,
   getTransformInfos,
   transformAstSketchLines,
 } from './sketchcombos'
-import { recast } from '../recast'
-import { initPromise } from '../rust'
 import { getSketchSegmentFromSourceRange } from './sketchConstraints'
 import { Selection } from '../../useStore'
 import { enginelessExecutor } from '../../lib/testHelpers'
@@ -31,7 +28,7 @@ async function testingSwapSketchFnCall({
     type: 'default',
     range: [startIndex, startIndex + callToSwap.length],
   }
-  const ast = parser_wasm(inputCode)
+  const ast = parse(inputCode)
   const programMemory = await enginelessExecutor(ast)
   const selections = {
     codeBasedSelections: [range],
@@ -381,7 +378,7 @@ const part001 = startSketchAt([0, 0.04]) // segment-in-start
   |> xLine(3.54, %)
 show(part001)`
   it('normal case works', async () => {
-    const programMemory = await enginelessExecutor(parser_wasm(code))
+    const programMemory = await enginelessExecutor(parse(code))
     const index = code.indexOf('// normal-segment') - 7
     const { __geoMeta, ...segment } = getSketchSegmentFromSourceRange(
       programMemory.root['part001'] as SketchGroup,
@@ -395,12 +392,17 @@ show(part001)`
     })
   })
   it('verify it works when the segment is in the `start` property', async () => {
-    const programMemory = await enginelessExecutor(parser_wasm(code))
+    const programMemory = await enginelessExecutor(parse(code))
     const index = code.indexOf('// segment-in-start') - 7
     const { __geoMeta, ...segment } = getSketchSegmentFromSourceRange(
       programMemory.root['part001'] as SketchGroup,
       [index, index]
     ).segment
-    expect(segment).toEqual({ to: [0, 0.04], from: [0, 0.04], name: '' })
+    expect(segment).toEqual({
+      to: [0, 0.04],
+      from: [0, 0.04],
+      name: '',
+      type: 'base',
+    })
   })
 })
