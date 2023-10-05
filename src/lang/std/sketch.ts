@@ -960,9 +960,11 @@ export function addNewSketchLn({
     pathToNode,
     'VariableDeclarator'
   )
-  getNodeFromPath<
-    PipeExpression | CallExpression
-  >(node, pathToNode, 'PipeExpression')
+  getNodeFromPath<PipeExpression | CallExpression>(
+    node,
+    pathToNode,
+    'PipeExpression'
+  )
   const variableName = varDec.id.name
   const sketch = previousProgramMemory?.root?.[variableName]
   if (sketch.type !== 'SketchGroup') throw new Error('not a SketchGroup')
