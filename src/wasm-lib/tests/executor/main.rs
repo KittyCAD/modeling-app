@@ -345,22 +345,76 @@ const height = 10
 const length = 12
 
 fn box = (sk1, sk2, scale, plane) => {
-  const boxSketch = startSketchOn(plane)
-    |> startProfileAt([sk1, sk2], %)
+  const boxsketch = startsketchon(plane)
+    |> startprofileat([sk1, sk2], %)
     |> line([0, scale], %)
     |> line([scale, 0], %)
     |> line([0, -scale], %)
     |> close(%)
     |> extrude(scale, %)
-  return boxSketch
+  return boxsketch
 }
 
-box(0, 0, 5, 'XY')
-box(10, 23, 8, 'XZ')
-box(30, 43, 18, '-XY')
-let thing = box(-12, -15, 10, 'YZ')
-box(-20, -5, 10, 'XY')"#;
+box(0, 0, 5, 'xy')
+box(10, 23, 8, 'xz')
+box(30, 43, 18, '-xy')
+let thing = box(-12, -15, 10, 'yz')
+box(-20, -5, 10, 'xy')"#;
 
     let result = execute_and_snapshot(code).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/different_planes_same_drawing.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_lots_of_planes() {
+    let code = r#"const sigmaAllow = 15000 // psi
+const width = 11 // inch
+const p = 150 // Force on shelf - lbs
+const distance = 12 // inches
+const FOS = 2
+const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))
+const filletR = thickness * 2
+const shelfMountL = 9
+const wallMountL = 8
+
+const bracket = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, wallMountL], %)
+  |> tangentalArc({ radius: filletR, offset: 90 }, %)
+  |> line([-shelfMountL, 0], %)
+  |> line([0, -thickness], %)
+  |> line([shelfMountL, 0], %)
+  |> tangentalArc({
+       radius: filletR - thickness,
+       offset: -90
+     }, %)
+  |> line([0, -wallMountL], %)
+  |> close(%)
+  |> extrude(width, %)
+
+show(bracket)
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-15.53, -10.28], %)
+  |> line([10.49, -2.08], %)
+  |> line([10.42, 8.47], %)
+  |> line([-19.16, 5.1], %)
+  |> close(%)
+  |> extrude(4, %)
+
+const part002 = startSketchOn('-XZ')
+  |> startProfileAt([-9.35, 19.18], %)
+  |> line([32.14, -2.47], %)
+  |> close(%)
+const part003 = startSketchOn('-XZ')
+  |> startProfileAt([13.82, 16.51], %)
+  |> line([-6.24, -30.82], %)
+  |> close(%)
+const part004 = startSketchOn('YZ')
+  |> startProfileAt([19.04, 20.22], %)
+  |> line([9.44, -30.16], %)
+  |> close(%)
+"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/lots_of_planes.png", &result, 1.0);
 }
