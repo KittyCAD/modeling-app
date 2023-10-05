@@ -18,7 +18,7 @@ import { createLiteral, createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { updateCursors } from '../../lang/util'
 
-const getModalInfo = create(GetInfoModal as any)
+const getModalInfo = create(GetInfoModal)
 
 type ButtonType =
   | 'setHorzDistance'
@@ -140,7 +140,7 @@ export const SetHorzVertDistance = ({
             value: valueUsedInTransform,
             initialVariableName:
               constraint === 'setHorzDistance' ? 'xDis' : 'yDis',
-          } as any))
+          }))
         if (segName === tagInfo?.tag && value === valueUsedInTransform) {
           updateAst(modifiedAst, true, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),

@@ -20,7 +20,7 @@ import {
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { updateCursors } from '../../lang/util'
 
-const getModalInfo = create(SetAngleLengthModal as any)
+const getModalInfo = create(SetAngleLengthModal)
 
 type ButtonType = 'xAbs' | 'yAbs' | 'snapToYAxis' | 'snapToXAxis'
 
@@ -105,7 +105,7 @@ export const SetAbsDistance = ({ buttonType }: { buttonType: ButtonType }) => {
               getModalInfo({
                 value: forceVal,
                 valueName: disType === 'yAbs' ? 'yDis' : 'xDis',
-              } as any))
+              }))
           let finalValue = isAlign
             ? createIdentifier('_0')
             : removeDoubleNegatives(valueNode, sign, variableName)

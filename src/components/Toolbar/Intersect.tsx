@@ -18,7 +18,7 @@ import { createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { updateCursors } from '../../lang/util'
 
-const getModalInfo = create(GetInfoModal as any)
+const getModalInfo = create(GetInfoModal)
 
 export const Intersect = () => {
   const { guiMode, selectionRanges, ast, programMemory, updateAst, setCursor } =
@@ -136,19 +136,12 @@ export const Intersect = () => {
           variableName,
           newVariableInsertIndex,
           sign,
-        }: {
-          segName: string
-          value: number
-          valueNode: Value
-          variableName?: string
-          newVariableInsertIndex: number
-          sign: number
         } = await getModalInfo({
           segName: tagInfo?.tag,
           isSegNameEditable: !tagInfo?.isTagExisting,
           value: valueUsedInTransform,
           initialVariableName: 'offset',
-        } as any)
+        })
         if (segName === tagInfo?.tag && value === valueUsedInTransform) {
           updateAst(modifiedAst, true, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),

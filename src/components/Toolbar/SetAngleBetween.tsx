@@ -17,7 +17,7 @@ import { createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { updateCursors } from '../../lang/util'
 
-const getModalInfo = create(GetInfoModal as any)
+const getModalInfo = create(GetInfoModal)
 
 export const SetAngleBetween = () => {
   const { guiMode, selectionRanges, ast, programMemory, updateAst, setCursor } =
@@ -107,7 +107,7 @@ export const SetAngleBetween = () => {
           isSegNameEditable: !tagInfo?.isTagExisting,
           value: valueUsedInTransform,
           initialVariableName: 'angle',
-        } as any)
+        })
         if (segName === tagInfo?.tag && value === valueUsedInTransform) {
           updateAst(modifiedAst, true, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),

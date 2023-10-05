@@ -1,5 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
+import { type InstanceProps } from 'react-modal-promise'
 import { Value } from '../lang/wasm'
 import {
   AvailableVars,
@@ -17,25 +18,27 @@ export const GetInfoModal = ({
   isSegNameEditable,
   value: initialValue,
   initialVariableName,
-}: {
-  isOpen: boolean
-  onResolve: (a: {
+}: InstanceProps<
+  {
     value: string
     segName: string
     valueNode: Value
     variableName?: string
     newVariableInsertIndex: number
     sign: number
-  }) => void
-  onReject: (a: any) => void
+  },
+  boolean
+> & {
   segName: string
   isSegNameEditable: boolean
-  value: number
+  value?: number
   initialVariableName: string
 }) => {
   const [sign, setSign] = useState(Math.sign(Number(initialValue)))
   const [segName, setSegName] = useState(initialSegName)
-  const [value, setValue] = useState(String(Math.abs(initialValue)))
+  const [value, setValue] = useState(
+    initialValue === undefined ? '' : String(Math.abs(initialValue))
+  )
   const [shouldCreateVariable, setShouldCreateVariable] = useState(false)
 
   const {
