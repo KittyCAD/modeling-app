@@ -726,7 +726,6 @@ export class EngineCommandManager {
             ) {
               this.handleModelingCommand(message.resp, message.request_id)
             } else if (!message.success && message.request_id) {
-              console.log(message)
               this.handleFailedModelingCommand(message)
             }
           }
