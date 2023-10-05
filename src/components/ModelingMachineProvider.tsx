@@ -179,7 +179,6 @@ export const ModelingMachineProvider = ({
       'Selection contains face': () => true,
       'Selection contains line': () => true,
       'Selection contains point': () => true,
-      'Selection is empty': () => true,
       'Selection is not empty': () => true,
       'Selection is one face': ({ selectionRanges }) => {
         return !!isCursorInSketchCommandRange(
@@ -187,12 +186,8 @@ export const ModelingMachineProvider = ({
           selectionRanges
         )
       },
-      'Selection is one or more edges': () => true,
     },
     services: {
-      // createSketch: async () => {},
-      createExtrude: async () => {},
-      createFillet: async () => {},
       'Get horizontal info': async ({ selectionRanges }) => {
         const { modifiedAst, pathToNodeMap } =
           await applyConstraintHorzVertDistance({
