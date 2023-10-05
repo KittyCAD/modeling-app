@@ -17,6 +17,9 @@ on:
       - .github/workflows/cargo-criterion.yml
   workflow_dispatch:
 permissions: read-all
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 name: cargo criterion
 jobs:
   cargocriterion:

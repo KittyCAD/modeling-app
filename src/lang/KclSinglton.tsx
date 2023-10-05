@@ -9,6 +9,8 @@ import { parse, PathToNode, Program, ProgramMemory, recast } from 'lang/wasm'
 import { bracket } from 'lib/exampleKcl'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { getNodeFromPath } from './queryAst'
+import { DefaultPlanes } from '../wasm-lib/kcl/bindings/DefaultPlanes'
+import { initDefaultPlanes } from '../hooks/useAppMode'
 import { CursorPos } from 'readline'
 
 const PERSIST_CODE_TOKEN = 'persistCode'
@@ -28,6 +30,7 @@ class KclManager {
     root: {},
     return: null,
   }
+  private _defaultPlanes: DefaultPlanes | null = null
   private _logs: string[] = []
   private _kclErrors: KCLError[] = []
   private _isExecuting = false
@@ -67,6 +70,10 @@ class KclManager {
   set programMemory(programMemory) {
     this._programMemory = programMemory
     this._programMemoryCallBack(programMemory)
+  }
+
+  get defaultPlanes() {
+    return this._defaultPlanes
   }
 
   get logs() {
@@ -133,12 +140,24 @@ class KclManager {
     this._isExecutingCallback = setIsExecuting
   }
 
+  async initDefaultPlanes() {
+    if (this._defaultPlanes) return
+
+    let defaultPlanes = await initDefaultPlanes(engineCommandManager, true)
+    if (!defaultPlanes) return
+    this._defaultPlanes = defaultPlanes
+  }
+
   async executeAst(ast: Program = this._ast, updateCode = false) {
     // if (!this.isStreamReady) return
     this._isExecutingCallback(true)
+    if (!this._defaultPlanes) {
+      this.initDefaultPlanes()
+    }
     const { logs, errors, programMemory } = await executeAst({
       ast,
       engineCommandManager,
+      defaultPlanes: this._defaultPlanes!,
     })
     this._isExecutingCallback(false)
     this._logs = logs
@@ -162,6 +181,7 @@ class KclManager {
     const { logs, errors, programMemory } = await executeAst({
       ast: newAst,
       engineCommandManager,
+      defaultPlanes: this._defaultPlanes!,
       useFakeExecutor: true,
     })
     this._logs = logs

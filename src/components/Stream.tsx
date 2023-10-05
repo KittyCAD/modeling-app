@@ -216,6 +216,23 @@ export const Stream = ({ className = '' }) => {
           'VariableDeclarator'
         ).node
         const variableName = varDec?.id?.name
+
+        // TODO: Kurts help for xstate here.
+        // Get the current plane string for plane we are on.
+        let currentPlaneString = ''
+        if (currentPlane === defaultPlanes?.xy) {
+          currentPlaneString = 'XY'
+        } else if (currentPlane === defaultPlanes?.yz) {
+          currentPlaneString = 'YZ'
+        } else if (currentPlane === defaultPlanes?.xz) {
+          currentPlaneString = 'XZ'
+        }
+
+        // Do not supporting editing/moving lines on a non-default plane.
+        // Eventually we can support this but for now we will just throw an
+        // error.
+        if (currentPlaneString === '') return
+
         const updatedAst: Program = await modifyAstForSketch(
           engineCommandManager,
           kclManager.ast,

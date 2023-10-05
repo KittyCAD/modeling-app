@@ -94,8 +94,46 @@ export const ModelingMachineProvider = ({
         await Promise.all(proms)
       },
       'AST start new sketch': assign((_, { data: coords }) => {
+        // TODO: need kurts help here, this was old code.
+        // We need the normal for the plane we are on.
+        const plane = await engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'get_sketch_mode_plane',
+          },
+        })
+        const z_axis = plane.data.data.z_axis
+
+        // Get the current axis.
+        let currentAxis: 'xy' | 'xz' | 'yz' | '-xy' | '-xz' | '-yz' | null =
+          null
+        if (currentPlane === defaultPlanes?.xy) {
+          if (z_axis.z === -1) {
+            currentAxis = '-xy'
+          } else {
+            currentAxis = 'xy'
+          }
+        } else if (currentPlane === defaultPlanes?.yz) {
+          if (z_axis.x === -1) {
+            currentAxis = '-yz'
+          } else {
+            currentAxis = 'yz'
+          }
+        } else if (currentPlane === defaultPlanes?.xz) {
+          if (z_axis.y === -1) {
+            currentAxis = '-xz'
+          } else {
+            currentAxis = 'xz'
+          }
+        }
+
+        // Do not support starting a new sketch on a non-default plane.
+        if (!currentAxis) return
+
         const _addStartSketch = addStartSketch(
           kclManager.ast,
+          currentAxis, // the axis.
           [roundOff(coords[0].x), roundOff(coords[0].y)],
           [
             roundOff(coords[1].x - coords[0].x),

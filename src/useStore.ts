@@ -16,6 +16,7 @@ import { EditorSelection } from '@codemirror/state'
 import { EngineCommandManager } from './lang/std/engineConnection'
 import { KCLError } from './lang/errors'
 import { kclManager } from 'lang/KclSinglton'
+import { DefaultPlanes } from './wasm-lib/kcl/bindings/DefaultPlanes'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
@@ -156,6 +157,8 @@ export interface StoreState {
     streamWidth: number
     streamHeight: number
   }) => void
+  currentPlane: string | null
+  setCurrentPlane: (currentPlane: string) => void
 
   showHomeMenu: boolean
   setHomeShowMenu: (showMenu: boolean) => void
@@ -265,6 +268,8 @@ export const useStore = create<StoreState>()(
         setStreamDimensions: (streamDimensions) => {
           set({ streamDimensions })
         },
+        currentPlane: null,
+        setCurrentPlane: (currentPlane) => set({ currentPlane }),
 
         // tauri specific app settings
         defaultDir: {
@@ -322,11 +327,13 @@ async function executeCode({
   engineCommandManager,
   code,
   lastAst,
+  defaultPlanes,
   force,
 }: {
   code: string
   lastAst: Program
   engineCommandManager: EngineCommandManager
+  defaultPlanes: DefaultPlanes
   force?: boolean
 }): Promise<
   | {
@@ -376,6 +383,7 @@ async function executeCode({
   const { logs, errors, programMemory } = await executeAst({
     ast,
     engineCommandManager,
+    defaultPlanes,
   })
   return {
     ast,
@@ -389,10 +397,12 @@ async function executeCode({
 export async function executeAst({
   ast,
   engineCommandManager,
+  defaultPlanes,
   useFakeExecutor = false,
 }: {
   ast: Program
   engineCommandManager: EngineCommandManager
+  defaultPlanes: DefaultPlanes
   useFakeExecutor?: boolean
 }): Promise<{
   logs: string[]
@@ -415,7 +425,8 @@ export async function executeAst({
             root: defaultProgramMemory,
             return: null,
           },
-          engineCommandManager
+          engineCommandManager,
+          defaultPlanes
         ))
 
     await engineCommandManager.waitForAllCommands(ast, programMemory)

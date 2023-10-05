@@ -16,16 +16,21 @@ pub async fn execute_wasm(
     program_str: &str,
     memory_str: &str,
     manager: kcl_lib::engine::conn_wasm::EngineCommandManager,
+    planes_str: &str,
 ) -> Result<JsValue, String> {
     // deserialize the ast from a stringified json
+
+    use kcl_lib::executor::ExecutorContext;
     let program: kcl_lib::ast::types::Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
+    let planes: kcl_lib::executor::DefaultPlanes = serde_json::from_str(planes_str).map_err(|e| e.to_string())?;
     let mut mem: kcl_lib::executor::ProgramMemory = serde_json::from_str(memory_str).map_err(|e| e.to_string())?;
 
     let engine = kcl_lib::engine::EngineConnection::new(manager)
         .await
         .map_err(|e| format!("{:?}", e))?;
+    let ctx = ExecutorContext { engine, planes };
 
-    let memory = kcl_lib::executor::execute(program, &mut mem, kcl_lib::executor::BodyType::Root, &engine)
+    let memory = kcl_lib::executor::execute(program, &mut mem, kcl_lib::executor::BodyType::Root, &ctx)
         .await
         .map_err(String::from)?;
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
@@ -40,10 +45,13 @@ pub async fn modify_ast_for_sketch_wasm(
     manager: kcl_lib::engine::conn_wasm::EngineCommandManager,
     program_str: &str,
     sketch_name: &str,
+    plane_type: &str,
     sketch_id: &str,
 ) -> Result<JsValue, String> {
     // deserialize the ast from a stringified json
     let mut program: kcl_lib::ast::types::Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
+
+    let plane: kcl_lib::executor::PlaneType = serde_json::from_str(plane_type).map_err(|e| e.to_string())?;
 
     let mut engine = kcl_lib::engine::EngineConnection::new(manager)
         .await
@@ -53,6 +61,7 @@ pub async fn modify_ast_for_sketch_wasm(
         &mut engine,
         &mut program,
         sketch_name,
+        plane,
         uuid::Uuid::parse_str(sketch_id).map_err(|e| e.to_string())?,
     )
     .await
