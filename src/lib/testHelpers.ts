@@ -8,6 +8,11 @@ import { Models } from '@kittycad/lib'
 type WebSocketResponse = Models['OkWebSocketResponseData_type']
 
 class MockEngineCommandManager {
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
+  constructor(mockParams: {
+    setIsStreamReady: (isReady: boolean) => void
+    setMediaStream: (stream: MediaStream) => void
+  }) {}
   startNewSession() {}
   waitForAllCommands() {}
   waitForReady = new Promise<void>((resolve) => resolve())
