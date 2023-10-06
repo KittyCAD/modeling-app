@@ -8,10 +8,6 @@ import { Models } from '@kittycad/lib'
 type WebSocketResponse = Models['OkWebSocketResponseData_type']
 
 class MockEngineCommandManager {
-  constructor(mockParams: {
-    setIsStreamReady: (isReady: boolean) => void
-    setMediaStream: (stream: MediaStream) => void
-  }) {}
   startNewSession() {}
   waitForAllCommands() {}
   waitForReady = new Promise<void>((resolve) => resolve())
