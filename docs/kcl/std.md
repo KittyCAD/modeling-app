@@ -48,7 +48,9 @@
 	* [`show`](#show)
 	* [`sin`](#sin)
 	* [`sqrt`](#sqrt)
+	* [`startProfileAt`](#startProfileAt)
 	* [`startSketchAt`](#startSketchAt)
+	* [`startSketchOn`](#startSketchOn)
 	* [`tan`](#tan)
 	* [`tangentalArc`](#tangentalArc)
 	* [`tangentalArcTo`](#tangentalArcTo)
@@ -120,6 +122,8 @@ angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup)
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -204,6 +208,8 @@ angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup)
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -298,6 +304,8 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -364,6 +372,8 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -454,6 +464,8 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -520,6 +532,8 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -610,6 +624,8 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -676,6 +692,8 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -767,6 +785,8 @@ angledLineThatIntersects(data: AngeledLineThatIntersectsData, sketch_group: Sket
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -833,6 +853,8 @@ angledLineThatIntersects(data: AngeledLineThatIntersectsData, sketch_group: Sket
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -923,6 +945,8 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -989,6 +1013,8 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -1079,6 +1105,8 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -1145,6 +1173,8 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -1262,6 +1292,8 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -1328,6 +1360,8 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -1467,6 +1501,8 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -1533,6 +1569,8 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -1631,6 +1669,8 @@ close(sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -1697,6 +1737,8 @@ close(sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -1815,6 +1857,8 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -1996,6 +2040,8 @@ lastSegX(sketch_group: SketchGroup) -> number
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -2078,6 +2124,8 @@ lastSegY(sketch_group: SketchGroup) -> number
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -2233,6 +2281,8 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -2299,6 +2349,8 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -2387,6 +2439,8 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -2453,6 +2507,8 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -2693,6 +2749,8 @@ segAng(segment_name: string, sketch_group: SketchGroup) -> number
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -2776,6 +2834,8 @@ segEndX(segment_name: string, sketch_group: SketchGroup) -> number
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -2859,6 +2919,8 @@ segEndY(segment_name: string, sketch_group: SketchGroup) -> number
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -2942,6 +3004,8 @@ segLen(segment_name: string, sketch_group: SketchGroup) -> number
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -3024,6 +3088,8 @@ show(sketch: SketchGroup)
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -3125,14 +3191,14 @@ sqrt(num: number) -> number
 
 
 
-### startSketchAt
+### startProfileAt
 
-Start a sketch at a given point.
+Start a profile at a given point.
 
 
 
 ```
-startSketchAt(data: LineData) -> SketchGroup
+startProfileAt(data: LineData, plane: Plane) -> SketchGroup
 ```
 
 #### Arguments
@@ -3147,6 +3213,40 @@ startSketchAt(data: LineData) -> SketchGroup
 } |
 [number]
 ```
+* `plane`: `Plane` - A plane.
+```
+{
+	// The id of the plane.
+	id: uuid,
+	// Origin of the plane.
+	origin: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// Type for a plane.
+	value: string |
+string,
+	// What should the plane’s X axis be?
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// What should the plane’s Y axis be?
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The z-axis (normal).
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+}
+```
 
 #### Returns
 
@@ -3155,6 +3255,8 @@ startSketchAt(data: LineData) -> SketchGroup
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -3211,6 +3313,188 @@ startSketchAt(data: LineData) -> SketchGroup
 	to: [number],
 	type: string,
 }],
+}
+```
+
+
+
+### startSketchAt
+
+Start a sketch at a given point on the 'XY' plane.
+
+
+
+```
+startSketchAt(data: LineData) -> SketchGroup
+```
+
+#### Arguments
+
+* `data`: `LineData` - Data to draw a line.
+```
+{
+	// The tag.
+	tag: string,
+	// The to point.
+	to: [number],
+} |
+[number]
+```
+
+#### Returns
+
+* `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
+	// The position of the sketch group.
+	position: [number],
+	// The rotation of the sketch group.
+	rotation: [number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number],
+	type: string,
+}],
+}
+```
+
+
+
+### startSketchOn
+
+Start a sketch at a given point.
+
+
+
+```
+startSketchOn(data: PlaneData) -> Plane
+```
+
+#### Arguments
+
+* `data`: `PlaneData` - Data for a plane.
+```
+string |
+string |
+string |
+string |
+string |
+string |
+{
+	plane: {
+	// Origin of the plane.
+	origin: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// What should the plane’s X axis be?
+	x_axis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// What should the plane’s Y axis be?
+	y_axis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The z-axis (normal).
+	z_axis: {
+	x: number,
+	y: number,
+	z: number,
+},
+},
+}
+```
+
+#### Returns
+
+* `Plane` - A plane.
+```
+{
+	// The id of the plane.
+	id: uuid,
+	// Origin of the plane.
+	origin: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// Type for a plane.
+	value: string |
+string,
+	// What should the plane’s X axis be?
+	xAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// What should the plane’s Y axis be?
+	yAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
+	// The z-axis (normal).
+	zAxis: {
+	x: number,
+	y: number,
+	z: number,
+},
 }
 ```
 
@@ -3269,6 +3553,8 @@ tangentalArc(data: TangentalArcData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -3335,6 +3621,8 @@ tangentalArc(data: TangentalArcData, sketch_group: SketchGroup) -> SketchGroup
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -3423,6 +3711,8 @@ tangentalArcTo(data: TangentalArcToData, sketch_group: SketchGroup) -> SketchGro
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -3489,6 +3779,8 @@ tangentalArcTo(data: TangentalArcToData, sketch_group: SketchGroup) -> SketchGro
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -3596,6 +3888,8 @@ number
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -3662,6 +3956,8 @@ number
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -3750,6 +4046,8 @@ number
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -3816,6 +4114,8 @@ number
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -3904,6 +4204,8 @@ number
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -3970,6 +4272,8 @@ number
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -4058,6 +4362,8 @@ number
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.
@@ -4124,6 +4430,8 @@ number
 {
 	// The id of the sketch group.
 	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
 	// The position of the sketch group.
 	position: [number],
 	// The rotation of the sketch group.

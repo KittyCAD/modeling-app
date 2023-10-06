@@ -26,7 +26,8 @@ const halfArmAngle = armAngle / 2
 const arrExpShouldNotBeIncluded = [1, 2, 3]
 const objExpShouldNotBeIncluded = { a: 1, b: 2, c: 3 }
 
-const part001 = startSketchAt([0, 0])
+const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   |> yLineTo(1, %)
   |> xLine(3.84, %) // selection-range-7ish-before-this
 
@@ -57,7 +58,8 @@ show(part001)`
 })
 
 describe('testing argIsNotIdentifier', () => {
-  const code = `const part001 = startSketchAt([-1.2, 4.83])
+  const code = `const part001 = startSketchOn('XY')
+|> startProfileAt([-1.2, 4.83], %)
 |> line([2.8, 0], %)
 |> angledLine([100 + 100, 3.09], %)
 |> angledLine([abc, 3.09], %)
@@ -194,7 +196,8 @@ show(part001)`
 })
 
 describe('testing getNodePathFromSourceRange', () => {
-  const code = `const part001 = startSketchAt([0.39, -0.05])
+  const code = `const part001 = startSketchOn('XY')
+  |> startProfileAt([0.39, -0.05], %)
   |> line([0.94, 2.61], %)
   |> line([-0.21, -1.4], %)
 show(part001)`
@@ -210,7 +213,7 @@ show(part001)`
       [0, 'index'],
       ['init', ''],
       ['body', 'PipeExpression'],
-      [1, 'index'],
+      [2, 'index'],
     ])
   })
   it('finds the last line when cursor is put at the end', () => {
@@ -225,7 +228,7 @@ show(part001)`
       [0, 'index'],
       ['init', ''],
       ['body', 'PipeExpression'],
-      [2, 'index'],
+      [3, 'index'],
     ]
     expect(result).toEqual(expected)
     // expect similar result for start of line
