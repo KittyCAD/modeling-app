@@ -150,7 +150,7 @@ export function useCalc({
         ast,
         _programMem,
         engineCommandManager,
-        kclManager.defaultPlanes.planes
+        kclManager.defaultPlanes
       ).then((programMemory) => {
         const resultDeclaration = ast.body.find(
           (a) =>

@@ -12,6 +12,7 @@ import { v4 as uuidv4 } from 'uuid'
 import * as Sentry from '@sentry/react'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 import { kclManager } from 'lang/KclSinglton'
+import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 
 let lastMessage = ''
 
@@ -594,6 +595,7 @@ export class EngineCommandManager {
   outSequence = 1
   inSequence = 1
   engineConnection?: EngineConnection
+  defaultPlanes: DefaultPlanes = { xy: '', yz: '', xz: '' }
   // Folks should realize that wait for ready does not get called _everytime_
   // the connection resets and restarts, it only gets called the first time.
   // Be careful what you put here.
@@ -669,12 +671,15 @@ export class EngineCommandManager {
           },
         })
 
-        // We execute the code here to make sure if the stream was to
-        // restart in a session, we want to make sure to execute the code.
-        // We force it to re-execute the code because we want to make sure
-        // the code is executed everytime the stream is restarted.
-        // We pass undefined for the code so it reads from the current state.
-        executeCode(undefined, true)
+        // Inisialize the planes.
+        this.initPlanes().then(() => {
+          // We execute the code here to make sure if the stream was to
+          // restart in a session, we want to make sure to execute the code.
+          // We force it to re-execute the code because we want to make sure
+          // the code is executed everytime the stream is restarted.
+          // We pass undefined for the code so it reads from the current state.
+          executeCode(undefined, true)
+        })
       },
       onClose: () => {
         setIsStreamReady(false)
@@ -1176,6 +1181,73 @@ export class EngineCommandManager {
         }
       }
     })
+  }
+  private async initPlanes() {
+    const [xy, yz, xz] = [
+      await this.createPlane({
+        x_axis: { x: 1, y: 0, z: 0 },
+        y_axis: { x: 0, y: 1, z: 0 },
+        color: { r: 0.7, g: 0.28, b: 0.28, a: 0.4 },
+      }),
+      await this.createPlane({
+        x_axis: { x: 0, y: 1, z: 0 },
+        y_axis: { x: 0, y: 0, z: 1 },
+        color: { r: 0.28, g: 0.7, b: 0.28, a: 0.4 },
+      }),
+      await this.createPlane({
+        x_axis: { x: 1, y: 0, z: 0 },
+        y_axis: { x: 0, y: 0, z: 1 },
+        color: { r: 0.28, g: 0.28, b: 0.7, a: 0.4 },
+      }),
+    ]
+    this.defaultPlanes = { xy, yz, xz }
+  }
+
+  async setPlaneHidden(id: string, hidden: boolean): Promise<string> {
+    return await this.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'object_visible',
+        object_id: id,
+        hidden: hidden,
+      },
+    })
+  }
+
+  private async createPlane({
+    x_axis,
+    y_axis,
+    color,
+  }: {
+    x_axis: Models['Point3d_type']
+    y_axis: Models['Point3d_type']
+    color: Models['Color_type']
+  }): Promise<string> {
+    const planeId = uuidv4()
+    await this.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'make_plane',
+        size: 60,
+        origin: { x: 0, y: 0, z: 0 },
+        x_axis,
+        y_axis,
+        clobber: false,
+      },
+      cmd_id: planeId,
+    })
+    await this.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'plane_set_color',
+        plane_id: planeId,
+        color,
+      },
+      cmd_id: uuidv4(),
+    })
+    await this.setPlaneHidden(planeId, true)
+    return planeId
   }
 }
 

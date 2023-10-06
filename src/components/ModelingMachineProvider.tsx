@@ -70,7 +70,7 @@ export const ModelingMachineProvider = ({
       'Modify AST': () => {},
       'Update code selection cursors': () => {},
       'show default planes': () => {
-        kclManager.defaultPlanes?.showPlanes()
+        kclManager.showPlanes()
       },
       'create path': async () => {
         const sketchUuid = uuidv4()
@@ -241,7 +241,7 @@ export const ModelingMachineProvider = ({
   })
 
   useEffect(() => {
-    kclManager.defaultPlanes?.onPlaneSelected((plane_id: string) => {
+    kclManager.onPlaneSelected((plane_id: string) => {
       if (modelingState.nextEvents.includes('Select face')) {
         modelingSend('Select face')
       }

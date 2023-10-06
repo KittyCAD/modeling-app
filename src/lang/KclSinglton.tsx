@@ -9,8 +9,8 @@ import { parse, PathToNode, Program, ProgramMemory, recast } from 'lang/wasm'
 import { bracket } from 'lib/exampleKcl'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { getNodeFromPath } from './queryAst'
-import { CursorPos } from 'readline'
 import { DefaultPlanes } from './std/engineConnectionManagerUtils'
+import { DefaultPlanes as DefaultPlanesType } from '../wasm-lib/kcl/bindings/DefaultPlanes'
 
 const PERSIST_CODE_TOKEN = 'persistCode'
 
@@ -32,7 +32,6 @@ class KclManager {
   private _logs: string[] = []
   private _kclErrors: KCLError[] = []
   private _isExecuting = false
-  private _defaultPlanes: DefaultPlanes
 
   engineCommandManager: EngineCommandManager
   private _defferer = deferExecution((code: string) => {
@@ -72,7 +71,7 @@ class KclManager {
   }
 
   get defaultPlanes() {
-    return this._defaultPlanes
+    return this.engineCommandManager.defaultPlanes
   }
 
   get logs() {
@@ -115,7 +114,6 @@ class KclManager {
       this._code = storedCode || bracket
     }
     this._codeCallBack(this._code)
-    this._defaultPlanes = new DefaultPlanes(this.engineCommandManager)
   }
   registerCallBacks({
     setCode,
@@ -146,7 +144,7 @@ class KclManager {
     const { logs, errors, programMemory } = await executeAst({
       ast,
       engineCommandManager: this.engineCommandManager,
-      defaultPlanes: this._defaultPlanes.planes,
+      defaultPlanes: this.defaultPlanes,
     })
     this._isExecutingCallback(false)
     this._logs = logs
@@ -170,7 +168,7 @@ class KclManager {
     const { logs, errors, programMemory } = await executeAst({
       ast: newAst,
       engineCommandManager: this.engineCommandManager,
-      defaultPlanes: this._defaultPlanes.planes,
+      defaultPlanes: this.defaultPlanes,
       useFakeExecutor: true,
     })
     this._logs = logs
@@ -251,6 +249,27 @@ class KclManager {
       this.executeAstMock(astWithUpdatedSource)
     }
     return returnVal
+  }
+
+  onPlaneSelectCallback = (id: string) => {}
+  onPlaneSelected(callback: (id: string) => void) {
+    this.onPlaneSelectCallback = callback
+  }
+
+  getPlaneId(axis: 'xy' | 'xz' | 'yz'): string {
+    return this.defaultPlanes[axis]
+  }
+
+  showPlanes() {
+    this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, false)
+    this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, false)
+    this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, false)
+  }
+
+  hidePlanes() {
+    this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, true)
+    this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, true)
+    this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, true)
   }
 }
 

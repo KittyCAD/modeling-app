@@ -649,7 +649,7 @@ export const modelingMachine = createMachine(
           })
       },
       'hide default planes': ({}) => {
-        kclManager.defaultPlanes.hidePlanes()
+        kclManager.hidePlanes()
       },
       edit_mode_exit: () =>
         engineCommandManager.sendSceneCommand({
@@ -697,7 +697,7 @@ export const modelingMachine = createMachine(
             planeStrCleaned === 'xz' ||
             planeStrCleaned === 'yz'
           ) {
-            planeId = kclManager.defaultPlanes.getPlaneId(planeStrCleaned)
+            planeId = kclManager.getPlaneId(planeStrCleaned)
           }
         }
 
