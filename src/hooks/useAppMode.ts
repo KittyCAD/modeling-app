@@ -24,10 +24,7 @@ export function useAppMode() {
       guiMode.sketchMode === 'selectFace' &&
       engineCommandManager
     ) {
-      const createAndShowPlanes = async () => {
-        kclManager.showPlanes()
-      }
-      createAndShowPlanes()
+      kclManager.showPlanes()
     }
     if (
       guiMode.mode === 'sketch' &&
@@ -35,7 +32,7 @@ export function useAppMode() {
       engineCommandManager
     ) {
       const enableSketchMode = async () => {
-        kclManager.showPlanes()
+        kclManager.hidePlanes()
 
         await engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
@@ -115,7 +112,9 @@ export function useAppMode() {
           return
         }
 
-          // TODO: Right here we want to set the context.sketchPlaneId to data.entity_id
+        console.log('plane id', data.entity_id)
+
+        // TODO: Right here we want to set the context.sketchPlaneId to data.entity_id
         const sketchModeResponse = await engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
@@ -126,7 +125,7 @@ export function useAppMode() {
             animated: !isReducedMotion(),
           },
         })
-        kclManager.showPlanes()
+        kclManager.hidePlanes()
         const sketchUuid = uuidv4()
         const proms: any[] = []
         proms.push(
