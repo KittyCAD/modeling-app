@@ -12,7 +12,6 @@ import {
 } from '../../lang/std/sketchcombos'
 import { updateCursors } from '../../lang/util'
 import { kclManager } from 'lang/KclSinglton'
-import { useModelingContext } from 'hooks/useModelingContext'
 
 export const RemoveConstrainingValues = () => {
   const { guiMode, selectionRanges, setCursor } = useStore((s) => ({
@@ -20,7 +19,6 @@ export const RemoveConstrainingValues = () => {
     selectionRanges: s.selectionRanges,
     setCursor: s.setCursor,
   }))
-  const { context } = useModelingContext()
   const [enableHorz, setEnableHorz] = useState(false)
   const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
   useEffect(() => {
@@ -63,7 +61,7 @@ export const RemoveConstrainingValues = () => {
           programMemory: kclManager.programMemory,
           referenceSegName: '',
         })
-        kclManager.updateAst(context.defaultPlanes.planes, modifiedAst, true, {
+        kclManager.updateAst(modifiedAst, true, {
           callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
         })
       }}

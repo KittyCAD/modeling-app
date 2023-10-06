@@ -22,7 +22,6 @@ import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { normaliseAngle } from '../../lib/utils'
 import { updateCursors } from '../../lang/util'
 import { kclManager } from 'lang/KclSinglton'
-import { useModelingContext } from 'hooks/useModelingContext'
 
 const getModalInfo = create(SetAngleLengthModal as any)
 
@@ -45,7 +44,6 @@ export const SetAngleLength = ({
   }))
   const [enableAngLen, setEnableAngLen] = useState(false)
   const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
-  const { context } = useModelingContext()
   useEffect(() => {
     const { enabled, transforms } = setAngleLengthInfo({
       selectionRanges,
@@ -131,18 +129,9 @@ export const SetAngleLength = ({
             _modifiedAst.body = newBody
           }
 
-          kclManager.updateAst(
-            context.defaultPlanes.planes,
-            _modifiedAst,
-            true,
-            {
-              callBack: updateCursors(
-                setCursor,
-                selectionRanges,
-                pathToNodeMap
-              ),
-            }
-          )
+          kclManager.updateAst(_modifiedAst, true, {
+            callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
+          })
         } catch (e) {
           console.log('erorr', e)
         }

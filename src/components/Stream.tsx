@@ -192,7 +192,7 @@ export const Stream = ({ className = '' }) => {
           let currentAxis: 'xy' | 'xz' | 'yz' | '-xy' | '-xz' | '-yz' | null =
             null
           if (
-            context.sketchPlaneId === context.defaultPlanes.getPlaneId('xy')
+            context.sketchPlaneId === kclManager.defaultPlanes.getPlaneId('xy')
           ) {
             if (z_axis.z === -1) {
               currentAxis = '-xy'
@@ -200,7 +200,7 @@ export const Stream = ({ className = '' }) => {
               currentAxis = 'xy'
             }
           } else if (
-            context.sketchPlaneId === context.defaultPlanes.getPlaneId('yz')
+            context.sketchPlaneId === kclManager.defaultPlanes.getPlaneId('yz')
           ) {
             if (z_axis.x === -1) {
               currentAxis = '-yz'
@@ -208,7 +208,7 @@ export const Stream = ({ className = '' }) => {
               currentAxis = 'yz'
             }
           } else if (
-            context.sketchPlaneId === context.defaultPlanes.getPlaneId('xz')
+            context.sketchPlaneId === kclManager.defaultPlanes.getPlaneId('xz')
           ) {
             if (z_axis.y === -1) {
               currentAxis = '-xz'
@@ -267,14 +267,16 @@ export const Stream = ({ className = '' }) => {
 
         // Get the current plane string for plane we are on.
         let currentPlaneString = ''
-        if (context.sketchPlaneId === context.defaultPlanes.getPlaneId('xy')) {
+        if (
+          context.sketchPlaneId === kclManager.defaultPlanes.getPlaneId('xy')
+        ) {
           currentPlaneString = 'XY'
         } else if (
-          context.sketchPlaneId === context.defaultPlanes.getPlaneId('yz')
+          context.sketchPlaneId === kclManager.defaultPlanes.getPlaneId('yz')
         ) {
           currentPlaneString = 'YZ'
         } else if (
-          context.sketchPlaneId === context.defaultPlanes.getPlaneId('xz')
+          context.sketchPlaneId === kclManager.defaultPlanes.getPlaneId('xz')
         ) {
           currentPlaneString = 'XZ'
         }
@@ -291,11 +293,7 @@ export const Stream = ({ className = '' }) => {
           currentPlaneString,
           context.sketchEnginePathId
         )
-        kclManager.executeAstMock(
-          context.defaultPlanes.planes,
-          updatedAst,
-          true
-        )
+        kclManager.executeAstMock(updatedAst, true)
       })
     }
 

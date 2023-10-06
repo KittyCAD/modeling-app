@@ -70,7 +70,7 @@ export const ModelingMachineProvider = ({
       'Modify AST': () => {},
       'Update code selection cursors': () => {},
       'show default planes': () => {
-        modelingState.context.defaultPlanes?.showPlanes()
+        kclManager.defaultPlanes?.showPlanes()
       },
       'create path': async () => {
         const sketchUuid = uuidv4()
@@ -93,43 +93,34 @@ export const ModelingMachineProvider = ({
         ]
         await Promise.all(proms)
       },
-      'AST start new sketch': assign(
-        ({ defaultPlanes }, { data: { coords, axis } }) => {
-          // Something really weird must have happened for this to happen.
-          if (!axis) {
-            console.error('axis is undefined for starting a new sketch')
-            return
-          }
-
-          const _addStartSketch = addStartSketch(
-            kclManager.ast,
-            axis,
-            [roundOff(coords[0].x), roundOff(coords[0].y)],
-            [
-              roundOff(coords[1].x - coords[0].x),
-              roundOff(coords[1].y - coords[0].y),
-            ]
-          )
-          const _modifiedAst = _addStartSketch.modifiedAst
-          const _pathToNode = _addStartSketch.pathToNode
-          const newCode = recast(_modifiedAst)
-          const astWithUpdatedSource = parse(newCode)
-
-          kclManager.executeAstMock(
-            defaultPlanes.planes,
-            astWithUpdatedSource,
-            true
-          )
-
-          return {
-            sketchPathToNode: _pathToNode,
-          }
+      'AST start new sketch': assign((_, { data: { coords, axis } }) => {
+        // Something really weird must have happened for this to happen.
+        if (!axis) {
+          console.error('axis is undefined for starting a new sketch')
+          return
         }
-      ),
-      'AST add line segment': (
-        { sketchPathToNode, defaultPlanes },
-        { data: { coords } }
-      ) => {
+
+        const _addStartSketch = addStartSketch(
+          kclManager.ast,
+          axis,
+          [roundOff(coords[0].x), roundOff(coords[0].y)],
+          [
+            roundOff(coords[1].x - coords[0].x),
+            roundOff(coords[1].y - coords[0].y),
+          ]
+        )
+        const _modifiedAst = _addStartSketch.modifiedAst
+        const _pathToNode = _addStartSketch.pathToNode
+        const newCode = recast(_modifiedAst)
+        const astWithUpdatedSource = parse(newCode)
+
+        kclManager.executeAstMock(astWithUpdatedSource, true)
+
+        return {
+          sketchPathToNode: _pathToNode,
+        }
+      }),
+      'AST add line segment': ({ sketchPathToNode }, { data: { coords } }) => {
         if (!sketchPathToNode) return
         const lastCoord = coords[coords.length - 1]
 
@@ -157,7 +148,7 @@ export const ModelingMachineProvider = ({
             fnName: 'line',
             pathToNode: sketchPathToNode,
           }).modifiedAst
-          kclManager.executeAstMock(defaultPlanes.planes, _modifiedAst, true)
+          kclManager.executeAstMock(_modifiedAst, true)
           // kclManager.updateAst(_modifiedAst, false)
         } else {
           _modifiedAst = addCloseToPipe({
@@ -175,12 +166,12 @@ export const ModelingMachineProvider = ({
             cmd_id: uuidv4(),
             cmd: { type: 'default_camera_disable_sketch_mode' },
           })
-          kclManager.executeAstMock(defaultPlanes.planes, _modifiedAst, true)
+          kclManager.executeAstMock(_modifiedAst, true)
           // updateAst(_modifiedAst, true)
         }
       },
-      'sketch exit execute': ({ defaultPlanes }) => {
-        kclManager.executeAst(defaultPlanes.planes)
+      'sketch exit execute': ({}) => {
+        kclManager.executeAst()
       },
       'set tool': () => {}, // TODO
       'toast extrude failed': () => {
@@ -204,43 +195,43 @@ export const ModelingMachineProvider = ({
       },
     },
     services: {
-      'Get horizontal info': async ({ defaultPlanes, selectionRanges }) => {
+      'Get horizontal info': async ({ selectionRanges }) => {
         const { modifiedAst, pathToNodeMap } =
           await applyConstraintHorzVertDistance({
             constraint: 'setHorzDistance',
             selectionRanges,
           })
-        kclManager.updateAst(defaultPlanes.planes, modifiedAst, true, {
+        kclManager.updateAst(modifiedAst, true, {
           // todo handle cursor
           // callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
         })
       },
-      'Get vertical info': async ({ defaultPlanes, selectionRanges }) => {
+      'Get vertical info': async ({ selectionRanges }) => {
         const { modifiedAst, pathToNodeMap } =
           await applyConstraintHorzVertDistance({
             constraint: 'setVertDistance',
             selectionRanges,
           })
-        kclManager.updateAst(defaultPlanes.planes, modifiedAst, true, {
+        kclManager.updateAst(modifiedAst, true, {
           // todo handle cursor
           // callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
         })
       },
-      'Get angle info': async ({ defaultPlanes, selectionRanges }) => {
+      'Get angle info': async ({ selectionRanges }) => {
         const { modifiedAst, pathToNodeMap } =
           await applyConstraintAngleBetween({
             selectionRanges,
           })
-        kclManager.updateAst(defaultPlanes.planes, modifiedAst, true, {
+        kclManager.updateAst(modifiedAst, true, {
           // todo handle cursor
           // callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
         })
       },
-      'Get length info': async ({ defaultPlanes, selectionRanges }) => {
+      'Get length info': async ({ selectionRanges }) => {
         const { modifiedAst, pathToNodeMap } = await applyConstraintAngleLength(
           { selectionRanges }
         )
-        kclManager.updateAst(defaultPlanes.planes, modifiedAst, true, {
+        kclManager.updateAst(modifiedAst, true, {
           // todo handle cursor
           // callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
         })
@@ -250,12 +241,12 @@ export const ModelingMachineProvider = ({
   })
 
   useEffect(() => {
-    modelingState.context.defaultPlanes?.onPlaneSelected((plane_id: string) => {
+    kclManager.defaultPlanes?.onPlaneSelected((plane_id: string) => {
       if (modelingState.nextEvents.includes('Select face')) {
         modelingSend('Select face')
       }
     })
-  }, [modelingState.context.defaultPlanes, modelingSend])
+  }, [kclManager.defaultPlanes, modelingSend])
 
   // useStateMachineCommands({
   //   state: settingsState,

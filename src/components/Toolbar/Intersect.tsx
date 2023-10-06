@@ -18,7 +18,6 @@ import { createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { updateCursors } from '../../lang/util'
 import { kclManager } from 'lang/KclSinglton'
-import { useModelingContext } from 'hooks/useModelingContext'
 
 const getModalInfo = create(GetInfoModal as any)
 
@@ -32,7 +31,6 @@ export const Intersect = () => {
   const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
   const [forecdSelectionRanges, setForcedSelectionRanges] =
     useState<typeof selectionRanges>()
-  const { context } = useModelingContext()
   useEffect(() => {
     if (selectionRanges.codeBasedSelections.length < 2) {
       setEnable(false)
@@ -148,18 +146,9 @@ export const Intersect = () => {
           initialVariableName: 'offset',
         } as any)
         if (segName === tagInfo?.tag && value === valueUsedInTransform) {
-          kclManager.updateAst(
-            context.defaultPlanes.planes,
-            modifiedAst,
-            true,
-            {
-              callBack: updateCursors(
-                setCursor,
-                selectionRanges,
-                pathToNodeMap
-              ),
-            }
-          )
+          kclManager.updateAst(modifiedAst, true, {
+            callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
+          })
         } else {
           // transform again but forcing certain values
           const finalValue = removeDoubleNegatives(
@@ -185,18 +174,9 @@ export const Intersect = () => {
             )
             _modifiedAst.body = newBody
           }
-          kclManager.updateAst(
-            context.defaultPlanes.planes,
-            _modifiedAst,
-            true,
-            {
-              callBack: updateCursors(
-                setCursor,
-                selectionRanges,
-                pathToNodeMap
-              ),
-            }
-          )
+          kclManager.updateAst(_modifiedAst, true, {
+            callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
+          })
         }
       }}
       disabled={!enable}

@@ -9,7 +9,6 @@ import {
 import { findAllPreviousVariables, PrevVariable } from '../lang/queryAst'
 import { useStore } from '../useStore'
 import { engineCommandManager } from '../lang/std/engineConnection'
-import { useModelingContext } from 'hooks/useModelingContext'
 import { kclManager, useKclContext } from 'lang/KclSinglton'
 
 export const AvailableVars = ({
@@ -109,7 +108,6 @@ export function useCalc({
   const [calcResult, setCalcResult] = useState('NAN')
   const [newVariableName, setNewVariableName] = useState('')
   const [isNewVariableNameUnique, setIsNewVariableNameUnique] = useState(true)
-  const { send, state, context } = useModelingContext()
 
   useEffect(() => {
     setTimeout(() => {
@@ -152,7 +150,7 @@ export function useCalc({
         ast,
         _programMem,
         engineCommandManager,
-        context.defaultPlanes.planes
+        kclManager.defaultPlanes.planes
       ).then((programMemory) => {
         const resultDeclaration = ast.body.find(
           (a) =>

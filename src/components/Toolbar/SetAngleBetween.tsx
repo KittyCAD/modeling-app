@@ -18,7 +18,6 @@ import { createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { updateCursors } from '../../lang/util'
 import { kclManager } from 'lang/KclSinglton'
-import { useModelingContext } from 'hooks/useModelingContext'
 
 const getModalInfo = create(GetInfoModal as any)
 
@@ -30,7 +29,6 @@ export const SetAngleBetween = () => {
   }))
   const [enable, setEnable] = useState(false)
   const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
-  const { context } = useModelingContext()
   useEffect(() => {
     const { enabled, transforms } = angleBetweenInfo({ selectionRanges })
     setTransformInfos(transforms)
@@ -70,18 +68,9 @@ export const SetAngleBetween = () => {
           initialVariableName: 'angle',
         } as any)
         if (segName === tagInfo?.tag && value === valueUsedInTransform) {
-          kclManager.updateAst(
-            context.defaultPlanes.planes,
-            modifiedAst,
-            true,
-            {
-              callBack: updateCursors(
-                setCursor,
-                selectionRanges,
-                pathToNodeMap
-              ),
-            }
-          )
+          kclManager.updateAst(modifiedAst, true, {
+            callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
+          })
         } else {
           const finalValue = removeDoubleNegatives(
             valueNode as BinaryPart,
@@ -107,18 +96,9 @@ export const SetAngleBetween = () => {
             )
             _modifiedAst.body = newBody
           }
-          kclManager.updateAst(
-            context.defaultPlanes.planes,
-            _modifiedAst,
-            true,
-            {
-              callBack: updateCursors(
-                setCursor,
-                selectionRanges,
-                pathToNodeMap
-              ),
-            }
-          )
+          kclManager.updateAst(_modifiedAst, true, {
+            callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
+          })
         }
       }}
       disabled={!enable}

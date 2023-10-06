@@ -9,7 +9,9 @@ export class DefaultPlanes {
   onPlaneSelectCallback = (id: string) => {}
   constructor(engineConnectionManager: EngineCommandManager) {
     this.ecm = engineConnectionManager
-    this.ecm.waitForReady.then(() => {
+    /*
+     *TODO remove.
+     * this.ecm.waitForReady.then(() => {
       this.initPlanes()
 
       this.ecm.subscribeTo({
@@ -25,7 +27,7 @@ export class DefaultPlanes {
           this.onPlaneSelectCallback(data.entity_id)
         },
       })
-    })
+    })*/
   }
 
   onPlaneSelected(callback: (id: string) => void) {

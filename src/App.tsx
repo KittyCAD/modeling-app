@@ -59,7 +59,7 @@ export function App() {
   const { settings } = useGlobalStateContext()
   const { showDebugPanel, onboardingStatus, cameraControls, theme } =
     settings?.context || {}
-  const { state, context } = useModelingContext()
+  const { state } = useModelingContext()
 
   const editorTheme = theme === Themes.System ? getSystemTheme() : theme
 
@@ -96,7 +96,7 @@ export function App() {
         // this is necessary to get the UI back into a consistent
         // state right now, hopefully won't need to rerender
         // when exiting sketch mode in the future
-        kclManager.executeAst(context.defaultPlanes.planes)
+        kclManager.executeAst()
       } else {
         engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',

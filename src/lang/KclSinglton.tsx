@@ -10,7 +10,7 @@ import { bracket } from 'lib/exampleKcl'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { getNodeFromPath } from './queryAst'
 import { CursorPos } from 'readline'
-import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
+import { DefaultPlanes } from './std/engineConnectionManagerUtils'
 
 const PERSIST_CODE_TOKEN = 'persistCode'
 
@@ -32,21 +32,13 @@ class KclManager {
   private _logs: string[] = []
   private _kclErrors: KCLError[] = []
   private _isExecuting = false
+  private _defaultPlanes: DefaultPlanes
 
   engineCommandManager: EngineCommandManager
-  private _defferer = deferExecution(
-    ({
-      defaultPlanes,
-      code,
-    }: {
-      defaultPlanes: DefaultPlanes
-      code: string
-    }) => {
-      const ast = parse(code)
-      this.executeAst(defaultPlanes, ast)
-    },
-    600
-  )
+  private _defferer = deferExecution((code: string) => {
+    const ast = parse(code)
+    this.executeAst(ast)
+  }, 600)
 
   private _isExecutingCallback: (a: boolean) => void = () => {}
   private _codeCallBack: (arg: string) => void = () => {}
@@ -77,6 +69,10 @@ class KclManager {
   set programMemory(programMemory) {
     this._programMemory = programMemory
     this._programMemoryCallBack(programMemory)
+  }
+
+  get defaultPlanes() {
+    return this._defaultPlanes
   }
 
   get logs() {
@@ -119,6 +115,7 @@ class KclManager {
       this._code = storedCode || bracket
     }
     this._codeCallBack(this._code)
+    this._defaultPlanes = new DefaultPlanes(engineCommandManager)
   }
   registerCallBacks({
     setCode,
@@ -143,17 +140,13 @@ class KclManager {
     this._isExecutingCallback = setIsExecuting
   }
 
-  async executeAst(
-    defaultPlanes: DefaultPlanes,
-    ast: Program = this._ast,
-    updateCode = false
-  ) {
+  async executeAst(ast: Program = this._ast, updateCode = false) {
     // if (!this.isStreamReady) return
     this._isExecutingCallback(true)
     const { logs, errors, programMemory } = await executeAst({
       ast,
       engineCommandManager,
-      defaultPlanes,
+      defaultPlanes: this._defaultPlanes.planes,
     })
     this._isExecutingCallback(false)
     this._logs = logs
@@ -165,11 +158,7 @@ class KclManager {
       this._codeCallBack(this._code)
     }
   }
-  async executeAstMock(
-    defaultPlanes: DefaultPlanes,
-    ast: Program = this._ast,
-    updateCode = false
-  ) {
+  async executeAstMock(ast: Program = this._ast, updateCode = false) {
     const newCode = recast(ast)
     const newAst = parse(newCode)
     await engineCommandManager.waitForReady
@@ -181,7 +170,7 @@ class KclManager {
     const { logs, errors, programMemory } = await executeAst({
       ast: newAst,
       engineCommandManager,
-      defaultPlanes,
+      defaultPlanes: this._defaultPlanes.planes,
       useFakeExecutor: true,
     })
     this._logs = logs
@@ -193,10 +182,10 @@ class KclManager {
     this._codeCallBack(code)
     localStorage.setItem(PERSIST_CODE_TOKEN, code)
   }
-  setCodeAndExecute(defaultPlanes: DefaultPlanes, code: string) {
+  setCodeAndExecute(code: string) {
     this.setCode(code)
     if (code.trim()) {
-      this._defferer({ defaultPlanes, code })
+      this._defferer(code)
       return
     }
     this._ast = {
@@ -221,7 +210,6 @@ class KclManager {
   // updateAst was added as it was used a lot before xState migration so makes the port easier.
   // but should probably have think about which of the function to keep
   updateAst(
-    defaultPlanes: DefaultPlanes,
     ast: Program,
     execute: boolean,
     optionalParams?: {
@@ -255,12 +243,12 @@ class KclManager {
 
     if (execute) {
       // Call execute on the set ast.
-      this.executeAst(defaultPlanes, astWithUpdatedSource)
+      this.executeAst(astWithUpdatedSource)
     } else {
       // When we don't re-execute, we still want to update the program
       // memory with the new ast. So we will hit the mock executor
       // instead.
-      this.executeAstMock(defaultPlanes, astWithUpdatedSource)
+      this.executeAstMock(astWithUpdatedSource)
     }
     return returnVal
   }

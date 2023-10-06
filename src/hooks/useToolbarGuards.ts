@@ -5,7 +5,6 @@ import { isNodeSafeToReplace } from 'lang/queryAst'
 import { useEffect, useState } from 'react'
 import { create } from 'react-modal-promise'
 import { useStore } from 'useStore'
-import { useModelingContext } from 'hooks/useModelingContext'
 
 const getModalInfo = create(SetVarNameModal as any)
 
@@ -15,7 +14,6 @@ export function useConvertToVariable() {
     selectionRanges: s.selectionRanges,
   }))
   const [enable, setEnabled] = useState(false)
-  const { context } = useModelingContext()
   useEffect(() => {
     const { isSafe, value } = isNodeSafeToReplace(
       kclManager.ast,
@@ -41,7 +39,7 @@ export function useConvertToVariable() {
         variableName
       )
 
-      kclManager.updateAst(context.defaultPlanes.planes, _modifiedAst, true)
+      kclManager.updateAst(_modifiedAst, true)
     } catch (e) {
       console.log('error', e)
     }

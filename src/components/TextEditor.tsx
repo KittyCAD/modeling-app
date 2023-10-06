@@ -120,7 +120,7 @@ export const TextEditor = ({
 
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
-    kclManager.setCodeAndExecute(context.defaultPlanes.planes, value)
+    kclManager.setCodeAndExecute(value)
     if (isTauri() && pathParams.id) {
       // Save the file to disk
       // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files

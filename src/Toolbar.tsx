@@ -52,7 +52,7 @@ export const Toolbar = () => {
     selectionRanges: s.selectionRanges,
   }))
   useAppMode()
-  const { state, send, context } = useModelingContext()
+  const { state, send } = useModelingContext()
   const toolbarButtonsRef = useRef<HTMLSpanElement>(null)
   const pathId = useMemo(
     () =>
@@ -182,11 +182,7 @@ export const Toolbar = () => {
                 pathToNode,
                 kclManager.programMemory
               )
-              kclManager.updateAst(
-                context.defaultPlanes.planes,
-                modifiedAst,
-                true
-              )
+              kclManager.updateAst(modifiedAst, true)
             }}
             className="group"
           >
