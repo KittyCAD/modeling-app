@@ -11,6 +11,7 @@ import { exportSave } from 'lib/exportSave'
 import { v4 as uuidv4 } from 'uuid'
 import * as Sentry from '@sentry/react'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
+import { kclManager } from 'lang/KclSinglton'
 
 let lastMessage = ''
 
@@ -667,6 +668,9 @@ export class EngineCommandManager {
             gizmo_mode: true,
           },
         })
+
+        // Create the default planes.
+        kclManager.defaultPlanes.init()
 
         // We execute the code here to make sure if the stream was to
         // restart in a session, we want to make sure to execute the code.
