@@ -1,6 +1,11 @@
 import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../../components/ActionButton'
-import { ONBOARDING_PROJECT_NAME, onboardingPaths, useDismiss, useNextClick } from '.'
+import {
+  ONBOARDING_PROJECT_NAME,
+  onboardingPaths,
+  useDismiss,
+  useNextClick,
+} from '.'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { bracket } from 'lib/exampleKcl'
@@ -31,8 +36,14 @@ function OnboardingWithNewFile() {
 
   async function createAndOpenNewProject() {
     const projects = await getProjectsInDir(defaultDirectory)
-    const nextIndex = await getNextProjectIndex(ONBOARDING_PROJECT_NAME, projects)
-    const name = interpolateProjectNameWithIndex(ONBOARDING_PROJECT_NAME, nextIndex)
+    const nextIndex = await getNextProjectIndex(
+      ONBOARDING_PROJECT_NAME,
+      projects
+    )
+    const name = interpolateProjectNameWithIndex(
+      ONBOARDING_PROJECT_NAME,
+      nextIndex
+    )
     const newFile = await createNewProject(defaultDirectory + '/' + name)
     navigate(`${paths.FILE}/${encodeURIComponent(newFile.path)}`)
   }
