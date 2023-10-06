@@ -1,11 +1,13 @@
-import { SetVarNameModal } from 'components/SetVarNameModal'
+import {
+  SetVarNameModal,
+  createSetVarNameModal,
+} from 'components/SetVarNameModal'
 import { moveValueIntoNewVariable } from 'lang/modifyAst'
 import { isNodeSafeToReplace } from 'lang/queryAst'
 import { useEffect, useState } from 'react'
-import { create } from 'react-modal-promise'
 import { useStore } from 'useStore'
 
-const getModalInfo = create(SetVarNameModal as any)
+const getModalInfo = createSetVarNameModal(SetVarNameModal)
 
 export function useConvertToVariable() {
   const { guiMode, selectionRanges, ast, programMemory, updateAst } = useStore(
@@ -37,7 +39,7 @@ export function useConvertToVariable() {
     try {
       const { variableName } = await getModalInfo({
         valueName: 'var',
-      } as any)
+      })
 
       const { modifiedAst: _modifiedAst } = moveValueIntoNewVariable(
         ast,
