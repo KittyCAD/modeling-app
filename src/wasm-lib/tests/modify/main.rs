@@ -60,7 +60,7 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
                 size: 60.0,
                 x_axis: Point3D { x: 1.0, y: 0.0, z: 0.0 },
                 y_axis: Point3D { x: 0.0, y: 1.0, z: 0.0 },
-                hide: true,
+                hide: Some(true),
             },
         )
         .await?;
