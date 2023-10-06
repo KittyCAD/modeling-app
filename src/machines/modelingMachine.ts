@@ -1,6 +1,5 @@
 import { PathToNode } from 'lang/wasm'
 import { engineCommandManager } from 'lang/std/engineConnection'
-import { DefaultPlanes } from 'lang/std/engineConnectionManagerUtils'
 import { isReducedMotion } from 'lang/util'
 import { Axis, Selection, SelectionRangeTypeMap, Selections } from 'useStore'
 import { assign, createMachine } from 'xstate'
@@ -114,7 +113,6 @@ export const modelingMachine = createMachine(
         | { type: 'Complete line' }
         | { type: 'Set distance' }
         | { type: 'Equip new tool' }
-        | { type: 'Set Default Planes'; data: DefaultPlanes }
         | { type: 'update_code'; data: string }
         | { type: 'Make segment horizontal' }
         | { type: 'Make segment vertical' }
@@ -656,6 +654,7 @@ export const modelingMachine = createMachine(
         }),
       }),
       'sketch mode enabled': ({ sketchPlaneId }) => {
+        console.log('sketchPlaneId', sketchPlaneId)
         engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
@@ -734,6 +733,8 @@ export const modelingMachine = createMachine(
             planeId = kclManager.getPlaneId(planeStrCleaned)
           }
         }
+
+        console.log('planeId', planeId)
 
         const sketchEnginePathId =
           isCursorInSketchCommandRange(

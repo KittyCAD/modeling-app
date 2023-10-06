@@ -9,8 +9,6 @@ import { parse, PathToNode, Program, ProgramMemory, recast } from 'lang/wasm'
 import { bracket } from 'lib/exampleKcl'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { getNodeFromPath } from './queryAst'
-import { DefaultPlanes } from './std/engineConnectionManagerUtils'
-import { DefaultPlanes as DefaultPlanesType } from '../wasm-lib/kcl/bindings/DefaultPlanes'
 
 const PERSIST_CODE_TOKEN = 'persistCode'
 
@@ -249,11 +247,6 @@ class KclManager {
       await this.executeAstMock(astWithUpdatedSource)
     }
     return returnVal
-  }
-
-  onPlaneSelectCallback = (id: string) => {}
-  onPlaneSelected(callback: (id: string) => void) {
-    this.onPlaneSelectCallback = callback
   }
 
   getPlaneId(axis: 'xy' | 'xz' | 'yz'): string {

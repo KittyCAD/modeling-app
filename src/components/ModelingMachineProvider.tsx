@@ -317,7 +317,7 @@ export const ModelingMachineProvider = ({
   })
 
   useEffect(() => {
-    kclManager.onPlaneSelected((plane_id: string) => {
+    engineCommandManager.onPlaneSelected((plane_id: string) => {
       if (modelingState.nextEvents.includes('Select face')) {
         modelingSend('Select face')
       }
