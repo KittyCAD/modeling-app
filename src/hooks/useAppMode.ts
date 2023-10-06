@@ -42,7 +42,7 @@ export function useAppMode() {
           cmd_id: uuidv4(),
           cmd: {
             type: 'sketch_mode_enable',
-            plane_id: kclManager.defaultPlanes.xy,
+            plane_id: context.sketchPlaneId,
             ortho: true,
             animated: !isReducedMotion(),
           },
