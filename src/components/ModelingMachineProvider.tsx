@@ -108,7 +108,7 @@ export const ModelingMachineProvider = ({
         // Something really weird must have happened for this to happen.
         if (!axis) {
           console.error('axis is undefined for starting a new sketch')
-          return
+          return {}
         }
 
         const _addStartSketch = addStartSketch(

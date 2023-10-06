@@ -1,7 +1,7 @@
 import { PathToNode } from 'lang/wasm'
 import { engineCommandManager } from 'lang/std/engineConnection'
 import { DefaultPlanes } from 'lang/std/engineConnectionManagerUtils'
-import { isReducedMotion, pathMapToSelections } from 'lang/util'
+import { isReducedMotion } from 'lang/util'
 import { Axis, Selection, SelectionRangeTypeMap, Selections } from 'useStore'
 import { assign, createMachine } from 'xstate'
 import { v4 as uuidv4 } from 'uuid'
@@ -713,12 +713,12 @@ export const modelingMachine = createMachine(
           sketchPathToNode,
           'PipeExpression'
         ).node
-        if (pipeExpression.type !== 'PipeExpression') return /// bad bad bad
+        if (pipeExpression.type !== 'PipeExpression') return {}
         const sketchCallExpression = pipeExpression.body.find(
           (e) =>
             e.type === 'CallExpression' && e.callee.name === 'startSketchOn'
         ) as CallExpression
-        if (!sketchCallExpression) return // also bad bad bad
+        if (!sketchCallExpression) return {}
         const firstArg = sketchCallExpression.arguments[0]
         let planeId = ''
         if (firstArg.type === 'Literal' && firstArg.value) {
