@@ -18,7 +18,6 @@ import {
   createVariableDeclaration,
 } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
-import { updateCursors } from '../../lang/util'
 import { kclManager } from 'lang/KclSinglton'
 
 const getModalInfo = create(SetAngleLengthModal as any)
@@ -32,6 +31,7 @@ const buttonLabels: Record<ButtonType, string> = {
   snapToXAxis: 'Snap To X Axis',
 }
 
+/*
 export const SetAbsDistance = ({ buttonType }: { buttonType: ButtonType }) => {
   const { guiMode, selectionRanges, setCursor } = useStore((s) => ({
     guiMode: s.guiMode,
@@ -144,3 +144,4 @@ export const SetAbsDistance = ({ buttonType }: { buttonType: ButtonType }) => {
     </button>
   )
 }
+*/

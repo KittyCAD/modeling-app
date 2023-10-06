@@ -16,11 +16,11 @@ import {
 import { GetInfoModal } from '../SetHorVertDistanceModal'
 import { createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
-import { updateCursors } from '../../lang/util'
 import { kclManager } from 'lang/KclSinglton'
 
 const getModalInfo = create(GetInfoModal as any)
 
+/*
 export const Intersect = () => {
   const { guiMode, selectionRanges, setCursor } = useStore((s) => ({
     guiMode: s.guiMode,
@@ -186,3 +186,4 @@ export const Intersect = () => {
     </button>
   )
 }
+*/

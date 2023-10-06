@@ -8,7 +8,7 @@ import {
   StateFrom,
   assign,
 } from 'xstate'
-import { modelingMachine } from 'machines/modelingMachine'
+import { SetSelections, modelingMachine } from 'machines/modelingMachine'
 import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { isCursorInSketchCommandRange } from 'hooks/useAppMode'
@@ -28,6 +28,12 @@ import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
 import { applyConstraintAngleBetween } from './Toolbar/SetAngleBetween'
 import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
 import { toast } from 'react-hot-toast'
+import { pathMapToSelections } from 'lang/util'
+import {
+  dispatchCodeMirrorCursor,
+  setCodeMirrorCursor,
+  useStore,
+} from 'useStore'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -48,6 +54,11 @@ export const ModelingMachineProvider = ({
   const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)
   useSetupEngineManager(streamRef, token)
+
+  const { isShiftDown, editorView } = useStore((s) => ({
+    isShiftDown: s.isShiftDown,
+    editorView: s.editorView,
+  }))
 
   // const { commands } = useCommandsContext()
 
@@ -172,6 +183,45 @@ export const ModelingMachineProvider = ({
           'Extrude failed, sketches need to be closed, or not already extruded'
         )
       },
+      'Set selection': assign(({ selectionRanges }, event) => {
+        if (event.type !== 'Set selection') return {} // this was needed for ts after adding 'Set selection' action to on done modal events
+        const setSelections = event.data
+        if (setSelections.selectionType === 'mirrorCodeMirrorSelections')
+          return { selectionRanges: setSelections.selection }
+        else if (setSelections.selectionType === 'otherSelection')
+          return {
+            selectionRanges: {
+              ...selectionRanges,
+              otherSelections: [setSelections.selection],
+            },
+          }
+        else if (!editorView) return {}
+        else if (setSelections.selectionType === 'singleCodeCursor') {
+          // This DOES NOT set the `selectionRanges` in xstate context
+          // instead it updates/dispatches to the editor, which in turn updates the xstate context
+          // I've found this the best way to deal with the editor without causing an infinite loop
+          // and really we want the editor to be in charge of cursor positions and for `selectionRanges` mirror it
+          // because we want to respect the user manually placing the cursor too.
+          const selectionRangeTypeMap = setCodeMirrorCursor({
+            codeSelection: setSelections.selection,
+            currestSelections: selectionRanges,
+            editorView,
+            isShiftDown,
+          })
+          return {
+            selectionRangeTypeMap,
+          }
+        }
+        // This DOES NOT set the `selectionRanges` in xstate context
+        // same as comment above
+        const selectionRangeTypeMap = dispatchCodeMirrorCursor({
+          selections: setSelections.selection,
+          editorView,
+        })
+        return {
+          selectionRangeTypeMap,
+        }
+      }),
     },
     guards: {
       'Selection contains axis': () => true,
@@ -188,46 +238,72 @@ export const ModelingMachineProvider = ({
       },
     },
     services: {
-      'Get horizontal info': async ({ selectionRanges }) => {
+      'Get horizontal info': async ({
+        selectionRanges,
+      }): Promise<SetSelections> => {
         const { modifiedAst, pathToNodeMap } =
           await applyConstraintHorzVertDistance({
             constraint: 'setHorzDistance',
             selectionRanges,
           })
-        kclManager.updateAst(modifiedAst, true, {
-          // todo handle cursor
-          // callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
-        })
+        await kclManager.updateAst(modifiedAst, true)
+        return {
+          selectionType: 'completeSelection',
+          selection: pathMapToSelections(
+            kclManager.ast,
+            selectionRanges,
+            pathToNodeMap
+          ),
+        }
       },
-      'Get vertical info': async ({ selectionRanges }) => {
+      'Get vertical info': async ({
+        selectionRanges,
+      }): Promise<SetSelections> => {
         const { modifiedAst, pathToNodeMap } =
           await applyConstraintHorzVertDistance({
             constraint: 'setVertDistance',
             selectionRanges,
           })
-        kclManager.updateAst(modifiedAst, true, {
-          // todo handle cursor
-          // callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
-        })
+        await kclManager.updateAst(modifiedAst, true)
+        return {
+          selectionType: 'completeSelection',
+          selection: pathMapToSelections(
+            kclManager.ast,
+            selectionRanges,
+            pathToNodeMap
+          ),
+        }
       },
-      'Get angle info': async ({ selectionRanges }) => {
+      'Get angle info': async ({ selectionRanges }): Promise<SetSelections> => {
         const { modifiedAst, pathToNodeMap } =
           await applyConstraintAngleBetween({
             selectionRanges,
           })
-        kclManager.updateAst(modifiedAst, true, {
-          // todo handle cursor
-          // callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
-        })
+        await kclManager.updateAst(modifiedAst, true)
+        return {
+          selectionType: 'completeSelection',
+          selection: pathMapToSelections(
+            kclManager.ast,
+            selectionRanges,
+            pathToNodeMap
+          ),
+        }
       },
-      'Get length info': async ({ selectionRanges }) => {
+      'Get length info': async ({
+        selectionRanges,
+      }): Promise<SetSelections> => {
         const { modifiedAst, pathToNodeMap } = await applyConstraintAngleLength(
           { selectionRanges }
         )
-        kclManager.updateAst(modifiedAst, true, {
-          // todo handle cursor
-          // callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
-        })
+        await kclManager.updateAst(modifiedAst, true)
+        return {
+          selectionType: 'completeSelection',
+          selection: pathMapToSelections(
+            kclManager.ast,
+            selectionRanges,
+            pathToNodeMap
+          ),
+        }
       },
     },
     devTools: true,

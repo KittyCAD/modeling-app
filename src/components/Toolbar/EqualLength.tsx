@@ -12,11 +12,11 @@ import {
   getTransformInfos,
   PathToNodeMap,
 } from '../../lang/std/sketchcombos'
-import { updateCursors } from '../../lang/util'
 import { ActionIcon } from 'components/ActionIcon'
 import { sketchButtonClassnames } from 'Toolbar'
 import { kclManager } from 'lang/KclSinglton'
 
+/*
 export const EqualLength = () => {
   const { guiMode, selectionRanges, setCursor } = useStore((s) => ({
     guiMode: s.guiMode,
@@ -63,7 +63,7 @@ export const EqualLength = () => {
     </button>
   )
 }
-
+*/
 export function setEqualLengthInfo({
   selectionRanges,
 }: {

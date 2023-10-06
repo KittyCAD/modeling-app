@@ -199,14 +199,14 @@ class KclManager {
   // There's overlapping resposibility between updateAst and executeAst.
   // updateAst was added as it was used a lot before xState migration so makes the port easier.
   // but should probably have think about which of the function to keep
-  updateAst(
+  async updateAst(
     ast: Program,
     execute: boolean,
     optionalParams?: {
       focusPath?: PathToNode
       callBack?: (ast: Program) => void
     }
-  ): Selections | null {
+  ): Promise<Selections | null> {
     const newCode = recast(ast)
     const astWithUpdatedSource = parse(newCode)
     optionalParams?.callBack?.(astWithUpdatedSource)
@@ -233,12 +233,12 @@ class KclManager {
 
     if (execute) {
       // Call execute on the set ast.
-      this.executeAst(astWithUpdatedSource)
+      await this.executeAst(astWithUpdatedSource)
     } else {
       // When we don't re-execute, we still want to update the program
       // memory with the new ast. So we will hit the mock executor
       // instead.
-      this.executeAstMock(astWithUpdatedSource)
+      await this.executeAstMock(astWithUpdatedSource)
     }
     return returnVal
   }

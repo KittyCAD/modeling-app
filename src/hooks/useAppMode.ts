@@ -9,6 +9,7 @@ import { Models } from '@kittycad/lib/dist/types/src'
 import { isReducedMotion } from 'lang/util'
 import { isOverlap } from 'lib/utils'
 import { engineCommandManager } from '../lang/std/engineConnection'
+import { useModelingContext } from './useModelingContext'
 
 interface DefaultPlanes {
   xy: string
@@ -18,14 +19,12 @@ interface DefaultPlanes {
 }
 
 export function useAppMode() {
-  const { guiMode, setGuiMode, selectionRanges, selectionRangeTypeMap } =
-    useStore((s) => ({
-      guiMode: s.guiMode,
-      setGuiMode: s.setGuiMode,
-      selectionRanges: s.selectionRanges,
-      selectionRangeTypeMap: s.selectionRangeTypeMap,
-    }))
+  const { guiMode, setGuiMode } = useStore((s) => ({
+    guiMode: s.guiMode,
+    setGuiMode: s.setGuiMode,
+  }))
   const [defaultPlanes, setDefaultPlanes] = useState<DefaultPlanes | null>(null)
+  const { context } = useModelingContext()
   useEffect(() => {
     if (
       guiMode.mode === 'sketch' &&
@@ -97,7 +96,7 @@ export function useAppMode() {
         engineCommandManager &&
         isCursorInSketchCommandRange(
           engineCommandManager.artifactMap,
-          selectionRanges
+          context.selectionRanges
         )
       if (pathId) {
         setGuiMode({
@@ -113,7 +112,7 @@ export function useAppMode() {
         !engineCommandManager ||
         !isCursorInSketchCommandRange(
           engineCommandManager.artifactMap,
-          selectionRanges
+          context.selectionRanges
         )
       ) {
         setGuiMode({
@@ -121,13 +120,7 @@ export function useAppMode() {
         })
       }
     }
-  }, [
-    guiMode,
-    guiMode.mode,
-    engineCommandManager,
-    selectionRanges,
-    selectionRangeTypeMap,
-  ])
+  }, [guiMode, guiMode.mode, engineCommandManager, context.selectionRanges])
 
   useEffect(() => {
     const unSub = engineCommandManager.subscribeTo({

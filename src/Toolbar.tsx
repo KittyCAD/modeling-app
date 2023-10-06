@@ -1,15 +1,15 @@
 import { useStore, toolTips, ToolTip } from './useStore'
 import { extrudeSketch, sketchOnExtrudedFace } from './lang/modifyAst'
 import { getNodePathFromSourceRange } from './lang/queryAst'
-import { HorzVert } from './components/Toolbar/HorzVert'
-import { RemoveConstrainingValues } from './components/Toolbar/RemoveConstrainingValues'
-import { EqualLength } from './components/Toolbar/EqualLength'
-import { EqualAngle } from './components/Toolbar/EqualAngle'
-import { Intersect } from './components/Toolbar/Intersect'
-import { SetHorzVertDistance } from './components/Toolbar/SetHorzVertDistance'
-import { SetAngleLength } from './components/Toolbar/setAngleLength'
-import { SetAbsDistance } from './components/Toolbar/SetAbsDistance'
-import { SetAngleBetween } from './components/Toolbar/SetAngleBetween'
+// import { HorzVert } from './components/Toolbar/HorzVert'
+// import { RemoveConstrainingValues } from './components/Toolbar/RemoveConstrainingValues'
+// import { EqualLength } from './components/Toolbar/EqualLength'
+// import { EqualAngle } from './components/Toolbar/EqualAngle'
+// import { Intersect } from './components/Toolbar/Intersect'
+// import { SetHorzVertDistance } from './components/Toolbar/SetHorzVertDistance'
+// import { SetAngleLength } from './components/Toolbar/setAngleLength'
+// import { SetAbsDistance } from './components/Toolbar/SetAbsDistance'
+// import { SetAngleBetween } from './components/Toolbar/SetAngleBetween'
 import { Fragment, WheelEvent, useRef, useMemo } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faX } from '@fortawesome/free-solid-svg-icons'
@@ -46,21 +46,20 @@ const sketchFnLabels: Record<ToolTip | 'sketch_line' | 'move', string> = {
 }
 
 export const Toolbar = () => {
-  const { setGuiMode, guiMode, selectionRanges } = useStore((s) => ({
+  const { setGuiMode, guiMode } = useStore((s) => ({
     guiMode: s.guiMode,
     setGuiMode: s.setGuiMode,
-    selectionRanges: s.selectionRanges,
   }))
   useAppMode()
-  const { state, send } = useModelingContext()
+  const { state, send, context } = useModelingContext()
   const toolbarButtonsRef = useRef<HTMLSpanElement>(null)
   const pathId = useMemo(
     () =>
       isCursorInSketchCommandRange(
         engineCommandManager.artifactMap,
-        selectionRanges
+        context.selectionRanges
       ),
-    [engineCommandManager.artifactMap, selectionRanges]
+    [engineCommandManager.artifactMap, context.selectionRanges]
   )
 
   function handleToolbarButtonsWheelEvent(ev: WheelEvent<HTMLSpanElement>) {
@@ -175,7 +174,7 @@ export const Toolbar = () => {
             onClick={() => {
               const pathToNode = getNodePathFromSourceRange(
                 kclManager.ast,
-                selectionRanges.codeBasedSelections[0].range
+                context.selectionRanges.codeBasedSelections[0].range
               )
               const { modifiedAst } = sketchOnExtrudedFace(
                 kclManager.ast,
@@ -265,7 +264,7 @@ export const Toolbar = () => {
               </button>
             )
           })}
-        <HorzVert horOrVert="horizontal" />
+        {/* <HorzVert horOrVert="horizontal" />
         <HorzVert horOrVert="vertical" />
         <EqualLength />
         <EqualAngle />
@@ -281,7 +280,7 @@ export const Toolbar = () => {
         <SetAngleLength angleOrLength="setLength" />
         <Intersect />
         <RemoveConstrainingValues />
-        <SetAngleBetween />
+        <SetAngleBetween /> */}
       </span>
     )
   }

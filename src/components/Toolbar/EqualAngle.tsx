@@ -11,11 +11,11 @@ import {
   transformSecondarySketchLinesTagFirst,
   getTransformInfos,
 } from '../../lang/std/sketchcombos'
-import { updateCursors } from '../../lang/util'
 import { ActionIcon } from 'components/ActionIcon'
 import { sketchButtonClassnames } from 'Toolbar'
 import { kclManager } from 'lang/KclSinglton'
 
+/*
 export const EqualAngle = () => {
   const { guiMode, selectionRanges, setCursor } = useStore((s) => ({
     guiMode: s.guiMode,
@@ -99,3 +99,4 @@ export const EqualAngle = () => {
     </button>
   )
 }
+*/
