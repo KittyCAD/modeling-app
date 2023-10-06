@@ -114,6 +114,8 @@ export function useAppMode() {
           // user clicked something else in the scene
           return
         }
+
+          // TODO: Right here we want to set the context.sketchPlaneId to data.entity_id
         const sketchModeResponse = await engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
