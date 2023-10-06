@@ -35,7 +35,13 @@ class KclManager {
 
   engineCommandManager: EngineCommandManager
   private _defferer = deferExecution(
-    (defaultPlanes: DefaultPlanes, code: string) => {
+    ({
+      defaultPlanes,
+      code,
+    }: {
+      defaultPlanes: DefaultPlanes
+      code: string
+    }) => {
       const ast = parse(code)
       this.executeAst(defaultPlanes, ast)
     },
@@ -190,7 +196,7 @@ class KclManager {
   setCodeAndExecute(defaultPlanes: DefaultPlanes, code: string) {
     this.setCode(code)
     if (code.trim()) {
-      this._defferer(defaultPlanes, code)
+      this._defferer({ defaultPlanes, code })
       return
     }
     this._ast = {
