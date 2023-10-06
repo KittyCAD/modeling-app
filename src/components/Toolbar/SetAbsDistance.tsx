@@ -20,6 +20,7 @@ import {
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { updateCursors } from '../../lang/util'
 import { kclManager } from 'lang/KclSinglton'
+import { useModelingContext } from 'hooks/useModelingContext'
 
 const getModalInfo = create(SetAngleLengthModal as any)
 
@@ -38,6 +39,7 @@ export const SetAbsDistance = ({ buttonType }: { buttonType: ButtonType }) => {
     selectionRanges: s.selectionRanges,
     setCursor: s.setCursor,
   }))
+  const { context } = useModelingContext()
   const disType: ConstraintType =
     buttonType === 'xAbs' || buttonType === 'yAbs'
       ? buttonType
@@ -130,9 +132,18 @@ export const SetAbsDistance = ({ buttonType }: { buttonType: ButtonType }) => {
             _modifiedAst.body = newBody
           }
 
-          kclManager.updateAst(_modifiedAst, true, {
-            callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
-          })
+          kclManager.updateAst(
+            context.defaultPlanes.planes,
+            _modifiedAst,
+            true,
+            {
+              callBack: updateCursors(
+                setCursor,
+                selectionRanges,
+                pathToNodeMap
+              ),
+            }
+          )
         } catch (e) {
           console.log('error', e)
         }

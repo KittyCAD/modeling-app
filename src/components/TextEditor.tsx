@@ -70,8 +70,8 @@ export const TextEditor = ({
   }))
   const { code, errors } = useKclContext()
 
-  const { context: { selectionRanges: machineSelectionRanges } = {}, send } =
-    useModelingContext()
+  const { context, send } = useModelingContext()
+  const machineSelectionRanges = context.selectionRanges
 
   const { settings: { context: { textWrapping } = {} } = {} } =
     useGlobalStateContext()
@@ -120,7 +120,7 @@ export const TextEditor = ({
 
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (value: string, viewUpdate: ViewUpdate) => {
-    kclManager.setCode(value, true)
+    kclManager.setCodeAndExecute(context.defaultPlanes.planes, value)
     if (isTauri() && pathParams.id) {
       // Save the file to disk
       // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files

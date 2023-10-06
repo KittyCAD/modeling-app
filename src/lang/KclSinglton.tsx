@@ -182,30 +182,31 @@ class KclManager {
     this._kclErrors = errors
     this._programMemory = programMemory
   }
-  setCode(code: string, execute = false) {
+  setCode(code: string) {
     this._code = code
     this._codeCallBack(code)
     localStorage.setItem(PERSIST_CODE_TOKEN, code)
-    if (execute) {
-      if (code.trim()) {
-        this._defferer(code)
-        return
-      }
-      this._ast = {
-        body: [],
-        start: 0,
-        end: 0,
-        nonCodeMeta: {
-          nonCodeNodes: {},
-          start: null,
-        },
-      }
-      this._programMemory = {
-        root: {},
-        return: null,
-      }
-      engineCommandManager.endSession()
+  }
+  setCodeAndExecute(defaultPlanes: DefaultPlanes, code: string) {
+    this.setCode(code)
+    if (code.trim()) {
+      this._defferer(defaultPlanes, code)
+      return
     }
+    this._ast = {
+      body: [],
+      start: 0,
+      end: 0,
+      nonCodeMeta: {
+        nonCodeNodes: {},
+        start: null,
+      },
+    }
+    this._programMemory = {
+      root: {},
+      return: null,
+    }
+    engineCommandManager.endSession()
   }
   format() {
     this.code = recast(parse(kclManager.code))

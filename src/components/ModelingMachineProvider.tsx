@@ -204,43 +204,43 @@ export const ModelingMachineProvider = ({
       },
     },
     services: {
-      'Get horizontal info': async ({ selectionRanges }) => {
+      'Get horizontal info': async ({ defaultPlanes, selectionRanges }) => {
         const { modifiedAst, pathToNodeMap } =
           await applyConstraintHorzVertDistance({
             constraint: 'setHorzDistance',
             selectionRanges,
           })
-        kclManager.updateAst(modifiedAst, true, {
+        kclManager.updateAst(defaultPlanes.planes, modifiedAst, true, {
           // todo handle cursor
           // callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
         })
       },
-      'Get vertical info': async ({ selectionRanges }) => {
+      'Get vertical info': async ({ defaultPlanes, selectionRanges }) => {
         const { modifiedAst, pathToNodeMap } =
           await applyConstraintHorzVertDistance({
             constraint: 'setVertDistance',
             selectionRanges,
           })
-        kclManager.updateAst(modifiedAst, true, {
+        kclManager.updateAst(defaultPlanes.planes, modifiedAst, true, {
           // todo handle cursor
           // callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
         })
       },
-      'Get angle info': async ({ selectionRanges }) => {
+      'Get angle info': async ({ defaultPlanes, selectionRanges }) => {
         const { modifiedAst, pathToNodeMap } =
           await applyConstraintAngleBetween({
             selectionRanges,
           })
-        kclManager.updateAst(modifiedAst, true, {
+        kclManager.updateAst(defaultPlanes.planes, modifiedAst, true, {
           // todo handle cursor
           // callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
         })
       },
-      'Get length info': async ({ selectionRanges }) => {
+      'Get length info': async ({ defaultPlanes, selectionRanges }) => {
         const { modifiedAst, pathToNodeMap } = await applyConstraintAngleLength(
           { selectionRanges }
         )
-        kclManager.updateAst(modifiedAst, true, {
+        kclManager.updateAst(defaultPlanes.planes, modifiedAst, true, {
           // todo handle cursor
           // callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
         })

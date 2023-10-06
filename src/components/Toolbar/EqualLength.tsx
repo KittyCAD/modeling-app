@@ -16,6 +16,7 @@ import { updateCursors } from '../../lang/util'
 import { ActionIcon } from 'components/ActionIcon'
 import { sketchButtonClassnames } from 'Toolbar'
 import { kclManager } from 'lang/KclSinglton'
+import { useModelingContext } from 'hooks/useModelingContext'
 
 export const EqualLength = () => {
   const { guiMode, selectionRanges, setCursor } = useStore((s) => ({
@@ -25,6 +26,7 @@ export const EqualLength = () => {
   }))
   const [enableEqual, setEnableEqual] = useState(false)
   const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
+  const { context } = useModelingContext()
   useEffect(() => {
     const { enabled, transforms } = setEqualLengthInfo({ selectionRanges })
 
@@ -44,7 +46,7 @@ export const EqualLength = () => {
             transformInfos,
             programMemory: kclManager.programMemory,
           })
-        kclManager.updateAst(modifiedAst, true, {
+        kclManager.updateAst(context.defaultPlanes.planes, modifiedAst, true, {
           callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
         })
       }}

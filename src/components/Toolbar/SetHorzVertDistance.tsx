@@ -20,6 +20,7 @@ import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { updateCursors } from '../../lang/util'
 import { kclManager } from 'lang/KclSinglton'
 import { Selections } from 'useStore'
+import { useModelingContext } from 'hooks/useModelingContext'
 
 const getModalInfo = create(GetInfoModal as any)
 
@@ -46,6 +47,7 @@ export const SetHorzVertDistance = ({
     selectionRanges: s.selectionRanges,
     setCursor: s.setCursor,
   }))
+  const { context } = useModelingContext()
   const constraint: ConstraintType =
     buttonType === 'setHorzDistance' || buttonType === 'setVertDistance'
       ? buttonType
@@ -102,9 +104,18 @@ export const SetHorzVertDistance = ({
               constraint === 'setHorzDistance' ? 'xDis' : 'yDis',
           } as any))
         if (segName === tagInfo?.tag && value === valueUsedInTransform) {
-          kclManager.updateAst(modifiedAst, true, {
-            callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
-          })
+          kclManager.updateAst(
+            context.defaultPlanes.planes,
+            modifiedAst,
+            true,
+            {
+              callBack: updateCursors(
+                setCursor,
+                selectionRanges,
+                pathToNodeMap
+              ),
+            }
+          )
         } else {
           let finalValue = isAlign
             ? createLiteral(0)
@@ -128,9 +139,18 @@ export const SetHorzVertDistance = ({
             )
             _modifiedAst.body = newBody
           }
-          kclManager.updateAst(_modifiedAst, true, {
-            callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
-          })
+          kclManager.updateAst(
+            context.defaultPlanes.planes,
+            _modifiedAst,
+            true,
+            {
+              callBack: updateCursors(
+                setCursor,
+                selectionRanges,
+                pathToNodeMap
+              ),
+            }
+          )
         }
       }}
       disabled={!enable}

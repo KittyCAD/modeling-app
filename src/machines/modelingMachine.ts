@@ -793,7 +793,7 @@ export const modelingMachine = createMachine(
           // callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
         })
       },
-      'AST extrude': ({ selectionRanges }) => {
+      'AST extrude': ({ defaultPlanes, selectionRanges }) => {
         const pathToNode = getNodePathFromSourceRange(
           kclManager.ast,
           selectionRanges.codeBasedSelections[0].range
@@ -803,7 +803,7 @@ export const modelingMachine = createMachine(
           pathToNode
         )
         // TODO not handling focusPath correctly I think
-        kclManager.updateAst(modifiedAst, true, {
+        kclManager.updateAst(defaultPlanes.planes, modifiedAst, true, {
           focusPath: pathToExtrudeArg,
         })
       },
