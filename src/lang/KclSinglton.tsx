@@ -9,9 +9,8 @@ import { parse, PathToNode, Program, ProgramMemory, recast } from 'lang/wasm'
 import { bracket } from 'lib/exampleKcl'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { getNodeFromPath } from './queryAst'
-import { DefaultPlanes } from '../wasm-lib/kcl/bindings/DefaultPlanes'
-import { initDefaultPlanes } from '../hooks/useAppMode'
 import { CursorPos } from 'readline'
+import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 
 const PERSIST_CODE_TOKEN = 'persistCode'
 
@@ -30,16 +29,18 @@ class KclManager {
     root: {},
     return: null,
   }
-  private _defaultPlanes: DefaultPlanes | null = null
   private _logs: string[] = []
   private _kclErrors: KCLError[] = []
   private _isExecuting = false
 
   engineCommandManager: EngineCommandManager
-  private _defferer = deferExecution((code: string) => {
-    const ast = parse(code)
-    this.executeAst(ast)
-  }, 600)
+  private _defferer = deferExecution(
+    (defaultPlanes: DefaultPlanes, code: string) => {
+      const ast = parse(code)
+      this.executeAst(defaultPlanes, ast)
+    },
+    600
+  )
 
   private _isExecutingCallback: (a: boolean) => void = () => {}
   private _codeCallBack: (arg: string) => void = () => {}
@@ -70,10 +71,6 @@ class KclManager {
   set programMemory(programMemory) {
     this._programMemory = programMemory
     this._programMemoryCallBack(programMemory)
-  }
-
-  get defaultPlanes() {
-    return this._defaultPlanes
   }
 
   get logs() {
@@ -140,24 +137,17 @@ class KclManager {
     this._isExecutingCallback = setIsExecuting
   }
 
-  async initDefaultPlanes() {
-    if (this._defaultPlanes) return
-
-    let defaultPlanes = await initDefaultPlanes(engineCommandManager, true)
-    if (!defaultPlanes) return
-    this._defaultPlanes = defaultPlanes
-  }
-
-  async executeAst(ast: Program = this._ast, updateCode = false) {
+  async executeAst(
+    defaultPlanes: DefaultPlanes,
+    ast: Program = this._ast,
+    updateCode = false
+  ) {
     // if (!this.isStreamReady) return
     this._isExecutingCallback(true)
-    if (!this._defaultPlanes) {
-      this.initDefaultPlanes()
-    }
     const { logs, errors, programMemory } = await executeAst({
       ast,
       engineCommandManager,
-      defaultPlanes: this._defaultPlanes!,
+      defaultPlanes,
     })
     this._isExecutingCallback(false)
     this._logs = logs
@@ -169,7 +159,11 @@ class KclManager {
       this._codeCallBack(this._code)
     }
   }
-  async executeAstMock(ast: Program = this._ast, updateCode = false) {
+  async executeAstMock(
+    defaultPlanes: DefaultPlanes,
+    ast: Program = this._ast,
+    updateCode = false
+  ) {
     const newCode = recast(ast)
     const newAst = parse(newCode)
     await engineCommandManager.waitForReady
@@ -181,7 +175,7 @@ class KclManager {
     const { logs, errors, programMemory } = await executeAst({
       ast: newAst,
       engineCommandManager,
-      defaultPlanes: this._defaultPlanes!,
+      defaultPlanes,
       useFakeExecutor: true,
     })
     this._logs = logs
@@ -220,6 +214,7 @@ class KclManager {
   // updateAst was added as it was used a lot before xState migration so makes the port easier.
   // but should probably have think about which of the function to keep
   updateAst(
+    defaultPlanes: DefaultPlanes,
     ast: Program,
     execute: boolean,
     optionalParams?: {
@@ -253,12 +248,12 @@ class KclManager {
 
     if (execute) {
       // Call execute on the set ast.
-      this.executeAst(astWithUpdatedSource)
+      this.executeAst(defaultPlanes, astWithUpdatedSource)
     } else {
       // When we don't re-execute, we still want to update the program
       // memory with the new ast. So we will hit the mock executor
       // instead.
-      this.executeAstMock(astWithUpdatedSource)
+      this.executeAstMock(defaultPlanes, astWithUpdatedSource)
     }
     return returnVal
   }

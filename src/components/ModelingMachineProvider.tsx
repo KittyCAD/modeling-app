@@ -93,65 +93,43 @@ export const ModelingMachineProvider = ({
         ]
         await Promise.all(proms)
       },
-      'AST start new sketch': assign((_, { data: coords }) => {
-        // TODO: need kurts help here, this was old code.
-        // We need the normal for the plane we are on.
-        const plane = await engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'get_sketch_mode_plane',
-          },
-        })
-        const z_axis = plane.data.data.z_axis
+      'AST start new sketch': assign(
+        ({ defaultPlanes }, { data: { coords, axis } }) => {
+          // Something really weird must have happened for this to happen.
+          if (!axis) {
+            console.error('axis is undefined for starting a new sketch')
+            return
+          }
 
-        // Get the current axis.
-        let currentAxis: 'xy' | 'xz' | 'yz' | '-xy' | '-xz' | '-yz' | null =
-          null
-        if (currentPlane === defaultPlanes?.xy) {
-          if (z_axis.z === -1) {
-            currentAxis = '-xy'
-          } else {
-            currentAxis = 'xy'
-          }
-        } else if (currentPlane === defaultPlanes?.yz) {
-          if (z_axis.x === -1) {
-            currentAxis = '-yz'
-          } else {
-            currentAxis = 'yz'
-          }
-        } else if (currentPlane === defaultPlanes?.xz) {
-          if (z_axis.y === -1) {
-            currentAxis = '-xz'
-          } else {
-            currentAxis = 'xz'
+          const _addStartSketch = addStartSketch(
+            kclManager.ast,
+            axis,
+            [roundOff(coords[0].x), roundOff(coords[0].y)],
+            [
+              roundOff(coords[1].x - coords[0].x),
+              roundOff(coords[1].y - coords[0].y),
+            ]
+          )
+          const _modifiedAst = _addStartSketch.modifiedAst
+          const _pathToNode = _addStartSketch.pathToNode
+          const newCode = recast(_modifiedAst)
+          const astWithUpdatedSource = parse(newCode)
+
+          kclManager.executeAstMock(
+            defaultPlanes.planes,
+            astWithUpdatedSource,
+            true
+          )
+
+          return {
+            sketchPathToNode: _pathToNode,
           }
         }
-
-        // Do not support starting a new sketch on a non-default plane.
-        if (!currentAxis) return
-
-        const _addStartSketch = addStartSketch(
-          kclManager.ast,
-          currentAxis, // the axis.
-          [roundOff(coords[0].x), roundOff(coords[0].y)],
-          [
-            roundOff(coords[1].x - coords[0].x),
-            roundOff(coords[1].y - coords[0].y),
-          ]
-        )
-        const _modifiedAst = _addStartSketch.modifiedAst
-        const _pathToNode = _addStartSketch.pathToNode
-        const newCode = recast(_modifiedAst)
-        const astWithUpdatedSource = parse(newCode)
-
-        kclManager.executeAstMock(astWithUpdatedSource, true)
-
-        return {
-          sketchPathToNode: _pathToNode,
-        }
-      }),
-      'AST add line segment': ({ sketchPathToNode }, { data: coords }) => {
+      ),
+      'AST add line segment': (
+        { sketchPathToNode, defaultPlanes },
+        { data: { coords } }
+      ) => {
         if (!sketchPathToNode) return
         const lastCoord = coords[coords.length - 1]
 
@@ -179,7 +157,7 @@ export const ModelingMachineProvider = ({
             fnName: 'line',
             pathToNode: sketchPathToNode,
           }).modifiedAst
-          kclManager.executeAstMock(_modifiedAst, true)
+          kclManager.executeAstMock(defaultPlanes.planes, _modifiedAst, true)
           // kclManager.updateAst(_modifiedAst, false)
         } else {
           _modifiedAst = addCloseToPipe({
@@ -197,12 +175,12 @@ export const ModelingMachineProvider = ({
             cmd_id: uuidv4(),
             cmd: { type: 'default_camera_disable_sketch_mode' },
           })
-          kclManager.executeAstMock(_modifiedAst, true)
+          kclManager.executeAstMock(defaultPlanes.planes, _modifiedAst, true)
           // updateAst(_modifiedAst, true)
         }
       },
-      'sketch exit execute': () => {
-        kclManager.executeAst()
+      'sketch exit execute': ({ defaultPlanes }) => {
+        kclManager.executeAst(defaultPlanes.planes)
       },
       'set tool': () => {}, // TODO
       'toast extrude failed': () => {

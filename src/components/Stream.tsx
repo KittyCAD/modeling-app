@@ -167,10 +167,7 @@ export const Stream = ({ className = '' }) => {
         if (!entities_modified) return
         if (state.matches('Sketch.Line Tool.No Points')) {
           send('Add point')
-        } else if (
-          state.matches('Sketch.Line Tool.Point Added') ||
-          state.matches('Sketch.Line Tool.Segment Added')
-        ) {
+        } else if (state.matches('Sketch.Line Tool.Point Added')) {
           const curve = await engineCommandManager.sendSceneCommand({
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
@@ -181,7 +178,58 @@ export const Stream = ({ className = '' }) => {
           })
           const coords: { x: number; y: number }[] =
             curve.data.data.control_points
-          send({ type: 'Add point', data: coords })
+          // We need the normal for the plane we are on.
+          const plane = await engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'get_sketch_mode_plane',
+            },
+          })
+          const z_axis = plane.data.data.z_axis
+
+          // Get the current axis.
+          let currentAxis: 'xy' | 'xz' | 'yz' | '-xy' | '-xz' | '-yz' | null =
+            null
+          if (
+            context.sketchPlaneId === context.defaultPlanes.getPlaneId('xy')
+          ) {
+            if (z_axis.z === -1) {
+              currentAxis = '-xy'
+            } else {
+              currentAxis = 'xy'
+            }
+          } else if (
+            context.sketchPlaneId === context.defaultPlanes.getPlaneId('yz')
+          ) {
+            if (z_axis.x === -1) {
+              currentAxis = '-yz'
+            } else {
+              currentAxis = 'yz'
+            }
+          } else if (
+            context.sketchPlaneId === context.defaultPlanes.getPlaneId('xz')
+          ) {
+            if (z_axis.y === -1) {
+              currentAxis = '-xz'
+            } else {
+              currentAxis = 'xz'
+            }
+          }
+
+          send({ type: 'Add point', data: { coords, axis: currentAxis } })
+        } else if (state.matches('Sketch.Line Tool.Segment Added')) {
+          const curve = await engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'curve_get_control_points',
+              curve_id: entities_modified[0],
+            },
+          })
+          const coords: { x: number; y: number }[] =
+            curve.data.data.control_points
+          send({ type: 'Add point', data: { coords, axis: null } })
         }
       })
     } else if (
@@ -217,14 +265,17 @@ export const Stream = ({ className = '' }) => {
         ).node
         const variableName = varDec?.id?.name
 
-        // TODO: Kurts help for xstate here.
         // Get the current plane string for plane we are on.
         let currentPlaneString = ''
-        if (currentPlane === defaultPlanes?.xy) {
+        if (context.sketchPlaneId === context.defaultPlanes.getPlaneId('xy')) {
           currentPlaneString = 'XY'
-        } else if (currentPlane === defaultPlanes?.yz) {
+        } else if (
+          context.sketchPlaneId === context.defaultPlanes.getPlaneId('yz')
+        ) {
           currentPlaneString = 'YZ'
-        } else if (currentPlane === defaultPlanes?.xz) {
+        } else if (
+          context.sketchPlaneId === context.defaultPlanes.getPlaneId('xz')
+        ) {
           currentPlaneString = 'XZ'
         }
 
@@ -237,9 +288,14 @@ export const Stream = ({ className = '' }) => {
           engineCommandManager,
           kclManager.ast,
           variableName,
+          currentPlaneString,
           context.sketchEnginePathId
         )
-        kclManager.executeAstMock(updatedAst, true)
+        kclManager.executeAstMock(
+          context.defaultPlanes.planes,
+          updatedAst,
+          true
+        )
       })
     }
 

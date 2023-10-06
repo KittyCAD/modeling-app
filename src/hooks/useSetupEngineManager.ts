@@ -4,6 +4,7 @@ import { useStore } from '../useStore'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { deferExecution } from 'lib/utils'
 import { kclManager } from 'lang/KclSinglton'
+import { useModelingContext } from 'hooks/useModelingContext'
 
 export function useSetupEngineManager(
   streamRef: React.RefObject<HTMLDivElement>,
@@ -20,6 +21,7 @@ export function useSetupEngineManager(
     setStreamDimensions: s.setStreamDimensions,
     streamDimensions: s.streamDimensions,
   }))
+  const { context } = useModelingContext()
 
   const streamWidth = streamRef?.current?.offsetWidth
   const streamHeight = streamRef?.current?.offsetHeight
@@ -27,7 +29,11 @@ export function useSetupEngineManager(
   const hasSetNonZeroDimensions = useRef<boolean>(false)
 
   useEffect(() => {
-    kclManager.executeAst(parse(kclManager.code), true)
+    kclManager.executeAst(
+      context.defaultPlanes.planes,
+      parse(kclManager.code),
+      true
+    )
   }, [])
 
   useLayoutEffect(() => {
@@ -45,7 +51,7 @@ export function useSetupEngineManager(
         height: quadHeight,
         executeCode: (code?: string) => {
           const _ast = parse(code || kclManager.code)
-          return kclManager.executeAst(_ast, true)
+          return kclManager.executeAst(context.defaultPlanes.planes, _ast, true)
         },
         token,
       })

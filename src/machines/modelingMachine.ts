@@ -28,6 +28,8 @@ import {
   setEqualLengthInfo,
 } from 'components/Toolbar/EqualLength'
 import { extrudeSketch } from 'lang/modifyAst'
+import { getNodeFromPath } from '../lang/queryAst'
+import { CallExpression, PipeExpression } from '../lang/wasm'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -52,6 +54,7 @@ export const modelingMachine = createMachine(
       } as Selections,
       sketchPathToNode: null as PathToNode | null, // maybe too specific, and we should have a generic pathToNode, but being specific seems less risky when I'm not sure
       sketchEnginePathId: '' as string,
+      sketchPlaneId: '' as string,
     },
 
     schema: {
@@ -83,7 +86,13 @@ export const modelingMachine = createMachine(
         | { type: 'Toggle gui mode' }
         | { type: 'Cancel' }
         | { type: 'CancelSketch' }
-        | { type: 'Add point'; data: { x: number; y: number }[] }
+        | {
+            type: 'Add point'
+            data: {
+              coords: { x: number; y: number }[]
+              axis: 'xy' | 'xz' | 'yz' | '-xy' | '-xz' | '-yz' | null
+            }
+          }
         | { type: 'Equip tool' }
         | { type: 'Equip move tool' }
         | { type: 'Set radius' }
@@ -613,14 +622,13 @@ export const modelingMachine = createMachine(
           codeBasedSelections: [],
         }),
       }),
-      'sketch mode enabled': ({ defaultPlanes }) => {
-        // TODO we're always assuming that they want to sketch on the xy plane!
+      'sketch mode enabled': ({ defaultPlanes, sketchPlaneId }) => {
         engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
             type: 'sketch_mode_enable',
-            plane_id: defaultPlanes.xy,
+            plane_id: sketchPlaneId,
             ortho: true,
             animated: !isReducedMotion(),
           },
@@ -659,13 +667,41 @@ export const modelingMachine = createMachine(
       'reset sketchPathToNode': assign({
         sketchPathToNode: null,
         sketchEnginePathId: '',
+        sketchPlaneId: '',
       }),
-      'set sketchPathToNode': assign(({ selectionRanges }) => {
+      'set sketchPathToNode': assign(({ selectionRanges, defaultPlanes }) => {
         const sourceRange = selectionRanges.codeBasedSelections[0].range
         const sketchPathToNode = getNodePathFromSourceRange(
           kclManager.ast,
           sourceRange
         )
+        const pipeExpression = getNodeFromPath<PipeExpression>(
+          kclManager.ast,
+          sketchPathToNode,
+          'PipeExpression'
+        ).node
+        if (pipeExpression.type !== 'PipeExpression') return /// bad bad bad
+        const sketchCallExpression = pipeExpression.body.find(
+          (e) =>
+            e.type === 'CallExpression' && e.callee.name === 'startSketchOn'
+        ) as CallExpression
+        if (!sketchCallExpression) return // also bad bad bad
+        const firstArg = sketchCallExpression.arguments[0]
+        let planeId = ''
+        if (firstArg.type === 'Literal' && firstArg.value) {
+          const planeStrCleaned = firstArg.value
+            .toString()
+            .toLowerCase()
+            .replace('-', '')
+          if (
+            planeStrCleaned === 'xy' ||
+            planeStrCleaned === 'xz' ||
+            planeStrCleaned === 'yz'
+          ) {
+            planeId = defaultPlanes.getPlaneId(planeStrCleaned)
+          }
+        }
+
         const sketchEnginePathId =
           isCursorInSketchCommandRange(
             engineCommandManager.artifactMap,
@@ -674,6 +710,7 @@ export const modelingMachine = createMachine(
         return {
           sketchPathToNode,
           sketchEnginePathId,
+          sketchPlaneId: planeId,
         }
       }),
       'set tool line': () =>
@@ -703,55 +740,55 @@ export const modelingMachine = createMachine(
             tool: 'move',
           },
         }),
-      'Make selection horizontal': ({ selectionRanges }) => {
+      'Make selection horizontal': ({ defaultPlanes, selectionRanges }) => {
         const { modifiedAst, pathToNodeMap } = applyConstraintHorzVert(
           selectionRanges,
           'horizontal',
           kclManager.ast,
           kclManager.programMemory
         )
-        kclManager.updateAst(modifiedAst, true, {
+        kclManager.updateAst(defaultPlanes.planes, modifiedAst, true, {
           // TODO re implement cursor shit
           // callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
         })
       },
-      'Make selection vertical': ({ selectionRanges }) => {
+      'Make selection vertical': ({ defaultPlanes, selectionRanges }) => {
         const { modifiedAst, pathToNodeMap } = applyConstraintHorzVert(
           selectionRanges,
           'vertical',
           kclManager.ast,
           kclManager.programMemory
         )
-        kclManager.updateAst(modifiedAst, true, {
+        kclManager.updateAst(defaultPlanes.planes, modifiedAst, true, {
           // TODO re implement cursor shit
           // callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
         })
       },
-      'Constrain horizontally align': ({ selectionRanges }) => {
+      'Constrain horizontally align': ({ defaultPlanes, selectionRanges }) => {
         const { modifiedAst, pathToNodeMap } = applyConstraintHorzVertAlign({
           selectionRanges,
           constraint: 'setVertDistance',
         })
-        kclManager.updateAst(modifiedAst, true, {
+        kclManager.updateAst(defaultPlanes.planes, modifiedAst, true, {
           // TODO re implement cursor shit
           // callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
         })
       },
-      'Constrain vertically align': ({ selectionRanges }) => {
+      'Constrain vertically align': ({ defaultPlanes, selectionRanges }) => {
         const { modifiedAst, pathToNodeMap } = applyConstraintHorzVertAlign({
           selectionRanges,
           constraint: 'setHorzDistance',
         })
-        kclManager.updateAst(modifiedAst, true, {
+        kclManager.updateAst(defaultPlanes.planes, modifiedAst, true, {
           // TODO re implement cursor shit
           // callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
         })
       },
-      'Constrain equal length': ({ selectionRanges }) => {
+      'Constrain equal length': ({ defaultPlanes, selectionRanges }) => {
         const { modifiedAst, pathToNodeMap } = applyConstraintEqualLength({
           selectionRanges,
         })
-        kclManager.updateAst(modifiedAst, true, {
+        kclManager.updateAst(defaultPlanes.planes, modifiedAst, true, {
           // TODO re implement cursor shit
           // callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
         })
