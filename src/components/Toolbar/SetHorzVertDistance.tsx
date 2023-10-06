@@ -17,7 +17,6 @@ import {
 import { GetInfoModal } from '../SetHorVertDistanceModal'
 import { createLiteral, createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
-import { updateCursors } from '../../lang/util'
 import { kclManager } from 'lang/KclSinglton'
 import { Selections } from 'useStore'
 
@@ -36,6 +35,7 @@ const buttonLabels: Record<ButtonType, string> = {
   alignEndsVertically: 'Align Ends Vertically',
 }
 
+/*
 export const SetHorzVertDistance = ({
   buttonType,
 }: {
@@ -140,6 +140,7 @@ export const SetHorzVertDistance = ({
     </button>
   )
 }
+*/
 
 export function horzVertDistanceInfo({
   selectionRanges,

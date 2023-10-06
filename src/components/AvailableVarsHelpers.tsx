@@ -7,9 +7,9 @@ import {
   findUniqueName,
 } from '../lang/modifyAst'
 import { findAllPreviousVariables, PrevVariable } from '../lang/queryAst'
-import { useStore } from '../useStore'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { kclManager, useKclContext } from 'lang/KclSinglton'
+import { useModelingContext } from 'hooks/useModelingContext'
 
 export const AvailableVars = ({
   onVarClick,
@@ -92,10 +92,9 @@ export function useCalc({
   newVariableInsertIndex: number
   setNewVariableName: (a: string) => void
 } {
-  const { selectionRange } = useStore((s) => ({
-    selectionRange: s.selectionRanges.codeBasedSelections[0].range,
-  }))
   const { programMemory } = useKclContext()
+  const { context } = useModelingContext()
+  const selectionRange = context.selectionRanges.codeBasedSelections[0].range
   const inputRef = useRef<HTMLInputElement>(null)
   const [availableVarInfo, setAvailableVarInfo] = useState<
     ReturnType<typeof findAllPreviousVariables>

@@ -20,7 +20,6 @@ import {
 } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { normaliseAngle } from '../../lib/utils'
-import { updateCursors } from '../../lang/util'
 import { kclManager } from 'lang/KclSinglton'
 
 const getModalInfo = create(SetAngleLengthModal as any)
@@ -32,6 +31,7 @@ const buttonLabels: Record<ButtonType, string> = {
   setLength: 'Set Length',
 }
 
+/*
 export const SetAngleLength = ({
   angleOrLength,
 }: {
@@ -143,6 +143,7 @@ export const SetAngleLength = ({
     </button>
   )
 }
+*/
 
 export function setAngleLengthInfo({
   selectionRanges,

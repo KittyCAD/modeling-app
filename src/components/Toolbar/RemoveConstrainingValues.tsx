@@ -10,9 +10,9 @@ import {
   getRemoveConstraintsTransforms,
   transformAstSketchLines,
 } from '../../lang/std/sketchcombos'
-import { updateCursors } from '../../lang/util'
 import { kclManager } from 'lang/KclSinglton'
 
+/*
 export const RemoveConstrainingValues = () => {
   const { guiMode, selectionRanges, setCursor } = useStore((s) => ({
     guiMode: s.guiMode,
@@ -72,3 +72,4 @@ export const RemoveConstrainingValues = () => {
     </button>
   )
 }
+*/

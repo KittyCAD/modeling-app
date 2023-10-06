@@ -23,7 +23,7 @@
 "Get vertical info": "done.invoke.get-vertical-info";
         };
         missingImplementations: {
-          actions: "AST add line segment" | "AST start new sketch" | "Modify AST" | "Update code selection cursors" | "create path" | "set tool" | "show default planes" | "sketch exit execute" | "toast extrude failed";
+          actions: "AST add line segment" | "AST start new sketch" | "Modify AST" | "Set selection" | "Update code selection cursors" | "create path" | "set tool" | "show default planes" | "sketch exit execute" | "toast extrude failed";
           delays: never;
           guards: "Selection contains axis" | "Selection contains edge" | "Selection contains face" | "Selection contains line" | "Selection contains point" | "Selection is not empty" | "Selection is one face";
           services: "Get angle info" | "Get horizontal info" | "Get length info" | "Get vertical info";
@@ -43,7 +43,7 @@
 "Modify AST": "Complete line";
 "Remove from code-based selection": "Deselect edge" | "Deselect face" | "Deselect point";
 "Remove from other selection": "Deselect axis";
-"Set selection": "Set selection";
+"Set selection": "Set selection" | "done.invoke.get-angle-info" | "done.invoke.get-horizontal-info" | "done.invoke.get-length-info" | "done.invoke.get-vertical-info";
 "Update code selection cursors": "Complete line" | "Deselect all" | "Deselect axis" | "Deselect edge" | "Deselect face" | "Deselect point" | "Deselect segment" | "Select edge" | "Select face" | "Select point" | "Select segment";
 "create path": "Select face";
 "default_camera_disable_sketch_mode": "Cancel";

@@ -11,12 +11,12 @@ import {
   getTransformInfos,
   transformAstSketchLines,
 } from '../../lang/std/sketchcombos'
-import { updateCursors } from '../../lang/util'
 import { ActionIcon } from 'components/ActionIcon'
 import { sketchButtonClassnames } from 'Toolbar'
 import { kclManager } from 'lang/KclSinglton'
 import { Selections } from 'useStore'
 
+/*
 export const HorzVert = ({
   horOrVert,
 }: {
@@ -66,6 +66,7 @@ export const HorzVert = ({
     </button>
   )
 }
+*/
 
 export function horzVertInfo(
   selectionRanges: Selections,

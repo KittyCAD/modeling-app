@@ -51,27 +51,19 @@ export const TextEditor = ({
   theme: Themes.Light | Themes.Dark
 }) => {
   const pathParams = useParams()
-  const {
-    editorView,
-    isLSPServerReady,
-    selectionRanges,
-    selectionRangeTypeMap,
-    setEditorView,
-    setIsLSPServerReady,
-    setSelectionRanges,
-  } = useStore((s) => ({
-    editorView: s.editorView,
-    isLSPServerReady: s.isLSPServerReady,
-    selectionRanges: s.selectionRanges,
-    selectionRangeTypeMap: s.selectionRangeTypeMap,
-    setEditorView: s.setEditorView,
-    setIsLSPServerReady: s.setIsLSPServerReady,
-    setSelectionRanges: s.setSelectionRanges,
-  }))
+  const { editorView, isLSPServerReady, setEditorView, setIsLSPServerReady } =
+    useStore((s) => ({
+      editorView: s.editorView,
+      isLSPServerReady: s.isLSPServerReady,
+      setEditorView: s.setEditorView,
+      setIsLSPServerReady: s.setIsLSPServerReady,
+    }))
   const { code, errors } = useKclContext()
 
-  const { context, send } = useModelingContext()
-  const machineSelectionRanges = context.selectionRanges
+  const {
+    context: { selectionRanges, selectionRangeTypeMap },
+    send,
+  } = useModelingContext()
 
   const { settings: { context: { textWrapping } = {} } = {} } =
     useGlobalStateContext()
@@ -187,17 +179,15 @@ export const TextEditor = ({
       idBasedSelections,
     })
 
-    setSelectionRanges({
-      otherSelections: [],
-      codeBasedSelections,
-    })
-
-    machineSelectionRanges &&
+    selectionRanges &&
       send({
         type: 'Set selection',
         data: {
-          ...machineSelectionRanges,
-          codeBasedSelections,
+          selectionType: 'mirrorCodeMirrorSelections',
+          selection: {
+            ...selectionRanges,
+            codeBasedSelections,
+          },
         },
       })
   }

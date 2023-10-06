@@ -125,16 +125,15 @@ export type PaneType =
   | 'logs'
   | 'lspMessages'
 
+export interface SelectionRangeTypeMap {
+  [key: number]: Selection['type']
+}
+
 export interface StoreState {
   editorView: EditorView | null
   setEditorView: (editorView: EditorView) => void
   highlightRange: [number, number]
   setHighlightRange: (range: Selection['range']) => void
-  setCursor: (selections: Selections) => void
-  setCursor2: (a?: Selection) => void
-  selectionRanges: Selections
-  selectionRangeTypeMap: { [key: number]: Selection['type'] }
-  setSelectionRanges: (range: Selections) => void
   guiMode: GuiModes
   lastGuiMode: GuiModes
   setGuiMode: (guiMode: GuiModes) => void
@@ -189,58 +188,6 @@ export const useStore = create<StoreState>()(
             editorView.dispatch({ effects: addLineHighlight.of(selection) })
           }
         },
-        setCursor: (selections) => {
-          const { editorView } = get()
-          if (!editorView) return
-          const ranges: ReturnType<typeof EditorSelection.cursor>[] = []
-          const selectionRangeTypeMap: { [key: number]: Selection['type'] } = {}
-          set({ selectionRangeTypeMap })
-          selections.codeBasedSelections.forEach(({ range, type }) => {
-            if (range?.[1]) {
-              ranges.push(EditorSelection.cursor(range[1]))
-              selectionRangeTypeMap[range[1]] = type
-            }
-          })
-          setTimeout(() => {
-            ranges.length &&
-              editorView.dispatch({
-                selection: EditorSelection.create(
-                  ranges,
-                  selections.codeBasedSelections.length - 1
-                ),
-              })
-          })
-        },
-        setCursor2: (codeSelections) => {
-          const currestSelections = get().selectionRanges
-          const code = kclManager.code
-          if (!codeSelections) {
-            get().setCursor({
-              otherSelections: currestSelections.otherSelections,
-              codeBasedSelections: [
-                {
-                  range: [0, code.length ? code.length - 1 : 0],
-                  type: 'default',
-                },
-              ],
-            })
-            return
-          }
-          const selections: Selections = {
-            ...currestSelections,
-            codeBasedSelections: get().isShiftDown
-              ? [...currestSelections.codeBasedSelections, codeSelections]
-              : [codeSelections],
-          }
-          get().setCursor(selections)
-        },
-        selectionRangeTypeMap: {},
-        selectionRanges: {
-          otherSelections: [],
-          codeBasedSelections: [],
-        },
-        setSelectionRanges: (selectionRanges) =>
-          set({ selectionRanges, selectionRangeTypeMap: {} }),
         guiMode: { mode: 'default' },
         lastGuiMode: { mode: 'default' },
         setGuiMode: (guiMode) => {
@@ -457,4 +404,80 @@ export async function executeAst({
       }
     }
   }
+}
+
+export function dispatchCodeMirrorCursor({
+  selections,
+  editorView,
+}: {
+  selections: Selections
+  editorView: EditorView
+}): {
+  selectionRangeTypeMap: SelectionRangeTypeMap
+} {
+  const ranges: ReturnType<typeof EditorSelection.cursor>[] = []
+  const selectionRangeTypeMap: SelectionRangeTypeMap = {}
+  selections.codeBasedSelections.forEach(({ range, type }) => {
+    if (range?.[1]) {
+      ranges.push(EditorSelection.cursor(range[1]))
+      selectionRangeTypeMap[range[1]] = type
+    }
+  })
+  setTimeout(() => {
+    ranges.length &&
+      editorView.dispatch({
+        selection: EditorSelection.create(
+          ranges,
+          selections.codeBasedSelections.length - 1
+        ),
+      })
+  })
+  return {
+    selectionRangeTypeMap,
+  }
+}
+
+export function setCodeMirrorCursor({
+  codeSelection,
+  currestSelections,
+  editorView,
+  isShiftDown,
+}: {
+  codeSelection?: Selection
+  currestSelections: Selections
+  editorView: EditorView
+  isShiftDown: boolean
+}): SelectionRangeTypeMap {
+  // This DOES NOT set the `selectionRanges` in xstate context
+  // instead it updates/dispatches to the editor, which in turn updates the xstate context
+  // I've found this the best way to deal with the editor without causing an infinite loop
+  // and really we want the editor to be in charge of cursor positions and for `selectionRanges` mirror it
+  // because we want to respect the user manually placing the cursor too.
+  const code = kclManager.code
+  if (!codeSelection) {
+    const selectionRangeTypeMap = dispatchCodeMirrorCursor({
+      editorView,
+      selections: {
+        otherSelections: currestSelections.otherSelections,
+        codeBasedSelections: [
+          {
+            range: [0, code.length ? code.length - 1 : 0],
+            type: 'default',
+          },
+        ],
+      },
+    })
+    return selectionRangeTypeMap
+  }
+  const selections: Selections = {
+    ...currestSelections,
+    codeBasedSelections: isShiftDown
+      ? [...currestSelections.codeBasedSelections, codeSelection]
+      : [codeSelection],
+  }
+  const selectionRangeTypeMap = dispatchCodeMirrorCursor({
+    editorView,
+    selections,
+  })
+  return selectionRangeTypeMap
 }

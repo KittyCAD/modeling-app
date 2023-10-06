@@ -5,26 +5,28 @@ import { isNodeSafeToReplace } from 'lang/queryAst'
 import { useEffect, useState } from 'react'
 import { create } from 'react-modal-promise'
 import { useStore } from 'useStore'
+import { useModelingContext } from './useModelingContext'
 
 const getModalInfo = create(SetVarNameModal as any)
 
 export function useConvertToVariable() {
-  const { guiMode, selectionRanges } = useStore((s) => ({
+  const { guiMode } = useStore((s) => ({
     guiMode: s.guiMode,
-    selectionRanges: s.selectionRanges,
   }))
+  const { context } = useModelingContext()
   const [enable, setEnabled] = useState(false)
   useEffect(() => {
     const { isSafe, value } = isNodeSafeToReplace(
       kclManager.ast,
-      selectionRanges.codeBasedSelections?.[0]?.range || []
+      context.selectionRanges.codeBasedSelections?.[0]?.range || []
     )
     const canReplace = isSafe && value.type !== 'Identifier'
-    const isOnlyOneSelection = selectionRanges.codeBasedSelections.length === 1
+    const isOnlyOneSelection =
+      context.selectionRanges.codeBasedSelections.length === 1
 
     const _enableHorz = canReplace && isOnlyOneSelection
     setEnabled(_enableHorz)
-  }, [guiMode, selectionRanges])
+  }, [guiMode, context.selectionRanges])
 
   const handleClick = async () => {
     try {
@@ -35,7 +37,7 @@ export function useConvertToVariable() {
       const { modifiedAst: _modifiedAst } = moveValueIntoNewVariable(
         kclManager.ast,
         kclManager.programMemory,
-        selectionRanges.codeBasedSelections[0].range,
+        context.selectionRanges.codeBasedSelections[0].range,
         variableName
       )
 
