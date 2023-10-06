@@ -115,7 +115,7 @@ class KclManager {
       this._code = storedCode || bracket
     }
     this._codeCallBack(this._code)
-    this._defaultPlanes = new DefaultPlanes(engineCommandManager)
+    this._defaultPlanes = new DefaultPlanes(this.engineCommandManager)
   }
   registerCallBacks({
     setCode,
@@ -145,7 +145,7 @@ class KclManager {
     this._isExecutingCallback(true)
     const { logs, errors, programMemory } = await executeAst({
       ast,
-      engineCommandManager,
+      engineCommandManager: this.engineCommandManager,
       defaultPlanes: this._defaultPlanes.planes,
     })
     this._isExecutingCallback(false)
@@ -161,7 +161,7 @@ class KclManager {
   async executeAstMock(ast: Program = this._ast, updateCode = false) {
     const newCode = recast(ast)
     const newAst = parse(newCode)
-    await engineCommandManager.waitForReady
+    await this.engineCommandManager.waitForReady
     if (updateCode) {
       this.setCode(recast(ast))
     }
@@ -169,7 +169,7 @@ class KclManager {
 
     const { logs, errors, programMemory } = await executeAst({
       ast: newAst,
-      engineCommandManager,
+      engineCommandManager: this.engineCommandManager,
       defaultPlanes: this._defaultPlanes.planes,
       useFakeExecutor: true,
     })
@@ -201,7 +201,7 @@ class KclManager {
       root: {},
       return: null,
     }
-    engineCommandManager.endSession()
+    this.engineCommandManager.endSession()
   }
   format() {
     this.code = recast(parse(kclManager.code))

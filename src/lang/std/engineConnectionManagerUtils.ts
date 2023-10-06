@@ -9,22 +9,18 @@ export class DefaultPlanes {
   onPlaneSelectCallback = (id: string) => {}
   constructor(engineConnectionManager: EngineCommandManager) {
     this.ecm = engineConnectionManager
-  }
-  init() {
-    this.initPlanes()
 
-    this.ecm.subscribeTo({
-      event: 'select_with_point',
-      callback: ({ data }) => {
-        if (!data?.entity_id) return
-        if (
-          ![this.planes.xy, this.planes.yz, this.planes.xz].includes(
-            data.entity_id
-          )
-        )
-          return
-        this.onPlaneSelectCallback(data.entity_id)
-      },
+      this.ecm.waitForReady.then(() => {
+      this.initPlanes()
+
+      this.ecm.subscribeTo({
+        event: 'select_with_point',
+        callback: ({ data }) => {
+          if (!data?.entity_id) return
+          if (![this.xy /*, this.yz, this.xz*/].includes(data.entity_id)) return
+          this.onPlaneSelectCallback(data.entity_id)
+        },
+      })
     })
   }
 
@@ -48,7 +44,7 @@ export class DefaultPlanes {
     this.setPlaneHidden(this.planes.xz, true)
   }
 
-  private initPlanes() {
+  initPlanes() {
     const [xy, yz, xz] = [
       this.createPlane({
         x_axis: { x: 1, y: 0, z: 0 },

@@ -669,9 +669,6 @@ export class EngineCommandManager {
           },
         })
 
-        // Create the default planes.
-        kclManager.defaultPlanes.init()
-
         // We execute the code here to make sure if the stream was to
         // restart in a session, we want to make sure to execute the code.
         // We force it to re-execute the code because we want to make sure
