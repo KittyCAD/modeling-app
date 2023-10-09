@@ -28,8 +28,8 @@ export const CustomIcon = ({
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
+            fillRule="evenodd"
+            clipRule="evenodd"
             d="M4 3H4.5H11H11.2071L11.3536 3.14645L15.8536 7.64646L16 7.7929V8.00001V11.3773C15.6992 11.1362 15.3628 10.9376 15 10.7908V8.50001H11H10.5V8.00001V4H5V16H9.79076C9.93763 16.3628 10.1362 16.6992 10.3773 17H4.5H4V16.5V3.5V3ZM11.5 4.70711L14.2929 7.50001H11.5V4.70711ZM13 12V14H11V15H13V17H14V15H16V14H14V12H13Z"
             fill="currentColor"
           />
@@ -44,8 +44,8 @@ export const CustomIcon = ({
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
+            fillRule="evenodd"
+            clipRule="evenodd"
             d="M3.5 3.5H4H7H7.16667L7.3 3.6L9.16667 5H16H16.5V5.5V7.5V10.3773C16.1992 10.1362 15.8628 9.93763 15.5 9.79076V8H4.5V15.5H10.5351C10.7529 15.8764 11.0302 16.2141 11.3542 16.5H4H3.5V16V7.5V4V3.5ZM4.5 4.5V7H15.5V6H9H8.83333L8.7 5.9L6.83333 4.5H4.5ZM13.5 11V13H11.5V14H13.5V16H14.5V14H16.5V13H14.5V11H13.5Z"
             fill="currentColor"
           />

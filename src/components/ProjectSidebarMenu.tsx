@@ -96,7 +96,10 @@ const ProjectSidebarMenu = ({
             </div>
           </div>
           {isTauri() ? (
-            <FileTree className="flex-1 border-0 border-y border-energy-40 dark:border-energy-70" />
+            <FileTree
+              project={project}
+              className="overflow-hidden flex-1 flex flex-col border-0 border-y border-energy-40 dark:border-energy-70"
+            />
           ) : (
             <div className="flex-1" />
           )}

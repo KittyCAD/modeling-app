@@ -26,7 +26,7 @@ export default function Tooltip({
   return (
     <div
       // @ts-ignore while awaiting merge of this PR for support of "inert" https://github.com/DefinitelyTyped/DefinitelyTyped/pull/60822
-      inert
+      inert="true"
       role="tooltip"
       className={styles.tooltip + ' ' + styles[position] + ' ' + className}
       style={{ '--_delay': delay + 'ms' } as React.CSSProperties}

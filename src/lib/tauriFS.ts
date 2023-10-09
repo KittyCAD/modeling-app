@@ -15,6 +15,7 @@ export const FILE_EXT = '.kcl'
 export const PROJECT_ENTRYPOINT = 'main' + FILE_EXT
 const INDEX_IDENTIFIER = '$n' // $nn.. will pad the number with 0s
 export const MAX_PADDING = 7
+const RELEVANT_FILE_TYPES = ['kcl']
 
 // Initializes the project directory and returns the path
 export async function initializeProjectDirectory(directory: string) {
@@ -75,6 +76,34 @@ export async function getProjectsInDir(projectDir: string) {
   )
 
   return projectsWithMetadata
+}
+
+// Read the contents of a project directory
+// and return all relevant files and sub-directories recursively
+export async function readProject(projectDir: string) {
+  const readFiles = (
+    await readDir(projectDir, {
+      recursive: true,
+    })
+  ).filter(isRelevantFileOrDir)
+
+  return readFiles
+}
+
+// Determines if a file or directory is relevant to the project
+// i.e. not a hidden file or directory, and is a relevant file type
+// or contains at least one relevant file (even if it's nested)
+export function isRelevantFileOrDir(fileOrDir: FileEntry) {
+  const isDir = Boolean(fileOrDir.children && fileOrDir.children.length)
+  let isRelevantDir = false
+  if (fileOrDir.children && fileOrDir.children.length) {
+    isRelevantDir = fileOrDir.children.some(isRelevantFileOrDir)
+  }
+  const isRelevantFile =
+    !fileOrDir.name?.startsWith('.') &&
+    RELEVANT_FILE_TYPES.some((ext) => fileOrDir.name?.endsWith(ext))
+
+  return (isDir && isRelevantDir) || (!isDir && isRelevantFile)
 }
 
 // Creates a new file in the default directory with the default project name
