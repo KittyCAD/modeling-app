@@ -1259,6 +1259,7 @@ export class EngineCommandManager {
         x_axis,
         y_axis,
         clobber: false,
+        hide: true,
       },
       cmd_id: planeId,
     })
