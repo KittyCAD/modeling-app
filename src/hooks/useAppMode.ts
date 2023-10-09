@@ -164,6 +164,106 @@ export function useAppMode() {
   }, [engineCommandManager])
 }
 
+async function createPlane(
+  engineCommandManager: EngineCommandManager,
+  {
+    x_axis,
+    y_axis,
+    color,
+    hidden,
+  }: {
+    x_axis: Models['Point3d_type']
+    y_axis: Models['Point3d_type']
+    color: Models['Color_type']
+    hidden: boolean
+  }
+) {
+  const planeId = uuidv4()
+  await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd: {
+      type: 'make_plane',
+      size: 60,
+      origin: { x: 0, y: 0, z: 0 },
+      x_axis,
+      y_axis,
+      clobber: false,
+      hide: hidden,
+    },
+    cmd_id: planeId,
+  })
+  await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd: {
+      type: 'plane_set_color',
+      plane_id: planeId,
+      color,
+    },
+    cmd_id: uuidv4(),
+  })
+  return planeId
+}
+
+export function setDefaultPlanesHidden(
+  engineCommandManager: EngineCommandManager,
+  defaultPlanes: DefaultPlanes,
+  hidden: boolean
+) {
+  Object.values(defaultPlanes).forEach((planeId) => {
+    hidePlane(engineCommandManager, planeId, hidden)
+  })
+}
+
+function hidePlane(
+  engineCommandManager: EngineCommandManager,
+  planeId: string,
+  hidden: boolean
+) {
+  engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'object_visible',
+      object_id: planeId,
+      hidden: hidden,
+    },
+  })
+}
+
+export async function initDefaultPlanes(
+  engineCommandManager: EngineCommandManager,
+  hidePlanes?: boolean
+): Promise<DefaultPlanes | null> {
+  if (!engineCommandManager.engineConnection?.isReady()) {
+    return null
+  }
+  const xy = await createPlane(engineCommandManager, {
+    x_axis: { x: 1, y: 0, z: 0 },
+    y_axis: { x: 0, y: 1, z: 0 },
+    color: { r: 0.7, g: 0.28, b: 0.28, a: 0.4 },
+    hidden: hidePlanes ? true : false,
+  })
+  if (hidePlanes) {
+    hidePlane(engineCommandManager, xy, true)
+  }
+  const yz = await createPlane(engineCommandManager, {
+    x_axis: { x: 0, y: 1, z: 0 },
+    y_axis: { x: 0, y: 0, z: 1 },
+    color: { r: 0.28, g: 0.7, b: 0.28, a: 0.4 },
+    hidden: hidePlanes ? true : false,
+  })
+  if (hidePlanes) {
+    hidePlane(engineCommandManager, yz, true)
+  }
+  const xz = await createPlane(engineCommandManager, {
+    x_axis: { x: 1, y: 0, z: 0 },
+    y_axis: { x: 0, y: 0, z: 1 },
+    color: { r: 0.28, g: 0.28, b: 0.7, a: 0.4 },
+    hidden: hidePlanes ? true : false,
+  })
+  return { xy, yz, xz }
+}
+
 export function isCursorInSketchCommandRange(
   artifactMap: ArtifactMap,
   selectionRanges: Selections
