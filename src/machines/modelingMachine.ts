@@ -214,9 +214,9 @@ export const modelingMachine = createMachine(
               target: 'Sketch',
               cond: 'Selection is one face',
               actions: [
+                'set sketch metadata',
                 'sketch mode enabled',
                 'edit mode enter',
-                'set sketch metadata',
               ],
             },
             'Sketch no face',
