@@ -93,7 +93,7 @@ For running the rust (not tauri rust though) only, you can
 cd src/wasm-lib
 cargo test
 ```
-but you will need to have install ffmpeg prior too.
+but you will need to have install ffmpeg prior to.
 
 ## Tauri
 
