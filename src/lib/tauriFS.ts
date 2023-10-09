@@ -16,6 +16,7 @@ export const PROJECT_ENTRYPOINT = 'main' + FILE_EXT
 const INDEX_IDENTIFIER = '$n' // $nn.. will pad the number with 0s
 export const MAX_PADDING = 7
 const RELEVANT_FILE_TYPES = ['kcl']
+export const FILE_QUERY_PARAM = 'file'
 
 // Initializes the project directory and returns the path
 export async function initializeProjectDirectory(directory: string) {
@@ -70,7 +71,7 @@ export async function getProjectsInDir(projectDir: string) {
 
   const projectsWithMetadata = await Promise.all(
     readProjects.map(async (p) => ({
-      entrypoint_metadata: await metadata(p.path + '/' + PROJECT_ENTRYPOINT),
+      entrypointMetadata: await metadata(p.path + '/' + PROJECT_ENTRYPOINT),
       ...p,
     }))
   )
@@ -160,7 +161,7 @@ export async function createNewProject(
   return {
     name: path.slice(path.lastIndexOf('/') + 1),
     path: path,
-    entrypoint_metadata: m,
+    entrypointMetadata: m,
     children: [
       {
         name: PROJECT_ENTRYPOINT,

@@ -44,14 +44,14 @@ export function getSortFunction(sortBy: string) {
     b: ProjectWithEntryPointMetadata
   ) => {
     if (
-      a.entrypoint_metadata?.modifiedAt &&
-      b.entrypoint_metadata?.modifiedAt
+      a.entrypointMetadata?.modifiedAt &&
+      b.entrypointMetadata?.modifiedAt
     ) {
       return !sortBy || sortBy.includes('desc')
-        ? b.entrypoint_metadata.modifiedAt.getTime() -
-            a.entrypoint_metadata.modifiedAt.getTime()
-        : a.entrypoint_metadata.modifiedAt.getTime() -
-            b.entrypoint_metadata.modifiedAt.getTime()
+        ? b.entrypointMetadata.modifiedAt.getTime() -
+            a.entrypointMetadata.modifiedAt.getTime()
+        : a.entrypointMetadata.modifiedAt.getTime() -
+            b.entrypointMetadata.modifiedAt.getTime()
     }
     return 0
   }

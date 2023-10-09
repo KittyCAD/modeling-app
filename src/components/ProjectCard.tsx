@@ -84,7 +84,7 @@ function ProjectCard({
               {project.name?.replace(FILE_EXT, '')}
             </Link>
             <span className="text-chalkboard-60 text-xs">
-              Edited {getDisplayedTime(project.entrypoint_metadata.modifiedAt)}
+              Edited {getDisplayedTime(project.entrypointMetadata.modifiedAt)}
             </span>
             <div className="absolute bottom-2 right-2 flex gap-1 items-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
               <ActionButton
