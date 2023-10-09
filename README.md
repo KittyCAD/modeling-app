@@ -88,6 +88,13 @@ yarn test
 
 Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testing Library E2E](https://testing-library.com/docs/react-testing-library/intro/) tests, in interactive mode by default.
 
+For running the rust (not tauri rust though) only, you can
+```bash
+cd src/wasm-lib
+cargo test
+```
+but you will need to have install ffmpeg prior too.
+
 ## Tauri
 
 To spin up up tauri dev, `yarn install` and `yarn build:wasm` need to have been done before hand then
