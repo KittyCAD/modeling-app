@@ -318,8 +318,11 @@ export const ModelingMachineProvider = ({
 
   useEffect(() => {
     engineCommandManager.onPlaneSelected((plane_id: string) => {
-      if (modelingState.nextEvents.includes('Select face')) {
-        modelingSend('Select face')
+      if (modelingState.nextEvents.includes('Select default plane')) {
+        modelingSend({
+          type: 'Select default plane',
+          data: { planeId: plane_id },
+        })
       }
     })
   }, [kclManager.defaultPlanes, modelingSend])
