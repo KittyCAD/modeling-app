@@ -98,10 +98,10 @@ const ProjectSidebarMenu = ({
           {isTauri() ? (
             <FileTree
               project={project}
-              className="overflow-hidden flex-1 flex flex-col border-0 border-y border-energy-40 dark:border-energy-70"
+              className="overflow-visible flex-1 flex flex-col border-0 border-y border-energy-40 dark:border-energy-70"
             />
           ) : (
-            <div className="flex-1" />
+            <div className="flex-1 overflow-hidden" />
           )}
           <div className="p-4 flex flex-col gap-2 bg-energy-10/25 dark:bg-energy-110">
             <ExportButton

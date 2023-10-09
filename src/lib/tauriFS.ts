@@ -78,32 +78,59 @@ export async function getProjectsInDir(projectDir: string) {
   return projectsWithMetadata
 }
 
+export const isHidden = (fileOrDir: FileEntry) =>
+  !!fileOrDir.name?.startsWith('.')
+
+export const isDir = (fileOrDir: FileEntry) =>
+  Boolean(fileOrDir.children && fileOrDir.children.length)
+
+export function deepFileFilter(
+  entries: FileEntry[],
+  filterFn: (f: FileEntry) => boolean
+): FileEntry[] {
+  const filteredEntries: FileEntry[] = []
+  for (const fileOrDir of entries) {
+    if (fileOrDir.children && fileOrDir.children.length) {
+      const filteredChildren = deepFileFilter(fileOrDir.children, filterFn)
+      if (filterFn(fileOrDir) && filteredChildren.length) {
+        filteredEntries.push({
+          ...fileOrDir,
+          children: filteredChildren,
+        })
+      }
+    } else if (filterFn(fileOrDir)) {
+      filteredEntries.push(fileOrDir)
+    }
+  }
+  return filteredEntries
+}
+
 // Read the contents of a project directory
 // and return all relevant files and sub-directories recursively
 export async function readProject(projectDir: string) {
-  const readFiles = (
-    await readDir(projectDir, {
-      recursive: true,
-    })
-  ).filter(isRelevantFileOrDir)
+  const readFiles = await readDir(projectDir, {
+    recursive: true,
+  })
 
-  return readFiles
+  return deepFileFilter(readFiles, isRelevantFileOrDir)
 }
 
 // Determines if a file or directory is relevant to the project
 // i.e. not a hidden file or directory, and is a relevant file type
 // or contains at least one relevant file (even if it's nested)
 export function isRelevantFileOrDir(fileOrDir: FileEntry) {
-  const isDir = Boolean(fileOrDir.children && fileOrDir.children.length)
   let isRelevantDir = false
   if (fileOrDir.children && fileOrDir.children.length) {
-    isRelevantDir = fileOrDir.children.some(isRelevantFileOrDir)
+    isRelevantDir =
+      !isHidden(fileOrDir) && fileOrDir.children.some(isRelevantFileOrDir)
   }
   const isRelevantFile =
-    !fileOrDir.name?.startsWith('.') &&
+    !isHidden(fileOrDir) &&
     RELEVANT_FILE_TYPES.some((ext) => fileOrDir.name?.endsWith(ext))
 
-  return (isDir && isRelevantDir) || (!isDir && isRelevantFile)
+  return (
+    (isDir(fileOrDir) && isRelevantDir) || (!isDir(fileOrDir) && isRelevantFile)
+  )
 }
 
 // Creates a new file in the default directory with the default project name
