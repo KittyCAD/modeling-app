@@ -288,14 +288,18 @@ export class EngineConnection {
       const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
 
       if (!message.success) {
+        const errorsString = message?.errors
+          ?.map((error) => {
+            return `  - ${error.error_code}: ${error.message}`
+          })
+          .join('\n')
         if (message.request_id) {
-          console.error(`Error in response to request ${message.request_id}:`)
+          console.error(
+            `Error in response to request ${message.request_id}:\n${errorsString}`
+          )
         } else {
-          console.error(`Error from server:`)
+          console.error(`Error from server:\n${errorsString}`)
         }
-        message?.errors?.forEach((error) => {
-          console.error(` - ${error.error_code}: ${error.message}`)
-        })
         return
       }
 

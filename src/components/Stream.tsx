@@ -29,14 +29,12 @@ export const Stream = ({ className = '' }) => {
     didDragInStream,
     setDidDragInStream,
     streamDimensions,
-    guiMode,
   } = useStore((s) => ({
     mediaStream: s.mediaStream,
     setButtonDownInStream: s.setButtonDownInStream,
     didDragInStream: s.didDragInStream,
     setDidDragInStream: s.setDidDragInStream,
     streamDimensions: s.streamDimensions,
-    guiMode: s.guiMode,
   }))
   const { settings } = useGlobalStateContext()
   const cameraControls = settings?.context?.cameraControls
