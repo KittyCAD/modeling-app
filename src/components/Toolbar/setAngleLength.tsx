@@ -21,7 +21,7 @@ import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { normaliseAngle } from '../../lib/utils'
 import { updateCursors } from '../../lang/util'
 
-const getModalInfo = create(SetAngleLengthModal)
+const getModalInfo = create(SetAngleLengthModal as any)
 
 type ButtonType = 'setAngle' | 'setLength'
 
@@ -112,7 +112,7 @@ export const SetAngleLength = ({
               value: forceVal,
               valueName: angleOrLength === 'setAngle' ? 'angle' : 'length',
               shouldCreateVariable: true,
-            })
+            } as any)
           let finalValue = removeDoubleNegatives(valueNode, sign, variableName)
           if (
             isReferencingYAxisAngle ||
