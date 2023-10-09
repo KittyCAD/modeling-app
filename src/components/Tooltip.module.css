@@ -2,6 +2,7 @@
 
 .tooltip {
   /* internal CSS vars */
+  --_delay: 200ms;
   --_p-inline: 1ch;
   --_p-block: 4px;
   --_triangle-size: 7px;
@@ -14,33 +15,33 @@
 
   /* Using conic gradients to get a clear tip triangle */
   --_bottom-tip: conic-gradient(
-          from -30deg at bottom,
-          #0000,
-          #000 1deg 60deg,
-          #0000 61deg
-      )
-      bottom / 100% 50% no-repeat;
+      from -30deg at bottom,
+      #0000,
+      #000 1deg 60deg,
+      #0000 61deg
+    )
+    bottom / 100% 50% no-repeat;
   --_top-tip: conic-gradient(
-          from 150deg at top,
-          #0000,
-          #000 1deg 60deg,
-          #0000 61deg
-      )
-      top / 100% 50% no-repeat;
+      from 150deg at top,
+      #0000,
+      #000 1deg 60deg,
+      #0000 61deg
+    )
+    top / 100% 50% no-repeat;
   --_right-tip: conic-gradient(
-          from -120deg at right,
-          #0000,
-          #000 1deg 60deg,
-          #0000 61deg
-      )
-      right / 50% 100% no-repeat;
+      from -120deg at right,
+      #0000,
+      #000 1deg 60deg,
+      #0000 61deg
+    )
+    right / 50% 100% no-repeat;
   --_left-tip: conic-gradient(
-          from 60deg at left,
-          #0000,
-          #000 1deg 60deg,
-          #0000 61deg
-      )
-      left / 50% 100% no-repeat;
+      from 60deg at left,
+      #0000,
+      #000 1deg 60deg,
+      #0000 61deg
+    )
+    left / 50% 100% no-repeat;
 
   pointer-events: none;
   user-select: none;
@@ -48,7 +49,7 @@
   /* The parts that will be transitioned */
   opacity: 0;
   transform: translate(var(--_x, 0), var(--_y, 0));
-  transition: transition 0.15s ease-out, opacity 0.11s ease-out;
+  transition: transform 0.15s ease-out, opacity 0.11s ease-out;
 
   position: absolute;
   z-index: 1;
@@ -65,10 +66,15 @@
   margin: 0;
   border-radius: 3px;
   background: var(--_bg);
-  color: CanvasText;
+  @apply text-chalkboard-110;
   will-change: filter;
   filter: drop-shadow(0 1px 3px hsl(0 0% 0% / var(--_shadow-alpha)))
-      drop-shadow(0 6px 12px hsl(0 0% 0% / var(--_shadow-alpha)));
+    drop-shadow(0 6px 12px hsl(0 0% 0% / var(--_shadow-alpha)));
+}
+
+:global(.dark) .tooltip {
+  --_bg: var(--chalkboard-110);
+  @apply text-chalkboard-10;
 }
 
 /* TODO we don't support a light theme yet */
@@ -90,7 +96,7 @@
 
 :is(:hover, :focus-visible, :active) > .tooltip {
   opacity: 1;
-  transition-delay: 200ms;
+  transition-delay: var(--_delay);
 }
 
 /* prepend some prose for screen readers only */
@@ -195,26 +201,25 @@
 
 @media (prefers-reduced-motion: no-preference) {
   /* TOP || BLOCK-START */
-  :has(> :is(.tooltip.top, .tooltip.blockStart)):not(:hover, :active)
-      .tooltip {
-      --_y: 3px;
+  :has(> :is(.tooltip.top, .tooltip.blockStart)):not(:hover, :active) .tooltip {
+    --_y: 3px;
   }
 
   /* RIGHT || INLINE-END */
   :has(> :is(.tooltip.right, .tooltip.inlineEnd)):not(:hover, :active)
-      .tooltip {
-      --_x: calc(var(--isRTL) * -3px * -1);
+    .tooltip {
+    --_x: calc(var(--isRTL) * -3px * -1);
   }
 
   /* BOTTOM || BLOCK-END */
   :has(> :is(.tooltip.bottom, .tooltip.blockEnd)):not(:hover, :active)
-      .tooltip {
-      --_y: -3px;
+    .tooltip {
+    --_y: -3px;
   }
 
   /* BOTTOM || BLOCK-END */
   :has(> :is(.tooltip.left, .tooltip.inlineStart)):not(:hover, :active)
-      .tooltip {
-      --_x: calc(var(--isRTL) * 3px * -1);
+    .tooltip {
+    --_x: calc(var(--isRTL) * 3px * -1);
   }
 }

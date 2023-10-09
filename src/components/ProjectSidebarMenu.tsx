@@ -69,7 +69,7 @@ const ProjectSidebarMenu = ({
         leaveTo="opacity-0 -translate-x-4"
         as={Fragment}
       >
-        <Popover.Panel className="fixed inset-0 right-auto z-30 w-64 flex flex-col bg-chalkboard-10 dark:bg-chalkboard-100 border border-energy-100 dark:border-energy-100/50 shadow-md rounded-r-lg overflow-hidden">
+        <Popover.Panel className="fixed inset-0 right-auto z-30 w-64 flex flex-col bg-chalkboard-10 dark:bg-chalkboard-100 border border-energy-100 dark:border-energy-100/50 shadow-md rounded-r-lg">
           <div className="flex items-center gap-4 px-4 py-3 bg-energy-10/25 dark:bg-energy-110">
             <img
               src="/kitt-8bit-winking.svg"
@@ -104,7 +104,7 @@ const ProjectSidebarMenu = ({
             <ExportButton
               className={{
                 button:
-                  'border-transparent dark:border-transparent dark:hover:border-energy-60',
+                  'border-transparent dark:border-transparent hover:border-energy-60',
                 icon: 'text-energy-10 dark:text-energy-120',
                 bg: 'bg-energy-120 dark:bg-energy-10',
               }}
@@ -120,7 +120,7 @@ const ProjectSidebarMenu = ({
                   iconClassName: 'text-energy-10 dark:text-energy-120',
                   bgClassName: 'bg-energy-120 dark:bg-energy-10',
                 }}
-                className="border-transparent dark:border-transparent dark:hover:border-energy-60"
+                className="border-transparent dark:border-transparent hover:border-energy-60"
               >
                 Go to Home
               </ActionButton>
