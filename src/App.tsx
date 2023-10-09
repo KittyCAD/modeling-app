@@ -34,7 +34,7 @@ import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubsc
 import { engineCommandManager } from './lang/std/engineConnection'
 
 export function App() {
-  const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
+  const { code: loadedCode, project, file } = useLoaderData() as IndexLoaderData
 
   const streamRef = useRef<HTMLDivElement>(null)
   useHotKeyListener()
@@ -140,7 +140,7 @@ export function App() {
   // Use file code loaded from disk
   // on mount, and overwrite any locally-stored code
   useEffect(() => {
-    if (isTauri() && loadedCode !== null) {
+    if (isTauri() && loadedCode !== null && loadedCode !== undefined) {
       setCode(loadedCode)
     }
     return () => {
@@ -242,7 +242,7 @@ export function App() {
           paneOpacity +
           (buttonDownInStream ? ' pointer-events-none' : '')
         }
-        project={project}
+        project={{ project, file }}
         enableMenu={true}
       />
       <ModalContainer />

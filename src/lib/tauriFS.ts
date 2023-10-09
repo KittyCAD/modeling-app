@@ -16,7 +16,6 @@ export const PROJECT_ENTRYPOINT = 'main' + FILE_EXT
 const INDEX_IDENTIFIER = '$n' // $nn.. will pad the number with 0s
 export const MAX_PADDING = 7
 const RELEVANT_FILE_TYPES = ['kcl']
-export const FILE_QUERY_PARAM = 'file'
 
 // Initializes the project directory and returns the path
 export async function initializeProjectDirectory(directory: string) {

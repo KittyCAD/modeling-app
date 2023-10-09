@@ -127,13 +127,11 @@ export const TextEditor = ({
     if (isTauri() && pathParams.id) {
       // Save the file to disk
       // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
-      writeTextFile(pathParams.id + '/' + PROJECT_ENTRYPOINT, value).catch(
-        (err) => {
-          // TODO: add Sentry per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
-          console.error('error saving file', err)
-          toast.error('Error saving file, please check file permissions')
-        }
-      )
+      writeTextFile(pathParams.id, value).catch((err) => {
+        // TODO: add Sentry per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
+        console.error('error saving file', err)
+        toast.error('Error saving file, please check file permissions')
+      })
     }
     if (editorView) {
       editorView?.dispatch({ effects: addLineHighlight.of([0, 0]) })

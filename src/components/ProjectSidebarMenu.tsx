@@ -14,7 +14,7 @@ const ProjectSidebarMenu = ({
   renderAsLink = false,
 }: {
   renderAsLink?: boolean
-  project: IndexLoaderData['project']
+  project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
 }) => {
   return renderAsLink ? (
