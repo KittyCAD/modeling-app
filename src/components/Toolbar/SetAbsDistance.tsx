@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
-import { create } from 'react-modal-promise'
 import { toolTips, useStore } from '../../useStore'
-import { Value } from '../../lang/wasm'
+import { BinaryPart, Identifier, Value } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -12,7 +11,10 @@ import {
   transformAstSketchLines,
   ConstraintType,
 } from '../../lang/std/sketchcombos'
-import { SetAngleLengthModal } from '../SetAngleLengthModal'
+import {
+  SetAngleLengthModal,
+  createSetAngleLengthModal,
+} from '../SetAngleLengthModal'
 import {
   createIdentifier,
   createVariableDeclaration,
@@ -20,7 +22,7 @@ import {
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { updateCursors } from '../../lang/util'
 
-const getModalInfo = create(SetAngleLengthModal as any)
+const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
 
 type ButtonType = 'xAbs' | 'yAbs' | 'snapToYAxis' | 'snapToXAxis'
 
@@ -98,40 +100,67 @@ export const SetAbsDistance = ({ buttonType }: { buttonType: ButtonType }) => {
           programMemory,
           referenceSegName: '',
         })
+
+        function transformValue(
+          fv: Identifier | BinaryPart,
+          transformInfos: TransformInfo[]
+        ) {
+          return transformAstSketchLines({
+            ast: JSON.parse(JSON.stringify(ast)),
+            selectionRanges: selectionRanges,
+            transformInfos,
+            programMemory,
+            referenceSegName: '',
+            forceValueUsedInTransform: fv,
+          })
+        }
+
         try {
-          let forceVal = valueUsedInTransform || 0
-          const { valueNode, variableName, newVariableInsertIndex, sign } =
-            await (!isAlign &&
-              getModalInfo({
+          if (!isAlign) {
+            const forceVal = valueUsedInTransform || 0
+
+            const { valueNode, variableName, newVariableInsertIndex, sign } =
+              await getModalInfo({
                 value: forceVal,
                 valueName: disType === 'yAbs' ? 'yDis' : 'xDis',
-              } as any))
-          let finalValue = isAlign
-            ? createIdentifier('_0')
-            : removeDoubleNegatives(valueNode, sign, variableName)
+              })
 
-          const { modifiedAst: _modifiedAst, pathToNodeMap } =
-            transformAstSketchLines({
-              ast: JSON.parse(JSON.stringify(ast)),
-              selectionRanges: selectionRanges,
-              transformInfos,
-              programMemory,
-              referenceSegName: '',
-              forceValueUsedInTransform: finalValue,
-            })
-          if (variableName) {
-            const newBody = [..._modifiedAst.body]
-            newBody.splice(
-              newVariableInsertIndex,
-              0,
-              createVariableDeclaration(variableName, valueNode)
+            const finalValue = removeDoubleNegatives(
+              valueNode as BinaryPart,
+              sign,
+              variableName
             )
-            _modifiedAst.body = newBody
-          }
+            const { modifiedAst: _modifiedAst, pathToNodeMap: _pathToNodeMap } =
+              transformValue(finalValue, transformInfos)
 
-          updateAst(_modifiedAst, true, {
-            callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
-          })
+            if (variableName) {
+              const newBody = [..._modifiedAst.body]
+              newBody.splice(
+                newVariableInsertIndex,
+                0,
+                createVariableDeclaration(variableName, valueNode)
+              )
+              _modifiedAst.body = newBody
+            }
+
+            updateAst(_modifiedAst, true, {
+              callBack: updateCursors(
+                setCursor,
+                selectionRanges,
+                _pathToNodeMap
+              ),
+            })
+          } else {
+            const { modifiedAst: _modifiedAst, pathToNodeMap: _pathToNodeMap } =
+              transformValue(createIdentifier('_0'), transformInfos)
+            updateAst(_modifiedAst, true, {
+              callBack: updateCursors(
+                setCursor,
+                selectionRanges,
+                _pathToNodeMap
+              ),
+            })
+          }
         } catch (e) {
           console.log('error', e)
         }
