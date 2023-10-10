@@ -314,9 +314,40 @@ pub fn get_type_string_from_schema(schema: &schemars::schema::Schema) -> Result<
             }
 
             if let Some(array_val) = &o.array {
+
+                println!("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
+                println!("array_val => {:?} ", array_val);
+                println!("\narray_val.items => {:?} ", &array_val.items);
+                println!("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+
                 if let Some(schemars::schema::SingleOrVec::Single(items)) = &array_val.items {
+
+                    let temp = get_type_string_from_schema(items)?.0;
+    
+                    
+                    let result: String = match array_val.max_items {
+                        Some(val) => {
+                            println!("****************************************");
+                            //println!("\ntemp = get_type_string_from_schema(&array_val.items)?.0 => {:?}", temp);
+                            //println!("\nmax_items {:?}", val );
+
+                            (0..val).map(|_| "number").collect::<Vec<_>>().join(", ")
+                        },
+                        None => {
+                            println!("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+                            //println!("\ntemp = get_type_string_from_schema(&array_val.items)?.0 => {:?}", temp);
+
+                            format!("{}", get_type_string_from_schema(items)?.0)
+                        }
+                    };
+                    println!("{:?}", result);
+                    println!("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+
+
+                    //TODO: Check what items and array_val look like when max_members looks like
+                    
                     // Let's print out the object's properties.
-                    return Ok((format!("[{}]", get_type_string_from_schema(items)?.0), false));
+                    return Ok((format!("[{}]", result), false));
                 } else if let Some(items) = &array_val.contains {
                     return Ok((format!("[{}]", get_type_string_from_schema(items)?.0), false));
                 }
