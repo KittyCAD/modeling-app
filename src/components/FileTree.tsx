@@ -1,10 +1,10 @@
 import { IndexLoaderData, paths } from 'Router'
 import { ActionButton } from './ActionButton'
 import Tooltip from './Tooltip'
-import { FileEntry } from '@tauri-apps/api/fs'
+import { FileEntry, removeDir, removeFile } from '@tauri-apps/api/fs'
 import { useEffect, useState } from 'react'
 import { readProject } from 'lib/tauriFS'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Disclosure } from '@headlessui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons'
@@ -27,20 +27,36 @@ const FileTreeItem = ({
   ) => void
   level?: number
 }) => {
+  const navigate = useNavigate()
   const isCurrentFile = fileOrDir.path === currentFile?.path
+
+  async function handleDelete(fileOrDir: FileEntry) {
+    if (!fileOrDir.children) {
+      await removeFile(fileOrDir.path)
+    } else {
+      await removeDir(fileOrDir.path, { recursive: true })
+    }
+  }
 
   return !fileOrDir.children ? (
     <li
       className={
-        'group m-0 py-1 border-solid border-0 hover:bg-energy-10/50 dark:hover:bg-energy-90/50 ' +
+        'group m-0 p-0 border-solid border-0 hover:bg-energy-10/50 dark:hover:bg-energy-90/50 focus-within:bg-energy-10/80 dark:focus-within:bg-energy-80/50 hover:focus-within:bg-energy-10/80 dark:hover:focus-within:bg-energy-80/50 ' +
         (isCurrentFile ? 'bg-energy-10/50 dark:bg-energy-90/50' : '')
       }
-      style={{ paddingInline: `calc(1rem * ${level + 1})` }}
     >
-      <Link
-        to={`${paths.FILE}/${encodeURIComponent(fileOrDir.path)}`}
-        className="text-energy-100 group-hover:text-energy-70 dark:text-energy-30 dark:group-hover:text-energy-20"
-        onClick={() => closePanel()}
+      <button
+        className="py-1 rounded-none border-none p-0 m-0 text-base w-full hover:!bg-transparent text-left text-energy-100 group-hover:text-energy-70 dark:text-energy-30 dark:group-hover:text-energy-20"
+        style={{ paddingInline: `calc(1rem * ${level + 1})` }}
+        onDoubleClick={() => {
+          navigate(`${paths.FILE}/${encodeURIComponent(fileOrDir.path)}`)
+          closePanel()
+        }}
+        onClick={(e) => e.currentTarget.focus()}
+        onKeyDown={(e) => {
+          console.log(e.metaKey, e.key)
+          e.metaKey && e.key === 'Backspace' && handleDelete(fileOrDir)
+        }}
       >
         {isCurrentFile && (
           <div className="inline-block w-2 h-2 rounded-full bg-energy-10 mr-2">
@@ -48,14 +64,14 @@ const FileTreeItem = ({
           </div>
         )}
         {fileOrDir.name}
-      </Link>
+      </button>
     </li>
   ) : (
     <Disclosure defaultOpen={currentFile?.path.includes(fileOrDir.path)}>
       {({ open }) => (
-        <>
+        <div className="group">
           <Disclosure.Button
-            className="border-none text-base rounded-none p-0 m-0 flex items-center justify-start w-full py-1 text-chalkboard-70 dark:text-chalkboard-30 hover:bg-energy-10/50 dark:hover:bg-energy-90/50"
+            className="group border-none text-base rounded-none p-0 m-0 flex items-center justify-start w-full py-1 text-chalkboard-70 dark:text-chalkboard-30 hover:bg-energy-10/50 dark:hover:bg-energy-90/50 group-focus-within:bg-chalkboard-20 dark:group-focus-within:bg-chalkboard-80/20 hover:group-focus-within:bg-chalkboard-20 dark:hover:group-focus-within:bg-chalkboard-80/20"
             style={{ paddingInline: `calc(1rem * ${level + 1})` }}
           >
             <FontAwesomeIcon
@@ -80,7 +96,7 @@ const FileTreeItem = ({
               ))}
             </ul>
           </Disclosure.Panel>
-        </>
+        </div>
       )}
     </Disclosure>
   )
