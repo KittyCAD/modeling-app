@@ -2,7 +2,7 @@
 // Once we have xState this should be removed
 
 import { useStore, Selections } from 'useStore'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { ArtifactMap, EngineCommandManager } from 'lang/std/engineConnection'
 import { Models } from '@kittycad/lib/dist/types/src'
@@ -112,8 +112,6 @@ export function useAppMode() {
           return
         }
 
-        console.log('plane id', data.entity_id)
-
         // TODO: Right here we want to set the context.sketchPlaneId to data.entity_id
         const sketchModeResponse = await engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
@@ -208,17 +206,18 @@ export function isCursorInSketchCommandRange(
   artifactMap: ArtifactMap,
   selectionRanges: Selections
 ): string | false {
-  const overlapingEntries = Object.entries(artifactMap || {}).filter(
-    ([id, artifact]) =>
-      selectionRanges.codeBasedSelections.some(
-        (selection) =>
-          Array.isArray(selection?.range) &&
-          Array.isArray(artifact?.range) &&
-          isOverlap(selection.range, artifact.range) &&
-          (artifact.commandType === 'start_path' ||
-            artifact.commandType === 'extend_path' ||
-            artifact.commandType === 'close_path')
-      )
+  const overlapingEntries: [string, ArtifactMap[string]][] = Object.entries(
+    artifactMap
+  ).filter(([id, artifact]: [string, ArtifactMap[string]]) =>
+    selectionRanges.codeBasedSelections.some(
+      (selection) =>
+        Array.isArray(selection?.range) &&
+        Array.isArray(artifact?.range) &&
+        isOverlap(selection.range, artifact.range) &&
+        (artifact.commandType === 'start_path' ||
+          artifact.commandType === 'extend_path' ||
+          artifact.commandType === 'close_path')
+    )
   )
   return overlapingEntries.length && overlapingEntries[0][1].parentId
     ? overlapingEntries[0][1].parentId
