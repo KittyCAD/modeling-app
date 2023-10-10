@@ -2,7 +2,7 @@ use std::{collections::HashMap, str::FromStr};
 
 use crate::{
     ast::types::{
-        ArrayExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression, ExpressionStatement,
+        ArrayExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression, CommentStyle, ExpressionStatement,
         FunctionExpression, Identifier, Literal, LiteralIdentifier, MemberExpression, MemberObject, NonCodeMeta,
         NonCodeNode, NonCodeValue, ObjectExpression, ObjectKeyInfo, ObjectProperty, PipeExpression, PipeSubstitution,
         Program, ReturnStatement, UnaryExpression, UnaryOperator, Value, VariableDeclaration, VariableDeclarator,
@@ -295,6 +295,12 @@ impl Parser {
             ));
         }
 
+        let is_block_style = non_code_tokens
+            .iter()
+            .next()
+            .map(|tok| matches!(tok.token_type, TokenType::BlockComment))
+            .unwrap_or_default();
+
         let full_string = non_code_tokens
             .iter()
             .map(|t| {
@@ -340,7 +346,14 @@ impl Parser {
             } else if is_new_line_comment {
                 NonCodeValue::BlockComment { value: full_string }
             } else {
-                NonCodeValue::InlineComment { value: full_string }
+                NonCodeValue::InlineComment {
+                    value: full_string,
+                    style: if is_block_style {
+                        CommentStyle::Block
+                    } else {
+                        CommentStyle::Line
+                    },
+                }
             },
         };
         Ok((Some(node), end_index - 1))

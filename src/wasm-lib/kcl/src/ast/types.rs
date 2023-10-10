@@ -707,7 +707,7 @@ pub struct NonCodeNode {
 impl NonCodeNode {
     pub fn value(&self) -> String {
         match &self.value {
-            NonCodeValue::InlineComment { value } => value.clone(),
+            NonCodeValue::InlineComment { value, style: _ } => value.clone(),
             NonCodeValue::BlockComment { value } => value.clone(),
             NonCodeValue::NewLineBlockComment { value } => value.clone(),
             NonCodeValue::NewLine => "\n\n".to_string(),
@@ -716,7 +716,14 @@ impl NonCodeNode {
 
     pub fn format(&self, indentation: &str) -> String {
         match &self.value {
-            NonCodeValue::InlineComment { value } => format!(" // {}\n", value),
+            NonCodeValue::InlineComment {
+                value,
+                style: CommentStyle::Line,
+            } => format!(" // {}\n", value),
+            NonCodeValue::InlineComment {
+                value,
+                style: CommentStyle::Block,
+            } => format!(" /* {} */\n", value),
             NonCodeValue::BlockComment { value } => {
                 let add_start_new_line = if self.start == 0 { "" } else { "\n" };
                 if value.contains('\n') {
@@ -741,11 +748,24 @@ impl NonCodeNode {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
+pub enum CommentStyle {
+    /// Like // foo
+    Line,
+    /// Like /* foo */
+    Block,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub enum NonCodeValue {
     /// An inline comment.
-    /// An example of this is the following: `1 + 1 // This is an inline comment`.
+    /// Here are examples:
+    /// `1 + 1 // This is an inline comment`.
+    /// `1 + 1 /* Here's another */`.
     InlineComment {
         value: String,
+        style: CommentStyle,
     },
     /// A block comment.
     /// An example of this is the following:
