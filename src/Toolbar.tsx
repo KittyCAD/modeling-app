@@ -46,10 +46,6 @@ const sketchFnLabels: Record<ToolTip | 'sketch_line' | 'move', string> = {
 }
 
 export const Toolbar = () => {
-  const { setGuiMode, guiMode } = useStore((s) => ({
-    guiMode: s.guiMode,
-    setGuiMode: s.setGuiMode,
-  }))
   useAppMode()
   const { state, send, context } = useModelingContext()
   const toolbarButtonsRef = useRef<HTMLSpanElement>(null)
@@ -168,26 +164,6 @@ export const Toolbar = () => {
                   .replace('Constrain ', '')}
               </button>
             ))}
-        {guiMode.mode === 'canEditExtrude' && (
-          <button
-            onClick={() => {
-              const pathToNode = getNodePathFromSourceRange(
-                kclManager.ast,
-                context.selectionRanges.codeBasedSelections[0].range
-              )
-              const { modifiedAst } = sketchOnExtrudedFace(
-                kclManager.ast,
-                pathToNode,
-                kclManager.programMemory
-              )
-              kclManager.updateAst(modifiedAst, true)
-            }}
-            className="group"
-          >
-            <ActionIcon icon="sketch" className="!p-0.5" size="md" />
-            Sketch on Face
-          </button>
-        )}
         {state.matches('idle') && (
           <button
             onClick={() => send('extrude intent')}
@@ -204,65 +180,6 @@ export const Toolbar = () => {
           </button>
         )}
 
-        {toolTips
-          .filter(
-            // (sketchFnName) => !['angledLineThatIntersects'].includes(sketchFnName)
-            (sketchFnName) => ['sketch_line', 'move'].includes(sketchFnName)
-          )
-          .map((sketchFnName) => {
-            if (
-              guiMode.mode !== 'sketch' ||
-              !('isTooltip' in guiMode || guiMode.sketchMode === 'sketchEdit')
-            )
-              return null
-            return (
-              <button
-                key={sketchFnName}
-                onClick={() => {
-                  engineCommandManager.sendSceneCommand({
-                    type: 'modeling_cmd_req',
-                    cmd_id: uuidv4(),
-                    cmd: {
-                      type: 'set_tool',
-                      tool:
-                        guiMode.sketchMode === sketchFnName
-                          ? 'select'
-                          : (sketchFnName as any),
-                    },
-                  })
-                  setGuiMode({
-                    ...guiMode,
-                    ...(guiMode.sketchMode === sketchFnName
-                      ? {
-                          sketchMode: 'sketchEdit',
-                          // todo: ...guiMod is adding isTooltip: true, will probably just fix with xstate migtaion
-                        }
-                      : {
-                          sketchMode: sketchFnName,
-                          waitingFirstClick: true,
-                          isTooltip: true,
-                          pathId: guiMode.pathId,
-                        }),
-                  })
-                }}
-                className={
-                  'group ' +
-                  (guiMode.sketchMode === sketchFnName
-                    ? '!text-fern-70 !bg-fern-10 !dark:text-fern-20 !border-fern-50'
-                    : '')
-                }
-              >
-                <ActionIcon
-                  icon={sketchFnName.includes('line') ? 'line' : 'move'}
-                  className="!p-0.5"
-                  bgClassName={sketchButtonClassnames.background}
-                  iconClassName={sketchButtonClassnames.icon}
-                  size="md"
-                />
-                {sketchFnLabels[sketchFnName]}
-              </button>
-            )
-          })}
         {/* <HorzVert horOrVert="horizontal" />
         <HorzVert horOrVert="vertical" />
         <EqualLength />
@@ -285,10 +202,10 @@ export const Toolbar = () => {
   }
 
   return (
-    <Popover className={styles.toolbarWrapper + ' ' + guiMode.mode}>
+    <Popover className={styles.toolbarWrapper}>
       <div className={styles.toolbar}>
         <span className={styles.toolbarCap + ' ' + styles.label}>
-          {guiMode.mode === 'sketch' ? '2D' : '3D'}
+          {state.matches('Sketch') ? '2D' : '3D'}
         </span>
         <menu className="flex-1 gap-2 py-0.5 overflow-hidden whitespace-nowrap">
           <ToolbarButtons />
@@ -324,7 +241,7 @@ export const Toolbar = () => {
             <p
               className={`${styles.toolbarCap} ${styles.label} !self-center rounded-r-full w-fit`}
             >
-              You're in {guiMode.mode === 'sketch' ? '2D' : '3D'}
+              You're in {state.matches('Sketch') ? '2D' : '3D'}
             </p>
             <Popover.Button className="p-2 flex items-center justify-center rounded-sm bg-chalkboard-20 text-chalkboard-110 dark:bg-chalkboard-70 dark:text-chalkboard-20 border-none hover:bg-chalkboard-30 dark:hover:bg-chalkboard-60">
               <FontAwesomeIcon icon={faX} className="w-4 h-4" />

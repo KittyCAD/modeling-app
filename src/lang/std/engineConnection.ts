@@ -11,7 +11,6 @@ import { exportSave } from 'lib/exportSave'
 import { v4 as uuidv4 } from 'uuid'
 import * as Sentry from '@sentry/react'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
-import { kclManager } from 'lang/KclSinglton'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 
 let lastMessage = ''

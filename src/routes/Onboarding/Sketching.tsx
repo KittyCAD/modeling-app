@@ -12,7 +12,7 @@ export default function Sketching() {
 
   useEffect(() => {
     kclManager.setCode('')
-  }, [kclManager.setCode])
+  }, [])
 
   return (
     <div className="fixed grid justify-center items-end inset-0 z-50 pointer-events-none">

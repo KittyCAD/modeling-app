@@ -44,11 +44,7 @@ export function App() {
     setOpenPanes,
     didDragInStream,
     streamDimensions,
-    guiMode,
-    setGuiMode,
   } = useStore((s) => ({
-    guiMode: s.guiMode,
-    setGuiMode: s.setGuiMode,
     buttonDownInStream: s.buttonDownInStream,
     openPanes: s.openPanes,
     setOpenPanes: s.setOpenPanes,
@@ -59,7 +55,7 @@ export function App() {
   const { settings } = useGlobalStateContext()
   const { showDebugPanel, onboardingStatus, cameraControls, theme } =
     settings?.context || {}
-  const { state } = useModelingContext()
+  const { state, send } = useModelingContext()
 
   const editorTheme = theme === Themes.System ? getSystemTheme() : theme
 
@@ -77,48 +73,8 @@ export function App() {
   useHotkeys('shift + e', () => togglePane('kclErrors'))
   useHotkeys('shift + d', () => togglePane('debug'))
   useHotkeys('esc', () => {
-    if (guiMode.mode === 'sketch') {
-      if (guiMode.sketchMode === 'selectFace') return
-      if (guiMode.sketchMode === 'sketchEdit') {
-        // TODO: share this with Toolbar's "Exit sketch" button
-        // exiting sketch should be done consistently across all exits
-        engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: { type: 'edit_mode_exit' },
-        })
-        engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: { type: 'default_camera_disable_sketch_mode' },
-        })
-        setGuiMode({ mode: 'default' })
-        // this is necessary to get the UI back into a consistent
-        // state right now, hopefully won't need to rerender
-        // when exiting sketch mode in the future
-        kclManager.executeAst()
-      } else {
-        engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'set_tool',
-            tool: 'select',
-          },
-        })
-        setGuiMode({
-          mode: 'sketch',
-          sketchMode: 'sketchEdit',
-          rotation: guiMode.rotation,
-          position: guiMode.position,
-          pathToNode: guiMode.pathToNode,
-          pathId: guiMode.pathId,
-          // todo: ...guiMod is adding isTooltip: true, will probably just fix with xstate migtaion
-        })
-      }
-    } else {
-      setGuiMode({ mode: 'default' })
-    }
+    // TODO might not be that simple
+    send('Cancel')
   })
 
   const paneOpacity = [onboardingPaths.CAMERA, onboardingPaths.STREAMING].some(
@@ -141,7 +97,7 @@ export function App() {
         kclManager.setCode('')
       }
     }
-  }, [loadedCode, kclManager.setCode])
+  }, [loadedCode])
 
   useEngineConnectionSubscriptions()
 

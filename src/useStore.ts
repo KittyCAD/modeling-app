@@ -69,54 +69,6 @@ export const toolTips = [
   'angledLineThatIntersects',
 ] as any as ToolTip[]
 
-export type GuiModes =
-  | {
-      mode: 'default'
-    }
-  | {
-      mode: 'sketch'
-      sketchMode: ToolTip
-      isTooltip: true
-      waitingFirstClick: boolean
-      rotation: Rotation
-      position: Position
-      pathId: string
-      pathToNode: PathToNode
-    }
-  | {
-      mode: 'sketch'
-      sketchMode: 'sketchEdit'
-      rotation: Rotation
-      position: Position
-      pathToNode: PathToNode
-      pathId: string
-    }
-  | {
-      mode: 'sketch'
-      sketchMode: 'enterSketchEdit'
-      rotation: Rotation
-      position: Position
-      pathToNode: PathToNode
-      pathId: string
-    }
-  | {
-      mode: 'sketch'
-      sketchMode: 'selectFace'
-    }
-  | {
-      mode: 'canEditSketch'
-      pathId: string
-      pathToNode: PathToNode
-      rotation: Rotation
-      position: Position
-    }
-  | {
-      mode: 'canEditExtrude'
-      pathToNode: PathToNode
-      rotation: Rotation
-      position: Position
-    }
-
 export type PaneType =
   | 'code'
   | 'variables'
@@ -134,9 +86,6 @@ export interface StoreState {
   setEditorView: (editorView: EditorView) => void
   highlightRange: [number, number]
   setHighlightRange: (range: Selection['range']) => void
-  guiMode: GuiModes
-  lastGuiMode: GuiModes
-  setGuiMode: (guiMode: GuiModes) => void
   isShiftDown: boolean
   setIsShiftDown: (isShiftDown: boolean) => void
   mediaStream?: MediaStream
@@ -187,11 +136,6 @@ export const useStore = create<StoreState>()(
           if (editorView) {
             editorView.dispatch({ effects: addLineHighlight.of(selection) })
           }
-        },
-        guiMode: { mode: 'default' },
-        lastGuiMode: { mode: 'default' },
-        setGuiMode: (guiMode) => {
-          set({ guiMode })
         },
         isShiftDown: false,
         setIsShiftDown: (isShiftDown) => set({ isShiftDown }),
@@ -268,77 +212,6 @@ const defaultProgramMemory: ProgramMemory['root'] = {
     value: Math.PI,
     __meta: [],
   },
-}
-
-async function executeCode({
-  engineCommandManager,
-  code,
-  lastAst,
-  defaultPlanes,
-  force,
-}: {
-  code: string
-  lastAst: Program
-  engineCommandManager: EngineCommandManager
-  defaultPlanes: DefaultPlanes
-  force?: boolean
-}): Promise<
-  | {
-      logs: string[]
-      errors: KCLError[]
-      programMemory: ProgramMemory
-      ast: Program
-      isChange: true
-    }
-  | { isChange: false }
-> {
-  let ast: Program
-  try {
-    ast = parse(code)
-  } catch (e) {
-    let errors: KCLError[] = []
-    let logs: string[] = [JSON.stringify(e)]
-    if (e instanceof KCLError) {
-      errors = [e]
-      logs = []
-      if (e.msg === 'file is empty') engineCommandManager.endSession()
-    }
-    return {
-      isChange: true,
-      logs,
-      errors,
-      programMemory: {
-        root: {},
-        return: null,
-      },
-      ast: {
-        start: 0,
-        end: 0,
-        body: [],
-        nonCodeMeta: {
-          nonCodeNodes: {},
-          start: null,
-        },
-      },
-    }
-  }
-  // Check if the ast we have is equal to the ast in the storage.
-  // If it is, we don't need to update the ast.
-  if (JSON.stringify(ast) === JSON.stringify(lastAst) && !force)
-    return { isChange: false }
-
-  const { logs, errors, programMemory } = await executeAst({
-    ast,
-    engineCommandManager,
-    defaultPlanes,
-  })
-  return {
-    ast,
-    logs,
-    errors,
-    programMemory,
-    isChange: true,
-  }
 }
 
 export async function executeAst({

@@ -4,15 +4,11 @@ import { moveValueIntoNewVariable } from 'lang/modifyAst'
 import { isNodeSafeToReplace } from 'lang/queryAst'
 import { useEffect, useState } from 'react'
 import { create } from 'react-modal-promise'
-import { useStore } from 'useStore'
 import { useModelingContext } from './useModelingContext'
 
 const getModalInfo = create(SetVarNameModal as any)
 
 export function useConvertToVariable() {
-  const { guiMode } = useStore((s) => ({
-    guiMode: s.guiMode,
-  }))
   const { context } = useModelingContext()
   const [enable, setEnabled] = useState(false)
   useEffect(() => {
@@ -26,7 +22,7 @@ export function useConvertToVariable() {
 
     const _enableHorz = canReplace && isOnlyOneSelection
     setEnabled(_enableHorz)
-  }, [guiMode, context.selectionRanges])
+  }, [context.selectionRanges])
 
   const handleClick = async () => {
     try {

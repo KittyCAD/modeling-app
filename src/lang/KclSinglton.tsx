@@ -1,4 +1,4 @@
-import { Selection, Selections, executeAst } from 'useStore'
+import { Selections, executeAst } from 'useStore'
 import { KCLError } from './errors'
 import {
   EngineCommandManager,
@@ -99,7 +99,7 @@ class KclManager {
   constructor(engineCommandManager: EngineCommandManager) {
     this.engineCommandManager = engineCommandManager
     const storedCode = localStorage.getItem(PERSIST_CODE_TOKEN)
-    // TODO remove zustand persistance logic in a few months
+    // TODO #819 remove zustand persistance logic in a few months
     // short term migration, shouldn't make a difference for tauri app users
     // anyway since that's filesystem based.
     const zustandStore = JSON.parse(localStorage.getItem('store') || '{}')
@@ -137,7 +137,6 @@ class KclManager {
   }
 
   async executeAst(ast: Program = this._ast, updateCode = false) {
-    // if (!this.isStreamReady) return
     this._isExecutingCallback(true)
     const { logs, errors, programMemory } = await executeAst({
       ast,

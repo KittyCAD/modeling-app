@@ -181,7 +181,7 @@ export const ModelingMachineProvider = ({
           // updateAst(_modifiedAst, true)
         }
       },
-      'sketch exit execute': ({}) => {
+      'sketch exit execute': () => {
         kclManager.executeAst()
       },
       'set tool': () => {}, // TODO
@@ -325,7 +325,7 @@ export const ModelingMachineProvider = ({
         })
       }
     })
-  }, [kclManager.defaultPlanes, modelingSend])
+  }, [kclManager.defaultPlanes, modelingSend, modelingState.nextEvents])
 
   // useStateMachineCommands({
   //   state: settingsState,
@@ -343,7 +343,7 @@ export const ModelingMachineProvider = ({
         send: modelingSend,
       }}
     >
-      {/* TODO maybe pass reff down to children/app.ts or render app.tsx directly?
+      {/* TODO #818: maybe pass reff down to children/app.ts or render app.tsx directly?
       since realistically it won't ever have generic children that isn't app.tsx */}
       <div className="h-screen overflow-hidden select-none" ref={streamRef}>
         {children}

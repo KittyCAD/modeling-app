@@ -1,6 +1,5 @@
 import ReactJson from 'react-json-view'
 import { useEffect } from 'react'
-import { useStore } from '../useStore'
 import { CollapsiblePanel, CollapsiblePanelProps } from './CollapsiblePanel'
 import { Themes } from '../lib/theme'
 import { useKclContext } from 'lang/KclSinglton'

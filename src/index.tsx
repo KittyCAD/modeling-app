@@ -5,10 +5,12 @@ import { Toaster } from 'react-hot-toast'
 import { Router } from './Router'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 import { inspect } from '@xstate/inspect'
+import { DEV } from 'env'
 
-inspect({
-  iframe: false,
-})
+if (DEV)
+  inspect({
+    iframe: false,
+  })
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 

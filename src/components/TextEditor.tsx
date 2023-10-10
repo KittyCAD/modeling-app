@@ -111,12 +111,12 @@ export const TextEditor = ({
   }, [lspClient, isLSPServerReady])
 
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
-  const onChange = (value: string, viewUpdate: ViewUpdate) => {
-    kclManager.setCodeAndExecute(value)
+  const onChange = (newCode: string, viewUpdate: ViewUpdate) => {
+    kclManager.setCodeAndExecute(newCode)
     if (isTauri() && pathParams.id) {
       // Save the file to disk
       // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
-      writeTextFile(pathParams.id + '/' + PROJECT_ENTRYPOINT, value).catch(
+      writeTextFile(pathParams.id + '/' + PROJECT_ENTRYPOINT, newCode).catch(
         (err) => {
           // TODO: add Sentry per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
           console.error('error saving file', err)
