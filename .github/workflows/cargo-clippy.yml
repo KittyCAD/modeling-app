@@ -15,6 +15,9 @@ on:
       - '**/rust-toolchain.toml'
       - '**.rs'
       - .github/workflows/cargo-build.yml
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 name: cargo clippy
 jobs:
   cargoclippy:

@@ -41,7 +41,8 @@ const newVar = myVar + 1`
     expect(root.magicNum.value).toBe(69)
   })
   it('sketch declaration', async () => {
-    let code = `const mySketch = startSketchAt([0,0])
+    let code = `const mySketch = startSketchOn('XY')
+  |> startProfileAt([0,0], %)
   |> lineTo({to: [0,2], tag: "myPath"}, %)
   |> lineTo([2,3], %)
   |> lineTo({ to: [5,-1], tag: "rightPath" }, %)
@@ -57,7 +58,7 @@ show(mySketch)
         to: [0, 2],
         from: [0, 0],
         __geoMeta: {
-          sourceRange: [43, 80],
+          sourceRange: [72, 109],
           id: expect.any(String),
         },
         name: 'myPath',
@@ -68,7 +69,7 @@ show(mySketch)
         from: [0, 2],
         name: '',
         __geoMeta: {
-          sourceRange: [86, 102],
+          sourceRange: [115, 131],
           id: expect.any(String),
         },
       },
@@ -77,7 +78,7 @@ show(mySketch)
         to: [5, -1],
         from: [2, 3],
         __geoMeta: {
-          sourceRange: [108, 151],
+          sourceRange: [137, 180],
           id: expect.any(String),
         },
         name: 'rightPath',
@@ -87,8 +88,8 @@ show(mySketch)
     expect(_return).toEqual([
       {
         type: 'Identifier',
-        start: 174,
-        end: 182,
+        start: 203,
+        end: 211,
         name: 'mySketch',
       },
     ])
@@ -132,7 +133,8 @@ show(mySketch)
   it('execute pipe sketch into call expression', async () => {
     // Enable rotations #152
     const code = [
-      'const mySk1 = startSketchAt([0,0])',
+      "const mySk1 = startSketchOn('XY')",
+      '  |> startProfileAt([0,0], %)',
       '  |> lineTo([1,1], %)',
       '  |> lineTo({to: [0, 1], tag: "myPath"}, %)',
       '  |> lineTo([1,1], %)',
@@ -147,7 +149,7 @@ show(mySketch)
         name: '',
         __geoMeta: {
           id: expect.any(String),
-          sourceRange: [14, 34],
+          sourceRange: [39, 63],
         },
       },
       value: [
@@ -157,7 +159,7 @@ show(mySketch)
           from: [0, 0],
           name: '',
           __geoMeta: {
-            sourceRange: [40, 56],
+            sourceRange: [69, 85],
             id: expect.any(String),
           },
         },
@@ -166,7 +168,7 @@ show(mySketch)
           to: [0, 1],
           from: [1, 1],
           __geoMeta: {
-            sourceRange: [62, 100],
+            sourceRange: [91, 129],
             id: expect.any(String),
           },
           name: 'myPath',
@@ -177,7 +179,7 @@ show(mySketch)
           from: [0, 1],
           name: '',
           __geoMeta: {
-            sourceRange: [106, 122],
+            sourceRange: [135, 151],
             id: expect.any(String),
           },
         },
@@ -185,7 +187,8 @@ show(mySketch)
       position: [0, 0, 0],
       rotation: [0, 0, 0, 1],
       id: expect.any(String),
-      __meta: [{ sourceRange: [14, 34] }],
+      planeId: expect.any(String),
+      __meta: [{ sourceRange: [39, 63] }],
     })
   })
   it('execute array expression', async () => {
@@ -329,7 +332,8 @@ describe('testing math operators', () => {
   })
   it('with unaryExpression in ArrayExpression in CallExpression, checking nothing funny happens when used in a sketch', async () => {
     const code = [
-      'const part001 = startSketchAt([0, 0])',
+      "const part001 = startSketchOn('XY')",
+      '  |> startProfileAt([0, 0], %)',
       '|> line([-2.21, -legLen(5, min(3, 999))], %)',
     ].join('\n')
     const { root } = await exe(code)
@@ -341,7 +345,8 @@ describe('testing math operators', () => {
   it('test that % substitution feeds down CallExp->ArrExp->UnaryExp->CallExp', async () => {
     const code = [
       `const myVar = 3`,
-      `const part001 = startSketchAt([0, 0])`,
+      `const part001 = startSketchOn('XY')`,
+      `  |> startProfileAt([0, 0], %)`,
       `  |> line({ to: [3, 4], tag: 'seg01' }, %)`,
       `  |> line([`,
       `  min(segLen('seg01', %), myVar),`,
@@ -377,7 +382,8 @@ describe('testing math operators', () => {
 describe('Testing Errors', () => {
   it('should throw an error when a variable is not defined', async () => {
     const code = `const myVar = 5
-const theExtrude = startSketchAt([0, 0])
+const theExtrude = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   |> line([-2.4, 5], %)
   |> line([-0.76], myVarZ, %)
   |> line([5,5], %)
@@ -388,7 +394,7 @@ show(theExtrude)`
       new KCLError(
         'undefined_value',
         'memory item key `myVarZ` is not defined',
-        [[100, 106]]
+        [[129, 135]]
       )
     )
   })
