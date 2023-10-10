@@ -201,7 +201,11 @@ export const Toolbar = () => {
   }
 
   return (
-    <Popover className={styles.toolbarWrapper}>
+    <Popover
+      className={
+        styles.toolbarWrapper + state.matches('Sketch') ? ' sketch' : ''
+      }
+    >
       <div className={styles.toolbar}>
         <span className={styles.toolbarCap + ' ' + styles.label}>
           {state.matches('Sketch') ? '2D' : '3D'}
