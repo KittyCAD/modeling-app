@@ -318,11 +318,13 @@ pub fn get_type_string_from_schema(schema: &schemars::schema::Schema) -> Result<
                     // Let's print out the object's properties.
                     match array_val.max_items {
                         Some(val) => {
-                            return Ok( (format!("[{}]", (0..val).map(|_| "number").collect::<Vec<_>>().join(", ")), false) );
-
-                        },
+                            return Ok((
+                                format!("[{}]", (0..val).map(|_| "number").collect::<Vec<_>>().join(", ")),
+                                false,
+                            ));
+                        }
                         None => {
-                            return Ok( (format!("[{}]", get_type_string_from_schema(items)?.0), false) );
+                            return Ok((format!("[{}]", get_type_string_from_schema(items)?.0), false));
                         }
                     };
                 } else if let Some(items) = &array_val.contains {
