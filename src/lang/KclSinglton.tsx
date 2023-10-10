@@ -69,7 +69,7 @@ class KclManager {
   }
 
   get defaultPlanes() {
-    return this.engineCommandManager.defaultPlanes
+    return this?.engineCommandManager?.defaultPlanes
   }
 
   get logs() {

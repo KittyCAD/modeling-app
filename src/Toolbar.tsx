@@ -16,7 +16,7 @@ import { faSearch, faX } from '@fortawesome/free-solid-svg-icons'
 import { Popover, Transition } from '@headlessui/react'
 import styles from './Toolbar.module.css'
 import { v4 as uuidv4 } from 'uuid'
-import { isCursorInSketchCommandRange, useAppMode } from 'hooks/useAppMode'
+import { isCursorInSketchCommandRange } from 'hooks/useAppMode'
 import { ActionIcon } from 'components/ActionIcon'
 import { engineCommandManager } from './lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
@@ -46,7 +46,6 @@ const sketchFnLabels: Record<ToolTip | 'sketch_line' | 'move', string> = {
 }
 
 export const Toolbar = () => {
-  useAppMode()
   const { state, send, context } = useModelingContext()
   const toolbarButtonsRef = useRef<HTMLSpanElement>(null)
   const pathId = useMemo(
