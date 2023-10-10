@@ -5,13 +5,19 @@ import { FileEntry } from '@tauri-apps/api/fs'
 import { useEffect, useState } from 'react'
 import { readProject } from 'lib/tauriFS'
 import { Link } from 'react-router-dom'
+import { Disclosure } from '@headlessui/react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons'
 
 const FileTreeItem = ({
   project,
+  currentFile,
   fileOrDir,
   closePanel,
+  level = 0,
 }: {
   project?: IndexLoaderData['project']
+  currentFile?: IndexLoaderData['file']
   fileOrDir: FileEntry
   closePanel: (
     focusableElement?:
@@ -19,36 +25,71 @@ const FileTreeItem = ({
       | React.MutableRefObject<HTMLElement | null>
       | undefined
   ) => void
+  level?: number
 }) => {
+  const isCurrentFile = fileOrDir.path === currentFile?.path
+
   return !fileOrDir.children ? (
-    <li className="m-0 py-1 px-4 border-solid border-0">
+    <li
+      className={
+        'group m-0 py-1 border-solid border-0 hover:bg-energy-10/50 dark:hover:bg-energy-90/50 ' +
+        (isCurrentFile ? 'bg-energy-10/50 dark:bg-energy-90/50' : '')
+      }
+      style={{ paddingInline: `calc(1rem * ${level + 1})` }}
+    >
       <Link
         to={`${paths.FILE}/${encodeURIComponent(fileOrDir.path)}`}
-        className="text-energy-100 hover:text-energy-70 dark:text-energy-30 dark:hover:text-energy-20"
+        className="text-energy-100 group-hover:text-energy-70 dark:text-energy-30 dark:group-hover:text-energy-20"
         onClick={() => closePanel()}
       >
+        {isCurrentFile && (
+          <div className="inline-block w-2 h-2 rounded-full bg-energy-10 mr-2">
+            <span className="sr-only">(current)</span>
+          </div>
+        )}
         {fileOrDir.name}
       </Link>
     </li>
   ) : (
-    <details className="m-0 py-1 px-4">
-      <summary>{fileOrDir.name}</summary>
-      <ul className="m-0 p-0">
-        {fileOrDir.children.map((child) => (
-          <FileTreeItem
-            fileOrDir={child}
-            project={project}
-            closePanel={closePanel}
-          />
-        ))}
-      </ul>
-    </details>
+    <Disclosure defaultOpen={currentFile?.path.includes(fileOrDir.path)}>
+      {({ open }) => (
+        <>
+          <Disclosure.Button
+            className="border-none text-base rounded-none p-0 m-0 flex items-center justify-start w-full py-1 text-chalkboard-70 dark:text-chalkboard-30 hover:bg-energy-10/50 dark:hover:bg-energy-90/50"
+            style={{ paddingInline: `calc(1rem * ${level + 1})` }}
+          >
+            <FontAwesomeIcon
+              icon={faChevronRight}
+              className={
+                'inline-block mr-2 m-0 p-0 w-2 h-2 ' +
+                (open ? 'transform rotate-90' : '')
+              }
+            />
+            {fileOrDir.name}
+          </Disclosure.Button>
+          <Disclosure.Panel>
+            <ul className="m-0 p-0">
+              {fileOrDir.children?.map((child) => (
+                <FileTreeItem
+                  fileOrDir={child}
+                  project={project}
+                  currentFile={currentFile}
+                  closePanel={closePanel}
+                  level={level + 1}
+                />
+              ))}
+            </ul>
+          </Disclosure.Panel>
+        </>
+      )}
+    </Disclosure>
   )
 }
 
 interface FileTreeProps {
   className?: string
   project?: IndexLoaderData['project']
+  file?: IndexLoaderData['file']
   closePanel: (
     focusableElement?:
       | HTMLElement
@@ -60,6 +101,7 @@ interface FileTreeProps {
 export const FileTree = ({
   className = '',
   project,
+  file,
   closePanel,
 }: FileTreeProps) => {
   const [contents, setContents] = useState<FileEntry[]>([])
@@ -108,6 +150,7 @@ export const FileTree = ({
         {contents.map((fileOrDir) => (
           <FileTreeItem
             project={project}
+            currentFile={file}
             fileOrDir={fileOrDir}
             closePanel={closePanel}
           />
