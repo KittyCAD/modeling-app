@@ -105,8 +105,6 @@ export interface StoreState {
     streamWidth: number
     streamHeight: number
   }) => void
-  currentPlane: string | null
-  setCurrentPlane: (currentPlane: string) => void
 
   showHomeMenu: boolean
   setHomeShowMenu: (showMenu: boolean) => void
@@ -159,8 +157,6 @@ export const useStore = create<StoreState>()(
         setStreamDimensions: (streamDimensions) => {
           set({ streamDimensions })
         },
-        currentPlane: null,
-        setCurrentPlane: (currentPlane) => set({ currentPlane }),
 
         // tauri specific app settings
         defaultDir: {
