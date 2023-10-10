@@ -43,10 +43,7 @@ export function getSortFunction(sortBy: string) {
     a: ProjectWithEntryPointMetadata,
     b: ProjectWithEntryPointMetadata
   ) => {
-    if (
-      a.entrypointMetadata?.modifiedAt &&
-      b.entrypointMetadata?.modifiedAt
-    ) {
+    if (a.entrypointMetadata?.modifiedAt && b.entrypointMetadata?.modifiedAt) {
       return !sortBy || sortBy.includes('desc')
         ? b.entrypointMetadata.modifiedAt.getTime() -
             a.entrypointMetadata.modifiedAt.getTime()
