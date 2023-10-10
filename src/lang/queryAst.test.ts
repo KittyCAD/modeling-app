@@ -4,7 +4,7 @@ import {
   isNodeSafeToReplace,
   isTypeInValue,
   getNodePathFromSourceRange,
-  doesPipeHave,
+  doesPipeHaveCallExp,
   hasExtrudeSketchGroup,
 } from './queryAst'
 import { enginelessExecutor } from '../lib/testHelpers'
@@ -260,7 +260,7 @@ const part001 = startSketchAt([-1.41, 3.46])
   |> close(%)
 `
     const ast = parse(exampleCode)
-    const result = doesPipeHave({
+    const result = doesPipeHaveCallExp({
       calleeName: 'close',
       ast,
       selection: { type: 'default', range: [100, 101] },
@@ -278,7 +278,7 @@ const part001 = startSketchAt([-1.41, 3.46])
   |> extrude(1, %)
 `
     const ast = parse(exampleCode)
-    const result = doesPipeHave({
+    const result = doesPipeHaveCallExp({
       calleeName: 'extrude',
       ast,
       selection: { type: 'default', range: [100, 101] },
@@ -294,7 +294,7 @@ const part001 = startSketchAt([-1.41, 3.46])
   |> angledLine([-175, segLen('seg01', %)], %)
 `
     const ast = parse(exampleCode)
-    const result = doesPipeHave({
+    const result = doesPipeHaveCallExp({
       calleeName: 'close',
       ast,
       selection: { type: 'default', range: [100, 101] },
@@ -304,7 +304,7 @@ const part001 = startSketchAt([-1.41, 3.46])
   it('returns false if not a pipe', () => {
     const exampleCode = `const length001 = 2`
     const ast = parse(exampleCode)
-    const result = doesPipeHave({
+    const result = doesPipeHaveCallExp({
       calleeName: 'close',
       ast,
       selection: { type: 'default', range: [9, 10] },

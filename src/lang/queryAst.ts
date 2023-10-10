@@ -513,7 +513,7 @@ export function isLinesParallelAndConstrained(
   }
 }
 
-export function doesPipeHave({
+export function doesPipeHaveCallExp({
   ast,
   selection,
   calleeName,

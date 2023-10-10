@@ -6,7 +6,7 @@ import { assign, createMachine } from 'xstate'
 import { v4 as uuidv4 } from 'uuid'
 import { isCursorInSketchCommandRange } from 'hooks/useAppMode'
 import {
-  doesPipeHave,
+  doesPipeHaveCallExp,
   getNodePathFromSourceRange,
   hasExtrudeSketchGroup,
 } from 'lang/queryAst'
@@ -613,8 +613,11 @@ export const modelingMachine = createMachine(
           selection: selectionRanges.codeBasedSelections[0],
           ast: kclManager.ast,
         }
-        const hasClose = doesPipeHave({ calleeName: 'close', ...common })
-        const hasExtrude = doesPipeHave({ calleeName: 'extrude', ...common })
+        const hasClose = doesPipeHaveCallExp({ calleeName: 'close', ...common })
+        const hasExtrude = doesPipeHaveCallExp({
+          calleeName: 'extrude',
+          ...common,
+        })
         return !!isSketchPipe && hasClose && !hasExtrude
       },
     },
