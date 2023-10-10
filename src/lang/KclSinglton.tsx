@@ -9,7 +9,6 @@ import { parse, PathToNode, Program, ProgramMemory, recast } from 'lang/wasm'
 import { bracket } from 'lib/exampleKcl'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { getNodeFromPath } from './queryAst'
-import { CursorPos } from 'readline'
 
 const PERSIST_CODE_TOKEN = 'persistCode'
 
@@ -67,6 +66,10 @@ class KclManager {
   set programMemory(programMemory) {
     this._programMemory = programMemory
     this._programMemoryCallBack(programMemory)
+  }
+
+  get defaultPlanes() {
+    return this.engineCommandManager.defaultPlanes
   }
 
   get logs() {
@@ -138,7 +141,8 @@ class KclManager {
     this._isExecutingCallback(true)
     const { logs, errors, programMemory } = await executeAst({
       ast,
-      engineCommandManager,
+      engineCommandManager: this.engineCommandManager,
+      defaultPlanes: this.defaultPlanes,
     })
     this._isExecutingCallback(false)
     this._logs = logs
@@ -153,7 +157,7 @@ class KclManager {
   async executeAstMock(ast: Program = this._ast, updateCode = false) {
     const newCode = recast(ast)
     const newAst = parse(newCode)
-    await engineCommandManager.waitForReady
+    await this.engineCommandManager.waitForReady
     if (updateCode) {
       this.setCode(recast(ast))
     }
@@ -161,37 +165,39 @@ class KclManager {
 
     const { logs, errors, programMemory } = await executeAst({
       ast: newAst,
-      engineCommandManager,
+      engineCommandManager: this.engineCommandManager,
+      defaultPlanes: this.defaultPlanes,
       useFakeExecutor: true,
     })
     this._logs = logs
     this._kclErrors = errors
     this._programMemory = programMemory
   }
-  setCode(code: string, execute = false) {
+  setCode(code: string) {
     this._code = code
     this._codeCallBack(code)
     localStorage.setItem(PERSIST_CODE_TOKEN, code)
-    if (execute) {
-      if (code.trim()) {
-        this._defferer(code)
-        return
-      }
-      this._ast = {
-        body: [],
-        start: 0,
-        end: 0,
-        nonCodeMeta: {
-          nonCodeNodes: {},
-          start: null,
-        },
-      }
-      this._programMemory = {
-        root: {},
-        return: null,
-      }
-      engineCommandManager.endSession()
+  }
+  setCodeAndExecute(code: string) {
+    this.setCode(code)
+    if (code.trim()) {
+      this._defferer(code)
+      return
     }
+    this._ast = {
+      body: [],
+      start: 0,
+      end: 0,
+      nonCodeMeta: {
+        nonCodeNodes: {},
+        start: null,
+      },
+    }
+    this._programMemory = {
+      root: {},
+      return: null,
+    }
+    this.engineCommandManager.endSession()
   }
   format() {
     this.code = recast(parse(kclManager.code))
@@ -241,6 +247,22 @@ class KclManager {
       await this.executeAstMock(astWithUpdatedSource)
     }
     return returnVal
+  }
+
+  getPlaneId(axis: 'xy' | 'xz' | 'yz'): string {
+    return this.defaultPlanes[axis]
+  }
+
+  showPlanes() {
+    this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, false)
+    this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, false)
+    this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, false)
+  }
+
+  hidePlanes() {
+    this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, true)
+    this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, true)
+    this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, true)
   }
 }
 

@@ -18,6 +18,8 @@ import FutureWork from './FutureWork'
 import { paths } from 'Router'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 
+export const ONBOARDING_PROJECT_NAME = 'Tutorial Project $nn'
+
 export const onboardingPaths = {
   INDEX: '/',
   CAMERA: '/camera',

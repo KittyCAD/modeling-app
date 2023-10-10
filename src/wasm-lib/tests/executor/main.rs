@@ -37,10 +37,13 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
     let program = parser.ast()?;
     let mut mem: kcl_lib::executor::ProgramMemory = Default::default();
     let engine = kcl_lib::engine::EngineConnection::new(ws).await?;
-    let _ = kcl_lib::executor::execute(program, &mut mem, kcl_lib::executor::BodyType::Root, &engine).await?;
+    let planes = kcl_lib::executor::DefaultPlanes::new(&engine).await?;
+    let ctx = kcl_lib::executor::ExecutorContext { engine, planes };
+    let _ = kcl_lib::executor::execute(program, &mut mem, kcl_lib::executor::BodyType::Root, &ctx).await?;
 
     // Send a snapshot request to the engine.
-    let resp = engine
+    let resp = ctx
+        .engine
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             kcl_lib::executor::SourceRange::default(),
@@ -68,7 +71,8 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_execute_with_function_sketch() {
     let code = r#"fn box = (h, l, w) => {
- const myBox = startSketchAt([0,0])
+ const myBox = startSketchOn('XY')
+    |> startProfileAt([0,0], %)
     |> line([0, l], %)
     |> line([w, 0], %)
     |> line([0, -l], %)
@@ -89,7 +93,8 @@ show(fnBox)"#;
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_execute_with_function_sketch_with_position() {
     let code = r#"fn box = (p, h, l, w) => {
- const myBox = startSketchAt(p)
+ const myBox = startSketchOn('XY')
+    |> startProfileAt(p, %)
     |> line([0, l], %)
     |> line([w, 0], %)
     |> line([0, -l], %)
@@ -107,7 +112,8 @@ show(box([0,0], 3, 6, 10))"#;
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_execute_with_angled_line() {
-    let code = r#"const part001 = startSketchAt([4.83, 12.56])
+    let code = r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([4.83, 12.56], %)
   |> line([15.1, 2.48], %)
   |> line({ to: [3.15, -9.85], tag: 'seg01' }, %)
   |> line([-15.17, -4.1], %)
@@ -133,7 +139,8 @@ const FOS = 2
 const leg1 = 5 // inches
 const leg2 = 8 // inches
 const thickness = sqrt(distance * p * FOS * 6 / sigmaAllow / width) // inches
-const bracket = startSketchAt([0, 0])
+const bracket = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   |> line([0, leg1], %)
   |> line([leg2, 0], %)
   |> line([0, -thickness], %)
@@ -185,7 +192,8 @@ show(bracket)"#;
 
 #[tokio::test(flavor = "multi_thread")]
 async fn serial_test_execute_engine_error_return() {
-    let code = r#"const part001 = startSketchAt([5.5229, 5.25217])
+    let code = r#"const part001 = startSketchOn('XY')
+  |> startProfileAt([5.5229, 5.25217], %)
   |> line([10.50433, -1.19122], %)
   |> line([8.01362, -5.48731], %)
   |> line([-1.02877, -6.76825], %)
@@ -197,7 +205,7 @@ async fn serial_test_execute_engine_error_return() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"engine: KclErrorDetails { source_ranges: [SourceRange([193, 206])], message: "Modeling command failed: Some([ApiError { error_code: BadRequest, message: \"The path is not closed.  Solid2D construction requires a closed path!\" }])" }"#,
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([222, 235])], message: "Modeling command failed: Some([ApiError { error_code: BadRequest, message: \"The path is not closed.  Solid2D construction requires a closed path!\" }])" }"#,
     );
 }
 
@@ -221,7 +229,8 @@ async fn serial_test_execute_kittycad_svg() {
 #[tokio::test(flavor = "multi_thread")]
 async fn test_member_expression_sketch_group() {
     let code = r#"fn cube = (pos, scale) => {
-  const sg = startSketchAt(pos)
+  const sg = startSketchOn('XY')
+    |> startProfileAt(pos, %)
     |> line([0, scale], %)
     |> line([scale, 0], %)
     |> line([0, -scale], %)
@@ -252,7 +261,8 @@ async fn test_close_arc() {
 const radius = 40
 const height = 3
 
-const body = startSketchAt([center[0]+radius, center[1]])
+const body = startSketchOn('XY')
+      |> startProfileAt([center[0]+radius, center[1]], %)
       |> arc({angle_end: 360, angle_start: 0, radius: radius}, %)
       |> close(%)
       |> extrude(height, %)
@@ -270,7 +280,8 @@ const height = 10
 const length = 12
 
 fn box = (sk1, sk2, scale) => {
-  const boxSketch = startSketchAt([sk1, sk2])
+  const boxSketch = startSketchOn('XY')
+    |> startProfileAt([sk1, sk2], %)
     |> line([0, scale], %)
     |> line([scale, 0], %)
     |> line([0, -scale], %)
@@ -325,4 +336,90 @@ async fn test_basic_tangental_arc_to() {
 
     let result = execute_and_snapshot(code).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/tangental_arc_to.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_different_planes_same_drawing() {
+    let code = r#"const width = 5
+const height = 10
+const length = 12
+
+fn box = (sk1, sk2, scale, plane) => {
+  const boxsketch = startSketchOn(plane)
+    |> startProfileAt([sk1, sk2], %)
+    |> line([0, scale], %)
+    |> line([scale, 0], %)
+    |> line([0, -scale], %)
+    |> close(%)
+    |> extrude(scale, %)
+  return boxsketch
+}
+
+box(0, 0, 5, 'xy')
+box(10, 23, 8, 'xz')
+box(30, 43, 18, '-xy')
+let thing = box(-12, -15, 10, 'yz')
+box(-20, -5, 10, 'xy')"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/different_planes_same_drawing.png", &result, 1.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_lots_of_planes() {
+    let code = r#"const sigmaAllow = 15000 // psi
+const width = 11 // inch
+const p = 150 // Force on shelf - lbs
+const distance = 12 // inches
+const FOS = 2
+const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))
+const filletR = thickness * 2
+const shelfMountL = 9
+const wallMountL = 8
+
+const bracket = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, wallMountL], %)
+  |> tangentalArc({ radius: filletR, offset: 90 }, %)
+  |> line([-shelfMountL, 0], %)
+  |> line([0, -thickness], %)
+  |> line([shelfMountL, 0], %)
+  |> tangentalArc({
+       radius: filletR - thickness,
+       offset: -90
+     }, %)
+  |> line([0, -wallMountL], %)
+  |> close(%)
+  |> extrude(width, %)
+
+show(bracket)
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-15.53, -10.28], %)
+  |> line([10.49, -2.08], %)
+  |> line([10.42, 8.47], %)
+  |> line([-19.16, 5.1], %)
+  |> close(%)
+  |> extrude(4, %)
+
+const part002 = startSketchOn('-XZ')
+  |> startProfileAt([-9.35, 19.18], %)
+  |> line([32.14, -2.47], %)
+  |> line([8.39, -3.73], %)
+  |> close(%)
+
+const part003 = startSketchOn('-XZ')
+  |> startProfileAt([13.82, 16.51], %)
+  |> line([-6.24, -30.82], %)
+  |> line([8.39, -3.73], %)
+  |> close(%)
+
+const part004 = startSketchOn('YZ')
+  |> startProfileAt([19.04, 20.22], %)
+  |> line([9.44, -30.16], %)
+  |> line([8.39, -3.73], %)
+  |> close(%)
+"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/lots_of_planes.png", &result, 1.0);
 }

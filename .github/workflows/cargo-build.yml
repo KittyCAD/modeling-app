@@ -15,6 +15,9 @@ on:
       - '**/Cargo.lock'
       - '**/rust-toolchain.toml'
       - .github/workflows/cargo-build.yml
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 name: cargo build
 jobs:
   cargobuild:

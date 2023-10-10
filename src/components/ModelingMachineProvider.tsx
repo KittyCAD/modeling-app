@@ -81,7 +81,7 @@ export const ModelingMachineProvider = ({
       'Modify AST': () => {},
       'Update code selection cursors': () => {},
       'show default planes': () => {
-        modelingState.context.defaultPlanes?.showPlanes()
+        kclManager.showPlanes()
       },
       'create path': async () => {
         const sketchUuid = uuidv4()
@@ -104,9 +104,16 @@ export const ModelingMachineProvider = ({
         ]
         await Promise.all(proms)
       },
-      'AST start new sketch': assign((_, { data: coords }) => {
+      'AST start new sketch': assign((_, { data: { coords, axis } }) => {
+        // Something really weird must have happened for this to happen.
+        if (!axis) {
+          console.error('axis is undefined for starting a new sketch')
+          return {}
+        }
+
         const _addStartSketch = addStartSketch(
           kclManager.ast,
+          axis,
           [roundOff(coords[0].x), roundOff(coords[0].y)],
           [
             roundOff(coords[1].x - coords[0].x),
@@ -124,7 +131,7 @@ export const ModelingMachineProvider = ({
           sketchPathToNode: _pathToNode,
         }
       }),
-      'AST add line segment': ({ sketchPathToNode }, { data: coords }) => {
+      'AST add line segment': ({ sketchPathToNode }, { data: { coords } }) => {
         if (!sketchPathToNode) return
         const lastCoord = coords[coords.length - 1]
 
@@ -174,7 +181,7 @@ export const ModelingMachineProvider = ({
           // updateAst(_modifiedAst, true)
         }
       },
-      'sketch exit execute': () => {
+      'sketch exit execute': ({}) => {
         kclManager.executeAst()
       },
       'set tool': () => {}, // TODO
@@ -310,12 +317,15 @@ export const ModelingMachineProvider = ({
   })
 
   useEffect(() => {
-    modelingState.context.defaultPlanes?.onPlaneSelected((plane_id: string) => {
-      if (modelingState.nextEvents.includes('Select face')) {
-        modelingSend('Select face')
+    engineCommandManager.onPlaneSelected((plane_id: string) => {
+      if (modelingState.nextEvents.includes('Select default plane')) {
+        modelingSend({
+          type: 'Select default plane',
+          data: { planeId: plane_id },
+        })
       }
     })
-  }, [modelingState.context.defaultPlanes, modelingSend])
+  }, [kclManager.defaultPlanes, modelingSend])
 
   // useStateMachineCommands({
   //   state: settingsState,

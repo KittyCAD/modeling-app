@@ -99,16 +99,16 @@ export const Toolbar = () => {
         {state.nextEvents.includes('Cancel') && !state.matches('idle') && (
           <button onClick={() => send({ type: 'Cancel' })} className="group">
             <ActionIcon icon="exit" className="!p-0.5" size="md" />
-            Exit Sketch v2
+            Exit Sketch
           </button>
         )}
-        {state.matches('Sketch') && (
+        {state.matches('Sketch') && !state.matches('idle') && (
           <button
-            onClick={() => {
+            onClick={() =>
               state.matches('Sketch.Line Tool')
                 ? send('CancelSketch')
                 : send('Equip tool')
-            }}
+            }
             className={
               'group ' +
               (state.matches('Sketch.Line Tool')
@@ -122,12 +122,11 @@ export const Toolbar = () => {
         )}
         {state.matches('Sketch') && (
           <button
-            onClick={() => {
-              console.log('yo', state.matches('Sketch.Move Tool'))
+            onClick={() =>
               state.matches('Sketch.Move Tool')
                 ? send('CancelSketch')
                 : send('Equip move tool')
-            }}
+            }
             className={
               'group ' +
               (state.matches('Sketch.Move Tool')

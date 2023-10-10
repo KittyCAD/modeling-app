@@ -144,7 +144,13 @@ export function useCalc({
       availableVarInfo.variables.forEach(({ key, value }) => {
         _programMem.root[key] = { type: 'userVal', value, __meta: [] }
       })
-      executor(ast, _programMem, engineCommandManager).then((programMemory) => {
+
+      executor(
+        ast,
+        _programMem,
+        engineCommandManager,
+        kclManager.defaultPlanes
+      ).then((programMemory) => {
         const resultDeclaration = ast.body.find(
           (a) =>
             a.type === 'VariableDeclaration' &&

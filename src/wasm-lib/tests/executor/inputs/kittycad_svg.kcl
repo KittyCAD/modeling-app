@@ -1,4 +1,5 @@
-const svg = startSketchAt([0, 0])
+const svg = startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
 
 |> lineTo([2.52, -26.04], %) // MoveAbsolute
 |> lineTo([2.52, -25.2], %) // VerticalLineAbsolute

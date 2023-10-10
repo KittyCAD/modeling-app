@@ -92,7 +92,8 @@ const myVar2 = 5
 const myVar3 = 6
 const myAng = 40
 const myAng2 = 134
-const part001 = startSketchAt([0, 0])
+const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   |> line([1, 3.82], %) // ln-should-get-tag
   |> lineTo([myVar, 1], %) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
   |> lineTo([1, myVar], %) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper
@@ -128,7 +129,8 @@ const myVar2 = 5
 const myVar3 = 6
 const myAng = 40
 const myAng2 = 134
-const part001 = startSketchAt([0, 0])
+const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   |> line({ to: [1, 3.82], tag: 'seg01' }, %) // ln-should-get-tag
   |> angledLineToX([
        -angleToMatchLengthX('seg01', myVar, %),
@@ -231,7 +233,8 @@ describe('testing transformAstForSketchLines for vertical and horizontal constra
   const inputScript = `const myVar = 2
 const myVar2 = 12
 const myVar3 = -10
-const part001 = startSketchAt([0, 0])
+const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   |> lineTo([1, 1], %)
   |> line([-6.28, 1.4], %) // select for horizontal constraint 1
   |> line([-1.07, myVar], %) // select for vertical constraint 1
@@ -259,7 +262,8 @@ show(part001)
     const expectModifiedScript = `const myVar = 2
 const myVar2 = 12
 const myVar3 = -10
-const part001 = startSketchAt([0, 0])
+const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   |> lineTo([1, 1], %)
   |> xLine(-6.28, %) // select for horizontal constraint 1
   |> line([-1.07, myVar], %) // select for vertical constraint 1
@@ -317,7 +321,8 @@ show(part001)
     const expectModifiedScript = `const myVar = 2
 const myVar2 = 12
 const myVar3 = -10
-const part001 = startSketchAt([0, 0])
+const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   |> lineTo([1, 1], %)
   |> line([-6.28, 1.4], %) // select for horizontal constraint 1
   |> yLine(myVar, %) // select for vertical constraint 1
@@ -376,7 +381,8 @@ show(part001)
 describe('testing transformAstForSketchLines for vertical and horizontal distance constraints', () => {
   describe('testing setHorzDistance for line', () => {
     const inputScript = `const myVar = 1
-const part001 = startSketchAt([0, 0])
+const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   |> line([0.31, 1.67], %) // base selection
   |> line([0.45, 1.46], %)
   |> line([0.45, 1.46], %) // free
@@ -477,7 +483,8 @@ const baseThickHalf = baseThick / 2
 const halfHeight = totalHeight / 2
 const halfArmAngle = armAngle / 2
 
-const part001 = startSketchAt([-0.01, -0.05])
+const part001 = startSketchOn('XY')
+  |> startProfileAt([-0.01, -0.05], %)
   |> line([0.01, 0.94 + 0], %) // partial
   |> xLine(3.03, %) // partial
   |> angledLine({
