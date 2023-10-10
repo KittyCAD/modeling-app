@@ -48,7 +48,9 @@ const ProjectSidebarMenu = ({
         />
         <div className="flex flex-col items-start py-0.5">
           <span className="text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap hidden lg:block">
-            {isTauri() && file?.name ? file.name : 'KittyCAD Modeling App'}
+            {isTauri() && file?.name
+              ? file.name.slice(file.name.lastIndexOf('/') + 1)
+              : 'KittyCAD Modeling App'}
           </span>
           {isTauri() && project?.name && (
             <span className="text-xs text-chalkboard-70 dark:text-chalkboard-40 whitespace-nowrap hidden lg:block">
@@ -109,6 +111,7 @@ const ProjectSidebarMenu = ({
               {isTauri() ? (
                 <FileTree
                   project={project}
+                  file={file}
                   className="overflow-visible flex-1 flex flex-col border-0 border-y border-energy-40 dark:border-energy-70"
                   closePanel={close}
                 />
