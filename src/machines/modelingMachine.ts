@@ -546,7 +546,7 @@ export const modelingMachine = createMachine(
             actions: 'toast extrude failed',
           },
         ],
-      }
+      },
     },
 
     initial: 'idle',
