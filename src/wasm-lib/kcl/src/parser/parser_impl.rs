@@ -834,7 +834,12 @@ fn value_but_not_pipe(i: TokenSlice) -> PResult<Value> {
 }
 
 fn unnecessarily_bracketed(i: TokenSlice) -> PResult<Value> {
-    delimited(open_paren, value, close_paren).parse_next(i)
+    delimited(
+        terminated(open_paren, opt(whitespace)),
+        value,
+        preceded(opt(whitespace), close_paren),
+    )
+    .parse_next(i)
 }
 
 fn value_allowed_in_pipe_expr(i: TokenSlice) -> PResult<Value> {
@@ -1266,9 +1271,9 @@ fn binding_name(i: TokenSlice) -> PResult<Identifier> {
 
 fn fn_call(i: TokenSlice) -> PResult<CallExpression> {
     let fn_name = identifier(i)?;
-    let _ = open_paren(i)?;
+    let _ = terminated(open_paren, opt(whitespace)).parse_next(i)?;
     let args = arguments(i)?;
-    let end = close_paren(i)?.end;
+    let end = preceded(opt(whitespace), close_paren).parse_next(i)?.end;
     let function = if let Some(stdlib_fn) = STDLIB.get(&fn_name.name) {
         crate::ast::types::Function::StdLib { func: stdlib_fn }
     } else {
@@ -1580,9 +1585,39 @@ const mySk1 = startSketchAt([0, 0])"#;
 
     #[test]
     fn assign_brackets() {
-        let test_input = "const thickness_squared = (1 + 1)";
-        let tokens = crate::token::lexer(test_input);
-        let _decl = declaration.parse(&tokens).unwrap();
+        for (i, test_input) in [
+            "const thickness_squared = (1 + 1)",
+            "const thickness_squared = ( 1 + 1)",
+            "const thickness_squared = (1 + 1 )",
+            "const thickness_squared = ( 1 + 1 )",
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let tokens = crate::token::lexer(test_input);
+            let mut actual = match declaration.parse(&tokens) {
+                Err(e) => panic!("Could not parse test {i}: {e:#?}"),
+                Ok(a) => a,
+            };
+            let Value::BinaryExpression(_expr) = actual.declarations.remove(0).init else {
+                panic!(
+                    "Expected test {i} to be a binary expression but it wasn't, it was {:?}",
+                    actual.declarations[0]
+                );
+            };
+            // TODO: check both sides are 1... probably not necessary but should do.
+        }
+    }
+
+    #[test]
+    fn test_function_call() {
+        for (i, test_input) in ["const x = f(1)", "const x = f( 1 )"].into_iter().enumerate() {
+            let tokens = crate::token::lexer(test_input);
+            let _actual = match declaration.parse(&tokens) {
+                Err(e) => panic!("Could not parse test {i}: {e:#?}"),
+                Ok(a) => a,
+            };
+        }
     }
 
     #[test]
