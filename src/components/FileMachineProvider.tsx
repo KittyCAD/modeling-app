@@ -1,0 +1,152 @@
+import { useMachine } from '@xstate/react'
+import { useNavigate, useRouteLoaderData } from 'react-router-dom'
+import { IndexLoaderData, paths } from '../Router'
+import React, { createContext, useEffect, useRef } from 'react'
+import useStateMachineCommands from '../hooks/useStateMachineCommands'
+import { toast } from 'react-hot-toast'
+import {
+  AnyStateMachine,
+  ContextFrom,
+  EventFrom,
+  InterpreterFrom,
+  Prop,
+  StateFrom,
+} from 'xstate'
+import { useCommandsContext } from 'hooks/useCommandsContext'
+import {
+  DEFAULT_FILE_NAME,
+  FILE_PERSIST_KEY,
+  fileCommandMeta,
+  fileMachine,
+} from 'machines/fileMachine'
+import {
+  readDir,
+  removeDir,
+  removeFile,
+  renameFile,
+  writeFile,
+} from '@tauri-apps/api/fs'
+import { FILE_EXT, readProject } from 'lib/tauriFS'
+
+type MachineContext<T extends AnyStateMachine> = {
+  state: StateFrom<T>
+  context: ContextFrom<T>
+  send: Prop<InterpreterFrom<T>, 'send'>
+}
+
+export const FileContext = createContext(
+  {} as MachineContext<typeof fileMachine>
+)
+
+export const FileMachineProvider = ({
+  children,
+}: {
+  children: React.ReactNode
+}) => {
+  const navigate = useNavigate()
+  const { commands, setCommandBarOpen } = useCommandsContext()
+  const { project } = useRouteLoaderData(paths.FILE) as IndexLoaderData
+
+  const [state, send] = useMachine(fileMachine, {
+    context: {
+      project,
+      currentDirectory: project?.path,
+    },
+    actions: {
+      navigateToFile: (
+        context: ContextFrom<typeof fileMachine>,
+        event: EventFrom<typeof fileMachine>
+      ) => {
+        if (event.data && 'name' in event.data) {
+          setCommandBarOpen(false)
+          navigate(
+            `${paths.FILE}/${encodeURIComponent(
+              context.currentDirectory + '/' + event.data.name
+            )}`
+          )
+        }
+      },
+      toastSuccess: (_, event) => toast.success((event.data || '') + ''),
+      toastError: (_, event) => toast.error((event.data || '') + ''),
+    },
+    services: {
+      readFiles: async (context: ContextFrom<typeof fileMachine>) => {
+        const newFiles = await readProject(context.project.path)
+        return {
+          ...context.project,
+          children: newFiles,
+        }
+      },
+      createFile: async (
+        context: ContextFrom<typeof fileMachine>,
+        event: EventFrom<typeof fileMachine, 'Create file'>
+      ) => {
+        let name = (event.data.name.trim() || DEFAULT_FILE_NAME) + FILE_EXT
+
+        await writeFile(context.currentDirectory.path + '/' + name, '')
+
+        return `Successfully created "${name}"`
+      },
+      renameFile: async (
+        context: ContextFrom<typeof fileMachine>,
+        event: EventFrom<typeof fileMachine, 'Rename file'>
+      ) => {
+        const { oldName, newName } = event.data
+        let name = newName ? newName : DEFAULT_FILE_NAME
+
+        await renameFile(
+          context.currentDirectory.path + '/' + oldName,
+          context.currentDirectory.path + '/' + name
+        )
+        return `Successfully renamed "${oldName}" to "${name}"`
+      },
+      deleteFile: async (
+        context: ContextFrom<typeof fileMachine>,
+        event: EventFrom<typeof fileMachine, 'Delete file'>
+      ) => {
+        const isDir = !!event.data.file.children
+
+        if (isDir) {
+          await removeDir(event.data.file.path, {
+            recursive: true,
+          }).catch((e) => console.error('Error deleting directory', e))
+        } else {
+          await removeFile(event.data.file.path).catch((e) =>
+            console.error('Error deleting file', e)
+          )
+        }
+        return `Successfully deleted ${isDir ? 'folder' : 'file'} "${
+          event.data.file.name
+        }"`
+      },
+    },
+    guards: {
+      'Has at least 1 file': (_, event: EventFrom<typeof fileMachine>) => {
+        if (event.type !== 'done.invoke.read-files') return false
+        return !!event?.data?.children && event.data.children.length > 0
+      },
+    },
+  })
+
+  useStateMachineCommands<typeof fileMachine>({
+    commands,
+    send,
+    state,
+    commandBarMeta: fileCommandMeta,
+    owner: 'file',
+  })
+
+  return (
+    <FileContext.Provider
+      value={{
+        send,
+        state,
+        context: state.context, // just a convenience, can remove if we need to save on memory
+      }}
+    >
+      {children}
+    </FileContext.Provider>
+  )
+}
+
+export default FileMachineProvider

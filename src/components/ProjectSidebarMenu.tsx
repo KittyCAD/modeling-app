@@ -110,7 +110,6 @@ const ProjectSidebarMenu = ({
               </div>
               {isTauri() ? (
                 <FileTree
-                  project={project}
                   file={file}
                   className="overflow-visible flex-1 flex flex-col border-0 border-y border-energy-40 dark:border-energy-70"
                   closePanel={close}

@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import { Disclosure } from '@headlessui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons'
+import { useFileContext } from 'hooks/useFileContext'
 
 const FileTreeItem = ({
   project,
@@ -27,6 +28,7 @@ const FileTreeItem = ({
   ) => void
   level?: number
 }) => {
+  const { send } = useFileContext()
   const navigate = useNavigate()
   const isCurrentFile = fileOrDir.path === currentFile?.path
 
@@ -84,7 +86,12 @@ const FileTreeItem = ({
             {fileOrDir.name}
           </Disclosure.Button>
           <Disclosure.Panel>
-            <ul className="m-0 p-0">
+            <ul
+              className="m-0 p-0"
+              onClickCapture={(e) => {
+                send({ type: 'Set current directory', data: fileOrDir })
+              }}
+            >
               {fileOrDir.children?.map((child) => (
                 <FileTreeItem
                   fileOrDir={child}
@@ -92,6 +99,7 @@ const FileTreeItem = ({
                   currentFile={currentFile}
                   closePanel={closePanel}
                   level={level + 1}
+                  key={level + '-' + child.path}
                 />
               ))}
             </ul>
@@ -104,7 +112,6 @@ const FileTreeItem = ({
 
 interface FileTreeProps {
   className?: string
-  project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
   closePanel: (
     focusableElement?:
@@ -116,19 +123,14 @@ interface FileTreeProps {
 
 export const FileTree = ({
   className = '',
-  project,
   file,
   closePanel,
 }: FileTreeProps) => {
-  const [contents, setContents] = useState<FileEntry[]>([])
+  const { send, context } = useFileContext()
 
-  useEffect(() => {
-    async function getContents() {
-      const contents = await readProject(project?.path || '')
-      setContents(contents)
-    }
-    getContents()
-  }, [project])
+  async function createFile() {
+    send({ type: 'Create file', data: { name: '' } })
+  }
 
   return (
     <div className={className}>
@@ -142,6 +144,7 @@ export const FileTree = ({
             bgClassName: 'hover:bg-energy-10/50 dark:hover:bg-transparent',
           }}
           className="!p-0 border-none bg-transparent"
+          onClick={createFile}
         >
           <Tooltip position="blockEnd" delay={750}>
             Create File
@@ -162,13 +165,19 @@ export const FileTree = ({
           </Tooltip>
         </ActionButton>
       </div>
-      <ul className="flex-1 m-0 p-0">
-        {contents.map((fileOrDir) => (
+      <ul
+        className="flex-1 m-0 p-0"
+        onClickCapture={(e) => {
+          send({ type: 'Set current directory', data: context.project })
+        }}
+      >
+        {context.project.children?.map((fileOrDir) => (
           <FileTreeItem
-            project={project}
+            project={context.project}
             currentFile={file}
             fileOrDir={fileOrDir}
             closePanel={closePanel}
+            key={fileOrDir.path}
           />
         ))}
       </ul>

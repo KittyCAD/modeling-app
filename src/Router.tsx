@@ -42,6 +42,7 @@ import { TEST, VITE_KC_SENTRY_DSN } from './env'
 import * as Sentry from '@sentry/react'
 import ModelingMachineProvider from 'components/ModelingMachineProvider'
 import { KclContextProvider } from 'lang/KclSinglton'
+import FileMachineProvider from 'components/FileMachineProvider'
 
 if (VITE_KC_SENTRY_DSN && !TEST) {
   Sentry.init({
@@ -144,11 +145,13 @@ const router = createBrowserRouter(
       element: (
         <Auth>
           <Outlet />
-          <KclContextProvider>
-            <ModelingMachineProvider>
-              <App />
-            </ModelingMachineProvider>
-          </KclContextProvider>
+          <FileMachineProvider>
+            <KclContextProvider>
+              <ModelingMachineProvider>
+                <App />
+              </ModelingMachineProvider>
+            </KclContextProvider>
+          </FileMachineProvider>
           {!isTauri() && import.meta.env.PROD && <DownloadAppBanner />}
         </Auth>
       ),
