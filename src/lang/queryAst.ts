@@ -13,6 +13,7 @@ import {
   ProgramMemory,
   SketchGroup,
   SourceRange,
+  PipeExpression,
 } from './wasm'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
 import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
@@ -510,4 +511,48 @@ export function isLinesParallelAndConstrained(
       sourceRange: [0, 0],
     }
   }
+}
+
+export function doesPipeHaveCallExp({
+  ast,
+  selection,
+  calleeName,
+}: {
+  calleeName: string
+  ast: Program
+  selection: Selection
+}): boolean {
+  const pathToNode = getNodePathFromSourceRange(ast, selection.range)
+  const pipeExpression = getNodeFromPath<PipeExpression>(
+    ast,
+    pathToNode,
+    'PipeExpression'
+  ).node
+  if (pipeExpression.type !== 'PipeExpression') return false
+  return pipeExpression.body.some(
+    (expression) =>
+      expression.type === 'CallExpression' &&
+      expression.callee.name === calleeName
+  )
+}
+
+export function hasExtrudeSketchGroup({
+  ast,
+  selection,
+  programMemory,
+}: {
+  ast: Program
+  selection: Selection
+  programMemory: ProgramMemory
+}): boolean {
+  const pathToNode = getNodePathFromSourceRange(ast, selection.range)
+  const varDec = getNodeFromPath<VariableDeclaration>(
+    ast,
+    pathToNode,
+    'VariableDeclaration'
+  ).node
+  if (varDec.type !== 'VariableDeclaration') return false
+  const varName = varDec.declarations[0].id.name
+  const varValue = programMemory?.root[varName]
+  return varValue?.type === 'ExtrudeGroup' || varValue?.type === 'SketchGroup'
 }
