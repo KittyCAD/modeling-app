@@ -1,13 +1,14 @@
 import { useEffect } from 'react'
 import { useStore } from 'useStore'
 import { engineCommandManager } from '../lang/std/engineConnection'
+import { useModelingContext } from './useModelingContext'
 
 export function useEngineConnectionSubscriptions() {
-  const { setCursor2, setHighlightRange, highlightRange } = useStore((s) => ({
-    setCursor2: s.setCursor2,
+  const { setHighlightRange, highlightRange } = useStore((s) => ({
     setHighlightRange: s.setHighlightRange,
     highlightRange: s.highlightRange,
   }))
+  const { send } = useModelingContext()
   useEffect(() => {
     if (!engineCommandManager) return
 
@@ -30,16 +31,25 @@ export function useEngineConnectionSubscriptions() {
       event: 'select_with_point',
       callback: ({ data }) => {
         if (!data?.entity_id) {
-          setCursor2()
+          send({
+            type: 'Set selection',
+            data: { selectionType: 'singleCodeCursor' },
+          })
           return
         }
         const sourceRange = engineCommandManager.sourceRangeMap[data.entity_id]
-        setCursor2({ range: sourceRange, type: 'default' })
+        send({
+          type: 'Set selection',
+          data: {
+            selectionType: 'singleCodeCursor',
+            selection: { range: sourceRange, type: 'default' },
+          },
+        })
       },
     })
     return () => {
       unSubHover()
       unSubClick()
     }
-  }, [engineCommandManager, setCursor2, setHighlightRange, highlightRange])
+  }, [engineCommandManager, setHighlightRange, highlightRange])
 }

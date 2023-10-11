@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
+import { create } from 'react-modal-promise'
 import { toolTips, useStore } from '../../useStore'
-import { BinaryPart, Identifier, Value } from '../../lang/wasm'
+import { Value } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -11,18 +12,15 @@ import {
   transformAstSketchLines,
   ConstraintType,
 } from '../../lang/std/sketchcombos'
-import {
-  SetAngleLengthModal,
-  createSetAngleLengthModal,
-} from '../SetAngleLengthModal'
+import { SetAngleLengthModal } from '../SetAngleLengthModal'
 import {
   createIdentifier,
   createVariableDeclaration,
 } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
-import { updateCursors } from '../../lang/util'
+import { kclManager } from 'lang/KclSinglton'
 
-const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
+const getModalInfo = create(SetAngleLengthModal as any)
 
 type ButtonType = 'xAbs' | 'yAbs' | 'snapToYAxis' | 'snapToXAxis'
 
@@ -33,16 +31,13 @@ const buttonLabels: Record<ButtonType, string> = {
   snapToXAxis: 'Snap To X Axis',
 }
 
+/*
 export const SetAbsDistance = ({ buttonType }: { buttonType: ButtonType }) => {
-  const { guiMode, selectionRanges, ast, programMemory, updateAst, setCursor } =
-    useStore((s) => ({
-      guiMode: s.guiMode,
-      ast: s.ast,
-      updateAst: s.updateAst,
-      selectionRanges: s.selectionRanges,
-      programMemory: s.programMemory,
-      setCursor: s.setCursor,
-    }))
+  const { guiMode, selectionRanges, setCursor } = useStore((s) => ({
+    guiMode: s.guiMode,
+    selectionRanges: s.selectionRanges,
+    setCursor: s.setCursor,
+  }))
   const disType: ConstraintType =
     buttonType === 'xAbs' || buttonType === 'yAbs'
       ? buttonType
@@ -52,13 +47,13 @@ export const SetAbsDistance = ({ buttonType }: { buttonType: ButtonType }) => {
   const [enableAngLen, setEnableAngLen] = useState(false)
   const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
   useEffect(() => {
-    if (!ast) return
     const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
-      getNodePathFromSourceRange(ast, range)
+      getNodePathFromSourceRange(kclManager.ast, range)
     )
     const nodes = paths.map(
       (pathToNode) =>
-        getNodeFromPath<Value>(ast, pathToNode, 'CallExpression').node
+        getNodeFromPath<Value>(kclManager.ast, pathToNode, 'CallExpression')
+          .node
     )
     const isAllTooltips = nodes.every(
       (node) =>
@@ -66,7 +61,11 @@ export const SetAbsDistance = ({ buttonType }: { buttonType: ButtonType }) => {
         toolTips.includes(node.callee.name as any)
     )
 
-    const theTransforms = getTransformInfos(selectionRanges, ast, disType)
+    const theTransforms = getTransformInfos(
+      selectionRanges,
+      kclManager.ast,
+      disType
+    )
     setTransformInfos(theTransforms)
 
     const enableY =
@@ -92,75 +91,48 @@ export const SetAbsDistance = ({ buttonType }: { buttonType: ButtonType }) => {
   return (
     <button
       onClick={async () => {
-        if (!(transformInfos && ast)) return
+        if (!transformInfos) return
         const { valueUsedInTransform } = transformAstSketchLines({
-          ast: JSON.parse(JSON.stringify(ast)),
+          ast: JSON.parse(JSON.stringify(kclManager.ast)),
           selectionRanges: selectionRanges,
           transformInfos,
-          programMemory,
+          programMemory: kclManager.programMemory,
           referenceSegName: '',
         })
-
-        function transformValue(
-          fv: Identifier | BinaryPart,
-          transformInfos: TransformInfo[]
-        ) {
-          return transformAstSketchLines({
-            ast: JSON.parse(JSON.stringify(ast)),
-            selectionRanges: selectionRanges,
-            transformInfos,
-            programMemory,
-            referenceSegName: '',
-            forceValueUsedInTransform: fv,
-          })
-        }
-
         try {
-          if (!isAlign) {
-            const forceVal = valueUsedInTransform || 0
-
-            const { valueNode, variableName, newVariableInsertIndex, sign } =
-              await getModalInfo({
+          let forceVal = valueUsedInTransform || 0
+          const { valueNode, variableName, newVariableInsertIndex, sign } =
+            await (!isAlign &&
+              getModalInfo({
                 value: forceVal,
                 valueName: disType === 'yAbs' ? 'yDis' : 'xDis',
-              })
+              } as any))
+          let finalValue = isAlign
+            ? createIdentifier('_0')
+            : removeDoubleNegatives(valueNode, sign, variableName)
 
-            const finalValue = removeDoubleNegatives(
-              valueNode as BinaryPart,
-              sign,
-              variableName
+          const { modifiedAst: _modifiedAst, pathToNodeMap } =
+            transformAstSketchLines({
+              ast: JSON.parse(JSON.stringify(kclManager.ast)),
+              selectionRanges: selectionRanges,
+              transformInfos,
+              programMemory: kclManager.programMemory,
+              referenceSegName: '',
+              forceValueUsedInTransform: finalValue,
+            })
+          if (variableName) {
+            const newBody = [..._modifiedAst.body]
+            newBody.splice(
+              newVariableInsertIndex,
+              0,
+              createVariableDeclaration(variableName, valueNode)
             )
-            const { modifiedAst: _modifiedAst, pathToNodeMap: _pathToNodeMap } =
-              transformValue(finalValue, transformInfos)
-
-            if (variableName) {
-              const newBody = [..._modifiedAst.body]
-              newBody.splice(
-                newVariableInsertIndex,
-                0,
-                createVariableDeclaration(variableName, valueNode)
-              )
-              _modifiedAst.body = newBody
-            }
-
-            updateAst(_modifiedAst, true, {
-              callBack: updateCursors(
-                setCursor,
-                selectionRanges,
-                _pathToNodeMap
-              ),
-            })
-          } else {
-            const { modifiedAst: _modifiedAst, pathToNodeMap: _pathToNodeMap } =
-              transformValue(createIdentifier('_0'), transformInfos)
-            updateAst(_modifiedAst, true, {
-              callBack: updateCursors(
-                setCursor,
-                selectionRanges,
-                _pathToNodeMap
-              ),
-            })
+            _modifiedAst.body = newBody
           }
+
+          kclManager.updateAst(_modifiedAst, true, {
+            callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
+          })
         } catch (e) {
           console.log('error', e)
         }
@@ -172,3 +144,4 @@ export const SetAbsDistance = ({ buttonType }: { buttonType: ButtonType }) => {
     </button>
   )
 }
+*/

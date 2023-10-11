@@ -113,20 +113,6 @@ show(mySketch001)
       programMemory,
       [sourceStart, sourceStart + lineToChange.length],
       [2, 3],
-      {
-        mode: 'sketch',
-        sketchMode: 'sketchEdit',
-        pathId: '',
-        rotation: [0, 0, 0, 1],
-        position: [0, 0, 0],
-        pathToNode: [
-          ['body', ''],
-          [0, 'index'],
-          ['declarations', 'VariableDeclaration'],
-          [0, 'index'],
-          ['init', 'VariableDeclarator'],
-        ],
-      },
       [0, 0]
     )
     expect(recast(modifiedAst)).toBe(expectedCode)

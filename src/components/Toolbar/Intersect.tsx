@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { create } from 'react-modal-promise'
 import { toolTips, useStore } from '../../useStore'
 import { BinaryPart, Value, VariableDeclarator } from '../../lang/wasm'
 import {
@@ -12,29 +13,25 @@ import {
   transformSecondarySketchLinesTagFirst,
   getTransformInfos,
 } from '../../lang/std/sketchcombos'
-import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
+import { GetInfoModal } from '../SetHorVertDistanceModal'
 import { createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
-import { updateCursors } from '../../lang/util'
+import { kclManager } from 'lang/KclSinglton'
 
-const getModalInfo = createInfoModal(GetInfoModal)
+const getModalInfo = create(GetInfoModal as any)
 
+/*
 export const Intersect = () => {
-  const { guiMode, selectionRanges, ast, programMemory, updateAst, setCursor } =
-    useStore((s) => ({
-      guiMode: s.guiMode,
-      ast: s.ast,
-      updateAst: s.updateAst,
-      selectionRanges: s.selectionRanges,
-      programMemory: s.programMemory,
-      setCursor: s.setCursor,
-    }))
+  const { guiMode, selectionRanges, setCursor } = useStore((s) => ({
+    guiMode: s.guiMode,
+    selectionRanges: s.selectionRanges,
+    setCursor: s.setCursor,
+  }))
   const [enable, setEnable] = useState(false)
   const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
   const [forecdSelectionRanges, setForcedSelectionRanges] =
     useState<typeof selectionRanges>()
   useEffect(() => {
-    if (!ast) return
     if (selectionRanges.codeBasedSelections.length < 2) {
       setEnable(false)
       setForcedSelectionRanges({ ...selectionRanges })
@@ -44,8 +41,8 @@ export const Intersect = () => {
     const previousSegment =
       selectionRanges.codeBasedSelections.length > 1 &&
       isLinesParallelAndConstrained(
-        ast,
-        programMemory,
+        kclManager.ast,
+        kclManager.programMemory,
         selectionRanges.codeBasedSelections[0],
         selectionRanges.codeBasedSelections[1]
       )
@@ -69,15 +66,15 @@ export const Intersect = () => {
     setForcedSelectionRanges(_forcedSelectionRanges)
 
     const paths = _forcedSelectionRanges.codeBasedSelections.map(({ range }) =>
-      getNodePathFromSourceRange(ast, range)
+      getNodePathFromSourceRange(kclManager.ast, range)
     )
     const nodes = paths.map(
-      (pathToNode) => getNodeFromPath<Value>(ast, pathToNode).node
+      (pathToNode) => getNodeFromPath<Value>(kclManager.ast, pathToNode).node
     )
     const varDecs = paths.map(
       (pathToNode) =>
         getNodeFromPath<VariableDeclarator>(
-          ast,
+          kclManager.ast,
           pathToNode,
           'VariableDeclarator'
         )?.node
@@ -85,7 +82,7 @@ export const Intersect = () => {
     const primaryLine = varDecs[0]
     const secondaryVarDecs = varDecs.slice(1)
     const isOthersLinkedToPrimary = secondaryVarDecs.every((secondary) =>
-      isSketchVariablesLinked(secondary, primaryLine, ast)
+      isSketchVariablesLinked(secondary, primaryLine, kclManager.ast)
     )
     const isAllTooltips = nodes.every(
       (node) =>
@@ -102,7 +99,7 @@ export const Intersect = () => {
         codeBasedSelections:
           _forcedSelectionRanges.codeBasedSelections.slice(1),
       },
-      ast,
+      kclManager.ast,
       'intersect'
     )
     setTransformInfos(theTransforms)
@@ -120,13 +117,13 @@ export const Intersect = () => {
   return (
     <button
       onClick={async () => {
-        if (!(transformInfos && ast && forecdSelectionRanges)) return
+        if (!(transformInfos && forecdSelectionRanges)) return
         const { modifiedAst, tagInfo, valueUsedInTransform, pathToNodeMap } =
           transformSecondarySketchLinesTagFirst({
-            ast: JSON.parse(JSON.stringify(ast)),
+            ast: JSON.parse(JSON.stringify(kclManager.ast)),
             selectionRanges: forecdSelectionRanges,
             transformInfos,
-            programMemory,
+            programMemory: kclManager.programMemory,
           })
         const {
           segName,
@@ -135,20 +132,21 @@ export const Intersect = () => {
           variableName,
           newVariableInsertIndex,
           sign,
+        }: {
+          segName: string
+          value: number
+          valueNode: Value
+          variableName?: string
+          newVariableInsertIndex: number
+          sign: number
         } = await getModalInfo({
           segName: tagInfo?.tag,
           isSegNameEditable: !tagInfo?.isTagExisting,
           value: valueUsedInTransform,
           initialVariableName: 'offset',
-        })
-        if (
-          segName === tagInfo?.tag &&
-          value ===
-            (valueUsedInTransform === undefined
-              ? ''
-              : String(Math.abs(valueUsedInTransform)))
-        ) {
-          updateAst(modifiedAst, true, {
+        } as any)
+        if (segName === tagInfo?.tag && value === valueUsedInTransform) {
+          kclManager.updateAst(modifiedAst, true, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
         } else {
@@ -160,10 +158,10 @@ export const Intersect = () => {
           )
           const { modifiedAst: _modifiedAst, pathToNodeMap } =
             transformSecondarySketchLinesTagFirst({
-              ast,
+              ast: kclManager.ast,
               selectionRanges: forecdSelectionRanges,
               transformInfos,
-              programMemory,
+              programMemory: kclManager.programMemory,
               forceSegName: segName,
               forceValueUsedInTransform: finalValue,
             })
@@ -176,7 +174,7 @@ export const Intersect = () => {
             )
             _modifiedAst.body = newBody
           }
-          updateAst(_modifiedAst, true, {
+          kclManager.updateAst(_modifiedAst, true, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
         }
@@ -188,3 +186,4 @@ export const Intersect = () => {
     </button>
   )
 }
+*/

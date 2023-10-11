@@ -72,7 +72,7 @@ export class KCLUndefinedValueError extends KCLError {
  * Currently the diagnostics are all errors, but in the future they could include lints.
  * */
 export function kclErrToDiagnostic(errors: KCLError[]): Diagnostic[] {
-  return errors.flatMap((err) => {
+  return errors?.flatMap((err) => {
     return err.sourceRanges.map(([from, to]) => {
       return { from, to, message: err.msg, severity: 'error' }
     })
