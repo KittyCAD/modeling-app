@@ -1,18 +1,18 @@
+import { useModelingContext } from 'hooks/useModelingContext'
+import { kclManager } from 'lang/KclSinglton'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 import { useEffect, useRef, useState } from 'react'
 import { useStore } from 'useStore'
 
 export function AstExplorer() {
-  const { ast, setHighlightRange, selectionRanges } = useStore((s) => ({
-    ast: s.ast,
-    setHighlightRange: s.setHighlightRange,
-    selectionRanges: s.selectionRanges,
-  }))
+  const setHighlightRange = useStore((s) => s.setHighlightRange)
+  const { context } = useModelingContext()
   const pathToNode = getNodePathFromSourceRange(
-    ast,
-    selectionRanges.codeBasedSelections?.[0]?.range
+    // TODO maybe need to have callback to make sure it stays in sync
+    kclManager.ast,
+    context.selectionRanges.codeBasedSelections?.[0]?.range
   )
-  const node = getNodeFromPath(ast, pathToNode).node
+  const node = getNodeFromPath(kclManager.ast, pathToNode).node
   const [filterKeys, setFilterKeys] = useState<string[]>(['start', 'end'])
 
   return (
@@ -46,7 +46,11 @@ export function AstExplorer() {
         }}
       >
         <pre className=" text-xs overflow-y-auto" style={{ width: '300px' }}>
-          <DisplayObj obj={ast} filterKeys={filterKeys} node={node} />
+          <DisplayObj
+            obj={kclManager.ast}
+            filterKeys={filterKeys}
+            node={node}
+          />
         </pre>
       </div>
     </div>
@@ -84,10 +88,8 @@ function DisplayObj({
   filterKeys: string[]
   node: any
 }) {
-  const { setHighlightRange, setCursor2 } = useStore((s) => ({
-    setHighlightRange: s.setHighlightRange,
-    setCursor2: s.setCursor2,
-  }))
+  const setHighlightRange = useStore((s) => s.setHighlightRange)
+  const { send } = useModelingContext()
   const ref = useRef<HTMLPreElement>(null)
   const [hasCursor, setHasCursor] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -118,7 +120,16 @@ function DisplayObj({
         setHighlightRange([obj?.start || 0, obj.end])
       }}
       onClick={(e) => {
-        setCursor2({ type: 'default', range: [obj?.start || 0, obj.end || 0] })
+        send({
+          type: 'Set selection',
+          data: {
+            selectionType: 'singleCodeCursor',
+            selection: {
+              type: 'default',
+              range: [obj?.start || 0, obj.end || 0],
+            },
+          },
+        })
         e.stopPropagation()
       }}
     >

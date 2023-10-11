@@ -22,9 +22,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   const displayedName = getDisplayName(user)
   const [imageLoadFailed, setImageLoadFailed] = useState(false)
   const navigate = useNavigate()
-  const {
-    auth: { send },
-  } = useGlobalStateContext()
+  const send = useGlobalStateContext()?.auth?.send
 
   // Fallback logic for displaying user's "name":
   // 1. user.name
