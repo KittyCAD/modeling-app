@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback, MouseEventHandler } from 'react'
+import { useEffect, useCallback, MouseEventHandler } from 'react'
 import { DebugPanel } from './components/DebugPanel'
 import { v4 as uuidv4 } from 'uuid'
 import { PaneType, useStore } from './useStore'
@@ -29,45 +29,33 @@ import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/mod
 import { CodeMenu } from 'components/CodeMenu'
 import { TextEditor } from 'components/TextEditor'
 import { Themes, getSystemTheme } from 'lib/theme'
-import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
 import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
 import { engineCommandManager } from './lang/std/engineConnection'
+import { kclManager } from 'lang/KclSinglton'
+import { useModelingContext } from 'hooks/useModelingContext'
 
 export function App() {
   const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
 
-  const streamRef = useRef<HTMLDivElement>(null)
   useHotKeyListener()
   const {
-    setCode,
     buttonDownInStream,
     openPanes,
     setOpenPanes,
     didDragInStream,
     streamDimensions,
-    guiMode,
-    setGuiMode,
-    executeAst,
   } = useStore((s) => ({
-    guiMode: s.guiMode,
-    setGuiMode: s.setGuiMode,
-    setCode: s.setCode,
     buttonDownInStream: s.buttonDownInStream,
     openPanes: s.openPanes,
     setOpenPanes: s.setOpenPanes,
     didDragInStream: s.didDragInStream,
     streamDimensions: s.streamDimensions,
-    executeAst: s.executeAst,
   }))
 
-  const {
-    auth: {
-      context: { token },
-    },
-    settings: {
-      context: { showDebugPanel, onboardingStatus, cameraControls, theme },
-    },
-  } = useGlobalStateContext()
+  const { settings } = useGlobalStateContext()
+  const { showDebugPanel, onboardingStatus, cameraControls, theme } =
+    settings?.context || {}
+  const { state, send } = useModelingContext()
 
   const editorTheme = theme === Themes.System ? getSystemTheme() : theme
 
@@ -84,50 +72,7 @@ export function App() {
   useHotkeys('shift + l', () => togglePane('logs'))
   useHotkeys('shift + e', () => togglePane('kclErrors'))
   useHotkeys('shift + d', () => togglePane('debug'))
-  useHotkeys('esc', () => {
-    if (guiMode.mode === 'sketch') {
-      if (guiMode.sketchMode === 'selectFace') return
-      if (guiMode.sketchMode === 'sketchEdit') {
-        // TODO: share this with Toolbar's "Exit sketch" button
-        // exiting sketch should be done consistently across all exits
-        engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: { type: 'edit_mode_exit' },
-        })
-        engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: { type: 'default_camera_disable_sketch_mode' },
-        })
-        setGuiMode({ mode: 'default' })
-        // this is necessary to get the UI back into a consistent
-        // state right now, hopefully won't need to rerender
-        // when exiting sketch mode in the future
-        executeAst()
-      } else {
-        engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'set_tool',
-            tool: 'select',
-          },
-        })
-        setGuiMode({
-          mode: 'sketch',
-          sketchMode: 'sketchEdit',
-          rotation: guiMode.rotation,
-          position: guiMode.position,
-          pathToNode: guiMode.pathToNode,
-          pathId: guiMode.pathId,
-          // todo: ...guiMod is adding isTooltip: true, will probably just fix with xstate migtaion
-        })
-      }
-    } else {
-      setGuiMode({ mode: 'default' })
-    }
-  })
+  useHotkeys('esc', () => send('Cancel'))
 
   const paneOpacity = [onboardingPaths.CAMERA, onboardingPaths.STREAMING].some(
     (p) => p === onboardingStatus
@@ -141,17 +86,16 @@ export function App() {
   // on mount, and overwrite any locally-stored code
   useEffect(() => {
     if (isTauri() && loadedCode !== null) {
-      setCode(loadedCode)
+      kclManager.setCode(loadedCode)
     }
     return () => {
       // Clear code on unmount if in desktop app
       if (isTauri()) {
-        setCode('')
+        kclManager.setCode('')
       }
     }
-  }, [loadedCode, setCode])
+  }, [loadedCode])
 
-  useSetupEngineManager(streamRef, token)
   useEngineConnectionSubscriptions()
 
   const debounceSocketSend = throttle<EngineCommand>((message) => {
@@ -169,10 +113,7 @@ export function App() {
 
     const newCmdId = uuidv4()
     if (buttonDownInStream === undefined) {
-      if (
-        guiMode.mode === 'sketch' &&
-        guiMode.sketchMode === ('sketch_line' as any)
-      ) {
+      if (state.matches('Sketch.Line Tool')) {
         debounceSocketSend({
           type: 'modeling_cmd_req',
           cmd_id: newCmdId,
@@ -192,7 +133,7 @@ export function App() {
         })
       }
     } else {
-      if (guiMode.mode === 'sketch' && guiMode.sketchMode === ('move' as any)) {
+      if (state.matches('Sketch.Move Tool')) {
         debounceSocketSend({
           type: 'modeling_cmd_req',
           cmd_id: newCmdId,
@@ -232,9 +173,8 @@ export function App() {
 
   return (
     <div
-      className="h-screen overflow-hidden relative flex flex-col cursor-pointer select-none"
+      className="relative h-full flex flex-col"
       onMouseMove={handleMouseMove}
-      ref={streamRef}
     >
       <AppHeader
         className={
