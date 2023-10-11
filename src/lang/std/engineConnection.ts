@@ -1221,6 +1221,13 @@ export class EngineCommandManager {
       },
     })
   }
+  planesInitialized(): boolean {
+    return (
+      this.defaultPlanes.xy !== '' &&
+      this.defaultPlanes.yz !== '' &&
+      this.defaultPlanes.xz !== ''
+    )
+  }
 
   onPlaneSelectCallback = (id: string) => {}
   onPlaneSelected(callback: (id: string) => void) {
