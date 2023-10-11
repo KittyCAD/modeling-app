@@ -1209,7 +1209,7 @@ fn colon(i: TokenSlice) -> PResult<()> {
 
 /// Parse a comma, optionally followed by some whitespace.
 fn comma_sep(i: TokenSlice) -> PResult<()> {
-    (comma, opt(whitespace))
+    (opt(whitespace), comma, opt(whitespace))
         .context(expected("a comma, optionally followed by whitespace"))
         .parse_next(i)?;
     Ok(())
@@ -1606,6 +1606,8 @@ const mySk1 = startSketchAt([0, 0])"#;
     #[test]
     fn check_parsers_work_the_same() {
         for (i, test_program) in [
+            "const myVar = min(5 , -legLen(5, 4))", // Space before comma
+            "const myVar = min(-legLen(5, 4), 5)",
             "const myVar = 5 + 6 |> myFunc(45, %)",
             "let x = 1 * (3 - 4)",
             r#"const x = 1 // this is an inline comment"#,
