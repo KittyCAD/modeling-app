@@ -139,7 +139,7 @@ fn non_code_node_no_leading_whitespace(i: TokenSlice) -> PResult<NonCodeNode> {
 fn pipe_expression(i: TokenSlice) -> PResult<PipeExpression> {
     let mut non_code_meta = NonCodeMeta::default();
     let (head, noncode) = terminated(
-        (value_but_not_pipe, preceded(whitespace, opt(non_code_node))),
+        (value_allowed_in_pipe_expr, preceded(whitespace, opt(non_code_node))),
         peek(pipe_surrounded_by_whitespace),
     )
     .context(expected("an expression, followed by the |> (pipe) operator"))
@@ -150,7 +150,7 @@ fn pipe_expression(i: TokenSlice) -> PResult<PipeExpression> {
     let mut values = vec![head];
     let value_surrounded_by_comments = (
         repeat(0.., preceded(opt(whitespace), non_code_node)), // Before the value
-        preceded(opt(whitespace), value_but_not_pipe),         // The value
+        preceded(opt(whitespace), value_allowed_in_pipe_expr), // The value
         repeat(0.., noncode_just_after_code),                  // After the value
     );
     let tail: Vec<(Vec<_>, _, Vec<_>)> = repeat(
@@ -817,20 +817,20 @@ pub fn return_stmt(i: TokenSlice) -> PResult<ReturnStatement> {
 fn value(i: TokenSlice) -> PResult<Value> {
     alt((
         pipe_expression.map(Box::new).map(Value::PipeExpression),
-        value_but_not_pipe,
+        binary_expression.map(Box::new).map(Value::BinaryExpression),
+        unary_expression.map(Box::new).map(Value::UnaryExpression),
+        value_allowed_in_pipe_expr,
     ))
     .context(expected("a KCL value"))
     .parse_next(i)
 }
 
 fn unnecessarily_bracketed(i: TokenSlice) -> PResult<Value> {
-    delimited(open_paren, value_but_not_pipe, close_paren).parse_next(i)
+    delimited(open_paren, value, close_paren).parse_next(i)
 }
 
-fn value_but_not_pipe(i: TokenSlice) -> PResult<Value> {
+fn value_allowed_in_pipe_expr(i: TokenSlice) -> PResult<Value> {
     alt((
-        binary_expression.map(Box::new).map(Value::BinaryExpression),
-        unary_expression.map(Box::new).map(Value::UnaryExpression),
         member_expression.map(Box::new).map(Value::MemberExpression),
         bool_value.map(Box::new).map(Value::Identifier),
         literal.map(Box::new).map(Value::Literal),
