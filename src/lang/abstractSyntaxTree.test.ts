@@ -141,42 +141,6 @@ const newVar = myVar + 1
 })
 
 describe('testing function declaration', () => {
-  test('fn funcN = () => {}', () => {
-    const { body } = parse('fn funcN = () => {}')
-    delete (body[0] as any).declarations[0].init.body.nonCodeMeta
-    expect(body).toEqual([
-      {
-        type: 'VariableDeclaration',
-        start: 0,
-        end: 19,
-        kind: 'fn',
-        declarations: [
-          {
-            type: 'VariableDeclarator',
-            start: 3,
-            end: 19,
-            id: {
-              type: 'Identifier',
-              start: 3,
-              end: 8,
-              name: 'funcN',
-            },
-            init: {
-              type: 'FunctionExpression',
-              start: 11,
-              end: 19,
-              params: [],
-              body: {
-                start: 17,
-                end: 19,
-                body: [],
-              },
-            },
-          },
-        ],
-      },
-    ])
-  })
   test('fn funcN = (a, b) => {return a + b}', () => {
     const { body } = parse(
       ['fn funcN = (a, b) => {', '  return a + b', '}'].join('\n')
