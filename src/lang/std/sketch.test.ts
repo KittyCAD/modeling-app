@@ -100,7 +100,7 @@ describe('testing changeSketchArguments', () => {
   |> startProfileAt([0, 0], %)
   |> ${line}
   |> lineTo([0.46, -5.82], %)
-// |> rx(45, %)
+  // |> rx(45, %)
 show(mySketch001)
 `
     const code = genCode(lineToChange)
