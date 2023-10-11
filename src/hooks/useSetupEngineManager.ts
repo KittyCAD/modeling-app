@@ -27,9 +27,7 @@ export function useSetupEngineManager(
   const hasSetNonZeroDimensions = useRef<boolean>(false)
 
   useEffect(() => {
-    // TODO #827 if there are errors is the parse step we'll miss them, probably should have an executeCode method
-    // that handles this correctly
-    kclManager.executeCode
+    kclManager.executeCode()
   }, [])
 
   useLayoutEffect(() => {

@@ -182,7 +182,7 @@ class KclManager {
     this._kclErrors = errors
     this._programMemory = programMemory
   }
-  async executeCode(code: string) {
+  async executeCode(code?: string) {
     await initPromise
     await this.engineCommandManager.waitForReady
     const result = await executeCode({
@@ -198,7 +198,7 @@ class KclManager {
     this.kclErrors = errors
     this.programMemory = programMemory
     this.ast = ast
-    this.code = code
+    if (code) this.code = code
   }
   setCode(code: string) {
     this._code = code
