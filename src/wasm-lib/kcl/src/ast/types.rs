@@ -811,18 +811,16 @@ impl<'de> Deserialize<'de> for NonCodeMeta {
         #[derive(Deserialize)]
         #[serde(rename_all = "camelCase")]
         struct NonCodeMetaHelper {
-            non_code_nodes: HashMap<String, NonCodeNode>,
+            non_code_nodes: HashMap<String, Vec<NonCodeNode>>,
             start: Option<NonCodeNode>,
         }
 
         let helper = NonCodeMetaHelper::deserialize(deserializer)?;
-        let mut non_code_nodes = HashMap::new();
-        for (key, value) in helper.non_code_nodes {
-            non_code_nodes
-                .entry(key.parse().map_err(serde::de::Error::custom)?)
-                .or_insert(Vec::new())
-                .push(value);
-        }
+        let non_code_nodes = helper
+            .non_code_nodes
+            .into_iter()
+            .map(|(key, value)| Ok((key.parse().map_err(serde::de::Error::custom)?, value)))
+            .collect::<Result<HashMap<_, _>, _>>()?;
         Ok(NonCodeMeta {
             non_code_nodes,
             start: helper.start,
