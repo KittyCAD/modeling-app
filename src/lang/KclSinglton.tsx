@@ -16,6 +16,8 @@ import {
 import { bracket } from 'lib/exampleKcl'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { getNodeFromPath } from './queryAst'
+import { IndexLoaderData } from 'Router'
+import { useLoaderData } from 'react-router-dom'
 
 const PERSIST_CODE_TOKEN = 'persistCode'
 
@@ -314,7 +316,10 @@ export function KclContextProvider({
 }: {
   children: React.ReactNode
 }) {
-  const [code, setCode] = useState(kclManager.code)
+  // If we try to use this component anywhere but under the paths.FILE route it will fail
+  // Because useLoaderData assumes we are on within it's context.
+  const { code: loadedCode } = useLoaderData() as IndexLoaderData
+  const [code, setCode] = useState(loadedCode || kclManager.code)
   const [programMemory, setProgramMemory] = useState(kclManager.programMemory)
   const [ast, setAst] = useState(kclManager.ast)
   const [isExecuting, setIsExecuting] = useState(false)
