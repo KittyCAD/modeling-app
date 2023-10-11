@@ -2,18 +2,15 @@ import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../../components/ActionButton'
 import { useDismiss } from '.'
 import { useEffect } from 'react'
-import { useStore } from 'useStore'
 import { bracket } from 'lib/exampleKcl'
+import { kclManager } from 'lang/KclSinglton'
 
 export default function FutureWork() {
   const dismiss = useDismiss()
-  const { deferredSetCode } = useStore((s) => ({
-    deferredSetCode: s.deferredSetCode,
-  }))
 
   useEffect(() => {
-    deferredSetCode(bracket)
-  }, [deferredSetCode])
+    kclManager.setCode(bracket)
+  }, [kclManager.setCode])
 
   return (
     <div className="fixed grid justify-center items-center inset-0 bg-chalkboard-100/50 z-50">

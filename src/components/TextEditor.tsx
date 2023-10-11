@@ -11,7 +11,7 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
 import { Themes } from 'lib/theme'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { linter, lintGutter } from '@codemirror/lint'
 import { Selections, useStore } from 'useStore'
 import { LanguageServerClient } from 'editor/lsp'
@@ -29,8 +29,10 @@ import {
 import { isOverlap, roundOff } from 'lib/utils'
 import { kclErrToDiagnostic } from 'lang/errors'
 import { CSSRuleObject } from 'tailwindcss/types/config'
+import { useModelingContext } from 'hooks/useModelingContext'
 import interact from '@replit/codemirror-interact'
 import { engineCommandManager } from '../lang/std/engineConnection'
+import { kclManager, useKclContext } from 'lang/KclSinglton'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -49,35 +51,22 @@ export const TextEditor = ({
   theme: Themes.Light | Themes.Dark
 }) => {
   const pathParams = useParams()
-  const {
-    code,
-    deferredSetCode,
-    editorView,
-    formatCode,
-    isLSPServerReady,
-    selectionRanges,
-    selectionRangeTypeMap,
-    setEditorView,
-    setIsLSPServerReady,
-    setSelectionRanges,
-  } = useStore((s) => ({
-    code: s.code,
-    deferredSetCode: s.deferredSetCode,
-    editorView: s.editorView,
-    formatCode: s.formatCode,
-    isLSPServerReady: s.isLSPServerReady,
-    selectionRanges: s.selectionRanges,
-    selectionRangeTypeMap: s.selectionRangeTypeMap,
-    setEditorView: s.setEditorView,
-    setIsLSPServerReady: s.setIsLSPServerReady,
-    setSelectionRanges: s.setSelectionRanges,
-  }))
+  const { editorView, isLSPServerReady, setEditorView, setIsLSPServerReady } =
+    useStore((s) => ({
+      editorView: s.editorView,
+      isLSPServerReady: s.isLSPServerReady,
+      setEditorView: s.setEditorView,
+      setIsLSPServerReady: s.setIsLSPServerReady,
+    }))
+  const { code, errors } = useKclContext()
 
   const {
-    settings: {
-      context: { textWrapping },
-    },
-  } = useGlobalStateContext()
+    context: { selectionRanges, selectionRangeTypeMap },
+    send,
+  } = useModelingContext()
+
+  const { settings: { context: { textWrapping } = {} } = {} } =
+    useGlobalStateContext()
   const { setCommandBarOpen } = useCommandsContext()
   const { enable: convertEnabled, handleClick: convertCallback } =
     useConvertToVariable()
@@ -122,12 +111,12 @@ export const TextEditor = ({
   }, [lspClient, isLSPServerReady])
 
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
-  const onChange = (value: string, viewUpdate: ViewUpdate) => {
-    deferredSetCode(value)
+  const onChange = (newCode: string, viewUpdate: ViewUpdate) => {
+    kclManager.setCodeAndExecute(newCode)
     if (isTauri() && pathParams.id) {
       // Save the file to disk
       // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
-      writeTextFile(pathParams.id + '/' + PROJECT_ENTRYPOINT, value).catch(
+      writeTextFile(pathParams.id + '/' + PROJECT_ENTRYPOINT, newCode).catch(
         (err) => {
           // TODO: add Sentry per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
           console.error('error saving file', err)
@@ -190,10 +179,17 @@ export const TextEditor = ({
       idBasedSelections,
     })
 
-    setSelectionRanges({
-      otherSelections: [],
-      codeBasedSelections,
-    })
+    selectionRanges &&
+      send({
+        type: 'Set selection',
+        data: {
+          selectionType: 'mirrorCodeMirrorSelections',
+          selection: {
+            ...selectionRanges,
+            codeBasedSelections,
+          },
+        },
+      })
   }
 
   const editorExtensions = useMemo(() => {
@@ -210,7 +206,7 @@ export const TextEditor = ({
         {
           key: editorShortcutMeta.formatCode.codeMirror,
           run: () => {
-            formatCode()
+            kclManager.format()
             return true
           },
         },
@@ -234,7 +230,7 @@ export const TextEditor = ({
       extensions.push(
         lintGutter(),
         linter((_view) => {
-          return kclErrToDiagnostic(useStore.getState().kclErrors)
+          return kclErrToDiagnostic(errors)
         }),
         interact({
           rules: [
