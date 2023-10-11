@@ -185,6 +185,7 @@ class KclManager {
   async executeCode(code?: string) {
     await initPromise
     await this?.engineCommandManager?.waitForReady
+    if (!this?.engineCommandManager?.planesInitialized()) return
     const result = await executeCode({
       engineCommandManager,
       code: code || this._code,
