@@ -1513,9 +1513,10 @@ const key = 'c'`
     const nonCodeMetaInstance = {
       type: 'NonCodeNode',
       start: code.indexOf('\n// this is a comment'),
-      end: code.indexOf('const key'),
+      end: code.indexOf('const key') - 1,
       value: {
         type: 'blockComment',
+        style: 'line',
         value: 'this is a comment',
       },
     }
@@ -1545,13 +1546,14 @@ const key = 'c'`
     const { body } = parse(code)
     const indexOfSecondLineToExpression = 2
     const sketchNonCodeMeta = (body as any)[0].declarations[0].init.nonCodeMeta
-      .nonCodeNodes[0]
-    expect(sketchNonCodeMeta[indexOfSecondLineToExpression]).toEqual({
+      .nonCodeNodes
+    expect(sketchNonCodeMeta[indexOfSecondLineToExpression][0]).toEqual({
       type: 'NonCodeNode',
       start: 106,
-      end: 166,
+      end: 163,
       value: {
-        type: 'blockComment',
+        type: 'inlineComment',
+        style: 'block',
         value: 'this is\n      a comment\n      spanning a few lines',
       },
     })
@@ -1568,14 +1570,15 @@ const key = 'c'`
 
     const { body } = parse(code)
     const sketchNonCodeMeta = (body[0] as any).declarations[0].init.nonCodeMeta
-      .nonCodeNodes[0]
-    expect(sketchNonCodeMeta[3]).toEqual({
+      .nonCodeNodes[3][0]
+    expect(sketchNonCodeMeta).toEqual({
       type: 'NonCodeNode',
       start: 125,
-      end: 141,
+      end: 138,
       value: {
         type: 'blockComment',
         value: 'a comment',
+        style: 'line',
       },
     })
   })
@@ -1693,11 +1696,7 @@ describe('parsing errors', () => {
     }
     const theError = _theError as any
     expect(theError).toEqual(
-      new KCLError(
-        'unexpected',
-        'Unexpected token Token { token_type: Brace, start: 29, end: 30, value: "}" }',
-        [[29, 30]]
-      )
+      new KCLError('syntax', 'Unexpected token', [[27, 28]])
     )
   })
 })
