@@ -181,8 +181,31 @@ impl Parser {
         Ok(token)
     }
 
+    /// Use the new Winnow parser.
     pub fn ast(&self) -> Result<Program, KclError> {
         parser_impl::run_parser(&mut self.tokens.as_slice())
+    }
+
+    /// Use the old handwritten recursive parser.
+    pub fn ast_old(&self) -> Result<Program, KclError> {
+        let body = self.make_body(
+            0,
+            vec![],
+            NonCodeMeta {
+                non_code_nodes: HashMap::new(),
+                start: Vec::new(),
+            },
+        )?;
+        let end = match self.get_token(body.last_index) {
+            Ok(token) => token.end,
+            Err(_) => self.tokens[self.tokens.len() - 1].end,
+        };
+        Ok(Program {
+            start: 0,
+            end,
+            body: body.body,
+            non_code_meta: body.non_code_meta,
+        })
     }
 
     fn make_identifier(&self, index: usize) -> Result<Identifier, KclError> {
@@ -1044,7 +1067,7 @@ impl Parser {
         let non_code_meta = match previous_non_code_meta {
             Some(meta) => meta,
             None => NonCodeMeta {
-                start: None,
+                start: Vec::new(),
                 non_code_nodes: HashMap::new(),
             },
         };
@@ -1642,7 +1665,9 @@ impl Parser {
             let next_token = self.next_meaningful_token(token_index, Some(0))?;
             if let Some(node) = &next_token.non_code_node {
                 if previous_body.is_empty() {
-                    non_code_meta.start = next_token.non_code_node;
+                    if let Some(next) = next_token.non_code_node {
+                        non_code_meta.start.push(next);
+                    }
                 } else {
                     non_code_meta.insert(previous_body.len(), node.clone());
                 }
@@ -1760,7 +1785,7 @@ impl Parser {
                 last_index: next_token_index,
                 non_code_meta: NonCodeMeta {
                     non_code_nodes: HashMap::new(),
-                    start: None,
+                    start: Vec::new(),
                 },
             }
         } else {
@@ -1769,7 +1794,7 @@ impl Parser {
                 vec![],
                 NonCodeMeta {
                     non_code_nodes: HashMap::new(),
-                    start: None,
+                    start: Vec::new(),
                 },
             )?
         };
@@ -2641,7 +2666,7 @@ show(mySk1)"#;
                 vec![],
                 NonCodeMeta {
                     non_code_nodes: HashMap::new(),
-                    start: None,
+                    start: Vec::new(),
                 },
             )
             .unwrap();
@@ -2677,10 +2702,7 @@ show(mySk1)"#;
                     })),
                 })),
             })],
-            non_code_meta: NonCodeMeta {
-                non_code_nodes: Default::default(),
-                start: None,
-            },
+            non_code_meta: NonCodeMeta::default(),
         };
 
         assert_eq!(result, expected_result);
@@ -3022,10 +3044,7 @@ e
                 }],
                 kind: VariableKind::Const,
             })],
-            non_code_meta: NonCodeMeta {
-                non_code_nodes: Default::default(),
-                start: None,
-            },
+            non_code_meta: NonCodeMeta::default(),
         };
 
         assert_eq!(result, expected_result);

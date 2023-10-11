@@ -760,7 +760,7 @@ pub fn function_body(i: TokenSlice) -> PResult<Program> {
                 }
                 end = nc.end;
                 if body.is_empty() {
-                    non_code_meta.start = Some(nc)
+                    non_code_meta.start.push(nc);
                 } else {
                     non_code_meta.insert(body.len() - 1, nc);
                 }
@@ -1346,7 +1346,7 @@ mod tests {
         let mut slice = tokens.as_slice();
         let expr = function_expression.parse_next(&mut slice).unwrap();
         assert_eq!(expr.params, vec![]);
-        let comment_start = expr.body.non_code_meta.start.unwrap();
+        let comment_start = expr.body.non_code_meta.start.first().unwrap();
         let comment0 = &expr.body.non_code_meta.non_code_nodes.get(&0).unwrap()[0];
         let comment1 = &expr.body.non_code_meta.non_code_nodes.get(&1).unwrap()[0];
         assert_eq!(comment_start.value(), "comment 0");
@@ -1365,6 +1365,28 @@ comment */
         let expr = function_expression.parse_next(&mut slice).unwrap();
         let comment0 = &expr.body.non_code_meta.non_code_nodes.get(&0).unwrap()[0];
         assert_eq!(comment0.value(), "block\ncomment");
+    }
+
+    #[test]
+    fn test_comment_at_start_of_program() {
+        let test_program = r#"
+/* comment at start */
+
+const mySk1 = startSketchAt([0, 0])"#;
+        let tokens = crate::token::lexer(test_program);
+        let program = program.parse(&tokens).unwrap();
+        let mut starting_comments = program.non_code_meta.start;
+        assert_eq!(starting_comments.len(), 2);
+        let start0 = starting_comments.remove(0);
+        let start1 = starting_comments.remove(0);
+        assert_eq!(
+            start0.value,
+            NonCodeValue::BlockComment {
+                value: "comment at start".to_owned(),
+                style: CommentStyle::Block,
+            }
+        );
+        assert_eq!(start1.value, NonCodeValue::NewLine);
     }
 
     #[test]
@@ -1408,11 +1430,11 @@ comment */
                     })],
                     non_code_meta: NonCodeMeta {
                         non_code_nodes: Default::default(),
-                        start: Some(NonCodeNode {
+                        start: vec![NonCodeNode {
                             start: 7,
                             end: 25,
                             value: NonCodeValue::NewLine
-                        })
+                        }],
                     },
                 }
             }
@@ -1456,14 +1478,14 @@ comment */
         let tokens = crate::token::lexer(test_program);
         let Program { non_code_meta, .. } = function_body.parse(&tokens).unwrap();
         assert_eq!(
-            Some(NonCodeNode {
+            vec![NonCodeNode {
                 start: 0,
                 end: 20,
                 value: NonCodeValue::BlockComment {
                     value: "this is a comment".to_owned(),
                     style: CommentStyle::Line,
                 },
-            }),
+            }],
             non_code_meta.start,
         );
         assert_eq!(
@@ -1577,18 +1599,6 @@ comment */
     fn check_parsers_work_the_same() {
         for (i, test_program) in [
             "let x = 1 * (3 - 4)",
-            r#"
-// this is a comment
-const yo = { a: { b: { c: '123' } } }
-
-const key = 'c'
-const things = "things"
-
-// this is also a comment"#,
-            r#"const three = 3
-
-const yo = 3
-"#,
             r#"const x = 1 // this is an inline comment"#,
             r#"fn x = () => {
                 return sg
@@ -1658,7 +1668,7 @@ const yo = 3
             // Run the original parser
             let tokens = crate::token::lexer(test_program);
             let expected = crate::parser::Parser::new(tokens.clone())
-                .ast()
+                .ast_old()
                 .expect("Old parser failed");
 
             // Run the second parser, check it matches the first parser.

@@ -63,10 +63,14 @@ impl Program {
                 .fold(String::new(), |mut output, (index, recast_str)| {
                     let start_string = if index == 0 {
                         // We need to indent.
-                        if let Some(start) = self.non_code_meta.start.clone() {
-                            start.format(&indentation)
-                        } else {
+                        if self.non_code_meta.start.is_empty() {
                             indentation.to_string()
+                        } else {
+                            self.non_code_meta
+                                .start
+                                .iter()
+                                .map(|start| start.format(&indentation))
+                                .collect()
                         }
                     } else {
                         // Do nothing, we already applied the indentation elsewhere.
@@ -730,7 +734,7 @@ impl NonCodeNode {
             NonCodeValue::BlockComment { value, style } => {
                 let add_start_new_line = if self.start == 0 { "" } else { "\n" };
                 match style {
-                    CommentStyle::Block => format!("{}{}/* {} */\n", add_start_new_line, indentation, value),
+                    CommentStyle::Block => format!("{}{}/* {} */", add_start_new_line, indentation, value),
                     CommentStyle::Line => format!("{}{}// {}\n", add_start_new_line, indentation, value),
                 }
             }
@@ -798,7 +802,7 @@ pub enum NonCodeValue {
 #[serde(rename_all = "camelCase")]
 pub struct NonCodeMeta {
     pub non_code_nodes: HashMap<usize, Vec<NonCodeNode>>,
-    pub start: Option<NonCodeNode>,
+    pub start: Vec<NonCodeNode>,
 }
 
 // implement Deserialize manually because we to force the keys of non_code_nodes to be usize
@@ -812,7 +816,7 @@ impl<'de> Deserialize<'de> for NonCodeMeta {
         #[serde(rename_all = "camelCase")]
         struct NonCodeMetaHelper {
             non_code_nodes: HashMap<String, Vec<NonCodeNode>>,
-            start: Option<NonCodeNode>,
+            start: Vec<NonCodeNode>,
         }
 
         let helper = NonCodeMetaHelper::deserialize(deserializer)?;
@@ -2908,6 +2912,25 @@ show(part001)"#;
   // this is also a comment
   return things
 }
+"#
+        );
+    }
+    #[test]
+    fn test_recast_comment_at_start() {
+        let test_program = r#"
+/* comment at start */
+
+const mySk1 = startSketchAt([0, 0])"#;
+        let tokens = crate::token::lexer(test_program);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"/* comment at start */
+
+const mySk1 = startSketchAt([0, 0])
 "#
         );
     }

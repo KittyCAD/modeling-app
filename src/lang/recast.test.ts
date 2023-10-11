@@ -273,6 +273,7 @@ const mySk1 = startSketchAt([0, 0])
     const { ast } = code2ast(code)
     const recasted = recast(ast)
     expect(recasted).toBe(`/* comment at start */
+
 const mySk1 = startSketchAt([0, 0])
   |> lineTo([1, 1], %)
   // comment here
