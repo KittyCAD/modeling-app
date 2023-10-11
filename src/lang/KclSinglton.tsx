@@ -166,7 +166,7 @@ class KclManager {
     await initPromise
     const newCode = recast(ast)
     const newAst = parse(newCode)
-    await this.engineCommandManager.waitForReady
+    await this?.engineCommandManager?.waitForReady
     if (updateCode) {
       this.setCode(recast(ast))
     }
@@ -184,7 +184,7 @@ class KclManager {
   }
   async executeCode(code?: string) {
     await initPromise
-    await this.engineCommandManager.waitForReady
+    await this?.engineCommandManager?.waitForReady
     const result = await executeCode({
       engineCommandManager,
       code: code || this._code,
