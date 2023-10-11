@@ -20,11 +20,8 @@ export const AppHeader = ({
   className = '',
   enableMenu = false,
 }: AppHeaderProps) => {
-  const {
-    auth: {
-      context: { user },
-    },
-  } = useGlobalStateContext()
+  const { auth } = useGlobalStateContext()
+  const user = auth?.context?.user
 
   return (
     <header
