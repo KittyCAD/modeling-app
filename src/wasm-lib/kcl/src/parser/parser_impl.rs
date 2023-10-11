@@ -868,6 +868,7 @@ fn possible_operands(i: TokenSlice) -> PResult<Value> {
         fn_call.map(Box::new).map(Value::CallExpression),
         identifier.map(Box::new).map(Value::Identifier),
         binary_expr_in_parens.map(Box::new).map(Value::BinaryExpression),
+        unnecessarily_bracketed,
     ))
     .context(expected(
         "a KCL value which can be used as an argument/operand to an operator",
@@ -1559,6 +1560,21 @@ const mySk1 = startSketchAt([0, 0])"#;
             Err(e) => panic!("{e:?}"),
         };
         assert_eq!(actual.operator, BinaryOperator::Sub);
+    }
+
+    #[test]
+    fn test_arg() {
+        for input in [
+            "( sigmaAllow * width )",
+            "6 / ( sigmaAllow * width )",
+            "sqrt(distance * p * FOS * 6 / ( sigmaAllow * width ))",
+        ] {
+            let tokens = crate::token::lexer(input);
+            let _actual = match value.parse(&tokens) {
+                Ok(x) => x,
+                Err(e) => panic!("{e:?}"),
+            };
+        }
     }
 
     #[test]
