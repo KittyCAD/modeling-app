@@ -109,8 +109,8 @@ describe('Testing addSketchTo', () => {
       'yz'
     )
     const str = recast(result.modifiedAst)
-    expect(str).toBe(`const part001 = startSketchAt('default')
-  |> ry(90, %)
+    expect(str).toBe(`const part001 = startSketchOn('YZ')
+  |> startProfileAt('default', %)
   |> line('default', %)
 show(part001)
 `)
@@ -133,7 +133,8 @@ function giveSketchFnCallTagTestHelper(
 }
 
 describe('Testing giveSketchFnCallTag', () => {
-  const code = `const part001 = startSketchAt([0, 0])
+  const code = `const part001 = startSketchOn('XY')
+|> startProfileAt([0, 0], %)
 |> line([-2.57, -0.13], %)
 |> line([0, 0.83], %)
 |> line([0.82, 0.34], %)
@@ -185,7 +186,8 @@ fn ghi = (x) => {
 const abc = 3
 const identifierGuy = 5
 const yo = 5 + 6
-const part001 = startSketchAt([-1.2, 4.83])
+const part001 = startSketchOn('XY')
+|> startProfileAt([-1.2, 4.83], %)
 |> line([2.8, 0], %)
 |> angledLine([100 + 100, 3.09], %)
 |> angledLine([abc, 3.09], %)

@@ -1,24 +1,26 @@
 import { useStore, toolTips, ToolTip } from './useStore'
 import { extrudeSketch, sketchOnExtrudedFace } from './lang/modifyAst'
 import { getNodePathFromSourceRange } from './lang/queryAst'
-import { HorzVert } from './components/Toolbar/HorzVert'
-import { RemoveConstrainingValues } from './components/Toolbar/RemoveConstrainingValues'
-import { EqualLength } from './components/Toolbar/EqualLength'
-import { EqualAngle } from './components/Toolbar/EqualAngle'
-import { Intersect } from './components/Toolbar/Intersect'
-import { SetHorzVertDistance } from './components/Toolbar/SetHorzVertDistance'
-import { SetAngleLength } from './components/Toolbar/setAngleLength'
-import { SetAbsDistance } from './components/Toolbar/SetAbsDistance'
-import { SetAngleBetween } from './components/Toolbar/SetAngleBetween'
-import { Fragment, WheelEvent, useRef } from 'react'
+// import { HorzVert } from './components/Toolbar/HorzVert'
+// import { RemoveConstrainingValues } from './components/Toolbar/RemoveConstrainingValues'
+// import { EqualLength } from './components/Toolbar/EqualLength'
+// import { EqualAngle } from './components/Toolbar/EqualAngle'
+// import { Intersect } from './components/Toolbar/Intersect'
+// import { SetHorzVertDistance } from './components/Toolbar/SetHorzVertDistance'
+// import { SetAngleLength } from './components/Toolbar/setAngleLength'
+// import { SetAbsDistance } from './components/Toolbar/SetAbsDistance'
+// import { SetAngleBetween } from './components/Toolbar/SetAngleBetween'
+import { Fragment, WheelEvent, useRef, useMemo } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faX } from '@fortawesome/free-solid-svg-icons'
 import { Popover, Transition } from '@headlessui/react'
 import styles from './Toolbar.module.css'
 import { v4 as uuidv4 } from 'uuid'
-import { useAppMode } from 'hooks/useAppMode'
+import { isCursorInSketchCommandRange } from 'lang/util'
 import { ActionIcon } from 'components/ActionIcon'
 import { engineCommandManager } from './lang/std/engineConnection'
+import { useModelingContext } from 'hooks/useModelingContext'
+import { kclManager } from 'lang/KclSinglton'
 
 export const sketchButtonClassnames = {
   background:
@@ -44,25 +46,16 @@ const sketchFnLabels: Record<ToolTip | 'sketch_line' | 'move', string> = {
 }
 
 export const Toolbar = () => {
-  const {
-    setGuiMode,
-    guiMode,
-    selectionRanges,
-    ast,
-    updateAst,
-    programMemory,
-    executeAst,
-  } = useStore((s) => ({
-    guiMode: s.guiMode,
-    setGuiMode: s.setGuiMode,
-    selectionRanges: s.selectionRanges,
-    ast: s.ast,
-    updateAst: s.updateAst,
-    programMemory: s.programMemory,
-    executeAst: s.executeAst,
-  }))
-  useAppMode()
+  const { state, send, context } = useModelingContext()
   const toolbarButtonsRef = useRef<HTMLSpanElement>(null)
+  const pathId = useMemo(
+    () =>
+      isCursorInSketchCommandRange(
+        engineCommandManager.artifactMap,
+        context.selectionRanges
+      ),
+    [engineCommandManager.artifactMap, context.selectionRanges]
+  )
 
   function handleToolbarButtonsWheelEvent(ev: WheelEvent<HTMLSpanElement>) {
     const span = toolbarButtonsRef.current
@@ -80,194 +73,113 @@ export const Toolbar = () => {
         onWheel={handleToolbarButtonsWheelEvent}
         className={styles.toolbarButtons + ' ' + className}
       >
-        {guiMode.mode === 'default' && (
+        {state.nextEvents.includes('Enter sketch') && (
           <button
-            onClick={() => {
-              setGuiMode({
-                mode: 'sketch',
-                sketchMode: 'selectFace',
-              })
-            }}
+            onClick={() => send({ type: 'Enter sketch' })}
             className="group"
           >
             <ActionIcon icon="sketch" className="!p-0.5" size="md" />
             Start Sketch
           </button>
         )}
-        {guiMode.mode === 'canEditExtrude' && (
+        {state.nextEvents.includes('Enter sketch') && pathId && (
           <button
-            onClick={() => {
-              if (!ast) return
-              const pathToNode = getNodePathFromSourceRange(
-                ast,
-                selectionRanges.codeBasedSelections[0].range
-              )
-              const { modifiedAst } = sketchOnExtrudedFace(
-                ast,
-                pathToNode,
-                programMemory
-              )
-              updateAst(modifiedAst, true)
-            }}
-            className="group"
-          >
-            <ActionIcon icon="sketch" className="!p-0.5" size="md" />
-            Sketch on Face
-          </button>
-        )}
-        {guiMode.mode === 'canEditSketch' && (
-          <button
-            onClick={() => {
-              const pathToNode = getNodePathFromSourceRange(
-                ast,
-                selectionRanges.codeBasedSelections[0].range
-              )
-              setGuiMode({
-                mode: 'sketch',
-                sketchMode: 'enterSketchEdit',
-                pathToNode: pathToNode,
-                rotation: [0, 0, 0, 1],
-                position: [0, 0, 0],
-                pathId: guiMode.pathId,
-              })
-            }}
+            onClick={() => send({ type: 'Enter sketch' })}
             className="group"
           >
             <ActionIcon icon="sketch" className="!p-0.5" size="md" />
             Edit Sketch
           </button>
         )}
-        {guiMode.mode === 'canEditSketch' && (
-          <>
-            <button
-              onClick={() => {
-                if (!ast) return
-                const pathToNode = getNodePathFromSourceRange(
-                  ast,
-                  selectionRanges.codeBasedSelections[0].range
-                )
-                const { modifiedAst, pathToExtrudeArg } = extrudeSketch(
-                  ast,
-                  pathToNode
-                )
-                updateAst(modifiedAst, true, { focusPath: pathToExtrudeArg })
-              }}
-              className="group"
-            >
-              <ActionIcon icon="extrude" className="!p-0.5" size="md" />
-              Extrude
-            </button>
-            <button
-              onClick={() => {
-                if (!ast) return
-                const pathToNode = getNodePathFromSourceRange(
-                  ast,
-                  selectionRanges.codeBasedSelections[0].range
-                )
-                const { modifiedAst, pathToExtrudeArg } = extrudeSketch(
-                  ast,
-                  pathToNode,
-                  false
-                )
-                updateAst(modifiedAst, true, { focusPath: pathToExtrudeArg })
-              }}
-              className="group"
-            >
-              <ActionIcon icon="extrude" className="!p-0.5" size="md" />
-              Extrude as new
-            </button>
-          </>
-        )}
-
-        {guiMode.mode === 'sketch' && (
-          <button
-            onClick={() => {
-              engineCommandManager.sendSceneCommand({
-                type: 'modeling_cmd_req',
-                cmd_id: uuidv4(),
-                cmd: { type: 'edit_mode_exit' },
-              })
-              engineCommandManager.sendSceneCommand({
-                type: 'modeling_cmd_req',
-                cmd_id: uuidv4(),
-                cmd: { type: 'default_camera_disable_sketch_mode' },
-              })
-
-              setGuiMode({ mode: 'default' })
-              executeAst()
-            }}
-            className="group"
-          >
-            <ActionIcon
-              icon="exit"
-              className="!p-0.5"
-              bgClassName={sketchButtonClassnames.background}
-              iconClassName={sketchButtonClassnames.icon}
-              size="md"
-            />
-            Exit sketch
+        {state.nextEvents.includes('Cancel') && !state.matches('idle') && (
+          <button onClick={() => send({ type: 'Cancel' })} className="group">
+            <ActionIcon icon="exit" className="!p-0.5" size="md" />
+            Exit Sketch
           </button>
         )}
-        {toolTips
-          .filter(
-            // (sketchFnName) => !['angledLineThatIntersects'].includes(sketchFnName)
-            (sketchFnName) => ['sketch_line', 'move'].includes(sketchFnName)
-          )
-          .map((sketchFnName) => {
-            if (
-              guiMode.mode !== 'sketch' ||
-              !('isTooltip' in guiMode || guiMode.sketchMode === 'sketchEdit')
+        {state.matches('Sketch') && !state.matches('idle') && (
+          <button
+            onClick={() =>
+              state.matches('Sketch.Line Tool')
+                ? send('CancelSketch')
+                : send('Equip tool')
+            }
+            className={
+              'group ' +
+              (state.matches('Sketch.Line Tool')
+                ? '!text-fern-70 !bg-fern-10 !dark:text-fern-20 !border-fern-50'
+                : '')
+            }
+          >
+            <ActionIcon icon="line" className="!p-0.5" size="md" />
+            Line
+          </button>
+        )}
+        {state.matches('Sketch') && (
+          <button
+            onClick={() =>
+              state.matches('Sketch.Move Tool')
+                ? send('CancelSketch')
+                : send('Equip move tool')
+            }
+            className={
+              'group ' +
+              (state.matches('Sketch.Move Tool')
+                ? '!text-fern-70 !bg-fern-10 !dark:text-fern-20 !border-fern-50'
+                : '')
+            }
+          >
+            <ActionIcon icon="move" className="!p-0.5" size="md" />
+            Move
+          </button>
+        )}
+        {state.matches('Sketch.SketchIdle') &&
+          state.nextEvents
+            .filter(
+              (eventName) =>
+                eventName.includes('Make segment') ||
+                eventName.includes('Constrain')
             )
-              return null
-            return (
+            .map((eventName) => (
               <button
-                key={sketchFnName}
-                onClick={() => {
-                  engineCommandManager.sendSceneCommand({
-                    type: 'modeling_cmd_req',
-                    cmd_id: uuidv4(),
-                    cmd: {
-                      type: 'set_tool',
-                      tool:
-                        guiMode.sketchMode === sketchFnName
-                          ? 'select'
-                          : (sketchFnName as any),
-                    },
-                  })
-                  setGuiMode({
-                    ...guiMode,
-                    ...(guiMode.sketchMode === sketchFnName
-                      ? {
-                          sketchMode: 'sketchEdit',
-                          // todo: ...guiMod is adding isTooltip: true, will probably just fix with xstate migtaion
-                        }
-                      : {
-                          sketchMode: sketchFnName,
-                          waitingFirstClick: true,
-                          isTooltip: true,
-                          pathId: guiMode.pathId,
-                        }),
-                  })
-                }}
-                className={
-                  'group ' +
-                  (guiMode.sketchMode === sketchFnName
-                    ? '!text-fern-70 !bg-fern-10 !dark:text-fern-20 !border-fern-50'
-                    : '')
+                key={eventName}
+                onClick={() => send(eventName)}
+                className="group"
+                disabled={
+                  !state.nextEvents
+                    .filter((event) => state.can(event as any))
+                    .includes(eventName)
                 }
+                title={eventName}
               >
                 <ActionIcon
-                  icon={sketchFnName.includes('line') ? 'line' : 'move'}
-                  className="!p-0.5"
+                  icon={'line'} // TODO
                   bgClassName={sketchButtonClassnames.background}
                   iconClassName={sketchButtonClassnames.icon}
                   size="md"
                 />
-                {sketchFnLabels[sketchFnName]}
+                {eventName
+                  .replace('Make segment ', '')
+                  .replace('Constrain ', '')}
               </button>
-            )
-          })}
-        <HorzVert horOrVert="horizontal" />
+            ))}
+        {state.matches('idle') && (
+          <button
+            onClick={() => send('extrude intent')}
+            disabled={!state.can('extrude intent')}
+            className="group"
+            title={
+              state.can('extrude intent')
+                ? 'extrude'
+                : 'sketches need to be closed, or not already extruded'
+            }
+          >
+            <ActionIcon icon="extrude" className="!p-0.5" size="md" />
+            Extrude
+          </button>
+        )}
+
+        {/* <HorzVert horOrVert="horizontal" />
         <HorzVert horOrVert="vertical" />
         <EqualLength />
         <EqualAngle />
@@ -283,16 +195,20 @@ export const Toolbar = () => {
         <SetAngleLength angleOrLength="setLength" />
         <Intersect />
         <RemoveConstrainingValues />
-        <SetAngleBetween />
+        <SetAngleBetween /> */}
       </span>
     )
   }
 
   return (
-    <Popover className={styles.toolbarWrapper + ' ' + guiMode.mode}>
+    <Popover
+      className={
+        styles.toolbarWrapper + state.matches('Sketch') ? ' sketch' : ''
+      }
+    >
       <div className={styles.toolbar}>
         <span className={styles.toolbarCap + ' ' + styles.label}>
-          {guiMode.mode === 'sketch' ? '2D' : '3D'}
+          {state.matches('Sketch') ? '2D' : '3D'}
         </span>
         <menu className="flex-1 gap-2 py-0.5 overflow-hidden whitespace-nowrap">
           <ToolbarButtons />
@@ -328,7 +244,7 @@ export const Toolbar = () => {
             <p
               className={`${styles.toolbarCap} ${styles.label} !self-center rounded-r-full w-fit`}
             >
-              You're in {guiMode.mode === 'sketch' ? '2D' : '3D'}
+              You're in {state.matches('Sketch') ? '2D' : '3D'}
             </p>
             <Popover.Button className="p-2 flex items-center justify-center rounded-sm bg-chalkboard-20 text-chalkboard-110 dark:bg-chalkboard-70 dark:text-chalkboard-20 border-none hover:bg-chalkboard-30 dark:hover:bg-chalkboard-60">
               <FontAwesomeIcon icon={faX} className="w-4 h-4" />

@@ -31,6 +31,8 @@ pub async fn modify_ast_for_sketch(
     program: &mut Program,
     // The name of the sketch.
     sketch_name: &str,
+    // The type of plane the sketch is on. `XY` or `XZ`, etc
+    plane: crate::executor::PlaneType,
     // The ID of the parent sketch.
     sketch_id: uuid::Uuid,
 ) -> Result<String, KclError> {
@@ -153,10 +155,11 @@ pub async fn modify_ast_for_sketch(
         y: (first_control_points.points[1].y - first_control_points.points[0].y),
         z: (first_control_points.points[1].z - first_control_points.points[0].z),
     };
-    let sketch = create_start_sketch_at(
+    let sketch = create_start_sketch_on(
         sketch_name,
         [first_control_points.points[0].x, first_control_points.points[0].y],
         [start_sketch_at_end.x, start_sketch_at_end.y],
+        plane,
         additional_lines,
     )?;
 
@@ -174,19 +177,24 @@ pub async fn modify_ast_for_sketch(
 }
 
 /// Create a pipe expression that starts a sketch at the given point and draws a line to the given point.
-fn create_start_sketch_at(
+fn create_start_sketch_on(
     name: &str,
     start: [f64; 2],
     end: [f64; 2],
+    plane: crate::executor::PlaneType,
     additional_lines: Vec<[f64; 2]>,
 ) -> Result<VariableDeclarator, KclError> {
-    let start_sketch_at = CallExpression::new(
-        "startSketchAt",
-        vec![ArrayExpression::new(vec![
-            Literal::new(round_before_recast(start[0]).into()).into(),
-            Literal::new(round_before_recast(start[1]).into()).into(),
-        ])
-        .into()],
+    let start_sketch_on = CallExpression::new("startSketchOn", vec![Literal::new(plane.to_string().into()).into()])?;
+    let start_profile_at = CallExpression::new(
+        "startProfileAt",
+        vec![
+            ArrayExpression::new(vec![
+                Literal::new(round_before_recast(start[0]).into()).into(),
+                Literal::new(round_before_recast(start[1]).into()).into(),
+            ])
+            .into(),
+            PipeSubstitution::new().into(),
+        ],
     )?;
 
     // Keep track of where we are so we can close the sketch if we need to.
@@ -209,7 +217,7 @@ fn create_start_sketch_at(
         ],
     )?;
 
-    let mut pipe_body = vec![start_sketch_at.into(), initial_line.into()];
+    let mut pipe_body = vec![start_sketch_on.into(), start_profile_at.into(), initial_line.into()];
 
     for (index, line) in additional_lines.iter().enumerate() {
         current_position.x += line[0];

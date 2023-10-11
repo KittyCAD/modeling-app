@@ -1530,10 +1530,10 @@
   resolved "https://registry.yarnpkg.com/@juggle/resize-observer/-/resize-observer-3.4.0.tgz#08d6c5e20cf7e4cc02fd181c4b0c225cd31dbb60"
   integrity sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==
 
-"@kittycad/lib@^0.0.40":
-  version "0.0.40"
-  resolved "https://registry.yarnpkg.com/@kittycad/lib/-/lib-0.0.40.tgz#0ba00c642e76648fb7cb1337e799b9d24724312d"
-  integrity sha512-R8sQKLWe3lQC7l7cyY49oFgeiMvRh8+bCaaoLiIVYT+YiE9TaS+uwwF1+sR7MiX6YZp/YCBBPFGj4Ci0VHC9Bg==
+"@kittycad/lib@^0.0.43":
+  version "0.0.43"
+  resolved "https://registry.yarnpkg.com/@kittycad/lib/-/lib-0.0.43.tgz#b93c0961200cf327f5ac6491be1ca01f9edc321c"
+  integrity sha512-Pe/PQfZ8BWEDOm4dkY4tcPcuCSh2mQPe/W8RvJ6PQNTlB7bmjAj0234pVyG+8zrKKsJC9nq4ye7CZoaXEfUSTg==
   dependencies:
     node-fetch "3.3.2"
     openapi-types "^12.0.0"
@@ -2217,6 +2217,13 @@
     diff-sequences "^29.4.3"
     loupe "^2.3.6"
     pretty-format "^29.5.0"
+
+"@xstate/inspect@^0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@xstate/inspect/-/inspect-0.8.0.tgz#f99d3706cd823d4922c47ce4f4376eecac502cc7"
+  integrity sha512-wSkFeOnp+7dhn+zTThO0M4D2FEqZN9lGIWowJu5JLa2ojjtlzRwK8SkjcHZ4rLX8VnMev7kGjgQLrGs8kxy+hw==
+  dependencies:
+    fast-safe-stringify "^2.1.1"
 
 "@xstate/react@^3.2.2":
   version "3.2.2"
@@ -3379,6 +3386,11 @@ fast-levenshtein@^2.0.6:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
   integrity sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==
+
+fast-safe-stringify@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/fast-safe-stringify/-/fast-safe-stringify-2.1.1.tgz#c406a83b6e70d9e35ce3b30a81141df30aeba884"
+  integrity sha512-W+KJc2dmILlPplD/H4K9l9LcAHAfPtP6BY84uVLXQ6Evcz9Lcg33Y2z1IVblT6xdY54PXYVHEv+0Wpq8Io6zkA==
 
 fastq@^1.6.0:
   version "1.15.0"

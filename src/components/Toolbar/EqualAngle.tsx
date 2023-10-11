@@ -11,34 +11,30 @@ import {
   transformSecondarySketchLinesTagFirst,
   getTransformInfos,
 } from '../../lang/std/sketchcombos'
-import { updateCursors } from '../../lang/util'
 import { ActionIcon } from 'components/ActionIcon'
 import { sketchButtonClassnames } from 'Toolbar'
+import { kclManager } from 'lang/KclSinglton'
 
+/*
 export const EqualAngle = () => {
-  const { guiMode, selectionRanges, ast, programMemory, updateAst, setCursor } =
-    useStore((s) => ({
-      guiMode: s.guiMode,
-      ast: s.ast,
-      updateAst: s.updateAst,
-      selectionRanges: s.selectionRanges,
-      programMemory: s.programMemory,
-      setCursor: s.setCursor,
-    }))
+  const { guiMode, selectionRanges, setCursor } = useStore((s) => ({
+    guiMode: s.guiMode,
+    selectionRanges: s.selectionRanges,
+    setCursor: s.setCursor,
+  }))
   const [enableEqual, setEnableEqual] = useState(false)
   const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
   useEffect(() => {
-    if (!ast) return
     const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
-      getNodePathFromSourceRange(ast, range)
+      getNodePathFromSourceRange(kclManager.ast, range)
     )
     const nodes = paths.map(
-      (pathToNode) => getNodeFromPath<Value>(ast, pathToNode).node
+      (pathToNode) => getNodeFromPath<Value>(kclManager.ast, pathToNode).node
     )
     const varDecs = paths.map(
       (pathToNode) =>
         getNodeFromPath<VariableDeclarator>(
-          ast,
+          kclManager.ast,
           pathToNode,
           'VariableDeclarator'
         )?.node
@@ -46,7 +42,7 @@ export const EqualAngle = () => {
     const primaryLine = varDecs[0]
     const secondaryVarDecs = varDecs.slice(1)
     const isOthersLinkedToPrimary = secondaryVarDecs.every((secondary) =>
-      isSketchVariablesLinked(secondary, primaryLine, ast)
+      isSketchVariablesLinked(secondary, primaryLine, kclManager.ast)
     )
     const isAllTooltips = nodes.every(
       (node) =>
@@ -59,7 +55,7 @@ export const EqualAngle = () => {
         ...selectionRanges,
         codeBasedSelections: selectionRanges.codeBasedSelections.slice(1),
       },
-      ast,
+      kclManager.ast,
       'equalAngle'
     )
     setTransformInfos(theTransforms)
@@ -76,15 +72,15 @@ export const EqualAngle = () => {
   return (
     <button
       onClick={async () => {
-        if (!(transformInfos && ast)) return
+        if (!transformInfos) return
         const { modifiedAst, pathToNodeMap } =
           transformSecondarySketchLinesTagFirst({
-            ast,
+            ast: kclManager.ast,
             selectionRanges,
             transformInfos,
-            programMemory,
+            programMemory: kclManager.programMemory,
           })
-        updateAst(modifiedAst, true, {
+        kclManager.updateAst(modifiedAst, true, {
           callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
         })
       }}
@@ -103,3 +99,4 @@ export const EqualAngle = () => {
     </button>
   )
 }
+*/

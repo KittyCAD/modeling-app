@@ -7,28 +7,17 @@ import {
 } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { useStore } from '../useStore'
-import { getNormalisedCoordinates, roundOff } from '../lib/utils'
+import { getNormalisedCoordinates } from '../lib/utils'
 import Loading from './Loading'
 import { cameraMouseDragGuards } from 'lib/cameraControls'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
 import { Models } from '@kittycad/lib'
-import { addStartSketch } from 'lang/modifyAst'
-import {
-  addCloseToPipe,
-  addNewSketchLn,
-  compareVec2Epsilon,
-} from 'lang/std/sketch'
 import { getNodeFromPath } from 'lang/queryAst'
-import {
-  Program,
-  VariableDeclarator,
-  rangeTypeFix,
-  modifyAstForSketch,
-} from 'lang/wasm'
-import { KCLError } from 'lang/errors'
-import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
+import { Program, VariableDeclarator, modifyAstForSketch } from 'lang/wasm'
 import { engineCommandManager } from '../lang/std/engineConnection'
+import { useModelingContext } from 'hooks/useModelingContext'
+import { kclManager, useKclContext } from 'lang/KclSinglton'
 
 export const Stream = ({ className = '' }) => {
   const [isLoading, setIsLoading] = useState(true)
@@ -40,31 +29,17 @@ export const Stream = ({ className = '' }) => {
     didDragInStream,
     setDidDragInStream,
     streamDimensions,
-    isExecuting,
-    guiMode,
-    ast,
-    updateAst,
-    setGuiMode,
-    programMemory,
   } = useStore((s) => ({
     mediaStream: s.mediaStream,
     setButtonDownInStream: s.setButtonDownInStream,
-    fileId: s.fileId,
     didDragInStream: s.didDragInStream,
     setDidDragInStream: s.setDidDragInStream,
     streamDimensions: s.streamDimensions,
-    isExecuting: s.isExecuting,
-    guiMode: s.guiMode,
-    ast: s.ast,
-    updateAst: s.updateAst,
-    setGuiMode: s.setGuiMode,
-    programMemory: s.programMemory,
   }))
-  const {
-    settings: {
-      context: { cameraControls },
-    },
-  } = useGlobalStateContext()
+  const { settings } = useGlobalStateContext()
+  const cameraControls = settings?.context?.cameraControls
+  const { send, state, context } = useModelingContext()
+  const { isExecuting } = useKclContext()
 
   useEffect(() => {
     if (
@@ -108,7 +83,7 @@ export const Stream = ({ className = '' }) => {
       interaction = 'zoom'
     }
 
-    if (guiMode.mode === 'sketch' && guiMode.sketchMode === ('move' as any)) {
+    if (state.matches('Sketch.Move Tool')) {
       engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
@@ -117,12 +92,7 @@ export const Stream = ({ className = '' }) => {
         },
         cmd_id: newId,
       })
-    } else if (
-      !(
-        guiMode.mode === 'sketch' &&
-        guiMode.sketchMode === ('sketch_line' as any)
-      )
-    ) {
+    } else if (!state.matches('Sketch.Line Tool')) {
       engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
@@ -178,200 +148,141 @@ export const Stream = ({ className = '' }) => {
       cmd_id: newCmdId,
     }
 
-    if (!didDragInStream) {
-      engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd: {
-          type: 'select_with_point',
-          selection_type: 'add',
-          selected_at_window: { x, y },
-        },
-        cmd_id: uuidv4(),
-      })
-    }
-
-    if (!didDragInStream && guiMode.mode === 'default') {
+    if (!didDragInStream && state.matches('Sketch no face')) {
       command.cmd = {
         type: 'select_with_point',
         selection_type: 'add',
         selected_at_window: { x, y },
       }
-    } else if (
-      (!didDragInStream &&
-        guiMode.mode === 'sketch' &&
-        ['move', 'select'].includes(guiMode.sketchMode)) ||
-      (guiMode.mode === 'sketch' &&
-        guiMode.sketchMode === ('sketch_line' as any))
-    ) {
+      engineCommandManager.sendSceneCommand(command)
+    } else if (!didDragInStream && state.matches('Sketch.Line Tool')) {
       command.cmd = {
         type: 'mouse_click',
         window: { x, y },
       }
+      engineCommandManager.sendSceneCommand(command).then(async (resp) => {
+        const entities_modified = resp?.data?.data?.entities_modified
+        if (!entities_modified) return
+        if (state.matches('Sketch.Line Tool.No Points')) {
+          send('Add point')
+        } else if (state.matches('Sketch.Line Tool.Point Added')) {
+          const curve = await engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'curve_get_control_points',
+              curve_id: entities_modified[0],
+            },
+          })
+          const coords: { x: number; y: number }[] =
+            curve.data.data.control_points
+          // We need the normal for the plane we are on.
+          const plane = await engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'get_sketch_mode_plane',
+            },
+          })
+          const z_axis = plane.data.data.z_axis
+
+          // Get the current axis.
+          let currentAxis: 'xy' | 'xz' | 'yz' | '-xy' | '-xz' | '-yz' | null =
+            null
+          if (context.sketchPlaneId === kclManager.getPlaneId('xy')) {
+            if (z_axis.z === -1) {
+              currentAxis = '-xy'
+            } else {
+              currentAxis = 'xy'
+            }
+          } else if (context.sketchPlaneId === kclManager.getPlaneId('yz')) {
+            if (z_axis.x === -1) {
+              currentAxis = '-yz'
+            } else {
+              currentAxis = 'yz'
+            }
+          } else if (context.sketchPlaneId === kclManager.getPlaneId('xz')) {
+            if (z_axis.y === -1) {
+              currentAxis = '-xz'
+            } else {
+              currentAxis = 'xz'
+            }
+          }
+
+          send({ type: 'Add point', data: { coords, axis: currentAxis } })
+        } else if (state.matches('Sketch.Line Tool.Segment Added')) {
+          const curve = await engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'curve_get_control_points',
+              curve_id: entities_modified[0],
+            },
+          })
+          const coords: { x: number; y: number }[] =
+            curve.data.data.control_points
+          send({ type: 'Add point', data: { coords, axis: null } })
+        }
+      })
     } else if (
-      guiMode.mode === 'sketch' &&
-      guiMode.sketchMode === ('move' as any)
+      !didDragInStream &&
+      (state.matches('Sketch.SketchIdle') ||
+        state.matches('idle') ||
+        state.matches('awaiting selection'))
     ) {
+      command.cmd = {
+        type: 'select_with_point',
+        selected_at_window: { x, y },
+        selection_type: 'add',
+      }
+      engineCommandManager.sendSceneCommand(command)
+    } else if (!didDragInStream && state.matches('Sketch.Move Tool')) {
+      command.cmd = {
+        type: 'select_with_point',
+        selected_at_window: { x, y },
+        selection_type: 'add',
+      }
+      engineCommandManager.sendSceneCommand(command)
+    } else if (didDragInStream && state.matches('Sketch.Move Tool')) {
       command.cmd = {
         type: 'handle_mouse_drag_end',
         window: { x, y },
       }
-    }
-    engineCommandManager.sendSceneCommand(command).then(async (resp) => {
-      if (!(guiMode.mode === 'sketch')) return
+      engineCommandManager.sendSceneCommand(command).then(async () => {
+        if (!context.sketchPathToNode) return
+        const varDec = getNodeFromPath<VariableDeclarator>(
+          kclManager.ast,
+          context.sketchPathToNode,
+          'VariableDeclarator'
+        ).node
+        const variableName = varDec?.id?.name
 
-      if (guiMode.sketchMode === 'selectFace') return
+        // Get the current plane string for plane we are on.
+        let currentPlaneString = ''
+        if (context.sketchPlaneId === kclManager.getPlaneId('xy')) {
+          currentPlaneString = 'XY'
+        } else if (context.sketchPlaneId === kclManager.getPlaneId('yz')) {
+          currentPlaneString = 'YZ'
+        } else if (context.sketchPlaneId === kclManager.getPlaneId('xz')) {
+          currentPlaneString = 'XZ'
+        }
 
-      // Check if the sketch group already exists.
-      const varDec = getNodeFromPath<VariableDeclarator>(
-        ast,
-        guiMode.pathToNode,
-        'VariableDeclarator'
-      ).node
-      const variableName = varDec?.id?.name
-      const sketchGroup = programMemory.root[variableName]
-      const isEditingExistingSketch =
-        sketchGroup?.type === 'SketchGroup' && sketchGroup.value.length
-      let sketchGroupId = ''
-      if (sketchGroup && sketchGroup.type === 'SketchGroup') {
-        sketchGroupId = sketchGroup.id
-      }
-
-      if (
-        guiMode.sketchMode === ('move' as any as 'line') &&
-        command.cmd.type === 'handle_mouse_drag_end'
-      ) {
-        // Let's get the updated ast.
-        if (sketchGroupId === '') return
-        // We have a problem if we do not have an id for the sketch group.
-        if (
-          guiMode.pathId === undefined ||
-          guiMode.pathId === null ||
-          guiMode.pathId === ''
-        )
-          return
-
-        let engineId = guiMode.pathId
+        // Do not supporting editing/moving lines on a non-default plane.
+        // Eventually we can support this but for now we will just throw an
+        // error.
+        if (currentPlaneString === '') return
 
         const updatedAst: Program = await modifyAstForSketch(
           engineCommandManager,
-          ast,
+          kclManager.ast,
           variableName,
-          engineId
+          currentPlaneString,
+          context.sketchEnginePathId
         )
+        kclManager.executeAstMock(updatedAst, true)
+      })
+    }
 
-        updateAst(updatedAst, false)
-        return
-      }
-
-      if (command?.cmd?.type !== 'mouse_click' || !ast) return
-
-      if (!(guiMode.sketchMode === ('sketch_line' as any as 'line'))) return
-
-      if (
-        resp?.data?.data?.entities_modified?.length &&
-        guiMode.waitingFirstClick &&
-        !isEditingExistingSketch
-      ) {
-        const curve = await engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'curve_get_control_points',
-            curve_id: resp?.data?.data?.entities_modified[0],
-          },
-        })
-        const coords: { x: number; y: number }[] =
-          curve.data.data.control_points
-        const _addStartSketch = addStartSketch(
-          ast,
-          [roundOff(coords[0].x), roundOff(coords[0].y)],
-          [
-            roundOff(coords[1].x - coords[0].x),
-            roundOff(coords[1].y - coords[0].y),
-          ]
-        )
-        const _modifiedAst = _addStartSketch.modifiedAst
-        const _pathToNode = _addStartSketch.pathToNode
-
-        // We need to update the guiMode with the right pathId so that we can
-        // move lines later and send the right sketch id to the engine.
-        for (const [id, artifact] of Object.entries(
-          engineCommandManager.artifactMap
-        )) {
-          if (artifact.commandType === 'start_path') {
-            guiMode.pathId = id
-          }
-        }
-
-        setGuiMode({
-          ...guiMode,
-          pathToNode: _pathToNode,
-          waitingFirstClick: false,
-        })
-        updateAst(_modifiedAst, false)
-      } else if (
-        resp?.data?.data?.entities_modified?.length &&
-        (!guiMode.waitingFirstClick || isEditingExistingSketch)
-      ) {
-        const curve = await engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'curve_get_control_points',
-            curve_id: resp?.data?.data?.entities_modified[0],
-          },
-        })
-        const coords: { x: number; y: number }[] =
-          curve.data.data.control_points
-
-        const { node: varDec } = getNodeFromPath<VariableDeclarator>(
-          ast,
-          guiMode.pathToNode,
-          'VariableDeclarator'
-        )
-        const variableName = varDec.id.name
-        const sketchGroup = programMemory.root[variableName]
-        if (!sketchGroup || sketchGroup.type !== 'SketchGroup') return
-        const initialCoords = sketchGroup.value[0].from
-
-        const isClose = compareVec2Epsilon(initialCoords, [
-          coords[1].x,
-          coords[1].y,
-        ])
-
-        let _modifiedAst: Program
-        if (!isClose) {
-          _modifiedAst = addNewSketchLn({
-            node: ast,
-            programMemory,
-            to: [coords[1].x, coords[1].y],
-            fnName: 'line',
-            pathToNode: guiMode.pathToNode,
-          }).modifiedAst
-          updateAst(_modifiedAst, false)
-        } else {
-          _modifiedAst = addCloseToPipe({
-            node: ast,
-            programMemory,
-            pathToNode: guiMode.pathToNode,
-          })
-          setGuiMode({
-            mode: 'default',
-          })
-          engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: { type: 'edit_mode_exit' },
-          })
-          engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: { type: 'default_camera_disable_sketch_mode' },
-          })
-          updateAst(_modifiedAst, true)
-        }
-      }
-    })
     setDidDragInStream(false)
     setClickCoords(undefined)
   }
@@ -402,8 +313,8 @@ export const Stream = ({ className = '' }) => {
         onWheel={handleScroll}
         onPlay={() => setIsLoading(false)}
         onMouseMoveCapture={handleMouseMove}
+        className={`w-full cursor-pointer h-full ${isExecuting && 'blur-md'}`}
         disablePictureInPicture
-        className={`w-full h-full ${isExecuting && 'blur-md'}`}
         style={{ transitionDuration: '200ms', transitionProperty: 'filter' }}
       />
       {isLoading && (

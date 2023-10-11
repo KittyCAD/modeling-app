@@ -1,7 +1,7 @@
 [package]
 name = "kcl-lib"
 description = "KittyCAD Language"
-version = "0.1.32"
+version = "0.1.33"
 edition = "2021"
 license = "MIT"
 
@@ -15,7 +15,7 @@ clap = { version = "4.4.6", features = ["cargo", "derive", "env", "unicode"], op
 dashmap = "5.5.3"
 derive-docs = { version = "0.1.4" }
 #derive-docs = { path = "../derive-docs" }
-kittycad = { version = "0.2.27", default-features = false, features = ["js"] }
+kittycad = { version = "0.2.31", default-features = false, features = ["js"] }
 lazy_static = "1.4.0"
 parse-display = "0.8.2"
 schemars = { version = "0.8", features = ["impl_json_schema", "url", "uuid1"] }
@@ -24,7 +24,7 @@ serde_json = "1.0.107"
 thiserror = "1.0.49"
 ts-rs = { version = "7", package = "ts-rs-json-value", features = ["serde-json-impl", "schemars-impl", "uuid-impl"] }
 uuid = { version = "1.4.1", features = ["v4", "js", "serde"] }
-winnow = "0.5.15"
+winnow = "0.5.16"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 js-sys = { version = "0.3.64" }

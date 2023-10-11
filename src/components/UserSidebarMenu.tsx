@@ -7,7 +7,7 @@ import {
   faSignOutAlt,
 } from '@fortawesome/free-solid-svg-icons'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment, useState } from 'react'
 import { paths } from '../Router'
 import { Models } from '@kittycad/lib'
@@ -17,13 +17,12 @@ import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 type User = Models['User_type']
 
 const UserSidebarMenu = ({ user }: { user?: User }) => {
+  const location = useLocation()
   const filePath = useAbsoluteFilePath()
   const displayedName = getDisplayName(user)
   const [imageLoadFailed, setImageLoadFailed] = useState(false)
   const navigate = useNavigate()
-  const {
-    auth: { send },
-  } = useGlobalStateContext()
+  const send = useGlobalStateContext()?.auth?.send
 
   // Fallback logic for displaying user's "name":
   // 1. user.name
@@ -132,7 +131,10 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                     // since /settings is a nested route the sidebar doesn't close
                     // automatically when navigating to it
                     close()
-                    navigate(filePath + paths.SETTINGS)
+                    const targetPath = location.pathname.includes(paths.FILE)
+                      ? filePath + paths.SETTINGS
+                      : paths.HOME + paths.SETTINGS
+                    navigate(targetPath)
                   }}
                 >
                   Settings

@@ -16,6 +16,7 @@ import { ProgramReturn } from '../wasm-lib/kcl/bindings/ProgramReturn'
 import { MemoryItem } from '../wasm-lib/kcl/bindings/MemoryItem'
 import type { Program } from '../wasm-lib/kcl/bindings/Program'
 import type { Token } from '../wasm-lib/kcl/bindings/Token'
+import { DefaultPlanes } from '../wasm-lib/kcl/bindings/DefaultPlanes'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Value } from '../wasm-lib/kcl/bindings/Value'
@@ -118,6 +119,7 @@ export const executor = async (
   node: Program,
   programMemory: ProgramMemory = { root: {}, return: null },
   engineCommandManager: EngineCommandManager,
+  planes: DefaultPlanes,
   // work around while the gemotry is still be stored on the frontend
   // will be removed when the stream UI is added.
   tempMapCallback: (a: {
@@ -129,7 +131,8 @@ export const executor = async (
   const _programMemory = await _executor(
     node,
     programMemory,
-    engineCommandManager
+    engineCommandManager,
+    planes
   )
   const { artifactMap, sourceRangeMap } =
     await engineCommandManager.waitForAllCommands(node, _programMemory)
@@ -142,13 +145,15 @@ export const executor = async (
 export const _executor = async (
   node: Program,
   programMemory: ProgramMemory = { root: {}, return: null },
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: EngineCommandManager,
+  planes: DefaultPlanes
 ): Promise<ProgramMemory> => {
   try {
     const memory: ProgramMemory = await execute_wasm(
       JSON.stringify(node),
       JSON.stringify(programMemory),
-      engineCommandManager
+      engineCommandManager,
+      JSON.stringify(planes)
     )
     return memory
   } catch (e: any) {
@@ -190,6 +195,7 @@ export const modifyAstForSketch = async (
   engineCommandManager: EngineCommandManager,
   ast: Program,
   variableName: string,
+  currentPlane: string,
   engineId: string
 ): Promise<Program> => {
   try {
@@ -197,6 +203,7 @@ export const modifyAstForSketch = async (
       engineCommandManager,
       JSON.stringify(ast),
       variableName,
+      JSON.stringify(currentPlane),
       engineId
     )
 

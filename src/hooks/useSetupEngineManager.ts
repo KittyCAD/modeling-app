@@ -1,9 +1,9 @@
 import { useLayoutEffect, useEffect, useRef } from 'react'
-import { _executor } from '../lang/wasm'
+import { _executor, parse } from '../lang/wasm'
 import { useStore } from '../useStore'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { deferExecution } from 'lib/utils'
-import { v4 as uuidv4 } from 'uuid'
+import { kclManager } from 'lang/KclSinglton'
 
 export function useSetupEngineManager(
   streamRef: React.RefObject<HTMLDivElement>,
@@ -14,13 +14,11 @@ export function useSetupEngineManager(
     setIsStreamReady,
     setStreamDimensions,
     streamDimensions,
-    executeCode,
   } = useStore((s) => ({
     setMediaStream: s.setMediaStream,
     setIsStreamReady: s.setIsStreamReady,
     setStreamDimensions: s.setStreamDimensions,
     streamDimensions: s.streamDimensions,
-    executeCode: s.executeCode,
   }))
 
   const streamWidth = streamRef?.current?.offsetWidth
@@ -29,7 +27,7 @@ export function useSetupEngineManager(
   const hasSetNonZeroDimensions = useRef<boolean>(false)
 
   useEffect(() => {
-    executeCode()
+    kclManager.executeCode()
   }, [])
 
   useLayoutEffect(() => {
@@ -45,7 +43,10 @@ export function useSetupEngineManager(
         setIsStreamReady,
         width: quadWidth,
         height: quadHeight,
-        executeCode,
+        executeCode: (code?: string) => {
+          const _ast = parse(code || kclManager.code)
+          return kclManager.executeAst(_ast, true)
+        },
         token,
       })
       setStreamDimensions({

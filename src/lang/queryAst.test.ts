@@ -4,6 +4,8 @@ import {
   isNodeSafeToReplace,
   isTypeInValue,
   getNodePathFromSourceRange,
+  doesPipeHaveCallExp,
+  hasExtrudeSketchGroup,
 } from './queryAst'
 import { enginelessExecutor } from '../lib/testHelpers'
 import {
@@ -26,7 +28,8 @@ const halfArmAngle = armAngle / 2
 const arrExpShouldNotBeIncluded = [1, 2, 3]
 const objExpShouldNotBeIncluded = { a: 1, b: 2, c: 3 }
 
-const part001 = startSketchAt([0, 0])
+const part001 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   |> yLineTo(1, %)
   |> xLine(3.84, %) // selection-range-7ish-before-this
 
@@ -57,7 +60,8 @@ show(part001)`
 })
 
 describe('testing argIsNotIdentifier', () => {
-  const code = `const part001 = startSketchAt([-1.2, 4.83])
+  const code = `const part001 = startSketchOn('XY')
+|> startProfileAt([-1.2, 4.83], %)
 |> line([2.8, 0], %)
 |> angledLine([100 + 100, 3.09], %)
 |> angledLine([abc, 3.09], %)
@@ -194,7 +198,8 @@ show(part001)`
 })
 
 describe('testing getNodePathFromSourceRange', () => {
-  const code = `const part001 = startSketchAt([0.39, -0.05])
+  const code = `const part001 = startSketchOn('XY')
+  |> startProfileAt([0.39, -0.05], %)
   |> line([0.94, 2.61], %)
   |> line([-0.21, -1.4], %)
 show(part001)`
@@ -210,7 +215,7 @@ show(part001)`
       [0, 'index'],
       ['init', ''],
       ['body', 'PipeExpression'],
-      [1, 'index'],
+      [2, 'index'],
     ])
   })
   it('finds the last line when cursor is put at the end', () => {
@@ -225,7 +230,7 @@ show(part001)`
       [0, 'index'],
       ['init', ''],
       ['body', 'PipeExpression'],
-      [2, 'index'],
+      [3, 'index'],
     ]
     expect(result).toEqual(expected)
     // expect similar result for start of line
@@ -241,5 +246,116 @@ show(part001)`
       sourceIndex,
     ])
     expect(selectWholeThing).toEqual(expected)
+  })
+})
+
+describe('testing doesPipeHave', () => {
+  it('finds close', () => {
+    const exampleCode = `const length001 = 2
+const part001 = startSketchAt([-1.41, 3.46])
+  |> line({ to: [19.49, 1.16], tag: 'seg01' }, %)
+  |> angledLine([-35, length001], %)
+  |> line([-3.22, -7.36], %)
+  |> angledLine([-175, segLen('seg01', %)], %)
+  |> close(%)
+`
+    const ast = parse(exampleCode)
+    const result = doesPipeHaveCallExp({
+      calleeName: 'close',
+      ast,
+      selection: { type: 'default', range: [100, 101] },
+    })
+    expect(result).toEqual(true)
+  })
+  it('finds extrude', () => {
+    const exampleCode = `const length001 = 2
+const part001 = startSketchAt([-1.41, 3.46])
+  |> line({ to: [19.49, 1.16], tag: 'seg01' }, %)
+  |> angledLine([-35, length001], %)
+  |> line([-3.22, -7.36], %)
+  |> angledLine([-175, segLen('seg01', %)], %)
+  |> close(%)
+  |> extrude(1, %)
+`
+    const ast = parse(exampleCode)
+    const result = doesPipeHaveCallExp({
+      calleeName: 'extrude',
+      ast,
+      selection: { type: 'default', range: [100, 101] },
+    })
+    expect(result).toEqual(true)
+  })
+  it('does NOT find close', () => {
+    const exampleCode = `const length001 = 2
+const part001 = startSketchAt([-1.41, 3.46])
+  |> line({ to: [19.49, 1.16], tag: 'seg01' }, %)
+  |> angledLine([-35, length001], %)
+  |> line([-3.22, -7.36], %)
+  |> angledLine([-175, segLen('seg01', %)], %)
+`
+    const ast = parse(exampleCode)
+    const result = doesPipeHaveCallExp({
+      calleeName: 'close',
+      ast,
+      selection: { type: 'default', range: [100, 101] },
+    })
+    expect(result).toEqual(false)
+  })
+  it('returns false if not a pipe', () => {
+    const exampleCode = `const length001 = 2`
+    const ast = parse(exampleCode)
+    const result = doesPipeHaveCallExp({
+      calleeName: 'close',
+      ast,
+      selection: { type: 'default', range: [9, 10] },
+    })
+    expect(result).toEqual(false)
+  })
+})
+
+describe('testing hasExtrudeSketchGroup', () => {
+  it('find sketch group', async () => {
+    const exampleCode = `const length001 = 2
+const part001 = startSketchAt([-1.41, 3.46])
+  |> line({ to: [19.49, 1.16], tag: 'seg01' }, %)
+  |> angledLine([-35, length001], %)
+  |> line([-3.22, -7.36], %)
+  |> angledLine([-175, segLen('seg01', %)], %)`
+    const ast = parse(exampleCode)
+    const programMemory = await enginelessExecutor(ast)
+    const result = hasExtrudeSketchGroup({
+      ast,
+      selection: { type: 'default', range: [100, 101] },
+      programMemory,
+    })
+    expect(result).toEqual(true)
+  })
+  it('find extrude group', async () => {
+    const exampleCode = `const length001 = 2
+const part001 = startSketchAt([-1.41, 3.46])
+  |> line({ to: [19.49, 1.16], tag: 'seg01' }, %)
+  |> angledLine([-35, length001], %)
+  |> line([-3.22, -7.36], %)
+  |> angledLine([-175, segLen('seg01', %)], %)
+  |> extrude(1, %)`
+    const ast = parse(exampleCode)
+    const programMemory = await enginelessExecutor(ast)
+    const result = hasExtrudeSketchGroup({
+      ast,
+      selection: { type: 'default', range: [100, 101] },
+      programMemory,
+    })
+    expect(result).toEqual(true)
+  })
+  it('finds nothing', async () => {
+    const exampleCode = `const length001 = 2`
+    const ast = parse(exampleCode)
+    const programMemory = await enginelessExecutor(ast)
+    const result = hasExtrudeSketchGroup({
+      ast,
+      selection: { type: 'default', range: [10, 11] },
+      programMemory,
+    })
+    expect(result).toEqual(false)
   })
 })

@@ -7,8 +7,9 @@ import {
   findUniqueName,
 } from '../lang/modifyAst'
 import { findAllPreviousVariables, PrevVariable } from '../lang/queryAst'
-import { useStore } from '../useStore'
 import { engineCommandManager } from '../lang/std/engineConnection'
+import { kclManager, useKclContext } from 'lang/KclSinglton'
+import { useModelingContext } from 'hooks/useModelingContext'
 
 export const AvailableVars = ({
   onVarClick,
@@ -91,11 +92,9 @@ export function useCalc({
   newVariableInsertIndex: number
   setNewVariableName: (a: string) => void
 } {
-  const { ast, programMemory, selectionRange } = useStore((s) => ({
-    ast: s.ast,
-    programMemory: s.programMemory,
-    selectionRange: s.selectionRanges.codeBasedSelections[0].range,
-  }))
+  const { programMemory } = useKclContext()
+  const { context } = useModelingContext()
+  const selectionRange = context.selectionRanges.codeBasedSelections[0].range
   const inputRef = useRef<HTMLInputElement>(null)
   const [availableVarInfo, setAvailableVarInfo] = useState<
     ReturnType<typeof findAllPreviousVariables>
@@ -115,9 +114,7 @@ export function useCalc({
       inputRef.current &&
         inputRef.current.setSelectionRange(0, String(value).length)
     }, 100)
-    if (ast) {
-      setNewVariableName(findUniqueName(ast, valueName))
-    }
+    setNewVariableName(findUniqueName(kclManager.ast, valueName))
   }, [])
 
   useEffect(() => {
@@ -130,10 +127,14 @@ export function useCalc({
   }, [newVariableName])
 
   useEffect(() => {
-    if (!ast || !programMemory || !selectionRange) return
-    const varInfo = findAllPreviousVariables(ast, programMemory, selectionRange)
+    if (!programMemory || !selectionRange) return
+    const varInfo = findAllPreviousVariables(
+      kclManager.ast,
+      programMemory,
+      selectionRange
+    )
     setAvailableVarInfo(varInfo)
-  }, [ast, programMemory, selectionRange])
+  }, [kclManager.ast, programMemory, selectionRange])
 
   useEffect(() => {
     try {
@@ -143,7 +144,13 @@ export function useCalc({
       availableVarInfo.variables.forEach(({ key, value }) => {
         _programMem.root[key] = { type: 'userVal', value, __meta: [] }
       })
-      executor(ast, _programMem, engineCommandManager).then((programMemory) => {
+
+      executor(
+        ast,
+        _programMem,
+        engineCommandManager,
+        kclManager.defaultPlanes
+      ).then((programMemory) => {
         const resultDeclaration = ast.body.find(
           (a) =>
             a.type === 'VariableDeclaration' &&

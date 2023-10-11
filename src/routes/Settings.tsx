@@ -24,11 +24,19 @@ import {
 } from 'lib/cameraControls'
 import { UnitSystem } from 'machines/settingsMachine'
 import { useDotDotSlash } from 'hooks/useDotDotSlash'
+import {
+  createNewProject,
+  getNextProjectIndex,
+  getProjectsInDir,
+  interpolateProjectNameWithIndex,
+} from 'lib/tauriFS'
+import { ONBOARDING_PROJECT_NAME } from './Onboarding'
 
 export const Settings = () => {
   const loaderData = useRouteLoaderData(paths.FILE) as IndexLoaderData
   const navigate = useNavigate()
   const location = useLocation()
+  const isFileSettings = location.pathname.includes(paths.FILE)
   const dotDotSlash = useDotDotSlash()
   useHotkeys('esc', () => navigate(dotDotSlash()))
   const {
@@ -61,6 +69,33 @@ export const Settings = () => {
         data: { defaultDirectory: newDirectory },
       })
     }
+  }
+
+  function restartOnboarding() {
+    send({
+      type: 'Set Onboarding Status',
+      data: { onboardingStatus: '' },
+    })
+
+    if (isFileSettings) {
+      navigate(dotDotSlash(1) + paths.ONBOARDING.INDEX)
+    } else {
+      createAndOpenNewProject()
+    }
+  }
+
+  async function createAndOpenNewProject() {
+    const projects = await getProjectsInDir(defaultDirectory)
+    const nextIndex = await getNextProjectIndex(
+      ONBOARDING_PROJECT_NAME,
+      projects
+    )
+    const name = interpolateProjectNameWithIndex(
+      ONBOARDING_PROJECT_NAME,
+      nextIndex
+    )
+    const newFile = await createNewProject(defaultDirectory + '/' + name)
+    navigate(`${paths.FILE}/${encodeURIComponent(newFile.path)}`)
   }
 
   return (
@@ -257,26 +292,18 @@ export const Settings = () => {
             ))}
           </select>
         </SettingsSection>
-        {location.pathname.includes(paths.FILE) && (
-          <SettingsSection
-            title="Onboarding"
-            description="Replay the onboarding process"
+        <SettingsSection
+          title="Onboarding"
+          description="Replay the onboarding process"
+        >
+          <ActionButton
+            Element="button"
+            onClick={restartOnboarding}
+            icon={{ icon: faArrowRotateBack }}
           >
-            <ActionButton
-              Element="button"
-              onClick={() => {
-                send({
-                  type: 'Set Onboarding Status',
-                  data: { onboardingStatus: '' },
-                })
-                navigate(dotDotSlash(1) + paths.ONBOARDING.INDEX)
-              }}
-              icon={{ icon: faArrowRotateBack }}
-            >
-              Replay Onboarding
-            </ActionButton>
-          </SettingsSection>
-        )}
+            Replay Onboarding
+          </ActionButton>
+        </SettingsSection>
       </div>
     </div>
   )
