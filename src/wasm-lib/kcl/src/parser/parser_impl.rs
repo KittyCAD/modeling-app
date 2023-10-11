@@ -139,7 +139,7 @@ fn non_code_node_no_leading_whitespace(i: TokenSlice) -> PResult<NonCodeNode> {
 fn pipe_expression(i: TokenSlice) -> PResult<PipeExpression> {
     let mut non_code_meta = NonCodeMeta::default();
     let (head, noncode) = terminated(
-        (value_allowed_in_pipe_expr, preceded(whitespace, opt(non_code_node))),
+        (value_but_not_pipe, preceded(whitespace, opt(non_code_node))),
         peek(pipe_surrounded_by_whitespace),
     )
     .context(expected("an expression, followed by the |> (pipe) operator"))
@@ -817,6 +817,14 @@ pub fn return_stmt(i: TokenSlice) -> PResult<ReturnStatement> {
 fn value(i: TokenSlice) -> PResult<Value> {
     alt((
         pipe_expression.map(Box::new).map(Value::PipeExpression),
+        value_but_not_pipe,
+    ))
+    .context(expected("a KCL value"))
+    .parse_next(i)
+}
+
+fn value_but_not_pipe(i: TokenSlice) -> PResult<Value> {
+    alt((
         binary_expression.map(Box::new).map(Value::BinaryExpression),
         unary_expression.map(Box::new).map(Value::UnaryExpression),
         value_allowed_in_pipe_expr,
@@ -1598,6 +1606,7 @@ const mySk1 = startSketchAt([0, 0])"#;
     #[test]
     fn check_parsers_work_the_same() {
         for (i, test_program) in [
+            "const myVar = 5 + 6 |> myFunc(45, %)",
             "let x = 1 * (3 - 4)",
             r#"const x = 1 // this is an inline comment"#,
             r#"fn x = () => {
