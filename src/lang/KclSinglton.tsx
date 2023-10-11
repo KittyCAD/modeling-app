@@ -103,15 +103,16 @@ class KclManager {
     // short term migration, shouldn't make a difference for tauri app users
     // anyway since that's filesystem based.
     const zustandStore = JSON.parse(localStorage.getItem('store') || '{}')
-    if (!storedCode && zustandStore?.state?.code) {
-      this._code = zustandStore.state.code
+    if (storedCode === null && zustandStore?.state?.code) {
+      this.code = zustandStore.state.code
       localStorage.setItem(PERSIST_CODE_TOKEN, this._code)
       zustandStore.state.code = ''
       localStorage.setItem('store', JSON.stringify(zustandStore))
+    } else if (storedCode === null) {
+      this.code = bracket
     } else {
-      this._code = storedCode || bracket
+      this.code = storedCode
     }
-    this._codeCallBack(this._code)
   }
   registerCallBacks({
     setCode,
@@ -137,13 +138,13 @@ class KclManager {
   }
 
   async executeAst(ast: Program = this._ast, updateCode = false) {
-    this._isExecutingCallback(true)
+    this.isExecuting = true
     const { logs, errors, programMemory } = await executeAst({
       ast,
       engineCommandManager: this.engineCommandManager,
       defaultPlanes: this.defaultPlanes,
     })
-    this._isExecutingCallback(false)
+    this.isExecuting = false
     this._logs = logs
     this._kclErrors = errors
     this._programMemory = programMemory

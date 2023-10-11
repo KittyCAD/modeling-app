@@ -27,7 +27,7 @@ export function useSetupEngineManager(
   const hasSetNonZeroDimensions = useRef<boolean>(false)
 
   useEffect(() => {
-    kclManager.executeAst(parse(kclManager.code), true)
+    if (kclManager.code) kclManager.executeAst(parse(kclManager.code), true)
   }, [])
 
   useLayoutEffect(() => {
