@@ -1,11 +1,18 @@
-import { Selections, executeAst } from 'useStore'
+import { Selections, executeAst, executeCode } from 'useStore'
 import { KCLError } from './errors'
 import {
   EngineCommandManager,
   engineCommandManager,
 } from './std/engineConnection'
 import { deferExecution } from 'lib/utils'
-import { parse, PathToNode, Program, ProgramMemory, recast } from 'lang/wasm'
+import {
+  initPromise,
+  parse,
+  PathToNode,
+  Program,
+  ProgramMemory,
+  recast,
+} from 'lang/wasm'
 import { bracket } from 'lib/exampleKcl'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { getNodeFromPath } from './queryAst'
@@ -139,6 +146,7 @@ class KclManager {
 
   async executeAst(ast: Program = this._ast, updateCode = false) {
     this.isExecuting = true
+    await initPromise
     const { logs, errors, programMemory } = await executeAst({
       ast,
       engineCommandManager: this.engineCommandManager,
@@ -155,6 +163,7 @@ class KclManager {
     }
   }
   async executeAstMock(ast: Program = this._ast, updateCode = false) {
+    await initPromise
     const newCode = recast(ast)
     const newAst = parse(newCode)
     await this.engineCommandManager.waitForReady
@@ -172,6 +181,24 @@ class KclManager {
     this._logs = logs
     this._kclErrors = errors
     this._programMemory = programMemory
+  }
+  async executeCode(code: string) {
+    await initPromise
+    await this.engineCommandManager.waitForReady
+    const result = await executeCode({
+      engineCommandManager,
+      code: code || this._code,
+      lastAst: this._ast,
+      defaultPlanes: this.defaultPlanes,
+      force: false,
+    })
+    if (!result.isChange) return
+    const { logs, errors, programMemory, ast } = result
+    this.logs = logs
+    this.kclErrors = errors
+    this.programMemory = programMemory
+    this.ast = ast
+    this.code = code
   }
   setCode(code: string) {
     this._code = code

@@ -29,8 +29,7 @@ export function useSetupEngineManager(
   useEffect(() => {
     // TODO #827 if there are errors is the parse step we'll miss them, probably should have an executeCode method
     // that handles this correctly
-    console.log('wtf wtf', kclManager.code)
-    if (kclManager.code) kclManager.executeAst(parse(kclManager.code), true)
+    kclManager.executeCode
   }, [])
 
   useLayoutEffect(() => {

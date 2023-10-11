@@ -87,11 +87,7 @@ export const initPromise = initialise()
 export const rangeTypeFix = (ranges: number[][]): [number, number][] =>
   ranges.map(([start, end]) => [start, end])
 
-export const parse = (_code: string): Program => {
-  if (typeof _code === 'undefined') {
-    console.trace('parse called with undefined code')
-  }
-  const code = _code || ''
+export const parse = (code: string): Program => {
   try {
     const program: Program = parse_wasm(code)
     return program
