@@ -243,7 +243,7 @@ export async function applyConstraintHorzVertDistance({
       value: valueUsedInTransform,
       initialVariableName: constraint === 'setHorzDistance' ? 'xDis' : 'yDis',
     } as any)
-  if (segName === tagInfo?.tag && value === valueUsedInTransform) {
+  if (segName === tagInfo?.tag && Number(value) === valueUsedInTransform) {
     return {
       modifiedAst,
       pathToNodeMap,
