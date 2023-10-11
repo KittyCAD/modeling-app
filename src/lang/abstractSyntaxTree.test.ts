@@ -1520,15 +1520,15 @@ const key = 'c'`
       },
     }
     const { nonCodeMeta } = parse(code)
-    expect(nonCodeMeta.nonCodeNodes[0]).toEqual(nonCodeMetaInstance)
+    expect(nonCodeMeta.nonCodeNodes[0][0]).toEqual(nonCodeMetaInstance)
 
     // extra whitespace won't change it's position (0) or value (NB the start end would have changed though)
     const codeWithExtraStartWhitespace = '\n\n\n' + code
     const { nonCodeMeta: nonCodeMeta2 } = parse(codeWithExtraStartWhitespace)
-    expect(nonCodeMeta2.nonCodeNodes[0].value).toStrictEqual(
+    expect(nonCodeMeta2.nonCodeNodes[0][0].value).toStrictEqual(
       nonCodeMetaInstance.value
     )
-    expect(nonCodeMeta2.nonCodeNodes[0].start).not.toBe(
+    expect(nonCodeMeta2.nonCodeNodes[0][0].start).not.toBe(
       nonCodeMetaInstance.start
     )
   })
@@ -1545,7 +1545,7 @@ const key = 'c'`
     const { body } = parse(code)
     const indexOfSecondLineToExpression = 2
     const sketchNonCodeMeta = (body as any)[0].declarations[0].init.nonCodeMeta
-      .nonCodeNodes
+      .nonCodeNodes[0]
     expect(sketchNonCodeMeta[indexOfSecondLineToExpression]).toEqual({
       type: 'NonCodeNode',
       start: 106,
@@ -1568,7 +1568,7 @@ const key = 'c'`
 
     const { body } = parse(code)
     const sketchNonCodeMeta = (body[0] as any).declarations[0].init.nonCodeMeta
-      .nonCodeNodes
+      .nonCodeNodes[0]
     expect(sketchNonCodeMeta[3]).toEqual({
       type: 'NonCodeNode',
       start: 125,
