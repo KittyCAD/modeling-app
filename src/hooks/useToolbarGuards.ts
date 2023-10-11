@@ -1,52 +1,43 @@
 import { SetVarNameModal } from 'components/SetVarNameModal'
+import { kclManager } from 'lang/KclSinglton'
 import { moveValueIntoNewVariable } from 'lang/modifyAst'
 import { isNodeSafeToReplace } from 'lang/queryAst'
 import { useEffect, useState } from 'react'
 import { create } from 'react-modal-promise'
-import { useStore } from 'useStore'
+import { useModelingContext } from './useModelingContext'
 
 const getModalInfo = create(SetVarNameModal as any)
 
 export function useConvertToVariable() {
-  const { guiMode, selectionRanges, ast, programMemory, updateAst } = useStore(
-    (s) => ({
-      guiMode: s.guiMode,
-      ast: s.ast,
-      updateAst: s.updateAst,
-      selectionRanges: s.selectionRanges,
-      programMemory: s.programMemory,
-    })
-  )
+  const { context } = useModelingContext()
   const [enable, setEnabled] = useState(false)
   useEffect(() => {
-    if (!ast) return
-
     const { isSafe, value } = isNodeSafeToReplace(
-      ast,
-      selectionRanges.codeBasedSelections?.[0]?.range || []
+      kclManager.ast,
+      context.selectionRanges.codeBasedSelections?.[0]?.range || []
     )
     const canReplace = isSafe && value.type !== 'Identifier'
-    const isOnlyOneSelection = selectionRanges.codeBasedSelections.length === 1
+    const isOnlyOneSelection =
+      context.selectionRanges.codeBasedSelections.length === 1
 
     const _enableHorz = canReplace && isOnlyOneSelection
     setEnabled(_enableHorz)
-  }, [guiMode, selectionRanges])
+  }, [context.selectionRanges])
 
   const handleClick = async () => {
-    if (!ast) return
     try {
       const { variableName } = await getModalInfo({
         valueName: 'var',
       } as any)
 
       const { modifiedAst: _modifiedAst } = moveValueIntoNewVariable(
-        ast,
-        programMemory,
-        selectionRanges.codeBasedSelections[0].range,
+        kclManager.ast,
+        kclManager.programMemory,
+        context.selectionRanges.codeBasedSelections[0].range,
         variableName
       )
 
-      updateAst(_modifiedAst, true)
+      kclManager.updateAst(_modifiedAst, true)
     } catch (e) {
       console.log('error', e)
     }

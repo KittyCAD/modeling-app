@@ -1,69 +1,53 @@
 import { useState, useEffect } from 'react'
 import { toolTips, useStore } from '../../useStore'
-import { Value } from '../../lang/wasm'
+import { Program, ProgramMemory, Value } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
 } from '../../lang/queryAst'
 import {
+  PathToNodeMap,
   TransformInfo,
   getTransformInfos,
   transformAstSketchLines,
 } from '../../lang/std/sketchcombos'
-import { updateCursors } from '../../lang/util'
 import { ActionIcon } from 'components/ActionIcon'
 import { sketchButtonClassnames } from 'Toolbar'
+import { kclManager } from 'lang/KclSinglton'
+import { Selections } from 'useStore'
 
+/*
 export const HorzVert = ({
   horOrVert,
 }: {
   horOrVert: 'vertical' | 'horizontal'
 }) => {
-  const { guiMode, selectionRanges, ast, programMemory, updateAst, setCursor } =
-    useStore((s) => ({
-      guiMode: s.guiMode,
-      ast: s.ast,
-      updateAst: s.updateAst,
-      selectionRanges: s.selectionRanges,
-      programMemory: s.programMemory,
-      setCursor: s.setCursor,
-    }))
+  const { guiMode, selectionRanges, setCursor } = useStore((s) => ({
+    guiMode: s.guiMode,
+    selectionRanges: s.selectionRanges,
+    setCursor: s.setCursor,
+  }))
   const [enableHorz, setEnableHorz] = useState(false)
   const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
   useEffect(() => {
-    if (!ast) return
-    const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
-      getNodePathFromSourceRange(ast, range)
-    )
-    const nodes = paths.map(
-      (pathToNode) => getNodeFromPath<Value>(ast, pathToNode).node
-    )
-    const isAllTooltips = nodes.every(
-      (node) =>
-        node?.type === 'CallExpression' &&
-        toolTips.includes(node.callee.name as any)
-    )
-
-    const theTransforms = getTransformInfos(selectionRanges, ast, horOrVert)
-    setTransformInfos(theTransforms)
-
-    const _enableHorz = isAllTooltips && theTransforms.every(Boolean)
-    setEnableHorz(_enableHorz)
+    const { enabled, transforms } = horzVertInfo(selectionRanges, horOrVert)
+    setTransformInfos(transforms)
+    setEnableHorz(enabled)
   }, [guiMode, selectionRanges])
   if (guiMode.mode !== 'sketch') return null
 
   return (
     <button
       onClick={() => {
-        if (!transformInfos || !ast) return
+        if (!transformInfos) return
         const { modifiedAst, pathToNodeMap } = transformAstSketchLines({
-          ast,
+          ast: kclManager.ast,
           selectionRanges,
           transformInfos,
-          programMemory,
+          programMemory: kclManager.programMemory,
           referenceSegName: '',
         })
-        updateAst(modifiedAst, true, {
+        kclManager.updateAst(modifiedAst, true, {
           callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
         })
       }}
@@ -81,4 +65,52 @@ export const HorzVert = ({
       {horOrVert === 'horizontal' ? 'Horizontal' : 'Vertical'}
     </button>
   )
+}
+*/
+
+export function horzVertInfo(
+  selectionRanges: Selections,
+  horOrVert: 'vertical' | 'horizontal'
+) {
+  const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
+    getNodePathFromSourceRange(kclManager.ast, range)
+  )
+  const nodes = paths.map(
+    (pathToNode) => getNodeFromPath<Value>(kclManager.ast, pathToNode).node
+  )
+  const isAllTooltips = nodes.every(
+    (node) =>
+      node?.type === 'CallExpression' &&
+      toolTips.includes(node.callee.name as any)
+  )
+
+  const theTransforms = getTransformInfos(
+    selectionRanges,
+    kclManager.ast,
+    horOrVert
+  )
+  const _enableHorz = isAllTooltips && theTransforms.every(Boolean)
+  return { enabled: _enableHorz, transforms: theTransforms }
+}
+
+export function applyConstraintHorzVert(
+  selectionRanges: Selections,
+  horOrVert: 'vertical' | 'horizontal',
+  ast: Program,
+  programMemory: ProgramMemory
+): {
+  modifiedAst: Program
+  pathToNodeMap: PathToNodeMap
+} {
+  const transformInfos = horzVertInfo(selectionRanges, horOrVert).transforms
+  return transformAstSketchLines({
+    ast,
+    selectionRanges,
+    transformInfos,
+    programMemory,
+    referenceSegName: '',
+  })
+  // kclManager.updateAst(modifiedAst, true, {
+  //   callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
+  // })
 }

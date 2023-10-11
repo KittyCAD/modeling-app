@@ -3,18 +3,16 @@ import { ActionButton } from '../../components/ActionButton'
 import { onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from 'useStore'
 import { useEffect } from 'react'
+import { kclManager } from 'lang/KclSinglton'
 
 export default function Sketching() {
-  const { deferredSetCode, buttonDownInStream } = useStore((s) => ({
-    deferredSetCode: s.deferredSetCode,
-    buttonDownInStream: s.buttonDownInStream,
-  }))
+  const buttonDownInStream = useStore((s) => s.buttonDownInStream)
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.FUTURE_WORK)
 
   useEffect(() => {
-    deferredSetCode('')
-  }, [deferredSetCode])
+    kclManager.setCode('')
+  }, [])
 
   return (
     <div className="fixed grid justify-center items-end inset-0 z-50 pointer-events-none">

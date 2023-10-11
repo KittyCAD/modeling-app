@@ -1306,7 +1306,7 @@ export function getRemoveConstraintsTransforms(
   return theTransforms
 }
 
-type PathToNodeMap = { [key: number]: PathToNode }
+export type PathToNodeMap = { [key: number]: PathToNode }
 
 export function transformSecondarySketchLinesTagFirst({
   ast,
