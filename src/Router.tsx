@@ -40,6 +40,8 @@ import { ContextFrom } from 'xstate'
 import CommandBarProvider from 'components/CommandBar'
 import { TEST, VITE_KC_SENTRY_DSN } from './env'
 import * as Sentry from '@sentry/react'
+import ModelingMachineProvider from 'components/ModelingMachineProvider'
+import { KclContextProvider } from 'lang/KclSinglton'
 
 if (VITE_KC_SENTRY_DSN && !TEST) {
   Sentry.init({
@@ -141,7 +143,11 @@ const router = createBrowserRouter(
       element: (
         <Auth>
           <Outlet />
-          <App />
+          <KclContextProvider>
+            <ModelingMachineProvider>
+              <App />
+            </ModelingMachineProvider>
+          </KclContextProvider>
           {!isTauri() && import.meta.env.PROD && <DownloadAppBanner />}
         </Auth>
       ),

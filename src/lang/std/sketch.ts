@@ -18,7 +18,7 @@ import {
   getNodePathFromSourceRange,
 } from '../queryAst'
 import { isLiteralArrayOrStatic } from './sketchcombos'
-import { GuiModes, toolTips, ToolTip } from '../../useStore'
+import { toolTips, ToolTip } from '../../useStore'
 import { createPipeExpression, splitPathAtPipeExpression } from '../modifyAst'
 
 import { SketchLineHelper, ModifyAstBase, TransformCallback } from './stdTypes'
@@ -898,7 +898,6 @@ export function changeSketchArguments(
   programMemory: ProgramMemory,
   sourceRange: SourceRange,
   args: [number, number],
-  guiMode: GuiModes,
   from: [number, number]
 ): { modifiedAst: Program } {
   const _node = { ...node }
@@ -907,7 +906,6 @@ export function changeSketchArguments(
     _node,
     thePath
   )
-  if (guiMode.mode !== 'sketch') throw new Error('not in sketch mode')
 
   if (callExpression?.callee?.name in sketchLineHelperMap) {
     const { updateArgs } = sketchLineHelperMap[callExpression.callee.name]

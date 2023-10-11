@@ -9,6 +9,7 @@ import {
 } from 'react-router-dom'
 import { GlobalStateProvider } from './components/GlobalStateProvider'
 import CommandBarProvider from 'components/CommandBar'
+import ModelingMachineProvider from 'components/ModelingMachineProvider'
 import { BROWSER_FILE_NAME } from 'Router'
 
 let listener: ((rect: any) => void) | undefined = undefined
@@ -56,7 +57,9 @@ function TestWrap({ children }: { children: React.ReactNode }) {
         path="/file/:id"
         element={
           <CommandBarProvider>
-            <GlobalStateProvider>{children}</GlobalStateProvider>
+            <GlobalStateProvider>
+              <ModelingMachineProvider>{children}</ModelingMachineProvider>
+            </GlobalStateProvider>
           </CommandBarProvider>
         }
       />

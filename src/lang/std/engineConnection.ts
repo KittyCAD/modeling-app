@@ -11,6 +11,7 @@ import { exportSave } from 'lib/exportSave'
 import { v4 as uuidv4 } from 'uuid'
 import * as Sentry from '@sentry/react'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
+import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 
 let lastMessage = ''
 
@@ -286,14 +287,18 @@ export class EngineConnection {
       const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
 
       if (!message.success) {
+        const errorsString = message?.errors
+          ?.map((error) => {
+            return `  - ${error.error_code}: ${error.message}`
+          })
+          .join('\n')
         if (message.request_id) {
-          console.error(`Error in response to request ${message.request_id}:`)
+          console.error(
+            `Error in response to request ${message.request_id}:\n${errorsString}`
+          )
         } else {
-          console.error(`Error from server:`)
+          console.error(`Error from server:\n${errorsString}`)
         }
-        message?.errors?.forEach((error) => {
-          console.error(` - ${error.error_code}: ${error.message}`)
-        })
         return
       }
 
@@ -593,11 +598,14 @@ export class EngineCommandManager {
   outSequence = 1
   inSequence = 1
   engineConnection?: EngineConnection
+  defaultPlanes: DefaultPlanes = { xy: '', yz: '', xz: '' }
   // Folks should realize that wait for ready does not get called _everytime_
   // the connection resets and restarts, it only gets called the first time.
   // Be careful what you put here.
-  waitForReady: Promise<void> = new Promise(() => {})
   private resolveReady = () => {}
+  waitForReady: Promise<void> = new Promise((resolve) => {
+    this.resolveReady = resolve
+  })
 
   subscriptions: {
     [event: string]: {
@@ -639,9 +647,6 @@ export class EngineCommandManager {
       return
     }
 
-    this.waitForReady = new Promise((resolve) => {
-      this.resolveReady = resolve
-    })
     const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}`
     this.engineConnection = new EngineConnection({
       url,
@@ -669,12 +674,15 @@ export class EngineCommandManager {
           },
         })
 
-        // We execute the code here to make sure if the stream was to
-        // restart in a session, we want to make sure to execute the code.
-        // We force it to re-execute the code because we want to make sure
-        // the code is executed everytime the stream is restarted.
-        // We pass undefined for the code so it reads from the current state.
-        executeCode(undefined, true)
+        // Inisialize the planes.
+        this.initPlanes().then(() => {
+          // We execute the code here to make sure if the stream was to
+          // restart in a session, we want to make sure to execute the code.
+          // We force it to re-execute the code because we want to make sure
+          // the code is executed everytime the stream is restarted.
+          // We pass undefined for the code so it reads from the current state.
+          executeCode(undefined, true)
+        })
       },
       onClose: () => {
         setIsStreamReady(false)
@@ -1176,6 +1184,95 @@ export class EngineCommandManager {
         }
       }
     })
+  }
+  private async initPlanes() {
+    const [xy, yz, xz] = [
+      await this.createPlane({
+        x_axis: { x: 1, y: 0, z: 0 },
+        y_axis: { x: 0, y: 1, z: 0 },
+        color: { r: 0.7, g: 0.28, b: 0.28, a: 0.4 },
+      }),
+      await this.createPlane({
+        x_axis: { x: 0, y: 1, z: 0 },
+        y_axis: { x: 0, y: 0, z: 1 },
+        color: { r: 0.28, g: 0.7, b: 0.28, a: 0.4 },
+      }),
+      await this.createPlane({
+        x_axis: { x: 1, y: 0, z: 0 },
+        y_axis: { x: 0, y: 0, z: 1 },
+        color: { r: 0.28, g: 0.28, b: 0.7, a: 0.4 },
+      }),
+    ]
+    this.defaultPlanes = { xy, yz, xz }
+
+    this.subscribeTo({
+      event: 'select_with_point',
+      callback: ({ data }) => {
+        if (!data?.entity_id) return
+        if (
+          ![
+            this.defaultPlanes.xy,
+            this.defaultPlanes.yz,
+            this.defaultPlanes.xz,
+          ].includes(data.entity_id)
+        )
+          return
+        this.onPlaneSelectCallback(data.entity_id)
+      },
+    })
+  }
+
+  onPlaneSelectCallback = (id: string) => {}
+  onPlaneSelected(callback: (id: string) => void) {
+    this.onPlaneSelectCallback = callback
+  }
+
+  async setPlaneHidden(id: string, hidden: boolean): Promise<string> {
+    return await this.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'object_visible',
+        object_id: id,
+        hidden: hidden,
+      },
+    })
+  }
+
+  private async createPlane({
+    x_axis,
+    y_axis,
+    color,
+  }: {
+    x_axis: Models['Point3d_type']
+    y_axis: Models['Point3d_type']
+    color: Models['Color_type']
+  }): Promise<string> {
+    const planeId = uuidv4()
+    await this.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'make_plane',
+        size: 60,
+        origin: { x: 0, y: 0, z: 0 },
+        x_axis,
+        y_axis,
+        clobber: false,
+        hide: true,
+      },
+      cmd_id: planeId,
+    })
+    await this.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'plane_set_color',
+        plane_id: planeId,
+        color,
+      },
+      cmd_id: uuidv4(),
+    })
+    await this.setPlaneHidden(planeId, true)
+    return planeId
   }
 }
 
