@@ -9,6 +9,7 @@ import { documentDir, homeDir } from '@tauri-apps/api/path'
 import { isTauri } from './isTauri'
 import { ProjectWithEntryPointMetadata } from '../Router'
 import { metadata } from 'tauri-plugin-fs-extra-api'
+import { file } from '@kittycad/lib/dist/types/src'
 
 const PROJECT_FOLDER = 'kittycad-modeling-projects'
 export const FILE_EXT = '.kcl'
@@ -82,7 +83,7 @@ export const isHidden = (fileOrDir: FileEntry) =>
   !!fileOrDir.name?.startsWith('.')
 
 export const isDir = (fileOrDir: FileEntry) =>
-  Boolean(fileOrDir.children && fileOrDir.children.length)
+  'children' in fileOrDir && fileOrDir.children !== undefined
 
 export function deepFileFilter(
   entries: FileEntry[],
@@ -90,9 +91,9 @@ export function deepFileFilter(
 ): FileEntry[] {
   const filteredEntries: FileEntry[] = []
   for (const fileOrDir of entries) {
-    if (fileOrDir.children && fileOrDir.children.length) {
+    if ('children' in fileOrDir && fileOrDir.children !== undefined) {
       const filteredChildren = deepFileFilter(fileOrDir.children, filterFn)
-      if (filterFn(fileOrDir) && filteredChildren.length) {
+      if (filterFn(fileOrDir)) {
         filteredEntries.push({
           ...fileOrDir,
           children: filteredChildren,
@@ -118,11 +119,14 @@ export async function readProject(projectDir: string) {
 // Determines if a file or directory is relevant to the project
 // i.e. not a hidden file or directory, and is a relevant file type
 // or contains at least one relevant file (even if it's nested)
+// or is a completely empty directory
 export function isRelevantFileOrDir(fileOrDir: FileEntry) {
   let isRelevantDir = false
-  if (fileOrDir.children && fileOrDir.children.length) {
+  if ('children' in fileOrDir && fileOrDir.children !== undefined) {
     isRelevantDir =
-      !isHidden(fileOrDir) && fileOrDir.children.some(isRelevantFileOrDir)
+      !isHidden(fileOrDir) &&
+      (fileOrDir.children.some(isRelevantFileOrDir) ||
+        fileOrDir.children.length === 0)
   }
   const isRelevantFile =
     !isHidden(fileOrDir) &&

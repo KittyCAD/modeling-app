@@ -40,7 +40,7 @@ const FileTreeItem = ({
     }
   }
 
-  return !fileOrDir.children ? (
+  return fileOrDir.children === undefined ? (
     <li
       className={
         'group m-0 p-0 border-solid border-0 hover:bg-energy-10/50 dark:hover:bg-energy-90/50 focus-within:bg-energy-10/80 dark:focus-within:bg-energy-80/50 hover:focus-within:bg-energy-10/80 dark:hover:focus-within:bg-energy-80/50 ' +
@@ -49,19 +49,20 @@ const FileTreeItem = ({
     >
       <button
         className="py-1 rounded-none border-none p-0 m-0 text-base w-full hover:!bg-transparent text-left text-energy-100 group-hover:text-energy-70 dark:text-energy-30 dark:group-hover:text-energy-20"
-        style={{ paddingInline: `calc(1rem * ${level + 1})` }}
+        style={{ paddingInlineStart: `calc(1rem * ${level + 1})` }}
         onDoubleClick={() => {
           navigate(`${paths.FILE}/${encodeURIComponent(fileOrDir.path)}`)
           closePanel()
         }}
         onClick={(e) => e.currentTarget.focus()}
-        onKeyDown={(e) => {
-          console.log(e.metaKey, e.key)
-          e.metaKey && e.key === 'Backspace' && handleDelete(fileOrDir)
-        }}
+        onKeyDown={(e) =>
+          e.metaKey &&
+          e.key === 'Backspace' &&
+          send({ type: 'Delete file', data: fileOrDir })
+        }
       >
         {isCurrentFile && (
-          <div className="inline-block w-2 h-2 rounded-full bg-energy-10 mr-2">
+          <div className="inline-block w-2 h-2 rounded-full bg-energy-90 dark:bg-energy-10 mr-2">
             <span className="sr-only">(current)</span>
           </div>
         )}
@@ -74,7 +75,16 @@ const FileTreeItem = ({
         <div className="group">
           <Disclosure.Button
             className="group border-none text-base rounded-none p-0 m-0 flex items-center justify-start w-full py-1 text-chalkboard-70 dark:text-chalkboard-30 hover:bg-energy-10/50 dark:hover:bg-energy-90/50 group-focus-within:bg-chalkboard-20 dark:group-focus-within:bg-chalkboard-80/20 hover:group-focus-within:bg-chalkboard-20 dark:hover:group-focus-within:bg-chalkboard-80/20"
-            style={{ paddingInline: `calc(1rem * ${level + 1})` }}
+            style={{ paddingInlineStart: `calc(1rem * ${level + 1})` }}
+            onClickCapture={(e) =>
+              send({ type: 'Set current directory', data: fileOrDir })
+            }
+            onClick={(e) => e.currentTarget.focus()}
+            onKeyDown={(e) =>
+              e.metaKey &&
+              e.key === 'Backspace' &&
+              send({ type: 'Delete file', data: fileOrDir })
+            }
           >
             <FontAwesomeIcon
               icon={faChevronRight}
@@ -129,8 +139,14 @@ export const FileTree = ({
   const { send, context } = useFileContext()
 
   async function createFile() {
-    send({ type: 'Create file', data: { name: '' } })
+    send({ type: 'Create file', data: { name: '', makeDir: false } })
   }
+
+  async function createFolder() {
+    send({ type: 'Create file', data: { name: '', makeDir: true } })
+  }
+
+  useEffect(() => console.log(context.project), [context.project])
 
   return (
     <div className={className}>
@@ -159,6 +175,7 @@ export const FileTree = ({
             bgClassName: 'hover:bg-energy-10/50 dark:hover:bg-transparent',
           }}
           className="!p-0 border-none bg-transparent"
+          onClick={createFolder}
         >
           <Tooltip position="blockEnd" delay={750}>
             Create Folder

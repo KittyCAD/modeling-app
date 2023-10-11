@@ -16,10 +16,10 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import {
   DEFAULT_FILE_NAME,
   FILE_PERSIST_KEY,
-  fileCommandMeta,
   fileMachine,
 } from 'machines/fileMachine'
 import {
+  createDir,
   readDir,
   removeDir,
   removeFile,
@@ -50,7 +50,7 @@ export const FileMachineProvider = ({
   const [state, send] = useMachine(fileMachine, {
     context: {
       project,
-      currentDirectory: project?.path,
+      currentDirectory: project,
     },
     actions: {
       navigateToFile: (
@@ -81,9 +81,16 @@ export const FileMachineProvider = ({
         context: ContextFrom<typeof fileMachine>,
         event: EventFrom<typeof fileMachine, 'Create file'>
       ) => {
-        let name = (event.data.name.trim() || DEFAULT_FILE_NAME) + FILE_EXT
+        let name = event.data.name.trim() || DEFAULT_FILE_NAME
 
-        await writeFile(context.currentDirectory.path + '/' + name, '')
+        if (event.data.makeDir) {
+          await createDir(context.currentDirectory.path + '/' + name)
+        } else {
+          await writeFile(
+            context.currentDirectory.path + '/' + name + FILE_EXT,
+            ''
+          )
+        }
 
         return `Successfully created "${name}"`
       },
@@ -104,19 +111,19 @@ export const FileMachineProvider = ({
         context: ContextFrom<typeof fileMachine>,
         event: EventFrom<typeof fileMachine, 'Delete file'>
       ) => {
-        const isDir = !!event.data.file.children
+        const isDir = !!event.data.children
 
         if (isDir) {
-          await removeDir(event.data.file.path, {
+          await removeDir(event.data.path, {
             recursive: true,
           }).catch((e) => console.error('Error deleting directory', e))
         } else {
-          await removeFile(event.data.file.path).catch((e) =>
+          await removeFile(event.data.path).catch((e) =>
             console.error('Error deleting file', e)
           )
         }
         return `Successfully deleted ${isDir ? 'folder' : 'file'} "${
-          event.data.file.name
+          event.data.name
         }"`
       },
     },
@@ -126,14 +133,6 @@ export const FileMachineProvider = ({
         return !!event?.data?.children && event.data.children.length > 0
       },
     },
-  })
-
-  useStateMachineCommands<typeof fileMachine>({
-    commands,
-    send,
-    state,
-    commandBarMeta: fileCommandMeta,
-    owner: 'file',
   })
 
   return (
