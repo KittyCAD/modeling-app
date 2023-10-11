@@ -1,5 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
+import { type InstanceProps, create } from 'react-modal-promise'
 import { Value } from '../lang/wasm'
 import {
   AvailableVars,
@@ -9,6 +10,30 @@ import {
   CreateNewVariable,
 } from './AvailableVarsHelpers'
 
+type ModalResolve = {
+  value: string
+  segName: string
+  valueNode: Value
+  variableName?: string
+  newVariableInsertIndex: number
+  sign: number
+}
+
+type ModalReject = boolean
+
+type GetInfoModalProps = InstanceProps<ModalResolve, ModalReject> & {
+  segName: string
+  isSegNameEditable: boolean
+  value?: number
+  initialVariableName: string
+}
+
+export const createInfoModal = create<
+  GetInfoModalProps,
+  ModalResolve,
+  ModalReject
+>
+
 export const GetInfoModal = ({
   isOpen,
   onResolve,
@@ -17,25 +42,12 @@ export const GetInfoModal = ({
   isSegNameEditable,
   value: initialValue,
   initialVariableName,
-}: {
-  isOpen: boolean
-  onResolve: (a: {
-    value: string
-    segName: string
-    valueNode: Value
-    variableName?: string
-    newVariableInsertIndex: number
-    sign: number
-  }) => void
-  onReject: (a: any) => void
-  segName: string
-  isSegNameEditable: boolean
-  value: number
-  initialVariableName: string
-}) => {
+}: GetInfoModalProps) => {
   const [sign, setSign] = useState(Math.sign(Number(initialValue)))
   const [segName, setSegName] = useState(initialSegName)
-  const [value, setValue] = useState(String(Math.abs(initialValue)))
+  const [value, setValue] = useState(
+    initialValue === undefined ? '' : String(Math.abs(initialValue))
+  )
   const [shouldCreateVariable, setShouldCreateVariable] = useState(false)
 
   const {

@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { create } from 'react-modal-promise'
 import { toolTips, useStore } from '../../useStore'
 import { BinaryPart, Program, Value, VariableDeclarator } from '../../lang/wasm'
 import {
@@ -14,13 +13,13 @@ import {
   ConstraintType,
   PathToNodeMap,
 } from '../../lang/std/sketchcombos'
-import { GetInfoModal } from '../SetHorVertDistanceModal'
+import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
 import { createLiteral, createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { kclManager } from 'lang/KclSinglton'
 import { Selections } from 'useStore'
 
-const getModalInfo = create(GetInfoModal as any)
+const getModalInfo = createInfoModal(GetInfoModal)
 
 type ButtonType =
   | 'setHorzDistance'
@@ -79,22 +78,16 @@ export const SetHorzVertDistance = ({
             transformInfos,
             programMemory: kclManager.programMemory,
           })
-        const {
-          segName,
-          value,
-          valueNode,
-          variableName,
-          newVariableInsertIndex,
-          sign,
-        }: {
-          segName: string
-          value: number
-          valueNode: Value
-          variableName?: string
-          newVariableInsertIndex: number
-          sign: number
-        } = await (!isAlign &&
-          getModalInfo({
+
+        if (!isAlign) {
+          const {
+            segName,
+            value,
+            valueNode,
+            variableName,
+            newVariableInsertIndex,
+            sign,
+          } = await getModalInfo({
             segName: tagInfo?.tag,
             isSegNameEditable: !tagInfo?.isTagExisting,
             value: valueUsedInTransform,
@@ -105,12 +98,30 @@ export const SetHorzVertDistance = ({
           kclManager.updateAst(modifiedAst, true, {
             callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
           })
-        } else {
-          let finalValue = isAlign
-            ? createLiteral(0)
-            : removeDoubleNegatives(valueNode as BinaryPart, sign, variableName)
-          // transform again but forcing certain values
-          const { modifiedAst: _modifiedAst, pathToNodeMap } =
+
+          if (
+            segName === tagInfo?.tag &&
+            value ===
+              (valueUsedInTransform === undefined
+                ? ''
+                : String(Math.abs(valueUsedInTransform)))
+          ) {
+            updateAst(modifiedAst, true, {
+              callBack: updateCursors(
+                setCursor,
+                selectionRanges,
+                pathToNodeMap
+              ),
+            })
+          }
+
+          const finalValue = removeDoubleNegatives(
+            valueNode as BinaryPart,
+            sign,
+            variableName
+          )
+
+          const { modifiedAst: _modifiedAst, pathToNodeMap: _pathToNodeMap } =
             transformSecondarySketchLinesTagFirst({
               ast: kclManager.ast,
               selectionRanges,
@@ -119,6 +130,7 @@ export const SetHorzVertDistance = ({
               forceSegName: segName,
               forceValueUsedInTransform: finalValue,
             })
+
           if (variableName) {
             const newBody = [..._modifiedAst.body]
             newBody.splice(
@@ -201,7 +213,7 @@ export async function applyConstraintHorzVertDistance({
 }: {
   selectionRanges: Selections
   constraint: 'setHorzDistance' | 'setVertDistance'
-  isAlign?: boolean
+  isAlign?: false
 }): Promise<{
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
@@ -224,20 +236,13 @@ export async function applyConstraintHorzVertDistance({
     variableName,
     newVariableInsertIndex,
     sign,
-  }: {
-    segName: string
-    value: number
-    valueNode: Value
-    variableName?: string
-    newVariableInsertIndex: number
-    sign: number
-  } = await (!isAlign &&
+  } = await
     getModalInfo({
       segName: tagInfo?.tag,
       isSegNameEditable: !tagInfo?.isTagExisting,
       value: valueUsedInTransform,
       initialVariableName: constraint === 'setHorzDistance' ? 'xDis' : 'yDis',
-    } as any))
+    } as any)
   if (segName === tagInfo?.tag && value === valueUsedInTransform) {
     return {
       modifiedAst,

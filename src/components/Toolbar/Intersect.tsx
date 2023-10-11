@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { create } from 'react-modal-promise'
 import { toolTips, useStore } from '../../useStore'
 import { BinaryPart, Value, VariableDeclarator } from '../../lang/wasm'
 import {
@@ -13,12 +12,12 @@ import {
   transformSecondarySketchLinesTagFirst,
   getTransformInfos,
 } from '../../lang/std/sketchcombos'
-import { GetInfoModal } from '../SetHorVertDistanceModal'
+import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
 import { createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { kclManager } from 'lang/KclSinglton'
 
-const getModalInfo = create(GetInfoModal as any)
+const getModalInfo = createInfoModal(GetInfoModal)
 
 /*
 export const Intersect = () => {
@@ -132,13 +131,6 @@ export const Intersect = () => {
           variableName,
           newVariableInsertIndex,
           sign,
-        }: {
-          segName: string
-          value: number
-          valueNode: Value
-          variableName?: string
-          newVariableInsertIndex: number
-          sign: number
         } = await getModalInfo({
           segName: tagInfo?.tag,
           isSegNameEditable: !tagInfo?.isTagExisting,

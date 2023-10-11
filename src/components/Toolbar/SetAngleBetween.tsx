@@ -13,12 +13,12 @@ import {
   getTransformInfos,
   PathToNodeMap,
 } from '../../lang/std/sketchcombos'
-import { GetInfoModal } from '../SetHorVertDistanceModal'
+import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
 import { createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { kclManager } from 'lang/KclSinglton'
 
-const getModalInfo = create(GetInfoModal as any)
+const getModalInfo = createInfoModal(GetInfoModal)
 
 /*
 export const SetAngleBetween = () => {
@@ -54,13 +54,6 @@ export const SetAngleBetween = () => {
           variableName,
           newVariableInsertIndex,
           sign,
-        }: {
-          segName: string
-          value: number
-          valueNode: Value
-          variableName?: string
-          newVariableInsertIndex: number
-          sign: number
         } = await getModalInfo({
           segName: tagInfo?.tag,
           isSegNameEditable: !tagInfo?.isTagExisting,
@@ -183,20 +176,13 @@ export async function applyConstraintAngleBetween({
     variableName,
     newVariableInsertIndex,
     sign,
-  }: {
-    segName: string
-    value: number
-    valueNode: Value
-    variableName?: string
-    newVariableInsertIndex: number
-    sign: number
   } = await getModalInfo({
     segName: tagInfo?.tag,
     isSegNameEditable: !tagInfo?.isTagExisting,
     value: valueUsedInTransform,
     initialVariableName: 'angle',
   } as any)
-  if (segName === tagInfo?.tag && value === valueUsedInTransform) {
+  if (segName === tagInfo?.tag && Number(value) === valueUsedInTransform) {
     return {
       modifiedAst,
       pathToNodeMap,
