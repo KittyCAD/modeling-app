@@ -11,7 +11,7 @@ import {
 import { SetSelections, modelingMachine } from 'machines/modelingMachine'
 import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
-import { isCursorInSketchCommandRange } from 'hooks/useAppMode'
+import { isCursorInSketchCommandRange } from 'lang/util'
 import { engineCommandManager } from 'lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
 import { addStartSketch } from 'lang/modifyAst'
