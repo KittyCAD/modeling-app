@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import { useFileContext } from 'hooks/useFileContext'
 import { useHotkeys } from 'react-hotkeys-hook'
+import { kclManager } from 'lang/KclSinglton'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -105,6 +106,7 @@ const FileTreeItem = ({
 
   function openFile() {
     if (fileOrDir.children !== undefined) return // Don't open directories
+    kclManager.setCode('')
     navigate(`${paths.FILE}/${encodeURIComponent(fileOrDir.path)}`)
     closePanel()
   }
