@@ -47,12 +47,7 @@ function RenameForm({
   }
 
   return (
-    <form
-      onSubmit={(e) => {
-        console.log('why is this firing???')
-        handleRenameSubmit(e)
-      }}
-    >
+    <form onSubmit={handleRenameSubmit}>
       <label>
         <span className="sr-only">Rename file</span>
         <input
@@ -253,7 +248,7 @@ export const FileTree = ({
             iconClassName: '!text-energy-80 dark:!text-energy-20',
             bgClassName: 'hover:bg-energy-10/50 dark:hover:bg-transparent',
           }}
-          className="!p-0 border-none bg-transparent"
+          className="!p-0 border-none bg-transparent !outline-none"
           onClick={createFile}
         >
           <Tooltip position="blockEnd" delay={750}>
@@ -268,7 +263,7 @@ export const FileTree = ({
             iconClassName: '!text-energy-80 dark:!text-energy-20',
             bgClassName: 'hover:bg-energy-10/50 dark:hover:bg-transparent',
           }}
-          className="!p-0 border-none bg-transparent"
+          className="!p-0 border-none bg-transparent !outline-none"
           onClick={createFolder}
         >
           <Tooltip position="blockEnd" delay={750}>

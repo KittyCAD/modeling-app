@@ -99,6 +99,10 @@
   transition-delay: var(--_delay);
 }
 
+:is(:focus, :focus-visible, :focus-within) > .tooltip {
+  --_delay: 0 !important;
+}
+
 /* prepend some prose for screen readers only */
 .tooltip::before {
   content: '; Has tooltip: ';
