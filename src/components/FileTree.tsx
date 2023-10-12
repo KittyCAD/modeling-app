@@ -87,7 +87,7 @@ const FileTreeItem = ({
   ) => void
   level?: number
 }) => {
-  const { send } = useFileContext()
+  const { send, context } = useFileContext()
   const navigate = useNavigate()
   const [isRenaming, setIsRenaming] = useState(false)
   const isCurrentFile = fileOrDir.path === currentFile?.path
@@ -147,7 +147,12 @@ const FileTreeItem = ({
         <div className="group">
           {!isRenaming ? (
             <Disclosure.Button
-              className="group border-none text-base rounded-none p-0 m-0 flex items-center justify-start w-full py-1 text-chalkboard-70 dark:text-chalkboard-30 hover:bg-energy-10/50 dark:hover:bg-energy-90/50 group-focus-within:bg-chalkboard-20 dark:group-focus-within:bg-chalkboard-80/20 hover:group-focus-within:bg-chalkboard-20 dark:hover:group-focus-within:bg-chalkboard-80/20"
+              className={
+                'group border-none text-base rounded-none p-0 m-0 flex items-center justify-start w-full py-1 text-chalkboard-70 dark:text-chalkboard-30 hover:bg-energy-10/50 dark:hover:bg-energy-90/50' +
+                (context.selectedDirectory.path.includes(fileOrDir.path)
+                  ? ' group-focus-within:bg-chalkboard-20 dark:group-focus-within:bg-chalkboard-80/20 hover:group-focus-within:bg-chalkboard-20 dark:hover:group-focus-within:bg-chalkboard-80/20 group-active:bg-chalkboard-20 dark:group-active:bg-chalkboard-80/20 hover:group-active:bg-chalkboard-20 dark:hover:group-active:bg-chalkboard-80/20'
+                  : '')
+              }
               style={{ paddingInlineStart: getIndentationCSS(level) }}
               onClick={(e) => e.currentTarget.focus()}
               onClickCapture={(e) =>
