@@ -83,16 +83,16 @@ export const ModelingMachineProvider = ({
       'show default planes': () => {
         kclManager.showPlanes()
       },
-      'create path': async () => {
-        const sketchUuid = uuidv4()
-        const proms = [
+      'create path': assign({
+        sketchEnginePathId: () => {
+          const sketchUuid = uuidv4()
           engineCommandManager.sendSceneCommand({
             type: 'modeling_cmd_req',
             cmd_id: sketchUuid,
             cmd: {
               type: 'start_path',
             },
-          }),
+          })
           engineCommandManager.sendSceneCommand({
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
@@ -100,10 +100,10 @@ export const ModelingMachineProvider = ({
               type: 'edit_mode_enter',
               target: sketchUuid,
             },
-          }),
-        ]
-        await Promise.all(proms)
-      },
+          })
+          return sketchUuid
+        },
+      }),
       'AST start new sketch': assign((_, { data: { coords, axis } }) => {
         // Something really weird must have happened for this to happen.
         if (!axis) {
