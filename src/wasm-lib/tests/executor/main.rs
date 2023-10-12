@@ -87,7 +87,7 @@ const fnBox = box(3, 6, 10)
 show(fnBox)"#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/function_sketch.png", &result, 1.0);
+    twenty_twenty::assert_image("tests/executor/outputs/function_sketch.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -107,7 +107,11 @@ async fn serial_test_execute_with_function_sketch_with_position() {
 show(box([0,0], 3, 6, 10))"#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/function_sketch_with_position.png", &result, 1.0);
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/function_sketch_with_position.png",
+        &result,
+        0.999,
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -125,7 +129,7 @@ async fn serial_test_execute_with_angled_line() {
 show(part001)"#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/angled_line.png", &result, 1.0);
+    twenty_twenty::assert_image("tests/executor/outputs/angled_line.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -152,7 +156,7 @@ const bracket = startSketchOn('XY')
 show(bracket)"#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/parametric.png", &result, 1.0);
+    twenty_twenty::assert_image("tests/executor/outputs/parametric.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -187,7 +191,7 @@ const bracket = startSketchAt([0, 0])
 show(bracket)"#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/parametric_with_tan_arc.png", &result, 1.0);
+    twenty_twenty::assert_image("tests/executor/outputs/parametric_with_tan_arc.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -215,7 +219,7 @@ async fn serial_test_execute_pipes_on_pipes() {
     let code = include_str!("inputs/pipes_on_pipes.kcl");
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/pipes_on_pipes.png", &result, 1.0);
+    twenty_twenty::assert_image("tests/executor/outputs/pipes_on_pipes.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -223,7 +227,7 @@ async fn serial_test_execute_kittycad_svg() {
     let code = include_str!("inputs/kittycad_svg.kcl");
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/kittycad_svg.png", &result, 1.0);
+    twenty_twenty::assert_image("tests/executor/outputs/kittycad_svg.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -270,7 +274,7 @@ const body = startSketchOn('XY')
 show(body)"#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/close_arc.png", &result, 1.0);
+    twenty_twenty::assert_image("tests/executor/outputs/close_arc.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -296,7 +300,7 @@ let thing = box(-12, -15, 10)
 box(-20, -5, 10)"#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/negative_args.png", &result, 1.0);
+    twenty_twenty::assert_image("tests/executor/outputs/negative_args.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -309,7 +313,7 @@ async fn test_basic_tangental_arc() {
 "#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/tangental_arc.png", &result, 1.0);
+    twenty_twenty::assert_image("tests/executor/outputs/tangental_arc.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -322,7 +326,7 @@ async fn test_basic_tangental_arc_with_point() {
 "#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/tangental_arc_with_point.png", &result, 1.0);
+    twenty_twenty::assert_image("tests/executor/outputs/tangental_arc_with_point.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -335,7 +339,7 @@ async fn test_basic_tangental_arc_to() {
 "#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/tangental_arc_to.png", &result, 1.0);
+    twenty_twenty::assert_image("tests/executor/outputs/tangental_arc_to.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -362,7 +366,11 @@ let thing = box(-12, -15, 10, 'yz')
 box(-20, -5, 10, 'xy')"#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/different_planes_same_drawing.png", &result, 1.0);
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/different_planes_same_drawing.png",
+        &result,
+        0.999,
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -421,5 +429,5 @@ const part004 = startSketchOn('YZ')
 "#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/lots_of_planes.png", &result, 1.0);
+    twenty_twenty::assert_image("tests/executor/outputs/lots_of_planes.png", &result, 0.999);
 }

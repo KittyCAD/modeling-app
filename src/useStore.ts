@@ -257,7 +257,7 @@ export async function executeCode({
         body: [],
         nonCodeMeta: {
           nonCodeNodes: {},
-          start: null,
+          start: [],
         },
       },
     }

@@ -272,21 +272,20 @@ const mySk1 = startSketchAt([0, 0])
 `
     const { ast } = code2ast(code)
     const recasted = recast(ast)
-    expect(recasted).toBe(`// comment at start
+    expect(recasted).toBe(`/* comment at start */
+
 const mySk1 = startSketchAt([0, 0])
   |> lineTo([1, 1], %)
   // comment here
   |> lineTo({ to: [0, 1], tag: 'myTag' }, %)
-  |> lineTo([1, 1], %)
-  /* and
-  here
-
-a comment between pipe expression statements */
+  |> lineTo([1, 1], %) /* and
+  here */
+  // a comment between pipe expression statements
   |> rx(90, %)
   // and another with just white space between others below
   |> ry(45, %)
   |> rx(45, %)
-// one more for good measure
+  /* one more for good measure */
 `)
   })
 })
