@@ -2,12 +2,13 @@ import { IndexLoaderData, paths } from 'Router'
 import { ActionButton } from './ActionButton'
 import Tooltip from './Tooltip'
 import { FileEntry } from '@tauri-apps/api/fs'
-import { Dispatch, useCallback, useEffect, useRef, useState } from 'react'
+import { Dispatch, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Disclosure } from '@headlessui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import { useFileContext } from 'hooks/useFileContext'
+import { useHotkeys } from 'react-hotkeys-hook'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -228,6 +229,8 @@ export const FileTree = ({
   closePanel,
 }: FileTreeProps) => {
   const { send, context } = useFileContext()
+  useHotkeys('meta + n', createFile)
+  useHotkeys('meta + shift + n', createFolder)
 
   async function createFile() {
     send({ type: 'Create file', data: { name: '', makeDir: false } })
