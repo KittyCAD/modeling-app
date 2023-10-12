@@ -24,14 +24,24 @@ pub async fn extrude(args: Args) -> Result<MemoryItem, KclError> {
     name = "extrude"
 }]
 async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) -> Result<Box<ExtrudeGroup>, KclError> {
-    let id = uuid::Uuid::new_v4();
+    // Extrude the element.
+    args.send_modeling_cmd(
+        uuid::Uuid::new_v4(),
+        kittycad::types::ModelingCmd::Extrude {
+            target: sketch_group.id,
+            distance: length,
+            cap: true,
+        },
+    )
+    .await?;
 
-    let cmd = kittycad::types::ModelingCmd::Extrude {
-        target: sketch_group.id,
-        distance: length,
-        cap: true,
-    };
-    args.send_modeling_cmd(id, cmd).await?;
+    // Bring the object to the front of the scene.
+    // See: https://github.com/KittyCAD/modeling-app/issues/806
+    args.send_modeling_cmd(
+        uuid::Uuid::new_v4(),
+        kittycad::types::ModelingCmd::ObjectBringToFront { uuid: sketch_group.id },
+    )
+    .await?;
 
     Ok(Box::new(ExtrudeGroup {
         id,
