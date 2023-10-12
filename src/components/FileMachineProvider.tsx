@@ -44,7 +44,7 @@ export const FileMachineProvider = ({
   const [state, send] = useMachine(fileMachine, {
     context: {
       project,
-      currentDirectory: project,
+      selectedDirectory: project,
     },
     actions: {
       navigateToFile: (
@@ -55,12 +55,13 @@ export const FileMachineProvider = ({
           setCommandBarOpen(false)
           navigate(
             `${paths.FILE}/${encodeURIComponent(
-              context.currentDirectory + '/' + event.data.name
+              context.selectedDirectory + '/' + event.data.name
             )}`
           )
         }
       },
-      toastSuccess: (_, event) => toast.success((event.data || '') + ''),
+      toastSuccess: (_, event) =>
+        event.data && toast.success((event.data || '') + ''),
       toastError: (_, event) => toast.error((event.data || '') + ''),
     },
     services: {
@@ -78,10 +79,10 @@ export const FileMachineProvider = ({
         let name = event.data.name.trim() || DEFAULT_FILE_NAME
 
         if (event.data.makeDir) {
-          await createDir(context.currentDirectory.path + '/' + name)
+          await createDir(context.selectedDirectory.path + '/' + name)
         } else {
           await writeFile(
-            context.currentDirectory.path +
+            context.selectedDirectory.path +
               '/' +
               name +
               (name.endsWith(FILE_EXT) ? '' : FILE_EXT),
@@ -99,13 +100,15 @@ export const FileMachineProvider = ({
         let name = newName ? newName : DEFAULT_FILE_NAME
 
         await renameFile(
-          context.currentDirectory.path + '/' + oldName,
-          context.currentDirectory.path +
+          context.selectedDirectory.path + '/' + oldName,
+          context.selectedDirectory.path +
             '/' +
             name +
             (name.endsWith(FILE_EXT) || isDir ? '' : FILE_EXT)
         )
-        return `Successfully renamed "${oldName}" to "${name}"`
+        return (
+          oldName !== name && `Successfully renamed "${oldName}" to "${name}"`
+        )
       },
       deleteFile: async (
         context: ContextFrom<typeof fileMachine>,

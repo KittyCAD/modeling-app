@@ -55,8 +55,8 @@ export interface Typegen0 {
   }
   eventsCausingActions: {
     navigateToFile: 'Open file'
-    setCurrentDirectory: 'Set current directory'
     setFiles: 'done.invoke.read-files'
+    setSelectedDirectory: 'Set selected directory'
     toastError:
       | 'error.platform.create-file'
       | 'error.platform.delete-file'

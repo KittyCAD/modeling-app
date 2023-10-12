@@ -14,7 +14,7 @@ export const fileMachine = createMachine(
 
     context: {
       project: {} as ProjectWithEntryPointMetadata,
-      currentDirectory: {} as FileEntry,
+      selectedDirectory: {} as FileEntry,
     },
 
     on: {
@@ -52,9 +52,9 @@ export const fileMachine = createMachine(
             target: 'Opening file',
           },
 
-          'Set current directory': {
+          'Set selected directory': {
             target: 'Has files',
-            actions: ['setCurrentDirectory'],
+            actions: ['setSelectedDirectory'],
           },
         },
       },
@@ -152,7 +152,7 @@ export const fileMachine = createMachine(
           }
         | { type: 'Create file'; data: { name: string; makeDir: boolean } }
         | { type: 'Delete file'; data: FileEntry }
-        | { type: 'Set current directory'; data: FileEntry }
+        | { type: 'Set selected directory'; data: FileEntry }
         | { type: 'navigate'; data: { name: string } }
         | {
             type: 'done.invoke.read-files'
@@ -170,8 +170,8 @@ export const fileMachine = createMachine(
       setFiles: assign((_, event) => {
         return { project: event.data }
       }),
-      setCurrentDirectory: assign((_, event) => {
-        return { currentDirectory: event.data }
+      setSelectedDirectory: assign((_, event) => {
+        return { selectedDirectory: event.data }
       }),
     },
   }

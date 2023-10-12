@@ -85,8 +85,14 @@ export function App() {
   // Use file code loaded from disk
   // on mount, and overwrite any locally-stored code
   useEffect(() => {
-    if (isTauri() && loadedCode !== null && loadedCode !== undefined) {
-      kclManager.setCode(loadedCode)
+    if (isTauri() && loadedCode !== null) {
+      if (kclManager.engineCommandManager.engineConnection?.isReady()) {
+        // If the engine is ready, promptly execute the loaded code
+        kclManager.setCodeAndExecute(loadedCode)
+      } else {
+        // Otherwise, just set the code and wait for the connection to complete
+        kclManager.setCode(loadedCode)
+      }
     }
     return () => {
       // Clear code on unmount if in desktop app

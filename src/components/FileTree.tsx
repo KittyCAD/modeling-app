@@ -33,7 +33,7 @@ function RenameForm({
       type: 'Rename file',
       data: {
         oldName: fileOrDir.name || '',
-        newName: inputRef.current?.value || '',
+        newName: inputRef.current?.value || fileOrDir.name || '',
         isDir: fileOrDir.children !== undefined,
       },
     })
@@ -98,7 +98,15 @@ const FileTreeItem = ({
     } else if (e.key === 'Enter') {
       // Show the renaming form
       setIsRenaming(true)
+    } else if (e.code === 'Space') {
+      openFile()
     }
+  }
+
+  function openFile() {
+    if (fileOrDir.children !== undefined) return // Don't open directories
+    navigate(`${paths.FILE}/${encodeURIComponent(fileOrDir.path)}`)
+    closePanel()
   }
 
   return fileOrDir.children === undefined ? (
@@ -112,10 +120,7 @@ const FileTreeItem = ({
         <button
           className="py-1 rounded-none border-none p-0 m-0 text-base w-full hover:!bg-transparent text-left text-energy-100 group-hover:text-energy-70 dark:text-energy-30 dark:group-hover:text-energy-20"
           style={{ paddingInlineStart: getIndentationCSS(level) }}
-          onDoubleClick={() => {
-            navigate(`${paths.FILE}/${encodeURIComponent(fileOrDir.path)}`)
-            closePanel()
-          }}
+          onDoubleClick={openFile}
           onClick={(e) => e.currentTarget.focus()}
           onKeyUp={handleKeyUp}
         >
@@ -142,13 +147,14 @@ const FileTreeItem = ({
             <Disclosure.Button
               className="group border-none text-base rounded-none p-0 m-0 flex items-center justify-start w-full py-1 text-chalkboard-70 dark:text-chalkboard-30 hover:bg-energy-10/50 dark:hover:bg-energy-90/50 group-focus-within:bg-chalkboard-20 dark:group-focus-within:bg-chalkboard-80/20 hover:group-focus-within:bg-chalkboard-20 dark:hover:group-focus-within:bg-chalkboard-80/20"
               style={{ paddingInlineStart: getIndentationCSS(level) }}
+              onClick={(e) => e.currentTarget.focus()}
               onClickCapture={(e) =>
-                send({ type: 'Set current directory', data: fileOrDir })
+                send({ type: 'Set selected directory', data: fileOrDir })
               }
               onFocusCapture={(e) =>
-                send({ type: 'Set current directory', data: fileOrDir })
+                send({ type: 'Set selected directory', data: fileOrDir })
               }
-              onClick={(e) => e.currentTarget.focus()}
+              onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
               onKeyUp={handleKeyUp}
             >
               <FontAwesomeIcon
@@ -183,10 +189,10 @@ const FileTreeItem = ({
             <ul
               className="m-0 p-0"
               onClickCapture={(e) => {
-                send({ type: 'Set current directory', data: fileOrDir })
+                send({ type: 'Set selected directory', data: fileOrDir })
               }}
               onFocusCapture={(e) =>
-                send({ type: 'Set current directory', data: fileOrDir })
+                send({ type: 'Set selected directory', data: fileOrDir })
               }
             >
               {fileOrDir.children?.map((child) => (
@@ -274,7 +280,7 @@ export const FileTree = ({
       <ul
         className="flex-1 m-0 p-0"
         onClickCapture={(e) => {
-          send({ type: 'Set current directory', data: context.project })
+          send({ type: 'Set selected directory', data: context.project })
         }}
       >
         {context.project.children?.map((fileOrDir) => (
