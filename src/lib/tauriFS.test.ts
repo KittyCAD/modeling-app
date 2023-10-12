@@ -3,9 +3,9 @@ import {
   MAX_PADDING,
   deepFileFilter,
   getNextProjectIndex,
+  getPartsCount,
   interpolateProjectNameWithIndex,
   isRelevantFileOrDir,
-  readProject,
 } from './tauriFS'
 
 describe('Test project name utility functions', () => {
@@ -139,5 +139,12 @@ describe('Test file tree utility functions', () => {
     expect(deepFileFilter(withHiddenDir, isRelevantFileOrDir)).toEqual(
       filteredBaseFiles
     )
+  })
+
+  it(`Properly counts the number of relevant files and directories in a project`, () => {
+    expect(getPartsCount(nestedFiles)).toEqual({
+      kclFileCount: 2,
+      kclDirCount: 2,
+    })
   })
 })

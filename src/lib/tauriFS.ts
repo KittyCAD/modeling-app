@@ -106,6 +106,28 @@ export function deepFileFilter(
   return filteredEntries
 }
 
+export function deepFileFilterFlat(
+  entries: FileEntry[],
+  filterFn: (f: FileEntry) => boolean
+): FileEntry[] {
+  const filteredEntries: FileEntry[] = []
+  for (const fileOrDir of entries) {
+    if ('children' in fileOrDir && fileOrDir.children !== undefined) {
+      const filteredChildren = deepFileFilterFlat(fileOrDir.children, filterFn)
+      if (filterFn(fileOrDir)) {
+        filteredEntries.push({
+          ...fileOrDir,
+          children: filteredChildren,
+        })
+      }
+      filteredEntries.push(...filteredChildren)
+    } else if (filterFn(fileOrDir)) {
+      filteredEntries.push(fileOrDir)
+    }
+  }
+  return filteredEntries
+}
+
 // Read the contents of a project directory
 // and return all relevant files and sub-directories recursively
 export async function readProject(projectDir: string) {
@@ -114,6 +136,23 @@ export async function readProject(projectDir: string) {
   })
 
   return deepFileFilter(readFiles, isRelevantFileOrDir)
+}
+
+// Given a read project, return the number of .kcl files,
+// both in the root directory and in sub-directories,
+// and folders that contain at least one .kcl file
+export function getPartsCount(project: FileEntry[]) {
+  const flatProject = deepFileFilterFlat(project, isRelevantFileOrDir)
+
+  const kclFileCount = flatProject.filter((f) =>
+    f.name?.endsWith(FILE_EXT)
+  ).length
+  const kclDirCount = flatProject.filter((f) => f.children !== undefined).length
+
+  return {
+    kclFileCount,
+    kclDirCount,
+  }
 }
 
 // Determines if a file or directory is relevant to the project
