@@ -1,5 +1,4 @@
 import { assign, createMachine } from 'xstate'
-import { CommandBarMeta } from '../lib/commands'
 import { ProjectWithEntryPointMetadata } from 'Router'
 import { FileEntry } from '@tauri-apps/api/fs'
 

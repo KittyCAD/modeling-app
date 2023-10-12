@@ -12,10 +12,7 @@ import {
   StateFrom,
 } from 'xstate'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import {
-  DEFAULT_FILE_NAME,
-  fileMachine,
-} from 'machines/fileMachine'
+import { DEFAULT_FILE_NAME, fileMachine } from 'machines/fileMachine'
 import {
   createDir,
   removeDir,
@@ -41,7 +38,7 @@ export const FileMachineProvider = ({
   children: React.ReactNode
 }) => {
   const navigate = useNavigate()
-  const { commands, setCommandBarOpen } = useCommandsContext()
+  const { setCommandBarOpen } = useCommandsContext()
   const { project } = useRouteLoaderData(paths.FILE) as IndexLoaderData
 
   const [state, send] = useMachine(fileMachine, {
@@ -84,7 +81,10 @@ export const FileMachineProvider = ({
           await createDir(context.currentDirectory.path + '/' + name)
         } else {
           await writeFile(
-            context.currentDirectory.path + '/' + name + FILE_EXT,
+            context.currentDirectory.path +
+              '/' +
+              name +
+              (name.endsWith(FILE_EXT) ? '' : FILE_EXT),
             ''
           )
         }
@@ -100,7 +100,10 @@ export const FileMachineProvider = ({
 
         await renameFile(
           context.currentDirectory.path + '/' + oldName,
-          context.currentDirectory.path + '/' + name
+          context.currentDirectory.path +
+            '/' +
+            name +
+            (name.endsWith(FILE_EXT) ? '' : FILE_EXT)
         )
         return `Successfully renamed "${oldName}" to "${name}"`
       },
