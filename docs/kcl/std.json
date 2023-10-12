@@ -17481,16 +17481,16 @@
     "deprecated": false
   },
   {
-    "name": "tangentalArc",
+    "name": "tangentialArc",
     "summary": "Draw an arc.",
     "description": "",
     "tags": [],
     "args": [
       {
         "name": "data",
-        "type": "TangentalArcData",
+        "type": "TangentialArcData",
         "schema": {
-          "description": "Data to draw a tangental arc.",
+          "description": "Data to draw a tangential arc.",
           "anyOf": [
             {
               "type": "object",
@@ -18432,16 +18432,16 @@
     "deprecated": false
   },
   {
-    "name": "tangentalArcTo",
+    "name": "tangentialArcTo",
     "summary": "Draw an arc.",
     "description": "",
     "tags": [],
     "args": [
       {
         "name": "data",
-        "type": "TangentalArcToData",
+        "type": "TangentialArcToData",
         "schema": {
-          "description": "Data to draw a tangental arc to a specific point.",
+          "description": "Data to draw a tangential arc to a specific point.",
           "anyOf": [
             {
               "description": "A point with a tag.",
