@@ -438,6 +438,7 @@ async fn serial_test_holes() {
     const sg = startSketchOn('XY')
       |> startProfileAt(pos, %)
       |> arc({angle_end: 360, angle_start: 0, radius: radius}, %)
+      |> close(%)
 
     return sg
 }
