@@ -40,7 +40,9 @@ async fn inner_extrude(length: f64, sketch_group: Box<SketchGroup>, args: Args) 
     // See: https://github.com/KittyCAD/modeling-app/issues/806
     args.send_modeling_cmd(
         uuid::Uuid::new_v4(),
-        kittycad::types::ModelingCmd::ObjectBringToFront { object_id: id },
+        kittycad::types::ModelingCmd::ObjectBringToFront {
+            object_id: sketch_group.id,
+        },
     )
     .await?;
 
