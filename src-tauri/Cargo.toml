@@ -20,7 +20,7 @@ kittycad = "0.2.31"
 oauth2 = "4.4.2"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-tauri = { version = "1.5.1", features = [ "os-all", "dialog-all", "fs-all", "http-request", "path-all", "shell-open", "shell-open-api", "updater", "devtools"] }
+tauri = { version = "1.5.2", features = [ "os-all", "dialog-all", "fs-all", "http-request", "path-all", "shell-open", "shell-open-api", "updater", "devtools"] }
 tauri-plugin-fs-extra = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 tokio = { version = "1.33.0", features = ["time"] }
 toml = "0.8.2"
