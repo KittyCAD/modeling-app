@@ -231,7 +231,7 @@ async fn serial_test_execute_kittycad_svg() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_member_expression_sketch_group() {
+async fn serial_test_member_expression_sketch_group() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -260,7 +260,7 @@ show(b2)"#;
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_close_arc() {
+async fn serial_test_close_arc() {
     let code = r#"const center = [0,0]
 const radius = 40
 const height = 3
@@ -278,7 +278,7 @@ show(body)"#;
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_negative_args() {
+async fn serial_test_negative_args() {
     let code = r#"const width = 5
 const height = 10
 const length = 12
@@ -304,7 +304,7 @@ box(-20, -5, 10)"#;
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_basic_tangential_arc() {
+async fn serial_test_basic_tangential_arc() {
     let code = r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
     |> tangentialArc({radius: 5, offset: 90}, %)
@@ -317,7 +317,7 @@ async fn test_basic_tangential_arc() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_basic_tangential_arc_with_point() {
+async fn serial_test_basic_tangential_arc_with_point() {
     let code = r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
     |> tangentialArc([-5, 5], %)
@@ -330,7 +330,7 @@ async fn test_basic_tangential_arc_with_point() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_basic_tangential_arc_to() {
+async fn serial_test_basic_tangential_arc_to() {
     let code = r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
     |> tangentialArcTo([-5, 15], %)
@@ -343,7 +343,7 @@ async fn test_basic_tangential_arc_to() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_different_planes_same_drawing() {
+async fn serial_test_different_planes_same_drawing() {
     let code = r#"const width = 5
 const height = 10
 const length = 12
@@ -374,7 +374,7 @@ box(-20, -5, 10, 'xy')"#;
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_lots_of_planes() {
+async fn serial_test_lots_of_planes() {
     let code = r#"const sigmaAllow = 15000 // psi
 const width = 11 // inch
 const p = 150 // Force on shelf - lbs
