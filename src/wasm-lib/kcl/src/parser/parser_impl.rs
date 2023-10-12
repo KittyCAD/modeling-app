@@ -1682,7 +1682,7 @@ const mySk1 = startSketchAt([0, 0])"#;
         for (i, test_program) in [
             r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
-    |> tangentalArc([-5, 5], %)
+    |> tangentialArc([-5, 5], %)
     |> line([5, -15], %)
     |> extrude(10, %)
 "#,

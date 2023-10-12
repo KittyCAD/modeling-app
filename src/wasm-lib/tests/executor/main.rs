@@ -173,14 +173,14 @@ const wallMountL = 8
 
 const bracket = startSketchAt([0, 0])
   |> line([0, wallMountL], %)
-  |> tangentalArc({
+  |> tangentialArc({
     radius: filletR,
     offset: 90
   }, %)
   |> line([-shelfMountL, 0], %)
   |> line([0, -thickness], %)
   |> line([shelfMountL, 0], %)
-  |> tangentalArc({
+  |> tangentialArc({
     radius: filletR - thickness,
     offset: -90
   }, %)
@@ -304,42 +304,42 @@ box(-20, -5, 10)"#;
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_basic_tangental_arc() {
+async fn test_basic_tangential_arc() {
     let code = r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
-    |> tangentalArc({radius: 5, offset: 90}, %)
+    |> tangentialArc({radius: 5, offset: 90}, %)
     |> line([5, -15], %)
     |> extrude(10, %)
 "#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/tangental_arc.png", &result, 0.999);
+    twenty_twenty::assert_image("tests/executor/outputs/tangential_arc.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_basic_tangental_arc_with_point() {
+async fn test_basic_tangential_arc_with_point() {
     let code = r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
-    |> tangentalArc([-5, 5], %)
+    |> tangentialArc([-5, 5], %)
     |> line([5, -15], %)
     |> extrude(10, %)
 "#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/tangental_arc_with_point.png", &result, 0.999);
+    twenty_twenty::assert_image("tests/executor/outputs/tangential_arc_with_point.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_basic_tangental_arc_to() {
+async fn test_basic_tangential_arc_to() {
     let code = r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
-    |> tangentalArcTo([-5, 15], %)
+    |> tangentialArcTo([-5, 15], %)
     |> line([5, -15], %)
     |> extrude(10, %)
 "#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/tangental_arc_to.png", &result, 0.999);
+    twenty_twenty::assert_image("tests/executor/outputs/tangential_arc_to.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -388,11 +388,11 @@ const wallMountL = 8
 const bracket = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, wallMountL], %)
-  |> tangentalArc({ radius: filletR, offset: 90 }, %)
+  |> tangentialArc({ radius: filletR, offset: 90 }, %)
   |> line([-shelfMountL, 0], %)
   |> line([0, -thickness], %)
   |> line([shelfMountL, 0], %)
-  |> tangentalArc({
+  |> tangentialArc({
        radius: filletR - thickness,
        offset: -90
      }, %)
