@@ -1404,6 +1404,29 @@ const mySk1 = startSketchAt([0, 0])"#;
     }
 
     #[test]
+    fn test_comment_in_pipe() {
+        let tokens = crate::token::lexer(r#"const x = y() |> /*hi*/ z(%)"#);
+        let mut body = program.parse(&tokens).unwrap().body;
+        let BodyItem::VariableDeclaration(mut item) = body.remove(0) else {
+            panic!("expected vardec");
+        };
+        let val = item.declarations.remove(0).init;
+        let Value::PipeExpression(pipe) = val else {
+            panic!("expected pipe");
+        };
+        let mut noncode = dbg!(pipe.non_code_meta);
+        assert_eq!(noncode.non_code_nodes.len(), 1);
+        let comment = noncode.non_code_nodes.remove(&0).unwrap().pop().unwrap();
+        assert_eq!(
+            comment.value,
+            NonCodeValue::BlockComment {
+                value: "hi".to_owned(),
+                style: CommentStyle::Block
+            }
+        );
+    }
+
+    #[test]
     fn test_whitespace_in_function() {
         let test_program = r#"() => {
             return sg
