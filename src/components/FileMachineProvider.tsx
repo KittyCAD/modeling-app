@@ -1,8 +1,7 @@
 import { useMachine } from '@xstate/react'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { IndexLoaderData, paths } from '../Router'
-import React, { createContext, useEffect, useRef } from 'react'
-import useStateMachineCommands from '../hooks/useStateMachineCommands'
+import React, { createContext } from 'react'
 import { toast } from 'react-hot-toast'
 import {
   AnyStateMachine,
@@ -15,12 +14,10 @@ import {
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import {
   DEFAULT_FILE_NAME,
-  FILE_PERSIST_KEY,
   fileMachine,
 } from 'machines/fileMachine'
 import {
   createDir,
-  readDir,
   removeDir,
   removeFile,
   renameFile,

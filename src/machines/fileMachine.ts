@@ -169,7 +169,6 @@ export const fileMachine = createMachine(
         return { project: event.data }
       }),
       setCurrentDirectory: assign((_, event) => {
-        console.log('setting current directory', event)
         return { currentDirectory: event.data }
       }),
     },

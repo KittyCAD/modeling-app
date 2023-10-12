@@ -32,14 +32,6 @@ const FileTreeItem = ({
   const navigate = useNavigate()
   const isCurrentFile = fileOrDir.path === currentFile?.path
 
-  async function handleDelete(fileOrDir: FileEntry) {
-    if (!fileOrDir.children) {
-      await removeFile(fileOrDir.path)
-    } else {
-      await removeDir(fileOrDir.path, { recursive: true })
-    }
-  }
-
   return fileOrDir.children === undefined ? (
     <li
       className={
