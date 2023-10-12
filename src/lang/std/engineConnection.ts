@@ -1,16 +1,10 @@
-import {
-  ProgramMemory,
-  SourceRange,
-  Program,
-  VariableDeclarator,
-} from 'lang/wasm'
+import { SourceRange } from 'lang/wasm'
 import { Selections } from 'useStore'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_CONNECTION_TIMEOUT_MS } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
 import { v4 as uuidv4 } from 'uuid'
 import * as Sentry from '@sentry/react'
-import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 
 let lastMessage = ''
@@ -1081,10 +1075,7 @@ export class EngineCommandManager {
     }
     return command.promise
   }
-  async waitForAllCommands(
-    ast?: Program,
-    programMemory?: ProgramMemory
-  ): Promise<{
+  async waitForAllCommands(): Promise<{
     artifactMap: ArtifactMap
     sourceRangeMap: SourceRangeMap
   }> {
@@ -1093,96 +1084,11 @@ export class EngineCommandManager {
     ) as PendingCommand[]
     const proms = pendingCommands.map(({ promise }) => promise)
     await Promise.all(proms)
-    if (ast && programMemory) {
-      await this.fixIdMappings(ast, programMemory)
-    }
 
     return {
       artifactMap: this.artifactMap,
       sourceRangeMap: this.sourceRangeMap,
     }
-  }
-  private async fixIdMappings(ast: Program, programMemory: ProgramMemory) {
-    if (this.engineConnection === undefined) {
-      return
-    }
-    /* This is a temporary solution since the cmd_ids that are sent through when
-    sending 'extend_path' ids are not used as the segment ids.
-
-    We have a way to back fill them with 'path_get_info', however this relies on one
-    the sketchGroup array and the segements array returned from the server to be in
-    the same length and order. plus it's super hacky, we first use the path_id to get
-    the source range of the pipe expression then use the name of the variable to get
-    the sketchGroup from programMemory.
-
-    I feel queezy about relying on all these steps to always line up.
-    We have also had to pollute this EngineCommandManager class with knowledge of both the ast and programMemory
-    We should get the cmd_ids to match with the segment ids and delete this method.
-    */
-    const pathInfoProms = []
-    for (const [id, artifact] of Object.entries(this.artifactMap)) {
-      if (artifact.commandType === 'start_path') {
-        pathInfoProms.push(
-          this.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'path_get_info',
-              path_id: id,
-            },
-          }).then(({ data }) => ({
-            originalId: id,
-            segments: data?.data?.segments,
-          }))
-        )
-      }
-    }
-
-    const pathInfos = await Promise.all(pathInfoProms)
-    pathInfos.forEach(({ originalId, segments }) => {
-      const originalArtifact = this.artifactMap[originalId]
-      if (!originalArtifact || originalArtifact.type === 'pending') {
-        return
-      }
-      const pipeExpPath = getNodePathFromSourceRange(
-        ast,
-        originalArtifact.range
-      )
-      const pipeExp = getNodeFromPath<VariableDeclarator>(
-        ast,
-        pipeExpPath,
-        'VariableDeclarator'
-      ).node
-      if (pipeExp.type !== 'VariableDeclarator') {
-        return
-      }
-      const variableName = pipeExp.id.name
-      const memoryItem = programMemory.root[variableName]
-      if (!memoryItem) {
-        return
-      } else if (memoryItem.type !== 'SketchGroup') {
-        return
-      }
-
-      const relevantSegments = segments.filter(
-        ({ command_id }: { command_id: string | null }) => command_id
-      )
-      if (memoryItem.value.length !== relevantSegments.length) {
-        return
-      }
-      for (let i = 0; i < relevantSegments.length; i++) {
-        const engineSegment = relevantSegments[i]
-        const memorySegment = memoryItem.value[i]
-        const oldId = memorySegment.__geoMeta.id
-        const artifact = this.artifactMap[oldId]
-        delete this.artifactMap[oldId]
-        delete this.sourceRangeMap[oldId]
-        if (artifact) {
-          this.artifactMap[engineSegment.command_id] = artifact
-          this.sourceRangeMap[engineSegment.command_id] = artifact.range
-        }
-      }
-    })
   }
   private async initPlanes() {
     const [xy, yz, xz] = [

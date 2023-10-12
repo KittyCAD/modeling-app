@@ -135,7 +135,7 @@ export const executor = async (
     planes
   )
   const { artifactMap, sourceRangeMap } =
-    await engineCommandManager.waitForAllCommands(node, _programMemory)
+    await engineCommandManager.waitForAllCommands()
   tempMapCallback({ artifactMap, sourceRangeMap })
 
   engineCommandManager.endSession()
