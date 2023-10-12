@@ -33,6 +33,7 @@ function RenameForm({
       data: {
         oldName: fileOrDir.name || '',
         newName: inputRef.current?.value || '',
+        isDir: fileOrDir.children !== undefined,
       },
     })
   }
@@ -141,30 +142,56 @@ const FileTreeItem = ({
     <Disclosure defaultOpen={currentFile?.path.includes(fileOrDir.path)}>
       {({ open }) => (
         <div className="group">
-          <Disclosure.Button
-            className="group border-none text-base rounded-none p-0 m-0 flex items-center justify-start w-full py-1 text-chalkboard-70 dark:text-chalkboard-30 hover:bg-energy-10/50 dark:hover:bg-energy-90/50 group-focus-within:bg-chalkboard-20 dark:group-focus-within:bg-chalkboard-80/20 hover:group-focus-within:bg-chalkboard-20 dark:hover:group-focus-within:bg-chalkboard-80/20"
-            style={{ paddingInlineStart: getIndentationCSS(level) }}
-            onClickCapture={(e) =>
-              send({ type: 'Set current directory', data: fileOrDir })
-            }
-            onClick={(e) => e.currentTarget.focus()}
-            onKeyUp={handleKeyUp}
-          >
-            <FontAwesomeIcon
-              icon={faChevronRight}
-              className={
-                'inline-block mr-2 m-0 p-0 w-2 h-2 ' +
-                (open ? 'transform rotate-90' : '')
+          {!isRenaming ? (
+            <Disclosure.Button
+              className="group border-none text-base rounded-none p-0 m-0 flex items-center justify-start w-full py-1 text-chalkboard-70 dark:text-chalkboard-30 hover:bg-energy-10/50 dark:hover:bg-energy-90/50 group-focus-within:bg-chalkboard-20 dark:group-focus-within:bg-chalkboard-80/20 hover:group-focus-within:bg-chalkboard-20 dark:hover:group-focus-within:bg-chalkboard-80/20"
+              style={{ paddingInlineStart: getIndentationCSS(level) }}
+              onClickCapture={(e) =>
+                send({ type: 'Set current directory', data: fileOrDir })
               }
-            />
-            {fileOrDir.name}
-          </Disclosure.Button>
+              onFocusCapture={(e) =>
+                send({ type: 'Set current directory', data: fileOrDir })
+              }
+              onClick={(e) => e.currentTarget.focus()}
+              onKeyUp={handleKeyUp}
+            >
+              <FontAwesomeIcon
+                icon={faChevronRight}
+                className={
+                  'inline-block mr-2 m-0 p-0 w-2 h-2 ' +
+                  (open ? 'transform rotate-90' : '')
+                }
+              />
+              {fileOrDir.name}
+            </Disclosure.Button>
+          ) : (
+            <div
+              className="flex items-center"
+              style={{ paddingInlineStart: getIndentationCSS(level) }}
+            >
+              <FontAwesomeIcon
+                icon={faChevronRight}
+                className={
+                  'inline-block mr-2 m-0 p-0 w-2 h-2 ' +
+                  (open ? 'transform rotate-90' : '')
+                }
+              />
+              <RenameForm
+                fileOrDir={fileOrDir}
+                setIsRenaming={setIsRenaming}
+                level={-1}
+              />
+            </div>
+          )}
           <Disclosure.Panel>
             <ul
               className="m-0 p-0"
               onClickCapture={(e) => {
                 send({ type: 'Set current directory', data: fileOrDir })
               }}
+              onFocusCapture={(e) =>
+                send({ type: 'Set current directory', data: fileOrDir })
+              }
             >
               {fileOrDir.children?.map((child) => (
                 <FileTreeItem

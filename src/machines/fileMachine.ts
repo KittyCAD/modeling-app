@@ -146,7 +146,10 @@ export const fileMachine = createMachine(
     schema: {
       events: {} as
         | { type: 'Open file'; data: { name: string } }
-        | { type: 'Rename file'; data: { oldName: string; newName: string } }
+        | {
+            type: 'Rename file'
+            data: { oldName: string; newName: string; isDir: boolean }
+          }
         | { type: 'Create file'; data: { name: string; makeDir: boolean } }
         | { type: 'Delete file'; data: FileEntry }
         | { type: 'Set current directory'; data: FileEntry }

@@ -95,7 +95,7 @@ export const FileMachineProvider = ({
         context: ContextFrom<typeof fileMachine>,
         event: EventFrom<typeof fileMachine, 'Rename file'>
       ) => {
-        const { oldName, newName } = event.data
+        const { oldName, newName, isDir } = event.data
         let name = newName ? newName : DEFAULT_FILE_NAME
 
         await renameFile(
@@ -103,7 +103,7 @@ export const FileMachineProvider = ({
           context.currentDirectory.path +
             '/' +
             name +
-            (name.endsWith(FILE_EXT) ? '' : FILE_EXT)
+            (name.endsWith(FILE_EXT) || isDir ? '' : FILE_EXT)
         )
         return `Successfully renamed "${oldName}" to "${name}"`
       },

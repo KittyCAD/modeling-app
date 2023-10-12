@@ -174,7 +174,7 @@ const Home = () => {
   return (
     <div className="h-screen overflow-hidden relative flex flex-col">
       <AppHeader showToolbar={false} />
-      <div className="my-24 overflow-y-auto max-w-5xl w-full mx-auto">
+      <div className="my-24 px-4 lg:px-0 overflow-y-auto max-w-5xl w-full mx-auto">
         <section className="flex justify-between">
           <h1 className="text-3xl text-bold">Your Projects</h1>
           <div className="flex">
