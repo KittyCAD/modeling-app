@@ -6,6 +6,8 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::SemanticTokenType;
 
+use crate::{ast::types::VariableKind, executor::SourceRange};
+
 mod tokeniser;
 
 /// The types of tokens.
@@ -142,15 +144,39 @@ impl Token {
             TokenType::Whitespace | TokenType::LineComment | TokenType::BlockComment
         )
     }
+
+    pub fn as_source_range(&self) -> SourceRange {
+        SourceRange([self.start, self.end])
+    }
+
+    pub fn as_source_ranges(&self) -> Vec<SourceRange> {
+        vec![self.as_source_range()]
+    }
+
+    /// Is this token the beginning of a variable/function declaration?
+    /// If so, what kind?
+    /// If not, returns None.
+    pub fn declaration_keyword(&self) -> Option<VariableKind> {
+        if !matches!(self.token_type, TokenType::Keyword) {
+            return None;
+        }
+        Some(match self.value.as_str() {
+            "var" => VariableKind::Var,
+            "let" => VariableKind::Let,
+            "fn" => VariableKind::Fn,
+            "const" => VariableKind::Const,
+            _ => return None,
+        })
+    }
 }
 
-impl From<Token> for crate::executor::SourceRange {
+impl From<Token> for SourceRange {
     fn from(token: Token) -> Self {
         Self([token.start, token.end])
     }
 }
 
-impl From<&Token> for crate::executor::SourceRange {
+impl From<&Token> for SourceRange {
     fn from(token: &Token) -> Self {
         Self([token.start, token.end])
     }

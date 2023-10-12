@@ -63,10 +63,14 @@ impl Program {
                 .fold(String::new(), |mut output, (index, recast_str)| {
                     let start_string = if index == 0 {
                         // We need to indent.
-                        if let Some(start) = self.non_code_meta.start.clone() {
-                            start.format(&indentation)
-                        } else {
+                        if self.non_code_meta.start.is_empty() {
                             indentation.to_string()
+                        } else {
+                            self.non_code_meta
+                                .start
+                                .iter()
+                                .map(|start| start.format(&indentation))
+                                .collect()
                         }
                     } else {
                         // Do nothing, we already applied the indentation elsewhere.
@@ -82,7 +86,10 @@ impl Program {
                     };
 
                     let custom_white_space_or_comment = match self.non_code_meta.non_code_nodes.get(&index) {
-                        Some(custom_white_space_or_comment) => custom_white_space_or_comment.format(&indentation),
+                        Some(noncodes) => noncodes
+                            .iter()
+                            .map(|custom_white_space_or_comment| custom_white_space_or_comment.format(&indentation))
+                            .collect::<String>(),
                         None => String::new(),
                     };
                     let end_string = if custom_white_space_or_comment.is_empty() {
@@ -707,30 +714,35 @@ pub struct NonCodeNode {
 impl NonCodeNode {
     pub fn value(&self) -> String {
         match &self.value {
-            NonCodeValue::InlineComment { value } => value.clone(),
-            NonCodeValue::BlockComment { value } => value.clone(),
-            NonCodeValue::NewLineBlockComment { value } => value.clone(),
+            NonCodeValue::InlineComment { value, style: _ } => value.clone(),
+            NonCodeValue::BlockComment { value, style: _ } => value.clone(),
+            NonCodeValue::NewLineBlockComment { value, style: _ } => value.clone(),
             NonCodeValue::NewLine => "\n\n".to_string(),
         }
     }
 
     pub fn format(&self, indentation: &str) -> String {
         match &self.value {
-            NonCodeValue::InlineComment { value } => format!(" // {}\n", value),
-            NonCodeValue::BlockComment { value } => {
+            NonCodeValue::InlineComment {
+                value,
+                style: CommentStyle::Line,
+            } => format!(" // {}\n", value),
+            NonCodeValue::InlineComment {
+                value,
+                style: CommentStyle::Block,
+            } => format!(" /* {} */", value),
+            NonCodeValue::BlockComment { value, style } => {
                 let add_start_new_line = if self.start == 0 { "" } else { "\n" };
-                if value.contains('\n') {
-                    format!("{}{}/* {} */\n", add_start_new_line, indentation, value)
-                } else {
-                    format!("{}{}// {}\n", add_start_new_line, indentation, value)
+                match style {
+                    CommentStyle::Block => format!("{}{}/* {} */", add_start_new_line, indentation, value),
+                    CommentStyle::Line => format!("{}{}// {}\n", add_start_new_line, indentation, value),
                 }
             }
-            NonCodeValue::NewLineBlockComment { value } => {
+            NonCodeValue::NewLineBlockComment { value, style } => {
                 let add_start_new_line = if self.start == 0 { "" } else { "\n\n" };
-                if value.contains('\n') {
-                    format!("{}{}/* {} */\n", add_start_new_line, indentation, value)
-                } else {
-                    format!("{}{}// {}\n", add_start_new_line, indentation, value)
+                match style {
+                    CommentStyle::Block => format!("{}{}/* {} */\n", add_start_new_line, indentation, value),
+                    CommentStyle::Line => format!("{}{}// {}\n", add_start_new_line, indentation, value),
                 }
             }
             NonCodeValue::NewLine => "\n\n".to_string(),
@@ -740,12 +752,25 @@ impl NonCodeNode {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub enum CommentStyle {
+    /// Like // foo
+    Line,
+    /// Like /* foo */
+    Block,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum NonCodeValue {
     /// An inline comment.
-    /// An example of this is the following: `1 + 1 // This is an inline comment`.
+    /// Here are examples:
+    /// `1 + 1 // This is an inline comment`.
+    /// `1 + 1 /* Here's another */`.
     InlineComment {
         value: String,
+        style: CommentStyle,
     },
     /// A block comment.
     /// An example of this is the following:
@@ -759,11 +784,13 @@ pub enum NonCodeValue {
     /// If it did it would be a `NewLineBlockComment`.
     BlockComment {
         value: String,
+        style: CommentStyle,
     },
     /// A block comment that has a new line above it.
     /// The user explicitly added a new line above the block comment.
     NewLineBlockComment {
         value: String,
+        style: CommentStyle,
     },
     // A new line like `\n\n` NOT a new line like `\n`.
     // This is also not a comment.
@@ -774,8 +801,8 @@ pub enum NonCodeValue {
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct NonCodeMeta {
-    pub non_code_nodes: HashMap<usize, NonCodeNode>,
-    pub start: Option<NonCodeNode>,
+    pub non_code_nodes: HashMap<usize, Vec<NonCodeNode>>,
+    pub start: Vec<NonCodeNode>,
 }
 
 // implement Deserialize manually because we to force the keys of non_code_nodes to be usize
@@ -788,19 +815,26 @@ impl<'de> Deserialize<'de> for NonCodeMeta {
         #[derive(Deserialize)]
         #[serde(rename_all = "camelCase")]
         struct NonCodeMetaHelper {
-            non_code_nodes: HashMap<String, NonCodeNode>,
-            start: Option<NonCodeNode>,
+            non_code_nodes: HashMap<String, Vec<NonCodeNode>>,
+            start: Vec<NonCodeNode>,
         }
 
         let helper = NonCodeMetaHelper::deserialize(deserializer)?;
-        let mut non_code_nodes = HashMap::new();
-        for (key, value) in helper.non_code_nodes {
-            non_code_nodes.insert(key.parse().map_err(serde::de::Error::custom)?, value);
-        }
+        let non_code_nodes = helper
+            .non_code_nodes
+            .into_iter()
+            .map(|(key, value)| Ok((key.parse().map_err(serde::de::Error::custom)?, value)))
+            .collect::<Result<HashMap<_, _>, _>>()?;
         Ok(NonCodeMeta {
             non_code_nodes,
             start: helper.start,
         })
+    }
+}
+
+impl NonCodeMeta {
+    pub fn insert(&mut self, i: usize, new: NonCodeNode) {
+        self.non_code_nodes.entry(i).or_default().push(new);
     }
 }
 
@@ -2385,7 +2419,9 @@ impl PipeExpression {
                 let mut s = statement.recast(options, indentation_level + 1, true);
                 let non_code_meta = self.non_code_meta.clone();
                 if let Some(non_code_meta_value) = non_code_meta.non_code_nodes.get(&index) {
-                    s += non_code_meta_value.format(&indentation).trim_end_matches('\n')
+                    for val in non_code_meta_value {
+                        s += val.format(&indentation).trim_end_matches('\n')
+                    }
                 }
 
                 if index != self.body.len() - 1 {
@@ -2869,13 +2905,32 @@ show(part001)"#;
             recasted,
             r#"fn myFn = () => {
   // this is a comment
-  const yo = { a: { b: { c: '123' } } }
-  /* block
+  const yo = { a: { b: { c: '123' } } } /* block
   comment */
+
   const key = 'c'
   // this is also a comment
   return things
 }
+"#
+        );
+    }
+    #[test]
+    fn test_recast_comment_at_start() {
+        let test_program = r#"
+/* comment at start */
+
+const mySk1 = startSketchAt([0, 0])"#;
+        let tokens = crate::token::lexer(test_program);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"/* comment at start */
+
+const mySk1 = startSketchAt([0, 0])
 "#
         );
     }
@@ -2913,14 +2968,13 @@ const mySk1 = startSketchOn('XY')
   |> lineTo({ to: [0, 1], tag: 'myTag' }, %)
   |> lineTo([1, 1], %)
   /* and
-  here
-
-a comment between pipe expression statements */
+  here */
+  // a comment between pipe expression statements
   |> rx(90, %)
   // and another with just white space between others below
   |> ry(45, %)
   |> rx(45, %)
-// one more for good measure
+  // one more for good measure
 "#
         );
     }
@@ -2988,16 +3042,19 @@ const things = "things"
         let program = parser.ast().unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
-        assert_eq!(recasted.trim(), some_program_string.trim());
+        let expected = some_program_string.trim();
+        // Currently new parser removes an empty line
+        let actual = recasted.trim();
+        assert_eq!(actual, expected);
     }
 
     #[test]
     fn test_recast_comment_tokens_inside_strings() {
         let some_program_string = r#"let b = {
-  "end": 141,
-  "start": 125,
-  "type": "NonCodeNode",
-  "value": "
+  end: 141,
+  start: 125,
+  type: "NonCodeNode",
+  value: "
  // a comment
    "
 }"#;

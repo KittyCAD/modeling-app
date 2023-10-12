@@ -29,7 +29,7 @@ class KclManager {
     end: 0,
     nonCodeMeta: {
       nonCodeNodes: {},
-      start: null,
+      start: [],
     },
   }
   private _programMemory: ProgramMemory = {
@@ -220,7 +220,7 @@ class KclManager {
       end: 0,
       nonCodeMeta: {
         nonCodeNodes: {},
-        start: null,
+        start: [],
       },
     }
     this._programMemory = {
