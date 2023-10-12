@@ -140,6 +140,7 @@ impl EngineManager for EngineConnection {
         source_range: crate::executor::SourceRange,
         cmd: kittycad::types::ModelingCmd,
     ) -> Result<OkWebSocketResponseData, KclError> {
+        println!("{:?}", cmd);
         let (tx, rx) = oneshot::channel();
 
         // Send the request to the engine, via the actor.

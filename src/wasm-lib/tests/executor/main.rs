@@ -437,7 +437,7 @@ async fn serial_test_holes() {
     let code = r#"fn circle = (pos, radius) => {
     const sg = startSketchOn('XY')
       |> startProfileAt(pos, %)
-      |> tangentialArc({radius: radius, offset: 90}, %)
+      |> arc({angle_end: 360, angle_start: 0, radius: radius}, %)
       |> close(%)
 
     return sg
@@ -449,8 +449,8 @@ const square = startSketchOn('XY')
   |> line([10, 0], %)
   |> line([0, -10], %)
   |> close(%)
-  |> hole(circle([2, -2], 2), %)
-  |> hole(circle([2, -8], 2), %)
+  |> hole(circle([2, -2], 1), %)
+  |> hole(circle([2, -8], 1), %)
   |> extrude(2, %)
 
 show(square)

@@ -1412,8 +1412,6 @@ async fn inner_hole(
     sketch_group: Box<SketchGroup>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
-    println!("hole_sketch_group: {:?}", hole_sketch_group);
-    println!("sketch_group: {:?}", sketch_group);
     args.send_modeling_cmd(
         uuid::Uuid::new_v4(),
         ModelingCmd::Solid2DAddHole {
