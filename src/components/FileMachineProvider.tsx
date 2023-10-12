@@ -21,6 +21,7 @@ import {
   writeFile,
 } from '@tauri-apps/api/fs'
 import { FILE_EXT, readProject } from 'lib/tauriFS'
+import { isTauri } from 'lib/isTauri'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -66,7 +67,9 @@ export const FileMachineProvider = ({
     },
     services: {
       readFiles: async (context: ContextFrom<typeof fileMachine>) => {
-        const newFiles = await readProject(context.project.path)
+        const newFiles = isTauri()
+          ? await readProject(context.project.path)
+          : []
         return {
           ...context.project,
           children: newFiles,
