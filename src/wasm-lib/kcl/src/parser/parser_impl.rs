@@ -1657,6 +1657,12 @@ const mySk1 = startSketchAt([0, 0])"#;
     #[test]
     fn check_parsers_work_the_same() {
         for (i, test_program) in [
+            r#"const boxSketch = startSketchAt([0, 0])
+    |> line([0, 10], %)
+    |> tangentalArc([-5, 5], %)
+    |> line([5, -15], %)
+    |> extrude(10, %)
+"#,
             "const myVar = min(5 , -legLen(5, 4))", // Space before comma
             "const myVar = min(-legLen(5, 4), 5)",
             "const myVar = 5 + 6 |> myFunc(45, %)",
