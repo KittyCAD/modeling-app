@@ -162,8 +162,8 @@ export const TextEditor = ({
       .map(({ type, range }) => {
         const hasOverlap = Object.entries(
           engineCommandManager.artifactMap || {}
-        ).filter(([_, { range }]) => {
-          return isOverlap(range, range)
+        ).filter(([_, { range: artifactRange }]) => {
+          return isOverlap(artifactRange, range)
         })
         if (hasOverlap.length) {
           return {
