@@ -26,6 +26,7 @@
 	* [`extrude`](#extrude)
 	* [`floor`](#floor)
 	* [`getExtrudeWallTransform`](#getExtrudeWallTransform)
+	* [`hole`](#hole)
 	* [`lastSegX`](#lastSegX)
 	* [`lastSegY`](#lastSegY)
 	* [`legAngX`](#legAngX)
@@ -2018,6 +2019,219 @@ getExtrudeWallTransform(surface_name: string, extrude_group: ExtrudeGroup) -> Ex
 {
 	position: [number, number, number],
 	rotation: [number, number, number, number],
+}
+```
+
+
+
+### hole
+
+Use a sketch to cut a hole in another sketch.
+
+
+
+```
+hole(hole_sketch_group: SketchGroup, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Arguments
+
+* `hole_sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
+	// The position of the sketch group.
+	position: [number, number, number],
+	// The rotation of the sketch group.
+	rotation: [number, number, number, number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+}],
+}
+```
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
+	// The position of the sketch group.
+	position: [number, number, number],
+	// The rotation of the sketch group.
+	rotation: [number, number, number, number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+}],
+}
+```
+
+#### Returns
+
+* `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
+	// The position of the sketch group.
+	position: [number, number, number],
+	// The rotation of the sketch group.
+	rotation: [number, number, number, number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+}],
 }
 ```
 

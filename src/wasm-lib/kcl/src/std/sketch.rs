@@ -1395,6 +1395,50 @@ async fn inner_bezier_curve(
     Ok(new_sketch_group)
 }
 
+/// Use a sketch to cut a hole in another sketch.
+pub async fn hole(args: Args) -> Result<MemoryItem, KclError> {
+    let (hole_sketch_group, sketch_group): (Box<SketchGroup>, Box<SketchGroup>) = args.get_sketch_groups()?;
+
+    let new_sketch_group = inner_hole(hole_sketch_group, sketch_group, args).await?;
+    Ok(MemoryItem::SketchGroup(new_sketch_group))
+}
+
+/// Use a sketch to cut a hole in another sketch.
+#[stdlib {
+    name = "hole",
+}]
+async fn inner_hole(
+    hole_sketch_group: Box<SketchGroup>,
+    sketch_group: Box<SketchGroup>,
+    args: Args,
+) -> Result<Box<SketchGroup>, KclError> {
+    //TODO: batch these (once we have batch)
+
+    args.send_modeling_cmd(
+        uuid::Uuid::new_v4(),
+        ModelingCmd::Solid2DAddHole {
+            object_id: sketch_group.id,
+            hole_id: hole_sketch_group.id,
+        },
+    )
+    .await?;
+
+    //suggestion (mike)
+    //we also hide the source hole since its essentially "consumed" by this operation
+    args.send_modeling_cmd(
+        uuid::Uuid::new_v4(),
+        ModelingCmd::ObjectVisible {
+            object_id: hole_sketch_group.id,
+            hidden: true,
+        },
+    )
+    .await?;
+
+    // TODO: should we modify the sketch group to include the hole data, probably?
+
+    Ok(sketch_group)
+}
+
 #[cfg(test)]
 mod tests {
 
