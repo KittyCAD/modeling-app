@@ -921,7 +921,7 @@ export function changeSketchArguments(
   sourceRange: SourceRange,
   args: [number, number],
   from: [number, number]
-): { modifiedAst: Program } {
+): { modifiedAst: Program; pathToNode: PathToNode } {
   const _node = { ...node }
   const thePath = getNodePathFromSourceRange(_node, sourceRange)
   const { node: callExpression, shallowPath } = getNodeFromPath<CallExpression>(
@@ -941,7 +941,7 @@ export function changeSketchArguments(
     })
   }
 
-  throw new Error('not a sketch line helper')
+  throw new Error(`not a sketch line helper: ${callExpression?.callee?.name}`)
 }
 
 interface CreateLineFnCallArgs {

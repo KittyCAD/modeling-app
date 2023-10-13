@@ -14,10 +14,11 @@ import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
 import { Models } from '@kittycad/lib'
 import { getNodeFromPath } from 'lang/queryAst'
-import { Program, VariableDeclarator, modifyAstForSketch } from 'lang/wasm'
+import { VariableDeclarator, recast, parse, CallExpression } from 'lang/wasm'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { kclManager, useKclContext } from 'lang/KclSinglton'
+import { changeSketchArguments } from 'lang/std/sketch'
 
 export const Stream = ({ className = '' }) => {
   const [isLoading, setIsLoading] = useState(true)
@@ -84,6 +85,9 @@ export const Stream = ({ className = '' }) => {
     }
 
     if (state.matches('Sketch.Move Tool')) {
+      if (state.matches('Sketch.Move Tool.No move')) {
+        return
+      }
       engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
@@ -265,8 +269,6 @@ export const Stream = ({ className = '' }) => {
           context.sketchPathToNode,
           'VariableDeclarator'
         ).node
-        const variableName = varDec?.id?.name
-
         // Get the current plane string for plane we are on.
         let currentPlaneString = ''
         if (context.sketchPlaneId === kclManager.getPlaneId('xy')) {
@@ -282,14 +284,73 @@ export const Stream = ({ className = '' }) => {
         // error.
         if (currentPlaneString === '') return
 
-        const updatedAst: Program = await modifyAstForSketch(
-          engineCommandManager,
-          kclManager.ast,
-          variableName,
-          currentPlaneString,
-          context.sketchEnginePathId
+        const pathInfo = await engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'path_get_info',
+            path_id: context.sketchEnginePathId,
+          },
+        })
+        const segmentsWithMappings = (
+          pathInfo?.data?.data?.segments as { command_id: string }[]
         )
-        kclManager.executeAstMock(updatedAst, true)
+          .filter(({ command_id }) => {
+            return command_id && engineCommandManager.artifactMap[command_id]
+          })
+          .map(({ command_id }) => command_id)
+        const segment2dInfo = await Promise.all(
+          segmentsWithMappings.map(async (segmentId) => {
+            const response = await engineCommandManager.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: {
+                type: 'curve_get_control_points',
+                curve_id: segmentId,
+              },
+            })
+            const controlPoints: [
+              { x: number; y: number },
+              { x: number; y: number }
+            ] = response.data.data.control_points
+            return {
+              controlPoints,
+              segmentId,
+            }
+          })
+        )
+
+        let modifiedAst = { ...kclManager.ast }
+        let code = kclManager.code
+        for (const controlPoint of segment2dInfo) {
+          const range =
+            engineCommandManager.artifactMap[controlPoint.segmentId].range
+          if (!range) continue
+          const from = controlPoint.controlPoints[0]
+          const to = controlPoint.controlPoints[1]
+          const modded = changeSketchArguments(
+            modifiedAst,
+            kclManager.programMemory,
+            range,
+            [to.x, to.y],
+            [from.x, from.y]
+          )
+          modifiedAst = modded.modifiedAst
+
+          // update artifact map ranges now that we have updated the ast.
+          code = recast(modded.modifiedAst)
+          const astWithCurrentRanges = parse(code)
+          const updateNode = getNodeFromPath<CallExpression>(
+            astWithCurrentRanges,
+            modded.pathToNode
+          ).node
+          engineCommandManager.artifactMap[controlPoint.segmentId].range = [
+            updateNode.start,
+            updateNode.end,
+          ]
+        }
+
+        kclManager.executeAstMock(modifiedAst, true)
       })
     }
 

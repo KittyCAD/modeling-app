@@ -82,6 +82,8 @@
 "Selection contains point": "Deselect point";
 "Selection is not empty": "Deselect all";
 "Selection is one face": "Enter sketch";
+"can move": "";
+"can move with execute": "";
 "has no selection": "extrude intent";
 "has valid extrude selection": "" | "extrude intent";
 "is editing existing sketch": "";
@@ -92,7 +94,8 @@
 "Get length info": "Constrain length";
 "Get vertical info": "Constrain vertical distance";
         };
-        matchesStates: "Sketch" | "Sketch no face" | "Sketch.Await angle info" | "Sketch.Await horizontal distance info" | "Sketch.Await length info" | "Sketch.Await vertical distance info" | "Sketch.Line Tool" | "Sketch.Line Tool.Done" | "Sketch.Line Tool.Init" | "Sketch.Line Tool.No Points" | "Sketch.Line Tool.Point Added" | "Sketch.Line Tool.Segment Added" | "Sketch.Move Tool" | "Sketch.SketchIdle" | "awaiting selection" | "checking selection" | "idle" | { "Sketch"?: "Await angle info" | "Await horizontal distance info" | "Await length info" | "Await vertical distance info" | "Line Tool" | "Move Tool" | "SketchIdle" | { "Line Tool"?: "Done" | "Init" | "No Points" | "Point Added" | "Segment Added"; }; };
+        matchesStates: "Sketch" | "Sketch no face" | "Sketch.Await angle info" | "Sketch.Await horizontal distance info" | "Sketch.Await length info" | "Sketch.Await vertical distance info" | "Sketch.Line Tool" | "Sketch.Line Tool.Done" | "Sketch.Line Tool.Init" | "Sketch.Line Tool.No Points" | "Sketch.Line Tool.Point Added" | "Sketch.Line Tool.Segment Added" | "Sketch.Move Tool" | "Sketch.Move Tool.Move init" | "Sketch.Move Tool.Move with execute" | "Sketch.Move Tool.Move without re-execute" | "Sketch.Move Tool.No move" | "Sketch.SketchIdle" | "awaiting selection" | "checking selection" | "idle" | { "Sketch"?: "Await angle info" | "Await horizontal distance info" | "Await length info" | "Await vertical distance info" | "Line Tool" | "Move Tool" | "SketchIdle" | { "Line Tool"?: "Done" | "Init" | "No Points" | "Point Added" | "Segment Added";
+"Move Tool"?: "Move init" | "Move with execute" | "Move without re-execute" | "No move"; }; };
         tags: never;
       }
   
