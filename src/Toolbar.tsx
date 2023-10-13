@@ -102,7 +102,7 @@ export const Toolbar = () => {
             onClick={() =>
               state.matches('Sketch.Line Tool')
                 ? send('CancelSketch')
-                : send('Equip tool')
+                : send('Equip line tool')
             }
             className={
               'group ' +
@@ -113,6 +113,25 @@ export const Toolbar = () => {
           >
             <ActionIcon icon="line" className="!p-0.5" size="md" />
             Line
+          </button>
+        )}
+        {state.matches('Sketch') && !state.matches('idle') && (
+          <button
+            onClick={() =>
+              state.matches('Sketch.TangentialArc Tool')
+                ? send('CancelSketch')
+                : send('Equip tangential arc tool')
+            }
+            className={
+              'group ' +
+              (state.matches('Sketch.TangentialArc Tool')
+                ? '!text-fern-70 !bg-fern-10 !dark:text-fern-20 !border-fern-50'
+                : '')
+            }
+          >
+            {/* TODO: icon */}
+            <ActionIcon icon="line" className="!p-0.5" size="md" />
+            Tangential Arc
           </button>
         )}
         {state.matches('Sketch') && (

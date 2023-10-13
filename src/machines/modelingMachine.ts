@@ -110,7 +110,8 @@ export const modelingMachine = createMachine(
               segmentId?: string
             }
           }
-        | { type: 'Equip tool' }
+        | { type: 'Equip line tool' }
+        | { type: 'Equip tangential arc tool' }
         | { type: 'Equip move tool' }
         | { type: 'Set radius' }
         | { type: 'Complete line' }
@@ -309,9 +310,14 @@ export const modelingMachine = createMachine(
                 ],
               },
 
-              'Equip tool': {
+              'Equip line tool': {
                 target: 'Line Tool',
-                actions: 'set tool line',
+                actions: 'set tool',
+              },
+
+              'Equip tangential arc tool': {
+                target: 'TangentialArc Tool',
+                actions: 'set tool tangential arc',
               },
 
               'Equip move tool': 'Move Tool',
@@ -413,6 +419,73 @@ export const modelingMachine = createMachine(
                     target: 'Segment Added',
                     internal: true,
                     actions: 'set tool',
+                  },
+                },
+              },
+
+              Init: {
+                always: [
+                  {
+                    target: 'Segment Added',
+                    cond: 'is editing existing sketch',
+                  },
+                  'No Points',
+                ],
+              },
+
+              'No Points': {
+                on: {
+                  'Add point': 'Point Added',
+                },
+              },
+            },
+
+            // invoke: [
+            //   {
+            //     src: 'createLine',
+            //     id: 'Create line',
+            //     onDone: 'SketchIdle',
+            //   },
+            // ],
+            initial: 'Init',
+
+            on: {
+              'Equip move tool': 'Move Tool',
+            },
+          },
+
+          'TangentialArc Tool': {
+            states: {
+              Done: {
+                type: 'final',
+              },
+
+              'Point Added': {
+                on: {
+                  'Add point': {
+                    target: 'Segment Added',
+                    actions: ['AST start new sketch'],
+                  },
+                },
+              },
+
+              'Segment Added': {
+                on: {
+                  'Add point': {
+                    target: 'Segment Added',
+                    internal: true,
+                    actions: ['AST add tangential arc segment'],
+                  },
+
+                  'Complete line': {
+                    target: 'Done',
+                    actions: ['Modify AST', 'Update code selection cursors'],
+                  },
+
+                  'Equip new tool': {
+                    target: 'Segment Added',
+                    internal: true,
+                    actions: 'set tool tangential arc',
                   },
                 },
               },
@@ -798,13 +871,22 @@ export const modelingMachine = createMachine(
           sketchPlaneId: planeId,
         }
       }),
-      'set tool line': () =>
+      'set tool': () =>
         engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
             type: 'set_tool',
             tool: 'sketch_line',
+          },
+        }),
+      'set tool tangential arc': () =>
+        engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'set_tool',
+            tool: 'sketch_tangential_arc',
           },
         }),
       'equip select': () =>

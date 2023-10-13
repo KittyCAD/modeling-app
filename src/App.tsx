@@ -113,7 +113,10 @@ export function App() {
 
     const newCmdId = uuidv4()
     if (buttonDownInStream === undefined) {
-      if (state.matches('Sketch.Line Tool')) {
+      if (
+        state.matches('Sketch.Line Tool') ||
+        state.matches('Sketch.TangentialArc Tool')
+      ) {
         debounceSocketSend({
           type: 'modeling_cmd_req',
           cmd_id: newCmdId,

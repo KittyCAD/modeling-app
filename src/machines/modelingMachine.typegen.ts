@@ -23,13 +23,14 @@
 "Get vertical info": "done.invoke.get-vertical-info";
         };
         missingImplementations: {
-          actions: "AST add line segment" | "AST start new sketch" | "Modify AST" | "Set selection" | "Update code selection cursors" | "create path" | "set tool" | "show default planes" | "sketch exit execute" | "toast extrude failed";
+          actions: "AST add line segment" | "AST add tangential arc segment" | "AST start new sketch" | "Modify AST" | "Set selection" | "Update code selection cursors" | "create path" | "show default planes" | "sketch exit execute" | "toast extrude failed";
           delays: never;
           guards: "Selection contains axis" | "Selection contains edge" | "Selection contains face" | "Selection contains line" | "Selection contains point" | "Selection is not empty" | "Selection is one face";
           services: "Get angle info" | "Get horizontal info" | "Get length info" | "Get vertical info";
         };
         eventsCausingActions: {
           "AST add line segment": "Add point";
+"AST add tangential arc segment": "Add point";
 "AST extrude": "" | "extrude intent";
 "AST start new sketch": "Add point";
 "Add to code-based selection": "Deselect point" | "Deselect segment" | "Select all" | "Select edge" | "Select face" | "Select point" | "Select segment";
@@ -54,9 +55,9 @@
 "reset sketch metadata": "Cancel" | "Select default plane";
 "set default plane id": "Select default plane";
 "set sketch metadata": "Enter sketch";
-"set tool": "Equip new tool";
-"set tool line": "Equip tool";
+"set tool": "Equip line tool" | "Equip new tool";
 "set tool move": "Equip move tool" | "Set selection";
+"set tool tangential arc": "Equip new tool" | "Equip tangential arc tool";
 "show default planes": "Enter sketch";
 "sketch exit execute": "Cancel" | "Complete line" | "xstate.stop";
 "sketch mode enabled": "Enter sketch" | "Select default plane";
@@ -94,8 +95,9 @@
 "Get length info": "Constrain length";
 "Get vertical info": "Constrain vertical distance";
         };
-        matchesStates: "Sketch" | "Sketch no face" | "Sketch.Await angle info" | "Sketch.Await horizontal distance info" | "Sketch.Await length info" | "Sketch.Await vertical distance info" | "Sketch.Line Tool" | "Sketch.Line Tool.Done" | "Sketch.Line Tool.Init" | "Sketch.Line Tool.No Points" | "Sketch.Line Tool.Point Added" | "Sketch.Line Tool.Segment Added" | "Sketch.Move Tool" | "Sketch.Move Tool.Move init" | "Sketch.Move Tool.Move with execute" | "Sketch.Move Tool.Move without re-execute" | "Sketch.Move Tool.No move" | "Sketch.SketchIdle" | "awaiting selection" | "checking selection" | "idle" | { "Sketch"?: "Await angle info" | "Await horizontal distance info" | "Await length info" | "Await vertical distance info" | "Line Tool" | "Move Tool" | "SketchIdle" | { "Line Tool"?: "Done" | "Init" | "No Points" | "Point Added" | "Segment Added";
-"Move Tool"?: "Move init" | "Move with execute" | "Move without re-execute" | "No move"; }; };
+        matchesStates: "Sketch" | "Sketch no face" | "Sketch.Await angle info" | "Sketch.Await horizontal distance info" | "Sketch.Await length info" | "Sketch.Await vertical distance info" | "Sketch.Line Tool" | "Sketch.Line Tool.Done" | "Sketch.Line Tool.Init" | "Sketch.Line Tool.No Points" | "Sketch.Line Tool.Point Added" | "Sketch.Line Tool.Segment Added" | "Sketch.Move Tool" | "Sketch.Move Tool.Move init" | "Sketch.Move Tool.Move with execute" | "Sketch.Move Tool.Move without re-execute" | "Sketch.Move Tool.No move" | "Sketch.SketchIdle" | "Sketch.TangentialArc Tool" | "Sketch.TangentialArc Tool.Done" | "Sketch.TangentialArc Tool.Init" | "Sketch.TangentialArc Tool.No Points" | "Sketch.TangentialArc Tool.Point Added" | "Sketch.TangentialArc Tool.Segment Added" | "awaiting selection" | "checking selection" | "idle" | { "Sketch"?: "Await angle info" | "Await horizontal distance info" | "Await length info" | "Await vertical distance info" | "Line Tool" | "Move Tool" | "SketchIdle" | "TangentialArc Tool" | { "Line Tool"?: "Done" | "Init" | "No Points" | "Point Added" | "Segment Added";
+"Move Tool"?: "Move init" | "Move with execute" | "Move without re-execute" | "No move";
+"TangentialArc Tool"?: "Done" | "Init" | "No Points" | "Point Added" | "Segment Added"; }; };
         tags: never;
       }
   
