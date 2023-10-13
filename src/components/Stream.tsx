@@ -228,7 +228,10 @@ export const Stream = ({ className = '' }) => {
           })
           const coords: { x: number; y: number }[] =
             curve.data.data.control_points
-          send({ type: 'Add point', data: { coords, axis: null } })
+          send({
+            type: 'Add point',
+            data: { coords, axis: null, segmentId: entities_modified[0] },
+          })
         }
       })
     } else if (

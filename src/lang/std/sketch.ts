@@ -209,7 +209,11 @@ export const line: SketchLineHelper = {
       pipe.body[callIndex] = callExp
       return {
         modifiedAst: _node,
-        pathToNode,
+        pathToNode: [
+          ...pathToNode,
+          ['body', 'PipeExpression'],
+          [callIndex, 'CallExpression'],
+        ],
         valueUsedInTransform,
       }
     }
@@ -220,6 +224,14 @@ export const line: SketchLineHelper = {
     ])
     if (pipe.type === 'PipeExpression') {
       pipe.body = [...pipe.body, callExp]
+      return {
+        modifiedAst: _node,
+        pathToNode: [
+          ...pathToNode,
+          ['body', 'PipeExpression'],
+          [pipe.body.length - 1, 'CallExpression'],
+        ],
+      }
     } else {
       varDec.init = createPipeExpression([varDec.init, callExp])
     }
@@ -959,6 +971,7 @@ export function addNewSketchLn({
   pathToNode,
 }: Omit<CreateLineFnCallArgs, 'from'>): {
   modifiedAst: Program
+  pathToNode: PathToNode
 } {
   const node = JSON.parse(JSON.stringify(_node))
   const { add, updateArgs } = sketchLineHelperMap?.[fnName] || {}

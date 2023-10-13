@@ -22,6 +22,7 @@ import {
   Program,
   VariableDeclarator,
   PipeExpression,
+  CallExpression,
 } from 'lang/wasm'
 import { getNodeFromPath } from 'lang/queryAst'
 import {
@@ -173,7 +174,10 @@ export const ModelingMachineProvider = ({
           }
         }
       ),
-      'AST add line segment': ({ sketchPathToNode }, { data: { coords } }) => {
+      'AST add line segment': (
+        { sketchPathToNode, sketchEnginePathId },
+        { data: { coords, segmentId } }
+      ) => {
         if (!sketchPathToNode) return
         const lastCoord = coords[coords.length - 1]
 
@@ -194,15 +198,30 @@ export const ModelingMachineProvider = ({
 
         let _modifiedAst: Program
         if (!isClose) {
-          _modifiedAst = addNewSketchLn({
+          const newSketchLn = addNewSketchLn({
             node: kclManager.ast,
             programMemory: kclManager.programMemory,
             to: [lastCoord.x, lastCoord.y],
             fnName: 'line',
             pathToNode: sketchPathToNode,
-          }).modifiedAst
-          kclManager.executeAstMock(_modifiedAst, true)
-          // kclManager.updateAst(_modifiedAst, false)
+          })
+          const _modifiedAst = newSketchLn.modifiedAst
+          kclManager.executeAstMock(_modifiedAst, true).then(() => {
+            const lineCallExp = getNodeFromPath<CallExpression>(
+              kclManager.ast,
+              newSketchLn.pathToNode
+            ).node
+            if (segmentId)
+              engineCommandManager.artifactMap[segmentId] = {
+                type: 'result',
+                range: [lineCallExp.start, lineCallExp.end],
+                commandType: 'extend_path',
+                parentId: sketchEnginePathId,
+                data: null,
+                raw: {} as any,
+              }
+          })
+
         } else {
           _modifiedAst = addCloseToPipe({
             node: kclManager.ast,
