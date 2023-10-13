@@ -85,7 +85,10 @@ export const Stream = ({ className = '' }) => {
     }
 
     if (state.matches('Sketch.Move Tool')) {
-      if (state.matches('Sketch.Move Tool.No move')) {
+      if (
+        state.matches('Sketch.Move Tool.No move') ||
+        state.matches('Sketch.Move Tool.Move with execute')
+      ) {
         return
       }
       engineCommandManager.sendSceneCommand({
