@@ -16,7 +16,14 @@ import { engineCommandManager } from 'lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
 import { addStartSketch } from 'lang/modifyAst'
 import { roundOff } from 'lib/utils'
-import { recast, parse, Program, VariableDeclarator } from 'lang/wasm'
+import {
+  recast,
+  parse,
+  Program,
+  VariableDeclarator,
+  PipeExpression,
+  CallExpression,
+} from 'lang/wasm'
 import { getNodeFromPath } from 'lang/queryAst'
 import {
   addCloseToPipe,
@@ -104,34 +111,73 @@ export const ModelingMachineProvider = ({
           return sketchUuid
         },
       }),
-      'AST start new sketch': assign((_, { data: { coords, axis } }) => {
-        // Something really weird must have happened for this to happen.
-        if (!axis) {
-          console.error('axis is undefined for starting a new sketch')
-          return {}
+      'AST start new sketch': assign(
+        ({ sketchEnginePathId }, { data: { coords, axis, segmentId } }) => {
+          if (!axis) {
+            // Something really weird must have happened for this to happen.
+            console.error('axis is undefined for starting a new sketch')
+            return {}
+          }
+          if (!segmentId) {
+            // Something really weird must have happened for this to happen.
+            console.error('segmentId is undefined for starting a new sketch')
+            return {}
+          }
+
+          const _addStartSketch = addStartSketch(
+            kclManager.ast,
+            axis,
+            [roundOff(coords[0].x), roundOff(coords[0].y)],
+            [
+              roundOff(coords[1].x - coords[0].x),
+              roundOff(coords[1].y - coords[0].y),
+            ]
+          )
+          const _modifiedAst = _addStartSketch.modifiedAst
+          const _pathToNode = _addStartSketch.pathToNode
+          const newCode = recast(_modifiedAst)
+          const astWithUpdatedSource = parse(newCode)
+          const updatedPipeNode = getNodeFromPath<PipeExpression>(
+            astWithUpdatedSource,
+            _pathToNode
+          ).node
+          const startProfileAtCallExp = updatedPipeNode.body.find(
+            (exp) =>
+              exp.type === 'CallExpression' &&
+              exp.callee.name === 'startProfileAt'
+          )
+          if (startProfileAtCallExp)
+            engineCommandManager.artifactMap[sketchEnginePathId] = {
+              type: 'result',
+              range: [startProfileAtCallExp.start, startProfileAtCallExp.end],
+              commandType: 'extend_path',
+              data: null,
+              raw: {} as any,
+            }
+          const lineCallExp = updatedPipeNode.body.find(
+            (exp) => exp.type === 'CallExpression' && exp.callee.name === 'line'
+          )
+          if (lineCallExp)
+            engineCommandManager.artifactMap[segmentId] = {
+              type: 'result',
+              range: [lineCallExp.start, lineCallExp.end],
+              commandType: 'extend_path',
+              parentId: sketchEnginePathId,
+              data: null,
+              raw: {} as any,
+            }
+
+          kclManager.executeAstMock(astWithUpdatedSource, true)
+
+          return {
+            sketchPathToNode: _pathToNode,
+          }
         }
-
-        const _addStartSketch = addStartSketch(
-          kclManager.ast,
-          axis,
-          [roundOff(coords[0].x), roundOff(coords[0].y)],
-          [
-            roundOff(coords[1].x - coords[0].x),
-            roundOff(coords[1].y - coords[0].y),
-          ]
-        )
-        const _modifiedAst = _addStartSketch.modifiedAst
-        const _pathToNode = _addStartSketch.pathToNode
-        const newCode = recast(_modifiedAst)
-        const astWithUpdatedSource = parse(newCode)
-
-        kclManager.executeAstMock(astWithUpdatedSource, true)
-
-        return {
-          sketchPathToNode: _pathToNode,
-        }
-      }),
-      'AST add line segment': ({ sketchPathToNode }, { data: { coords } }) => {
+      ),
+      'AST add line segment': (
+        { sketchPathToNode, sketchEnginePathId },
+        { data: { coords, segmentId } }
+      ) => {
         if (!sketchPathToNode) return
         const lastCoord = coords[coords.length - 1]
 
@@ -152,15 +198,29 @@ export const ModelingMachineProvider = ({
 
         let _modifiedAst: Program
         if (!isClose) {
-          _modifiedAst = addNewSketchLn({
+          const newSketchLn = addNewSketchLn({
             node: kclManager.ast,
             programMemory: kclManager.programMemory,
             to: [lastCoord.x, lastCoord.y],
             fnName: 'line',
             pathToNode: sketchPathToNode,
-          }).modifiedAst
-          kclManager.executeAstMock(_modifiedAst, true)
-          // kclManager.updateAst(_modifiedAst, false)
+          })
+          const _modifiedAst = newSketchLn.modifiedAst
+          kclManager.executeAstMock(_modifiedAst, true).then(() => {
+            const lineCallExp = getNodeFromPath<CallExpression>(
+              kclManager.ast,
+              newSketchLn.pathToNode
+            ).node
+            if (segmentId)
+              engineCommandManager.artifactMap[segmentId] = {
+                type: 'result',
+                range: [lineCallExp.start, lineCallExp.end],
+                commandType: 'extend_path',
+                parentId: sketchEnginePathId,
+                data: null,
+                raw: {} as any,
+              }
+          })
         } else {
           _modifiedAst = addCloseToPipe({
             node: kclManager.ast,
@@ -325,7 +385,7 @@ export const ModelingMachineProvider = ({
         })
       }
     })
-  }, [kclManager.defaultPlanes, modelingSend, modelingState.nextEvents])
+  }, [modelingSend, modelingState.nextEvents])
 
   // useStateMachineCommands({
   //   state: settingsState,
