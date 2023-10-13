@@ -86,5 +86,10 @@ export function useEngineConnectionSubscriptions() {
       unSubHover()
       unSubClick()
     }
-  }, [engineCommandManager, setHighlightRange, highlightRange])
+  }, [
+    engineCommandManager,
+    setHighlightRange,
+    highlightRange,
+    context.sketchEnginePathId,
+  ])
 }
