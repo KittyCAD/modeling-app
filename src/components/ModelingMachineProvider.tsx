@@ -221,7 +221,6 @@ export const ModelingMachineProvider = ({
                 raw: {} as any,
               }
           })
-
         } else {
           _modifiedAst = addCloseToPipe({
             node: kclManager.ast,
