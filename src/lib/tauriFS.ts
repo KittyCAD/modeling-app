@@ -176,6 +176,38 @@ export function isRelevantFileOrDir(fileOrDir: FileEntry) {
   )
 }
 
+// Deeply sort the files and directories in a project like VS Code does:
+// The main.kcl file is always first, then files, then directories
+// Files and directories are sorted alphabetically
+export function sortProject(project: FileEntry[]): FileEntry[] {
+  const sortedProject = project.sort((a, b) => {
+    if (a.name === PROJECT_ENTRYPOINT) {
+      return -1
+    } else if (b.name === PROJECT_ENTRYPOINT) {
+      return 1
+    } else if (a.children === undefined && b.children !== undefined) {
+      return -1
+    } else if (a.children !== undefined && b.children === undefined) {
+      return 1
+    } else if (a.name && b.name) {
+      return a.name.localeCompare(b.name)
+    } else {
+      return 0
+    }
+  })
+
+  return sortedProject.map((fileOrDir: FileEntry) => {
+    if ('children' in fileOrDir && fileOrDir.children !== undefined) {
+      return {
+        ...fileOrDir,
+        children: sortProject(fileOrDir.children),
+      }
+    } else {
+      return fileOrDir
+    }
+  })
+}
+
 // Creates a new file in the default directory with the default project name
 // Returns the path to the new file
 export async function createNewProject(
