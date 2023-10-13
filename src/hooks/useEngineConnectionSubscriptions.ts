@@ -17,7 +17,7 @@ export function useEngineConnectionSubscriptions() {
       callback: ({ data }) => {
         if (data?.entity_id) {
           const sourceRange =
-            engineCommandManager.sourceRangeMap[data.entity_id]
+            engineCommandManager.artifactMap?.[data.entity_id]?.range
           setHighlightRange(sourceRange)
         } else if (
           !highlightRange ||
@@ -37,7 +37,8 @@ export function useEngineConnectionSubscriptions() {
           })
           return
         }
-        const sourceRange = engineCommandManager.sourceRangeMap[data.entity_id]
+        const sourceRange =
+          engineCommandManager.artifactMap[data.entity_id]?.range
         send({
           type: 'Set selection',
           data: {

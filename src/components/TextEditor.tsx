@@ -161,9 +161,9 @@ export const TextEditor = ({
     const idBasedSelections = codeBasedSelections
       .map(({ type, range }) => {
         const hasOverlap = Object.entries(
-          engineCommandManager.sourceRangeMap || {}
-        ).filter(([_, sourceRange]) => {
-          return isOverlap(sourceRange, range)
+          engineCommandManager.artifactMap || {}
+        ).filter(([_, { range }]) => {
+          return isOverlap(range, range)
         })
         if (hasOverlap.length) {
           return {

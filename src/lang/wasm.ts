@@ -7,11 +7,7 @@ import init, {
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
-import {
-  EngineCommandManager,
-  ArtifactMap,
-  SourceRangeMap,
-} from './std/engineConnection'
+import { EngineCommandManager } from './std/engineConnection'
 import { ProgramReturn } from '../wasm-lib/kcl/bindings/ProgramReturn'
 import { MemoryItem } from '../wasm-lib/kcl/bindings/MemoryItem'
 import type { Program } from '../wasm-lib/kcl/bindings/Program'
@@ -119,13 +115,7 @@ export const executor = async (
   node: Program,
   programMemory: ProgramMemory = { root: {}, return: null },
   engineCommandManager: EngineCommandManager,
-  planes: DefaultPlanes,
-  // work around while the gemotry is still be stored on the frontend
-  // will be removed when the stream UI is added.
-  tempMapCallback: (a: {
-    artifactMap: ArtifactMap
-    sourceRangeMap: SourceRangeMap
-  }) => void = () => {}
+  planes: DefaultPlanes
 ): Promise<ProgramMemory> => {
   engineCommandManager.startNewSession()
   const _programMemory = await _executor(
@@ -134,9 +124,7 @@ export const executor = async (
     engineCommandManager,
     planes
   )
-  const { artifactMap, sourceRangeMap } =
-    await engineCommandManager.waitForAllCommands()
-  tempMapCallback({ artifactMap, sourceRangeMap })
+  await engineCommandManager.waitForAllCommands()
 
   engineCommandManager.endSession()
   return _programMemory

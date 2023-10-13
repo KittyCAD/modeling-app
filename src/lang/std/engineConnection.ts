@@ -35,9 +35,6 @@ interface PendingCommand extends CommandInfo {
 export interface ArtifactMap {
   [key: string]: ResultCommand | PendingCommand | FailedCommand
 }
-export interface SourceRangeMap {
-  [key: string]: SourceRange
-}
 
 interface NewTrackArgs {
   conn: EngineConnection
@@ -588,7 +585,6 @@ interface Subscription<T extends ModelTypes> {
 
 export class EngineCommandManager {
   artifactMap: ArtifactMap = {}
-  sourceRangeMap: SourceRangeMap = {}
   outSequence = 1
   inSequence = 1
   engineConnection?: EngineConnection
@@ -849,7 +845,6 @@ export class EngineCommandManager {
   }
   startNewSession() {
     this.artifactMap = {}
-    this.sourceRangeMap = {}
   }
   subscribeTo<T extends ModelTypes>({
     event,
@@ -999,7 +994,6 @@ export class EngineCommandManager {
     if (this.engineConnection === undefined) {
       return Promise.resolve()
     }
-    this.sourceRangeMap[id] = range
 
     if (!this.engineConnection?.isReady()) {
       return Promise.resolve()
@@ -1077,7 +1071,6 @@ export class EngineCommandManager {
   }
   async waitForAllCommands(): Promise<{
     artifactMap: ArtifactMap
-    sourceRangeMap: SourceRangeMap
   }> {
     const pendingCommands = Object.values(this.artifactMap).filter(
       ({ type }) => type === 'pending'
@@ -1087,7 +1080,6 @@ export class EngineCommandManager {
 
     return {
       artifactMap: this.artifactMap,
-      sourceRangeMap: this.sourceRangeMap,
     }
   }
   private async initPlanes() {
