@@ -1412,11 +1412,24 @@ async fn inner_hole(
     sketch_group: Box<SketchGroup>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
+    //TODO: batch these (once we have batch)
+
     args.send_modeling_cmd(
         uuid::Uuid::new_v4(),
         ModelingCmd::Solid2DAddHole {
             object_id: sketch_group.id,
             hole_id: hole_sketch_group.id,
+        },
+    )
+    .await?;
+
+    //suggestion (mike)
+    //we also hide the source hole since its essentially "consumed" by this operation
+    args.send_modeling_cmd(
+        uuid::Uuid::new_v4(),
+        ModelingCmd::ObjectVisible {
+            object_id: hole_sketch_group.id,
+            hidden: true,
         },
     )
     .await?;
