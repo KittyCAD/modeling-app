@@ -6,9 +6,6 @@ import {
   Program,
   _executor,
   ProgramMemory,
-  Position,
-  PathToNode,
-  Rotation,
   SourceRange,
 } from './lang/wasm'
 import { enginelessExecutor } from './lib/testHelpers'
@@ -316,7 +313,7 @@ export async function executeAst({
           defaultPlanes
         ))
 
-    await engineCommandManager.waitForAllCommands(ast, programMemory)
+    await engineCommandManager.waitForAllCommands()
     return {
       logs: [],
       errors: [],
