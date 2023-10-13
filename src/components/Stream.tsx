@@ -209,7 +209,14 @@ export const Stream = ({ className = '' }) => {
             }
           }
 
-          send({ type: 'Add point', data: { coords, axis: currentAxis } })
+          send({
+            type: 'Add point',
+            data: {
+              coords,
+              axis: currentAxis,
+              segmentId: entities_modified[0],
+            },
+          })
         } else if (state.matches('Sketch.Line Tool.Segment Added')) {
           const curve = await engineCommandManager.sendSceneCommand({
             type: 'modeling_cmd_req',

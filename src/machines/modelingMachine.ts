@@ -106,6 +106,7 @@ export const modelingMachine = createMachine(
             data: {
               coords: { x: number; y: number }[]
               axis: 'xy' | 'xz' | 'yz' | '-xy' | '-xz' | '-yz' | null
+              segmentId?: string
             }
           }
         | { type: 'Equip tool' }
