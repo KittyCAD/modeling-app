@@ -80,7 +80,8 @@ const ProjectSidebarMenu = ({
         leaveTo="opacity-0 -translate-x-4"
         as={Fragment}
       >
-        <Popover.Panel className="fixed inset-0 right-auto z-30 w-64 flex flex-col bg-chalkboard-10 dark:bg-chalkboard-100 border border-energy-100 dark:border-energy-100/50 shadow-md rounded-r-lg">
+        <Popover.Panel className="fixed inset-0 right-auto z-30 w-64 h-screen max-h-screen grid grid-cols-1 bg-chalkboard-10 dark:bg-chalkboard-100 border border-energy-100 dark:border-energy-100/50 shadow-md rounded-r-lg"
+        style={{gridTemplateRows: 'auto 1fr auto'}}>
           {({ close }) => (
             <>
               <div className="flex items-center gap-4 px-4 py-3 bg-energy-10/25 dark:bg-energy-110">
@@ -111,7 +112,7 @@ const ProjectSidebarMenu = ({
               {isTauri() ? (
                 <FileTree
                   file={file}
-                  className="overflow-visible flex-1 flex flex-col border-0 border-y border-energy-40 dark:border-energy-70"
+                  className="overflow-hidden border-0 border-y border-energy-40 dark:border-energy-70"
                   closePanel={close}
                 />
               ) : (

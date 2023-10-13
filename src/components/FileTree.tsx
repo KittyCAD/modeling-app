@@ -122,7 +122,7 @@ const FileTreeItem = ({
     >
       {!isRenaming ? (
         <button
-          className="flex gap-1 items-center py-1 rounded-none border-none p-0 m-0 text-sm w-full hover:!bg-transparent text-left !text-inherit"
+          className="flex gap-1 items-center py-0.5 rounded-none border-none p-0 m-0 text-sm w-full hover:!bg-transparent text-left !text-inherit"
           style={{ paddingInlineStart: getIndentationCSS(level) }}
           onDoubleClick={openFile}
           onClick={(e) => e.currentTarget.focus()}
@@ -153,7 +153,7 @@ const FileTreeItem = ({
           {!isRenaming ? (
             <Disclosure.Button
               className={
-                ' group border-none text-sm rounded-none p-0 m-0 flex items-center justify-start w-full py-1 text-chalkboard-70 dark:text-chalkboard-30 hover:bg-energy-10/50 dark:hover:bg-energy-90/50' +
+                ' group border-none text-sm rounded-none p-0 m-0 flex items-center justify-start w-full py-0.5 text-chalkboard-70 dark:text-chalkboard-30 hover:bg-energy-10/50 dark:hover:bg-energy-90/50' +
                 (context.selectedDirectory.path.includes(fileOrDir.path)
                   ? ' group-focus-within:bg-chalkboard-20/50 dark:group-focus-within:bg-chalkboard-80/20 hover:group-focus-within:bg-chalkboard-20 dark:hover:group-focus-within:bg-chalkboard-80/20 group-active:bg-chalkboard-20/50 dark:group-active:bg-chalkboard-80/20 hover:group-active:bg-chalkboard-20/50 dark:hover:group-active:bg-chalkboard-80/20'
                   : '')
@@ -276,7 +276,7 @@ export const FileTree = ({
           className="!p-0 border-none bg-transparent !outline-none"
           onClick={createFile}
         >
-          <Tooltip position="blockEnd" delay={750}>
+          <Tooltip position="inlineStart" delay={750}>
             Create File
           </Tooltip>
         </ActionButton>
@@ -291,27 +291,29 @@ export const FileTree = ({
           className="!p-0 border-none bg-transparent !outline-none"
           onClick={createFolder}
         >
-          <Tooltip position="blockEnd" delay={750}>
+          <Tooltip position="inlineStart" delay={750}>
             Create Folder
           </Tooltip>
         </ActionButton>
       </div>
-      <ul
-        className="flex-1 m-0 p-0 text-sm"
-        onClickCapture={(e) => {
-          send({ type: 'Set selected directory', data: context.project })
-        }}
-      >
-        {sortProject(context.project.children || []).map((fileOrDir) => (
-          <FileTreeItem
-            project={context.project}
-            currentFile={file}
-            fileOrDir={fileOrDir}
-            closePanel={closePanel}
-            key={fileOrDir.path}
-          />
-        ))}
-      </ul>
+      <div className="overflow-auto max-h-full pb-12">
+        <ul
+          className="m-0 p-0 text-sm"
+          onClickCapture={(e) => {
+            send({ type: 'Set selected directory', data: context.project })
+          }}
+        >
+          {sortProject(context.project.children || []).map((fileOrDir) => (
+            <FileTreeItem
+              project={context.project}
+              currentFile={file}
+              fileOrDir={fileOrDir}
+              closePanel={closePanel}
+              key={fileOrDir.path}
+            />
+          ))}
+        </ul>
+      </div>
     </div>
   )
 }
