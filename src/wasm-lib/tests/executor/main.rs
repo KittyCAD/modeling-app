@@ -431,3 +431,76 @@ const part004 = startSketchOn('YZ')
     let result = execute_and_snapshot(code).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/lots_of_planes.png", &result, 0.999);
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_holes() {
+    let code = r#"fn circle = (pos, radius) => {
+    const sg = startSketchOn('XY')
+      |> startProfileAt(pos, %)
+      |> arc({angle_end: 360, angle_start: 0, radius: radius}, %)
+      |> close(%)
+
+    return sg
+}
+
+const square = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %)
+  |> close(%)
+  |> hole(circle([2, 2], .5), %)
+  |> hole(circle([2, 8], .5), %)
+  |> extrude(2, %)
+
+show(square)
+"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/holes.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_rounded_with_holes() {
+    let code = r#"fn circle = (pos, radius) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt([pos[0] + radius, pos[1]], %)
+    |> arc({
+       angle_end: 360,
+       angle_start: 0,
+       radius: radius
+     }, %)
+    |> close(%)
+  return sg
+}
+
+fn roundedRectangle = (pos, w, l, cornerRadius) => {
+  const rr = startSketchOn('XY')
+    |> startProfileAt([pos[0] - w/2, 0], %)
+    |> lineTo([pos[0] - w/2, pos[1] - l/2 + cornerRadius], %)
+    |> tangentialArcTo([pos[0] - w/2 + cornerRadius, pos[1] - l/2], %)
+    |> lineTo([pos[0] + w/2 - cornerRadius, pos[1] - l/2], %)
+    |> tangentialArcTo([pos[0] + w/2, pos[1] - l/2 + cornerRadius], %)
+    |> lineTo([pos[0] + w/2, pos[1] + l/2 - cornerRadius], %)
+    |> tangentialArcTo([pos[0] + w/2 - cornerRadius, pos[1] + l/2], %)
+    |> lineTo([pos[0] - w/2 + cornerRadius, pos[1] + l/2], %)
+    |> tangentialArcTo([pos[0] - w/2, pos[1] + l/2 - cornerRadius], %)
+    |> close(%)
+  return rr
+}
+
+const holeRadius = 1
+const holeIndex = 6
+
+const part = roundedRectangle([0, 0], 20, 20, 4)
+  |> hole(circle([-holeIndex, holeIndex], holeRadius), %)
+  |> hole(circle([holeIndex, holeIndex], holeRadius), %)
+  |> hole(circle([-holeIndex, -holeIndex], holeRadius), %)
+  |> hole(circle([holeIndex, -holeIndex], holeRadius), %)
+  |> extrude(2, %)
+
+show(part)"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/rounded_with_holes.png", &result, 0.999);
+}
