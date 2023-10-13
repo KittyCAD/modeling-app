@@ -385,7 +385,7 @@ export const ModelingMachineProvider = ({
         })
       }
     })
-  }, [kclManager.defaultPlanes, modelingSend, modelingState.nextEvents])
+  }, [modelingSend, modelingState.nextEvents])
 
   // useStateMachineCommands({
   //   state: settingsState,
