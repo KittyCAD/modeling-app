@@ -56,7 +56,7 @@
 "set sketch metadata": "Enter sketch";
 "set tool": "Equip new tool";
 "set tool line": "Equip tool";
-"set tool move": "Equip move tool";
+"set tool move": "Equip move tool" | "Set selection";
 "show default planes": "Enter sketch";
 "sketch exit execute": "Cancel" | "Complete line" | "xstate.stop";
 "sketch mode enabled": "Enter sketch" | "Select default plane";
