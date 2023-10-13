@@ -1658,9 +1658,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.2.31"
+version = "0.2.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "539b323537b877fc8dd130362b8f1af9af8051c19208bb8bfd816ab7c330f2bb"
+checksum = "c2b6004ce120245048ab47f2eda8f5f253221b5c37f2aceb62e9412eb150110a"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3712,9 +3712,9 @@ dependencies = [
 
 [[package]]
 name = "tauri"
-version = "1.5.1"
+version = "1.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0238c5063bf9613054149a1b6bce4935922e532b7d8211f36989a490a79806be"
+checksum = "9bfe673cf125ef364d6f56b15e8ce7537d9ca7e4dae1cf6fbbdeed2e024db3d9"
 dependencies = [
  "anyhow",
  "base64 0.21.2",

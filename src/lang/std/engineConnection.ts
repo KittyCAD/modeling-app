@@ -765,7 +765,6 @@ export class EngineCommandManager {
     streamWidth: number
     streamHeight: number
   }) {
-    console.log('handleResize', streamWidth, streamHeight)
     if (!this.engineConnection?.isReady()) {
       return
     }

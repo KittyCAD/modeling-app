@@ -52,8 +52,8 @@
 	* [`startSketchAt`](#startSketchAt)
 	* [`startSketchOn`](#startSketchOn)
 	* [`tan`](#tan)
-	* [`tangentalArc`](#tangentalArc)
-	* [`tangentalArcTo`](#tangentalArcTo)
+	* [`tangentialArc`](#tangentialArc)
+	* [`tangentialArcTo`](#tangentialArcTo)
 	* [`tau`](#tau)
 	* [`xLine`](#xLine)
 	* [`xLineTo`](#xLineTo)
@@ -3520,19 +3520,19 @@ tan(num: number) -> number
 
 
 
-### tangentalArc
+### tangentialArc
 
 Draw an arc.
 
 
 
 ```
-tangentalArc(data: TangentalArcData, sketch_group: SketchGroup) -> SketchGroup
+tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
 #### Arguments
 
-* `data`: `TangentalArcData` - Data to draw a tangental arc.
+* `data`: `TangentialArcData` - Data to draw a tangential arc.
 ```
 {
 	// Offset of the arc, in degrees.
@@ -3684,19 +3684,19 @@ tangentalArc(data: TangentalArcData, sketch_group: SketchGroup) -> SketchGroup
 
 
 
-### tangentalArcTo
+### tangentialArcTo
 
 Draw an arc.
 
 
 
 ```
-tangentalArcTo(data: TangentalArcToData, sketch_group: SketchGroup) -> SketchGroup
+tangentialArcTo(data: TangentialArcToData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
 #### Arguments
 
-* `data`: `TangentalArcToData` - Data to draw a tangental arc to a specific point.
+* `data`: `TangentialArcToData` - Data to draw a tangential arc to a specific point.
 ```
 {
 	// The tag.

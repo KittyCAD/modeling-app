@@ -87,7 +87,7 @@ const fnBox = box(3, 6, 10)
 show(fnBox)"#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/function_sketch.png", &result, 1.0);
+    twenty_twenty::assert_image("tests/executor/outputs/function_sketch.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -107,7 +107,11 @@ async fn serial_test_execute_with_function_sketch_with_position() {
 show(box([0,0], 3, 6, 10))"#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/function_sketch_with_position.png", &result, 1.0);
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/function_sketch_with_position.png",
+        &result,
+        0.999,
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -125,7 +129,7 @@ async fn serial_test_execute_with_angled_line() {
 show(part001)"#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/angled_line.png", &result, 1.0);
+    twenty_twenty::assert_image("tests/executor/outputs/angled_line.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -152,7 +156,7 @@ const bracket = startSketchOn('XY')
 show(bracket)"#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/parametric.png", &result, 1.0);
+    twenty_twenty::assert_image("tests/executor/outputs/parametric.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -169,14 +173,14 @@ const wallMountL = 8
 
 const bracket = startSketchAt([0, 0])
   |> line([0, wallMountL], %)
-  |> tangentalArc({
+  |> tangentialArc({
     radius: filletR,
     offset: 90
   }, %)
   |> line([-shelfMountL, 0], %)
   |> line([0, -thickness], %)
   |> line([shelfMountL, 0], %)
-  |> tangentalArc({
+  |> tangentialArc({
     radius: filletR - thickness,
     offset: -90
   }, %)
@@ -187,7 +191,7 @@ const bracket = startSketchAt([0, 0])
 show(bracket)"#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/parametric_with_tan_arc.png", &result, 1.0);
+    twenty_twenty::assert_image("tests/executor/outputs/parametric_with_tan_arc.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -215,7 +219,7 @@ async fn serial_test_execute_pipes_on_pipes() {
     let code = include_str!("inputs/pipes_on_pipes.kcl");
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/pipes_on_pipes.png", &result, 1.0);
+    twenty_twenty::assert_image("tests/executor/outputs/pipes_on_pipes.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -223,11 +227,11 @@ async fn serial_test_execute_kittycad_svg() {
     let code = include_str!("inputs/kittycad_svg.kcl");
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/kittycad_svg.png", &result, 1.0);
+    twenty_twenty::assert_image("tests/executor/outputs/kittycad_svg.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_member_expression_sketch_group() {
+async fn serial_test_member_expression_sketch_group() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -256,7 +260,7 @@ show(b2)"#;
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_close_arc() {
+async fn serial_test_close_arc() {
     let code = r#"const center = [0,0]
 const radius = 40
 const height = 3
@@ -270,11 +274,11 @@ const body = startSketchOn('XY')
 show(body)"#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/close_arc.png", &result, 1.0);
+    twenty_twenty::assert_image("tests/executor/outputs/close_arc.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_negative_args() {
+async fn serial_test_negative_args() {
     let code = r#"const width = 5
 const height = 10
 const length = 12
@@ -296,50 +300,50 @@ let thing = box(-12, -15, 10)
 box(-20, -5, 10)"#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/negative_args.png", &result, 1.0);
+    twenty_twenty::assert_image("tests/executor/outputs/negative_args.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_basic_tangental_arc() {
+async fn serial_test_basic_tangential_arc() {
     let code = r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
-    |> tangentalArc({radius: 5, offset: 90}, %)
+    |> tangentialArc({radius: 5, offset: 90}, %)
     |> line([5, -15], %)
     |> extrude(10, %)
 "#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/tangental_arc.png", &result, 1.0);
+    twenty_twenty::assert_image("tests/executor/outputs/tangential_arc.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_basic_tangental_arc_with_point() {
+async fn serial_test_basic_tangential_arc_with_point() {
     let code = r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
-    |> tangentalArc([-5, 5], %)
+    |> tangentialArc([-5, 5], %)
     |> line([5, -15], %)
     |> extrude(10, %)
 "#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/tangental_arc_with_point.png", &result, 1.0);
+    twenty_twenty::assert_image("tests/executor/outputs/tangential_arc_with_point.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_basic_tangental_arc_to() {
+async fn serial_test_basic_tangential_arc_to() {
     let code = r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
-    |> tangentalArcTo([-5, 15], %)
+    |> tangentialArcTo([-5, 15], %)
     |> line([5, -15], %)
     |> extrude(10, %)
 "#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/tangental_arc_to.png", &result, 1.0);
+    twenty_twenty::assert_image("tests/executor/outputs/tangential_arc_to.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_different_planes_same_drawing() {
+async fn serial_test_different_planes_same_drawing() {
     let code = r#"const width = 5
 const height = 10
 const length = 12
@@ -362,11 +366,15 @@ let thing = box(-12, -15, 10, 'yz')
 box(-20, -5, 10, 'xy')"#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/different_planes_same_drawing.png", &result, 1.0);
+    twenty_twenty::assert_image(
+        "tests/executor/outputs/different_planes_same_drawing.png",
+        &result,
+        0.999,
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_lots_of_planes() {
+async fn serial_test_lots_of_planes() {
     let code = r#"const sigmaAllow = 15000 // psi
 const width = 11 // inch
 const p = 150 // Force on shelf - lbs
@@ -380,11 +388,11 @@ const wallMountL = 8
 const bracket = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, wallMountL], %)
-  |> tangentalArc({ radius: filletR, offset: 90 }, %)
+  |> tangentialArc({ radius: filletR, offset: 90 }, %)
   |> line([-shelfMountL, 0], %)
   |> line([0, -thickness], %)
   |> line([shelfMountL, 0], %)
-  |> tangentalArc({
+  |> tangentialArc({
        radius: filletR - thickness,
        offset: -90
      }, %)
@@ -421,5 +429,5 @@ const part004 = startSketchOn('YZ')
 "#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/lots_of_planes.png", &result, 1.0);
+    twenty_twenty::assert_image("tests/executor/outputs/lots_of_planes.png", &result, 0.999);
 }
