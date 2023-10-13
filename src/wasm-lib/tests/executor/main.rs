@@ -173,14 +173,14 @@ const wallMountL = 8
 
 const bracket = startSketchAt([0, 0])
   |> line([0, wallMountL], %)
-  |> tangentalArc({
+  |> tangentialArc({
     radius: filletR,
     offset: 90
   }, %)
   |> line([-shelfMountL, 0], %)
   |> line([0, -thickness], %)
   |> line([shelfMountL, 0], %)
-  |> tangentalArc({
+  |> tangentialArc({
     radius: filletR - thickness,
     offset: -90
   }, %)
@@ -231,7 +231,7 @@ async fn serial_test_execute_kittycad_svg() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_member_expression_sketch_group() {
+async fn serial_test_member_expression_sketch_group() {
     let code = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
@@ -260,7 +260,7 @@ show(b2)"#;
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_close_arc() {
+async fn serial_test_close_arc() {
     let code = r#"const center = [0,0]
 const radius = 40
 const height = 3
@@ -278,7 +278,7 @@ show(body)"#;
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_negative_args() {
+async fn serial_test_negative_args() {
     let code = r#"const width = 5
 const height = 10
 const length = 12
@@ -304,46 +304,46 @@ box(-20, -5, 10)"#;
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_basic_tangental_arc() {
+async fn serial_test_basic_tangential_arc() {
     let code = r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
-    |> tangentalArc({radius: 5, offset: 90}, %)
+    |> tangentialArc({radius: 5, offset: 90}, %)
     |> line([5, -15], %)
     |> extrude(10, %)
 "#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/tangental_arc.png", &result, 0.999);
+    twenty_twenty::assert_image("tests/executor/outputs/tangential_arc.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_basic_tangental_arc_with_point() {
+async fn serial_test_basic_tangential_arc_with_point() {
     let code = r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
-    |> tangentalArc([-5, 5], %)
+    |> tangentialArc([-5, 5], %)
     |> line([5, -15], %)
     |> extrude(10, %)
 "#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/tangental_arc_with_point.png", &result, 0.999);
+    twenty_twenty::assert_image("tests/executor/outputs/tangential_arc_with_point.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_basic_tangental_arc_to() {
+async fn serial_test_basic_tangential_arc_to() {
     let code = r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
-    |> tangentalArcTo([-5, 15], %)
+    |> tangentialArcTo([-5, 15], %)
     |> line([5, -15], %)
     |> extrude(10, %)
 "#;
 
     let result = execute_and_snapshot(code).await.unwrap();
-    twenty_twenty::assert_image("tests/executor/outputs/tangental_arc_to.png", &result, 0.999);
+    twenty_twenty::assert_image("tests/executor/outputs/tangential_arc_to.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_different_planes_same_drawing() {
+async fn serial_test_different_planes_same_drawing() {
     let code = r#"const width = 5
 const height = 10
 const length = 12
@@ -374,7 +374,7 @@ box(-20, -5, 10, 'xy')"#;
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn test_lots_of_planes() {
+async fn serial_test_lots_of_planes() {
     let code = r#"const sigmaAllow = 15000 // psi
 const width = 11 // inch
 const p = 150 // Force on shelf - lbs
@@ -388,11 +388,11 @@ const wallMountL = 8
 const bracket = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, wallMountL], %)
-  |> tangentalArc({ radius: filletR, offset: 90 }, %)
+  |> tangentialArc({ radius: filletR, offset: 90 }, %)
   |> line([-shelfMountL, 0], %)
   |> line([0, -thickness], %)
   |> line([shelfMountL, 0], %)
-  |> tangentalArc({
+  |> tangentialArc({
        radius: filletR - thickness,
        offset: -90
      }, %)
@@ -430,4 +430,77 @@ const part004 = startSketchOn('YZ')
 
     let result = execute_and_snapshot(code).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/lots_of_planes.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_holes() {
+    let code = r#"fn circle = (pos, radius) => {
+    const sg = startSketchOn('XY')
+      |> startProfileAt(pos, %)
+      |> arc({angle_end: 360, angle_start: 0, radius: radius}, %)
+      |> close(%)
+
+    return sg
+}
+
+const square = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %)
+  |> close(%)
+  |> hole(circle([2, 2], .5), %)
+  |> hole(circle([2, 8], .5), %)
+  |> extrude(2, %)
+
+show(square)
+"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/holes.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_rounded_with_holes() {
+    let code = r#"fn circle = (pos, radius) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt([pos[0] + radius, pos[1]], %)
+    |> arc({
+       angle_end: 360,
+       angle_start: 0,
+       radius: radius
+     }, %)
+    |> close(%)
+  return sg
+}
+
+fn roundedRectangle = (pos, w, l, cornerRadius) => {
+  const rr = startSketchOn('XY')
+    |> startProfileAt([pos[0] - w/2, 0], %)
+    |> lineTo([pos[0] - w/2, pos[1] - l/2 + cornerRadius], %)
+    |> tangentialArcTo([pos[0] - w/2 + cornerRadius, pos[1] - l/2], %)
+    |> lineTo([pos[0] + w/2 - cornerRadius, pos[1] - l/2], %)
+    |> tangentialArcTo([pos[0] + w/2, pos[1] - l/2 + cornerRadius], %)
+    |> lineTo([pos[0] + w/2, pos[1] + l/2 - cornerRadius], %)
+    |> tangentialArcTo([pos[0] + w/2 - cornerRadius, pos[1] + l/2], %)
+    |> lineTo([pos[0] - w/2 + cornerRadius, pos[1] + l/2], %)
+    |> tangentialArcTo([pos[0] - w/2, pos[1] + l/2 - cornerRadius], %)
+    |> close(%)
+  return rr
+}
+
+const holeRadius = 1
+const holeIndex = 6
+
+const part = roundedRectangle([0, 0], 20, 20, 4)
+  |> hole(circle([-holeIndex, holeIndex], holeRadius), %)
+  |> hole(circle([holeIndex, holeIndex], holeRadius), %)
+  |> hole(circle([-holeIndex, -holeIndex], holeRadius), %)
+  |> hole(circle([holeIndex, -holeIndex], holeRadius), %)
+  |> extrude(2, %)
+
+show(part)"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/rounded_with_holes.png", &result, 0.999);
 }

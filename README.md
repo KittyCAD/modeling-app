@@ -29,6 +29,7 @@ The 3D view in KittyCAD Modeling App is just a video stream from our hosted geom
   - [React](https://react.dev/)
   - [Headless UI](https://headlessui.com/)
   - [TailwindCSS](https://tailwindcss.com/)
+  - [XState](https://xstate.js.org/)
 - Networking
   - WebSockets (via [KittyCAD TS client](https://github.com/KittyCAD/kittycad.ts))
 - Code Editor
@@ -56,7 +57,7 @@ yarn install
 followed by:
 
 ```
-yarn build:wasm
+yarn build:wasm-dev
 ```
 
 That will build the WASM binary and put in the `public` dir (though gitignored)
@@ -97,7 +98,7 @@ but you will need to have install ffmpeg prior to.
 
 ## Tauri
 
-To spin up up tauri dev, `yarn install` and `yarn build:wasm` need to have been done before hand then
+To spin up up tauri dev, `yarn install` and `yarn build:wasm-dev` need to have been done before hand then
 
 ```
 yarn tauri dev

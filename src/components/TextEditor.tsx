@@ -11,7 +11,7 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
 import { Themes } from 'lib/theme'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { linter, lintGutter } from '@codemirror/lint'
 import { Selections, useStore } from 'useStore'
 import { LanguageServerClient } from 'editor/lsp'
@@ -159,16 +159,17 @@ export const TextEditor = ({
     const idBasedSelections = codeBasedSelections
       .map(({ type, range }) => {
         const hasOverlap = Object.entries(
-          engineCommandManager.sourceRangeMap || {}
-        ).filter(([_, sourceRange]) => {
-          return isOverlap(sourceRange, range)
+          engineCommandManager.artifactMap || {}
+        ).filter(([_, { range: artifactRange }]) => {
+          return artifactRange && isOverlap(artifactRange, range)
         })
         if (hasOverlap.length) {
           return {
             type,
-            id: hasOverlap[0][0],
+            id: hasOverlap?.[0]?.[0],
           }
         }
+        return null
       })
       .filter(Boolean) as any
 
@@ -267,7 +268,7 @@ export const TextEditor = ({
     }
 
     return extensions
-  }, [kclLSP, textWrapping])
+  }, [kclLSP, textWrapping, convertCallback])
 
   return (
     <div

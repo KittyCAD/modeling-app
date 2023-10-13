@@ -1390,7 +1390,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.1.33"
+version = "0.1.35"
 dependencies = [
  "anyhow",
  "async-recursion",
@@ -1426,9 +1426,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.2.32"
+version = "0.2.33"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c2b6004ce120245048ab47f2eda8f5f253221b5c37f2aceb62e9412eb150110a"
+checksum = "d341a81a4dfef43460d395c87d86c17e24affb96db0e7f4a35e8688f0e092344"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1733,7 +1733,7 @@ checksum = "0ab1bc2a289d34bd04a330323ac98a1b4bc82c9d9fcb1e66b63caa84da26b575"
 [[package]]
 name = "openapitor"
 version = "0.0.9"
-source = "git+https://github.com/KittyCAD/kittycad.rs?branch=main#c122a9b1d6afe51c25e545b5e0bbeb91d367e6d2"
+source = "git+https://github.com/KittyCAD/kittycad.rs?branch=main#7e087ecaee2fdfdbdbe8648e769213130f777c45"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -1914,7 +1914,7 @@ dependencies = [
  "bincode",
  "either",
  "fnv",
- "itertools 0.11.0",
+ "itertools 0.10.5",
  "lazy_static",
  "nom",
  "quick-xml",
@@ -2549,9 +2549,9 @@ dependencies = [
 
 [[package]]
 name = "serde"
-version = "1.0.188"
+version = "1.0.189"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cf9e0fcba69a370eed61bcf2b728575f726b50b55cba78064753d708ddc7549e"
+checksum = "8e422a44e74ad4001bdc8eede9a4570ab52f71190e9c076d14369f38b9200537"
 dependencies = [
  "serde_derive",
 ]
@@ -2567,9 +2567,9 @@ dependencies = [
 
 [[package]]
 name = "serde_derive"
-version = "1.0.188"
+version = "1.0.189"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4eca7ac642d82aa35b60049a6eccb4be6be75e599bd2e9adb5f875a737654af2"
+checksum = "1e48d1f918009ce3145511378cf68d613e3b3d9137d67272562080d68a2b32d5"
 dependencies = [
  "proc-macro2",
  "quote",
