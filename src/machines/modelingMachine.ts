@@ -312,7 +312,7 @@ export const modelingMachine = createMachine(
 
               'Equip line tool': {
                 target: 'Line Tool',
-                actions: 'set tool',
+                actions: 'set tool line',
               },
 
               'Equip tangential arc tool': {
@@ -871,7 +871,7 @@ export const modelingMachine = createMachine(
           sketchPlaneId: planeId,
         }
       }),
-      'set tool': () =>
+      'set tool line': () =>
         engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),

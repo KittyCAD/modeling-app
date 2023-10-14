@@ -23,7 +23,7 @@
 "Get vertical info": "done.invoke.get-vertical-info";
         };
         missingImplementations: {
-          actions: "AST add line segment" | "AST add tangential arc segment" | "AST start new sketch" | "Modify AST" | "Set selection" | "Update code selection cursors" | "create path" | "show default planes" | "sketch exit execute" | "toast extrude failed";
+          actions: "AST add line segment" | "AST add tangential arc segment" | "AST start new sketch" | "Modify AST" | "Set selection" | "Update code selection cursors" | "create path" | "set tool" | "show default planes" | "sketch exit execute" | "toast extrude failed";
           delays: never;
           guards: "Selection contains axis" | "Selection contains edge" | "Selection contains face" | "Selection contains line" | "Selection contains point" | "Selection is not empty" | "Selection is one face";
           services: "Get angle info" | "Get horizontal info" | "Get length info" | "Get vertical info";
@@ -55,7 +55,8 @@
 "reset sketch metadata": "Cancel" | "Select default plane";
 "set default plane id": "Select default plane";
 "set sketch metadata": "Enter sketch";
-"set tool": "Equip line tool" | "Equip new tool";
+"set tool": "Equip new tool";
+"set tool line": "Equip line tool";
 "set tool move": "Equip move tool" | "Set selection";
 "set tool tangential arc": "Equip new tool" | "Equip tangential arc tool";
 "show default planes": "Enter sketch";
