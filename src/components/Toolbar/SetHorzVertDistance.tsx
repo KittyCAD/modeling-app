@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react'
-import { toolTips, useStore } from '../../useStore'
+import { toolTips } from '../../useStore'
 import { BinaryPart, Program, Value, VariableDeclarator } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
@@ -7,10 +6,8 @@ import {
 } from '../../lang/queryAst'
 import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
 import {
-  TransformInfo,
   transformSecondarySketchLinesTagFirst,
   getTransformInfos,
-  ConstraintType,
   PathToNodeMap,
 } from '../../lang/std/sketchcombos'
 import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
@@ -20,139 +17,6 @@ import { kclManager } from 'lang/KclSinglton'
 import { Selections } from 'useStore'
 
 const getModalInfo = createInfoModal(GetInfoModal)
-
-type ButtonType =
-  | 'setHorzDistance'
-  | 'setVertDistance'
-  | 'alignEndsHorizontally'
-  | 'alignEndsVertically'
-
-const buttonLabels: Record<ButtonType, string> = {
-  setHorzDistance: 'Set Horizontal Distance',
-  setVertDistance: 'Set Vertical Distance',
-  alignEndsHorizontally: 'Align Ends Horizontally',
-  alignEndsVertically: 'Align Ends Vertically',
-}
-
-/*
-export const SetHorzVertDistance = ({
-  buttonType,
-}: {
-  buttonType: ButtonType
-}) => {
-  const { guiMode, selectionRanges, setCursor } = useStore((s) => ({
-    guiMode: s.guiMode,
-    selectionRanges: s.selectionRanges,
-    setCursor: s.setCursor,
-  }))
-  const constraint: ConstraintType =
-    buttonType === 'setHorzDistance' || buttonType === 'setVertDistance'
-      ? buttonType
-      : buttonType === 'alignEndsHorizontally'
-      ? 'setVertDistance'
-      : 'setHorzDistance'
-  const [enable, setEnable] = useState(false)
-  const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
-  useEffect(() => {
-    const { transforms, enabled } = horzVertDistanceInfo({
-      selectionRanges,
-      constraint,
-    })
-    setTransformInfos(transforms)
-    setEnable(enabled)
-  }, [guiMode, selectionRanges])
-  if (guiMode.mode !== 'sketch') return null
-
-  const isAlign =
-    buttonType === 'alignEndsHorizontally' ||
-    buttonType === 'alignEndsVertically'
-
-  return (
-    <button
-      onClick={async () => {
-        if (!transformInfos) return
-        const { modifiedAst, tagInfo, valueUsedInTransform, pathToNodeMap } =
-          transformSecondarySketchLinesTagFirst({
-            ast: JSON.parse(JSON.stringify(kclManager.ast)),
-            selectionRanges,
-            transformInfos,
-            programMemory: kclManager.programMemory,
-          })
-
-        if (!isAlign) {
-          const {
-            segName,
-            value,
-            valueNode,
-            variableName,
-            newVariableInsertIndex,
-            sign,
-          } = await getModalInfo({
-            segName: tagInfo?.tag,
-            isSegNameEditable: !tagInfo?.isTagExisting,
-            value: valueUsedInTransform,
-            initialVariableName:
-              constraint === 'setHorzDistance' ? 'xDis' : 'yDis',
-          } as any))
-        if (segName === tagInfo?.tag && value === valueUsedInTransform) {
-          kclManager.updateAst(modifiedAst, true, {
-            callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
-          })
-
-          if (
-            segName === tagInfo?.tag &&
-            value ===
-              (valueUsedInTransform === undefined
-                ? ''
-                : String(Math.abs(valueUsedInTransform)))
-          ) {
-            updateAst(modifiedAst, true, {
-              callBack: updateCursors(
-                setCursor,
-                selectionRanges,
-                pathToNodeMap
-              ),
-            })
-          }
-
-          const finalValue = removeDoubleNegatives(
-            valueNode as BinaryPart,
-            sign,
-            variableName
-          )
-
-          const { modifiedAst: _modifiedAst, pathToNodeMap: _pathToNodeMap } =
-            transformSecondarySketchLinesTagFirst({
-              ast: kclManager.ast,
-              selectionRanges,
-              transformInfos,
-              programMemory: kclManager.programMemory,
-              forceSegName: segName,
-              forceValueUsedInTransform: finalValue,
-            })
-
-          if (variableName) {
-            const newBody = [..._modifiedAst.body]
-            newBody.splice(
-              newVariableInsertIndex,
-              0,
-              createVariableDeclaration(variableName, valueNode)
-            )
-            _modifiedAst.body = newBody
-          }
-          kclManager.updateAst(_modifiedAst, true, {
-            callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
-          })
-        }
-      }}
-      disabled={!enable}
-      title={buttonLabels[buttonType]}
-    >
-      {buttonLabels[buttonType]}
-    </button>
-  )
-}
-*/
 
 export function horzVertDistanceInfo({
   selectionRanges,
@@ -236,22 +100,17 @@ export async function applyConstraintHorzVertDistance({
     variableName,
     newVariableInsertIndex,
     sign,
-  } = await
-    getModalInfo({
-      segName: tagInfo?.tag,
-      isSegNameEditable: !tagInfo?.isTagExisting,
-      value: valueUsedInTransform,
-      initialVariableName: constraint === 'setHorzDistance' ? 'xDis' : 'yDis',
-    } as any)
+  } = await getModalInfo({
+    segName: tagInfo?.tag,
+    isSegNameEditable: !tagInfo?.isTagExisting,
+    value: valueUsedInTransform,
+    initialVariableName: constraint === 'setHorzDistance' ? 'xDis' : 'yDis',
+  } as any)
   if (segName === tagInfo?.tag && Number(value) === valueUsedInTransform) {
     return {
       modifiedAst,
       pathToNodeMap,
     }
-    // TODO handle cursor stuff
-    // kclManager.updateAst(modifiedAst, true, {
-    //   callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
-    // })
   } else {
     let finalValue = isAlign
       ? createLiteral(0)
@@ -279,10 +138,6 @@ export async function applyConstraintHorzVertDistance({
       modifiedAst: _modifiedAst,
       pathToNodeMap,
     }
-    // TODO handle cursor stuff
-    // kclManager.updateAst(_modifiedAst, true, {
-    //   callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
-    // })
   }
 }
 
@@ -312,8 +167,4 @@ export function applyConstraintHorzVertAlign({
     modifiedAst: modifiedAst,
     pathToNodeMap,
   }
-  // TODO handle cursor stuff
-  // kclManager.updateAst(_modifiedAst, true, {
-  //   callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
-  // })
 }

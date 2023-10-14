@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react'
-import { toolTips, useStore } from '../../useStore'
+import { toolTips } from '../../useStore'
 import { Program, ProgramMemory, Value } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
@@ -7,66 +6,11 @@ import {
 } from '../../lang/queryAst'
 import {
   PathToNodeMap,
-  TransformInfo,
   getTransformInfos,
   transformAstSketchLines,
 } from '../../lang/std/sketchcombos'
-import { ActionIcon } from 'components/ActionIcon'
-import { sketchButtonClassnames } from 'Toolbar'
 import { kclManager } from 'lang/KclSinglton'
 import { Selections } from 'useStore'
-
-/*
-export const HorzVert = ({
-  horOrVert,
-}: {
-  horOrVert: 'vertical' | 'horizontal'
-}) => {
-  const { guiMode, selectionRanges, setCursor } = useStore((s) => ({
-    guiMode: s.guiMode,
-    selectionRanges: s.selectionRanges,
-    setCursor: s.setCursor,
-  }))
-  const [enableHorz, setEnableHorz] = useState(false)
-  const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
-  useEffect(() => {
-    const { enabled, transforms } = horzVertInfo(selectionRanges, horOrVert)
-    setTransformInfos(transforms)
-    setEnableHorz(enabled)
-  }, [guiMode, selectionRanges])
-  if (guiMode.mode !== 'sketch') return null
-
-  return (
-    <button
-      onClick={() => {
-        if (!transformInfos) return
-        const { modifiedAst, pathToNodeMap } = transformAstSketchLines({
-          ast: kclManager.ast,
-          selectionRanges,
-          transformInfos,
-          programMemory: kclManager.programMemory,
-          referenceSegName: '',
-        })
-        kclManager.updateAst(modifiedAst, true, {
-          callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
-        })
-      }}
-      disabled={!enableHorz}
-      className="group"
-      title={horOrVert === 'horizontal' ? 'Horizontal' : 'Vertical'}
-    >
-      <ActionIcon
-        icon={horOrVert === 'horizontal' ? 'horizontal' : 'vertical'}
-        className="!p-0.5"
-        bgClassName={sketchButtonClassnames.background}
-        iconClassName={sketchButtonClassnames.icon}
-        size="md"
-      />
-      {horOrVert === 'horizontal' ? 'Horizontal' : 'Vertical'}
-    </button>
-  )
-}
-*/
 
 export function horzVertInfo(
   selectionRanges: Selections,
@@ -110,7 +54,4 @@ export function applyConstraintHorzVert(
     programMemory,
     referenceSegName: '',
   })
-  // kclManager.updateAst(modifiedAst, true, {
-  //   callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
-  // })
 }

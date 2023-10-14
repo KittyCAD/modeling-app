@@ -1,6 +1,4 @@
-import { useState, useEffect } from 'react'
-import { create } from 'react-modal-promise'
-import { Selections, toolTips, useStore } from '../../useStore'
+import { Selections, toolTips } from '../../useStore'
 import { BinaryPart, Program, Value, VariableDeclarator } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
@@ -8,7 +6,6 @@ import {
 } from '../../lang/queryAst'
 import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
 import {
-  TransformInfo,
   transformSecondarySketchLinesTagFirst,
   getTransformInfos,
   PathToNodeMap,
@@ -19,89 +16,6 @@ import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { kclManager } from 'lang/KclSinglton'
 
 const getModalInfo = createInfoModal(GetInfoModal)
-
-/*
-export const SetAngleBetween = () => {
-  const { guiMode, selectionRanges, setCursor } = useStore((s) => ({
-    guiMode: s.guiMode,
-    selectionRanges: s.selectionRanges,
-    setCursor: s.setCursor,
-  }))
-  const [enable, setEnable] = useState(false)
-  const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
-  useEffect(() => {
-    const { enabled, transforms } = angleBetweenInfo({ selectionRanges })
-    setTransformInfos(transforms)
-    setEnable(enabled)
-  }, [guiMode, selectionRanges])
-  if (guiMode.mode !== 'sketch') return null
-
-  return (
-    <button
-      onClick={async () => {
-        if (!transformInfos) return
-        const { modifiedAst, tagInfo, valueUsedInTransform, pathToNodeMap } =
-          transformSecondarySketchLinesTagFirst({
-            ast: JSON.parse(JSON.stringify(kclManager.ast)),
-            selectionRanges,
-            transformInfos,
-            programMemory: kclManager.programMemory,
-          })
-        const {
-          segName,
-          value,
-          valueNode,
-          variableName,
-          newVariableInsertIndex,
-          sign,
-        } = await getModalInfo({
-          segName: tagInfo?.tag,
-          isSegNameEditable: !tagInfo?.isTagExisting,
-          value: valueUsedInTransform,
-          initialVariableName: 'angle',
-        } as any)
-        if (segName === tagInfo?.tag && value === valueUsedInTransform) {
-          kclManager.updateAst(modifiedAst, true, {
-            callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
-          })
-        } else {
-          const finalValue = removeDoubleNegatives(
-            valueNode as BinaryPart,
-            sign,
-            variableName
-          )
-          // transform again but forcing certain values
-          const { modifiedAst: _modifiedAst, pathToNodeMap } =
-            transformSecondarySketchLinesTagFirst({
-              ast: kclManager.ast,
-              selectionRanges,
-              transformInfos,
-              programMemory: kclManager.programMemory,
-              forceSegName: segName,
-              forceValueUsedInTransform: finalValue,
-            })
-          if (variableName) {
-            const newBody = [..._modifiedAst.body]
-            newBody.splice(
-              newVariableInsertIndex,
-              0,
-              createVariableDeclaration(variableName, valueNode)
-            )
-            _modifiedAst.body = newBody
-          }
-          kclManager.updateAst(_modifiedAst, true, {
-            callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
-          })
-        }
-      }}
-      disabled={!enable}
-      title="Set Angle Between"
-    >
-      Set Angle Between
-    </button>
-  )
-}
-*/
 
 export function angleBetweenInfo({
   selectionRanges,
@@ -187,10 +101,6 @@ export async function applyConstraintAngleBetween({
       modifiedAst,
       pathToNodeMap,
     }
-    // kclManager.updateAst(modifiedAst, true, {
-    // TODO handle cursor
-    //   callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
-    // })
   }
 
   const finalValue = removeDoubleNegatives(
@@ -221,8 +131,4 @@ export async function applyConstraintAngleBetween({
     modifiedAst: _modifiedAst,
     pathToNodeMap: _pathToNodeMap,
   }
-  // kclManager.updateAst(_modifiedAst, true, {
-  // TODO handle cursor
-  //   callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
-  // })
 }

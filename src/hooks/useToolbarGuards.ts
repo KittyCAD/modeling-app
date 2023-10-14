@@ -1,4 +1,7 @@
-import { SetVarNameModal, createSetVarNameModal } from 'components/SetVarNameModal'
+import {
+  SetVarNameModal,
+  createSetVarNameModal,
+} from 'components/SetVarNameModal'
 import { kclManager } from 'lang/KclSinglton'
 import { moveValueIntoNewVariable } from 'lang/modifyAst'
 import { isNodeSafeToReplace } from 'lang/queryAst'
