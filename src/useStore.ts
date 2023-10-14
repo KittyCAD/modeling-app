@@ -47,6 +47,7 @@ export type ToolTip =
   | 'xLineTo'
   | 'yLineTo'
   | 'angledLineThatIntersects'
+  | 'tangentialArc'
 
 export const toolTips = [
   'sketch_line',

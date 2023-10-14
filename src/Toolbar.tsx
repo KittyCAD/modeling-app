@@ -43,6 +43,7 @@ const sketchFnLabels: Record<ToolTip | 'sketch_line' | 'move', string> = {
   yLine: 'Vertical Line',
   xLineTo: 'Horizontal Line to Point',
   yLineTo: 'Vertical Line to Point',
+  tangentialArc: 'Tangential Arc',
 }
 
 export const Toolbar = () => {

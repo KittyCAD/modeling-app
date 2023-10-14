@@ -269,7 +269,7 @@ export const ModelingMachineProvider = ({
             node: kclManager.ast,
             programMemory: kclManager.programMemory,
             to: [lastCoord.x, lastCoord.y],
-            fnName: 'line',
+            fnName: 'tangentialArc',
             pathToNode: sketchPathToNode,
           })
           const _modifiedAst = newSketchLn.modifiedAst
