@@ -20,6 +20,7 @@ import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { normaliseAngle } from '../../lib/utils'
 import { kclManager } from 'lang/KclSinglton'
 
+// TODO I think this needs to be typed
 const getModalInfo = create(SetAngleLengthModal)
 
 export function setAngleLengthInfo({

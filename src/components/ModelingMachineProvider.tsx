@@ -41,6 +41,7 @@ import {
   setCodeMirrorCursor,
   useStore,
 } from 'useStore'
+import { applyConstraintIntersect } from './Toolbar/Intersect'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -362,6 +363,22 @@ export const ModelingMachineProvider = ({
         const { modifiedAst, pathToNodeMap } = await applyConstraintAngleLength(
           { selectionRanges }
         )
+        await kclManager.updateAst(modifiedAst, true)
+        return {
+          selectionType: 'completeSelection',
+          selection: pathMapToSelections(
+            kclManager.ast,
+            selectionRanges,
+            pathToNodeMap
+          ),
+        }
+      },
+      'Get perpendicular distance info': async ({
+        selectionRanges,
+      }): Promise<SetSelections> => {
+        const { modifiedAst, pathToNodeMap } = await applyConstraintIntersect({
+          selectionRanges,
+        })
         await kclManager.updateAst(modifiedAst, true)
         return {
           selectionType: 'completeSelection',
