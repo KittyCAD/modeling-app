@@ -38,6 +38,7 @@
 "Constrain equal length": "Constrain equal length";
 "Constrain horizontally align": "Constrain horizontally align";
 "Constrain parallel": "Constrain parallel";
+"Constrain remove constraints": "Constrain remove constraints";
 "Constrain vertically align": "Constrain vertically align";
 "Make selection horizontal": "Make segment horizontal";
 "Make selection vertical": "Make segment vertical";
@@ -50,7 +51,7 @@
 "default_camera_disable_sketch_mode": "Cancel";
 "edit mode enter": "Enter sketch";
 "edit_mode_exit": "Cancel";
-"equip select": "CancelSketch" | "Constrain equal length" | "Constrain horizontally align" | "Constrain parallel" | "Constrain vertically align" | "Deselect point" | "Deselect segment" | "Enter sketch" | "Make segment horizontal" | "Make segment vertical" | "Select default plane" | "Select point" | "Select segment" | "Set selection" | "done.invoke.get-angle-info" | "done.invoke.get-horizontal-info" | "done.invoke.get-length-info" | "done.invoke.get-vertical-info" | "error.platform.get-angle-info" | "error.platform.get-horizontal-info" | "error.platform.get-length-info" | "error.platform.get-vertical-info";
+"equip select": "CancelSketch" | "Constrain equal length" | "Constrain horizontally align" | "Constrain parallel" | "Constrain remove constraints" | "Constrain vertically align" | "Deselect point" | "Deselect segment" | "Enter sketch" | "Make segment horizontal" | "Make segment vertical" | "Select default plane" | "Select point" | "Select segment" | "Set selection" | "done.invoke.get-angle-info" | "done.invoke.get-horizontal-info" | "done.invoke.get-length-info" | "done.invoke.get-vertical-info" | "error.platform.get-angle-info" | "error.platform.get-horizontal-info" | "error.platform.get-length-info" | "error.platform.get-vertical-info";
 "hide default planes": "Cancel" | "Select default plane" | "xstate.stop";
 "reset sketch metadata": "Cancel" | "Select default plane";
 "set default plane id": "Select default plane";
@@ -73,6 +74,7 @@
 "Can constrain horizontal distance": "Constrain horizontal distance";
 "Can constrain horizontally align": "Constrain horizontally align";
 "Can constrain length": "Constrain length";
+"Can constrain remove constraints": "Constrain remove constraints";
 "Can constrain vertical distance": "Constrain vertical distance";
 "Can constrain vertically align": "Constrain vertically align";
 "Can make selection horizontal": "Make segment horizontal";
