@@ -155,13 +155,15 @@ struct FunctionExpressionResult {
 
 pub struct Parser {
     pub tokens: Vec<Token>,
+    pub unkown_tokens: Vec<Token>,
     stdlib: crate::std::StdLib,
 }
 
 impl Parser {
     pub fn new(tokens: Vec<Token>) -> Self {
         let stdlib = crate::std::StdLib::new();
-        Self { tokens, stdlib }
+        let unkown_tokens: Vec<Token> = tokens.iter().cloned().filter(|token| token.token_type == TokenType::Unkown).collect();
+        Self { tokens, unkown_tokens, stdlib }
     }
 
     pub fn get_token(&self, index: usize) -> Result<&Token, KclError> {

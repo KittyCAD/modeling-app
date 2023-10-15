@@ -44,6 +44,8 @@ pub enum TokenType {
     BlockComment,
     /// A function name.
     Function,
+    /// Uknown lexems
+    Unkown,
 }
 
 /// Most KCL tokens correspond to LSP semantic tokens (but not all).
@@ -64,7 +66,8 @@ impl TryFrom<TokenType> for SemanticTokenType {
             | TokenType::Comma
             | TokenType::Colon
             | TokenType::Period
-            | TokenType::DoublePeriod => {
+            | TokenType::DoublePeriod 
+            | TokenType::Unkown => {
                 anyhow::bail!("unsupported token type: {:?}", token_type)
             }
         })
@@ -110,7 +113,10 @@ impl TokenType {
             let label = TokenType::from_str(&enum_values[0].to_string().replace('"', ""))?;
             if let Ok(semantic_token_type) = SemanticTokenType::try_from(label) {
                 semantic_tokens.push(semantic_token_type);
+            }else{
+                println!("vector -> {:?}", semantic_tokens);
             }
+
         }
 
         Ok(semantic_tokens)

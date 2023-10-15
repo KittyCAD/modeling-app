@@ -4,17 +4,32 @@ use winnow::{
     error::{ContextError, ParseError},
     prelude::*,
     token::{any, none_of, one_of, take_till1, take_until0},
-    Located,
+    Located, stream::{Location, Stream},
 };
 
 use crate::token::{Token, TokenType};
 
 pub fn lexer(i: &str) -> Result<Vec<Token>, ParseError<Located<&str>, ContextError>> {
-    repeat(0.., token).parse(Located::new(i))
+    match repeat(0.., token).parse(Located::new(i)){
+        Ok( working ) => {
+            println!("i := {:?}", i);
+            println!("lexer OK  => {:?}", working);
+            return Ok(working);
+        },
+        Err ( error ) => {
+            //println!("i := {:?}", i);
+            //println!("i[error.offset+1..] := {:?}", &i[error.offset()+1..]);
+            //i =  &i[error.offset()+1..];
+
+            //Ok(Token::from_range(Range::<error.offset()>, TokenType::LineComment, "test".to_string()))
+            println!("lexer ERR => {:?}", error);
+            return Err(error);
+        }
+    }
 }
 
 pub fn token(i: &mut Located<&str>) -> PResult<Token> {
-    winnow::combinator::dispatch! {peek(any);
+    match winnow::combinator::dispatch! {peek(any);
         '"' | '\'' => string,
         '/' => alt((line_comment, block_comment, operator)),
         '{' | '(' | '[' => brace_start,
@@ -26,7 +41,55 @@ pub fn token(i: &mut Located<&str>) -> PResult<Token> {
         ' ' | '\t' | '\n' => whitespace,
         _ => alt((operator, keyword, word))
     }
-    .parse_next(i)
+    .parse_next(i) {
+        Ok( token ) => {
+
+
+
+            println!("\n--------------------------------------------------");
+            println!("i              =======> {:?}", i);
+            println!("i.location()   =======> {:?}", i.location());
+            println!("OK             =======> {:?}", token);
+            println!("\n--------------------------------------------------");
+
+            return Ok(token);
+        },
+        Err( x ) => {
+
+            if i.len() == 0 {
+                return Err( x );
+            }
+
+            println!("\n==================================================");
+
+            let location_index = i.location();
+
+            println!("i               =======> {:?}", i);
+            println!("i.location()    =======> {:?}", location_index);
+            println!("i.to_string()   =======> {:?}", i.to_string());
+            println!("i.checkpoint()  =======> {:?}", i.checkpoint());
+            println!("i.len()         =======> {:?}", i.len());
+
+            
+
+            let error_token_found = i.next_slice(1);
+            println!("i.next_slice()  =======> {:?}", error_token_found);
+            println!("i               =======> {:?}", i);
+            println!("TOKEN ERROR =======> {:?}", x);
+
+            let token = Token::from_range(location_index..location_index+1, TokenType::Unkown, error_token_found.to_string());
+            println!("token error recovery {:?}", token);
+            println!("==================================================\n");
+
+
+            Ok(token)
+
+
+
+            //return Err(x);
+        }
+
+    }
 }
 
 fn block_comment(i: &mut Located<&str>) -> PResult<Token> {
@@ -42,14 +105,33 @@ fn line_comment(i: &mut Located<&str>) -> PResult<Token> {
 }
 
 fn number(i: &mut Located<&str>) -> PResult<Token> {
+    println!("NUMBER {:?}", i);
     let number_parser = alt((
         // Digits before the decimal point.
         (digit1, opt(('.', digit1))).map(|_| ()),
         // No digits before the decimal point.
         ('.', digit1).map(|_| ()),
     ));
-    let (value, range) = number_parser.recognize().with_span().parse_next(i)?;
-    Ok(Token::from_range(range, TokenType::Number, value.to_string()))
+    //let (value, range) = number_parser.recognize().with_span().parse_next(i)?;
+    
+    //println!("***************************************");
+    //println!("{:?}", Token::from_range(range.clone(), TokenType::Number, value.to_string()));
+
+    //println!("***************************************");
+    //Ok(Token::from_range(range, TokenType::Number, value.to_string()))
+
+
+    match number_parser.recognize().with_span().parse_next(i) {
+        Ok( obj ) => {
+            return Ok(Token::from_range(obj.1, TokenType::Number, obj.0.to_string()));
+        },
+        Err( error ) => {
+            println!("---------> {:?} <---------", error);
+            return Err(error);
+        }
+
+    };
+
 }
 
 fn whitespace(i: &mut Located<&str>) -> PResult<Token> {
@@ -64,16 +146,34 @@ fn inner_word(i: &mut Located<&str>) -> PResult<()> {
 }
 
 fn word(i: &mut Located<&str>) -> PResult<Token> {
-    let (value, range) = inner_word.recognize().with_span().parse_next(i)?;
-    Ok(Token::from_range(range, TokenType::Word, value.to_string()))
+    //let (value, range) = inner_word.recognize().with_span().parse_next(i)?;
+
+
+    match inner_word.recognize().with_span().parse_next(i) {
+        Ok( obj ) => {
+            return Ok(Token::from_range(obj.1, TokenType::Word, obj.0.to_string()));
+        },
+        Err( error ) => {
+            println!("---------> {:?} <---------", error);
+            return Err(error);
+        }
+
+    };
+
+
+
+    //Ok(Token::from_range(range, TokenType::Word, value.to_string()))
 }
 
 fn operator(i: &mut Located<&str>) -> PResult<Token> {
+    println!("Inside operator{:?}", i);
     let (value, range) = alt((
         ">=", "<=", "==", "=>", "!= ", "|>", "*", "+", "-", "/", "%", "=", "<", ">", r"\", "|", "^",
     ))
     .with_span()
     .parse_next(i)?;
+
+    println!("============================================");
     Ok(Token::from_range(range, TokenType::Operator, value.to_string()))
 }
 
@@ -234,6 +334,8 @@ mod tests {
     }
 
     fn assert_tokens(expected: Vec<Token>, actual: Vec<Token>) {
+        assert_eq!(expected.len(), actual.len(), "\nexpected {} tokens, actually got {}", expected.len(), actual.len());
+
         let n = expected.len();
         for i in 0..n {
             assert_eq!(
@@ -242,7 +344,6 @@ mod tests {
                 expected[i], actual[i],
             )
         }
-        assert_eq!(n, actual.len(), "expected {} tokens, actually got {}", n, actual.len());
     }
 
     #[test]
@@ -1461,4 +1562,67 @@ const things = "things"
         ];
         assert_tokens(expected, actual);
     }
+
+
+    #[test]
+    fn test_unrecognized_token() {
+        let actual = lexer("12 ; 8");
+        let mut my_vec = Vec::new();
+
+
+        match actual {
+            Ok( i ) => {
+                my_vec = i;
+            },
+            Err(e) => {
+                println!("SOMETHING BAD HAPPEN->{:?}<-", e); 
+            }
+        }
+
+        println!("Actual Vec {:?}", my_vec.clone());
+        let expected = vec![
+            Token {
+                token_type: TokenType::Number,
+                value: "12".to_string(),
+                start: 0,
+                end: 2,
+            },
+            Token {
+                token_type: TokenType::Whitespace,
+                value: " ".to_string(),
+                start: 2,
+                end: 3,
+            },
+            Token {
+                token_type: TokenType::Unkown,
+                value: ";".to_string(),
+                start: 3,
+                end: 4,
+            },
+            Token {
+                token_type: TokenType::Whitespace,
+                value: " ".to_string(),
+                start: 4,
+                end: 5,
+            },
+            Token {
+                token_type: TokenType::Number,
+                value: "8".to_string(),
+                start: 5,
+                end: 6,
+            },
+        ];
+
+        println!("**************************************");
+        println!("{:?}", expected);
+        println!("{:?}", my_vec);
+        println!("**************************************");
+        assert_tokens(expected, my_vec);
+    }
+
+
+
+
+
+
 }
