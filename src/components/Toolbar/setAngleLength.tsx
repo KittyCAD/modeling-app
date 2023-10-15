@@ -1,6 +1,5 @@
-import { create } from 'react-modal-promise'
 import { Selections, toolTips } from '../../useStore'
-import { Program, Value } from '../../lang/wasm'
+import { BinaryPart, Program, Value } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
   getNodeFromPath,
@@ -10,7 +9,10 @@ import {
   getTransformInfos,
   transformAstSketchLines,
 } from '../../lang/std/sketchcombos'
-import { SetAngleLengthModal } from '../SetAngleLengthModal'
+import {
+  SetAngleLengthModal,
+  createSetAngleLengthModal,
+} from '../SetAngleLengthModal'
 import {
   createBinaryExpressionWithUnary,
   createIdentifier,
@@ -20,8 +22,7 @@ import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { normaliseAngle } from '../../lib/utils'
 import { kclManager } from 'lang/KclSinglton'
 
-// TODO I think this needs to be typed
-const getModalInfo = create(SetAngleLengthModal)
+const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
 
 export function setAngleLengthInfo({
   selectionRanges,
@@ -98,8 +99,13 @@ export async function applyConstraintAngleLength({
         value: forceVal,
         valueName: angleOrLength === 'setAngle' ? 'angle' : 'length',
         shouldCreateVariable: true,
-      } as any)
-    let finalValue = removeDoubleNegatives(valueNode, sign, variableName)
+      })
+
+    let finalValue = removeDoubleNegatives(
+      valueNode as BinaryPart,
+      sign,
+      variableName
+    )
     if (
       isReferencingYAxisAngle ||
       (isReferencingXAxisAngle && calcIdentifier.name !== '_0')
