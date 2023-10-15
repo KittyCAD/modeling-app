@@ -570,7 +570,7 @@ export const modelingMachine = createMachine(
               },
               onError: 'SketchIdle',
             },
-          }
+          },
         },
 
         initial: 'SketchIdle',
