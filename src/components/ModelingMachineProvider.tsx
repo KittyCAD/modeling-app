@@ -262,13 +262,13 @@ export const ModelingMachineProvider = ({
           }
         else if (!editorView) return {}
         else if (setSelections.selectionType === 'singleCodeCursor') {
-          // TODO move this explanation
-
           // This DOES NOT set the `selectionRanges` in xstate context
           // instead it updates/dispatches to the editor, which in turn updates the xstate context
           // I've found this the best way to deal with the editor without causing an infinite loop
           // and really we want the editor to be in charge of cursor positions and for `selectionRanges` mirror it
           // because we want to respect the user manually placing the cursor too.
+
+          // for more details on how selections see `src/lib/selections.ts`.
           const { codeMirrorSelection, selectionRangeTypeMap } =
             handleSelectionWithShift({
               codeSelection: setSelections.selection,

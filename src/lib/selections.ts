@@ -62,6 +62,8 @@ In detail:
 An important note is that if a user changes the cursor directly themselves
 then they skip directly to step 5, And these selections get a type of
 "default".
+
+There are a few more nuances than this, but best to find them in the code.
 */
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
@@ -196,11 +198,6 @@ export function handleSelectionWithShift({
   selectionRangeTypeMap: SelectionRangeTypeMap
   codeMirrorSelection?: EditorSelection
 } {
-  // This DOES NOT set the `selectionRanges` in xstate context
-  // instead it updates/dispatches to the editor, which in turn updates the xstate context
-  // I've found this the best way to deal with the editor without causing an infinite loop
-  // and really we want the editor to be in charge of cursor positions and for `selectionRanges` mirror it
-  // because we want to respect the user manually placing the cursor too.
   const code = kclManager.code
   if (!codeSelection)
     return handleSelectionBatch({
