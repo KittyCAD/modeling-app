@@ -4,9 +4,9 @@ import Tooltip from './Tooltip'
 import { FileEntry } from '@tauri-apps/api/fs'
 import { Dispatch, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Disclosure } from '@headlessui/react'
+import { Dialog, Disclosure } from '@headlessui/react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronRight } from '@fortawesome/free-solid-svg-icons'
+import { faChevronRight, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { useFileContext } from 'hooks/useFileContext'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { kclManager } from 'lang/KclSinglton'
@@ -71,6 +71,60 @@ function RenameForm({
   )
 }
 
+function DeleteConfirmationDialog({
+  fileOrDir,
+  setIsOpen,
+}: {
+  fileOrDir: FileEntry
+  setIsOpen: Dispatch<React.SetStateAction<boolean>>
+}) {
+  const { send } = useFileContext()
+  return (
+    <Dialog
+      open={true}
+      onClose={() => setIsOpen(false)}
+      className="relative z-50"
+    >
+      <div className="fixed inset-0 bg-chalkboard-110/80 grid place-content-center">
+        <Dialog.Panel className="rounded p-4 bg-chalkboard-10 dark:bg-chalkboard-100 border border-destroy-80 max-w-2xl">
+          <Dialog.Title as="h2" className="text-2xl font-bold mb-4">
+            Delete {fileOrDir.children !== undefined ? 'Folder' : 'File'}
+          </Dialog.Title>
+          <Dialog.Description className="my-6">
+            This will permanently delete "{fileOrDir.name || 'this file'}"
+            {fileOrDir.children !== undefined
+              ? ' and all of its contents. '
+              : '. '}
+            This action cannot be undone.
+          </Dialog.Description>
+
+          <div className="flex justify-between">
+            <ActionButton
+              Element="button"
+              onClick={async () => {
+                send({ type: 'Delete file', data: fileOrDir })
+                setIsOpen(false)
+              }}
+              icon={{
+                icon: faTrashAlt,
+                bgClassName: 'bg-destroy-80',
+                iconClassName:
+                  'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10 dark:text-destroy-20 dark:group-hover:text-destroy-10 dark:hover:text-destroy-10',
+              }}
+              className="hover:border-destroy-40 dark:hover:border-destroy-40"
+            >
+              Delete
+            </ActionButton>
+            <ActionButton Element="button" onClick={() => setIsOpen(false)}>
+              Cancel
+            </ActionButton>
+          </div>
+        </Dialog.Panel>
+      </div>
+    </Dialog>
+  )
+}
+
 const FileTreeItem = ({
   project,
   currentFile,
@@ -92,12 +146,13 @@ const FileTreeItem = ({
   const { send, context } = useFileContext()
   const navigate = useNavigate()
   const [isRenaming, setIsRenaming] = useState(false)
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
   const isCurrentFile = fileOrDir.path === currentFile?.path
 
   function handleKeyUp(e: React.KeyboardEvent<HTMLButtonElement>) {
     if (e.metaKey && e.key === 'Backspace') {
-      // Delete the entry
-      send({ type: 'Delete file', data: fileOrDir })
+      // Open confirmation dialog
+      setIsConfirmingDelete(true)
     } else if (e.key === 'Enter') {
       // Show the renaming form
       setIsRenaming(true)
@@ -113,122 +168,132 @@ const FileTreeItem = ({
     closePanel()
   }
 
-  return fileOrDir.children === undefined ? (
-    <li
-      className={
-        'group m-0 p-0 border-solid border-0 text-energy-100 hover:text-energy-70 hover:bg-energy-10/50 dark:text-energy-30 dark:hover:!text-energy-20 dark:hover:bg-energy-90/50 focus-within:bg-energy-10/80 dark:focus-within:bg-energy-80/50 hover:focus-within:bg-energy-10/80 dark:hover:focus-within:bg-energy-80/50 ' +
-        (isCurrentFile ? 'bg-energy-10/50 dark:bg-energy-90/50' : '')
-      }
-    >
-      {!isRenaming ? (
-        <button
-          className="flex gap-1 items-center py-0.5 rounded-none border-none p-0 m-0 text-sm w-full hover:!bg-transparent text-left !text-inherit"
-          style={{ paddingInlineStart: getIndentationCSS(level) }}
-          onDoubleClick={openFile}
-          onClick={(e) => e.currentTarget.focus()}
-          onKeyUp={handleKeyUp}
+  return (
+    <>
+      {fileOrDir.children === undefined ? (
+        <li
+          className={
+            'group m-0 p-0 border-solid border-0 text-energy-100 hover:text-energy-70 hover:bg-energy-10/50 dark:text-energy-30 dark:hover:!text-energy-20 dark:hover:bg-energy-90/50 focus-within:bg-energy-10/80 dark:focus-within:bg-energy-80/50 hover:focus-within:bg-energy-10/80 dark:hover:focus-within:bg-energy-80/50 ' +
+            (isCurrentFile ? 'bg-energy-10/50 dark:bg-energy-90/50' : '')
+          }
         >
-          <KclIcon
-            className={
-              'inline-block w-3 ' +
-              (isCurrentFile
-                ? 'text-energy-90 dark:text-energy-10'
-                : 'text-energy-50 dark:text-energy-50')
-            }
-          />
-          {fileOrDir.name}
-        </button>
-      ) : (
-        <RenameForm
-          fileOrDir={fileOrDir}
-          setIsRenaming={setIsRenaming}
-          level={level}
-        />
-      )}
-    </li>
-  ) : (
-    <Disclosure defaultOpen={currentFile?.path.includes(fileOrDir.path)}>
-      {({ open }) => (
-        <div className="group">
           {!isRenaming ? (
-            <Disclosure.Button
-              className={
-                ' group border-none text-sm rounded-none p-0 m-0 flex items-center justify-start w-full py-0.5 text-chalkboard-70 dark:text-chalkboard-30 hover:bg-energy-10/50 dark:hover:bg-energy-90/50' +
-                (context.selectedDirectory.path.includes(fileOrDir.path)
-                  ? ' group-focus-within:bg-chalkboard-20/50 dark:group-focus-within:bg-chalkboard-80/20 hover:group-focus-within:bg-chalkboard-20 dark:hover:group-focus-within:bg-chalkboard-80/20 group-active:bg-chalkboard-20/50 dark:group-active:bg-chalkboard-80/20 hover:group-active:bg-chalkboard-20/50 dark:hover:group-active:bg-chalkboard-80/20'
-                  : '')
-              }
+            <button
+              className="flex gap-1 items-center py-0.5 rounded-none border-none p-0 m-0 text-sm w-full hover:!bg-transparent text-left !text-inherit"
               style={{ paddingInlineStart: getIndentationCSS(level) }}
+              onDoubleClick={openFile}
               onClick={(e) => e.currentTarget.focus()}
-              onClickCapture={(e) =>
-                send({ type: 'Set selected directory', data: fileOrDir })
-              }
-              onFocusCapture={(e) =>
-                send({ type: 'Set selected directory', data: fileOrDir })
-              }
-              onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
               onKeyUp={handleKeyUp}
             >
-              <FontAwesomeIcon
-                icon={faChevronRight}
+              <KclIcon
                 className={
-                  'inline-block mr-2 m-0 p-0 w-2 h-2 ' +
-                  (open ? 'transform rotate-90' : '')
+                  'inline-block w-3 ' +
+                  (isCurrentFile
+                    ? 'text-energy-90 dark:text-energy-10'
+                    : 'text-energy-50 dark:text-energy-50')
                 }
               />
               {fileOrDir.name}
-            </Disclosure.Button>
+            </button>
           ) : (
-            <div
-              className="flex items-center"
-              style={{ paddingInlineStart: getIndentationCSS(level) }}
-            >
-              <FontAwesomeIcon
-                icon={faChevronRight}
-                className={
-                  'inline-block mr-2 m-0 p-0 w-2 h-2 ' +
-                  (open ? 'transform rotate-90' : '')
+            <RenameForm
+              fileOrDir={fileOrDir}
+              setIsRenaming={setIsRenaming}
+              level={level}
+            />
+          )}
+        </li>
+      ) : (
+        <Disclosure defaultOpen={currentFile?.path.includes(fileOrDir.path)}>
+          {({ open }) => (
+            <div className="group">
+              {!isRenaming ? (
+                <Disclosure.Button
+                  className={
+                    ' group border-none text-sm rounded-none p-0 m-0 flex items-center justify-start w-full py-0.5 text-chalkboard-70 dark:text-chalkboard-30 hover:bg-energy-10/50 dark:hover:bg-energy-90/50' +
+                    (context.selectedDirectory.path.includes(fileOrDir.path)
+                      ? ' group-focus-within:bg-chalkboard-20/50 dark:group-focus-within:bg-chalkboard-80/20 hover:group-focus-within:bg-chalkboard-20 dark:hover:group-focus-within:bg-chalkboard-80/20 group-active:bg-chalkboard-20/50 dark:group-active:bg-chalkboard-80/20 hover:group-active:bg-chalkboard-20/50 dark:hover:group-active:bg-chalkboard-80/20'
+                      : '')
+                  }
+                  style={{ paddingInlineStart: getIndentationCSS(level) }}
+                  onClick={(e) => e.currentTarget.focus()}
+                  onClickCapture={(e) =>
+                    send({ type: 'Set selected directory', data: fileOrDir })
+                  }
+                  onFocusCapture={(e) =>
+                    send({ type: 'Set selected directory', data: fileOrDir })
+                  }
+                  onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+                  onKeyUp={handleKeyUp}
+                >
+                  <FontAwesomeIcon
+                    icon={faChevronRight}
+                    className={
+                      'inline-block mr-2 m-0 p-0 w-2 h-2 ' +
+                      (open ? 'transform rotate-90' : '')
+                    }
+                  />
+                  {fileOrDir.name}
+                </Disclosure.Button>
+              ) : (
+                <div
+                  className="flex items-center"
+                  style={{ paddingInlineStart: getIndentationCSS(level) }}
+                >
+                  <FontAwesomeIcon
+                    icon={faChevronRight}
+                    className={
+                      'inline-block mr-2 m-0 p-0 w-2 h-2 ' +
+                      (open ? 'transform rotate-90' : '')
+                    }
+                  />
+                  <RenameForm
+                    fileOrDir={fileOrDir}
+                    setIsRenaming={setIsRenaming}
+                    level={-1}
+                  />
+                </div>
+              )}
+              <Disclosure.Panel
+                className={styles.folder}
+                style={
+                  {
+                    '--indent-line-left': getIndentationCSS(level),
+                  } as React.CSSProperties
                 }
-              />
-              <RenameForm
-                fileOrDir={fileOrDir}
-                setIsRenaming={setIsRenaming}
-                level={-1}
-              />
+              >
+                <ul
+                  className="m-0 p-0"
+                  onClickCapture={(e) => {
+                    send({ type: 'Set selected directory', data: fileOrDir })
+                  }}
+                  onFocusCapture={(e) =>
+                    send({ type: 'Set selected directory', data: fileOrDir })
+                  }
+                >
+                  {fileOrDir.children?.map((child) => (
+                    <FileTreeItem
+                      fileOrDir={child}
+                      project={project}
+                      currentFile={currentFile}
+                      closePanel={closePanel}
+                      level={level + 1}
+                      key={level + '-' + child.path}
+                    />
+                  ))}
+                </ul>
+              </Disclosure.Panel>
             </div>
           )}
-          <Disclosure.Panel
-            className={styles.folder}
-            style={
-              {
-                '--indent-line-left': getIndentationCSS(level),
-              } as React.CSSProperties
-            }
-          >
-            <ul
-              className="m-0 p-0"
-              onClickCapture={(e) => {
-                send({ type: 'Set selected directory', data: fileOrDir })
-              }}
-              onFocusCapture={(e) =>
-                send({ type: 'Set selected directory', data: fileOrDir })
-              }
-            >
-              {fileOrDir.children?.map((child) => (
-                <FileTreeItem
-                  fileOrDir={child}
-                  project={project}
-                  currentFile={currentFile}
-                  closePanel={closePanel}
-                  level={level + 1}
-                  key={level + '-' + child.path}
-                />
-              ))}
-            </ul>
-          </Disclosure.Panel>
-        </div>
+        </Disclosure>
       )}
-    </Disclosure>
+      {isConfirmingDelete && (
+        <DeleteConfirmationDialog
+          fileOrDir={fileOrDir}
+          setIsOpen={setIsConfirmingDelete}
+        />
+      )}
+    </>
   )
 }
 
@@ -259,8 +324,6 @@ export const FileTree = ({
   async function createFolder() {
     send({ type: 'Create file', data: { name: '', makeDir: true } })
   }
-
-  useEffect(() => console.log(context.project), [context.project])
 
   return (
     <div className={className}>
