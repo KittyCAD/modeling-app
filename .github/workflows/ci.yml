@@ -69,7 +69,7 @@ jobs:
       - run: yarn test:cov
 
   prepare-json-files:
-    runs-on: ubuntu-20.04  # seperate job on Ubuntu for easy string manipulations (compared to Windows)
+    runs-on: ubuntu-20.04 # seperate job on Ubuntu for easy string manipulations (compared to Windows)
     outputs:
       version: ${{ steps.export_version.outputs.version }}
     steps:
@@ -79,7 +79,7 @@ jobs:
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
-          
+
       - name: Set nightly version
         if: github.event_name == 'schedule'
         run: |
@@ -141,13 +141,23 @@ jobs:
         with:
           workspaces: './src/wasm-lib'
 
-      - name: wasm prep
+      - name: wasm prep - linux/mac
+        if: matrix.os != 'windows-latest'
         shell: bash
         run: |
           mkdir src/wasm-lib/pkg; cd src/wasm-lib
           npx wasm-pack build --target web --out-dir pkg
           cd ../../
           cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
+
+      - name: wasm prep - windows
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          mkdir src\wasm-lib\pkg; cd src\wasm-lib
+          npx wasm-pack build --target web --out-dir pkg
+          cd ..\..\
+          cp src\wasm-lib\pkg\wasm_lib_bg.wasm public
 
       - name: Fix format
         run: yarn fmt
