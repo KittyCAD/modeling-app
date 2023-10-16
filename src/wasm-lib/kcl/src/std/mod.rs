@@ -63,9 +63,10 @@ impl StdLib {
             Box::new(crate::std::sketch::StartProfileAt),
             Box::new(crate::std::sketch::Close),
             Box::new(crate::std::sketch::Arc),
-            Box::new(crate::std::sketch::TangentalArc),
-            Box::new(crate::std::sketch::TangentalArcTo),
+            Box::new(crate::std::sketch::TangentialArc),
+            Box::new(crate::std::sketch::TangentialArcTo),
             Box::new(crate::std::sketch::BezierCurve),
+            Box::new(crate::std::sketch::Hole),
             Box::new(crate::std::math::Cos),
             Box::new(crate::std::math::Sin),
             Box::new(crate::std::math::Tan),
@@ -228,6 +229,42 @@ impl Args {
         };
 
         Ok((segment_name, sketch_group))
+    }
+
+    fn get_sketch_groups(&self) -> Result<(Box<SketchGroup>, Box<SketchGroup>), KclError> {
+        let first_value = self.args.first().ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Expected a SketchGroup as the first argument, found `{:?}`", self.args),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let sketch_group = if let MemoryItem::SketchGroup(sg) = first_value {
+            sg.clone()
+        } else {
+            return Err(KclError::Type(KclErrorDetails {
+                message: format!("Expected a SketchGroup as the first argument, found `{:?}`", self.args),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+
+        let second_value = self.args.get(1).ok_or_else(|| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Expected a SketchGroup as the second argument, found `{:?}`", self.args),
+                source_ranges: vec![self.source_range],
+            })
+        })?;
+
+        let second_sketch_group = if let MemoryItem::SketchGroup(sg) = second_value {
+            sg.clone()
+        } else {
+            return Err(KclError::Type(KclErrorDetails {
+                message: format!("Expected a SketchGroup as the second argument, found `{:?}`", self.args),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+
+        Ok((sketch_group, second_sketch_group))
     }
 
     fn get_sketch_group(&self) -> Result<Box<SketchGroup>, KclError> {

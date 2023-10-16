@@ -1,5 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
+import { type InstanceProps, create } from 'react-modal-promise'
 import { Value } from '../lang/wasm'
 import {
   AvailableVars,
@@ -9,6 +10,28 @@ import {
   CreateNewVariable,
 } from './AvailableVarsHelpers'
 
+type ModalResolve = {
+  value: string
+  sign: number
+  valueNode: Value
+  variableName?: string
+  newVariableInsertIndex: number
+}
+
+type ModalReject = boolean
+
+type SetAngleLengthModalProps = InstanceProps<ModalResolve, ModalReject> & {
+  value: number
+  valueName: string
+  shouldCreateVariable?: boolean
+}
+
+export const createSetAngleLengthModal = create<
+  SetAngleLengthModalProps,
+  ModalResolve,
+  ModalReject
+>
+
 export const SetAngleLengthModal = ({
   isOpen,
   onResolve,
@@ -16,20 +39,7 @@ export const SetAngleLengthModal = ({
   value: initialValue,
   valueName,
   shouldCreateVariable: initialShouldCreateVariable = false,
-}: {
-  isOpen: boolean
-  onResolve: (a: {
-    value: string
-    sign: number
-    valueNode: Value
-    variableName?: string
-    newVariableInsertIndex: number
-  }) => void
-  onReject: (a: any) => void
-  value: number
-  valueName: string
-  shouldCreateVariable: boolean
-}) => {
+}: SetAngleLengthModalProps) => {
   const [sign, setSign] = useState(Math.sign(Number(initialValue)))
   const [value, setValue] = useState(String(initialValue * sign))
   const [shouldCreateVariable, setShouldCreateVariable] = useState(

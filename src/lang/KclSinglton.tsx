@@ -1,4 +1,5 @@
-import { Selections, executeAst, executeCode } from 'useStore'
+import { executeAst, executeCode } from 'useStore'
+import { Selections } from 'lib/selections'
 import { KCLError } from './errors'
 import {
   EngineCommandManager,
@@ -29,7 +30,7 @@ class KclManager {
     end: 0,
     nonCodeMeta: {
       nonCodeNodes: {},
-      start: null,
+      start: [],
     },
   }
   private _programMemory: ProgramMemory = {
@@ -220,7 +221,7 @@ class KclManager {
       end: 0,
       nonCodeMeta: {
         nonCodeNodes: {},
-        start: null,
+        start: [],
       },
     }
     this._programMemory = {

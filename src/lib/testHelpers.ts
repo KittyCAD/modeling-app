@@ -93,6 +93,6 @@ export async function executor(
     yz: uuidv4(),
     xz: uuidv4(),
   })
-  await engineCommandManager.waitForAllCommands(ast, programMemory)
+  await engineCommandManager.waitForAllCommands()
   return programMemory
 }

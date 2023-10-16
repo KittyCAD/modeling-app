@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { Selections, toolTips, useStore } from '../../useStore'
+import { toolTips } from '../../useStore'
+import { Selections } from 'lib/selections'
 import { Program, Value, VariableDeclarator } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
@@ -7,63 +7,12 @@ import {
 } from '../../lang/queryAst'
 import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
 import {
-  TransformInfo,
   transformSecondarySketchLinesTagFirst,
   getTransformInfos,
   PathToNodeMap,
 } from '../../lang/std/sketchcombos'
-import { ActionIcon } from 'components/ActionIcon'
-import { sketchButtonClassnames } from 'Toolbar'
 import { kclManager } from 'lang/KclSinglton'
 
-/*
-export const EqualLength = () => {
-  const { guiMode, selectionRanges, setCursor } = useStore((s) => ({
-    guiMode: s.guiMode,
-    selectionRanges: s.selectionRanges,
-    setCursor: s.setCursor,
-  }))
-  const [enableEqual, setEnableEqual] = useState(false)
-  const [transformInfos, setTransformInfos] = useState<TransformInfo[]>()
-  useEffect(() => {
-    const { enabled, transforms } = setEqualLengthInfo({ selectionRanges })
-
-    setTransformInfos(transforms)
-    setEnableEqual(enabled)
-  }, [guiMode, selectionRanges])
-  if (guiMode.mode !== 'sketch') return null
-
-  return (
-    <button
-      onClick={() => {
-        if (!transformInfos) return
-        const { modifiedAst, pathToNodeMap } =
-          transformSecondarySketchLinesTagFirst({
-            ast: kclManager.ast,
-            selectionRanges,
-            transformInfos,
-            programMemory: kclManager.programMemory,
-          })
-        kclManager.updateAst(modifiedAst, true, {
-          callBack: updateCursors(setCursor, selectionRanges, pathToNodeMap),
-        })
-      }}
-      disabled={!enableEqual}
-      className="group"
-      title="Equal Length"
-    >
-      <ActionIcon
-        icon="equal"
-        className="!p-0.5"
-        bgClassName={sketchButtonClassnames.background}
-        iconClassName={sketchButtonClassnames.icon}
-        size="md"
-      />
-      Equal Length
-    </button>
-  )
-}
-*/
 export function setEqualLengthInfo({
   selectionRanges,
 }: {
