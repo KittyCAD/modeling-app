@@ -5,7 +5,7 @@ import {
   transformAstSketchLines,
 } from './sketchcombos'
 import { getSketchSegmentFromSourceRange } from './sketchConstraints'
-import { Selection } from '../../useStore'
+import { Selection } from 'lib/selections'
 import { enginelessExecutor } from '../../lib/testHelpers'
 
 beforeAll(() => initPromise)

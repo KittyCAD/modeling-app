@@ -4,7 +4,7 @@ use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
 use crate::executor::SourceRange;
 
-#[derive(Error, Debug, Serialize, Deserialize, ts_rs::TS)]
+#[derive(Error, Debug, Serialize, Deserialize, ts_rs::TS, Clone)]
 #[ts(export)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum KclError {
@@ -28,7 +28,7 @@ pub enum KclError {
     Engine(KclErrorDetails),
 }
 
-#[derive(Debug, Serialize, Deserialize, ts_rs::TS)]
+#[derive(Debug, Serialize, Deserialize, ts_rs::TS, Clone)]
 #[ts(export)]
 pub struct KclErrorDetails {
     #[serde(rename = "sourceRanges")]
@@ -78,6 +78,22 @@ impl KclError {
             KclError::Engine(e) => e.source_ranges.clone(),
         }
     }
+
+    /// Get the inner error message.
+    pub fn message(&self) -> &str {
+        match &self {
+            KclError::Syntax(e) => &e.message,
+            KclError::Semantic(e) => &e.message,
+            KclError::Type(e) => &e.message,
+            KclError::Unimplemented(e) => &e.message,
+            KclError::Unexpected(e) => &e.message,
+            KclError::ValueAlreadyDefined(e) => &e.message,
+            KclError::UndefinedValue(e) => &e.message,
+            KclError::InvalidExpression(e) => &e.message,
+            KclError::Engine(e) => &e.message,
+        }
+    }
+
     pub fn to_lsp_diagnostic(&self, code: &str) -> Diagnostic {
         let (message, _, _) = self.get_message_line_column(code);
         let source_ranges = self.source_ranges();

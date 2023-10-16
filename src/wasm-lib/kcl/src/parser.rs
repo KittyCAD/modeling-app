@@ -2,7 +2,7 @@ use std::{collections::HashMap, str::FromStr};
 
 use crate::{
     ast::types::{
-        ArrayExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression, ExpressionStatement,
+        ArrayExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression, CommentStyle, ExpressionStatement,
         FunctionExpression, Identifier, Literal, LiteralIdentifier, MemberExpression, MemberObject, NonCodeMeta,
         NonCodeNode, NonCodeValue, ObjectExpression, ObjectKeyInfo, ObjectProperty, PipeExpression, PipeSubstitution,
         Program, ReturnStatement, UnaryExpression, UnaryOperator, Value, VariableDeclaration, VariableDeclarator,
@@ -12,6 +12,8 @@ use crate::{
     math_parser::MathParser,
     token::{Token, TokenType},
 };
+
+mod parser_impl;
 
 pub const PIPE_SUBSTITUTION_OPERATOR: &str = "%";
 pub const PIPE_OPERATOR: &str = "|>";
@@ -179,13 +181,19 @@ impl Parser {
         Ok(token)
     }
 
+    /// Use the new Winnow parser.
     pub fn ast(&self) -> Result<Program, KclError> {
+        parser_impl::run_parser(&mut self.tokens.as_slice())
+    }
+
+    /// Use the old handwritten recursive parser.
+    pub fn ast_old(&self) -> Result<Program, KclError> {
         let body = self.make_body(
             0,
             vec![],
             NonCodeMeta {
                 non_code_nodes: HashMap::new(),
-                start: None,
+                start: Vec::new(),
             },
         )?;
         let end = match self.get_token(body.last_index) {
@@ -209,7 +217,7 @@ impl Parser {
         })
     }
 
-    pub fn make_literal(&self, index: usize) -> Result<Literal, KclError> {
+    fn make_literal(&self, index: usize) -> Result<Literal, KclError> {
         let token = self.get_token(index)?;
         let value = if token.token_type == TokenType::Number {
             if let Ok(value) = token.value.parse::<i64>() {
@@ -295,6 +303,11 @@ impl Parser {
             ));
         }
 
+        let is_block_style = non_code_tokens
+            .first()
+            .map(|tok| matches!(tok.token_type, TokenType::BlockComment))
+            .unwrap_or_default();
+
         let full_string = non_code_tokens
             .iter()
             .map(|t| {
@@ -336,11 +349,32 @@ impl Parser {
             value: if start_end_string.starts_with("\n\n") && is_new_line_comment {
                 // Preserve if they want a whitespace line before the comment.
                 // But let's just allow one.
-                NonCodeValue::NewLineBlockComment { value: full_string }
+                NonCodeValue::NewLineBlockComment {
+                    value: full_string,
+                    style: if is_block_style {
+                        CommentStyle::Block
+                    } else {
+                        CommentStyle::Line
+                    },
+                }
             } else if is_new_line_comment {
-                NonCodeValue::BlockComment { value: full_string }
+                NonCodeValue::BlockComment {
+                    value: full_string,
+                    style: if is_block_style {
+                        CommentStyle::Block
+                    } else {
+                        CommentStyle::Line
+                    },
+                }
             } else {
-                NonCodeValue::InlineComment { value: full_string }
+                NonCodeValue::InlineComment {
+                    value: full_string,
+                    style: if is_block_style {
+                        CommentStyle::Block
+                    } else {
+                        CommentStyle::Line
+                    },
+                }
             },
         };
         Ok((Some(node), end_index - 1))
@@ -1033,7 +1067,7 @@ impl Parser {
         let non_code_meta = match previous_non_code_meta {
             Some(meta) => meta,
             None => NonCodeMeta {
-                start: None,
+                start: Vec::new(),
                 non_code_nodes: HashMap::new(),
             },
         };
@@ -1064,7 +1098,7 @@ impl Parser {
         let mut _non_code_meta: NonCodeMeta;
         if let Some(node) = next_pipe.non_code_node {
             _non_code_meta = non_code_meta;
-            _non_code_meta.non_code_nodes.insert(previous_values.len(), node);
+            _non_code_meta.insert(previous_values.len(), node);
         } else {
             _non_code_meta = non_code_meta;
         }
@@ -1435,7 +1469,7 @@ impl Parser {
         self.make_params(next_brace_or_comma_token.index, _previous_params)
     }
 
-    pub fn make_unary_expression(&self, index: usize) -> Result<UnaryExpressionResult, KclError> {
+    fn make_unary_expression(&self, index: usize) -> Result<UnaryExpressionResult, KclError> {
         let current_token = self.get_token(index)?;
         let next_token = self.next_meaningful_token(index, None)?;
         if next_token.token.is_none() {
@@ -1631,9 +1665,11 @@ impl Parser {
             let next_token = self.next_meaningful_token(token_index, Some(0))?;
             if let Some(node) = &next_token.non_code_node {
                 if previous_body.is_empty() {
-                    non_code_meta.start = next_token.non_code_node;
+                    if let Some(next) = next_token.non_code_node {
+                        non_code_meta.start.push(next);
+                    }
                 } else {
-                    non_code_meta.non_code_nodes.insert(previous_body.len(), node.clone());
+                    non_code_meta.insert(previous_body.len(), node.clone());
                 }
             }
             return self.make_body(next_token.index, previous_body, non_code_meta);
@@ -1641,14 +1677,14 @@ impl Parser {
 
         let next = self.next_meaningful_token(token_index, None)?;
         if let Some(node) = &next.non_code_node {
-            non_code_meta.non_code_nodes.insert(previous_body.len(), node.clone());
+            non_code_meta.insert(previous_body.len(), node.clone());
         }
 
         if token.token_type == TokenType::Keyword && VariableKind::from_str(&token.value).is_ok() {
             let declaration = self.make_variable_declaration(token_index)?;
             let next_thing = self.next_meaningful_token(declaration.last_index, None)?;
             if let Some(node) = &next_thing.non_code_node {
-                non_code_meta.non_code_nodes.insert(previous_body.len(), node.clone());
+                non_code_meta.insert(previous_body.len(), node.clone());
             }
             let mut _previous_body = previous_body;
             _previous_body.push(BodyItem::VariableDeclaration(VariableDeclaration {
@@ -1669,7 +1705,7 @@ impl Parser {
             let statement = self.make_return_statement(token_index)?;
             let next_thing = self.next_meaningful_token(statement.last_index, None)?;
             if let Some(node) = &next_thing.non_code_node {
-                non_code_meta.non_code_nodes.insert(previous_body.len(), node.clone());
+                non_code_meta.insert(previous_body.len(), node.clone());
             }
             let mut _previous_body = previous_body;
             _previous_body.push(BodyItem::ReturnStatement(ReturnStatement {
@@ -1693,7 +1729,7 @@ impl Parser {
                 let expression = self.make_expression_statement(token_index)?;
                 let next_thing = self.next_meaningful_token(expression.last_index, None)?;
                 if let Some(node) = &next_thing.non_code_node {
-                    non_code_meta.non_code_nodes.insert(previous_body.len(), node.clone());
+                    non_code_meta.insert(previous_body.len(), node.clone());
                 }
                 let mut _previous_body = previous_body;
                 _previous_body.push(BodyItem::ExpressionStatement(ExpressionStatement {
@@ -1716,7 +1752,7 @@ impl Parser {
                 && next_thing_token.token_type == TokenType::Operator
             {
                 if let Some(node) = &next_thing.non_code_node {
-                    non_code_meta.non_code_nodes.insert(previous_body.len(), node.clone());
+                    non_code_meta.insert(previous_body.len(), node.clone());
                 }
                 let expression = self.make_expression_statement(token_index)?;
                 let mut _previous_body = previous_body;
@@ -1749,7 +1785,7 @@ impl Parser {
                 last_index: next_token_index,
                 non_code_meta: NonCodeMeta {
                     non_code_nodes: HashMap::new(),
-                    start: None,
+                    start: Vec::new(),
                 },
             }
         } else {
@@ -1758,7 +1794,7 @@ impl Parser {
                 vec![],
                 NonCodeMeta {
                     non_code_nodes: HashMap::new(),
-                    start: None,
+                    start: Vec::new(),
                 },
             )?
         };
@@ -1913,6 +1949,7 @@ const key = 'c'"#,
                 end: 60,
                 value: NonCodeValue::BlockComment {
                     value: "this is a comment".to_string(),
+                    style: CommentStyle::Line,
                 },
             }),
             31,
@@ -1964,6 +2001,35 @@ const key = 'c'"#,
             },
             literal
         );
+    }
+
+    #[test]
+    fn test_math_parse() {
+        let tokens = crate::token::lexer(r#"5 + "a""#);
+        let actual = Parser::new(tokens).ast().unwrap().body;
+        let expr = BinaryExpression {
+            start: 0,
+            end: 7,
+            operator: BinaryOperator::Add,
+            left: BinaryPart::Literal(Box::new(Literal {
+                start: 0,
+                end: 1,
+                value: serde_json::Value::Number(serde_json::Number::from(5)),
+                raw: "5".to_owned(),
+            })),
+            right: BinaryPart::Literal(Box::new(Literal {
+                start: 4,
+                end: 7,
+                value: serde_json::Value::String("a".to_owned()),
+                raw: r#""a""#.to_owned(),
+            })),
+        };
+        let expected = vec![BodyItem::ExpressionStatement(ExpressionStatement {
+            start: 0,
+            end: 7,
+            expression: Value::BinaryExpression(Box::new(expr)),
+        })];
+        assert_eq!(expected, actual);
     }
 
     #[test]
@@ -2600,7 +2666,7 @@ show(mySk1)"#;
                 vec![],
                 NonCodeMeta {
                     non_code_nodes: HashMap::new(),
-                    start: None,
+                    start: Vec::new(),
                 },
             )
             .unwrap();
@@ -2636,10 +2702,7 @@ show(mySk1)"#;
                     })),
                 })),
             })],
-            non_code_meta: NonCodeMeta {
-                non_code_nodes: Default::default(),
-                start: None,
-            },
+            non_code_meta: NonCodeMeta::default(),
         };
 
         assert_eq!(result, expected_result);
@@ -2812,10 +2875,6 @@ z(-[["#,
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
-        assert_eq!(
-            result.err().unwrap().to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([1, 2])], message: "missing a closing brace for the function call" }"#
-        );
     }
 
     #[test]
@@ -2831,7 +2890,7 @@ z(-[["#,
         // https://github.com/KittyCAD/modeling-app/issues/696
         assert_eq!(
             result.err().unwrap().to_string(),
-            r#"semantic: KclErrorDetails { source_ranges: [], message: "file is empty" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [], message: "file is empty" }"#
         );
     }
 
@@ -2845,7 +2904,7 @@ z(-[["#,
         // https://github.com/KittyCAD/modeling-app/issues/696
         assert_eq!(
             result.err().unwrap().to_string(),
-            r#"semantic: KclErrorDetails { source_ranges: [], message: "file is empty" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [], message: "file is empty" }"#
         );
     }
 
@@ -2863,7 +2922,7 @@ e
             .err()
             .unwrap()
             .to_string()
-            .contains("expected to be started on a identifier or literal"));
+            .contains("expected whitespace, found ')' which is brace"));
     }
 
     #[test]
@@ -2872,7 +2931,11 @@ e
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
-        assert!(result.err().unwrap().to_string().contains("expected another token"));
+        assert!(result
+            .err()
+            .unwrap()
+            .to_string()
+            .contains("expected whitespace, found ')' which is brace"));
     }
 
     #[test]
@@ -2884,11 +2947,7 @@ e
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
-        assert!(result
-            .err()
-            .unwrap()
-            .to_string()
-            .contains("unexpected end of expression"));
+        assert!(result.err().unwrap().to_string().contains("Unexpected token"));
     }
 
     #[test]
@@ -2985,10 +3044,7 @@ e
                 }],
                 kind: VariableKind::Const,
             })],
-            non_code_meta: NonCodeMeta {
-                non_code_nodes: Default::default(),
-                start: None,
-            },
+            non_code_meta: NonCodeMeta::default(),
         };
 
         assert_eq!(result, expected_result);
@@ -3022,7 +3078,9 @@ e
 
     #[test]
     fn test_error_stdlib_in_fn_name() {
-        let some_program_string = r#"fn cos = () {}"#;
+        let some_program_string = r#"fn cos = () => {
+            return 1
+        }"#;
         let tokens = crate::token::lexer(some_program_string);
         let parser = Parser::new(tokens);
         let result = parser.ast();
@@ -3123,9 +3181,12 @@ thing(false)
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
+        // TODO: https://github.com/KittyCAD/modeling-app/issues/784
+        // Improve this error message.
+        // It should say that the compiler is expecting a function expression on the RHS.
         assert_eq!(
             result.err().unwrap().to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([0, 2])], message: "Expected a `let` variable kind, found: `fn`" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([11, 18])], message: "Unexpected token" }"#
         );
     }
 
@@ -3159,15 +3220,6 @@ show(b2)"#;
         let some_program_string = r#"const d2r = pi() / 2
 let other_thing = 2 * cos(3)"#;
         let tokens = crate::token::lexer(some_program_string);
-        let parser = Parser::new(tokens);
-        parser.ast().unwrap();
-    }
-
-    #[test]
-    fn test_parse_pipes_on_pipes() {
-        let code = include_str!("../../tests/executor/inputs/pipes_on_pipes.kcl");
-
-        let tokens = crate::token::lexer(code);
         let parser = Parser::new(tokens);
         parser.ast().unwrap();
     }

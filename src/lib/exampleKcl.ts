@@ -11,14 +11,14 @@ const wallMountL = 8
 const bracket = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0, wallMountL], %)
-  |> tangentalArc({
+  |> tangentialArc({
     radius: filletR,
     offset: 90
   }, %)
   |> line([-shelfMountL, 0], %)
   |> line([0, -thickness], %)
   |> line([shelfMountL, 0], %)
-  |> tangentalArc({
+  |> tangentialArc({
     radius: filletR - thickness,
     offset: -90
   }, %)

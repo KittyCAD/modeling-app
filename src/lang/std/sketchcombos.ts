@@ -1,5 +1,6 @@
 import { TransformCallback } from './stdTypes'
-import { Selections, toolTips, ToolTip, Selection } from '../../useStore'
+import { toolTips, ToolTip } from '../../useStore'
+import { Selections, Selection } from 'lib/selections'
 import {
   CallExpression,
   Program,

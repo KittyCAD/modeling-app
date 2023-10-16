@@ -2,13 +2,22 @@ import { useEffect } from 'react'
 import { useStore } from 'useStore'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { useModelingContext } from './useModelingContext'
+import { v4 as uuidv4 } from 'uuid'
+import { SourceRange } from 'lang/wasm'
+import { getEventForSelectWithPoint } from 'lib/selections'
 
 export function useEngineConnectionSubscriptions() {
   const { setHighlightRange, highlightRange } = useStore((s) => ({
     setHighlightRange: s.setHighlightRange,
     highlightRange: s.highlightRange,
   }))
-  const { send } = useModelingContext()
+  const { send, context } = useModelingContext()
+
+  interface RangeAndId {
+    id: string
+    range: SourceRange
+  }
+
   useEffect(() => {
     if (!engineCommandManager) return
 
@@ -17,7 +26,7 @@ export function useEngineConnectionSubscriptions() {
       callback: ({ data }) => {
         if (data?.entity_id) {
           const sourceRange =
-            engineCommandManager.sourceRangeMap[data.entity_id]
+            engineCommandManager.artifactMap?.[data.entity_id]?.range
           setHighlightRange(sourceRange)
         } else if (
           !highlightRange ||
@@ -29,27 +38,21 @@ export function useEngineConnectionSubscriptions() {
     })
     const unSubClick = engineCommandManager.subscribeTo({
       event: 'select_with_point',
-      callback: ({ data }) => {
-        if (!data?.entity_id) {
-          send({
-            type: 'Set selection',
-            data: { selectionType: 'singleCodeCursor' },
-          })
-          return
-        }
-        const sourceRange = engineCommandManager.sourceRangeMap[data.entity_id]
-        send({
-          type: 'Set selection',
-          data: {
-            selectionType: 'singleCodeCursor',
-            selection: { range: sourceRange, type: 'default' },
-          },
+      callback: async (engineEvent) => {
+        const event = await getEventForSelectWithPoint(engineEvent, {
+          sketchEnginePathId: context.sketchEnginePathId,
         })
+        send(event)
       },
     })
     return () => {
       unSubHover()
       unSubClick()
     }
-  }, [engineCommandManager, setHighlightRange, highlightRange])
+  }, [
+    engineCommandManager,
+    setHighlightRange,
+    highlightRange,
+    context.sketchEnginePathId,
+  ])
 }

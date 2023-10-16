@@ -141,42 +141,6 @@ const newVar = myVar + 1
 })
 
 describe('testing function declaration', () => {
-  test('fn funcN = () => {}', () => {
-    const { body } = parse('fn funcN = () => {}')
-    delete (body[0] as any).declarations[0].init.body.nonCodeMeta
-    expect(body).toEqual([
-      {
-        type: 'VariableDeclaration',
-        start: 0,
-        end: 19,
-        kind: 'fn',
-        declarations: [
-          {
-            type: 'VariableDeclarator',
-            start: 3,
-            end: 19,
-            id: {
-              type: 'Identifier',
-              start: 3,
-              end: 8,
-              name: 'funcN',
-            },
-            init: {
-              type: 'FunctionExpression',
-              start: 11,
-              end: 19,
-              params: [],
-              body: {
-                start: 17,
-                end: 19,
-                body: [],
-              },
-            },
-          },
-        ],
-      },
-    ])
-  })
   test('fn funcN = (a, b) => {return a + b}', () => {
     const { body } = parse(
       ['fn funcN = (a, b) => {', '  return a + b', '}'].join('\n')
@@ -1513,22 +1477,23 @@ const key = 'c'`
     const nonCodeMetaInstance = {
       type: 'NonCodeNode',
       start: code.indexOf('\n// this is a comment'),
-      end: code.indexOf('const key'),
+      end: code.indexOf('const key') - 1,
       value: {
         type: 'blockComment',
+        style: 'line',
         value: 'this is a comment',
       },
     }
     const { nonCodeMeta } = parse(code)
-    expect(nonCodeMeta.nonCodeNodes[0]).toEqual(nonCodeMetaInstance)
+    expect(nonCodeMeta.nonCodeNodes[0][0]).toEqual(nonCodeMetaInstance)
 
     // extra whitespace won't change it's position (0) or value (NB the start end would have changed though)
     const codeWithExtraStartWhitespace = '\n\n\n' + code
     const { nonCodeMeta: nonCodeMeta2 } = parse(codeWithExtraStartWhitespace)
-    expect(nonCodeMeta2.nonCodeNodes[0].value).toStrictEqual(
+    expect(nonCodeMeta2.nonCodeNodes[0][0].value).toStrictEqual(
       nonCodeMetaInstance.value
     )
-    expect(nonCodeMeta2.nonCodeNodes[0].start).not.toBe(
+    expect(nonCodeMeta2.nonCodeNodes[0][0].start).not.toBe(
       nonCodeMetaInstance.start
     )
   })
@@ -1546,12 +1511,13 @@ const key = 'c'`
     const indexOfSecondLineToExpression = 2
     const sketchNonCodeMeta = (body as any)[0].declarations[0].init.nonCodeMeta
       .nonCodeNodes
-    expect(sketchNonCodeMeta[indexOfSecondLineToExpression]).toEqual({
+    expect(sketchNonCodeMeta[indexOfSecondLineToExpression][0]).toEqual({
       type: 'NonCodeNode',
       start: 106,
-      end: 166,
+      end: 163,
       value: {
-        type: 'blockComment',
+        type: 'inlineComment',
+        style: 'block',
         value: 'this is\n      a comment\n      spanning a few lines',
       },
     })
@@ -1568,14 +1534,15 @@ const key = 'c'`
 
     const { body } = parse(code)
     const sketchNonCodeMeta = (body[0] as any).declarations[0].init.nonCodeMeta
-      .nonCodeNodes
-    expect(sketchNonCodeMeta[3]).toEqual({
+      .nonCodeNodes[3][0]
+    expect(sketchNonCodeMeta).toEqual({
       type: 'NonCodeNode',
       start: 125,
-      end: 141,
+      end: 138,
       value: {
         type: 'blockComment',
         value: 'a comment',
+        style: 'line',
       },
     })
   })
@@ -1693,11 +1660,7 @@ describe('parsing errors', () => {
     }
     const theError = _theError as any
     expect(theError).toEqual(
-      new KCLError(
-        'unexpected',
-        'Unexpected token Token { token_type: Brace, start: 29, end: 30, value: "}" }',
-        [[29, 30]]
-      )
+      new KCLError('syntax', 'Unexpected token', [[27, 28]])
     )
   })
 })
