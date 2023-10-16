@@ -14,7 +14,7 @@ import { Themes } from 'lib/theme'
 import { useMemo } from 'react'
 import { linter, lintGutter } from '@codemirror/lint'
 import { useStore } from 'useStore'
-import { Selections } from 'lib/selections'
+import { processCodeMirrorRanges } from 'lib/selections'
 import { LanguageServerClient } from 'editor/lsp'
 import kclLanguage from 'editor/lsp/language'
 import { isTauri } from 'lib/isTauri'
@@ -133,74 +133,14 @@ export const TextEditor = ({
     if (!editorView) {
       setEditorView(viewUpdate.view)
     }
-    const ranges = viewUpdate.state.selection.ranges
-
-    const isChange =
-      ranges.length !== selectionRanges.codeBasedSelections.length ||
-      ranges.some(({ from, to }, i) => {
-        return (
-          from !== selectionRanges.codeBasedSelections[i].range[0] ||
-          to !== selectionRanges.codeBasedSelections[i].range[1]
-        )
-      })
-
-    if (!isChange) return
-    const codeBasedSelections: Selections['codeBasedSelections'] = ranges.map(
-      ({ from, to }) => {
-        if (selectionRangeTypeMap[to]) {
-          return {
-            type: selectionRangeTypeMap[to],
-            range: [from, to],
-          }
-        }
-        return {
-          type: 'default',
-          range: [from, to],
-        }
-      }
-    )
-    const idBasedSelections = codeBasedSelections
-      .map(({ type, range }) => {
-        // TODO #868: loops over all artifacts will become inefficient at a large scale
-        const entriesWithOverlap = Object.entries(
-          engineCommandManager.artifactMap || {}
-        ).filter(([_, artifact]) => {
-          return artifact.range && isOverlap(artifact.range, range)
-            ? artifact
-            : false
-        })
-        if (entriesWithOverlap.length) {
-          const [id, artifact] = entriesWithOverlap?.[0]
-          return {
-            type,
-            id:
-              type === 'line-end' &&
-              artifact.type === 'result' &&
-              artifact.headVertexId
-                ? artifact.headVertexId
-                : id,
-          }
-        }
-        return null
-      })
-      .filter(Boolean) as any
-
-    engineCommandManager.cusorsSelected({
-      otherSelections: [],
-      idBasedSelections,
+    const machineEvent = processCodeMirrorRanges({
+      codeMirrorRanges: viewUpdate.state.selection.ranges,
+      selectionRanges,
+      selectionRangeTypeMap,
     })
-
-    selectionRanges &&
-      send({
-        type: 'Set selection',
-        data: {
-          selectionType: 'mirrorCodeMirrorSelections',
-          selection: {
-            ...selectionRanges,
-            codeBasedSelections,
-          },
-        },
-      })
+    if (machineEvent) {
+      send(machineEvent)
+    }
   }
 
   const editorExtensions = useMemo(() => {

@@ -6,6 +6,8 @@ import { v4 as uuidv4 } from 'uuid'
 import { EditorView } from 'editor/highlightextension'
 import { EditorSelection } from '@codemirror/state'
 import { kclManager } from 'lang/KclSinglton'
+import { SelectionRange } from '@uiw/react-codemirror'
+import { isOverlap } from 'lib/utils'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
@@ -171,4 +173,100 @@ export function setCodeMirrorCursor({
     selections,
   })
   return selectionRangeTypeMap
+}
+
+export function processCodeMirrorRanges({
+  codeMirrorRanges,
+  selectionRanges,
+  selectionRangeTypeMap,
+}: {
+  codeMirrorRanges: readonly SelectionRange[]
+  selectionRanges: Selections
+  selectionRangeTypeMap: SelectionRangeTypeMap
+}): null | ModelingEvent {
+  const isChange =
+    codeMirrorRanges.length !== selectionRanges.codeBasedSelections.length ||
+    codeMirrorRanges.some(({ from, to }, i) => {
+      return (
+        from !== selectionRanges.codeBasedSelections[i].range[0] ||
+        to !== selectionRanges.codeBasedSelections[i].range[1]
+      )
+    })
+
+  if (!isChange) return null
+  const codeBasedSelections: Selections['codeBasedSelections'] =
+    codeMirrorRanges.map(({ from, to }) => {
+      if (selectionRangeTypeMap[to]) {
+        return {
+          type: selectionRangeTypeMap[to],
+          range: [from, to],
+        }
+      }
+      return {
+        type: 'default',
+        range: [from, to],
+      }
+    })
+  const idBasedSelections = codeBasedSelections
+    .map(({ type, range }) => {
+      // TODO #868: loops over all artifacts will become inefficient at a large scale
+      const entriesWithOverlap = Object.entries(
+        engineCommandManager.artifactMap || {}
+      ).filter(([_, artifact]) => {
+        return artifact.range && isOverlap(artifact.range, range)
+          ? artifact
+          : false
+      })
+      if (entriesWithOverlap.length) {
+        const [id, artifact] = entriesWithOverlap?.[0]
+        return {
+          type,
+          id:
+            type === 'line-end' &&
+            artifact.type === 'result' &&
+            artifact.headVertexId
+              ? artifact.headVertexId
+              : id,
+        }
+      }
+      return null
+    })
+    .filter(Boolean) as any
+
+  engineCommandManager.cusorsSelected(idBasedSelections)
+  if (!selectionRanges) return null
+  return {
+    type: 'Set selection',
+    data: {
+      selectionType: 'mirrorCodeMirrorSelections',
+      selection: {
+        ...selectionRanges,
+        codeBasedSelections,
+      },
+    },
+  }
+}
+
+export function resetAndSetEngineEntitySelectionFromIdsAssociatedWithSourceRanges(
+  selections: { type: string; id: string }[]
+) {
+  if (!engineCommandManager.engineConnection?.isReady()) {
+    console.log('engine connection isnt ready')
+    return
+  }
+  engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd: {
+      type: 'select_clear',
+    },
+    cmd_id: uuidv4(),
+  })
+  engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd: {
+      type: 'select_add',
+      entities: selections.map(({ id }) => id),
+    },
+    cmd_id: uuidv4(),
+  })
 }

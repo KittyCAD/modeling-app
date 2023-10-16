@@ -1,5 +1,5 @@
 import { SourceRange } from 'lang/wasm'
-import { Selections } from 'lib/selections'
+import { resetAndSetEngineEntitySelectionFromIdsAssociatedWithSourceRanges } from 'lib/selections'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_CONNECTION_TIMEOUT_MS } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
@@ -911,29 +911,10 @@ export class EngineCommandManager {
       this.engineConnection?.send(deletCmd)
     })
   }
-  cusorsSelected(selections: {
-    otherSelections: Selections['otherSelections']
-    idBasedSelections: { type: string; id: string }[]
-  }) {
-    if (!this.engineConnection?.isReady()) {
-      console.log('engine connection isnt ready')
-      return
-    }
-    this.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'select_clear',
-      },
-      cmd_id: uuidv4(),
-    })
-    this.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'select_add',
-        entities: selections.idBasedSelections.map((s) => s.id),
-      },
-      cmd_id: uuidv4(),
-    })
+  cusorsSelected(selections: { type: string; id: string }[]) {
+    resetAndSetEngineEntitySelectionFromIdsAssociatedWithSourceRanges(
+      selections
+    )
   }
   sendSceneCommand(command: EngineCommand): Promise<any> {
     if (this.engineConnection === undefined) {
