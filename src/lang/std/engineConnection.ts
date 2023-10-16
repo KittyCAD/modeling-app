@@ -1,5 +1,5 @@
 import { SourceRange } from 'lang/wasm'
-import { Selections } from 'useStore'
+import { Selections } from 'lib/selections'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_CONNECTION_TIMEOUT_MS } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'

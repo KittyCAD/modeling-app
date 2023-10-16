@@ -1,7 +1,12 @@
 import { PathToNode } from 'lang/wasm'
 import { engineCommandManager } from 'lang/std/engineConnection'
 import { isReducedMotion } from 'lang/util'
-import { Axis, Selection, SelectionRangeTypeMap, Selections } from 'useStore'
+import {
+  Axis,
+  Selection,
+  SelectionRangeTypeMap,
+  Selections,
+} from 'lib/selections'
 import { assign, createMachine } from 'xstate'
 import { v4 as uuidv4 } from 'uuid'
 import { isCursorInSketchCommandRange } from 'lang/util'

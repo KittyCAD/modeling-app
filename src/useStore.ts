@@ -1,13 +1,8 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { addLineHighlight, EditorView } from './editor/highlightextension'
-import {
-  parse,
-  Program,
-  _executor,
-  ProgramMemory,
-  SourceRange,
-} from './lang/wasm'
+import { parse, Program, _executor, ProgramMemory } from './lang/wasm'
+import { Selection, Selections, SelectionRangeTypeMap } from 'lib/selections'
 import { enginelessExecutor } from './lib/testHelpers'
 import { EditorSelection } from '@codemirror/state'
 import { EngineCommandManager } from './lang/std/engineConnection'
@@ -15,25 +10,6 @@ import { KCLError } from './lang/errors'
 import { kclManager } from 'lang/KclSinglton'
 import { DefaultPlanes } from './wasm-lib/kcl/bindings/DefaultPlanes'
 
-export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
-
-export type Selection = {
-  type:
-    | 'default'
-    | 'line-end'
-    | 'line-mid'
-    | 'face'
-    | 'point'
-    | 'edge'
-    | 'line'
-    | 'arc'
-    | 'all'
-  range: SourceRange
-}
-export type Selections = {
-  otherSelections: Axis[]
-  codeBasedSelections: Selection[]
-}
 export type ToolTip =
   | 'lineTo'
   | 'line'
@@ -73,10 +49,6 @@ export type PaneType =
   | 'kclErrors'
   | 'logs'
   | 'lspMessages'
-
-export interface SelectionRangeTypeMap {
-  [key: number]: Selection['type']
-}
 
 export interface StoreState {
   editorView: EditorView | null

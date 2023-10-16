@@ -1,4 +1,4 @@
-import { Selections, StoreState } from '../useStore'
+import { Selections } from 'lib/selections'
 import { Program, PathToNode } from './wasm'
 import { getNodeFromPath } from './queryAst'
 import { ArtifactMap } from './std/engineConnection'
