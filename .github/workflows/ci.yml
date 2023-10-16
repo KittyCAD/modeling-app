@@ -81,14 +81,14 @@ jobs:
           cache: 'yarn'
           
       - name: Set nightly version
-        # if: github.event_name == 'schedule'
+        if: github.event_name == 'schedule'
         run: |
           VERSION=$(date +'%-y.%-m.%-d') yarn bump-jsons
           echo "$(jq --arg url 'https://dl.kittycad.io/releases/modeling-app/test/nightly/last_update.json' \
             '.tauri.updater.endpoints[]=$url' src-tauri/tauri.conf.json --indent 2)" > src-tauri/tauri.conf.json
 
       - uses: actions/upload-artifact@v3
-        # if: github.event_name == 'schedule'
+        if: github.event_name == 'schedule'
         with:
           path: |
             package.json
@@ -109,7 +109,7 @@ jobs:
       - uses: actions/download-artifact@v3
 
       - name: Copy updated .json files
-        # if: github.event_name == 'schedule'
+        if: github.event_name == 'schedule'
         run: |
           ls -l artifact
           cp artifact/package.json package.json
