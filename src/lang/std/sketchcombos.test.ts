@@ -7,7 +7,8 @@ import {
   ConstraintType,
   getConstraintLevelFromSourceRange,
 } from './sketchcombos'
-import { Selections, ToolTip } from '../../useStore'
+import { ToolTip } from '../../useStore'
+import { Selections } from 'lib/selections'
 import { enginelessExecutor } from '../../lib/testHelpers'
 
 beforeAll(() => initPromise)

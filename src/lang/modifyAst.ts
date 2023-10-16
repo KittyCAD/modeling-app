@@ -1,4 +1,5 @@
-import { Selection, ToolTip } from '../useStore'
+import { ToolTip } from '../useStore'
+import { Selection } from 'lib/selections'
 import {
   Program,
   CallExpression,
@@ -540,7 +541,7 @@ export function createPipeExpression(
     start: 0,
     end: 0,
     body,
-    nonCodeMeta: { nonCodeNodes: {}, start: null },
+    nonCodeMeta: { nonCodeNodes: {}, start: [] },
   }
 }
 

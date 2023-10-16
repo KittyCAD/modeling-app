@@ -1,4 +1,5 @@
-import { Selections, executeAst, executeCode } from 'useStore'
+import { executeAst, executeCode } from 'useStore'
+import { Selections } from 'lib/selections'
 import { KCLError } from './errors'
 import {
   EngineCommandManager,
@@ -16,6 +17,8 @@ import {
 import { bracket } from 'lib/exampleKcl'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { getNodeFromPath } from './queryAst'
+import { IndexLoaderData } from 'Router'
+import { useLoaderData } from 'react-router-dom'
 
 const PERSIST_CODE_TOKEN = 'persistCode'
 
@@ -27,7 +30,7 @@ class KclManager {
     end: 0,
     nonCodeMeta: {
       nonCodeNodes: {},
-      start: null,
+      start: [],
     },
   }
   private _programMemory: ProgramMemory = {
@@ -185,6 +188,7 @@ class KclManager {
   async executeCode(code?: string) {
     await initPromise
     await this?.engineCommandManager?.waitForReady
+    if (!this?.engineCommandManager?.planesInitialized()) return
     const result = await executeCode({
       engineCommandManager,
       code: code || this._code,
@@ -217,7 +221,7 @@ class KclManager {
       end: 0,
       nonCodeMeta: {
         nonCodeNodes: {},
-        start: null,
+        start: [],
       },
     }
     this._programMemory = {
@@ -313,7 +317,10 @@ export function KclContextProvider({
 }: {
   children: React.ReactNode
 }) {
-  const [code, setCode] = useState(kclManager.code)
+  // If we try to use this component anywhere but under the paths.FILE route it will fail
+  // Because useLoaderData assumes we are on within it's context.
+  const { code: loadedCode } = useLoaderData() as IndexLoaderData
+  const [code, setCode] = useState(loadedCode || kclManager.code)
   const [programMemory, setProgramMemory] = useState(kclManager.programMemory)
   const [ast, setAst] = useState(kclManager.ast)
   const [isExecuting, setIsExecuting] = useState(false)

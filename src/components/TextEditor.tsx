@@ -11,9 +11,10 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { useConvertToVariable } from 'hooks/useToolbarGuards'
 import { Themes } from 'lib/theme'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { linter, lintGutter } from '@codemirror/lint'
-import { Selections, useStore } from 'useStore'
+import { useStore } from 'useStore'
+import { processCodeMirrorRanges } from 'lib/selections'
 import { LanguageServerClient } from 'editor/lsp'
 import kclLanguage from 'editor/lsp/language'
 import { isTauri } from 'lib/isTauri'
@@ -132,65 +133,17 @@ export const TextEditor = ({
     if (!editorView) {
       setEditorView(viewUpdate.view)
     }
-    const ranges = viewUpdate.state.selection.ranges
-
-    const isChange =
-      ranges.length !== selectionRanges.codeBasedSelections.length ||
-      ranges.some(({ from, to }, i) => {
-        return (
-          from !== selectionRanges.codeBasedSelections[i].range[0] ||
-          to !== selectionRanges.codeBasedSelections[i].range[1]
-        )
-      })
-
-    if (!isChange) return
-    const codeBasedSelections: Selections['codeBasedSelections'] = ranges.map(
-      ({ from, to }) => {
-        if (selectionRangeTypeMap[to]) {
-          return {
-            type: selectionRangeTypeMap[to],
-            range: [from, to],
-          }
-        }
-        return {
-          type: 'default',
-          range: [from, to],
-        }
-      }
-    )
-    const idBasedSelections = codeBasedSelections
-      .map(({ type, range }) => {
-        const hasOverlap = Object.entries(
-          engineCommandManager.sourceRangeMap || {}
-        ).filter(([_, sourceRange]) => {
-          return isOverlap(sourceRange, range)
-        })
-        if (hasOverlap.length) {
-          return {
-            type,
-            id: hasOverlap[0][0],
-          }
-        }
-        return undefined
-      })
-      .filter(Boolean) as any
-
-    engineCommandManager.cusorsSelected({
-      otherSelections: [],
-      idBasedSelections,
+    const eventInfo = processCodeMirrorRanges({
+      codeMirrorRanges: viewUpdate.state.selection.ranges,
+      selectionRanges,
+      selectionRangeTypeMap,
     })
+    if (!eventInfo) return
 
-    selectionRanges &&
-      send({
-        type: 'Set selection',
-        data: {
-          selectionType: 'mirrorCodeMirrorSelections',
-          selection: {
-            ...selectionRanges,
-            codeBasedSelections,
-          },
-        },
-      })
+    send(eventInfo.modelingEvent)
+    eventInfo.engineEvents.forEach((event) =>
+      engineCommandManager.sendSceneCommand(event)
+    )
   }
 
   const editorExtensions = useMemo(() => {
@@ -270,7 +223,7 @@ export const TextEditor = ({
     }
 
     return extensions
-  }, [kclLSP, textWrapping])
+  }, [kclLSP, textWrapping, convertCallback])
 
   return (
     <div

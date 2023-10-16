@@ -26,6 +26,7 @@
 	* [`extrude`](#extrude)
 	* [`floor`](#floor)
 	* [`getExtrudeWallTransform`](#getExtrudeWallTransform)
+	* [`hole`](#hole)
 	* [`lastSegX`](#lastSegX)
 	* [`lastSegY`](#lastSegY)
 	* [`legAngX`](#legAngX)
@@ -52,8 +53,8 @@
 	* [`startSketchAt`](#startSketchAt)
 	* [`startSketchOn`](#startSketchOn)
 	* [`tan`](#tan)
-	* [`tangentalArc`](#tangentalArc)
-	* [`tangentalArcTo`](#tangentalArcTo)
+	* [`tangentialArc`](#tangentialArc)
+	* [`tangentialArcTo`](#tangentialArcTo)
 	* [`tau`](#tau)
 	* [`xLine`](#xLine)
 	* [`xLineTo`](#xLineTo)
@@ -125,46 +126,46 @@ angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup)
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -173,11 +174,11 @@ angleToMatchLengthX(segment_name: string, to: number, sketch_group: SketchGroup)
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -211,46 +212,46 @@ angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup)
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -259,11 +260,11 @@ angleToMatchLengthY(segment_name: string, to: number, sketch_group: SketchGroup)
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -297,7 +298,7 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 	// The tag.
 	tag: string,
 } |
-[number]
+[number, number]
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
@@ -307,46 +308,46 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -355,11 +356,11 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -375,46 +376,46 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -423,11 +424,11 @@ angledLine(data: AngledLineData, sketch_group: SketchGroup) -> SketchGroup
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -457,7 +458,7 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	// The tag.
 	tag: string,
 } |
-[number]
+[number, number]
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
@@ -467,46 +468,46 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -515,11 +516,11 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -535,46 +536,46 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -583,11 +584,11 @@ angledLineOfXLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -617,7 +618,7 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	// The tag.
 	tag: string,
 } |
-[number]
+[number, number]
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
@@ -627,46 +628,46 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -675,11 +676,11 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -695,46 +696,46 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -743,11 +744,11 @@ angledLineOfYLength(data: AngledLineData, sketch_group: SketchGroup) -> SketchGr
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -788,46 +789,46 @@ angledLineThatIntersects(data: AngeledLineThatIntersectsData, sketch_group: Sket
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -836,11 +837,11 @@ angledLineThatIntersects(data: AngeledLineThatIntersectsData, sketch_group: Sket
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -856,46 +857,46 @@ angledLineThatIntersects(data: AngeledLineThatIntersectsData, sketch_group: Sket
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -904,11 +905,11 @@ angledLineThatIntersects(data: AngeledLineThatIntersectsData, sketch_group: Sket
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -938,7 +939,7 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	// The point to draw to.
 	to: number,
 } |
-[number]
+[number, number]
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
@@ -948,46 +949,46 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -996,11 +997,11 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -1016,46 +1017,46 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -1064,11 +1065,11 @@ angledLineToX(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -1098,7 +1099,7 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	// The point to draw to.
 	to: number,
 } |
-[number]
+[number, number]
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
@@ -1108,46 +1109,46 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -1156,11 +1157,11 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -1176,46 +1177,46 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -1224,11 +1225,11 @@ angledLineToY(data: AngledLineToData, sketch_group: SketchGroup) -> SketchGroup
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -1270,21 +1271,21 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 } |
 {
 	// The center.
-	center: [number],
+	center: [number, number],
 	// The radius.
 	radius: number,
 	// The tag.
 	tag: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 } |
 {
 	// The center.
-	center: [number],
+	center: [number, number],
 	// The radius.
 	radius: number,
 	// The to point.
-	to: [number],
+	to: [number, number],
 }
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
@@ -1295,46 +1296,46 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -1343,11 +1344,11 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -1363,46 +1364,46 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -1411,11 +1412,11 @@ arc(data: ArcData, sketch_group: SketchGroup) -> SketchGroup
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -1479,21 +1480,21 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 ```
 {
 	// The first control point.
-	control1: [number],
+	control1: [number, number],
 	// The second control point.
-	control2: [number],
+	control2: [number, number],
 	// The tag.
 	tag: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 } |
 {
 	// The first control point.
-	control1: [number],
+	control1: [number, number],
 	// The second control point.
-	control2: [number],
+	control2: [number, number],
 	// The to point.
-	to: [number],
+	to: [number, number],
 }
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
@@ -1504,46 +1505,46 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -1552,11 +1553,11 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -1572,46 +1573,46 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -1620,11 +1621,11 @@ bezierCurve(data: BezierData, sketch_group: SketchGroup) -> SketchGroup
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -1672,46 +1673,46 @@ close(sketch_group: SketchGroup) -> SketchGroup
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -1720,11 +1721,11 @@ close(sketch_group: SketchGroup) -> SketchGroup
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -1740,46 +1741,46 @@ close(sketch_group: SketchGroup) -> SketchGroup
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -1788,11 +1789,11 @@ close(sketch_group: SketchGroup) -> SketchGroup
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -1860,46 +1861,46 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -1908,11 +1909,11 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -1928,9 +1929,9 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 	// The id of the extrude group.
 	id: uuid,
 	// The position of the extrude group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the extrude group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The extrude surfaces.
 	value: [{
 	// The id of the geometry.
@@ -1938,11 +1939,11 @@ extrude(length: number, sketch_group: SketchGroup) -> ExtrudeGroup
 	// The name.
 	name: string,
 	// The position.
-	position: [number],
+	position: [number, number, number],
 	// The rotation.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The source range.
-	sourceRange: [number],
+	sourceRange: [number, number],
 	type: string,
 }],
 }
@@ -1991,9 +1992,9 @@ getExtrudeWallTransform(surface_name: string, extrude_group: ExtrudeGroup) -> Ex
 	// The id of the extrude group.
 	id: uuid,
 	// The position of the extrude group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the extrude group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The extrude surfaces.
 	value: [{
 	// The id of the geometry.
@@ -2001,11 +2002,11 @@ getExtrudeWallTransform(surface_name: string, extrude_group: ExtrudeGroup) -> Ex
 	// The name.
 	name: string,
 	// The position.
-	position: [number],
+	position: [number, number, number],
 	// The rotation.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The source range.
-	sourceRange: [number],
+	sourceRange: [number, number],
 	type: string,
 }],
 }
@@ -2016,8 +2017,221 @@ getExtrudeWallTransform(surface_name: string, extrude_group: ExtrudeGroup) -> Ex
 * `ExtrudeTransform`
 ```
 {
-	position: [number],
-	rotation: [number],
+	position: [number, number, number],
+	rotation: [number, number, number, number],
+}
+```
+
+
+
+### hole
+
+Use a sketch to cut a hole in another sketch.
+
+
+
+```
+hole(hole_sketch_group: SketchGroup, sketch_group: SketchGroup) -> SketchGroup
+```
+
+#### Arguments
+
+* `hole_sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
+	// The position of the sketch group.
+	position: [number, number, number],
+	// The rotation of the sketch group.
+	rotation: [number, number, number, number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+}],
+}
+```
+* `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
+	// The position of the sketch group.
+	position: [number, number, number],
+	// The rotation of the sketch group.
+	rotation: [number, number, number, number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+}],
+}
+```
+
+#### Returns
+
+* `SketchGroup` - A sketch group is a collection of paths.
+```
+{
+	// The id of the sketch group.
+	id: uuid,
+	// The plane id of the sketch group.
+	planeId: uuid,
+	// The position of the sketch group.
+	position: [number, number, number],
+	// The rotation of the sketch group.
+	rotation: [number, number, number, number],
+	// The starting path.
+	start: {
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+},
+	// The paths in the sketch group.
+	value: [{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+	// The x coordinate.
+	x: number,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+	// The x coordinate.
+	x: number,
+	// The y coordinate.
+	y: number,
+} |
+{
+	// The from point.
+	from: [number, number],
+	// The name of the path.
+	name: string,
+	// The to point.
+	to: [number, number],
+	type: string,
+}],
 }
 ```
 
@@ -2043,46 +2257,46 @@ lastSegX(sketch_group: SketchGroup) -> number
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -2091,11 +2305,11 @@ lastSegX(sketch_group: SketchGroup) -> number
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -2127,46 +2341,46 @@ lastSegY(sketch_group: SketchGroup) -> number
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -2175,11 +2389,11 @@ lastSegY(sketch_group: SketchGroup) -> number
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -2272,9 +2486,9 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 	// The tag.
 	tag: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 } |
-[number]
+[number, number]
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
@@ -2284,46 +2498,46 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -2332,11 +2546,11 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -2352,46 +2566,46 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -2400,11 +2614,11 @@ line(data: LineData, sketch_group: SketchGroup) -> SketchGroup
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -2430,9 +2644,9 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 	// The tag.
 	tag: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 } |
-[number]
+[number, number]
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
@@ -2442,46 +2656,46 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -2490,11 +2704,11 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -2510,46 +2724,46 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -2558,11 +2772,11 @@ lineTo(data: LineToData, sketch_group: SketchGroup) -> SketchGroup
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -2752,46 +2966,46 @@ segAng(segment_name: string, sketch_group: SketchGroup) -> number
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -2800,11 +3014,11 @@ segAng(segment_name: string, sketch_group: SketchGroup) -> number
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -2837,46 +3051,46 @@ segEndX(segment_name: string, sketch_group: SketchGroup) -> number
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -2885,11 +3099,11 @@ segEndX(segment_name: string, sketch_group: SketchGroup) -> number
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -2922,46 +3136,46 @@ segEndY(segment_name: string, sketch_group: SketchGroup) -> number
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -2970,11 +3184,11 @@ segEndY(segment_name: string, sketch_group: SketchGroup) -> number
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -3007,46 +3221,46 @@ segLen(segment_name: string, sketch_group: SketchGroup) -> number
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -3055,11 +3269,11 @@ segLen(segment_name: string, sketch_group: SketchGroup) -> number
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -3091,46 +3305,46 @@ show(sketch: SketchGroup)
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -3139,11 +3353,11 @@ show(sketch: SketchGroup)
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -3209,9 +3423,9 @@ startProfileAt(data: LineData, plane: Plane) -> SketchGroup
 	// The tag.
 	tag: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 } |
-[number]
+[number, number]
 ```
 * `plane`: `Plane` - A plane.
 ```
@@ -3258,46 +3472,46 @@ string,
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -3306,11 +3520,11 @@ string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -3336,9 +3550,9 @@ startSketchAt(data: LineData) -> SketchGroup
 	// The tag.
 	tag: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 } |
-[number]
+[number, number]
 ```
 
 #### Returns
@@ -3351,46 +3565,46 @@ startSketchAt(data: LineData) -> SketchGroup
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -3399,11 +3613,11 @@ startSketchAt(data: LineData) -> SketchGroup
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -3520,19 +3734,19 @@ tan(num: number) -> number
 
 
 
-### tangentalArc
+### tangentialArc
 
 Draw an arc.
 
 
 
 ```
-tangentalArc(data: TangentalArcData, sketch_group: SketchGroup) -> SketchGroup
+tangentialArc(data: TangentialArcData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
 #### Arguments
 
-* `data`: `TangentalArcData` - Data to draw a tangental arc.
+* `data`: `TangentialArcData` - Data to draw a tangential arc.
 ```
 {
 	// Offset of the arc, in degrees.
@@ -3544,9 +3758,9 @@ tangentalArc(data: TangentalArcData, sketch_group: SketchGroup) -> SketchGroup
 	// The tag.
 	tag: string,
 	// Where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.
-	to: [number],
+	to: [number, number],
 } |
-[number]
+[number, number]
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
@@ -3556,46 +3770,46 @@ tangentalArc(data: TangentalArcData, sketch_group: SketchGroup) -> SketchGroup
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -3604,11 +3818,11 @@ tangentalArc(data: TangentalArcData, sketch_group: SketchGroup) -> SketchGroup
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -3624,46 +3838,46 @@ tangentalArc(data: TangentalArcData, sketch_group: SketchGroup) -> SketchGroup
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -3672,11 +3886,11 @@ tangentalArc(data: TangentalArcData, sketch_group: SketchGroup) -> SketchGroup
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -3684,27 +3898,27 @@ tangentalArc(data: TangentalArcData, sketch_group: SketchGroup) -> SketchGroup
 
 
 
-### tangentalArcTo
+### tangentialArcTo
 
 Draw an arc.
 
 
 
 ```
-tangentalArcTo(data: TangentalArcToData, sketch_group: SketchGroup) -> SketchGroup
+tangentialArcTo(data: TangentialArcToData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
 #### Arguments
 
-* `data`: `TangentalArcToData` - Data to draw a tangental arc to a specific point.
+* `data`: `TangentialArcToData` - Data to draw a tangential arc to a specific point.
 ```
 {
 	// The tag.
 	tag: string,
 	// Where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.
-	to: [number],
+	to: [number, number],
 } |
-[number]
+[number, number]
 ```
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
@@ -3714,46 +3928,46 @@ tangentalArcTo(data: TangentalArcToData, sketch_group: SketchGroup) -> SketchGro
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -3762,11 +3976,11 @@ tangentalArcTo(data: TangentalArcToData, sketch_group: SketchGroup) -> SketchGro
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -3782,46 +3996,46 @@ tangentalArcTo(data: TangentalArcToData, sketch_group: SketchGroup) -> SketchGro
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -3830,11 +4044,11 @@ tangentalArcTo(data: TangentalArcToData, sketch_group: SketchGroup) -> SketchGro
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -3891,46 +4105,46 @@ number
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -3939,11 +4153,11 @@ number
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -3959,46 +4173,46 @@ number
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -4007,11 +4221,11 @@ number
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -4049,46 +4263,46 @@ number
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -4097,11 +4311,11 @@ number
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -4117,46 +4331,46 @@ number
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -4165,11 +4379,11 @@ number
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -4207,46 +4421,46 @@ number
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -4255,11 +4469,11 @@ number
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -4275,46 +4489,46 @@ number
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -4323,11 +4537,11 @@ number
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -4365,46 +4579,46 @@ number
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -4413,11 +4627,11 @@ number
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }
@@ -4433,46 +4647,46 @@ number
 	// The plane id of the sketch group.
 	planeId: uuid,
 	// The position of the sketch group.
-	position: [number],
+	position: [number, number, number],
 	// The rotation of the sketch group.
-	rotation: [number],
+	rotation: [number, number, number, number],
 	// The starting path.
 	start: {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 },
 	// The paths in the sketch group.
 	value: [{
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 	// The x coordinate.
 	x: number,
@@ -4481,11 +4695,11 @@ number
 } |
 {
 	// The from point.
-	from: [number],
+	from: [number, number],
 	// The name of the path.
 	name: string,
 	// The to point.
-	to: [number],
+	to: [number, number],
 	type: string,
 }],
 }

@@ -16,7 +16,14 @@ import { engineCommandManager } from 'lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
 import { addStartSketch } from 'lang/modifyAst'
 import { roundOff } from 'lib/utils'
-import { recast, parse, Program, VariableDeclarator } from 'lang/wasm'
+import {
+  recast,
+  parse,
+  Program,
+  VariableDeclarator,
+  PipeExpression,
+  CallExpression,
+} from 'lang/wasm'
 import { getNodeFromPath } from 'lang/queryAst'
 import {
   addCloseToPipe,
@@ -29,11 +36,9 @@ import { applyConstraintAngleBetween } from './Toolbar/SetAngleBetween'
 import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
 import { toast } from 'react-hot-toast'
 import { pathMapToSelections } from 'lang/util'
-import {
-  dispatchCodeMirrorCursor,
-  setCodeMirrorCursor,
-  useStore,
-} from 'useStore'
+import { useStore } from 'useStore'
+import { handleSelectionBatch, handleSelectionWithShift } from 'lib/selections'
+import { applyConstraintIntersect } from './Toolbar/Intersect'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -83,16 +88,16 @@ export const ModelingMachineProvider = ({
       'show default planes': () => {
         kclManager.showPlanes()
       },
-      'create path': async () => {
-        const sketchUuid = uuidv4()
-        const proms = [
+      'create path': assign({
+        sketchEnginePathId: () => {
+          const sketchUuid = uuidv4()
           engineCommandManager.sendSceneCommand({
             type: 'modeling_cmd_req',
             cmd_id: sketchUuid,
             cmd: {
               type: 'start_path',
             },
-          }),
+          })
           engineCommandManager.sendSceneCommand({
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
@@ -100,38 +105,77 @@ export const ModelingMachineProvider = ({
               type: 'edit_mode_enter',
               target: sketchUuid,
             },
-          }),
-        ]
-        await Promise.all(proms)
-      },
-      'AST start new sketch': assign((_, { data: { coords, axis } }) => {
-        // Something really weird must have happened for this to happen.
-        if (!axis) {
-          console.error('axis is undefined for starting a new sketch')
-          return {}
-        }
-
-        const _addStartSketch = addStartSketch(
-          kclManager.ast,
-          axis,
-          [roundOff(coords[0].x), roundOff(coords[0].y)],
-          [
-            roundOff(coords[1].x - coords[0].x),
-            roundOff(coords[1].y - coords[0].y),
-          ]
-        )
-        const _modifiedAst = _addStartSketch.modifiedAst
-        const _pathToNode = _addStartSketch.pathToNode
-        const newCode = recast(_modifiedAst)
-        const astWithUpdatedSource = parse(newCode)
-
-        kclManager.executeAstMock(astWithUpdatedSource, true)
-
-        return {
-          sketchPathToNode: _pathToNode,
-        }
+          })
+          return sketchUuid
+        },
       }),
-      'AST add line segment': ({ sketchPathToNode }, { data: { coords } }) => {
+      'AST start new sketch': assign(
+        ({ sketchEnginePathId }, { data: { coords, axis, segmentId } }) => {
+          if (!axis) {
+            // Something really weird must have happened for this to happen.
+            console.error('axis is undefined for starting a new sketch')
+            return {}
+          }
+          if (!segmentId) {
+            // Something really weird must have happened for this to happen.
+            console.error('segmentId is undefined for starting a new sketch')
+            return {}
+          }
+
+          const _addStartSketch = addStartSketch(
+            kclManager.ast,
+            axis,
+            [roundOff(coords[0].x), roundOff(coords[0].y)],
+            [
+              roundOff(coords[1].x - coords[0].x),
+              roundOff(coords[1].y - coords[0].y),
+            ]
+          )
+          const _modifiedAst = _addStartSketch.modifiedAst
+          const _pathToNode = _addStartSketch.pathToNode
+          const newCode = recast(_modifiedAst)
+          const astWithUpdatedSource = parse(newCode)
+          const updatedPipeNode = getNodeFromPath<PipeExpression>(
+            astWithUpdatedSource,
+            _pathToNode
+          ).node
+          const startProfileAtCallExp = updatedPipeNode.body.find(
+            (exp) =>
+              exp.type === 'CallExpression' &&
+              exp.callee.name === 'startProfileAt'
+          )
+          if (startProfileAtCallExp)
+            engineCommandManager.artifactMap[sketchEnginePathId] = {
+              type: 'result',
+              range: [startProfileAtCallExp.start, startProfileAtCallExp.end],
+              commandType: 'extend_path',
+              data: null,
+              raw: {} as any,
+            }
+          const lineCallExp = updatedPipeNode.body.find(
+            (exp) => exp.type === 'CallExpression' && exp.callee.name === 'line'
+          )
+          if (lineCallExp)
+            engineCommandManager.artifactMap[segmentId] = {
+              type: 'result',
+              range: [lineCallExp.start, lineCallExp.end],
+              commandType: 'extend_path',
+              parentId: sketchEnginePathId,
+              data: null,
+              raw: {} as any,
+            }
+
+          kclManager.executeAstMock(astWithUpdatedSource, true)
+
+          return {
+            sketchPathToNode: _pathToNode,
+          }
+        }
+      ),
+      'AST add line segment': (
+        { sketchPathToNode, sketchEnginePathId },
+        { data: { coords, segmentId } }
+      ) => {
         if (!sketchPathToNode) return
         const lastCoord = coords[coords.length - 1]
 
@@ -152,15 +196,29 @@ export const ModelingMachineProvider = ({
 
         let _modifiedAst: Program
         if (!isClose) {
-          _modifiedAst = addNewSketchLn({
+          const newSketchLn = addNewSketchLn({
             node: kclManager.ast,
             programMemory: kclManager.programMemory,
             to: [lastCoord.x, lastCoord.y],
             fnName: 'line',
             pathToNode: sketchPathToNode,
-          }).modifiedAst
-          kclManager.executeAstMock(_modifiedAst, true)
-          // kclManager.updateAst(_modifiedAst, false)
+          })
+          const _modifiedAst = newSketchLn.modifiedAst
+          kclManager.executeAstMock(_modifiedAst, true).then(() => {
+            const lineCallExp = getNodeFromPath<CallExpression>(
+              kclManager.ast,
+              newSketchLn.pathToNode
+            ).node
+            if (segmentId)
+              engineCommandManager.artifactMap[segmentId] = {
+                type: 'result',
+                range: [lineCallExp.start, lineCallExp.end],
+                commandType: 'extend_path',
+                parentId: sketchEnginePathId,
+                data: null,
+                raw: {} as any,
+              }
+          })
         } else {
           _modifiedAst = addCloseToPipe({
             node: kclManager.ast,
@@ -209,25 +267,37 @@ export const ModelingMachineProvider = ({
           // I've found this the best way to deal with the editor without causing an infinite loop
           // and really we want the editor to be in charge of cursor positions and for `selectionRanges` mirror it
           // because we want to respect the user manually placing the cursor too.
-          const selectionRangeTypeMap = setCodeMirrorCursor({
-            codeSelection: setSelections.selection,
-            currestSelections: selectionRanges,
-            editorView,
-            isShiftDown,
-          })
-          return {
-            selectionRangeTypeMap,
+
+          // for more details on how selections see `src/lib/selections.ts`.
+          const { codeMirrorSelection, selectionRangeTypeMap } =
+            handleSelectionWithShift({
+              codeSelection: setSelections.selection,
+              currestSelections: selectionRanges,
+              isShiftDown,
+            })
+          if (codeMirrorSelection) {
+            setTimeout(() => {
+              editorView.dispatch({
+                selection: codeMirrorSelection,
+              })
+            })
           }
+          return { selectionRangeTypeMap }
         }
         // This DOES NOT set the `selectionRanges` in xstate context
         // same as comment above
-        const selectionRangeTypeMap = dispatchCodeMirrorCursor({
-          selections: setSelections.selection,
-          editorView,
-        })
-        return {
-          selectionRangeTypeMap,
+        const { codeMirrorSelection, selectionRangeTypeMap } =
+          handleSelectionBatch({
+            selections: setSelections.selection,
+          })
+        if (codeMirrorSelection) {
+          setTimeout(() => {
+            editorView.dispatch({
+              selection: codeMirrorSelection,
+            })
+          })
         }
+        return { selectionRangeTypeMap }
       }),
     },
     guards: {
@@ -312,6 +382,22 @@ export const ModelingMachineProvider = ({
           ),
         }
       },
+      'Get perpendicular distance info': async ({
+        selectionRanges,
+      }): Promise<SetSelections> => {
+        const { modifiedAst, pathToNodeMap } = await applyConstraintIntersect({
+          selectionRanges,
+        })
+        await kclManager.updateAst(modifiedAst, true)
+        return {
+          selectionType: 'completeSelection',
+          selection: pathMapToSelections(
+            kclManager.ast,
+            selectionRanges,
+            pathToNodeMap
+          ),
+        }
+      },
     },
     devTools: true,
   })
@@ -325,7 +411,7 @@ export const ModelingMachineProvider = ({
         })
       }
     })
-  }, [kclManager.defaultPlanes, modelingSend, modelingState.nextEvents])
+  }, [modelingSend, modelingState.nextEvents])
 
   // useStateMachineCommands({
   //   state: settingsState,

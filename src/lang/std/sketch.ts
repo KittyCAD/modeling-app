@@ -202,7 +202,11 @@ export const line: SketchLineHelper = {
       pipe.body[callIndex] = callExp
       return {
         modifiedAst: _node,
-        pathToNode,
+        pathToNode: [
+          ...pathToNode,
+          ['body', 'PipeExpression'],
+          [callIndex, 'CallExpression'],
+        ],
         valueUsedInTransform,
       }
     }
@@ -213,6 +217,14 @@ export const line: SketchLineHelper = {
     ])
     if (pipe.type === 'PipeExpression') {
       pipe.body = [...pipe.body, callExp]
+      return {
+        modifiedAst: _node,
+        pathToNode: [
+          ...pathToNode,
+          ['body', 'PipeExpression'],
+          [pipe.body.length - 1, 'CallExpression'],
+        ],
+      }
     } else {
       varDec.init = createPipeExpression([varDec.init, callExp])
     }
@@ -899,7 +911,7 @@ export function changeSketchArguments(
   sourceRange: SourceRange,
   args: [number, number],
   from: [number, number]
-): { modifiedAst: Program } {
+): { modifiedAst: Program; pathToNode: PathToNode } {
   const _node = { ...node }
   const thePath = getNodePathFromSourceRange(_node, sourceRange)
   const { node: callExpression, shallowPath } = getNodeFromPath<CallExpression>(
@@ -919,7 +931,7 @@ export function changeSketchArguments(
     })
   }
 
-  throw new Error('not a sketch line helper')
+  throw new Error(`not a sketch line helper: ${callExpression?.callee?.name}`)
 }
 
 interface CreateLineFnCallArgs {
@@ -949,6 +961,7 @@ export function addNewSketchLn({
   pathToNode,
 }: Omit<CreateLineFnCallArgs, 'from'>): {
   modifiedAst: Program
+  pathToNode: PathToNode
 } {
   const node = JSON.parse(JSON.stringify(_node))
   const { add, updateArgs } = sketchLineHelperMap?.[fnName] || {}
