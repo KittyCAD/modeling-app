@@ -160,15 +160,24 @@ export const TextEditor = ({
     )
     const idBasedSelections = codeBasedSelections
       .map(({ type, range }) => {
-        const hasOverlap = Object.entries(
+        // TODO #868: loops over all artifacts will become inefficient at a large scale
+        const entriesWithOverlap = Object.entries(
           engineCommandManager.artifactMap || {}
-        ).filter(([_, { range: artifactRange }]) => {
-          return artifactRange && isOverlap(artifactRange, range)
+        ).filter(([_, artifact]) => {
+          return artifact.range && isOverlap(artifact.range, range)
+            ? artifact
+            : false
         })
-        if (hasOverlap.length) {
+        if (entriesWithOverlap.length) {
+          const [id, artifact] = entriesWithOverlap?.[0]
           return {
             type,
-            id: hasOverlap?.[0]?.[0],
+            id:
+              type === 'line-end' &&
+              artifact.type === 'result' &&
+              artifact.headVertexId
+                ? artifact.headVertexId
+                : id,
           }
         }
         return null
