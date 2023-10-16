@@ -1,5 +1,4 @@
-use std::{collections::HashMap, str::FromStr};
-
+use crate::executor::SourceRange;
 use crate::{
     ast::types::{
         ArrayExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression, CommentStyle, ExpressionStatement,
@@ -12,6 +11,7 @@ use crate::{
     math_parser::MathParser,
     token::{Token, TokenType},
 };
+use std::{collections::HashMap, str::FromStr};
 
 mod parser_impl;
 
@@ -162,15 +162,46 @@ pub struct Parser {
 impl Parser {
     pub fn new(tokens: Vec<Token>) -> Self {
         let stdlib = crate::std::StdLib::new();
-        let unkown_tokens: Vec<Token> = tokens.iter().cloned().filter(|token| token.token_type == TokenType::Unkown).collect();
-        Self { tokens, unkown_tokens, stdlib }
+        let unkown_tokens: Vec<Token> = tokens
+            .iter()
+            .cloned()
+            .filter(|token| token.token_type == TokenType::Unkown)
+            .collect();
+        let tokens: Vec<Token> = tokens
+            .into_iter()
+            .filter(|token| token.token_type != TokenType::Unkown)
+            .collect();
+
+        println!("unkown_tokens => {:?}, tokens => {:?}", unkown_tokens, tokens);
+
+        Self {
+            tokens,
+            unkown_tokens,
+            stdlib,
+        }
     }
 
     pub fn get_token(&self, index: usize) -> Result<&Token, KclError> {
+
         if self.tokens.is_empty() {
             return Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: vec![],
                 message: "file is empty".to_string(),
+            }));
+        }
+
+        println!("*******************************");
+        println!("{:?}", self.unkown_tokens.clone());
+        println!("*******************************");
+        if !self.unkown_tokens.is_empty() {
+            return Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: self
+                    .unkown_tokens
+                    .clone()
+                    .iter()
+                    .map(|token| SourceRange::new(token.start, token.end))
+                    .collect(),
+                message: "found list of unkown tokens".to_string(),
             }));
         }
 
@@ -185,7 +216,7 @@ impl Parser {
 
     /// Use the new Winnow parser.
     pub fn ast(&self) -> Result<Program, KclError> {
-        parser_impl::run_parser(&mut self.tokens.as_slice())
+        parser_impl::run_parser(&mut self.tokens.as_slice(), &mut self.unkown_tokens.as_slice())
     }
 
     /// Use the old handwritten recursive parser.
@@ -1646,6 +1677,23 @@ impl Parser {
             }));
         }
 
+
+        println!("*******************************");
+        println!("{:?}", self.unkown_tokens.clone());
+        println!("*******************************");
+
+        if !self.unkown_tokens.is_empty() {
+            return Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: self
+                    .unkown_tokens
+                    .clone()
+                    .iter()
+                    .map(|token| SourceRange::new(token.start, token.end))
+                    .collect(),
+                message: "found list of unkown tokens".to_string(),
+            }));
+        }
+
         if token_index >= self.tokens.len() - 1 {
             return Ok(BodyResult {
                 body: previous_body,
@@ -2828,11 +2876,20 @@ const secondExtrude = startSketchOn('XY')
     #[test]
     fn test_parse_greater_bang() {
         let tokens = crate::token::lexer(">!");
+
+        
+        println!("tokens => {:?}", tokens);
+
         let parser = Parser::new(tokens);
+
         let err = parser.ast().unwrap_err();
+
         // TODO: Better errors when program cannot tokenize.
         // https://github.com/KittyCAD/modeling-app/issues/696
-        assert!(err.to_string().contains("file is empty"));
+        
+
+        println!("err => {:?}", err);
+        assert!(err.to_string().contains("found list of unkown tokens"));
     }
 
     #[test]
@@ -2847,6 +2904,9 @@ const secondExtrude = startSketchOn('XY')
     #[test]
     fn test_parse_parens_unicode() {
         let tokens = crate::token::lexer("(ޜ");
+
+        println!("===================================================");
+
         let parser = Parser::new(tokens);
         let result = parser.ast();
         // TODO: Better errors when program cannot tokenize.
@@ -2885,6 +2945,7 @@ z(-[["#,
             r#"z
  (--#"#,
         );
+        println!("\n\n{:?}\n\n", tokens);
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
@@ -2892,7 +2953,7 @@ z(-[["#,
         // https://github.com/KittyCAD/modeling-app/issues/696
         assert_eq!(
             result.err().unwrap().to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [], message: "file is empty" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([6, 7])], message: "found list of unkown tokens" }"#
         );
     }
 
@@ -2906,7 +2967,7 @@ z(-[["#,
         // https://github.com/KittyCAD/modeling-app/issues/696
         assert_eq!(
             result.err().unwrap().to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [], message: "file is empty" }"#
+            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([25, 26]), SourceRange([26, 27])], message: "found list of unkown tokens" }"#
         );
     }
 

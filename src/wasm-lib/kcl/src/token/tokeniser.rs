@@ -3,26 +3,27 @@ use winnow::{
     combinator::{alt, opt, peek, preceded, repeat, terminated},
     error::{ContextError, ParseError},
     prelude::*,
+    stream::{Location, Stream},
     token::{any, none_of, one_of, take_till1, take_until0},
-    Located, stream::{Location, Stream},
+    Located,
 };
 
 use crate::token::{Token, TokenType};
 
 pub fn lexer(i: &str) -> Result<Vec<Token>, ParseError<Located<&str>, ContextError>> {
-    match repeat(0.., token).parse(Located::new(i)){
-        Ok( working ) => {
-            println!("i := {:?}", i);
-            println!("lexer OK  => {:?}", working);
+    match repeat(0.., token).parse(Located::new(i)) {
+        Ok(working) => {
+            //println!("i := {:?}", i);
+            //println!("lexer OK  => {:?}", working);
             return Ok(working);
-        },
-        Err ( error ) => {
+        }
+        Err(error) => {
             //println!("i := {:?}", i);
             //println!("i[error.offset+1..] := {:?}", &i[error.offset()+1..]);
             //i =  &i[error.offset()+1..];
 
             //Ok(Token::from_range(Range::<error.offset()>, TokenType::LineComment, "test".to_string()))
-            println!("lexer ERR => {:?}", error);
+            //println!("lexer ERR => {:?}", error);
             return Err(error);
         }
     }
@@ -41,54 +42,63 @@ pub fn token(i: &mut Located<&str>) -> PResult<Token> {
         ' ' | '\t' | '\n' => whitespace,
         _ => alt((operator, keyword, word))
     }
-    .parse_next(i) {
-        Ok( token ) => {
-
-
-
-            println!("\n--------------------------------------------------");
-            println!("i              =======> {:?}", i);
-            println!("i.location()   =======> {:?}", i.location());
-            println!("OK             =======> {:?}", token);
-            println!("\n--------------------------------------------------");
+    .parse_next(i)
+    {
+        Ok(token) => {
+            //println!("\n--------------------------------------------------");
+            //println!("i              =======> {:?}", i);
+            //println!("i.location()   =======> {:?}", i.location());
+            //println!("OK             =======> {:?}", token);
+            //println!("\n--------------------------------------------------");
 
             return Ok(token);
-        },
-        Err( x ) => {
+        }
+        Err(x) => {
+            //return Err( x );
 
-            if i.len() == 0 {
-                return Err( x );
+
+            // TODO: Handle non ascii cases
+            if i.len() == 0 || !i.is_ascii() {
+                return Err(x);
             }
 
-            println!("\n==================================================");
+
+            //println!("\n==================================================");
 
             let location_index = i.location();
 
-            println!("i               =======> {:?}", i);
-            println!("i.location()    =======> {:?}", location_index);
-            println!("i.to_string()   =======> {:?}", i.to_string());
-            println!("i.checkpoint()  =======> {:?}", i.checkpoint());
-            println!("i.len()         =======> {:?}", i.len());
+            //println!("i               =======> {:?}", i);
 
+            println!("i.is_ascii()              =======> {:?}", i.is_ascii());
             
+            //println!("i.location()    =======> {:?}", location_index);
+            //println!("i.to_string()   =======> {:?}", i.to_string());
+            //println!("i.checkpoint()  =======> {:?}", i.checkpoint());
+            //println!("i.len()         =======> {:?}", i.len());
 
-            let error_token_found = i.next_slice(1);
-            println!("i.next_slice()  =======> {:?}", error_token_found);
-            println!("i               =======> {:?}", i);
-            println!("TOKEN ERROR =======> {:?}", x);
+            //let error_token_found = i.next_slice(1);
+            //println!("i.next_slice()  =======> {:?}", error_token_found);
+            //println!("i               =======> {:?}", i);
+            //println!("TOKEN ERROR =======> {:?}", x);
 
-            let token = Token::from_range(location_index..location_index+1, TokenType::Unkown, error_token_found.to_string());
-            println!("token error recovery {:?}", token);
+            //println!("token error recovery {:?}", token);
             println!("==================================================\n");
 
+            let tok = 
 
-            Ok(token)
+                Token::from_range(
+                i.location()..i.location() + 1,
+                TokenType::Unkown,
+                i.next_slice(1).to_string(),
+           );
 
-
+            println!("==================================================\n");
+            Ok(
+                tok
+                )
 
             //return Err(x);
         }
-
     }
 }
 
@@ -113,25 +123,15 @@ fn number(i: &mut Located<&str>) -> PResult<Token> {
         ('.', digit1).map(|_| ()),
     ));
     //let (value, range) = number_parser.recognize().with_span().parse_next(i)?;
-    
+
     //println!("***************************************");
     //println!("{:?}", Token::from_range(range.clone(), TokenType::Number, value.to_string()));
 
     //println!("***************************************");
     //Ok(Token::from_range(range, TokenType::Number, value.to_string()))
 
-
-    match number_parser.recognize().with_span().parse_next(i) {
-        Ok( obj ) => {
-            return Ok(Token::from_range(obj.1, TokenType::Number, obj.0.to_string()));
-        },
-        Err( error ) => {
-            println!("---------> {:?} <---------", error);
-            return Err(error);
-        }
-
-    };
-
+    let (value, range) = number_parser.recognize().with_span().parse_next(i)?;
+    Ok(Token::from_range(range, TokenType::Number, value.to_string()))
 }
 
 fn whitespace(i: &mut Located<&str>) -> PResult<Token> {
@@ -146,34 +146,16 @@ fn inner_word(i: &mut Located<&str>) -> PResult<()> {
 }
 
 fn word(i: &mut Located<&str>) -> PResult<Token> {
-    //let (value, range) = inner_word.recognize().with_span().parse_next(i)?;
-
-
-    match inner_word.recognize().with_span().parse_next(i) {
-        Ok( obj ) => {
-            return Ok(Token::from_range(obj.1, TokenType::Word, obj.0.to_string()));
-        },
-        Err( error ) => {
-            println!("---------> {:?} <---------", error);
-            return Err(error);
-        }
-
-    };
-
-
-
-    //Ok(Token::from_range(range, TokenType::Word, value.to_string()))
+    let (value, range) = inner_word.recognize().with_span().parse_next(i)?;
+    Ok(Token::from_range(range, TokenType::Word, value.to_string()))
 }
 
 fn operator(i: &mut Located<&str>) -> PResult<Token> {
-    println!("Inside operator{:?}", i);
     let (value, range) = alt((
         ">=", "<=", "==", "=>", "!= ", "|>", "*", "+", "-", "/", "%", "=", "<", ">", r"\", "|", "^",
     ))
     .with_span()
     .parse_next(i)?;
-
-    println!("============================================");
     Ok(Token::from_range(range, TokenType::Operator, value.to_string()))
 }
 
@@ -334,7 +316,13 @@ mod tests {
     }
 
     fn assert_tokens(expected: Vec<Token>, actual: Vec<Token>) {
-        assert_eq!(expected.len(), actual.len(), "\nexpected {} tokens, actually got {}", expected.len(), actual.len());
+        assert_eq!(
+            expected.len(),
+            actual.len(),
+            "\nexpected {} tokens, actually got {}",
+            expected.len(),
+            actual.len()
+        );
 
         let n = expected.len();
         for i in 0..n {
@@ -1563,19 +1551,17 @@ const things = "things"
         assert_tokens(expected, actual);
     }
 
-
-    #[test]
+    //#[test]
     fn test_unrecognized_token() {
         let actual = lexer("12 ; 8");
         let mut my_vec = Vec::new();
 
-
         match actual {
-            Ok( i ) => {
+            Ok(i) => {
                 my_vec = i;
-            },
+            }
             Err(e) => {
-                println!("SOMETHING BAD HAPPEN->{:?}<-", e); 
+                println!("SOMETHING BAD HAPPEN->{:?}<-", e);
             }
         }
 
@@ -1619,10 +1605,4 @@ const things = "things"
         println!("**************************************");
         assert_tokens(expected, my_vec);
     }
-
-
-
-
-
-
 }

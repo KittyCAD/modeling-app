@@ -33,13 +33,24 @@ lazy_static::lazy_static! {
 
 type TokenSlice<'slice, 'input> = &'slice mut &'input [Token];
 
-pub fn run_parser(i: TokenSlice) -> Result<Program, KclError> {
+pub fn run_parser(i: TokenSlice, j: TokenSlice) -> Result<Program, KclError> {
     if i.is_empty() {
         return Err(KclError::Syntax(KclErrorDetails {
             source_ranges: vec![],
             message: "file is empty".to_string(),
         }));
     }
+    if !j.is_empty() {
+        return Err(KclError::Syntax(KclErrorDetails {
+            source_ranges: j
+                .iter()
+                .map(|token| SourceRange::new(token.start, token.end))
+                .collect(),
+            message: "found list of unkown tokens".to_string(),
+        }));
+    }
+
+
 
     program.parse(i).map_err(KclError::from)
 }
