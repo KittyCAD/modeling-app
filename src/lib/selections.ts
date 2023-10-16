@@ -175,6 +175,8 @@ export function setCodeMirrorCursor({
   return selectionRangeTypeMap
 }
 
+type SelectionToEngine = { type: Selection['type']; id: string }
+
 export function processCodeMirrorRanges({
   codeMirrorRanges,
   selectionRanges,
@@ -183,7 +185,10 @@ export function processCodeMirrorRanges({
   codeMirrorRanges: readonly SelectionRange[]
   selectionRanges: Selections
   selectionRangeTypeMap: SelectionRangeTypeMap
-}): null | ModelingEvent {
+}): null | {
+  modelingEvent: ModelingEvent
+  engineEvents: Models['WebSocketRequest_type'][]
+} {
   const isChange =
     codeMirrorRanges.length !== selectionRanges.codeBasedSelections.length ||
     codeMirrorRanges.some(({ from, to }, i) => {
@@ -207,8 +212,8 @@ export function processCodeMirrorRanges({
         range: [from, to],
       }
     })
-  const idBasedSelections = codeBasedSelections
-    .map(({ type, range }) => {
+  const idBasedSelections: SelectionToEngine[] = codeBasedSelections
+    .map(({ type, range }): null | SelectionToEngine => {
       // TODO #868: loops over all artifacts will become inefficient at a large scale
       const entriesWithOverlap = Object.entries(
         engineCommandManager.artifactMap || {}
@@ -233,40 +238,44 @@ export function processCodeMirrorRanges({
     })
     .filter(Boolean) as any
 
-  engineCommandManager.cusorsSelected(idBasedSelections)
   if (!selectionRanges) return null
   return {
-    type: 'Set selection',
-    data: {
-      selectionType: 'mirrorCodeMirrorSelections',
-      selection: {
-        ...selectionRanges,
-        codeBasedSelections,
+    modelingEvent: {
+      type: 'Set selection',
+      data: {
+        selectionType: 'mirrorCodeMirrorSelections',
+        selection: {
+          ...selectionRanges,
+          codeBasedSelections,
+        },
       },
     },
+    engineEvents: resetAndSetEngineEntitySelectionCmds(idBasedSelections),
   }
 }
 
-export function resetAndSetEngineEntitySelectionFromIdsAssociatedWithSourceRanges(
-  selections: { type: string; id: string }[]
-) {
+export function resetAndSetEngineEntitySelectionCmds(
+  selections: SelectionToEngine[]
+): Models['WebSocketRequest_type'][] {
   if (!engineCommandManager.engineConnection?.isReady()) {
     console.log('engine connection isnt ready')
-    return
+    return []
   }
-  engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd: {
-      type: 'select_clear',
+  return [
+    {
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'select_clear',
+      },
+      cmd_id: uuidv4(),
     },
-    cmd_id: uuidv4(),
-  })
-  engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd: {
-      type: 'select_add',
-      entities: selections.map(({ id }) => id),
+    {
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'select_add',
+        entities: selections.map(({ id }) => id),
+      },
+      cmd_id: uuidv4(),
     },
-    cmd_id: uuidv4(),
-  })
+  ]
 }

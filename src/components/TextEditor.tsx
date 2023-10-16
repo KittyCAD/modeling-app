@@ -133,14 +133,17 @@ export const TextEditor = ({
     if (!editorView) {
       setEditorView(viewUpdate.view)
     }
-    const machineEvent = processCodeMirrorRanges({
+    const eventInfo = processCodeMirrorRanges({
       codeMirrorRanges: viewUpdate.state.selection.ranges,
       selectionRanges,
       selectionRangeTypeMap,
     })
-    if (machineEvent) {
-      send(machineEvent)
-    }
+    if (!eventInfo) return
+
+    send(eventInfo.modelingEvent)
+    eventInfo.engineEvents.forEach((event) =>
+      engineCommandManager.sendSceneCommand(event)
+    )
   }
 
   const editorExtensions = useMemo(() => {

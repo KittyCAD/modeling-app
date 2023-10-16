@@ -1,5 +1,4 @@
 import { SourceRange } from 'lang/wasm'
-import { resetAndSetEngineEntitySelectionFromIdsAssociatedWithSourceRanges } from 'lib/selections'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_CONNECTION_TIMEOUT_MS } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
@@ -910,11 +909,6 @@ export class EngineCommandManager {
       }
       this.engineConnection?.send(deletCmd)
     })
-  }
-  cusorsSelected(selections: { type: string; id: string }[]) {
-    resetAndSetEngineEntitySelectionFromIdsAssociatedWithSourceRanges(
-      selections
-    )
   }
   sendSceneCommand(command: EngineCommand): Promise<any> {
     if (this.engineConnection === undefined) {
