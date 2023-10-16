@@ -1,6 +1,6 @@
 import { Toolbar } from '../Toolbar'
 import UserSidebarMenu from './UserSidebarMenu'
-import { ProjectWithEntryPointMetadata } from '../Router'
+import { IndexLoaderData } from '../Router'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import styles from './AppHeader.module.css'
@@ -8,7 +8,7 @@ import { NetworkHealthIndicator } from './NetworkHealthIndicator'
 
 interface AppHeaderProps extends React.PropsWithChildren {
   showToolbar?: boolean
-  project?: ProjectWithEntryPointMetadata
+  project?: Omit<IndexLoaderData, 'code'>
   className?: string
   enableMenu?: boolean
 }
@@ -32,7 +32,13 @@ export const AppHeader = ({
         className
       }
     >
-      <ProjectSidebarMenu renderAsLink={!enableMenu} project={project} />
+      {project && (
+        <ProjectSidebarMenu
+          renderAsLink={!enableMenu}
+          project={project.project}
+          file={project.file}
+        />
+      )}
       {/* Toolbar if the context deems it */}
       {showToolbar && (
         <div className="max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-4xl 2xl:max-w-5xl">

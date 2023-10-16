@@ -33,7 +33,8 @@ import {
 import { ONBOARDING_PROJECT_NAME } from './Onboarding'
 
 export const Settings = () => {
-  const loaderData = useRouteLoaderData(paths.FILE) as IndexLoaderData
+  const loaderData =
+    (useRouteLoaderData(paths.FILE) as IndexLoaderData) || undefined
   const navigate = useNavigate()
   const location = useLocation()
   const isFileSettings = location.pathname.includes(paths.FILE)
@@ -100,7 +101,7 @@ export const Settings = () => {
 
   return (
     <div className="fixed inset-0 z-40 overflow-auto body-bg">
-      <AppHeader showToolbar={false} project={loaderData?.project}>
+      <AppHeader showToolbar={false} project={loaderData}>
         <ActionButton
           Element="link"
           to={location.pathname.replace(paths.SETTINGS, '')}

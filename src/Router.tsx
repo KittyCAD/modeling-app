@@ -42,6 +42,7 @@ import { TEST, VITE_KC_SENTRY_DSN } from './env'
 import * as Sentry from '@sentry/react'
 import ModelingMachineProvider from 'components/ModelingMachineProvider'
 import { KclContextProvider } from 'lang/KclSinglton'
+import FileMachineProvider from 'components/FileMachineProvider'
 
 if (VITE_KC_SENTRY_DSN && !TEST) {
   Sentry.init({
@@ -101,10 +102,11 @@ export const BROWSER_FILE_NAME = 'new'
 export type IndexLoaderData = {
   code: string | null
   project?: ProjectWithEntryPointMetadata
+  file?: FileEntry
 }
 
 export type ProjectWithEntryPointMetadata = FileEntry & {
-  entrypoint_metadata: Metadata
+  entrypointMetadata: Metadata
 }
 export type HomeLoaderData = {
   projects: ProjectWithEntryPointMetadata[]
@@ -143,11 +145,13 @@ const router = createBrowserRouter(
       element: (
         <Auth>
           <Outlet />
-          <KclContextProvider>
-            <ModelingMachineProvider>
-              <App />
-            </ModelingMachineProvider>
-          </KclContextProvider>
+          <FileMachineProvider>
+            <KclContextProvider>
+              <ModelingMachineProvider>
+                <App />
+              </ModelingMachineProvider>
+            </KclContextProvider>
+          </FileMachineProvider>
           {!isTauri() && import.meta.env.PROD && <DownloadAppBanner />}
         </Auth>
       ),
@@ -177,21 +181,41 @@ const router = createBrowserRouter(
           )
         }
 
+        const defaultDir = persistedSettings.defaultDirectory || ''
+
         if (params.id && params.id !== BROWSER_FILE_NAME) {
+          const decodedId = decodeURIComponent(params.id)
+          const projectAndFile = decodedId.replace(defaultDir + '/', '')
+          const firstSlashIndex = projectAndFile.indexOf('/')
+          const projectName = projectAndFile.slice(0, firstSlashIndex)
+          const projectPath = defaultDir + '/' + projectName
+          const currentFileName = projectAndFile.slice(firstSlashIndex + 1)
+
+          if (firstSlashIndex === -1 || !currentFileName)
+            return redirect(
+              `${paths.FILE}/${encodeURIComponent(
+                `${params.id}/${PROJECT_ENTRYPOINT}`
+              )}`
+            )
+
           // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
-          const code = await readTextFile(params.id + '/' + PROJECT_ENTRYPOINT)
-          const entrypoint_metadata = await metadata(
-            params.id + '/' + PROJECT_ENTRYPOINT
+          const code = await readTextFile(decodedId)
+          const entrypointMetadata = await metadata(
+            projectPath + '/' + PROJECT_ENTRYPOINT
           )
-          const children = await readDir(params.id)
+          const children = await readDir(projectPath, { recursive: true })
 
           return {
             code,
             project: {
-              name: params.id.slice(params.id.lastIndexOf('/') + 1),
-              path: params.id,
+              name: projectName,
+              path: projectPath,
               children,
-              entrypoint_metadata,
+              entrypointMetadata,
+            },
+            file: {
+              name: currentFileName,
+              path: params.id,
             },
           }
         }
@@ -245,7 +269,7 @@ const router = createBrowserRouter(
         )
         const projects = await Promise.all(
           projectsNoMeta.map(async (p) => ({
-            entrypoint_metadata: await metadata(
+            entrypointMetadata: await metadata(
               p.path + '/' + PROJECT_ENTRYPOINT
             ),
             ...p,
