@@ -36,11 +36,9 @@ import { applyConstraintAngleBetween } from './Toolbar/SetAngleBetween'
 import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
 import { toast } from 'react-hot-toast'
 import { pathMapToSelections } from 'lang/util'
-import {
-  dispatchCodeMirrorCursor,
-  setCodeMirrorCursor,
-  useStore,
-} from 'useStore'
+import { useStore } from 'useStore'
+import { handleSelectionBatch, handleSelectionWithShift } from 'lib/selections'
+import { applyConstraintIntersect } from './Toolbar/Intersect'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -269,25 +267,37 @@ export const ModelingMachineProvider = ({
           // I've found this the best way to deal with the editor without causing an infinite loop
           // and really we want the editor to be in charge of cursor positions and for `selectionRanges` mirror it
           // because we want to respect the user manually placing the cursor too.
-          const selectionRangeTypeMap = setCodeMirrorCursor({
-            codeSelection: setSelections.selection,
-            currestSelections: selectionRanges,
-            editorView,
-            isShiftDown,
-          })
-          return {
-            selectionRangeTypeMap,
+
+          // for more details on how selections see `src/lib/selections.ts`.
+          const { codeMirrorSelection, selectionRangeTypeMap } =
+            handleSelectionWithShift({
+              codeSelection: setSelections.selection,
+              currestSelections: selectionRanges,
+              isShiftDown,
+            })
+          if (codeMirrorSelection) {
+            setTimeout(() => {
+              editorView.dispatch({
+                selection: codeMirrorSelection,
+              })
+            })
           }
+          return { selectionRangeTypeMap }
         }
         // This DOES NOT set the `selectionRanges` in xstate context
         // same as comment above
-        const selectionRangeTypeMap = dispatchCodeMirrorCursor({
-          selections: setSelections.selection,
-          editorView,
-        })
-        return {
-          selectionRangeTypeMap,
+        const { codeMirrorSelection, selectionRangeTypeMap } =
+          handleSelectionBatch({
+            selections: setSelections.selection,
+          })
+        if (codeMirrorSelection) {
+          setTimeout(() => {
+            editorView.dispatch({
+              selection: codeMirrorSelection,
+            })
+          })
         }
+        return { selectionRangeTypeMap }
       }),
     },
     guards: {
@@ -362,6 +372,22 @@ export const ModelingMachineProvider = ({
         const { modifiedAst, pathToNodeMap } = await applyConstraintAngleLength(
           { selectionRanges }
         )
+        await kclManager.updateAst(modifiedAst, true)
+        return {
+          selectionType: 'completeSelection',
+          selection: pathMapToSelections(
+            kclManager.ast,
+            selectionRanges,
+            pathToNodeMap
+          ),
+        }
+      },
+      'Get perpendicular distance info': async ({
+        selectionRanges,
+      }): Promise<SetSelections> => {
+        const { modifiedAst, pathToNodeMap } = await applyConstraintIntersect({
+          selectionRanges,
+        })
         await kclManager.updateAst(modifiedAst, true)
         return {
           selectionType: 'completeSelection',
