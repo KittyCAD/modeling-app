@@ -3,7 +3,6 @@ import { engineCommandManager } from 'lang/std/engineConnection'
 import { SourceRange } from 'lang/wasm'
 import { ModelingEvent } from 'machines/modelingMachine'
 import { v4 as uuidv4 } from 'uuid'
-import { EditorView } from 'editor/highlightextension'
 import { EditorSelection } from '@codemirror/state'
 import { kclManager } from 'lang/KclSinglton'
 import { SelectionRange } from '@uiw/react-codemirror'
@@ -99,14 +98,13 @@ export async function getEventForSelectWithPoint(
   }
 }
 
-export function dispatchCodeMirrorCursor({
+export function handleSelectionBatch({
   selections,
-  editorView,
 }: {
   selections: Selections
-  editorView: EditorView
 }): {
   selectionRangeTypeMap: SelectionRangeTypeMap
+  codeMirrorSelection?: EditorSelection
 } {
   const ranges: ReturnType<typeof EditorSelection.cursor>[] = []
   const selectionRangeTypeMap: SelectionRangeTypeMap = {}
@@ -116,40 +114,40 @@ export function dispatchCodeMirrorCursor({
       selectionRangeTypeMap[range[1]] = type
     }
   })
-  setTimeout(() => {
-    ranges.length &&
-      editorView.dispatch({
-        selection: EditorSelection.create(
-          ranges,
-          selections.codeBasedSelections.length - 1
-        ),
-      })
-  })
+  if (ranges.length)
+    return {
+      selectionRangeTypeMap,
+      codeMirrorSelection: EditorSelection.create(
+        ranges,
+        selections.codeBasedSelections.length - 1
+      ),
+    }
+
   return {
     selectionRangeTypeMap,
   }
 }
 
-export function setCodeMirrorCursor({
+export function handleSelectionWithShift({
   codeSelection,
   currestSelections,
-  editorView,
   isShiftDown,
 }: {
   codeSelection?: Selection
   currestSelections: Selections
-  editorView: EditorView
   isShiftDown: boolean
-}): SelectionRangeTypeMap {
+}): {
+  selectionRangeTypeMap: SelectionRangeTypeMap
+  codeMirrorSelection?: EditorSelection
+} {
   // This DOES NOT set the `selectionRanges` in xstate context
   // instead it updates/dispatches to the editor, which in turn updates the xstate context
   // I've found this the best way to deal with the editor without causing an infinite loop
   // and really we want the editor to be in charge of cursor positions and for `selectionRanges` mirror it
   // because we want to respect the user manually placing the cursor too.
   const code = kclManager.code
-  if (!codeSelection) {
-    const { selectionRangeTypeMap } = dispatchCodeMirrorCursor({
-      editorView,
+  if (!codeSelection)
+    return handleSelectionBatch({
       selections: {
         otherSelections: currestSelections.otherSelections,
         codeBasedSelections: [
@@ -160,19 +158,13 @@ export function setCodeMirrorCursor({
         ],
       },
     })
-    return selectionRangeTypeMap
-  }
   const selections: Selections = {
     ...currestSelections,
     codeBasedSelections: isShiftDown
       ? [...currestSelections.codeBasedSelections, codeSelection]
       : [codeSelection],
   }
-  const { selectionRangeTypeMap } = dispatchCodeMirrorCursor({
-    editorView,
-    selections,
-  })
-  return selectionRangeTypeMap
+  return handleSelectionBatch({ selections })
 }
 
 type SelectionToEngine = { type: Selection['type']; id: string }

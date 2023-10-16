@@ -37,7 +37,7 @@ import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
 import { toast } from 'react-hot-toast'
 import { pathMapToSelections } from 'lang/util'
 import { useStore } from 'useStore'
-import { dispatchCodeMirrorCursor, setCodeMirrorCursor } from 'lib/selections'
+import { handleSelectionBatch, handleSelectionWithShift } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 
 type MachineContext<T extends AnyStateMachine> = {
@@ -269,23 +269,35 @@ export const ModelingMachineProvider = ({
           // I've found this the best way to deal with the editor without causing an infinite loop
           // and really we want the editor to be in charge of cursor positions and for `selectionRanges` mirror it
           // because we want to respect the user manually placing the cursor too.
-          return {
-            selectionRangeTypeMap: setCodeMirrorCursor({
+          const { codeMirrorSelection, selectionRangeTypeMap } =
+            handleSelectionWithShift({
               codeSelection: setSelections.selection,
               currestSelections: selectionRanges,
-              editorView,
               isShiftDown,
-            }),
+            })
+          if (codeMirrorSelection) {
+            setTimeout(() => {
+              editorView.dispatch({
+                selection: codeMirrorSelection,
+              })
+            })
           }
+          return { selectionRangeTypeMap }
         }
         // This DOES NOT set the `selectionRanges` in xstate context
         // same as comment above
-        return {
-          selectionRangeTypeMap: dispatchCodeMirrorCursor({
+        const { codeMirrorSelection, selectionRangeTypeMap } =
+          handleSelectionBatch({
             selections: setSelections.selection,
-            editorView,
-          }),
+          })
+        if (codeMirrorSelection) {
+          setTimeout(() => {
+            editorView.dispatch({
+              selection: codeMirrorSelection,
+            })
+          })
         }
+        return { selectionRangeTypeMap }
       }),
     },
     guards: {
