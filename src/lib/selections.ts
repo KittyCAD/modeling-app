@@ -3,6 +3,9 @@ import { engineCommandManager } from 'lang/std/engineConnection'
 import { SourceRange } from 'lang/wasm'
 import { ModelingEvent } from 'machines/modelingMachine'
 import { v4 as uuidv4 } from 'uuid'
+import { EditorView } from 'editor/highlightextension'
+import { EditorSelection } from '@codemirror/state'
+import { kclManager } from 'lang/KclSinglton'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
@@ -92,4 +95,80 @@ export async function getEventForSelectWithPoint(
       selection: { range: _sourceRange, type: 'line-end' },
     },
   }
+}
+
+export function dispatchCodeMirrorCursor({
+  selections,
+  editorView,
+}: {
+  selections: Selections
+  editorView: EditorView
+}): {
+  selectionRangeTypeMap: SelectionRangeTypeMap
+} {
+  const ranges: ReturnType<typeof EditorSelection.cursor>[] = []
+  const selectionRangeTypeMap: SelectionRangeTypeMap = {}
+  selections.codeBasedSelections.forEach(({ range, type }) => {
+    if (range?.[1]) {
+      ranges.push(EditorSelection.cursor(range[1]))
+      selectionRangeTypeMap[range[1]] = type
+    }
+  })
+  setTimeout(() => {
+    ranges.length &&
+      editorView.dispatch({
+        selection: EditorSelection.create(
+          ranges,
+          selections.codeBasedSelections.length - 1
+        ),
+      })
+  })
+  return {
+    selectionRangeTypeMap,
+  }
+}
+
+export function setCodeMirrorCursor({
+  codeSelection,
+  currestSelections,
+  editorView,
+  isShiftDown,
+}: {
+  codeSelection?: Selection
+  currestSelections: Selections
+  editorView: EditorView
+  isShiftDown: boolean
+}): SelectionRangeTypeMap {
+  // This DOES NOT set the `selectionRanges` in xstate context
+  // instead it updates/dispatches to the editor, which in turn updates the xstate context
+  // I've found this the best way to deal with the editor without causing an infinite loop
+  // and really we want the editor to be in charge of cursor positions and for `selectionRanges` mirror it
+  // because we want to respect the user manually placing the cursor too.
+  const code = kclManager.code
+  if (!codeSelection) {
+    const { selectionRangeTypeMap } = dispatchCodeMirrorCursor({
+      editorView,
+      selections: {
+        otherSelections: currestSelections.otherSelections,
+        codeBasedSelections: [
+          {
+            range: [0, code.length ? code.length - 1 : 0],
+            type: 'default',
+          },
+        ],
+      },
+    })
+    return selectionRangeTypeMap
+  }
+  const selections: Selections = {
+    ...currestSelections,
+    codeBasedSelections: isShiftDown
+      ? [...currestSelections.codeBasedSelections, codeSelection]
+      : [codeSelection],
+  }
+  const { selectionRangeTypeMap } = dispatchCodeMirrorCursor({
+    editorView,
+    selections,
+  })
+  return selectionRangeTypeMap
 }

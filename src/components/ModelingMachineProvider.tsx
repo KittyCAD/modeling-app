@@ -36,11 +36,8 @@ import { applyConstraintAngleBetween } from './Toolbar/SetAngleBetween'
 import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
 import { toast } from 'react-hot-toast'
 import { pathMapToSelections } from 'lang/util'
-import {
-  dispatchCodeMirrorCursor,
-  setCodeMirrorCursor,
-  useStore,
-} from 'useStore'
+import { useStore } from 'useStore'
+import { dispatchCodeMirrorCursor, setCodeMirrorCursor } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 
 type MachineContext<T extends AnyStateMachine> = {
