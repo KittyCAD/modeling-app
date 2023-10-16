@@ -3,6 +3,7 @@ import { useStore } from 'useStore'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { useModelingContext } from './useModelingContext'
 import { v4 as uuidv4 } from 'uuid'
+import { SourceRange } from 'lang/wasm'
 
 export function useEngineConnectionSubscriptions() {
   const { setHighlightRange, highlightRange } = useStore((s) => ({
@@ -10,6 +11,12 @@ export function useEngineConnectionSubscriptions() {
     highlightRange: s.highlightRange,
   }))
   const { send, context } = useModelingContext()
+
+  interface RangeAndId {
+    id: string
+    range: SourceRange
+  }
+
   useEffect(() => {
     if (!engineCommandManager) return
 
@@ -62,19 +69,26 @@ export function useEngineConnectionSubscriptions() {
             })
             .then((res) => {
               const curveIds = res?.data?.data?.curve_ids
-              const ranges = curveIds
+              const ranges: RangeAndId[] = curveIds
                 .map(
-                  (id: string) => engineCommandManager.artifactMap[id]?.range
+                  (id: string): RangeAndId => ({
+                    id,
+                    range: engineCommandManager.artifactMap[id].range,
+                  })
                 )
-                .sort((a: [number, number], b: [number, number]) => a[0] - b[0])
+                .sort((a: RangeAndId, b: RangeAndId) => a.range[0] - b.range[0])
               // default to the head of the curve selected
-              const _sourceRange = ranges?.[0]
-              // TODO, we telling the engine that the line is selected, becasue we don't store
-              // vertex ranges in the artifact map, needs some thought.
+              const _sourceRange = ranges?.[0].range
+              const artifact = engineCommandManager.artifactMap[ranges?.[0]?.id]
+              if (artifact.type === 'result') {
+                artifact.headVertexId = data.entity_id
+              }
               send({
                 type: 'Set selection',
                 data: {
                   selectionType: 'singleCodeCursor',
+                  // line-end is used to indicate that headVertexId should be sent to the engine as "selected"
+                  // not the whole curve
                   selection: { range: _sourceRange, type: 'line-end' },
                 },
               })

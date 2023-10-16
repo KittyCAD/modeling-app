@@ -282,7 +282,7 @@ export const ModelingMachineProvider = ({
         }
         // This DOES NOT set the `selectionRanges` in xstate context
         // same as comment above
-        const selectionRangeTypeMap = dispatchCodeMirrorCursor({
+        const { selectionRangeTypeMap } = dispatchCodeMirrorCursor({
           selections: setSelections.selection,
           editorView,
         })

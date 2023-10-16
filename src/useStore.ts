@@ -392,7 +392,7 @@ export function setCodeMirrorCursor({
   // because we want to respect the user manually placing the cursor too.
   const code = kclManager.code
   if (!codeSelection) {
-    const selectionRangeTypeMap = dispatchCodeMirrorCursor({
+    const { selectionRangeTypeMap } = dispatchCodeMirrorCursor({
       editorView,
       selections: {
         otherSelections: currestSelections.otherSelections,
@@ -412,7 +412,7 @@ export function setCodeMirrorCursor({
       ? [...currestSelections.codeBasedSelections, codeSelection]
       : [codeSelection],
   }
-  const selectionRangeTypeMap = dispatchCodeMirrorCursor({
+  const { selectionRangeTypeMap } = dispatchCodeMirrorCursor({
     editorView,
     selections,
   })

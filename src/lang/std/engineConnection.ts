@@ -21,6 +21,7 @@ interface ResultCommand extends CommandInfo {
   type: 'result'
   data: any
   raw: WebSocketResponse
+  headVertexId?: string
 }
 interface FailedCommand extends CommandInfo {
   type: 'failed'
