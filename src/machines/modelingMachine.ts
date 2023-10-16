@@ -64,7 +64,7 @@ export type SetSelections =
       selection: Selections
     }
 
-export type ModelingEvent =
+export type ModelingMachineEvent =
   | { type: 'Deselect all' }
   | { type: 'Deselect edge'; data: Selection & { type: 'edge' } }
   | { type: 'Deselect axis'; data: Axis }
@@ -145,7 +145,7 @@ export const modelingMachine = createMachine(
     },
 
     schema: {
-      events: {} as ModelingEvent,
+      events: {} as ModelingMachineEvent,
     },
 
     states: {

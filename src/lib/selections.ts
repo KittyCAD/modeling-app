@@ -1,12 +1,68 @@
 import { Models } from '@kittycad/lib'
 import { engineCommandManager } from 'lang/std/engineConnection'
 import { SourceRange } from 'lang/wasm'
-import { ModelingEvent } from 'machines/modelingMachine'
+import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { v4 as uuidv4 } from 'uuid'
 import { EditorSelection } from '@codemirror/state'
 import { kclManager } from 'lang/KclSinglton'
 import { SelectionRange } from '@uiw/react-codemirror'
 import { isOverlap } from 'lib/utils'
+
+/*
+How selections work is complex due to the nature that we rely on the engine
+to tell what has been selected after we send a click command. But than the
+app needs these selections to be based on cursors, therefore the app must
+be in control of selections. On top of that because we need to set cursor
+positions in code-mirror for selections, both from app logic, and still
+allow the user to add multiple cursors like a normal editor, it's best to
+let code mirror control cursor positions and assosiate those source ranges
+with entity ids from code-mirror events later.
+
+So it's a lot of back and forth. conceptually the back and forth is:
+
+1) we send a click command to the engine
+2) the engine sends back ids of entities that were clicked
+3) we associate that source ranges with those ids
+4) we set the codemirror selection based on those source ranges (taking
+  into account if the user is holding shift to add to current selections
+  or not). we also create and remember a SelectionRangeTypeMap
+5) Code mirror fires a an event that cursors have changed, we loop through
+  these ranges and associate them with entity ids again with the ArtifactMap,
+  but also we can pick up selection types using the SelectionRangeTypeMap
+6) we clear all previous selections in the engine and set the new ones
+
+The above is less likely to get stale but below is some more details,
+because this wonders all over the code-base, I've tried to centeralise it
+by putting relevant utils in this file. All of the functions below are
+pure with the exception of getEventForSelectWithPoint which makes a call
+to the engine, but it's a query call (not mutation) so I'm okay with this.
+Actual side effects that change cursors or tell the engine what's selected
+are still done throughout the in their relevant parts in the codebase.
+
+In detail:
+
+1) Click commands are mostly sent in stream.tsx search for
+  "select_with_point"
+2) The handler for when the engine sends back entitiy ids calls
+  getEventForSelectWithPoint, it fires an XState event to update our
+  selections is xstate context
+3 and 4) The XState handler for the above uses handleSelectionBatch and
+  handleSelectionWithShift to update the selections in xstate context as
+  well as returning our SelectionRangeTypeMap and a codeMirror specific
+  event to be dispatched.
+5) The codeMirror handler for changes to the cursor uses
+  processCodeMirrorRanges to associate the ranges back with their original
+  types and the entity ids (the id can vary depending on the type, as
+  there's only one source range for a given segment, but depending on if
+  the user selected the segment directly or the vertex, the id will be
+  different)
+6) We take all of the ids and create events for the engine with
+  resetAndSetEngineEntitySelectionCmds
+
+An important note is that if a user changes the cursor directly themselves
+then they skip directly to step 5, And these selections get a type of
+"default".
+*/
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
@@ -45,7 +101,7 @@ export async function getEventForSelectWithPoint(
     { type: 'select_with_point' }
   >,
   { sketchEnginePathId }: { sketchEnginePathId: string }
-): Promise<ModelingEvent> {
+): Promise<ModelingMachineEvent> {
   if (!data?.entity_id) {
     return {
       type: 'Set selection',
@@ -178,7 +234,7 @@ export function processCodeMirrorRanges({
   selectionRanges: Selections
   selectionRangeTypeMap: SelectionRangeTypeMap
 }): null | {
-  modelingEvent: ModelingEvent
+  modelingEvent: ModelingMachineEvent
   engineEvents: Models['WebSocketRequest_type'][]
 } {
   const isChange =
