@@ -1,5 +1,4 @@
 import { SourceRange } from 'lang/wasm'
-import { Selections } from 'useStore'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_CONNECTION_TIMEOUT_MS } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
@@ -21,6 +20,7 @@ interface ResultCommand extends CommandInfo {
   type: 'result'
   data: any
   raw: WebSocketResponse
+  headVertexId?: string
 }
 interface FailedCommand extends CommandInfo {
   type: 'failed'
@@ -908,30 +908,6 @@ export class EngineCommandManager {
         },
       }
       this.engineConnection?.send(deletCmd)
-    })
-  }
-  cusorsSelected(selections: {
-    otherSelections: Selections['otherSelections']
-    idBasedSelections: { type: string; id: string }[]
-  }) {
-    if (!this.engineConnection?.isReady()) {
-      console.log('engine connection isnt ready')
-      return
-    }
-    this.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'select_clear',
-      },
-      cmd_id: uuidv4(),
-    })
-    this.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'select_add',
-        entities: selections.idBasedSelections.map((s) => s.id),
-      },
-      cmd_id: uuidv4(),
     })
   }
   sendSceneCommand(command: EngineCommand): Promise<any> {

@@ -1,4 +1,5 @@
-import { Selections, executeAst, executeCode } from 'useStore'
+import { executeAst, executeCode } from 'useStore'
+import { Selections } from 'lib/selections'
 import { KCLError } from './errors'
 import {
   EngineCommandManager,
