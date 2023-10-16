@@ -1,4 +1,5 @@
-import { Selections, toolTips } from '../../useStore'
+import { toolTips } from '../../useStore'
+import { Selections } from 'lib/selections'
 import { BinaryPart, Program, Value } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,

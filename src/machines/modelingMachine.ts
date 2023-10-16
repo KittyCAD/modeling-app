@@ -1,7 +1,12 @@
 import { PathToNode } from 'lang/wasm'
 import { engineCommandManager } from 'lang/std/engineConnection'
 import { isReducedMotion } from 'lang/util'
-import { Axis, Selection, SelectionRangeTypeMap, Selections } from 'useStore'
+import {
+  Axis,
+  Selection,
+  SelectionRangeTypeMap,
+  Selections,
+} from 'lib/selections'
 import { assign, createMachine } from 'xstate'
 import { v4 as uuidv4 } from 'uuid'
 import { isCursorInSketchCommandRange } from 'lang/util'
@@ -59,6 +64,64 @@ export type SetSelections =
       selection: Selections
     }
 
+export type ModelingMachineEvent =
+  | { type: 'Deselect all' }
+  | { type: 'Deselect edge'; data: Selection & { type: 'edge' } }
+  | { type: 'Deselect axis'; data: Axis }
+  | {
+      type: 'Deselect segment'
+      data: Selection & { type: 'line' | 'arc' }
+    }
+  | { type: 'Deselect face'; data: Selection & { type: 'face' } }
+  | {
+      type: 'Deselect point'
+      data: Selection & { type: 'point' | 'line-end' | 'line-mid' }
+    }
+  | { type: 'Enter sketch' }
+  | { type: 'Select all'; data: Selection & { type: 'all ' } }
+  | { type: 'Select edge'; data: Selection & { type: 'edge' } }
+  | { type: 'Select axis'; data: Axis }
+  | { type: 'Select segment'; data: Selection & { type: 'line' | 'arc' } }
+  | { type: 'Select face'; data: Selection & { type: 'face' } }
+  | { type: 'Select default plane'; data: { planeId: string } }
+  | { type: 'Set selection'; data: SetSelections }
+  | {
+      type: 'Select point'
+      data: Selection & { type: 'point' | 'line-end' | 'line-mid' }
+    }
+  | { type: 'Sketch no face' }
+  | { type: 'Toggle gui mode' }
+  | { type: 'Cancel' }
+  | { type: 'CancelSketch' }
+  | {
+      type: 'Add point'
+      data: {
+        coords: { x: number; y: number }[]
+        axis: 'xy' | 'xz' | 'yz' | '-xy' | '-xz' | '-yz' | null
+        segmentId?: string
+      }
+    }
+  | { type: 'Equip tool' }
+  | { type: 'Equip move tool' }
+  | { type: 'Set radius' }
+  | { type: 'Complete line' }
+  | { type: 'Set distance' }
+  | { type: 'Equip new tool' }
+  | { type: 'update_code'; data: string }
+  | { type: 'Make segment horizontal' }
+  | { type: 'Make segment vertical' }
+  | { type: 'Constrain horizontal distance' }
+  | { type: 'Constrain vertical distance' }
+  | { type: 'Constrain angle' }
+  | { type: 'Constrain perpendicular distance' }
+  | { type: 'Constrain horizontally align' }
+  | { type: 'Constrain vertically align' }
+  | { type: 'Constrain length' }
+  | { type: 'Constrain equal length' }
+  | { type: 'Constrain parallel' }
+  | { type: 'Constrain remove constraints' }
+  | { type: 'extrude intent' }
+
 export const modelingMachine = createMachine(
   {
     /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogDMAVgDsAOmEiAjLMGCAHIIAsAJlHKANCACeiaQDZBEsctGrVATmmiaNQQF8H2tBhz5x2CJjAEAymDsAASwWGDknNy0DEggLGyRPLECCMrCCuL20qrCRpYagvnaegjZBtLiBqLploIGCtZVyk4u6Fh4UJ7evgAicGERQSx47NG88RxcSaApdcKSNKIKi8ppwsrLwsX60oriqgaWBgbKImpWqi0gru0eXj4EfaE+g5AwY7ETibyzx5lLu1sygM61ERV0+ho0mU4gURlOwihlis2SuN3cnXuvX6L2CJD42FgH2YrEm3B+QnM4mqdhoyPUILqBm2CAaFTS5houQUCMczmubQxXQeAVxQ1QI2JcVJ32SiGUXPEhjBtWklgaokMzIhqVUNHEG0WgjVqkEUN2aMFHWFvlF4WCbzAUq+UwpqRoGQ2pwacPW4JKJxhgYU0kWu3Wymklrc1qx-gGeIJRPo4xlrrlqUEqkqdMKOSRNEOLPWGTVhkswlU0O5fNaMbu3XjYoAZiRKM60+SMwqMgY7Go6mbalCWaIjLCjtJ0n36tUFNHbpjGwBRXDsMAAJxCAGtAuQABYdhLpmY7SPiSzAyOXwGFUQs01BtXVEEV9VSZr89Gxldrzc7vdD2kGISWPLtTwQepBGpEN8lDGhVBDLYdTUfVZzvYFQ3MS4vytBsHieBMglbdsU0+Ttpn4Sk0KzBR1EKdING1EozQqYxajyNQ6MOBchTjO1BhITBMCPMlKJSSNoIsEEllQrlhGQko9RhZEDFUL1vWEUMcLrRcbUeHF7SCISRLI0CxLdRR2ROJQwQQ2RmMQENJD1OxjR5aE+1rAV6yXB4wD4dgNwAVwwIIRjANdRNlCDlGRJU6kfapK0vdYWSnBQJEsfJMtODYrM-XS+MbAKgtCsBwr-KLgNTMDxPlawJ0DKtXNkLl0o2NjNULPMPQ2HSfL0vxd3YA9iDIShMGGwDopPKjSg0fUaDURFFoVbJ7x1S9oOSmQcl2CtRF461ptG-dxFOg8AElGwE4JhiiszpTqt1pB9C8NA8plynVFlyn1EMzVfdTrAU46PEu87IZukUiNCKAAFtItGJ6XXA+a3vVD6vV2Y41IQlkzAMakLCnD0K0jK9wc6SGLpG67G0IsUHpRkDnosjM3oUi91SsRYjmUywWRUDJRFEY0PXzdQrGpunALls6YexZ4jPhpHHrZtH6tKHkJHkLJ1AUGpsofQxxBEWpxayCXFFl2noZXABHYLsCYIJ2FQVBTM1ijLK5Njp20wtPMEUc+yVRC4vgpZlqjXDfIVg9E-3JWCGXZ3XaCBHUAANwqj2vdm9HZg9NjpPUZbIykFkKYNTD1nsGycjt+modb1OAmCFWIimIvtbVMwczF4wtXqRyEDHfVsiNwtahyTU46Kk7W+T1PkBIXcQjARHkaCPON04cghL716kKVdYjErEWFEy9LoXZKsQT7I3jWEFv5Ydh5183tXd-3VANzYAAF7cHYMfVGvtOZggyOkewqkjBqQrOlOBlQqjyCrEoacR145DRXp-XwRBuCwCCiQPAQR-6AJAWuISQQICEjARQJ0ECXpQOqJIawHl0hMizOlfI8xsrqTBHZD084cFCntu3RshDcDEI3KQ3Ae9NyHxoXQ4hE0mE+xYRBGwlh9SIlNEoRQvMFDpRfgacohhIyS0jO-M6q8pFEJIWQsgUAfAn05nCFS8g6j2AOPSIWOo9SZSVBWBSthMpiykLYpO+DiCOLkWQnw+B2CHmYRzbRRsMig2hCI0MwhLymyxrYPI5g5zZEKoNcReDJEPGkbI+RQxNxMEinQ8gwVMAkC3KohhpFNHpIxjSTIGweRV0LMtRSiBTSXkqNyMW8kBzRLboBVOdSnEKIocA0BJkdDGRwFAXA7jtFLGJkoBC5gGhqXqBM0o6kYSRg0EsRCdhLyWEWfY2p8SGn72UcJHZQlsD7MORjZY0EFTAiqIWcwYh0oiB2rINQyIRBaThG82JqyEkKLAM7GhSSoApKBSkN6NgDS+iqDkCxaUdTVhgVpYcfZrBuVRTUghnyyFME6SZagaSYrAsRDzVYZZVjqACSULU8wpxmGROsLMhQDBMuWQ4mRayggbjANnPOQRyCsrXMmPpPLCVi2zOkNQ3oRBIhMVShSlgEpG0RO+coYs3kABk8AVQACqe0wGnDObt1X509QSoQigYGPIUmqdInlRxKCVFyHqU58liwqd+CGK8XW4HdZ68QAAFCUa4ggAEEIAYAgAQQtEBxSSm5XNEuwJzYNHSFINSJqtA6kRBUSxUJMp+ltd5ZNNNU2uqCB6r2F1t7q2CGWyApai0Vo1rVfpsxEIVEOJlLyZpCz1EJqaA0Bx1JPyJdJZ1g7h2YFHTvPNk6S2EIRkwHw64gjuA0fO-VQhgQSBnsPNIDQciExvkqXK9zlpWDike9NQ7M0BHPROotU704uzdumgA7u7ANVbi5CArvsN6Y8EJHCOMLN6ISbxaV2PWpNeF+3yzTRmkdV1cAcAIIGhA6k1T-CRZqXIVc-r2EyFcsWRLESFlAzR09dGGNUBquRLR80pnWrpKaOBSgQQtpKJWYmhQuRGz5rYMcwnwMjoAHKoCCDmkYsBp3lpZkxhk1rrDqDBCleTxZ1JKgVPkukWRGJvLQBqk98Yu4Jl7mh7WTIsq1DNAcFQ7nNolA0PMU4fZZ7uXFuRhOtMfMifEBlyq4nguWXc9SLMBxp66OhMgv4hwZwKmNKcS83nc6Zey3gcTknzIvoQCLcVxpLzmHqNYZEd8rCSDyIUaEFMZZiOXvLbLJ6ssNZy+wRjqg9XVqEOkDIFzTTmGq15O+ujKhwiQqXXYFpJspvlvmxDpDggbKoWAzAtD6HqMqs2VABAIDcDAJ4XAOdUC7nEDAdgABaW7WzMBA7wK96zdF+FvkpjfTkMX9DZWtUsdUCFBOmkMG8y713yEAM2dQh73TnuQ7e5uDcADxC3pIOwV7G4EYA8CCDgnd2hIQ9wFDvLGZEIHFQYUU4dJqt1F4eUD61QwRQXFscHHV2OCKIPtgI+xOnuMJe29j76bvu-f+4DoH3ylfs7J9D+QB2UtVinBxUx44QwWBqycaE4tZd44N8rx7ai1dk4IBTqnNO6cAMZ3r13RvOeoBNzCJFfNkRfpF1Sui2ZtIRs1KpW2Z3KN2Nx-LlxPh1fvc+9rv7X29fZ7ABzrnK30PMaUBtxExxbAekONcqsdRYRNGWBseopxe0UeTuITPeJ8A569z7jc1OOn+4Z0z4HJey9h+5xBSO+ochzHVJVkQ489T5EyIiP0Eb9Hd7SyvfvD7Ip4v3LnzXX28A66L8z3FKTZ8m+JuqE0+SLCXg3wceYtIrDHFUhE53eXe-c-YfDcSnUfP3enQPO-U-B-Y3efGTWySoOKG+bKGwKsaFQJCwI1bKYEG+SFLSAaPtXvY-ZpDcZpXAVpdpTpd3HpCqL3S-AvXXZnMgigqgjpDcIHEnRhR-BAlIQ2GEVaI2IwTUNQDfNzc2PqNIYcNtQA+6JpFpJXagrpVXSgXPEfMfWnKAqfIHVgxQtpDgrg1Q0veAivbWAQhYJYXIEeMQh8EQPWKQ-JM0WQtPZOIIXAYzEiW0IiDAVsdpe6DpdNJjcpa1fJZFa8EZIwQmKcC8UMXGI2aecwA-PSEgOXTgfALeXEKYfzTI+0ILMw16YOakXRMcHkY4SMKcdKTjakPsDYdUVdS8URJeDwA8cIbcDoXInubgRjPg-Qe5fYTjDkA4M5KotSElVYc0HxGxVw1o8gdojI7uRIRjVrdmdre+IMY0CuDQdUYEEVPoqQSoXYaQxFD0BCJwfkDwjAeAWIPtZ9VbDrOkSQGQOQRQFQdQFTRAIHfhaBHkfJI2RHbBZovyMAO4yvYEI1DTKoQ4TUeEUOKlQcCOXROkN6EMLvRZUE-uQ4bMIDVaMFKEdQFkZyI2WoQGYk8seVRWboDE16RFfYJkKEbxWVJHBAZEJfBSRkkMJI1LXBKjY9T1aknnA4EwRFBNKQbAj45jM0SoXA+QJEiwJIvTWbHoT7AUiCYwKU3IcWJdTtBkZzaCSEvJZEdUZIqpXksDWbUzC9GDCAVUmTXRfU-IRQAoeQE4ZkysIMNzeokEdYCwRUiDMdXeS9W0xdcOBzCmcFIcZzD0rkL0hSc4P02jejdgYMyZV+dhU0UUordSYsQjO3WoPKQXI4BM09IzEzXNdga4tre4g4WtBLE0TYm+ced05AmMjzV+TKerXzfkqTBdINMWC8clMwN9OoaQGuIbD-TTasHKJoypKbOxGbTNJrJMlMjrFaAczjJiaXUcqlQsO5YEZE2QEIuVVw9LebWbbLRDDgf+YKYIVVIHAKcIG8kEns9rYwdYAchUcoDBaoU0crPcmcQgzKQsGc4g08rskdC8q8oIB8tpdcFct84mIQ79FQY0Zk2QdQc2A6BUPdEMewTszLUsv1eCiXTIN8BoIGaEVQO+P9BLVdA6XAuQ-HShMHWg0nUPFcgxWzXRLSZacoLSWPUVfIbMXnJ5H-TCRi4PFXD3NQsnDi6rakOkdYSsGeEQUxccixPsIRNTbk00jPNI4yQfeg9il86s-onRMQLSMwaWC1JSERGoj0FQEk-JV5E8o-fS4A9XOS2QC8KQOkF8EMbcpSR+EmC5WwUMU4IgnvWmUghQygpQjg1iz3YyqsyvLbDIFQWoqEKQHTOwsXJ+avDvfjHSucg8dwzwtsZ8lK7WI4UWM1TGcNQsKilCRYc2HYukCxeyWWVI67DoxYuaLWN0XKC8CFYkpdTUqo4JbKJYAofKVE2WWY+YqATonlAazmbA4bFAjaHkWoPY0odIBPKcGwWvHsHCJwIAA */
@@ -82,64 +145,7 @@ export const modelingMachine = createMachine(
     },
 
     schema: {
-      events: {} as
-        | { type: 'Deselect all' }
-        | { type: 'Deselect edge'; data: Selection & { type: 'edge' } }
-        | { type: 'Deselect axis'; data: Axis }
-        | {
-            type: 'Deselect segment'
-            data: Selection & { type: 'line' | 'arc' }
-          }
-        | { type: 'Deselect face'; data: Selection & { type: 'face' } }
-        | {
-            type: 'Deselect point'
-            data: Selection & { type: 'point' | 'line-end' | 'line-mid' }
-          }
-        | { type: 'Enter sketch' }
-        | { type: 'Select all'; data: Selection & { type: 'all ' } }
-        | { type: 'Select edge'; data: Selection & { type: 'edge' } }
-        | { type: 'Select axis'; data: Axis }
-        | { type: 'Select segment'; data: Selection & { type: 'line' | 'arc' } }
-        | { type: 'Select face'; data: Selection & { type: 'face' } }
-        | { type: 'Select default plane'; data: { planeId: string } }
-        | { type: 'Set selection'; data: SetSelections }
-        | {
-            type: 'Select point'
-            data: Selection & { type: 'point' | 'line-end' | 'line-mid' }
-          }
-        | { type: 'Sketch no face' }
-        | { type: 'Toggle gui mode' }
-        | { type: 'Cancel' }
-        | { type: 'CancelSketch' }
-        | {
-            type: 'Add point'
-            data: {
-              coords: { x: number; y: number }[]
-              axis: 'xy' | 'xz' | 'yz' | '-xy' | '-xz' | '-yz' | null
-              segmentId?: string
-            }
-          }
-        | { type: 'Equip tool' }
-        | { type: 'Equip move tool' }
-        | { type: 'Set radius' }
-        | { type: 'Complete line' }
-        | { type: 'Set distance' }
-        | { type: 'Equip new tool' }
-        | { type: 'update_code'; data: string }
-        | { type: 'Make segment horizontal' }
-        | { type: 'Make segment vertical' }
-        | { type: 'Constrain horizontal distance' }
-        | { type: 'Constrain vertical distance' }
-        | { type: 'Constrain angle' }
-        | { type: 'Constrain perpendicular distance' }
-        | { type: 'Constrain horizontally align' }
-        | { type: 'Constrain vertically align' }
-        | { type: 'Constrain length' }
-        | { type: 'Constrain equal length' }
-        | { type: 'Constrain parallel' }
-        | { type: 'Constrain remove constraints' }
-        | { type: 'extrude intent' },
-      // ,
+      events: {} as ModelingMachineEvent,
     },
 
     states: {
