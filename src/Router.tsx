@@ -44,6 +44,7 @@ import * as Sentry from '@sentry/react'
 import ModelingMachineProvider from 'components/ModelingMachineProvider'
 import { KclContextProvider } from 'lang/KclSinglton'
 import FileMachineProvider from 'components/FileMachineProvider'
+import { sep } from '@tauri-apps/api/path'
 
 if (VITE_KC_SENTRY_DSN && !TEST) {
   Sentry.init({
@@ -145,10 +146,10 @@ const router = createBrowserRouter(
       path: paths.FILE + '/:id',
       element: (
         <Auth>
-          <Outlet />
           <FileMachineProvider>
             <KclContextProvider>
               <ModelingMachineProvider>
+                <Outlet />
                 <App />
               </ModelingMachineProvider>
               <WasmErrBanner />
@@ -187,23 +188,23 @@ const router = createBrowserRouter(
 
         if (params.id && params.id !== BROWSER_FILE_NAME) {
           const decodedId = decodeURIComponent(params.id)
-          const projectAndFile = decodedId.replace(defaultDir + '/', '')
-          const firstSlashIndex = projectAndFile.indexOf('/')
+          const projectAndFile = decodedId.replace(defaultDir + sep, '')
+          const firstSlashIndex = projectAndFile.indexOf(sep)
           const projectName = projectAndFile.slice(0, firstSlashIndex)
-          const projectPath = defaultDir + '/' + projectName
+          const projectPath = defaultDir + sep + projectName
           const currentFileName = projectAndFile.slice(firstSlashIndex + 1)
 
           if (firstSlashIndex === -1 || !currentFileName)
             return redirect(
               `${paths.FILE}/${encodeURIComponent(
-                `${params.id}/${PROJECT_ENTRYPOINT}`
+                `${params.id}${sep}${PROJECT_ENTRYPOINT}`
               )}`
             )
 
           // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
           const code = await readTextFile(decodedId)
           const entrypointMetadata = await metadata(
-            projectPath + '/' + PROJECT_ENTRYPOINT
+            projectPath + sep + PROJECT_ENTRYPOINT
           )
           const children = await readDir(projectPath, { recursive: true })
 
@@ -270,9 +271,9 @@ const router = createBrowserRouter(
           isProjectDirectory
         )
         const projects = await Promise.all(
-          projectsNoMeta.map(async (p) => ({
+          projectsNoMeta.map(async (p: FileEntry) => ({
             entrypointMetadata: await metadata(
-              p.path + '/' + PROJECT_ENTRYPOINT
+              p.path + sep + PROJECT_ENTRYPOINT
             ),
             ...p,
           }))
