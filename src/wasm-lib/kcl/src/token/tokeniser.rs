@@ -11,22 +11,7 @@ use winnow::{
 use crate::token::{Token, TokenType};
 
 pub fn lexer(i: &str) -> Result<Vec<Token>, ParseError<Located<&str>, ContextError>> {
-    match repeat(0.., token).parse(Located::new(i)) {
-        Ok(working) => {
-            //println!("i := {:?}", i);
-            //println!("lexer OK  => {:?}", working);
-            return Ok(working);
-        }
-        Err(error) => {
-            //println!("i := {:?}", i);
-            //println!("i[error.offset+1..] := {:?}", &i[error.offset()+1..]);
-            //i =  &i[error.offset()+1..];
-
-            //Ok(Token::from_range(Range::<error.offset()>, TokenType::LineComment, "test".to_string()))
-            //println!("lexer ERR => {:?}", error);
-            return Err(error);
-        }
-    }
+    repeat(0.., token).parse(Located::new(i))
 }
 
 pub fn token(i: &mut Located<&str>) -> PResult<Token> {
@@ -45,12 +30,6 @@ pub fn token(i: &mut Located<&str>) -> PResult<Token> {
     .parse_next(i)
     {
         Ok(token) => {
-            //println!("\n--------------------------------------------------");
-            //println!("i              =======> {:?}", i);
-            //println!("i.location()   =======> {:?}", i.location());
-            //println!("OK             =======> {:?}", token);
-            //println!("\n--------------------------------------------------");
-
             return Ok(token);
         }
         Err(x) => {

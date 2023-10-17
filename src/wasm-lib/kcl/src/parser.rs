@@ -172,8 +172,6 @@ impl Parser {
             .filter(|token| token.token_type != TokenType::Unkown)
             .collect();
 
-        println!("unkown_tokens => {:?}, tokens => {:?}", unkown_tokens, tokens);
-
         Self {
             tokens,
             unkown_tokens,
@@ -189,9 +187,6 @@ impl Parser {
             }));
         }
 
-        println!("*******************************");
-        println!("{:?}", self.unkown_tokens.clone());
-        println!("*******************************");
         if !self.unkown_tokens.is_empty() {
             return Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: self
@@ -1684,10 +1679,6 @@ impl Parser {
             }));
         }
 
-        println!("*******************************");
-        println!("{:?}", self.unkown_tokens.clone());
-        println!("*******************************");
-
         if !self.unkown_tokens.is_empty() {
             return Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: self
@@ -2891,16 +2882,12 @@ const secondExtrude = startSketchOn('XY')
     fn test_parse_greater_bang() {
         let tokens = crate::token::lexer(">!");
 
-        println!("tokens => {:?}", tokens);
-
         let parser = Parser::new(tokens);
 
         let err = parser.ast().unwrap_err();
 
         // TODO: Better errors when program cannot tokenize.
         // https://github.com/KittyCAD/modeling-app/issues/696
-
-        println!("err => {:?}", err);
         assert!(err.to_string().contains("found list of unkown tokens"));
     }
 
@@ -2916,8 +2903,6 @@ const secondExtrude = startSketchOn('XY')
     #[test]
     fn test_parse_parens_unicode() {
         let tokens = crate::token::lexer("(ޜ");
-
-        println!("===================================================");
 
         let parser = Parser::new(tokens);
         let result = parser.ast();

@@ -113,8 +113,6 @@ impl TokenType {
             let label = TokenType::from_str(&enum_values[0].to_string().replace('"', ""))?;
             if let Ok(semantic_token_type) = SemanticTokenType::try_from(label) {
                 semantic_tokens.push(semantic_token_type);
-            } else {
-                println!("vector -> {:?}", semantic_tokens);
             }
         }
 
