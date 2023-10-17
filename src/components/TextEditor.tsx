@@ -27,7 +27,7 @@ import {
   addLineHighlight,
   lineHighlightField,
 } from 'editor/highlightextension'
-import { isOverlap, roundOff } from 'lib/utils'
+import { roundOff } from 'lib/utils'
 import { kclErrToDiagnostic } from 'lang/errors'
 import { CSSRuleObject } from 'tailwindcss/types/config'
 import { useModelingContext } from 'hooks/useModelingContext'

@@ -787,7 +787,7 @@ export const modelingMachine = createMachine(
             },
           })
       },
-      'hide default planes': ({}) => {
+      'hide default planes': () => {
         kclManager.hidePlanes()
       },
       edit_mode_exit: () =>
