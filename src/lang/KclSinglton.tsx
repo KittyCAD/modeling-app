@@ -166,9 +166,7 @@ class KclManager {
       if (this.wasmInitFailed) {
         this.wasmInitFailed = false
       }
-      console.log('no error !!')
     } catch (e) {
-      console.log('Error !!')
       this.wasmInitFailed = true
     }
   }
