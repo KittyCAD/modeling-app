@@ -185,23 +185,25 @@ export const ModelingMachineProvider = ({
           cmd: {
             type: 'path_get_info',
             path_id: sketchEnginePathId,
-          }
+          },
         })
-        const firstSegment = pathInfo?.data?.data?.segments.find((seg: any) => seg.command === "line_to")
+        const firstSegment = pathInfo?.data?.data?.segments.find(
+          (seg: any) => seg.command === 'line_to'
+        )
         const firstSegCoords = await engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
             type: 'curve_get_control_points',
             curve_id: firstSegment.command_id,
-          }
+          },
         })
         const startPathCoord = firstSegCoords?.data?.data?.control_points[0]
-        
-        const isClose = compareVec2Epsilon([startPathCoord.x, startPathCoord.y], [
-          lastCoord.x,
-          lastCoord.y,
-        ])
+
+        const isClose = compareVec2Epsilon(
+          [startPathCoord.x, startPathCoord.y],
+          [lastCoord.x, lastCoord.y]
+        )
 
         let _modifiedAst: Program
         if (!isClose) {
