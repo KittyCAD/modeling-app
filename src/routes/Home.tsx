@@ -29,6 +29,7 @@ import useStateMachineCommands from '../hooks/useStateMachineCommands'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { DEFAULT_PROJECT_NAME } from 'machines/settingsMachine'
+import { sep } from '@tauri-apps/api/path'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
@@ -58,7 +59,7 @@ const Home = () => {
           setCommandBarOpen(false)
           navigate(
             `${paths.FILE}/${encodeURIComponent(
-              context.defaultDirectory + '/' + event.data.name
+              context.defaultDirectory + sep + event.data.name
             )}`
           )
         }
@@ -91,7 +92,7 @@ const Home = () => {
           name = interpolateProjectNameWithIndex(name, nextIndex)
         }
 
-        await createNewProject(context.defaultDirectory + '/' + name)
+        await createNewProject(context.defaultDirectory + sep + name)
 
         if (shouldUpdateDefaultProjectName) {
           sendToSettings({
@@ -114,8 +115,8 @@ const Home = () => {
         }
 
         await renameFile(
-          context.defaultDirectory + '/' + oldName,
-          context.defaultDirectory + '/' + name
+          context.defaultDirectory + sep + oldName,
+          context.defaultDirectory + sep + name
         )
         return `Successfully renamed "${oldName}" to "${name}"`
       },
@@ -123,7 +124,7 @@ const Home = () => {
         context: ContextFrom<typeof homeMachine>,
         event: EventFrom<typeof homeMachine, 'Delete project'>
       ) => {
-        await removeDir(context.defaultDirectory + '/' + event.data.name, {
+        await removeDir(context.defaultDirectory + sep + event.data.name, {
           recursive: true,
         })
         return `Successfully deleted "${event.data.name}"`
@@ -172,9 +173,9 @@ const Home = () => {
   }
 
   return (
-    <div className="h-screen overflow-hidden relative flex flex-col">
+    <div className="relative flex flex-col h-screen overflow-hidden">
       <AppHeader showToolbar={false} />
-      <div className="my-24 overflow-y-auto max-w-5xl w-full mx-auto">
+      <div className="w-full max-w-5xl px-4 mx-auto my-24 overflow-y-auto lg:px-0">
         <section className="flex justify-between">
           <h1 className="text-3xl text-bold">Your Projects</h1>
           <div className="flex">
@@ -235,7 +236,7 @@ const Home = () => {
           ) : (
             <>
               {projects.length > 0 ? (
-                <ul className="my-8 w-full grid grid-cols-4 gap-4">
+                <ul className="grid w-full grid-cols-4 gap-4 my-8">
                   {projects.sort(getSortFunction(sort)).map((project) => (
                     <ProjectCard
                       key={project.name}
@@ -246,7 +247,7 @@ const Home = () => {
                   ))}
                 </ul>
               ) : (
-                <p className="rounded my-8 border border-dashed border-chalkboard-30 dark:border-chalkboard-70 p-4">
+                <p className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70">
                   No Projects found, ready to make your first one?
                 </p>
               )}

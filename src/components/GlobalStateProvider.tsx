@@ -24,9 +24,7 @@ import {
   StateFrom,
 } from 'xstate'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { invoke } from '@tauri-apps/api'
 import { isTauri } from 'lib/isTauri'
-import { VITE_KC_API_BASE_URL } from 'env'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>

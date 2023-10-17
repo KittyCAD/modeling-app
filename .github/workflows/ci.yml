@@ -7,6 +7,10 @@ on:
       - main
   release:
     types: [published]
+  schedule:
+    - cron: '0 4 * * *'
+  # Daily at 04:00 AM UTC
+  # Will checkout the last commit from the default branch (main as of 2023-10-04)
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -42,8 +46,6 @@ jobs:
 
   build-test-web:
     runs-on: ubuntu-20.04
-    outputs:
-      version: ${{ steps.export_version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
 
@@ -66,17 +68,52 @@ jobs:
 
       - run: yarn test:cov
 
+  prepare-json-files:
+    runs-on: ubuntu-20.04  # seperate job on Ubuntu for easy string manipulations (compared to Windows)
+    outputs:
+      version: ${{ steps.export_version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+          
+      - name: Set nightly version
+        if: github.event_name == 'schedule'
+        run: |
+          VERSION=$(date +'%-y.%-m.%-d') yarn bump-jsons
+          echo "$(jq --arg url 'https://dl.kittycad.io/releases/modeling-app/test/nightly/last_update.json' \
+            '.tauri.updater.endpoints[]=$url' src-tauri/tauri.conf.json --indent 2)" > src-tauri/tauri.conf.json
+
+      - uses: actions/upload-artifact@v3
+        if: github.event_name == 'schedule'
+        with:
+          path: |
+            package.json
+            src-tauri/tauri.conf.json
+
       - id: export_version
         run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
 
   build-apps:
-    needs: [check-format, build-test-web, check-types]
+    needs: [check-format, build-test-web, prepare-json-files, check-types]
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [macos-latest, ubuntu-20.04, windows-latest]
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v3
+
+      - name: Copy updated .json files
+        if: github.event_name == 'schedule'
+        run: |
+          ls -l artifact
+          cp artifact/package.json package.json
+          cp artifact/src-tauri/tauri.conf.json src-tauri/tauri.conf.json
 
       - name: install ubuntu system dependencies
         if: matrix.os == 'ubuntu-20.04'
@@ -156,6 +193,7 @@ jobs:
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         with:
           args: ${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }}
 
@@ -165,12 +203,14 @@ jobs:
 
   publish-apps-release:
     runs-on: ubuntu-20.04
-    if: github.event_name == 'release'
-    needs: [build-test-web, build-apps]
+    if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
+    needs: [build-test-web, prepare-json-files, build-apps]
     env:
-      VERSION_NO_V: ${{ needs.build-test-web.outputs.version }}
-      PUB_DATE: ${{ github.event.release.created_at }}
-      NOTES: ${{ github.event.release.body }}
+      VERSION_NO_V: ${{ needs.prepare-json-files.outputs.version }}
+      VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-json-files.outputs.version) || needs.prepare-json-files.outputs.version }}
+      PUB_DATE: ${{ github.event_name == 'release' && github.event.release.created_at || github.event.repository.updated_at }}
+      NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Nightly build, commit {0}', github.sha) }}
+      BUCKET_DIR: ${{ github.event_name == 'release' && 'dl.kittycad.io/releases/modeling-app' || 'dl.kittycad.io/releases/modeling-app/nightly' }}
     steps:
       - uses: actions/download-artifact@v3
 
@@ -180,9 +220,9 @@ jobs:
           DARWIN_SIG=`cat artifact/macos/*.app.tar.gz.sig`
           LINUX_SIG=`cat artifact/appimage/*.AppImage.tar.gz.sig`
           WINDOWS_SIG=`cat artifact/msi/*.msi.zip.sig`
-          RELEASE_DIR=https://dl.kittycad.io/releases/modeling-app/v${VERSION_NO_V}
+          RELEASE_DIR=https://${BUCKET_DIR}/${VERSION}
           jq --null-input \
-            --arg version "v${VERSION_NO_V}" \
+            --arg version "${VERSION}" \
             --arg pub_date "${PUB_DATE}" \
             --arg notes "${NOTES}" \
             --arg darwin_sig "$DARWIN_SIG" \
@@ -218,9 +258,9 @@ jobs:
 
       - name: Generate the download static endpoint
         run: |
-          RELEASE_DIR=https://dl.kittycad.io/releases/modeling-app/v${VERSION_NO_V}
+          RELEASE_DIR=https://${BUCKET_DIR}/${VERSION}
           jq --null-input \
-            --arg version "v${VERSION_NO_V}" \
+            --arg version "${VERSION}" \
             --arg pub_date "${PUB_DATE}" \
             --arg notes "${NOTES}" \
             --arg darwin_url "$RELEASE_DIR/dmg/KittyCAD%20Modeling_${VERSION_NO_V}_universal.dmg" \
@@ -260,21 +300,22 @@ jobs:
           path: artifact
           glob: '*/*itty*'
           parent: false
-          destination: dl.kittycad.io/releases/modeling-app/v${{ env.VERSION_NO_V }}
+          destination: ${{ env.BUCKET_DIR }}/${{ env.VERSION }}
 
       - name: Upload update endpoint to public bucket
         uses: google-github-actions/upload-cloud-storage@v1.0.3
         with:
           path: last_update.json
-          destination: dl.kittycad.io/releases/modeling-app
+          destination: ${{ env.BUCKET_DIR }}
 
       - name: Upload download endpoint to public bucket
         uses: google-github-actions/upload-cloud-storage@v1.0.3
         with:
           path: last_download.json
-          destination: dl.kittycad.io/releases/modeling-app
+          destination: ${{ env.BUCKET_DIR }}
 
       - name: Upload release files to Github
+        if: ${{ github.event_name == 'release' }}
         uses: softprops/action-gh-release@v1
         with:
           files: artifact/*/*itty*
