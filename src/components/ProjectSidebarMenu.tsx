@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom'
 import { ExportButton } from './ExportButton'
 import { Fragment } from 'react'
 import { FileTree } from './FileTree'
+import { sep } from '@tauri-apps/api/path'
 
 const ProjectSidebarMenu = ({
   project,
@@ -26,10 +27,10 @@ const ProjectSidebarMenu = ({
       <img
         src="/kitt-8bit-winking.svg"
         alt="KittyCAD App"
-        className="h-9 w-auto"
+        className="w-auto h-9"
       />
       <span
-        className="text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap hidden lg:block"
+        className="hidden text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
         data-testid="project-sidebar-link-name"
       >
         {project?.name ? project.name : 'KittyCAD Modeling App'}
@@ -44,16 +45,16 @@ const ProjectSidebarMenu = ({
         <img
           src="/kitt-8bit-winking.svg"
           alt="KittyCAD App"
-          className="h-full w-auto"
+          className="w-auto h-full"
         />
         <div className="flex flex-col items-start py-0.5">
-          <span className="text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap hidden lg:block">
+          <span className="hidden text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block">
             {isTauri() && file?.name
-              ? file.name.slice(file.name.lastIndexOf('/') + 1)
+              ? file.name.slice(file.name.lastIndexOf(sep) + 1)
               : 'KittyCAD Modeling App'}
           </span>
           {isTauri() && project?.name && (
-            <span className="text-xs text-chalkboard-70 dark:text-chalkboard-40 whitespace-nowrap hidden lg:block">
+            <span className="hidden text-xs text-chalkboard-70 dark:text-chalkboard-40 whitespace-nowrap lg:block">
               {project.name}
             </span>
           )}
@@ -68,7 +69,7 @@ const ProjectSidebarMenu = ({
         leaveTo="opacity-0"
         as={Fragment}
       >
-        <Popover.Overlay className="fixed z-20 inset-0 bg-chalkboard-110/50" />
+        <Popover.Overlay className="fixed inset-0 z-20 bg-chalkboard-110/50" />
       </Transition>
 
       <Transition
@@ -81,7 +82,7 @@ const ProjectSidebarMenu = ({
         as={Fragment}
       >
         <Popover.Panel
-          className="fixed inset-0 right-auto z-30 w-64 h-screen max-h-screen grid grid-cols-1 bg-chalkboard-10 dark:bg-chalkboard-100 border border-energy-100 dark:border-energy-100/50 shadow-md rounded-r-lg"
+          className="fixed inset-0 right-auto z-30 grid w-64 h-screen max-h-screen grid-cols-1 border rounded-r-lg shadow-md bg-chalkboard-10 dark:bg-chalkboard-100 border-energy-100 dark:border-energy-100/50"
           style={{ gridTemplateRows: 'auto 1fr auto' }}
         >
           {({ close }) => (
@@ -90,7 +91,7 @@ const ProjectSidebarMenu = ({
                 <img
                   src="/kitt-8bit-winking.svg"
                   alt="KittyCAD App"
-                  className="h-9 w-auto"
+                  className="w-auto h-9"
                 />
 
                 <div>
@@ -102,7 +103,7 @@ const ProjectSidebarMenu = ({
                   </p>
                   {project?.entrypointMetadata && (
                     <p
-                      className="m-0 text-chalkboard-100 dark:text-energy-40 text-xs"
+                      className="m-0 text-xs text-chalkboard-100 dark:text-energy-40"
                       data-testid="createdAt"
                     >
                       Created{' '}
@@ -120,7 +121,7 @@ const ProjectSidebarMenu = ({
               ) : (
                 <div className="flex-1 overflow-hidden" />
               )}
-              <div className="p-4 flex flex-col gap-2 bg-energy-10/25 dark:bg-energy-110">
+              <div className="flex flex-col gap-2 p-4 bg-energy-10/25 dark:bg-energy-110">
                 <ExportButton
                   className={{
                     button:
