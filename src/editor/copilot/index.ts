@@ -18,7 +18,7 @@ import {
   Transaction,
 } from '@codemirror/state'
 import { completionStatus } from '@codemirror/autocomplete'
-import { docPathFacet, offsetToPos, posToOffset } from '../util'
+import { docPathFacet, offsetToPos, posToOffset } from 'editor/lsp/util'
 import { LanguageServerPlugin } from 'editor/lsp/plugin'
 import { LanguageServerOptions } from 'editor/lsp/plugin'
 import { LanguageServerClient } from 'editor/lsp'

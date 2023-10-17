@@ -26,7 +26,7 @@ import type { Text } from '@codemirror/state'
 import type * as LSP from 'vscode-languageserver-protocol'
 import { LanguageServerClient, Notification } from '.'
 import { Marked } from '@ts-stack/markdown'
-import { offsetToPos, posToOffset } from 'editor/util'
+import { offsetToPos, posToOffset } from 'editor/lsp/util'
 
 const changesDelay = 500
 
