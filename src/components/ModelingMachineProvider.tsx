@@ -413,6 +413,12 @@ export const ModelingMachineProvider = ({
     })
   }, [modelingSend, modelingState.nextEvents])
 
+  useEffect(() => {
+    kclManager.registerExecuteCallback(() => {
+      modelingSend({ type: 'Re-execute' })
+    })
+  }, [])
+
   // useStateMachineCommands({
   //   state: settingsState,
   //   send: settingsSend,

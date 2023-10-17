@@ -112,7 +112,7 @@ export const TextEditor = ({
   }, [lspClient, isLSPServerReady])
 
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
-  const onChange = (newCode: string, viewUpdate: ViewUpdate) => {
+  const onChange = (newCode: string) => {
     kclManager.setCodeAndExecute(newCode)
     if (isTauri() && pathParams.id) {
       // Save the file to disk
