@@ -10,7 +10,7 @@ import {
   NodeSet,
 } from '@lezer/common'
 import { LanguageServerClient } from '.'
-import { posToOffset } from './plugin'
+import { posToOffset } from '../util'
 import { SemanticToken } from './semantic_tokens'
 import { DocInput } from '@codemirror/language'
 import { tags, styleTags } from '@lezer/highlight'
