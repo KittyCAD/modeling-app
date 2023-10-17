@@ -31,6 +31,7 @@ import {
 } from './lib/tauriFS'
 import { metadata, type Metadata } from 'tauri-plugin-fs-extra-api'
 import DownloadAppBanner from './components/DownloadAppBanner'
+import { WasmErrBanner } from './components/WasmErrBanner'
 import { GlobalStateProvider } from './components/GlobalStateProvider'
 import {
   SETTINGS_PERSIST_KEY,
@@ -150,6 +151,7 @@ const router = createBrowserRouter(
               <ModelingMachineProvider>
                 <App />
               </ModelingMachineProvider>
+              <WasmErrBanner />
             </KclContextProvider>
           </FileMachineProvider>
           {!isTauri() && import.meta.env.PROD && <DownloadAppBanner />}
