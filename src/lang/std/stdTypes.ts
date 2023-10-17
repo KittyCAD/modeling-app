@@ -24,6 +24,7 @@ export interface PathReturn {
 
 export interface ModifyAstBase {
   node: Program
+  // TODO #896: Remove ProgramMemory from this interface
   previousProgramMemory: ProgramMemory
   pathToNode: PathToNode
 }

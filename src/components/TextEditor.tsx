@@ -20,7 +20,6 @@ import kclLanguage from 'editor/lsp/language'
 import { isTauri } from 'lib/isTauri'
 import { useParams } from 'react-router-dom'
 import { writeTextFile } from '@tauri-apps/api/fs'
-import { PROJECT_ENTRYPOINT } from 'lib/tauriFS'
 import { toast } from 'react-hot-toast'
 import {
   EditorView,
@@ -112,7 +111,7 @@ export const TextEditor = ({
   }, [lspClient, isLSPServerReady])
 
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
-  const onChange = (newCode: string, viewUpdate: ViewUpdate) => {
+  const onChange = (newCode: string) => {
     kclManager.setCodeAndExecute(newCode)
     if (isTauri() && pathParams.id) {
       // Save the file to disk

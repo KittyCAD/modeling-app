@@ -55,6 +55,7 @@ class KclManager {
   private _logsCallBack: (arg: string[]) => void = () => {}
   private _kclErrorsCallBack: (arg: KCLError[]) => void = () => {}
   private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
+  private _executeCallback: () => void = () => {}
 
   get ast() {
     return this._ast
@@ -159,6 +160,9 @@ class KclManager {
     this._isExecutingCallback = setIsExecuting
     this._wasmInitFailedCallback = setWasmInitFailed
   }
+  registerExecuteCallback(callback: () => void) {
+    this._executeCallback = callback
+  }
 
   async ensureWasmInit() {
     try {
@@ -188,6 +192,7 @@ class KclManager {
       this._code = recast(ast)
       this._codeCallBack(this._code)
     }
+    this._executeCallback()
   }
   async executeAstMock(ast: Program = this._ast, updateCode = false) {
     await this.ensureWasmInit()
