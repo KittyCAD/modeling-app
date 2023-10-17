@@ -2,12 +2,10 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { addLineHighlight, EditorView } from './editor/highlightextension'
 import { parse, Program, _executor, ProgramMemory } from './lang/wasm'
-import { Selection, Selections, SelectionRangeTypeMap } from 'lib/selections'
+import { Selection } from 'lib/selections'
 import { enginelessExecutor } from './lib/testHelpers'
-import { EditorSelection } from '@codemirror/state'
 import { EngineCommandManager } from './lang/std/engineConnection'
 import { KCLError } from './lang/errors'
-import { kclManager } from 'lang/KclSinglton'
 import { DefaultPlanes } from './wasm-lib/kcl/bindings/DefaultPlanes'
 
 export type ToolTip =
