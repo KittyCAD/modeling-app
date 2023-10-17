@@ -146,10 +146,10 @@ const router = createBrowserRouter(
       path: paths.FILE + '/:id',
       element: (
         <Auth>
-          <Outlet />
           <FileMachineProvider>
             <KclContextProvider>
               <ModelingMachineProvider>
+                <Outlet />
                 <App />
               </ModelingMachineProvider>
               <WasmErrBanner />

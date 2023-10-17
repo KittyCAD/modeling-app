@@ -10,6 +10,7 @@ import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { bracket } from 'lib/exampleKcl'
 import {
+  PROJECT_ENTRYPOINT,
   createNewProject,
   getNextProjectIndex,
   getProjectsInDir,
@@ -20,6 +21,7 @@ import { useNavigate } from 'react-router-dom'
 import { paths } from 'Router'
 import { useEffect } from 'react'
 import { kclManager } from 'lang/KclSinglton'
+import { sep } from '@tauri-apps/api/path'
 
 function OnboardingWithNewFile() {
   const navigate = useNavigate()
@@ -42,7 +44,11 @@ function OnboardingWithNewFile() {
       nextIndex
     )
     const newFile = await createNewProject(defaultDirectory + sep + name)
-    navigate(`${paths.FILE}/${encodeURIComponent(newFile.path)}`)
+    navigate(
+      `${paths.FILE}/${encodeURIComponent(
+        newFile.path + sep + PROJECT_ENTRYPOINT
+      )}${paths.ONBOARDING.INDEX}`
+    )
   }
   return (
     <div className="fixed inset-0 z-50 grid place-content-center bg-chalkboard-110/50">
@@ -110,7 +116,11 @@ function OnboardingWithNewFile() {
               </ActionButton>
               <ActionButton
                 Element="button"
-                onClick={createAndOpenNewProject}
+                onClick={() => {
+                  createAndOpenNewProject()
+                  kclManager.setCode(bracket)
+                  dismiss()
+                }}
                 icon={{ icon: faArrowRight }}
               >
                 Make a new project
@@ -138,12 +148,13 @@ export default function Introduction() {
       : ''
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.CAMERA)
+  const isStarterCode = kclManager.code === '' || kclManager.code === bracket
 
   useEffect(() => {
     if (kclManager.code === '') kclManager.setCode(bracket)
-  }, [kclManager.code, kclManager.setCode])
+  }, [])
 
-  return !(kclManager.code !== '' && kclManager.code !== bracket) ? (
+  return isStarterCode ? (
     <div className="fixed inset-0 z-50 grid place-content-center bg-chalkboard-110/50">
       <div className="max-w-3xl p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
         <h1 className="flex flex-wrap items-center gap-4 text-2xl font-bold">

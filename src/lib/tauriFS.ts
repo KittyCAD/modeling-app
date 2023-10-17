@@ -9,6 +9,7 @@ import { documentDir, homeDir, sep } from '@tauri-apps/api/path'
 import { isTauri } from './isTauri'
 import { ProjectWithEntryPointMetadata } from '../Router'
 import { metadata } from 'tauri-plugin-fs-extra-api'
+import { bracket } from './exampleKcl'
 
 const PROJECT_FOLDER = 'kittycad-modeling-projects'
 export const FILE_EXT = '.kcl'
@@ -224,7 +225,7 @@ export async function createNewProject(
     })
   }
 
-  await writeTextFile(path + sep + PROJECT_ENTRYPOINT, '').catch((err) => {
+  await writeTextFile(path + sep + PROJECT_ENTRYPOINT, bracket).catch((err) => {
     console.error('Error creating new file:', err)
     throw err
   })
