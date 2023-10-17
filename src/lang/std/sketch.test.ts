@@ -138,6 +138,7 @@ show(mySketch001)`
       node: ast,
       programMemory,
       to: [2, 3],
+      from: [0, 0],
       fnName: 'lineTo',
       pathToNode: [
         ['body', ''],
