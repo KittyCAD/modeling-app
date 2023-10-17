@@ -32,13 +32,11 @@ export const AppHeader = ({
         className
       }
     >
-      {project && (
-        <ProjectSidebarMenu
-          renderAsLink={!enableMenu}
-          project={project.project}
-          file={project.file}
-        />
-      )}
+      <ProjectSidebarMenu
+        renderAsLink={!enableMenu}
+        project={project?.project}
+        file={project?.file}
+      />
       {/* Toolbar if the context deems it */}
       {showToolbar && (
         <div className="max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-4xl 2xl:max-w-5xl">
@@ -47,7 +45,7 @@ export const AppHeader = ({
       )}
       {/* If there are children, show them, otherwise show User menu */}
       {children || (
-        <div className="ml-auto flex items-center gap-1">
+        <div className="flex items-center gap-1 ml-auto">
           <NetworkHealthIndicator />
           <UserSidebarMenu user={user} />
         </div>
