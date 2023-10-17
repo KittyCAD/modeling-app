@@ -2942,7 +2942,6 @@ z(-[["#,
             r#"z
  (--#"#,
         );
-        println!("\n\n{:?}\n\n", tokens);
         let parser = Parser::new(tokens);
         let result = parser.ast();
         assert!(result.is_err());
