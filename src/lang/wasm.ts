@@ -67,6 +67,8 @@ const initialise = async () => {
       ? 'http://127.0.0.1:3000'
       : window.location.origin.includes('tauri://localhost')
       ? 'tauri://localhost'
+      : window.location.origin.includes('tauri.localhost')
+      ? 'https://tauri.localhost'
       : window.location.origin.includes('localhost')
       ? 'http://localhost:3000'
       : window.location.origin && window.location.origin !== 'null'
