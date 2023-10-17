@@ -41,12 +41,12 @@ function OnboardingWithNewFile() {
       ONBOARDING_PROJECT_NAME,
       nextIndex
     )
-    const newFile = await createNewProject(defaultDirectory + '/' + name)
+    const newFile = await createNewProject(defaultDirectory + sep + name)
     navigate(`${paths.FILE}/${encodeURIComponent(newFile.path)}`)
   }
   return (
-    <div className="fixed grid place-content-center inset-0 bg-chalkboard-110/50 z-50">
-      <div className="max-w-3xl bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded">
+    <div className="fixed inset-0 z-50 grid place-content-center bg-chalkboard-110/50">
+      <div className="max-w-3xl p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
         {!isTauri() ? (
           <>
             <h1 className="text-2xl font-bold text-warn-80 dark:text-warn-10">
@@ -84,7 +84,7 @@ function OnboardingWithNewFile() {
           </>
         ) : (
           <>
-            <h1 className="text-2xl font-bold flex gap-4 flex-wrap items-center">
+            <h1 className="flex flex-wrap items-center gap-4 text-2xl font-bold">
               Would you like to create a new project?
             </h1>
             <section className="my-12">
@@ -144,15 +144,15 @@ export default function Introduction() {
   }, [kclManager.code, kclManager.setCode])
 
   return !(kclManager.code !== '' && kclManager.code !== bracket) ? (
-    <div className="fixed grid place-content-center inset-0 bg-chalkboard-110/50 z-50">
-      <div className="max-w-3xl bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded">
-        <h1 className="text-2xl font-bold flex gap-4 flex-wrap items-center">
+    <div className="fixed inset-0 z-50 grid place-content-center bg-chalkboard-110/50">
+      <div className="max-w-3xl p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
+        <h1 className="flex flex-wrap items-center gap-4 text-2xl font-bold">
           <img
             src={`/kcma-logomark${getLogoTheme()}.svg`}
             alt="KittyCAD Modeling App"
-            className="max-w-full h-20"
+            className="h-20 max-w-full"
           />
-          <span className="bg-energy-10 text-energy-80 px-3 py-1 rounded-full text-base">
+          <span className="px-3 py-1 text-base rounded-full bg-energy-10 text-energy-80">
             Alpha
           </span>
         </h1>

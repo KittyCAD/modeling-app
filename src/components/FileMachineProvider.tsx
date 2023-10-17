@@ -22,6 +22,7 @@ import {
 } from '@tauri-apps/api/fs'
 import { FILE_EXT, readProject } from 'lib/tauriFS'
 import { isTauri } from 'lib/isTauri'
+import { sep } from '@tauri-apps/api/path'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -56,7 +57,7 @@ export const FileMachineProvider = ({
           setCommandBarOpen(false)
           navigate(
             `${paths.FILE}/${encodeURIComponent(
-              context.selectedDirectory + '/' + event.data.name
+              context.selectedDirectory + sep + event.data.name
             )}`
           )
         }
@@ -82,11 +83,11 @@ export const FileMachineProvider = ({
         let name = event.data.name.trim() || DEFAULT_FILE_NAME
 
         if (event.data.makeDir) {
-          await createDir(context.selectedDirectory.path + '/' + name)
+          await createDir(context.selectedDirectory.path + sep + name)
         } else {
           await writeFile(
             context.selectedDirectory.path +
-              '/' +
+              sep +
               name +
               (name.endsWith(FILE_EXT) ? '' : FILE_EXT),
             ''
@@ -103,9 +104,9 @@ export const FileMachineProvider = ({
         let name = newName ? newName : DEFAULT_FILE_NAME
 
         await renameFile(
-          context.selectedDirectory.path + '/' + oldName,
+          context.selectedDirectory.path + sep + oldName,
           context.selectedDirectory.path +
-            '/' +
+            sep +
             name +
             (name.endsWith(FILE_EXT) || isDir ? '' : FILE_EXT)
         )
