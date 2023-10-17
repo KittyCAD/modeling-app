@@ -417,7 +417,7 @@ export const ModelingMachineProvider = ({
     kclManager.registerExecuteCallback(() => {
       modelingSend({ type: 'Re-execute' })
     })
-  }, [])
+  }, [modelingSend])
 
   // useStateMachineCommands({
   //   state: settingsState,
