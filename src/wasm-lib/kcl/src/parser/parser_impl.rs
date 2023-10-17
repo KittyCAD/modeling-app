@@ -41,16 +41,17 @@ pub fn run_parser(i: TokenSlice, j: TokenSlice) -> Result<Program, KclError> {
         }));
     }
     if !j.is_empty() {
-        return Err(KclError::Syntax(KclErrorDetails {
-            source_ranges: j
-                .iter()
-                .map(|token| SourceRange::new(token.start, token.end))
-                .collect(),
-            message: "found list of unkown tokens".to_string(),
+        return Err(KclError::Lexical(KclErrorDetails {
+            source_ranges: j.iter().map(|token| SourceRange::new(token.start, token.end)).collect(),
+            message: format!(
+                "found list of unkown tokens {:?}",
+                j.into_iter()
+                    .map(|token| token.value.clone())
+                    .collect::<Vec<_>>()
+                    .join(" ")
+            ),
         }));
     }
-
-
 
     program.parse(i).map_err(KclError::from)
 }

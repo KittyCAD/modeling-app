@@ -239,6 +239,8 @@ export async function executeCode({
       errors = [e]
       logs = []
       if (e.msg === 'file is empty') engineCommandManager.endSession()
+      if (e.msg.slice(0, 27) === 'found list of unkown tokens')
+        engineCommandManager.endSession()
     }
     return {
       isChange: true,

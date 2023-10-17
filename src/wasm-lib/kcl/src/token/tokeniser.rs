@@ -54,50 +54,16 @@ pub fn token(i: &mut Located<&str>) -> PResult<Token> {
             return Ok(token);
         }
         Err(x) => {
-            //return Err( x );
-
-
             // TODO: Handle non ascii cases
             if i.len() == 0 || !i.is_ascii() {
                 return Err(x);
             }
 
-
-            //println!("\n==================================================");
-
-            let location_index = i.location();
-
-            //println!("i               =======> {:?}", i);
-
-            println!("i.is_ascii()              =======> {:?}", i.is_ascii());
-            
-            //println!("i.location()    =======> {:?}", location_index);
-            //println!("i.to_string()   =======> {:?}", i.to_string());
-            //println!("i.checkpoint()  =======> {:?}", i.checkpoint());
-            //println!("i.len()         =======> {:?}", i.len());
-
-            //let error_token_found = i.next_slice(1);
-            //println!("i.next_slice()  =======> {:?}", error_token_found);
-            //println!("i               =======> {:?}", i);
-            //println!("TOKEN ERROR =======> {:?}", x);
-
-            //println!("token error recovery {:?}", token);
-            println!("==================================================\n");
-
-            let tok = 
-
-                Token::from_range(
+            Ok(Token::from_range(
                 i.location()..i.location() + 1,
                 TokenType::Unkown,
                 i.next_slice(1).to_string(),
-           );
-
-            println!("==================================================\n");
-            Ok(
-                tok
-                )
-
-            //return Err(x);
+            ))
         }
     }
 }
@@ -115,21 +81,12 @@ fn line_comment(i: &mut Located<&str>) -> PResult<Token> {
 }
 
 fn number(i: &mut Located<&str>) -> PResult<Token> {
-    println!("NUMBER {:?}", i);
     let number_parser = alt((
         // Digits before the decimal point.
         (digit1, opt(('.', digit1))).map(|_| ()),
         // No digits before the decimal point.
         ('.', digit1).map(|_| ()),
     ));
-    //let (value, range) = number_parser.recognize().with_span().parse_next(i)?;
-
-    //println!("***************************************");
-    //println!("{:?}", Token::from_range(range.clone(), TokenType::Number, value.to_string()));
-
-    //println!("***************************************");
-    //Ok(Token::from_range(range, TokenType::Number, value.to_string()))
-
     let (value, range) = number_parser.recognize().with_span().parse_next(i)?;
     Ok(Token::from_range(range, TokenType::Number, value.to_string()))
 }
@@ -1551,21 +1508,9 @@ const things = "things"
         assert_tokens(expected, actual);
     }
 
-    //#[test]
+    #[test]
     fn test_unrecognized_token() {
-        let actual = lexer("12 ; 8");
-        let mut my_vec = Vec::new();
-
-        match actual {
-            Ok(i) => {
-                my_vec = i;
-            }
-            Err(e) => {
-                println!("SOMETHING BAD HAPPEN->{:?}<-", e);
-            }
-        }
-
-        println!("Actual Vec {:?}", my_vec.clone());
+        let actual = lexer("12 ; 8").unwrap();
         let expected = vec![
             Token {
                 token_type: TokenType::Number,
@@ -1599,10 +1544,6 @@ const things = "things"
             },
         ];
 
-        println!("**************************************");
-        println!("{:?}", expected);
-        println!("{:?}", my_vec);
-        println!("**************************************");
-        assert_tokens(expected, my_vec);
+        assert_tokens(expected, actual);
     }
 }

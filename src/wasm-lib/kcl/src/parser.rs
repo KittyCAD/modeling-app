@@ -182,7 +182,6 @@ impl Parser {
     }
 
     pub fn get_token(&self, index: usize) -> Result<&Token, KclError> {
-
         if self.tokens.is_empty() {
             return Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: vec![],
@@ -201,7 +200,15 @@ impl Parser {
                     .iter()
                     .map(|token| SourceRange::new(token.start, token.end))
                     .collect(),
-                message: "found list of unkown tokens".to_string(),
+                message: format!(
+                    "found list of unkown tokens {:?}",
+                    self.unkown_tokens
+                        .clone()
+                        .iter()
+                        .map(|token| token.value.clone())
+                        .collect::<Vec<_>>()
+                        .join(" ")
+                ),
             }));
         }
 
@@ -1677,7 +1684,6 @@ impl Parser {
             }));
         }
 
-
         println!("*******************************");
         println!("{:?}", self.unkown_tokens.clone());
         println!("*******************************");
@@ -1690,7 +1696,15 @@ impl Parser {
                     .iter()
                     .map(|token| SourceRange::new(token.start, token.end))
                     .collect(),
-                message: "found list of unkown tokens".to_string(),
+                message: format!(
+                    "found list of unkown tokens {:?}",
+                    self.unkown_tokens
+                        .clone()
+                        .iter()
+                        .map(|token| token.value.clone())
+                        .collect::<Vec<_>>()
+                        .join(" ")
+                ),
             }));
         }
 
@@ -2877,7 +2891,6 @@ const secondExtrude = startSketchOn('XY')
     fn test_parse_greater_bang() {
         let tokens = crate::token::lexer(">!");
 
-        
         println!("tokens => {:?}", tokens);
 
         let parser = Parser::new(tokens);
@@ -2886,7 +2899,6 @@ const secondExtrude = startSketchOn('XY')
 
         // TODO: Better errors when program cannot tokenize.
         // https://github.com/KittyCAD/modeling-app/issues/696
-        
 
         println!("err => {:?}", err);
         assert!(err.to_string().contains("found list of unkown tokens"));
@@ -2953,7 +2965,7 @@ z(-[["#,
         // https://github.com/KittyCAD/modeling-app/issues/696
         assert_eq!(
             result.err().unwrap().to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([6, 7])], message: "found list of unkown tokens" }"#
+            r##"lexical: KclErrorDetails { source_ranges: [SourceRange([6, 7])], message: "found list of unkown tokens \"#\"" }"##
         );
     }
 
@@ -2967,7 +2979,7 @@ z(-[["#,
         // https://github.com/KittyCAD/modeling-app/issues/696
         assert_eq!(
             result.err().unwrap().to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([25, 26]), SourceRange([26, 27])], message: "found list of unkown tokens" }"#
+            r##"lexical: KclErrorDetails { source_ranges: [SourceRange([25, 26]), SourceRange([26, 27])], message: "found list of unkown tokens \"# #\"" }"##
         );
     }
 
