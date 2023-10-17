@@ -5,10 +5,11 @@ import {
   readDir,
   writeTextFile,
 } from '@tauri-apps/api/fs'
-import { documentDir, homeDir } from '@tauri-apps/api/path'
+import { documentDir, homeDir, sep } from '@tauri-apps/api/path'
 import { isTauri } from './isTauri'
 import { ProjectWithEntryPointMetadata } from '../Router'
 import { metadata } from 'tauri-plugin-fs-extra-api'
+import { bracket } from './exampleKcl'
 
 const PROJECT_FOLDER = 'kittycad-modeling-projects'
 export const FILE_EXT = '.kcl'
@@ -70,7 +71,7 @@ export async function getProjectsInDir(projectDir: string) {
 
   const projectsWithMetadata = await Promise.all(
     readProjects.map(async (p) => ({
-      entrypointMetadata: await metadata(p.path + '/' + PROJECT_ENTRYPOINT),
+      entrypointMetadata: await metadata(p.path + sep + PROJECT_ENTRYPOINT),
       ...p,
     }))
   )
@@ -224,7 +225,7 @@ export async function createNewProject(
     })
   }
 
-  await writeTextFile(path + '/' + PROJECT_ENTRYPOINT, '').catch((err) => {
+  await writeTextFile(path + sep + PROJECT_ENTRYPOINT, bracket).catch((err) => {
     console.error('Error creating new file:', err)
     throw err
   })
@@ -232,13 +233,13 @@ export async function createNewProject(
   const m = await metadata(path)
 
   return {
-    name: path.slice(path.lastIndexOf('/') + 1),
+    name: path.slice(path.lastIndexOf(sep) + 1),
     path: path,
     entrypointMetadata: m,
     children: [
       {
         name: PROJECT_ENTRYPOINT,
-        path: path + '/' + PROJECT_ENTRYPOINT,
+        path: path + sep + PROJECT_ENTRYPOINT,
         children: [],
       },
     ],
