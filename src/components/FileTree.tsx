@@ -163,7 +163,6 @@ const FileTreeItem = ({
 
   function openFile() {
     if (fileOrDir.children !== undefined) return // Don't open directories
-    kclManager.setCode('')
     navigate(`${paths.FILE}/${encodeURIComponent(fileOrDir.path)}`)
     closePanel()
   }

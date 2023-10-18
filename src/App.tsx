@@ -94,12 +94,6 @@ export function App() {
         kclManager.setCode(loadedCode)
       }
     }
-    return () => {
-      // Clear code on unmount if in desktop app
-      if (isTauri()) {
-        kclManager.setCode('')
-      }
-    }
   }, [loadedCode])
 
   useEngineConnectionSubscriptions()
