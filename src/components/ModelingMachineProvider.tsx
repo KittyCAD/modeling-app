@@ -20,7 +20,6 @@ import {
   recast,
   parse,
   Program,
-  VariableDeclarator,
   PipeExpression,
   CallExpression,
 } from 'lang/wasm'

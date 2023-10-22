@@ -2,8 +2,6 @@ import { useEffect } from 'react'
 import { useStore } from 'useStore'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { useModelingContext } from './useModelingContext'
-import { v4 as uuidv4 } from 'uuid'
-import { SourceRange } from 'lang/wasm'
 import { getEventForSelectWithPoint } from 'lib/selections'
 
 export function useEngineConnectionSubscriptions() {
@@ -12,11 +10,6 @@ export function useEngineConnectionSubscriptions() {
     highlightRange: s.highlightRange,
   }))
   const { send, context } = useModelingContext()
-
-  interface RangeAndId {
-    id: string
-    range: SourceRange
-  }
 
   useEffect(() => {
     if (!engineCommandManager) return

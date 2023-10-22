@@ -964,14 +964,12 @@ export function addNewSketchLn({
   const node = JSON.parse(JSON.stringify(_node))
   const { add, updateArgs } = sketchLineHelperMap?.[fnName] || {}
   if (!add || !updateArgs) throw new Error('not a sketch line helper')
-  getNodeFromPath<VariableDeclarator>(
+  getNodeFromPath<VariableDeclarator>(node, pathToNode, 'VariableDeclarator')
+  getNodeFromPath<PipeExpression | CallExpression>(
     node,
     pathToNode,
-    'VariableDeclarator'
+    'PipeExpression'
   )
-  getNodeFromPath<
-    PipeExpression | CallExpression
-  >(node, pathToNode, 'PipeExpression')
   return add({
     node,
     previousProgramMemory,
