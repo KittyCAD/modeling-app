@@ -15,7 +15,7 @@ const projectWellFormed = {
       path: '/some/path/Simple Box/main.kcl',
     },
   ],
-  entrypoint_metadata: {
+  entrypointMetadata: {
     accessedAt: now,
     blksize: 32,
     blocks: 32,

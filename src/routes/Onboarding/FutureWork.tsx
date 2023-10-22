@@ -4,13 +4,23 @@ import { useDismiss } from '.'
 import { useEffect } from 'react'
 import { bracket } from 'lib/exampleKcl'
 import { kclManager } from 'lang/KclSinglton'
+import { useModelingContext } from 'hooks/useModelingContext'
 
 export default function FutureWork() {
+  const { send } = useModelingContext()
   const dismiss = useDismiss()
 
   useEffect(() => {
-    kclManager.setCode(bracket)
-  }, [kclManager.setCode])
+    if (kclManager.engineCommandManager.engineConnection?.isReady()) {
+      // If the engine is ready, promptly execute the loaded code
+      kclManager.setCodeAndExecute(bracket)
+    } else {
+      // Otherwise, just set the code and wait for the connection to complete
+      kclManager.setCode(bracket)
+    }
+
+    send({ type: 'Cancel' }) // in case the user hit 'Next' while still in sketch mode
+  }, [send])
 
   return (
     <div className="fixed grid justify-center items-center inset-0 bg-chalkboard-100/50 z-50">

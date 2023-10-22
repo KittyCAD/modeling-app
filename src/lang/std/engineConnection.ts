@@ -450,18 +450,18 @@ export class EngineConnection {
             videoTrackStats.forEach((videoTrackReport) => {
               if (videoTrackReport.type === 'inbound-rtp') {
                 client_metrics.rtc_frames_decoded =
-                  videoTrackReport.framesDecoded
+                  videoTrackReport.framesDecoded || 0
                 client_metrics.rtc_frames_dropped =
-                  videoTrackReport.framesDropped
+                  videoTrackReport.framesDropped || 0
                 client_metrics.rtc_frames_received =
-                  videoTrackReport.framesReceived
+                  videoTrackReport.framesReceived || 0
                 client_metrics.rtc_frames_per_second =
                   videoTrackReport.framesPerSecond || 0
                 client_metrics.rtc_freeze_count =
                   videoTrackReport.freezeCount || 0
-                client_metrics.rtc_jitter_sec = videoTrackReport.jitter
+                client_metrics.rtc_jitter_sec = videoTrackReport.jitter || 0.0
                 client_metrics.rtc_keyframes_decoded =
-                  videoTrackReport.keyFramesDecoded
+                  videoTrackReport.keyFramesDecoded || 0
                 client_metrics.rtc_total_freezes_duration_sec =
                   videoTrackReport.totalFreezesDuration || 0
               } else if (videoTrackReport.type === 'transport') {

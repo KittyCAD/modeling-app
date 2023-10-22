@@ -186,9 +186,6 @@ export const line: SketchLineHelper = {
       pathToNode,
       'VariableDeclarator'
     )
-    const variableName = varDec.id.name
-    const sketch = previousProgramMemory?.root?.[variableName]
-    if (sketch.type !== 'SketchGroup') throw new Error('not a SketchGroup')
 
     const newXVal = createLiteral(roundOff(to[0] - from[0], 2))
     const newYVal = createLiteral(roundOff(to[1] - from[1], 2))
@@ -959,29 +956,22 @@ export function addNewSketchLn({
   to,
   fnName,
   pathToNode,
-}: Omit<CreateLineFnCallArgs, 'from'>): {
+  from,
+}: CreateLineFnCallArgs): {
   modifiedAst: Program
   pathToNode: PathToNode
 } {
   const node = JSON.parse(JSON.stringify(_node))
   const { add, updateArgs } = sketchLineHelperMap?.[fnName] || {}
   if (!add || !updateArgs) throw new Error('not a sketch line helper')
-  const { node: varDec } = getNodeFromPath<VariableDeclarator>(
+  getNodeFromPath<VariableDeclarator>(
     node,
     pathToNode,
     'VariableDeclarator'
   )
-  getNodeFromPath<PipeExpression | CallExpression>(
-    node,
-    pathToNode,
-    'PipeExpression'
-  )
-  const variableName = varDec.id.name
-  const sketch = previousProgramMemory?.root?.[variableName]
-  if (sketch.type !== 'SketchGroup') throw new Error('not a SketchGroup')
-
-  const last = sketch.value[sketch.value.length - 1] || sketch.start
-  const from = last.to
+  getNodeFromPath<
+    PipeExpression | CallExpression
+  >(node, pathToNode, 'PipeExpression')
   return add({
     node,
     previousProgramMemory,

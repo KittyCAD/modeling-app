@@ -24,8 +24,15 @@ export default function Export() {
             Try opening the project menu and clicking "Export Model".
           </p>
           <p className="my-4">
-            KittyCAD Modeling App uses our open-source extension proposal for
-            the GLTF file format.{' '}
+            KittyCAD Modeling App uses{' '}
+            <a
+              href="https://kittycad.io/gltf-format-extension"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              our open-source extension proposal
+            </a>{' '}
+            for the GLTF file format.{' '}
             <a
               href="https://kittycad.io/docs/api/convert-cad-file"
               rel="noopener noreferrer"

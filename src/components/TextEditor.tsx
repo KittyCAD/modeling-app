@@ -20,14 +20,13 @@ import kclLanguage from 'editor/lsp/language'
 import { isTauri } from 'lib/isTauri'
 import { useParams } from 'react-router-dom'
 import { writeTextFile } from '@tauri-apps/api/fs'
-import { PROJECT_ENTRYPOINT } from 'lib/tauriFS'
 import { toast } from 'react-hot-toast'
 import {
   EditorView,
   addLineHighlight,
   lineHighlightField,
 } from 'editor/highlightextension'
-import { isOverlap, roundOff } from 'lib/utils'
+import { roundOff } from 'lib/utils'
 import { kclErrToDiagnostic } from 'lang/errors'
 import { CSSRuleObject } from 'tailwindcss/types/config'
 import { useModelingContext } from 'hooks/useModelingContext'
@@ -112,18 +111,16 @@ export const TextEditor = ({
   }, [lspClient, isLSPServerReady])
 
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
-  const onChange = (newCode: string, viewUpdate: ViewUpdate) => {
+  const onChange = (newCode: string) => {
     kclManager.setCodeAndExecute(newCode)
     if (isTauri() && pathParams.id) {
       // Save the file to disk
       // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
-      writeTextFile(pathParams.id + '/' + PROJECT_ENTRYPOINT, newCode).catch(
-        (err) => {
-          // TODO: add Sentry per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
-          console.error('error saving file', err)
-          toast.error('Error saving file, please check file permissions')
-        }
-      )
+      writeTextFile(pathParams.id, newCode).catch((err) => {
+        // TODO: add Sentry per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
+        console.error('error saving file', err)
+        toast.error('Error saving file, please check file permissions')
+      })
     }
     if (editorView) {
       editorView?.dispatch({ effects: addLineHighlight.of([0, 0]) })
