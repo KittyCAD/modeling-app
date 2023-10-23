@@ -9,13 +9,13 @@ const binary = process.platform == 'win32' ? 'KittyCAD Modeling.exe' : 'kittycad
 
 exports.config = {
   port: 4444,
-  specs: ['./e2e/specs/**/*.js'],
+  specs: ['./src-tauri/e2e/specs/**/*.js'],
   maxInstances: 1,
   capabilities: [
     {
       maxInstances: 1,
       'tauri:options': {
-        application: 'src-tauri/target/release/' + binary,
+        application: './src-tauri/target/release/' + binary,
       },
     },
   ],
