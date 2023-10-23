@@ -15,7 +15,7 @@ exports.config = {
     {
       maxInstances: 1,
       'tauri:options': {
-        application: './src-tauri/target/release/' + binary,
+        application: 'src-tauri/target/release/' + binary,
       },
     },
   ],
@@ -27,7 +27,7 @@ exports.config = {
   },
 
   // ensure the rust project is built since we expect this binary to exist for the webdriver sessions
-  onPrepare: () => spawnSync('yarn', ['tauri', 'build', '-b', 'none']),
+  // onPrepare: () => spawnSync('yarn', ['tauri', 'build', '-b', 'none']),
 
   // ensure we are running `tauri-driver` before the session starts so that we can proxy the webdriver requests
   beforeSession: () =>
