@@ -201,6 +201,13 @@ jobs:
         with:
           path: ${{ matrix.os == 'macos-latest' && 'src-tauri/target/universal-apple-darwin/release/bundle/*/*' || 'src-tauri/target/release/bundle/*/*' }}
 
+      - name: Install tauri-driver
+        if: matrix.os == 'ubuntu-20.04'
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: tauri-driver
+
       - name: Run the E2E tests on Linux
         if: matrix.os == 'ubuntu-20.04'
         run: xvfb-run yarn test:e2e
