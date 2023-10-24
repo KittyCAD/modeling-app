@@ -10,7 +10,7 @@ license = "MIT"
 [dependencies]
 anyhow = { version = "1.0.75", features = ["backtrace"] }
 async-recursion = "1.0.5"
-async-trait = "0.1.73"
+async-trait = "0.1.74"
 clap = { version = "4.4.6", features = ["cargo", "derive", "env", "unicode"], optional = true }
 dashmap = "5.5.3"
 derive-docs = { version = "0.1.4" }
