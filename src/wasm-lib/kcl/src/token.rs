@@ -45,7 +45,7 @@ pub enum TokenType {
     /// A function name.
     Function,
     /// Uknown lexems
-    Unkown,
+    Unknown,
 }
 
 /// Most KCL tokens correspond to LSP semantic tokens (but not all).
@@ -67,7 +67,7 @@ impl TryFrom<TokenType> for SemanticTokenType {
             | TokenType::Colon
             | TokenType::Period
             | TokenType::DoublePeriod
-            | TokenType::Unkown => {
+            | TokenType::Unknown => {
                 anyhow::bail!("unsupported token type: {:?}", token_type)
             }
         })

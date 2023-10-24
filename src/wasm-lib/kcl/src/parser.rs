@@ -162,16 +162,9 @@ pub struct Parser {
 impl Parser {
     pub fn new(tokens: Vec<Token>) -> Self {
         let stdlib = crate::std::StdLib::new();
-        let unkown_tokens: Vec<Token> = tokens
-            .iter()
-            .cloned()
-            .filter(|token| token.token_type == TokenType::Unkown)
-            .collect();
-        let tokens: Vec<Token> = tokens
+        let (tokens, unkown_tokens): (Vec<Token>, Vec<Token>) = tokens
             .into_iter()
-            .filter(|token| token.token_type != TokenType::Unkown)
-            .collect();
-
+            .partition(|token| token.token_type != TokenType::Unknown);
         Self {
             tokens,
             unkown_tokens,

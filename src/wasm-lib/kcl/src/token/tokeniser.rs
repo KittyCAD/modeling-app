@@ -40,7 +40,7 @@ pub fn token(i: &mut Located<&str>) -> PResult<Token> {
 
             Ok(Token::from_range(
                 i.location()..i.location() + 1,
-                TokenType::Unkown,
+                TokenType::Unknown,
                 i.next_slice(1).to_string(),
             ))
         }
@@ -1504,7 +1504,7 @@ const things = "things"
                 end: 3,
             },
             Token {
-                token_type: TokenType::Unkown,
+                token_type: TokenType::Unknown,
                 value: ";".to_string(),
                 start: 3,
                 end: 4,
