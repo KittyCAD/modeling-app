@@ -136,7 +136,7 @@ pub async fn modify_ast_for_sketch(
     })?;
 
     let mut additional_lines = Vec::new();
-    let mut last_point = first_control_points.points[1].clone();
+    let mut last_point = first_control_points.points[1];
     for control_point in control_points[1..].iter() {
         additional_lines.push([
             (control_point.points[1].x - last_point.x),
