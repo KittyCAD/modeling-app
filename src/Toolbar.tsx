@@ -1,26 +1,13 @@
-import { useStore, toolTips, ToolTip } from './useStore'
-import { extrudeSketch, sketchOnExtrudedFace } from './lang/modifyAst'
-import { getNodePathFromSourceRange } from './lang/queryAst'
-// import { HorzVert } from './components/Toolbar/HorzVert'
-// import { RemoveConstrainingValues } from './components/Toolbar/RemoveConstrainingValues'
-// import { EqualLength } from './components/Toolbar/EqualLength'
-// import { EqualAngle } from './components/Toolbar/EqualAngle'
-// import { Intersect } from './components/Toolbar/Intersect'
-// import { SetHorzVertDistance } from './components/Toolbar/SetHorzVertDistance'
-// import { SetAngleLength } from './components/Toolbar/setAngleLength'
-// import { SetAbsDistance } from './components/Toolbar/SetAbsDistance'
-// import { SetAngleBetween } from './components/Toolbar/SetAngleBetween'
+import { ToolTip } from './useStore'
 import { Fragment, WheelEvent, useRef, useMemo } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faX } from '@fortawesome/free-solid-svg-icons'
 import { Popover, Transition } from '@headlessui/react'
 import styles from './Toolbar.module.css'
-import { v4 as uuidv4 } from 'uuid'
 import { isCursorInSketchCommandRange } from 'lang/util'
 import { ActionIcon } from 'components/ActionIcon'
 import { engineCommandManager } from './lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
-import { kclManager } from 'lang/KclSinglton'
 
 export const sketchButtonClassnames = {
   background:
@@ -178,24 +165,6 @@ export const Toolbar = () => {
             Extrude
           </button>
         )}
-
-        {/* <HorzVert horOrVert="horizontal" />
-        <HorzVert horOrVert="vertical" />
-        <EqualLength />
-        <EqualAngle />
-        <SetHorzVertDistance buttonType="alignEndsVertically" />
-        <SetHorzVertDistance buttonType="setHorzDistance" />
-        <SetAbsDistance buttonType="snapToYAxis" />
-        <SetAbsDistance buttonType="xAbs" />
-        <SetHorzVertDistance buttonType="alignEndsHorizontally" />
-        <SetAbsDistance buttonType="snapToXAxis" />
-        <SetHorzVertDistance buttonType="setVertDistance" />
-        <SetAbsDistance buttonType="yAbs" />
-        <SetAngleLength angleOrLength="setAngle" />
-        <SetAngleLength angleOrLength="setLength" />
-        <Intersect />
-        <RemoveConstrainingValues />
-        <SetAngleBetween /> */}
       </span>
     )
   }

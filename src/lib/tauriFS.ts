@@ -5,16 +5,18 @@ import {
   readDir,
   writeTextFile,
 } from '@tauri-apps/api/fs'
-import { documentDir, homeDir } from '@tauri-apps/api/path'
+import { documentDir, homeDir, sep } from '@tauri-apps/api/path'
 import { isTauri } from './isTauri'
 import { ProjectWithEntryPointMetadata } from '../Router'
 import { metadata } from 'tauri-plugin-fs-extra-api'
+import { bracket } from './exampleKcl'
 
 const PROJECT_FOLDER = 'kittycad-modeling-projects'
 export const FILE_EXT = '.kcl'
 export const PROJECT_ENTRYPOINT = 'main' + FILE_EXT
 const INDEX_IDENTIFIER = '$n' // $nn.. will pad the number with 0s
 export const MAX_PADDING = 7
+const RELEVANT_FILE_TYPES = ['kcl']
 
 // Initializes the project directory and returns the path
 export async function initializeProjectDirectory(directory: string) {
@@ -69,12 +71,141 @@ export async function getProjectsInDir(projectDir: string) {
 
   const projectsWithMetadata = await Promise.all(
     readProjects.map(async (p) => ({
-      entrypoint_metadata: await metadata(p.path + '/' + PROJECT_ENTRYPOINT),
+      entrypointMetadata: await metadata(p.path + sep + PROJECT_ENTRYPOINT),
       ...p,
     }))
   )
 
   return projectsWithMetadata
+}
+
+export const isHidden = (fileOrDir: FileEntry) =>
+  !!fileOrDir.name?.startsWith('.')
+
+export const isDir = (fileOrDir: FileEntry) =>
+  'children' in fileOrDir && fileOrDir.children !== undefined
+
+export function deepFileFilter(
+  entries: FileEntry[],
+  filterFn: (f: FileEntry) => boolean
+): FileEntry[] {
+  const filteredEntries: FileEntry[] = []
+  for (const fileOrDir of entries) {
+    if ('children' in fileOrDir && fileOrDir.children !== undefined) {
+      const filteredChildren = deepFileFilter(fileOrDir.children, filterFn)
+      if (filterFn(fileOrDir)) {
+        filteredEntries.push({
+          ...fileOrDir,
+          children: filteredChildren,
+        })
+      }
+    } else if (filterFn(fileOrDir)) {
+      filteredEntries.push(fileOrDir)
+    }
+  }
+  return filteredEntries
+}
+
+export function deepFileFilterFlat(
+  entries: FileEntry[],
+  filterFn: (f: FileEntry) => boolean
+): FileEntry[] {
+  const filteredEntries: FileEntry[] = []
+  for (const fileOrDir of entries) {
+    if ('children' in fileOrDir && fileOrDir.children !== undefined) {
+      const filteredChildren = deepFileFilterFlat(fileOrDir.children, filterFn)
+      if (filterFn(fileOrDir)) {
+        filteredEntries.push({
+          ...fileOrDir,
+          children: filteredChildren,
+        })
+      }
+      filteredEntries.push(...filteredChildren)
+    } else if (filterFn(fileOrDir)) {
+      filteredEntries.push(fileOrDir)
+    }
+  }
+  return filteredEntries
+}
+
+// Read the contents of a project directory
+// and return all relevant files and sub-directories recursively
+export async function readProject(projectDir: string) {
+  const readFiles = await readDir(projectDir, {
+    recursive: true,
+  })
+
+  return deepFileFilter(readFiles, isRelevantFileOrDir)
+}
+
+// Given a read project, return the number of .kcl files,
+// both in the root directory and in sub-directories,
+// and folders that contain at least one .kcl file
+export function getPartsCount(project: FileEntry[]) {
+  const flatProject = deepFileFilterFlat(project, isRelevantFileOrDir)
+
+  const kclFileCount = flatProject.filter((f) =>
+    f.name?.endsWith(FILE_EXT)
+  ).length
+  const kclDirCount = flatProject.filter((f) => f.children !== undefined).length
+
+  return {
+    kclFileCount,
+    kclDirCount,
+  }
+}
+
+// Determines if a file or directory is relevant to the project
+// i.e. not a hidden file or directory, and is a relevant file type
+// or contains at least one relevant file (even if it's nested)
+// or is a completely empty directory
+export function isRelevantFileOrDir(fileOrDir: FileEntry) {
+  let isRelevantDir = false
+  if ('children' in fileOrDir && fileOrDir.children !== undefined) {
+    isRelevantDir =
+      !isHidden(fileOrDir) &&
+      (fileOrDir.children.some(isRelevantFileOrDir) ||
+        fileOrDir.children.length === 0)
+  }
+  const isRelevantFile =
+    !isHidden(fileOrDir) &&
+    RELEVANT_FILE_TYPES.some((ext) => fileOrDir.name?.endsWith(ext))
+
+  return (
+    (isDir(fileOrDir) && isRelevantDir) || (!isDir(fileOrDir) && isRelevantFile)
+  )
+}
+
+// Deeply sort the files and directories in a project like VS Code does:
+// The main.kcl file is always first, then files, then directories
+// Files and directories are sorted alphabetically
+export function sortProject(project: FileEntry[]): FileEntry[] {
+  const sortedProject = project.sort((a, b) => {
+    if (a.name === PROJECT_ENTRYPOINT) {
+      return -1
+    } else if (b.name === PROJECT_ENTRYPOINT) {
+      return 1
+    } else if (a.children === undefined && b.children !== undefined) {
+      return -1
+    } else if (a.children !== undefined && b.children === undefined) {
+      return 1
+    } else if (a.name && b.name) {
+      return a.name.localeCompare(b.name)
+    } else {
+      return 0
+    }
+  })
+
+  return sortedProject.map((fileOrDir: FileEntry) => {
+    if ('children' in fileOrDir && fileOrDir.children !== undefined) {
+      return {
+        ...fileOrDir,
+        children: sortProject(fileOrDir.children),
+      }
+    } else {
+      return fileOrDir
+    }
+  })
 }
 
 // Creates a new file in the default directory with the default project name
@@ -94,7 +225,7 @@ export async function createNewProject(
     })
   }
 
-  await writeTextFile(path + '/' + PROJECT_ENTRYPOINT, '').catch((err) => {
+  await writeTextFile(path + sep + PROJECT_ENTRYPOINT, bracket).catch((err) => {
     console.error('Error creating new file:', err)
     throw err
   })
@@ -102,13 +233,13 @@ export async function createNewProject(
   const m = await metadata(path)
 
   return {
-    name: path.slice(path.lastIndexOf('/') + 1),
+    name: path.slice(path.lastIndexOf(sep) + 1),
     path: path,
-    entrypoint_metadata: m,
+    entrypointMetadata: m,
     children: [
       {
         name: PROJECT_ENTRYPOINT,
-        path: path + '/' + PROJECT_ENTRYPOINT,
+        path: path + sep + PROJECT_ENTRYPOINT,
         children: [],
       },
     ],

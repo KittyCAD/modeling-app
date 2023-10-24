@@ -13,20 +13,20 @@ import { useConvertToVariable } from 'hooks/useToolbarGuards'
 import { Themes } from 'lib/theme'
 import { useMemo } from 'react'
 import { linter, lintGutter } from '@codemirror/lint'
-import { Selections, useStore } from 'useStore'
+import { useStore } from 'useStore'
+import { processCodeMirrorRanges } from 'lib/selections'
 import { LanguageServerClient } from 'editor/lsp'
 import kclLanguage from 'editor/lsp/language'
 import { isTauri } from 'lib/isTauri'
 import { useParams } from 'react-router-dom'
 import { writeTextFile } from '@tauri-apps/api/fs'
-import { PROJECT_ENTRYPOINT } from 'lib/tauriFS'
 import { toast } from 'react-hot-toast'
 import {
   EditorView,
   addLineHighlight,
   lineHighlightField,
 } from 'editor/highlightextension'
-import { isOverlap, roundOff } from 'lib/utils'
+import { roundOff } from 'lib/utils'
 import { kclErrToDiagnostic } from 'lang/errors'
 import { CSSRuleObject } from 'tailwindcss/types/config'
 import { useModelingContext } from 'hooks/useModelingContext'
@@ -111,18 +111,16 @@ export const TextEditor = ({
   }, [lspClient, isLSPServerReady])
 
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
-  const onChange = (newCode: string, viewUpdate: ViewUpdate) => {
+  const onChange = (newCode: string) => {
     kclManager.setCodeAndExecute(newCode)
     if (isTauri() && pathParams.id) {
       // Save the file to disk
       // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
-      writeTextFile(pathParams.id + '/' + PROJECT_ENTRYPOINT, newCode).catch(
-        (err) => {
-          // TODO: add Sentry per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
-          console.error('error saving file', err)
-          toast.error('Error saving file, please check file permissions')
-        }
-      )
+      writeTextFile(pathParams.id, newCode).catch((err) => {
+        // TODO: add Sentry per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
+        console.error('error saving file', err)
+        toast.error('Error saving file, please check file permissions')
+      })
     }
     if (editorView) {
       editorView?.dispatch({ effects: addLineHighlight.of([0, 0]) })
@@ -132,65 +130,17 @@ export const TextEditor = ({
     if (!editorView) {
       setEditorView(viewUpdate.view)
     }
-    const ranges = viewUpdate.state.selection.ranges
-
-    const isChange =
-      ranges.length !== selectionRanges.codeBasedSelections.length ||
-      ranges.some(({ from, to }, i) => {
-        return (
-          from !== selectionRanges.codeBasedSelections[i].range[0] ||
-          to !== selectionRanges.codeBasedSelections[i].range[1]
-        )
-      })
-
-    if (!isChange) return
-    const codeBasedSelections: Selections['codeBasedSelections'] = ranges.map(
-      ({ from, to }) => {
-        if (selectionRangeTypeMap[to]) {
-          return {
-            type: selectionRangeTypeMap[to],
-            range: [from, to],
-          }
-        }
-        return {
-          type: 'default',
-          range: [from, to],
-        }
-      }
-    )
-    const idBasedSelections = codeBasedSelections
-      .map(({ type, range }) => {
-        const hasOverlap = Object.entries(
-          engineCommandManager.artifactMap || {}
-        ).filter(([_, { range: artifactRange }]) => {
-          return artifactRange && isOverlap(artifactRange, range)
-        })
-        if (hasOverlap.length) {
-          return {
-            type,
-            id: hasOverlap?.[0]?.[0],
-          }
-        }
-        return null
-      })
-      .filter(Boolean) as any
-
-    engineCommandManager.cusorsSelected({
-      otherSelections: [],
-      idBasedSelections,
+    const eventInfo = processCodeMirrorRanges({
+      codeMirrorRanges: viewUpdate.state.selection.ranges,
+      selectionRanges,
+      selectionRangeTypeMap,
     })
+    if (!eventInfo) return
 
-    selectionRanges &&
-      send({
-        type: 'Set selection',
-        data: {
-          selectionType: 'mirrorCodeMirrorSelections',
-          selection: {
-            ...selectionRanges,
-            codeBasedSelections,
-          },
-        },
-      })
+    send(eventInfo.modelingEvent)
+    eventInfo.engineEvents.forEach((event) =>
+      engineCommandManager.sendSceneCommand(event)
+    )
   }
 
   const editorExtensions = useMemo(() => {

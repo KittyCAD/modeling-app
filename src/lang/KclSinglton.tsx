@@ -1,4 +1,5 @@
-import { Selections, executeAst, executeCode } from 'useStore'
+import { executeAst, executeCode } from 'useStore'
+import { Selections } from 'lib/selections'
 import { KCLError } from './errors'
 import {
   EngineCommandManager,
@@ -39,6 +40,7 @@ class KclManager {
   private _logs: string[] = []
   private _kclErrors: KCLError[] = []
   private _isExecuting = false
+  private _wasmInitFailed = true
 
   engineCommandManager: EngineCommandManager
   private _defferer = deferExecution((code: string) => {
@@ -46,12 +48,14 @@ class KclManager {
     this.executeAst(ast)
   }, 600)
 
-  private _isExecutingCallback: (a: boolean) => void = () => {}
+  private _isExecutingCallback: (arg: boolean) => void = () => {}
   private _codeCallBack: (arg: string) => void = () => {}
   private _astCallBack: (arg: Program) => void = () => {}
   private _programMemoryCallBack: (arg: ProgramMemory) => void = () => {}
   private _logsCallBack: (arg: string[]) => void = () => {}
   private _kclErrorsCallBack: (arg: KCLError[]) => void = () => {}
+  private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
+  private _executeCallback: () => void = () => {}
 
   get ast() {
     return this._ast
@@ -105,6 +109,14 @@ class KclManager {
     this._isExecutingCallback(isExecuting)
   }
 
+  get wasmInitFailed() {
+    return this._wasmInitFailed
+  }
+  set wasmInitFailed(wasmInitFailed) {
+    this._wasmInitFailed = wasmInitFailed
+    this._wasmInitFailedCallback(wasmInitFailed)
+  }
+
   constructor(engineCommandManager: EngineCommandManager) {
     this.engineCommandManager = engineCommandManager
     const storedCode = localStorage.getItem(PERSIST_CODE_TOKEN)
@@ -130,6 +142,7 @@ class KclManager {
     setLogs,
     setKclErrors,
     setIsExecuting,
+    setWasmInitFailed,
   }: {
     setCode: (arg: string) => void
     setProgramMemory: (arg: ProgramMemory) => void
@@ -137,6 +150,7 @@ class KclManager {
     setLogs: (arg: string[]) => void
     setKclErrors: (arg: KCLError[]) => void
     setIsExecuting: (arg: boolean) => void
+    setWasmInitFailed: (arg: boolean) => void
   }) {
     this._codeCallBack = setCode
     this._programMemoryCallBack = setProgramMemory
@@ -144,11 +158,26 @@ class KclManager {
     this._logsCallBack = setLogs
     this._kclErrorsCallBack = setKclErrors
     this._isExecutingCallback = setIsExecuting
+    this._wasmInitFailedCallback = setWasmInitFailed
+  }
+  registerExecuteCallback(callback: () => void) {
+    this._executeCallback = callback
+  }
+
+  async ensureWasmInit() {
+    try {
+      await initPromise
+      if (this.wasmInitFailed) {
+        this.wasmInitFailed = false
+      }
+    } catch (e) {
+      this.wasmInitFailed = true
+    }
   }
 
   async executeAst(ast: Program = this._ast, updateCode = false) {
+    await this.ensureWasmInit()
     this.isExecuting = true
-    await initPromise
     const { logs, errors, programMemory } = await executeAst({
       ast,
       engineCommandManager: this.engineCommandManager,
@@ -163,9 +192,10 @@ class KclManager {
       this._code = recast(ast)
       this._codeCallBack(this._code)
     }
+    this._executeCallback()
   }
   async executeAstMock(ast: Program = this._ast, updateCode = false) {
-    await initPromise
+    await this.ensureWasmInit()
     const newCode = recast(ast)
     const newAst = parse(newCode)
     await this?.engineCommandManager?.waitForReady
@@ -185,7 +215,7 @@ class KclManager {
     this._programMemory = programMemory
   }
   async executeCode(code?: string) {
-    await initPromise
+    await this.ensureWasmInit()
     await this?.engineCommandManager?.waitForReady
     if (!this?.engineCommandManager?.planesInitialized()) return
     const result = await executeCode({
@@ -305,6 +335,7 @@ const KclContext = createContext({
   isExecuting: kclManager.isExecuting,
   errors: kclManager.kclErrors,
   logs: kclManager.logs,
+  wasmInitFailed: kclManager.wasmInitFailed,
 })
 
 export function useKclContext() {
@@ -325,6 +356,7 @@ export function KclContextProvider({
   const [isExecuting, setIsExecuting] = useState(false)
   const [errors, setErrors] = useState<KCLError[]>([])
   const [logs, setLogs] = useState<string[]>([])
+  const [wasmInitFailed, setWasmInitFailed] = useState(false)
 
   useEffect(() => {
     kclManager.registerCallBacks({
@@ -334,6 +366,7 @@ export function KclContextProvider({
       setLogs,
       setKclErrors: setErrors,
       setIsExecuting,
+      setWasmInitFailed,
     })
   }, [])
   return (
@@ -345,6 +378,7 @@ export function KclContextProvider({
         isExecuting,
         errors,
         logs,
+        wasmInitFailed,
       }}
     >
       {children}

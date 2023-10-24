@@ -4,19 +4,26 @@ import { useCalc, CreateNewVariable } from './AvailableVarsHelpers'
 import { ActionButton } from './ActionButton'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { toast } from 'react-hot-toast'
+import { type InstanceProps, create } from 'react-modal-promise'
+
+type ModalResolve = { variableName: string }
+type ModalReject = boolean
+type SetVarNameModalProps = InstanceProps<ModalResolve, ModalReject> & {
+  valueName: string
+}
+
+export const createSetVarNameModal = create<
+  SetVarNameModalProps,
+  ModalResolve,
+  ModalReject
+>
 
 export const SetVarNameModal = ({
   isOpen,
   onResolve,
   onReject,
   valueName,
-}: {
-  isOpen: boolean
-  onResolve: (a: { variableName?: string }) => void
-  onReject: (a: any) => void
-  value: number
-  valueName: string
-}) => {
+}: SetVarNameModalProps) => {
   const { isNewVariableNameUnique, newVariableName, setNewVariableName } =
     useCalc({ value: '', initialVariableName: valueName })
 

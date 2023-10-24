@@ -11,7 +11,13 @@ export default function Sketching() {
   const next = useNextClick(onboardingPaths.FUTURE_WORK)
 
   useEffect(() => {
-    kclManager.setCode('')
+    if (kclManager.engineCommandManager.engineConnection?.isReady()) {
+      // If the engine is ready, promptly execute the loaded code
+      kclManager.setCodeAndExecute('')
+    } else {
+      // Otherwise, just set the code and wait for the connection to complete
+      kclManager.setCode('')
+    }
   }, [])
 
   return (

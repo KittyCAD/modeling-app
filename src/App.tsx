@@ -35,7 +35,7 @@ import { kclManager } from 'lang/KclSinglton'
 import { useModelingContext } from 'hooks/useModelingContext'
 
 export function App() {
-  const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
+  const { code: loadedCode, project, file } = useLoaderData() as IndexLoaderData
 
   useHotKeyListener()
   const {
@@ -86,7 +86,13 @@ export function App() {
   // on mount, and overwrite any locally-stored code
   useEffect(() => {
     if (isTauri() && loadedCode !== null) {
-      kclManager.setCode(loadedCode)
+      if (kclManager.engineCommandManager.engineConnection?.isReady()) {
+        // If the engine is ready, promptly execute the loaded code
+        kclManager.setCodeAndExecute(loadedCode)
+      } else {
+        // Otherwise, just set the code and wait for the connection to complete
+        kclManager.setCode(loadedCode)
+      }
     }
     return () => {
       // Clear code on unmount if in desktop app
@@ -182,7 +188,7 @@ export function App() {
           paneOpacity +
           (buttonDownInStream ? ' pointer-events-none' : '')
         }
-        project={project}
+        project={{ project, file }}
         enableMenu={true}
       />
       <ModalContainer />

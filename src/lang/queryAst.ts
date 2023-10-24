@@ -1,4 +1,5 @@
-import { Selection, ToolTip } from '../useStore'
+import { ToolTip } from '../useStore'
+import { Selection } from 'lib/selections'
 import {
   BinaryExpression,
   Program,

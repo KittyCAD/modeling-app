@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import { type ProjectWithEntryPointMetadata, paths } from '../Router'
 import { Link } from 'react-router-dom'
 import { ActionButton } from './ActionButton'
@@ -8,7 +8,7 @@ import {
   faTrashAlt,
   faX,
 } from '@fortawesome/free-solid-svg-icons'
-import { FILE_EXT } from '../lib/tauriFS'
+import { FILE_EXT, getPartsCount, readProject } from '../lib/tauriFS'
 import { Dialog } from '@headlessui/react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
@@ -28,6 +28,8 @@ function ProjectCard({
   useHotkeys('esc', () => setIsEditing(false))
   const [isEditing, setIsEditing] = useState(false)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
+  const [numberOfParts, setNumberOfParts] = useState(1)
+  const [numberOfFolders, setNumberOfFolders] = useState(0)
 
   function handleSave(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -41,6 +43,17 @@ function ProjectCard({
       ? date.toLocaleDateString()
       : date.toLocaleTimeString()
   }
+
+  useEffect(() => {
+    async function getNumberOfParts() {
+      const { kclFileCount, kclDirCount } = getPartsCount(
+        await readProject(project.path)
+      )
+      setNumberOfParts(kclFileCount)
+      setNumberOfFolders(kclDirCount)
+    }
+    getNumberOfParts()
+  }, [project.path])
 
   return (
     <li
@@ -76,7 +89,7 @@ function ProjectCard({
         </form>
       ) : (
         <>
-          <div className="p-1 flex flex-col gap-2">
+          <div className="p-1 flex flex-col h-full gap-2">
             <Link
               to={`${paths.FILE}/${encodeURIComponent(project.path)}`}
               className="flex-1 text-liquid-100"
@@ -84,7 +97,14 @@ function ProjectCard({
               {project.name?.replace(FILE_EXT, '')}
             </Link>
             <span className="text-chalkboard-60 text-xs">
-              Edited {getDisplayedTime(project.entrypoint_metadata.modifiedAt)}
+              {numberOfParts} part{numberOfParts === 1 ? '' : 's'}{' '}
+              {numberOfFolders > 0 &&
+                `/ ${numberOfFolders} folder${
+                  numberOfFolders === 1 ? '' : 's'
+                }`}
+            </span>
+            <span className="text-chalkboard-60 text-xs">
+              Edited {getDisplayedTime(project.entrypointMetadata.modifiedAt)}
             </span>
             <div className="absolute bottom-2 right-2 flex gap-1 items-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
               <ActionButton

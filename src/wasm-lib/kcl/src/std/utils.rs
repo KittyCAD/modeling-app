@@ -1,5 +1,7 @@
 use std::f64::consts::PI;
 
+use kittycad::types::UnitAngle;
+
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{Point2d, SourceRange},
@@ -19,6 +21,14 @@ impl From<kittycad::types::Angle> for Angle {
     }
 }
 
+impl From<Angle> for kittycad::types::Angle {
+    fn from(value: Angle) -> Self {
+        Self {
+            unit: UnitAngle::Degrees,
+            value: value.degrees,
+        }
+    }
+}
 impl Angle {
     const ZERO: Self = Self { degrees: 0.0 };
     /// Make an angle of the given degrees.

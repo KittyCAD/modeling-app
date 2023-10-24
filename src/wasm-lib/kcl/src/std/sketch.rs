@@ -1049,6 +1049,8 @@ async fn inner_arc(data: ArcData, sketch_group: Box<SketchGroup>, args: Args) ->
             segment: kittycad::types::PathSegment::Arc {
                 angle_start: angle_start.degrees(),
                 angle_end: angle_end.degrees(),
+                start: Some(angle_start.into()),
+                end: Some(angle_end.into()),
                 center: center.into(),
                 radius,
                 relative: false,
