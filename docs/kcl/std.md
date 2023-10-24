@@ -763,12 +763,12 @@ Draw an angled line that intersects with a given line.
 
 
 ```
-angledLineThatIntersects(data: AngeledLineThatIntersectsData, sketch_group: SketchGroup) -> SketchGroup
+angledLineThatIntersects(data: AngledLineThatIntersectsData, sketch_group: SketchGroup) -> SketchGroup
 ```
 
 #### Arguments
 
-* `data`: `AngeledLineThatIntersectsData` - Data for drawing an angled line that intersects with a given line.
+* `data`: `AngledLineThatIntersectsData` - Data for drawing an angled line that intersects with a given line.
 ```
 {
 	// The angle of the line.
