@@ -2,11 +2,10 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kittycad::types::{ModelingCmd, Point3D};
+use kittycad::types::{Angle, ModelingCmd, Point3D};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use super::utils::Angle;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
@@ -1033,8 +1032,8 @@ async fn inner_arc(data: ArcData, sketch_group: Box<SketchGroup>, args: Args) ->
             segment: kittycad::types::PathSegment::Arc {
                 angle_start: angle_start.degrees(),
                 angle_end: angle_end.degrees(),
-                start: Some(angle_start.into()),
-                end: Some(angle_end.into()),
+                start: Some(angle_start),
+                end: Some(angle_end),
                 center: center.into(),
                 radius,
                 relative: false,
