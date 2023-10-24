@@ -1664,9 +1664,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.2.38"
+version = "0.2.41"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "633a728fb7209b398b7fa5b67460cb7f3cdb268c6b2a9e81967dda464cfbb5c1"
+checksum = "874914cd40bfd43674406683bb3f0924d41780698a4ade96f2e180a73678bdd1"
 dependencies = [
  "anyhow",
  "async-trait",
