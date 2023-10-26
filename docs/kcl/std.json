@@ -3812,7 +3812,7 @@
     "args": [
       {
         "name": "data",
-        "type": "AngeledLineThatIntersectsData",
+        "type": "AngledLineThatIntersectsData",
         "schema": {
           "description": "Data for drawing an angled line that intersects with a given line.",
           "type": "object",
