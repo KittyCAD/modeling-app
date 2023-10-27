@@ -260,7 +260,7 @@ jobs:
       - name: Run the e2e tests
         run: |
           export E2E_APPLICATION=$(ls artifact/appimage/*.AppImage)
-          chmox a+x $E2E_APPLICATION
+          chmod a+x $E2E_APPLICATION
           xvfb-run yarn test:e2e
 
 
