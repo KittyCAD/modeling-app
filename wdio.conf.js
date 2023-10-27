@@ -5,7 +5,7 @@ const { spawn, spawnSync } = require('child_process')
 // keep track of the `tauri-driver` child process
 let tauriDriver
 
-const binary = process.platform == 'win32' ? 'KittyCAD Modeling.exe' : 'kittycad-modeling'
+const application = process.env.E2E_APPLICATION || './src-tauri/target/release/kittycad-modeling'
 
 exports.config = {
   port: 4444,
@@ -15,7 +15,7 @@ exports.config = {
     {
       maxInstances: 1,
       'tauri:options': {
-        application: './src-tauri/target/release/' + binary,
+        application,
       },
     },
   ],

@@ -97,6 +97,7 @@ jobs:
       - id: export_version
         run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
 
+
   build-apps:
     needs: [check-format, build-test-web, prepare-json-files, check-types]
     runs-on: ${{ matrix.os }}
@@ -217,6 +218,49 @@ jobs:
       - name: Run the E2E tests on Linux
         if: matrix.os == 'ubuntu-latest'
         run: xvfb-run yarn test:e2e
+
+
+  test-apps:
+    needs: [check-format, build-test-web, prepare-json-files, check-types, build-apps]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v3
+
+      - name: Install Ubuntu system dependencies
+        run: >
+          sudo apt-get update &&
+          sudo apt-get install -y
+          libgtk-3-dev
+          libgtksourceview-3.0-dev
+          webkit2gtk-4.0
+          libappindicator3-dev
+          webkit2gtk-driver
+          xvfb
+          libfuse2
+
+      - name: Sync node version and setup cache
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn' # Set this to npm, yarn or pnpm.
+
+      - run: yarn install
+
+      - name: Rust setup
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install tauri-driver
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: tauri-driver
+
+      - name: Run the e2e tests
+        run: |
+          export E2E_APPLICATION=$(ls src-tauri/target/release/bundle/appimage/*.AppImage)
+          xvfb-run yarn test:e2e
 
 
   publish-apps-release:
