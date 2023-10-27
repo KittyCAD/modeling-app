@@ -259,7 +259,7 @@ jobs:
 
       - name: Run the e2e tests
         run: |
-          export E2E_APPLICATION=$(ls src-tauri/target/release/bundle/appimage/*.AppImage)
+          export E2E_APPLICATION=$(ls artifact/appimage/*.AppImage)
           xvfb-run yarn test:e2e
 
 
