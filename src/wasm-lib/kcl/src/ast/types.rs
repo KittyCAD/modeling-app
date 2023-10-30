@@ -371,13 +371,13 @@ impl BodyItem {
     }
 }
 
-impl From<BodyItem> for crate::executor::SourceRange {
+impl From<BodyItem> for SourceRange {
     fn from(item: BodyItem) -> Self {
         Self([item.start(), item.end()])
     }
 }
 
-impl From<&BodyItem> for crate::executor::SourceRange {
+impl From<&BodyItem> for SourceRange {
     fn from(item: &BodyItem) -> Self {
         Self([item.start(), item.end()])
     }
@@ -534,13 +534,13 @@ impl Value {
     }
 }
 
-impl From<Value> for crate::executor::SourceRange {
+impl From<Value> for SourceRange {
     fn from(value: Value) -> Self {
         Self([value.start(), value.end()])
     }
 }
 
-impl From<&Value> for crate::executor::SourceRange {
+impl From<&Value> for SourceRange {
     fn from(value: &Value) -> Self {
         Self([value.start(), value.end()])
     }
@@ -558,13 +558,13 @@ pub enum BinaryPart {
     MemberExpression(Box<MemberExpression>),
 }
 
-impl From<BinaryPart> for crate::executor::SourceRange {
+impl From<BinaryPart> for SourceRange {
     fn from(value: BinaryPart) -> Self {
         Self([value.start(), value.end()])
     }
 }
 
-impl From<&BinaryPart> for crate::executor::SourceRange {
+impl From<&BinaryPart> for SourceRange {
     fn from(value: &BinaryPart) -> Self {
         Self([value.start(), value.end()])
     }
@@ -640,7 +640,7 @@ impl BinaryPart {
         pipe_info: &mut PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
-        // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
+        // We DO NOT set this globally because if we did and this was called inside a pipe it would
         // stop the execution of the pipe.
         // THIS IS IMPORTANT.
         let mut new_pipe_info = pipe_info.clone();
@@ -930,7 +930,7 @@ impl CallExpression {
                     binary_expression.get_result(memory, pipe_info, ctx).await?
                 }
                 Value::CallExpression(call_expression) => {
-                    // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
+                    // We DO NOT set this globally because if we did and this was called inside a pipe it would
                     // stop the execution of the pipe.
                     // THIS IS IMPORTANT.
                     let mut new_pipe_info = pipe_info.clone();
@@ -1552,7 +1552,7 @@ impl ArrayExpression {
                     binary_expression.get_result(memory, pipe_info, ctx).await?
                 }
                 Value::CallExpression(call_expression) => {
-                    // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
+                    // We DO NOT set this globally because if we did and this was called inside a pipe it would
                     // stop the execution of the pipe.
                     // THIS IS IMPORTANT.
                     let mut new_pipe_info = pipe_info.clone();
@@ -1703,7 +1703,7 @@ impl ObjectExpression {
                     binary_expression.get_result(memory, pipe_info, ctx).await?
                 }
                 Value::CallExpression(call_expression) => {
-                    // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
+                    // We DO NOT set this globally because if we did and this was called inside a pipe it would
                     // stop the execution of the pipe.
                     // THIS IS IMPORTANT.
                     let mut new_pipe_info = pipe_info.clone();
@@ -1831,13 +1831,13 @@ impl MemberObject {
     }
 }
 
-impl From<MemberObject> for crate::executor::SourceRange {
+impl From<MemberObject> for SourceRange {
     fn from(obj: MemberObject) -> Self {
         Self([obj.start(), obj.end()])
     }
 }
 
-impl From<&MemberObject> for crate::executor::SourceRange {
+impl From<&MemberObject> for SourceRange {
     fn from(obj: &MemberObject) -> Self {
         Self([obj.start(), obj.end()])
     }
@@ -1867,13 +1867,13 @@ impl LiteralIdentifier {
     }
 }
 
-impl From<LiteralIdentifier> for crate::executor::SourceRange {
+impl From<LiteralIdentifier> for SourceRange {
     fn from(id: LiteralIdentifier) -> Self {
         Self([id.start(), id.end()])
     }
 }
 
-impl From<&LiteralIdentifier> for crate::executor::SourceRange {
+impl From<&LiteralIdentifier> for SourceRange {
     fn from(id: &LiteralIdentifier) -> Self {
         Self([id.start(), id.end()])
     }
@@ -2133,7 +2133,7 @@ impl BinaryExpression {
         pipe_info: &mut PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
-        // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
+        // We DO NOT set this globally because if we did and this was called inside a pipe it would
         // stop the execution of the pipe.
         // THIS IS IMPORTANT.
         let mut new_pipe_info = pipe_info.clone();
@@ -2307,7 +2307,7 @@ impl UnaryExpression {
         pipe_info: &mut PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
-        // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
+        // We DO NOT set this globally because if we did and this was called inside a pipe it would
         // stop the execution of the pipe.
         // THIS IS IMPORTANT.
         let mut new_pipe_info = pipe_info.clone();

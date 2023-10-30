@@ -183,7 +183,7 @@ impl DefaultPlanes {
                 SourceRange::default(),
                 ModelingCmd::MakePlane {
                     clobber: false,
-                    origin: default_origin.clone(),
+                    origin: default_origin,
                     size: default_size,
                     x_axis: Point3D { x: 1.0, y: 0.0, z: 0.0 },
                     y_axis: Point3D { x: 0.0, y: 1.0, z: 0.0 },
@@ -216,7 +216,7 @@ impl DefaultPlanes {
                 SourceRange::default(),
                 ModelingCmd::MakePlane {
                     clobber: false,
-                    origin: default_origin.clone(),
+                    origin: default_origin,
                     size: default_size,
                     x_axis: Point3D { x: 0.0, y: 1.0, z: 0.0 },
                     y_axis: Point3D { x: 0.0, y: 0.0, z: 1.0 },
