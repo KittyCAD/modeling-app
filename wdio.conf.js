@@ -1,11 +1,12 @@
 const os = require('os')
 const path = require('path')
-const { spawn, spawnSync } = require('child_process')
+const { spawn } = require('child_process')
 
 // keep track of the `tauri-driver` child process
 let tauriDriver
 
-const application = process.env.E2E_APPLICATION || './src-tauri/target/release/kittycad-modeling'
+const application =
+  process.env.E2E_APPLICATION || './src-tauri/target/release/kittycad-modeling'
 
 exports.config = {
   port: 4444,
@@ -25,9 +26,6 @@ exports.config = {
     ui: 'bdd',
     timeout: 600000,
   },
-
-  // ensure the rust project is built since we expect this binary to exist for the webdriver sessions
-  // onPrepare: () => spawnSync('yarn', ['tauri', 'build', '-b', 'none']),
 
   // ensure we are running `tauri-driver` before the session starts so that we can proxy the webdriver requests
   beforeSession: () =>
