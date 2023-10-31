@@ -1,4 +1,3 @@
-use serde_json::{Number as JNumber, Value as JValue};
 use winnow::{
     combinator::{alt, delimited, opt, peek, preceded, repeat, separated0, terminated},
     dispatch,
@@ -10,10 +9,10 @@ use winnow::{
 use crate::{
     ast::types::{
         ArrayExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression, CommentStyle,
-        ExpressionStatement, FunctionExpression, Identifier, Literal, LiteralIdentifier, MemberExpression,
-        MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, PipeExpression,
-        PipeSubstitution, Program, ReturnStatement, UnaryExpression, UnaryOperator, Value, VariableDeclaration,
-        VariableDeclarator, VariableKind,
+        ExpressionStatement, FunctionExpression, Identifier, Literal, LiteralIdentifier, LiteralValue,
+        MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty,
+        PipeExpression, PipeSubstitution, Program, ReturnStatement, UnaryExpression, UnaryOperator, Value,
+        VariableDeclaration, VariableDeclarator, VariableKind,
     },
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
@@ -216,7 +215,7 @@ pub fn string_literal(i: TokenSlice) -> PResult<Literal> {
         .try_map(|token: Token| match token.token_type {
             TokenType::String => {
                 let s = token.value[1..token.value.len() - 1].to_string();
-                Ok((JValue::String(s), token))
+                Ok((LiteralValue::from(s), token))
             }
             _ => Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: token.as_source_ranges(),
@@ -238,8 +237,8 @@ fn unsigned_number_literal(i: TokenSlice) -> PResult<Literal> {
     let (value, token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Number => {
-                if let Ok(x) = token.value.parse::<i64>() {
-                    return Ok((JValue::Number(JNumber::from(x)), token));
+                if let Ok(x) = token.value.parse::<u64>() {
+                    return Ok((LiteralValue::UInteger(x), token));
                 }
                 let x: f64 = token.value.parse().map_err(|_| {
                     KclError::Syntax(KclErrorDetails {
@@ -248,13 +247,7 @@ fn unsigned_number_literal(i: TokenSlice) -> PResult<Literal> {
                     })
                 })?;
 
-                match JNumber::from_f64(x) {
-                    Some(n) => Ok((JValue::Number(n), token)),
-                    None => Err(KclError::Syntax(KclErrorDetails {
-                        source_ranges: token.as_source_ranges(),
-                        message: format!("Invalid float: {}", token.value),
-                    })),
-                }
+                Ok((LiteralValue::Fractional(x), token))
             }
             _ => Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: token.as_source_ranges(),
@@ -407,7 +400,7 @@ fn integer_range(i: TokenSlice) -> PResult<Vec<Value>> {
             Value::Literal(Box::new(Literal {
                 start: token0.start,
                 end: token0.end,
-                value: JValue::Number(num.into()),
+                value: num.into(),
                 raw: num.to_string(),
             }))
         })
@@ -1459,7 +1452,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         argument: Value::Literal(Box::new(Literal {
                             start: 32,
                             end: 33,
-                            value: JValue::Number(JNumber::from(2)),
+                            value: 2u32.into(),
                             raw: "2".to_owned(),
                         })),
                     })],
@@ -1614,7 +1607,7 @@ const mySk1 = startSketchAt([0, 0])"#;
             BinaryPart::Literal(Box::new(Literal {
                 start: 9,
                 end: 10,
-                value: JValue::Number(JNumber::from(3)),
+                value: 3u32.into(),
                 raw: "3".to_owned(),
             }))
         );
@@ -1774,11 +1767,11 @@ const mySk1 = startSketchAt([0, 0])"#;
             let BinaryPart::Literal(left) = actual.left else {
                 panic!("should be expression");
             };
-            assert_eq!(left.value, serde_json::Value::Number(1.into()));
+            assert_eq!(left.value, 1u32.into());
             let BinaryPart::Literal(right) = actual.right else {
                 panic!("should be expression");
             };
-            assert_eq!(right.value, serde_json::Value::Number(2.into()));
+            assert_eq!(right.value, 2u32.into());
         }
     }
 
@@ -1957,12 +1950,10 @@ const mySk1 = startSketchAt([0, 0])"#;
         let parsed_literal = literal.parse(&tokens).unwrap();
         assert_eq!(
             parsed_literal.value,
-            JValue::String(
-                "
+            "
            // a comment
              "
-                .to_owned()
-            )
+            .into()
         );
     }
 
@@ -2067,13 +2058,13 @@ const mySk1 = startSketchAt([0, 0])"#;
             left: BinaryPart::Literal(Box::new(Literal {
                 start: 0,
                 end: 1,
-                value: serde_json::Value::Number(serde_json::Number::from(5)),
+                value: 5u32.into(),
                 raw: "5".to_owned(),
             })),
             right: BinaryPart::Literal(Box::new(Literal {
                 start: 4,
                 end: 7,
-                value: serde_json::Value::String("a".to_owned()),
+                value: "a".into(),
                 raw: r#""a""#.to_owned(),
             })),
         };
@@ -2180,14 +2171,14 @@ const mySk1 = startSketchAt([0, 0])"#;
                     left: BinaryPart::Literal(Box::new(Literal {
                         start: 0,
                         end: 1,
-                        value: serde_json::Value::Number(serde_json::Number::from(5)),
+                        value: 5u32.into(),
                         raw: "5".to_string(),
                     })),
                     operator: BinaryOperator::Add,
                     right: BinaryPart::Literal(Box::new(Literal {
                         start: 3,
                         end: 4,
-                        value: serde_json::Value::Number(serde_json::Number::from(6)),
+                        value: 6u32.into(),
                         raw: "6".to_string(),
                     })),
                 })),
@@ -2466,67 +2457,67 @@ e
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
-                                value: 0.into(),
+                                value: 0u32.into(),
                                 raw: "0".to_string(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
-                                value: 1.into(),
+                                value: 1u32.into(),
                                 raw: "1".to_string(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
-                                value: 2.into(),
+                                value: 2u32.into(),
                                 raw: "2".to_string(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
-                                value: 3.into(),
+                                value: 3u32.into(),
                                 raw: "3".to_string(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
-                                value: 4.into(),
+                                value: 4u32.into(),
                                 raw: "4".to_string(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
-                                value: 5.into(),
+                                value: 5u32.into(),
                                 raw: "5".to_string(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
-                                value: 6.into(),
+                                value: 6u32.into(),
                                 raw: "6".to_string(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
-                                value: 7.into(),
+                                value: 7u32.into(),
                                 raw: "7".to_string(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
-                                value: 8.into(),
+                                value: 8u32.into(),
                                 raw: "8".to_string(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
-                                value: 9.into(),
+                                value: 9u32.into(),
                                 raw: "9".to_string(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
-                                value: 10.into(),
+                                value: 10u32.into(),
                                 raw: "10".to_string(),
                             })),
                         ],

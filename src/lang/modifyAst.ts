@@ -440,11 +440,15 @@ export function splitPathAtPipeExpression(pathToNode: PathToNode): {
 }
 
 export function createLiteral(value: string | number): Literal {
+  const literalValue =
+    typeof value === 'string'
+      ? ({ type: 'string', data: value } as const)
+      : ({ type: 'fractional', data: value } as const)
   return {
     type: 'Literal',
     start: 0,
     end: 0,
-    value,
+    value: literalValue,
     raw: `${value}`,
   }
 }

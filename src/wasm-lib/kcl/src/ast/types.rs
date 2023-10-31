@@ -7,13 +7,17 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Map;
+use serde_json::Value as JValue;
 use tower_lsp::lsp_types::{CompletionItem, CompletionItemKind, DocumentSymbol, Range as LspRange, SymbolKind};
 
+pub use self::literal_value::LiteralValue;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{ExecutorContext, MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange, UserVal},
     parser::PIPE_OPERATOR,
 };
+
+mod literal_value;
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -1312,24 +1316,18 @@ impl VariableDeclarator {
 pub struct Literal {
     pub start: usize,
     pub end: usize,
-    pub value: serde_json::Value,
+    pub value: LiteralValue,
     pub raw: String,
 }
 
 impl_value_meta!(Literal);
 
-impl From<Literal> for Value {
-    fn from(literal: Literal) -> Self {
-        Value::Literal(Box::new(literal))
-    }
-}
-
 impl Literal {
-    pub fn new(value: serde_json::Value) -> Self {
+    pub fn new(value: LiteralValue) -> Self {
         Self {
             start: 0,
             end: 0,
-            raw: value.to_string(),
+            raw: JValue::from(value.clone()).to_string(),
             value,
         }
     }
@@ -1343,11 +1341,17 @@ impl Literal {
     }
 
     fn recast(&self) -> String {
-        if let serde_json::Value::String(value) = &self.value {
-            let quote = if self.raw.trim().starts_with('"') { '"' } else { '\'' };
-            format!("{}{}{}", quote, value, quote)
-        } else {
-            self.value.to_string()
+        match self.value {
+            // Use the debug representation, not .to_string(), because
+            // calling (6.0).to_string() outputs "6" not "6.0".
+            // It's important that fractional numbers stay fractional after recasting.
+            LiteralValue::Fractional(n) => format!("{n:?}"),
+            LiteralValue::UInteger(n) => n.to_string(),
+            LiteralValue::IInteger(n) => n.to_string(),
+            LiteralValue::String(ref s) => {
+                let quote = if self.raw.trim().starts_with('"') { '"' } else { '\'' };
+                format!("{quote}{s}{quote}")
+            }
         }
     }
 }
@@ -1355,7 +1359,7 @@ impl Literal {
 impl From<Literal> for MemoryItem {
     fn from(literal: Literal) -> Self {
         MemoryItem::UserVal(UserVal {
-            value: literal.value.clone(),
+            value: JValue::from(literal.value.clone()),
             meta: vec![Metadata {
                 source_range: literal.into(),
             }],
@@ -1366,7 +1370,7 @@ impl From<Literal> for MemoryItem {
 impl From<&Box<Literal>> for MemoryItem {
     fn from(literal: &Box<Literal>) -> Self {
         MemoryItem::UserVal(UserVal {
-            value: literal.value.clone(),
+            value: JValue::from(literal.value.clone()),
             meta: vec![Metadata {
                 source_range: literal.into(),
             }],
@@ -1967,17 +1971,22 @@ impl MemberExpression {
             LiteralIdentifier::Identifier(identifier) => identifier.name.to_string(),
             LiteralIdentifier::Literal(literal) => {
                 let value = literal.value.clone();
-                // Parse this as a string.
-                if let serde_json::Value::String(string) = value {
-                    string
-                } else if let serde_json::Value::Number(_) = &value {
-                    // It can also be a number if we are getting a member of an array.
-                    return self.get_result_array(memory, parse_json_number_as_usize(&value, self.into())?);
-                } else {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!("Expected string literal or number for property name, found {:?}", value),
-                        source_ranges: vec![literal.into()],
-                    }));
+                match value {
+                    LiteralValue::UInteger(x) => return self.get_result_array(memory, x as usize),
+                    LiteralValue::IInteger(x) if x > 0 => return self.get_result_array(memory, x as usize),
+                    LiteralValue::IInteger(x) => {
+                        return Err(KclError::Syntax(KclErrorDetails {
+                            source_ranges: vec![self.into()],
+                            message: format!("invalid index: {x}"),
+                        }))
+                    }
+                    LiteralValue::Fractional(x) => {
+                        return Err(KclError::Syntax(KclErrorDetails {
+                            source_ranges: vec![self.into()],
+                            message: format!("invalid index: {x}"),
+                        }))
+                    }
+                    LiteralValue::String(s) => s,
                 }
             }
         };
@@ -2205,22 +2214,6 @@ pub fn parse_json_number_as_f64(j: &serde_json::Value, source_range: SourceRange
         Err(KclError::Syntax(KclErrorDetails {
             source_ranges: vec![source_range],
             message: format!("Invalid number: {}", j),
-        }))
-    }
-}
-
-pub fn parse_json_number_as_usize(j: &serde_json::Value, source_range: SourceRange) -> Result<usize, KclError> {
-    if let serde_json::Value::Number(n) = &j {
-        Ok(n.as_i64().ok_or_else(|| {
-            KclError::Syntax(KclErrorDetails {
-                source_ranges: vec![source_range],
-                message: format!("Invalid index: {}", j),
-            })
-        })? as usize)
-    } else {
-        Err(KclError::Syntax(KclErrorDetails {
-            source_ranges: vec![source_range],
-            message: format!("Invalid index: {}", j),
         }))
     }
 }
