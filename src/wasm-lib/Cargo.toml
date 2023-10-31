@@ -28,7 +28,7 @@ twenty-twenty = "0.6.1"
 uuid = { version = "1.5.0", features = ["v4", "js", "serde"] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-futures = "0.3.28"
+futures = "0.3.29"
 js-sys = "0.3.64"
 tower-lsp = { version = "0.20.0", default-features = false, features = ["runtime-agnostic"] }
 wasm-bindgen-futures = { version = "0.4.37", features = ["futures-core-03-stream"] }
