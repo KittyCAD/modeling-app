@@ -4,6 +4,7 @@ description = "KittyCAD Language"
 version = "0.1.35"
 edition = "2021"
 license = "MIT"
+repository = "https://github.com/KittyCAD/modeling-app"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
