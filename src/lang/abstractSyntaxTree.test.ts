@@ -1443,7 +1443,7 @@ describe('nests binary expressions correctly', () => {
             type: 'BinaryExpression',
             operator: '*',
             start: 15,
-            end: 26,
+            end: 25,
             left: { type: 'Literal', value: 2, raw: '2', start: 15, end: 16 },
             right: {
               type: 'BinaryExpression',
