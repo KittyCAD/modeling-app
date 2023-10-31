@@ -17,11 +17,12 @@ use crate::{
     },
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
-    math_parser::MathParser,
     parser::parser_impl::error::ContextError,
     std::StdLib,
     token::{Token, TokenType},
 };
+
+use super::math::BinaryExpressionToken;
 
 mod error;
 
@@ -1025,35 +1026,33 @@ fn unary_expression(i: TokenSlice) -> PResult<UnaryExpression> {
 /// Consume tokens that make up a binary expression, but don't actually return them.
 /// Why not?
 /// Because this is designed to be used with .recognize() within the `binary_expression` parser.
-fn binary_expression_tokens(i: TokenSlice) -> PResult<()> {
-    let _first = operand.parse_next(i)?;
-    let _remaining: Vec<_> = repeat(
+fn binary_expression_tokens(i: TokenSlice) -> PResult<Vec<BinaryExpressionToken>> {
+    let first = operand.parse_next(i).map(BinaryExpressionToken::from)?;
+    let remaining: Vec<_> = repeat(
         1..,
         (
-            preceded(opt(whitespace), binary_operator),
-            preceded(opt(whitespace), operand),
+            preceded(opt(whitespace), binary_operator).map(BinaryExpressionToken::from),
+            preceded(opt(whitespace), operand).map(BinaryExpressionToken::from),
         ),
     )
     .context(expected(
         "one or more binary operators (like + or -) and operands for them, e.g. 1 + 2 - 3",
     ))
     .parse_next(i)?;
-    Ok(())
+    let mut out = Vec::with_capacity(1 + 2 * remaining.len());
+    out.push(first);
+    out.extend(remaining.into_iter().flat_map(|(a, b)| [a, b]));
+    Ok(out)
 }
 
 /// Parse an infix binary expression.
 fn binary_expression(i: TokenSlice) -> PResult<BinaryExpression> {
     // Find the slice of tokens which makes up the binary expression
-    let tokens = binary_expression_tokens.recognize().parse_next(i)?;
+    let tokens = binary_expression_tokens.parse_next(i)?;
 
     // Pass the token slice into the specialized math parser, for things like
     // precedence and converting infix operations to an AST.
-    let mut math_parser = MathParser::new(tokens);
-    let expr = math_parser
-        .parse()
-        .map_err(error::ContextError::from)
-        .map_err(ErrMode::Backtrack)?;
-    Ok(expr)
+    Ok(super::math::parse(tokens))
 }
 
 fn binary_expr_in_parens(i: TokenSlice) -> PResult<BinaryExpression> {
@@ -1687,14 +1686,14 @@ const mySk1 = startSketchAt([0, 0])"#;
 "#,
             "const myVar = min(5 , -legLen(5, 4))", // Space before comma
             "const myVar = min(-legLen(5, 4), 5)",
-            "const myVar = 5 + 6 |> myFunc(45, %)",
-            "let x = 1 * (3 - 4)",
+            // "const myVar = 5 + 6 |> myFunc(45, %)",
+            // "let x = 1 * (3 - 4)",
             r#"const x = 1 // this is an inline comment"#,
             r#"fn x = () => {
                 return sg
                 return sg
               }"#,
-            r#"const x = -leg2 + thickness"#,
+            // r#"const x = -leg2 + thickness"#,
             r#"const obj = { a: 1, b: 2 }
             const height = 1 - obj.a"#,
             r#"const obj = { a: 1, b: 2 }

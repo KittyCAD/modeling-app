@@ -13,6 +13,7 @@ use crate::{
     token::{Token, TokenType},
 };
 
+mod math;
 mod parser_impl;
 
 pub const PIPE_SUBSTITUTION_OPERATOR: &str = "%";
