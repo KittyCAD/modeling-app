@@ -2282,6 +2282,8 @@ impl Associativity {
 }
 
 impl BinaryOperator {
+    /// Follow JS definitions of each operator.
+    /// Taken from <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table>
     pub fn precedence(&self) -> u8 {
         match &self {
             BinaryOperator::Add | BinaryOperator::Sub => 11,
@@ -2289,6 +2291,9 @@ impl BinaryOperator {
             BinaryOperator::Pow => 6,
         }
     }
+
+    /// Follow JS definitions of each operator.
+    /// Taken from <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table>
     pub fn associativity(&self) -> Associativity {
         match self {
             Self::Add | Self::Sub | Self::Mul | Self::Div | Self::Mod => Associativity::Left,

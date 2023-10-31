@@ -51,7 +51,7 @@ panic = "abort"
 debug = true
 
 [profile.bench]
-debug = true
+debug = true # Flamegraphs of benchmarks require accurate debug symbols
 
 [dev-dependencies]
 criterion = "0.5.1"

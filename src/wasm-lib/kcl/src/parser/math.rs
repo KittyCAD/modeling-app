@@ -1,10 +1,13 @@
 use crate::ast::types::{BinaryExpression, BinaryOperator, BinaryPart};
 
-pub fn parse(tokens: Vec<BinaryExpressionToken>) -> BinaryExpression {
-    let rpn = postfix(tokens);
+/// Parses a list of tokens (in infix order, i.e. as the user typed them)
+/// into a binary expression tree.
+pub fn parse(infix_tokens: Vec<BinaryExpressionToken>) -> BinaryExpression {
+    let rpn = postfix(infix_tokens);
     evaluate(rpn)
 }
 
+/// Parses a list of tokens (in postfix order) into a binary expression tree.
 fn evaluate(rpn: Vec<BinaryExpressionToken>) -> BinaryExpression {
     let mut operand_stack = Vec::new();
     for item in rpn {
@@ -31,6 +34,7 @@ fn evaluate(rpn: Vec<BinaryExpressionToken>) -> BinaryExpression {
     }
 }
 
+/// Reorders tokens from infix order to postfix order.
 fn postfix(infix: Vec<BinaryExpressionToken>) -> Vec<BinaryExpressionToken> {
     let mut operator_stack: Vec<BinaryOperator> = Vec::with_capacity(infix.len());
     let mut output = Vec::with_capacity(infix.len());
@@ -62,6 +66,7 @@ fn postfix(infix: Vec<BinaryExpressionToken>) -> Vec<BinaryExpressionToken> {
     output
 }
 
+/// Expressions are made up of operators and operands.
 #[derive(PartialEq, Debug)]
 pub enum BinaryExpressionToken {
     Operator(BinaryOperator),
