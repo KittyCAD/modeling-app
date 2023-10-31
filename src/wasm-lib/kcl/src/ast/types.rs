@@ -7,6 +7,7 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Map;
+use serde_json::Number as JNumber;
 use serde_json::Value as JValue;
 use tower_lsp::lsp_types::{CompletionItem, CompletionItemKind, DocumentSymbol, Range as LspRange, SymbolKind};
 
@@ -1342,11 +1343,8 @@ impl Literal {
 
     fn recast(&self) -> String {
         match self.value {
-            // Use the debug representation, not .to_string(), because
-            // calling (6.0).to_string() outputs "6" not "6.0".
-            // It's important that fractional numbers stay fractional after recasting.
-            LiteralValue::Fractional(n) => format!("{n:?}"),
-            LiteralValue::IInteger(n) => n.to_string(),
+            LiteralValue::Fractional(n) => JNumber::from_f64(n).unwrap().to_string(),
+            LiteralValue::IInteger(n) => JNumber::from(n).to_string(),
             LiteralValue::String(ref s) => {
                 let quote = if self.raw.trim().starts_with('"') { '"' } else { '\'' };
                 format!("{quote}{s}{quote}")
