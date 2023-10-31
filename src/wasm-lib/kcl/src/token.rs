@@ -5,6 +5,7 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::SemanticTokenType;
+use winnow::stream::ContainsToken;
 
 use crate::{ast::types::VariableKind, executor::SourceRange};
 
@@ -127,6 +128,18 @@ pub struct Token {
     /// Offset in the source code where this token ends.
     pub end: usize,
     pub value: String,
+}
+
+impl ContainsToken<Token> for (TokenType, &str) {
+    fn contains_token(&self, token: Token) -> bool {
+        self.0 == token.token_type && self.1 == token.value
+    }
+}
+
+impl ContainsToken<Token> for TokenType {
+    fn contains_token(&self, token: Token) -> bool {
+        *self == token.token_type
+    }
 }
 
 impl Token {
