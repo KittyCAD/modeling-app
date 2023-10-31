@@ -1426,7 +1426,7 @@ export function transformAstSketchLines({
       referenceSegName ||
       (_referencedSegmentNameVal &&
         _referencedSegmentNameVal.type === 'Literal' &&
-        String(_referencedSegmentNameVal.value)) ||
+        String(_referencedSegmentNameVal.value.data)) ||
       ''
     const [varValA, varValB] = Array.isArray(val) ? val : [val, val]
 

@@ -645,7 +645,7 @@ export function giveSketchFnCallTag(
   const isTagExisting = !!firstArg.tag
   const tagValue = (firstArg.tag ||
     createLiteral(tag || findUniqueName(ast, 'seg', 2))) as Literal
-  const tagStr = String(tagValue.value)
+  const tagStr = String(tagValue.value.data)
   const newFirstArg = createFirstArg(
     primaryCallExp.callee.name as ToolTip,
     firstArg.val,
