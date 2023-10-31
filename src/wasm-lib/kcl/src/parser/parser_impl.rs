@@ -4,7 +4,7 @@ use winnow::{
     dispatch,
     error::{ErrMode, StrContext, StrContextValue},
     prelude::*,
-    token::any,
+    token::{any, one_of},
 };
 
 use crate::{
@@ -77,8 +77,7 @@ fn non_code_node(i: TokenSlice) -> PResult<NonCodeNode> {
     /// Matches one case of NonCodeValue
     /// See docstring on [NonCodeValue::NewLineBlockComment] for why that case is different to the others.
     fn non_code_node_leading_whitespace(i: TokenSlice) -> PResult<NonCodeNode> {
-        let leading_whitespace = any
-            .verify(|token: &Token| token.token_type == TokenType::Whitespace)
+        let leading_whitespace = one_of(TokenType::Whitespace)
             .context(expected("whitespace, with a newline"))
             .parse_next(i)?;
         let has_empty_line = count_in('\n', &leading_whitespace.value) >= 2;
@@ -378,7 +377,7 @@ fn whitespace(i: TokenSlice) -> PResult<Vec<Token>> {
 
 /// Parse the = operator.
 fn equals(i: TokenSlice) -> PResult<Token> {
-    any.verify(|token: &Token| matches!(token.token_type, TokenType::Operator) && token.value == "=")
+    one_of((TokenType::Operator, "="))
         .context(expected("the equals operator, ="))
         .parse_next(i)
 }
@@ -1103,8 +1102,7 @@ fn expression(i: TokenSlice) -> PResult<ExpressionStatement> {
 
 /// Parse a KCL integer, and the token that held it.
 fn integer(i: TokenSlice) -> PResult<(Token, u64)> {
-    let num = any
-        .verify(|token: &Token| matches!(token.token_type, TokenType::Number))
+    let num = one_of(TokenType::Number)
         .context(expected("a number token e.g. 3"))
         .try_map(|token: Token| {
             let source_ranges = token.as_source_ranges();
@@ -1123,20 +1121,20 @@ fn integer(i: TokenSlice) -> PResult<(Token, u64)> {
 
 /// Parse the given brace symbol.
 fn some_brace(symbol: &'static str, i: TokenSlice) -> PResult<Token> {
-    any.verify(|token: &Token| matches!(token.token_type, TokenType::Brace) && token.value == symbol)
+    one_of((TokenType::Brace, symbol))
         .context(expected(symbol))
         .parse_next(i)
 }
 
 /// Parse a => operator.
 fn big_arrow(i: TokenSlice) -> PResult<Token> {
-    any.verify(|token: &Token| matches!(token.token_type, TokenType::Operator) && token.value == "=>")
+    one_of((TokenType::Operator, "=>"))
         .context(expected("the => symbol, used for declaring functions"))
         .parse_next(i)
 }
 /// Parse a |> operator.
 fn pipe_operator(i: TokenSlice) -> PResult<Token> {
-    any.verify(|token: &Token| matches!(token.token_type, TokenType::Operator) && token.value == "|>")
+    one_of((TokenType::Operator, "|>"))
         .context(expected(
             "the |> operator, used for 'piping' one function's output into another function's input",
         ))
@@ -1144,7 +1142,8 @@ fn pipe_operator(i: TokenSlice) -> PResult<Token> {
 }
 
 fn ws_with_newline(i: TokenSlice) -> PResult<Token> {
-    any.verify(|token: &Token| matches!(token.token_type, TokenType::Whitespace) && token.value.contains('\n'))
+    one_of(TokenType::Whitespace)
+        .verify(|token: &Token| token.value.contains('\n'))
         .context(expected("a newline, possibly with whitespace"))
         .parse_next(i)
 }
