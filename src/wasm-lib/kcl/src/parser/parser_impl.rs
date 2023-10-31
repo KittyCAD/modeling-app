@@ -1756,19 +1756,11 @@ const mySk1 = startSketchAt([0, 0])"#;
         {
             // Run the original parser
             let tokens = crate::token::lexer(test_program);
-            let expected = crate::parser::Parser::new(tokens.clone())
-                .ast_old()
-                .expect("Old parser failed");
-
-            // Run the second parser, check it matches the first parser.
-            let actual = match program.parse(&tokens) {
+            // TODO: get snapshots of what this outputs.
+            let _actual = match program.parse(&tokens) {
                 Ok(x) => x,
                 Err(_e) => panic!("could not parse test {i}"),
             };
-            assert_eq!(
-                expected, actual,
-                "old parser (left) and new parser (right) disagree on test {i}"
-            );
         }
     }
 

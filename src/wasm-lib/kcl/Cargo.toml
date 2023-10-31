@@ -50,6 +50,9 @@ engine = []
 panic = "abort"
 debug = true
 
+[profile.bench]
+debug = true
+
 [dev-dependencies]
 criterion = "0.5.1"
 expectorate = "1.1.0"
