@@ -1686,14 +1686,14 @@ const mySk1 = startSketchAt([0, 0])"#;
 "#,
             "const myVar = min(5 , -legLen(5, 4))", // Space before comma
             "const myVar = min(-legLen(5, 4), 5)",
-            // "const myVar = 5 + 6 |> myFunc(45, %)",
-            // "let x = 1 * (3 - 4)",
+            "const myVar = 5 + 6 |> myFunc(45, %)",
+            "let x = 1 * (3 - 4)",
             r#"const x = 1 // this is an inline comment"#,
             r#"fn x = () => {
                 return sg
                 return sg
               }"#,
-            // r#"const x = -leg2 + thickness"#,
+            r#"const x = -leg2 + thickness"#,
             r#"const obj = { a: 1, b: 2 }
             const height = 1 - obj.a"#,
             r#"const obj = { a: 1, b: 2 }
@@ -2732,5 +2732,25 @@ show(myBox)"#;
         let tokens = crate::token::lexer(some_program_string);
         let parser = crate::parser::Parser::new(tokens);
         parser.ast().unwrap();
+    }
+
+    #[test]
+    fn test_math() {
+        for math_expression in [
+            "1 + 2",
+            "1+2",
+            "1 -2",
+            "1 + 2 * 3",
+            "1 * ( 2 + 3 )",
+            "1 * ( 2 + 3 ) / 4",
+            "1 + ( 2 + 3 ) / 4",
+            "1 * (( 2 + 3 ) / 4 + 5 )",
+            "1 * ((( 2 + 3 )))",
+            "distance * p * FOS * 6 / (sigmaAllow * width)",
+            "2 + (((3)))",
+        ] {
+            let tokens = crate::token::lexer(math_expression);
+            let _expr = binary_expression.parse(&tokens).unwrap();
+        }
     }
 }
