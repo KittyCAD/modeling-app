@@ -238,7 +238,7 @@ fn unsigned_number_literal(i: TokenSlice) -> PResult<Literal> {
         .try_map(|token: Token| match token.token_type {
             TokenType::Number => {
                 if let Ok(x) = token.value.parse::<u64>() {
-                    return Ok((LiteralValue::UInteger(x), token));
+                    return Ok((LiteralValue::IInteger(x as i64), token));
                 }
                 let x: f64 = token.value.parse().map_err(|_| {
                     KclError::Syntax(KclErrorDetails {
@@ -397,6 +397,7 @@ fn integer_range(i: TokenSlice) -> PResult<Vec<Value>> {
     let (_token1, ceiling) = integer.parse_next(i)?;
     Ok((floor..=ceiling)
         .map(|num| {
+            let num = num as i64;
             Value::Literal(Box::new(Literal {
                 start: token0.start,
                 end: token0.end,

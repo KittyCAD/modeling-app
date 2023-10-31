@@ -1346,7 +1346,6 @@ impl Literal {
             // calling (6.0).to_string() outputs "6" not "6.0".
             // It's important that fractional numbers stay fractional after recasting.
             LiteralValue::Fractional(n) => format!("{n:?}"),
-            LiteralValue::UInteger(n) => n.to_string(),
             LiteralValue::IInteger(n) => n.to_string(),
             LiteralValue::String(ref s) => {
                 let quote = if self.raw.trim().starts_with('"') { '"' } else { '\'' };
@@ -1972,8 +1971,7 @@ impl MemberExpression {
             LiteralIdentifier::Literal(literal) => {
                 let value = literal.value.clone();
                 match value {
-                    LiteralValue::UInteger(x) => return self.get_result_array(memory, x as usize),
-                    LiteralValue::IInteger(x) if x > 0 => return self.get_result_array(memory, x as usize),
+                    LiteralValue::IInteger(x) if x >= 0 => return self.get_result_array(memory, x as usize),
                     LiteralValue::IInteger(x) => {
                         return Err(KclError::Syntax(KclErrorDetails {
                             source_ranges: vec![self.into()],

@@ -94,7 +94,7 @@ mod tests {
     #[test]
     fn parse_and_evaluate() {
         /// Make a literal
-        fn lit(n: u64) -> BinaryPart {
+        fn lit(n: i64) -> BinaryPart {
             BinaryPart::Literal(Box::new(Literal {
                 start: 0,
                 end: 0,

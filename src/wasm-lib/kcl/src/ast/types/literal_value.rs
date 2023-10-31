@@ -8,7 +8,6 @@ use super::{Literal, Value};
 #[ts(export)]
 #[serde(tag = "type", content = "data", rename_all = "snake_case")]
 pub enum LiteralValue {
-    UInteger(u64),
     IInteger(i64),
     Fractional(f64),
     String(String),
@@ -24,7 +23,6 @@ impl From<LiteralValue> for JValue {
     fn from(value: LiteralValue) -> Self {
         match value {
             LiteralValue::IInteger(x) => x.into(),
-            LiteralValue::UInteger(x) => x.into(),
             LiteralValue::Fractional(x) => x.into(),
             LiteralValue::String(x) => x.into(),
         }
@@ -49,24 +47,19 @@ impl From<String> for LiteralValue {
     }
 }
 
-impl From<u64> for LiteralValue {
-    fn from(value: u64) -> Self {
-        Self::UInteger(value)
-    }
-}
 impl From<u32> for LiteralValue {
     fn from(value: u32) -> Self {
-        Self::UInteger(value as u64)
+        Self::IInteger(value as i64)
     }
 }
 impl From<u16> for LiteralValue {
     fn from(value: u16) -> Self {
-        Self::UInteger(value as u64)
+        Self::IInteger(value as i64)
     }
 }
 impl From<u8> for LiteralValue {
     fn from(value: u8) -> Self {
-        Self::UInteger(value as u64)
+        Self::IInteger(value as i64)
     }
 }
 impl From<&'static str> for LiteralValue {
