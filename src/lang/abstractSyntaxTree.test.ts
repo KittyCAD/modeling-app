@@ -1345,7 +1345,7 @@ describe('nests binary expressions correctly', () => {
       ],
     })
   })
-  it('should nest properly with two opperators of equal precedence', () => {
+  it('should nest properly with two operators of equal precedence', () => {
     const code = `const yo = 1 + 2 - 3`
     const { body } = parse(code)
     expect((body[0] as any).declarations[0].init).toEqual({
@@ -1382,7 +1382,7 @@ describe('nests binary expressions correctly', () => {
       },
     })
   })
-  it('should nest properly with two opperators of equal (but higher) precedence', () => {
+  it('should nest properly with two operators of equal (but higher) precedence', () => {
     const code = `const yo = 1 * 2 / 3`
     const { body } = parse(code)
     expect((body[0] as any).declarations[0].init).toEqual({

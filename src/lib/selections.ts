@@ -15,7 +15,7 @@ app needs these selections to be based on cursors, therefore the app must
 be in control of selections. On top of that because we need to set cursor
 positions in code-mirror for selections, both from app logic, and still
 allow the user to add multiple cursors like a normal editor, it's best to
-let code mirror control cursor positions and assosiate those source ranges
+let code mirror control cursor positions and associate those source ranges
 with entity ids from code-mirror events later.
 
 So it's a lot of back and forth. conceptually the back and forth is:
@@ -43,7 +43,7 @@ In detail:
 
 1) Click commands are mostly sent in stream.tsx search for
   "select_with_point"
-2) The handler for when the engine sends back entitiy ids calls
+2) The handler for when the engine sends back entity ids calls
   getEventForSelectWithPoint, it fires an XState event to update our
   selections is xstate context
 3 and 4) The XState handler for the above uses handleSelectionBatch and
@@ -303,7 +303,7 @@ export function resetAndSetEngineEntitySelectionCmds(
   selections: SelectionToEngine[]
 ): Models['WebSocketRequest_type'][] {
   if (!engineCommandManager.engineConnection?.isReady()) {
-    console.log('engine connection isnt ready')
+    console.log('engine connection is not ready')
     return []
   }
   return [

@@ -664,8 +664,8 @@ export const modelingMachine = createMachine(
     on: {
       Cancel: {
         target: 'idle',
-        // TODO what if we're existing extrude equiped, should these actions still be fired?
-        // mabye cancel needs to have a guard for if else logic?
+        // TODO what if we're existing extrude equipped, should these actions still be fired?
+        // maybe cancel needs to have a guard for if else logic?
         actions: [
           'edit_mode_exit',
           'default_camera_disable_sketch_mode',
