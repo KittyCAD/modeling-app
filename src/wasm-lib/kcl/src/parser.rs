@@ -54,6 +54,6 @@ impl Parser {
             }));
         }
 
-        parser_impl::run_parser(&mut self.tokens.as_slice(), &mut self.unknown_tokens.as_slice())
+        parser_impl::run_parser(&mut self.tokens.as_slice())
     }
 }
