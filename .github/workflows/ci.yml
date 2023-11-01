@@ -17,22 +17,23 @@ concurrency:
   cancel-in-progress: true
 jobs:
   check-format:
-    runs-on: 'ubuntu-20.04'
+    runs-on: 'ubuntu-latest'
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
       - run: yarn install
       - run: yarn fmt-check
 
+
   check-types:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
@@ -44,12 +45,13 @@ jobs:
       - run: yarn build:wasm
       - run: yarn tsc
 
+
   build-test-web:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
@@ -68,14 +70,15 @@ jobs:
 
       - run: yarn test:cov
 
+
   prepare-json-files:
-    runs-on: ubuntu-20.04  # seperate job on Ubuntu for easy string manipulations (compared to Windows)
+    runs-on: ubuntu-latest  # seperate job on Ubuntu for easy string manipulations (compared to Windows)
     outputs:
       version: ${{ steps.export_version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
@@ -97,12 +100,13 @@ jobs:
       - id: export_version
         run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
 
-  build-apps:
+
+  build-test-apps:
     needs: [check-format, build-test-web, prepare-json-files, check-types]
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-20.04, windows-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
 
@@ -116,13 +120,19 @@ jobs:
           cp artifact/src-tauri/tauri.conf.json src-tauri/tauri.conf.json
 
       - name: install ubuntu system dependencies
-        if: matrix.os == 'ubuntu-20.04'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev
+        if: matrix.os == 'ubuntu-latest'
+        run: >
+          sudo apt-get update &&
+          sudo apt-get install -y
+          libgtk-3-dev
+          libgtksourceview-3.0-dev
+          webkit2gtk-4.0
+          libappindicator3-dev
+          webkit2gtk-driver
+          xvfb
 
       - name: Sync node version and setup cache
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn' # Set this to npm, yarn or pnpm.
@@ -201,10 +211,22 @@ jobs:
         with:
           path: ${{ matrix.os == 'macos-latest' && 'src-tauri/target/universal-apple-darwin/release/bundle/*/*' || 'src-tauri/target/release/bundle/*/*' }}
 
+      - name: Install tauri-driver for e2e tests
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: tauri-driver
+
+      - name: Run e2e tests
+        if: matrix.os == 'ubuntu-latest'
+        run: xvfb-run yarn test:e2e
+
+
   publish-apps-release:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
-    needs: [build-test-web, prepare-json-files, build-apps]
+    needs: [build-test-web, prepare-json-files, build-test-apps]
     env:
       VERSION_NO_V: ${{ needs.prepare-json-files.outputs.version }}
       VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-json-files.outputs.version) || needs.prepare-json-files.outputs.version }}

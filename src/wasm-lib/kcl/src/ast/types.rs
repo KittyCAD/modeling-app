@@ -2175,6 +2175,7 @@ impl BinaryExpression {
             BinaryOperator::Mul => (left * right).into(),
             BinaryOperator::Div => (left / right).into(),
             BinaryOperator::Mod => (left % right).into(),
+            BinaryOperator::Pow => (left.powf(right)).into(),
         };
 
         Ok(MemoryItem::UserVal(UserVal {
@@ -2257,13 +2258,46 @@ pub enum BinaryOperator {
     #[serde(rename = "%")]
     #[display("%")]
     Mod,
+    /// Raise a number to a power.
+    #[serde(rename = "^")]
+    #[display("^")]
+    Pow,
+}
+
+/// Mathematical associativity.
+/// Should a . b . c be read as (a . b) . c, or a . (b . c)
+/// See <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#precedence_and_associativity> for more.
+#[derive(PartialEq, Eq, Debug, Clone, Copy)]
+pub enum Associativity {
+    /// Read a . b . c as (a . b) . c
+    Left,
+    /// Read a . b . c as a . (b . c)
+    Right,
+}
+
+impl Associativity {
+    pub fn is_left(&self) -> bool {
+        matches!(self, Self::Left)
+    }
 }
 
 impl BinaryOperator {
+    /// Follow JS definitions of each operator.
+    /// Taken from <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table>
     pub fn precedence(&self) -> u8 {
         match &self {
             BinaryOperator::Add | BinaryOperator::Sub => 11,
             BinaryOperator::Mul | BinaryOperator::Div | BinaryOperator::Mod => 12,
+            BinaryOperator::Pow => 6,
+        }
+    }
+
+    /// Follow JS definitions of each operator.
+    /// Taken from <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table>
+    pub fn associativity(&self) -> Associativity {
+        match self {
+            Self::Add | Self::Sub | Self::Mul | Self::Div | Self::Mod => Associativity::Left,
+            Self::Pow => Associativity::Right,
         }
     }
 }
