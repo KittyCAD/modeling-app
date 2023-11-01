@@ -248,7 +248,7 @@ export function App() {
       <Stream className="absolute inset-0 z-0" />
       {showDebugPanel && (
         <DebugPanel
-          title="Debug"
+          title="Debug (AST Explorer)"
           className={
             'transition-opacity transition-duration-75 ' +
             paneOpacity +
