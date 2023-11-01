@@ -1676,95 +1676,6 @@ const mySk1 = startSketchAt([0, 0])"#;
     }
 
     #[test]
-    fn check_parsers_work_the_same() {
-        for (i, test_program) in [
-            r#"const boxSketch = startSketchAt([0, 0])
-    |> line([0, 10], %)
-    |> tangentialArc([-5, 5], %)
-    |> line([5, -15], %)
-    |> extrude(10, %)
-"#,
-            "const myVar = min(5 , -legLen(5, 4))", // Space before comma
-            "const myVar = min(-legLen(5, 4), 5)",
-            "const myVar = 5 + 6 |> myFunc(45, %)",
-            "let x = 1 * (3 - 4)",
-            r#"const x = 1 // this is an inline comment"#,
-            r#"fn x = () => {
-                return sg
-                return sg
-              }"#,
-            r#"const x = -leg2 + thickness"#,
-            r#"const obj = { a: 1, b: 2 }
-            const height = 1 - obj.a"#,
-            r#"const obj = { a: 1, b: 2 }
-            const height = 1 - obj["a"]"#,
-            r#"const obj = { a: 1, b: 2 }
-            const height = obj["a"] - 1"#,
-            r#"const obj = { a: 1, b: 2 }
-            const height = [1 - obj["a"], 0]"#,
-            r#"const obj = { a: 1, b: 2 }
-            const height = [obj["a"] - 1, 0]"#,
-            r#"const obj = { a: 1, b: 2 }
-            const height = [obj["a"] -1, 0]"#,
-            "const height = 1 - obj.a",
-            "const six = 1 + 2 + 3",
-            "const five = 3 * 1 + 2",
-            r#"const height = [ obj["a"], 0 ]"#,
-            r#"const obj = { a: 1, b: 2 }
-            const height = obj["a"]"#,
-            r#"const prop = yo["one"][two]"#,
-            r#"const pt1 = b1[x]"#,
-            "const prop = yo.one.two.three.four",
-            r#"const pt1 = b1[0]"#,
-            r#"const pt1 = b1['zero']"#,
-            r#"const pt1 = b1.zero"#,
-            "const sg = startSketchAt(pos)",
-            "const sg = startSketchAt(pos) |> line([0, -scale], %)",
-            r#"const sg = -scale"#,
-            "lineTo({ to: [0, -1] })",
-            "const myArray = [0..10]",
-            r#"
-            fn firstPrimeNumber = () => {
-                return 2
-            }
-            firstPrimeNumber()"#,
-            r#"fn thing = (param) => {
-                return true
-            }
-            thing(false)"#,
-            r#"const mySketch = startSketchAt([0,0])
-                |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
-                |> lineTo([1, 1], %)
-                |> lineTo({ to: [1,0], tag: "rightPath" }, %)
-                |> close(%)"#,
-            "const mySketch = startSketchAt([0,0]) |> lineTo([1, 1], %) |> close(%)",
-            "const myBox = startSketchAt(p)",
-            r#"const myBox = f(1) |> g(2)"#,
-            r#"const myBox = startSketchAt(p) |> line([0, l], %)"#,
-            "lineTo({ to: [0, 1] })",
-            "lineTo({ to: [0, 1], from: [3, 3] })",
-            "lineTo({to:[0, 1]})",
-            "lineTo({ to: [0, 1], from: [3, 3]})",
-            "lineTo({ to: [0, 1],from: [3, 3] })",
-            "const mySketch = startSketchAt([0,0])",
-            "log(5, \"hello\", aIdentifier)",
-            r#"5 + "a""#,
-            "line([0, l], %)",
-        ]
-        .into_iter()
-        .enumerate()
-        {
-            // Run the original parser
-            let tokens = crate::token::lexer(test_program);
-            // TODO: get snapshots of what this outputs.
-            let _actual = match program.parse(&tokens) {
-                Ok(x) => x,
-                Err(_e) => panic!("could not parse test {i}"),
-            };
-        }
-    }
-
-    #[test]
     fn binary_expression_ignores_whitespace() {
         let tests = ["1 - 2", "1- 2", "1 -2", "1-2"];
         for test in tests {
@@ -2733,24 +2644,173 @@ show(myBox)"#;
         let parser = crate::parser::Parser::new(tokens);
         parser.ast().unwrap();
     }
+}
 
-    #[test]
-    fn test_math() {
-        for math_expression in [
-            "1 + 2",
-            "1+2",
-            "1 -2",
-            "1 + 2 * 3",
-            "1 * ( 2 + 3 )",
-            "1 * ( 2 + 3 ) / 4",
-            "1 + ( 2 + 3 ) / 4",
-            "1 * (( 2 + 3 ) / 4 + 5 )",
-            "1 * ((( 2 + 3 )))",
-            "distance * p * FOS * 6 / (sigmaAllow * width)",
-            "2 + (((3)))",
-        ] {
-            let tokens = crate::token::lexer(math_expression);
-            let _expr = binary_expression.parse(&tokens).unwrap();
-        }
+#[cfg(test)]
+mod snapshot_math_tests {
+    use super::*;
+
+    // This macro generates a test function with the given function name.
+    // The macro takes a KCL program, ensures it tokenizes and parses, then compares
+    // its parsed AST to a snapshot (kept in this repo in a file under snapshots/ dir)
+    macro_rules! snapshot_test {
+        ($func_name:ident, $test_kcl_program:expr) => {
+            #[test]
+            fn $func_name() {
+                let tokens = crate::token::lexer($test_kcl_program);
+                let actual = match binary_expression.parse(&tokens) {
+                    Ok(x) => x,
+                    Err(_e) => panic!("could not parse test"),
+                };
+                insta::assert_json_snapshot!(actual);
+            }
+        };
     }
+
+    snapshot_test!(a, "1 + 2");
+    snapshot_test!(b, "1+2");
+    snapshot_test!(c, "1 -2");
+    snapshot_test!(d, "1 + 2 * 3");
+    snapshot_test!(e, "1 * ( 2 + 3 )");
+    snapshot_test!(f, "1 * ( 2 + 3 ) / 4");
+    snapshot_test!(g, "1 + ( 2 + 3 ) / 4");
+    snapshot_test!(h, "1 * (( 2 + 3 ) / 4 + 5 )");
+    snapshot_test!(i, "1 * ((( 2 + 3 )))");
+    snapshot_test!(j, "distance * p * FOS * 6 / (sigmaAllow * width)");
+    snapshot_test!(k, "2 + (((3)))");
+}
+
+#[cfg(test)]
+mod snapshot_tests {
+    use super::*;
+
+    // This macro generates a test function with the given function name.
+    // The macro takes a KCL program, ensures it tokenizes and parses, then compares
+    // its parsed AST to a snapshot (kept in this repo in a file under snapshots/ dir)
+    macro_rules! snapshot_test {
+        ($func_name:ident, $test_kcl_program:expr) => {
+            #[test]
+            fn $func_name() {
+                let tokens = crate::token::lexer($test_kcl_program);
+                let actual = match program.parse(&tokens) {
+                    Ok(x) => x,
+                    Err(_e) => panic!("could not parse test"),
+                };
+                insta::assert_json_snapshot!(actual);
+            }
+        };
+    }
+
+    snapshot_test!(
+        a,
+        r#"const boxSketch = startSketchAt([0, 0])
+    |> line([0, 10], %)
+    |> tangentialArc([-5, 5], %)
+    |> line([5, -15], %)
+    |> extrude(10, %)
+"#
+    );
+    snapshot_test!(b, "const myVar = min(5 , -legLen(5, 4))"); // Space before comma
+
+    snapshot_test!(c, "const myVar = min(-legLen(5, 4), 5)");
+    snapshot_test!(d, "const myVar = 5 + 6 |> myFunc(45, %)");
+    snapshot_test!(e, "let x = 1 * (3 - 4)");
+    snapshot_test!(f, r#"const x = 1 // this is an inline comment"#);
+    snapshot_test!(
+        g,
+        r#"fn x = () => {
+        return sg
+        return sg
+      }"#
+    );
+    snapshot_test!(d2, r#"const x = -leg2 + thickness"#);
+    snapshot_test!(
+        h,
+        r#"const obj = { a: 1, b: 2 }
+    const height = 1 - obj.a"#
+    );
+    snapshot_test!(
+        i,
+        r#"const obj = { a: 1, b: 2 }
+     const height = 1 - obj["a"]"#
+    );
+    snapshot_test!(
+        j,
+        r#"const obj = { a: 1, b: 2 }
+    const height = obj["a"] - 1"#
+    );
+    snapshot_test!(
+        k,
+        r#"const obj = { a: 1, b: 2 }
+    const height = [1 - obj["a"], 0]"#
+    );
+    snapshot_test!(
+        l,
+        r#"const obj = { a: 1, b: 2 }
+    const height = [obj["a"] - 1, 0]"#
+    );
+    snapshot_test!(
+        m,
+        r#"const obj = { a: 1, b: 2 }
+    const height = [obj["a"] -1, 0]"#
+    );
+    snapshot_test!(n, "const height = 1 - obj.a");
+    snapshot_test!(o, "const six = 1 + 2 + 3");
+    snapshot_test!(p, "const five = 3 * 1 + 2");
+    snapshot_test!(q, r#"const height = [ obj["a"], 0 ]"#);
+    snapshot_test!(
+        r,
+        r#"const obj = { a: 1, b: 2 }
+    const height = obj["a"]"#
+    );
+    snapshot_test!(s, r#"const prop = yo["one"][two]"#);
+    snapshot_test!(t, r#"const pt1 = b1[x]"#);
+    snapshot_test!(u, "const prop = yo.one.two.three.four");
+    snapshot_test!(v, r#"const pt1 = b1[0]"#);
+    snapshot_test!(w, r#"const pt1 = b1['zero']"#);
+    snapshot_test!(x, r#"const pt1 = b1.zero"#);
+    snapshot_test!(y, "const sg = startSketchAt(pos)");
+    snapshot_test!(z, "const sg = startSketchAt(pos) |> line([0, -scale], %)");
+    snapshot_test!(aa, r#"const sg = -scale"#);
+    snapshot_test!(ab, "lineTo({ to: [0, -1] })");
+    snapshot_test!(ac, "const myArray = [0..10]");
+    snapshot_test!(
+        ad,
+        r#"
+    fn firstPrimeNumber = () => {
+        return 2
+    }
+    firstPrimeNumber()"#
+    );
+    snapshot_test!(
+        ae,
+        r#"fn thing = (param) => {
+        return true
+    }
+    thing(false)"#
+    );
+    snapshot_test!(
+        af,
+        r#"const mySketch = startSketchAt([0,0])
+        |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
+        |> lineTo([1, 1], %)
+        |> lineTo({ to: [1,0], tag: "rightPath" }, %)
+        |> close(%)"#
+    );
+    snapshot_test!(
+        ag,
+        "const mySketch = startSketchAt([0,0]) |> lineTo([1, 1], %) |> close(%)"
+    );
+    snapshot_test!(ah, "const myBox = startSketchAt(p)");
+    snapshot_test!(ai, r#"const myBox = f(1) |> g(2)"#);
+    snapshot_test!(aj, r#"const myBox = startSketchAt(p) |> line([0, l], %)"#);
+    snapshot_test!(ak, "lineTo({ to: [0, 1] })");
+    snapshot_test!(al, "lineTo({ to: [0, 1], from: [3, 3] })");
+    snapshot_test!(am, "lineTo({to:[0, 1]})");
+    snapshot_test!(an, "lineTo({ to: [0, 1], from: [3, 3]})");
+    snapshot_test!(ao, "lineTo({ to: [0, 1],from: [3, 3] })");
+    snapshot_test!(ap, "const mySketch = startSketchAt([0,0])");
+    snapshot_test!(aq, "log(5, \"hello\", aIdentifier)");
+    snapshot_test!(ar, r#"5 + "a""#);
+    snapshot_test!(at, "line([0, l], %)");
 }

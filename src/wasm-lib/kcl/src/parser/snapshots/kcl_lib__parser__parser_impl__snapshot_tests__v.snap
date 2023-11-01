@@ -1,0 +1,56 @@
+---
+source: kcl/src/parser/parser_impl.rs
+expression: actual
+---
+{
+  "start": 0,
+  "end": 17,
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 17,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 6,
+          "end": 17,
+          "id": {
+            "type": "Identifier",
+            "start": 6,
+            "end": 9,
+            "name": "pt1"
+          },
+          "init": {
+            "type": "MemberExpression",
+            "type": "MemberExpression",
+            "start": 12,
+            "end": 17,
+            "object": {
+              "type": "Identifier",
+              "type": "Identifier",
+              "start": 12,
+              "end": 14,
+              "name": "b1"
+            },
+            "property": {
+              "type": "Literal",
+              "type": "Literal",
+              "start": 15,
+              "end": 16,
+              "value": 0,
+              "raw": "0"
+            },
+            "computed": false
+          }
+        }
+      ],
+      "kind": "const"
+    }
+  ],
+  "nonCodeMeta": {
+    "nonCodeNodes": {},
+    "start": []
+  }
+}
