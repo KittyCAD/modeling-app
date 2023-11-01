@@ -5,7 +5,7 @@ import { parse, Program, _executor, ProgramMemory } from './lang/wasm'
 import { Selection } from 'lib/selections'
 import { enginelessExecutor } from './lib/testHelpers'
 import { EngineCommandManager } from './lang/std/engineConnection'
-import { KCLError, KCLLexicalError } from './lang/errors'
+import { KCLError } from './lang/errors'
 import { DefaultPlanes } from './wasm-lib/kcl/bindings/DefaultPlanes'
 
 export type ToolTip =
@@ -209,7 +209,6 @@ export async function executeCode({
       errors = [e]
       logs = []
       if (e.msg === 'file is empty') engineCommandManager.endSession()
-      if (e instanceof KCLLexicalError) engineCommandManager.endSession()
     }
     return {
       isChange: true,
