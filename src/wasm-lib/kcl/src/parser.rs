@@ -35,21 +35,12 @@ impl Parser {
         }
 
         if !self.unknown_tokens.is_empty() {
+            let source_ranges = self.unknown_tokens.iter().map(SourceRange::from).collect();
             return Err(KclError::Lexical(KclErrorDetails {
-                source_ranges: self
-                    .unknown_tokens
-                    .clone()
-                    .iter()
-                    .map(|token| SourceRange::new(token.start, token.end))
-                    .collect(),
+                source_ranges,
                 message: format!(
-                    "found list of unknown tokens {:?}",
-                    self.unknown_tokens
-                        .clone()
-                        .iter()
-                        .map(|token| token.value.clone())
-                        .collect::<Vec<_>>()
-                        .join(" ")
+                    "found unknown tokens {:?}",
+                    self.unknown_tokens.iter().map(|t| t.value.as_str()).collect::<Vec<_>>()
                 ),
             }));
         }
