@@ -27,6 +27,13 @@ impl Parser {
 
     /// Run the parser
     pub fn ast(&self) -> Result<Program, KclError> {
+        if self.tokens.is_empty() {
+            return Err(KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![],
+                message: "file is empty".to_string(),
+            }));
+        }
+
         if !self.unknown_tokens.is_empty() {
             return Err(KclError::Lexical(KclErrorDetails {
                 source_ranges: self
