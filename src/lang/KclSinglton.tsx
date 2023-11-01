@@ -149,7 +149,7 @@ class KclManager {
       return
     }
     const storedCode = localStorage.getItem(PERSIST_CODE_TOKEN)
-    // TODO #819 remove zustand persistance logic in a few months
+    // TODO #819 remove zustand persistence logic in a few months
     // short term migration, shouldn't make a difference for tauri app users
     // anyway since that's filesystem based.
     const zustandStore = JSON.parse(localStorage.getItem('store') || '{}')
@@ -288,7 +288,7 @@ class KclManager {
   format() {
     this.code = recast(parse(kclManager.code))
   }
-  // There's overlapping resposibility between updateAst and executeAst.
+  // There's overlapping responsibility between updateAst and executeAst.
   // updateAst was added as it was used a lot before xState migration so makes the port easier.
   // but should probably have think about which of the function to keep
   async updateAst(

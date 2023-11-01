@@ -1,0 +1,88 @@
+---
+source: kcl/src/parser/parser_impl.rs
+expression: actual
+---
+{
+  "start": 0,
+  "end": 80,
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
+      "start": 5,
+      "end": 57,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 8,
+          "end": 57,
+          "id": {
+            "type": "Identifier",
+            "start": 8,
+            "end": 24,
+            "name": "firstPrimeNumber"
+          },
+          "init": {
+            "type": "FunctionExpression",
+            "type": "FunctionExpression",
+            "start": 27,
+            "end": 57,
+            "params": [],
+            "body": {
+              "start": 33,
+              "end": 57,
+              "body": [
+                {
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement",
+                  "start": 43,
+                  "end": 51,
+                  "argument": {
+                    "type": "Literal",
+                    "type": "Literal",
+                    "start": 50,
+                    "end": 51,
+                    "value": 2,
+                    "raw": "2"
+                  }
+                }
+              ],
+              "nonCodeMeta": {
+                "nonCodeNodes": {},
+                "start": []
+              }
+            }
+          }
+        }
+      ],
+      "kind": "fn"
+    },
+    {
+      "type": "ExpressionStatement",
+      "type": "ExpressionStatement",
+      "start": 62,
+      "end": 80,
+      "expression": {
+        "type": "CallExpression",
+        "type": "CallExpression",
+        "start": 62,
+        "end": 80,
+        "callee": {
+          "type": "Identifier",
+          "start": 62,
+          "end": 78,
+          "name": "firstPrimeNumber"
+        },
+        "arguments": [],
+        "optional": false,
+        "function": {
+          "type": "InMemory"
+        }
+      }
+    }
+  ],
+  "nonCodeMeta": {
+    "nonCodeNodes": {},
+    "start": []
+  }
+}

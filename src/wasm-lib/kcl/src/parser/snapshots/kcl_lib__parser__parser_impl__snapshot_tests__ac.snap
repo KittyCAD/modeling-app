@@ -1,0 +1,130 @@
+---
+source: kcl/src/parser/parser_impl.rs
+expression: actual
+---
+{
+  "start": 0,
+  "end": 23,
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 23,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 6,
+          "end": 23,
+          "id": {
+            "type": "Identifier",
+            "start": 6,
+            "end": 13,
+            "name": "myArray"
+          },
+          "init": {
+            "type": "ArrayExpression",
+            "type": "ArrayExpression",
+            "start": 16,
+            "end": 23,
+            "elements": [
+              {
+                "type": "Literal",
+                "type": "Literal",
+                "start": 17,
+                "end": 18,
+                "value": 0,
+                "raw": "0"
+              },
+              {
+                "type": "Literal",
+                "type": "Literal",
+                "start": 17,
+                "end": 18,
+                "value": 1,
+                "raw": "1"
+              },
+              {
+                "type": "Literal",
+                "type": "Literal",
+                "start": 17,
+                "end": 18,
+                "value": 2,
+                "raw": "2"
+              },
+              {
+                "type": "Literal",
+                "type": "Literal",
+                "start": 17,
+                "end": 18,
+                "value": 3,
+                "raw": "3"
+              },
+              {
+                "type": "Literal",
+                "type": "Literal",
+                "start": 17,
+                "end": 18,
+                "value": 4,
+                "raw": "4"
+              },
+              {
+                "type": "Literal",
+                "type": "Literal",
+                "start": 17,
+                "end": 18,
+                "value": 5,
+                "raw": "5"
+              },
+              {
+                "type": "Literal",
+                "type": "Literal",
+                "start": 17,
+                "end": 18,
+                "value": 6,
+                "raw": "6"
+              },
+              {
+                "type": "Literal",
+                "type": "Literal",
+                "start": 17,
+                "end": 18,
+                "value": 7,
+                "raw": "7"
+              },
+              {
+                "type": "Literal",
+                "type": "Literal",
+                "start": 17,
+                "end": 18,
+                "value": 8,
+                "raw": "8"
+              },
+              {
+                "type": "Literal",
+                "type": "Literal",
+                "start": 17,
+                "end": 18,
+                "value": 9,
+                "raw": "9"
+              },
+              {
+                "type": "Literal",
+                "type": "Literal",
+                "start": 17,
+                "end": 18,
+                "value": 10,
+                "raw": "10"
+              }
+            ]
+          }
+        }
+      ],
+      "kind": "const"
+    }
+  ],
+  "nonCodeMeta": {
+    "nonCodeNodes": {},
+    "start": []
+  }
+}

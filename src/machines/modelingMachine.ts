@@ -664,8 +664,8 @@ export const modelingMachine = createMachine(
     on: {
       Cancel: {
         target: 'idle',
-        // TODO what if we're existing extrude equiped, should these actions still be fired?
-        // mabye cancel needs to have a guard for if else logic?
+        // TODO what if we're existing extrude equipped, should these actions still be fired?
+        // maybe cancel needs to have a guard for if else logic?
         actions: [
           'edit_mode_exit',
           'default_camera_disable_sketch_mode',
@@ -882,7 +882,7 @@ export const modelingMachine = createMachine(
       // TODO implement source ranges for all of these constraints
       // need to make the async like the modal constraints
       'Make selection horizontal': ({ selectionRanges }) => {
-        const { modifiedAst, pathToNodeMap } = applyConstraintHorzVert(
+        const { modifiedAst } = applyConstraintHorzVert(
           selectionRanges,
           'horizontal',
           kclManager.ast,
@@ -891,7 +891,7 @@ export const modelingMachine = createMachine(
         kclManager.updateAst(modifiedAst, true)
       },
       'Make selection vertical': ({ selectionRanges }) => {
-        const { modifiedAst, pathToNodeMap } = applyConstraintHorzVert(
+        const { modifiedAst } = applyConstraintHorzVert(
           selectionRanges,
           'vertical',
           kclManager.ast,
@@ -900,33 +900,33 @@ export const modelingMachine = createMachine(
         kclManager.updateAst(modifiedAst, true)
       },
       'Constrain horizontally align': ({ selectionRanges }) => {
-        const { modifiedAst, pathToNodeMap } = applyConstraintHorzVertAlign({
+        const { modifiedAst } = applyConstraintHorzVertAlign({
           selectionRanges,
           constraint: 'setVertDistance',
         })
         kclManager.updateAst(modifiedAst, true)
       },
       'Constrain vertically align': ({ selectionRanges }) => {
-        const { modifiedAst, pathToNodeMap } = applyConstraintHorzVertAlign({
+        const { modifiedAst } = applyConstraintHorzVertAlign({
           selectionRanges,
           constraint: 'setHorzDistance',
         })
         kclManager.updateAst(modifiedAst, true)
       },
       'Constrain equal length': ({ selectionRanges }) => {
-        const { modifiedAst, pathToNodeMap } = applyConstraintEqualLength({
+        const { modifiedAst } = applyConstraintEqualLength({
           selectionRanges,
         })
         kclManager.updateAst(modifiedAst, true)
       },
       'Constrain parallel': ({ selectionRanges }) => {
-        const { modifiedAst, pathToNodeMap } = applyConstraintEqualAngle({
+        const { modifiedAst } = applyConstraintEqualAngle({
           selectionRanges,
         })
         kclManager.updateAst(modifiedAst, true)
       },
       'Constrain remove constraints': ({ selectionRanges }) => {
-        const { modifiedAst, pathToNodeMap } = applyRemoveConstrainingValues({
+        const { modifiedAst } = applyRemoveConstrainingValues({
           selectionRanges,
         })
         kclManager.updateAst(modifiedAst, true)

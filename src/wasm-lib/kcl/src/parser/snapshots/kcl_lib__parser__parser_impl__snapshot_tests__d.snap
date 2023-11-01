@@ -1,0 +1,101 @@
+---
+source: kcl/src/parser/parser_impl.rs
+expression: actual
+---
+{
+  "start": 0,
+  "end": 36,
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 36,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 6,
+          "end": 36,
+          "id": {
+            "type": "Identifier",
+            "start": 6,
+            "end": 11,
+            "name": "myVar"
+          },
+          "init": {
+            "type": "PipeExpression",
+            "type": "PipeExpression",
+            "start": 14,
+            "end": 36,
+            "body": [
+              {
+                "type": "BinaryExpression",
+                "type": "BinaryExpression",
+                "start": 14,
+                "end": 19,
+                "operator": "+",
+                "left": {
+                  "type": "Literal",
+                  "type": "Literal",
+                  "start": 14,
+                  "end": 15,
+                  "value": 5,
+                  "raw": "5"
+                },
+                "right": {
+                  "type": "Literal",
+                  "type": "Literal",
+                  "start": 18,
+                  "end": 19,
+                  "value": 6,
+                  "raw": "6"
+                }
+              },
+              {
+                "type": "CallExpression",
+                "type": "CallExpression",
+                "start": 23,
+                "end": 36,
+                "callee": {
+                  "type": "Identifier",
+                  "start": 23,
+                  "end": 29,
+                  "name": "myFunc"
+                },
+                "arguments": [
+                  {
+                    "type": "Literal",
+                    "type": "Literal",
+                    "start": 30,
+                    "end": 32,
+                    "value": 45,
+                    "raw": "45"
+                  },
+                  {
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution",
+                    "start": 34,
+                    "end": 35
+                  }
+                ],
+                "optional": false,
+                "function": {
+                  "type": "InMemory"
+                }
+              }
+            ],
+            "nonCodeMeta": {
+              "nonCodeNodes": {},
+              "start": []
+            }
+          }
+        }
+      ],
+      "kind": "const"
+    }
+  ],
+  "nonCodeMeta": {
+    "nonCodeNodes": {},
+    "start": []
+  }
+}

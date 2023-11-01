@@ -83,7 +83,7 @@ export const TextEditor = ({
   // Here we initialize the plugin which will start the client.
   // When we have multi-file support the name of the file will be a dep of
   // this use memo, as well as the directory structure, which I think is
-  // a good setup becuase it will restart the client but not the server :)
+  // a good setup because it will restart the client but not the server :)
   // We do not want to restart the server, its just wasteful.
   const kclLSP = useMemo(() => {
     let plugin = null

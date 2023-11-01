@@ -664,7 +664,7 @@ export class EngineCommandManager {
           },
         })
 
-        // Inisialize the planes.
+        // Initialize the planes.
         this.initPlanes().then(() => {
           // We execute the code here to make sure if the stream was to
           // restart in a session, we want to make sure to execute the code.
@@ -887,7 +887,7 @@ export class EngineCommandManager {
   }
   endSession() {
     // TODO: instead of sending a single command with `object_ids: Object.keys(this.artifactMap)`
-    // we need to loop over them each individualy because if the engine doesn't recognise a single
+    // we need to loop over them each individually because if the engine doesn't recognise a single
     // id the whole command fails.
     const artifactsToDelete: any = {}
     Object.entries(this.artifactMap).forEach(([id, artifact]) => {
@@ -985,7 +985,7 @@ export class EngineCommandManager {
       if (parseCommand.type === 'modeling_cmd_req')
         return this.handlePendingCommand(id, parseCommand?.cmd, range)
     }
-    throw 'shouldnt reach here'
+    throw Error('shouldnt reach here')
   }
   handlePendingCommand(
     id: string,

@@ -2,11 +2,10 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kittycad::types::{ModelingCmd, Point3D};
+use kittycad::types::{Angle, ModelingCmd, Point3D};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use super::utils::Angle;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
@@ -334,6 +333,16 @@ pub enum AngledLineData {
     AngleAndLength([f64; 2]),
 }
 
+impl AngledLineData {
+    pub fn into_inner_line(self, to: [f64; 2]) -> LineData {
+        if let AngledLineData::AngleWithTag { tag, .. } = self {
+            LineData::PointWithTag { to, tag }
+        } else {
+            LineData::Point(to)
+        }
+    }
+}
+
 /// Draw an angled line.
 pub async fn angled_line(args: Args) -> Result<MemoryItem, KclError> {
     let (data, sketch_group): (AngledLineData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
@@ -429,16 +438,7 @@ async fn inner_angled_line_of_x_length(
 
     let to = get_y_component(Angle::from_degrees(angle), length);
 
-    let new_sketch_group = inner_line(
-        if let AngledLineData::AngleWithTag { tag, .. } = data {
-            LineData::PointWithTag { to: to.into(), tag }
-        } else {
-            LineData::Point(to.into())
-        },
-        sketch_group,
-        args,
-    )
-    .await?;
+    let new_sketch_group = inner_line(data.into_inner_line(to.into()), sketch_group, args).await?;
 
     Ok(new_sketch_group)
 }
@@ -459,6 +459,16 @@ pub enum AngledLineToData {
     },
     /// An angle and point to draw to.
     AngleAndPoint([f64; 2]),
+}
+
+impl AngledLineToData {
+    pub fn into_inner_line(self, x_to: f64, y_to: f64) -> LineToData {
+        if let AngledLineToData::AngleWithTag { tag, .. } = self {
+            LineToData::PointWithTag { to: [x_to, y_to], tag }
+        } else {
+            LineToData::Point([x_to, y_to])
+        }
+    }
 }
 
 /// Draw an angled line to a given x coordinate.
@@ -488,16 +498,7 @@ async fn inner_angled_line_to_x(
     let y_component = x_component * f64::tan(angle.to_radians());
     let y_to = from.y + y_component;
 
-    let new_sketch_group = inner_line_to(
-        if let AngledLineToData::AngleWithTag { tag, .. } = data {
-            LineToData::PointWithTag { to: [x_to, y_to], tag }
-        } else {
-            LineToData::Point([x_to, y_to])
-        },
-        sketch_group,
-        args,
-    )
-    .await?;
+    let new_sketch_group = inner_line_to(data.into_inner_line(x_to, y_to), sketch_group, args).await?;
     Ok(new_sketch_group)
 }
 
@@ -526,16 +527,7 @@ async fn inner_angled_line_of_y_length(
 
     let to = get_x_component(Angle::from_degrees(angle), length);
 
-    let new_sketch_group = inner_line(
-        if let AngledLineData::AngleWithTag { tag, .. } = data {
-            LineData::PointWithTag { to: to.into(), tag }
-        } else {
-            LineData::Point(to.into())
-        },
-        sketch_group,
-        args,
-    )
-    .await?;
+    let new_sketch_group = inner_line(data.into_inner_line(to.into()), sketch_group, args).await?;
 
     Ok(new_sketch_group)
 }
@@ -567,16 +559,7 @@ async fn inner_angled_line_to_y(
     let x_component = y_component / f64::tan(angle.to_radians());
     let x_to = from.x + x_component;
 
-    let new_sketch_group = inner_line_to(
-        if let AngledLineToData::AngleWithTag { tag, .. } = data {
-            LineToData::PointWithTag { to: [x_to, y_to], tag }
-        } else {
-            LineToData::Point([x_to, y_to])
-        },
-        sketch_group,
-        args,
-    )
-    .await?;
+    let new_sketch_group = inner_line_to(data.into_inner_line(x_to, y_to), sketch_group, args).await?;
     Ok(new_sketch_group)
 }
 
@@ -585,7 +568,7 @@ async fn inner_angled_line_to_y(
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 // TODO: make sure the docs on the args below are correct.
-pub struct AngeledLineThatIntersectsData {
+pub struct AngledLineThatIntersectsData {
     /// The angle of the line.
     pub angle: f64,
     /// The tag of the line to intersect with.
@@ -598,7 +581,7 @@ pub struct AngeledLineThatIntersectsData {
 
 /// Draw an angled line that intersects with a given line.
 pub async fn angled_line_that_intersects(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (AngeledLineThatIntersectsData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
+    let (data, sketch_group): (AngledLineThatIntersectsData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
     let new_sketch_group = inner_angled_line_that_intersects(data, sketch_group, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
@@ -608,7 +591,7 @@ pub async fn angled_line_that_intersects(args: Args) -> Result<MemoryItem, KclEr
     name = "angledLineThatIntersects",
 }]
 async fn inner_angled_line_that_intersects(
-    data: AngeledLineThatIntersectsData,
+    data: AngledLineThatIntersectsData,
     sketch_group: Box<SketchGroup>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
@@ -1049,6 +1032,8 @@ async fn inner_arc(data: ArcData, sketch_group: Box<SketchGroup>, args: Args) ->
             segment: kittycad::types::PathSegment::Arc {
                 angle_start: angle_start.degrees(),
                 angle_end: angle_end.degrees(),
+                start: Some(angle_start),
+                end: Some(angle_end),
                 center: center.into(),
                 radius,
                 relative: false,
@@ -1148,40 +1133,12 @@ async fn inner_tangential_arc(
             to.into()
         }
         TangentialArcData::PointWithTag { to, .. } => {
-            args.send_modeling_cmd(
-                id,
-                ModelingCmd::ExtendPath {
-                    path: sketch_group.id,
-                    segment: kittycad::types::PathSegment::TangentialArcTo {
-                        angle_snap_increment: None,
-                        to: kittycad::types::Point3D {
-                            x: to[0],
-                            y: to[1],
-                            z: 0.0,
-                        },
-                    },
-                },
-            )
-            .await?;
+            args.send_modeling_cmd(id, tan_arc_to(&sketch_group, to)).await?;
 
             *to
         }
         TangentialArcData::Point(to) => {
-            args.send_modeling_cmd(
-                id,
-                ModelingCmd::ExtendPath {
-                    path: sketch_group.id,
-                    segment: kittycad::types::PathSegment::TangentialArcTo {
-                        angle_snap_increment: None,
-                        to: kittycad::types::Point3D {
-                            x: to[0],
-                            y: to[1],
-                            z: 0.0,
-                        },
-                    },
-                },
-            )
-            .await?;
+            args.send_modeling_cmd(id, tan_arc_to(&sketch_group, to)).await?;
 
             *to
         }
@@ -1205,6 +1162,20 @@ async fn inner_tangential_arc(
     new_sketch_group.value.push(current_path);
 
     Ok(new_sketch_group)
+}
+
+fn tan_arc_to(sketch_group: &SketchGroup, to: &[f64; 2]) -> ModelingCmd {
+    ModelingCmd::ExtendPath {
+        path: sketch_group.id,
+        segment: kittycad::types::PathSegment::TangentialArcTo {
+            angle_snap_increment: None,
+            to: Point3D {
+                x: to[0],
+                y: to[1],
+                z: 0.0,
+            },
+        },
+    }
 }
 
 /// Data to draw a tangential arc to a specific point.
@@ -1247,24 +1218,8 @@ async fn inner_tangential_arc_to(
     };
 
     let delta = [to[0] - from.x, to[1] - from.y];
-
     let id = uuid::Uuid::new_v4();
-
-    args.send_modeling_cmd(
-        id,
-        ModelingCmd::ExtendPath {
-            path: sketch_group.id,
-            segment: kittycad::types::PathSegment::TangentialArcTo {
-                angle_snap_increment: None,
-                to: kittycad::types::Point3D {
-                    x: delta[0],
-                    y: delta[1],
-                    z: 0.0,
-                },
-            },
-        },
-    )
-    .await?;
+    args.send_modeling_cmd(id, tan_arc_to(&sketch_group, &delta)).await?;
 
     let current_path = Path::ToPoint {
         base: BasePath {

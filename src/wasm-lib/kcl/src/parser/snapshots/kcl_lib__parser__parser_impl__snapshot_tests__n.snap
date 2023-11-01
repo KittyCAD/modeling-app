@@ -1,0 +1,70 @@
+---
+source: kcl/src/parser/parser_impl.rs
+expression: actual
+---
+{
+  "start": 0,
+  "end": 24,
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 24,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 6,
+          "end": 24,
+          "id": {
+            "type": "Identifier",
+            "start": 6,
+            "end": 12,
+            "name": "height"
+          },
+          "init": {
+            "type": "BinaryExpression",
+            "type": "BinaryExpression",
+            "start": 15,
+            "end": 24,
+            "operator": "-",
+            "left": {
+              "type": "Literal",
+              "type": "Literal",
+              "start": 15,
+              "end": 16,
+              "value": 1,
+              "raw": "1"
+            },
+            "right": {
+              "type": "MemberExpression",
+              "type": "MemberExpression",
+              "start": 19,
+              "end": 24,
+              "object": {
+                "type": "Identifier",
+                "type": "Identifier",
+                "start": 19,
+                "end": 22,
+                "name": "obj"
+              },
+              "property": {
+                "type": "Identifier",
+                "type": "Identifier",
+                "start": 23,
+                "end": 24,
+                "name": "a"
+              },
+              "computed": false
+            }
+          }
+        }
+      ],
+      "kind": "const"
+    }
+  ],
+  "nonCodeMeta": {
+    "nonCodeNodes": {},
+    "start": []
+  }
+}
