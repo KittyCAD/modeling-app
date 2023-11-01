@@ -2392,7 +2392,8 @@ z(-[["#,
         // https://github.com/KittyCAD/modeling-app/issues/696
         assert_eq!(
             result.err().unwrap().to_string(),
-            r##"lexical: KclErrorDetails { source_ranges: [SourceRange([6, 7])], message: "found list of unkown tokens \"#\"" }"## );
+            r##"lexical: KclErrorDetails { source_ranges: [SourceRange([6, 7])], message: "found list of unkown tokens \"#\"" }"##
+        );
     }
 
     #[test]
