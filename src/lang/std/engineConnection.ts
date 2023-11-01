@@ -1,5 +1,4 @@
 import { SourceRange } from 'lang/wasm'
-import { Selections } from 'useStore'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_CONNECTION_TIMEOUT_MS } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
@@ -21,6 +20,7 @@ interface ResultCommand extends CommandInfo {
   type: 'result'
   data: any
   raw: WebSocketResponse
+  headVertexId?: string
 }
 interface FailedCommand extends CommandInfo {
   type: 'failed'
@@ -450,18 +450,18 @@ export class EngineConnection {
             videoTrackStats.forEach((videoTrackReport) => {
               if (videoTrackReport.type === 'inbound-rtp') {
                 client_metrics.rtc_frames_decoded =
-                  videoTrackReport.framesDecoded
+                  videoTrackReport.framesDecoded || 0
                 client_metrics.rtc_frames_dropped =
-                  videoTrackReport.framesDropped
+                  videoTrackReport.framesDropped || 0
                 client_metrics.rtc_frames_received =
-                  videoTrackReport.framesReceived
+                  videoTrackReport.framesReceived || 0
                 client_metrics.rtc_frames_per_second =
                   videoTrackReport.framesPerSecond || 0
                 client_metrics.rtc_freeze_count =
                   videoTrackReport.freezeCount || 0
-                client_metrics.rtc_jitter_sec = videoTrackReport.jitter
+                client_metrics.rtc_jitter_sec = videoTrackReport.jitter || 0.0
                 client_metrics.rtc_keyframes_decoded =
-                  videoTrackReport.keyFramesDecoded
+                  videoTrackReport.keyFramesDecoded || 0
                 client_metrics.rtc_total_freezes_duration_sec =
                   videoTrackReport.totalFreezesDuration || 0
               } else if (videoTrackReport.type === 'transport') {
@@ -664,7 +664,7 @@ export class EngineCommandManager {
           },
         })
 
-        // Inisialize the planes.
+        // Initialize the planes.
         this.initPlanes().then(() => {
           // We execute the code here to make sure if the stream was to
           // restart in a session, we want to make sure to execute the code.
@@ -887,7 +887,7 @@ export class EngineCommandManager {
   }
   endSession() {
     // TODO: instead of sending a single command with `object_ids: Object.keys(this.artifactMap)`
-    // we need to loop over them each individualy because if the engine doesn't recognise a single
+    // we need to loop over them each individually because if the engine doesn't recognise a single
     // id the whole command fails.
     Object.entries(this.artifactMap).forEach(([id, artifact]) => {
       const artifactTypesToDelete: ArtifactMap[string]['commandType'][] = [
@@ -908,30 +908,6 @@ export class EngineCommandManager {
         },
       }
       this.engineConnection?.send(deletCmd)
-    })
-  }
-  cusorsSelected(selections: {
-    otherSelections: Selections['otherSelections']
-    idBasedSelections: { type: string; id: string }[]
-  }) {
-    if (!this.engineConnection?.isReady()) {
-      console.log('engine connection isnt ready')
-      return
-    }
-    this.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'select_clear',
-      },
-      cmd_id: uuidv4(),
-    })
-    this.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'select_add',
-        entities: selections.idBasedSelections.map((s) => s.id),
-      },
-      cmd_id: uuidv4(),
     })
   }
   sendSceneCommand(command: EngineCommand): Promise<any> {
@@ -1006,7 +982,7 @@ export class EngineCommandManager {
       if (parseCommand.type === 'modeling_cmd_req')
         return this.handlePendingCommand(id, parseCommand?.cmd, range)
     }
-    throw 'shouldnt reach here'
+    throw Error('shouldnt reach here')
   }
   handlePendingCommand(
     id: string,

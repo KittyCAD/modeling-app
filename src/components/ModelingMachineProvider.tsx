@@ -20,7 +20,6 @@ import {
   recast,
   parse,
   Program,
-  VariableDeclarator,
   PipeExpression,
   CallExpression,
 } from 'lang/wasm'
@@ -36,11 +35,8 @@ import { applyConstraintAngleBetween } from './Toolbar/SetAngleBetween'
 import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
 import { toast } from 'react-hot-toast'
 import { pathMapToSelections } from 'lang/util'
-import {
-  dispatchCodeMirrorCursor,
-  setCodeMirrorCursor,
-  useStore,
-} from 'useStore'
+import { useStore } from 'useStore'
+import { handleSelectionBatch, handleSelectionWithShift } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 
 type MachineContext<T extends AnyStateMachine> = {
@@ -175,27 +171,38 @@ export const ModelingMachineProvider = ({
           }
         }
       ),
-      'AST add line segment': (
+      'AST add line segment': async (
         { sketchPathToNode, sketchEnginePathId },
         { data: { coords, segmentId } }
       ) => {
         if (!sketchPathToNode) return
         const lastCoord = coords[coords.length - 1]
 
-        const { node: varDec } = getNodeFromPath<VariableDeclarator>(
-          kclManager.ast,
-          sketchPathToNode,
-          'VariableDeclarator'
+        const pathInfo = await engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'path_get_info',
+            path_id: sketchEnginePathId,
+          },
+        })
+        const firstSegment = pathInfo?.data?.data?.segments.find(
+          (seg: any) => seg.command === 'line_to'
         )
-        const variableName = varDec.id.name
-        const sketchGroup = kclManager.programMemory.root[variableName]
-        if (!sketchGroup || sketchGroup.type !== 'SketchGroup') return
-        const initialCoords = sketchGroup.value[0].from
+        const firstSegCoords = await engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'curve_get_control_points',
+            curve_id: firstSegment.command_id,
+          },
+        })
+        const startPathCoord = firstSegCoords?.data?.data?.control_points[0]
 
-        const isClose = compareVec2Epsilon(initialCoords, [
-          lastCoord.x,
-          lastCoord.y,
-        ])
+        const isClose = compareVec2Epsilon(
+          [startPathCoord.x, startPathCoord.y],
+          [lastCoord.x, lastCoord.y]
+        )
 
         let _modifiedAst: Program
         if (!isClose) {
@@ -203,6 +210,7 @@ export const ModelingMachineProvider = ({
             node: kclManager.ast,
             programMemory: kclManager.programMemory,
             to: [lastCoord.x, lastCoord.y],
+            from: [coords[0].x, coords[0].y],
             fnName: 'line',
             pathToNode: sketchPathToNode,
           })
@@ -270,25 +278,37 @@ export const ModelingMachineProvider = ({
           // I've found this the best way to deal with the editor without causing an infinite loop
           // and really we want the editor to be in charge of cursor positions and for `selectionRanges` mirror it
           // because we want to respect the user manually placing the cursor too.
-          const selectionRangeTypeMap = setCodeMirrorCursor({
-            codeSelection: setSelections.selection,
-            currestSelections: selectionRanges,
-            editorView,
-            isShiftDown,
-          })
-          return {
-            selectionRangeTypeMap,
+
+          // for more details on how selections see `src/lib/selections.ts`.
+          const { codeMirrorSelection, selectionRangeTypeMap } =
+            handleSelectionWithShift({
+              codeSelection: setSelections.selection,
+              currestSelections: selectionRanges,
+              isShiftDown,
+            })
+          if (codeMirrorSelection) {
+            setTimeout(() => {
+              editorView.dispatch({
+                selection: codeMirrorSelection,
+              })
+            })
           }
+          return { selectionRangeTypeMap }
         }
         // This DOES NOT set the `selectionRanges` in xstate context
         // same as comment above
-        const selectionRangeTypeMap = dispatchCodeMirrorCursor({
-          selections: setSelections.selection,
-          editorView,
-        })
-        return {
-          selectionRangeTypeMap,
+        const { codeMirrorSelection, selectionRangeTypeMap } =
+          handleSelectionBatch({
+            selections: setSelections.selection,
+          })
+        if (codeMirrorSelection) {
+          setTimeout(() => {
+            editorView.dispatch({
+              selection: codeMirrorSelection,
+            })
+          })
         }
+        return { selectionRangeTypeMap }
       }),
     },
     guards: {
@@ -403,6 +423,12 @@ export const ModelingMachineProvider = ({
       }
     })
   }, [modelingSend, modelingState.nextEvents])
+
+  useEffect(() => {
+    kclManager.registerExecuteCallback(() => {
+      modelingSend({ type: 'Re-execute' })
+    })
+  }, [modelingSend])
 
   // useStateMachineCommands({
   //   state: settingsState,

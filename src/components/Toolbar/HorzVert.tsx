@@ -1,4 +1,5 @@
 import { toolTips } from '../../useStore'
+import { Selections } from 'lib/selections'
 import { Program, ProgramMemory, Value } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
@@ -10,7 +11,6 @@ import {
   transformAstSketchLines,
 } from '../../lang/std/sketchcombos'
 import { kclManager } from 'lang/KclSinglton'
-import { Selections } from 'useStore'
 
 export function horzVertInfo(
   selectionRanges: Selections,

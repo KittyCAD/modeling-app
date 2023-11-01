@@ -16,8 +16,8 @@ type StorageUnion = ExtractStorageTypes<OutputFormat>
 interface ExportButtonProps extends React.PropsWithChildren {
   className?: {
     button?: string
-    // If we wanted more classname configuration of sub-elements,
-    // put them here
+    icon?: string
+    bg?: string
   }
 }
 
@@ -109,7 +109,11 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
       <ActionButton
         onClick={openModal}
         Element="button"
-        icon={{ icon: faFileExport }}
+        icon={{
+          icon: faFileExport,
+          iconClassName: className?.icon,
+          bgClassName: className?.bg,
+        }}
         className={className?.button}
       >
         {children || 'Export'}

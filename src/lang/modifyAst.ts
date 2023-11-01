@@ -1,4 +1,5 @@
-import { Selection, ToolTip } from '../useStore'
+import { ToolTip } from '../useStore'
+import { Selection } from 'lib/selections'
 import {
   Program,
   CallExpression,
@@ -309,7 +310,7 @@ export function extrudeSketch(
   const name = findUniqueName(node, 'part')
   const VariableDeclaration = createVariableDeclaration(name, extrudeCall)
   let showCallIndex = getShowIndex(_node)
-  if (showCallIndex == -1) {
+  if (showCallIndex === -1) {
     // We didn't find a show, so let's just append everything
     showCallIndex = _node.body.length
   }

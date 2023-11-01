@@ -31,9 +31,11 @@ import {
   interpolateProjectNameWithIndex,
 } from 'lib/tauriFS'
 import { ONBOARDING_PROJECT_NAME } from './Onboarding'
+import { sep } from '@tauri-apps/api/path'
 
 export const Settings = () => {
-  const loaderData = useRouteLoaderData(paths.FILE) as IndexLoaderData
+  const loaderData =
+    (useRouteLoaderData(paths.FILE) as IndexLoaderData) || undefined
   const navigate = useNavigate()
   const location = useLocation()
   const isFileSettings = location.pathname.includes(paths.FILE)
@@ -94,13 +96,13 @@ export const Settings = () => {
       ONBOARDING_PROJECT_NAME,
       nextIndex
     )
-    const newFile = await createNewProject(defaultDirectory + '/' + name)
+    const newFile = await createNewProject(defaultDirectory + sep + name)
     navigate(`${paths.FILE}/${encodeURIComponent(newFile.path)}`)
   }
 
   return (
     <div className="fixed inset-0 z-40 overflow-auto body-bg">
-      <AppHeader showToolbar={false} project={loaderData?.project}>
+      <AppHeader showToolbar={false} project={loaderData}>
         <ActionButton
           Element="link"
           to={location.pathname.replace(paths.SETTINGS, '')}
@@ -115,7 +117,7 @@ export const Settings = () => {
           Close
         </ActionButton>
       </AppHeader>
-      <div className="max-w-5xl mx-auto my-24">
+      <div className="max-w-5xl mx-5 lg:mx-auto my-24">
         <h1 className="text-4xl font-bold">User Settings</h1>
         <p className="max-w-2xl mt-6">
           Don't see the feature you want? Check to see if it's on{' '}

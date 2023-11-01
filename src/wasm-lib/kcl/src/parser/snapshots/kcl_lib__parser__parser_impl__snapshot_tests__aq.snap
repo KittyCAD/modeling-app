@@ -1,0 +1,98 @@
+---
+source: kcl/src/parser/parser_impl.rs
+expression: actual
+---
+{
+  "start": 0,
+  "end": 28,
+  "body": [
+    {
+      "type": "ExpressionStatement",
+      "type": "ExpressionStatement",
+      "start": 0,
+      "end": 28,
+      "expression": {
+        "type": "CallExpression",
+        "type": "CallExpression",
+        "start": 0,
+        "end": 28,
+        "callee": {
+          "type": "Identifier",
+          "start": 0,
+          "end": 3,
+          "name": "log"
+        },
+        "arguments": [
+          {
+            "type": "Literal",
+            "type": "Literal",
+            "start": 4,
+            "end": 5,
+            "value": 5,
+            "raw": "5"
+          },
+          {
+            "type": "Literal",
+            "type": "Literal",
+            "start": 7,
+            "end": 14,
+            "value": "hello",
+            "raw": "\"hello\""
+          },
+          {
+            "type": "Identifier",
+            "type": "Identifier",
+            "start": 16,
+            "end": 27,
+            "name": "aIdentifier"
+          }
+        ],
+        "optional": false,
+        "function": {
+          "type": "StdLib",
+          "func": {
+            "name": "log",
+            "summary": "Computes the logarithm of the number with respect to an arbitrary base.",
+            "description": "The result might not be correctly rounded owing to implementation details; `log2()` can produce more accurate results for base 2, and `log10()` can produce more accurate results for base 10.",
+            "tags": [],
+            "args": [
+              {
+                "name": "num",
+                "type": "number",
+                "schema": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "required": true
+              },
+              {
+                "name": "base",
+                "type": "number",
+                "schema": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "required": true
+              }
+            ],
+            "returnValue": {
+              "name": "",
+              "type": "number",
+              "schema": {
+                "type": "number",
+                "format": "double"
+              },
+              "required": true
+            },
+            "unpublished": false,
+            "deprecated": false
+          }
+        }
+      }
+    }
+  ],
+  "nonCodeMeta": {
+    "nonCodeNodes": {},
+    "start": []
+  }
+}

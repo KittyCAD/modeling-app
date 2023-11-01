@@ -7,13 +7,17 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Map;
+use serde_json::Value as JValue;
 use tower_lsp::lsp_types::{CompletionItem, CompletionItemKind, DocumentSymbol, Range as LspRange, SymbolKind};
 
+pub use self::literal_value::LiteralValue;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{ExecutorContext, MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange, UserVal},
     parser::PIPE_OPERATOR,
 };
+
+mod literal_value;
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -371,13 +375,13 @@ impl BodyItem {
     }
 }
 
-impl From<BodyItem> for crate::executor::SourceRange {
+impl From<BodyItem> for SourceRange {
     fn from(item: BodyItem) -> Self {
         Self([item.start(), item.end()])
     }
 }
 
-impl From<&BodyItem> for crate::executor::SourceRange {
+impl From<&BodyItem> for SourceRange {
     fn from(item: &BodyItem) -> Self {
         Self([item.start(), item.end()])
     }
@@ -534,13 +538,13 @@ impl Value {
     }
 }
 
-impl From<Value> for crate::executor::SourceRange {
+impl From<Value> for SourceRange {
     fn from(value: Value) -> Self {
         Self([value.start(), value.end()])
     }
 }
 
-impl From<&Value> for crate::executor::SourceRange {
+impl From<&Value> for SourceRange {
     fn from(value: &Value) -> Self {
         Self([value.start(), value.end()])
     }
@@ -558,13 +562,13 @@ pub enum BinaryPart {
     MemberExpression(Box<MemberExpression>),
 }
 
-impl From<BinaryPart> for crate::executor::SourceRange {
+impl From<BinaryPart> for SourceRange {
     fn from(value: BinaryPart) -> Self {
         Self([value.start(), value.end()])
     }
 }
 
-impl From<&BinaryPart> for crate::executor::SourceRange {
+impl From<&BinaryPart> for SourceRange {
     fn from(value: &BinaryPart) -> Self {
         Self([value.start(), value.end()])
     }
@@ -640,7 +644,7 @@ impl BinaryPart {
         pipe_info: &mut PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
-        // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
+        // We DO NOT set this globally because if we did and this was called inside a pipe it would
         // stop the execution of the pipe.
         // THIS IS IMPORTANT.
         let mut new_pipe_info = pipe_info.clone();
@@ -780,7 +784,7 @@ pub enum NonCodeValue {
     /// 1 + 1
     /// ```
     /// Now this is important. The block comment is attached to the next line.
-    /// This is always the case. Also the block comment doesnt have a new line above it.
+    /// This is always the case. Also the block comment doesn't have a new line above it.
     /// If it did it would be a `NewLineBlockComment`.
     BlockComment {
         value: String,
@@ -930,7 +934,7 @@ impl CallExpression {
                     binary_expression.get_result(memory, pipe_info, ctx).await?
                 }
                 Value::CallExpression(call_expression) => {
-                    // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
+                    // We DO NOT set this globally because if we did and this was called inside a pipe it would
                     // stop the execution of the pipe.
                     // THIS IS IMPORTANT.
                     let mut new_pipe_info = pipe_info.clone();
@@ -1312,24 +1316,18 @@ impl VariableDeclarator {
 pub struct Literal {
     pub start: usize,
     pub end: usize,
-    pub value: serde_json::Value,
+    pub value: LiteralValue,
     pub raw: String,
 }
 
 impl_value_meta!(Literal);
 
-impl From<Literal> for Value {
-    fn from(literal: Literal) -> Self {
-        Value::Literal(Box::new(literal))
-    }
-}
-
 impl Literal {
-    pub fn new(value: serde_json::Value) -> Self {
+    pub fn new(value: LiteralValue) -> Self {
         Self {
             start: 0,
             end: 0,
-            raw: value.to_string(),
+            raw: JValue::from(value.clone()).to_string(),
             value,
         }
     }
@@ -1343,11 +1341,19 @@ impl Literal {
     }
 
     fn recast(&self) -> String {
-        if let serde_json::Value::String(value) = &self.value {
-            let quote = if self.raw.trim().starts_with('"') { '"' } else { '\'' };
-            format!("{}{}{}", quote, value, quote)
-        } else {
-            self.value.to_string()
+        match self.value {
+            LiteralValue::Fractional(x) => {
+                if x.fract() == 0.0 {
+                    format!("{x:?}")
+                } else {
+                    self.raw.clone()
+                }
+            }
+            LiteralValue::IInteger(_) => self.raw.clone(),
+            LiteralValue::String(ref s) => {
+                let quote = if self.raw.trim().starts_with('"') { '"' } else { '\'' };
+                format!("{quote}{s}{quote}")
+            }
         }
     }
 }
@@ -1355,7 +1361,7 @@ impl Literal {
 impl From<Literal> for MemoryItem {
     fn from(literal: Literal) -> Self {
         MemoryItem::UserVal(UserVal {
-            value: literal.value.clone(),
+            value: JValue::from(literal.value.clone()),
             meta: vec![Metadata {
                 source_range: literal.into(),
             }],
@@ -1366,7 +1372,7 @@ impl From<Literal> for MemoryItem {
 impl From<&Box<Literal>> for MemoryItem {
     fn from(literal: &Box<Literal>) -> Self {
         MemoryItem::UserVal(UserVal {
-            value: literal.value.clone(),
+            value: JValue::from(literal.value.clone()),
             meta: vec![Metadata {
                 source_range: literal.into(),
             }],
@@ -1552,7 +1558,7 @@ impl ArrayExpression {
                     binary_expression.get_result(memory, pipe_info, ctx).await?
                 }
                 Value::CallExpression(call_expression) => {
-                    // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
+                    // We DO NOT set this globally because if we did and this was called inside a pipe it would
                     // stop the execution of the pipe.
                     // THIS IS IMPORTANT.
                     let mut new_pipe_info = pipe_info.clone();
@@ -1703,7 +1709,7 @@ impl ObjectExpression {
                     binary_expression.get_result(memory, pipe_info, ctx).await?
                 }
                 Value::CallExpression(call_expression) => {
-                    // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
+                    // We DO NOT set this globally because if we did and this was called inside a pipe it would
                     // stop the execution of the pipe.
                     // THIS IS IMPORTANT.
                     let mut new_pipe_info = pipe_info.clone();
@@ -1831,13 +1837,13 @@ impl MemberObject {
     }
 }
 
-impl From<MemberObject> for crate::executor::SourceRange {
+impl From<MemberObject> for SourceRange {
     fn from(obj: MemberObject) -> Self {
         Self([obj.start(), obj.end()])
     }
 }
 
-impl From<&MemberObject> for crate::executor::SourceRange {
+impl From<&MemberObject> for SourceRange {
     fn from(obj: &MemberObject) -> Self {
         Self([obj.start(), obj.end()])
     }
@@ -1867,13 +1873,13 @@ impl LiteralIdentifier {
     }
 }
 
-impl From<LiteralIdentifier> for crate::executor::SourceRange {
+impl From<LiteralIdentifier> for SourceRange {
     fn from(id: LiteralIdentifier) -> Self {
         Self([id.start(), id.end()])
     }
 }
 
-impl From<&LiteralIdentifier> for crate::executor::SourceRange {
+impl From<&LiteralIdentifier> for SourceRange {
     fn from(id: &LiteralIdentifier) -> Self {
         Self([id.start(), id.end()])
     }
@@ -1967,17 +1973,21 @@ impl MemberExpression {
             LiteralIdentifier::Identifier(identifier) => identifier.name.to_string(),
             LiteralIdentifier::Literal(literal) => {
                 let value = literal.value.clone();
-                // Parse this as a string.
-                if let serde_json::Value::String(string) = value {
-                    string
-                } else if let serde_json::Value::Number(_) = &value {
-                    // It can also be a number if we are getting a member of an array.
-                    return self.get_result_array(memory, parse_json_number_as_usize(&value, self.into())?);
-                } else {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!("Expected string literal or number for property name, found {:?}", value),
-                        source_ranges: vec![literal.into()],
-                    }));
+                match value {
+                    LiteralValue::IInteger(x) if x >= 0 => return self.get_result_array(memory, x as usize),
+                    LiteralValue::IInteger(x) => {
+                        return Err(KclError::Syntax(KclErrorDetails {
+                            source_ranges: vec![self.into()],
+                            message: format!("invalid index: {x}"),
+                        }))
+                    }
+                    LiteralValue::Fractional(x) => {
+                        return Err(KclError::Syntax(KclErrorDetails {
+                            source_ranges: vec![self.into()],
+                            message: format!("invalid index: {x}"),
+                        }))
+                    }
+                    LiteralValue::String(s) => s,
                 }
             }
         };
@@ -2133,7 +2143,7 @@ impl BinaryExpression {
         pipe_info: &mut PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
-        // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
+        // We DO NOT set this globally because if we did and this was called inside a pipe it would
         // stop the execution of the pipe.
         // THIS IS IMPORTANT.
         let mut new_pipe_info = pipe_info.clone();
@@ -2175,6 +2185,7 @@ impl BinaryExpression {
             BinaryOperator::Mul => (left * right).into(),
             BinaryOperator::Div => (left / right).into(),
             BinaryOperator::Mod => (left % right).into(),
+            BinaryOperator::Pow => (left.powf(right)).into(),
         };
 
         Ok(MemoryItem::UserVal(UserVal {
@@ -2204,22 +2215,6 @@ pub fn parse_json_number_as_f64(j: &serde_json::Value, source_range: SourceRange
         Err(KclError::Syntax(KclErrorDetails {
             source_ranges: vec![source_range],
             message: format!("Invalid number: {}", j),
-        }))
-    }
-}
-
-pub fn parse_json_number_as_usize(j: &serde_json::Value, source_range: SourceRange) -> Result<usize, KclError> {
-    if let serde_json::Value::Number(n) = &j {
-        Ok(n.as_i64().ok_or_else(|| {
-            KclError::Syntax(KclErrorDetails {
-                source_ranges: vec![source_range],
-                message: format!("Invalid index: {}", j),
-            })
-        })? as usize)
-    } else {
-        Err(KclError::Syntax(KclErrorDetails {
-            source_ranges: vec![source_range],
-            message: format!("Invalid index: {}", j),
         }))
     }
 }
@@ -2257,13 +2252,46 @@ pub enum BinaryOperator {
     #[serde(rename = "%")]
     #[display("%")]
     Mod,
+    /// Raise a number to a power.
+    #[serde(rename = "^")]
+    #[display("^")]
+    Pow,
+}
+
+/// Mathematical associativity.
+/// Should a . b . c be read as (a . b) . c, or a . (b . c)
+/// See <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#precedence_and_associativity> for more.
+#[derive(PartialEq, Eq, Debug, Clone, Copy)]
+pub enum Associativity {
+    /// Read a . b . c as (a . b) . c
+    Left,
+    /// Read a . b . c as a . (b . c)
+    Right,
+}
+
+impl Associativity {
+    pub fn is_left(&self) -> bool {
+        matches!(self, Self::Left)
+    }
 }
 
 impl BinaryOperator {
+    /// Follow JS definitions of each operator.
+    /// Taken from <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table>
     pub fn precedence(&self) -> u8 {
         match &self {
             BinaryOperator::Add | BinaryOperator::Sub => 11,
             BinaryOperator::Mul | BinaryOperator::Div | BinaryOperator::Mod => 12,
+            BinaryOperator::Pow => 6,
+        }
+    }
+
+    /// Follow JS definitions of each operator.
+    /// Taken from <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table>
+    pub fn associativity(&self) -> Associativity {
+        match self {
+            Self::Add | Self::Sub | Self::Mul | Self::Div | Self::Mod => Associativity::Left,
+            Self::Pow => Associativity::Right,
         }
     }
 }
@@ -2307,7 +2335,7 @@ impl UnaryExpression {
         pipe_info: &mut PipeInfo,
         ctx: &ExecutorContext,
     ) -> Result<MemoryItem, KclError> {
-        // We DO NOT set this gloablly because if we did and this was called inside a pipe it would
+        // We DO NOT set this globally because if we did and this was called inside a pipe it would
         // stop the execution of the pipe.
         // THIS IS IMPORTANT.
         let mut new_pipe_info = pipe_info.clone();
@@ -3254,5 +3282,41 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(recasted.trim(), some_program_string);
+    }
+
+    #[test]
+    fn recast_literal() {
+        use winnow::Parser;
+        for (i, (raw, expected, reason)) in [
+            (
+                "5.0",
+                "5.0",
+                "fractional numbers should stay fractional, i.e. don't reformat this to '5'",
+            ),
+            (
+                "5",
+                "5",
+                "integers should stay integral, i.e. don't reformat this to '5.0'",
+            ),
+            (
+                "5.0000000",
+                "5.0",
+                "if the number is f64 but not fractional, use its canonical format",
+            ),
+            ("5.1", "5.1", "straightforward case works"),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let tokens = crate::token::lexer(raw);
+            let literal = crate::parser::parser_impl::unsigned_number_literal
+                .parse(&tokens)
+                .unwrap();
+            assert_eq!(
+                literal.recast(),
+                expected,
+                "failed test {i}, which is testing that {reason}"
+            );
+        }
     }
 }

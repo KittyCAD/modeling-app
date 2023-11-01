@@ -8,6 +8,8 @@ use crate::executor::SourceRange;
 #[ts(export)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum KclError {
+    #[error("lexical: {0:?}")]
+    Lexical(KclErrorDetails),
     #[error("syntax: {0:?}")]
     Syntax(KclErrorDetails),
     #[error("semantic: {0:?}")]
@@ -41,6 +43,7 @@ impl KclError {
     /// Get the error message, line and column from the error and input code.
     pub fn get_message_line_column(&self, input: &str) -> (String, Option<usize>, Option<usize>) {
         let (type_, source_range, message) = match &self {
+            KclError::Lexical(e) => ("lexical", e.source_ranges.clone(), e.message.clone()),
             KclError::Syntax(e) => ("syntax", e.source_ranges.clone(), e.message.clone()),
             KclError::Semantic(e) => ("semantic", e.source_ranges.clone(), e.message.clone()),
             KclError::Type(e) => ("type", e.source_ranges.clone(), e.message.clone()),
@@ -67,6 +70,7 @@ impl KclError {
 
     pub fn source_ranges(&self) -> Vec<SourceRange> {
         match &self {
+            KclError::Lexical(e) => e.source_ranges.clone(),
             KclError::Syntax(e) => e.source_ranges.clone(),
             KclError::Semantic(e) => e.source_ranges.clone(),
             KclError::Type(e) => e.source_ranges.clone(),
@@ -82,6 +86,7 @@ impl KclError {
     /// Get the inner error message.
     pub fn message(&self) -> &str {
         match &self {
+            KclError::Lexical(e) => &e.message,
             KclError::Syntax(e) => &e.message,
             KclError::Semantic(e) => &e.message,
             KclError::Type(e) => &e.message,

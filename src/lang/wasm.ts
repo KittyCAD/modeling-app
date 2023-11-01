@@ -66,13 +66,16 @@ const initialise = async () => {
     typeof window === 'undefined'
       ? 'http://127.0.0.1:3000'
       : window.location.origin.includes('tauri://localhost')
-      ? 'tauri://localhost'
+      ? 'tauri://localhost' // custom protocol for macOS
+      : window.location.origin.includes('tauri.localhost')
+      ? 'https://tauri.localhost' // fallback for Windows
       : window.location.origin.includes('localhost')
       ? 'http://localhost:3000'
       : window.location.origin && window.location.origin !== 'null'
       ? window.location.origin
       : 'http://localhost:3000'
   const fullUrl = baseUrl + '/wasm_lib_bg.wasm'
+  console.log(`Full URL for WASM: ${fullUrl}`)
   const input = await fetch(fullUrl)
   const buffer = await input.arrayBuffer()
   return init(buffer)

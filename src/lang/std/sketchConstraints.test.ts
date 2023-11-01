@@ -5,7 +5,7 @@ import {
   transformAstSketchLines,
 } from './sketchcombos'
 import { getSketchSegmentFromSourceRange } from './sketchConstraints'
-import { Selection } from '../../useStore'
+import { Selection } from 'lib/selections'
 import { enginelessExecutor } from '../../lib/testHelpers'
 
 beforeAll(() => initPromise)
@@ -50,7 +50,7 @@ async function testingSwapSketchFnCall({
   }
 }
 
-describe('testing swaping out sketch calls with xLine/xLineTo', () => {
+describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   const bigExampleArr = [
     `const part001 = startSketchOn('XY')`,
     `  |> startProfileAt([0, 0], %)`,
@@ -178,7 +178,7 @@ describe('testing swaping out sketch calls with xLine/xLineTo', () => {
       constraintType: 'horizontal',
     })
     const expectedLine = "xLine({ length: -0.86, tag: 'abc4' }, %)"
-    // hmm "-0.86" is correct since the angle is 104, but need to make sure this is compatiable `-myVar`
+    // hmm "-0.86" is correct since the angle is 104, but need to make sure this is compatible `-myVar`
     expect(newCode).toContain(expectedLine)
     // new line should start at the same place as the old line
     expect(originalRange[0]).toBe(newCode.indexOf(expectedLine))
@@ -268,7 +268,7 @@ describe('testing swaping out sketch calls with xLine/xLineTo', () => {
   })
 })
 
-describe('testing swaping out sketch calls with xLine/xLineTo while keeping variable/identifiers intact', () => {
+describe('testing swapping out sketch calls with xLine/xLineTo while keeping variable/identifiers intact', () => {
   // Enable rotations #152
   const variablesExampleArr = [
     `const lineX = -1`,

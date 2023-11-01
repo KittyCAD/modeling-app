@@ -1,4 +1,5 @@
-import { Selections, toolTips } from '../../useStore'
+import { toolTips } from '../../useStore'
+import { Selections } from 'lib/selections'
 import { Program, Value, VariableDeclarator } from '../../lang/wasm'
 import {
   getNodePathFromSourceRange,
@@ -68,7 +69,7 @@ export function applyConstraintEqualLength({
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
 } {
-  const { enabled, transforms } = setEqualLengthInfo({ selectionRanges })
+  const { transforms } = setEqualLengthInfo({ selectionRanges })
   const { modifiedAst, pathToNodeMap } = transformSecondarySketchLinesTagFirst({
     ast: kclManager.ast,
     selectionRanges,

@@ -68,7 +68,7 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
     };
 
     // Open the system browser with the auth_uri.
-    // We do this in the browser and not a seperate window because we want 1password and
+    // We do this in the browser and not a separate window because we want 1password and
     // other crap to work well.
     tauri::api::shell::open(&app.shell_scope(), auth_uri.secret(), None)
         .map_err(|e| InvokeError::from_anyhow(e.into()))?;
@@ -129,10 +129,10 @@ async fn get_user(
 
 fn main() {
     tauri::Builder::default()
-        .setup(|app| {
+        .setup(|_app| {
             #[cfg(debug_assertions)] // only include this code on debug builds
             {
-                let window = app.get_window("main").unwrap();
+                let window = _app.get_window("main").unwrap();
                 // comment out the below if you don't devtools to open everytime.
                 // it's useful because otherwise devtools shuts everytime rust code changes.
                 window.open_devtools();

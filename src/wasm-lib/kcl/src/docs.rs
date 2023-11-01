@@ -193,7 +193,7 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
     }
 
     fn to_signature_help(&self) -> SignatureHelp {
-        // Fill this in based on the current positon of the cursor.
+        // Fill this in based on the current position of the cursor.
         let active_parameter = None;
 
         SignatureHelp {

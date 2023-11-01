@@ -1,0 +1,136 @@
+---
+source: kcl/src/parser/parser_impl.rs
+expression: actual
+---
+{
+  "start": 0,
+  "end": 55,
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 26,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 6,
+          "end": 26,
+          "id": {
+            "type": "Identifier",
+            "start": 6,
+            "end": 9,
+            "name": "obj"
+          },
+          "init": {
+            "type": "ObjectExpression",
+            "type": "ObjectExpression",
+            "start": 12,
+            "end": 26,
+            "properties": [
+              {
+                "type": "ObjectProperty",
+                "start": 14,
+                "end": 18,
+                "key": {
+                  "type": "Identifier",
+                  "start": 14,
+                  "end": 15,
+                  "name": "a"
+                },
+                "value": {
+                  "type": "Literal",
+                  "type": "Literal",
+                  "start": 17,
+                  "end": 18,
+                  "value": 1,
+                  "raw": "1"
+                }
+              },
+              {
+                "type": "ObjectProperty",
+                "start": 20,
+                "end": 24,
+                "key": {
+                  "type": "Identifier",
+                  "start": 20,
+                  "end": 21,
+                  "name": "b"
+                },
+                "value": {
+                  "type": "Literal",
+                  "type": "Literal",
+                  "start": 23,
+                  "end": 24,
+                  "value": 2,
+                  "raw": "2"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "kind": "const"
+    },
+    {
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
+      "start": 31,
+      "end": 55,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 37,
+          "end": 55,
+          "id": {
+            "type": "Identifier",
+            "start": 37,
+            "end": 43,
+            "name": "height"
+          },
+          "init": {
+            "type": "BinaryExpression",
+            "type": "BinaryExpression",
+            "start": 46,
+            "end": 55,
+            "operator": "-",
+            "left": {
+              "type": "Literal",
+              "type": "Literal",
+              "start": 46,
+              "end": 47,
+              "value": 1,
+              "raw": "1"
+            },
+            "right": {
+              "type": "MemberExpression",
+              "type": "MemberExpression",
+              "start": 50,
+              "end": 55,
+              "object": {
+                "type": "Identifier",
+                "type": "Identifier",
+                "start": 50,
+                "end": 53,
+                "name": "obj"
+              },
+              "property": {
+                "type": "Identifier",
+                "type": "Identifier",
+                "start": 54,
+                "end": 55,
+                "name": "a"
+              },
+              "computed": false
+            }
+          }
+        }
+      ],
+      "kind": "const"
+    }
+  ],
+  "nonCodeMeta": {
+    "nonCodeNodes": {},
+    "start": []
+  }
+}
