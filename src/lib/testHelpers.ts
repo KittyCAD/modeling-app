@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from 'uuid'
 type WebSocketResponse = Models['OkWebSocketResponseData_type']
 
 class MockEngineCommandManager {
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(mockParams: {
     setIsStreamReady: (isReady: boolean) => void
     setMediaStream: (stream: MediaStream) => void

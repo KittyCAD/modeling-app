@@ -982,7 +982,7 @@ export class EngineCommandManager {
       if (parseCommand.type === 'modeling_cmd_req')
         return this.handlePendingCommand(id, parseCommand?.cmd, range)
     }
-    throw 'shouldnt reach here'
+    throw Error('shouldnt reach here')
   }
   handlePendingCommand(
     id: string,

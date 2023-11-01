@@ -69,7 +69,7 @@ export function applyConstraintEqualLength({
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
 } {
-  const { enabled, transforms } = setEqualLengthInfo({ selectionRanges })
+  const { transforms } = setEqualLengthInfo({ selectionRanges })
   const { modifiedAst, pathToNodeMap } = transformSecondarySketchLinesTagFirst({
     ast: kclManager.ast,
     selectionRanges,

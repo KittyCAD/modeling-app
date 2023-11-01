@@ -267,11 +267,11 @@ export const Stream = ({ className = '' }) => {
       }
       engineCommandManager.sendSceneCommand(command).then(async () => {
         if (!context.sketchPathToNode) return
-        const varDec = getNodeFromPath<VariableDeclarator>(
+        getNodeFromPath<VariableDeclarator>(
           kclManager.ast,
           context.sketchPathToNode,
           'VariableDeclarator'
-        ).node
+        )
         // Get the current plane string for plane we are on.
         let currentPlaneString = ''
         if (context.sketchPlaneId === kclManager.getPlaneId('xy')) {

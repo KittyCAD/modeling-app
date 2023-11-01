@@ -129,10 +129,10 @@ async fn get_user(
 
 fn main() {
     tauri::Builder::default()
-        .setup(|app| {
+        .setup(|_app| {
             #[cfg(debug_assertions)] // only include this code on debug builds
             {
-                let window = app.get_window("main").unwrap();
+                let window = _app.get_window("main").unwrap();
                 // comment out the below if you don't devtools to open everytime.
                 // it's useful because otherwise devtools shuts everytime rust code changes.
                 window.open_devtools();

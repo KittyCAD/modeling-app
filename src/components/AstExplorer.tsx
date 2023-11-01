@@ -184,6 +184,7 @@ function DisplayObj({
                   </li>
                 )
               }
+              return null
             })}
           </ul>
         </span>

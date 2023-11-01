@@ -20,7 +20,6 @@ import {
 import { isLiteralArrayOrStatic } from './sketchcombos'
 import { toolTips, ToolTip } from '../../useStore'
 import { createPipeExpression, splitPathAtPipeExpression } from '../modifyAst'
-import { generateUuidFromHashSeed } from '../../lib/uuid'
 
 import { SketchLineHelper, ModifyAstBase, TransformCallback } from './stdTypes'
 
@@ -92,16 +91,10 @@ export function createFirstArg(
   throw new Error('all sketch line types should have been covered')
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type LineData = {
   from: [number, number, number]
   to: [number, number, number]
-}
-
-function makeId(seed: string | any) {
-  if (typeof seed === 'string') {
-    return generateUuidFromHashSeed(seed)
-  }
-  return generateUuidFromHashSeed(JSON.stringify(seed))
 }
 
 export const lineTo: SketchLineHelper = {
@@ -250,9 +243,6 @@ export const line: SketchLineHelper = {
     ])
 
     if (callExpression.arguments?.[0].type === 'ObjectExpression') {
-      const toProp = callExpression.arguments?.[0].properties?.find(
-        ({ key }) => key.name === 'to'
-      )
       mutateObjExpProp(callExpression.arguments?.[0], toArrExp, 'to')
     } else {
       mutateArrExp(callExpression.arguments?.[0], toArrExp)
@@ -974,14 +964,12 @@ export function addNewSketchLn({
   const node = JSON.parse(JSON.stringify(_node))
   const { add, updateArgs } = sketchLineHelperMap?.[fnName] || {}
   if (!add || !updateArgs) throw new Error('not a sketch line helper')
-  const { node: varDec } = getNodeFromPath<VariableDeclarator>(
+  getNodeFromPath<VariableDeclarator>(node, pathToNode, 'VariableDeclarator')
+  getNodeFromPath<PipeExpression | CallExpression>(
     node,
     pathToNode,
-    'VariableDeclarator'
+    'PipeExpression'
   )
-  const { node: pipeExp, shallowPath: pipePath } = getNodeFromPath<
-    PipeExpression | CallExpression
-  >(node, pathToNode, 'PipeExpression')
   return add({
     node,
     previousProgramMemory,
