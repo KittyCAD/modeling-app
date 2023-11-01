@@ -568,7 +568,7 @@ describe('testing pipe operator special', () => {
                       type: 'Literal',
                       start: 139,
                       end: 141,
-                      value: { type: 'string', data: 45 },
+                      value: { type: 'i_integer', data: 45 },
                       raw: '45',
                     },
                     { type: 'PipeSubstitution', start: 143, end: 144 },
@@ -646,7 +646,7 @@ describe('testing pipe operator special', () => {
                       type: 'Literal',
                       start: 30,
                       end: 32,
-                      value: { type: 'string', data: 45 },
+                      value: { type: 'i_integer', data: 45 },
                       raw: '45',
                     },
                     {
@@ -1548,10 +1548,7 @@ const key = 'c'`
       value: {
         type: 'inlineComment',
         style: 'block',
-        value: {
-          type: 'string',
-          data: 'this is\n      a comment\n      spanning a few lines',
-        },
+        value: 'this is\n      a comment\n      spanning a few lines',
       },
     })
   })
@@ -1574,7 +1571,7 @@ const key = 'c'`
       end: 138,
       value: {
         type: 'blockComment',
-        value: { type: 'string', data: 'a comment' },
+        value: 'a comment',
         style: 'line',
       },
     })
@@ -1608,7 +1605,7 @@ describe('test UnaryExpression', () => {
             type: 'Literal',
             start: 22,
             end: 25,
-            value: { type: 'string', data: 100 },
+            value: { type: 'i_integer', data: 100 },
             raw: '100',
           },
         ],
@@ -1634,7 +1631,7 @@ describe('testing nested call expressions', () => {
           type: 'Literal',
           start: 18,
           end: 21,
-          value: { type: 'string', data: 100 },
+          value: { type: 'i_integer', data: 100 },
           raw: '100',
         },
         {

@@ -7,7 +7,6 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Map;
-use serde_json::Number as JNumber;
 use serde_json::Value as JValue;
 use tower_lsp::lsp_types::{CompletionItem, CompletionItemKind, DocumentSymbol, Range as LspRange, SymbolKind};
 
@@ -1343,8 +1342,7 @@ impl Literal {
 
     fn recast(&self) -> String {
         match self.value {
-            LiteralValue::Fractional(n) => JNumber::from_f64(n).unwrap().to_string(),
-            LiteralValue::IInteger(n) => JNumber::from(n).to_string(),
+            LiteralValue::Fractional(_) | LiteralValue::IInteger(_) => self.raw.clone(),
             LiteralValue::String(ref s) => {
                 let quote = if self.raw.trim().starts_with('"') { '"' } else { '\'' };
                 format!("{quote}{s}{quote}")

@@ -21,7 +21,7 @@ describe('Testing createLiteral', () => {
   it('should create a literal', () => {
     const result = createLiteral(5)
     expect(result.type).toBe('Literal')
-    expect(result.value).toBe(5)
+    expect(result.value.data).toBe(5)
   })
 })
 describe('Testing createIdentifier', () => {
@@ -38,7 +38,7 @@ describe('Testing createCallExpression', () => {
     expect(result.callee.type).toBe('Identifier')
     expect(result.callee.name).toBe('myFunc')
     expect(result.arguments[0].type).toBe('Literal')
-    expect((result.arguments[0] as any).value).toBe(5)
+    expect((result.arguments[0] as any).value.data).toBe(5)
   })
 })
 describe('Testing createObjectExpression', () => {
@@ -50,7 +50,7 @@ describe('Testing createObjectExpression', () => {
     expect(result.properties[0].type).toBe('ObjectProperty')
     expect(result.properties[0].key.name).toBe('myProp')
     expect(result.properties[0].value.type).toBe('Literal')
-    expect((result.properties[0].value as any).value).toBe(5)
+    expect((result.properties[0].value as any).value.data).toBe(5)
   })
 })
 describe('Testing createArrayExpression', () => {
@@ -58,7 +58,7 @@ describe('Testing createArrayExpression', () => {
     const result = createArrayExpression([createLiteral(5)])
     expect(result.type).toBe('ArrayExpression')
     expect(result.elements[0].type).toBe('Literal')
-    expect((result.elements[0] as any).value).toBe(5)
+    expect((result.elements[0] as any).value.data).toBe(5)
   })
 })
 describe('Testing createPipeSubstitution', () => {
@@ -75,7 +75,7 @@ describe('Testing createVariableDeclaration', () => {
     expect(result.declarations[0].id.type).toBe('Identifier')
     expect(result.declarations[0].id.name).toBe('myVar')
     expect(result.declarations[0].init.type).toBe('Literal')
-    expect((result.declarations[0].init as any).value).toBe(5)
+    expect((result.declarations[0].init as any).value.data).toBe(5)
   })
 })
 describe('Testing createPipeExpression', () => {
@@ -83,7 +83,7 @@ describe('Testing createPipeExpression', () => {
     const result = createPipeExpression([createLiteral(5)])
     expect(result.type).toBe('PipeExpression')
     expect(result.body[0].type).toBe('Literal')
-    expect((result.body[0] as any).value).toBe(5)
+    expect((result.body[0] as any).value.data).toBe(5)
   })
 })
 
