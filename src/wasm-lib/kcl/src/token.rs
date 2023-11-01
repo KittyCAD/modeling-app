@@ -45,7 +45,7 @@ pub enum TokenType {
     BlockComment,
     /// A function name.
     Function,
-    /// Uknown lexems
+    /// Unknown lexemes.
     Unknown,
 }
 
