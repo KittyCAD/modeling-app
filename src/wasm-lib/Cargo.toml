@@ -33,7 +33,7 @@ futures = "0.3.29"
 js-sys = "0.3.64"
 tower-lsp = { version = "0.20.0", default-features = false, features = ["runtime-agnostic"] }
 wasm-bindgen-futures = { version = "0.4.37", features = ["futures-core-03-stream"] }
-wasm-streams = "0.3.0"
+wasm-streams = "0.4.0"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies.web-sys]
 version = "0.3.57"

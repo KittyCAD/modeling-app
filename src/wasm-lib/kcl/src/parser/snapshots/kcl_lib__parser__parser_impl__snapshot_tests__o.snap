@@ -1,0 +1,72 @@
+---
+source: kcl/src/parser/parser_impl.rs
+expression: actual
+---
+{
+  "start": 0,
+  "end": 21,
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 21,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 6,
+          "end": 21,
+          "id": {
+            "type": "Identifier",
+            "start": 6,
+            "end": 9,
+            "name": "six"
+          },
+          "init": {
+            "type": "BinaryExpression",
+            "type": "BinaryExpression",
+            "start": 12,
+            "end": 21,
+            "operator": "+",
+            "left": {
+              "type": "BinaryExpression",
+              "type": "BinaryExpression",
+              "start": 12,
+              "end": 17,
+              "operator": "+",
+              "left": {
+                "type": "Literal",
+                "type": "Literal",
+                "start": 12,
+                "end": 13,
+                "value": 1,
+                "raw": "1"
+              },
+              "right": {
+                "type": "Literal",
+                "type": "Literal",
+                "start": 16,
+                "end": 17,
+                "value": 2,
+                "raw": "2"
+              }
+            },
+            "right": {
+              "type": "Literal",
+              "type": "Literal",
+              "start": 20,
+              "end": 21,
+              "value": 3,
+              "raw": "3"
+            }
+          }
+        }
+      ],
+      "kind": "const"
+    }
+  ],
+  "nonCodeMeta": {
+    "nonCodeNodes": {},
+    "start": []
+  }
+}

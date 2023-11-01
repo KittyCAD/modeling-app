@@ -1,4 +1,3 @@
-use serde_json::{Number as JNumber, Value as JValue};
 use winnow::{
     combinator::{alt, delimited, opt, peek, preceded, repeat, separated0, terminated},
     dispatch,
@@ -10,10 +9,10 @@ use winnow::{
 use crate::{
     ast::types::{
         ArrayExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression, CommentStyle,
-        ExpressionStatement, FunctionExpression, Identifier, Literal, LiteralIdentifier, MemberExpression,
-        MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, PipeExpression,
-        PipeSubstitution, Program, ReturnStatement, UnaryExpression, UnaryOperator, Value, VariableDeclaration,
-        VariableDeclarator, VariableKind,
+        ExpressionStatement, FunctionExpression, Identifier, Literal, LiteralIdentifier, LiteralValue,
+        MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty,
+        PipeExpression, PipeSubstitution, Program, ReturnStatement, UnaryExpression, UnaryOperator, Value,
+        VariableDeclaration, VariableDeclarator, VariableKind,
     },
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
@@ -209,7 +208,7 @@ pub fn string_literal(i: TokenSlice) -> PResult<Literal> {
         .try_map(|token: Token| match token.token_type {
             TokenType::String => {
                 let s = token.value[1..token.value.len() - 1].to_string();
-                Ok((JValue::String(s), token))
+                Ok((LiteralValue::from(s), token))
             }
             _ => Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: token.as_source_ranges(),
@@ -227,12 +226,12 @@ pub fn string_literal(i: TokenSlice) -> PResult<Literal> {
 }
 
 /// Parse a KCL literal number, with no - sign.
-fn unsigned_number_literal(i: TokenSlice) -> PResult<Literal> {
+pub(crate) fn unsigned_number_literal(i: TokenSlice) -> PResult<Literal> {
     let (value, token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Number => {
-                if let Ok(x) = token.value.parse::<i64>() {
-                    return Ok((JValue::Number(JNumber::from(x)), token));
+                if let Ok(x) = token.value.parse::<u64>() {
+                    return Ok((LiteralValue::IInteger(x as i64), token));
                 }
                 let x: f64 = token.value.parse().map_err(|_| {
                     KclError::Syntax(KclErrorDetails {
@@ -241,13 +240,7 @@ fn unsigned_number_literal(i: TokenSlice) -> PResult<Literal> {
                     })
                 })?;
 
-                match JNumber::from_f64(x) {
-                    Some(n) => Ok((JValue::Number(n), token)),
-                    None => Err(KclError::Syntax(KclErrorDetails {
-                        source_ranges: token.as_source_ranges(),
-                        message: format!("Invalid float: {}", token.value),
-                    })),
-                }
+                Ok((LiteralValue::Fractional(x), token))
             }
             _ => Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: token.as_source_ranges(),
@@ -397,10 +390,11 @@ fn integer_range(i: TokenSlice) -> PResult<Vec<Value>> {
     let (_token1, ceiling) = integer.parse_next(i)?;
     Ok((floor..=ceiling)
         .map(|num| {
+            let num = num as i64;
             Value::Literal(Box::new(Literal {
                 start: token0.start,
                 end: token0.end,
-                value: JValue::Number(num.into()),
+                value: num.into(),
                 raw: num.to_string(),
             }))
         })
@@ -1452,7 +1446,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                         argument: Value::Literal(Box::new(Literal {
                             start: 32,
                             end: 33,
-                            value: JValue::Number(JNumber::from(2)),
+                            value: 2u32.into(),
                             raw: "2".to_owned(),
                         })),
                     })],
@@ -1607,7 +1601,7 @@ const mySk1 = startSketchAt([0, 0])"#;
             BinaryPart::Literal(Box::new(Literal {
                 start: 9,
                 end: 10,
-                value: JValue::Number(JNumber::from(3)),
+                value: 3u32.into(),
                 raw: "3".to_owned(),
             }))
         );
@@ -1669,95 +1663,6 @@ const mySk1 = startSketchAt([0, 0])"#;
     }
 
     #[test]
-    fn check_parsers_work_the_same() {
-        for (i, test_program) in [
-            r#"const boxSketch = startSketchAt([0, 0])
-    |> line([0, 10], %)
-    |> tangentialArc([-5, 5], %)
-    |> line([5, -15], %)
-    |> extrude(10, %)
-"#,
-            "const myVar = min(5 , -legLen(5, 4))", // Space before comma
-            "const myVar = min(-legLen(5, 4), 5)",
-            "const myVar = 5 + 6 |> myFunc(45, %)",
-            "let x = 1 * (3 - 4)",
-            r#"const x = 1 // this is an inline comment"#,
-            r#"fn x = () => {
-                return sg
-                return sg
-              }"#,
-            r#"const x = -leg2 + thickness"#,
-            r#"const obj = { a: 1, b: 2 }
-            const height = 1 - obj.a"#,
-            r#"const obj = { a: 1, b: 2 }
-            const height = 1 - obj["a"]"#,
-            r#"const obj = { a: 1, b: 2 }
-            const height = obj["a"] - 1"#,
-            r#"const obj = { a: 1, b: 2 }
-            const height = [1 - obj["a"], 0]"#,
-            r#"const obj = { a: 1, b: 2 }
-            const height = [obj["a"] - 1, 0]"#,
-            r#"const obj = { a: 1, b: 2 }
-            const height = [obj["a"] -1, 0]"#,
-            "const height = 1 - obj.a",
-            "const six = 1 + 2 + 3",
-            "const five = 3 * 1 + 2",
-            r#"const height = [ obj["a"], 0 ]"#,
-            r#"const obj = { a: 1, b: 2 }
-            const height = obj["a"]"#,
-            r#"const prop = yo["one"][two]"#,
-            r#"const pt1 = b1[x]"#,
-            "const prop = yo.one.two.three.four",
-            r#"const pt1 = b1[0]"#,
-            r#"const pt1 = b1['zero']"#,
-            r#"const pt1 = b1.zero"#,
-            "const sg = startSketchAt(pos)",
-            "const sg = startSketchAt(pos) |> line([0, -scale], %)",
-            r#"const sg = -scale"#,
-            "lineTo({ to: [0, -1] })",
-            "const myArray = [0..10]",
-            r#"
-            fn firstPrimeNumber = () => {
-                return 2
-            }
-            firstPrimeNumber()"#,
-            r#"fn thing = (param) => {
-                return true
-            }
-            thing(false)"#,
-            r#"const mySketch = startSketchAt([0,0])
-                |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
-                |> lineTo([1, 1], %)
-                |> lineTo({ to: [1,0], tag: "rightPath" }, %)
-                |> close(%)"#,
-            "const mySketch = startSketchAt([0,0]) |> lineTo([1, 1], %) |> close(%)",
-            "const myBox = startSketchAt(p)",
-            r#"const myBox = f(1) |> g(2)"#,
-            r#"const myBox = startSketchAt(p) |> line([0, l], %)"#,
-            "lineTo({ to: [0, 1] })",
-            "lineTo({ to: [0, 1], from: [3, 3] })",
-            "lineTo({to:[0, 1]})",
-            "lineTo({ to: [0, 1], from: [3, 3]})",
-            "lineTo({ to: [0, 1],from: [3, 3] })",
-            "const mySketch = startSketchAt([0,0])",
-            "log(5, \"hello\", aIdentifier)",
-            r#"5 + "a""#,
-            "line([0, l], %)",
-        ]
-        .into_iter()
-        .enumerate()
-        {
-            // Run the original parser
-            let tokens = crate::token::lexer(test_program);
-            // TODO: get snapshots of what this outputs.
-            let _actual = match program.parse(&tokens) {
-                Ok(x) => x,
-                Err(_e) => panic!("could not parse test {i}"),
-            };
-        }
-    }
-
-    #[test]
     fn binary_expression_ignores_whitespace() {
         let tests = ["1 - 2", "1- 2", "1 -2", "1-2"];
         for test in tests {
@@ -1767,11 +1672,11 @@ const mySk1 = startSketchAt([0, 0])"#;
             let BinaryPart::Literal(left) = actual.left else {
                 panic!("should be expression");
             };
-            assert_eq!(left.value, serde_json::Value::Number(1.into()));
+            assert_eq!(left.value, 1u32.into());
             let BinaryPart::Literal(right) = actual.right else {
                 panic!("should be expression");
             };
-            assert_eq!(right.value, serde_json::Value::Number(2.into()));
+            assert_eq!(right.value, 2u32.into());
         }
     }
 
@@ -1950,12 +1855,10 @@ const mySk1 = startSketchAt([0, 0])"#;
         let parsed_literal = literal.parse(&tokens).unwrap();
         assert_eq!(
             parsed_literal.value,
-            JValue::String(
-                "
+            "
            // a comment
              "
-                .to_owned()
-            )
+            .into()
         );
     }
 
@@ -2060,13 +1963,13 @@ const mySk1 = startSketchAt([0, 0])"#;
             left: BinaryPart::Literal(Box::new(Literal {
                 start: 0,
                 end: 1,
-                value: serde_json::Value::Number(serde_json::Number::from(5)),
+                value: 5u32.into(),
                 raw: "5".to_owned(),
             })),
             right: BinaryPart::Literal(Box::new(Literal {
                 start: 4,
                 end: 7,
-                value: serde_json::Value::String("a".to_owned()),
+                value: "a".into(),
                 raw: r#""a""#.to_owned(),
             })),
         };
@@ -2173,14 +2076,14 @@ const mySk1 = startSketchAt([0, 0])"#;
                     left: BinaryPart::Literal(Box::new(Literal {
                         start: 0,
                         end: 1,
-                        value: serde_json::Value::Number(serde_json::Number::from(5)),
+                        value: 5u32.into(),
                         raw: "5".to_string(),
                     })),
                     operator: BinaryOperator::Add,
                     right: BinaryPart::Literal(Box::new(Literal {
                         start: 3,
                         end: 4,
-                        value: serde_json::Value::Number(serde_json::Number::from(6)),
+                        value: 6u32.into(),
                         raw: "6".to_string(),
                     })),
                 })),
@@ -2459,67 +2362,67 @@ e
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
-                                value: 0.into(),
+                                value: 0u32.into(),
                                 raw: "0".to_string(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
-                                value: 1.into(),
+                                value: 1u32.into(),
                                 raw: "1".to_string(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
-                                value: 2.into(),
+                                value: 2u32.into(),
                                 raw: "2".to_string(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
-                                value: 3.into(),
+                                value: 3u32.into(),
                                 raw: "3".to_string(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
-                                value: 4.into(),
+                                value: 4u32.into(),
                                 raw: "4".to_string(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
-                                value: 5.into(),
+                                value: 5u32.into(),
                                 raw: "5".to_string(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
-                                value: 6.into(),
+                                value: 6u32.into(),
                                 raw: "6".to_string(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
-                                value: 7.into(),
+                                value: 7u32.into(),
                                 raw: "7".to_string(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
-                                value: 8.into(),
+                                value: 8u32.into(),
                                 raw: "8".to_string(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
-                                value: 9.into(),
+                                value: 9u32.into(),
                                 raw: "9".to_string(),
                             })),
                             Value::Literal(Box::new(Literal {
                                 start: 17,
                                 end: 18,
-                                value: 10.into(),
+                                value: 10u32.into(),
                                 raw: "10".to_string(),
                             })),
                         ],
@@ -2726,24 +2629,173 @@ show(myBox)"#;
         let parser = crate::parser::Parser::new(tokens);
         parser.ast().unwrap();
     }
+}
 
-    #[test]
-    fn test_math() {
-        for math_expression in [
-            "1 + 2",
-            "1+2",
-            "1 -2",
-            "1 + 2 * 3",
-            "1 * ( 2 + 3 )",
-            "1 * ( 2 + 3 ) / 4",
-            "1 + ( 2 + 3 ) / 4",
-            "1 * (( 2 + 3 ) / 4 + 5 )",
-            "1 * ((( 2 + 3 )))",
-            "distance * p * FOS * 6 / (sigmaAllow * width)",
-            "2 + (((3)))",
-        ] {
-            let tokens = crate::token::lexer(math_expression);
-            let _expr = binary_expression.parse(&tokens).unwrap();
-        }
+#[cfg(test)]
+mod snapshot_math_tests {
+    use super::*;
+
+    // This macro generates a test function with the given function name.
+    // The macro takes a KCL program, ensures it tokenizes and parses, then compares
+    // its parsed AST to a snapshot (kept in this repo in a file under snapshots/ dir)
+    macro_rules! snapshot_test {
+        ($func_name:ident, $test_kcl_program:expr) => {
+            #[test]
+            fn $func_name() {
+                let tokens = crate::token::lexer($test_kcl_program);
+                let actual = match binary_expression.parse(&tokens) {
+                    Ok(x) => x,
+                    Err(_e) => panic!("could not parse test"),
+                };
+                insta::assert_json_snapshot!(actual);
+            }
+        };
     }
+
+    snapshot_test!(a, "1 + 2");
+    snapshot_test!(b, "1+2");
+    snapshot_test!(c, "1 -2");
+    snapshot_test!(d, "1 + 2 * 3");
+    snapshot_test!(e, "1 * ( 2 + 3 )");
+    snapshot_test!(f, "1 * ( 2 + 3 ) / 4");
+    snapshot_test!(g, "1 + ( 2 + 3 ) / 4");
+    snapshot_test!(h, "1 * (( 2 + 3 ) / 4 + 5 )");
+    snapshot_test!(i, "1 * ((( 2 + 3 )))");
+    snapshot_test!(j, "distance * p * FOS * 6 / (sigmaAllow * width)");
+    snapshot_test!(k, "2 + (((3)))");
+}
+
+#[cfg(test)]
+mod snapshot_tests {
+    use super::*;
+
+    // This macro generates a test function with the given function name.
+    // The macro takes a KCL program, ensures it tokenizes and parses, then compares
+    // its parsed AST to a snapshot (kept in this repo in a file under snapshots/ dir)
+    macro_rules! snapshot_test {
+        ($func_name:ident, $test_kcl_program:expr) => {
+            #[test]
+            fn $func_name() {
+                let tokens = crate::token::lexer($test_kcl_program);
+                let actual = match program.parse(&tokens) {
+                    Ok(x) => x,
+                    Err(_e) => panic!("could not parse test"),
+                };
+                insta::assert_json_snapshot!(actual);
+            }
+        };
+    }
+
+    snapshot_test!(
+        a,
+        r#"const boxSketch = startSketchAt([0, 0])
+    |> line([0, 10], %)
+    |> tangentialArc([-5, 5], %)
+    |> line([5, -15], %)
+    |> extrude(10, %)
+"#
+    );
+    snapshot_test!(b, "const myVar = min(5 , -legLen(5, 4))"); // Space before comma
+
+    snapshot_test!(c, "const myVar = min(-legLen(5, 4), 5)");
+    snapshot_test!(d, "const myVar = 5 + 6 |> myFunc(45, %)");
+    snapshot_test!(e, "let x = 1 * (3 - 4)");
+    snapshot_test!(f, r#"const x = 1 // this is an inline comment"#);
+    snapshot_test!(
+        g,
+        r#"fn x = () => {
+        return sg
+        return sg
+      }"#
+    );
+    snapshot_test!(d2, r#"const x = -leg2 + thickness"#);
+    snapshot_test!(
+        h,
+        r#"const obj = { a: 1, b: 2 }
+    const height = 1 - obj.a"#
+    );
+    snapshot_test!(
+        i,
+        r#"const obj = { a: 1, b: 2 }
+     const height = 1 - obj["a"]"#
+    );
+    snapshot_test!(
+        j,
+        r#"const obj = { a: 1, b: 2 }
+    const height = obj["a"] - 1"#
+    );
+    snapshot_test!(
+        k,
+        r#"const obj = { a: 1, b: 2 }
+    const height = [1 - obj["a"], 0]"#
+    );
+    snapshot_test!(
+        l,
+        r#"const obj = { a: 1, b: 2 }
+    const height = [obj["a"] - 1, 0]"#
+    );
+    snapshot_test!(
+        m,
+        r#"const obj = { a: 1, b: 2 }
+    const height = [obj["a"] -1, 0]"#
+    );
+    snapshot_test!(n, "const height = 1 - obj.a");
+    snapshot_test!(o, "const six = 1 + 2 + 3");
+    snapshot_test!(p, "const five = 3 * 1 + 2");
+    snapshot_test!(q, r#"const height = [ obj["a"], 0 ]"#);
+    snapshot_test!(
+        r,
+        r#"const obj = { a: 1, b: 2 }
+    const height = obj["a"]"#
+    );
+    snapshot_test!(s, r#"const prop = yo["one"][two]"#);
+    snapshot_test!(t, r#"const pt1 = b1[x]"#);
+    snapshot_test!(u, "const prop = yo.one.two.three.four");
+    snapshot_test!(v, r#"const pt1 = b1[0]"#);
+    snapshot_test!(w, r#"const pt1 = b1['zero']"#);
+    snapshot_test!(x, r#"const pt1 = b1.zero"#);
+    snapshot_test!(y, "const sg = startSketchAt(pos)");
+    snapshot_test!(z, "const sg = startSketchAt(pos) |> line([0, -scale], %)");
+    snapshot_test!(aa, r#"const sg = -scale"#);
+    snapshot_test!(ab, "lineTo({ to: [0, -1] })");
+    snapshot_test!(ac, "const myArray = [0..10]");
+    snapshot_test!(
+        ad,
+        r#"
+    fn firstPrimeNumber = () => {
+        return 2
+    }
+    firstPrimeNumber()"#
+    );
+    snapshot_test!(
+        ae,
+        r#"fn thing = (param) => {
+        return true
+    }
+    thing(false)"#
+    );
+    snapshot_test!(
+        af,
+        r#"const mySketch = startSketchAt([0,0])
+        |> lineTo({ to: [0, 1], tag: 'myPath' }, %)
+        |> lineTo([1, 1], %)
+        |> lineTo({ to: [1,0], tag: "rightPath" }, %)
+        |> close(%)"#
+    );
+    snapshot_test!(
+        ag,
+        "const mySketch = startSketchAt([0,0]) |> lineTo([1, 1], %) |> close(%)"
+    );
+    snapshot_test!(ah, "const myBox = startSketchAt(p)");
+    snapshot_test!(ai, r#"const myBox = f(1) |> g(2)"#);
+    snapshot_test!(aj, r#"const myBox = startSketchAt(p) |> line([0, l], %)"#);
+    snapshot_test!(ak, "lineTo({ to: [0, 1] })");
+    snapshot_test!(al, "lineTo({ to: [0, 1], from: [3, 3] })");
+    snapshot_test!(am, "lineTo({to:[0, 1]})");
+    snapshot_test!(an, "lineTo({ to: [0, 1], from: [3, 3]})");
+    snapshot_test!(ao, "lineTo({ to: [0, 1],from: [3, 3] })");
+    snapshot_test!(ap, "const mySketch = startSketchAt([0,0])");
+    snapshot_test!(aq, "log(5, \"hello\", aIdentifier)");
+    snapshot_test!(ar, r#"5 + "a""#);
+    snapshot_test!(at, "line([0, l], %)");
 }

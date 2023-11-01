@@ -1,0 +1,97 @@
+---
+source: kcl/src/parser/parser_impl.rs
+expression: actual
+---
+{
+  "start": 0,
+  "end": 34,
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 34,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 6,
+          "end": 34,
+          "id": {
+            "type": "Identifier",
+            "start": 6,
+            "end": 10,
+            "name": "prop"
+          },
+          "init": {
+            "type": "MemberExpression",
+            "type": "MemberExpression",
+            "start": 13,
+            "end": 34,
+            "object": {
+              "type": "MemberExpression",
+              "type": "MemberExpression",
+              "start": 13,
+              "end": 29,
+              "object": {
+                "type": "MemberExpression",
+                "type": "MemberExpression",
+                "start": 13,
+                "end": 23,
+                "object": {
+                  "type": "MemberExpression",
+                  "type": "MemberExpression",
+                  "start": 13,
+                  "end": 19,
+                  "object": {
+                    "type": "Identifier",
+                    "type": "Identifier",
+                    "start": 13,
+                    "end": 15,
+                    "name": "yo"
+                  },
+                  "property": {
+                    "type": "Identifier",
+                    "type": "Identifier",
+                    "start": 16,
+                    "end": 19,
+                    "name": "one"
+                  },
+                  "computed": false
+                },
+                "property": {
+                  "type": "Identifier",
+                  "type": "Identifier",
+                  "start": 20,
+                  "end": 23,
+                  "name": "two"
+                },
+                "computed": false
+              },
+              "property": {
+                "type": "Identifier",
+                "type": "Identifier",
+                "start": 24,
+                "end": 29,
+                "name": "three"
+              },
+              "computed": false
+            },
+            "property": {
+              "type": "Identifier",
+              "type": "Identifier",
+              "start": 30,
+              "end": 34,
+              "name": "four"
+            },
+            "computed": false
+          }
+        }
+      ],
+      "kind": "const"
+    }
+  ],
+  "nonCodeMeta": {
+    "nonCodeNodes": {},
+    "start": []
+  }
+}
