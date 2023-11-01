@@ -233,7 +233,7 @@ pub fn string_literal(i: TokenSlice) -> PResult<Literal> {
 }
 
 /// Parse a KCL literal number, with no - sign.
-fn unsigned_number_literal(i: TokenSlice) -> PResult<Literal> {
+pub(crate) fn unsigned_number_literal(i: TokenSlice) -> PResult<Literal> {
     let (value, token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Number => {

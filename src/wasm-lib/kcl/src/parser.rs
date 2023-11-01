@@ -1,7 +1,7 @@
 use crate::{ast::types::Program, errors::KclError, token::Token};
 
 mod math;
-mod parser_impl;
+pub(crate) mod parser_impl;
 
 pub const PIPE_SUBSTITUTION_OPERATOR: &str = "%";
 pub const PIPE_OPERATOR: &str = "|>";

@@ -1342,7 +1342,14 @@ impl Literal {
 
     fn recast(&self) -> String {
         match self.value {
-            LiteralValue::Fractional(_) | LiteralValue::IInteger(_) => self.raw.clone(),
+            LiteralValue::Fractional(x) => {
+                if x.fract() == 0.0 {
+                    format!("{x:?}")
+                } else {
+                    self.raw.clone()
+                }
+            }
+            LiteralValue::IInteger(_) => self.raw.clone(),
             LiteralValue::String(ref s) => {
                 let quote = if self.raw.trim().starts_with('"') { '"' } else { '\'' };
                 format!("{quote}{s}{quote}")
@@ -3275,5 +3282,41 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(recasted.trim(), some_program_string);
+    }
+
+    #[test]
+    fn recast_literal() {
+        use winnow::Parser;
+        for (i, (raw, expected, reason)) in [
+            (
+                "5.0",
+                "5.0",
+                "fractional numbers should stay fractional, i.e. don't reformat this to '5'",
+            ),
+            (
+                "5",
+                "5",
+                "integers should stay integral, i.e. don't reformat this to '5.0'",
+            ),
+            (
+                "5.0000000",
+                "5.0",
+                "if the number is f64 but not fractional, use its canonical format",
+            ),
+            ("5.1", "5.1", "straightforward case works"),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let tokens = crate::token::lexer(raw);
+            let literal = crate::parser::parser_impl::unsigned_number_literal
+                .parse(&tokens)
+                .unwrap();
+            assert_eq!(
+                literal.recast(),
+                expected,
+                "failed test {i}, which is testing that {reason}"
+            );
+        }
     }
 }
