@@ -26,7 +26,7 @@ export class Codec {
   }
 }
 
-// FIXME: tracing effiency
+// FIXME: tracing efficiency
 export class IntoServer
   extends Queue<Uint8Array>
   implements AsyncGenerator<Uint8Array, never, void>

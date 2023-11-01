@@ -784,7 +784,7 @@ pub enum NonCodeValue {
     /// 1 + 1
     /// ```
     /// Now this is important. The block comment is attached to the next line.
-    /// This is always the case. Also the block comment doesnt have a new line above it.
+    /// This is always the case. Also the block comment doesn't have a new line above it.
     /// If it did it would be a `NewLineBlockComment`.
     BlockComment {
         value: String,

@@ -222,6 +222,11 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: xvfb-run yarn test:e2e
 
+  typos: # Edit .codespellrc to change this CI job's configuration.
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check for typos
+      uses: codespell-project/actions-codespell@v2
 
   publish-apps-release:
     runs-on: ubuntu-latest

@@ -1,0 +1,3 @@
+[codespell]
+ignore-words-list: crate,everytime
+skip: **/target,node_modules,build
