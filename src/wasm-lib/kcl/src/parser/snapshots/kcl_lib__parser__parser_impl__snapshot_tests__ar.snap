@@ -1,0 +1,43 @@
+---
+source: kcl/src/parser/parser_impl.rs
+expression: actual
+---
+{
+  "start": 0,
+  "end": 7,
+  "body": [
+    {
+      "type": "ExpressionStatement",
+      "type": "ExpressionStatement",
+      "start": 0,
+      "end": 7,
+      "expression": {
+        "type": "BinaryExpression",
+        "type": "BinaryExpression",
+        "start": 0,
+        "end": 7,
+        "operator": "+",
+        "left": {
+          "type": "Literal",
+          "type": "Literal",
+          "start": 0,
+          "end": 1,
+          "value": 5,
+          "raw": "5"
+        },
+        "right": {
+          "type": "Literal",
+          "type": "Literal",
+          "start": 4,
+          "end": 7,
+          "value": "a",
+          "raw": "\"a\""
+        }
+      }
+    }
+  ],
+  "nonCodeMeta": {
+    "nonCodeNodes": {},
+    "start": []
+  }
+}
