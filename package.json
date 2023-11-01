@@ -129,7 +129,7 @@
     "yarn": "^1.22.19",
     "@wdio/cli": "^7.7.3",
     "@wdio/local-runner": "^7.7.3",
-    "@wdio/mocha-framework": "^7.7.3",
+    "@wdio/mocha-framework": "^8.20.3",
     "@wdio/spec-reporter": "^7.7.3"
   }
 }
