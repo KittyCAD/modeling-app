@@ -30,7 +30,7 @@ pub fn token(i: &mut Located<&str>) -> PResult<Token> {
     .parse_next(i)
     {
         Ok(token) => {
-            return Ok(token);
+            Ok(token)
         }
         Err(x) => {
             // TODO: Handle non ascii cases
