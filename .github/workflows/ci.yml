@@ -153,9 +153,11 @@ jobs:
 
       - name: wasm prep
         shell: bash
+        env:
+          MODE: ${{ (github.event_name == 'release' || github.event_name == 'schedule') && '--release' || '--debug' }}
         run: |
           mkdir src/wasm-lib/pkg; cd src/wasm-lib
-          npx wasm-pack build --target web --out-dir pkg
+          npx wasm-pack build --target web --out-dir pkg $DEBUG_OR_RELEASE ${{ env.MODE }}
           cd ../../
           cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
 
