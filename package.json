@@ -51,7 +51,7 @@
     "uuid": "^9.0.1",
     "vitest": "^0.34.6",
     "vscode-jsonrpc": "^8.1.0",
-    "vscode-languageserver-protocol": "^3.17.3",
+    "vscode-languageserver-protocol": "^3.17.5",
     "wasm-pack": "^0.12.1",
     "web-vitals": "^3.5.0",
     "ws": "^8.13.0",
