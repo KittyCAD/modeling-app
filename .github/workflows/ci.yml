@@ -104,6 +104,7 @@ jobs:
   build-test-apps:
     needs: [check-format, build-test-web, prepare-json-files, check-types]
     runs-on: ${{ matrix.os }}
+    if: ${{ github.event_name != 'pull_request' }}
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
