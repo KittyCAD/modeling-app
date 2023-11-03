@@ -153,9 +153,12 @@ jobs:
 
       - name: wasm prep
         shell: bash
+        env:
+          MODE: ${{ (github.event_name == 'release' || github.event_name == 'schedule') && '--release' || '--debug' }}
         run: |
           mkdir src/wasm-lib/pkg; cd src/wasm-lib
-          npx wasm-pack build --target web --out-dir pkg
+          echo "building with ${{ env.MODE }}"
+          npx wasm-pack build --target web --out-dir pkg ${{ env.MODE }}
           cd ../../
           cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
 
@@ -205,6 +208,8 @@ jobs:
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         with:
+          includeRelease: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
+          includeDebug: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
           args: ${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }}
 
       - uses: actions/upload-artifact@v3
@@ -221,12 +226,21 @@ jobs:
       - name: Run e2e tests
         if: matrix.os == 'ubuntu-latest'
         run: xvfb-run yarn test:e2e
+        env:
+          MODE: ${{ (github.event_name == 'release' || github.event_name == 'schedule') && 'release' || 'debug' }}
 
-  typos: # Edit .codespellrc to change this CI job's configuration.
+  typos: 
     runs-on: ubuntu-latest
     steps:
-    - name: Check for typos
-      uses: codespell-project/actions-codespell@v2
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+      - name: Install codespell
+        run: |
+            python -m pip install codespell
+      - name: Run codespell
+        run: codespell --config .codespellrc # Edit this file to tweak the typo list and other configuration.
 
   publish-apps-release:
     runs-on: ubuntu-latest

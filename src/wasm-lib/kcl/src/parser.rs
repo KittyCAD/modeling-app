@@ -36,13 +36,13 @@ impl Parser {
 
         if !self.unknown_tokens.is_empty() {
             let source_ranges = self.unknown_tokens.iter().map(SourceRange::from).collect();
-            return Err(KclError::Lexical(KclErrorDetails {
-                source_ranges,
-                message: format!(
-                    "found unknown tokens {:?}",
-                    self.unknown_tokens.iter().map(|t| t.value.as_str()).collect::<Vec<_>>()
-                ),
-            }));
+            let token_list = self.unknown_tokens.iter().map(|t| t.value.as_str()).collect::<Vec<_>>();
+            let message = if token_list.len() == 1 {
+                format!("found unknown token '{}'", token_list[0])
+            } else {
+                format!("found unknown tokens [{}]", token_list.join(", "))
+            };
+            return Err(KclError::Lexical(KclErrorDetails { source_ranges, message }));
         }
 
         parser_impl::run_parser(&mut self.tokens.as_slice())
