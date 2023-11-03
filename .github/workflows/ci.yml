@@ -174,7 +174,7 @@ jobs:
           rustup target add aarch64-apple-darwin
 
       - name: Prepare Windows certificate and variables
-        if: matrix.os == 'windows-latest'
+        if: ${{ matrix.os == 'windows-latest' && env.BUILD_RELEASE }}
         run: |
           echo "${{secrets.SM_CLIENT_CERT_FILE_B64 }}" | base64 --decode > /d/Certificate_pkcs12.p12
           cat /d/Certificate_pkcs12.p12
@@ -189,7 +189,7 @@ jobs:
         shell: bash
 
       - name: Setup Windows certicate with SSM KSP
-        if: matrix.os == 'windows-latest'
+        if: ${{ matrix.os == 'windows-latest' && env.BUILD_RELEASE }}
         run: |
           curl -X GET  https://one.digicert.com/signingmanager/api-ui/v1/releases/smtools-windows-x64.msi/download -H "x-api-key:%SM_API_KEY%" -o smtools-windows-x64.msi
           msiexec /i smtools-windows-x64.msi /quiet /qn
@@ -202,14 +202,14 @@ jobs:
       - name: Build and sign the app for the current platform
         uses: tauri-apps/tauri-action@v0
         env:
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
-          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          TAURI_PRIVATE_KEY: ${{ env.BUILD_RELEASE && secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ env.BUILD_RELEASE && secrets.TAURI_KEY_PASSWORD }}
+          APPLE_CERTIFICATE: ${{ env.BUILD_RELEASE && secrets.APPLE_CERTIFICATE || '' }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ env.BUILD_RELEASE && secrets.APPLE_CERTIFICATE_PASSWORD || '' }}
+          APPLE_SIGNING_IDENTITY: ${{ env.BUILD_RELEASE && secrets.APPLE_SIGNING_IDENTITY || '' }}
+          APPLE_ID: ${{ env.BUILD_RELEASE && secrets.APPLE_ID || '' }}
+          APPLE_PASSWORD: ${{ env.BUILD_RELEASE && secrets.APPLE_PASSWORD || '' }}
+          APPLE_TEAM_ID: ${{ env.BUILD_RELEASE && secrets.APPLE_TEAM_ID || '' }}
         with:
           includeRelease: ${{ env.BUILD_RELEASE }}
           includeDebug: ${{ !env.BUILD_RELEASE }}
