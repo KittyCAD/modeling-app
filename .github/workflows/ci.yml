@@ -204,16 +204,18 @@ jobs:
         env:
           TAURI_PRIVATE_KEY: ${{ env.BUILD_RELEASE && secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ env.BUILD_RELEASE && secrets.TAURI_KEY_PASSWORD }}
+          TAURI_NO_UPDATER_ARGS: ${{ !env.BUILD_RELEASE && '-c src-tauri/tauri.noupdater.json ' }}
           APPLE_CERTIFICATE: ${{ env.BUILD_RELEASE && secrets.APPLE_CERTIFICATE || '' }}
           APPLE_CERTIFICATE_PASSWORD: ${{ env.BUILD_RELEASE && secrets.APPLE_CERTIFICATE_PASSWORD || '' }}
           APPLE_SIGNING_IDENTITY: ${{ env.BUILD_RELEASE && secrets.APPLE_SIGNING_IDENTITY || '' }}
           APPLE_ID: ${{ env.BUILD_RELEASE && secrets.APPLE_ID || '' }}
           APPLE_PASSWORD: ${{ env.BUILD_RELEASE && secrets.APPLE_PASSWORD || '' }}
           APPLE_TEAM_ID: ${{ env.BUILD_RELEASE && secrets.APPLE_TEAM_ID || '' }}
+          APPLE_UNIVERSAL_ARGS: ${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin ' || ' ' }}
         with:
           includeRelease: ${{ env.BUILD_RELEASE }}
           includeDebug: ${{ !env.BUILD_RELEASE }}
-          args: ${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }}
+          args: ${{ join(env.TAURI_NO_UPDATER_ARGS, env.APPLE_UNIVERSAL_ARGS) }}
 
       - uses: actions/upload-artifact@v3
         with:
