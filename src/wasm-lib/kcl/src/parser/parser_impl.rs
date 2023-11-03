@@ -1039,7 +1039,8 @@ fn binary_expression(i: TokenSlice) -> PResult<BinaryExpression> {
 
     // Pass the token slice into the specialized math parser, for things like
     // precedence and converting infix operations to an AST.
-    Ok(super::math::parse(tokens))
+    let expr = super::math::parse(tokens).map_err(|e| ErrMode::Backtrack(e.into()))?;
+    Ok(expr)
 }
 
 fn binary_expr_in_parens(i: TokenSlice) -> PResult<BinaryExpression> {
