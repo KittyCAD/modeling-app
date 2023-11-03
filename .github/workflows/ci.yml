@@ -213,8 +213,8 @@ jobs:
           APPLE_TEAM_ID: ${{ env.BUILD_RELEASE && secrets.APPLE_TEAM_ID || '' }}
           APPLE_UNIVERSAL_ARGS: ${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin ' || ' ' }}
         with:
-          includeRelease: ${{ env.BUILD_RELEASE }}
-          includeDebug: ${{ !env.BUILD_RELEASE }}
+          includeRelease: ${{ env.BUILD_RELEASE && 'true' || 'false' }}
+          includeDebug: ${{ !env.BUILD_RELEASE && 'true' || 'false' }}
           args: ${{ join(env.TAURI_NO_UPDATER_ARGS, env.APPLE_UNIVERSAL_ARGS) }}
 
       - uses: actions/upload-artifact@v3
