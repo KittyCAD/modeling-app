@@ -12,6 +12,9 @@ on:
   # Daily at 04:00 AM UTC
   # Will checkout the last commit from the default branch (main as of 2023-10-04)
 
+env:
+  BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && contains(github.event.pull_request.title, 'Cut release v') }}
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
@@ -154,7 +157,7 @@ jobs:
       - name: wasm prep
         shell: bash
         env:
-          MODE: ${{ (github.event_name == 'release' || github.event_name == 'schedule') && '--release' || '--debug' }}
+          MODE: ${{ env.BUILD_RELEASE && '--release' || '--debug' }}
         run: |
           mkdir src/wasm-lib/pkg; cd src/wasm-lib
           echo "building with ${{ env.MODE }}"
@@ -208,8 +211,8 @@ jobs:
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         with:
-          includeRelease: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
-          includeDebug: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
+          includeRelease: ${{ env.BUILD_RELEASE }}
+          includeDebug: ${{ !env.BUILD_RELEASE }}
           args: ${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }}
 
       - uses: actions/upload-artifact@v3
@@ -227,7 +230,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: xvfb-run yarn test:e2e
         env:
-          MODE: ${{ (github.event_name == 'release' || github.event_name == 'schedule') && 'release' || 'debug' }}
+          MODE: ${{ env.BUILD_RELEASE && 'release' || 'debug' }}
 
   typos: 
     runs-on: ubuntu-latest
