@@ -32,6 +32,7 @@ import {
 } from 'lib/tauriFS'
 import { ONBOARDING_PROJECT_NAME } from './Onboarding'
 import { sep } from '@tauri-apps/api/path'
+import { bracket } from 'lib/exampleKcl'
 
 export const Settings = () => {
   const loaderData =
@@ -96,7 +97,10 @@ export const Settings = () => {
       ONBOARDING_PROJECT_NAME,
       nextIndex
     )
-    const newFile = await createNewProject(defaultDirectory + sep + name)
+    const newFile = await createNewProject(
+      defaultDirectory + sep + name,
+      bracket
+    )
     navigate(`${paths.FILE}/${encodeURIComponent(newFile.path)}`)
   }
 

@@ -31,7 +31,6 @@ import { TextEditor } from 'components/TextEditor'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
 import { engineCommandManager } from './lang/std/engineConnection'
-import { kclManager } from 'lang/KclSinglton'
 import { useModelingContext } from 'hooks/useModelingContext'
 
 export function App() {
@@ -81,20 +80,6 @@ export function App() {
     : didDragInStream
     ? 'opacity-40'
     : ''
-
-  // Use file code loaded from disk
-  // on mount, and overwrite any locally-stored code
-  useEffect(() => {
-    if (isTauri() && loadedCode !== null) {
-      if (kclManager.engineCommandManager.engineConnection?.isReady()) {
-        // If the engine is ready, promptly execute the loaded code
-        kclManager.setCodeAndExecute(loadedCode)
-      } else {
-        // Otherwise, just set the code and wait for the connection to complete
-        kclManager.setCode(loadedCode)
-      }
-    }
-  }, [loadedCode])
 
   useEngineConnectionSubscriptions()
 

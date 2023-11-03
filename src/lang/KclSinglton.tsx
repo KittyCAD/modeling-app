@@ -145,7 +145,7 @@ class KclManager {
     this.engineCommandManager = engineCommandManager
 
     if (isTauri()) {
-      this.code = bracket
+      this.code = ''
       return
     }
     const storedCode = localStorage.getItem(PERSIST_CODE_TOKEN)
@@ -159,6 +159,7 @@ class KclManager {
       zustandStore.state.code = ''
       localStorage.setItem('store', JSON.stringify(zustandStore))
     } else if (storedCode === null) {
+      console.log('stored brack thing')
       this.code = bracket
     } else {
       this.code = storedCode
@@ -261,11 +262,17 @@ class KclManager {
     this.ast = ast
     if (code) this.code = code
   }
-  setCode(code: string) {
-    this.code = code
+  setCode(code: string, shouldWriteFile = true) {
+    if (shouldWriteFile) {
+      // use the normal code setter
+      this.code = code
+      return
+    }
+    this._code = code
+    this._codeCallBack(code)
   }
-  setCodeAndExecute(code: string) {
-    this.setCode(code)
+  setCodeAndExecute(code: string, shouldWriteFile = true) {
+    this.setCode(code, shouldWriteFile)
     if (code.trim()) {
       this._defferer(code)
       return
