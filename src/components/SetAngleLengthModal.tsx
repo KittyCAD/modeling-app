@@ -108,7 +108,7 @@ export const SetAngleLengthModal = ({
                 </label>
                 <div className="mt-1 flex">
                   <button
-                    className="border border-gray-300 px-2"
+                    className="border border-gray-300 px-2 text-gray-900"
                     onClick={() => setSign(-sign)}
                   >
                     {sign > 0 ? '+' : '-'}
@@ -118,7 +118,7 @@ export const SetAngleLengthModal = ({
                     type="text"
                     name="val"
                     id="val"
-                    className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md font-mono pl-1"
+                    className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md font-mono pl-1 text-gray-900"
                     value={value}
                     onChange={(e) => {
                       setValue(e.target.value)
