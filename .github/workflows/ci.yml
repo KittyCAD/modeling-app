@@ -157,7 +157,7 @@ jobs:
       - name: wasm prep
         shell: bash
         env:
-          MODE: ${{ env.BUILD_RELEASE && '--release' || '--debug' }}
+          MODE: ${{ env.BUILD_RELEASE == 'true' && '--release' || '--debug' }}
         run: |
           mkdir src/wasm-lib/pkg; cd src/wasm-lib
           echo "building with ${{ env.MODE }}"
@@ -174,7 +174,7 @@ jobs:
           rustup target add aarch64-apple-darwin
 
       - name: Prepare Windows certificate and variables
-        if: ${{ matrix.os == 'windows-latest' && env.BUILD_RELEASE }}
+        if: ${{ matrix.os == 'windows-latest' && env.BUILD_RELEASE == 'true' }}
         run: |
           echo "${{secrets.SM_CLIENT_CERT_FILE_B64 }}" | base64 --decode > /d/Certificate_pkcs12.p12
           cat /d/Certificate_pkcs12.p12
@@ -189,7 +189,7 @@ jobs:
         shell: bash
 
       - name: Setup Windows certicate with SSM KSP
-        if: ${{ matrix.os == 'windows-latest' && env.BUILD_RELEASE }}
+        if: ${{ matrix.os == 'windows-latest' && env.BUILD_RELEASE == 'true' }}
         run: |
           curl -X GET  https://one.digicert.com/signingmanager/api-ui/v1/releases/smtools-windows-x64.msi/download -H "x-api-key:%SM_API_KEY%" -o smtools-windows-x64.msi
           msiexec /i smtools-windows-x64.msi /quiet /qn
@@ -199,23 +199,28 @@ jobs:
           smksp_cert_sync.exe
         shell: cmd
 
+      - name: Build the app in debug for the current platform
+        uses: tauri-apps/tauri-action@v0
+        if: ${{ env.BUILD_RELEASE == 'false' }}
+        with:
+          includeRelease: false
+          includeDebug: true
+          args: ${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }} -c src-tauri/tauri.noupdater.json
+
       - name: Build and sign the app for the current platform
         uses: tauri-apps/tauri-action@v0
+        if: ${{ env.BUILD_RELEASE == 'true' }}
         env:
-          TAURI_PRIVATE_KEY: ${{ env.BUILD_RELEASE && secrets.TAURI_PRIVATE_KEY }}
-          TAURI_KEY_PASSWORD: ${{ env.BUILD_RELEASE && secrets.TAURI_KEY_PASSWORD }}
-          TAURI_NO_UPDATER_ARGS: ${{ env.BUILD_RELEASE && ' ' || '-c src-tauri/tauri.noupdater.json ' }}
-          APPLE_CERTIFICATE: ${{ env.BUILD_RELEASE && secrets.APPLE_CERTIFICATE || '' }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ env.BUILD_RELEASE && secrets.APPLE_CERTIFICATE_PASSWORD || '' }}
-          APPLE_SIGNING_IDENTITY: ${{ env.BUILD_RELEASE && secrets.APPLE_SIGNING_IDENTITY || '' }}
-          APPLE_ID: ${{ env.BUILD_RELEASE && secrets.APPLE_ID || '' }}
-          APPLE_PASSWORD: ${{ env.BUILD_RELEASE && secrets.APPLE_PASSWORD || '' }}
-          APPLE_TEAM_ID: ${{ env.BUILD_RELEASE && secrets.APPLE_TEAM_ID || '' }}
-          APPLE_UNIVERSAL_ARGS: ${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin ' || ' ' }}
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         with:
-          includeRelease: ${{ env.BUILD_RELEASE && 'true' || 'false' }}
-          includeDebug: ${{ !env.BUILD_RELEASE && 'true' || 'false' }}
-          args: ${{ join(env.TAURI_NO_UPDATER_ARGS, env.APPLE_UNIVERSAL_ARGS) }}
+          args: ${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }}
 
       - uses: actions/upload-artifact@v3
         with:
@@ -232,7 +237,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: xvfb-run yarn test:e2e
         env:
-          MODE: ${{ env.BUILD_RELEASE && 'release' || 'debug' }}
+          MODE: ${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}
 
   typos: 
     runs-on: ubuntu-latest
