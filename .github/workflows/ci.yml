@@ -204,7 +204,7 @@ jobs:
         env:
           TAURI_PRIVATE_KEY: ${{ env.BUILD_RELEASE && secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ env.BUILD_RELEASE && secrets.TAURI_KEY_PASSWORD }}
-          TAURI_NO_UPDATER_ARGS: ${{ !env.BUILD_RELEASE && '-c src-tauri/tauri.noupdater.json ' }}
+          TAURI_NO_UPDATER_ARGS: ${{ env.BUILD_RELEASE && ' ' || '-c src-tauri/tauri.noupdater.json ' }}
           APPLE_CERTIFICATE: ${{ env.BUILD_RELEASE && secrets.APPLE_CERTIFICATE || '' }}
           APPLE_CERTIFICATE_PASSWORD: ${{ env.BUILD_RELEASE && secrets.APPLE_CERTIFICATE_PASSWORD || '' }}
           APPLE_SIGNING_IDENTITY: ${{ env.BUILD_RELEASE && secrets.APPLE_SIGNING_IDENTITY || '' }}
