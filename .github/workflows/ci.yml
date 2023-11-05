@@ -199,13 +199,13 @@ jobs:
           smksp_cert_sync.exe
         shell: cmd
 
-      - name: Build the app in debug for the current platform
+      - name: Build the app (debug) for the current platform
         uses: tauri-apps/tauri-action@v0
         if: ${{ env.BUILD_RELEASE == 'false' }}
         with:
           includeRelease: false
           includeDebug: true
-          args: ${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }} -c src-tauri/tauri.noupdater.json
+          args: ${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }} --config src-tauri/tauri.noupdater.json
 
       - name: Build and sign the app for the current platform
         uses: tauri-apps/tauri-action@v0
