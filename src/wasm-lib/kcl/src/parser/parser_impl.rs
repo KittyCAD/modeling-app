@@ -2575,6 +2575,23 @@ thing(false)
     }
 
     #[test]
+    fn random_words_fail() {
+        let test_program = r#"const part001 = startSketchOn('-XZ')
+    |> startProfileAt([8.53, 11.8], %)
+    asdasd asdasd
+    |> line([11.12, -14.82], %)
+    |> line([-13.27, -6.98], %)
+    |> line([-5.09, 12.33], %)
+    asdasd
+"#;
+        let tokens = crate::token::lexer(test_program);
+        let parser = crate::parser::Parser::new(tokens);
+        let result = parser.ast();
+        let e = result.unwrap_err();
+        eprintln!("{e:?}")
+    }
+
+    #[test]
     fn test_member_expression_sketch_group() {
         let some_program_string = r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
