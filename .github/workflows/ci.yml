@@ -214,7 +214,7 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          path: ${{ matrix.os == 'macos-latest' && 'src-tauri/target/universal-apple-darwin/release/bundle/*/*' || 'src-tauri/target/release/bundle/*/*' }}
+          path: ${{ matrix.os == 'macos-latest' && 'src-tauri/target/universal-apple-darwin/*/bundle/*/*' || 'src-tauri/target/*/bundle/*/*' }}
 
       - name: Install tauri-driver for e2e tests
         if: matrix.os == 'ubuntu-latest'
