@@ -342,7 +342,8 @@ export const Stream = ({ className = '' }) => {
 
           // update artifact map ranges now that we have updated the ast.
           code = recast(modded.modifiedAst)
-          const astWithCurrentRanges = parse(code)
+          const astWithCurrentRanges = kclManager.safeParse(code)
+          if (!astWithCurrentRanges) return
           const updateNode = getNodeFromPath<CallExpression>(
             astWithCurrentRanges,
             modded.pathToNode
