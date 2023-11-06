@@ -15,9 +15,9 @@ on:
 env:
   BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && contains(github.event.pull_request.title, 'Cut release v') }}
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-  cancel-in-progress: true
+# concurrency:
+#   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+#   cancel-in-progress: true
 jobs:
   check-format:
     runs-on: 'ubuntu-latest'
@@ -47,6 +47,20 @@ jobs:
 
       - run: yarn build:wasm
       - run: yarn tsc
+
+
+  check-typos: 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+      - name: Install codespell
+        run: |
+            python -m pip install codespell
+      - name: Run codespell
+        run: codespell --config .codespellrc # Edit this file to tweak the typo list and other configuration.
 
 
   build-test-web:
@@ -105,7 +119,7 @@ jobs:
 
 
   build-test-apps:
-    needs: [check-format, build-test-web, prepare-json-files, check-types]
+    needs: [prepare-json-files]
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -240,23 +254,11 @@ jobs:
         env:
           MODE: ${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}
 
-  typos: 
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v4
-      - name: Install codespell
-        run: |
-            python -m pip install codespell
-      - name: Run codespell
-        run: codespell --config .codespellrc # Edit this file to tweak the typo list and other configuration.
 
   publish-apps-release:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
-    needs: [build-test-web, prepare-json-files, build-test-apps]
+    needs: [check-format, check-types, check-typos, build-test-web, prepare-json-files, build-test-apps]
     env:
       VERSION_NO_V: ${{ needs.prepare-json-files.outputs.version }}
       VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-json-files.outputs.version) || needs.prepare-json-files.outputs.version }}
