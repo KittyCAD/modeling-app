@@ -42,7 +42,7 @@ import CommandBarProvider from 'components/CommandBar'
 import { TEST, VITE_KC_SENTRY_DSN } from './env'
 import * as Sentry from '@sentry/react'
 import ModelingMachineProvider from 'components/ModelingMachineProvider'
-import { KclContextProvider } from 'lang/KclSinglton'
+import { KclContextProvider, kclManager } from 'lang/KclSinglton'
 import FileMachineProvider from 'components/FileMachineProvider'
 import { sep } from '@tauri-apps/api/path'
 
@@ -207,6 +207,7 @@ const router = createBrowserRouter(
             projectPath + sep + PROJECT_ENTRYPOINT
           )
           const children = await readDir(projectPath, { recursive: true })
+          kclManager.setCodeAndExecute(code, false)
 
           return {
             code,

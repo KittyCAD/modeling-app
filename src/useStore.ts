@@ -253,11 +253,13 @@ export async function executeAst({
   engineCommandManager,
   defaultPlanes,
   useFakeExecutor = false,
+  programMemoryOverride,
 }: {
   ast: Program
   engineCommandManager: EngineCommandManager
   defaultPlanes: DefaultPlanes
   useFakeExecutor?: boolean
+  programMemoryOverride?: ProgramMemory
 }): Promise<{
   logs: string[]
   errors: KCLError[]
@@ -269,10 +271,13 @@ export async function executeAst({
       engineCommandManager.startNewSession()
     }
     const programMemory = await (useFakeExecutor
-      ? enginelessExecutor(ast, {
-          root: defaultProgramMemory,
-          return: null,
-        })
+      ? enginelessExecutor(
+          ast,
+          programMemoryOverride || {
+            root: defaultProgramMemory,
+            return: null,
+          }
+        )
       : _executor(
           ast,
           {
