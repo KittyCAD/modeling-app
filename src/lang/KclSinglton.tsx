@@ -50,6 +50,14 @@ class KclManager {
   engineCommandManager: EngineCommandManager
   private _defferer = deferExecution((code: string) => {
     const ast = parse(code)
+    try {
+      const fmtAndStringify = (ast: Program) =>
+        JSON.stringify(parse(recast(ast)))
+      const isAstTheSame = fmtAndStringify(ast) === fmtAndStringify(this._ast)
+      if (isAstTheSame) return
+    } catch (e) {
+      console.error(e)
+    }
     this.executeAst(ast)
   }, 600)
 
