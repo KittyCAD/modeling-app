@@ -80,7 +80,7 @@ jobs:
         with:
           workspaces: './src/wasm-lib'
 
-      - run: yarn build:wasm-dev
+      - run: yarn build:wasm
 
       - run: yarn simpleserver:ci
 
