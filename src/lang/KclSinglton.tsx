@@ -18,7 +18,11 @@ import { bracket } from 'lib/exampleKcl'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { getNodeFromPath } from './queryAst'
 import { IndexLoaderData } from 'Router'
-import { useLoaderData } from 'react-router-dom'
+import { Params, useLoaderData } from 'react-router-dom'
+import { isTauri } from 'lib/isTauri'
+import { writeTextFile } from '@tauri-apps/api/fs'
+import { toast } from 'react-hot-toast'
+import { useParams } from 'react-router-dom'
 
 const PERSIST_CODE_TOKEN = 'persistCode'
 
@@ -41,11 +45,20 @@ class KclManager {
   private _kclErrors: KCLError[] = []
   private _isExecuting = false
   private _wasmInitFailed = true
+  private _params: Params<string> = {}
 
   engineCommandManager: EngineCommandManager
   private _defferer = deferExecution((code: string) => {
     const ast = this.safeParse(code)
     if (!ast) return
+    try {
+      const fmtAndStringify = (ast: Program) =>
+        JSON.stringify(parse(recast(ast)))
+      const isAstTheSame = fmtAndStringify(ast) === fmtAndStringify(this._ast)
+      if (isAstTheSame) return
+    } catch (e) {
+      console.error(e)
+    }
     this.executeAst(ast)
   }, 600)
 
@@ -72,6 +85,21 @@ class KclManager {
   set code(code) {
     this._code = code
     this._codeCallBack(code)
+    if (isTauri()) {
+      setTimeout(() => {
+        // Wait one event loop to give a chance for params to be set
+        // Save the file to disk
+        // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
+        this._params.id &&
+          writeTextFile(this._params.id, code).catch((err) => {
+            // TODO: add Sentry per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
+            console.error('error saving file', err)
+            toast.error('Error saving file, please check file permissions')
+          })
+      })
+    } else {
+      localStorage.setItem(PERSIST_CODE_TOKEN, code)
+    }
   }
 
   get programMemory() {
@@ -118,8 +146,17 @@ class KclManager {
     this._wasmInitFailedCallback(wasmInitFailed)
   }
 
+  setParams(params: Params<string>) {
+    this._params = params
+  }
+
   constructor(engineCommandManager: EngineCommandManager) {
     this.engineCommandManager = engineCommandManager
+
+    if (isTauri()) {
+      this.code = ''
+      return
+    }
     const storedCode = localStorage.getItem(PERSIST_CODE_TOKEN)
     // TODO #819 remove zustand persistence logic in a few months
     // short term migration, shouldn't make a difference for tauri app users
@@ -131,6 +168,7 @@ class KclManager {
       zustandStore.state.code = ''
       localStorage.setItem('store', JSON.stringify(zustandStore))
     } else if (storedCode === null) {
+      console.log('stored brack thing')
       this.code = bracket
     } else {
       this.code = storedCode
@@ -203,8 +241,7 @@ class KclManager {
     this._programMemory = programMemory
     this._ast = { ...ast }
     if (updateCode) {
-      this._code = recast(ast)
-      this._codeCallBack(this._code)
+      this.code = recast(ast)
     }
     this._executeCallback()
   }
@@ -248,13 +285,17 @@ class KclManager {
     this.ast = ast
     if (code) this.code = code
   }
-  setCode(code: string) {
+  setCode(code: string, shouldWriteFile = true) {
+    if (shouldWriteFile) {
+      // use the normal code setter
+      this.code = code
+      return
+    }
     this._code = code
     this._codeCallBack(code)
-    localStorage.setItem(PERSIST_CODE_TOKEN, code)
   }
-  setCodeAndExecute(code: string) {
-    this.setCode(code)
+  setCodeAndExecute(code: string, shouldWriteFile = true) {
+    this.setCode(code, shouldWriteFile)
     if (code.trim()) {
       this._defferer(code)
       return
@@ -287,16 +328,13 @@ class KclManager {
     execute: boolean,
     optionalParams?: {
       focusPath?: PathToNode
-      callBack?: (ast: Program) => void
     }
   ): Promise<Selections | null> {
     const newCode = recast(ast)
     const astWithUpdatedSource = this.safeParse(newCode)
     if (!astWithUpdatedSource) return null
-    optionalParams?.callBack?.(astWithUpdatedSource)
     let returnVal: Selections | null = null
 
-    this.code = newCode
     if (optionalParams?.focusPath) {
       const { node } = getNodeFromPath<any>(
         astWithUpdatedSource,
@@ -317,12 +355,12 @@ class KclManager {
 
     if (execute) {
       // Call execute on the set ast.
-      await this.executeAst(astWithUpdatedSource)
+      await this.executeAst(astWithUpdatedSource, true)
     } else {
       // When we don't re-execute, we still want to update the program
       // memory with the new ast. So we will hit the mock executor
       // instead.
-      await this.executeAstMock(astWithUpdatedSource)
+      await this.executeAstMock(astWithUpdatedSource, true)
     }
     return returnVal
   }
@@ -387,6 +425,11 @@ export function KclContextProvider({
       setWasmInitFailed,
     })
   }, [])
+
+  const params = useParams()
+  useEffect(() => {
+    kclManager.setParams(params)
+  }, [params])
   return (
     <KclContext.Provider
       value={{

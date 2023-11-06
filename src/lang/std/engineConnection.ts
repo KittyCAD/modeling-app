@@ -889,6 +889,7 @@ export class EngineCommandManager {
     // TODO: instead of sending a single command with `object_ids: Object.keys(this.artifactMap)`
     // we need to loop over them each individually because if the engine doesn't recognise a single
     // id the whole command fails.
+    const artifactsToDelete: any = {}
     Object.entries(this.artifactMap).forEach(([id, artifact]) => {
       const artifactTypesToDelete: ArtifactMap[string]['commandType'][] = [
         // 'start_path' creates a new scene object for the path, which is why it needs to be deleted,
@@ -898,7 +899,9 @@ export class EngineCommandManager {
         'start_path',
       ]
       if (!artifactTypesToDelete.includes(artifact.commandType)) return
-
+      artifactsToDelete[id] = artifact
+    })
+    Object.keys(artifactsToDelete).forEach((id) => {
       const deletCmd: EngineCommand = {
         type: 'modeling_cmd_req',
         cmd_id: uuidv4(),

@@ -43,7 +43,10 @@ function OnboardingWithNewFile() {
       ONBOARDING_PROJECT_NAME,
       nextIndex
     )
-    const newFile = await createNewProject(defaultDirectory + sep + name)
+    const newFile = await createNewProject(
+      defaultDirectory + sep + name,
+      bracket
+    )
     navigate(
       `${paths.FILE}/${encodeURIComponent(
         newFile.path + sep + PROJECT_ENTRYPOINT
@@ -79,7 +82,7 @@ function OnboardingWithNewFile() {
               <ActionButton
                 Element="button"
                 onClick={() => {
-                  kclManager.setCode(bracket)
+                  kclManager.setCodeAndExecute(bracket)
                   next()
                 }}
                 icon={{ icon: faArrowRight }}
@@ -118,7 +121,7 @@ function OnboardingWithNewFile() {
                 Element="button"
                 onClick={() => {
                   createAndOpenNewProject()
-                  kclManager.setCode(bracket)
+                  kclManager.setCode(bracket, false)
                   dismiss()
                 }}
                 icon={{ icon: faArrowRight }}

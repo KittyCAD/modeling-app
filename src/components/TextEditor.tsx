@@ -17,15 +17,7 @@ import { useStore } from 'useStore'
 import { processCodeMirrorRanges } from 'lib/selections'
 import { LanguageServerClient } from 'editor/lsp'
 import kclLanguage from 'editor/lsp/language'
-import { isTauri } from 'lib/isTauri'
-import { useParams } from 'react-router-dom'
-import { writeTextFile } from '@tauri-apps/api/fs'
-import { toast } from 'react-hot-toast'
-import {
-  EditorView,
-  addLineHighlight,
-  lineHighlightField,
-} from 'editor/highlightextension'
+import { EditorView, lineHighlightField } from 'editor/highlightextension'
 import { roundOff } from 'lib/utils'
 import { kclErrToDiagnostic } from 'lang/errors'
 import { CSSRuleObject } from 'tailwindcss/types/config'
@@ -50,7 +42,6 @@ export const TextEditor = ({
 }: {
   theme: Themes.Light | Themes.Dark
 }) => {
-  const pathParams = useParams()
   const { editorView, isLSPServerReady, setEditorView, setIsLSPServerReady } =
     useStore((s) => ({
       editorView: s.editorView,
@@ -113,18 +104,6 @@ export const TextEditor = ({
   // const onChange = React.useCallback((value: string, viewUpdate: ViewUpdate) => {
   const onChange = (newCode: string) => {
     kclManager.setCodeAndExecute(newCode)
-    if (isTauri() && pathParams.id) {
-      // Save the file to disk
-      // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
-      writeTextFile(pathParams.id, newCode).catch((err) => {
-        // TODO: add Sentry per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
-        console.error('error saving file', err)
-        toast.error('Error saving file, please check file permissions')
-      })
-    }
-    if (editorView) {
-      editorView?.dispatch({ effects: addLineHighlight.of([0, 0]) })
-    }
   } //, []);
   const onUpdate = (viewUpdate: ViewUpdate) => {
     if (!editorView) {

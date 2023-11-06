@@ -147,7 +147,7 @@ export const ModelingMachineProvider = ({
             engineCommandManager.artifactMap[sketchEnginePathId] = {
               type: 'result',
               range: [startProfileAtCallExp.start, startProfileAtCallExp.end],
-              commandType: 'extend_path',
+              commandType: 'start_path',
               data: null,
               raw: {} as any,
             }

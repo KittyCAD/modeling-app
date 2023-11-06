@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import { parse, BinaryPart, Value, executor } from '../lang/wasm'
+import { parse, BinaryPart, Value } from '../lang/wasm'
 import {
   createIdentifier,
   createLiteral,
@@ -10,6 +10,7 @@ import { findAllPreviousVariables, PrevVariable } from '../lang/queryAst'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { kclManager, useKclContext } from 'lang/KclSinglton'
 import { useModelingContext } from 'hooks/useModelingContext'
+import { executeAst } from 'useStore'
 
 export const AvailableVars = ({
   onVarClick,
@@ -130,27 +131,29 @@ export function useCalc({
     if (!programMemory || !selectionRange) return
     const varInfo = findAllPreviousVariables(
       kclManager.ast,
-      programMemory,
+      kclManager.programMemory,
       selectionRange
     )
     setAvailableVarInfo(varInfo)
-  }, [kclManager.ast, programMemory, selectionRange])
+  }, [kclManager.ast, kclManager.programMemory, selectionRange])
 
   useEffect(() => {
     try {
-      const code = `const __result__ = ${value}\nshow(__result__)`
+      const code = `const __result__ = ${value}`
       const ast = parse(code)
       const _programMem: any = { root: {}, return: null }
       availableVarInfo.variables.forEach(({ key, value }) => {
         _programMem.root[key] = { type: 'userVal', value, __meta: [] }
       })
-
-      executor(
+      executeAst({
         ast,
-        _programMem,
         engineCommandManager,
-        kclManager.defaultPlanes
-      ).then((programMemory) => {
+        defaultPlanes: kclManager.defaultPlanes,
+        useFakeExecutor: true,
+        programMemoryOverride: JSON.parse(
+          JSON.stringify(kclManager.programMemory)
+        ),
+      }).then(({ programMemory }) => {
         const resultDeclaration = ast.body.find(
           (a) =>
             a.type === 'VariableDeclaration' &&
@@ -167,7 +170,7 @@ export function useCalc({
       setCalcResult('NAN')
       setValueNode(null)
     }
-  }, [value])
+  }, [value, availableVarInfo])
 
   return {
     valueNode,
@@ -212,7 +215,10 @@ export const CreateNewVariable = ({
 }) => {
   return (
     <>
-      <label htmlFor="create-new-variable" className="block mt-3 font-mono">
+      <label
+        htmlFor="create-new-variable"
+        className="block mt-3 font-mono text-gray-900"
+      >
         Create new variable
       </label>
       <div className="mt-1 flex gap-2 items-center">
@@ -223,6 +229,7 @@ export const CreateNewVariable = ({
             onChange={(e) => {
               setShouldCreateVariable(e.target.checked)
             }}
+            className="bg-white text-gray-900"
           />
         )}
         <input

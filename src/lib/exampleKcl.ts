@@ -26,5 +26,4 @@ const bracket = startSketchOn('XY')
   |> close(%)
   |> extrude(width, %)
 
-show(bracket)
 `
