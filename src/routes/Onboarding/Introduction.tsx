@@ -121,7 +121,7 @@ function OnboardingWithNewFile() {
                 Element="button"
                 onClick={() => {
                   createAndOpenNewProject()
-                  kclManager.setCode(bracket)
+                  kclManager.setCode(bracket, false)
                   dismiss()
                 }}
                 icon={{ icon: faArrowRight }}
