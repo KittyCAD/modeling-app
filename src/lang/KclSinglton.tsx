@@ -49,7 +49,8 @@ class KclManager {
 
   engineCommandManager: EngineCommandManager
   private _defferer = deferExecution((code: string) => {
-    const ast = parse(code)
+    const ast = this.safeParse(code)
+    if (!ast) return
     try {
       const fmtAndStringify = (ast: Program) =>
         JSON.stringify(parse(recast(ast)))
@@ -202,6 +203,19 @@ class KclManager {
     this._executeCallback = callback
   }
 
+  safeParse(code: string): Program | null {
+    try {
+      return parse(code)
+    } catch (e) {
+      console.error('error parsing code', e)
+      if (e instanceof KCLError) {
+        this.kclErrors = [e]
+        if (e.msg === 'file is empty') engineCommandManager.endSession()
+      }
+      return null
+    }
+  }
+
   async ensureWasmInit() {
     try {
       await initPromise
@@ -234,7 +248,8 @@ class KclManager {
   async executeAstMock(ast: Program = this._ast, updateCode = false) {
     await this.ensureWasmInit()
     const newCode = recast(ast)
-    const newAst = parse(newCode)
+    const newAst = this.safeParse(newCode)
+    if (!newAst) return
     await this?.engineCommandManager?.waitForReady
     if (updateCode) {
       this.setCode(recast(ast))
@@ -301,7 +316,9 @@ class KclManager {
     this.engineCommandManager.endSession()
   }
   format() {
-    this.code = recast(parse(kclManager.code))
+    const ast = this.safeParse(this.code)
+    if (!ast) return
+    this.code = recast(ast)
   }
   // There's overlapping responsibility between updateAst and executeAst.
   // updateAst was added as it was used a lot before xState migration so makes the port easier.
@@ -314,7 +331,8 @@ class KclManager {
     }
   ): Promise<Selections | null> {
     const newCode = recast(ast)
-    const astWithUpdatedSource = parse(newCode)
+    const astWithUpdatedSource = this.safeParse(newCode)
+    if (!astWithUpdatedSource) return null
     let returnVal: Selections | null = null
 
     if (optionalParams?.focusPath) {
