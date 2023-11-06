@@ -239,8 +239,11 @@ jobs:
           args: "${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }} ${{ env.TAURI_CONF_ARGS }}"
 
       - uses: actions/upload-artifact@v3
+        env:
+          PREFIX: ${{ matrix.os == 'macos-latest' && 'src-tauri/target/universal-apple-darwin' || 'src-tauri/target' }}
+          MODE: ${{ (github.event_name == 'release' || github.event_name == 'schedule') && 'release' || 'debug' }}
         with:
-          path: ${{ matrix.os == 'macos-latest' && 'src-tauri/target/universal-apple-darwin/release/bundle/*/*' || 'src-tauri/target/release/bundle/*/*' }}
+          path: "${{ env.PREFIX }}/${{ env.MODE }}/bundle/*/*"
 
       - name: Install tauri-driver for e2e tests (linux only)
         if: matrix.os == 'ubuntu-latest'
