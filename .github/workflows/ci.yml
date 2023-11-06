@@ -205,7 +205,7 @@ jobs:
         with:
           includeRelease: false
           includeDebug: true
-          args: "${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }} --config '{ \"tauri\": { \"updater\": { \"active\": false } } }'"
+          args: ${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }}
 
       - name: Build and sign the app for the current platform
         uses: tauri-apps/tauri-action@v0
@@ -219,8 +219,9 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          TAURI_CONF_ARGS: "--config ${{ matrix.os == 'windows-latest' && 'src-tauri\tauri.release.conf.json' || 'src-tauri/tauri.release.conf.json' }}"
         with:
-          args: ${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }}
+          args: "${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }} ${{ env.TAURI_CONF_ARGS }}"
 
       - uses: actions/upload-artifact@v3
         with:

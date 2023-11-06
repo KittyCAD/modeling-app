@@ -1,9 +1,0 @@
-
-{
-  "$schema": "../node_modules/@tauri-apps/cli/schema.json",
-  "tauri": {
-    "updater": {
-      "active": false
-    }
-  }
-}
