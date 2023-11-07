@@ -1,4 +1,4 @@
-import { useEffect, useCallback, MouseEventHandler } from 'react'
+import { useCallback, MouseEventHandler } from 'react'
 import { DebugPanel } from './components/DebugPanel'
 import { v4 as uuidv4 } from 'uuid'
 import { PaneType, useStore } from './useStore'
@@ -19,7 +19,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { getNormalisedCoordinates } from './lib/utils'
-import { isTauri } from './lib/isTauri'
 import { useLoaderData } from 'react-router-dom'
 import { IndexLoaderData } from './Router'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
@@ -34,7 +33,7 @@ import { engineCommandManager } from './lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
 
 export function App() {
-  const { code: loadedCode, project, file } = useLoaderData() as IndexLoaderData
+  const { project, file } = useLoaderData() as IndexLoaderData
 
   useHotKeyListener()
   const {
