@@ -205,7 +205,9 @@ class KclManager {
 
   safeParse(code: string): Program | null {
     try {
-      return parse(code)
+      const ast = parse(code)
+      this.kclErrors = []
+      return ast
     } catch (e) {
       console.error('error parsing code', e)
       if (e instanceof KCLError) {
