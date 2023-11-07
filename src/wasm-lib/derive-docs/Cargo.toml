@@ -15,7 +15,7 @@ proc-macro = true
 convert_case = "0.6.0"
 proc-macro2 = "1"
 quote = "1"
-serde = { version = "1.0.190", features = ["derive"] }
+serde = { version = "1.0.192", features = ["derive"] }
 serde_tokenstream = "0.2"
 syn = { version = "2.0.38", features = ["full"] }
 
