@@ -102,8 +102,8 @@ export async function getEventForSelectWithPoint(
     Models['OkModelingCmdResponse_type'],
     { type: 'select_with_point' }
   >,
-  { sketchEnginePathId }: { sketchEnginePathId: string }
-): Promise<ModelingMachineEvent> {
+  { sketchEnginePathId }: { sketchEnginePathId?: string }
+): Promise<ModelingMachineEvent | null> {
   if (!data?.entity_id) {
     return {
       type: 'Set selection',
@@ -120,6 +120,7 @@ export async function getEventForSelectWithPoint(
       },
     }
   }
+  if (!sketchEnginePathId) return null
   // selected a vertex
   const res = await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
