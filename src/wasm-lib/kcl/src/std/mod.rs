@@ -31,7 +31,7 @@ pub struct StdLib {
 
 impl StdLib {
     pub fn new() -> Self {
-        let internal_fns: Vec<Box<(dyn crate::docs::StdLibFn)>> = vec![
+        let internal_fns: [Box<dyn crate::docs::StdLibFn>; 55] = [
             Box::new(Show),
             Box::new(LegLen),
             Box::new(LegAngX),
@@ -88,11 +88,10 @@ impl StdLib {
             Box::new(crate::std::math::Log10),
             Box::new(crate::std::math::Ln),
         ];
-
-        let mut fns = HashMap::new();
-        for internal_fn in &internal_fns {
-            fns.insert(internal_fn.name().to_string(), internal_fn.clone());
-        }
+        let fns = internal_fns
+            .into_iter()
+            .map(|internal_fn| (internal_fn.name(), internal_fn))
+            .collect();
 
         Self { fns }
     }
