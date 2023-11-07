@@ -11,9 +11,11 @@ use tower_lsp::lsp_types::{CompletionItem, CompletionItemKind, DocumentSymbol, R
 
 pub use self::literal_value::LiteralValue;
 use crate::{
+    docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
-    executor::{ExecutorContext, MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange, UserVal},
+    executor::{BodyType, ExecutorContext, MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange, UserVal},
     parser::PIPE_OPERATOR,
+    std::{kcl_stdlib::KclStdLibFn, FunctionKind},
 };
 
 mod literal_value;
@@ -304,6 +306,23 @@ impl Program {
         }
 
         None
+    }
+
+    /// If this program has exactly one body item, which is a function expression, return it.
+    /// Otherwise returns None.
+    pub fn only_function_expression(mut self) -> Option<FunctionExpression> {
+        let item = self.body.pop()?;
+        if !self.body.is_empty() {
+            return None;
+        }
+        let BodyItem::ExpressionStatement(e) = item else {
+            return None;
+        };
+        if let Value::FunctionExpression(f) = e.expression {
+            Some(*f)
+        } else {
+            None
+        }
     }
 }
 
@@ -960,8 +979,8 @@ impl CallExpression {
             fn_args.push(result);
         }
 
-        match ctx.stdlib.get(&self.callee.name) {
-            Some(func) => {
+        match ctx.stdlib.get_either(&self.callee.name) {
+            FunctionKind::Core(func) => {
                 // Attempt to call the function.
                 let args = crate::std::Args::new(fn_args, self.into(), ctx.clone());
                 let result = func.std_lib_fn()(args).await?;
@@ -973,8 +992,47 @@ impl CallExpression {
                     Ok(result)
                 }
             }
-            // Must be user-defined then
-            None => {
+            FunctionKind::Std(func) => {
+                let function_expression = func.function();
+                if fn_args.len() != function_expression.params.len() {
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        message: format!(
+                            "Expected {} arguments, got {}",
+                            function_expression.params.len(),
+                            fn_args.len(),
+                        ),
+                        source_ranges: vec![(function_expression).into()],
+                    }));
+                }
+
+                // Add the arguments to the memory.
+                let mut fn_memory = memory.clone();
+                for (index, param) in function_expression.params.iter().enumerate() {
+                    fn_memory.add(&param.name, fn_args.get(index).unwrap().clone(), param.into())?;
+                }
+
+                // Call the stdlib function
+                let out = crate::executor::execute(func.program().clone(), &mut fn_memory, BodyType::Block, ctx)
+                    .await?
+                    .return_;
+                let result = out.ok_or_else(|| {
+                    KclError::UndefinedValue(KclErrorDetails {
+                        message: format!("Result of function {} is undefined", fn_name),
+                        source_ranges: vec![self.into()],
+                    })
+                })?;
+                let result = result.get_value()?;
+
+                if pipe_info.is_in_pipe {
+                    pipe_info.index += 1;
+                    pipe_info.previous_results.push(result);
+
+                    execute_pipe_body(memory, &pipe_info.body.clone(), pipe_info, self.into(), ctx).await
+                } else {
+                    Ok(result)
+                }
+            }
+            FunctionKind::UserDefined => {
                 let func = memory.get(&fn_name, self.into())?;
                 let result = func
                     .call_fn(fn_args, memory.clone(), ctx.clone())
@@ -1056,10 +1114,15 @@ impl CallExpression {
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Function {
-    /// A stdlib function.
+    /// A stdlib function written in Rust (aka core lib).
     StdLib {
         /// The function.
-        func: Box<dyn crate::docs::StdLibFn>,
+        func: Box<dyn StdLibFn>,
+    },
+    /// A stdlib function written in KCL.
+    StdLibKcl {
+        /// The function.
+        func: Box<dyn KclStdLibFn>,
     },
     /// A function that is defined in memory.
     #[default]

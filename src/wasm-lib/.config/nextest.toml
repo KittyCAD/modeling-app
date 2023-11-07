@@ -20,3 +20,7 @@ threads-required = 4
 filter = "test(serial_test_)"
 test-group = "serial-integration"
 threads-required = 4
+
+[[profile.default.overrides]]
+filter = "test(parser::parser_impl::snapshot_tests)"
+slow-timeout = { period = "1s", terminate-after = 5 }
