@@ -14,7 +14,7 @@ import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
 import { Models } from '@kittycad/lib'
 import { getNodeFromPath } from 'lang/queryAst'
-import { VariableDeclarator, recast, parse, CallExpression } from 'lang/wasm'
+import { VariableDeclarator, recast, CallExpression } from 'lang/wasm'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { kclManager, useKclContext } from 'lang/KclSinglton'
@@ -342,7 +342,8 @@ export const Stream = ({ className = '' }) => {
 
           // update artifact map ranges now that we have updated the ast.
           code = recast(modded.modifiedAst)
-          const astWithCurrentRanges = parse(code)
+          const astWithCurrentRanges = kclManager.safeParse(code)
+          if (!astWithCurrentRanges) return
           const updateNode = getNodeFromPath<CallExpression>(
             astWithCurrentRanges,
             modded.pathToNode

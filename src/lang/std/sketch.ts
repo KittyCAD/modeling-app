@@ -946,7 +946,7 @@ export function compareVec2Epsilon(
 ) {
   const compareEpsilon = 0.015625 // or 2^-6
   const xDifference = Math.abs(vec1[0] - vec2[0])
-  const yDifference = Math.abs(vec1[0] - vec2[0])
+  const yDifference = Math.abs(vec1[1] - vec2[1])
   return xDifference < compareEpsilon && yDifference < compareEpsilon
 }
 

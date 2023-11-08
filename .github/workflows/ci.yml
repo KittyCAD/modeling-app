@@ -12,9 +12,13 @@ on:
   # Daily at 04:00 AM UTC
   # Will checkout the last commit from the default branch (main as of 2023-10-04)
 
+env:
+  BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && contains(github.event.pull_request.title, 'Cut release v') }}
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
+
 jobs:
   check-format:
     runs-on: 'ubuntu-latest'
@@ -44,6 +48,20 @@ jobs:
 
       - run: yarn build:wasm
       - run: yarn tsc
+
+
+  check-typos: 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+      - name: Install codespell
+        run: |
+            python -m pip install codespell
+      - name: Run codespell
+        run: codespell --config .codespellrc # Edit this file to tweak the typo list and other configuration.
 
 
   build-test-web:
@@ -102,7 +120,7 @@ jobs:
 
 
   build-test-apps:
-    needs: [check-format, build-test-web, prepare-json-files, check-types]
+    needs: [prepare-json-files]
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -119,7 +137,7 @@ jobs:
           cp artifact/package.json package.json
           cp artifact/src-tauri/tauri.conf.json src-tauri/tauri.conf.json
 
-      - name: install ubuntu system dependencies
+      - name: Install ubuntu system dependencies
         if: matrix.os == 'ubuntu-latest'
         run: >
           sudo apt-get update &&
@@ -139,10 +157,10 @@ jobs:
 
       - run: yarn install
 
-      - name: Rust setup
+      - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Rust cache
+      - name: Setup Rust cache
         uses: swatinem/rust-cache@v2
         with:
           workspaces: './src-tauri -> target'
@@ -151,10 +169,10 @@ jobs:
         with:
           workspaces: './src/wasm-lib'
 
-      - name: wasm prep
+      - name: Run build:wasm manually
         shell: bash
         env:
-          MODE: ${{ (github.event_name == 'release' || github.event_name == 'schedule') && '--release' || '--debug' }}
+          MODE: ${{ env.BUILD_RELEASE == 'true' && '--release' || '--debug' }}
         run: |
           mkdir src/wasm-lib/pkg; cd src/wasm-lib
           echo "building with ${{ env.MODE }}"
@@ -165,13 +183,13 @@ jobs:
       - name: Fix format
         run: yarn fmt
 
-      - name: install apple silicon target mac
+      - name: Install Universal target (MacOS only)
         if: matrix.os == 'macos-latest'
         run: |
           rustup target add aarch64-apple-darwin
 
-      - name: Prepare Windows certificate and variables
-        if: matrix.os == 'windows-latest'
+      - name: Prepare certificate and variables (Windows only)
+        if: ${{ matrix.os == 'windows-latest' && env.BUILD_RELEASE == 'true' }}
         run: |
           echo "${{secrets.SM_CLIENT_CERT_FILE_B64 }}" | base64 --decode > /d/Certificate_pkcs12.p12
           cat /d/Certificate_pkcs12.p12
@@ -185,8 +203,8 @@ jobs:
           echo "C:\Program Files\DigiCert\DigiCert One Signing Manager Tools" >> $GITHUB_PATH
         shell: bash
 
-      - name: Setup Windows certicate with SSM KSP
-        if: matrix.os == 'windows-latest'
+      - name: Setup certicate with SSM KSP (Windows only)
+        if: ${{ matrix.os == 'windows-latest' && env.BUILD_RELEASE == 'true' }}
         run: |
           curl -X GET  https://one.digicert.com/signingmanager/api-ui/v1/releases/smtools-windows-x64.msi/download -H "x-api-key:%SM_API_KEY%" -o smtools-windows-x64.msi
           msiexec /i smtools-windows-x64.msi /quiet /qn
@@ -196,8 +214,17 @@ jobs:
           smksp_cert_sync.exe
         shell: cmd
 
-      - name: Build and sign the app for the current platform
+      - name: Build the app (debug)
         uses: tauri-apps/tauri-action@v0
+        if: ${{ env.BUILD_RELEASE == 'false' }}
+        with:
+          includeRelease: false
+          includeDebug: true
+          args: ${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }}
+
+      - name: Build the app (release) and sign
+        uses: tauri-apps/tauri-action@v0
+        if: ${{ env.BUILD_RELEASE == 'true' }}
         env:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
@@ -207,45 +234,35 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          TAURI_CONF_ARGS: "--config ${{ matrix.os == 'windows-latest' && 'src-tauri\\tauri.release.conf.json' || 'src-tauri/tauri.release.conf.json' }}"
         with:
-          includeRelease: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
-          includeDebug: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
-          args: ${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }}
+          args: "${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }} ${{ env.TAURI_CONF_ARGS }}"
 
       - uses: actions/upload-artifact@v3
+        env:
+          PREFIX: ${{ matrix.os == 'macos-latest' && 'src-tauri/target/universal-apple-darwin' || 'src-tauri/target' }}
+          MODE: ${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}
         with:
-          path: ${{ matrix.os == 'macos-latest' && 'src-tauri/target/universal-apple-darwin/release/bundle/*/*' || 'src-tauri/target/release/bundle/*/*' }}
+          path: "${{ env.PREFIX }}/${{ env.MODE }}/bundle/*/*"
 
-      - name: Install tauri-driver for e2e tests
+      - name: Install tauri-driver for e2e tests (linux only)
         if: matrix.os == 'ubuntu-latest'
         uses: actions-rs/cargo@v1
         with:
           command: install
           args: tauri-driver
 
-      - name: Run e2e tests
+      - name: Run e2e tests (linux only)
         if: matrix.os == 'ubuntu-latest'
         run: xvfb-run yarn test:e2e
         env:
-          MODE: ${{ (github.event_name == 'release' || github.event_name == 'schedule') && 'release' || 'debug' }}
+          MODE: ${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}
 
-  typos: 
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v4
-      - name: Install codespell
-        run: |
-            python -m pip install codespell
-      - name: Run codespell
-        run: codespell --config .codespellrc # Edit this file to tweak the typo list and other configuration.
 
   publish-apps-release:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
-    needs: [build-test-web, prepare-json-files, build-test-apps]
+    needs: [check-format, check-types, check-typos, build-test-web, prepare-json-files, build-test-apps]
     env:
       VERSION_NO_V: ${{ needs.prepare-json-files.outputs.version }}
       VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-json-files.outputs.version) || needs.prepare-json-files.outputs.version }}

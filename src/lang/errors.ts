@@ -25,6 +25,13 @@ export class KCLLexicalError extends KCLError {
   }
 }
 
+export class KCLInternalError extends KCLError {
+  constructor(msg: string, sourceRanges: [number, number][]) {
+    super('internal', msg, sourceRanges)
+    Object.setPrototypeOf(this, KCLSyntaxError.prototype)
+  }
+}
+
 export class KCLSyntaxError extends KCLError {
   constructor(msg: string, sourceRanges: [number, number][]) {
     super('syntax', msg, sourceRanges)

@@ -35,7 +35,7 @@ export function useEngineConnectionSubscriptions() {
         const event = await getEventForSelectWithPoint(engineEvent, {
           sketchEnginePathId: context.sketchEnginePathId,
         })
-        send(event)
+        event && send(event)
       },
     })
     return () => {

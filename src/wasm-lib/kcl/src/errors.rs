@@ -28,6 +28,8 @@ pub enum KclError {
     InvalidExpression(KclErrorDetails),
     #[error("engine: {0:?}")]
     Engine(KclErrorDetails),
+    #[error("internal error, please report to KittyCAD team: {0:?}")]
+    Internal(KclErrorDetails),
 }
 
 #[derive(Debug, Serialize, Deserialize, ts_rs::TS, Clone)]
@@ -42,21 +44,8 @@ pub struct KclErrorDetails {
 impl KclError {
     /// Get the error message, line and column from the error and input code.
     pub fn get_message_line_column(&self, input: &str) -> (String, Option<usize>, Option<usize>) {
-        let (type_, source_range, message) = match &self {
-            KclError::Lexical(e) => ("lexical", e.source_ranges.clone(), e.message.clone()),
-            KclError::Syntax(e) => ("syntax", e.source_ranges.clone(), e.message.clone()),
-            KclError::Semantic(e) => ("semantic", e.source_ranges.clone(), e.message.clone()),
-            KclError::Type(e) => ("type", e.source_ranges.clone(), e.message.clone()),
-            KclError::Unimplemented(e) => ("unimplemented", e.source_ranges.clone(), e.message.clone()),
-            KclError::Unexpected(e) => ("unexpected", e.source_ranges.clone(), e.message.clone()),
-            KclError::ValueAlreadyDefined(e) => ("value already defined", e.source_ranges.clone(), e.message.clone()),
-            KclError::UndefinedValue(e) => ("undefined value", e.source_ranges.clone(), e.message.clone()),
-            KclError::InvalidExpression(e) => ("invalid expression", e.source_ranges.clone(), e.message.clone()),
-            KclError::Engine(e) => ("engine", e.source_ranges.clone(), e.message.clone()),
-        };
-
         // Calculate the line and column of the error from the source range.
-        let (line, column) = if let Some(range) = source_range.first() {
+        let (line, column) = if let Some(range) = self.source_ranges().first() {
             let line = input[..range.0[0]].lines().count();
             let column = input[..range.0[0]].lines().last().map(|l| l.len()).unwrap_or_default();
 
@@ -65,7 +54,23 @@ impl KclError {
             (None, None)
         };
 
-        (format!("{}: {}", type_, message), line, column)
+        (format!("{}: {}", self.error_type(), self.message()), line, column)
+    }
+
+    pub fn error_type(&self) -> &'static str {
+        match self {
+            KclError::Lexical(_) => "lexical",
+            KclError::Syntax(_) => "syntax",
+            KclError::Semantic(_) => "semantic",
+            KclError::Type(_) => "type",
+            KclError::Unimplemented(_) => "unimplemented",
+            KclError::Unexpected(_) => "unexpected",
+            KclError::ValueAlreadyDefined(_) => "value already defined",
+            KclError::UndefinedValue(_) => "undefined value",
+            KclError::InvalidExpression(_) => "invalid expression",
+            KclError::Engine(_) => "engine",
+            KclError::Internal(_) => "internal",
+        }
     }
 
     pub fn source_ranges(&self) -> Vec<SourceRange> {
@@ -80,6 +85,7 @@ impl KclError {
             KclError::UndefinedValue(e) => e.source_ranges.clone(),
             KclError::InvalidExpression(e) => e.source_ranges.clone(),
             KclError::Engine(e) => e.source_ranges.clone(),
+            KclError::Internal(e) => e.source_ranges.clone(),
         }
     }
 
@@ -96,6 +102,7 @@ impl KclError {
             KclError::UndefinedValue(e) => &e.message,
             KclError::InvalidExpression(e) => &e.message,
             KclError::Engine(e) => &e.message,
+            KclError::Internal(e) => &e.message,
         }
     }
 

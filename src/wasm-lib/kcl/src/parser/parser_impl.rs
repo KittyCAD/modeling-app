@@ -1,5 +1,5 @@
 use winnow::{
-    combinator::{alt, delimited, opt, peek, preceded, repeat, separated0, terminated},
+    combinator::{alt, delimited, opt, peek, preceded, repeat, separated, terminated},
     dispatch,
     error::{ErrMode, StrContext, StrContextValue},
     prelude::*,
@@ -373,7 +373,7 @@ fn equals(i: TokenSlice) -> PResult<Token> {
 fn array(i: TokenSlice) -> PResult<ArrayExpression> {
     let start = open_bracket(i)?.start;
     ignore_whitespace(i);
-    let elements = alt((integer_range, separated0(value, comma_sep)))
+    let elements = alt((integer_range, separated(0.., value, comma_sep)))
         .context(expected(
             "array contents, either a numeric range (like 0..10) or a list of elements (like [1, 2, 3])",
         ))
@@ -430,7 +430,7 @@ fn object_property(i: TokenSlice) -> PResult<ObjectProperty> {
 fn object(i: TokenSlice) -> PResult<ObjectExpression> {
     let start = open_brace(i)?.start;
     ignore_whitespace(i);
-    let properties = separated0(object_property, comma_sep)
+    let properties = separated(0.., object_property, comma_sep)
         .context(expected(
             "a comma-separated list of key-value pairs, e.g. 'height: 4, width: 3'",
         ))
@@ -1039,7 +1039,8 @@ fn binary_expression(i: TokenSlice) -> PResult<BinaryExpression> {
 
     // Pass the token slice into the specialized math parser, for things like
     // precedence and converting infix operations to an AST.
-    Ok(super::math::parse(tokens))
+    let expr = super::math::parse(tokens).map_err(|e| ErrMode::Backtrack(e.into()))?;
+    Ok(expr)
 }
 
 fn binary_expr_in_parens(i: TokenSlice) -> PResult<BinaryExpression> {
@@ -1208,7 +1209,7 @@ fn comma_sep(i: TokenSlice) -> PResult<()> {
 
 /// Arguments are passed into a function.
 fn arguments(i: TokenSlice) -> PResult<Vec<Value>> {
-    separated0(value, comma_sep)
+    separated(0.., value, comma_sep)
         .context(expected("function arguments"))
         .parse_next(i)
 }
@@ -1221,7 +1222,7 @@ fn not_close_paren(i: TokenSlice) -> PResult<Token> {
 /// Parameters are declared in a function signature, and used within a function.
 fn parameters(i: TokenSlice) -> PResult<Vec<Identifier>> {
     // Get all tokens until the next ), because that ends the parameter list.
-    let candidates: Vec<Token> = separated0(not_close_paren, comma_sep)
+    let candidates: Vec<Token> = separated(0.., not_close_paren, comma_sep)
         .context(expected("function parameters"))
         .parse_next(i)?;
     // Make sure all those tokens are valid parameters.
@@ -2571,6 +2572,23 @@ thing(false)
             result.err().unwrap().to_string(),
             r#"syntax: KclErrorDetails { source_ranges: [SourceRange([11, 18])], message: "Unexpected token" }"#
         );
+    }
+
+    #[test]
+    fn random_words_fail() {
+        let test_program = r#"const part001 = startSketchOn('-XZ')
+    |> startProfileAt([8.53, 11.8], %)
+    asdasd asdasd
+    |> line([11.12, -14.82], %)
+    |> line([-13.27, -6.98], %)
+    |> line([-5.09, 12.33], %)
+    asdasd
+"#;
+        let tokens = crate::token::lexer(test_program);
+        let parser = crate::parser::Parser::new(tokens);
+        let result = parser.ast();
+        let e = result.unwrap_err();
+        eprintln!("{e:?}")
     }
 
     #[test]

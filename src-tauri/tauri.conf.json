@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "kittycad-modeling",
-    "version": "0.11.1"
+    "version": "0.11.3"
   },
   "tauri": {
     "allowlist": {
@@ -72,23 +72,13 @@
       },
       "resources": [],
       "shortDescription": "",
-      "targets": "all",
-      "windows": {
-        "certificateThumbprint": "F4C9A52FF7BC26EE5E054946F6B11DEEA94C748D",
-        "digestAlgorithm": "sha256",
-        "timestampUrl": "http://timestamp.digicert.com"
-      }
+      "targets": "all"
     },
     "security": {
       "csp": null
     },
     "updater": {
-      "active": true,
-      "endpoints": [
-        "https://dl.kittycad.io/releases/modeling-app/last_update.json"
-      ],
-      "dialog": true,
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEUzNzA4MjBEQjFBRTY4NzYKUldSMmFLNnhEWUp3NCtsT21Jd05wQktOaGVkOVp6MUFma0hNTDRDSnI2RkJJTEZOWG1ncFhqcU8K"
+      "active": false
     },
     "windows": [
       {
