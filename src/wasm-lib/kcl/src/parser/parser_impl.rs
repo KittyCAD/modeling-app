@@ -1,5 +1,5 @@
 use winnow::{
-    combinator::{alt, delimited, opt, peek, preceded, repeat, separated0, terminated},
+    combinator::{alt, delimited, opt, peek, preceded, repeat, separated, terminated},
     dispatch,
     error::{ErrMode, StrContext, StrContextValue},
     prelude::*,
@@ -373,7 +373,7 @@ fn equals(i: TokenSlice) -> PResult<Token> {
 fn array(i: TokenSlice) -> PResult<ArrayExpression> {
     let start = open_bracket(i)?.start;
     ignore_whitespace(i);
-    let elements = alt((integer_range, separated0(value, comma_sep)))
+    let elements = alt((integer_range, separated(0.., value, comma_sep)))
         .context(expected(
             "array contents, either a numeric range (like 0..10) or a list of elements (like [1, 2, 3])",
         ))
@@ -430,7 +430,7 @@ fn object_property(i: TokenSlice) -> PResult<ObjectProperty> {
 fn object(i: TokenSlice) -> PResult<ObjectExpression> {
     let start = open_brace(i)?.start;
     ignore_whitespace(i);
-    let properties = separated0(object_property, comma_sep)
+    let properties = separated(0.., object_property, comma_sep)
         .context(expected(
             "a comma-separated list of key-value pairs, e.g. 'height: 4, width: 3'",
         ))
@@ -1209,7 +1209,7 @@ fn comma_sep(i: TokenSlice) -> PResult<()> {
 
 /// Arguments are passed into a function.
 fn arguments(i: TokenSlice) -> PResult<Vec<Value>> {
-    separated0(value, comma_sep)
+    separated(0.., value, comma_sep)
         .context(expected("function arguments"))
         .parse_next(i)
 }
@@ -1222,7 +1222,7 @@ fn not_close_paren(i: TokenSlice) -> PResult<Token> {
 /// Parameters are declared in a function signature, and used within a function.
 fn parameters(i: TokenSlice) -> PResult<Vec<Identifier>> {
     // Get all tokens until the next ), because that ends the parameter list.
-    let candidates: Vec<Token> = separated0(not_close_paren, comma_sep)
+    let candidates: Vec<Token> = separated(0.., not_close_paren, comma_sep)
         .context(expected("function parameters"))
         .parse_next(i)?;
     // Make sure all those tokens are valid parameters.
