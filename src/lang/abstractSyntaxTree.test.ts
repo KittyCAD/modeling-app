@@ -331,9 +331,6 @@ const myVar = funcN(1, 2)`
                   raw: '2',
                 },
               ],
-              function: {
-                type: 'InMemory',
-              },
               optional: false,
             },
           },
@@ -403,7 +400,6 @@ describe('testing pipe operator special', () => {
                       ],
                     },
                   ],
-                  function: expect.any(Object),
                   optional: false,
                 },
                 {
@@ -440,7 +436,6 @@ describe('testing pipe operator special', () => {
                     },
                     { type: 'PipeSubstitution', start: 59, end: 60 },
                   ],
-                  function: expect.any(Object),
                   optional: false,
                 },
                 {
@@ -513,7 +508,6 @@ describe('testing pipe operator special', () => {
                     },
                     { type: 'PipeSubstitution', start: 105, end: 106 },
                   ],
-                  function: expect.any(Object),
                   optional: false,
                 },
                 {
@@ -550,7 +544,6 @@ describe('testing pipe operator special', () => {
                     },
                     { type: 'PipeSubstitution', start: 128, end: 129 },
                   ],
-                  function: expect.any(Object),
                   optional: false,
                 },
                 {
@@ -573,9 +566,6 @@ describe('testing pipe operator special', () => {
                     },
                     { type: 'PipeSubstitution', start: 143, end: 144 },
                   ],
-                  function: {
-                    type: 'InMemory',
-                  },
                   optional: false,
                 },
               ],
@@ -655,9 +645,6 @@ describe('testing pipe operator special', () => {
                       end: 35,
                     },
                   ],
-                  function: {
-                    type: 'InMemory',
-                  },
                   optional: false,
                 },
               ],
@@ -1567,7 +1554,6 @@ describe('test UnaryExpression', () => {
           { type: 'Literal', start: 19, end: 20, value: 4, raw: '4' },
           { type: 'Literal', start: 22, end: 25, value: 100, raw: '100' },
         ],
-        function: expect.any(Object),
         optional: false,
       },
     })
@@ -1601,12 +1587,10 @@ describe('testing nested call expressions', () => {
               { type: 'Literal', start: 34, end: 35, value: 5, raw: '5' },
               { type: 'Literal', start: 37, end: 38, value: 3, raw: '3' },
             ],
-            function: expect.any(Object),
             optional: false,
           },
         },
       ],
-      function: expect.any(Object),
       optional: false,
     })
   })
@@ -1638,7 +1622,6 @@ describe('should recognise callExpresions in binaryExpressions', () => {
             },
             { type: 'PipeSubstitution', start: 25, end: 26 },
           ],
-          function: expect.any(Object),
           optional: false,
         },
         right: { type: 'Literal', value: 1, raw: '1', start: 30, end: 31 },

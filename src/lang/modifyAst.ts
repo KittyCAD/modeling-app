@@ -480,21 +480,6 @@ export function createCallExpressionStdLib(
       end: 0,
       name,
     },
-    function: {
-      type: 'StdLib',
-      func: {
-        // We only need the name here to map it back when it serializes
-        // to rust, don't worry about the rest.
-        name,
-        summary: '',
-        description: '',
-        tags: [],
-        returnValue: { type: '', required: false, name: '', schema: {} },
-        args: [],
-        unpublished: false,
-        deprecated: false,
-      },
-    },
     optional: false,
     arguments: args,
   }
@@ -513,9 +498,6 @@ export function createCallExpression(
       start: 0,
       end: 0,
       name,
-    },
-    function: {
-      type: 'InMemory',
     },
     optional: false,
     arguments: args,
