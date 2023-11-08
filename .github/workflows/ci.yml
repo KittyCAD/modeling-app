@@ -106,7 +106,7 @@ jobs:
         run: |
           VERSION=$(date +'%-y.%-m.%-d') yarn bump-jsons
           echo "$(jq --arg url 'https://dl.kittycad.io/releases/modeling-app/nightly/last_update.json' \
-            '.tauri.updater.endpoints[]=$url' src-tauri/tauri.conf.json --indent 2)" > src-tauri/tauri.conf.json
+            '.tauri.updater.endpoints[]=$url' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
 
       - uses: actions/upload-artifact@v3
         if: github.event_name == 'schedule'
@@ -114,6 +114,7 @@ jobs:
           path: |
             package.json
             src-tauri/tauri.conf.json
+            src-tauri/tauri.release.conf.json
 
       - id: export_version
         run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
@@ -136,6 +137,7 @@ jobs:
           ls -l artifact
           cp artifact/package.json package.json
           cp artifact/src-tauri/tauri.conf.json src-tauri/tauri.conf.json
+          cp artifact/src-tauri/tauri.release.conf.json src-tauri/tauri.release.conf.json 
 
       - name: Install ubuntu system dependencies
         if: matrix.os == 'ubuntu-latest'
