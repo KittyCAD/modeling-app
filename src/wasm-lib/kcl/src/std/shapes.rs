@@ -30,7 +30,7 @@ pub struct Circle {
 impl Default for Circle {
     fn default() -> Self {
         // TODO in https://github.com/KittyCAD/modeling-app/issues/1018
-        // Don't unwrap here, parse it at compiletime.
+        // Don't unwrap here, parse it at compile-time.
         let (src, function) = super::kcl_stdlib::extract_function(CIRCLE_FN).unwrap();
         Self {
             function: *function,
