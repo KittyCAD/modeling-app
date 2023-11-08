@@ -78,10 +78,7 @@ expression: actual
                     "end": 35
                   }
                 ],
-                "optional": false,
-                "function": {
-                  "type": "InMemory"
-                }
+                "optional": false
               }
             ],
             "nonCodeMeta": {

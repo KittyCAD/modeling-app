@@ -49,10 +49,7 @@ expression: actual
                     "raw": "1"
                   }
                 ],
-                "optional": false,
-                "function": {
-                  "type": "InMemory"
-                }
+                "optional": false
               },
               {
                 "type": "CallExpression",
@@ -75,10 +72,7 @@ expression: actual
                     "raw": "2"
                   }
                 ],
-                "optional": false,
-                "function": {
-                  "type": "InMemory"
-                }
+                "optional": false
               }
             ],
             "nonCodeMeta": {

@@ -77,85 +77,11 @@ expression: actual
                       "raw": "4"
                     }
                   ],
-                  "optional": false,
-                  "function": {
-                    "type": "StdLib",
-                    "func": {
-                      "name": "legLen",
-                      "summary": "Returns the length of the given leg.",
-                      "description": "",
-                      "tags": [],
-                      "args": [
-                        {
-                          "name": "hypotenuse",
-                          "type": "number",
-                          "schema": {
-                            "type": "number",
-                            "format": "double"
-                          },
-                          "required": true
-                        },
-                        {
-                          "name": "leg",
-                          "type": "number",
-                          "schema": {
-                            "type": "number",
-                            "format": "double"
-                          },
-                          "required": true
-                        }
-                      ],
-                      "returnValue": {
-                        "name": "",
-                        "type": "number",
-                        "schema": {
-                          "type": "number",
-                          "format": "double"
-                        },
-                        "required": true
-                      },
-                      "unpublished": false,
-                      "deprecated": false
-                    }
-                  }
+                  "optional": false
                 }
               }
             ],
-            "optional": false,
-            "function": {
-              "type": "StdLib",
-              "func": {
-                "name": "min",
-                "summary": "Computes the minimum of the given arguments.",
-                "description": "",
-                "tags": [],
-                "args": [
-                  {
-                    "name": "args",
-                    "type": "[number]",
-                    "schema": {
-                      "type": "array",
-                      "items": {
-                        "type": "number",
-                        "format": "double"
-                      }
-                    },
-                    "required": true
-                  }
-                ],
-                "returnValue": {
-                  "name": "",
-                  "type": "number",
-                  "schema": {
-                    "type": "number",
-                    "format": "double"
-                  },
-                  "required": true
-                },
-                "unpublished": false,
-                "deprecated": false
-              }
-            }
+            "optional": false
           }
         }
       ],
