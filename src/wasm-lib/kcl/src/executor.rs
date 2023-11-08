@@ -1,6 +1,6 @@
 //! The executor for the AST.
 
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Arc};
 
 use anyhow::Result;
 use kittycad::types::{Color, ModelingCmd, Point3D};
@@ -10,9 +10,10 @@ use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
-    ast::types::{BodyItem, Function, FunctionExpression, Value},
+    ast::types::{BodyItem, FunctionExpression, Value},
     engine::{EngineConnection, EngineManager},
     errors::{KclError, KclErrorDetails},
+    std::StdLib,
 };
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -776,6 +777,7 @@ impl Default for PipeInfo {
 pub struct ExecutorContext {
     pub engine: EngineConnection,
     pub planes: DefaultPlanes,
+    pub stdlib: Arc<StdLib>,
 }
 
 /// Execute a AST's program.
@@ -826,15 +828,18 @@ pub async fn execute(
                         }
                     }
                     let _show_fn = Box::new(crate::std::Show);
-                    if let Function::StdLib { func: _show_fn } = &call_expr.function {
-                        if options != BodyType::Root {
-                            return Err(KclError::Semantic(KclErrorDetails {
-                                message: "Cannot call show outside of a root".to_string(),
-                                source_ranges: vec![call_expr.into()],
-                            }));
-                        }
+                    if let Some(func) = ctx.stdlib.get(&call_expr.callee.name) {
+                        use crate::docs::StdLibFn;
+                        if func.name() == _show_fn.name() {
+                            if options != BodyType::Root {
+                                return Err(KclError::Semantic(KclErrorDetails {
+                                    message: "Cannot call show outside of a root".to_string(),
+                                    source_ranges: vec![call_expr.into()],
+                                }));
+                            }
 
-                        memory.return_ = Some(ProgramReturn::Arguments(call_expr.arguments.clone()));
+                            memory.return_ = Some(ProgramReturn::Arguments(call_expr.arguments.clone()));
+                        }
                     } else if let Some(func) = memory.clone().root.get(&fn_name) {
                         let result = func.call_fn(args.clone(), memory.clone(), ctx.clone()).await?;
 
@@ -1011,7 +1016,11 @@ mod tests {
         let mut mem: ProgramMemory = Default::default();
         let engine = EngineConnection::new().await?;
         let planes = DefaultPlanes::new(&engine).await?;
-        let ctx = ExecutorContext { engine, planes };
+        let ctx = ExecutorContext {
+            engine,
+            planes,
+            stdlib: Arc::new(StdLib::default()),
+        };
         let memory = execute(program, &mut mem, BodyType::Root, &ctx).await?;
 
         Ok(memory)

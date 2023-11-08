@@ -6,6 +6,7 @@ use winnow::{
     token::{any, one_of},
 };
 
+use super::{math::BinaryExpressionToken, PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR};
 use crate::{
     ast::types::{
         ArrayExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression, CommentStyle,
@@ -17,19 +18,12 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
     parser::parser_impl::error::ContextError,
-    std::StdLib,
     token::{Token, TokenType},
 };
-
-use super::{math::BinaryExpressionToken, PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR};
 
 mod error;
 
 type PResult<O, E = error::ContextError> = winnow::prelude::PResult<O, E>;
-
-lazy_static::lazy_static! {
-    static ref STDLIB: StdLib = StdLib::new();
-}
 
 type TokenSlice<'slice, 'input> = &'slice mut &'input [Token];
 
@@ -1237,7 +1231,7 @@ fn parameters(i: TokenSlice) -> PResult<Vec<Identifier>> {
 impl Identifier {
     fn into_valid_binding_name(self) -> Result<Identifier, KclError> {
         // Make sure they are not assigning a variable to a stdlib function.
-        if STDLIB.fns.contains_key(&self.name) {
+        if crate::std::name_in_stdlib(&self.name) {
             return Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: vec![SourceRange([self.start, self.end])],
                 message: format!("Cannot assign a variable to a reserved keyword: {}", self.name),
@@ -1261,18 +1255,12 @@ fn fn_call(i: TokenSlice) -> PResult<CallExpression> {
     let _ = terminated(open_paren, opt(whitespace)).parse_next(i)?;
     let args = arguments(i)?;
     let end = preceded(opt(whitespace), close_paren).parse_next(i)?.end;
-    let function = if let Some(stdlib_fn) = STDLIB.get(&fn_name.name) {
-        crate::ast::types::Function::StdLib { func: stdlib_fn }
-    } else {
-        crate::ast::types::Function::InMemory
-    };
     Ok(CallExpression {
         start: fn_name.start,
         end,
         callee: fn_name,
         arguments: args,
         optional: false,
-        function,
     })
 }
 

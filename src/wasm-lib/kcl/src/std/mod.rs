@@ -11,12 +11,14 @@ use std::collections::HashMap;
 use anyhow::Result;
 use derive_docs::stdlib;
 use kittycad::types::OkWebSocketResponseData;
+use lazy_static::lazy_static;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
     ast::types::parse_json_number_as_f64,
+    docs::StdLibFn,
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
     executor::{ExecutorContext, ExtrudeGroup, MemoryItem, Metadata, Plane, SketchGroup, SourceRange},
@@ -25,70 +27,84 @@ use crate::{
 pub type StdFn = fn(Args) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<MemoryItem, KclError>>>>;
 pub type FnMap = HashMap<String, StdFn>;
 
+lazy_static! {
+    static ref CORE_FNS: Vec<Box<dyn StdLibFn>> = vec![
+        Box::new(Show),
+        Box::new(LegLen),
+        Box::new(LegAngX),
+        Box::new(LegAngY),
+        Box::new(crate::std::extrude::Extrude),
+        Box::new(crate::std::extrude::GetExtrudeWallTransform),
+        Box::new(crate::std::segment::SegEndX),
+        Box::new(crate::std::segment::SegEndY),
+        Box::new(crate::std::segment::LastSegX),
+        Box::new(crate::std::segment::LastSegY),
+        Box::new(crate::std::segment::SegLen),
+        Box::new(crate::std::segment::SegAng),
+        Box::new(crate::std::segment::AngleToMatchLengthX),
+        Box::new(crate::std::segment::AngleToMatchLengthY),
+        Box::new(crate::std::sketch::LineTo),
+        Box::new(crate::std::sketch::Line),
+        Box::new(crate::std::sketch::XLineTo),
+        Box::new(crate::std::sketch::XLine),
+        Box::new(crate::std::sketch::YLineTo),
+        Box::new(crate::std::sketch::YLine),
+        Box::new(crate::std::sketch::AngledLineToX),
+        Box::new(crate::std::sketch::AngledLineToY),
+        Box::new(crate::std::sketch::AngledLine),
+        Box::new(crate::std::sketch::AngledLineOfXLength),
+        Box::new(crate::std::sketch::AngledLineOfYLength),
+        Box::new(crate::std::sketch::AngledLineThatIntersects),
+        Box::new(crate::std::sketch::StartSketchAt),
+        Box::new(crate::std::sketch::StartSketchOn),
+        Box::new(crate::std::sketch::StartProfileAt),
+        Box::new(crate::std::sketch::Close),
+        Box::new(crate::std::sketch::Arc),
+        Box::new(crate::std::sketch::TangentialArc),
+        Box::new(crate::std::sketch::TangentialArcTo),
+        Box::new(crate::std::sketch::BezierCurve),
+        Box::new(crate::std::sketch::Hole),
+        Box::new(crate::std::math::Cos),
+        Box::new(crate::std::math::Sin),
+        Box::new(crate::std::math::Tan),
+        Box::new(crate::std::math::Acos),
+        Box::new(crate::std::math::Asin),
+        Box::new(crate::std::math::Atan),
+        Box::new(crate::std::math::Pi),
+        Box::new(crate::std::math::E),
+        Box::new(crate::std::math::Tau),
+        Box::new(crate::std::math::Sqrt),
+        Box::new(crate::std::math::Abs),
+        Box::new(crate::std::math::Floor),
+        Box::new(crate::std::math::Ceil),
+        Box::new(crate::std::math::Min),
+        Box::new(crate::std::math::Max),
+        Box::new(crate::std::math::Pow),
+        Box::new(crate::std::math::Log),
+        Box::new(crate::std::math::Log2),
+        Box::new(crate::std::math::Log10),
+        Box::new(crate::std::math::Ln),
+    ];
+}
+
+pub fn name_in_stdlib(name: &str) -> bool {
+    CORE_FNS.iter().any(|f| f.name() == name)
+}
+
 pub struct StdLib {
-    pub fns: HashMap<String, Box<(dyn crate::docs::StdLibFn)>>,
+    pub fns: HashMap<String, Box<(dyn StdLibFn)>>,
+}
+
+impl std::fmt::Debug for StdLib {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("StdLib").field("fns.len()", &self.fns.len()).finish()
+    }
 }
 
 impl StdLib {
     pub fn new() -> Self {
-        let internal_fns: [Box<dyn crate::docs::StdLibFn>; 55] = [
-            Box::new(Show),
-            Box::new(LegLen),
-            Box::new(LegAngX),
-            Box::new(LegAngY),
-            Box::new(crate::std::extrude::Extrude),
-            Box::new(crate::std::extrude::GetExtrudeWallTransform),
-            Box::new(crate::std::segment::SegEndX),
-            Box::new(crate::std::segment::SegEndY),
-            Box::new(crate::std::segment::LastSegX),
-            Box::new(crate::std::segment::LastSegY),
-            Box::new(crate::std::segment::SegLen),
-            Box::new(crate::std::segment::SegAng),
-            Box::new(crate::std::segment::AngleToMatchLengthX),
-            Box::new(crate::std::segment::AngleToMatchLengthY),
-            Box::new(crate::std::sketch::LineTo),
-            Box::new(crate::std::sketch::Line),
-            Box::new(crate::std::sketch::XLineTo),
-            Box::new(crate::std::sketch::XLine),
-            Box::new(crate::std::sketch::YLineTo),
-            Box::new(crate::std::sketch::YLine),
-            Box::new(crate::std::sketch::AngledLineToX),
-            Box::new(crate::std::sketch::AngledLineToY),
-            Box::new(crate::std::sketch::AngledLine),
-            Box::new(crate::std::sketch::AngledLineOfXLength),
-            Box::new(crate::std::sketch::AngledLineOfYLength),
-            Box::new(crate::std::sketch::AngledLineThatIntersects),
-            Box::new(crate::std::sketch::StartSketchAt),
-            Box::new(crate::std::sketch::StartSketchOn),
-            Box::new(crate::std::sketch::StartProfileAt),
-            Box::new(crate::std::sketch::Close),
-            Box::new(crate::std::sketch::Arc),
-            Box::new(crate::std::sketch::TangentialArc),
-            Box::new(crate::std::sketch::TangentialArcTo),
-            Box::new(crate::std::sketch::BezierCurve),
-            Box::new(crate::std::sketch::Hole),
-            Box::new(crate::std::math::Cos),
-            Box::new(crate::std::math::Sin),
-            Box::new(crate::std::math::Tan),
-            Box::new(crate::std::math::Acos),
-            Box::new(crate::std::math::Asin),
-            Box::new(crate::std::math::Atan),
-            Box::new(crate::std::math::Pi),
-            Box::new(crate::std::math::E),
-            Box::new(crate::std::math::Tau),
-            Box::new(crate::std::math::Sqrt),
-            Box::new(crate::std::math::Abs),
-            Box::new(crate::std::math::Floor),
-            Box::new(crate::std::math::Ceil),
-            Box::new(crate::std::math::Min),
-            Box::new(crate::std::math::Max),
-            Box::new(crate::std::math::Pow),
-            Box::new(crate::std::math::Log),
-            Box::new(crate::std::math::Log2),
-            Box::new(crate::std::math::Log10),
-            Box::new(crate::std::math::Ln),
-        ];
-        let fns = internal_fns
+        let fns = CORE_FNS
+            .clone()
             .into_iter()
             .map(|internal_fn| (internal_fn.name(), internal_fn))
             .collect();
@@ -96,7 +112,7 @@ impl StdLib {
         Self { fns }
     }
 
-    pub fn get(&self, name: &str) -> Option<Box<dyn crate::docs::StdLibFn>> {
+    pub fn get(&self, name: &str) -> Option<Box<dyn StdLibFn>> {
         self.fns.get(name).cloned()
     }
 }
