@@ -16,7 +16,7 @@
     "@react-hook/resize-observer": "^1.2.6",
     "@replit/codemirror-interact": "^6.3.0",
     "@sentry/react": "^7.65.0",
-    "@tauri-apps/api": "^1.5.0",
+    "@tauri-apps/api": "^1.5.1",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.5.1",
