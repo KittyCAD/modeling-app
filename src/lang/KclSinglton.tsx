@@ -238,10 +238,10 @@ class KclManager {
       defaultPlanes: this.defaultPlanes,
     })
     this.isExecuting = false
-    this._logs = logs
-    this._kclErrors = errors
-    this._programMemory = programMemory
-    this._ast = { ...ast }
+    this.logs = logs
+    this.kclErrors = errors
+    this.programMemory = programMemory
+    this.ast = { ...ast }
     if (updateCode) {
       this.code = recast(ast)
     }
