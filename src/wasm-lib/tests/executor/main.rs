@@ -223,6 +223,14 @@ async fn serial_test_execute_pipes_on_pipes() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn serial_test_execute_cylinder() {
+    let code = include_str!("inputs/cylinder.kcl");
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/cylinder.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_execute_kittycad_svg() {
     let code = include_str!("inputs/kittycad_svg.kcl");
 
