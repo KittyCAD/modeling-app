@@ -14,10 +14,10 @@ pub trait KclStdLibFn: StdLibFn {
 }
 
 impl ts_rs::TS for dyn KclStdLibFn {
-    const EXPORT_TO: Option<&'static str> = Some("bindings/KclStdLibFnData");
+    const EXPORT_TO: Option<&'static str> = Some("bindings/StdLibFnData");
 
     fn name() -> String {
-        "KclStdLibFnData".to_string()
+        "StdLibFnData".to_string()
     }
 
     fn dependencies() -> Vec<ts_rs::Dependency>
