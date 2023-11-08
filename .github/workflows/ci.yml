@@ -102,9 +102,9 @@ jobs:
           cache: 'yarn'
           
       - name: Set nightly version
-        run: >
-          VERSION=$(date +'%-y.%-m.%-d') yarn bump-jsons &&
-          echo "$(jq --arg url 'https://dl.kittycad.io/releases/modeling-app/nightly/last_update.json'
+        run: |
+          VERSION=$(date +'%-y.%-m.%-d') yarn bump-jsons
+          echo "$(jq --arg url 'https://dl.kittycad.io/releases/modeling-app/nightly/last_update.json' \
             '.tauri.updater.endpoints[]=$url' src-tauri/tauri.conf.json --indent 2)" > src-tauri/tauri.conf.json
 
       - uses: actions/upload-artifact@v3
