@@ -347,27 +347,27 @@ impl MemoryItem {
         }
     }
 
+    /// If this memory item is a function, call it with the given arguments, return its val as Ok.
+    /// If it's not a function, return Err.
     pub async fn call_fn(
         &self,
         args: Vec<MemoryItem>,
         memory: ProgramMemory,
         ctx: ExecutorContext,
     ) -> Result<Option<ProgramReturn>, KclError> {
-        if let MemoryItem::Function { func, expression, meta } = &self {
-            if let Some(func) = func {
-                func(args, memory, expression.clone(), meta.clone(), ctx).await
-            } else {
-                Err(KclError::Semantic(KclErrorDetails {
-                    message: format!("Not a function: {:?}", expression),
-                    source_ranges: vec![],
-                }))
-            }
-        } else {
-            Err(KclError::Semantic(KclErrorDetails {
+        let MemoryItem::Function { func, expression, meta } = &self else {
+            return Err(KclError::Semantic(KclErrorDetails {
                 message: "not a in memory function".to_string(),
                 source_ranges: vec![],
-            }))
-        }
+            }));
+        };
+        let Some(func) = func else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: format!("Not a function: {:?}", expression),
+                source_ranges: vec![],
+            }));
+        };
+        func(args, memory, expression.clone(), meta.clone(), ctx).await
     }
 }
 
