@@ -1124,7 +1124,6 @@ impl PartialEq for Function {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct VariableDeclaration {
     pub start: usize,
     pub end: usize,
@@ -1347,7 +1346,6 @@ impl VariableDeclarator {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
 pub struct Literal {
     pub start: usize,
     pub end: usize,

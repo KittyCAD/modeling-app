@@ -1,0 +1,40 @@
+---
+source: kcl/src/parser/parser_impl.rs
+expression: actual
+---
+{
+  "start": 0,
+  "end": 11,
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 11,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 6,
+          "end": 11,
+          "id": {
+            "type": "Identifier",
+            "start": 6,
+            "end": 7,
+            "name": "x"
+          },
+          "init": {
+            "type": "Literal",
+            "start": 10,
+            "end": 11,
+            "value": 3,
+            "raw": "3"
+          }
+        }
+      ],
+      "kind": "const"
+    }
+  ],
+  "nonCodeMeta": {
+    "nonCodeNodes": {},
+    "start": []
+  }
+}

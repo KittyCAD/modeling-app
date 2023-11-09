@@ -2801,4 +2801,5 @@ mod snapshot_tests {
     snapshot_test!(ar, r#"5 + "a""#);
     snapshot_test!(at, "line([0, l], %)");
     snapshot_test!(au, include_str!("../../../tests/executor/inputs/cylinder.kcl"));
+    snapshot_test!(av, "const x = 3");
 }
