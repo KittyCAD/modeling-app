@@ -48,7 +48,7 @@ We recommend downloading the latest application binary from [our Releases page](
 
 ## Running a development build
 
-First, [install Rust via `rustup`](https://www.rust-lang.org/tools/install). This project uses a lot of Rust compiled to [WASM](https://webassembly.org/) within it. Then, run:
+First, [install Rust via `rustup`](https://www.rust-lang.org/tools/install). This project uses a lot of Rust compiled to [WASM](https://webassembly.org/) within it. We always use the latest stable version of Rust, so you may need to run `rustup update stable`. Then, run:
 
 ```
 yarn install
