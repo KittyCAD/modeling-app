@@ -795,7 +795,9 @@ pub async fn execute(
     for statement in &program.body {
         match statement {
             BodyItem::ExpressionStatement(expression_statement) => {
-                if let Value::CallExpression(call_expr) = &expression_statement.expression {
+                if let Value::PipeExpression(pipe_expr) = &expression_statement.expression {
+                    pipe_expr.get_result(memory, &mut pipe_info, ctx).await?;
+                } else if let Value::CallExpression(call_expr) = &expression_statement.expression {
                     let fn_name = call_expr.callee.name.to_string();
                     let mut args: Vec<MemoryItem> = Vec::new();
                     for arg in &call_expr.arguments {
