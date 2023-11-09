@@ -70,6 +70,7 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
     // Open the system browser with the auth_uri.
     // We do this in the browser and not a separate window because we want 1password and
     // other crap to work well.
+    println!(auth_uri.secret());
     tauri::api::shell::open(&app.shell_scope(), auth_uri.secret(), None)
         .map_err(|e| InvokeError::from_anyhow(e.into()))?;
 
