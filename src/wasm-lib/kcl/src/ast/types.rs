@@ -307,23 +307,6 @@ impl Program {
 
         None
     }
-
-    /// If this program has exactly one body item, which is a function expression, return it.
-    /// Otherwise returns None.
-    pub fn only_function_expression(mut self) -> Option<FunctionExpression> {
-        let item = self.body.pop()?;
-        if !self.body.is_empty() {
-            return None;
-        }
-        let BodyItem::ExpressionStatement(e) = item else {
-            return None;
-        };
-        if let Value::FunctionExpression(f) = e.expression {
-            Some(*f)
-        } else {
-            None
-        }
-    }
 }
 
 pub trait ValueMeta {
@@ -1012,8 +995,8 @@ impl CallExpression {
                 }
 
                 // Call the stdlib function
-                let p = func.function().clone();
-                let results = crate::executor::execute(p.body, &mut fn_memory, BodyType::Block, ctx).await?;
+                let p = func.function().clone().body;
+                let results = crate::executor::execute(p, &mut fn_memory, BodyType::Block, ctx).await?;
                 let out = results.return_;
                 let result = out.ok_or_else(|| {
                     KclError::UndefinedValue(KclErrorDetails {

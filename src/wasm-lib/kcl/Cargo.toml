@@ -46,7 +46,6 @@ tower-lsp = { version = "0.20.0", features = ["proposed"] }
 default = ["engine"]
 cli = ["dep:clap"]
 engine = []
-unstable-stdlib = []
 
 [profile.release]
 panic = "abort"
