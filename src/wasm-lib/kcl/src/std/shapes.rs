@@ -48,7 +48,7 @@ impl std::fmt::Debug for Circle {
 /// TODO: Parse the KCL in a macro and generate these
 impl StdLibFn for Circle {
     fn name(&self) -> String {
-        "circle".to_owned()
+        "unstable_stdlib_circle".to_owned()
     }
 
     fn summary(&self) -> String {

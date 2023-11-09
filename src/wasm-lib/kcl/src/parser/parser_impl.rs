@@ -1388,7 +1388,7 @@ const mySk1 = startSketchAt([0, 0])"#;
         let Value::PipeExpression(pipe) = val else {
             panic!("expected pipe");
         };
-        let mut noncode = dbg!(pipe.non_code_meta);
+        let mut noncode = pipe.non_code_meta;
         assert_eq!(noncode.non_code_nodes.len(), 1);
         let comment = noncode.non_code_nodes.remove(&0).unwrap().pop().unwrap();
         assert_eq!(
@@ -2575,8 +2575,7 @@ thing(false)
         let tokens = crate::token::lexer(test_program);
         let parser = crate::parser::Parser::new(tokens);
         let result = parser.ast();
-        let e = result.unwrap_err();
-        eprintln!("{e:?}")
+        let _e = result.unwrap_err();
     }
 
     #[test]

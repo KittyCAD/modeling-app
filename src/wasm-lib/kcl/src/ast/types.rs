@@ -1012,12 +1012,12 @@ impl CallExpression {
                 }
 
                 // Call the stdlib function
-                let out = crate::executor::execute(func.program().clone(), &mut fn_memory, BodyType::Block, ctx)
-                    .await?
-                    .return_;
+                let p = func.function().clone();
+                let results = crate::executor::execute(p.body, &mut fn_memory, BodyType::Block, ctx).await?;
+                let out = results.return_;
                 let result = out.ok_or_else(|| {
                     KclError::UndefinedValue(KclErrorDetails {
-                        message: format!("Result of function {} is undefined", fn_name),
+                        message: format!("Result of stdlib function {} is undefined", fn_name),
                         source_ranges: vec![self.into()],
                     })
                 })?;
@@ -1039,7 +1039,7 @@ impl CallExpression {
                     .await?
                     .ok_or_else(|| {
                         KclError::UndefinedValue(KclErrorDetails {
-                            message: format!("Result of function {} is undefined", fn_name),
+                            message: format!("Result of user-defined function {} is undefined", fn_name),
                             source_ranges: vec![self.into()],
                         })
                     })?;
