@@ -7,5 +7,6 @@ describe('Modeling App', () => {
     await button.waitForClickable()
     await browser.execute('arguments[0].click();', button)
     // TODO: handle auth
+    await new Promise(resolve => setTimeout(resolve, 1000))
   })
 })
