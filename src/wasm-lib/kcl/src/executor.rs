@@ -68,20 +68,14 @@ impl Default for ProgramMemory {
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum ProgramReturn {
-    Arguments(Vec<Value>),
+    Arguments,
     Value(MemoryItem),
 }
 
 impl From<ProgramReturn> for Vec<SourceRange> {
     fn from(item: ProgramReturn) -> Self {
         match item {
-            ProgramReturn::Arguments(args) => args
-                .iter()
-                .map(|arg| {
-                    let r: SourceRange = arg.into();
-                    r
-                })
-                .collect(),
+            ProgramReturn::Arguments => Default::default(),
             ProgramReturn::Value(v) => v.into(),
         }
     }
@@ -91,8 +85,8 @@ impl ProgramReturn {
     pub fn get_value(&self) -> Result<MemoryItem, KclError> {
         match self {
             ProgramReturn::Value(v) => Ok(v.clone()),
-            ProgramReturn::Arguments(args) => Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Cannot get value from arguments: {:?}", args),
+            ProgramReturn::Arguments => Err(KclError::Semantic(KclErrorDetails {
+                message: "Cannot get value from arguments".to_owned(),
                 source_ranges: self.clone().into(),
             })),
         }
@@ -838,7 +832,7 @@ pub async fn execute(
                                 }));
                             }
 
-                            memory.return_ = Some(ProgramReturn::Arguments(call_expr.arguments.clone()));
+                            memory.return_ = Some(ProgramReturn::Arguments);
                         }
                     } else if let Some(func) = memory.clone().root.get(&fn_name) {
                         let result = func.call_fn(args.clone(), memory.clone(), ctx.clone()).await?;
