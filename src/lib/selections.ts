@@ -120,7 +120,7 @@ export async function getEventForSelectWithPoint(
       },
     }
   }
-  if (!sketchEnginePathId) return null
+  // if (!sketchEnginePathId) return null
   // selected a vertex
   const res = await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
@@ -128,7 +128,7 @@ export async function getEventForSelectWithPoint(
     cmd: {
       type: 'path_get_curve_uuids_for_vertices',
       vertex_ids: [data.entity_id],
-      path_id: sketchEnginePathId,
+      path_id: sketchEnginePathId || '',
     },
   })
   const curveIds = res?.data?.data?.curve_ids

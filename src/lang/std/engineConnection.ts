@@ -289,6 +289,7 @@ export class EngineConnection {
           )
         } else {
           console.error(`Error from server:\n${errorsString}`)
+          console.log(message)
         }
         return
       }
