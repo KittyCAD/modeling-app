@@ -176,3 +176,39 @@ $ cargo +nightly fuzz run parser
 
 For more information on fuzzing you can check out
 [this guide](https://rust-fuzz.github.io/book/cargo-fuzz.html).
+
+
+### Playwright
+
+First time running plawright locally, you'll need to add the secrets file
+```bash
+touch ./src/e2e-tests/playwright-secrets.env
+echo 'token="your-token"' > ./src/e2e-tests/playwright-secrets.env
+```
+But save your token to the file
+
+then:
+run playwright
+```
+npx playwright test
+```
+
+run a specific test
+```
+npx playwright test src/e2e-tests/example.spec.ts
+```
+note if there are multip tests in a file, than change `test('...` to `test.only('...`
+
+run headed
+```
+npx playwright test --headed src/e2e-tests/example.spec.ts
+```
+
+run with step through debugger
+```
+PWDEBUG=1 npx playwright test src/e2e-tests/example.spec.ts
+```
+
+If you want to limit to a single browser use `--project="webkit"` or `firefox`, `Google Chrome`
+Or comment out browsers in `playwright.config.ts`
+// note chromium has encoder compat issues which is why were testing against the branded 'Google Chrome'

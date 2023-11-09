@@ -48,7 +48,7 @@ export const Toolbar = () => {
             className="group"
           >
             <ActionIcon icon="sketch" className="!p-0.5" size="md" />
-            Start Sketch
+            <span data-testid="start-sketch">Start Sketch</span>
           </button>
         )}
         {state.nextEvents.includes('Enter sketch') && pathId && (
