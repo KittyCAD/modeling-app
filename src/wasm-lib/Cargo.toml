@@ -53,6 +53,7 @@ debug = true
 members = [
 	"derive-docs",
 	"kcl",
+  "kcl-compile-macro",
 ]
 
 [workspace.dependencies]

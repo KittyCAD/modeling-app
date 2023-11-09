@@ -6,7 +6,7 @@ use serde_json::Value as JValue;
 use super::{Literal, Value};
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(untagged, rename_all = "snake_case")]
 pub enum LiteralValue {
