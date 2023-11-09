@@ -1,8 +1,10 @@
 //! Functions implemented for language execution.
 
 pub mod extrude;
+pub mod kcl_stdlib;
 pub mod math;
 pub mod segment;
+pub mod shapes;
 pub mod sketch;
 pub mod utils;
 
@@ -16,6 +18,7 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+use self::kcl_stdlib::KclStdLibFn;
 use crate::{
     ast::types::parse_json_number_as_f64,
     docs::StdLibFn,
@@ -92,12 +95,16 @@ pub fn name_in_stdlib(name: &str) -> bool {
 }
 
 pub struct StdLib {
-    pub fns: HashMap<String, Box<(dyn StdLibFn)>>,
+    pub fns: HashMap<String, Box<dyn StdLibFn>>,
+    pub kcl_fns: HashMap<String, Box<dyn KclStdLibFn>>,
 }
 
 impl std::fmt::Debug for StdLib {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("StdLib").field("fns.len()", &self.fns.len()).finish()
+        f.debug_struct("StdLib")
+            .field("fns.len()", &self.fns.len())
+            .field("kcl_fns.len()", &self.kcl_fns.len())
+            .finish()
     }
 }
 
@@ -109,11 +116,35 @@ impl StdLib {
             .map(|internal_fn| (internal_fn.name(), internal_fn))
             .collect();
 
-        Self { fns }
+        let kcl_internal_fns: [Box<dyn KclStdLibFn>; 1] = [Box::<shapes::Circle>::default()];
+        let kcl_fns = kcl_internal_fns
+            .into_iter()
+            .map(|internal_fn| (internal_fn.name(), internal_fn))
+            .collect();
+
+        Self { fns, kcl_fns }
     }
 
     pub fn get(&self, name: &str) -> Option<Box<dyn StdLibFn>> {
         self.fns.get(name).cloned()
+    }
+
+    pub fn get_kcl(&self, name: &str) -> Option<Box<dyn KclStdLibFn>> {
+        self.kcl_fns.get(name).cloned()
+    }
+
+    pub fn get_either(&self, name: &str) -> FunctionKind {
+        if let Some(f) = self.get(name) {
+            FunctionKind::Core(f)
+        } else if let Some(f) = self.get_kcl(name) {
+            FunctionKind::Std(f)
+        } else {
+            FunctionKind::UserDefined
+        }
+    }
+
+    pub fn contains_key(&self, key: &str) -> bool {
+        self.fns.contains_key(key) || self.kcl_fns.contains_key(key)
     }
 }
 
@@ -121,6 +152,12 @@ impl Default for StdLib {
     fn default() -> Self {
         Self::new()
     }
+}
+
+pub enum FunctionKind {
+    Core(Box<dyn StdLibFn>),
+    Std(Box<dyn KclStdLibFn>),
+    UserDefined,
 }
 
 #[derive(Debug, Clone)]
