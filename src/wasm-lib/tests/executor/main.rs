@@ -1,5 +1,7 @@
+use std::sync::Arc;
+
 use anyhow::Result;
-use kcl_lib::engine::EngineManager;
+use kcl_lib::{engine::EngineManager, std::StdLib};
 
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
@@ -38,7 +40,11 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
     let mut mem: kcl_lib::executor::ProgramMemory = Default::default();
     let engine = kcl_lib::engine::EngineConnection::new(ws).await?;
     let planes = kcl_lib::executor::DefaultPlanes::new(&engine).await?;
-    let ctx = kcl_lib::executor::ExecutorContext { engine, planes };
+    let ctx = kcl_lib::executor::ExecutorContext {
+        engine,
+        planes,
+        stdlib: Arc::new(StdLib::default()),
+    };
     let _ = kcl_lib::executor::execute(program, &mut mem, kcl_lib::executor::BodyType::Root, &ctx).await?;
 
     // Send a snapshot request to the engine.

@@ -28,7 +28,11 @@ pub async fn execute_wasm(
     let engine = kcl_lib::engine::EngineConnection::new(manager)
         .await
         .map_err(|e| format!("{:?}", e))?;
-    let ctx = ExecutorContext { engine, planes };
+    let ctx = ExecutorContext {
+        engine,
+        planes,
+        stdlib: std::sync::Arc::new(kcl_lib::std::StdLib::new()),
+    };
 
     let memory = kcl_lib::executor::execute(program, &mut mem, kcl_lib::executor::BodyType::Root, &ctx)
         .await

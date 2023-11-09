@@ -6,8 +6,7 @@ use anyhow::Result;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use serde_json::Map;
-use serde_json::Value as JValue;
+use serde_json::{Map, Value as JValue};
 use tower_lsp::lsp_types::{CompletionItem, CompletionItemKind, DocumentSymbol, Range as LspRange, SymbolKind};
 
 pub use self::literal_value::LiteralValue;
@@ -862,7 +861,6 @@ pub struct CallExpression {
     pub callee: Identifier,
     pub arguments: Vec<Value>,
     pub optional: bool,
-    pub function: Function,
 }
 
 impl_value_meta!(CallExpression);
@@ -875,22 +873,12 @@ impl From<CallExpression> for Value {
 
 impl CallExpression {
     pub fn new(name: &str, arguments: Vec<Value>) -> Result<Self, KclError> {
-        // Create our stdlib.
-        let stdlib = crate::std::StdLib::new();
-        let func = stdlib.get(name).ok_or_else(|| {
-            KclError::UndefinedValue(KclErrorDetails {
-                message: format!("Function {} is not defined", name),
-                source_ranges: vec![],
-            })
-        })?;
-
         Ok(Self {
             start: 0,
             end: 0,
             callee: Identifier::new(name),
             arguments,
             optional: false,
-            function: Function::StdLib { func },
         })
     }
 
@@ -972,8 +960,8 @@ impl CallExpression {
             fn_args.push(result);
         }
 
-        match &self.function {
-            Function::StdLib { func } => {
+        match ctx.stdlib.get(&self.callee.name) {
+            Some(func) => {
                 // Attempt to call the function.
                 let args = crate::std::Args::new(fn_args, self.into(), ctx.clone());
                 let result = func.std_lib_fn()(args).await?;
@@ -985,7 +973,8 @@ impl CallExpression {
                     Ok(result)
                 }
             }
-            Function::InMemory => {
+            // Must be user-defined then
+            None => {
                 let func = memory.get(&fn_name, self.into())?;
                 let result = func
                     .call_fn(fn_args, memory.clone(), ctx.clone())

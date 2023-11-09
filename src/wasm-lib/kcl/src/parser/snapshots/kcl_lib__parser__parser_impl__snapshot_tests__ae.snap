@@ -88,10 +88,7 @@ expression: actual
             "name": "false"
           }
         ],
-        "optional": false,
-        "function": {
-          "type": "InMemory"
-        }
+        "optional": false
       }
     }
   ],

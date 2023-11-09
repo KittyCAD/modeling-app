@@ -1,8 +1,11 @@
+use std::sync::Arc;
+
 use anyhow::Result;
 use kcl_lib::{
     ast::{modify::modify_ast_for_sketch, types::Program},
     engine::EngineManager,
     executor::{ExecutorContext, MemoryItem, PlaneType, SourceRange},
+    std::StdLib,
 };
 use kittycad::types::{ModelingCmd, Point3D};
 use pretty_assertions::assert_eq;
@@ -39,7 +42,11 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
     let mut mem: kcl_lib::executor::ProgramMemory = Default::default();
     let engine = kcl_lib::engine::EngineConnection::new(ws).await?;
     let planes = kcl_lib::executor::DefaultPlanes::new(&engine).await?;
-    let ctx = ExecutorContext { engine, planes };
+    let ctx = ExecutorContext {
+        engine,
+        planes,
+        stdlib: Arc::new(StdLib::default()),
+    };
     let memory = kcl_lib::executor::execute(program.clone(), &mut mem, kcl_lib::executor::BodyType::Root, &ctx).await?;
 
     // We need to get the sketch ID.

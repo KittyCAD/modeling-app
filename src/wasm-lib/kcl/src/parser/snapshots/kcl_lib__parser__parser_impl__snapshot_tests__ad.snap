@@ -74,10 +74,7 @@ expression: actual
           "name": "firstPrimeNumber"
         },
         "arguments": [],
-        "optional": false,
-        "function": {
-          "type": "InMemory"
-        }
+        "optional": false
       }
     }
   ],
