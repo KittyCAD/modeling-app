@@ -3350,22 +3350,22 @@ checksum = "3528ecfd12c466c6f163363caf2d02a71161dd5e1cc6ae7b34207ea2d42d81ed"
 
 [[package]]
 name = "ts-rs-json-value"
-version = "7.0.1"
+version = "7.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f7a6c8eccea9e885ef26336d58ef9ae48b22d7ae3e503422af1902240616d1f6"
+checksum = "3c6180ea4491378ce11e69129ace586476c591378af23bbbc5cd9f84991927a0"
 dependencies = [
  "schemars",
  "serde_json",
  "thiserror",
- "ts-rs-macros",
+ "ts-rs-macros-serde-json",
  "uuid",
 ]
 
 [[package]]
-name = "ts-rs-macros"
-version = "7.0.0"
+name = "ts-rs-macros-serde-json"
+version = "7.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a6f41cc0aeb7a4a55730188e147d3795a7349b501f8334697fd37629b896cdc2"
+checksum = "40ccddb90eaf7e7c5d8b62c74626beb8cbc714a77d0f77f456204cc8f93aada9"
 dependencies = [
  "Inflector",
  "proc-macro2",

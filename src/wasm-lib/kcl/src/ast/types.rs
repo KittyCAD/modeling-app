@@ -709,7 +709,7 @@ impl BinaryPart {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[ts(tag = "type")]
 pub struct NonCodeNode {
     pub start: usize,
     pub end: usize,
@@ -845,7 +845,7 @@ impl NonCodeMeta {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[ts(tag = "type")]
 pub struct ExpressionStatement {
     pub start: usize,
     pub end: usize,
@@ -856,7 +856,7 @@ impl_value_meta!(ExpressionStatement);
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[ts(tag = "type")]
 pub struct CallExpression {
     pub start: usize,
     pub end: usize,
@@ -1124,7 +1124,7 @@ impl PartialEq for Function {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[ts(tag = "type")]
 pub struct VariableDeclaration {
     pub start: usize,
     pub end: usize,
@@ -1318,7 +1318,7 @@ impl VariableKind {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[ts(tag = "type")]
 pub struct VariableDeclarator {
     pub start: usize,
     pub end: usize,
@@ -1347,7 +1347,7 @@ impl VariableDeclarator {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[ts(tag = "type")]
 pub struct Literal {
     pub start: usize,
     pub end: usize,
@@ -1417,7 +1417,7 @@ impl From<&Box<Literal>> for MemoryItem {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[ts(tag = "type")]
 pub struct Identifier {
     pub start: usize,
     pub end: usize,
@@ -1453,7 +1453,7 @@ impl Identifier {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[ts(tag = "type")]
 pub struct PipeSubstitution {
     pub start: usize,
     pub end: usize,
@@ -1481,7 +1481,7 @@ impl From<PipeSubstitution> for Value {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[ts(tag = "type")]
 pub struct ArrayExpression {
     pub start: usize,
     pub end: usize,
@@ -1641,7 +1641,7 @@ impl ArrayExpression {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[ts(tag = "type")]
 pub struct ObjectExpression {
     pub start: usize,
     pub end: usize,
@@ -1798,7 +1798,7 @@ impl_value_meta!(ObjectExpression);
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[ts(tag = "type")]
 pub struct ObjectProperty {
     pub start: usize,
     pub end: usize,
@@ -1922,7 +1922,7 @@ impl From<&LiteralIdentifier> for SourceRange {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[ts(tag = "type")]
 pub struct MemberExpression {
     pub start: usize,
     pub end: usize,
@@ -2085,7 +2085,7 @@ pub struct ObjectKeyInfo {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[ts(tag = "type")]
 pub struct BinaryExpression {
     pub start: usize,
     pub end: usize,
@@ -2332,7 +2332,7 @@ impl BinaryOperator {
 }
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[ts(tag = "type")]
 pub struct UnaryExpression {
     pub start: usize,
     pub end: usize,
@@ -2425,7 +2425,8 @@ pub enum UnaryOperator {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(rename_all = "camelCase", tag = "type")]
+#[serde(rename_all = "camelCase")]
+#[ts(tag = "type")]
 pub struct PipeExpression {
     pub start: usize,
     pub end: usize,
@@ -2583,7 +2584,7 @@ async fn execute_pipe_body(
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[ts(tag = "type")]
 pub struct FunctionExpression {
     pub start: usize,
     pub end: usize,
@@ -2633,7 +2634,7 @@ impl FunctionExpression {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[ts(tag = "type")]
 pub struct ReturnStatement {
     pub start: usize,
     pub end: usize,
@@ -3290,6 +3291,29 @@ const firstExtrude = startSketchOn('XY')
 show(firstExtrude)
 "#
         );
+    }
+
+    #[test]
+    fn test_serialize_deserialize_json() {
+        let some_program_string = r#"const w = 20
+const l = 8
+const h = 10
+
+const firstExtrude = startSketchOn('XY')
+  |> startProfileAt([0,0], %)
+  |> line([0, l], %)
+  |> line([w, 0], %)
+  |> line([0, -l], %)
+  |> close(%)
+  |> extrude(h, %)
+
+show(firstExtrude)"#;
+        let tokens = crate::token::lexer(some_program_string);
+        let parser = crate::parser::Parser::new(tokens);
+        let program = parser.ast().unwrap();
+
+        let json = serde_json::to_string_pretty(&program).unwrap();
+        let _deserialized: Program = serde_json::from_str(&json).unwrap();
     }
 
     #[tokio::test(flavor = "multi_thread")]
