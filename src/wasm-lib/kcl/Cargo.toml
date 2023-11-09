@@ -15,6 +15,7 @@ async-recursion = "1.0.5"
 async-trait = "0.1.73"
 clap = { version = "4.4.7", features = ["cargo", "derive", "env", "unicode"], optional = true }
 dashmap = "5.5.3"
+databake = { version = "0.1.6", features = ["derive"] }
 derive-docs = { version = "0.1.4" }
 #derive-docs = { path = "../derive-docs" }
 kittycad = { workspace = true }
