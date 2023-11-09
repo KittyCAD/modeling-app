@@ -2,8 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::io::Read;
-use std::fs::File;
-use std::io::prelude::*;
+use std::fs;
 
 use anyhow::Result;
 use oauth2::TokenResponse;
@@ -73,8 +72,8 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
     // We do this in the browser and not a separate window because we want 1password and
     // other crap to work well.
     println!("Opening {}", auth_uri.secret());
-    let mut file = File::create("/tmp/kittycad_user_code")?;
-    file.write_all("{}", auth_uri.secret())?;
+    // TODO: find a better way
+    fs::write("/tmp/kittycad_user_code", auth_uri.secret()).expect("Unable to write file");
     tauri::api::shell::open(&app.shell_scope(), auth_uri.secret(), None)
         .map_err(|e| InvokeError::from_anyhow(e.into()))?;
 
