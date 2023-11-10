@@ -116,7 +116,7 @@
     "autoprefixer": "^10.4.13",
     "eslint": "^8.53.0",
     "eslint-config-react-app": "^7.0.1",
-    "eslint-plugin-css-modules": "^2.11.0",
+    "eslint-plugin-css-modules": "^2.12.0",
     "happy-dom": "^10.8.0",
     "husky": "^8.0.3",
     "postcss": "^8.4.31",
