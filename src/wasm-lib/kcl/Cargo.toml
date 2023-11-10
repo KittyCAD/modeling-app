@@ -40,7 +40,7 @@ web-sys = { version = "0.3.64", features = ["console"] }
 bson = { version = "2.7.0", features = ["uuid-1", "chrono"] }
 futures = { version = "0.3.29" }
 reqwest = { version = "0.11.22", default-features = false }
-tokio = { version = "1.33.0", features = ["full"] }
+tokio = { version = "1.34.0", features = ["full"] }
 tokio-tungstenite = { version = "0.20.0", features = ["rustls-tls-native-roots"] }
 tower-lsp = { version = "0.20.0", features = ["proposed"] }
 
@@ -62,7 +62,7 @@ expectorate = "1.1.0"
 insta = { version = "1.34.0", features = ["json"] }
 itertools = "0.11.0"
 pretty_assertions = "1.4.0"
-tokio = { version = "1.33.0", features = ["rt-multi-thread", "macros", "time"] }
+tokio = { version = "1.34.0", features = ["rt-multi-thread", "macros", "time"] }
 
 [[bench]]
 name = "compiler_benchmark"
