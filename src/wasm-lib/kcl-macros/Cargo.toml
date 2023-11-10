@@ -1,5 +1,5 @@
 [package]
-name = "kcl-compile-macro"
+name = "kcl-macros"
 description = "Macro for compiling KCL to its AST during Rust compile-time"
 version = "0.1.0"
 edition = "2021"

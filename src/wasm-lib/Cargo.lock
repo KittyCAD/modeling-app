@@ -1426,18 +1426,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "kcl-compile-macro"
-version = "0.1.0"
-dependencies = [
- "databake",
- "kcl-lib",
- "pretty_assertions",
- "proc-macro2",
- "quote",
- "syn 2.0.39",
-]
-
-[[package]]
 name = "kcl-lib"
 version = "0.1.35"
 dependencies = [
@@ -1473,6 +1461,18 @@ dependencies = [
  "wasm-bindgen-futures",
  "web-sys",
  "winnow",
+]
+
+[[package]]
+name = "kcl-macros"
+version = "0.1.0"
+dependencies = [
+ "databake",
+ "kcl-lib",
+ "pretty_assertions",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.39",
 ]
 
 [[package]]

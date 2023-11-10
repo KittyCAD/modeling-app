@@ -12,7 +12,7 @@ use syn::{parse_macro_input, LitStr};
 /// let ast: kcl_lib::ast::types::Program = parse_kcl!("const y = 4");
 /// ```
 #[proc_macro]
-pub fn parse_kcl(input: TokenStream) -> TokenStream {
+pub fn parse(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as LitStr);
     let kcl_src = input.value();
     let tokens = kcl_lib::token::lexer(&kcl_src);

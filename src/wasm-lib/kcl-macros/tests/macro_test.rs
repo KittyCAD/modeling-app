@@ -1,14 +1,14 @@
 extern crate alloc;
-use kcl_compile_macro::parse_kcl;
 use kcl_lib::ast::types::{
     BodyItem, Identifier, Literal, LiteralValue, NonCodeMeta, Program, Value, VariableDeclaration, VariableDeclarator,
     VariableKind,
 };
+use kcl_macros::parse;
 use pretty_assertions::assert_eq;
 
 #[test]
 fn basic() {
-    let actual = parse_kcl!("const y = 4");
+    let actual = parse!("const y = 4");
     let expected = Program {
         start: 0,
         end: 11,
