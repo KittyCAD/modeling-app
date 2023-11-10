@@ -1464,6 +1464,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "kcl-macros"
+version = "0.1.0"
+dependencies = [
+ "databake",
+ "kcl-lib",
+ "pretty_assertions",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.39",
+]
+
+[[package]]
 name = "kittycad"
 version = "0.2.41"
 source = "registry+https://github.com/rust-lang/crates.io-index"
