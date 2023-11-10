@@ -6,10 +6,10 @@
 serial-integration = { max-threads = 4 }
 
 [profile.default]
-slow-timeout = { period = "60s", terminate-after = 1 }
+slow-timeout = { period = "10s", terminate-after = 1 }
 
 [profile.ci]
-slow-timeout = { period = "120s", terminate-after = 10 }
+slow-timeout = { period = "30s", terminate-after = 5 }
 
 [[profile.default.overrides]]
 filter = "test(serial_test_)"
@@ -20,3 +20,7 @@ threads-required = 4
 filter = "test(serial_test_)"
 test-group = "serial-integration"
 threads-required = 4
+
+[[profile.default.overrides]]
+filter = "test(parser::parser_impl::snapshot_tests)"
+slow-timeout = { period = "1s", terminate-after = 5 }

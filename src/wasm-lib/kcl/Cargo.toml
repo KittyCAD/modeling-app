@@ -5,6 +5,7 @@ version = "0.1.35"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
+rust-version = "1.73"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -14,6 +15,7 @@ async-recursion = "1.0.5"
 async-trait = "0.1.73"
 clap = { version = "4.4.7", features = ["cargo", "derive", "env", "unicode"], optional = true }
 dashmap = "5.5.3"
+databake = { version = "0.1.6", features = ["derive"] }
 derive-docs = { version = "0.1.4" }
 #derive-docs = { path = "../derive-docs" }
 kittycad = { workspace = true }
@@ -31,14 +33,14 @@ winnow = "0.5.18"
 js-sys = { version = "0.3.65" }
 tower-lsp = { version = "0.20.0", default-features = false, features = ["runtime-agnostic"] }
 wasm-bindgen = "0.2.88"
-wasm-bindgen-futures = "0.4.37"
+wasm-bindgen-futures = "0.4.38"
 web-sys = { version = "0.3.64", features = ["console"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 bson = { version = "2.7.0", features = ["uuid-1", "chrono"] }
 futures = { version = "0.3.29" }
 reqwest = { version = "0.11.22", default-features = false }
-tokio = { version = "1.33.0", features = ["full"] }
+tokio = { version = "1.34.0", features = ["full"] }
 tokio-tungstenite = { version = "0.20.0", features = ["rustls-tls-native-roots"] }
 tower-lsp = { version = "0.20.0", features = ["proposed"] }
 
@@ -60,7 +62,7 @@ expectorate = "1.1.0"
 insta = { version = "1.34.0", features = ["json"] }
 itertools = "0.11.0"
 pretty_assertions = "1.4.0"
-tokio = { version = "1.33.0", features = ["rt-multi-thread", "macros", "time"] }
+tokio = { version = "1.34.0", features = ["rt-multi-thread", "macros", "time"] }
 
 [[bench]]
 name = "compiler_benchmark"

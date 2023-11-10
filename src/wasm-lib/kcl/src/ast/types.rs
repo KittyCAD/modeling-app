@@ -3,6 +3,7 @@
 use std::{collections::HashMap, fmt::Write};
 
 use anyhow::Result;
+use databake::*;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -11,14 +12,17 @@ use tower_lsp::lsp_types::{CompletionItem, CompletionItemKind, DocumentSymbol, R
 
 pub use self::literal_value::LiteralValue;
 use crate::{
+    docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
-    executor::{ExecutorContext, MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange, UserVal},
+    executor::{BodyType, ExecutorContext, MemoryItem, Metadata, PipeInfo, ProgramMemory, SourceRange, UserVal},
     parser::PIPE_OPERATOR,
+    std::{kcl_stdlib::KclStdLibFn, FunctionKind},
 };
 
 mod literal_value;
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Program {
@@ -347,7 +351,8 @@ macro_rules! impl_value_meta {
 
 pub(crate) use impl_value_meta;
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum BodyItem {
@@ -386,7 +391,8 @@ impl From<&BodyItem> for SourceRange {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Value {
@@ -549,7 +555,8 @@ impl From<&Value> for SourceRange {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum BinaryPart {
@@ -705,7 +712,8 @@ impl BinaryPart {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct NonCodeNode {
@@ -753,7 +761,8 @@ impl NonCodeNode {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub enum CommentStyle {
@@ -763,7 +772,8 @@ pub enum CommentStyle {
     Block,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum NonCodeValue {
@@ -808,6 +818,19 @@ pub struct NonCodeMeta {
     pub start: Vec<NonCodeNode>,
 }
 
+impl Bake for NonCodeMeta {
+    fn bake(&self, env: &CrateEnv) -> TokenStream {
+        env.insert("kcl_lib");
+        let start = self.start.bake(env);
+        databake::quote! {
+            kcl_lib::NonCodeMeta {
+                non_code_nodes: HashMap::new(),
+                start: #start,
+            }
+        }
+    }
+}
+
 // implement Deserialize manually because we to force the keys of non_code_nodes to be usize
 // and by default the ts type { [statementIndex: number]: NonCodeNode } serializes to a string i.e. "0", "1", etc.
 impl<'de> Deserialize<'de> for NonCodeMeta {
@@ -841,7 +864,8 @@ impl NonCodeMeta {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ExpressionStatement {
@@ -852,7 +876,8 @@ pub struct ExpressionStatement {
 
 impl_value_meta!(ExpressionStatement);
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct CallExpression {
@@ -960,8 +985,8 @@ impl CallExpression {
             fn_args.push(result);
         }
 
-        match ctx.stdlib.get(&self.callee.name) {
-            Some(func) => {
+        match ctx.stdlib.get_either(&self.callee.name) {
+            FunctionKind::Core(func) => {
                 // Attempt to call the function.
                 let args = crate::std::Args::new(fn_args, self.into(), ctx.clone());
                 let result = func.std_lib_fn()(args).await?;
@@ -973,15 +998,54 @@ impl CallExpression {
                     Ok(result)
                 }
             }
-            // Must be user-defined then
-            None => {
+            FunctionKind::Std(func) => {
+                let function_expression = func.function();
+                if fn_args.len() != function_expression.params.len() {
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        message: format!(
+                            "Expected {} arguments, got {}",
+                            function_expression.params.len(),
+                            fn_args.len(),
+                        ),
+                        source_ranges: vec![(function_expression).into()],
+                    }));
+                }
+
+                // Add the arguments to the memory.
+                let mut fn_memory = memory.clone();
+                for (index, param) in function_expression.params.iter().enumerate() {
+                    fn_memory.add(&param.name, fn_args.get(index).unwrap().clone(), param.into())?;
+                }
+
+                // Call the stdlib function
+                let p = func.function().clone().body;
+                let results = crate::executor::execute(p, &mut fn_memory, BodyType::Block, ctx).await?;
+                let out = results.return_;
+                let result = out.ok_or_else(|| {
+                    KclError::UndefinedValue(KclErrorDetails {
+                        message: format!("Result of stdlib function {} is undefined", fn_name),
+                        source_ranges: vec![self.into()],
+                    })
+                })?;
+                let result = result.get_value()?;
+
+                if pipe_info.is_in_pipe {
+                    pipe_info.index += 1;
+                    pipe_info.previous_results.push(result);
+
+                    execute_pipe_body(memory, &pipe_info.body.clone(), pipe_info, self.into(), ctx).await
+                } else {
+                    Ok(result)
+                }
+            }
+            FunctionKind::UserDefined => {
                 let func = memory.get(&fn_name, self.into())?;
                 let result = func
                     .call_fn(fn_args, memory.clone(), ctx.clone())
                     .await?
                     .ok_or_else(|| {
                         KclError::UndefinedValue(KclErrorDetails {
-                            message: format!("Result of function {} is undefined", fn_name),
+                            message: format!("Result of user-defined function {} is undefined", fn_name),
                             source_ranges: vec![self.into()],
                         })
                     })?;
@@ -1056,10 +1120,15 @@ impl CallExpression {
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Function {
-    /// A stdlib function.
+    /// A stdlib function written in Rust (aka core lib).
     StdLib {
         /// The function.
-        func: Box<dyn crate::docs::StdLibFn>,
+        func: Box<dyn StdLibFn>,
+    },
+    /// A stdlib function written in KCL.
+    StdLibKcl {
+        /// The function.
+        func: Box<dyn KclStdLibFn>,
     },
     /// A function that is defined in memory.
     #[default]
@@ -1076,7 +1145,8 @@ impl PartialEq for Function {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct VariableDeclaration {
@@ -1226,7 +1296,8 @@ impl VariableDeclaration {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
@@ -1270,7 +1341,8 @@ impl VariableKind {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct VariableDeclarator {
@@ -1299,7 +1371,8 @@ impl VariableDeclarator {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Literal {
@@ -1369,7 +1442,8 @@ impl From<&Box<Literal>> for MemoryItem {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Identifier {
@@ -1405,7 +1479,8 @@ impl Identifier {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct PipeSubstitution {
@@ -1433,7 +1508,8 @@ impl From<PipeSubstitution> for Value {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ArrayExpression {
@@ -1593,7 +1669,8 @@ impl ArrayExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ObjectExpression {
@@ -1750,7 +1827,8 @@ impl ObjectExpression {
 
 impl_value_meta!(ObjectExpression);
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ObjectProperty {
@@ -1792,7 +1870,8 @@ impl ObjectProperty {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum MemberObject {
@@ -1838,7 +1917,8 @@ impl From<&MemberObject> for SourceRange {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum LiteralIdentifier {
@@ -1874,7 +1954,8 @@ impl From<&LiteralIdentifier> for SourceRange {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct MemberExpression {
@@ -2037,7 +2118,8 @@ pub struct ObjectKeyInfo {
     pub computed: bool,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct BinaryExpression {
@@ -2216,7 +2298,8 @@ pub fn parse_json_value_as_string(j: &serde_json::Value) -> Option<String> {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
@@ -2284,7 +2367,8 @@ impl BinaryOperator {
         }
     }
 }
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct UnaryExpression {
@@ -2362,7 +2446,8 @@ impl UnaryExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
@@ -2377,7 +2462,8 @@ pub enum UnaryOperator {
     Not,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct PipeExpression {
@@ -2535,7 +2621,8 @@ async fn execute_pipe_body(
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct FunctionExpression {
@@ -2585,7 +2672,8 @@ impl FunctionExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ReturnStatement {
