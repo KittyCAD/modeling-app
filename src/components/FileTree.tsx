@@ -9,7 +9,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronRight, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { useFileContext } from 'hooks/useFileContext'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { kclManager } from 'lang/KclSinglton'
 import styles from './FileTree.module.css'
 import { sortProject } from 'lib/tauriFS'
 

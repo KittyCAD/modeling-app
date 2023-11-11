@@ -1,11 +1,10 @@
 [package]
-name = "derive-docs"
-description = "A tool for generating documentation from Rust derive macros"
-version = "0.1.4"
+name = "kcl-macros"
+description = "Macro for compiling KCL to its AST during Rust compile-time"
+version = "0.1.0"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
-rust-version = "1.73"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -13,14 +12,11 @@ rust-version = "1.73"
 proc-macro = true
 
 [dependencies]
-convert_case = "0.6.0"
+databake = "0.1.6"
+kcl-lib = { path = "../kcl" }
 proc-macro2 = "1"
 quote = "1"
-serde = { version = "1.0.192", features = ["derive"] }
-serde_tokenstream = "0.2"
 syn = { version = "2.0.39", features = ["full"] }
 
 [dev-dependencies]
-expectorate = "1.1.0"
-openapitor = { git = "https://github.com/KittyCAD/kittycad.rs", branch = "main" }
 pretty_assertions = "1.4.0"

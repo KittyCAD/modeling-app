@@ -3,6 +3,7 @@
 use std::{collections::HashMap, sync::Arc};
 
 use anyhow::Result;
+use async_recursion::async_recursion;
 use kittycad::types::{Color, ModelingCmd, Point3D};
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
@@ -13,7 +14,7 @@ use crate::{
     ast::types::{BodyItem, FunctionExpression, Value},
     engine::{EngineConnection, EngineManager},
     errors::{KclError, KclErrorDetails},
-    std::StdLib,
+    std::{FunctionKind, StdLib},
 };
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -781,6 +782,7 @@ pub struct ExecutorContext {
 }
 
 /// Execute a AST's program.
+#[async_recursion(?Send)]
 pub async fn execute(
     program: crate::ast::types::Program,
     memory: &mut ProgramMemory,
@@ -793,7 +795,9 @@ pub async fn execute(
     for statement in &program.body {
         match statement {
             BodyItem::ExpressionStatement(expression_statement) => {
-                if let Value::CallExpression(call_expr) = &expression_statement.expression {
+                if let Value::PipeExpression(pipe_expr) = &expression_statement.expression {
+                    pipe_expr.get_result(memory, &mut pipe_info, ctx).await?;
+                } else if let Value::CallExpression(call_expr) = &expression_statement.expression {
                     let fn_name = call_expr.callee.name.to_string();
                     let mut args: Vec<MemoryItem> = Vec::new();
                     for arg in &call_expr.arguments {
@@ -828,27 +832,37 @@ pub async fn execute(
                         }
                     }
                     let _show_fn = Box::new(crate::std::Show);
-                    if let Some(func) = ctx.stdlib.get(&call_expr.callee.name) {
-                        use crate::docs::StdLibFn;
-                        if func.name() == _show_fn.name() {
-                            if options != BodyType::Root {
+                    match ctx.stdlib.get_either(&call_expr.callee.name) {
+                        FunctionKind::Core(func) => {
+                            use crate::docs::StdLibFn;
+                            if func.name() == _show_fn.name() {
+                                if options != BodyType::Root {
+                                    return Err(KclError::Semantic(KclErrorDetails {
+                                        message: "Cannot call show outside of a root".to_string(),
+                                        source_ranges: vec![call_expr.into()],
+                                    }));
+                                }
+
+                                memory.return_ = Some(ProgramReturn::Arguments(call_expr.arguments.clone()));
+                            }
+                        }
+                        FunctionKind::Std(func) => {
+                            let mut newmem = memory.clone();
+                            let result = execute(func.program().to_owned(), &mut newmem, BodyType::Block, ctx).await?;
+                            memory.return_ = result.return_;
+                        }
+                        FunctionKind::UserDefined => {
+                            if let Some(func) = memory.clone().root.get(&fn_name) {
+                                let result = func.call_fn(args.clone(), memory.clone(), ctx.clone()).await?;
+
+                                memory.return_ = result;
+                            } else {
                                 return Err(KclError::Semantic(KclErrorDetails {
-                                    message: "Cannot call show outside of a root".to_string(),
+                                    message: format!("No such name {} defined", fn_name),
                                     source_ranges: vec![call_expr.into()],
                                 }));
                             }
-
-                            memory.return_ = Some(ProgramReturn::Arguments(call_expr.arguments.clone()));
                         }
-                    } else if let Some(func) = memory.clone().root.get(&fn_name) {
-                        let result = func.call_fn(args.clone(), memory.clone(), ctx.clone()).await?;
-
-                        memory.return_ = result;
-                    } else {
-                        return Err(KclError::Semantic(KclErrorDetails {
-                            message: format!("No such name {} defined", fn_name),
-                            source_ranges: vec![call_expr.into()],
-                        }));
                     }
                 }
             }
