@@ -93,16 +93,8 @@ export function getNormalisedCoordinates({
   const { left, top, width, height } = el?.getBoundingClientRect()
   const browserX = clientX - left
   const browserY = clientY - top
-
-  const maxResolution = 2000
-  const ratio = Math.min(
-    maxResolution / streamWidth,
-    maxResolution / streamHeight
-  )
-  const scaledWidth = Math.floor(streamWidth * ratio)
-  const scaledHeight = Math.floor(streamHeight * ratio)
   return {
-    x: Math.round((browserX / width) * scaledWidth),
-    y: Math.round((browserY / height) * scaledHeight),
+    x: Math.round((browserX / width) * streamWidth),
+    y: Math.round((browserY / height) * streamHeight),
   }
 }

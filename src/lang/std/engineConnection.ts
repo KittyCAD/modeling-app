@@ -631,22 +631,16 @@ export class EngineCommandManager {
       return
     }
 
-    // Engine is currently constrained to 2000 by 2000, so normalize width and height first
-    const { width: scaledWidth, height: scaledHeight } = fitResolution(
-      width,
-      height
-    )
-
     // If we already have an engine connection, just need to resize the stream.
     if (this.engineConnection) {
       this.handleResize({
-        streamWidth: scaledWidth,
-        streamHeight: scaledHeight,
+        streamWidth: width,
+        streamHeight: height,
       })
       return
     }
 
-    const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${scaledWidth}&video_res_height=${scaledHeight}`
+    const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}`
     this.engineConnection = new EngineConnection({
       url,
       token,
@@ -1165,15 +1159,6 @@ export class EngineCommandManager {
     })
     await this.setPlaneHidden(planeId, true)
     return planeId
-  }
-}
-
-function fitResolution(width: number, height: number) {
-  const ratio = Math.min(2000 / width, 2000 / height)
-
-  return {
-    width: Math.floor(width * ratio),
-    height: Math.floor(height * ratio),
   }
 }
 
