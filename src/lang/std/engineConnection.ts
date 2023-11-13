@@ -76,12 +76,12 @@ export class EngineConnection {
   constructor({
     url,
     token,
-    onWebsocketOpen = () => { },
-    onNewTrack = () => { },
-    onEngineConnectionOpen = () => { },
-    onConnectionStarted = () => { },
-    onClose = () => { },
-    onDataChannelOpen = () => { },
+    onWebsocketOpen = () => {},
+    onNewTrack = () => {},
+    onEngineConnectionOpen = () => {},
+    onConnectionStarted = () => {},
+    onClose = () => {},
+    onDataChannelOpen = () => {},
   }: {
     url: string
     token?: string
@@ -592,7 +592,7 @@ export class EngineCommandManager {
   // Folks should realize that wait for ready does not get called _everytime_
   // the connection resets and restarts, it only gets called the first time.
   // Be careful what you put here.
-  private resolveReady = () => { }
+  private resolveReady = () => {}
   waitForReady: Promise<void> = new Promise((resolve) => {
     this.resolveReady = resolve
   })
@@ -1001,7 +1001,7 @@ export class EngineCommandManager {
     command: Models['ModelingCmd_type'],
     range?: SourceRange
   ) {
-    let resolve: (val: any) => void = () => { }
+    let resolve: (val: any) => void = () => {}
     const promise = new Promise((_resolve, reject) => {
       resolve = _resolve
     })
@@ -1114,7 +1114,7 @@ export class EngineCommandManager {
     )
   }
 
-  onPlaneSelectCallback = (id: string) => { }
+  onPlaneSelectCallback = (id: string) => {}
   onPlaneSelected(callback: (id: string) => void) {
     this.onPlaneSelectCallback = callback
   }
@@ -1169,7 +1169,7 @@ export class EngineCommandManager {
 }
 
 function fitResolution(width: number, height: number) {
-  var ratio = Math.min(2000 / width, 2000 / height)
+  const ratio = Math.min(2000 / width, 2000 / height)
 
   return {
     width: Math.floor(width * ratio),
