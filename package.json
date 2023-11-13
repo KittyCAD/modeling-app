@@ -122,7 +122,7 @@
     "postcss": "^8.4.31",
     "prettier": "^2.8.0",
     "setimmediate": "^1.0.5",
-    "tailwindcss": "^3.2.4",
+    "tailwindcss": "^3.3.5",
     "vite": "^4.5.0",
     "vite-plugin-eslint": "^1.8.1",
     "vite-tsconfig-paths": "^4.2.1",
