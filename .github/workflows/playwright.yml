@@ -1,13 +1,16 @@
 name: Playwright Tests
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main ]
 jobs:
   playwright:
     timeout-minutes: 60
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
@@ -25,13 +28,23 @@ jobs:
       run: yarn build:wasm
     - name: build web
       run: yarn build:local
-    # - name: start web app
-    #   run: yarn start &
-    - name: Run Playwright tests
-      run: DEBUG=pw:api yarn playwright test
+    - name: Run macos/safari
+      if: matrix.os == 'macos-latest'
+      run: yarn playwright test --project="webkit"
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+    - name: Run ubuntu/chrome
+      if: matrix.os == 'ubuntu-latest'
+      run: yarn playwright test --project="Google Chrome"
+      env:
+        CI: true
+        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+    # - name: Run Playwright tests
+    #   run: yarn playwright test
+    #   env:
+    #     CI: true
+    #     token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
     - uses: actions/upload-artifact@v3
       if: always()
       with:
