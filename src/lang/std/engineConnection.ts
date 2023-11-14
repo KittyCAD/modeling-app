@@ -640,7 +640,10 @@ export class EngineCommandManager {
 
     // If we already have an engine connection, just need to resize the stream.
     if (this.engineConnection) {
-      this.handleResize({ streamWidth: width, streamHeight: height })
+      this.handleResize({
+        streamWidth: width,
+        streamHeight: height,
+      })
       return
     }
 
