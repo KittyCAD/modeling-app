@@ -648,6 +648,7 @@ export class EngineCommandManager {
     }
 
     const url = `${VITE_KC_API_WS_MODELING_URL}?video_res_width=${width}&video_res_height=${height}`
+    console.log(`starting stream with dimensions ${width}x${height}`)
     this.engineConnection = new EngineConnection({
       url,
       token,

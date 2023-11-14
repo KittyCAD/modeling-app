@@ -38,10 +38,10 @@ test('Basic sketch', async ({ page }) => {
     document.querySelector('[data-testid="loading-stream"]')
   )
   await page.waitForTimeout(2000)
-  const pageContent = await page.content()
-
+  // const pageContent = await page.content()
   // Log the HTML content
-  console.log(pageContent)
+  // console.log(pageContent)
+
   // wait for all spinners to be gone
   await page.waitForFunction(
     () => !document.querySelector('[data-testid="loading"]')
