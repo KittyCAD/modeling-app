@@ -28,7 +28,7 @@ jobs:
     # - name: start web app
     #   run: yarn start &
     - name: Run Playwright tests
-      run: yarn playwright test
+      run: DEBUG=pw:api yarn playwright test
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
