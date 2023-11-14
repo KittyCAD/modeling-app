@@ -190,23 +190,23 @@ But save your token to the file
 then:
 run playwright
 ```
-npx playwright test
+yarn playwright test
 ```
 
 run a specific test
 ```
-npx playwright test src/e2e-tests/example.spec.ts
+yarn playwright test src/e2e-tests/example.spec.ts
 ```
 note if there are multip tests in a file, than change `test('...` to `test.only('...`
 
 run headed
 ```
-npx playwright test --headed src/e2e-tests/example.spec.ts
+yarn playwright test --headed src/e2e-tests/example.spec.ts
 ```
 
 run with step through debugger
 ```
-PWDEBUG=1 npx playwright test src/e2e-tests/example.spec.ts
+PWDEBUG=1 yarn playwright test src/e2e-tests/example.spec.ts
 ```
 
 If you want to limit to a single browser use `--project="webkit"` or `firefox`, `Google Chrome`

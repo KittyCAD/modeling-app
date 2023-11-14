@@ -34,7 +34,7 @@ src/wasm-lib/kcl/bindings
 public/wasm_lib_bg.wasm
 src/wasm-lib/lcov.info
 
-src/e2e-tests/playwright-secrets.env
+e2e/playwright/playwright-secrets.env
 /test-results/
 /playwright-report/
 /blob-report/
