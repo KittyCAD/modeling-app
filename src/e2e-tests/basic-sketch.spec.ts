@@ -38,9 +38,6 @@ test('Basic sketch', async ({ page }) => {
     document.querySelector('[data-testid="loading-stream"]')
   )
   await page.waitForTimeout(2000)
-  // const pageContent = await page.content()
-  // Log the HTML content
-  // console.log(pageContent)
 
   // wait for all spinners to be gone
   await page.waitForFunction(
@@ -120,6 +117,4 @@ test('Basic sketch', async ({ page }) => {
   |> line({ to: [10.03, 0], tag: 'seg01' }, %)
   |> line([0, ${tenish}], %)
   |> angledLine([180, segLen('seg01', %)], %)`)
-
-  // await page.waitForTimeout(4500)
 })

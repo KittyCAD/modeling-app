@@ -11,7 +11,6 @@ try {
 } catch (err) {
   console.log('probably running in CI')
   secrets.token = process.env.token || ''
-  console.log('secrets', JSON.stringify(secrets, null, 2))
 }
 
 export { secrets }
