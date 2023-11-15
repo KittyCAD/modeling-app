@@ -214,7 +214,7 @@ test('re-executes', async ({ page, context }) => {
   ).toBeVisible()
 })
 
-test.only('change camera, show planes', async ({ page, context }) => {
+test('change camera, show planes', async ({ page, context }) => {
   context.addInitScript(async (token) => {
     localStorage.setItem('persistCode', `const myVar = 5`)
   })
