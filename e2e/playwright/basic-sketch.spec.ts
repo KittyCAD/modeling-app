@@ -160,7 +160,7 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
   await page.keyboard.up('Shift')
   await page.keyboard.press('Backspace')
 
-  // wait for .cm-lint-marker-error not to be visiable
+  // wait for .cm-lint-marker-error not to be visible
   await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 })
 
