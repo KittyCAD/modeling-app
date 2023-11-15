@@ -222,6 +222,8 @@ test('change camera, show planes', async ({ page, context }) => {
   await page.goto('localhost:3000')
   await waitForPageLoad(page)
 
+  await page.waitForTimeout(1000)
+
   // rotate
   await page.mouse.move(700, 200)
   await page.mouse.down({ button: 'right' })
@@ -231,22 +233,22 @@ test('change camera, show planes', async ({ page, context }) => {
   await page.waitForTimeout(500)
 
   // pan
-  // await page.keyboard.down('Shift')
-  // await page.mouse.move(600, 200)
-  // await page.mouse.down({ button: 'right' })
-  // await page.mouse.move(700, 200)
-  // await page.mouse.up({ button: 'right' })
-  // await page.keyboard.up('Shift')
+  await page.keyboard.down('Shift')
+  await page.mouse.move(600, 200)
+  await page.mouse.down({ button: 'right' })
+  await page.mouse.move(700, 200)
+  await page.mouse.up({ button: 'right' })
+  await page.keyboard.up('Shift')
 
   await page.waitForTimeout(500)
 
   // zoom
-  // await page.keyboard.down('Control')
-  // await page.mouse.move(700, 400)
-  // await page.mouse.down({ button: 'right' })
-  // await page.mouse.move(700, 350)
-  // await page.mouse.up({ button: 'right' })
-  // await page.keyboard.up('Control')
+  await page.keyboard.down('Control')
+  await page.mouse.move(700, 400)
+  await page.mouse.down({ button: 'right' })
+  await page.mouse.move(700, 350)
+  await page.mouse.up({ button: 'right' })
+  await page.keyboard.up('Control')
 
   await page.waitForTimeout(500)
 
