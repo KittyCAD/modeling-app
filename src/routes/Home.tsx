@@ -255,6 +255,7 @@ const Home = () => {
                 Element="button"
                 onClick={() => send('Create project')}
                 icon={{ icon: faPlus }}
+                id="new_file"
               >
                 New file
               </ActionButton>

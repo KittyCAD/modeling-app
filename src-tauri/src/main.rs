@@ -72,8 +72,10 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
     // We do this in the browser and not a separate window because we want 1password and
     // other crap to work well.
     println!("Opening {}", auth_uri.secret());
-    // TODO: find a better way
-    fs::write("/tmp/kittycad_user_code", auth_uri.secret()).expect("Unable to write file");
+    #[cfg(target_os = "linux")] {
+        // TODO: find a better way to share this value with tauri e2e tests
+        fs::write("/tmp/kittycad_user_code", details.user_code().secret().to_string()).expect("Unable to write file");
+    }
     tauri::api::shell::open(&app.shell_scope(), auth_uri.secret(), None)
         .map_err(|e| InvokeError::from_anyhow(e.into()))?;
 

@@ -2,6 +2,9 @@ const fs = require('fs/promises');
 
 describe('Modeling App', () => {
   it('open the sign in page', async () => {
+    // Clean up previous tests
+    await fs.rm('/tmp/kittycad_user_code', { force: true })
+
     const button = await $('#signin')
     expect(button).toHaveText('Sign in')
 
@@ -11,8 +14,8 @@ describe('Modeling App', () => {
     await new Promise(resolve => setTimeout(resolve, 1000))
 
     // Get from main.rs
-    const verifyUrl = await (await fs.readFile('/tmp/kittycad_user_code')).toString()
-    console.log(`Found ${verifyUrl}`)
+    const userCode = await (await fs.readFile('/tmp/kittycad_user_code')).toString()
+    console.log(`Found user code ${userCode}`)
 
     // Device flow: verify
     const token = process.env.KITTYCAD_API_TOKEN
@@ -21,10 +24,10 @@ describe('Modeling App', () => {
       Accept: 'application/json',
       "Content-Type": "application/json",
     }
+    const verifyUrl = `https://api.kittycad.io/oauth2/device/verify?user_code=${userCode}`
     console.log(`GET ${verifyUrl}`)
     const vr = await fetch(verifyUrl, { headers })
     console.log(vr.status)
-    const userCode = verifyUrl.split('user_code=')[1]
 
     // Device flow: confirm
     const confirmUrl = 'https://api.kittycad.io/oauth2/device/confirm'
@@ -39,8 +42,9 @@ describe('Modeling App', () => {
     console.log(cr.status)
 
     // Now should be logged in
-    await new Promise(resolve => setTimeout(resolve, 10000))
-    const homeHeading = await $('section.flex.justify-between > h1')
-    expect(homeHeading).toHaveText('Your Projects')
+    await new Promise(resolve => setTimeout(resolve, 3000))
+    const newFileButton = await $('#new_file')
+    await newFileButton.waitForClickable()
+    expect(newFileButton).toHaveText('New file')
   })
 })
