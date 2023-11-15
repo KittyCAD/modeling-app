@@ -21,6 +21,8 @@ jobs:
       run: yarn
     - name: Install Playwright Browsers
       run: yarn playwright install --with-deps
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
     - name: Cache wasm
       uses: Swatinem/rust-cache@v2
       with:
