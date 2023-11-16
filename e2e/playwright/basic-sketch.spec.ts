@@ -2,6 +2,7 @@ import { test, expect, Page } from '@playwright/test'
 import { secrets } from './secrets'
 import { EngineCommand } from '../../src/lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
+import { getUtils } from './test-utils'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -32,97 +33,18 @@ test.beforeEach(async ({ context, page }) => {
       })
     )
   }, secrets.token)
+  // kill animations, speeds up tests and reduced flakiness
   page.emulateMedia({ reducedMotion: 'reduce' })
 })
 
 test.setTimeout(60000)
 
-async function waitForPageLoad(page: Page) {
-  // wait for 'Loading KittyCAD Modeling App...' spinner
-  await page.waitForFunction(() =>
-    document.querySelector('[data-testid="initial-load"]')
-  )
-  // wait for 'Loading stream...' spinner
-  await page.waitForFunction(() =>
-    document.querySelector('[data-testid="loading-stream"]')
-  )
-
-  // wait for all spinners to be gone
-  await page.waitForFunction(
-    () => !document.querySelector('[data-testid="loading"]')
-  )
-
-  await page.waitForFunction(() =>
-    document.querySelector('[data-testid="start-sketch"]')
-  )
-}
-
-async function removeCurrentCode(page: Page) {
-  await page.click('.cm-content')
-  await page.keyboard.down('Meta')
-  await page.keyboard.press('a')
-  await page.keyboard.up('Meta')
-  await page.keyboard.press('Backspace')
-}
-
-async function sendCustomCmd(page: Page, cmd: EngineCommand) {
-  await page.fill('[data-testid="custom-cmd-input"]', JSON.stringify(cmd))
-  await page.click('[data-testid="custom-cmd-send-button"]')
-}
-
-async function clearCommandLogs(page: Page) {
-  await page.click('[data-testid="clear-commands"]')
-}
-
-async function expectCmdLog(page: Page, locatorStr: string) {
-  await expect(page.locator(locatorStr)).toBeVisible()
-}
-
-async function waitForDefaultPlanesToBeVisible(page: Page) {
-  await expect(
-    await page.locator('[data-receive-command-type="object_visible"]')
-  ).toHaveCount(3)
-}
-
-async function openDebugPanel(page: Page) {
-  const isOpen =
-    (await page
-      .locator('[data-testid="debug-panel"]')
-      ?.getAttribute('open')) === ''
-
-  if (!isOpen) {
-    await page.getByText('Debug').click()
-    await page.waitForFunction(
-      () =>
-        document
-          .querySelector('[data-testid="debug-panel"]')
-          ?.getAttribute('open') === ''
-    )
-  }
-}
-
-async function closeDebugPanel(page: Page) {
-  const isOpen =
-    (await page
-      .locator('[data-testid="debug-panel"]')
-      ?.getAttribute('open')) === ''
-  if (isOpen) {
-    await page.getByText('Debug').click()
-    await page.waitForFunction(
-      () =>
-        document
-          .querySelector('[data-testid="debug-panel"]')
-          ?.getAttribute('open') === null
-    )
-  }
-}
-
 test('Basic sketch', async ({ page }) => {
+  const u = getUtils(page)
   page.setViewportSize({ width: 1000, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
   await page.goto('localhost:3000')
-
-  await waitForPageLoad(page)
+  await u.waitForPageLoad()
 
   await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
 
@@ -196,10 +118,11 @@ test('Basic sketch', async ({ page }) => {
 })
 
 test('if you write invalid kcl you get inlined errors', async ({ page }) => {
+  const u = getUtils(page)
   page.setViewportSize({ width: 1000, height: 500 })
   await page.goto('localhost:3000')
 
-  await waitForPageLoad(page)
+  await u.waitForPageLoad()
 
   // check no error to begin with
   await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -237,6 +160,7 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
 })
 
 test('executes on load', async ({ page, context }) => {
+  const u = getUtils(page)
   context.addInitScript(async (token) => {
     localStorage.setItem(
       'persistCode',
@@ -249,7 +173,7 @@ test('executes on load', async ({ page, context }) => {
   })
   page.setViewportSize({ width: 1000, height: 500 })
   await page.goto('localhost:3000')
-  await waitForPageLoad(page)
+  await u.waitForPageLoad()
 
   // expand variables section
   await page.getByText('Variables').click()
@@ -262,12 +186,13 @@ test('executes on load', async ({ page, context }) => {
 })
 
 test('re-executes', async ({ page, context }) => {
+  const u = getUtils(page)
   context.addInitScript(async (token) => {
     localStorage.setItem('persistCode', `const myVar = 5`)
   })
   page.setViewportSize({ width: 1000, height: 500 })
   await page.goto('localhost:3000')
-  await waitForPageLoad(page)
+  await u.waitForPageLoad()
 
   await page.getByText('Variables').click()
   // expect to see "myVar:5"
@@ -287,12 +212,13 @@ test('re-executes', async ({ page, context }) => {
 })
 
 test('change camera, show planes', async ({ page, context }) => {
+  const u = getUtils(page)
   context.addInitScript(async (token) => {
     localStorage.setItem('persistCode', `const myVar = 5`)
   })
   page.setViewportSize({ width: 1000, height: 500 })
   await page.goto('localhost:3000')
-  await waitForPageLoad(page)
+  await u.waitForPageLoad()
 
   await page.waitForTimeout(1000)
 
@@ -338,12 +264,13 @@ test('change camera, show planes', async ({ page, context }) => {
 test('Can create sketches on all planes and their back sides', async ({
   page,
 }) => {
+  const u = getUtils(page)
   const PUR = 400 / 37.5 //pixeltoUnitRatio
   page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('localhost:3000')
-  await waitForPageLoad(page)
-  await openDebugPanel(page)
-  await waitForDefaultPlanesToBeVisible(page)
+  await u.waitForPageLoad()
+  await u.openDebugPanel()
+  await u.waitForDefaultPlanesToBeVisible()
 
   const camCmd: EngineCommand = {
     type: 'modeling_cmd_req',
@@ -356,34 +283,34 @@ test('Can create sketches on all planes and their back sides', async ({
     },
   }
 
-  await sendCustomCmd(page, camCmd)
+  await u.sendCustomCmd(camCmd)
 
   const drawLine = async () => {
     const startXPx = 600
-    await clearCommandLogs(page)
+    await u.clearCommandLogs()
     await page.getByRole('button', { name: 'Line' }).click()
 
     await page.waitForFunction(() =>
       document.querySelector('[data-receive-command-type="set_tool"]')
     )
-    await clearCommandLogs(page)
+    await u.clearCommandLogs()
 
-    await closeDebugPanel(page)
+    await u.closeDebugPanel()
 
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-    await openDebugPanel(page)
+    await u.openDebugPanel()
     await page.waitForFunction(() =>
       document.querySelector('[data-receive-command-type="mouse_click"]')
     )
-    await closeDebugPanel(page)
+    await u.closeDebugPanel()
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
-    await openDebugPanel(page)
+    await u.openDebugPanel()
   }
 
-  await sendCustomCmd(page, camCmd)
-  await clearCommandLogs(page)
+  await u.sendCustomCmd(camCmd)
+  await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await waitForDefaultPlanesToBeVisible(page)
+  await u.waitForDefaultPlanesToBeVisible()
 
   await page.mouse.click(700, 350) // red
 
@@ -397,21 +324,21 @@ test('Can create sketches on all planes and their back sides', async ({
   |> line([4.01, 0], %)`)
 
   await page.getByRole('button', { name: 'Line' }).click()
-  await clearCommandLogs(page)
+  await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Exit Sketch' }).click()
-  await expectCmdLog(page, '[data-message-type="execution-done"]')
+  await u.expectCmdLog('[data-message-type="execution-done"]')
 
-  await removeCurrentCode(page)
+  await u.removeCurrentCode()
 
-  await sendCustomCmd(page, camCmd)
+  await u.sendCustomCmd(camCmd)
 
-  await clearCommandLogs(page)
+  await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await waitForDefaultPlanesToBeVisible(page)
+  await u.waitForDefaultPlanesToBeVisible()
 
-  await closeDebugPanel(page)
+  await u.closeDebugPanel()
   await page.mouse.click(1000, 200) // green
-  await openDebugPanel(page)
+  await u.openDebugPanel()
 
   await expect(page.getByRole('button', { name: 'Line' })).toBeVisible()
 
@@ -423,17 +350,17 @@ test('Can create sketches on all planes and their back sides', async ({
   |> line([4.01, 0], %)`)
 
   await page.getByRole('button', { name: 'Line' }).click()
-  await clearCommandLogs(page)
+  await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Exit Sketch' }).click()
-  await expectCmdLog(page, '[data-message-type="execution-done"]')
+  await u.expectCmdLog('[data-message-type="execution-done"]')
 
-  await removeCurrentCode(page)
+  await u.removeCurrentCode()
 
-  await sendCustomCmd(page, camCmd)
+  await u.sendCustomCmd(camCmd)
 
-  await clearCommandLogs(page)
+  await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await waitForDefaultPlanesToBeVisible(page)
+  await u.waitForDefaultPlanesToBeVisible()
 
   await page.mouse.click(630, 130) // blue
 
@@ -458,17 +385,17 @@ test('Can create sketches on all planes and their back sides', async ({
   }
 
   await page.getByRole('button', { name: 'Line' }).click()
-  await clearCommandLogs(page)
+  await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Exit Sketch' }).click()
-  await expectCmdLog(page, '[data-message-type="execution-done"]')
+  await u.expectCmdLog('[data-message-type="execution-done"]')
 
-  await removeCurrentCode(page)
+  await u.removeCurrentCode()
 
-  await sendCustomCmd(page, camCmdBackSide)
+  await u.sendCustomCmd(camCmdBackSide)
 
-  await clearCommandLogs(page)
+  await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await waitForDefaultPlanesToBeVisible(page)
+  await u.waitForDefaultPlanesToBeVisible()
 
   await page.mouse.click(705, 136) // red
 
@@ -482,21 +409,21 @@ test('Can create sketches on all planes and their back sides', async ({
   |> line([-4.01, 0], %)`)
 
   await page.getByRole('button', { name: 'Line' }).click()
-  await clearCommandLogs(page)
+  await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Exit Sketch' }).click()
-  await expectCmdLog(page, '[data-message-type="execution-done"]')
+  await u.expectCmdLog('[data-message-type="execution-done"]')
 
-  await removeCurrentCode(page)
+  await u.removeCurrentCode()
 
-  await sendCustomCmd(page, camCmdBackSide)
+  await u.sendCustomCmd(camCmdBackSide)
 
-  await clearCommandLogs(page)
+  await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await waitForDefaultPlanesToBeVisible(page)
+  await u.waitForDefaultPlanesToBeVisible()
 
-  await closeDebugPanel(page)
+  await u.closeDebugPanel()
   await page.mouse.click(1000, 350) // green
-  await openDebugPanel(page)
+  await u.openDebugPanel()
 
   await expect(page.getByRole('button', { name: 'Line' })).toBeVisible()
 
@@ -508,17 +435,17 @@ test('Can create sketches on all planes and their back sides', async ({
   |> line([-4.01, 0], %)`)
 
   await page.getByRole('button', { name: 'Line' }).click()
-  await clearCommandLogs(page)
+  await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Exit Sketch' }).click()
-  await expectCmdLog(page, '[data-message-type="execution-done"]')
+  await u.expectCmdLog('[data-message-type="execution-done"]')
 
-  await removeCurrentCode(page)
+  await u.removeCurrentCode()
 
-  await sendCustomCmd(page, camCmdBackSide)
+  await u.sendCustomCmd(camCmdBackSide)
 
-  await clearCommandLogs(page)
+  await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await waitForDefaultPlanesToBeVisible(page)
+  await u.waitForDefaultPlanesToBeVisible()
 
   await page.mouse.click(600, 400) // blue
 
@@ -533,11 +460,12 @@ test('Can create sketches on all planes and their back sides', async ({
 })
 
 test('Auto complete works', async ({ page }) => {
+  const u = getUtils(page)
   // const PUR = 400 / 37.5 //pixeltoUnitRatio
   page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('localhost:3000')
-  await waitForPageLoad(page)
-  await waitForDefaultPlanesToBeVisible(page)
+  await u.waitForPageLoad()
+  await u.waitForDefaultPlanesToBeVisible()
 
   // this test might be brittle as we add and remove functions
   // but should also be easy to update.
