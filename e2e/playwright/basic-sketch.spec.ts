@@ -32,7 +32,7 @@ test.beforeEach(async ({ context, page }) => {
       })
     )
   }, secrets.token)
-  page.emulateMedia({reducedMotion: 'reduce'})
+  page.emulateMedia({ reducedMotion: 'reduce' })
 })
 
 test.setTimeout(60000)
