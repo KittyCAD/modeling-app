@@ -2525,16 +2525,17 @@
     "@types/babel__core" "^7.20.3"
     react-refresh "^0.14.0"
 
-"@vitest/coverage-istanbul@^0.34.1":
-  version "0.34.1"
-  resolved "https://registry.yarnpkg.com/@vitest/coverage-istanbul/-/coverage-istanbul-0.34.1.tgz#a3cf36630c95b090457138b0706133b69ab59189"
-  integrity sha512-5GprlyY2t1g6+RrssWcN/w5RnZV3qIOM0eoaSDJw3jXbHpBpMvAfTg791zXo7PIqNYs5ORUqBWXIIU0gyAfZxA==
+"@vitest/coverage-istanbul@^0.34.6":
+  version "0.34.6"
+  resolved "https://registry.yarnpkg.com/@vitest/coverage-istanbul/-/coverage-istanbul-0.34.6.tgz#4fc91eac4d7cfc5b91850e9f82bcb986990b79a4"
+  integrity sha512-5KaBNZPDSk2ybavC3rZ1pWGniw7sJ5usuwVGRUYzJwiBfWvnLpuUer7bjw7qUCRGdKJXrBgb/Dsgif9rkwMX/A==
   dependencies:
     istanbul-lib-coverage "^3.2.0"
     istanbul-lib-instrument "^6.0.0"
     istanbul-lib-report "^3.0.1"
     istanbul-lib-source-maps "^4.0.1"
     istanbul-reports "^3.1.5"
+    picocolors "^1.0.0"
     test-exclude "^6.0.0"
 
 "@vitest/expect@0.34.6":
