@@ -1,7 +1,19 @@
 import { test, expect, Page } from '@playwright/test'
 import { secrets } from './secrets'
+import { EngineCommand } from '../../src/lang/std/engineConnection'
+import { v4 as uuidv4 } from 'uuid'
 
-test.beforeEach(async ({ context }) => {
+/*
+debug helper: unfortunetly we do rely on exact coord mouse clicks in a few places
+just from the nature of the stream, running the test with debugger and pasting the below
+into the console can be useful to get coords
+
+document.addEventListener('mousemove', (e) =>
+  console.log(`await page.mouse.click(${e.clientX}, ${e.clientY})`)
+)
+*/
+
+test.beforeEach(async ({ context, page }) => {
   context.addInitScript(async (token) => {
     localStorage.setItem('TOKEN_PERSIST_KEY', token)
     localStorage.setItem('persistCode', ``)
@@ -13,13 +25,14 @@ test.beforeEach(async ({ context }) => {
         defaultDirectory: '',
         defaultProjectName: 'project-$nnn',
         onboardingStatus: 'dismissed',
-        showDebugPanel: false,
+        showDebugPanel: true,
         textWrapping: 'On',
         theme: 'system',
         unitSystem: 'imperial',
       })
     )
   }, secrets.token)
+  page.emulateMedia({reducedMotion: 'reduce'})
 })
 
 test.setTimeout(60000)
@@ -33,7 +46,6 @@ async function waitForPageLoad(page: Page) {
   await page.waitForFunction(() =>
     document.querySelector('[data-testid="loading-stream"]')
   )
-  await page.waitForTimeout(500)
 
   // wait for all spinners to be gone
   await page.waitForFunction(
@@ -43,6 +55,66 @@ async function waitForPageLoad(page: Page) {
   await page.waitForFunction(() =>
     document.querySelector('[data-testid="start-sketch"]')
   )
+}
+
+async function removeCurrentCode(page: Page) {
+  await page.click('.cm-content')
+  await page.keyboard.down('Meta')
+  await page.keyboard.press('a')
+  await page.keyboard.up('Meta')
+  await page.keyboard.press('Backspace')
+}
+
+async function sendCustomCmd(page: Page, cmdString: string) {
+  await page.fill('[data-testid="custom-cmd-input"]', cmdString)
+  await page.click('[data-testid="custom-cmd-send-button"]')
+}
+
+async function clearCommandLogs(page: Page) {
+  await page.click('[data-testid="clear-commands"]')
+}
+
+async function expectCmdLog(page: Page, locatorStr: string) {
+  await expect(page.locator(locatorStr)).toBeVisible()
+}
+
+async function waitForDefaultPlanesToBeVisible(page: Page) {
+  await expect(
+    await page.locator('[data-receive-command-type="object_visible"]')
+  ).toHaveCount(3)
+}
+
+async function openDebugPanel(page: Page) {
+  const isOpen =
+    (await page
+      .locator('[data-testid="debug-panel"]')
+      ?.getAttribute('open')) === ''
+
+  if (!isOpen) {
+    await page.click('text=Debug')
+    await page.waitForFunction(
+      () =>
+        document
+          .querySelector('[data-testid="debug-panel"]')
+          ?.getAttribute('open') === ''
+    )
+  }
+}
+
+async function closeDebugPanel(page: Page) {
+  const isOpen =
+    (await page
+      .locator('[data-testid="debug-panel"]')
+      ?.getAttribute('open')) === ''
+  if (isOpen) {
+    await page.click('text=Debug')
+    await page.waitForFunction(
+      () =>
+        document
+          .querySelector('[data-testid="debug-panel"]')
+          ?.getAttribute('open') === null
+    )
+  }
 }
 
 test('Basic sketch', async ({ page }) => {
@@ -261,4 +333,203 @@ test('change camera, show planes', async ({ page, context }) => {
     maxDiffPixels: 100,
     // threshold: 0.6,
   })
+})
+
+test.only('Can create sketches on all planes and their back sides', async ({
+  page,
+}) => {
+  const PUR = 400 / 37.5 //pixeltoUnitRatio
+  page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('localhost:3000')
+  await waitForPageLoad(page)
+  await openDebugPanel(page)
+  await waitForDefaultPlanesToBeVisible(page)
+
+  const camCmd: EngineCommand = {
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_look_at',
+      center: { x: 15, y: 0, z: 0 },
+      up: { x: 0, y: 0, z: 1 },
+      vantage: { x: 30, y: 30, z: 30 },
+    },
+  }
+
+  const camCmdString = JSON.stringify(camCmd)
+
+  const drawLine = async () => {
+    const startXPx = 600
+    await clearCommandLogs(page)
+    await page.click('text=Line')
+
+    await page.waitForFunction(() =>
+      document.querySelector('[data-receive-command-type="set_tool"]')
+    )
+    await clearCommandLogs(page)
+
+    await closeDebugPanel(page)
+
+    await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
+    await openDebugPanel(page)
+    await page.waitForFunction(() =>
+      document.querySelector('[data-receive-command-type="mouse_click"]')
+    )
+    await closeDebugPanel(page)
+    await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
+    await openDebugPanel(page)
+  }
+
+  await sendCustomCmd(page, camCmdString)
+  await clearCommandLogs(page)
+  await page.click('text=Start Sketch')
+  await waitForDefaultPlanesToBeVisible(page)
+
+  await page.mouse.click(700, 350) // red
+
+  await expect(page.getByRole('button', { name: 'Line' })).toBeVisible()
+
+  await drawLine()
+
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('XY')
+  |> startProfileAt([3.97, -5.36], %)
+  |> line([4.01, 0], %)`)
+
+  await page.click('text=Line')
+  await clearCommandLogs(page)
+  await page.click('text=Exit Sketch')
+  await expectCmdLog(page, '[data-message-type="execution-done"]')
+
+  await removeCurrentCode(page)
+
+  await sendCustomCmd(page, camCmdString)
+
+  await clearCommandLogs(page)
+  await page.click('text=Start Sketch')
+  await waitForDefaultPlanesToBeVisible(page)
+
+  await closeDebugPanel(page)
+  await page.mouse.click(1000, 200) // green
+  await openDebugPanel(page)
+
+  await expect(page.getByRole('button', { name: 'Line' })).toBeVisible()
+
+  await drawLine()
+
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('YZ')
+  |> startProfileAt([3.97, -5.36], %)
+  |> line([4.01, 0], %)`)
+
+  await page.click('text=Line')
+  await clearCommandLogs(page)
+  await page.click('text=Exit Sketch')
+  await expectCmdLog(page, '[data-message-type="execution-done"]')
+
+  await removeCurrentCode(page)
+
+  await sendCustomCmd(page, camCmdString)
+
+  await clearCommandLogs(page)
+  await page.click('text=Start Sketch')
+  await waitForDefaultPlanesToBeVisible(page)
+
+  await page.mouse.click(630, 130) // blue
+
+  await expect(page.getByRole('button', { name: 'Line' })).toBeVisible()
+
+  await drawLine()
+
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('XZ')
+  |> startProfileAt([-3.97, -5.36], %)
+  |> line([-4.01, 0], %)`)
+
+  const camCmdBackSide: EngineCommand = {
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_look_at',
+      center: { x: -15, y: 0, z: 0 },
+      up: { x: 0, y: 0, z: 1 },
+      vantage: { x: -30, y: -30, z: -30 },
+    },
+  }
+
+  const camCmdBackSideString = JSON.stringify(camCmdBackSide)
+
+  await page.click('text=Line')
+  await clearCommandLogs(page)
+  await page.click('text=Exit Sketch')
+  await expectCmdLog(page, '[data-message-type="execution-done"]')
+
+  await removeCurrentCode(page)
+
+  await sendCustomCmd(page, camCmdBackSideString)
+
+  await clearCommandLogs(page)
+  await page.click('text=Start Sketch')
+  await waitForDefaultPlanesToBeVisible(page)
+
+  await page.mouse.click(705, 136) // red
+
+  await expect(page.getByRole('button', { name: 'Line' })).toBeVisible()
+
+  await drawLine()
+
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('-XY')
+  |> startProfileAt([-3.97, -5.36], %)
+  |> line([-4.01, 0], %)`)
+
+  await page.click('text=Line')
+  await clearCommandLogs(page)
+  await page.click('text=Exit Sketch')
+  await expectCmdLog(page, '[data-message-type="execution-done"]')
+
+  await removeCurrentCode(page)
+
+  await sendCustomCmd(page, camCmdBackSideString)
+
+  await clearCommandLogs(page)
+  await page.click('text=Start Sketch')
+  await waitForDefaultPlanesToBeVisible(page)
+
+  await closeDebugPanel(page)
+  await page.mouse.click(1000, 350) // green
+  await openDebugPanel(page)
+
+  await expect(page.getByRole('button', { name: 'Line' })).toBeVisible()
+
+  await drawLine()
+
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('-YZ')
+  |> startProfileAt([-3.97, -5.36], %)
+  |> line([-4.01, 0], %)`)
+
+  await page.click('text=Line')
+  await clearCommandLogs(page)
+  await page.click('text=Exit Sketch')
+  await expectCmdLog(page, '[data-message-type="execution-done"]')
+
+  await removeCurrentCode(page)
+
+  await sendCustomCmd(page, camCmdBackSideString)
+
+  await clearCommandLogs(page)
+  await page.click('text=Start Sketch')
+  await waitForDefaultPlanesToBeVisible(page)
+
+  await page.mouse.click(600, 400) // blue
+
+  await expect(page.getByRole('button', { name: 'Line' })).toBeVisible()
+
+  await drawLine()
+
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt([3.97, -5.36], %)
+  |> line([4.01, 0], %)`)
 })
