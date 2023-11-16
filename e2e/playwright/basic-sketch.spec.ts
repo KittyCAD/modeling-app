@@ -531,3 +531,45 @@ test('Can create sketches on all planes and their back sides', async ({
   |> startProfileAt([3.97, -5.36], %)
   |> line([4.01, 0], %)`)
 })
+
+test.only('Auto complete works', async ({ page }) => {
+  // const PUR = 400 / 37.5 //pixeltoUnitRatio
+  page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('localhost:3000')
+  await waitForPageLoad(page)
+  await waitForDefaultPlanesToBeVisible(page)
+
+  // this test might be brittle as we add and remove functions
+  // but should also be easy to update.
+  // tests clicking on an option, selection the first option
+  // and arrowing down to an option
+
+  await page.click('.cm-content')
+  await page.keyboard.type('const part001 = start')
+
+  // expect there to be three auto complete options
+  await expect(page.locator('.cm-completionLabel')).toHaveCount(3)
+  await page.click('text=startSketchOn')
+  await page.keyboard.type("('XY')")
+  await page.keyboard.press('Enter')
+  await page.keyboard.type('  |> startProfi')
+  // expect there be a single auto complete option that we can just hit enter on
+  await expect(page.locator('.cm-completionLabel')).toBeVisible()
+  await page.keyboard.press('Enter') // accepting the auto complete, not a new line
+
+  await page.keyboard.type('([0,0], %)')
+  await page.keyboard.press('Enter')
+  await page.keyboard.type('  |> lin')
+
+  await expect(page.locator('.cm-tooltip-autocomplete')).toBeVisible()
+  // press arrow down twice then enter to accept xLine
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('Enter')
+  await page.keyboard.type('(5, %)')
+
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('XY')
+  |> startProfileAt([0,0], %)
+  |> xLine(5, %)`)
+})
