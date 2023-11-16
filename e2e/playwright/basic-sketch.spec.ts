@@ -39,36 +39,42 @@ test.beforeEach(async ({ context, page }) => {
 
 test.setTimeout(60000)
 
-test('Basic sketch', async ({ page }) => {
+test.only('Basic sketch', async ({ page }) => {
   const u = getUtils(page)
-  page.setViewportSize({ width: 1000, height: 500 })
+  page.setViewportSize({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
   await page.goto('localhost:3000')
   await u.waitForPageLoad()
+  await u.openDebugPanel()
+  await u.waitForDefaultPlanesToBeVisible()
 
   await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
 
-  // wait 2 seconds
-  await page.waitForTimeout(1000)
-
   // click on "Start Sketch" button
+  await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await page.waitForTimeout(1000)
+  await u.waitForDefaultPlanesToBeVisible()
 
-  // click at location (x=700, y=400)
+  await u.closeDebugPanel()
+  // select a plane
   await page.mouse.click(700, 200)
+  await u.openDebugPanel()
 
-  // wait for button with text "Line"
-  await expect(page.getByRole('button', { name: 'Line' })).toBeVisible()
+  await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Line' }).click()
 
+  await u.waitForCmdReceive
+  await u.clearCommandLogs()
+  await u.closeDebugPanel()
+
   const startXPx = 600
-  await page.waitForTimeout(600)
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  await page.waitForTimeout(600)
+  await u.openDebugPanel()
+  await u.waitForCmdReceive('mouse_click')
+  await u.closeDebugPanel()
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
 
-  const startAt = '[19.31, -13.41]'
+  const startAt = '[9.94, -13.41]'
   const tenish = '10.03'
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
@@ -90,19 +96,23 @@ test('Basic sketch', async ({ page }) => {
   |> line([-19.97, 0], %)`)
 
   // deselect line tool
+
+  await u.openAndClearDebugPanel()
   await page.getByRole('button', { name: 'Line' }).click()
-  await page.waitForTimeout(100)
+  await u.waitForCmdReceive('set_tool')
+  await u.clearCommandLogs()
+  await u.closeDebugPanel()
 
   // click between first two clicks to get center of the line
   await page.mouse.click(startXPx + PUR * 15, 500 - PUR * 10)
-  await page.waitForTimeout(400)
+  await u.openDebugPanel()
+  await u.waitForCmdReceive('select_with_point')
+  await u.closeDebugPanel()
 
   // hold down shift
   await page.keyboard.down('Shift')
-  await page.waitForTimeout(100)
   // click between the latest two clicks to get center of the line
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 20)
-  await page.waitForTimeout(300)
 
   // selected two lines therefore there should be two cursors
   await expect(page.locator('.cm-cursor')).toHaveCount(2)

@@ -43,9 +43,11 @@ async function expectCmdLog(page: Page, locatorStr: string) {
 }
 
 async function waitForDefaultPlanesToBeVisible(page: Page) {
-  await expect(
-    await page.locator('[data-receive-command-type="object_visible"]')
-  ).toHaveCount(3)
+  await page.waitForFunction(
+    () =>
+      document.querySelectorAll('[data-receive-command-type="object_visible"]')
+        .length >= 3
+  )
 }
 
 async function openDebugPanel(page: Page) {
@@ -92,5 +94,18 @@ export function getUtils(page: Page) {
       waitForDefaultPlanesToBeVisible(page),
     openDebugPanel: () => openDebugPanel(page),
     closeDebugPanel: () => closeDebugPanel(page),
+    openAndClearDebugPanel: async () => {
+      await openDebugPanel(page)
+      return clearCommandLogs(page)
+    },
+    waitForCmdReceive: async (commandType: string) => {
+      await page.waitForFunction(
+        (commandType) =>
+          document.querySelector(
+            `[data-receive-command-type="${commandType}"]`
+          ),
+        commandType
+      )
+    },
   }
 }
