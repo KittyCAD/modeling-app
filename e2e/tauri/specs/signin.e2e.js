@@ -42,9 +42,8 @@ describe('Modeling App', () => {
     console.log(cr.status)
 
     // Now should be logged in
-    await new Promise(resolve => setTimeout(resolve, 10000))
     const newFileButton = await $('#new_file')
-    await newFileButton.waitForClickable()
+    await newFileButton.waitForClickable({ timeout:15000 })
     expect(newFileButton).toHaveText('New file')
   })
 })
