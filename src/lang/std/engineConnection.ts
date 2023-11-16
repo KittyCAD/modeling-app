@@ -216,6 +216,26 @@ export class EngineConnection {
       }
     })
 
+    this.pc.addEventListener('icecandidateerror', (_event) => {
+      const event = _event as RTCPeerConnectionIceErrorEvent
+      console.error(
+        `ICE candidate returned an error: ${event.errorCode}: ${event.errorText} for ${event.url}`
+      )
+    })
+
+    this.pc.addEventListener('connectionstatechange', (event) => {
+      if (this.pc?.iceConnectionState === 'connected') {
+        if (this.shouldTrace()) {
+          iceSpan.resolve?.()
+        }
+      } else if (this.pc?.iceConnectionState === 'failed') {
+        // failed is a terminal state; let's explicitly kill the
+        // connection to the server at this point.
+        console.log('failed to negotiate ice connection; restarting')
+        this.close()
+      }
+    })
+
     this.websocket.addEventListener('open', (event) => {
       if (this.shouldTrace()) {
         websocketSpan.resolve?.()
@@ -350,19 +370,6 @@ export class EngineConnection {
         // ICE negotiation happen in the background. Everything from here
         // until the end of this function is setup of our end of the
         // PeerConnection and waiting for events to fire our callbacks.
-
-        this.pc.addEventListener('connectionstatechange', (event) => {
-          if (this.pc?.iceConnectionState === 'connected') {
-            if (this.shouldTrace()) {
-              iceSpan.resolve?.()
-            }
-          } else if (this.pc?.iceConnectionState === 'failed') {
-            // failed is a terminal state; let's explicitly kill the
-            // connection to the server at this point.
-            console.log('failed to negotiate ice connection; restarting')
-            this.close()
-          }
-        })
 
         this.pc.addEventListener('icecandidate', (event) => {
           if (!this.pc || !this.websocket) return
@@ -633,7 +640,10 @@ export class EngineCommandManager {
 
     // If we already have an engine connection, just need to resize the stream.
     if (this.engineConnection) {
-      this.handleResize({ streamWidth: width, streamHeight: height })
+      this.handleResize({
+        streamWidth: width,
+        streamHeight: height,
+      })
       return
     }
 
