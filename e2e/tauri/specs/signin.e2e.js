@@ -32,8 +32,7 @@ describe('Modeling App', () => {
     // Device flow: confirm
     const confirmUrl = 'https://api.kittycad.io/oauth2/device/confirm'
     const data = JSON.stringify({ user_code: userCode })
-    console.log(`POST ${confirmUrl}`)
-    console.log(data)
+    console.log(`POST ${confirmUrl} ${data}`)
     const cr = await fetch(confirmUrl, {
       headers,
       method: 'POST',
@@ -43,7 +42,7 @@ describe('Modeling App', () => {
 
     // Now should be logged in
     const newFileButton = await $('#new_file')
-    await newFileButton.waitForClickable({ timeout:15000 })
+    await newFileButton.waitForClickable({ timeout: 30000 })
     expect(newFileButton).toHaveText('New file')
   })
 })

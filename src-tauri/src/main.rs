@@ -72,7 +72,8 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
     // We do this in the browser and not a separate window because we want 1password and
     // other crap to work well.
     println!("Opening {}", auth_uri.secret());
-    #[cfg(target_os = "linux")] {
+    #[cfg(target_os = "linux")]
+    {
         // TODO: find a better way to share this value with tauri e2e tests
         fs::write(
             "/tmp/kittycad_user_code",
