@@ -91,7 +91,7 @@ async function openDebugPanel(page: Page) {
       ?.getAttribute('open')) === ''
 
   if (!isOpen) {
-    await page.click('text=Debug')
+    await page.getByText('Debug').click()
     await page.waitForFunction(
       () =>
         document
@@ -107,7 +107,7 @@ async function closeDebugPanel(page: Page) {
       .locator('[data-testid="debug-panel"]')
       ?.getAttribute('open')) === ''
   if (isOpen) {
-    await page.click('text=Debug')
+    await page.getByText('Debug').click()
     await page.waitForFunction(
       () =>
         document
@@ -130,7 +130,7 @@ test('Basic sketch', async ({ page }) => {
   await page.waitForTimeout(1000)
 
   // click on "Start Sketch" button
-  await page.click('text=Start Sketch')
+  await page.getByRole('button', { name: 'Start Sketch' }).click()
   await page.waitForTimeout(1000)
 
   // click at location (x=700, y=400)
@@ -138,7 +138,7 @@ test('Basic sketch', async ({ page }) => {
 
   // wait for button with text "Line"
   await expect(page.getByRole('button', { name: 'Line' })).toBeVisible()
-  await page.click('text=Line')
+  await page.getByRole('button', { name: 'Line' }).click()
 
   const startXPx = 600
   await page.waitForTimeout(600)
@@ -168,7 +168,7 @@ test('Basic sketch', async ({ page }) => {
   |> line([-19.97, 0], %)`)
 
   // deselect line tool
-  await page.click('text=Line')
+  await page.getByRole('button', { name: 'Line' }).click()
   await page.waitForTimeout(100)
 
   // click between first two clicks to get center of the line
@@ -185,7 +185,7 @@ test('Basic sketch', async ({ page }) => {
   // selected two lines therefore there should be two cursors
   await expect(page.locator('.cm-cursor')).toHaveCount(2)
 
-  await page.click('text=Equal Length')
+  await page.getByRole('button', { name: 'Equal Length' }).click()
 
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
@@ -222,10 +222,10 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
 
   // error text on hover
   await page.hover('.cm-lint-marker-error')
-  await expect(page.locator("text=found unknown token '#'")).toBeVisible()
+  await expect(page.getByText("found unknown token '#'")).toBeVisible()
 
   // select the line that's causing the error and delete it
-  await page.click('text=# error')
+  await page.getByText('# error').click()
   await page.keyboard.press('End')
   await page.keyboard.down('Shift')
   await page.keyboard.press('Home')
@@ -252,7 +252,7 @@ test('executes on load', async ({ page, context }) => {
   await waitForPageLoad(page)
 
   // expand variables section
-  await page.click('text=Variables')
+  await page.getByText('Variables').click()
 
   // can find part001 in the variables summary (pretty-json-container, makes sure we're not looking in the code editor)
   // part001 only shows up in the variables summary if it's been executed
@@ -269,14 +269,14 @@ test('re-executes', async ({ page, context }) => {
   await page.goto('localhost:3000')
   await waitForPageLoad(page)
 
-  await page.click('text=Variables')
+  await page.getByText('Variables').click()
   // expect to see "myVar:5"
   await expect(
     page.locator('.pretty-json-container >> text=myVar:5')
   ).toBeVisible()
 
   // change 5 to 67
-  await page.click('text=const myVar')
+  await page.getByText('const myVar').click()
   await page.keyboard.press('End')
   await page.keyboard.press('Backspace')
   await page.keyboard.type('67')
@@ -325,7 +325,7 @@ test('change camera, show planes', async ({ page, context }) => {
   await page.waitForTimeout(500)
 
   await page.waitForTimeout(1000)
-  await page.click('text=Start Sketch')
+  await page.getByRole('button', { name: 'Start Sketch' }).click()
   await page.waitForTimeout(2000)
 
   // take snapshot
@@ -361,7 +361,7 @@ test('Can create sketches on all planes and their back sides', async ({
   const drawLine = async () => {
     const startXPx = 600
     await clearCommandLogs(page)
-    await page.click('text=Line')
+    await page.getByRole('button', { name: 'Line' }).click()
 
     await page.waitForFunction(() =>
       document.querySelector('[data-receive-command-type="set_tool"]')
@@ -382,7 +382,7 @@ test('Can create sketches on all planes and their back sides', async ({
 
   await sendCustomCmd(page, camCmd)
   await clearCommandLogs(page)
-  await page.click('text=Start Sketch')
+  await page.getByRole('button', { name: 'Start Sketch' }).click()
   await waitForDefaultPlanesToBeVisible(page)
 
   await page.mouse.click(700, 350) // red
@@ -396,9 +396,9 @@ test('Can create sketches on all planes and their back sides', async ({
   |> startProfileAt([3.97, -5.36], %)
   |> line([4.01, 0], %)`)
 
-  await page.click('text=Line')
+  await page.getByRole('button', { name: 'Line' }).click()
   await clearCommandLogs(page)
-  await page.click('text=Exit Sketch')
+  await page.getByRole('button', { name: 'Exit Sketch' }).click()
   await expectCmdLog(page, '[data-message-type="execution-done"]')
 
   await removeCurrentCode(page)
@@ -406,7 +406,7 @@ test('Can create sketches on all planes and their back sides', async ({
   await sendCustomCmd(page, camCmd)
 
   await clearCommandLogs(page)
-  await page.click('text=Start Sketch')
+  await page.getByRole('button', { name: 'Start Sketch' }).click()
   await waitForDefaultPlanesToBeVisible(page)
 
   await closeDebugPanel(page)
@@ -422,9 +422,9 @@ test('Can create sketches on all planes and their back sides', async ({
   |> startProfileAt([3.97, -5.36], %)
   |> line([4.01, 0], %)`)
 
-  await page.click('text=Line')
+  await page.getByRole('button', { name: 'Line' }).click()
   await clearCommandLogs(page)
-  await page.click('text=Exit Sketch')
+  await page.getByRole('button', { name: 'Exit Sketch' }).click()
   await expectCmdLog(page, '[data-message-type="execution-done"]')
 
   await removeCurrentCode(page)
@@ -432,7 +432,7 @@ test('Can create sketches on all planes and their back sides', async ({
   await sendCustomCmd(page, camCmd)
 
   await clearCommandLogs(page)
-  await page.click('text=Start Sketch')
+  await page.getByRole('button', { name: 'Start Sketch' }).click()
   await waitForDefaultPlanesToBeVisible(page)
 
   await page.mouse.click(630, 130) // blue
@@ -457,9 +457,9 @@ test('Can create sketches on all planes and their back sides', async ({
     },
   }
 
-  await page.click('text=Line')
+  await page.getByRole('button', { name: 'Line' }).click()
   await clearCommandLogs(page)
-  await page.click('text=Exit Sketch')
+  await page.getByRole('button', { name: 'Exit Sketch' }).click()
   await expectCmdLog(page, '[data-message-type="execution-done"]')
 
   await removeCurrentCode(page)
@@ -467,7 +467,7 @@ test('Can create sketches on all planes and their back sides', async ({
   await sendCustomCmd(page, camCmdBackSide)
 
   await clearCommandLogs(page)
-  await page.click('text=Start Sketch')
+  await page.getByRole('button', { name: 'Start Sketch' }).click()
   await waitForDefaultPlanesToBeVisible(page)
 
   await page.mouse.click(705, 136) // red
@@ -481,9 +481,9 @@ test('Can create sketches on all planes and their back sides', async ({
   |> startProfileAt([-3.97, -5.36], %)
   |> line([-4.01, 0], %)`)
 
-  await page.click('text=Line')
+  await page.getByRole('button', { name: 'Line' }).click()
   await clearCommandLogs(page)
-  await page.click('text=Exit Sketch')
+  await page.getByRole('button', { name: 'Exit Sketch' }).click()
   await expectCmdLog(page, '[data-message-type="execution-done"]')
 
   await removeCurrentCode(page)
@@ -491,7 +491,7 @@ test('Can create sketches on all planes and their back sides', async ({
   await sendCustomCmd(page, camCmdBackSide)
 
   await clearCommandLogs(page)
-  await page.click('text=Start Sketch')
+  await page.getByRole('button', { name: 'Start Sketch' }).click()
   await waitForDefaultPlanesToBeVisible(page)
 
   await closeDebugPanel(page)
@@ -507,9 +507,9 @@ test('Can create sketches on all planes and their back sides', async ({
   |> startProfileAt([-3.97, -5.36], %)
   |> line([-4.01, 0], %)`)
 
-  await page.click('text=Line')
+  await page.getByRole('button', { name: 'Line' }).click()
   await clearCommandLogs(page)
-  await page.click('text=Exit Sketch')
+  await page.getByRole('button', { name: 'Exit Sketch' }).click()
   await expectCmdLog(page, '[data-message-type="execution-done"]')
 
   await removeCurrentCode(page)
@@ -517,7 +517,7 @@ test('Can create sketches on all planes and their back sides', async ({
   await sendCustomCmd(page, camCmdBackSide)
 
   await clearCommandLogs(page)
-  await page.click('text=Start Sketch')
+  await page.getByRole('button', { name: 'Start Sketch' }).click()
   await waitForDefaultPlanesToBeVisible(page)
 
   await page.mouse.click(600, 400) // blue
@@ -549,7 +549,7 @@ test('Auto complete works', async ({ page }) => {
 
   // expect there to be three auto complete options
   await expect(page.locator('.cm-completionLabel')).toHaveCount(3)
-  await page.click('text=startSketchOn')
+  await page.getByText('startSketchOn').click()
   await page.keyboard.type("('XY')")
   await page.keyboard.press('Enter')
   await page.keyboard.type('  |> startProfi')
