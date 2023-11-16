@@ -532,7 +532,7 @@ test('Can create sketches on all planes and their back sides', async ({
   |> line([4.01, 0], %)`)
 })
 
-test.only('Auto complete works', async ({ page }) => {
+test('Auto complete works', async ({ page }) => {
   // const PUR = 400 / 37.5 //pixeltoUnitRatio
   page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('localhost:3000')
