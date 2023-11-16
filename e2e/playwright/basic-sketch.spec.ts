@@ -4,7 +4,7 @@ import { EngineCommand } from '../../src/lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
 
 /*
-debug helper: unfortunetly we do rely on exact coord mouse clicks in a few places
+debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
 just from the nature of the stream, running the test with debugger and pasting the below
 into the console can be useful to get coords
 
