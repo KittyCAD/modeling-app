@@ -65,8 +65,8 @@ async function removeCurrentCode(page: Page) {
   await page.keyboard.press('Backspace')
 }
 
-async function sendCustomCmd(page: Page, cmdString: string) {
-  await page.fill('[data-testid="custom-cmd-input"]', cmdString)
+async function sendCustomCmd(page: Page, cmd: EngineCommand) {
+  await page.fill('[data-testid="custom-cmd-input"]', JSON.stringify(cmd))
   await page.click('[data-testid="custom-cmd-send-button"]')
 }
 
@@ -335,7 +335,7 @@ test('change camera, show planes', async ({ page, context }) => {
   })
 })
 
-test.only('Can create sketches on all planes and their back sides', async ({
+test('Can create sketches on all planes and their back sides', async ({
   page,
 }) => {
   const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -356,7 +356,7 @@ test.only('Can create sketches on all planes and their back sides', async ({
     },
   }
 
-  const camCmdString = JSON.stringify(camCmd)
+  await sendCustomCmd(page, camCmd)
 
   const drawLine = async () => {
     const startXPx = 600
@@ -380,7 +380,7 @@ test.only('Can create sketches on all planes and their back sides', async ({
     await openDebugPanel(page)
   }
 
-  await sendCustomCmd(page, camCmdString)
+  await sendCustomCmd(page, camCmd)
   await clearCommandLogs(page)
   await page.click('text=Start Sketch')
   await waitForDefaultPlanesToBeVisible(page)
@@ -403,7 +403,7 @@ test.only('Can create sketches on all planes and their back sides', async ({
 
   await removeCurrentCode(page)
 
-  await sendCustomCmd(page, camCmdString)
+  await sendCustomCmd(page, camCmd)
 
   await clearCommandLogs(page)
   await page.click('text=Start Sketch')
@@ -429,7 +429,7 @@ test.only('Can create sketches on all planes and their back sides', async ({
 
   await removeCurrentCode(page)
 
-  await sendCustomCmd(page, camCmdString)
+  await sendCustomCmd(page, camCmd)
 
   await clearCommandLogs(page)
   await page.click('text=Start Sketch')
@@ -457,8 +457,6 @@ test.only('Can create sketches on all planes and their back sides', async ({
     },
   }
 
-  const camCmdBackSideString = JSON.stringify(camCmdBackSide)
-
   await page.click('text=Line')
   await clearCommandLogs(page)
   await page.click('text=Exit Sketch')
@@ -466,7 +464,7 @@ test.only('Can create sketches on all planes and their back sides', async ({
 
   await removeCurrentCode(page)
 
-  await sendCustomCmd(page, camCmdBackSideString)
+  await sendCustomCmd(page, camCmdBackSide)
 
   await clearCommandLogs(page)
   await page.click('text=Start Sketch')
@@ -490,7 +488,7 @@ test.only('Can create sketches on all planes and their back sides', async ({
 
   await removeCurrentCode(page)
 
-  await sendCustomCmd(page, camCmdBackSideString)
+  await sendCustomCmd(page, camCmdBackSide)
 
   await clearCommandLogs(page)
   await page.click('text=Start Sketch')
@@ -516,7 +514,7 @@ test.only('Can create sketches on all planes and their back sides', async ({
 
   await removeCurrentCode(page)
 
-  await sendCustomCmd(page, camCmdBackSideString)
+  await sendCustomCmd(page, camCmdBackSide)
 
   await clearCommandLogs(page)
   await page.click('text=Start Sketch')
