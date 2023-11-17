@@ -1,0 +1,94 @@
+---
+source: kcl/src/parser/parser_impl.rs
+expression: actual
+---
+{
+  "start": 0,
+  "end": 48,
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 48,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 3,
+          "end": 48,
+          "id": {
+            "type": "Identifier",
+            "start": 3,
+            "end": 4,
+            "name": "f"
+          },
+          "init": {
+            "type": "FunctionExpression",
+            "type": "FunctionExpression",
+            "start": 7,
+            "end": 48,
+            "params": [
+              {
+                "type": "Identifier",
+                "start": 8,
+                "end": 13,
+                "name": "angle"
+              }
+            ],
+            "body": {
+              "start": 18,
+              "end": 48,
+              "body": [
+                {
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement",
+                  "start": 20,
+                  "end": 46,
+                  "argument": {
+                    "type": "CallExpression",
+                    "type": "CallExpression",
+                    "start": 27,
+                    "end": 46,
+                    "callee": {
+                      "type": "Identifier",
+                      "start": 27,
+                      "end": 34,
+                      "name": "default"
+                    },
+                    "arguments": [
+                      {
+                        "type": "Identifier",
+                        "type": "Identifier",
+                        "start": 35,
+                        "end": 40,
+                        "name": "angle"
+                      },
+                      {
+                        "type": "Literal",
+                        "type": "Literal",
+                        "start": 42,
+                        "end": 45,
+                        "value": 360,
+                        "raw": "360"
+                      }
+                    ],
+                    "optional": false
+                  }
+                }
+              ],
+              "nonCodeMeta": {
+                "nonCodeNodes": {},
+                "start": []
+              }
+            }
+          }
+        }
+      ],
+      "kind": "fn"
+    }
+  ],
+  "nonCodeMeta": {
+    "nonCodeNodes": {},
+    "start": []
+  }
+}
