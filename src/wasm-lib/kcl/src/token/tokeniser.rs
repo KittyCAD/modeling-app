@@ -21,6 +21,7 @@ pub fn token(i: &mut Located<&str>) -> PResult<Token> {
         '{' | '(' | '[' => brace_start,
         '}' | ')' | ']' => brace_end,
         ',' => comma,
+        '?' => question_mark,
         '0'..='9' => number,
         ':' => colon,
         '.' => alt((number, double_period, period)),
@@ -106,6 +107,11 @@ fn brace_end(i: &mut Located<&str>) -> PResult<Token> {
 fn comma(i: &mut Located<&str>) -> PResult<Token> {
     let (value, range) = ','.with_span().parse_next(i)?;
     Ok(Token::from_range(range, TokenType::Comma, value.to_string()))
+}
+
+fn question_mark(i: &mut Located<&str>) -> PResult<Token> {
+    let (value, range) = '?'.with_span().parse_next(i)?;
+    Ok(Token::from_range(range, TokenType::QuestionMark, value.to_string()))
 }
 
 fn colon(i: &mut Located<&str>) -> PResult<Token> {
