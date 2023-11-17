@@ -1383,15 +1383,6 @@ dependencies = [
 
 [[package]]
 name = "itertools"
-version = "0.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b1c173a5686ce8bfa551b3563d0c2170bf24ca44da99c7ca4bfdab5418c3fe57"
-dependencies = [
- "either",
-]
-
-[[package]]
-name = "itertools"
 version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "25db6b064527c5d482d0423354fcd07a89a2dfe07b67892e62411946db7f07b0"
@@ -1793,7 +1784,7 @@ checksum = "0ab1bc2a289d34bd04a330323ac98a1b4bc82c9d9fcb1e66b63caa84da26b575"
 [[package]]
 name = "openapitor"
 version = "0.0.9"
-source = "git+https://github.com/KittyCAD/kittycad.rs?branch=main#3afe554cf9d55bf0029d37baac9343309c8b3e8d"
+source = "git+https://github.com/KittyCAD/kittycad.rs?branch=main#5ed477b5c9d3b25653f1b267635c7b00a6ca5898"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -1963,7 +1954,7 @@ dependencies = [
  "bincode",
  "either",
  "fnv",
- "itertools 0.11.0",
+ "itertools 0.10.5",
  "lazy_static",
  "nom",
  "quick-xml",
