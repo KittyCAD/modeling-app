@@ -27,6 +27,7 @@ async function removeCurrentCode(page: Page) {
   await page.keyboard.press('a')
   await page.keyboard.up('Meta')
   await page.keyboard.press('Backspace')
+  await expect(page.locator('.cm-content')).toHaveText('')
 }
 
 async function sendCustomCmd(page: Page, cmd: EngineCommand) {
