@@ -265,60 +265,62 @@ test.only('Can create sketches on all planes and their back sides', async ({
     await u.openDebugPanel()
   }
 
-  const TestSinglePlane = async ({viewCmd, expectedCode, clickCoords}: { 
+  const TestSinglePlane = async ({
+    viewCmd,
+    expectedCode,
+    clickCoords,
+  }: {
     viewCmd: EngineCommand
     expectedCode: string
-    clickCoords: { x: number, y: number }
+    clickCoords: { x: number; y: number }
   }) => {
-      await u.sendCustomCmd(viewCmd)
-      await u.clearCommandLogs()
-      await page.waitForTimeout(100)
-      await page.getByRole('button', { name: 'Start Sketch' }).click()
-      await u.waitForDefaultPlanesToBeVisible()
-    
+    await u.sendCustomCmd(viewCmd)
+    await u.clearCommandLogs()
+    await page.waitForTimeout(100)
+    await page.getByRole('button', { name: 'Start Sketch' }).click()
+    await u.waitForDefaultPlanesToBeVisible()
 
-      await u.closeDebugPanel()
-      await page.mouse.click(clickCoords.x, clickCoords.y)
-      await u.openDebugPanel()
-    
-      await expect(page.getByRole('button', { name: 'Line' })).toBeVisible()
-    
-      await drawLine()
-    
-      await expect(page.locator('.cm-content'))
-        .toHaveText(expectedCode)
-    
-      await page.getByRole('button', { name: 'Line' }).click()
-      await u.clearCommandLogs()
-      await page.getByRole('button', { name: 'Exit Sketch' }).click()
-      await u.expectCmdLog('[data-message-type="execution-done"]')
-      
-      await u.clearCommandLogs()
-      await u.removeCurrentCode()
-      // await u.waitForCmdReceive('execution_done')
+    await u.closeDebugPanel()
+    await page.mouse.click(clickCoords.x, clickCoords.y)
+    await u.openDebugPanel()
+
+    await expect(page.getByRole('button', { name: 'Line' })).toBeVisible()
+
+    await drawLine()
+
+    await expect(page.locator('.cm-content')).toHaveText(expectedCode)
+
+    await page.getByRole('button', { name: 'Line' }).click()
+    await u.clearCommandLogs()
+    await page.getByRole('button', { name: 'Exit Sketch' }).click()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+
+    await u.clearCommandLogs()
+    await u.removeCurrentCode()
+    // await u.waitForCmdReceive('execution_done')
   }
   await TestSinglePlane({
     viewCmd: camCmd,
     expectedCode: `const part001 = startSketchOn('XY')
   |> startProfileAt([3.97, -5.36], %)
   |> line([4.01, 0], %)`,
-    clickCoords: { x: 700, y: 350 } // red plane
+    clickCoords: { x: 700, y: 350 }, // red plane
   })
   await TestSinglePlane({
     viewCmd: camCmd,
     expectedCode: `const part001 = startSketchOn('YZ')
   |> startProfileAt([3.97, -5.36], %)
   |> line([4.01, 0], %)`,
-    clickCoords: { x: 1000, y: 200 } // green plane
+    clickCoords: { x: 1000, y: 200 }, // green plane
   })
   await TestSinglePlane({
     viewCmd: camCmd,
     expectedCode: `const part001 = startSketchOn('XZ')
   |> startProfileAt([-3.97, -5.36], %)
   |> line([-4.01, 0], %)`,
-    clickCoords: { x: 630, y: 130 } // blue plane
+    clickCoords: { x: 630, y: 130 }, // blue plane
   })
-  
+
   // new camera angle to click the back side of all three planes
   const camCmdBackSide: EngineCommand = {
     type: 'modeling_cmd_req',
@@ -335,21 +337,21 @@ test.only('Can create sketches on all planes and their back sides', async ({
     expectedCode: `const part001 = startSketchOn('-XY')
   |> startProfileAt([-3.97, -5.36], %)
   |> line([-4.01, 0], %)`,
-    clickCoords: { x: 705, y: 136 } // back of red plane
+    clickCoords: { x: 705, y: 136 }, // back of red plane
   })
   await TestSinglePlane({
     viewCmd: camCmdBackSide,
     expectedCode: `const part001 = startSketchOn('-YZ')
   |> startProfileAt([-3.97, -5.36], %)
   |> line([-4.01, 0], %)`,
-    clickCoords: { x: 1000, y: 350 } // back of green plane
+    clickCoords: { x: 1000, y: 350 }, // back of green plane
   })
   await TestSinglePlane({
     viewCmd: camCmdBackSide,
     expectedCode: `const part001 = startSketchOn('-XZ')
   |> startProfileAt([3.97, -5.36], %)
   |> line([4.01, 0], %)`,
-    clickCoords: { x: 600, y: 400 } // back of blue plane
+    clickCoords: { x: 600, y: 400 }, // back of blue plane
   })
 })
 
