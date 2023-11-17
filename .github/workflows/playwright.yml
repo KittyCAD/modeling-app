@@ -31,7 +31,7 @@ jobs:
       run: yarn build:wasm
     - name: build web
       run: yarn build:local
-    - name: Run macos/safari
+    - name: Run macos/safari snapshots
       if: matrix.os == 'macos-latest'
       # safari doesn't work on Ubuntu because of the same reason tauri doesn't (webRTC issues)
       # TODO remove this and the matrix and run all tests on ubuntu when this is fixed
@@ -39,7 +39,7 @@ jobs:
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-    - name: Run ubuntu/chrome
+    - name: Run ubuntu/chrome snapshots
       if: matrix.os == 'ubuntu-latest'
       run: yarn playwright test --project="Google Chrome" --update-snapshots e2e/playwright/snapshot-tests.spec.ts
       env:
@@ -75,7 +75,7 @@ jobs:
         git commit -am "A snapshot a day keeps the bugs away! 📷🐛 (OS: ${{ matrix.os }})" || true
         git push
         git push origin ${{ github.head_ref }}
-    - name: Run macos/safari
+    - name: Run macos/safari flow
       if: matrix.os == 'macos-latest'
       # safari doesn't work on Ubuntu because of the same reason tauri doesn't (webRTC issues)
       # TODO remove this and the matrix and run all tests on ubuntu when this is fixed
@@ -83,7 +83,7 @@ jobs:
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-    - name: Run ubuntu/chrome
+    - name: Run ubuntu/chrome flow
       if: matrix.os == 'ubuntu-latest'
       run: yarn playwright test --project="Google Chrome" e2e/playwright/flow-tests.spec.ts
       env:
