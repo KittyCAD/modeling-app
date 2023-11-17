@@ -276,7 +276,7 @@ test('Can create sketches on all planes and their back sides', async ({
   }) => {
     await u.sendCustomCmd(viewCmd)
     await u.clearCommandLogs()
-    await page.waitForTimeout(100)
+    await page.waitForTimeout(2000)
     await page.getByRole('button', { name: 'Start Sketch' }).click()
     await u.waitForDefaultPlanesToBeVisible()
 
