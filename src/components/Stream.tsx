@@ -356,6 +356,8 @@ export const Stream = ({ className = '' }) => {
 
         kclManager.executeAstMock(modifiedAst, true)
       })
+    } else {
+      engineCommandManager.sendSceneCommand(command)
     }
 
     setDidDragInStream(false)

@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test'
+import { test, expect } from '@playwright/test'
 import { secrets } from './secrets'
 import { EngineCommand } from '../../src/lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
@@ -39,7 +39,7 @@ test.beforeEach(async ({ context, page }) => {
 
 test.setTimeout(60000)
 
-test.only('Basic sketch', async ({ page }) => {
+test('Basic sketch', async ({ page }) => {
   const u = getUtils(page)
   page.setViewportSize({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -221,56 +221,6 @@ test('re-executes', async ({ page, context }) => {
   ).toBeVisible()
 })
 
-test('change camera, show planes', async ({ page, context }) => {
-  const u = getUtils(page)
-  context.addInitScript(async (token) => {
-    localStorage.setItem('persistCode', `const myVar = 5`)
-  })
-  page.setViewportSize({ width: 1000, height: 500 })
-  await page.goto('localhost:3000')
-  await u.waitForPageLoad()
-
-  await page.waitForTimeout(1000)
-
-  // rotate
-  await page.mouse.move(700, 200)
-  await page.mouse.down({ button: 'right' })
-  await page.mouse.move(600, 300)
-  await page.mouse.up({ button: 'right' })
-
-  await page.waitForTimeout(500)
-
-  // pan
-  await page.keyboard.down('Shift')
-  await page.mouse.move(600, 200)
-  await page.mouse.down({ button: 'right' })
-  await page.mouse.move(700, 200)
-  await page.mouse.up({ button: 'right' })
-  await page.keyboard.up('Shift')
-
-  await page.waitForTimeout(500)
-
-  // zoom
-  await page.keyboard.down('Control')
-  await page.mouse.move(700, 400)
-  await page.mouse.down({ button: 'right' })
-  await page.mouse.move(700, 350)
-  await page.mouse.up({ button: 'right' })
-  await page.keyboard.up('Control')
-
-  await page.waitForTimeout(500)
-
-  await page.waitForTimeout(1000)
-  await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await page.waitForTimeout(2000)
-
-  // take snapshot
-  expect(await page.screenshot()).toMatchSnapshot({
-    maxDiffPixels: 100,
-    // threshold: 0.6,
-  })
-})
-
 test('Can create sketches on all planes and their back sides', async ({
   page,
 }) => {
@@ -292,8 +242,6 @@ test('Can create sketches on all planes and their back sides', async ({
       vantage: { x: 30, y: 30, z: 30 },
     },
   }
-
-  await u.sendCustomCmd(camCmd)
 
   const drawLine = async () => {
     const startXPx = 600

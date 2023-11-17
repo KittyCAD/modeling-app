@@ -35,13 +35,13 @@ jobs:
       if: matrix.os == 'macos-latest'
       # safari doesn't work on Ubuntu because of the same reason tauri doesn't (webRTC issues)
       # TODO remove this and the matrix and run all tests on ubuntu when this is fixed
-      run: yarn playwright test --project="webkit" --update-snapshots
+      run: yarn playwright test --project="webkit" --update-snapshots e2e/playwright/snapshot-tests.spec.ts
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
     - name: Run ubuntu/chrome
       if: matrix.os == 'ubuntu-latest'
-      run: yarn playwright test --project="Google Chrome" --update-snapshots
+      run: yarn playwright test --project="Google Chrome" --update-snapshots e2e/playwright/snapshot-tests.spec.ts
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
@@ -75,3 +75,23 @@ jobs:
         git commit -am "A snapshot a day keeps the bugs away! 📷🐛 (OS: ${{ matrix.os }})" || true
         git push
         git push origin ${{ github.head_ref }}
+    - name: Run macos/safari
+      if: matrix.os == 'macos-latest'
+      # safari doesn't work on Ubuntu because of the same reason tauri doesn't (webRTC issues)
+      # TODO remove this and the matrix and run all tests on ubuntu when this is fixed
+      run: yarn playwright test --project="webkit" e2e/playwright/flow-tests.spec.ts
+      env:
+        CI: true
+        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+    - name: Run ubuntu/chrome
+      if: matrix.os == 'ubuntu-latest'
+      run: yarn playwright test --project="Google Chrome" e2e/playwright/flow-tests.spec.ts
+      env:
+        CI: true
+        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+    - uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
