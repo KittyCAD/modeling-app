@@ -683,21 +683,20 @@ checksum = "c2e66c9d817f1720209181c316d28635c050fa304f9c79e47a520882661b7308"
 
 [[package]]
 name = "databake"
-version = "0.1.6"
+version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "959b676312ba1aaafb2219c475560082e6b20c3bc572ec1483f93cecd748cf3d"
+checksum = "82175d72e69414ceafbe2b49686794d3a8bed846e0d50267355f83ea8fdd953a"
 dependencies = [
  "databake-derive",
  "proc-macro2",
  "quote",
- "syn 2.0.39",
 ]
 
 [[package]]
 name = "databake-derive"
-version = "0.1.6"
+version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5f0694dfe255f1af0289d3d1b40787bb955e8603d96e96a6b14b225926e108fb"
+checksum = "377af281d8f23663862a7c84623bc5dcf7f8c44b13c7496a590bdc157f941a43"
 dependencies = [
  "proc-macro2",
  "quote",
