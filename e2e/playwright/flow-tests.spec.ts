@@ -221,7 +221,7 @@ test('re-executes', async ({ page, context }) => {
   ).toBeVisible()
 })
 
-test.only('Can create sketches on all planes and their back sides', async ({
+test('Can create sketches on all planes and their back sides', async ({
   page,
 }) => {
   const u = getUtils(page)
