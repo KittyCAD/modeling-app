@@ -1,3 +1,4 @@
+//! This crate contains macros for parsing KCL at Rust compile-time.
 use databake::*;
 use proc_macro::TokenStream;
 use quote::quote;

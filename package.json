@@ -114,7 +114,7 @@
     "@types/wicg-file-system-access": "^2020.9.6",
     "@types/ws": "^8.5.5",
     "@vitejs/plugin-react": "^4.1.1",
-    "@vitest/coverage-istanbul": "^0.34.1",
+    "@vitest/coverage-istanbul": "^0.34.6",
     "@wdio/cli": "^7.7.3",
     "@wdio/local-runner": "^7.7.3",
     "@wdio/mocha-framework": "^7.7.3",
