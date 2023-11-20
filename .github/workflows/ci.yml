@@ -260,7 +260,8 @@ jobs:
           yarn tauri build -b none
           xvfb-run yarn test:e2e
         env:
-          MODE: ${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}
+          MODE: release
+          # MODE: ${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}
           KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN }}
 
 
