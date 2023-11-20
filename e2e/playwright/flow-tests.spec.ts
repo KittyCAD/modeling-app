@@ -44,16 +44,16 @@ test('Basic sketch', async ({ page }) => {
   page.setViewportSize({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
   await page.goto('localhost:3000')
-  await u.waitForPageLoad()
+  await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
-  await u.waitForDefaultPlanesToBeVisible()
+  await u.waitForDefaultPlanesVisibilityChange()
 
   await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeVisible()
 
   // click on "Start Sketch" button
   await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await u.waitForDefaultPlanesToBeVisible()
+  await u.waitForDefaultPlanesVisibilityChange()
 
   await u.closeDebugPanel()
   // select a plane
@@ -127,12 +127,12 @@ test('Basic sketch', async ({ page }) => {
   |> angledLine([180, segLen('seg01', %)], %)`)
 })
 
-test('if you write invalid kcl you get inlined errors', async ({ page }) => {
+test.only('if you write invalid kcl you get inlined errors', async ({ page }) => {
   const u = getUtils(page)
   page.setViewportSize({ width: 1000, height: 500 })
   await page.goto('localhost:3000')
 
-  await u.waitForPageLoad()
+  await u.waitForAuthSkipAppStart()
 
   // check no error to begin with
   await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -183,7 +183,7 @@ test('executes on load', async ({ page, context }) => {
   })
   page.setViewportSize({ width: 1000, height: 500 })
   await page.goto('localhost:3000')
-  await u.waitForPageLoad()
+  await u.waitForAuthSkipAppStart()
 
   // expand variables section
   await page.getByText('Variables').click()
@@ -208,7 +208,7 @@ test('re-executes', async ({ page, context }) => {
   })
   page.setViewportSize({ width: 1000, height: 500 })
   await page.goto('localhost:3000')
-  await u.waitForPageLoad()
+  await u.waitForAuthSkipAppStart()
 
   await page.getByText('Variables').click()
   // expect to see "myVar:5"
@@ -234,9 +234,9 @@ test('Can create sketches on all planes and their back sides', async ({
   const PUR = 400 / 37.5 //pixeltoUnitRatio
   page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('localhost:3000')
-  await u.waitForPageLoad()
+  await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
-  await u.waitForDefaultPlanesToBeVisible()
+  await u.waitForDefaultPlanesVisibilityChange()
 
   const camCmd: EngineCommand = {
     type: 'modeling_cmd_req',
@@ -285,7 +285,7 @@ test('Can create sketches on all planes and their back sides', async ({
     await u.clearCommandLogs()
     // await page.waitForTimeout(200)
     await page.getByRole('button', { name: 'Start Sketch' }).click()
-    await u.waitForDefaultPlanesToBeVisible()
+    await u.waitForDefaultPlanesVisibilityChange()
 
     await u.closeDebugPanel()
     await page.mouse.click(clickCoords.x, clickCoords.y)
@@ -367,8 +367,8 @@ test('Auto complete works', async ({ page }) => {
   // const PUR = 400 / 37.5 //pixeltoUnitRatio
   page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('localhost:3000')
-  await u.waitForPageLoad()
-  await u.waitForDefaultPlanesToBeVisible()
+  await u.waitForAuthSkipAppStart()
+  await u.waitForDefaultPlanesVisibilityChange()
 
   // this test might be brittle as we add and remove functions
   // but should also be easy to update.

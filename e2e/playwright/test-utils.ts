@@ -87,12 +87,12 @@ async function closeDebugPanel(page: Page) {
 
 export function getUtils(page: Page) {
   return {
-    waitForPageLoad: () => waitForPageLoad(page),
+    waitForAuthSkipAppStart: () => waitForPageLoad(page),
     removeCurrentCode: () => removeCurrentCode(page),
     sendCustomCmd: (cmd: EngineCommand) => sendCustomCmd(page, cmd),
     clearCommandLogs: () => clearCommandLogs(page),
     expectCmdLog: (locatorStr: string) => expectCmdLog(page, locatorStr),
-    waitForDefaultPlanesToBeVisible: () =>
+    waitForDefaultPlanesVisibilityChange: () =>
       waitForDefaultPlanesToBeVisible(page),
     openDebugPanel: () => openDebugPanel(page),
     closeDebugPanel: () => closeDebugPanel(page),

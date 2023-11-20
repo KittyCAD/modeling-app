@@ -33,7 +33,7 @@ test('change camera, show planes', async ({ page, context }) => {
   const u = getUtils(page)
   page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('localhost:3000')
-  await u.waitForPageLoad()
+  await u.waitForAuthSkipAppStart()
   await u.openAndClearDebugPanel()
 
   const camCmd: EngineCommand = {
@@ -64,7 +64,7 @@ test('change camera, show planes', async ({ page, context }) => {
 
   await page.getByRole('button', { name: 'Start Sketch' }).click()
 
-  await u.waitForDefaultPlanesToBeVisible()
+  await u.waitForDefaultPlanesVisibilityChange()
   await u.closeDebugPanel()
 
   await page.waitForTimeout(100) // best to be safe for screenshots
@@ -74,7 +74,7 @@ test('change camera, show planes', async ({ page, context }) => {
 
   await u.openAndClearDebugPanel()
   await page.getByRole('button', { name: 'Exit Sketch' }).click()
-  await u.waitForDefaultPlanesToBeVisible()
+  await u.waitForDefaultPlanesVisibilityChange()
 
   await u.sendCustomCmd(camCmd)
   await u.waitForCmdReceive('default_camera_look_at')
@@ -95,7 +95,7 @@ test('change camera, show planes', async ({ page, context }) => {
   await u.clearCommandLogs()
 
   await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await u.waitForDefaultPlanesToBeVisible()
+  await u.waitForDefaultPlanesVisibilityChange()
   await u.closeDebugPanel()
 
   await page.waitForTimeout(100) // best to be safe for screenshots
@@ -105,7 +105,7 @@ test('change camera, show planes', async ({ page, context }) => {
 
   await u.openAndClearDebugPanel()
   await page.getByRole('button', { name: 'Exit Sketch' }).click()
-  await u.waitForDefaultPlanesToBeVisible()
+  await u.waitForDefaultPlanesVisibilityChange()
 
   await u.sendCustomCmd(camCmd)
   await u.waitForCmdReceive('default_camera_look_at')
@@ -127,7 +127,7 @@ test('change camera, show planes', async ({ page, context }) => {
   await u.clearCommandLogs()
 
   await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await u.waitForDefaultPlanesToBeVisible()
+  await u.waitForDefaultPlanesVisibilityChange()
   await u.closeDebugPanel()
 
   // take snapshot
