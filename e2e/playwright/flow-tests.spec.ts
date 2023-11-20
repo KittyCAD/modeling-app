@@ -190,9 +190,12 @@ test('executes on load', async ({ page, context }) => {
 
   // can find part001 in the variables summary (pretty-json-container, makes sure we're not looking in the code editor)
   // part001 only shows up in the variables summary if it's been executed
-  await page.waitForFunction(() =>
-    document.querySelector('.pretty-json-container >> text=part001')
-  )
+  await page.waitForFunction(() => {
+    const variablesElement = document.querySelector(
+      '.pretty-json-container'
+    ) as HTMLDivElement
+    return variablesElement.innerHTML.includes('part001')
+  })
   await expect(
     page.locator('.pretty-json-container >> text=part001')
   ).toBeVisible()
