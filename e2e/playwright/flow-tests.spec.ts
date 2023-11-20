@@ -127,7 +127,7 @@ test('Basic sketch', async ({ page }) => {
   |> angledLine([180, segLen('seg01', %)], %)`)
 })
 
-test.only('if you write invalid kcl you get inlined errors', async ({ page }) => {
+test('if you write invalid kcl you get inlined errors', async ({ page }) => {
   const u = getUtils(page)
   page.setViewportSize({ width: 1000, height: 500 })
   await page.goto('localhost:3000')
@@ -227,7 +227,7 @@ test('re-executes', async ({ page, context }) => {
   ).toBeVisible()
 })
 
-test('Can create sketches on all planes and their back sides', async ({
+test.only('Can create sketches on all planes and their back sides', async ({
   page,
 }) => {
   const u = getUtils(page)
@@ -247,28 +247,6 @@ test('Can create sketches on all planes and their back sides', async ({
       up: { x: 0, y: 0, z: 1 },
       vantage: { x: 30, y: 30, z: 30 },
     },
-  }
-
-  const drawLine = async () => {
-    const startXPx = 600
-    await u.clearCommandLogs()
-    await page.getByRole('button', { name: 'Line' }).click()
-
-    await page.waitForFunction(() =>
-      document.querySelector('[data-receive-command-type="set_tool"]')
-    )
-    await u.clearCommandLogs()
-
-    await u.closeDebugPanel()
-
-    await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-    await u.openDebugPanel()
-    await page.waitForFunction(() =>
-      document.querySelector('[data-receive-command-type="mouse_click"]')
-    )
-    await u.closeDebugPanel()
-    await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
-    await u.openDebugPanel()
   }
 
   const TestSinglePlane = async ({
@@ -293,7 +271,19 @@ test('Can create sketches on all planes and their back sides', async ({
 
     await expect(page.getByRole('button', { name: 'Line' })).toBeVisible()
 
-    await drawLine()
+    // draw a line
+    const startXPx = 600
+    await u.clearCommandLogs()
+    await page.getByRole('button', { name: 'Line' }).click()
+    await u.waitForCmdReceive('set_tool')
+    await u.clearCommandLogs()
+    await u.closeDebugPanel()
+    await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
+    await u.openDebugPanel()
+    await u.waitForCmdReceive('mouse_click')
+    await u.closeDebugPanel()
+    await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
+    await u.openDebugPanel()
 
     await expect(page.locator('.cm-content')).toHaveText(expectedCode)
 
@@ -304,7 +294,6 @@ test('Can create sketches on all planes and their back sides', async ({
 
     await u.clearCommandLogs()
     await u.removeCurrentCode()
-    // await u.waitForCmdReceive('execution_done')
   }
   await TestSinglePlane({
     viewCmd: camCmd,
