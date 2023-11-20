@@ -19769,33 +19769,19 @@
         "type": "TangentialArcToData",
         "schema": {
           "description": "Data to draw a tangential arc to a specific point.",
-          "anyOf": [
-            {
-              "description": "A point with a tag.",
-              "type": "object",
-              "required": [
-                "tag",
-                "to"
-              ],
-              "properties": {
-                "tag": {
-                  "description": "The tag.",
-                  "type": "string"
-                },
-                "to": {
-                  "description": "Where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.",
-                  "type": "array",
-                  "items": {
-                    "type": "number",
-                    "format": "double"
-                  },
-                  "maxItems": 2,
-                  "minItems": 2
-                }
-              }
+          "type": "object",
+          "required": [
+            "to"
+          ],
+          "properties": {
+            "tag": {
+              "description": "The tag.",
+              "default": null,
+              "type": "string",
+              "nullable": true
             },
-            {
-              "description": "A point where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.",
+            "to": {
+              "description": "Where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.",
               "type": "array",
               "items": {
                 "type": "number",
@@ -19804,7 +19790,7 @@
               "maxItems": 2,
               "minItems": 2
             }
-          ]
+          }
         },
         "required": true
       },

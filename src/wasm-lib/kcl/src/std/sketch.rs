@@ -1181,17 +1181,13 @@ fn tan_arc_to(sketch_group: &SketchGroup, to: &[f64; 2]) -> ModelingCmd {
 /// Data to draw a tangential arc to a specific point.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, JsonSchema, ts_rs::TS)]
 #[ts(export)]
-#[serde(rename_all = "camelCase", untagged)]
-pub enum TangentialArcToData {
-    /// A point with a tag.
-    PointWithTag {
-        /// Where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.
-        to: [f64; 2],
-        /// The tag.
-        tag: String,
-    },
-    /// A point where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.
-    Point([f64; 2]),
+#[serde(rename_all = "camelCase")]
+pub struct TangentialArcToData {
+    /// Where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.
+    to: [f64; 2],
+    /// The tag.
+    #[serde(default)]
+    tag: Option<String>,
 }
 
 /// Draw a tangential arc to a specific point.
@@ -1212,10 +1208,7 @@ async fn inner_tangential_arc_to(
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from: Point2d = sketch_group.get_coords_from_paths()?;
-    let to = match &data {
-        TangentialArcToData::PointWithTag { to, .. } => to,
-        TangentialArcToData::Point(to) => to,
-    };
+    let to = data.to;
 
     let delta = [to[0] - from.x, to[1] - from.y];
     let id = uuid::Uuid::new_v4();
@@ -1224,12 +1217,8 @@ async fn inner_tangential_arc_to(
     let current_path = Path::ToPoint {
         base: BasePath {
             from: from.into(),
-            to: *to,
-            name: if let TangentialArcToData::PointWithTag { tag, .. } = data {
-                tag.to_string()
-            } else {
-                "".to_string()
-            },
+            to,
+            name: data.tag.unwrap_or_default(),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
