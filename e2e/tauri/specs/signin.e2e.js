@@ -28,6 +28,7 @@ describe('Modeling App', () => {
     console.log(`GET ${verifyUrl}`)
     const vr = await fetch(verifyUrl, { headers })
     console.log(vr.status)
+    console.log(await vr.text())
 
     // Device flow: confirm
     const confirmUrl = 'https://api.kittycad.io/oauth2/device/confirm'
@@ -39,6 +40,7 @@ describe('Modeling App', () => {
       body: data,
     })
     console.log(cr.status)
+    console.log(await cr.text())
 
     // Now should be logged in
     const newFileButton = await $('#new_file')
