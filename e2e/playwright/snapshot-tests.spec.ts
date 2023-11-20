@@ -31,9 +31,6 @@ test.setTimeout(60000)
 
 test('change camera, show planes', async ({ page, context }) => {
   const u = getUtils(page)
-  context.addInitScript(async (token) => {
-    localStorage.setItem('persistCode', `const myVar = 5`)
-  })
   page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('localhost:3000')
   await u.waitForPageLoad()
