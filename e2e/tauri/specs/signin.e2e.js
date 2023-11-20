@@ -3,7 +3,9 @@ const fs = require('fs/promises');
 describe('Modeling App', () => {
   it('open the sign in page', async () => {
     // Clean up previous tests
+    await new Promise(resolve => setTimeout(resolve, 100))
     await fs.rm('/tmp/kittycad_user_code', { force: true })
+    await browser.execute('window.localStorage.clear()');
 
     const button = await $('#signin')
     expect(button).toHaveText('Sign in')
