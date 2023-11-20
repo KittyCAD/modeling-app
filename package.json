@@ -112,7 +112,7 @@
     "@types/wicg-file-system-access": "^2020.9.6",
     "@types/ws": "^8.5.5",
     "@vitejs/plugin-react": "^4.1.1",
-    "@vitest/coverage-istanbul": "^0.34.1",
+    "@vitest/coverage-istanbul": "^0.34.6",
     "autoprefixer": "^10.4.13",
     "eslint": "^8.53.0",
     "eslint-config-react-app": "^7.0.1",
