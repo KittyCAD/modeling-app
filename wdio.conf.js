@@ -7,9 +7,8 @@ const { spawn } = require('child_process')
 // keep track of the `tauri-driver` child process
 let tauriDriver
 
-const mode = process.env.MODE || 'release'
 const application =
-  process.env.E2E_APPLICATION || `./src-tauri/target/${mode}/kittycad-modeling`
+  process.env.E2E_APPLICATION || `./src-tauri/target/release/kittycad-modeling`
 
 exports.config = {
   port: 4444,
