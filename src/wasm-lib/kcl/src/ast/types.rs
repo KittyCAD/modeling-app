@@ -810,25 +810,13 @@ pub enum NonCodeValue {
     NewLine,
 }
 
-#[derive(Debug, Default, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Default, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct NonCodeMeta {
     pub non_code_nodes: HashMap<usize, Vec<NonCodeNode>>,
     pub start: Vec<NonCodeNode>,
-}
-
-impl Bake for NonCodeMeta {
-    fn bake(&self, env: &CrateEnv) -> TokenStream {
-        env.insert("kcl_lib::ast::types");
-        let start = self.start.bake(env);
-        databake::quote! {
-            kcl_lib::ast::types::NonCodeMeta {
-                non_code_nodes: std::collections::HashMap::new(),
-                start: #start,
-            }
-        }
-    }
 }
 
 // implement Deserialize manually because we to force the keys of non_code_nodes to be usize
