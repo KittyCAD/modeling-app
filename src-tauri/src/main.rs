@@ -81,8 +81,11 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
         )
         .expect("Unable to write /tmp/kittycad_user_code file");
     }
-    tauri::api::shell::open(&app.shell_scope(), auth_uri.secret(), None)
-        .map_err(|e| InvokeError::from_anyhow(e.into()))?;
+    let url = tauri::api::shell::open(&app.shell_scope(), auth_uri.secret(), None);
+    match url {
+        Ok(()) => (),
+        Err(error) => println!("Problem opening the URL: {:?}", error),
+    };
 
     // Wait for the user to login.
     let token = auth_client

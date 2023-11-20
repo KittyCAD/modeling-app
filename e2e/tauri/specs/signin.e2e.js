@@ -11,7 +11,7 @@ describe('Modeling App', () => {
     // Workaround for .click(), see https://github.com/tauri-apps/tauri/issues/6541
     await button.waitForClickable()
     await browser.execute('arguments[0].click();', button)
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    await new Promise(resolve => setTimeout(resolve, 2000))
 
     // Get from main.rs
     const userCode = await (await fs.readFile('/tmp/kittycad_user_code')).toString()
@@ -42,7 +42,7 @@ describe('Modeling App', () => {
 
     // Now should be logged in
     const newFileButton = await $('#new_file')
-    await newFileButton.waitForClickable({ timeout: 30000 })
+    await newFileButton.waitForClickable({ timeout: 10000 })
     expect(newFileButton).toHaveText('New file')
   })
 })
