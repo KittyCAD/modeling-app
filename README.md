@@ -182,8 +182,8 @@ For more information on fuzzing you can check out
 
 First time running plawright locally, you'll need to add the secrets file
 ```bash
-touch ./src/e2e-tests/playwright-secrets.env
-echo 'token="your-token"' > ./src/e2e-tests/playwright-secrets.env
+touch ./e2e/playwright/playwright-secrets.env
+echo 'token="your-token"' > ./e2e/playwright/playwright-secrets.env
 ```
 But save your token to the file
 
@@ -201,12 +201,12 @@ note if there are multip tests in a file, than change `test('...` to `test.only(
 
 run headed
 ```
-yarn playwright test --headed src/e2e-tests/example.spec.ts
+yarn playwright test --headed e2e/playwright/snapshot-tests.spec.ts
 ```
 
 run with step through debugger
 ```
-PWDEBUG=1 yarn playwright test src/e2e-tests/example.spec.ts
+PWDEBUG=1 yarn playwright test e2e/playwright/snapshot-tests.spec.ts
 ```
 
 If you want to limit to a single browser use `--project="webkit"` or `firefox`, `Google Chrome`

@@ -22,10 +22,11 @@ async function waitForPageLoad(page: Page) {
 }
 
 async function removeCurrentCode(page: Page) {
+  const hotkey = process.platform === 'darwin' ? 'Meta' : 'Control'
   await page.click('.cm-content')
-  await page.keyboard.down('Meta')
+  await page.keyboard.down(hotkey)
   await page.keyboard.press('a')
-  await page.keyboard.up('Meta')
+  await page.keyboard.up(hotkey)
   await page.keyboard.press('Backspace')
   await expect(page.locator('.cm-content')).toHaveText('')
 }
@@ -100,6 +101,9 @@ export function getUtils(page: Page) {
       return clearCommandLogs(page)
     },
     waitForCmdReceive: async (commandType: string) => {
+      // await expect(page.locator(`[data-receive-command-type="${commandType}"]`))
+      // await page.waitForSelector(`[data-receive-command-type="${commandType}"]`)
+      console.log('waiting for', commandType)
       await page.waitForFunction(
         (commandType) =>
           document.querySelector(
