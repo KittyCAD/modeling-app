@@ -15,9 +15,9 @@ on:
 env:
   BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && contains(github.event.pull_request.title, 'Cut release v') }}
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-  cancel-in-progress: true
+# concurrency:
+#   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+#   cancel-in-progress: true
 
 jobs:
   check-format:
