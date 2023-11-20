@@ -5,12 +5,9 @@ on:
   pull_request:
     branches: [ main ]
 jobs:
-  playwright:
+  playwright-ubuntu:
     timeout-minutes: 60
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-latest]
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v4
@@ -31,16 +28,7 @@ jobs:
       run: yarn build:wasm
     - name: build web
       run: yarn build:local
-    - name: Run macos/safari snapshots
-      if: matrix.os == 'macos-latest'
-      # safari doesn't work on Ubuntu because of the same reason tauri doesn't (webRTC issues)
-      # TODO remove this and the matrix and run all tests on ubuntu when this is fixed
-      run: yarn playwright test --project="webkit" --update-snapshots e2e/playwright/snapshot-tests.spec.ts
-      env:
-        CI: true
-        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
     - name: Run ubuntu/chrome snapshots
-      if: matrix.os == 'ubuntu-latest'
       run: yarn playwright test --project="Google Chrome" --update-snapshots e2e/playwright/snapshot-tests.spec.ts
       env:
         CI: true
@@ -72,20 +60,49 @@ jobs:
         echo ${{ github.head_ref }}
         git checkout ${{ github.head_ref }}
         # TODO when safari works on ubuntu remove the os part of the commit message
-        git commit -am "A snapshot a day keeps the bugs away! 📷🐛 (OS: ${{ matrix.os }})" || true
+        git commit -am "A snapshot a day keeps the bugs away! 📷🐛 (OS: ubuntu)" || true
         git push
         git push origin ${{ github.head_ref }}
-    - name: Run macos/safari flow
-      if: matrix.os == 'macos-latest'
-      # safari doesn't work on Ubuntu because of the same reason tauri doesn't (webRTC issues)
-      # TODO remove this and the matrix and run all tests on ubuntu when this is fixed
-      run: yarn playwright test --project="webkit" e2e/playwright/flow-tests.spec.ts
+    - name: Run ubuntu/chrome flow
+      run: yarn playwright test --project="Google Chrome" e2e/playwright/flow-tests.spec.ts
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-    - name: Run ubuntu/chrome flow
-      if: matrix.os == 'ubuntu-latest'
-      run: yarn playwright test --project="Google Chrome" e2e/playwright/flow-tests.spec.ts
+    - uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
+
+  playwright-macos:
+    timeout-minutes: 60
+    runs-on: macos-latest
+    needs: playwright-ubuntu
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v4
+      with:
+        node-version-file: '.nvmrc'
+        cache: 'yarn'
+    - name: Install dependencies
+      run: yarn
+    - name: Install Playwright Browsers
+      run: yarn playwright install --with-deps
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
+    - name: Cache wasm
+      uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: './src/wasm-lib'
+    - name: build wasm
+      run: yarn build:wasm
+    - name: build web
+      run: yarn build:local
+    - name: Run macos/safari flow
+      # safari doesn't work on Ubuntu because of the same reason tauri doesn't (webRTC issues)
+      # TODO remove this and the matrix and run all tests on ubuntu when this is fixed
+      run: yarn playwright test --project="webkit" e2e/playwright/flow-tests.spec.ts
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
