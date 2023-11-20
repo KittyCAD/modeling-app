@@ -3856,7 +3856,7 @@ dependencies = [
 [[package]]
 name = "tauri-plugin-fs-extra"
 version = "0.0.0"
-source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v1#642a195d34ec5bf6bbc780dde9c02fca33e1bd00"
+source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v1#20ef22fc3ab76cab770c2c0dac0cc75dfc982c22"
 dependencies = [
  "log",
  "serde",
