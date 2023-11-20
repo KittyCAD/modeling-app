@@ -12,7 +12,7 @@ use crate::{
         ArrayExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression, CommentStyle,
         ExpressionStatement, FunctionExpression, Identifier, Literal, LiteralIdentifier, LiteralValue,
         MemberExpression, MemberObject, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty,
-        PipeExpression, PipeSubstitution, Program, ReturnStatement, UnaryExpression, UnaryOperator, Value,
+        Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, UnaryExpression, UnaryOperator, Value,
         VariableDeclaration, VariableDeclarator, VariableKind,
     },
     errors::{KclError, KclErrorDetails},
@@ -1208,24 +1208,60 @@ fn arguments(i: TokenSlice) -> PResult<Vec<Value>> {
         .parse_next(i)
 }
 
-fn not_close_paren(i: TokenSlice) -> PResult<Token> {
+fn required_param(i: TokenSlice) -> PResult<Token> {
     any.verify(|token: &Token| !matches!(token.token_type, TokenType::Brace) || token.value != ")")
         .parse_next(i)
 }
 
+fn optional_param(i: TokenSlice) -> PResult<Token> {
+    let token = required_param.parse_next(i)?;
+    let _question_mark = one_of(TokenType::QuestionMark).parse_next(i)?;
+    Ok(token)
+}
+
 /// Parameters are declared in a function signature, and used within a function.
-fn parameters(i: TokenSlice) -> PResult<Vec<Identifier>> {
+fn parameters(i: TokenSlice) -> PResult<Vec<Parameter>> {
     // Get all tokens until the next ), because that ends the parameter list.
-    let candidates: Vec<Token> = separated(0.., not_close_paren, comma_sep)
-        .context(expected("function parameters"))
-        .parse_next(i)?;
+    let candidates: Vec<_> = separated(
+        0..,
+        alt((optional_param.map(|t| (t, true)), required_param.map(|t| (t, false)))),
+        comma_sep,
+    )
+    .context(expected("function parameters"))
+    .parse_next(i)?;
+
     // Make sure all those tokens are valid parameters.
-    let params = candidates
+    let params: Vec<Parameter> = candidates
         .into_iter()
-        .map(|token| Identifier::try_from(token).and_then(Identifier::into_valid_binding_name))
+        .map(|(token, optional)| {
+            let identifier = Identifier::try_from(token).and_then(Identifier::into_valid_binding_name)?;
+            Ok(Parameter { identifier, optional })
+        })
         .collect::<Result<_, _>>()
-        .map_err(|e| ErrMode::Backtrack(ContextError::from(e)))?;
+        .map_err(|e: KclError| ErrMode::Backtrack(ContextError::from(e)))?;
+
+    // Make sure optional parameters are last.
+    if let Err(e) = optional_after_required(&params) {
+        return Err(ErrMode::Cut(ContextError::from(e)));
+    }
     Ok(params)
+}
+
+fn optional_after_required(params: &[Parameter]) -> Result<(), KclError> {
+    let mut found_optional = false;
+    for p in params {
+        if p.optional {
+            found_optional = true;
+        }
+        if !p.optional && found_optional {
+            let e = KclError::Syntax(KclErrorDetails {
+                source_ranges: vec![(&p.identifier).into()],
+                message: "mandatory parameters must be declared before optional parameters".to_owned(),
+            });
+            return Err(e);
+        }
+    }
+    Ok(())
 }
 
 impl Identifier {
@@ -1895,7 +1931,7 @@ const mySk1 = startSketchAt([0, 0])"#;
             let tokens = crate::token::lexer(input);
             let actual = parameters.parse(&tokens);
             assert!(actual.is_ok(), "could not parse test {i}");
-            let actual_ids: Vec<_> = actual.unwrap().into_iter().map(|id| id.name).collect();
+            let actual_ids: Vec<_> = actual.unwrap().into_iter().map(|p| p.identifier.name).collect();
             assert_eq!(actual_ids, expected);
         }
     }
@@ -2320,6 +2356,82 @@ e
         let result = parser.ast();
         assert!(result.is_err());
         assert!(result.err().unwrap().to_string().contains("Unexpected token"));
+    }
+
+    #[test]
+    fn test_optional_param_order() {
+        for (i, (params, expect_ok)) in [
+            (
+                vec![Parameter {
+                    identifier: Identifier {
+                        start: 0,
+                        end: 0,
+                        name: "a".to_owned(),
+                    },
+                    optional: true,
+                }],
+                true,
+            ),
+            (
+                vec![Parameter {
+                    identifier: Identifier {
+                        start: 0,
+                        end: 0,
+                        name: "a".to_owned(),
+                    },
+                    optional: false,
+                }],
+                true,
+            ),
+            (
+                vec![
+                    Parameter {
+                        identifier: Identifier {
+                            start: 0,
+                            end: 0,
+                            name: "a".to_owned(),
+                        },
+                        optional: false,
+                    },
+                    Parameter {
+                        identifier: Identifier {
+                            start: 0,
+                            end: 0,
+                            name: "b".to_owned(),
+                        },
+                        optional: true,
+                    },
+                ],
+                true,
+            ),
+            (
+                vec![
+                    Parameter {
+                        identifier: Identifier {
+                            start: 0,
+                            end: 0,
+                            name: "a".to_owned(),
+                        },
+                        optional: true,
+                    },
+                    Parameter {
+                        identifier: Identifier {
+                            start: 0,
+                            end: 0,
+                            name: "b".to_owned(),
+                        },
+                        optional: false,
+                    },
+                ],
+                false,
+            ),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let actual = optional_after_required(&params);
+            assert_eq!(actual.is_ok(), expect_ok, "failed test {i}");
+        }
     }
 
     #[test]
@@ -2801,4 +2913,5 @@ mod snapshot_tests {
     snapshot_test!(ar, r#"5 + "a""#);
     snapshot_test!(at, "line([0, l], %)");
     snapshot_test!(au, include_str!("../../../tests/executor/inputs/cylinder.kcl"));
+    snapshot_test!(av, "fn f = (angle?) => { return default(angle, 360) }");
 }

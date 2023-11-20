@@ -47,6 +47,8 @@ pub enum TokenType {
     Function,
     /// Unknown lexemes.
     Unknown,
+    /// The ? symbol, used for optional values.
+    QuestionMark,
 }
 
 /// Most KCL tokens correspond to LSP semantic tokens (but not all).
@@ -58,6 +60,7 @@ impl TryFrom<TokenType> for SemanticTokenType {
             TokenType::Word => Self::VARIABLE,
             TokenType::Keyword => Self::KEYWORD,
             TokenType::Operator => Self::OPERATOR,
+            TokenType::QuestionMark => Self::OPERATOR,
             TokenType::String => Self::STRING,
             TokenType::LineComment => Self::COMMENT,
             TokenType::BlockComment => Self::COMMENT,

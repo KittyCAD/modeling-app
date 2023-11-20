@@ -221,11 +221,11 @@ impl Program {
             if let Some(Value::FunctionExpression(ref mut function_expression)) = &mut value {
                 // Check if the params to the function expression contain the position.
                 for param in &mut function_expression.params {
-                    let param_source_range: SourceRange = param.clone().into();
+                    let param_source_range: SourceRange = (&param.identifier).into();
                     if param_source_range.contains(pos) {
-                        let old_name = param.name.clone();
+                        let old_name = param.identifier.name.clone();
                         // Rename the param.
-                        param.rename(&old_name, new_name);
+                        param.identifier.rename(&old_name, new_name);
                         // Now rename all the identifiers in the rest of the program.
                         function_expression.body.rename_identifiers(&old_name, new_name);
                         return;
@@ -1014,7 +1014,11 @@ impl CallExpression {
                 // Add the arguments to the memory.
                 let mut fn_memory = memory.clone();
                 for (index, param) in function_expression.params.iter().enumerate() {
-                    fn_memory.add(&param.name, fn_args.get(index).unwrap().clone(), param.into())?;
+                    fn_memory.add(
+                        &param.identifier.name,
+                        fn_args.get(index).unwrap().clone(),
+                        param.identifier.clone().into(),
+                    )?;
                 }
 
                 // Call the stdlib function
@@ -1249,10 +1253,10 @@ impl VariableDeclaration {
                     symbol_kind = SymbolKind::FUNCTION;
                     let mut children = vec![];
                     for param in &function_expression.params {
-                        let param_source_range: SourceRange = param.into();
+                        let param_source_range: SourceRange = (&param.identifier).into();
                         #[allow(deprecated)]
                         children.push(DocumentSymbol {
-                            name: param.name.clone(),
+                            name: param.identifier.name.clone(),
                             detail: None,
                             kind: SymbolKind::VARIABLE,
                             range: param_source_range.to_lsp_range(code),
@@ -1442,7 +1446,7 @@ impl From<&Box<Literal>> for MemoryItem {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake, Eq)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
@@ -2621,6 +2625,18 @@ async fn execute_pipe_body(
     }
 }
 
+/// Parameter of a KCL function.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct Parameter {
+    /// The parameter's label or name.
+    pub identifier: Identifier,
+    /// Is the parameter optional?
+    pub optional: bool,
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
@@ -2628,7 +2644,7 @@ async fn execute_pipe_body(
 pub struct FunctionExpression {
     pub start: usize,
     pub end: usize,
-    pub params: Vec<Identifier>,
+    pub params: Vec<Parameter>,
     pub body: Program,
 }
 
@@ -2654,7 +2670,7 @@ impl FunctionExpression {
             "({}) => {{\n{}{}\n}}",
             self.params
                 .iter()
-                .map(|param| param.name.clone())
+                .map(|param| param.identifier.name.clone())
                 .collect::<Vec<String>>()
                 .join(", "),
             options.get_indentation(indentation_level + 1),
