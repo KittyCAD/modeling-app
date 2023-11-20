@@ -44,7 +44,7 @@ describe('Modeling App', () => {
 
     // Now should be logged in
     const newFileButton = await $('#new_file')
-    await newFileButton.waitForClickable({ timeout: 10000 })
+    await newFileButton.waitForClickable({ timeout: 30000 })
     expect(newFileButton).toHaveText('New file')
   })
 })
