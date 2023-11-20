@@ -12,7 +12,7 @@ repository = "https://github.com/KittyCAD/modeling-app"
 proc-macro = true
 
 [dependencies]
-databake = "0.1.6"
+databake = "0.1.7"
 kcl-lib = { path = "../kcl" }
 proc-macro2 = "1"
 quote = "1"
