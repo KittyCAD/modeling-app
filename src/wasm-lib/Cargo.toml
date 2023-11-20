@@ -57,7 +57,7 @@ members = [
 ]
 
 [workspace.dependencies]
-kittycad = { version = "0.2.41", default-features = false, features = ["js"] }
+kittycad = { version = "0.2.42", default-features = false, features = ["js"] }
 
 [[test]]
 name = "executor"
