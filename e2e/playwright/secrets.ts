@@ -9,8 +9,9 @@ try {
     secrets[key] = process.env[key] || (value as any).replaceAll('"', '')
   })
 } catch (err) {
-  console.log('probably running in CI')
+  // probably running in CI
   secrets.token = process.env.token || ''
+  // add more env vars here to make them available in CI
 }
 
 export { secrets }

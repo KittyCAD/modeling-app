@@ -23,7 +23,7 @@ test.beforeEach(async ({ context, page }) => {
       })
     )
   }, secrets.token)
-  // kill animations, speeds up tests and reduced flakiness
+  // reducedMotion kills animations, which speeds up tests and reduces flakiness
   page.emulateMedia({ reducedMotion: 'reduce' })
 })
 

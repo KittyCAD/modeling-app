@@ -606,10 +606,6 @@ export type CommandLog =
       cmd_type?: string
     }
   | {
-      type: 'receive-unreliable'
-      data: UnreliableResponses
-    }
-  | {
       type: 'execution-done'
       data: null
     }
@@ -721,11 +717,6 @@ export class EngineCommandManager {
 
           unreliableDataChannel.addEventListener('message', (event) => {
             const result: UnreliableResponses = JSON.parse(event.data)
-            // too noisy
-            // this.addCommandLog({
-            //   type: 'receive-unreliable',
-            //   data: result,
-            // })
             Object.values(
               this.unreliableSubscriptions[result.type] || {}
             ).forEach(
@@ -993,6 +984,7 @@ export class EngineCommandManager {
           command.cmd.type === 'mouse_move')
       )
     ) {
+      // highlight_set_entity and mouse_move are sent over the unreliable channel and are too noisy
       this.addCommandLog({
         type: 'send-scene',
         data: command,

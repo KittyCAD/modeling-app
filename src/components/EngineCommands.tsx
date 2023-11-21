@@ -36,7 +36,6 @@ export const EngineCommands = () => {
               <code
                 key={index}
                 data-message-type={command.type}
-                // data-command-type={command.data?.type}
                 data-command-type={
                   (command.type === 'send-modeling' ||
                     command.type === 'send-scene') &&
