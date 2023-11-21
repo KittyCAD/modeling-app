@@ -100,17 +100,13 @@ export function getUtils(page: Page) {
       await openDebugPanel(page)
       return clearCommandLogs(page)
     },
-    waitForCmdReceive: async (commandType: string) => {
-      // await expect(page.locator(`[data-receive-command-type="${commandType}"]`))
-      // await page.waitForSelector(`[data-receive-command-type="${commandType}"]`)
-      console.log('waiting for', commandType)
-      await page.waitForFunction(
+    waitForCmdReceive: (commandType: string) =>
+      page.waitForFunction(
         (commandType) =>
           document.querySelector(
             `[data-receive-command-type="${commandType}"]`
           ),
         commandType
-      )
-    },
+      ),
   }
 }
