@@ -1180,18 +1180,6 @@ fn tan_arc_to(sketch_group: &SketchGroup, to: &[f64; 2]) -> ModelingCmd {
     }
 }
 
-/// Data to draw a tangential arc to a specific point.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, JsonSchema, ts_rs::TS)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub struct TangentialArcToData {
-    /// Where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.
-    to: [f64; 2],
-    /// The tag.
-    #[serde(default)]
-    tag: Option<String>,
-}
-
 fn too_few_args(source_range: SourceRange) -> KclError {
     KclError::Syntax(KclErrorDetails {
         source_ranges: vec![source_range],
