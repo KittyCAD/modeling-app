@@ -262,3 +262,21 @@ How to interpret failing playwright tests?
 If your tests fail, click through to the action and see that the tests failed on a line that includes `'[data-testid="loading"]'`, this means the test fail because the stream never started. It's you choice if you want to re-run the test, or ignore the failure.
 
 We run on ubuntu and macos, because safari doesn't work on linux because of the dreaded "no RTCPeerConnection variable" error. But linux runs first and then macos for the same reason that we limit the number of parallel tests to 1 because we limit stream connections per user, so tests would start failing we if let them run together.
+
+#### Getting started writing a playwright test in our app
+
+Besides following the instructions above and using the playwright docs, our app is weird because of the whole stream thing, which means our testing is weird. Because we've just figured out this stuff and therefore docs might go stale quick here's a 15min vid/tutorial
+
+https://github.com/KittyCAD/modeling-app/assets/29681384/6f5e8e85-1003-4fd9-be7f-f36ce833942d
+
+<details>
+
+<summary>
+Ps for the debug panel, the following JSON is useful for snapping the camera
+</summary>
+
+```JSON
+{"type":"modeling_cmd_req","cmd_id":"054e5472-e5e9-4071-92d7-1ce3bac61956","cmd":{"type":"default_camera_look_at","center":{"x":15,"y":0,"z":0},"up":{"x":0,"y":0,"z":1},"vantage":{"x":30,"y":30,"z":30}}}
+```
+
+</details>
