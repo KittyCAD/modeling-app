@@ -193,7 +193,7 @@ run playwright
 yarn playwright test
 ```
 
-run a specific suite test
+run a specific test suite
 ```
 yarn playwright test src/e2e-tests/example.spec.ts
 ```
@@ -212,8 +212,9 @@ PWDEBUG=1 yarn playwright test
 ```
 
 If you want to limit to a single browser use `--project="webkit"` or `firefox`, `Google Chrome`
-Or comment out browsers in `playwright.config.ts`
-// note chromium has encoder compat issues which is why were testing against the branded 'Google Chrome'
+Or comment out browsers in `playwright.config.ts`.
+
+note chromium has encoder compat issues which is why were testing against the branded 'Google Chrome'
 
 You may consider using the VSCode extension, it's useful for running individual threads, but some some reason the "record a test" is locked to chromium with we can't use. A work around is to us the CI `yarn playwright codegen -b wk --load-storage ./store localhost:3000`
 
@@ -256,7 +257,7 @@ However because much of our tests involve clicking in the stream at specific loc
 
 #### Some notes on CI
 
-The tests are broken into snapshot tests and non-snapshot tests, and they run in that order, they automatically commit new snap shots, so if you see an image commit check it was an intended change. If we have non-determinism in the snapshots such that they are always committing new images, hopefully this annoyance makes us fix them asap, if you notice this happening let Kurt know.
+The tests are broken into snapshot tests and non-snapshot tests, and they run in that order, they automatically commit new snap shots, so if you see an image commit check it was an intended change. If we have non-determinism in the snapshots such that they are always committing new images, hopefully this annoyance makes us fix them asap, if you notice this happening let Kurt know. But for the odd occasion  `git reset --hard HEAD~ && git push -f` is your friend.
 
 How to interpret failing playwright tests?
 If your tests fail, click through to the action and see that the tests failed on a line that includes `'[data-testid="loading"]'`, this means the test fail because the stream never started. It's you choice if you want to re-run the test, or ignore the failure.
