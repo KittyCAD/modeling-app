@@ -1187,13 +1187,19 @@ fn too_few_args(source_range: SourceRange) -> KclError {
     })
 }
 
+fn get_arg<I: Iterator>(it: &mut I, src: SourceRange) -> Result<I::Item, KclError> {
+    it.next().ok_or_else(|| too_few_args(src))
+}
+
 /// Draw a tangential arc to a specific point.
 pub async fn tangential_arc_to(args: Args) -> Result<MemoryItem, KclError> {
+    let src = args.source_range;
+
+    // Get arguments to function call
     let mut it = args.args.iter();
-    let source_range = args.source_range;
-    let to: [f64; 2] = it.next().ok_or_else(|| too_few_args(source_range))?.get_json()?;
-    let sketch_group: Box<SketchGroup> = it.next().ok_or_else(|| too_few_args(source_range))?.get_json()?;
-    let tag: Tag = if let Some(memory_item) = it.next() {
+    let to: [f64; 2] = get_arg(&mut it, src)?.get_json()?;
+    let sketch_group: Box<SketchGroup> = get_arg(&mut it, src)?.get_json()?;
+    let tag: Tag = if let Ok(memory_item) = get_arg(&mut it, src) {
         memory_item.get_json()?
     } else {
         Default::default()
