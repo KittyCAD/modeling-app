@@ -63,7 +63,7 @@ test('Basic sketch', async ({ page }) => {
   await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Line' }).click()
 
-  await u.waitForCmdReceive
+  await u.waitForCmdReceive('set_tool')
   await u.clearCommandLogs()
   await u.closeDebugPanel()
 
