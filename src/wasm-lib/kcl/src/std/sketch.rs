@@ -5,7 +5,9 @@ use derive_docs::stdlib;
 use kittycad::types::{Angle, ModelingCmd, Point3D};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use std::fmt::Formatter;
 
+use crate::executor::SourceRange;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
@@ -1122,7 +1124,7 @@ async fn inner_tangential_arc(
                     path: sketch_group.id,
                     segment: kittycad::types::PathSegment::TangentialArc {
                         radius: *radius,
-                        offset: kittycad::types::Angle {
+                        offset: Angle {
                             unit: kittycad::types::UnitAngle::Degrees,
                             value: *offset,
                         },
@@ -1190,12 +1192,43 @@ pub struct TangentialArcToData {
     tag: Option<String>,
 }
 
+fn too_few_args(source_range: SourceRange) -> KclError {
+    KclError::Syntax(KclErrorDetails {
+        source_ranges: vec![source_range],
+        message: "too few arguments".to_owned(),
+    })
+}
+
 /// Draw a tangential arc to a specific point.
 pub async fn tangential_arc_to(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (TangentialArcToData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
+    let mut it = args.args.iter();
+    let source_range = args.source_range;
+    let to: [f64; 2] = it.next().ok_or_else(|| too_few_args(source_range))?.get_json()?;
+    let sketch_group: Box<SketchGroup> = it.next().ok_or_else(|| too_few_args(source_range))?.get_json()?;
+    let tag: Tag = if let Some(memory_item) = it.next() {
+        memory_item.get_json()?
+    } else {
+        Default::default()
+    };
 
-    let new_sketch_group = inner_tangential_arc_to(data, sketch_group, args).await?;
+    let new_sketch_group = inner_tangential_arc_to(Point2(to), sketch_group, tag, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
+}
+
+/// Wrapper which only exists because the stdlib macro cannot use [f64; 2] as an identifier.
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, JsonSchema)]
+#[serde(transparent)]
+struct Point2(pub [f64; 2]);
+
+/// Wrapper which only exists because the stdlib macro cannot use Option<String> as an identifier.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, JsonSchema, Default)]
+#[serde(transparent)]
+struct Tag(pub Option<String>);
+
+impl std::fmt::Display for Tag {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        if let Some(tag) = &self.0 { tag } else { "" }.fmt(f)
+    }
 }
 
 /// Draw an arc.
@@ -1203,12 +1236,13 @@ pub async fn tangential_arc_to(args: Args) -> Result<MemoryItem, KclError> {
     name = "tangentialArcTo",
 }]
 async fn inner_tangential_arc_to(
-    data: TangentialArcToData,
+    to: Point2,
     sketch_group: Box<SketchGroup>,
+    tag: Tag,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from: Point2d = sketch_group.get_coords_from_paths()?;
-    let to = data.to;
+    let to = to.0;
 
     let delta = [to[0] - from.x, to[1] - from.y];
     let id = uuid::Uuid::new_v4();
@@ -1218,7 +1252,7 @@ async fn inner_tangential_arc_to(
         base: BasePath {
             from: from.into(),
             to,
-            name: data.tag.unwrap_or_default(),
+            name: tag.to_string(),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),

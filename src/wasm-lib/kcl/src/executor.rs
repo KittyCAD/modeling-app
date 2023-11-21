@@ -349,6 +349,18 @@ impl MemoryItem {
         }
     }
 
+    /// Get a JSON value and deserialize it into some concrete type.
+    pub fn get_json<T: serde::de::DeserializeOwned>(&self) -> Result<T, KclError> {
+        let json = self.get_json_value()?;
+
+        serde_json::from_value(json).map_err(|e| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Failed to deserialize struct from JSON: {}", e),
+                source_ranges: self.clone().into(),
+            })
+        })
+    }
+
     /// If this memory item is a function, call it with the given arguments, return its val as Ok.
     /// If it's not a function, return Err.
     pub async fn call_fn(

@@ -1,9 +1,3 @@
-// Copyright 2023 Oxide Computer Company
-
-//! This package defines macro attributes associated with HTTP handlers. These
-//! attributes are used both to define an HTTP API and to generate an OpenAPI
-//! Spec (OAS) v3 document that describes the API.
-
 // Clippy's style advice is definitely valuable, but not worth the trouble for
 // automated enforcement.
 #![allow(clippy::style)]

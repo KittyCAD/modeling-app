@@ -347,7 +347,7 @@ async fn serial_test_basic_tangential_arc_with_point() {
 async fn serial_test_basic_tangential_arc_to() {
     let code = r#"const boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
-    |> tangentialArcTo({to: [-5, 15]}, %)
+    |> tangentialArcTo([-5, 15], %)
     |> line([5, -15], %)
     |> extrude(10, %)
 "#;
@@ -492,13 +492,13 @@ fn roundedRectangle = (pos, w, l, cornerRadius) => {
   const rr = startSketchOn('XY')
     |> startProfileAt([pos[0] - w/2, 0], %)
     |> lineTo([pos[0] - w/2, pos[1] - l/2 + cornerRadius], %)
-    |> tangentialArcTo({to: [pos[0] - w/2 + cornerRadius, pos[1] - l/2]}, %)
+    |> tangentialArcTo([pos[0] - w/2 + cornerRadius, pos[1] - l/2], %, "arc0")
     |> lineTo([pos[0] + w/2 - cornerRadius, pos[1] - l/2], %)
-    |> tangentialArcTo({to: [pos[0] + w/2, pos[1] - l/2 + cornerRadius]}, %)
+    |> tangentialArcTo([pos[0] + w/2, pos[1] - l/2 + cornerRadius], %)
     |> lineTo([pos[0] + w/2, pos[1] + l/2 - cornerRadius], %)
-    |> tangentialArcTo({to: [pos[0] + w/2 - cornerRadius, pos[1] + l/2]}, %)
+    |> tangentialArcTo([pos[0] + w/2 - cornerRadius, pos[1] + l/2], %, "arc2")
     |> lineTo([pos[0] - w/2 + cornerRadius, pos[1] + l/2], %)
-    |> tangentialArcTo({to: [pos[0] - w/2, pos[1] + l/2 - cornerRadius]}, %)
+    |> tangentialArcTo([pos[0] - w/2, pos[1] + l/2 - cornerRadius], %)
     |> close(%)
   return rr
 }
