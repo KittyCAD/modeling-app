@@ -1,5 +1,5 @@
 import { getNodePathFromSourceRange, getNodeFromPath } from './queryAst'
-import { Identifier, parse, initPromise } from './wasm'
+import { Identifier, parse, initPromise, Parameter } from './wasm'
 
 beforeAll(() => initPromise)
 
@@ -46,7 +46,7 @@ const b1 = cube([0,0], 10)`
 
     const ast = parse(code)
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
-    const node = getNodeFromPath<Identifier>(ast, nodePath).node
+    const node = getNodeFromPath<Parameter>(ast, nodePath).node
 
     expect(nodePath).toEqual([
       ['body', ''],
@@ -57,8 +57,8 @@ const b1 = cube([0,0], 10)`
       ['params', 'FunctionExpression'],
       [0, 'index'],
     ])
-    expect(node.type).toBe('Identifier')
-    expect(node.name).toBe('pos')
+    expect(node.type).toBe('Parameter')
+    expect(node.identifier.name).toBe('pos')
   })
   it('gets path right for deep within function definition body', () => {
     const code = `fn cube = (pos, scale) => {

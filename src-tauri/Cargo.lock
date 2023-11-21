@@ -1664,9 +1664,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.2.41"
+version = "0.2.42"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "874914cd40bfd43674406683bb3f0924d41780698a4ade96f2e180a73678bdd1"
+checksum = "6aa554d86b6dbbd976a659c912ae25ce817b4378eb12a5684907e263410f0a7b"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3856,7 +3856,7 @@ dependencies = [
 [[package]]
 name = "tauri-plugin-fs-extra"
 version = "0.0.0"
-source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v1#b13d97c7c7d1dcb1c8e43bec9732f23eefe7b798"
+source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v1#20ef22fc3ab76cab770c2c0dac0cc75dfc982c22"
 dependencies = [
  "log",
  "serde",

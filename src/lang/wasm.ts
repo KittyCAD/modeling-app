@@ -20,6 +20,7 @@ export type { ObjectExpression } from '../wasm-lib/kcl/bindings/ObjectExpression
 export type { MemberExpression } from '../wasm-lib/kcl/bindings/MemberExpression'
 export type { PipeExpression } from '../wasm-lib/kcl/bindings/PipeExpression'
 export type { VariableDeclaration } from '../wasm-lib/kcl/bindings/VariableDeclaration'
+export type { Parameter } from '../wasm-lib/kcl/bindings/Parameter'
 export type { PipeSubstitution } from '../wasm-lib/kcl/bindings/PipeSubstitution'
 export type { Identifier } from '../wasm-lib/kcl/bindings/Identifier'
 export type { UnaryExpression } from '../wasm-lib/kcl/bindings/UnaryExpression'
