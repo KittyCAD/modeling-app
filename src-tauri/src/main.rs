@@ -74,18 +74,22 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
     #[cfg(target_os = "linux")]
     {
         // TODO: find a better way to share this value with tauri e2e tests
+        println!("Please open {}", auth_uri.secret());
         fs::write(
             "/tmp/kittycad_user_code",
             details.user_code().secret().to_string(),
         )
         .expect("Unable to write /tmp/kittycad_user_code file");
     }
-    println!("Opening {} in the default browser", auth_uri.secret());
-    let url = tauri::api::shell::open(&app.shell_scope(), auth_uri.secret(), None);
-    match url {
-        Ok(()) => println!("URL successfully opened in the default browser."),
-        Err(error) => println!("Problem opening the URL: {:?}", error),
-    };
+    #[cfg(not(target_os = "linux"))]
+    {
+        println!("Opening {} in the default browser", auth_uri.secret());
+        let url = tauri::api::shell::open(&app.shell_scope(), auth_uri.secret(), None);
+        match url {
+            Ok(()) => println!("URL successfully opened in the default browser."),
+            Err(error) => println!("Problem opening the URL: {:?}", error),
+        };
+    }
 
     // Wait for the user to login.
     let token = auth_client

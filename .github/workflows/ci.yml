@@ -31,12 +31,6 @@ jobs:
       - run: yarn install
       - run: yarn fmt-check
 
-  test-browser:
-    runs-on: ubuntu-latest
-
-    steps:
-      - run: update-alternatives --get-selections | grep browser
-
   check-types:
     runs-on: ubuntu-latest
 
