@@ -904,30 +904,8 @@ pub async fn execute(
                                  _metadata: Vec<Metadata>,
                                  ctx: ExecutorContext| {
                                     Box::pin(async move {
-                                        let mut fn_memory = memory.clone();
-
-                                        let num_args = function_expression.number_of_args();
-                                        let n = args.len();
-                                        if !num_args.contains(&n) {
-                                            let (min_params, max_params) = num_args.into_inner();
-                                            return Err(KclError::Semantic(KclErrorDetails {
-                                                message: if min_params == max_params {
-                                                    format!("Expected {min_params} arguments, got {n}")
-                                                } else {
-                                                    format!("Expected {min_params}-{max_params} arguments, got {n}")
-                                                },
-                                                source_ranges: vec![(&function_expression).into()],
-                                            }));
-                                        }
-
-                                        // Add the arguments to the memory.
-                                        for (index, param) in function_expression.params.iter().enumerate() {
-                                            fn_memory.add(
-                                                &param.identifier.name,
-                                                args.get(index).unwrap().clone(),
-                                                (&param.identifier).into(),
-                                            )?;
-                                        }
+                                        let mut fn_memory =
+                                            assign_args_to_params(&function_expression, args, memory.clone())?;
 
                                         let result = execute(
                                             function_expression.body.clone(),
@@ -1030,6 +1008,54 @@ pub async fn execute(
     }
 
     Ok(memory.clone())
+}
+
+/// For each argument given,
+/// assign it to a parameter of the function, in the given block of function memory.
+/// Returns Err if too few/too many arguments were given for the function.
+fn assign_args_to_params(
+    function_expression: &FunctionExpression,
+    args: Vec<MemoryItem>,
+    mut fn_memory: ProgramMemory,
+) -> Result<ProgramMemory, KclError> {
+    let num_args = function_expression.number_of_args();
+    let (min_params, max_params) = num_args.into_inner();
+    let n = args.len();
+
+    // Check if the user supplied too many arguments
+    // (we'll check for too few arguments below).
+    let err_wrong_number_args = KclError::Semantic(KclErrorDetails {
+        message: if min_params == max_params {
+            format!("Expected {min_params} arguments, got {n}")
+        } else {
+            format!("Expected {min_params}-{max_params} arguments, got {n}")
+        },
+        source_ranges: vec![function_expression.into()],
+    });
+    if n > max_params {
+        return Err(err_wrong_number_args);
+    }
+
+    // Add the arguments to the memory.
+    for (index, param) in function_expression.params.iter().enumerate() {
+        if let Some(arg) = args.get(index) {
+            // Argument was provided.
+            fn_memory.add(&param.identifier.name, arg.clone(), (&param.identifier).into())?;
+        } else {
+            // Argument was not provided.
+            if param.optional {
+                // If the corresponding parameter is optional,
+                // then it's fine, the user has supplied all the
+                // args they need to.
+                break;
+            } else {
+                // But if the corresponding parameter was required,
+                // then the user has called with too few arguments.
+                return Err(err_wrong_number_args);
+            }
+        }
+    }
+    Ok(fn_memory)
 }
 
 #[cfg(test)]
