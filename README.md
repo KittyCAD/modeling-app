@@ -210,6 +210,8 @@ run with step through debugger
 ```
 PWDEBUG=1 yarn playwright test
 ```
+However, if you want a debugger I recommend using VSCode and the `playwright` extension, as the above command is a cruder debugger that steps into every function call which is annoying.
+With the extension you can set a breakpoint after `waitForDefaultPlanesVisibilityChange` in order to skip app loading, then the vscode debugger's "step over" is much better for being able to stay at the right level of abstraction as you debug the code.
 
 If you want to limit to a single browser use `--project="webkit"` or `firefox`, `Google Chrome`
 Or comment out browsers in `playwright.config.ts`.
