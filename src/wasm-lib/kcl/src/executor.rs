@@ -1062,6 +1062,8 @@ fn assign_args_to_params(
 mod tests {
     use pretty_assertions::assert_eq;
 
+    use crate::ast::types::{Identifier, Parameter};
+
     use super::*;
 
     pub async fn parse_execute(code: &str) -> Result<ProgramMemory> {
@@ -1606,5 +1608,117 @@ const bracket = startSketchOn('XY')
 show(bracket)
 "#;
         parse_execute(ast).await.unwrap();
+    }
+
+    #[test]
+    fn test_assign_args_to_params() {
+        // Set up a little framework for this test.
+        fn mem(number: usize) -> MemoryItem {
+            MemoryItem::UserVal(UserVal {
+                value: number.into(),
+                meta: Default::default(),
+            })
+        }
+        fn ident(s: &'static str) -> Identifier {
+            Identifier {
+                start: 0,
+                end: 0,
+                name: s.to_owned(),
+            }
+        }
+        fn opt_param(s: &'static str) -> Parameter {
+            Parameter {
+                identifier: ident(s),
+                optional: true,
+            }
+        }
+        fn req_param(s: &'static str) -> Parameter {
+            Parameter {
+                identifier: ident(s),
+                optional: false,
+            }
+        }
+        // Declare the test cases.
+        for (test_name, params, args, expected) in [
+            ("empty", Vec::new(), Vec::new(), Ok(ProgramMemory::new())),
+            (
+                "all params required, and all given, should be OK",
+                vec![req_param("x")],
+                vec![mem(1)],
+                Ok(ProgramMemory {
+                    return_: None,
+                    root: HashMap::from([("x".to_owned(), mem(1))]),
+                }),
+            ),
+            (
+                "all params required, none given, should error",
+                vec![req_param("x")],
+                vec![],
+                Err(KclError::Semantic(KclErrorDetails {
+                    source_ranges: vec![SourceRange([0, 0])],
+                    message: "Expected 1 arguments, got 0".to_owned(),
+                })),
+            ),
+            (
+                "all params optional, none given, should be OK",
+                vec![opt_param("x")],
+                vec![],
+                Ok(ProgramMemory::default()),
+            ),
+            (
+                "mixed params, too few given",
+                vec![req_param("x"), opt_param("y")],
+                vec![],
+                Err(KclError::Semantic(KclErrorDetails {
+                    source_ranges: vec![SourceRange([0, 0])],
+                    message: "Expected 1-2 arguments, got 0".to_owned(),
+                })),
+            ),
+            (
+                "mixed params, minimum given, should be OK",
+                vec![req_param("x"), opt_param("y")],
+                vec![mem(1)],
+                Ok(ProgramMemory {
+                    return_: None,
+                    root: HashMap::from([("x".to_owned(), mem(1))]),
+                }),
+            ),
+            (
+                "mixed params, maximum given, should be OK",
+                vec![req_param("x"), opt_param("y")],
+                vec![mem(1), mem(2)],
+                Ok(ProgramMemory {
+                    return_: None,
+                    root: HashMap::from([("x".to_owned(), mem(1)), ("y".to_owned(), mem(2))]),
+                }),
+            ),
+            (
+                "mixed params, too many given",
+                vec![req_param("x"), opt_param("y")],
+                vec![mem(1), mem(2), mem(3)],
+                Err(KclError::Semantic(KclErrorDetails {
+                    source_ranges: vec![SourceRange([0, 0])],
+                    message: "Expected 1-2 arguments, got 3".to_owned(),
+                })),
+            ),
+        ] {
+            // Run each test.
+            let func_expr = &FunctionExpression {
+                start: 0,
+                end: 0,
+                params,
+                body: crate::ast::types::Program {
+                    start: 0,
+                    end: 0,
+                    body: Vec::new(),
+                    non_code_meta: Default::default(),
+                },
+            };
+            let actual = assign_args_to_params(func_expr, args, ProgramMemory::new());
+            assert_eq!(
+                actual, expected,
+                "failed {test_name}:\ngot {actual:?}\nbut expected\n{expected:?}"
+            );
+        }
     }
 }
