@@ -29,6 +29,7 @@ expression: actual
             "end": 49,
             "params": [
               {
+                "type": "Parameter",
                 "identifier": {
                   "type": "Identifier",
                   "start": 12,
