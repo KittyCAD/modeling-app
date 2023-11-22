@@ -906,13 +906,16 @@ pub async fn execute(
                                     Box::pin(async move {
                                         let mut fn_memory = memory.clone();
 
-                                        if args.len() != function_expression.params.len() {
+                                        let num_args = function_expression.number_of_args();
+                                        let n = args.len();
+                                        if !num_args.contains(&n) {
+                                            let (min_params, max_params) = num_args.into_inner();
                                             return Err(KclError::Semantic(KclErrorDetails {
-                                                message: format!(
-                                                    "Expected {} arguments, got {}",
-                                                    function_expression.params.len(),
-                                                    args.len(),
-                                                ),
+                                                message: if min_params == max_params {
+                                                    format!("Expected {min_params} arguments, got {n}")
+                                                } else {
+                                                    format!("Expected {min_params}-{max_params} arguments, got {n}")
+                                                },
                                                 source_ranges: vec![(&function_expression).into()],
                                             }));
                                         }

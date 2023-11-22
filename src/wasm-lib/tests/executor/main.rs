@@ -475,6 +475,24 @@ show(square)
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn optional_params() {
+    let code = r#"
+    fn circle = (pos, radius, tag?) => {
+      const sg = startSketchOn('XY')
+        |> startProfileAt(pos, %)
+        |> arc({angle_end: 360, angle_start: 0, radius: radius}, %)
+        |> close(%)
+  
+      return sg
+  }
+  
+  show(circle([2, 2], 20))
+"#;
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/optional_params.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn serial_test_rounded_with_holes() {
     let code = r#"fn circle = (pos, radius) => {
   const sg = startSketchOn('XY')
@@ -488,17 +506,21 @@ async fn serial_test_rounded_with_holes() {
   return sg
 }
 
+fn tarc = (to, sketchGroup, tag?) => {
+  return tangentialArcTo(to, sketchGroup, tag)
+}
+
 fn roundedRectangle = (pos, w, l, cornerRadius) => {
   const rr = startSketchOn('XY')
     |> startProfileAt([pos[0] - w/2, 0], %)
     |> lineTo([pos[0] - w/2, pos[1] - l/2 + cornerRadius], %)
-    |> tangentialArcTo([pos[0] - w/2 + cornerRadius, pos[1] - l/2], %, "arc0")
+    |> tarc([pos[0] - w/2 + cornerRadius, pos[1] - l/2], %, "arc0")
     |> lineTo([pos[0] + w/2 - cornerRadius, pos[1] - l/2], %)
-    |> tangentialArcTo([pos[0] + w/2, pos[1] - l/2 + cornerRadius], %)
+    |> tarc([pos[0] + w/2, pos[1] - l/2 + cornerRadius], %)
     |> lineTo([pos[0] + w/2, pos[1] + l/2 - cornerRadius], %)
-    |> tangentialArcTo([pos[0] + w/2 - cornerRadius, pos[1] + l/2], %, "arc2")
+    |> tarc([pos[0] + w/2 - cornerRadius, pos[1] + l/2], %, "arc2")
     |> lineTo([pos[0] - w/2 + cornerRadius, pos[1] + l/2], %)
-    |> tangentialArcTo([pos[0] - w/2, pos[1] + l/2 - cornerRadius], %)
+    |> tarc([pos[0] - w/2, pos[1] + l/2 - cornerRadius], %)
     |> close(%)
   return rr
 }

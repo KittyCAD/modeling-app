@@ -1,6 +1,6 @@
 //! Data types for the AST.
 
-use std::{collections::HashMap, fmt::Write};
+use std::{collections::HashMap, fmt::Write, ops::RangeInclusive};
 
 use anyhow::Result;
 use databake::*;
@@ -991,7 +991,7 @@ impl CallExpression {
                 if fn_args.len() != function_expression.params.len() {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: format!(
-                            "Expected {} arguments, got {}",
+                            "this function expected {} arguments, got {}",
                             function_expression.params.len(),
                             fn_args.len(),
                         ),
@@ -2646,6 +2646,23 @@ impl FunctionExpression {
         }
     }
 
+    /// Required parameters must be declared before optional parameters.
+    /// This gets all the required parameters.
+    pub fn required_params(&self) -> &[Parameter] {
+        let end_of_required_params = self
+            .params
+            .iter()
+            .position(|param| param.optional)
+            // If there's no optional params, then all the params are required params.
+            .unwrap_or_else(|| self.params.len());
+        &self.params[..end_of_required_params]
+    }
+
+    /// Minimum and maximum number of arguments this function can take.
+    pub fn number_of_args(&self) -> RangeInclusive<usize> {
+        self.required_params().len()..=self.params.len()
+    }
+
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Value) {
         self.body.replace_value(source_range, new_value);
     }
@@ -3398,6 +3415,109 @@ const thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
                 expected,
                 "failed test {i}, which is testing that {reason}"
             );
+        }
+    }
+
+    #[test]
+    fn required_params() {
+        for (i, (test_name, expected, function_expr)) in [
+            (
+                "no params",
+                (0..=0),
+                FunctionExpression {
+                    start: 0,
+                    end: 0,
+                    params: vec![],
+                    body: Program {
+                        start: 0,
+                        end: 0,
+                        body: Vec::new(),
+                        non_code_meta: Default::default(),
+                    },
+                },
+            ),
+            (
+                "all required params",
+                (1..=1),
+                FunctionExpression {
+                    start: 0,
+                    end: 0,
+                    params: vec![Parameter {
+                        identifier: Identifier {
+                            start: 0,
+                            end: 0,
+                            name: "foo".to_owned(),
+                        },
+                        optional: false,
+                    }],
+                    body: Program {
+                        start: 0,
+                        end: 0,
+                        body: Vec::new(),
+                        non_code_meta: Default::default(),
+                    },
+                },
+            ),
+            (
+                "all optional params",
+                (0..=1),
+                FunctionExpression {
+                    start: 0,
+                    end: 0,
+                    params: vec![Parameter {
+                        identifier: Identifier {
+                            start: 0,
+                            end: 0,
+                            name: "foo".to_owned(),
+                        },
+                        optional: true,
+                    }],
+                    body: Program {
+                        start: 0,
+                        end: 0,
+                        body: Vec::new(),
+                        non_code_meta: Default::default(),
+                    },
+                },
+            ),
+            (
+                "mixed params",
+                (1..=2),
+                FunctionExpression {
+                    start: 0,
+                    end: 0,
+                    params: vec![
+                        Parameter {
+                            identifier: Identifier {
+                                start: 0,
+                                end: 0,
+                                name: "foo".to_owned(),
+                            },
+                            optional: false,
+                        },
+                        Parameter {
+                            identifier: Identifier {
+                                start: 0,
+                                end: 0,
+                                name: "bar".to_owned(),
+                            },
+                            optional: true,
+                        },
+                    ],
+                    body: Program {
+                        start: 0,
+                        end: 0,
+                        body: Vec::new(),
+                        non_code_meta: Default::default(),
+                    },
+                },
+            ),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let actual = function_expr.number_of_args();
+            assert_eq!(expected, actual, "failed test #{i} '{test_name}'");
         }
     }
 }
