@@ -3,6 +3,7 @@ import { secrets } from './secrets'
 import { EngineCommand } from '../../src/lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
 import { getUtils } from './test-utils'
+import waitOn from 'wait-on'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -15,6 +16,11 @@ document.addEventListener('mousemove', (e) =>
 */
 
 test.beforeEach(async ({ context, page }) => {
+  // wait for Vite preview server to be up
+  await waitOn({
+    resources: ['tcp:3000'],
+    timeout: 5000,
+  })
   context.addInitScript(async (token) => {
     localStorage.setItem('TOKEN_PERSIST_KEY', token)
     localStorage.setItem('persistCode', ``)
