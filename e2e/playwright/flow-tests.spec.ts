@@ -55,10 +55,12 @@ test('Basic sketch', async ({ page }) => {
   await page.getByRole('button', { name: 'Start Sketch' }).click()
   await u.waitForDefaultPlanesVisibilityChange()
 
-  await u.closeDebugPanel()
+  await u.clearAndCloseDebugPanel()
   // select a plane
   await page.mouse.click(700, 200)
   await u.openDebugPanel()
+  await u.waitForCmdReceive('edit_mode_enter')
+  await u.waitForCmdReceive('set_tool')
 
   await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Line' }).click()

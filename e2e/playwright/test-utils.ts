@@ -100,6 +100,10 @@ export function getUtils(page: Page) {
       await openDebugPanel(page)
       return clearCommandLogs(page)
     },
+    clearAndCloseDebugPanel: async () => {
+      await clearCommandLogs(page)
+      return closeDebugPanel(page)
+    },
     waitForCmdReceive: (commandType: string) =>
       page.waitForFunction(
         (commandType) =>
