@@ -262,7 +262,7 @@ However because much of our tests involve clicking in the stream at specific loc
 The tests are broken into snapshot tests and non-snapshot tests, and they run in that order, they automatically commit new snap shots, so if you see an image commit check it was an intended change. If we have non-determinism in the snapshots such that they are always committing new images, hopefully this annoyance makes us fix them asap, if you notice this happening let Kurt know. But for the odd occasion  `git reset --hard HEAD~ && git push -f` is your friend.
 
 How to interpret failing playwright tests?
-If your tests fail, click through to the action and see that the tests failed on a line that includes `'[data-testid="loading"]'`, this means the test fail because the stream never started. It's you choice if you want to re-run the test, or ignore the failure.
+If your tests fail, click through to the action and see that the tests failed on a line that includes `await page.getByTestId('loading').waitFor({ state: 'detached' })`, this means the test fail because the stream never started. It's you choice if you want to re-run the test, or ignore the failure.
 
 We run on ubuntu and macos, because safari doesn't work on linux because of the dreaded "no RTCPeerConnection variable" error. But linux runs first and then macos for the same reason that we limit the number of parallel tests to 1 because we limit stream connections per user, so tests would start failing we if let them run together.
 
