@@ -17,7 +17,7 @@
         "never"
       ],
       "react-hooks/exhaustive-deps": "off",
-      "@typescript-eslint/no-floating-promises": "error"
+      "@typescript-eslint/no-floating-promises": "warn"
     },
     "overrides": [
       {
