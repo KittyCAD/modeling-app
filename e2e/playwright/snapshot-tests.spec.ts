@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { getUtils } from './test-utils'
 
 test.beforeEach(async ({ context, page }) => {
-  context.addInitScript(async (token) => {
+  await context.addInitScript(async (token) => {
     localStorage.setItem('TOKEN_PERSIST_KEY', token)
     localStorage.setItem('persistCode', ``)
     localStorage.setItem(
@@ -24,14 +24,14 @@ test.beforeEach(async ({ context, page }) => {
     )
   }, secrets.token)
   // reducedMotion kills animations, which speeds up tests and reduces flakiness
-  page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.emulateMedia({ reducedMotion: 'reduce' })
 })
 
 test.setTimeout(60000)
 
 test('change camera, show planes', async ({ page, context }) => {
   const u = getUtils(page)
-  page.setViewportSize({ width: 1200, height: 500 })
+  await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('localhost:3000')
   await u.waitForAuthSkipAppStart()
   await u.openAndClearDebugPanel()
@@ -67,8 +67,7 @@ test('change camera, show planes', async ({ page, context }) => {
   await u.waitForDefaultPlanesVisibilityChange()
   await u.closeDebugPanel()
 
-  await page.waitForTimeout(100) // best to be safe for screenshots
-  await expect(await page.screenshot()).toMatchSnapshot({
+  await expect(page).toHaveScreenshot({
     maxDiffPixels: 100,
   })
 
@@ -98,9 +97,8 @@ test('change camera, show planes', async ({ page, context }) => {
   await u.waitForDefaultPlanesVisibilityChange()
   await u.closeDebugPanel()
 
-  await page.waitForTimeout(100) // best to be safe for screenshots
-  await expect(await page.screenshot()).toMatchSnapshot({
-    maxDiffPixels: 150,
+  await expect(page).toHaveScreenshot({
+    maxDiffPixels: 100,
   })
 
   await u.openAndClearDebugPanel()
@@ -130,9 +128,7 @@ test('change camera, show planes', async ({ page, context }) => {
   await u.waitForDefaultPlanesVisibilityChange()
   await u.closeDebugPanel()
 
-  // take snapshot
-  await page.waitForTimeout(100) // best to be safe for screenshots
-  await expect(await page.screenshot()).toMatchSnapshot({
+  await expect(page).toHaveScreenshot({
     maxDiffPixels: 100,
   })
 })

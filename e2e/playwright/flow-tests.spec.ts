@@ -21,7 +21,7 @@ test.beforeEach(async ({ context, page }) => {
     resources: ['tcp:3000'],
     timeout: 5000,
   })
-  context.addInitScript(async (token) => {
+  await context.addInitScript(async (token) => {
     localStorage.setItem('TOKEN_PERSIST_KEY', token)
     localStorage.setItem('persistCode', ``)
     localStorage.setItem(
@@ -40,14 +40,14 @@ test.beforeEach(async ({ context, page }) => {
     )
   }, secrets.token)
   // kill animations, speeds up tests and reduced flakiness
-  page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.emulateMedia({ reducedMotion: 'reduce' })
 })
 
 test.setTimeout(60000)
 
 test('Basic sketch', async ({ page }) => {
   const u = getUtils(page)
-  page.setViewportSize({ width: 1200, height: 500 })
+  await page.setViewportSize({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
   await page.goto('localhost:3000')
   await u.waitForAuthSkipAppStart()
@@ -61,25 +61,22 @@ test('Basic sketch', async ({ page }) => {
   await page.getByRole('button', { name: 'Start Sketch' }).click()
   await u.waitForDefaultPlanesVisibilityChange()
 
-  await u.clearAndCloseDebugPanel()
   // select a plane
-  await page.mouse.click(700, 200)
-  await u.openDebugPanel()
-  await u.waitForCmdReceive('edit_mode_enter')
+  await u.doAndWaitForCmd(() => page.mouse.click(700, 200), 'edit_mode_enter')
   await u.waitForCmdReceive('set_tool')
 
-  await u.clearCommandLogs()
-  await page.getByRole('button', { name: 'Line' }).click()
-
-  await u.waitForCmdReceive('set_tool')
-  await u.clearCommandLogs()
-  await u.closeDebugPanel()
+  await u.doAndWaitForCmd(
+    () => page.getByRole('button', { name: 'Line' }).click(),
+    'set_tool'
+  )
 
   const startXPx = 600
-  await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-  await u.openDebugPanel()
-  await u.waitForCmdReceive('mouse_click')
-  await u.closeDebugPanel()
+  await u.doAndWaitForCmd(
+    () => page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10),
+    'mouse_click',
+    false
+  )
+
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
 
   const startAt = '[9.94, -13.41]'
@@ -104,17 +101,16 @@ test('Basic sketch', async ({ page }) => {
   |> line([-19.97, 0], %)`)
 
   // deselect line tool
-
-  await u.openAndClearDebugPanel()
-  await page.getByRole('button', { name: 'Line' }).click()
-  await u.waitForCmdReceive('set_tool')
-  await u.clearCommandLogs()
-  await u.closeDebugPanel()
+  await u.doAndWaitForCmd(
+    () => page.getByRole('button', { name: 'Line' }).click(),
+    'set_tool'
+  )
 
   // click between first two clicks to get center of the line
-  await page.mouse.click(startXPx + PUR * 15, 500 - PUR * 10)
-  await u.openDebugPanel()
-  await u.waitForCmdReceive('select_with_point')
+  await u.doAndWaitForCmd(
+    () => page.mouse.click(startXPx + PUR * 15, 500 - PUR * 10),
+    'select_with_point'
+  )
   await u.closeDebugPanel()
 
   // hold down shift
@@ -137,7 +133,7 @@ test('Basic sketch', async ({ page }) => {
 
 test('if you write invalid kcl you get inlined errors', async ({ page }) => {
   const u = getUtils(page)
-  page.setViewportSize({ width: 1000, height: 500 })
+  await page.setViewportSize({ width: 1000, height: 500 })
   await page.goto('localhost:3000')
 
   await u.waitForAuthSkipAppStart()
@@ -179,7 +175,7 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
 
 test('executes on load', async ({ page, context }) => {
   const u = getUtils(page)
-  context.addInitScript(async (token) => {
+  await context.addInitScript(async (token) => {
     localStorage.setItem(
       'persistCode',
       `const part001 = startSketchOn('-XZ')
@@ -189,7 +185,7 @@ test('executes on load', async ({ page, context }) => {
   |> line([-23.44, 0.52], %)`
     )
   })
-  page.setViewportSize({ width: 1000, height: 500 })
+  await page.setViewportSize({ width: 1000, height: 500 })
   await page.goto('localhost:3000')
   await u.waitForAuthSkipAppStart()
 
@@ -211,10 +207,10 @@ test('executes on load', async ({ page, context }) => {
 
 test('re-executes', async ({ page, context }) => {
   const u = getUtils(page)
-  context.addInitScript(async (token) => {
+  await context.addInitScript(async (token) => {
     localStorage.setItem('persistCode', `const myVar = 5`)
   })
-  page.setViewportSize({ width: 1000, height: 500 })
+  await page.setViewportSize({ width: 1000, height: 500 })
   await page.goto('localhost:3000')
   await u.waitForAuthSkipAppStart()
 
@@ -240,7 +236,7 @@ test('Can create sketches on all planes and their back sides', async ({
 }) => {
   const u = getUtils(page)
   const PUR = 400 / 37.5 //pixeltoUnitRatio
-  page.setViewportSize({ width: 1200, height: 500 })
+  await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('localhost:3000')
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
@@ -362,7 +358,7 @@ test('Can create sketches on all planes and their back sides', async ({
 test('Auto complete works', async ({ page }) => {
   const u = getUtils(page)
   // const PUR = 400 / 37.5 //pixeltoUnitRatio
-  page.setViewportSize({ width: 1200, height: 500 })
+  await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('localhost:3000')
   await u.waitForAuthSkipAppStart()
   await u.waitForDefaultPlanesVisibilityChange()

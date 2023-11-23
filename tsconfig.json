@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": "src",
     "paths": {
-      "/*": ["src/*"]
+      "/*": ["src/*", "e2e/*"]
     },
     "types": ["vite/client", "@types/wicg-file-system-access"],
     "target": "esnext",
@@ -26,7 +26,8 @@
     "jsx": "react-jsx"
   },
   "include": [
-    "src"
+    "src",
+    "e2e"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

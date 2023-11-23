@@ -3,22 +3,13 @@ import { EngineCommand } from '../../src/lang/std/engineConnection'
 
 async function waitForPageLoad(page: Page) {
   // wait for 'Loading KittyCAD Modeling App...' spinner
-  await page.waitForFunction(() =>
-    document.querySelector('[data-testid="initial-load"]')
-  )
+  await page.getByTestId('initial-load').waitFor()
   // wait for 'Loading stream...' spinner
-  await page.waitForFunction(() =>
-    document.querySelector('[data-testid="loading-stream"]')
-  )
-
+  await page.getByTestId('loading-stream').waitFor()
   // wait for all spinners to be gone
-  await page.waitForFunction(
-    () => !document.querySelector('[data-testid="loading"]')
-  )
+  await page.getByTestId('loading').waitFor({ state: 'detached' })
 
-  await page.waitForFunction(() =>
-    document.querySelector('[data-testid="start-sketch"]')
-  )
+  await page.getByTestId('start-sketch').waitFor()
 }
 
 async function removeCurrentCode(page: Page) {
@@ -60,29 +51,27 @@ async function openDebugPanel(page: Page) {
 
   if (!isOpen) {
     await page.getByText('Debug').click()
-    await page.waitForFunction(
-      () =>
-        document
-          .querySelector('[data-testid="debug-panel"]')
-          ?.getAttribute('open') === ''
-    )
+    await page.getByTestId('debug-panel').and(page.locator('[open]')).waitFor()
   }
 }
 
 async function closeDebugPanel(page: Page) {
   const isOpen =
-    (await page
-      .locator('[data-testid="debug-panel"]')
-      ?.getAttribute('open')) === ''
+    (await page.getByTestId('debug-panel')?.getAttribute('open')) === ''
   if (isOpen) {
     await page.getByText('Debug').click()
-    await page.waitForFunction(
-      () =>
-        document
-          .querySelector('[data-testid="debug-panel"]')
-          ?.getAttribute('open') === null
-    )
+    await page
+      .getByTestId('debug-panel')
+      .and(page.locator(':not([open])'))
+      .waitFor()
   }
+}
+
+async function waitForCmdReceive(page: Page, commandType: string) {
+  return page
+    .locator(`[data-receive-command-type="${commandType}"]`)
+    .first()
+    .waitFor()
 }
 
 export function getUtils(page: Page) {
@@ -105,12 +94,21 @@ export function getUtils(page: Page) {
       return closeDebugPanel(page)
     },
     waitForCmdReceive: (commandType: string) =>
-      page.waitForFunction(
-        (commandType) =>
-          document.querySelector(
-            `[data-receive-command-type="${commandType}"]`
-          ),
-        commandType
-      ),
+      waitForCmdReceive(page, commandType),
+    doAndWaitForCmd: async (
+      fn: () => Promise<void>,
+      commandType: string,
+      endWithDebugPanelOpen = true
+    ) => {
+      await openDebugPanel(page)
+      await clearCommandLogs(page)
+      await closeDebugPanel(page)
+      await fn()
+      await openDebugPanel(page)
+      await waitForCmdReceive(page, commandType)
+      if (!endWithDebugPanelOpen) {
+        await closeDebugPanel(page)
+      }
+    },
   }
 }
