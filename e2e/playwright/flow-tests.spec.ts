@@ -299,25 +299,26 @@ test('Can create sketches on all planes and their back sides', async ({
     await u.clearCommandLogs()
     await u.removeCurrentCode()
   }
+
+  const codeTemplate = (
+    plane = 'XY',
+    sign = ''
+  ) => `const part001 = startSketchOn('${plane}')
+  |> startProfileAt([${sign}3.97, -5.36], %)
+  |> line([${sign}4.01, 0], %)`
   await TestSinglePlane({
     viewCmd: camCmd,
-    expectedCode: `const part001 = startSketchOn('XY')
-  |> startProfileAt([3.97, -5.36], %)
-  |> line([4.01, 0], %)`,
+    expectedCode: codeTemplate('XY'),
     clickCoords: { x: 700, y: 350 }, // red plane
   })
   await TestSinglePlane({
     viewCmd: camCmd,
-    expectedCode: `const part001 = startSketchOn('YZ')
-  |> startProfileAt([3.97, -5.36], %)
-  |> line([4.01, 0], %)`,
+    expectedCode: codeTemplate('YZ'),
     clickCoords: { x: 1000, y: 200 }, // green plane
   })
   await TestSinglePlane({
     viewCmd: camCmd,
-    expectedCode: `const part001 = startSketchOn('XZ')
-  |> startProfileAt([-3.97, -5.36], %)
-  |> line([-4.01, 0], %)`,
+    expectedCode: codeTemplate('XZ', '-'),
     clickCoords: { x: 630, y: 130 }, // blue plane
   })
 
@@ -334,23 +335,17 @@ test('Can create sketches on all planes and their back sides', async ({
   }
   await TestSinglePlane({
     viewCmd: camCmdBackSide,
-    expectedCode: `const part001 = startSketchOn('-XY')
-  |> startProfileAt([-3.97, -5.36], %)
-  |> line([-4.01, 0], %)`,
+    expectedCode: codeTemplate('-XY', '-'),
     clickCoords: { x: 705, y: 136 }, // back of red plane
   })
   await TestSinglePlane({
     viewCmd: camCmdBackSide,
-    expectedCode: `const part001 = startSketchOn('-YZ')
-  |> startProfileAt([-3.97, -5.36], %)
-  |> line([-4.01, 0], %)`,
+    expectedCode: codeTemplate('-YZ', '-'),
     clickCoords: { x: 1000, y: 350 }, // back of green plane
   })
   await TestSinglePlane({
     viewCmd: camCmdBackSide,
-    expectedCode: `const part001 = startSketchOn('-XZ')
-  |> startProfileAt([3.97, -5.36], %)
-  |> line([4.01, 0], %)`,
+    expectedCode: codeTemplate('-XZ'),
     clickCoords: { x: 600, y: 400 }, // back of blue plane
   })
 })
