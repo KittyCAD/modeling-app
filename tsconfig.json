@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": "src",
     "paths": {
-      "/*": ["src/*", "e2e/*"]
+      "/*": ["src/*"]
     },
     "types": ["vite/client", "@types/wicg-file-system-access"],
     "target": "esnext",
