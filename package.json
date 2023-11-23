@@ -22,7 +22,7 @@
     "@testing-library/user-event": "^14.5.1",
     "@ts-stack/markdown": "^1.5.0",
     "@types/node": "^16.7.13",
-    "@types/react": "^18.0.0",
+    "@types/react": "^18.2.38",
     "@types/react-dom": "^18.0.0",
     "@uiw/react-codemirror": "^4.21.20",
     "@xstate/inspect": "^0.8.0",
