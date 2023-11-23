@@ -118,7 +118,7 @@
     "@vitest/coverage-istanbul": "^0.34.6",
     "@wdio/cli": "^7.7.3",
     "@wdio/local-runner": "^7.7.3",
-    "@wdio/mocha-framework": "^7.7.3",
+    "@wdio/mocha-framework": "^8.24.0",
     "@wdio/spec-reporter": "^7.7.3",
     "autoprefixer": "^10.4.13",
     "eslint": "^8.53.0",
