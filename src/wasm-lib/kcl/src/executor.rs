@@ -908,9 +908,9 @@ pub async fn execute(
                                         // Add the arguments to the memory.
                                         for (index, param) in function_expression.params.iter().enumerate() {
                                             fn_memory.add(
-                                                &param.name,
+                                                &param.identifier.name,
                                                 args.get(index).unwrap().clone(),
-                                                param.into(),
+                                                (&param.identifier).into(),
                                             )?;
                                         }
 

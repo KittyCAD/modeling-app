@@ -7,10 +7,11 @@ import { HotkeysProvider } from 'react-hotkeys-hook'
 import { inspect } from '@xstate/inspect'
 import { DEV } from 'env'
 
-if (DEV)
-  inspect({
-    iframe: false,
-  })
+// uncomment for xstate inspector
+// if (DEV)
+//   inspect({
+//     iframe: false,
+//   })
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
