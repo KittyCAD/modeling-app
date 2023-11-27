@@ -187,7 +187,7 @@ impl EngineManager for EngineConnection {
         }
 
         Err(KclError::Engine(KclErrorDetails {
-            message: format!("Modeling command timed out `{}`: {:?}", id, cmd),
+            message: format!("Modeling command timed out `{}`", id),
             source_ranges: vec![source_range],
         }))
     }
