@@ -345,7 +345,7 @@ jobs:
             cat last_download.json
 
       - name: Authenticate to Google Cloud
-        uses: 'google-github-actions/auth@v1.1.1'
+        uses: 'google-github-actions/auth@v1.2.0'
         with:
           credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
 
