@@ -1,18 +1,18 @@
 const fs = require('fs/promises')
 
-describe('The tauri Linux KCMA', () => {
-  it('opens the auth page, and proceeds to sign in', async () => {
+describe('KCMA (Tauri, Linux)', () => {
+  it('opens the auth page, signs in, and signs out', async () => {
     // Clean up previous tests
     await new Promise((resolve) => setTimeout(resolve, 100))
     await fs.rm('/tmp/kittycad_user_code', { force: true })
     await browser.execute('window.localStorage.clear()')
 
-    const button = await $('[data-testid="sign-in-button"]')
-    expect(button).toHaveText('Sign in')
+    const signInButton = await $('[data-testid="sign-in-button"]')
+    expect(await signInButton.getText()).toEqual('Sign in')
 
     // Workaround for .click(), see https://github.com/tauri-apps/tauri/issues/6541
-    await button.waitForClickable()
-    await browser.execute('arguments[0].click();', button)
+    await signInButton.waitForClickable()
+    await browser.execute('arguments[0].click();', signInButton)
     await new Promise((resolve) => setTimeout(resolve, 2000))
 
     // Get from main.rs
@@ -44,17 +44,18 @@ describe('The tauri Linux KCMA', () => {
     })
     console.log(cr.status)
 
-    // Now should be logged in
+    // Now should be signed in
     const newFileButton = await $('[data-testid="home-new-file"]')
-    await newFileButton.waitForClickable({ timeout: 30000 })
-    expect(newFileButton).toHaveText('New file')
+    expect(await newFileButton.getText()).toEqual('New file')
 
-    // So let's log out!
+    // So let's sign out!
     const menuButton = await $('[data-testid="user-sidebar-toggle"]')
     await menuButton.waitForClickable()
     await browser.execute('arguments[0].click();', menuButton)
     const signoutButton = await $('[data-testid="user-sidebar-sign-out"]')
     await signoutButton.waitForClickable()
     await browser.execute('arguments[0].click();', signoutButton)
+    const newSignInButton = await $('[data-testid="sign-in-button"]')
+    expect(await newSignInButton.getText()).toEqual('Sign in')
   })
 })
