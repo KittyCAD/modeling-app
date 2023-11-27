@@ -1,13 +1,13 @@
 const fs = require('fs/promises')
 
-describe('Modeling App', () => {
-  it('open the sign in page', async () => {
+describe('The tauri Linux KCMA', () => {
+  it('opens the auth page, and proceeds to sign in', async () => {
     // Clean up previous tests
     await new Promise((resolve) => setTimeout(resolve, 100))
     await fs.rm('/tmp/kittycad_user_code', { force: true })
     await browser.execute('window.localStorage.clear()')
 
-    const button = await $('#signin')
+    const button = await $('[data-testid="sign_in"]')
     expect(button).toHaveText('Sign in')
 
     // Workaround for .click(), see https://github.com/tauri-apps/tauri/issues/6541
@@ -45,7 +45,7 @@ describe('Modeling App', () => {
     console.log(cr.status)
 
     // Now should be logged in
-    const newFileButton = await $('#new_file')
+    const newFileButton = await $('[data-testid="new_file"]')
     await newFileButton.waitForClickable({ timeout: 30000 })
     expect(newFileButton).toHaveText('New file')
   })
