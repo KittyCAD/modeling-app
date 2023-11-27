@@ -7,7 +7,7 @@ describe('The tauri Linux KCMA', () => {
     await fs.rm('/tmp/kittycad_user_code', { force: true })
     await browser.execute('window.localStorage.clear()')
 
-    const button = await $('[data-testid="sign_in"]')
+    const button = await $('[data-testid="sign-in-button"]')
     expect(button).toHaveText('Sign in')
 
     // Workaround for .click(), see https://github.com/tauri-apps/tauri/issues/6541
@@ -45,7 +45,7 @@ describe('The tauri Linux KCMA', () => {
     console.log(cr.status)
 
     // Now should be logged in
-    const newFileButton = await $('[data-testid="new_file"]')
+    const newFileButton = await $('[data-testid="home-new-file"]')
     await newFileButton.waitForClickable({ timeout: 30000 })
     expect(newFileButton).toHaveText('New file')
 
