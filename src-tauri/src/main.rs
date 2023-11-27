@@ -71,9 +71,13 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
     // Open the system browser with the auth_uri.
     // We do this in the browser and not a separate window because we want 1password and
     // other crap to work well.
+    // TODO: find a better way to share this value with tauri e2e tests
+    // Here we're using target_os = "linux" as the way to say e2e vs no e2e, as
+    // linux is the only platform not part of our releases but the only one we got
+    // to work with tauri-driver. Had to remove the shell::open call as it failed on GHA.
+    // So this is for e2e tests:
     #[cfg(target_os = "linux")]
     {
-        // TODO: find a better way to share this value with tauri e2e tests
         println!("Please open {}", auth_uri.secret());
         fs::write(
             "/tmp/kittycad_user_code",
@@ -81,6 +85,7 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
         )
         .expect("Unable to write /tmp/kittycad_user_code file");
     }
+    // And this is for end users on macOS and Windows.
     #[cfg(not(target_os = "linux"))]
     {
         println!("Opening {} in the default browser", auth_uri.secret());
