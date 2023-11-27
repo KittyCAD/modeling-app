@@ -48,5 +48,13 @@ describe('The tauri Linux KCMA', () => {
     const newFileButton = await $('[data-testid="new_file"]')
     await newFileButton.waitForClickable({ timeout: 30000 })
     expect(newFileButton).toHaveText('New file')
+
+    // So let's log out!
+    const menuButton = await $('[data-testid="user-sidebar-toggle"]')
+    await menuButton.waitForClickable()
+    await browser.execute('arguments[0].click();', menuButton)
+    const signoutButton = await $('[data-testid="user-sidebar-sign-out"]')
+    await menuButton.waitForClickable()
+    await browser.execute('arguments[0].click();', signoutButton)
   })
 })
