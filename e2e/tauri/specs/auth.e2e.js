@@ -54,7 +54,7 @@ describe('The tauri Linux KCMA', () => {
     await menuButton.waitForClickable()
     await browser.execute('arguments[0].click();', menuButton)
     const signoutButton = await $('[data-testid="user-sidebar-sign-out"]')
-    await menuButton.waitForClickable()
+    await signoutButton.waitForClickable()
     await browser.execute('arguments[0].click();', signoutButton)
   })
 })
