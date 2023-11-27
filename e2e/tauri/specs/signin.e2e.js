@@ -1,11 +1,11 @@
-const fs = require('fs/promises');
+const fs = require('fs/promises')
 
 describe('Modeling App', () => {
   it('open the sign in page', async () => {
     // Clean up previous tests
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await new Promise((resolve) => setTimeout(resolve, 100))
     await fs.rm('/tmp/kittycad_user_code', { force: true })
-    await browser.execute('window.localStorage.clear()');
+    await browser.execute('window.localStorage.clear()')
 
     const button = await $('#signin')
     expect(button).toHaveText('Sign in')
@@ -13,10 +13,12 @@ describe('Modeling App', () => {
     // Workaround for .click(), see https://github.com/tauri-apps/tauri/issues/6541
     await button.waitForClickable()
     await browser.execute('arguments[0].click();', button)
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    await new Promise((resolve) => setTimeout(resolve, 2000))
 
     // Get from main.rs
-    const userCode = await (await fs.readFile('/tmp/kittycad_user_code')).toString()
+    const userCode = await (
+      await fs.readFile('/tmp/kittycad_user_code')
+    ).toString()
     console.log(`Found user code ${userCode}`)
 
     // Device flow: verify
@@ -24,7 +26,7 @@ describe('Modeling App', () => {
     const headers = {
       Authorization: `Bearer ${token}`,
       Accept: 'application/json',
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     }
     const verifyUrl = `https://api.kittycad.io/oauth2/device/verify?user_code=${userCode}`
     console.log(`GET ${verifyUrl}`)
