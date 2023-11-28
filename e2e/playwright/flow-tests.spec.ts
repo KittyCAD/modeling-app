@@ -392,3 +392,47 @@ test('Auto complete works', async ({ page }) => {
   |> startProfileAt([0,0], %)
   |> xLine(5, %)`)
 })
+
+// Onboarding tests
+test('Onboarding redirects and code updating', async ({ page, context }) => {
+  const u = getUtils(page)
+
+  // Override beforeEach test setup
+  await context.addInitScript(async () => {
+    // Give some initial code, so we can test that it's cleared
+    localStorage.setItem('persistCode', 'const sigmaAllow = 15000')
+
+    const storedSettings = JSON.parse(
+      localStorage.getItem('SETTINGS_PERSIST_KEY') || '{}'
+    )
+    storedSettings.onboardingStatus = '/export'
+    localStorage.setItem('SETTINGS_PERSIST_KEY', JSON.stringify(storedSettings))
+  })
+
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('localhost:3000')
+  await u.waitForAuthSkipAppStart()
+
+  // Test that the redirect happened
+  await expect(page.url()).toBe(
+    `http://localhost:3000/file/new/onboarding/export`
+  )
+
+  // Test that you come back to this page when you refresh
+  await page.reload()
+  await expect(page.url()).toBe(
+    `http://localhost:3000/file/new/onboarding/export`
+  )
+
+  // Test that the onboarding pane loaded
+  const title = page.locator('[data-testid="onboarding-content"]')
+  await expect(title).toBeAttached()
+
+  // Test that the code changes when you advance to the next step
+  await page.locator('[data-testid="onboarding-next"]').click()
+  await expect(page.locator('.cm-content')).toHaveText('')
+
+  // Test that the code is not empty when you click on the next step
+  await page.locator('[data-testid="onboarding-next"]').click()
+  await expect(page.locator('.cm-content')).toHaveText(/.+/)
+})
