@@ -73,11 +73,14 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
     // We do this in the browser and not a separate window because we want 1password and
     // other crap to work well.
     // TODO: find a better way to share this value with tauri e2e tests
-    // Here we're using an env var as the way to say e2e vs no e2e to enable the tmp file
-    // (windows not supported for now), and had to remove the shell::open call as it fails on GHA.
+    // Here we're using an env var to enable the /tmp file (windows not supported for now)
+    // and bypass the shell::open call as it fails on GitHub Actions.
     let e2e_tauri_enabled = env::var("E2E_TAURI_ENABLED").is_ok();
     if (e2e_tauri_enabled) {
-        println!("E2E_TAURI_ENABLED is set, won't open {} externally", auth_uri.secret());
+        println!(
+            "E2E_TAURI_ENABLED is set, won't open {} externally",
+            auth_uri.secret()
+        );
         fs::write(
             "/tmp/kittycad_user_code",
             details.user_code().secret().to_string(),
