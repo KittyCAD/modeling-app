@@ -1,6 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use std::env;
 use std::fs;
 use std::io::Read;
 
@@ -72,28 +73,19 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
     // We do this in the browser and not a separate window because we want 1password and
     // other crap to work well.
     // TODO: find a better way to share this value with tauri e2e tests
-    // Here we're using target_os = "linux" as the way to say e2e vs no e2e, as
-    // linux is the only platform not part of our releases but the only one we got
-    // to work with tauri-driver. Had to remove the shell::open call as it failed on GHA.
-    // So this is for e2e tests:
-    #[cfg(target_os = "linux")]
-    {
-        println!("Please open {}", auth_uri.secret());
+    // Here we're using an env var as the way to say e2e vs no e2e to enable the tmp file
+    // (windows not supported for now), and had to remove the shell::open call as it fails on GHA.
+    let e2e_tauri_enabled = env::var("E2E_TAURI_ENABLED").is_ok();
+    if (e2e_tauri_enabled) {
+        println!("E2E_TAURI_ENABLED is set, won't externally open {}", auth_uri.secret());
         fs::write(
             "/tmp/kittycad_user_code",
             details.user_code().secret().to_string(),
         )
         .expect("Unable to write /tmp/kittycad_user_code file");
-    }
-    // And this is for end users on macOS and Windows.
-    #[cfg(not(target_os = "linux"))]
-    {
-        println!("Opening {} in the default browser", auth_uri.secret());
-        let url = tauri::api::shell::open(&app.shell_scope(), auth_uri.secret(), None);
-        match url {
-            Ok(()) => println!("URL successfully opened in the default browser."),
-            Err(error) => println!("Problem opening the URL: {:?}", error),
-        };
+    } else {
+        tauri::api::shell::open(&app.shell_scope(), auth_uri.secret(), None)
+            .map_err(|e| InvokeError::from_anyhow(e.into()))?;
     }
 
     // Wait for the user to login.

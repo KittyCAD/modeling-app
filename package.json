@@ -70,7 +70,7 @@
     "test:nowatch": "vitest run --mode development",
     "test:rust": "(cd src/wasm-lib && cargo test --all && cargo clippy --all --tests --benches)",
     "test:cov": "vitest run --coverage --mode development",
-    "test:e2e": "wdio run wdio.conf.js",
+    "test:e2e": "E2E_TAURI_ENABLED=true wdio run wdio.conf.js",
     "simpleserver:ci": "yarn pretest && http-server ./public --cors -p 3000 &",
     "simpleserver": "yarn pretest && http-server ./public --cors -p 3000",
     "fmt": "prettier --write ./src && prettier --write ./e2e",
