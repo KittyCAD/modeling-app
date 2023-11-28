@@ -261,7 +261,7 @@ const part001 = startSketchOn('-XZ')
     coords: sysType,
     units: 'in',
   })
-  
+
   // the following exports are failing
   // await doExport({
   //   type: 'ply',

@@ -15,7 +15,11 @@ export const browserSaveFile = async (blob: Blob, suggestedName: string) => {
       }
     })()
   // If the File System Access API is supported…
-  if (supportsFileSystemAccess && window.showSaveFilePicker) {
+  if (
+    supportsFileSystemAccess &&
+    window.showSaveFilePicker &&
+    !(window as any).playwrightSkipFilePicker
+  ) {
     try {
       // Show the file save dialog.
       const handle = await window.showSaveFilePicker({
