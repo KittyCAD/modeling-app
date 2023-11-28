@@ -27,4 +27,7 @@ export const lineHighlightField = StateField.define({
   provide: (f) => EditorView.decorations.from(f),
 })
 
-const matchDeco = Decoration.mark({ class: 'bg-yellow-200' })
+const matchDeco = Decoration.mark({
+  class: 'bg-yellow-200',
+  attributes: { 'data-testid': 'hover-highlight' },
+})

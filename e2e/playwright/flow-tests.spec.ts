@@ -49,7 +49,7 @@ test('Basic sketch', async ({ page }) => {
   const u = getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
-  await page.goto('localhost:3000')
+  await page.goto('/')
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
   await u.waitForDefaultPlanesVisibilityChange()
@@ -134,7 +134,7 @@ test('Basic sketch', async ({ page }) => {
 test('if you write invalid kcl you get inlined errors', async ({ page }) => {
   const u = getUtils(page)
   await page.setViewportSize({ width: 1000, height: 500 })
-  await page.goto('localhost:3000')
+  await page.goto('/')
 
   await u.waitForAuthSkipAppStart()
 
@@ -186,7 +186,7 @@ test('executes on load', async ({ page, context }) => {
     )
   })
   await page.setViewportSize({ width: 1000, height: 500 })
-  await page.goto('localhost:3000')
+  await page.goto('/')
   await u.waitForAuthSkipAppStart()
 
   // expand variables section
@@ -211,7 +211,7 @@ test('re-executes', async ({ page, context }) => {
     localStorage.setItem('persistCode', `const myVar = 5`)
   })
   await page.setViewportSize({ width: 1000, height: 500 })
-  await page.goto('localhost:3000')
+  await page.goto('/')
   await u.waitForAuthSkipAppStart()
 
   await page.getByText('Variables').click()
@@ -237,7 +237,7 @@ test('Can create sketches on all planes and their back sides', async ({
   const u = getUtils(page)
   const PUR = 400 / 37.5 //pixeltoUnitRatio
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('localhost:3000')
+  await page.goto('/')
   await u.waitForAuthSkipAppStart()
   await u.openDebugPanel()
   await u.waitForDefaultPlanesVisibilityChange()
@@ -354,7 +354,7 @@ test('Auto complete works', async ({ page }) => {
   const u = getUtils(page)
   // const PUR = 400 / 37.5 //pixeltoUnitRatio
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('localhost:3000')
+  await page.goto('/')
   await u.waitForAuthSkipAppStart()
   await u.waitForDefaultPlanesVisibilityChange()
 
@@ -410,18 +410,18 @@ test('Onboarding redirects and code updating', async ({ page, context }) => {
   })
 
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('localhost:3000')
+  await page.goto('/')
   await u.waitForAuthSkipAppStart()
 
   // Test that the redirect happened
-  await expect(page.url()).toBe(
-    `http://localhost:3000/file/new/onboarding/export`
+  await expect(page.url().split(':3000').slice(-1)[0]).toBe(
+    `/file/new/onboarding/export`
   )
 
   // Test that you come back to this page when you refresh
   await page.reload()
-  await expect(page.url()).toBe(
-    `http://localhost:3000/file/new/onboarding/export`
+  await expect(page.url().split(':3000').slice(-1)[0]).toBe(
+    `/file/new/onboarding/export`
   )
 
   // Test that the onboarding pane loaded
@@ -435,4 +435,104 @@ test('Onboarding redirects and code updating', async ({ page, context }) => {
   // Test that the code is not empty when you click on the next step
   await page.locator('[data-testid="onboarding-next"]').click()
   await expect(page.locator('.cm-content')).toHaveText(/.+/)
+})
+
+test.only('Selections work on fresh and edited sketch', async ({ page }) => {
+  const u = getUtils(page)
+  const PUR = 400 / 37.5 //pixeltoUnitRatio
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await u.openDebugPanel()
+  await u.waitForDefaultPlanesVisibilityChange()
+
+  await u.clearCommandLogs()
+  await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await u.waitForDefaultPlanesVisibilityChange()
+
+  // select a plane
+  await u.doAndWaitForCmd(() => page.mouse.click(700, 200), 'edit_mode_enter')
+  await u.waitForCmdReceive('set_tool')
+
+  await u.doAndWaitForCmd(
+    () => page.getByRole('button', { name: 'Line' }).click(),
+    'set_tool'
+  )
+
+  const startXPx = 600
+  await u.doAndWaitForCmd(
+    () => page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10),
+    'mouse_click',
+    false
+  )
+
+  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
+
+  const startAt = '[9.94, -13.41]'
+  const tenish = '10.03'
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt(${startAt}, %)
+  |> line([${tenish}, 0], %)`)
+
+  await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt(${startAt}, %)
+  |> line([${tenish}, 0], %)
+  |> line([0, ${tenish}], %)`)
+  await page.mouse.click(startXPx, 500 - PUR * 20)
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt(${startAt}, %)
+  |> line([${tenish}, 0], %)
+  |> line([0, ${tenish}], %)
+  |> line([-19.97, 0], %)`)
+
+  // deselect line tool
+  await u.doAndWaitForCmd(
+    () => page.getByRole('button', { name: 'Line' }).click(),
+    'set_tool'
+  )
+
+  await u.closeDebugPanel()
+  const hoverSequency = async () => {
+    await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+
+    await page.mouse.move(startXPx + PUR * 15, 500 - PUR * 10)
+
+    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+    // bg-yellow-200 is more brittle than hover-highlight, but is closer to the user experience
+    // and will be an easy fix if it breaks because we change the colour
+    await expect(page.locator('.bg-yellow-200')).toBeVisible()
+
+    // check mousing off, than mousing onto another line
+    await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 15) // mouse off
+    await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+    await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 20) // mouse onto another line
+    await expect(page.getByTestId('hover-highlight')).toBeVisible()
+  }
+  await hoverSequency()
+
+  // hovering in fresh sketch worked, lets try exiting and re-entering
+  await u.doAndWaitForCmd(
+    () => page.getByRole('button', { name: 'Exit Sketch' }).click(),
+    'edit_mode_exit'
+  )
+
+  // select a line
+  await u.doAndWaitForCmd(
+    () => page.mouse.click(startXPx + PUR * 10, 500 - PUR * 20),
+    'select_with_point'
+  )
+
+  // enter sketch again
+  await u.doAndWaitForCmd(
+    () => page.getByRole('button', { name: 'Start Sketch' }).click(),
+    'edit_mode_enter',
+    false
+  )
+
+  // hover again and check it works
+  await hoverSequency()
 })
