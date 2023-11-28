@@ -77,7 +77,7 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
     // (windows not supported for now), and had to remove the shell::open call as it fails on GHA.
     let e2e_tauri_enabled = env::var("E2E_TAURI_ENABLED").is_ok();
     if (e2e_tauri_enabled) {
-        println!("E2E_TAURI_ENABLED is set, won't externally open {}", auth_uri.secret());
+        println!("E2E_TAURI_ENABLED is set, won't open {} externally", auth_uri.secret());
         fs::write(
             "/tmp/kittycad_user_code",
             details.user_code().secret().to_string(),
