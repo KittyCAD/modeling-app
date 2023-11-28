@@ -1677,7 +1677,10 @@ show(bracket)
                 "all params optional, none given, should be OK",
                 vec![opt_param("x")],
                 vec![],
-                Ok(ProgramMemory::default()),
+                Ok(ProgramMemory {
+                    return_: None,
+                    root: HashMap::from([("x".to_owned(), MemoryItem::from(&KclNone::default()))]),
+                }),
             ),
             (
                 "mixed params, too few given",
@@ -1694,7 +1697,10 @@ show(bracket)
                 vec![mem(1)],
                 Ok(ProgramMemory {
                     return_: None,
-                    root: HashMap::from([("x".to_owned(), mem(1))]),
+                    root: HashMap::from([
+                        ("x".to_owned(), mem(1)),
+                        ("y".to_owned(), MemoryItem::from(&KclNone::default())),
+                    ]),
                 }),
             ),
             (
