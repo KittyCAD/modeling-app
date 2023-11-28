@@ -62,6 +62,7 @@ export default function Export() {
             Element="button"
             onClick={next}
             icon={{ icon: faArrowRight }}
+            data-testid="onboarding-next"
           >
             Next: Sketching
           </ActionButton>
