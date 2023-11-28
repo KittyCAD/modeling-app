@@ -11,6 +11,7 @@ use serde_json::{Map, Value as JValue};
 use tower_lsp::lsp_types::{CompletionItem, CompletionItemKind, DocumentSymbol, Range as LspRange, SymbolKind};
 
 pub use self::literal_value::LiteralValue;
+pub use self::none::{KclNone, KclOption};
 use crate::{
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
@@ -20,6 +21,7 @@ use crate::{
 };
 
 mod literal_value;
+mod none;
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
@@ -407,6 +409,7 @@ pub enum Value {
     ObjectExpression(Box<ObjectExpression>),
     MemberExpression(Box<MemberExpression>),
     UnaryExpression(Box<UnaryExpression>),
+    None(KclNone),
 }
 
 impl Value {
@@ -423,6 +426,9 @@ impl Value {
             Value::PipeExpression(pipe_exp) => pipe_exp.recast(options, indentation_level),
             Value::UnaryExpression(unary_exp) => unary_exp.recast(options),
             Value::PipeSubstitution(_) => crate::parser::PIPE_SUBSTITUTION_OPERATOR.to_string(),
+            Value::None(_) => {
+                unimplemented!("there is no literal None, see https://github.com/KittyCAD/modeling-app/issues/1115")
+            }
         }
     }
 
@@ -444,6 +450,7 @@ impl Value {
             Value::PipeExpression(ref mut pipe_exp) => pipe_exp.replace_value(source_range, new_value),
             Value::UnaryExpression(ref mut unary_exp) => unary_exp.replace_value(source_range, new_value),
             Value::PipeSubstitution(_) => {}
+            Value::None(_) => {}
         }
     }
 
@@ -460,6 +467,7 @@ impl Value {
             Value::ObjectExpression(object_expression) => object_expression.start(),
             Value::MemberExpression(member_expression) => member_expression.start(),
             Value::UnaryExpression(unary_expression) => unary_expression.start(),
+            Value::None(none) => none.start,
         }
     }
 
@@ -476,6 +484,7 @@ impl Value {
             Value::ObjectExpression(object_expression) => object_expression.end(),
             Value::MemberExpression(member_expression) => member_expression.end(),
             Value::UnaryExpression(unary_expression) => unary_expression.end(),
+            Value::None(none) => none.end,
         }
     }
 
@@ -483,19 +492,22 @@ impl Value {
     /// This is really recursive so keep that in mind.
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
         match self {
-            Value::Literal(_literal) => None,
-            Value::Identifier(_identifier) => None,
             Value::BinaryExpression(binary_expression) => binary_expression.get_hover_value_for_position(pos, code),
             Value::FunctionExpression(function_expression) => {
                 function_expression.get_hover_value_for_position(pos, code)
             }
             Value::CallExpression(call_expression) => call_expression.get_hover_value_for_position(pos, code),
             Value::PipeExpression(pipe_expression) => pipe_expression.get_hover_value_for_position(pos, code),
-            Value::PipeSubstitution(_) => None,
             Value::ArrayExpression(array_expression) => array_expression.get_hover_value_for_position(pos, code),
             Value::ObjectExpression(object_expression) => object_expression.get_hover_value_for_position(pos, code),
             Value::MemberExpression(member_expression) => member_expression.get_hover_value_for_position(pos, code),
             Value::UnaryExpression(unary_expression) => unary_expression.get_hover_value_for_position(pos, code),
+            // TODO: LSP hover information for values/types. https://github.com/KittyCAD/modeling-app/issues/1126
+            Value::None(_) => None,
+            Value::Literal(_) => None,
+            Value::Identifier(_) => None,
+            // TODO: LSP hover information for symbols. https://github.com/KittyCAD/modeling-app/issues/1127
+            Value::PipeSubstitution(_) => None,
         }
     }
 
@@ -519,6 +531,7 @@ impl Value {
                 member_expression.rename_identifiers(old_name, new_name)
             }
             Value::UnaryExpression(ref mut unary_expression) => unary_expression.rename_identifiers(old_name, new_name),
+            Value::None(_) => {}
         }
     }
 
@@ -539,6 +552,7 @@ impl Value {
             Value::ObjectExpression(object_expression) => object_expression.get_constraint_level(),
             Value::MemberExpression(member_expression) => member_expression.get_constraint_level(),
             Value::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
+            Value::None(none) => none.get_constraint_level(),
         }
     }
 }
@@ -926,6 +940,7 @@ impl CallExpression {
 
         for arg in &self.arguments {
             let result: MemoryItem = match arg {
+                Value::None(none) => none.into(),
                 Value::Literal(literal) => literal.into(),
                 Value::Identifier(identifier) => {
                     let value = memory.get(&identifier.name, identifier.into())?;
@@ -1607,6 +1622,7 @@ impl ArrayExpression {
         for element in &self.elements {
             let result = match element {
                 Value::Literal(literal) => literal.into(),
+                Value::None(none) => none.into(),
                 Value::Identifier(identifier) => {
                     let value = memory.get(&identifier.name, identifier.into())?;
                     value.clone()
@@ -1759,6 +1775,7 @@ impl ObjectExpression {
         for property in &self.properties {
             let result = match &property.value {
                 Value::Literal(literal) => literal.into(),
+                Value::None(none) => none.into(),
                 Value::Identifier(identifier) => {
                     let value = memory.get(&identifier.name, identifier.into())?;
                     value.clone()

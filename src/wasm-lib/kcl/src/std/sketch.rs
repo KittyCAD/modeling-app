@@ -7,6 +7,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::fmt::Formatter;
 
+use crate::ast::types::KclOption;
 use crate::executor::SourceRange;
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -1200,6 +1201,7 @@ pub async fn tangential_arc_to(args: Args) -> Result<MemoryItem, KclError> {
     let to: [f64; 2] = get_arg(&mut it, src)?.get_json()?;
     let sketch_group: Box<SketchGroup> = get_arg(&mut it, src)?.get_json()?;
     let tag: Tag = if let Ok(memory_item) = get_arg(&mut it, src) {
+        eprintln!("Calling get_json");
         memory_item.get_json()?
     } else {
         Default::default()
@@ -1217,11 +1219,11 @@ struct Point2(pub [f64; 2]);
 /// Wrapper which only exists because the stdlib macro cannot use Option<String> as an identifier.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, JsonSchema, Default)]
 #[serde(transparent)]
-struct Tag(pub Option<String>);
+struct Tag(pub KclOption<String>);
 
 impl std::fmt::Display for Tag {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        if let Some(tag) = &self.0 { tag } else { "" }.fmt(f)
+        if let KclOption::Some(tag) = &self.0 { tag } else { "" }.fmt(f)
     }
 }
 

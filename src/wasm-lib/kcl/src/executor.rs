@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
-    ast::types::{BodyItem, FunctionExpression, Value},
+    ast::types::{BodyItem, FunctionExpression, KclNone, Value},
     engine::{EngineConnection, EngineManager},
     errors::{KclError, KclErrorDetails},
     std::{FunctionKind, StdLib},
@@ -49,6 +49,7 @@ impl ProgramMemory {
     }
 
     /// Get a value from the program memory.
+    /// Return Err if not found.
     pub fn get(&self, key: &str, source_range: SourceRange) -> Result<&MemoryItem, KclError> {
         self.root.get(key).ok_or_else(|| {
             KclError::UndefinedValue(KclErrorDetails {
@@ -355,7 +356,7 @@ impl MemoryItem {
 
         serde_json::from_value(json).map_err(|e| {
             KclError::Type(KclErrorDetails {
-                message: format!("Failed to deserialize struct from JSON: {}", e),
+                message: format!("ADAM: Failed to deserialize struct from JSON: {}", e),
                 source_ranges: self.clone().into(),
             })
         })
@@ -885,6 +886,9 @@ pub async fn execute(
                     let metadata = Metadata { source_range };
 
                     match &declaration.init {
+                        Value::None(none) => {
+                            memory.add(&var_name, none.into(), source_range)?;
+                        }
                         Value::Literal(literal) => {
                             memory.add(&var_name, literal.into(), source_range)?;
                         }
@@ -1003,6 +1007,9 @@ pub async fn execute(
                 }
                 Value::PipeSubstitution(_) => {}
                 Value::FunctionExpression(_) => {}
+                Value::None(none) => {
+                    memory.return_ = Some(ProgramReturn::Value(MemoryItem::from(none)));
+                }
             },
         }
     }
@@ -1045,9 +1052,16 @@ fn assign_args_to_params(
             // Argument was not provided.
             if param.optional {
                 // If the corresponding parameter is optional,
-                // then it's fine, the user has supplied all the
-                // args they need to.
-                break;
+                // then it's fine, the user doesn't need to supply it.
+                let none = KclNone {
+                    start: param.identifier.start,
+                    end: param.identifier.end,
+                };
+                fn_memory.add(
+                    &param.identifier.name,
+                    MemoryItem::from(&none),
+                    (&param.identifier).into(),
+                )?;
             } else {
                 // But if the corresponding parameter was required,
                 // then the user has called with too few arguments.
@@ -1717,7 +1731,7 @@ show(bracket)
             let actual = assign_args_to_params(func_expr, args, ProgramMemory::new());
             assert_eq!(
                 actual, expected,
-                "failed {test_name}:\ngot {actual:?}\nbut expected\n{expected:?}"
+                "failed test '{test_name}':\ngot {actual:?}\nbut expected\n{expected:?}"
             );
         }
     }
