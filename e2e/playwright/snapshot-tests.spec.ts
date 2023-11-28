@@ -32,7 +32,7 @@ test.setTimeout(60000)
 test('change camera, show planes', async ({ page, context }) => {
   const u = getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('localhost:3000')
+  await page.goto('/')
   await u.waitForAuthSkipAppStart()
   await u.openAndClearDebugPanel()
 

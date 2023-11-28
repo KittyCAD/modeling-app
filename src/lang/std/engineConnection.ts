@@ -51,7 +51,7 @@ type ClientMetrics = Models['ClientMetrics_type']
 // EngineConnection encapsulates the connection(s) to the Engine
 // for the EngineCommandManager; namely, the underlying WebSocket
 // and WebRTC connections.
-export class EngineConnection {
+class EngineConnection {
   websocket?: WebSocket
   pc?: RTCPeerConnection
   unreliableDataChannel?: RTCDataChannel
@@ -610,10 +610,9 @@ export type CommandLog =
       data: null
     }
 
-type CommandLogTypes = Extract<CommandLog, { type: string }>['type']
-
 export class EngineCommandManager {
   artifactMap: ArtifactMap = {}
+  lastArtifactMap: ArtifactMap = {}
   outSequence = 1
   inSequence = 1
   engineConnection?: EngineConnection
@@ -810,17 +809,17 @@ export class EngineCommandManager {
       return
     }
     const modelingResponse = message.data.modeling_response
+    const command = this.artifactMap[id]
     this.addCommandLog({
       type: 'receive-reliable',
       data: message,
       id,
-      cmd_type: this.artifactMap[id]?.commandType,
+      cmd_type: command?.commandType || this.lastArtifactMap[id]?.commandType,
     })
     Object.values(this.subscriptions[modelingResponse.type] || {}).forEach(
       (callback) => callback(modelingResponse)
     )
 
-    const command = this.artifactMap[id]
     if (command && command.type === 'pending') {
       const resolve = command.resolve
       this.artifactMap[id] = {
@@ -884,6 +883,7 @@ export class EngineCommandManager {
     this.engineConnection?.tearDown()
   }
   startNewSession() {
+    this.lastArtifactMap = this.artifactMap
     this.artifactMap = {}
   }
   subscribeTo<T extends ModelTypes>({

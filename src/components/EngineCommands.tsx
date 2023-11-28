@@ -32,7 +32,7 @@ export const EngineCommands = () => {
           const stringer = JSON.stringify(command)
           if (containsFilter && !stringer.includes(containsFilter)) return null
           return (
-            <pre className="text-xs">
+            <pre className="text-xs" key={index}>
               <code
                 key={index}
                 data-message-type={command.type}

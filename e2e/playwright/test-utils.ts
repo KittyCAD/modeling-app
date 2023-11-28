@@ -2,8 +2,6 @@ import { expect, Page } from '@playwright/test'
 import { EngineCommand } from '../../src/lang/std/engineConnection'
 
 async function waitForPageLoad(page: Page) {
-  // wait for 'Loading KittyCAD Modeling App...' spinner
-  await page.getByTestId('initial-load').waitFor()
   // wait for 'Loading stream...' spinner
   await page.getByTestId('loading-stream').waitFor()
   // wait for all spinners to be gone
