@@ -30,7 +30,7 @@ impl From<&KclNone> for SourceRange {
 impl From<&KclNone> for UserVal {
     fn from(none: &KclNone) -> Self {
         UserVal {
-            value: serde_json::to_value(&none).expect("can always serialize a None"),
+            value: serde_json::to_value(none).expect("can always serialize a None"),
             meta: Default::default(),
         }
     }

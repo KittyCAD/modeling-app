@@ -2671,7 +2671,7 @@ impl FunctionExpression {
             .iter()
             .position(|param| param.optional)
             // If there's no optional params, then all the params are required params.
-            .unwrap_or_else(|| self.params.len());
+            .unwrap_or(self.params.len());
         &self.params[..end_of_required_params]
     }
 
