@@ -147,12 +147,9 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
     const bottomAng = 25
    */
   await page.click('.cm-content')
-  await page.keyboard.type('# error')
-  await page.keyboard.press('Enter')
-  await page.keyboard.type('const topAng = 30')
-  await page.keyboard.press('Enter')
-  await page.keyboard.type('const bottomAng = 25')
-  await page.keyboard.press('Enter')
+  await page.keyboard.type(`# error
+const topAng = 30
+const bottomAng = 25`)
 
   // error in guter
   await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
