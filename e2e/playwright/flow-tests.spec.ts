@@ -437,7 +437,10 @@ test('Onboarding redirects and code updating', async ({ page, context }) => {
   await expect(page.locator('.cm-content')).toHaveText(/.+/)
 })
 
-test('Selections work on fresh and edited sketch', async ({ page }) => {
+test('Selections work on fresh and edited sketches', async ({ page }) => {
+  // tests mapping works on fresh sketch and edited sketch
+  // tests using hovers which is the same as selections, because if
+  // source ranges are wrong, hovers won't work
   const u = getUtils(page)
   const PUR = 400 / 37.5 //pixeltoUnitRatio
   await page.setViewportSize({ width: 1200, height: 500 })
