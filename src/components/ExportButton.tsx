@@ -133,6 +133,7 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
               <select
                 id="type"
                 name="type"
+                data-testid="export-type"
                 onChange={(e) => {
                   setType(e.target.value as OutputTypeKey)
                   if (e.target.value === 'gltf') {
@@ -162,6 +163,7 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
                 <select
                   id="storage"
                   name="storage"
+                  data-testid="export-storage"
                   onChange={(e) => {
                     setStorage(e.target.value as StorageUnion)
                     formik.handleChange(e)
