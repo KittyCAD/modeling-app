@@ -3905,21 +3905,12 @@ Draw an arc.
 
 
 ```
-tangentialArcTo(data: TangentialArcToData, sketch_group: SketchGroup) -> SketchGroup
+tangentialArcTo(to: Point2, sketch_group: SketchGroup, tag: OptionalTag) -> SketchGroup
 ```
 
 #### Arguments
 
-* `data`: `TangentialArcToData` - Data to draw a tangential arc to a specific point.
-```
-{
-	// The tag.
-	tag: string,
-	// Where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.
-	to: [number, number],
-} |
-[number, number]
-```
+* `to`: `Point2`
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
@@ -3983,6 +3974,14 @@ tangentialArcTo(data: TangentialArcToData, sketch_group: SketchGroup) -> SketchG
 	to: [number, number],
 	type: string,
 }],
+}
+```
+* `tag`: `OptionalTag` - Tags are optional. You can either give this geometry a tag, or not. If you tag the geometry, you can reference the tag later, to build relationships between features. E.g. tagging an edge lets you reference that edge later, so you can make another edge which has some constraint relative to the tagged edge.
+```
+string |
+{
+	end: number,
+	start: number,
 }
 ```
 

@@ -11,7 +11,7 @@ use serde_json::{Map, Value as JValue};
 use tower_lsp::lsp_types::{CompletionItem, CompletionItemKind, DocumentSymbol, Range as LspRange, SymbolKind};
 
 pub use self::literal_value::LiteralValue;
-pub use self::none::{KclNone, KclOption};
+pub use self::none::KclNone;
 use crate::{
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},

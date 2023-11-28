@@ -7,7 +7,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::fmt::Formatter;
 
-use crate::ast::types::KclOption;
+use crate::ast::types::KclNone;
 use crate::executor::SourceRange;
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -1200,7 +1200,7 @@ pub async fn tangential_arc_to(args: Args) -> Result<MemoryItem, KclError> {
     let mut it = args.args.iter();
     let to: [f64; 2] = get_arg(&mut it, src)?.get_json()?;
     let sketch_group: Box<SketchGroup> = get_arg(&mut it, src)?.get_json()?;
-    let tag: Tag = if let Ok(memory_item) = get_arg(&mut it, src) {
+    let tag: OptionalTag = if let Ok(memory_item) = get_arg(&mut it, src) {
         eprintln!("Calling get_json");
         memory_item.get_json()?
     } else {
@@ -1214,16 +1214,42 @@ pub async fn tangential_arc_to(args: Args) -> Result<MemoryItem, KclError> {
 /// Wrapper which only exists because the stdlib macro cannot use [f64; 2] as an identifier.
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, JsonSchema)]
 #[serde(transparent)]
-struct Point2(pub [f64; 2]);
+struct Point2(
+    /// The point, with its x and y components.
+    pub [f64; 2],
+);
 
-/// Wrapper which only exists because the stdlib macro cannot use Option<String> as an identifier.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, JsonSchema, Default)]
-#[serde(transparent)]
-struct Tag(pub KclOption<String>);
+/// Tags are optional. You can either give this geometry a tag, or not.
+/// If you tag the geometry, you can reference the tag later, to build relationships between features.
+/// E.g. tagging an edge lets you reference that edge later, so you can make another edge which
+/// has some constraint relative to the tagged edge.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, JsonSchema)]
+#[serde(untagged)]
+enum OptionalTag {
+    /// A tag with the given string.
+    Tag(String),
+    /// No tag.
+    None(KclNone),
+}
 
-impl std::fmt::Display for Tag {
+impl std::default::Default for OptionalTag {
+    fn default() -> Self {
+        Self::None(KclNone::default())
+    }
+}
+
+impl From<OptionalTag> for Option<String> {
+    fn from(value: OptionalTag) -> Self {
+        match value {
+            OptionalTag::Tag(t) => Some(t),
+            OptionalTag::None(_) => None,
+        }
+    }
+}
+
+impl std::fmt::Display for OptionalTag {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        if let KclOption::Some(tag) = &self.0 { tag } else { "" }.fmt(f)
+        if let OptionalTag::Tag(tag) = &self { tag } else { "" }.fmt(f)
     }
 }
 
@@ -1234,7 +1260,7 @@ impl std::fmt::Display for Tag {
 async fn inner_tangential_arc_to(
     to: Point2,
     sketch_group: Box<SketchGroup>,
-    tag: Tag,
+    tag: OptionalTag,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from: Point2d = sketch_group.get_coords_from_paths()?;

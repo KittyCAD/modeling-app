@@ -19765,32 +19765,16 @@
     "tags": [],
     "args": [
       {
-        "name": "data",
-        "type": "TangentialArcToData",
+        "name": "to",
+        "type": "Point2",
         "schema": {
-          "description": "Data to draw a tangential arc to a specific point.",
-          "type": "object",
-          "required": [
-            "to"
-          ],
-          "properties": {
-            "tag": {
-              "description": "The tag.",
-              "default": null,
-              "type": "string",
-              "nullable": true
-            },
-            "to": {
-              "description": "Where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.",
-              "type": "array",
-              "items": {
-                "type": "number",
-                "format": "double"
-              },
-              "maxItems": 2,
-              "minItems": 2
-            }
-          }
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "double"
+          },
+          "maxItems": 2,
+          "minItems": 2
         },
         "required": true
       },
@@ -20230,6 +20214,40 @@
               }
             }
           }
+        },
+        "required": true
+      },
+      {
+        "name": "tag",
+        "type": "OptionalTag",
+        "schema": {
+          "description": "Tags are optional. You can either give this geometry a tag, or not. If you tag the geometry, you can reference the tag later, to build relationships between features. E.g. tagging an edge lets you reference that edge later, so you can make another edge which has some constraint relative to the tagged edge.",
+          "anyOf": [
+            {
+              "description": "A tag with the given string.",
+              "type": "string"
+            },
+            {
+              "description": "No tag.",
+              "type": "object",
+              "required": [
+                "end",
+                "start"
+              ],
+              "properties": {
+                "end": {
+                  "type": "integer",
+                  "format": "uint",
+                  "minimum": 0.0
+                },
+                "start": {
+                  "type": "integer",
+                  "format": "uint",
+                  "minimum": 0.0
+                }
+              }
+            }
+          ]
         },
         "required": true
       }

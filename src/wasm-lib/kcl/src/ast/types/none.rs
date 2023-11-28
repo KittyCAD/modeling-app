@@ -56,25 +56,3 @@ impl KclNone {
         }
     }
 }
-
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, JsonSchema)]
-#[serde(untagged)]
-pub enum KclOption<T> {
-    Some(T),
-    None(KclNone),
-}
-
-impl<T> Default for KclOption<T> {
-    fn default() -> Self {
-        Self::None(Default::default())
-    }
-}
-
-impl<T> From<Option<T>> for KclOption<T> {
-    fn from(value: Option<T>) -> Self {
-        match value {
-            Some(t) => Self::Some(t),
-            None => Self::None(KclNone::default()),
-        }
-    }
-}
