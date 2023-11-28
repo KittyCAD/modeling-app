@@ -437,7 +437,7 @@ test('Onboarding redirects and code updating', async ({ page, context }) => {
   await expect(page.locator('.cm-content')).toHaveText(/.+/)
 })
 
-test.only('Selections work on fresh and edited sketch', async ({ page }) => {
+test('Selections work on fresh and edited sketch', async ({ page }) => {
   const u = getUtils(page)
   const PUR = 400 / 37.5 //pixeltoUnitRatio
   await page.setViewportSize({ width: 1200, height: 500 })
