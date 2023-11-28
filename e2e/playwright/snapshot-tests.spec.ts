@@ -199,7 +199,6 @@ const part001 = startSketchOn('-XZ')
   const doExport = async (output: Models['OutputFormat_type']) => {
     await page.getByRole('button', { name: 'Export Model' }).click()
 
-    // click the select box with name="type"
     const exportSelect = page.getByTestId('export-type')
     await exportSelect.selectOption({ label: output.type })
 
@@ -209,7 +208,6 @@ const part001 = startSketchOn('-XZ')
     }
 
     const downloadPromise = page.waitForEvent('download')
-    // await page.getByText('Download file').click();
     await page.getByRole('button', { name: 'Export', exact: true }).click()
     const download = await downloadPromise
 
@@ -218,8 +216,7 @@ const part001 = startSketchOn('-XZ')
     }-${'storage' in output ? output.storage : ''}.${output.type}`
     await download.saveAs(downloadLocation)
     if (output.type === 'step') {
-      // s/[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]+[0-9]+[0-9]\+[0-9]{2}:[0-9]{2}/1970-01-01T00:00:00.0+00:00/g
-      // replace date in download file
+      // stable timestamps for step files
       const fileContents = await fsp.readFile(downloadLocation, 'utf-8')
       const newFileContents = fileContents.replace(
         /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]+[0-9]+[0-9]\+[0-9]{2}:[0-9]{2}/g,
