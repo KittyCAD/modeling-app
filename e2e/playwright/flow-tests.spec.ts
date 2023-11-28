@@ -147,9 +147,17 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
     const bottomAng = 25
    */
   await page.click('.cm-content')
-  await page.keyboard.type(`# error
-const topAng = 30
-const bottomAng = 25`)
+  await page.keyboard.type('# error')
+
+  // press arrows to clear autocomplete
+  await page.keyboard.press('ArrowLeft')
+  await page.keyboard.press('ArrowRight')
+
+  await page.keyboard.press('Enter')
+  await page.keyboard.type('const topAng = 30')
+  await page.keyboard.press('Enter')
+  await page.keyboard.type('const bottomAng = 25')
+  await page.keyboard.press('Enter')
 
   // error in guter
   await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
@@ -434,10 +442,7 @@ test('Onboarding redirects and code updating', async ({ page, context }) => {
   await expect(page.locator('.cm-content')).toHaveText(/.+/)
 })
 
-test('Selections work on fresh and edited sketches', async ({ page }) => {
-  // tests mapping works on fresh sketch and edited sketch
-  // tests using hovers which is the same as selections, because if
-  // source ranges are wrong, hovers won't work
+test('Selections work on fresh and edited sketch', async ({ page }) => {
   const u = getUtils(page)
   const PUR = 400 / 37.5 //pixeltoUnitRatio
   await page.setViewportSize({ width: 1200, height: 500 })
