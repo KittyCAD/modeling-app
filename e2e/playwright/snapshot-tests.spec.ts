@@ -233,6 +233,9 @@ const part001 = startSketchOn('-XZ')
     forward: axisDirectionPair,
     up: axisDirectionPair,
   }
+  // NOTE it was easiest to leverage existing types and have doExport take Models['OutputFormat_type'] as in input
+  // just note that only `type` and `storage` are used for selecting the drop downs is the app
+  // the rest are only there to make typescript happy
   await doExport({
     type: 'step',
     coords: sysType,
@@ -253,33 +256,44 @@ const part001 = startSketchOn('-XZ')
     presentation: 'pretty',
   })
   await doExport({
+    type: 'ply',
+    coords: sysType,
+    selection: { type: 'default_scene' },
+    storage: 'ascii',
+    units: 'in',
+  })
+  await doExport({
+    type: 'ply',
+    storage: 'binary_little_endian',
+    coords: sysType,
+    selection: { type: 'default_scene' },
+    units: 'in',
+  })
+  await doExport({
+    type: 'ply',
+    storage: 'binary_big_endian',
+    coords: sysType,
+    selection: { type: 'default_scene' },
+    units: 'in',
+  })
+  await doExport({
+    type: 'stl',
+    storage: 'ascii',
+    coords: sysType,
+    units: 'in',
+    selection: { type: 'default_scene' },
+  })
+  await doExport({
+    type: 'stl',
+    storage: 'binary',
+    coords: sysType,
+    units: 'in',
+    selection: { type: 'default_scene' },
+  })
+  await doExport({
     // obj seems to be a little flaky, times out tests sometimes
     type: 'obj',
     coords: sysType,
     units: 'in',
   })
-
-  // the following exports are failing
-  // await doExport({
-  //   type: 'ply',
-  //   storage: 'ascii',
-  //   coords: sysType,
-  // })
-  // await doExport({
-  //   type: 'ply',
-  //   storage: 'binary' as unknown as 'binary_little_endian',
-  //   coords: sysType,
-  // })
-  // await doExport({
-  //   type: 'stl',
-  //   storage: 'ascii',
-  //   coords: sysType,
-  //   units: 'in',
-  // })
-  // await doExport({
-  //   type: 'stl',
-  //   storage: 'binary',
-  //   coords: sysType,
-  //   units: 'in',
-  // })
 })
