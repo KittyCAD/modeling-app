@@ -75,7 +75,11 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
           },
         }
       }
-      if (values.type === 'obj' || values.type === 'stl' || values.type === 'ply') {
+      if (
+        values.type === 'obj' ||
+        values.type === 'stl' ||
+        values.type === 'ply'
+      ) {
         values.units = baseUnit
       }
       if (

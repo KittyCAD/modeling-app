@@ -255,7 +255,7 @@ const part001 = startSketchOn('-XZ')
   await doExport({
     type: 'ply',
     coords: sysType,
-    selection: {type: 'default_scene'},
+    selection: { type: 'default_scene' },
     storage: 'ascii',
     units: 'in',
   })
@@ -263,14 +263,14 @@ const part001 = startSketchOn('-XZ')
     type: 'ply',
     storage: 'binary_little_endian',
     coords: sysType,
-    selection: {type: 'default_scene'},
+    selection: { type: 'default_scene' },
     units: 'in',
   })
   await doExport({
     type: 'ply',
     storage: 'binary_big_endian',
     coords: sysType,
-    selection: {type: 'default_scene'},
+    selection: { type: 'default_scene' },
     units: 'in',
   })
   await doExport({
