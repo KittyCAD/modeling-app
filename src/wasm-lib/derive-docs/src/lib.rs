@@ -203,6 +203,12 @@ fn do_stdlib_inner(
             quote! {
                Vec<#ty_ident>
             }
+        } else if ty_string.starts_with("Option<") {
+            let ty_string = ty_string.trim_start_matches("Option<").trim_end_matches('>');
+            let ty_ident = format_ident!("{}", ty_string);
+            quote! {
+               Vec<#ty_ident>
+            }
         } else if ty_string.starts_with("Box<") {
             let ty_string = ty_string.trim_start_matches("Box<").trim_end_matches('>');
             let ty_ident = format_ident!("{}", ty_string);
@@ -219,7 +225,7 @@ fn do_stdlib_inner(
         let ty_string = clean_type(&ty_string);
 
         if ty_string != "Args" {
-            let schema = if ty_ident.to_string().starts_with("Vec < ") {
+            let schema = if ty_ident.to_string().starts_with("Vec < ") || ty_ident.to_string().starts_with("Option <") {
                 quote! {
                    <#ty_ident>::json_schema(&mut generator)
                 }
@@ -490,6 +496,9 @@ fn clean_type(t: &str) -> String {
     }
     if t.starts_with("Box<") {
         t = t.replace("Box<", "").replace('>', "");
+    }
+    if t.starts_with("Option<") {
+        t = t.replace("Option<", "").replace('>', "");
     }
 
     if t == "f64" {

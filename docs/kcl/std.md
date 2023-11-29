@@ -3905,7 +3905,7 @@ Draw an arc.
 
 
 ```
-tangentialArcTo(to: Point2, sketch_group: SketchGroup, tag: OptionalTag) -> SketchGroup
+tangentialArcTo(to: Point2, sketch_group: SketchGroup, tag: String) -> SketchGroup
 ```
 
 #### Arguments
@@ -3976,14 +3976,7 @@ tangentialArcTo(to: Point2, sketch_group: SketchGroup, tag: OptionalTag) -> Sket
 }],
 }
 ```
-* `tag`: `OptionalTag` - Tags are optional. You can either give this geometry a tag, or not. If you tag the geometry, you can reference the tag later, to build relationships between features. E.g. tagging an edge lets you reference that edge later, so you can make another edge which has some constraint relative to the tagged edge.
-```
-string |
-{
-	end: number,
-	start: number,
-}
-```
+* `tag`: `String`
 
 #### Returns
 

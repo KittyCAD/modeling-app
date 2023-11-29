@@ -20219,35 +20219,12 @@
       },
       {
         "name": "tag",
-        "type": "OptionalTag",
+        "type": "String",
         "schema": {
-          "description": "Tags are optional. You can either give this geometry a tag, or not. If you tag the geometry, you can reference the tag later, to build relationships between features. E.g. tagging an edge lets you reference that edge later, so you can make another edge which has some constraint relative to the tagged edge.",
-          "anyOf": [
-            {
-              "description": "A tag with the given string.",
-              "type": "string"
-            },
-            {
-              "description": "No tag.",
-              "type": "object",
-              "required": [
-                "end",
-                "start"
-              ],
-              "properties": {
-                "end": {
-                  "type": "integer",
-                  "format": "uint",
-                  "minimum": 0.0
-                },
-                "start": {
-                  "type": "integer",
-                  "format": "uint",
-                  "minimum": 0.0
-                }
-              }
-            }
-          ]
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "required": true
       }

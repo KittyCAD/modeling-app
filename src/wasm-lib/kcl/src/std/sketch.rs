@@ -5,9 +5,7 @@ use derive_docs::stdlib;
 use kittycad::types::{Angle, ModelingCmd, Point3D};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use std::fmt::Formatter;
 
-use crate::ast::types::KclNone;
 use crate::executor::SourceRange;
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -1200,11 +1198,10 @@ pub async fn tangential_arc_to(args: Args) -> Result<MemoryItem, KclError> {
     let mut it = args.args.iter();
     let to: [f64; 2] = get_arg(&mut it, src)?.get_json()?;
     let sketch_group: Box<SketchGroup> = get_arg(&mut it, src)?.get_json()?;
-    let tag: OptionalTag = if let Ok(memory_item) = get_arg(&mut it, src) {
-        eprintln!("Calling get_json");
-        memory_item.get_json()?
+    let tag = if let Ok(memory_item) = get_arg(&mut it, src) {
+        memory_item.get_json_opt()?
     } else {
-        Default::default()
+        None
     };
 
     let new_sketch_group = inner_tangential_arc_to(Point2(to), sketch_group, tag, args).await?;
@@ -1219,40 +1216,6 @@ struct Point2(
     pub [f64; 2],
 );
 
-/// Tags are optional. You can either give this geometry a tag, or not.
-/// If you tag the geometry, you can reference the tag later, to build relationships between features.
-/// E.g. tagging an edge lets you reference that edge later, so you can make another edge which
-/// has some constraint relative to the tagged edge.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, JsonSchema)]
-#[serde(untagged)]
-enum OptionalTag {
-    /// A tag with the given string.
-    Tag(String),
-    /// No tag.
-    None(KclNone),
-}
-
-impl std::default::Default for OptionalTag {
-    fn default() -> Self {
-        Self::None(KclNone::default())
-    }
-}
-
-impl From<OptionalTag> for Option<String> {
-    fn from(value: OptionalTag) -> Self {
-        match value {
-            OptionalTag::Tag(t) => Some(t),
-            OptionalTag::None(_) => None,
-        }
-    }
-}
-
-impl std::fmt::Display for OptionalTag {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        if let OptionalTag::Tag(tag) = &self { tag } else { "" }.fmt(f)
-    }
-}
-
 /// Draw an arc.
 #[stdlib {
     name = "tangentialArcTo",
@@ -1260,7 +1223,7 @@ impl std::fmt::Display for OptionalTag {
 async fn inner_tangential_arc_to(
     to: Point2,
     sketch_group: Box<SketchGroup>,
-    tag: OptionalTag,
+    tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from: Point2d = sketch_group.get_coords_from_paths()?;
@@ -1274,7 +1237,7 @@ async fn inner_tangential_arc_to(
         base: BasePath {
             from: from.into(),
             to,
-            name: tag.to_string(),
+            name: tag.unwrap_or_default(),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),

@@ -729,20 +729,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "derive-docs"
-version = "0.1.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c357dec14992ba88803535217ed83d6f6cd80efcb8fa8e3f8a30a9b84fadc1c7"
-dependencies = [
- "convert_case",
- "proc-macro2",
- "quote",
- "serde",
- "serde_tokenstream",
- "syn 2.0.39",
-]
-
-[[package]]
 name = "diff"
 version = "0.1.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1436,7 +1422,7 @@ dependencies = [
  "criterion",
  "dashmap",
  "databake",
- "derive-docs 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive-docs",
  "expectorate",
  "futures",
  "insta",

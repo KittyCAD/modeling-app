@@ -8,6 +8,7 @@ use kittycad::types::{Color, ModelingCmd, Point3D};
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use serde_json::Value as JValue;
 use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
@@ -356,10 +357,32 @@ impl MemoryItem {
 
         serde_json::from_value(json).map_err(|e| {
             KclError::Type(KclErrorDetails {
-                message: format!("ADAM: Failed to deserialize struct from JSON: {}", e),
+                message: format!("Failed to deserialize struct from JSON: {}", e),
                 source_ranges: self.clone().into(),
             })
         })
+    }
+
+    /// Get a JSON value and deserialize it into some concrete type.
+    /// If it's a KCL None, return None. Otherwise return Some.
+    pub fn get_json_opt<T: serde::de::DeserializeOwned>(&self) -> Result<Option<T>, KclError> {
+        let json = self.get_json_value()?;
+        if let JValue::Object(ref o) = json {
+            if let Some(JValue::String(s)) = o.get("type") {
+                if s == "KclNone" {
+                    return Ok(None);
+                }
+            }
+        }
+
+        serde_json::from_value(json)
+            .map_err(|e| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Failed to deserialize struct from JSON: {}", e),
+                    source_ranges: self.clone().into(),
+                })
+            })
+            .map(Some)
     }
 
     /// If this memory item is a function, call it with the given arguments, return its val as Ok.
