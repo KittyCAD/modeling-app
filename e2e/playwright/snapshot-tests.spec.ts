@@ -233,6 +233,9 @@ const part001 = startSketchOn('-XZ')
     forward: axisDirectionPair,
     up: axisDirectionPair,
   }
+  // NOTE it was easiest to leverage existing types and have doExport take Models['OutputFormat_type'] as in input
+  // just note that only `type` and `storage` are used for selecting the drop downs is the app
+  // the rest are only there to make typescript happy
   await doExport({
     type: 'step',
     coords: sysType,
