@@ -1695,10 +1695,10 @@
   dependencies:
     "@lezer/common" "^1.0.0"
 
-"@lezer/javascript@^1.4.7":
-  version "1.4.7"
-  resolved "https://registry.yarnpkg.com/@lezer/javascript/-/javascript-1.4.7.tgz#4ebcce2db6043c07fbe827188c07cb001bc7fe37"
-  integrity sha512-OVWlK0YEi7HM+9JRWtRkir8qvcg0/kVYg2TAMHlVtl6DU1C9yK1waEOLBMztZsV/axRJxsqfJKhzYz+bxZme5g==
+"@lezer/javascript@^1.4.9":
+  version "1.4.9"
+  resolved "https://registry.yarnpkg.com/@lezer/javascript/-/javascript-1.4.9.tgz#1536427af5187621b3b616f21b6a21df3ffd1dbe"
+  integrity sha512-7Uv8mBBE6l44spgWEZvEMdDqGV+FIuY7kJ1o5TFm+jxIuxydO3PcKJYiINij09igd1D/9P7l2KDqpkN8c3bM6A==
   dependencies:
     "@lezer/highlight" "^1.1.3"
     "@lezer/lr" "^1.3.0"
