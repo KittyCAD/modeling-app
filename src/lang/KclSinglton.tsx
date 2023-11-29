@@ -246,6 +246,10 @@ class KclManager {
       this.code = recast(ast)
     }
     this._executeCallback()
+    engineCommandManager.addCommandLog({
+      type: 'execution-done',
+      data: null,
+    })
   }
   async executeAstMock(ast: Program = this._ast, updateCode = false) {
     await this.ensureWasmInit()

@@ -9,6 +9,7 @@ export interface CollapsiblePanelProps
   icon?: IconDefinition
   open?: boolean
   menu?: React.ReactNode
+  detailsTestId?: string
   iconClassNames?: {
     bg?: string
     icon?: string
@@ -51,11 +52,13 @@ export const CollapsiblePanel = ({
   className,
   iconClassNames,
   menu,
+  detailsTestId,
   ...props
 }: CollapsiblePanelProps) => {
   return (
     <details
       {...props}
+      data-testid={detailsTestId}
       className={styles.panel + ' group ' + (className || '')}
     >
       <PanelHeader

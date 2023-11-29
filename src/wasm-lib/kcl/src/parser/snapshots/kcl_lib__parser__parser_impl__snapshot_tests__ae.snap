@@ -29,10 +29,14 @@ expression: actual
             "end": 49,
             "params": [
               {
-                "type": "Identifier",
-                "start": 12,
-                "end": 17,
-                "name": "param"
+                "type": "Parameter",
+                "identifier": {
+                  "type": "Identifier",
+                  "start": 12,
+                  "end": 17,
+                  "name": "param"
+                },
+                "optional": false
               }
             ],
             "body": {

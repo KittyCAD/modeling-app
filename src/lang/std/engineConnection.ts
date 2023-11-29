@@ -51,7 +51,7 @@ type ClientMetrics = Models['ClientMetrics_type']
 // EngineConnection encapsulates the connection(s) to the Engine
 // for the EngineCommandManager; namely, the underlying WebSocket
 // and WebRTC connections.
-export class EngineConnection {
+class EngineConnection {
   websocket?: WebSocket
   pc?: RTCPeerConnection
   unreliableDataChannel?: RTCDataChannel
@@ -590,12 +590,35 @@ interface Subscription<T extends ModelTypes> {
   ) => void
 }
 
+export type CommandLog =
+  | {
+      type: 'send-modeling'
+      data: EngineCommand
+    }
+  | {
+      type: 'send-scene'
+      data: EngineCommand
+    }
+  | {
+      type: 'receive-reliable'
+      data: WebSocketResponse
+      id: string
+      cmd_type?: string
+    }
+  | {
+      type: 'execution-done'
+      data: null
+    }
+
 export class EngineCommandManager {
   artifactMap: ArtifactMap = {}
+  lastArtifactMap: ArtifactMap = {}
   outSequence = 1
   inSequence = 1
   engineConnection?: EngineConnection
   defaultPlanes: DefaultPlanes = { xy: '', yz: '', xz: '' }
+  _commandLogs: CommandLog[] = []
+  _commandLogCallBack: (command: CommandLog[]) => void = () => {}
   // Folks should realize that wait for ready does not get called _everytime_
   // the connection resets and restarts, it only gets called the first time.
   // Be careful what you put here.
@@ -786,11 +809,17 @@ export class EngineCommandManager {
       return
     }
     const modelingResponse = message.data.modeling_response
+    const command = this.artifactMap[id]
+    this.addCommandLog({
+      type: 'receive-reliable',
+      data: message,
+      id,
+      cmd_type: command?.commandType || this.lastArtifactMap[id]?.commandType,
+    })
     Object.values(this.subscriptions[modelingResponse.type] || {}).forEach(
       (callback) => callback(modelingResponse)
     )
 
-    const command = this.artifactMap[id]
     if (command && command.type === 'pending') {
       const resolve = command.resolve
       this.artifactMap[id] = {
@@ -854,6 +883,7 @@ export class EngineCommandManager {
     this.engineConnection?.tearDown()
   }
   startNewSession() {
+    this.lastArtifactMap = this.artifactMap
     this.artifactMap = {}
   }
   subscribeTo<T extends ModelTypes>({
@@ -923,6 +953,21 @@ export class EngineCommandManager {
       this.engineConnection?.send(deletCmd)
     })
   }
+  addCommandLog(message: CommandLog) {
+    if (this._commandLogs.length > 500) {
+      this._commandLogs.shift()
+    }
+    this._commandLogs.push(message)
+
+    this._commandLogCallBack([...this._commandLogs])
+  }
+  clearCommandLogs() {
+    this._commandLogs = []
+    this._commandLogCallBack(this._commandLogs)
+  }
+  registerCommandLogCallback(callback: (command: CommandLog[]) => void) {
+    this._commandLogCallBack = callback
+  }
   sendSceneCommand(command: EngineCommand): Promise<any> {
     if (this.engineConnection === undefined) {
       return Promise.resolve()
@@ -930,6 +975,20 @@ export class EngineCommandManager {
 
     if (!this.engineConnection?.isReady()) {
       return Promise.resolve()
+    }
+
+    if (
+      !(
+        command.type === 'modeling_cmd_req' &&
+        (command.cmd.type === 'highlight_set_entity' ||
+          command.cmd.type === 'mouse_move')
+      )
+    ) {
+      // highlight_set_entity and mouse_move are sent over the unreliable channel and are too noisy
+      this.addCommandLog({
+        type: 'send-scene',
+        data: command,
+      })
     }
 
     if (
@@ -986,6 +1045,17 @@ export class EngineCommandManager {
 
     if (!this.engineConnection?.isReady()) {
       return Promise.resolve()
+    }
+    if (typeof command !== 'string') {
+      this.addCommandLog({
+        type: 'send-modeling',
+        data: command,
+      })
+    } else {
+      this.addCommandLog({
+        type: 'send-modeling',
+        data: JSON.parse(command),
+      })
     }
     this.engineConnection?.send(command)
     if (typeof command !== 'string' && command.type === 'modeling_cmd_req') {

@@ -4,7 +4,7 @@
     "paths": {
       "/*": ["src/*"]
     },
-    "types": ["vite/client", "@types/wicg-file-system-access"],
+    "types": ["vite/client", "@types/wicg-file-system-access", "node", "@wdio/globals/types"],
     "target": "esnext",
     "lib": [
       "dom",
@@ -26,7 +26,8 @@
     "jsx": "react-jsx"
   },
   "include": [
-    "src"
+    "src",
+    "e2e"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
