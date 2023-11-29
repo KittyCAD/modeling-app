@@ -1,4 +1,5 @@
-const fs = require('fs/promises')
+import { browser, $, expect } from '@wdio/globals'
+import { fs } from 'fs/promises'
 
 describe('KCMA (Tauri, Linux)', () => {
   it('opens the auth page, signs in, and signs out', async () => {
