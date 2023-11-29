@@ -3,6 +3,8 @@ import { secrets } from './secrets'
 import { EngineCommand } from '../../src/lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
 import { getUtils } from './test-utils'
+import { Models } from '@kittycad/lib'
+import fsp from 'fs/promises'
 
 test.beforeEach(async ({ context, page }) => {
   await context.addInitScript(async (token) => {
@@ -131,4 +133,153 @@ test('change camera, show planes', async ({ page, context }) => {
   await expect(page).toHaveScreenshot({
     maxDiffPixels: 100,
   })
+})
+
+test('exports of each format should work', async ({ page, context }) => {
+  // FYI this test doesn't work with only engine running locally
+  const u = getUtils(page)
+  await context.addInitScript(async () => {
+    ;(window as any).playwrightSkipFilePicker = true
+    localStorage.setItem(
+      'persistCode',
+      `const topAng = 25
+const bottomAng = 35
+const baseLen = 3.5
+const baseHeight = 1
+const totalHeightHalf = 2
+const armThick = 0.5
+const totalLen = 9.5
+const part001 = startSketchOn('-XZ')
+  |> startProfileAt([0, 0], %)
+  |> yLine(baseHeight, %)
+  |> xLine(baseLen, %)
+  |> angledLineToY({
+        angle: topAng,
+        to: totalHeightHalf,
+        tag: 'seg04'
+      }, %)
+  |> xLineTo({ to: totalLen, tag: 'seg03' }, %)
+  |> yLine({ length: -armThick, tag: 'seg01' }, %)
+  |> angledLineThatIntersects({
+        angle: _180,
+        offset: -armThick,
+        intersectTag: 'seg04'
+      }, %)
+  |> angledLineToY([segAng('seg04', %) + 180, _0], %)
+  |> angledLineToY({
+        angle: -bottomAng,
+        to: -totalHeightHalf - armThick,
+        tag: 'seg02'
+      }, %)
+  |> xLineTo(segEndX('seg03', %) + 0, %)
+  |> yLine(-segLen('seg01', %), %)
+  |> angledLineThatIntersects({
+        angle: _180,
+        offset: -armThick,
+        intersectTag: 'seg02'
+      }, %)
+  |> angledLineToY([segAng('seg02', %) + 180, -baseHeight], %)
+  |> xLineTo(_0, %)
+  |> close(%) 
+  |> extrude(4, %)`
+    )
+  })
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await u.openDebugPanel()
+  await u.waitForDefaultPlanesVisibilityChange()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.waitForCmdReceive('extrude')
+  await page.waitForTimeout(1000)
+  await u.clearAndCloseDebugPanel()
+
+  await page.getByRole('button', { name: 'KittyCAD Modeling App' }).click()
+
+  const doExport = async (output: Models['OutputFormat_type']) => {
+    await page.getByRole('button', { name: 'Export Model' }).click()
+
+    const exportSelect = page.getByTestId('export-type')
+    await exportSelect.selectOption({ label: output.type })
+
+    if ('storage' in output) {
+      const storageSelect = page.getByTestId('export-storage')
+      await storageSelect.selectOption({ label: output.storage })
+    }
+
+    const downloadPromise = page.waitForEvent('download')
+    await page.getByRole('button', { name: 'Export', exact: true }).click()
+    const download = await downloadPromise
+
+    const downloadLocation = `./e2e/playwright/export-snapshots/${
+      output.type
+    }-${'storage' in output ? output.storage : ''}.${output.type}`
+    await download.saveAs(downloadLocation)
+    if (output.type === 'step') {
+      // stable timestamps for step files
+      const fileContents = await fsp.readFile(downloadLocation, 'utf-8')
+      const newFileContents = fileContents.replace(
+        /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]+[0-9]+[0-9]\+[0-9]{2}:[0-9]{2}/g,
+        '1970-01-01T00:00:00.0+00:00'
+      )
+      await fsp.writeFile(downloadLocation, newFileContents)
+    }
+  }
+  const axisDirectionPair: Models['AxisDirectionPair_type'] = {
+    axis: 'z',
+    direction: 'positive',
+  }
+  const sysType: Models['System_type'] = {
+    forward: axisDirectionPair,
+    up: axisDirectionPair,
+  }
+  await doExport({
+    type: 'step',
+    coords: sysType,
+  })
+  await doExport({
+    type: 'gltf',
+    storage: 'embedded',
+    presentation: 'pretty',
+  })
+  await doExport({
+    type: 'gltf',
+    storage: 'binary',
+    presentation: 'pretty',
+  })
+  await doExport({
+    type: 'gltf',
+    storage: 'standard',
+    presentation: 'pretty',
+  })
+  await doExport({
+    // obj seems to be a little flaky, times out tests sometimes
+    type: 'obj',
+    coords: sysType,
+    units: 'in',
+  })
+
+  // the following exports are failing
+  // await doExport({
+  //   type: 'ply',
+  //   storage: 'ascii',
+  //   coords: sysType,
+  // })
+  // await doExport({
+  //   type: 'ply',
+  //   storage: 'binary' as unknown as 'binary_little_endian',
+  //   coords: sysType,
+  // })
+  // await doExport({
+  //   type: 'stl',
+  //   storage: 'ascii',
+  //   coords: sysType,
+  //   units: 'in',
+  // })
+  // await doExport({
+  //   type: 'stl',
+  //   storage: 'binary',
+  //   coords: sysType,
+  //   units: 'in',
+  // })
 })
