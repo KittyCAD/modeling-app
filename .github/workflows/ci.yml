@@ -31,7 +31,6 @@ jobs:
       - run: yarn install
       - run: yarn fmt-check
 
-
   check-types:
     runs-on: ubuntu-latest
 
@@ -247,18 +246,14 @@ jobs:
         with:
           path: "${{ env.PREFIX }}/${{ env.MODE }}/bundle/*/*"
 
-      - name: Install tauri-driver for e2e tests (linux only)
-        if: matrix.os == 'ubuntu-latest'
-        uses: actions-rs/cargo@v1
-        with:
-          command: install
-          args: tauri-driver
-
       - name: Run e2e tests (linux only)
         if: matrix.os == 'ubuntu-latest'
-        run: xvfb-run yarn test:e2e
+        run: |
+          cargo install tauri-driver
+          xvfb-run yarn test:e2e:tauri
         env:
-          MODE: ${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}
+          E2E_APPLICATION: "./src-tauri/target/${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}/kittycad-modeling"
+          KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN }}
 
 
   publish-apps-release:

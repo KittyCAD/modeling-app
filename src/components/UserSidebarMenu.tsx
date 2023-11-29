@@ -165,6 +165,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                       'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
                   }}
                   className="border-transparent dark:border-transparent hover:border-destroy-40 dark:hover:border-destroy-60"
+                  data-testid="user-sidebar-sign-out"
                 >
                   Sign out
                 </ActionButton>
