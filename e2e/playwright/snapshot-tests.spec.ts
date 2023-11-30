@@ -210,11 +210,35 @@ const part001 = startSketchOn('-XZ')
     const downloadPromise = page.waitForEvent('download')
     await page.getByRole('button', { name: 'Export', exact: true }).click()
     const download = await downloadPromise
-
-    const downloadLocation = `./e2e/playwright/export-snapshots/${
+    const downloadLocationer = (extra = '') => `./e2e/playwright/export-snapshots/${
       output.type
-    }-${'storage' in output ? output.storage : ''}.${output.type}`
+    }-${'storage' in output ? output.storage : ''}${extra}.${output.type}`
+    const downloadLocation = downloadLocationer()
+    const downloadLocation2 = downloadLocationer('-2')
+    const downloadPromises = page.waitForEvent('download')
     await download.saveAs(downloadLocation)
+
+    if (output.type === 'gltf' && output.storage === 'standard') {
+      const download2 = await downloadPromises
+      // wait for second download
+      await download2.saveAs(downloadLocation2)
+
+      // rewrite uri to reference our file name
+      const fileContents = await fsp.readFile(downloadLocation, 'utf-8')
+      const isJson = fileContents.includes('buffers')
+      let contents = fileContents
+      let reWriteLocation = downloadLocation
+      let uri = downloadLocation2.split('/').pop()
+      if (!isJson) {
+        contents = await fsp.readFile(downloadLocation2, 'utf-8')
+        reWriteLocation = downloadLocation2
+        uri = downloadLocation.split('/').pop()
+      }
+      contents = contents.replace(/"uri": ".*"/g, `"uri": "${uri}"`)
+      await fsp.writeFile(reWriteLocation, contents)
+    }
+
+
     if (output.type === 'step') {
       // stable timestamps for step files
       const fileContents = await fsp.readFile(downloadLocation, 'utf-8')
