@@ -49,15 +49,26 @@ type Timeout = ReturnType<typeof setTimeout>
 type ClientMetrics = Models['ClientMetrics_type']
 
 type ConnectionStage = 'websocket' | 'ice' | 'webrtc'
+type ConnectionState = 'ok' | 'pending' | 'failed'
 
-interface ConnectionStageStatus {
-  status: 'ok' | 'pending' | 'failed'
-  errors: ErrorEvent[]
+type ConnectionError = {
+  type: string
+  message: string
+  raw: any
 }
 
-type ConnectionStatus = Record<ConnectionStage, ConnectionStageStatus>
+type ConnectionRecord = {
+  status: ConnectionState
+  errors: ConnectionError[]
+}
 
-const CONNECTION_STATUSES_DEFAULT = {
+type ConnectionStatus = {
+  websocket: ConnectionRecord
+  ice: ConnectionRecord
+  webrtc: ConnectionRecord
+}
+
+const CONNECTION_STATUSES_DEFAULT: ConnectionStatus = {
   websocket: {
     status: 'pending',
     errors: [],
@@ -249,8 +260,12 @@ class EngineConnection {
       console.error(
         `ICE candidate returned an error: ${event.errorCode}: ${event.errorText} for ${event.url}`
       )
-      this.connectionStatuses.ice.state = 'failed'
-      this.connectionStatuses.ice.errors.push(event)
+      this.connectionStatuses.ice.status = 'failed'
+      this.connectionStatuses.ice.errors.push({
+        type: event.type,
+        message: event.errorText,
+        raw: event,
+      })
     })
 
     this.pc.addEventListener('connectionstatechange', (event) => {
@@ -315,8 +330,12 @@ class EngineConnection {
 
     this.websocket.addEventListener('error', (event) => {
       console.log('websocket connection error', event)
-      this.connectionStatuses.websocket.state = 'failed'
-      this.connectionStatuses.websocket.errors.push(event)
+      this.connectionStatuses.websocket.status = 'failed'
+      this.connectionStatuses.websocket.errors.push({
+        type: event.type,
+        message: 'an unknown websocket error occurred',
+        raw: event,
+      })
       this.close()
     })
 
