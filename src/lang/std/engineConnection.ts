@@ -48,6 +48,30 @@ type Timeout = ReturnType<typeof setTimeout>
 
 type ClientMetrics = Models['ClientMetrics_type']
 
+type ConnectionStage = 'websocket' | 'ice' | 'webrtc'
+
+interface ConnectionStageStatus {
+  status: 'ok' | 'pending' | 'failed'
+  errors: ErrorEvent[]
+}
+
+type ConnectionStatus = Record<ConnectionStage, ConnectionStageStatus>
+
+const CONNECTION_STATUSES_DEFAULT = {
+  websocket: {
+    status: 'pending',
+    errors: [],
+  },
+  ice: {
+    status: 'pending',
+    errors: [],
+  },
+  webrtc: {
+    status: 'pending',
+    errors: [],
+  },
+}
+
 // EngineConnection encapsulates the connection(s) to the Engine
 // for the EngineCommandManager; namely, the underlying WebSocket
 // and WebRTC connections.
@@ -69,6 +93,8 @@ class EngineConnection {
   private onConnectionStarted: (engineConnection: EngineConnection) => void
   private onClose: (engineConnection: EngineConnection) => void
   private onNewTrack: (track: NewTrackArgs) => void
+
+  private connectionStatuses: ConnectionStatus
 
   // TODO: actual type is ClientMetrics
   private webrtcStatsCollector?: () => Promise<ClientMetrics>
@@ -104,6 +130,7 @@ class EngineConnection {
     this.onConnectionStarted = onConnectionStarted
     this.onClose = onClose
     this.onNewTrack = onNewTrack
+    this.connectionStatuses = Object.assign({}, CONNECTION_STATUSES_DEFAULT)
 
     // TODO(paultag): This ought to be tweakable.
     const pingIntervalMs = 10000
@@ -204,6 +231,7 @@ class EngineConnection {
       )
     }
 
+    this.connectionStatuses = Object.assign({}, CONNECTION_STATUSES_DEFAULT)
     this.websocket = new WebSocket(this.url, [])
     this.websocket.binaryType = 'arraybuffer'
 
@@ -221,6 +249,8 @@ class EngineConnection {
       console.error(
         `ICE candidate returned an error: ${event.errorCode}: ${event.errorText} for ${event.url}`
       )
+      this.connectionStatuses.ice.state = 'failed'
+      this.connectionStatuses.ice.errors.push(event)
     })
 
     this.pc.addEventListener('connectionstatechange', (event) => {
@@ -228,15 +258,20 @@ class EngineConnection {
         if (this.shouldTrace()) {
           iceSpan.resolve?.()
         }
+        this.connectionStatuses.ice.status = 'ok'
+        this.connectionStatuses.webrtc.status = 'ok'
+        console.log(this.connectionStatuses)
       } else if (this.pc?.iceConnectionState === 'failed') {
         // failed is a terminal state; let's explicitly kill the
         // connection to the server at this point.
         console.log('failed to negotiate ice connection; restarting')
+        this.connectionStatuses.webrtc.status = 'failed'
         this.close()
       }
     })
 
     this.websocket.addEventListener('open', (event) => {
+      this.connectionStatuses.websocket.status = 'ok'
       if (this.shouldTrace()) {
         websocketSpan.resolve?.()
 
@@ -280,6 +315,8 @@ class EngineConnection {
 
     this.websocket.addEventListener('error', (event) => {
       console.log('websocket connection error', event)
+      this.connectionStatuses.websocket.state = 'failed'
+      this.connectionStatuses.websocket.errors.push(event)
       this.close()
     })
 
