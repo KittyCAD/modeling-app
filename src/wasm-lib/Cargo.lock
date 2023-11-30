@@ -719,10 +719,12 @@ version = "0.1.4"
 dependencies = [
  "convert_case",
  "expectorate",
+ "once_cell",
  "openapitor",
  "pretty_assertions",
  "proc-macro2",
  "quote",
+ "regex",
  "serde",
  "serde_tokenstream",
  "syn 2.0.39",

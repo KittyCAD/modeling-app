@@ -19766,7 +19766,7 @@
     "args": [
       {
         "name": "to",
-        "type": "Point2",
+        "type": "[number]",
         "schema": {
           "type": "array",
           "items": {
@@ -20221,10 +20221,8 @@
         "name": "tag",
         "type": "String",
         "schema": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+          "type": "string",
+          "nullable": true
         },
         "required": true
       }

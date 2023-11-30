@@ -1204,32 +1204,24 @@ pub async fn tangential_arc_to(args: Args) -> Result<MemoryItem, KclError> {
         None
     };
 
-    let new_sketch_group = inner_tangential_arc_to(Point2(to), sketch_group, tag, args).await?;
+    let new_sketch_group = inner_tangential_arc_to(to, sketch_group, tag, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
-
-/// Wrapper which only exists because the stdlib macro cannot use [f64; 2] as an identifier.
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, JsonSchema)]
-#[serde(transparent)]
-struct Point2(
-    /// The point, with its x and y components.
-    pub [f64; 2],
-);
 
 /// Draw an arc.
 #[stdlib {
     name = "tangentialArcTo",
 }]
 async fn inner_tangential_arc_to(
-    to: Point2,
+    to: [f64; 2],
     sketch_group: Box<SketchGroup>,
     tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from: Point2d = sketch_group.get_coords_from_paths()?;
-    let to = to.0;
+    let [to_x, to_y] = to;
 
-    let delta = [to[0] - from.x, to[1] - from.y];
+    let delta = [to_x - from.x, to_y - from.y];
     let id = uuid::Uuid::new_v4();
     args.send_modeling_cmd(id, tan_arc_to(&sketch_group, &delta)).await?;
 

@@ -3905,12 +3905,12 @@ Draw an arc.
 
 
 ```
-tangentialArcTo(to: Point2, sketch_group: SketchGroup, tag: String) -> SketchGroup
+tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchGroup
 ```
 
 #### Arguments
 
-* `to`: `Point2`
+* `to`: `[number]`
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
