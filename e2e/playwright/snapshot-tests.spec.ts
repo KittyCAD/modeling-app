@@ -216,7 +216,7 @@ const part001 = startSketchOn('-XZ')
       }${extra}.${output.type}`
     const downloadLocation = downloadLocationer()
     const downloadLocation2 = downloadLocationer('-2')
-    
+
     if (output.type === 'gltf' && output.storage === 'standard') {
       // wait for second download
       const download2 = await page.waitForEvent('download')
