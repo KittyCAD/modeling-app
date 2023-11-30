@@ -262,17 +262,62 @@ export const ModelingMachineProvider = ({
       'Set selection': assign(({ selectionRanges }, event) => {
         if (event.type !== 'Set selection') return {} // this was needed for ts after adding 'Set selection' action to on done modal events
         const setSelections = event.data
+        if (!editorView) return {}
         if (setSelections.selectionType === 'mirrorCodeMirrorSelections')
           return { selectionRanges: setSelections.selection }
-        else if (setSelections.selectionType === 'otherSelection')
+        else if (setSelections.selectionType === 'otherSelection') {
+          // TODO send axis highlight when it working
+          // const axisAddCmd: EngineCommand = {
+          //   type: 'modeling_cmd_req',
+          //   cmd: {
+          //     type: 'highlight_set_entities',
+          //     entities: [
+          //       setSelections.selection === 'x-axis'
+          //         ? X_AXIS_UUID
+          //         : Y_AXIS_UUID,
+          //     ],
+          //   },
+          //   cmd_id: uuidv4(),
+          // }
+
+          // if (!isShiftDown) {
+          //   engineCommandManager
+          //     .sendSceneCommand({
+          //       type: 'modeling_cmd_req',
+          //       cmd: {
+          //         type: 'select_clear',
+          //       },
+          //       cmd_id: uuidv4(),
+          //     })
+          //     .then(() => {
+          //       engineCommandManager.sendSceneCommand(axisAddCmd)
+          //     })
+          // } else {
+          //   engineCommandManager.sendSceneCommand(axisAddCmd)
+          // }
+
+          const {
+            codeMirrorSelection,
+            selectionRangeTypeMap,
+            otherSelections,
+          } = handleSelectionWithShift({
+            otherSelection: setSelections.selection,
+            currentSelections: selectionRanges,
+            isShiftDown,
+          })
+          setTimeout(() => {
+            editorView.dispatch({
+              selection: codeMirrorSelection,
+            })
+          })
           return {
+            selectionRangeTypeMap,
             selectionRanges: {
-              ...selectionRanges,
-              otherSelections: [setSelections.selection],
+              codeBasedSelections: selectionRanges.codeBasedSelections,
+              otherSelections,
             },
           }
-        else if (!editorView) return {}
-        else if (setSelections.selectionType === 'singleCodeCursor') {
+        } else if (setSelections.selectionType === 'singleCodeCursor') {
           // This DOES NOT set the `selectionRanges` in xstate context
           // instead it updates/dispatches to the editor, which in turn updates the xstate context
           // I've found this the best way to deal with the editor without causing an infinite loop
@@ -280,12 +325,16 @@ export const ModelingMachineProvider = ({
           // because we want to respect the user manually placing the cursor too.
 
           // for more details on how selections see `src/lib/selections.ts`.
-          const { codeMirrorSelection, selectionRangeTypeMap } =
-            handleSelectionWithShift({
-              codeSelection: setSelections.selection,
-              currestSelections: selectionRanges,
-              isShiftDown,
-            })
+
+          const {
+            codeMirrorSelection,
+            selectionRangeTypeMap,
+            otherSelections,
+          } = handleSelectionWithShift({
+            codeSelection: setSelections.selection,
+            currentSelections: selectionRanges,
+            isShiftDown,
+          })
           if (codeMirrorSelection) {
             setTimeout(() => {
               editorView.dispatch({
@@ -293,7 +342,22 @@ export const ModelingMachineProvider = ({
               })
             })
           }
-          return { selectionRangeTypeMap }
+          if (!setSelections.selection) {
+            return {
+              selectionRangeTypeMap,
+              selectionRanges: {
+                codeBasedSelections: selectionRanges.codeBasedSelections,
+                otherSelections,
+              },
+            }
+          }
+          return {
+            selectionRangeTypeMap,
+            selectionRanges: {
+              codeBasedSelections: selectionRanges.codeBasedSelections,
+              otherSelections,
+            },
+          }
         }
         // This DOES NOT set the `selectionRanges` in xstate context
         // same as comment above

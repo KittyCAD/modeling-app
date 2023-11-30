@@ -42,13 +42,19 @@ export const TextEditor = ({
 }: {
   theme: Themes.Light | Themes.Dark
 }) => {
-  const { editorView, isLSPServerReady, setEditorView, setIsLSPServerReady } =
-    useStore((s) => ({
-      editorView: s.editorView,
-      isLSPServerReady: s.isLSPServerReady,
-      setEditorView: s.setEditorView,
-      setIsLSPServerReady: s.setIsLSPServerReady,
-    }))
+  const {
+    editorView,
+    isLSPServerReady,
+    setEditorView,
+    setIsLSPServerReady,
+    isShiftDown,
+  } = useStore((s) => ({
+    editorView: s.editorView,
+    isLSPServerReady: s.isLSPServerReady,
+    setEditorView: s.setEditorView,
+    setIsLSPServerReady: s.setIsLSPServerReady,
+    isShiftDown: s.isShiftDown,
+  }))
   const { code, errors } = useKclContext()
 
   const {
@@ -113,6 +119,7 @@ export const TextEditor = ({
       codeMirrorRanges: viewUpdate.state.selection.ranges,
       selectionRanges,
       selectionRangeTypeMap,
+      isShiftDown,
     })
     if (!eventInfo) return
 
