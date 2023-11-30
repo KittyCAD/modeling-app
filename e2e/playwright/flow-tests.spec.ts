@@ -541,7 +541,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     await u.doAndWaitForCmd(emptySpaceClick, 'select_clear', false)
 
     // same selection but click the axis first
-    await u.doAndWaitForCmd(xAxisClick, 'select_with_point', false) // the x axis
+    await u.doAndWaitForCmd(xAxisClick, 'select_with_point', false)
     await expect(absYButton).toBeDisabled()
     await page.keyboard.down('Shift')
     await u.doAndWaitForCmd(topHorzSegmentClick, 'select_with_point', false)
