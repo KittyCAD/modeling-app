@@ -528,52 +528,28 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     // now check clicking works including axis
 
     // click a segment hold shift and click an axis, see that a relevant constraint is enabled
-    await u.doAndWaitForCmd(
-      topHorzSegmentClick,
-      'select_with_point',
-      false
-    )
+    await u.doAndWaitForCmd(topHorzSegmentClick, 'select_with_point', false)
     await page.keyboard.down('Shift')
     const absYButton = page.getByRole('button', { name: 'ABS Y' })
     await expect(absYButton).toBeDisabled()
-    await u.doAndWaitForCmd(
-      xAxisClick,
-      'select_with_point',
-      false
-    )
+    await u.doAndWaitForCmd(xAxisClick, 'select_with_point', false)
     await page.keyboard.up('Shift')
     await absYButton.and(page.locator(':not([disabled])')).waitFor()
     await expect(absYButton).not.toBeDisabled()
 
     // clear selection by clicking on nothing
-    await u.doAndWaitForCmd(
-      emptySpaceClick,
-      'select_clear',
-      false
-    )
+    await u.doAndWaitForCmd(emptySpaceClick, 'select_clear', false)
 
     // same selection but click the axis first
-    await u.doAndWaitForCmd(
-      xAxisClick,
-      'select_with_point',
-      false
-    ) // the x axis
+    await u.doAndWaitForCmd(xAxisClick, 'select_with_point', false) // the x axis
     await expect(absYButton).toBeDisabled()
     await page.keyboard.down('Shift')
-    await u.doAndWaitForCmd(
-      topHorzSegmentClick,
-      'select_with_point',
-      false
-    )
+    await u.doAndWaitForCmd(topHorzSegmentClick, 'select_with_point', false)
     await page.keyboard.up('Shift')
     await expect(absYButton).not.toBeDisabled()
 
     // clear selection by clicking on nothing
-    await u.doAndWaitForCmd(
-      emptySpaceClick,
-      'select_clear',
-      false
-    )
+    await u.doAndWaitForCmd(emptySpaceClick, 'select_clear', false)
 
     // check the same selection again by putting cursor in code first then selecting axis
     await u.doAndWaitForCmd(
@@ -583,20 +559,12 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     )
     await page.keyboard.down('Shift')
     await expect(absYButton).toBeDisabled()
-    await u.doAndWaitForCmd(
-      xAxisClick,
-      'select_with_point',
-      false
-    )
+    await u.doAndWaitForCmd(xAxisClick, 'select_with_point', false)
     await page.keyboard.up('Shift')
     await expect(absYButton).not.toBeDisabled()
 
     // clear selection by clicking on nothing
-    await u.doAndWaitForCmd(
-      emptySpaceClick,
-      'select_clear',
-      false
-    )
+    await u.doAndWaitForCmd(emptySpaceClick, 'select_clear', false)
 
     // select segment in editor than another segment in scene and check there are two cursors
     await u.doAndWaitForCmd(
@@ -606,23 +574,14 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     )
     await page.keyboard.down('Shift')
     await expect(page.locator('.cm-cursor')).toHaveCount(1)
-    await u.doAndWaitForCmd(
-      bottomHorzSegmentClick,
-      'select_with_point',
-      false
-    ) // another segment, bottom one
+    await u.doAndWaitForCmd(bottomHorzSegmentClick, 'select_with_point', false) // another segment, bottom one
     await page.keyboard.up('Shift')
     await expect(page.locator('.cm-cursor')).toHaveCount(2)
 
     // clear selection by clicking on nothing
-    await u.doAndWaitForCmd(
-      emptySpaceClick,
-      'select_clear',
-      false
-    )
+    await u.doAndWaitForCmd(emptySpaceClick, 'select_clear', false)
   }
 
-  
   await hoverSequency()
 
   // hovering in fresh sketch worked, lets try exiting and re-entering
@@ -634,11 +593,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   await u.expectCmdLog('[data-message-type="execution-done"]')
 
   // select a line
-  await u.doAndWaitForCmd(
-    topHorzSegmentClick,
-    'select_clear',
-    false
-  )
+  await u.doAndWaitForCmd(topHorzSegmentClick, 'select_clear', false)
 
   // enter sketch again
   await u.doAndWaitForCmd(
