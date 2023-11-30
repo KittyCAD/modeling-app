@@ -38,6 +38,7 @@ import { pathMapToSelections } from 'lang/util'
 import { useStore } from 'useStore'
 import { handleSelectionBatch, handleSelectionWithShift } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
+import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -463,6 +464,40 @@ export const ModelingMachineProvider = ({
         const { modifiedAst, pathToNodeMap } = await applyConstraintIntersect({
           selectionRanges,
         })
+        await kclManager.updateAst(modifiedAst, true)
+        return {
+          selectionType: 'completeSelection',
+          selection: pathMapToSelections(
+            kclManager.ast,
+            selectionRanges,
+            pathToNodeMap
+          ),
+        }
+      },
+      'Get ABS X info': async ({ selectionRanges }): Promise<SetSelections> => {
+        const { modifiedAst, pathToNodeMap } = await applyConstraintAbsDistance(
+          {
+            constraint: 'xAbs',
+            selectionRanges,
+          }
+        )
+        await kclManager.updateAst(modifiedAst, true)
+        return {
+          selectionType: 'completeSelection',
+          selection: pathMapToSelections(
+            kclManager.ast,
+            selectionRanges,
+            pathToNodeMap
+          ),
+        }
+      },
+      'Get ABS Y info': async ({ selectionRanges }): Promise<SetSelections> => {
+        const { modifiedAst, pathToNodeMap } = await applyConstraintAbsDistance(
+          {
+            constraint: 'yAbs',
+            selectionRanges,
+          }
+        )
         await kclManager.updateAst(modifiedAst, true)
         return {
           selectionType: 'completeSelection',
