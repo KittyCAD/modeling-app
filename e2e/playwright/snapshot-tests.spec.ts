@@ -210,17 +210,17 @@ const part001 = startSketchOn('-XZ')
     const downloadPromise = page.waitForEvent('download')
     await page.getByRole('button', { name: 'Export', exact: true }).click()
     const download = await downloadPromise
-    const downloadLocationer = (extra = '') => `./e2e/playwright/export-snapshots/${
-      output.type
-    }-${'storage' in output ? output.storage : ''}${extra}.${output.type}`
+    const downloadLocationer = (extra = '') =>
+      `./e2e/playwright/export-snapshots/${output.type}-${
+        'storage' in output ? output.storage : ''
+      }${extra}.${output.type}`
     const downloadLocation = downloadLocationer()
     const downloadLocation2 = downloadLocationer('-2')
-    const downloadPromises = page.waitForEvent('download')
-    await download.saveAs(downloadLocation)
-
+    
     if (output.type === 'gltf' && output.storage === 'standard') {
-      const download2 = await downloadPromises
       // wait for second download
+      const download2 = await page.waitForEvent('download')
+      await download.saveAs(downloadLocation)
       await download2.saveAs(downloadLocation2)
 
       // rewrite uri to reference our file name
@@ -236,8 +236,9 @@ const part001 = startSketchOn('-XZ')
       }
       contents = contents.replace(/"uri": ".*"/g, `"uri": "${uri}"`)
       await fsp.writeFile(reWriteLocation, contents)
+    } else {
+      await download.saveAs(downloadLocation)
     }
-
 
     if (output.type === 'step') {
       // stable timestamps for step files
