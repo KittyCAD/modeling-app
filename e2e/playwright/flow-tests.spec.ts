@@ -4,6 +4,8 @@ import { EngineCommand } from '../../src/lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
 import { getUtils } from './test-utils'
 import waitOn from 'wait-on'
+import { Models } from '@kittycad/lib'
+import fsp from 'fs/promises'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -509,7 +511,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   )
 
   await u.closeDebugPanel()
-  const hoverSequency = async () => {
+  const selectionSequence = async () => {
     await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
 
     await page.mouse.move(startXPx + PUR * 15, 500 - PUR * 10)
@@ -582,7 +584,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     await u.doAndWaitForCmd(emptySpaceClick, 'select_clear', false)
   }
 
-  await hoverSequency()
+  await selectionSequence()
 
   // hovering in fresh sketch worked, lets try exiting and re-entering
   await u.doAndWaitForCmd(
@@ -603,5 +605,5 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   )
 
   // hover again and check it works
-  await hoverSequency()
+  await selectionSequence()
 })
