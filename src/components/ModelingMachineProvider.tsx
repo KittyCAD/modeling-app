@@ -270,7 +270,7 @@ export const ModelingMachineProvider = ({
         if (setSelections.selectionType === 'mirrorCodeMirrorSelections')
           return { selectionRanges: setSelections.selection }
         else if (setSelections.selectionType === 'otherSelection') {
-          // TODO send axis highlight when it working
+          // TODO KittyCAD/engine/issues/1620: send axis highlight when it's working (if thats what we settle on)
           // const axisAddCmd: EngineCommand = {
           //   type: 'modeling_cmd_req',
           //   cmd: {
