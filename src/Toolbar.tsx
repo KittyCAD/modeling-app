@@ -109,21 +109,6 @@ export const Toolbar = () => {
                 eventName.includes('Make segment') ||
                 eventName.includes('Constrain')
             )
-            .sort((a, b) => {
-              const aisEnabled = state.nextEvents
-                .filter((event) => state.can(event as any))
-                .includes(a)
-              const bIsEnabled = state.nextEvents
-                .filter((event) => state.can(event as any))
-                .includes(b)
-              if (aisEnabled && !bIsEnabled) {
-                return -1
-              }
-              if (!aisEnabled && bIsEnabled) {
-                return 1
-              }
-              return 0
-            })
             .map((eventName) => (
               <button
                 key={eventName}
