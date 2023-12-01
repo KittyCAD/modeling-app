@@ -1,5 +1,8 @@
 import { expect, Page } from '@playwright/test'
 import { EngineCommand } from '../../src/lang/std/engineConnection'
+import fsp from 'fs/promises'
+import pixelMatch from 'pixelmatch'
+import { PNG } from 'pngjs'
 
 async function waitForPageLoad(page: Page) {
   // wait for 'Loading stream...' spinner
@@ -108,5 +111,46 @@ export function getUtils(page: Page) {
         await closeDebugPanel(page)
       }
     },
+    doAndWaitForImageDiff: (fn: () => Promise<any>, diffCount = 200) =>
+      new Promise(async (resolve) => {
+        await page.screenshot({
+          path: './e2e/playwright/temp1.png',
+          fullPage: true,
+        })
+        await fn()
+        const isImageDiff = async () => {
+          await page.screenshot({
+            path: './e2e/playwright/temp2.png',
+            fullPage: true,
+          })
+          const screenshot1 = PNG.sync.read(
+            await fsp.readFile('./e2e/playwright/temp1.png')
+          )
+          const screenshot2 = PNG.sync.read(
+            await fsp.readFile('./e2e/playwright/temp2.png')
+          )
+          const actualDiffCount = pixelMatch(
+            screenshot1.data,
+            screenshot2.data,
+            null,
+            screenshot1.width,
+            screenshot2.height
+          )
+          return actualDiffCount > diffCount
+        }
+
+        // run isImageDiff every 50ms until it returns true or 5 seconds have passed (100 times)
+        let count = 0
+        const interval = setInterval(async () => {
+          count++
+          if (await isImageDiff()) {
+            clearInterval(interval)
+            resolve(true)
+          } else if (count > 100) {
+            clearInterval(interval)
+            resolve(false)
+          }
+        }, 50)
+      }),
   }
 }
