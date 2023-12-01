@@ -81,8 +81,8 @@ test('Basic sketch', async ({ page }) => {
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
 
-  const startAt = '[9.94, -13.41]'
-  const tenish = '10.03'
+  const startAt = '[10.97, -14.79]'
+  const tenish = '11.07'
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
@@ -100,7 +100,7 @@ test('Basic sketch', async ({ page }) => {
   |> startProfileAt(${startAt}, %)
   |> line([${tenish}, 0], %)
   |> line([0, ${tenish}], %)
-  |> line([-19.97, 0], %)`)
+  |> line([-22.04, 0], %)`)
 
   // deselect line tool
   await u.doAndWaitForCmd(
@@ -128,7 +128,7 @@ test('Basic sketch', async ({ page }) => {
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
-  |> line({ to: [10.03, 0], tag: 'seg01' }, %)
+  |> line({ to: [${tenish}, 0], tag: 'seg01' }, %)
   |> line([0, ${tenish}], %)
   |> angledLine([180, segLen('seg01', %)], %)`)
 })
@@ -311,8 +311,8 @@ test('Can create sketches on all planes and their back sides', async ({
     plane = 'XY',
     sign = ''
   ) => `const part001 = startSketchOn('${plane}')
-  |> startProfileAt([${sign}3.97, -5.36], %)
-  |> line([${sign}4.01, 0], %)`
+  |> startProfileAt([${sign}6.88, -9.29], %)
+  |> line([${sign}6.95, 0], %)`
   await TestSinglePlane({
     viewCmd: camCmd,
     expectedCode: codeTemplate('XY'),
@@ -483,8 +483,9 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
 
-  const startAt = '[9.94, -13.41]'
-  const tenish = '10.03'
+  const startAt = '[10.97, -14.79]'
+  const tenish = '11.07'
+  const twentyish = '22.04'
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
@@ -502,7 +503,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   |> startProfileAt(${startAt}, %)
   |> line([${tenish}, 0], %)
   |> line([0, ${tenish}], %)
-  |> line([-19.97, 0], %)`)
+  |> line([-${twentyish}, 0], %)`)
 
   // deselect line tool
   await u.doAndWaitForCmd(
@@ -555,7 +556,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
 
     // check the same selection again by putting cursor in code first then selecting axis
     await u.doAndWaitForCmd(
-      () => page.getByText('  |> line([-19.97, 0], %)').click(),
+      () => page.getByText(`  |> line([-${twentyish}, 0], %)`).click(),
       'select_clear',
       false
     )
@@ -570,7 +571,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
 
     // select segment in editor than another segment in scene and check there are two cursors
     await u.doAndWaitForCmd(
-      () => page.getByText('  |> line([-19.97, 0], %)').click(),
+      () => page.getByText(`  |> line([-${twentyish}, 0], %)`).click(),
       'select_clear',
       false
     )
