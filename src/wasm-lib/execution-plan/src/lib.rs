@@ -6,6 +6,7 @@
 //! You can think of it as a domain-specific language for making KittyCAD API calls and using
 //! the results to make other API calls.
 
+use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, fmt};
 
 #[cfg(test)]
@@ -16,7 +17,7 @@ mod tests;
 pub struct Memory(HashMap<usize, Value>);
 
 /// An address in KCEP's program memory.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct Address(usize);
 
 impl fmt::Display for Address {
@@ -43,7 +44,7 @@ impl Memory {
 }
 
 /// A value stored in KCEP program memory.
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub enum Value {
     String(String),
     NumericValue(NumericValue),
@@ -63,18 +64,19 @@ impl From<usize> for Value {
     }
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub enum NumericValue {
     Integer(usize),
     Float(f64),
 }
 
 /// One step of the execution plan.
+#[derive(Serialize, Deserialize)]
 pub enum Instruction {
     /// Call the KittyCAD API.
     ApiRequest {
         /// Which endpoint to call?
-        endpoint: &'static str,
+        endpoint: kittycad::types::ModelingCmd,
         /// Which address should the response be stored in?
         store_response: Option<usize>,
         /// Look up each API request in this register number.
@@ -97,6 +99,7 @@ pub enum Instruction {
 }
 
 /// Instruction to perform arithmetic on values in memory.
+#[derive(Deserialize, Serialize)]
 pub struct Arithmetic {
     /// Apply this operation
     pub operation: Operation,
@@ -156,7 +159,7 @@ impl Arithmetic {
 }
 
 /// Operations that can be applied to values in memory.
-#[derive(Debug)]
+#[derive(Debug, Deserialize, Serialize)]
 pub enum Operation {
     Add,
     Mul,
@@ -177,6 +180,7 @@ impl fmt::Display for Operation {
 }
 
 /// Argument to an operation.
+#[derive(Deserialize, Serialize)]
 pub enum Operand {
     Literal(Value),
     Reference(Address),
