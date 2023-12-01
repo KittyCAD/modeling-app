@@ -25,7 +25,7 @@ import {
   horzVertDistanceInfo,
 } from 'components/Toolbar/SetHorzVertDistance'
 import { angleBetweenInfo } from 'components/Toolbar/SetAngleBetween'
-import { setAngleLengthInfo } from 'components/Toolbar/setAngleLength'
+import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
 import {
   applyConstraintEqualLength,
   setEqualLengthInfo,
@@ -749,9 +749,10 @@ export const modelingMachine = createMachine(
       'Can constrain ABS Y': ({ selectionRanges }) =>
         absDistanceInfo({ selectionRanges, constraint: 'yAbs' }).enabled,
       'Can constrain angle': ({ selectionRanges }) =>
-        angleBetweenInfo({ selectionRanges }).enabled,
+        angleBetweenInfo({ selectionRanges }).enabled ||
+        angleLengthInfo({ selectionRanges, angleOrLength: 'setAngle' }).enabled,
       'Can constrain length': ({ selectionRanges }) =>
-        setAngleLengthInfo({ selectionRanges }).enabled,
+        angleLengthInfo({ selectionRanges }).enabled,
       'Can constrain perpendicular distance': ({ selectionRanges }) =>
         intersectInfo({ selectionRanges }).enabled,
       'Can constrain horizontally align': ({ selectionRanges }) =>

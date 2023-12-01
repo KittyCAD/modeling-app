@@ -31,7 +31,10 @@ import {
 } from 'lang/std/sketch'
 import { kclManager } from 'lang/KclSinglton'
 import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
-import { applyConstraintAngleBetween } from './Toolbar/SetAngleBetween'
+import {
+  angleBetweenInfo,
+  applyConstraintAngleBetween,
+} from './Toolbar/SetAngleBetween'
 import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
 import { toast } from 'react-hot-toast'
 import { pathMapToSelections } from 'lang/util'
@@ -428,10 +431,16 @@ export const ModelingMachineProvider = ({
         }
       },
       'Get angle info': async ({ selectionRanges }): Promise<SetSelections> => {
-        const { modifiedAst, pathToNodeMap } =
-          await applyConstraintAngleBetween({
-            selectionRanges,
-          })
+        const { modifiedAst, pathToNodeMap } = await (angleBetweenInfo({
+          selectionRanges,
+        }).enabled
+          ? applyConstraintAngleBetween({
+              selectionRanges,
+            })
+          : applyConstraintAngleLength({
+              selectionRanges,
+              angleOrLength: 'setAngle',
+            }))
         await kclManager.updateAst(modifiedAst, true)
         return {
           selectionType: 'completeSelection',
