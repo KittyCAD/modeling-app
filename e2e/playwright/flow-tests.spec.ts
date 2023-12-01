@@ -4,6 +4,8 @@ import { EngineCommand } from '../../src/lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
 import { getUtils } from './test-utils'
 import waitOn from 'wait-on'
+import { Models } from '@kittycad/lib'
+import fsp from 'fs/promises'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -58,13 +60,8 @@ test('Basic sketch', async ({ page }) => {
 
   // click on "Start Sketch" button
   await u.clearCommandLogs()
-  await Promise.all([
-    u.doAndWaitForImageDiff(
-      () => page.getByRole('button', { name: 'Start Sketch' }).click(),
-      200
-    ),
-    u.waitForDefaultPlanesVisibilityChange(),
-  ])
+  await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await u.waitForDefaultPlanesVisibilityChange()
 
   // select a plane
   await u.doAndWaitForCmd(() => page.mouse.click(700, 200), 'edit_mode_enter')

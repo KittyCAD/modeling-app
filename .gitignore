@@ -35,8 +35,6 @@ public/wasm_lib_bg.wasm
 src/wasm-lib/lcov.info
 
 e2e/playwright/playwright-secrets.env
-e2e/playwright/temp1.png
-e2e/playwright/temp2.png
 /test-results/
 /playwright-report/
 /blob-report/
