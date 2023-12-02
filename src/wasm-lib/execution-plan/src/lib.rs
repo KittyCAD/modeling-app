@@ -6,14 +6,17 @@
 //! You can think of it as a domain-specific language for making KittyCAD API calls and using
 //! the results to make other API calls.
 
+use in_memory::Composite;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, fmt};
 
+mod in_memory;
 #[cfg(test)]
 mod tests;
 
 /// KCEP's program memory. A flat, linear list of values.
 #[derive(Default, Debug)]
+#[cfg_attr(test, derive(PartialEq))]
 pub struct Memory(HashMap<usize, Value>);
 
 /// An address in KCEP's program memory.
@@ -37,9 +40,35 @@ impl Memory {
     pub fn get(&self, addr: &Address) -> Option<&Value> {
         self.0.get(&addr.0)
     }
+
     /// Store a value in KCEP's program memory.
     pub fn set(&mut self, addr: Address, value: Value) {
         self.0.insert(addr.0, value);
+    }
+
+    /// Store a composite value (i.e. a value which takes up multiple addresses in memory).
+    /// Store its parts in consecutive memory addresses starting at `start`.
+    pub fn set_composite<T: Composite>(&mut self, composite_value: T, start: Address) {
+        let parts = composite_value.into_parts().into_iter();
+        for (value, addr) in parts.zip(start.0..) {
+            self.0.insert(addr, value);
+        }
+    }
+
+    /// Get a composite value (i.e. a value which takes up multiple addresses in memory).
+    /// Its parts are stored in consecutive memory addresses starting at `start`.
+    pub fn get_composite<T: Composite>(&self, start: Address) -> Result<T, ExecutionError> {
+        let addrs = start.0..start.0 + T::SIZE;
+        let values: Vec<Value> = addrs
+            .into_iter()
+            .map(|a| {
+                let addr = Address(a);
+                self.get(&addr)
+                    .map(|x| x.to_owned())
+                    .ok_or(ExecutionError::MemoryEmpty { addr })
+            })
+            .collect::<Result<_, _>>()?;
+        T::from_parts(values)
     }
 }
 
@@ -48,6 +77,21 @@ impl Memory {
 pub enum Value {
     String(String),
     NumericValue(NumericValue),
+}
+
+impl TryFrom<Value> for f64 {
+    type Error = ExecutionError;
+
+    fn try_from(value: Value) -> Result<Self, Self::Error> {
+        if let Value::NumericValue(NumericValue::Float(x)) = value {
+            Ok(x)
+        } else {
+            Err(ExecutionError::MemoryWrongType {
+                expected: "float",
+                actual: format!("{value:?}"),
+            })
+        }
+    }
 }
 
 #[cfg(test)]
@@ -200,8 +244,7 @@ impl Operand {
 }
 
 /// Execute the plan.
-pub fn execute(plan: Vec<Instruction>) -> Result<Memory, ExecutionError> {
-    let mut mem = Memory::default();
+pub fn execute(mem: &mut Memory, plan: Vec<Instruction>) -> Result<(), ExecutionError> {
     for step in plan {
         match step {
             Instruction::ApiRequest { .. } => todo!("Execute API calls"),
@@ -212,12 +255,12 @@ pub fn execute(plan: Vec<Instruction>) -> Result<Memory, ExecutionError> {
                 arithmetic,
                 destination,
             } => {
-                let out = arithmetic.calculate(&mem)?;
+                let out = arithmetic.calculate(mem)?;
                 mem.set(destination, out);
             }
         }
     }
-    Ok(mem)
+    Ok(())
 }
 
 /// Errors that could occur when executing a KittyCAD execution plan.
@@ -227,4 +270,8 @@ pub enum ExecutionError {
     MemoryEmpty { addr: Address },
     #[error("Cannot apply operation {op} to operands {operands:?}")]
     CannotApplyOperation { op: Operation, operands: Vec<Value> },
+    #[error("Tried to read a '{expected}' from KCEP program memory, found an '{actual}' instead")]
+    MemoryWrongType { expected: &'static str, actual: String },
+    #[error("Wrong size of memory trying to read value from KCEP program memory: got {actual} but wanted {expected}")]
+    MemoryWrongSize { expected: usize, actual: usize },
 }
