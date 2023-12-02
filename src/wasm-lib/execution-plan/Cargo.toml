@@ -8,5 +8,6 @@ description = "A DSL for composing KittyCAD API queries"
 
 [dependencies]
 bytes = "1.5"
+kittycad = { workspace = true, features = ["requests"] }
 serde = { version = "1", features = ["derive"] }
 thiserror = "1"
