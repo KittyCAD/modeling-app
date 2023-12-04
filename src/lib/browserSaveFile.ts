@@ -34,8 +34,8 @@ export const browserSaveFile = async (blob: Blob, suggestedName: string) => {
       // Fail silently if the user has simply canceled the dialog.
       if (err.name !== 'AbortError') {
         console.error(err.name, err.message)
-        return
       }
+      return
     }
   }
   // Fallback if the File System Access API is not supported…

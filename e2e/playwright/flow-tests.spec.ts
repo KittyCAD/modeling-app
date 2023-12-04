@@ -4,6 +4,8 @@ import { EngineCommand } from '../../src/lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
 import { getUtils } from './test-utils'
 import waitOn from 'wait-on'
+import { Models } from '@kittycad/lib'
+import fsp from 'fs/promises'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -58,8 +60,13 @@ test('Basic sketch', async ({ page }) => {
 
   // click on "Start Sketch" button
   await u.clearCommandLogs()
-  await page.getByRole('button', { name: 'Start Sketch' }).click()
-  await u.waitForDefaultPlanesVisibilityChange()
+  await Promise.all([
+    u.doAndWaitForImageDiff(
+      () => page.getByRole('button', { name: 'Start Sketch' }).click(),
+      200
+    ),
+    u.waitForDefaultPlanesVisibilityChange(),
+  ])
 
   // select a plane
   await u.doAndWaitForCmd(() => page.mouse.click(700, 200), 'edit_mode_enter')
@@ -79,8 +86,8 @@ test('Basic sketch', async ({ page }) => {
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
 
-  const startAt = '[9.94, -13.41]'
-  const tenish = '10.03'
+  const startAt = '[10.97, -14.79]'
+  const tenish = '11.07'
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
@@ -98,7 +105,7 @@ test('Basic sketch', async ({ page }) => {
   |> startProfileAt(${startAt}, %)
   |> line([${tenish}, 0], %)
   |> line([0, ${tenish}], %)
-  |> line([-19.97, 0], %)`)
+  |> line([-22.04, 0], %)`)
 
   // deselect line tool
   await u.doAndWaitForCmd(
@@ -126,7 +133,7 @@ test('Basic sketch', async ({ page }) => {
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
-  |> line({ to: [10.03, 0], tag: 'seg01' }, %)
+  |> line({ to: [${tenish}, 0], tag: 'seg01' }, %)
   |> line([0, ${tenish}], %)
   |> angledLine([180, segLen('seg01', %)], %)`)
 })
@@ -309,8 +316,8 @@ test('Can create sketches on all planes and their back sides', async ({
     plane = 'XY',
     sign = ''
   ) => `const part001 = startSketchOn('${plane}')
-  |> startProfileAt([${sign}3.97, -5.36], %)
-  |> line([${sign}4.01, 0], %)`
+  |> startProfileAt([${sign}6.88, -9.29], %)
+  |> line([${sign}6.95, 0], %)`
   await TestSinglePlane({
     viewCmd: camCmd,
     expectedCode: codeTemplate('XY'),
@@ -454,6 +461,11 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   await u.openDebugPanel()
   await u.waitForDefaultPlanesVisibilityChange()
 
+  const xAxisClick = () => page.mouse.click(700, 250)
+  const emptySpaceClick = () => page.mouse.click(700, 300)
+  const topHorzSegmentClick = () => page.mouse.click(700, 285)
+  const bottomHorzSegmentClick = () => page.mouse.click(750, 393)
+
   await u.clearCommandLogs()
   await page.getByRole('button', { name: 'Start Sketch' }).click()
   await u.waitForDefaultPlanesVisibilityChange()
@@ -476,8 +488,9 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
 
-  const startAt = '[9.94, -13.41]'
-  const tenish = '10.03'
+  const startAt = '[10.97, -14.79]'
+  const tenish = '11.07'
+  const twentyish = '22.04'
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
@@ -495,7 +508,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   |> startProfileAt(${startAt}, %)
   |> line([${tenish}, 0], %)
   |> line([0, ${tenish}], %)
-  |> line([-19.97, 0], %)`)
+  |> line([-${twentyish}, 0], %)`)
 
   // deselect line tool
   await u.doAndWaitForCmd(
@@ -504,7 +517,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   )
 
   await u.closeDebugPanel()
-  const hoverSequency = async () => {
+  const selectionSequence = async () => {
     await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
 
     await page.mouse.move(startXPx + PUR * 15, 500 - PUR * 10)
@@ -519,20 +532,76 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
     await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
     await page.mouse.move(startXPx + PUR * 10, 500 - PUR * 20) // mouse onto another line
     await expect(page.getByTestId('hover-highlight')).toBeVisible()
+
+    // now check clicking works including axis
+
+    // click a segment hold shift and click an axis, see that a relevant constraint is enabled
+    await u.doAndWaitForCmd(topHorzSegmentClick, 'select_with_point', false)
+    await page.keyboard.down('Shift')
+    const absYButton = page.getByRole('button', { name: 'ABS Y' })
+    await expect(absYButton).toBeDisabled()
+    await u.doAndWaitForCmd(xAxisClick, 'select_with_point', false)
+    await page.keyboard.up('Shift')
+    await absYButton.and(page.locator(':not([disabled])')).waitFor()
+    await expect(absYButton).not.toBeDisabled()
+
+    // clear selection by clicking on nothing
+    await u.doAndWaitForCmd(emptySpaceClick, 'select_clear', false)
+
+    // same selection but click the axis first
+    await u.doAndWaitForCmd(xAxisClick, 'select_with_point', false)
+    await expect(absYButton).toBeDisabled()
+    await page.keyboard.down('Shift')
+    await u.doAndWaitForCmd(topHorzSegmentClick, 'select_with_point', false)
+    await page.keyboard.up('Shift')
+    await expect(absYButton).not.toBeDisabled()
+
+    // clear selection by clicking on nothing
+    await u.doAndWaitForCmd(emptySpaceClick, 'select_clear', false)
+
+    // check the same selection again by putting cursor in code first then selecting axis
+    await u.doAndWaitForCmd(
+      () => page.getByText(`  |> line([-${twentyish}, 0], %)`).click(),
+      'select_clear',
+      false
+    )
+    await page.keyboard.down('Shift')
+    await expect(absYButton).toBeDisabled()
+    await u.doAndWaitForCmd(xAxisClick, 'select_with_point', false)
+    await page.keyboard.up('Shift')
+    await expect(absYButton).not.toBeDisabled()
+
+    // clear selection by clicking on nothing
+    await u.doAndWaitForCmd(emptySpaceClick, 'select_clear', false)
+
+    // select segment in editor than another segment in scene and check there are two cursors
+    await u.doAndWaitForCmd(
+      () => page.getByText(`  |> line([-${twentyish}, 0], %)`).click(),
+      'select_clear',
+      false
+    )
+    await page.keyboard.down('Shift')
+    await expect(page.locator('.cm-cursor')).toHaveCount(1)
+    await u.doAndWaitForCmd(bottomHorzSegmentClick, 'select_with_point', false) // another segment, bottom one
+    await page.keyboard.up('Shift')
+    await expect(page.locator('.cm-cursor')).toHaveCount(2)
+
+    // clear selection by clicking on nothing
+    await u.doAndWaitForCmd(emptySpaceClick, 'select_clear', false)
   }
-  await hoverSequency()
+
+  await selectionSequence()
 
   // hovering in fresh sketch worked, lets try exiting and re-entering
   await u.doAndWaitForCmd(
     () => page.getByRole('button', { name: 'Exit Sketch' }).click(),
     'edit_mode_exit'
   )
+  // wait for execution done
+  await u.expectCmdLog('[data-message-type="execution-done"]')
 
   // select a line
-  await u.doAndWaitForCmd(
-    () => page.mouse.click(startXPx + PUR * 10, 500 - PUR * 20),
-    'select_with_point'
-  )
+  await u.doAndWaitForCmd(topHorzSegmentClick, 'select_clear', false)
 
   // enter sketch again
   await u.doAndWaitForCmd(
@@ -542,5 +611,5 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
   )
 
   // hover again and check it works
-  await hoverSequency()
+  await selectionSequence()
 })

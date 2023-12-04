@@ -1,7 +1,6 @@
 use crate::{
     ast::types::Program,
-    errors::KclError,
-    errors::KclErrorDetails,
+    errors::{KclError, KclErrorDetails},
     executor::SourceRange,
     token::{Token, TokenType},
 };
