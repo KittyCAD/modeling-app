@@ -4,12 +4,12 @@ use crate::{ExecutionError, Value};
 /// but require multiple values to store.
 /// They get laid out into multiple consecutive memory addresses.
 pub trait Composite: Sized {
+    /// How many memory addresses are required to store this value?
+    const SIZE: usize;
     /// Store the value in memory.
     fn into_parts(self) -> Vec<Value>;
     /// Read the value from memory.
     fn from_parts(values: Vec<Value>) -> Result<Self, ExecutionError>;
-    /// How many memory addresses are required to store this value?
-    const SIZE: usize;
 }
 
 impl Composite for kittycad::types::Point3D {
