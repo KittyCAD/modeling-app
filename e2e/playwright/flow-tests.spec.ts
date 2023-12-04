@@ -183,6 +183,26 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
 
   // wait for .cm-lint-marker-error not to be visible
   await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+  // let's check we get an error when defining the same variable twice
+  await page.getByText('const bottomAng = 25').click()
+  await page.keyboard.press('Enter')
+  await page.keyboard.type("// Let's define the same thing twice")
+  await page.keyboard.press('Enter')
+  await page.keyboard.type('const topAng = 42')
+
+  await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+  await expect(page.locator('.cm-lintRange.cm-lintRange-error')).toBeVisible()
+
+  await page.locator('.cm-lintRange.cm-lintRange-error').hover()
+  await expect(page.locator('.cm-diagnosticText')).toBeVisible()
+  await expect(page.getByText('Cannot redefine topAng')).toBeVisible()
+
+  const secondTopAng = await page.getByText('topAng').first()
+  await secondTopAng?.dblclick()
+  await page.keyboard.type('otherAng')
+
+  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 })
 
 test('executes on load', async ({ page, context }) => {
