@@ -6,11 +6,11 @@
 //! You can think of it as a domain-specific language for making KittyCAD API calls and using
 //! the results to make other API calls.
 
-use in_memory::Composite;
+use composite::Composite;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, fmt};
 
-mod in_memory;
+mod composite;
 #[cfg(test)]
 mod tests;
 
@@ -119,8 +119,9 @@ pub enum NumericValue {
 pub enum Instruction {
     /// Call the KittyCAD API.
     ApiRequest {
-        /// Which endpoint to call?
-        endpoint: kittycad::types::ModelingCmd,
+        /// Which ModelingCmd to call.
+        /// It's a composite value starting at the given address.
+        endpoint: Address,
         /// Which address should the response be stored in?
         store_response: Option<usize>,
         /// Look up each API request in this register number.
