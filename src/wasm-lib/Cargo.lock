@@ -823,6 +823,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "execution-plan"
+version = "0.1.0"
+dependencies = [
+ "bytes",
+ "kittycad",
+ "serde",
+ "thiserror",
+]
+
+[[package]]
 name = "expectorate"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"

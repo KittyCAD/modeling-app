@@ -1,0 +1,13 @@
+[package]
+name = "execution-plan"
+version = "0.1.0"
+edition = "2021"
+repository = "https://github.com/KittyCAD/modeling-app"
+rust-version = "1.73"
+description = "A DSL for composing KittyCAD API queries"
+
+[dependencies]
+bytes = "1.5"
+kittycad = { workspace = true, features = ["requests"] }
+serde = { version = "1", features = ["derive"] }
+thiserror = "1"

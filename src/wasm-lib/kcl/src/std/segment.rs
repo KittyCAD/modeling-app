@@ -4,13 +4,12 @@ use anyhow::Result;
 use derive_docs::stdlib;
 use schemars::JsonSchema;
 
+use super::utils::between;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{MemoryItem, SketchGroup},
     std::Args,
 };
-
-use super::utils::between;
 
 /// Returns the segment end of x.
 pub async fn segment_end_x(args: Args) -> Result<MemoryItem, KclError> {
