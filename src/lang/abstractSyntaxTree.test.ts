@@ -169,16 +169,24 @@ describe('testing function declaration', () => {
               end: 39,
               params: [
                 {
-                  type: 'Identifier',
-                  start: 12,
-                  end: 13,
-                  name: 'a',
+                  type: 'Parameter',
+                  identifier: {
+                    type: 'Identifier',
+                    start: 12,
+                    end: 13,
+                    name: 'a',
+                  },
+                  optional: false,
                 },
                 {
-                  type: 'Identifier',
-                  start: 15,
-                  end: 16,
-                  name: 'b',
+                  type: 'Parameter',
+                  identifier: {
+                    type: 'Identifier',
+                    start: 15,
+                    end: 16,
+                    name: 'b',
+                  },
+                  optional: false,
                 },
               ],
               body: {
@@ -244,16 +252,24 @@ const myVar = funcN(1, 2)`
               end: 37,
               params: [
                 {
-                  type: 'Identifier',
-                  start: 12,
-                  end: 13,
-                  name: 'a',
+                  type: 'Parameter',
+                  identifier: {
+                    type: 'Identifier',
+                    start: 12,
+                    end: 13,
+                    name: 'a',
+                  },
+                  optional: false,
                 },
                 {
-                  type: 'Identifier',
-                  start: 15,
-                  end: 16,
-                  name: 'b',
+                  type: 'Parameter',
+                  identifier: {
+                    type: 'Identifier',
+                    start: 15,
+                    end: 16,
+                    name: 'b',
+                  },
+                  optional: false,
                 },
               ],
               body: {
@@ -331,9 +347,6 @@ const myVar = funcN(1, 2)`
                   raw: '2',
                 },
               ],
-              function: {
-                type: 'InMemory',
-              },
               optional: false,
             },
           },
@@ -403,7 +416,6 @@ describe('testing pipe operator special', () => {
                       ],
                     },
                   ],
-                  function: expect.any(Object),
                   optional: false,
                 },
                 {
@@ -440,7 +452,6 @@ describe('testing pipe operator special', () => {
                     },
                     { type: 'PipeSubstitution', start: 59, end: 60 },
                   ],
-                  function: expect.any(Object),
                   optional: false,
                 },
                 {
@@ -513,7 +524,6 @@ describe('testing pipe operator special', () => {
                     },
                     { type: 'PipeSubstitution', start: 105, end: 106 },
                   ],
-                  function: expect.any(Object),
                   optional: false,
                 },
                 {
@@ -550,7 +560,6 @@ describe('testing pipe operator special', () => {
                     },
                     { type: 'PipeSubstitution', start: 128, end: 129 },
                   ],
-                  function: expect.any(Object),
                   optional: false,
                 },
                 {
@@ -573,9 +582,6 @@ describe('testing pipe operator special', () => {
                     },
                     { type: 'PipeSubstitution', start: 143, end: 144 },
                   ],
-                  function: {
-                    type: 'InMemory',
-                  },
                   optional: false,
                 },
               ],
@@ -655,9 +661,6 @@ describe('testing pipe operator special', () => {
                       end: 35,
                     },
                   ],
-                  function: {
-                    type: 'InMemory',
-                  },
                   optional: false,
                 },
               ],
@@ -1345,7 +1348,7 @@ describe('nests binary expressions correctly', () => {
       ],
     })
   })
-  it('should nest properly with two opperators of equal precedence', () => {
+  it('should nest properly with two operators of equal precedence', () => {
     const code = `const yo = 1 + 2 - 3`
     const { body } = parse(code)
     expect((body[0] as any).declarations[0].init).toEqual({
@@ -1382,7 +1385,7 @@ describe('nests binary expressions correctly', () => {
       },
     })
   })
-  it('should nest properly with two opperators of equal (but higher) precedence', () => {
+  it('should nest properly with two operators of equal (but higher) precedence', () => {
     const code = `const yo = 1 * 2 / 3`
     const { body } = parse(code)
     expect((body[0] as any).declarations[0].init).toEqual({
@@ -1443,7 +1446,7 @@ describe('nests binary expressions correctly', () => {
             type: 'BinaryExpression',
             operator: '*',
             start: 15,
-            end: 26,
+            end: 25,
             left: { type: 'Literal', value: 2, raw: '2', start: 15, end: 16 },
             right: {
               type: 'BinaryExpression',
@@ -1567,7 +1570,6 @@ describe('test UnaryExpression', () => {
           { type: 'Literal', start: 19, end: 20, value: 4, raw: '4' },
           { type: 'Literal', start: 22, end: 25, value: 100, raw: '100' },
         ],
-        function: expect.any(Object),
         optional: false,
       },
     })
@@ -1601,12 +1603,10 @@ describe('testing nested call expressions', () => {
               { type: 'Literal', start: 34, end: 35, value: 5, raw: '5' },
               { type: 'Literal', start: 37, end: 38, value: 3, raw: '3' },
             ],
-            function: expect.any(Object),
             optional: false,
           },
         },
       ],
-      function: expect.any(Object),
       optional: false,
     })
   })
@@ -1638,7 +1638,6 @@ describe('should recognise callExpresions in binaryExpressions', () => {
             },
             { type: 'PipeSubstitution', start: 25, end: 26 },
           ],
-          function: expect.any(Object),
           optional: false,
         },
         right: { type: 'Literal', value: 1, raw: '1', start: 30, end: 31 },

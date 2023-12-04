@@ -1,0 +1,85 @@
+---
+source: kcl/src/parser/parser_impl.rs
+expression: actual
+---
+{
+  "start": 0,
+  "end": 23,
+  "body": [
+    {
+      "type": "ExpressionStatement",
+      "type": "ExpressionStatement",
+      "start": 0,
+      "end": 23,
+      "expression": {
+        "type": "CallExpression",
+        "type": "CallExpression",
+        "start": 0,
+        "end": 23,
+        "callee": {
+          "type": "Identifier",
+          "start": 0,
+          "end": 6,
+          "name": "lineTo"
+        },
+        "arguments": [
+          {
+            "type": "ObjectExpression",
+            "type": "ObjectExpression",
+            "start": 7,
+            "end": 22,
+            "properties": [
+              {
+                "type": "ObjectProperty",
+                "start": 9,
+                "end": 20,
+                "key": {
+                  "type": "Identifier",
+                  "start": 9,
+                  "end": 11,
+                  "name": "to"
+                },
+                "value": {
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression",
+                  "start": 13,
+                  "end": 20,
+                  "elements": [
+                    {
+                      "type": "Literal",
+                      "type": "Literal",
+                      "start": 14,
+                      "end": 15,
+                      "value": 0,
+                      "raw": "0"
+                    },
+                    {
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression",
+                      "start": 17,
+                      "end": 19,
+                      "operator": "-",
+                      "argument": {
+                        "type": "Literal",
+                        "type": "Literal",
+                        "start": 18,
+                        "end": 19,
+                        "value": 1,
+                        "raw": "1"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "optional": false
+      }
+    }
+  ],
+  "nonCodeMeta": {
+    "nonCodeNodes": {},
+    "start": []
+  }
+}

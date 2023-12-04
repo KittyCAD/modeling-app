@@ -1,5 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
+import { type InstanceProps, create } from 'react-modal-promise'
 import { Value } from '../lang/wasm'
 import {
   AvailableVars,
@@ -9,6 +10,28 @@ import {
   CreateNewVariable,
 } from './AvailableVarsHelpers'
 
+type ModalResolve = {
+  value: string
+  sign: number
+  valueNode: Value
+  variableName?: string
+  newVariableInsertIndex: number
+}
+
+type ModalReject = boolean
+
+type SetAngleLengthModalProps = InstanceProps<ModalResolve, ModalReject> & {
+  value: number
+  valueName: string
+  shouldCreateVariable?: boolean
+}
+
+export const createSetAngleLengthModal = create<
+  SetAngleLengthModalProps,
+  ModalResolve,
+  ModalReject
+>
+
 export const SetAngleLengthModal = ({
   isOpen,
   onResolve,
@@ -16,20 +39,7 @@ export const SetAngleLengthModal = ({
   value: initialValue,
   valueName,
   shouldCreateVariable: initialShouldCreateVariable = false,
-}: {
-  isOpen: boolean
-  onResolve: (a: {
-    value: string
-    sign: number
-    valueNode: Value
-    variableName?: string
-    newVariableInsertIndex: number
-  }) => void
-  onReject: (a: any) => void
-  value: number
-  valueName: string
-  shouldCreateVariable: boolean
-}) => {
+}: SetAngleLengthModalProps) => {
   const [sign, setSign] = useState(Math.sign(Number(initialValue)))
   const [value, setValue] = useState(String(initialValue * sign))
   const [shouldCreateVariable, setShouldCreateVariable] = useState(
@@ -98,7 +108,7 @@ export const SetAngleLengthModal = ({
                 </label>
                 <div className="mt-1 flex">
                   <button
-                    className="border border-gray-300 px-2"
+                    className="border border-gray-300 px-2 text-gray-900"
                     onClick={() => setSign(-sign)}
                   >
                     {sign > 0 ? '+' : '-'}
@@ -108,7 +118,7 @@ export const SetAngleLengthModal = ({
                     type="text"
                     name="val"
                     id="val"
-                    className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md font-mono pl-1"
+                    className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md font-mono pl-1 text-gray-900"
                     value={value}
                     onChange={(e) => {
                       setValue(e.target.value)

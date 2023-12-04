@@ -1,5 +1,7 @@
+use std::sync::Arc;
+
 use anyhow::Result;
-use kcl_lib::engine::EngineManager;
+use kcl_lib::{engine::EngineManager, std::StdLib};
 
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
@@ -38,7 +40,11 @@ async fn execute_and_snapshot(code: &str) -> Result<image::DynamicImage> {
     let mut mem: kcl_lib::executor::ProgramMemory = Default::default();
     let engine = kcl_lib::engine::EngineConnection::new(ws).await?;
     let planes = kcl_lib::executor::DefaultPlanes::new(&engine).await?;
-    let ctx = kcl_lib::executor::ExecutorContext { engine, planes };
+    let ctx = kcl_lib::executor::ExecutorContext {
+        engine,
+        planes,
+        stdlib: Arc::new(StdLib::default()),
+    };
     let _ = kcl_lib::executor::execute(program, &mut mem, kcl_lib::executor::BodyType::Root, &ctx).await?;
 
     // Send a snapshot request to the engine.
@@ -220,6 +226,14 @@ async fn serial_test_execute_pipes_on_pipes() {
 
     let result = execute_and_snapshot(code).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/pipes_on_pipes.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_execute_cylinder() {
+    let code = include_str!("inputs/cylinder.kcl");
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/cylinder.png", &result, 0.999);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -503,4 +517,24 @@ show(part)"#;
 
     let result = execute_and_snapshot(code).await.unwrap();
     twenty_twenty::assert_image("tests/executor/outputs/rounded_with_holes.png", &result, 0.999);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn serial_test_top_level_expression() {
+    let code = r#"fn circle = (pos, radius) => {
+  const sg = startSketchOn('XY')
+    |> startProfileAt([pos[0] + radius, pos[1]], %)
+    |> arc({
+       angle_end: 360,
+       angle_start: 0,
+       radius: radius
+     }, %)
+    |> close(%)
+  return sg
+}
+
+circle([0,0], 22) |> extrude(14, %)"#;
+
+    let result = execute_and_snapshot(code).await.unwrap();
+    twenty_twenty::assert_image("tests/executor/outputs/top_level_expression.png", &result, 0.999);
 }

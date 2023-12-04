@@ -1,0 +1,73 @@
+---
+source: kcl/src/parser/parser_impl.rs
+expression: actual
+---
+{
+  "start": 0,
+  "end": 37,
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 37,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 6,
+          "end": 37,
+          "id": {
+            "type": "Identifier",
+            "start": 6,
+            "end": 14,
+            "name": "mySketch"
+          },
+          "init": {
+            "type": "CallExpression",
+            "type": "CallExpression",
+            "start": 17,
+            "end": 37,
+            "callee": {
+              "type": "Identifier",
+              "start": 17,
+              "end": 30,
+              "name": "startSketchAt"
+            },
+            "arguments": [
+              {
+                "type": "ArrayExpression",
+                "type": "ArrayExpression",
+                "start": 31,
+                "end": 36,
+                "elements": [
+                  {
+                    "type": "Literal",
+                    "type": "Literal",
+                    "start": 32,
+                    "end": 33,
+                    "value": 0,
+                    "raw": "0"
+                  },
+                  {
+                    "type": "Literal",
+                    "type": "Literal",
+                    "start": 34,
+                    "end": 35,
+                    "value": 0,
+                    "raw": "0"
+                  }
+                ]
+              }
+            ],
+            "optional": false
+          }
+        }
+      ],
+      "kind": "const"
+    }
+  ],
+  "nonCodeMeta": {
+    "nonCodeNodes": {},
+    "start": []
+  }
+}

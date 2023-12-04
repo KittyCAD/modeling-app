@@ -7,6 +7,6 @@ export function useAbsoluteFilePath() {
   return (
     paths.FILE +
     '/' +
-    encodeURIComponent(routeData?.project?.path || BROWSER_FILE_NAME)
+    encodeURIComponent(routeData?.file?.path || BROWSER_FILE_NAME)
   )
 }

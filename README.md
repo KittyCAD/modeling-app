@@ -48,7 +48,7 @@ We recommend downloading the latest application binary from [our Releases page](
 
 ## Running a development build
 
-First, [install Rust via `rustup`](https://www.rust-lang.org/tools/install). This project uses a lot of Rust compiled to [WASM](https://webassembly.org/) within it. Then, run:
+First, [install Rust via `rustup`](https://www.rust-lang.org/tools/install). This project uses a lot of Rust compiled to [WASM](https://webassembly.org/) within it. We always use the latest stable version of Rust, so you may need to run `rustup update stable`. Then, run:
 
 ```
 yarn install
@@ -104,7 +104,7 @@ To spin up up tauri dev, `yarn install` and `yarn build:wasm-dev` need to have b
 yarn tauri dev
 ```
 
-Will spin up the web app before opening up the tauri dev desktop app. Note that it's probably a good idea to close the browser tab that gets opened since at the time of writting they can conflict.
+Will spin up the web app before opening up the tauri dev desktop app. Note that it's probably a good idea to close the browser tab that gets opened since at the time of writing they can conflict.
 
 The dev instance automatically opens up the browser devtools which can be disabled by [commenting it out](https://github.com/KittyCAD/modeling-app/blob/main/src-tauri/src/main.rs#L92.)
 
@@ -176,3 +176,112 @@ $ cargo +nightly fuzz run parser
 
 For more information on fuzzing you can check out
 [this guide](https://rust-fuzz.github.io/book/cargo-fuzz.html).
+
+
+### Playwright
+
+First time running plawright locally, you'll need to add the secrets file
+```bash
+touch ./e2e/playwright/playwright-secrets.env
+echo 'token="your-token"' > ./e2e/playwright/playwright-secrets.env
+```
+then replace "your-token" with a dev token from dev.kittycad.io/account/api-tokens
+
+then:
+run playwright
+```
+yarn playwright test
+```
+
+run a specific test suite
+```
+yarn playwright test src/e2e-tests/example.spec.ts
+```
+
+run a specific test change the test from `test('...` to `test.only('...`
+(note if you commit this, the tests will instantly fail without running any of the tests)
+
+run headed
+```
+yarn playwright test --headed
+```
+
+run with step through debugger
+```
+PWDEBUG=1 yarn playwright test
+```
+However, if you want a debugger I recommend using VSCode and the `playwright` extension, as the above command is a cruder debugger that steps into every function call which is annoying.
+With the extension you can set a breakpoint after `waitForDefaultPlanesVisibilityChange` in order to skip app loading, then the vscode debugger's "step over" is much better for being able to stay at the right level of abstraction as you debug the code.
+
+If you want to limit to a single browser use `--project="webkit"` or `firefox`, `Google Chrome`
+Or comment out browsers in `playwright.config.ts`.
+
+note chromium has encoder compat issues which is why were testing against the branded 'Google Chrome'
+
+You may consider using the VSCode extension, it's useful for running individual threads, but some some reason the "record a test" is locked to chromium with we can't use. A work around is to us the CI `yarn playwright codegen -b wk --load-storage ./store localhost:3000`
+
+<details>
+<summary>
+
+Where `./store` should look like this
+
+</summary>
+
+```JSON
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:3000",
+      "localStorage": [
+        {
+          "name": "store",
+          "value": "{\"state\":{\"openPanes\":[\"code\"]},\"version\":0}"
+        },
+        {
+          "name": "persistCode",
+          "value": ""
+        },
+        {
+          "name": "TOKEN_PERSIST_KEY",
+          "value": "your-token"
+        }
+      ]
+    }
+  ]
+}
+```
+
+</details>
+
+
+However because much of our tests involve clicking in the stream at specific locations, it's code-gen looks `await page.locator('video').click();` when really we need to use a pixel coord, so I think it's of limited use.
+
+#### Some notes on CI
+
+The tests are broken into snapshot tests and non-snapshot tests, and they run in that order, they automatically commit new snap shots, so if you see an image commit check it was an intended change. If we have non-determinism in the snapshots such that they are always committing new images, hopefully this annoyance makes us fix them asap, if you notice this happening let Kurt know. But for the odd occasion  `git reset --hard HEAD~ && git push -f` is your friend.
+
+How to interpret failing playwright tests?
+If your tests fail, click through to the action and see that the tests failed on a line that includes `await page.getByTestId('loading').waitFor({ state: 'detached' })`, this means the test fail because the stream never started. It's you choice if you want to re-run the test, or ignore the failure.
+
+We run on ubuntu and macos, because safari doesn't work on linux because of the dreaded "no RTCPeerConnection variable" error. But linux runs first and then macos for the same reason that we limit the number of parallel tests to 1 because we limit stream connections per user, so tests would start failing we if let them run together.
+
+If something fails on CI you can download the artifact, unzip it and then open `playwright-report/data/<UUID>.zip` with https://trace.playwright.dev/ to see what happened.
+
+#### Getting started writing a playwright test in our app
+
+Besides following the instructions above and using the playwright docs, our app is weird because of the whole stream thing, which means our testing is weird. Because we've just figured out this stuff and therefore docs might go stale quick here's a 15min vid/tutorial
+
+https://github.com/KittyCAD/modeling-app/assets/29681384/6f5e8e85-1003-4fd9-be7f-f36ce833942d
+
+<details>
+
+<summary>
+Ps for the debug panel, the following JSON is useful for snapping the camera
+</summary>
+
+```JSON
+{"type":"modeling_cmd_req","cmd_id":"054e5472-e5e9-4071-92d7-1ce3bac61956","cmd":{"type":"default_camera_look_at","center":{"x":15,"y":0,"z":0},"up":{"x":0,"y":0,"z":1},"vantage":{"x":30,"y":30,"z":30}}}
+```
+
+</details>

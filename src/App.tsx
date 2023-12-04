@@ -1,4 +1,4 @@
-import { useEffect, useCallback, MouseEventHandler } from 'react'
+import { useCallback, MouseEventHandler } from 'react'
 import { DebugPanel } from './components/DebugPanel'
 import { v4 as uuidv4 } from 'uuid'
 import { PaneType, useStore } from './useStore'
@@ -19,7 +19,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { getNormalisedCoordinates } from './lib/utils'
-import { isTauri } from './lib/isTauri'
 import { useLoaderData } from 'react-router-dom'
 import { IndexLoaderData } from './Router'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
@@ -31,11 +30,10 @@ import { TextEditor } from 'components/TextEditor'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
 import { engineCommandManager } from './lang/std/engineConnection'
-import { kclManager } from 'lang/KclSinglton'
 import { useModelingContext } from 'hooks/useModelingContext'
 
 export function App() {
-  const { code: loadedCode, project } = useLoaderData() as IndexLoaderData
+  const { project, file } = useLoaderData() as IndexLoaderData
 
   useHotKeyListener()
   const {
@@ -81,20 +79,6 @@ export function App() {
     : didDragInStream
     ? 'opacity-40'
     : ''
-
-  // Use file code loaded from disk
-  // on mount, and overwrite any locally-stored code
-  useEffect(() => {
-    if (isTauri() && loadedCode !== null) {
-      kclManager.setCode(loadedCode)
-    }
-    return () => {
-      // Clear code on unmount if in desktop app
-      if (isTauri()) {
-        kclManager.setCode('')
-      }
-    }
-  }, [loadedCode])
 
   useEngineConnectionSubscriptions()
 
@@ -185,7 +169,7 @@ export function App() {
           paneOpacity +
           (buttonDownInStream ? ' pointer-events-none' : '')
         }
-        project={project}
+        project={{ project, file }}
         enableMenu={true}
       />
       <ModalContainer />

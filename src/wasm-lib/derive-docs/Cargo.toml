@@ -4,6 +4,8 @@ description = "A tool for generating documentation from Rust derive macros"
 version = "0.1.4"
 edition = "2021"
 license = "MIT"
+repository = "https://github.com/KittyCAD/modeling-app"
+rust-version = "1.73"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -14,9 +16,9 @@ proc-macro = true
 convert_case = "0.6.0"
 proc-macro2 = "1"
 quote = "1"
-serde = { version = "1.0.189", features = ["derive"] }
+serde = { version = "1.0.193", features = ["derive"] }
 serde_tokenstream = "0.2"
-syn = { version = "2.0.38", features = ["full"] }
+syn = { version = "2.0.39", features = ["full"] }
 
 [dev-dependencies]
 expectorate = "1.1.0"

@@ -10,7 +10,10 @@ const Loading = ({ children }: React.PropsWithChildren) => {
     return () => clearTimeout(timer)
   }, [setHasLongLoadTime])
   return (
-    <div className="body-bg flex flex-col items-center justify-center h-screen">
+    <div
+      className="body-bg flex flex-col items-center justify-center h-screen"
+      data-testid="loading"
+    >
       <svg viewBox="0 0 10 10" className="w-8 h-8">
         <circle cx="5" cy="5" r="4" stroke="var(--liquid-20)" fill="none" />
         <circle

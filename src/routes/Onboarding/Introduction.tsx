@@ -10,6 +10,7 @@ import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { bracket } from 'lib/exampleKcl'
 import {
+  PROJECT_ENTRYPOINT,
   createNewProject,
   getNextProjectIndex,
   getProjectsInDir,
@@ -20,6 +21,7 @@ import { useNavigate } from 'react-router-dom'
 import { paths } from 'Router'
 import { useEffect } from 'react'
 import { kclManager } from 'lang/KclSinglton'
+import { sep } from '@tauri-apps/api/path'
 
 function OnboardingWithNewFile() {
   const navigate = useNavigate()
@@ -41,12 +43,19 @@ function OnboardingWithNewFile() {
       ONBOARDING_PROJECT_NAME,
       nextIndex
     )
-    const newFile = await createNewProject(defaultDirectory + '/' + name)
-    navigate(`${paths.FILE}/${encodeURIComponent(newFile.path)}`)
+    const newFile = await createNewProject(
+      defaultDirectory + sep + name,
+      bracket
+    )
+    navigate(
+      `${paths.FILE}/${encodeURIComponent(
+        newFile.path + sep + PROJECT_ENTRYPOINT
+      )}${paths.ONBOARDING.INDEX}`
+    )
   }
   return (
-    <div className="fixed grid place-content-center inset-0 bg-chalkboard-110/50 z-50">
-      <div className="max-w-3xl bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded">
+    <div className="fixed inset-0 z-50 grid place-content-center bg-chalkboard-110/50">
+      <div className="max-w-3xl p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
         {!isTauri() ? (
           <>
             <h1 className="text-2xl font-bold text-warn-80 dark:text-warn-10">
@@ -73,7 +82,7 @@ function OnboardingWithNewFile() {
               <ActionButton
                 Element="button"
                 onClick={() => {
-                  kclManager.setCode(bracket)
+                  kclManager.setCodeAndExecute(bracket)
                   next()
                 }}
                 icon={{ icon: faArrowRight }}
@@ -84,7 +93,7 @@ function OnboardingWithNewFile() {
           </>
         ) : (
           <>
-            <h1 className="text-2xl font-bold flex gap-4 flex-wrap items-center">
+            <h1 className="flex flex-wrap items-center gap-4 text-2xl font-bold">
               Would you like to create a new project?
             </h1>
             <section className="my-12">
@@ -110,7 +119,11 @@ function OnboardingWithNewFile() {
               </ActionButton>
               <ActionButton
                 Element="button"
-                onClick={createAndOpenNewProject}
+                onClick={() => {
+                  createAndOpenNewProject()
+                  kclManager.setCode(bracket, false)
+                  dismiss()
+                }}
                 icon={{ icon: faArrowRight }}
               >
                 Make a new project
@@ -138,21 +151,22 @@ export default function Introduction() {
       : ''
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.CAMERA)
+  const isStarterCode = kclManager.code === '' || kclManager.code === bracket
 
   useEffect(() => {
     if (kclManager.code === '') kclManager.setCode(bracket)
-  }, [kclManager.code, kclManager.setCode])
+  }, [])
 
-  return !(kclManager.code !== '' && kclManager.code !== bracket) ? (
-    <div className="fixed grid place-content-center inset-0 bg-chalkboard-110/50 z-50">
-      <div className="max-w-3xl bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded">
-        <h1 className="text-2xl font-bold flex gap-4 flex-wrap items-center">
+  return isStarterCode ? (
+    <div className="fixed inset-0 z-50 grid place-content-center bg-chalkboard-110/50">
+      <div className="max-w-3xl p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
+        <h1 className="flex flex-wrap items-center gap-4 text-2xl font-bold">
           <img
             src={`/kcma-logomark${getLogoTheme()}.svg`}
             alt="KittyCAD Modeling App"
-            className="max-w-full h-20"
+            className="h-20 max-w-full"
           />
-          <span className="bg-energy-10 text-energy-80 px-3 py-1 rounded-full text-base">
+          <span className="px-3 py-1 text-base rounded-full bg-energy-10 text-energy-80">
             Alpha
           </span>
         </h1>

@@ -1,86 +1,57 @@
 use std::f64::consts::PI;
 
+use kittycad::types::Angle;
+
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{Point2d, SourceRange},
 };
 
-#[derive(Clone, Copy, Default, PartialOrd, PartialEq, Debug)]
-pub struct Angle {
-    degrees: f64,
+/// Get the angle between these points
+pub fn between(a: Point2d, b: Point2d) -> Angle {
+    let x = b.x - a.x;
+    let y = b.y - a.y;
+    normalize(Angle::from_radians(y.atan2(x)))
 }
 
-impl From<kittycad::types::Angle> for Angle {
-    fn from(angle: kittycad::types::Angle) -> Self {
-        match angle.unit {
-            kittycad::types::UnitAngle::Degrees => Self::from_degrees(angle.value),
-            kittycad::types::UnitAngle::Radians => Self::from_radians(angle.value),
-        }
-    }
+/// Normalize the angle
+pub fn normalize(angle: Angle) -> Angle {
+    let deg = angle.degrees();
+    let result = ((deg % 360.0) + 360.0) % 360.0;
+    Angle::from_degrees(if result > 180.0 { result - 360.0 } else { result })
 }
 
-impl Angle {
-    const ZERO: Self = Self { degrees: 0.0 };
-    /// Make an angle of the given degrees.
-    pub fn from_degrees(degrees: f64) -> Self {
-        Self { degrees }
-    }
-    /// Make an angle of the given radians.
-    pub fn from_radians(radians: f64) -> Self {
-        Self::from_degrees(radians.to_degrees())
-    }
-    /// Get the angle in degrees
-    pub fn degrees(&self) -> f64 {
-        self.degrees
-    }
-    /// Get the angle in radians
-    pub fn radians(&self) -> f64 {
-        self.degrees.to_radians()
-    }
-    /// Get the angle between these points
-    pub fn between(a: Point2d, b: Point2d) -> Self {
-        let x = b.x - a.x;
-        let y = b.y - a.y;
-        Self::from_radians(y.atan2(x)).normalize()
-    }
-    /// Normalize the angle
-    pub fn normalize(self) -> Self {
-        let angle = self.degrees();
-        let result = ((angle % 360.0) + 360.0) % 360.0;
-        Self::from_degrees(if result > 180.0 { result - 360.0 } else { result })
-    }
-    /// Gives the ▲-angle between from and to angles (shortest path), use radians.
-    ///
-    /// Sign of the returned angle denotes direction, positive means counterClockwise 🔄
-    /// # Examples
-    ///
-    /// ```
-    /// use std::f64::consts::PI;
-    ///
-    /// use kcl_lib::std::utils::Angle;
-    ///
-    /// assert_eq!(
-    ///     Angle::delta(Angle::from_radians(PI / 8.0), Angle::from_radians(PI / 4.0)),
-    ///     Angle::from_radians(PI / 8.0)
-    /// );
-    /// ```
-    #[allow(dead_code)]
-    pub fn delta(from_angle: Self, to_angle: Self) -> Self {
-        let norm_from_angle = normalize_rad(from_angle.radians());
-        let norm_to_angle = normalize_rad(to_angle.radians());
-        let provisional = norm_to_angle - norm_from_angle;
+/// Gives the ▲-angle between from and to angles (shortest path), use radians.
+///
+/// Sign of the returned angle denotes direction, positive means counterClockwise 🔄
+/// # Examples
+///
+/// ```
+/// use std::f64::consts::PI;
+///
+/// use kcl_lib::std::utils::Angle;
+///
+/// assert_eq!(
+///     Angle::delta(Angle::from_radians(PI / 8.0), Angle::from_radians(PI / 4.0)),
+///     Angle::from_radians(PI / 8.0)
+/// );
+/// ```
+#[allow(dead_code)]
+pub fn delta(from_angle: Angle, to_angle: Angle) -> Angle {
+    let norm_from_angle = normalize_rad(from_angle.radians());
+    let norm_to_angle = normalize_rad(to_angle.radians());
+    let provisional = norm_to_angle - norm_from_angle;
 
-        if provisional > -PI && provisional <= PI {
-            return Angle::from_radians(provisional);
-        }
-        if provisional > PI {
-            return Angle::from_radians(provisional - 2.0 * PI);
-        }
-        if provisional < -PI {
-            return Angle::from_radians(provisional + 2.0 * PI);
-        }
-        Angle::ZERO
+    if provisional > -PI && provisional <= PI {
+        return Angle::from_radians(provisional);
     }
+    if provisional > PI {
+        return Angle::from_radians(provisional - 2.0 * PI);
+    }
+    if provisional < -PI {
+        return Angle::from_radians(provisional + 2.0 * PI);
+    }
+    Angle::ZERO
 }
 
 #[allow(dead_code)]

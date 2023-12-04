@@ -1,0 +1,119 @@
+---
+source: kcl/src/parser/parser_impl.rs
+expression: actual
+---
+{
+  "start": 0,
+  "end": 53,
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 53,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 6,
+          "end": 53,
+          "id": {
+            "type": "Identifier",
+            "start": 6,
+            "end": 8,
+            "name": "sg"
+          },
+          "init": {
+            "type": "PipeExpression",
+            "type": "PipeExpression",
+            "start": 11,
+            "end": 53,
+            "body": [
+              {
+                "type": "CallExpression",
+                "type": "CallExpression",
+                "start": 11,
+                "end": 29,
+                "callee": {
+                  "type": "Identifier",
+                  "start": 11,
+                  "end": 24,
+                  "name": "startSketchAt"
+                },
+                "arguments": [
+                  {
+                    "type": "Identifier",
+                    "type": "Identifier",
+                    "start": 25,
+                    "end": 28,
+                    "name": "pos"
+                  }
+                ],
+                "optional": false
+              },
+              {
+                "type": "CallExpression",
+                "type": "CallExpression",
+                "start": 33,
+                "end": 53,
+                "callee": {
+                  "type": "Identifier",
+                  "start": 33,
+                  "end": 37,
+                  "name": "line"
+                },
+                "arguments": [
+                  {
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression",
+                    "start": 38,
+                    "end": 49,
+                    "elements": [
+                      {
+                        "type": "Literal",
+                        "type": "Literal",
+                        "start": 39,
+                        "end": 40,
+                        "value": 0,
+                        "raw": "0"
+                      },
+                      {
+                        "type": "UnaryExpression",
+                        "type": "UnaryExpression",
+                        "start": 42,
+                        "end": 48,
+                        "operator": "-",
+                        "argument": {
+                          "type": "Identifier",
+                          "type": "Identifier",
+                          "start": 43,
+                          "end": 48,
+                          "name": "scale"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution",
+                    "start": 51,
+                    "end": 52
+                  }
+                ],
+                "optional": false
+              }
+            ],
+            "nonCodeMeta": {
+              "nonCodeNodes": {},
+              "start": []
+            }
+          }
+        }
+      ],
+      "kind": "const"
+    }
+  ],
+  "nonCodeMeta": {
+    "nonCodeNodes": {},
+    "start": []
+  }
+}

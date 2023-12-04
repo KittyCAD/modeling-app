@@ -1,4 +1,5 @@
-import { Selection, ToolTip } from '../useStore'
+import { ToolTip } from '../useStore'
+import { Selection } from 'lib/selections'
 import {
   BinaryExpression,
   Program,
@@ -246,10 +247,10 @@ function moreNodePathFromSourceRange(
   if (_node.type === 'FunctionExpression' && isInRange) {
     for (let i = 0; i < _node.params.length; i++) {
       const param = _node.params[i]
-      if (param.start <= start && param.end >= end) {
+      if (param.identifier.start <= start && param.identifier.end >= end) {
         path.push(['params', 'FunctionExpression'])
         path.push([i, 'index'])
-        return moreNodePathFromSourceRange(param, sourceRange, path)
+        return moreNodePathFromSourceRange(param.identifier, sourceRange, path)
       }
     }
     if (_node.body.start <= start && _node.body.end >= end) {

@@ -1,0 +1,77 @@
+---
+source: kcl/src/parser/parser_impl.rs
+expression: actual
+---
+{
+  "start": 0,
+  "end": 58,
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 58,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 3,
+          "end": 58,
+          "id": {
+            "type": "Identifier",
+            "start": 3,
+            "end": 4,
+            "name": "x"
+          },
+          "init": {
+            "type": "FunctionExpression",
+            "type": "FunctionExpression",
+            "start": 7,
+            "end": 58,
+            "params": [],
+            "body": {
+              "start": 13,
+              "end": 58,
+              "body": [
+                {
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement",
+                  "start": 23,
+                  "end": 32,
+                  "argument": {
+                    "type": "Identifier",
+                    "type": "Identifier",
+                    "start": 30,
+                    "end": 32,
+                    "name": "sg"
+                  }
+                },
+                {
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement",
+                  "start": 41,
+                  "end": 50,
+                  "argument": {
+                    "type": "Identifier",
+                    "type": "Identifier",
+                    "start": 48,
+                    "end": 50,
+                    "name": "sg"
+                  }
+                }
+              ],
+              "nonCodeMeta": {
+                "nonCodeNodes": {},
+                "start": []
+              }
+            }
+          }
+        }
+      ],
+      "kind": "fn"
+    }
+  ],
+  "nonCodeMeta": {
+    "nonCodeNodes": {},
+    "start": []
+  }
+}

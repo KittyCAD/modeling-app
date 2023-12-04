@@ -7,16 +7,24 @@ on:
       - main
   release:
     types: [published]
+  schedule:
+    - cron: '0 4 * * *'
+  # Daily at 04:00 AM UTC
+  # Will checkout the last commit from the default branch (main as of 2023-10-04)
+
+env:
+  BUILD_RELEASE: ${{ github.event_name == 'release' || github.event_name == 'schedule' || github.event_name == 'pull_request' && contains(github.event.pull_request.title, 'Cut release v') }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
+
 jobs:
   check-format:
-    runs-on: 'ubuntu-20.04'
+    runs-on: 'ubuntu-latest'
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
@@ -24,11 +32,11 @@ jobs:
       - run: yarn fmt-check
 
   check-types:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
@@ -40,14 +48,27 @@ jobs:
       - run: yarn build:wasm
       - run: yarn tsc
 
+
+  check-typos: 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+      - name: Install codespell
+        run: |
+            python -m pip install codespell
+      - name: Run codespell
+        run: codespell --config .codespellrc # Edit this file to tweak the typo list and other configuration.
+
+
   build-test-web:
-    runs-on: ubuntu-20.04
-    outputs:
-      version: ${{ steps.export_version.outputs.version }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn'
@@ -66,36 +87,81 @@ jobs:
 
       - run: yarn test:cov
 
-      - id: export_version
-        run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
 
-  build-apps:
-    needs: [check-format, build-test-web, check-types]
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-20.04, windows-latest]
+  prepare-json-files:
+    runs-on: ubuntu-latest  # seperate job on Ubuntu for easy string manipulations (compared to Windows)
+    outputs:
+      version: ${{ steps.export_version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: install ubuntu system dependencies
-        if: matrix.os == 'ubuntu-20.04'
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+          
+      - name: Set nightly version
+        if: github.event_name == 'schedule'
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev
+          VERSION=$(date +'%-y.%-m.%-d') yarn bump-jsons
+          echo "$(jq --arg url 'https://dl.kittycad.io/releases/modeling-app/nightly/last_update.json' \
+            '.tauri.updater.endpoints[]=$url' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
+
+      - uses: actions/upload-artifact@v3
+        if: github.event_name == 'schedule'
+        with:
+          path: |
+            package.json
+            src-tauri/tauri.conf.json
+            src-tauri/tauri.release.conf.json
+
+      - id: export_version
+        run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
+
+
+  build-test-apps:
+    needs: [prepare-json-files]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v3
+
+      - name: Copy updated .json files
+        if: github.event_name == 'schedule'
+        run: |
+          ls -l artifact
+          cp artifact/package.json package.json
+          cp artifact/src-tauri/tauri.conf.json src-tauri/tauri.conf.json
+          cp artifact/src-tauri/tauri.release.conf.json src-tauri/tauri.release.conf.json 
+
+      - name: Install ubuntu system dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: >
+          sudo apt-get update &&
+          sudo apt-get install -y
+          libgtk-3-dev
+          libgtksourceview-3.0-dev
+          webkit2gtk-4.0
+          libappindicator3-dev
+          webkit2gtk-driver
+          xvfb
 
       - name: Sync node version and setup cache
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'yarn' # Set this to npm, yarn or pnpm.
 
       - run: yarn install
 
-      - name: Rust setup
+      - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Rust cache
+      - name: Setup Rust cache
         uses: swatinem/rust-cache@v2
         with:
           workspaces: './src-tauri -> target'
@@ -104,24 +170,27 @@ jobs:
         with:
           workspaces: './src/wasm-lib'
 
-      - name: wasm prep
+      - name: Run build:wasm manually
         shell: bash
+        env:
+          MODE: ${{ env.BUILD_RELEASE == 'true' && '--release' || '--debug' }}
         run: |
           mkdir src/wasm-lib/pkg; cd src/wasm-lib
-          npx wasm-pack build --target web --out-dir pkg
+          echo "building with ${{ env.MODE }}"
+          npx wasm-pack build --target web --out-dir pkg ${{ env.MODE }}
           cd ../../
           cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
 
       - name: Fix format
         run: yarn fmt
 
-      - name: install apple silicon target mac
+      - name: Install Universal target (MacOS only)
         if: matrix.os == 'macos-latest'
         run: |
           rustup target add aarch64-apple-darwin
 
-      - name: Prepare Windows certificate and variables
-        if: matrix.os == 'windows-latest'
+      - name: Prepare certificate and variables (Windows only)
+        if: ${{ matrix.os == 'windows-latest' && env.BUILD_RELEASE == 'true' }}
         run: |
           echo "${{secrets.SM_CLIENT_CERT_FILE_B64 }}" | base64 --decode > /d/Certificate_pkcs12.p12
           cat /d/Certificate_pkcs12.p12
@@ -135,8 +204,8 @@ jobs:
           echo "C:\Program Files\DigiCert\DigiCert One Signing Manager Tools" >> $GITHUB_PATH
         shell: bash
 
-      - name: Setup Windows certicate with SSM KSP
-        if: matrix.os == 'windows-latest'
+      - name: Setup certicate with SSM KSP (Windows only)
+        if: ${{ matrix.os == 'windows-latest' && env.BUILD_RELEASE == 'true' }}
         run: |
           curl -X GET  https://one.digicert.com/signingmanager/api-ui/v1/releases/smtools-windows-x64.msi/download -H "x-api-key:%SM_API_KEY%" -o smtools-windows-x64.msi
           msiexec /i smtools-windows-x64.msi /quiet /qn
@@ -146,8 +215,17 @@ jobs:
           smksp_cert_sync.exe
         shell: cmd
 
-      - name: Build and sign the app for the current platform
+      - name: Build the app (debug)
         uses: tauri-apps/tauri-action@v0
+        if: ${{ env.BUILD_RELEASE == 'false' }}
+        with:
+          includeRelease: false
+          includeDebug: true
+          args: ${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }}
+
+      - name: Build the app (release) and sign
+        uses: tauri-apps/tauri-action@v0
+        if: ${{ env.BUILD_RELEASE == 'true' }}
         env:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
@@ -156,21 +234,38 @@ jobs:
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          TAURI_CONF_ARGS: "--config ${{ matrix.os == 'windows-latest' && 'src-tauri\\tauri.release.conf.json' || 'src-tauri/tauri.release.conf.json' }}"
         with:
-          args: ${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }}
+          args: "${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }} ${{ env.TAURI_CONF_ARGS }}"
 
       - uses: actions/upload-artifact@v3
+        env:
+          PREFIX: ${{ matrix.os == 'macos-latest' && 'src-tauri/target/universal-apple-darwin' || 'src-tauri/target' }}
+          MODE: ${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}
         with:
-          path: ${{ matrix.os == 'macos-latest' && 'src-tauri/target/universal-apple-darwin/release/bundle/*/*' || 'src-tauri/target/release/bundle/*/*' }}
+          path: "${{ env.PREFIX }}/${{ env.MODE }}/bundle/*/*"
+
+      - name: Run e2e tests (linux only)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          cargo install tauri-driver
+          xvfb-run yarn test:e2e:tauri
+        env:
+          E2E_APPLICATION: "./src-tauri/target/${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}/kittycad-modeling"
+          KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN }}
+
 
   publish-apps-release:
-    runs-on: ubuntu-20.04
-    if: github.event_name == 'release'
-    needs: [build-test-web, build-apps]
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
+    needs: [check-format, check-types, check-typos, build-test-web, prepare-json-files, build-test-apps]
     env:
-      VERSION_NO_V: ${{ needs.build-test-web.outputs.version }}
-      PUB_DATE: ${{ github.event.release.created_at }}
-      NOTES: ${{ github.event.release.body }}
+      VERSION_NO_V: ${{ needs.prepare-json-files.outputs.version }}
+      VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-json-files.outputs.version) || needs.prepare-json-files.outputs.version }}
+      PUB_DATE: ${{ github.event_name == 'release' && github.event.release.created_at || github.event.repository.updated_at }}
+      NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Nightly build, commit {0}', github.sha) }}
+      BUCKET_DIR: ${{ github.event_name == 'release' && 'dl.kittycad.io/releases/modeling-app' || 'dl.kittycad.io/releases/modeling-app/nightly' }}
     steps:
       - uses: actions/download-artifact@v3
 
@@ -180,9 +275,9 @@ jobs:
           DARWIN_SIG=`cat artifact/macos/*.app.tar.gz.sig`
           LINUX_SIG=`cat artifact/appimage/*.AppImage.tar.gz.sig`
           WINDOWS_SIG=`cat artifact/msi/*.msi.zip.sig`
-          RELEASE_DIR=https://dl.kittycad.io/releases/modeling-app/v${VERSION_NO_V}
+          RELEASE_DIR=https://${BUCKET_DIR}/${VERSION}
           jq --null-input \
-            --arg version "v${VERSION_NO_V}" \
+            --arg version "${VERSION}" \
             --arg pub_date "${PUB_DATE}" \
             --arg notes "${NOTES}" \
             --arg darwin_sig "$DARWIN_SIG" \
@@ -218,9 +313,9 @@ jobs:
 
       - name: Generate the download static endpoint
         run: |
-          RELEASE_DIR=https://dl.kittycad.io/releases/modeling-app/v${VERSION_NO_V}
+          RELEASE_DIR=https://${BUCKET_DIR}/${VERSION}
           jq --null-input \
-            --arg version "v${VERSION_NO_V}" \
+            --arg version "${VERSION}" \
             --arg pub_date "${PUB_DATE}" \
             --arg notes "${NOTES}" \
             --arg darwin_url "$RELEASE_DIR/dmg/KittyCAD%20Modeling_${VERSION_NO_V}_universal.dmg" \
@@ -245,7 +340,7 @@ jobs:
             cat last_download.json
 
       - name: Authenticate to Google Cloud
-        uses: 'google-github-actions/auth@v1.1.1'
+        uses: 'google-github-actions/auth@v2.0.0'
         with:
           credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
 
@@ -260,21 +355,22 @@ jobs:
           path: artifact
           glob: '*/*itty*'
           parent: false
-          destination: dl.kittycad.io/releases/modeling-app/v${{ env.VERSION_NO_V }}
+          destination: ${{ env.BUCKET_DIR }}/${{ env.VERSION }}
 
       - name: Upload update endpoint to public bucket
         uses: google-github-actions/upload-cloud-storage@v1.0.3
         with:
           path: last_update.json
-          destination: dl.kittycad.io/releases/modeling-app
+          destination: ${{ env.BUCKET_DIR }}
 
       - name: Upload download endpoint to public bucket
         uses: google-github-actions/upload-cloud-storage@v1.0.3
         with:
           path: last_download.json
-          destination: dl.kittycad.io/releases/modeling-app
+          destination: ${{ env.BUCKET_DIR }}
 
       - name: Upload release files to Github
+        if: ${{ github.event_name == 'release' }}
         uses: softprops/action-gh-release@v1
         with:
           files: artifact/*/*itty*

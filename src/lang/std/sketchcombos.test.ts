@@ -7,7 +7,8 @@ import {
   ConstraintType,
   getConstraintLevelFromSourceRange,
 } from './sketchcombos'
-import { Selections, ToolTip } from '../../useStore'
+import { ToolTip } from '../../useStore'
+import { Selections } from 'lib/selections'
 import { enginelessExecutor } from '../../lib/testHelpers'
 
 beforeAll(() => initPromise)
@@ -107,7 +108,7 @@ const part001 = startSketchOn('XY')
   |> line([myVar, 1], %) // ln-should use legLen for y
   |> line([myVar, -1], %) // ln-legLen but negative
   |> line([-0.62, -1.54], %) // ln-should become angledLine
-  |> angledLine([myVar, 1.04], %) // ln-use segLen for secound arg
+  |> angledLine([myVar, 1.04], %) // ln-use segLen for second arg
   |> angledLine([45, 1.04], %) // ln-segLen again
   |> angledLineOfXLength([54, 2.35], %) // ln-should be transformed to angledLine
   |> angledLineOfXLength([50, myVar], %) // ln-should use legAngX to calculate angle
@@ -162,7 +163,7 @@ const part001 = startSketchOn('XY')
        -legLen(segLen('seg01', %), myVar)
      ], %) // ln-legLen but negative
   |> angledLine([-112, segLen('seg01', %)], %) // ln-should become angledLine
-  |> angledLine([myVar, segLen('seg01', %)], %) // ln-use segLen for secound arg
+  |> angledLine([myVar, segLen('seg01', %)], %) // ln-use segLen for second arg
   |> angledLine([45, segLen('seg01', %)], %) // ln-segLen again
   |> angledLine([54, segLen('seg01', %)], %) // ln-should be transformed to angledLine
   |> angledLineOfXLength([
@@ -470,7 +471,7 @@ async function helperThing(
 }
 
 describe('testing getConstraintLevelFromSourceRange', () => {
-  it('should devide up lines into free, partial and fully contrained', () => {
+  it('should divide up lines into free, partial and fully contrained', () => {
     const code = `const baseLength = 3
 const baseThick = 1
 const armThick = 0.5

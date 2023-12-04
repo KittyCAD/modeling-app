@@ -1,0 +1,58 @@
+---
+source: kcl/src/parser/parser_impl.rs
+expression: actual
+---
+{
+  "start": 0,
+  "end": 28,
+  "body": [
+    {
+      "type": "ExpressionStatement",
+      "type": "ExpressionStatement",
+      "start": 0,
+      "end": 28,
+      "expression": {
+        "type": "CallExpression",
+        "type": "CallExpression",
+        "start": 0,
+        "end": 28,
+        "callee": {
+          "type": "Identifier",
+          "start": 0,
+          "end": 3,
+          "name": "log"
+        },
+        "arguments": [
+          {
+            "type": "Literal",
+            "type": "Literal",
+            "start": 4,
+            "end": 5,
+            "value": 5,
+            "raw": "5"
+          },
+          {
+            "type": "Literal",
+            "type": "Literal",
+            "start": 7,
+            "end": 14,
+            "value": "hello",
+            "raw": "\"hello\""
+          },
+          {
+            "type": "Identifier",
+            "type": "Identifier",
+            "start": 16,
+            "end": 27,
+            "name": "aIdentifier"
+          }
+        ],
+        "optional": false
+      }
+    }
+  ],
+  "nonCodeMeta": {
+    "nonCodeNodes": {},
+    "start": []
+  }
+}

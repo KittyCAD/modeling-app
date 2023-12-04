@@ -1,0 +1,95 @@
+---
+source: kcl/src/parser/parser_impl.rs
+expression: actual
+---
+{
+  "start": 0,
+  "end": 36,
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 36,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 6,
+          "end": 36,
+          "id": {
+            "type": "Identifier",
+            "start": 6,
+            "end": 11,
+            "name": "myVar"
+          },
+          "init": {
+            "type": "CallExpression",
+            "type": "CallExpression",
+            "start": 14,
+            "end": 36,
+            "callee": {
+              "type": "Identifier",
+              "start": 14,
+              "end": 17,
+              "name": "min"
+            },
+            "arguments": [
+              {
+                "type": "Literal",
+                "type": "Literal",
+                "start": 18,
+                "end": 19,
+                "value": 5,
+                "raw": "5"
+              },
+              {
+                "type": "UnaryExpression",
+                "type": "UnaryExpression",
+                "start": 22,
+                "end": 35,
+                "operator": "-",
+                "argument": {
+                  "type": "CallExpression",
+                  "type": "CallExpression",
+                  "start": 23,
+                  "end": 35,
+                  "callee": {
+                    "type": "Identifier",
+                    "start": 23,
+                    "end": 29,
+                    "name": "legLen"
+                  },
+                  "arguments": [
+                    {
+                      "type": "Literal",
+                      "type": "Literal",
+                      "start": 30,
+                      "end": 31,
+                      "value": 5,
+                      "raw": "5"
+                    },
+                    {
+                      "type": "Literal",
+                      "type": "Literal",
+                      "start": 33,
+                      "end": 34,
+                      "value": 4,
+                      "raw": "4"
+                    }
+                  ],
+                  "optional": false
+                }
+              }
+            ],
+            "optional": false
+          }
+        }
+      ],
+      "kind": "const"
+    }
+  ],
+  "nonCodeMeta": {
+    "nonCodeNodes": {},
+    "start": []
+  }
+}

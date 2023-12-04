@@ -1,5 +1,4 @@
 import { SourceRange } from 'lang/wasm'
-import { Selections } from 'useStore'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_CONNECTION_TIMEOUT_MS } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
@@ -21,6 +20,7 @@ interface ResultCommand extends CommandInfo {
   type: 'result'
   data: any
   raw: WebSocketResponse
+  headVertexId?: string
 }
 interface FailedCommand extends CommandInfo {
   type: 'failed'
@@ -51,7 +51,7 @@ type ClientMetrics = Models['ClientMetrics_type']
 // EngineConnection encapsulates the connection(s) to the Engine
 // for the EngineCommandManager; namely, the underlying WebSocket
 // and WebRTC connections.
-export class EngineConnection {
+class EngineConnection {
   websocket?: WebSocket
   pc?: RTCPeerConnection
   unreliableDataChannel?: RTCDataChannel
@@ -216,6 +216,26 @@ export class EngineConnection {
       }
     })
 
+    this.pc.addEventListener('icecandidateerror', (_event) => {
+      const event = _event as RTCPeerConnectionIceErrorEvent
+      console.error(
+        `ICE candidate returned an error: ${event.errorCode}: ${event.errorText} for ${event.url}`
+      )
+    })
+
+    this.pc.addEventListener('connectionstatechange', (event) => {
+      if (this.pc?.iceConnectionState === 'connected') {
+        if (this.shouldTrace()) {
+          iceSpan.resolve?.()
+        }
+      } else if (this.pc?.iceConnectionState === 'failed') {
+        // failed is a terminal state; let's explicitly kill the
+        // connection to the server at this point.
+        console.log('failed to negotiate ice connection; restarting')
+        this.close()
+      }
+    })
+
     this.websocket.addEventListener('open', (event) => {
       if (this.shouldTrace()) {
         websocketSpan.resolve?.()
@@ -351,19 +371,6 @@ export class EngineConnection {
         // until the end of this function is setup of our end of the
         // PeerConnection and waiting for events to fire our callbacks.
 
-        this.pc.addEventListener('connectionstatechange', (event) => {
-          if (this.pc?.iceConnectionState === 'connected') {
-            if (this.shouldTrace()) {
-              iceSpan.resolve?.()
-            }
-          } else if (this.pc?.iceConnectionState === 'failed') {
-            // failed is a terminal state; let's explicitly kill the
-            // connection to the server at this point.
-            console.log('failed to negotiate ice connection; restarting')
-            this.close()
-          }
-        })
-
         this.pc.addEventListener('icecandidate', (event) => {
           if (!this.pc || !this.websocket) return
           if (event.candidate !== null) {
@@ -450,18 +457,18 @@ export class EngineConnection {
             videoTrackStats.forEach((videoTrackReport) => {
               if (videoTrackReport.type === 'inbound-rtp') {
                 client_metrics.rtc_frames_decoded =
-                  videoTrackReport.framesDecoded
+                  videoTrackReport.framesDecoded || 0
                 client_metrics.rtc_frames_dropped =
-                  videoTrackReport.framesDropped
+                  videoTrackReport.framesDropped || 0
                 client_metrics.rtc_frames_received =
-                  videoTrackReport.framesReceived
+                  videoTrackReport.framesReceived || 0
                 client_metrics.rtc_frames_per_second =
                   videoTrackReport.framesPerSecond || 0
                 client_metrics.rtc_freeze_count =
                   videoTrackReport.freezeCount || 0
-                client_metrics.rtc_jitter_sec = videoTrackReport.jitter
+                client_metrics.rtc_jitter_sec = videoTrackReport.jitter || 0.0
                 client_metrics.rtc_keyframes_decoded =
-                  videoTrackReport.keyFramesDecoded
+                  videoTrackReport.keyFramesDecoded || 0
                 client_metrics.rtc_total_freezes_duration_sec =
                   videoTrackReport.totalFreezesDuration || 0
               } else if (videoTrackReport.type === 'transport') {
@@ -583,12 +590,35 @@ interface Subscription<T extends ModelTypes> {
   ) => void
 }
 
+export type CommandLog =
+  | {
+      type: 'send-modeling'
+      data: EngineCommand
+    }
+  | {
+      type: 'send-scene'
+      data: EngineCommand
+    }
+  | {
+      type: 'receive-reliable'
+      data: WebSocketResponse
+      id: string
+      cmd_type?: string
+    }
+  | {
+      type: 'execution-done'
+      data: null
+    }
+
 export class EngineCommandManager {
   artifactMap: ArtifactMap = {}
+  lastArtifactMap: ArtifactMap = {}
   outSequence = 1
   inSequence = 1
   engineConnection?: EngineConnection
   defaultPlanes: DefaultPlanes = { xy: '', yz: '', xz: '' }
+  _commandLogs: CommandLog[] = []
+  _commandLogCallBack: (command: CommandLog[]) => void = () => {}
   // Folks should realize that wait for ready does not get called _everytime_
   // the connection resets and restarts, it only gets called the first time.
   // Be careful what you put here.
@@ -633,7 +663,10 @@ export class EngineCommandManager {
 
     // If we already have an engine connection, just need to resize the stream.
     if (this.engineConnection) {
-      this.handleResize({ streamWidth: width, streamHeight: height })
+      this.handleResize({
+        streamWidth: width,
+        streamHeight: height,
+      })
       return
     }
 
@@ -664,7 +697,7 @@ export class EngineCommandManager {
           },
         })
 
-        // Inisialize the planes.
+        // Initialize the planes.
         this.initPlanes().then(() => {
           // We execute the code here to make sure if the stream was to
           // restart in a session, we want to make sure to execute the code.
@@ -776,11 +809,17 @@ export class EngineCommandManager {
       return
     }
     const modelingResponse = message.data.modeling_response
+    const command = this.artifactMap[id]
+    this.addCommandLog({
+      type: 'receive-reliable',
+      data: message,
+      id,
+      cmd_type: command?.commandType || this.lastArtifactMap[id]?.commandType,
+    })
     Object.values(this.subscriptions[modelingResponse.type] || {}).forEach(
       (callback) => callback(modelingResponse)
     )
 
-    const command = this.artifactMap[id]
     if (command && command.type === 'pending') {
       const resolve = command.resolve
       this.artifactMap[id] = {
@@ -844,6 +883,7 @@ export class EngineCommandManager {
     this.engineConnection?.tearDown()
   }
   startNewSession() {
+    this.lastArtifactMap = this.artifactMap
     this.artifactMap = {}
   }
   subscribeTo<T extends ModelTypes>({
@@ -887,8 +927,9 @@ export class EngineCommandManager {
   }
   endSession() {
     // TODO: instead of sending a single command with `object_ids: Object.keys(this.artifactMap)`
-    // we need to loop over them each individualy because if the engine doesn't recognise a single
+    // we need to loop over them each individually because if the engine doesn't recognise a single
     // id the whole command fails.
+    const artifactsToDelete: any = {}
     Object.entries(this.artifactMap).forEach(([id, artifact]) => {
       const artifactTypesToDelete: ArtifactMap[string]['commandType'][] = [
         // 'start_path' creates a new scene object for the path, which is why it needs to be deleted,
@@ -898,7 +939,9 @@ export class EngineCommandManager {
         'start_path',
       ]
       if (!artifactTypesToDelete.includes(artifact.commandType)) return
-
+      artifactsToDelete[id] = artifact
+    })
+    Object.keys(artifactsToDelete).forEach((id) => {
       const deletCmd: EngineCommand = {
         type: 'modeling_cmd_req',
         cmd_id: uuidv4(),
@@ -910,29 +953,20 @@ export class EngineCommandManager {
       this.engineConnection?.send(deletCmd)
     })
   }
-  cusorsSelected(selections: {
-    otherSelections: Selections['otherSelections']
-    idBasedSelections: { type: string; id: string }[]
-  }) {
-    if (!this.engineConnection?.isReady()) {
-      console.log('engine connection isnt ready')
-      return
+  addCommandLog(message: CommandLog) {
+    if (this._commandLogs.length > 500) {
+      this._commandLogs.shift()
     }
-    this.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'select_clear',
-      },
-      cmd_id: uuidv4(),
-    })
-    this.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'select_add',
-        entities: selections.idBasedSelections.map((s) => s.id),
-      },
-      cmd_id: uuidv4(),
-    })
+    this._commandLogs.push(message)
+
+    this._commandLogCallBack([...this._commandLogs])
+  }
+  clearCommandLogs() {
+    this._commandLogs = []
+    this._commandLogCallBack(this._commandLogs)
+  }
+  registerCommandLogCallback(callback: (command: CommandLog[]) => void) {
+    this._commandLogCallBack = callback
   }
   sendSceneCommand(command: EngineCommand): Promise<any> {
     if (this.engineConnection === undefined) {
@@ -941,6 +975,20 @@ export class EngineCommandManager {
 
     if (!this.engineConnection?.isReady()) {
       return Promise.resolve()
+    }
+
+    if (
+      !(
+        command.type === 'modeling_cmd_req' &&
+        (command.cmd.type === 'highlight_set_entity' ||
+          command.cmd.type === 'mouse_move')
+      )
+    ) {
+      // highlight_set_entity and mouse_move are sent over the unreliable channel and are too noisy
+      this.addCommandLog({
+        type: 'send-scene',
+        data: command,
+      })
     }
 
     if (
@@ -998,6 +1046,17 @@ export class EngineCommandManager {
     if (!this.engineConnection?.isReady()) {
       return Promise.resolve()
     }
+    if (typeof command !== 'string') {
+      this.addCommandLog({
+        type: 'send-modeling',
+        data: command,
+      })
+    } else {
+      this.addCommandLog({
+        type: 'send-modeling',
+        data: JSON.parse(command),
+      })
+    }
     this.engineConnection?.send(command)
     if (typeof command !== 'string' && command.type === 'modeling_cmd_req') {
       return this.handlePendingCommand(id, command?.cmd, range)
@@ -1006,7 +1065,7 @@ export class EngineCommandManager {
       if (parseCommand.type === 'modeling_cmd_req')
         return this.handlePendingCommand(id, parseCommand?.cmd, range)
     }
-    throw 'shouldnt reach here'
+    throw Error('shouldnt reach here')
   }
   handlePendingCommand(
     id: string,

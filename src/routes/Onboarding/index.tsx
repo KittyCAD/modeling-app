@@ -125,9 +125,9 @@ const Onboarding = () => {
   useHotkeys('esc', dismiss)
 
   return (
-    <>
+    <div className="content" data-testid="onboarding-content">
       <Outlet />
-    </>
+    </div>
   )
 }
 

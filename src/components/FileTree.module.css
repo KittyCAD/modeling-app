@@ -1,0 +1,16 @@
+.folder {
+  position: relative;
+}
+
+.folder::after {
+  content: '';
+  width: 1px;
+  z-index: -1;
+  @apply absolute top-0 bottom-0;
+  left: calc(var(--indent-line-left, 1rem) + 0.25rem);
+  @apply bg-chalkboard-30;
+}
+
+:global(.dark) .folder::after {
+  @apply bg-chalkboard-80;
+}

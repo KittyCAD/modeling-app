@@ -1,49 +1,17 @@
-import { useStore, toolTips, ToolTip } from './useStore'
-import { extrudeSketch, sketchOnExtrudedFace } from './lang/modifyAst'
-import { getNodePathFromSourceRange } from './lang/queryAst'
-// import { HorzVert } from './components/Toolbar/HorzVert'
-// import { RemoveConstrainingValues } from './components/Toolbar/RemoveConstrainingValues'
-// import { EqualLength } from './components/Toolbar/EqualLength'
-// import { EqualAngle } from './components/Toolbar/EqualAngle'
-// import { Intersect } from './components/Toolbar/Intersect'
-// import { SetHorzVertDistance } from './components/Toolbar/SetHorzVertDistance'
-// import { SetAngleLength } from './components/Toolbar/setAngleLength'
-// import { SetAbsDistance } from './components/Toolbar/SetAbsDistance'
-// import { SetAngleBetween } from './components/Toolbar/SetAngleBetween'
 import { Fragment, WheelEvent, useRef, useMemo } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch, faX } from '@fortawesome/free-solid-svg-icons'
 import { Popover, Transition } from '@headlessui/react'
 import styles from './Toolbar.module.css'
-import { v4 as uuidv4 } from 'uuid'
 import { isCursorInSketchCommandRange } from 'lang/util'
 import { ActionIcon } from 'components/ActionIcon'
 import { engineCommandManager } from './lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
-import { kclManager } from 'lang/KclSinglton'
 
 export const sketchButtonClassnames = {
   background:
     'bg-chalkboard-100 group-hover:bg-chalkboard-90 hover:bg-chalkboard-90 dark:bg-fern-20 dark:group-hover:bg-fern-10 dark:hover:bg-fern-10 group-disabled:bg-chalkboard-50 dark:group-disabled:bg-chalkboard-60 group-hover:group-disabled:bg-chalkboard-50 dark:group-hover:group-disabled:bg-chalkboard-50',
   icon: 'text-fern-20 h-auto group-hover:text-fern-10 hover:text-fern-10 dark:text-chalkboard-100 dark:group-hover:text-chalkboard-100 dark:hover:text-chalkboard-100 group-disabled:bg-chalkboard-60 hover:group-disabled:text-inherit',
-}
-
-const sketchFnLabels: Record<ToolTip | 'sketch_line' | 'move', string> = {
-  sketch_line: 'Line',
-  line: 'Line',
-  move: 'Move',
-  angledLine: 'Angled Line',
-  angledLineThatIntersects: 'Angled Line That Intersects',
-  angledLineOfXLength: 'Angled Line Of X Length',
-  angledLineOfYLength: 'Angled Line Of Y Length',
-  angledLineToX: 'Angled Line To X',
-  angledLineToY: 'Angled Line To Y',
-  lineTo: 'Line to Point',
-  xLine: 'Horizontal Line',
-  yLine: 'Vertical Line',
-  xLineTo: 'Horizontal Line to Point',
-  yLineTo: 'Vertical Line to Point',
-  tangentialArc: 'Tangential Arc',
 }
 
 export const Toolbar = () => {
@@ -80,7 +48,7 @@ export const Toolbar = () => {
             className="group"
           >
             <ActionIcon icon="sketch" className="!p-0.5" size="md" />
-            Start Sketch
+            <span data-testid="start-sketch">Start Sketch</span>
           </button>
         )}
         {state.nextEvents.includes('Enter sketch') && pathId && (
@@ -160,6 +128,21 @@ export const Toolbar = () => {
                 eventName.includes('Make segment') ||
                 eventName.includes('Constrain')
             )
+            .sort((a, b) => {
+              const aisEnabled = state.nextEvents
+                .filter((event) => state.can(event as any))
+                .includes(a)
+              const bIsEnabled = state.nextEvents
+                .filter((event) => state.can(event as any))
+                .includes(b)
+              if (aisEnabled && !bIsEnabled) {
+                return -1
+              }
+              if (!aisEnabled && bIsEnabled) {
+                return 1
+              }
+              return 0
+            })
             .map((eventName) => (
               <button
                 key={eventName}
@@ -198,24 +181,6 @@ export const Toolbar = () => {
             Extrude
           </button>
         )}
-
-        {/* <HorzVert horOrVert="horizontal" />
-        <HorzVert horOrVert="vertical" />
-        <EqualLength />
-        <EqualAngle />
-        <SetHorzVertDistance buttonType="alignEndsVertically" />
-        <SetHorzVertDistance buttonType="setHorzDistance" />
-        <SetAbsDistance buttonType="snapToYAxis" />
-        <SetAbsDistance buttonType="xAbs" />
-        <SetHorzVertDistance buttonType="alignEndsHorizontally" />
-        <SetAbsDistance buttonType="snapToXAxis" />
-        <SetHorzVertDistance buttonType="setVertDistance" />
-        <SetAbsDistance buttonType="yAbs" />
-        <SetAngleLength angleOrLength="setAngle" />
-        <SetAngleLength angleOrLength="setLength" />
-        <Intersect />
-        <RemoveConstrainingValues />
-        <SetAngleBetween /> */}
       </span>
     )
   }

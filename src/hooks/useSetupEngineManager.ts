@@ -1,5 +1,5 @@
 import { useLayoutEffect, useEffect, useRef } from 'react'
-import { _executor, parse } from '../lang/wasm'
+import { parse } from '../lang/wasm'
 import { useStore } from '../useStore'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { deferExecution } from 'lib/utils'
@@ -25,10 +25,6 @@ export function useSetupEngineManager(
   const streamHeight = streamRef?.current?.offsetHeight
 
   const hasSetNonZeroDimensions = useRef<boolean>(false)
-
-  useEffect(() => {
-    kclManager.executeCode()
-  }, [])
 
   useLayoutEffect(() => {
     // Load the engine command manager once with the initial width and height,
@@ -86,9 +82,14 @@ export function useSetupEngineManager(
 }
 
 function getDimensions(streamWidth?: number, streamHeight?: number) {
+  const maxResolution = 2000
   const width = streamWidth ? streamWidth : 0
-  const quadWidth = Math.round(width / 4) * 4
   const height = streamHeight ? streamHeight : 0
-  const quadHeight = Math.round(height / 4) * 4
+  const ratio = Math.min(
+    Math.min(maxResolution / width, maxResolution / height),
+    1.0
+  )
+  const quadWidth = Math.round((width * ratio) / 4) * 4
+  const quadHeight = Math.round((height * ratio) / 4) * 4
   return { width: quadWidth, height: quadHeight }
 }

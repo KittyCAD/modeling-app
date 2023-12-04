@@ -1,8 +1,9 @@
 //! The executor for the AST.
 
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Arc};
 
 use anyhow::Result;
+use async_recursion::async_recursion;
 use kittycad::types::{Color, ModelingCmd, Point3D};
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
@@ -10,9 +11,10 @@ use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
-    ast::types::{BodyItem, Function, FunctionExpression, Value},
+    ast::types::{BodyItem, FunctionExpression, Value},
     engine::{EngineConnection, EngineManager},
     errors::{KclError, KclErrorDetails},
+    std::{FunctionKind, StdLib},
 };
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -183,7 +185,7 @@ impl DefaultPlanes {
                 SourceRange::default(),
                 ModelingCmd::MakePlane {
                     clobber: false,
-                    origin: default_origin.clone(),
+                    origin: default_origin,
                     size: default_size,
                     x_axis: Point3D { x: 1.0, y: 0.0, z: 0.0 },
                     y_axis: Point3D { x: 0.0, y: 1.0, z: 0.0 },
@@ -216,7 +218,7 @@ impl DefaultPlanes {
                 SourceRange::default(),
                 ModelingCmd::MakePlane {
                     clobber: false,
-                    origin: default_origin.clone(),
+                    origin: default_origin,
                     size: default_size,
                     x_axis: Point3D { x: 0.0, y: 1.0, z: 0.0 },
                     y_axis: Point3D { x: 0.0, y: 0.0, z: 1.0 },
@@ -347,27 +349,27 @@ impl MemoryItem {
         }
     }
 
+    /// If this memory item is a function, call it with the given arguments, return its val as Ok.
+    /// If it's not a function, return Err.
     pub async fn call_fn(
         &self,
         args: Vec<MemoryItem>,
         memory: ProgramMemory,
         ctx: ExecutorContext,
     ) -> Result<Option<ProgramReturn>, KclError> {
-        if let MemoryItem::Function { func, expression, meta } = &self {
-            if let Some(func) = func {
-                func(args, memory, expression.clone(), meta.clone(), ctx).await
-            } else {
-                Err(KclError::Semantic(KclErrorDetails {
-                    message: format!("Not a function: {:?}", expression),
-                    source_ranges: vec![],
-                }))
-            }
-        } else {
-            Err(KclError::Semantic(KclErrorDetails {
+        let MemoryItem::Function { func, expression, meta } = &self else {
+            return Err(KclError::Semantic(KclErrorDetails {
                 message: "not a in memory function".to_string(),
                 source_ranges: vec![],
-            }))
-        }
+            }));
+        };
+        let Some(func) = func else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: format!("Not a function: {:?}", expression),
+                source_ranges: vec![],
+            }));
+        };
+        func(args, memory, expression.clone(), meta.clone(), ctx).await
     }
 }
 
@@ -776,9 +778,11 @@ impl Default for PipeInfo {
 pub struct ExecutorContext {
     pub engine: EngineConnection,
     pub planes: DefaultPlanes,
+    pub stdlib: Arc<StdLib>,
 }
 
 /// Execute a AST's program.
+#[async_recursion(?Send)]
 pub async fn execute(
     program: crate::ast::types::Program,
     memory: &mut ProgramMemory,
@@ -791,7 +795,9 @@ pub async fn execute(
     for statement in &program.body {
         match statement {
             BodyItem::ExpressionStatement(expression_statement) => {
-                if let Value::CallExpression(call_expr) = &expression_statement.expression {
+                if let Value::PipeExpression(pipe_expr) = &expression_statement.expression {
+                    pipe_expr.get_result(memory, &mut pipe_info, ctx).await?;
+                } else if let Value::CallExpression(call_expr) = &expression_statement.expression {
                     let fn_name = call_expr.callee.name.to_string();
                     let mut args: Vec<MemoryItem> = Vec::new();
                     for arg in &call_expr.arguments {
@@ -826,24 +832,37 @@ pub async fn execute(
                         }
                     }
                     let _show_fn = Box::new(crate::std::Show);
-                    if let Function::StdLib { func: _show_fn } = &call_expr.function {
-                        if options != BodyType::Root {
-                            return Err(KclError::Semantic(KclErrorDetails {
-                                message: "Cannot call show outside of a root".to_string(),
-                                source_ranges: vec![call_expr.into()],
-                            }));
+                    match ctx.stdlib.get_either(&call_expr.callee.name) {
+                        FunctionKind::Core(func) => {
+                            use crate::docs::StdLibFn;
+                            if func.name() == _show_fn.name() {
+                                if options != BodyType::Root {
+                                    return Err(KclError::Semantic(KclErrorDetails {
+                                        message: "Cannot call show outside of a root".to_string(),
+                                        source_ranges: vec![call_expr.into()],
+                                    }));
+                                }
+
+                                memory.return_ = Some(ProgramReturn::Arguments(call_expr.arguments.clone()));
+                            }
                         }
+                        FunctionKind::Std(func) => {
+                            let mut newmem = memory.clone();
+                            let result = execute(func.program().to_owned(), &mut newmem, BodyType::Block, ctx).await?;
+                            memory.return_ = result.return_;
+                        }
+                        FunctionKind::UserDefined => {
+                            if let Some(func) = memory.clone().root.get(&fn_name) {
+                                let result = func.call_fn(args.clone(), memory.clone(), ctx.clone()).await?;
 
-                        memory.return_ = Some(ProgramReturn::Arguments(call_expr.arguments.clone()));
-                    } else if let Some(func) = memory.clone().root.get(&fn_name) {
-                        let result = func.call_fn(args.clone(), memory.clone(), ctx.clone()).await?;
-
-                        memory.return_ = result;
-                    } else {
-                        return Err(KclError::Semantic(KclErrorDetails {
-                            message: format!("No such name {} defined", fn_name),
-                            source_ranges: vec![call_expr.into()],
-                        }));
+                                memory.return_ = result;
+                            } else {
+                                return Err(KclError::Semantic(KclErrorDetails {
+                                    message: format!("No such name {} defined", fn_name),
+                                    source_ranges: vec![call_expr.into()],
+                                }));
+                            }
+                        }
                     }
                 }
             }
@@ -889,9 +908,9 @@ pub async fn execute(
                                         // Add the arguments to the memory.
                                         for (index, param) in function_expression.params.iter().enumerate() {
                                             fn_memory.add(
-                                                &param.name,
+                                                &param.identifier.name,
                                                 args.get(index).unwrap().clone(),
-                                                param.into(),
+                                                (&param.identifier).into(),
                                             )?;
                                         }
 
@@ -1011,7 +1030,11 @@ mod tests {
         let mut mem: ProgramMemory = Default::default();
         let engine = EngineConnection::new().await?;
         let planes = DefaultPlanes::new(&engine).await?;
-        let ctx = ExecutorContext { engine, planes };
+        let ctx = ExecutorContext {
+            engine,
+            planes,
+            stdlib: Arc::new(StdLib::default()),
+        };
         let memory = execute(program, &mut mem, BodyType::Root, &ctx).await?;
 
         Ok(memory)

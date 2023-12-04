@@ -1,0 +1,56 @@
+---
+source: kcl/src/parser/parser_impl.rs
+expression: actual
+---
+{
+  "start": 0,
+  "end": 30,
+  "body": [
+    {
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration",
+      "start": 0,
+      "end": 30,
+      "declarations": [
+        {
+          "type": "VariableDeclarator",
+          "start": 6,
+          "end": 30,
+          "id": {
+            "type": "Identifier",
+            "start": 6,
+            "end": 11,
+            "name": "myBox"
+          },
+          "init": {
+            "type": "CallExpression",
+            "type": "CallExpression",
+            "start": 14,
+            "end": 30,
+            "callee": {
+              "type": "Identifier",
+              "start": 14,
+              "end": 27,
+              "name": "startSketchAt"
+            },
+            "arguments": [
+              {
+                "type": "Identifier",
+                "type": "Identifier",
+                "start": 28,
+                "end": 29,
+                "name": "p"
+              }
+            ],
+            "optional": false
+          }
+        }
+      ],
+      "kind": "const"
+    }
+  ],
+  "nonCodeMeta": {
+    "nonCodeNodes": {},
+    "start": []
+  }
+}

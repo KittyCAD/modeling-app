@@ -1,0 +1,64 @@
+---
+source: kcl/src/parser/parser_impl.rs
+expression: actual
+---
+{
+  "start": 0,
+  "end": 15,
+  "body": [
+    {
+      "type": "ExpressionStatement",
+      "type": "ExpressionStatement",
+      "start": 0,
+      "end": 15,
+      "expression": {
+        "type": "CallExpression",
+        "type": "CallExpression",
+        "start": 0,
+        "end": 15,
+        "callee": {
+          "type": "Identifier",
+          "start": 0,
+          "end": 4,
+          "name": "line"
+        },
+        "arguments": [
+          {
+            "type": "ArrayExpression",
+            "type": "ArrayExpression",
+            "start": 5,
+            "end": 11,
+            "elements": [
+              {
+                "type": "Literal",
+                "type": "Literal",
+                "start": 6,
+                "end": 7,
+                "value": 0,
+                "raw": "0"
+              },
+              {
+                "type": "Identifier",
+                "type": "Identifier",
+                "start": 9,
+                "end": 10,
+                "name": "l"
+              }
+            ]
+          },
+          {
+            "type": "PipeSubstitution",
+            "type": "PipeSubstitution",
+            "start": 13,
+            "end": 14
+          }
+        ],
+        "optional": false
+      }
+    }
+  ],
+  "nonCodeMeta": {
+    "nonCodeNodes": {},
+    "start": []
+  }
+}

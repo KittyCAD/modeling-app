@@ -1,0 +1,114 @@
+name: Playwright Tests
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  playwright-ubuntu:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version-file: '.nvmrc'
+        cache: 'yarn'
+    - name: Install dependencies
+      run: yarn
+    - name: Install Playwright Browsers
+      run: yarn playwright install --with-deps
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
+    - name: Cache wasm
+      uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: './src/wasm-lib'
+    - name: build wasm
+      run: yarn build:wasm
+    - name: build web
+      run: yarn build:local
+    - name: Run ubuntu/chrome snapshots
+      run: yarn playwright test --project="Google Chrome" --update-snapshots e2e/playwright/snapshot-tests.spec.ts
+      env:
+        CI: true
+        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+    - uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
+    - name: check for changes
+      id: git-check
+      run: |
+          git add .
+          if git status | grep -q "Changes to be committed"
+          then
+            echo "::set-output name=modified::true"
+          else
+            echo "::set-output name=modified::false"
+          fi
+    - name: Commit changes, if any
+      if: steps.git-check.outputs.modified == 'true'
+      run: |
+        git add .
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+        git fetch origin
+        echo ${{ github.head_ref }}
+        git checkout ${{ github.head_ref }}
+        # TODO when safari works on ubuntu remove the os part of the commit message
+        git commit -am "A snapshot a day keeps the bugs away! 📷🐛 (OS: ubuntu)" || true
+        git push
+        git push origin ${{ github.head_ref }}
+    - name: Run ubuntu/chrome flow
+      run: yarn playwright test --project="Google Chrome" e2e/playwright/flow-tests.spec.ts
+      env:
+        CI: true
+        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+    - uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
+
+  playwright-macos:
+    timeout-minutes: 60
+    runs-on: macos-latest
+    needs: playwright-ubuntu
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version-file: '.nvmrc'
+        cache: 'yarn'
+    - name: Install dependencies
+      run: yarn
+    - name: Install Playwright Browsers
+      run: yarn playwright install --with-deps
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
+    - name: Cache wasm
+      uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: './src/wasm-lib'
+    - name: build wasm
+      run: yarn build:wasm
+    - name: build web
+      run: yarn build:local
+    - name: Run macos/safari flow
+      # safari doesn't work on Ubuntu because of the same reason tauri doesn't (webRTC issues)
+      # TODO remove this and the matrix and run all tests on ubuntu when this is fixed
+      run: yarn playwright test --project="webkit" e2e/playwright/flow-tests.spec.ts
+      env:
+        CI: true
+        token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+    - uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30

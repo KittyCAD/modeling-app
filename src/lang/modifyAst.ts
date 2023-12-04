@@ -1,4 +1,5 @@
-import { Selection, ToolTip } from '../useStore'
+import { ToolTip } from '../useStore'
+import { Selection } from 'lib/selections'
 import {
   Program,
   CallExpression,
@@ -309,7 +310,7 @@ export function extrudeSketch(
   const name = findUniqueName(node, 'part')
   const VariableDeclaration = createVariableDeclaration(name, extrudeCall)
   let showCallIndex = getShowIndex(_node)
-  if (showCallIndex == -1) {
+  if (showCallIndex === -1) {
     // We didn't find a show, so let's just append everything
     showCallIndex = _node.body.length
   }
@@ -479,21 +480,6 @@ export function createCallExpressionStdLib(
       end: 0,
       name,
     },
-    function: {
-      type: 'StdLib',
-      func: {
-        // We only need the name here to map it back when it serializes
-        // to rust, don't worry about the rest.
-        name,
-        summary: '',
-        description: '',
-        tags: [],
-        returnValue: { type: '', required: false, name: '', schema: {} },
-        args: [],
-        unpublished: false,
-        deprecated: false,
-      },
-    },
     optional: false,
     arguments: args,
   }
@@ -512,9 +498,6 @@ export function createCallExpression(
       start: 0,
       end: 0,
       name,
-    },
-    function: {
-      type: 'InMemory',
     },
     optional: false,
     arguments: args,

@@ -31,6 +31,7 @@ import {
 } from './lib/tauriFS'
 import { metadata, type Metadata } from 'tauri-plugin-fs-extra-api'
 import DownloadAppBanner from './components/DownloadAppBanner'
+import { WasmErrBanner } from './components/WasmErrBanner'
 import { GlobalStateProvider } from './components/GlobalStateProvider'
 import {
   SETTINGS_PERSIST_KEY,
@@ -41,7 +42,9 @@ import CommandBarProvider from 'components/CommandBar'
 import { TEST, VITE_KC_SENTRY_DSN } from './env'
 import * as Sentry from '@sentry/react'
 import ModelingMachineProvider from 'components/ModelingMachineProvider'
-import { KclContextProvider } from 'lang/KclSinglton'
+import { KclContextProvider, kclManager } from 'lang/KclSinglton'
+import FileMachineProvider from 'components/FileMachineProvider'
+import { sep } from '@tauri-apps/api/path'
 
 if (VITE_KC_SENTRY_DSN && !TEST) {
   Sentry.init({
@@ -101,10 +104,11 @@ export const BROWSER_FILE_NAME = 'new'
 export type IndexLoaderData = {
   code: string | null
   project?: ProjectWithEntryPointMetadata
+  file?: FileEntry
 }
 
 export type ProjectWithEntryPointMetadata = FileEntry & {
-  entrypoint_metadata: Metadata
+  entrypointMetadata: Metadata
 }
 export type HomeLoaderData = {
   projects: ProjectWithEntryPointMetadata[]
@@ -142,12 +146,15 @@ const router = createBrowserRouter(
       path: paths.FILE + '/:id',
       element: (
         <Auth>
-          <Outlet />
-          <KclContextProvider>
-            <ModelingMachineProvider>
-              <App />
-            </ModelingMachineProvider>
-          </KclContextProvider>
+          <FileMachineProvider>
+            <KclContextProvider>
+              <ModelingMachineProvider>
+                <Outlet />
+                <App />
+              </ModelingMachineProvider>
+              <WasmErrBanner />
+            </KclContextProvider>
+          </FileMachineProvider>
           {!isTauri() && import.meta.env.PROD && <DownloadAppBanner />}
         </Auth>
       ),
@@ -177,21 +184,42 @@ const router = createBrowserRouter(
           )
         }
 
+        const defaultDir = persistedSettings.defaultDirectory || ''
+
         if (params.id && params.id !== BROWSER_FILE_NAME) {
+          const decodedId = decodeURIComponent(params.id)
+          const projectAndFile = decodedId.replace(defaultDir + sep, '')
+          const firstSlashIndex = projectAndFile.indexOf(sep)
+          const projectName = projectAndFile.slice(0, firstSlashIndex)
+          const projectPath = defaultDir + sep + projectName
+          const currentFileName = projectAndFile.slice(firstSlashIndex + 1)
+
+          if (firstSlashIndex === -1 || !currentFileName)
+            return redirect(
+              `${paths.FILE}/${encodeURIComponent(
+                `${params.id}${sep}${PROJECT_ENTRYPOINT}`
+              )}`
+            )
+
           // Note that PROJECT_ENTRYPOINT is hardcoded until we support multiple files
-          const code = await readTextFile(params.id + '/' + PROJECT_ENTRYPOINT)
-          const entrypoint_metadata = await metadata(
-            params.id + '/' + PROJECT_ENTRYPOINT
+          const code = await readTextFile(decodedId)
+          const entrypointMetadata = await metadata(
+            projectPath + sep + PROJECT_ENTRYPOINT
           )
-          const children = await readDir(params.id)
+          const children = await readDir(projectPath, { recursive: true })
+          kclManager.setCodeAndExecute(code, false)
 
           return {
             code,
             project: {
-              name: params.id.slice(params.id.lastIndexOf('/') + 1),
-              path: params.id,
+              name: projectName,
+              path: projectPath,
               children,
-              entrypoint_metadata,
+              entrypointMetadata,
+            },
+            file: {
+              name: currentFileName,
+              path: params.id,
             },
           }
         }
@@ -244,9 +272,9 @@ const router = createBrowserRouter(
           isProjectDirectory
         )
         const projects = await Promise.all(
-          projectsNoMeta.map(async (p) => ({
-            entrypoint_metadata: await metadata(
-              p.path + '/' + PROJECT_ENTRYPOINT
+          projectsNoMeta.map(async (p: FileEntry) => ({
+            entrypointMetadata: await metadata(
+              p.path + sep + PROJECT_ENTRYPOINT
             ),
             ...p,
           }))

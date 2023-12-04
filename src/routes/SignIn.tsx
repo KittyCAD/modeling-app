@@ -67,6 +67,7 @@ const SignIn = () => {
             onClick={signInTauri}
             icon={{ icon: faSignInAlt }}
             className="w-fit mt-4"
+            data-testid="sign-in-button"
           >
             Sign in
           </ActionButton>

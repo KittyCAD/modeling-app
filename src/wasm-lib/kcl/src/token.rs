@@ -5,6 +5,7 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::SemanticTokenType;
+use winnow::stream::ContainsToken;
 
 use crate::{ast::types::VariableKind, executor::SourceRange};
 
@@ -44,6 +45,10 @@ pub enum TokenType {
     BlockComment,
     /// A function name.
     Function,
+    /// Unknown lexemes.
+    Unknown,
+    /// The ? symbol, used for optional values.
+    QuestionMark,
 }
 
 /// Most KCL tokens correspond to LSP semantic tokens (but not all).
@@ -55,6 +60,7 @@ impl TryFrom<TokenType> for SemanticTokenType {
             TokenType::Word => Self::VARIABLE,
             TokenType::Keyword => Self::KEYWORD,
             TokenType::Operator => Self::OPERATOR,
+            TokenType::QuestionMark => Self::OPERATOR,
             TokenType::String => Self::STRING,
             TokenType::LineComment => Self::COMMENT,
             TokenType::BlockComment => Self::COMMENT,
@@ -64,7 +70,8 @@ impl TryFrom<TokenType> for SemanticTokenType {
             | TokenType::Comma
             | TokenType::Colon
             | TokenType::Period
-            | TokenType::DoublePeriod => {
+            | TokenType::DoublePeriod
+            | TokenType::Unknown => {
                 anyhow::bail!("unsupported token type: {:?}", token_type)
             }
         })
@@ -127,6 +134,18 @@ pub struct Token {
     /// Offset in the source code where this token ends.
     pub end: usize,
     pub value: String,
+}
+
+impl ContainsToken<Token> for (TokenType, &str) {
+    fn contains_token(&self, token: Token) -> bool {
+        self.0 == token.token_type && self.1 == token.value
+    }
+}
+
+impl ContainsToken<Token> for TokenType {
+    fn contains_token(&self, token: Token) -> bool {
+        *self == token.token_type
+    }
 }
 
 impl Token {

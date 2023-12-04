@@ -3,6 +3,7 @@ use winnow::{
     combinator::{alt, opt, peek, preceded, repeat, terminated},
     error::{ContextError, ParseError},
     prelude::*,
+    stream::{Location, Stream},
     token::{any, none_of, one_of, take_till1, take_until0},
     Located,
 };
@@ -14,12 +15,13 @@ pub fn lexer(i: &str) -> Result<Vec<Token>, ParseError<Located<&str>, ContextErr
 }
 
 pub fn token(i: &mut Located<&str>) -> PResult<Token> {
-    winnow::combinator::dispatch! {peek(any);
+    match winnow::combinator::dispatch! {peek(any);
         '"' | '\'' => string,
         '/' => alt((line_comment, block_comment, operator)),
         '{' | '(' | '[' => brace_start,
         '}' | ')' | ']' => brace_end,
         ',' => comma,
+        '?' => question_mark,
         '0'..='9' => number,
         ':' => colon,
         '.' => alt((number, double_period, period)),
@@ -27,6 +29,21 @@ pub fn token(i: &mut Located<&str>) -> PResult<Token> {
         _ => alt((operator, keyword, word))
     }
     .parse_next(i)
+    {
+        Ok(token) => Ok(token),
+        Err(x) => {
+            // TODO: Handle non ascii cases
+            if i.len() == 0 || !i.is_ascii() {
+                return Err(x);
+            }
+
+            Ok(Token::from_range(
+                i.location()..i.location() + 1,
+                TokenType::Unknown,
+                i.next_slice(1).to_string(),
+            ))
+        }
+    }
 }
 
 fn block_comment(i: &mut Located<&str>) -> PResult<Token> {
@@ -90,6 +107,11 @@ fn brace_end(i: &mut Located<&str>) -> PResult<Token> {
 fn comma(i: &mut Located<&str>) -> PResult<Token> {
     let (value, range) = ','.with_span().parse_next(i)?;
     Ok(Token::from_range(range, TokenType::Comma, value.to_string()))
+}
+
+fn question_mark(i: &mut Located<&str>) -> PResult<Token> {
+    let (value, range) = '?'.with_span().parse_next(i)?;
+    Ok(Token::from_range(range, TokenType::QuestionMark, value.to_string()))
 }
 
 fn colon(i: &mut Located<&str>) -> PResult<Token> {
@@ -234,6 +256,14 @@ mod tests {
     }
 
     fn assert_tokens(expected: Vec<Token>, actual: Vec<Token>) {
+        assert_eq!(
+            expected.len(),
+            actual.len(),
+            "\nexpected {} tokens, actually got {}",
+            expected.len(),
+            actual.len()
+        );
+
         let n = expected.len();
         for i in 0..n {
             assert_eq!(
@@ -242,7 +272,6 @@ mod tests {
                 expected[i], actual[i],
             )
         }
-        assert_eq!(n, actual.len(), "expected {} tokens, actually got {}", n, actual.len());
     }
 
     #[test]
@@ -1459,6 +1488,45 @@ const things = "things"
                 end: 5,
             },
         ];
+        assert_tokens(expected, actual);
+    }
+
+    #[test]
+    fn test_unrecognized_token() {
+        let actual = lexer("12 ; 8").unwrap();
+        let expected = vec![
+            Token {
+                token_type: TokenType::Number,
+                value: "12".to_string(),
+                start: 0,
+                end: 2,
+            },
+            Token {
+                token_type: TokenType::Whitespace,
+                value: " ".to_string(),
+                start: 2,
+                end: 3,
+            },
+            Token {
+                token_type: TokenType::Unknown,
+                value: ";".to_string(),
+                start: 3,
+                end: 4,
+            },
+            Token {
+                token_type: TokenType::Whitespace,
+                value: " ".to_string(),
+                start: 4,
+                end: 5,
+            },
+            Token {
+                token_type: TokenType::Number,
+                value: "8".to_string(),
+                start: 5,
+                end: 6,
+            },
+        ];
+
         assert_tokens(expected, actual);
     }
 }

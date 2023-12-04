@@ -4,10 +4,11 @@ use anyhow::Result;
 use derive_docs::stdlib;
 use schemars::JsonSchema;
 
+use super::utils::between;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{MemoryItem, SketchGroup},
-    std::{utils::Angle, Args},
+    std::Args,
 };
 
 /// Returns the segment end of x.
@@ -174,7 +175,7 @@ fn inner_segment_angle(segment_name: &str, sketch_group: Box<SketchGroup>, args:
     })?;
     let line = path.get_base();
 
-    let result = Angle::between(line.from.into(), line.to.into());
+    let result = between(line.from.into(), line.to.into());
 
     Ok(result.degrees())
 }
