@@ -48,7 +48,7 @@ impl Memory {
 
     /// Store a composite value (i.e. a value which takes up multiple addresses in memory).
     /// Store its parts in consecutive memory addresses starting at `start`.
-    pub fn set_composite<T: Composite>(&mut self, composite_value: T, start: Address) {
+    pub fn set_composite<T: Composite<{ N }>, const N: usize>(&mut self, composite_value: T, start: Address) {
         let parts = composite_value.into_parts().into_iter();
         for (value, addr) in parts.zip(start.0..) {
             self.0.insert(addr, value);
@@ -57,17 +57,14 @@ impl Memory {
 
     /// Get a composite value (i.e. a value which takes up multiple addresses in memory).
     /// Its parts are stored in consecutive memory addresses starting at `start`.
-    pub fn get_composite<T: Composite>(&self, start: Address) -> Result<T, ExecutionError> {
-        let addrs = start.0..start.0 + T::SIZE;
-        let values: Vec<Value> = addrs
-            .into_iter()
-            .map(|a| {
-                let addr = Address(a);
-                self.get(&addr)
-                    .map(|x| x.to_owned())
-                    .ok_or(ExecutionError::MemoryEmpty { addr })
-            })
-            .collect::<Result<_, _>>()?;
+    pub fn get_composite<T: Composite<{ N }>, const N: usize>(&self, start: Address) -> Result<T, ExecutionError> {
+        let addrs: [Address; N] = core::array::from_fn(|i| Address(i + start.0));
+        let values: [Value; N] = arr_res_to_res_array(addrs.map(|addr| {
+            self.get(&addr)
+                .map(|x| x.to_owned())
+                .ok_or(ExecutionError::MemoryEmpty { addr })
+        }))?;
+
         T::from_parts(values)
     }
 }
@@ -275,4 +272,18 @@ pub enum ExecutionError {
     MemoryWrongType { expected: &'static str, actual: String },
     #[error("Wrong size of memory trying to read value from KCEP program memory: got {actual} but wanted {expected}")]
     MemoryWrongSize { expected: usize, actual: usize },
+}
+
+/// Take an array of result and return a result of array.
+/// If all members of the array are Ok(T), returns Ok with an array of the T values.
+/// If any member of the array was Err(E), return Err with the first E value.
+fn arr_res_to_res_array<T, E, const N: usize>(arr: [Result<T, E>; N]) -> Result<[T; N], E> {
+    let mut out = core::array::from_fn(|_| None);
+    for (i, res) in arr.enumerate() {
+        out[i] = match res {
+            Ok(x) => x,
+            Err(e) => return Err(e),
+        };
+    }
+    Ok(out.map(|opt| opt.unwrap()))
 }
