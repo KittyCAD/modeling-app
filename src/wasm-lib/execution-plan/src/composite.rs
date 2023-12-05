@@ -4,12 +4,10 @@ use crate::{ExecutionError, Value};
 /// but require multiple values to store.
 /// They get laid out into multiple consecutive memory addresses.
 pub trait Composite: Sized {
-    /// How many memory addresses are required to store this value?
-    const SIZE: usize;
     /// Store the value in memory.
     fn into_parts(self) -> Vec<Value>;
     /// Read the value from memory.
-    fn from_parts(values: Vec<Value>) -> Result<Self, ExecutionError>;
+    fn from_parts(values: &[Option<Value>]) -> Result<Self, ExecutionError>;
 }
 
 impl Composite for kittycad::types::Point3D {
@@ -21,19 +19,12 @@ impl Composite for kittycad::types::Point3D {
             .collect()
     }
 
-    const SIZE: usize = 3;
-
-    fn from_parts(values: Vec<Value>) -> Result<Self, ExecutionError> {
-        let n = values.len();
-        let Ok([x, y, z]): Result<[Value; 3], _> = values.try_into() else {
-            return Err(ExecutionError::MemoryWrongSize {
-                actual: n,
-                expected: Self::SIZE,
-            });
-        };
-        let x = x.try_into()?;
-        let y = y.try_into()?;
-        let z = z.try_into()?;
+    fn from_parts(values: &[Option<Value>]) -> Result<Self, ExecutionError> {
+        let err = ExecutionError::MemoryWrongSize { expected: 3 };
+        let [x, y, z] = [0, 1, 2].map(|n| values.get(n).ok_or(err.clone()));
+        let x = x?.to_owned().ok_or(err.clone())?.try_into()?;
+        let y = y?.to_owned().ok_or(err.clone())?.try_into()?;
+        let z = z?.to_owned().ok_or(err.clone())?.try_into()?;
         Ok(Self { x, y, z })
     }
 }
