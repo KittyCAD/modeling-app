@@ -330,7 +330,7 @@ export const FileTree = ({
         <ActionButton
           Element="button"
           icon={{
-            icon: 'createFile',
+            icon: 'filePlus',
             iconClassName: '!text-energy-80 dark:!text-energy-20',
             bgClassName: 'hover:bg-energy-10/50 dark:hover:bg-transparent',
           }}
@@ -345,7 +345,7 @@ export const FileTree = ({
         <ActionButton
           Element="button"
           icon={{
-            icon: 'createFolder',
+            icon: 'folderPlus',
             iconClassName: '!text-energy-80 dark:!text-energy-20',
             bgClassName: 'hover:bg-energy-10/50 dark:hover:bg-transparent',
           }}
