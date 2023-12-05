@@ -1221,7 +1221,7 @@ export class EngineCommandManager {
       type: 'modeling_cmd_req',
       cmd: {
         type: 'make_plane',
-        size: 60,
+        size: 100,
         origin: { x: 0, y: 0, z: 0 },
         x_axis,
         y_axis,
