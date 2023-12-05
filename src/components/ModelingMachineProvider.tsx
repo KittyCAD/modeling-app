@@ -22,6 +22,7 @@ import {
   Program,
   PipeExpression,
   CallExpression,
+  VariableDeclarator,
 } from 'lang/wasm'
 import { getNodeFromPath } from 'lang/queryAst'
 import {
@@ -282,6 +283,7 @@ export const ModelingMachineProvider = ({
             node: kclManager.ast,
             programMemory: kclManager.programMemory,
             to: [lastCoord.x, lastCoord.y],
+            from: [coords[0].x, coords[0].y],
             fnName: 'tangentialArc',
             pathToNode: sketchPathToNode,
           })
