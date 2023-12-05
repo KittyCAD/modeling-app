@@ -59,6 +59,7 @@ export function angleBetweenInfo({
   )
 
   const _enableEqual =
+    selectionRanges.otherSelections.length === 0 &&
     secondaryVarDecs.length === 1 &&
     isAllTooltips &&
     isOthersLinkedToPrimary &&

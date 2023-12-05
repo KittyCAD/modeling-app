@@ -75,7 +75,11 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
           },
         }
       }
-      if (values.type === 'obj' || values.type === 'stl') {
+      if (
+        values.type === 'obj' ||
+        values.type === 'stl' ||
+        values.type === 'ply'
+      ) {
         values.units = baseUnit
       }
       if (
@@ -85,6 +89,9 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
       ) {
         // Set the storage type.
         values.storage = storage
+      }
+      if (values.type === 'ply' || values.type === 'stl') {
+        values.selection = { type: 'default_scene' }
       }
       engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
@@ -133,6 +140,7 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
               <select
                 id="type"
                 name="type"
+                data-testid="export-type"
                 onChange={(e) => {
                   setType(e.target.value as OutputTypeKey)
                   if (e.target.value === 'gltf') {
@@ -162,6 +170,7 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
                 <select
                   id="storage"
                   name="storage"
+                  data-testid="export-storage"
                   onChange={(e) => {
                     setStorage(e.target.value as StorageUnion)
                     formik.handleChange(e)
@@ -175,13 +184,13 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
                       <option value="standard">standard</option>
                     </>
                   )}
-                  {type === 'ply' && (
+                  {type === 'stl' && (
                     <>
                       <option value="ascii">ascii</option>
                       <option value="binary">binary</option>
                     </>
                   )}
-                  {type === 'stl' && (
+                  {type === 'ply' && (
                     <>
                       <option value="ascii">ascii</option>
                       <option value="binary_little_endian">

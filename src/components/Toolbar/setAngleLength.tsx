@@ -25,7 +25,7 @@ import { kclManager } from 'lang/KclSinglton'
 
 const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
 
-export function setAngleLengthInfo({
+export function angleLengthInfo({
   selectionRanges,
   angleOrLength = 'setLength',
 }: {
@@ -50,7 +50,10 @@ export function setAngleLengthInfo({
     kclManager.ast,
     angleOrLength
   )
-  const enabled = isAllTooltips && transforms.every(Boolean)
+  const enabled =
+    selectionRanges.codeBasedSelections.length <= 1 &&
+    isAllTooltips &&
+    transforms.every(Boolean)
   return { enabled, transforms }
 }
 
@@ -64,7 +67,7 @@ export async function applyConstraintAngleLength({
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
 }> {
-  const { transforms } = setAngleLengthInfo({ selectionRanges, angleOrLength })
+  const { transforms } = angleLengthInfo({ selectionRanges, angleOrLength })
   const { valueUsedInTransform } = transformAstSketchLines({
     ast: JSON.parse(JSON.stringify(kclManager.ast)),
     selectionRanges,

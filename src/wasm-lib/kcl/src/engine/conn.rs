@@ -69,7 +69,16 @@ impl EngineConnection {
     async fn start_write_actor(mut tcp_write: WebSocketTcpWrite, mut engine_req_rx: mpsc::Receiver<ToEngineReq>) {
         while let Some(req) = engine_req_rx.recv().await {
             let ToEngineReq { req, request_sent } = req;
-            let res = Self::inner_send_to_engine(req, &mut tcp_write).await;
+            let res = if let kittycad::types::WebSocketRequest::ModelingCmdReq { cmd, cmd_id: _ } = &req {
+                if let kittycad::types::ModelingCmd::ImportFiles { .. } = cmd {
+                    // Send it as binary.
+                    Self::inner_send_to_engine_binary(req, &mut tcp_write).await
+                } else {
+                    Self::inner_send_to_engine(req, &mut tcp_write).await
+                }
+            } else {
+                Self::inner_send_to_engine(req, &mut tcp_write).await
+            };
             let _ = request_sent.send(res);
         }
     }
@@ -79,6 +88,16 @@ impl EngineConnection {
         let msg = serde_json::to_string(&request).map_err(|e| anyhow!("could not serialize json: {e}"))?;
         tcp_write
             .send(WsMsg::Text(msg))
+            .await
+            .map_err(|e| anyhow!("could not send json over websocket: {e}"))?;
+        Ok(())
+    }
+
+    /// Send the given `request` to the engine via the WebSocket connection `tcp_write` as binary.
+    async fn inner_send_to_engine_binary(request: WebSocketRequest, tcp_write: &mut WebSocketTcpWrite) -> Result<()> {
+        let msg = bson::to_vec(&request).map_err(|e| anyhow!("could not serialize bson: {e}"))?;
+        tcp_write
+            .send(WsMsg::Binary(msg))
             .await
             .map_err(|e| anyhow!("could not send json over websocket: {e}"))?;
         Ok(())
@@ -187,7 +206,7 @@ impl EngineManager for EngineConnection {
         }
 
         Err(KclError::Engine(KclErrorDetails {
-            message: format!("Modeling command timed out `{}`: {:?}", id, cmd),
+            message: format!("Modeling command timed out `{}`", id),
             source_ranges: vec![source_range],
         }))
     }

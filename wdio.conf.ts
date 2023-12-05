@@ -1,19 +1,15 @@
-const os = require('os')
-const path = require('path')
-const { spawn } = require('child_process')
+import os from 'os'
+import path from 'path'
+import { spawn, ChildProcess } from 'child_process'
 
+let tauriDriver: ChildProcess
 
-
-// keep track of the `tauri-driver` child process
-let tauriDriver
-
-const mode = process.env.MODE
 const application =
-  process.env.E2E_APPLICATION || `./src-tauri/target/${mode}/kittycad-modeling`
+  process.env.E2E_APPLICATION || `./src-tauri/target/release/kittycad-modeling`
 
-exports.config = {
+export const config = {
   port: 4444,
-  specs: ['./e2e/tauri/specs/**/*.js'],
+  specs: ['./e2e/tauri/specs/**/*.ts'],
   maxInstances: 1,
   capabilities: [
     {

@@ -334,10 +334,7 @@ const setAbsDistanceForAngleLineCreateNode =
   ): TransformInfo['createNode'] =>
   ({ tag, forceValueUsedInTransform, varValA }) => {
     return (args, referencedSegment) => {
-      const valueUsedInTransform = roundOff(
-        getArgLiteralVal(args?.[1]) - (referencedSegment?.to?.[index] || 0),
-        2
-      )
+      const valueUsedInTransform = roundOff(getArgLiteralVal(args?.[1]), 2)
       const val =
         (forceValueUsedInTransform as BinaryPart) ||
         createLiteral(valueUsedInTransform)

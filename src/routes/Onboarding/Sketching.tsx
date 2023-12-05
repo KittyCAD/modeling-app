@@ -57,6 +57,7 @@ export default function Sketching() {
             Element="button"
             onClick={next}
             icon={{ icon: faArrowRight }}
+            data-testid="onboarding-next"
           >
             Next: Future Work
           </ActionButton>

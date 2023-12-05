@@ -34,7 +34,7 @@ export async function exportSave(data: ArrayBuffer) {
         // Create a new blob.
         const blob = new Blob([new Uint8Array(file.contents)])
         // Save the file.
-        browserSaveFile(blob, file.name)
+        await browserSaveFile(blob, file.name)
       }
     }
   } catch (e) {

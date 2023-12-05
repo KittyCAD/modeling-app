@@ -8,6 +8,9 @@ import { kclManager } from 'lang/KclSinglton'
 import { SelectionRange } from '@uiw/react-codemirror'
 import { isOverlap } from 'lib/utils'
 
+export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
+export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
+
 /*
 How selections work is complex due to the nature that we rely on the engine
 to tell what has been selected after we send a click command. But than the
@@ -110,6 +113,15 @@ export async function getEventForSelectWithPoint(
       data: { selectionType: 'singleCodeCursor' },
     }
   }
+  if ([X_AXIS_UUID, Y_AXIS_UUID].includes(data.entity_id)) {
+    return {
+      type: 'Set selection',
+      data: {
+        selectionType: 'otherSelection',
+        selection: X_AXIS_UUID === data.entity_id ? 'x-axis' : 'y-axis',
+      },
+    }
+  }
   const sourceRange = engineCommandManager.artifactMap[data.entity_id]?.range
   if (engineCommandManager.artifactMap[data.entity_id]) {
     return {
@@ -164,6 +176,7 @@ export function handleSelectionBatch({
 }): {
   selectionRangeTypeMap: SelectionRangeTypeMap
   codeMirrorSelection?: EditorSelection
+  otherSelections: Axis[]
 } {
   const ranges: ReturnType<typeof EditorSelection.cursor>[] = []
   const selectionRangeTypeMap: SelectionRangeTypeMap = {}
@@ -180,43 +193,74 @@ export function handleSelectionBatch({
         ranges,
         selections.codeBasedSelections.length - 1
       ),
+      otherSelections: selections.otherSelections,
     }
 
   return {
     selectionRangeTypeMap,
+    otherSelections: selections.otherSelections,
   }
 }
 
 export function handleSelectionWithShift({
   codeSelection,
-  currestSelections,
+  otherSelection,
+  currentSelections,
   isShiftDown,
 }: {
   codeSelection?: Selection
-  currestSelections: Selections
+  otherSelection?: Axis
+  currentSelections: Selections
   isShiftDown: boolean
 }): {
   selectionRangeTypeMap: SelectionRangeTypeMap
+  otherSelections: Axis[]
   codeMirrorSelection?: EditorSelection
 } {
   const code = kclManager.code
-  if (!codeSelection)
+  if (codeSelection && otherSelection) {
+    throw new Error('cannot have both code and other selection')
+  }
+  if (!codeSelection && !otherSelection) {
     return handleSelectionBatch({
       selections: {
-        otherSelections: currestSelections.otherSelections,
+        otherSelections: [],
         codeBasedSelections: [
           {
-            range: [0, code.length ? code.length - 1 : 0],
+            range: [0, code.length ? code.length : 0],
             type: 'default',
           },
         ],
       },
     })
+  }
+  if (otherSelection) {
+    console.log('otherSelection in handleSelectionWithShift', otherSelection)
+    return handleSelectionBatch({
+      selections: {
+        codeBasedSelections: isShiftDown
+          ? currentSelections.codeBasedSelections
+          : [
+              {
+                range: [0, code.length ? code.length : 0],
+                type: 'default',
+              },
+            ],
+        otherSelections: [otherSelection],
+      },
+    })
+  }
+  const isEndOfFileDumbySelection =
+    currentSelections.codeBasedSelections.length === 1 &&
+    currentSelections.codeBasedSelections[0].range[0] === kclManager.code.length
+  const newCodeBasedSelections = !isShiftDown
+    ? [codeSelection!]
+    : isEndOfFileDumbySelection
+    ? [codeSelection!]
+    : [...currentSelections.codeBasedSelections, codeSelection!]
   const selections: Selections = {
-    ...currestSelections,
-    codeBasedSelections: isShiftDown
-      ? [...currestSelections.codeBasedSelections, codeSelection]
-      : [codeSelection],
+    otherSelections: isShiftDown ? currentSelections.otherSelections : [],
+    codeBasedSelections: newCodeBasedSelections,
   }
   return handleSelectionBatch({ selections })
 }
@@ -227,10 +271,12 @@ export function processCodeMirrorRanges({
   codeMirrorRanges,
   selectionRanges,
   selectionRangeTypeMap,
+  isShiftDown,
 }: {
   codeMirrorRanges: readonly SelectionRange[]
   selectionRanges: Selections
   selectionRangeTypeMap: SelectionRangeTypeMap
+  isShiftDown: boolean
 }): null | {
   modelingEvent: ModelingMachineEvent
   engineEvents: Models['WebSocketRequest_type'][]
@@ -291,7 +337,7 @@ export function processCodeMirrorRanges({
       data: {
         selectionType: 'mirrorCodeMirrorSelections',
         selection: {
-          ...selectionRanges,
+          otherSelections: isShiftDown ? selectionRanges.otherSelections : [],
           codeBasedSelections,
         },
       },
@@ -300,7 +346,7 @@ export function processCodeMirrorRanges({
   }
 }
 
-export function resetAndSetEngineEntitySelectionCmds(
+function resetAndSetEngineEntitySelectionCmds(
   selections: SelectionToEngine[]
 ): Models['WebSocketRequest_type'][] {
   if (!engineCommandManager.engineConnection?.isReady()) {

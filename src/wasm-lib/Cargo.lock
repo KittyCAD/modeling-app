@@ -823,6 +823,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "execution-plan"
+version = "0.1.0"
+dependencies = [
+ "bytes",
+ "kittycad",
+ "serde",
+ "thiserror",
+]
+
+[[package]]
 name = "expectorate"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1426,7 +1436,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.1.37"
+version = "0.1.40"
 dependencies = [
  "anyhow",
  "async-recursion",
@@ -1783,7 +1793,7 @@ checksum = "0ab1bc2a289d34bd04a330323ac98a1b4bc82c9d9fcb1e66b63caa84da26b575"
 [[package]]
 name = "openapitor"
 version = "0.0.9"
-source = "git+https://github.com/KittyCAD/kittycad.rs?branch=main#9caff1f4f00c64632ff5a226251e3dc68210b455"
+source = "git+https://github.com/KittyCAD/kittycad.rs?branch=main#920ba7c69fa167d74e4cc1be4f2ed96635893e89"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -2092,9 +2102,9 @@ dependencies = [
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.69"
+version = "1.0.70"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "134c189feb4956b20f6f547d2cf727d4c0fe06722b20a0eec87ed445a97f92da"
+checksum = "39278fbbf5fb4f646ce651690877f89d1c5811a3d4acb27700c1cb3cdb78fd3b"
 dependencies = [
  "unicode-ident",
 ]
@@ -3547,9 +3557,9 @@ checksum = "711b9620af191e0cdc7468a8d14e709c3dcdb115b36f838e601583af800a370a"
 
 [[package]]
 name = "uuid"
-version = "1.6.0"
+version = "1.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c58fe91d841bc04822c9801002db4ea904b9e4b8e6bbad25127b46eff8dc516b"
+checksum = "5e395fcf16a7a3d8127ec99782007af141946b4795001f876d54fb0d55978560"
 dependencies = [
  "atomic",
  "getrandom",
