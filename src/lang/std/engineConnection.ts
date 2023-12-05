@@ -304,9 +304,14 @@ class EngineConnection {
           })
           .join('\n')
         if (message.request_id) {
+          const artifactThatFailed =
+            engineCommandManager.artifactMap[message.request_id] ||
+            engineCommandManager.lastArtifactMap[message.request_id]
           console.error(
-            `Error in response to request ${message.request_id}:\n${errorsString}`
+            `Error in response to request ${message.request_id}:\n${errorsString}
+failed cmd type was ${artifactThatFailed?.commandType}`
           )
+          console.log(artifactThatFailed)
         } else {
           console.error(`Error from server:\n${errorsString}`)
         }
