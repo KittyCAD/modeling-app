@@ -174,6 +174,7 @@ export const Stream = ({ className = '' }) => {
         type: 'mouse_click',
         window: { x, y },
       }
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       engineCommandManager.sendSceneCommand(command).then(async (resp) => {
         const entities_modified = resp?.data?.data?.entities_modified
         if (!entities_modified) return
@@ -241,19 +242,26 @@ export const Stream = ({ className = '' }) => {
           state.matches('Sketch.Line Tool.Segment Added') ||
           state.matches('Sketch.TangentialArc Tool.Segment Added')
         ) {
-          const curve = await engineCommandManager.sendSceneCommand({
+          const curveEndpoints = await engineCommandManager.sendSceneCommand({
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
             cmd: {
-              type: 'curve_get_control_points',
+              type: 'curve_get_end_points',
               curve_id: entities_modified[0],
             },
           })
-          const coords: { x: number; y: number }[] =
-            curve.data.data.control_points
+          interface Point {
+            x: number
+            y: number
+          }
+          const coords: { end: Point; start: Point } = curveEndpoints.data.data
           send({
             type: 'Add point',
-            data: { coords, axis: null, segmentId: entities_modified[0] },
+            data: {
+              coords: [coords.start, coords.end],
+              axis: null,
+              segmentId: entities_modified[0],
+            },
           })
         }
       })
