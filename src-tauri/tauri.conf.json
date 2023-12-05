@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "kittycad-modeling",
-    "version": "0.12.0"
+    "version": "0.13.0"
   },
   "tauri": {
     "allowlist": {
