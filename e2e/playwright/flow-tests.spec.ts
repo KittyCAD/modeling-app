@@ -4,8 +4,6 @@ import { EngineCommand } from '../../src/lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
 import { getUtils } from './test-utils'
 import waitOn from 'wait-on'
-import { Models } from '@kittycad/lib'
-import fsp from 'fs/promises'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -86,26 +84,26 @@ test('Basic sketch', async ({ page }) => {
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
 
-  const startAt = '[10.97, -14.79]'
-  const tenish = '11.07'
+  const startAt = '[18.26, -24.63]'
+  const num = '18.43'
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
-  |> line([${tenish}, 0], %)`)
+  |> line([${num}, 0], %)`)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
-  |> line([${tenish}, 0], %)
-  |> line([0, ${tenish}], %)`)
+  |> line([${num}, 0], %)
+  |> line([0, ${num}], %)`)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
-  |> line([${tenish}, 0], %)
-  |> line([0, ${tenish}], %)
-  |> line([-22.04, 0], %)`)
+  |> line([${num}, 0], %)
+  |> line([0, ${num}], %)
+  |> line([-36.69, 0], %)`)
 
   // deselect line tool
   await u.doAndWaitForCmd(
@@ -133,8 +131,8 @@ test('Basic sketch', async ({ page }) => {
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
-  |> line({ to: [${tenish}, 0], tag: 'seg01' }, %)
-  |> line([0, ${tenish}], %)
+  |> line({ to: [${num}, 0], tag: 'seg01' }, %)
+  |> line([0, ${num}], %)
   |> angledLine([180, segLen('seg01', %)], %)`)
 })
 
@@ -508,27 +506,27 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
 
-  const startAt = '[10.97, -14.79]'
-  const tenish = '11.07'
-  const twentyish = '22.04'
+  const startAt = '[18.26, -24.63]'
+  const num = '18.43'
+  const num2 = '36.69'
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
-  |> line([${tenish}, 0], %)`)
+  |> line([${num}, 0], %)`)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
-  |> line([${tenish}, 0], %)
-  |> line([0, ${tenish}], %)`)
+  |> line([${num}, 0], %)
+  |> line([0, ${num}], %)`)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
-  |> line([${tenish}, 0], %)
-  |> line([0, ${tenish}], %)
-  |> line([-${twentyish}, 0], %)`)
+  |> line([${num}, 0], %)
+  |> line([0, ${num}], %)
+  |> line([-${num2}, 0], %)`)
 
   // deselect line tool
   await u.doAndWaitForCmd(
@@ -581,7 +579,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
 
     // check the same selection again by putting cursor in code first then selecting axis
     await u.doAndWaitForCmd(
-      () => page.getByText(`  |> line([-${twentyish}, 0], %)`).click(),
+      () => page.getByText(`  |> line([-${num2}, 0], %)`).click(),
       'select_clear',
       false
     )
@@ -596,7 +594,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
 
     // select segment in editor than another segment in scene and check there are two cursors
     await u.doAndWaitForCmd(
-      () => page.getByText(`  |> line([-${twentyish}, 0], %)`).click(),
+      () => page.getByText(`  |> line([-${num2}, 0], %)`).click(),
       'select_clear',
       false
     )
