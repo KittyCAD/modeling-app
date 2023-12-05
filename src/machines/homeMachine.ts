@@ -1,8 +1,8 @@
 import { assign, createMachine } from 'xstate'
 import { ProjectWithEntryPointMetadata } from '../Router'
-import { CommandBarMeta } from '../lib/commands'
+import { CommandBarConfig } from '../lib/commands'
 
-export const homeCommandMeta: CommandBarMeta = {
+export const homeCommandConfig: CommandBarConfig<typeof homeMachine> = {
   'Create project': {
     displayValue: (args: string[]) => `Create project "${args[0]}"`,
     args: [

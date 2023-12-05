@@ -1,12 +1,16 @@
 import { useEffect } from 'react'
 import { AnyStateMachine, StateFrom } from 'xstate'
-import { Command, CommandBarMeta, createMachineCommand } from '../lib/commands'
+import {
+  Command,
+  CommandBarConfig,
+  createMachineCommand,
+} from '../lib/commands'
 import { useCommandsContext } from './useCommandsContext'
 
 interface UseStateMachineCommandsArgs<T extends AnyStateMachine> {
   state: StateFrom<T>
   send: Function
-  commandBarMeta?: CommandBarMeta
+  commandBarConfig?: CommandBarConfig<T>
   commands: Command[]
   owner: string
 }
@@ -14,7 +18,7 @@ interface UseStateMachineCommandsArgs<T extends AnyStateMachine> {
 export default function useStateMachineCommands<T extends AnyStateMachine>({
   state,
   send,
-  commandBarMeta,
+  commandBarConfig,
   owner,
 }: UseStateMachineCommandsArgs<T>) {
   const { addCommands, removeCommands } = useCommandsContext()
@@ -27,11 +31,11 @@ export default function useStateMachineCommands<T extends AnyStateMachine>({
           type,
           state,
           send,
-          commandBarMeta,
+          commandBarConfig,
           owner,
         })
       )
-      .filter((c) => c !== null) as Command[]
+      .filter((c) => c !== null) as Command[] // TS isn't smart enough to know this filter removes nulls
 
     addCommands(newCommands)
 

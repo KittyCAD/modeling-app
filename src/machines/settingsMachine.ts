@@ -1,5 +1,5 @@
 import { assign, createMachine } from 'xstate'
-import { CommandBarMeta } from '../lib/commands'
+import { CommandBarConfig } from '../lib/commands'
 import { Themes, getSystemTheme, setThemeClass } from '../lib/theme'
 import { CameraSystem, cameraSystems } from 'lib/cameraControls'
 import { Models } from '@kittycad/lib'
@@ -24,7 +24,9 @@ export type Toggle = 'On' | 'Off'
 
 export const SETTINGS_PERSIST_KEY = 'SETTINGS_PERSIST_KEY'
 
-export const settingsCommandBarMeta: CommandBarMeta = {
+export const settingsCommandBarConfig: CommandBarConfig<
+  typeof settingsMachine
+> = {
   'Set Base Unit': {
     displayValue: (args: string[]) => 'Set your default base unit',
     args: [

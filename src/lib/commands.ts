@@ -5,14 +5,8 @@ type InitialCommandBarMetaArg = {
   name: string
   type: 'string' | 'select'
   description?: string
-  defaultValue?: string
-  options: string | Array<{ name: string }>
-}
-
-type Platform = 'both' | 'web' | 'desktop'
-
-export type CommandBarMeta = {
-  [key: string]:
+export type CommandBarConfig<T extends AnyStateMachine> = Partial<{
+  [EventType in EventFrom<T>['type']]:
     | {
         displayValue: (args: string[]) => string
         args: InitialCommandBarMetaArg[]
@@ -21,7 +15,7 @@ export type CommandBarMeta = {
     | {
         hide?: Platform
       }
-}
+}>
 
 export type Command = {
   owner: string
