@@ -44,6 +44,10 @@ export const authCommandBarConfig: CommandBarConfig<typeof authMachine> = {
   'Log in': {
     hide: 'both',
   },
+  'Log out': {
+    args: [],
+    icon: 'arrowLeft',
+  },
 }
 
 export const authMachine = createMachine<UserContext, Events>(
