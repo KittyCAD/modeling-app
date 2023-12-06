@@ -1,6 +1,4 @@
-import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
-import { ActionButton } from '../../components/ActionButton'
-import { onboardingPaths, useDismiss, useNextClick } from '.'
+import { OnboardingButtons, onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from '../../useStore'
 
 export default function UserMenu() {
@@ -25,28 +23,11 @@ export default function UserMenu() {
             change your settings, sign out, or request a feature.
           </p>
         </section>
-        <div className="flex justify-between">
-          <ActionButton
-            Element="button"
-            onClick={dismiss}
-            icon={{
-              icon: faXmark,
-              bgClassName: 'bg-destroy-80',
-              iconClassName:
-                'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
-            }}
-            className="hover:border-destroy-40"
-          >
-            Dismiss
-          </ActionButton>
-          <ActionButton
-            Element="button"
-            onClick={next}
-            icon={{ icon: faArrowRight }}
-          >
-            Next: Project Menu
-          </ActionButton>
-        </div>
+        <OnboardingButtons
+          dismiss={dismiss}
+          next={next}
+          nextText="Next: Project Menu"
+        />
       </div>
     </div>
   )
