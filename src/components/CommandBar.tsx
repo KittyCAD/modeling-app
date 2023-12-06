@@ -188,19 +188,8 @@ const CommandBar = () => {
         onClose={() => {
           setCommandBarOpen(false)
         }}
-        className="fixed inset-0 z-40 overflow-y-auto pb-4 pt-2"
+        className="fixed inset-0 z-40 overflow-y-auto pb-4 pt-1"
       >
-        <Transition.Child
-          enter="duration-100 ease-out"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="duration-75 ease-in"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-          as={Fragment}
-        >
-          <Dialog.Overlay className="fixed inset-0 bg-chalkboard-10/70 dark:bg-chalkboard-110/50" />
-        </Transition.Child>
         <Transition.Child
           enter="duration-100 ease-out"
           enterFrom="opacity-0 scale-95"
@@ -280,6 +269,7 @@ function Argument({
   appendCommandArgumentData: Dispatch<SetStateAction<any>>
   stepBack: () => void
 }) {
+  const { setCommandBarOpen } = useCommandsContext()
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -313,6 +303,12 @@ function Argument({
           className="flex-grow px-2 py-1 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80 !bg-transparent focus:outline-none"
           placeholder="Enter a value"
           defaultValue={arg.defaultValue}
+          onKeyDown={(event) => {
+            if (event.metaKey && event.key === 'k') setCommandBarOpen(false)
+            if (event.key === 'Backspace' && !event.currentTarget.value) {
+              stepBack()
+            }
+          }}
           autoFocus
         />
       </label>
@@ -355,7 +351,7 @@ function CommandComboBox({
       <div className="flex items-center gap-2 px-4 pb-2 border-solid border-0 border-b border-b-chalkboard-20 dark:border-b-chalkboard-80">
         <CustomIcon
           name="search"
-          className="w-5 h-5 bg-energy-10/50 dark:bg-energy-10 dark:text-chalkboard-100"
+          className="w-5 h-5 bg-energy-10/50 dark:bg-chalkboard-90 dark:text-energy-10"
         />
         <Combobox.Input
           onChange={(event) => setQuery(event.target.value)}
