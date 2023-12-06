@@ -182,7 +182,7 @@ jobs:
           cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
 
       - name: Run vite build (build:both)
-        run: vite build --mode ${{ env.BUILD_RELEASE == 'true' && 'production' || 'development' }}
+        run: yarn vite build --mode ${{ env.BUILD_RELEASE == 'true' && 'production' || 'development' }}
 
       - name: Fix format
         run: yarn fmt
