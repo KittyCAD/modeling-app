@@ -30,8 +30,10 @@ export const CodeMenu = ({ children }: PropsWithChildren) => {
         <Menu.Button className="p-0 border-none relative">
           <ActionIcon
             icon={faEllipsis}
+            className='p-1'
+            size='sm'
             bgClassName={
-              'bg-chalkboard-20 dark:bg-chalkboard-110 hover:bg-liquid-10/50 hover:dark:bg-chalkboard-90 ui-active:bg-chalkboard-80 ui-active:dark:bg-chalkboard-90  rounded'
+              'bg-chalkboard-20 dark:bg-chalkboard-110 hover:bg-energy-10/50 hover:dark:bg-chalkboard-90 ui-active:bg-chalkboard-80 ui-active:dark:bg-chalkboard-90 rounded-sm'
             }
             iconClassName={'text-chalkboard-90 dark:text-chalkboard-40'}
           />

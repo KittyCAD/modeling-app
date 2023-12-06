@@ -325,16 +325,16 @@ export const FileTree = ({
 
   return (
     <div className={className}>
-      <div className="flex items-center gap-1 px-4 py-1 bg-chalkboard-30/50 dark:bg-chalkboard-70/50">
+      <div className="flex items-center gap-1 px-4 py-1 bg-chalkboard-20/50 dark:bg-chalkboard-80/50 border-b border-b-chalkboard-30 dark:border-b-chalkboard-80">
         <h2 className="flex-1 m-0 p-0 text-sm mono">Files</h2>
         <ActionButton
           Element="button"
           icon={{
             icon: 'filePlus',
             iconClassName: '!text-energy-80 dark:!text-energy-20',
-            bgClassName: 'hover:bg-energy-10/50 dark:hover:bg-transparent',
+            bgClassName: 'bg-chalkboard-20/50 hover:bg-energy-10/50 dark:hover:bg-transparent',
           }}
-          className="!p-0 border-none bg-transparent !outline-none"
+          className="!p-0 bg-transparent !outline-none"
           onClick={createFile}
         >
           <Tooltip position="inlineStart" delay={750}>
@@ -347,9 +347,9 @@ export const FileTree = ({
           icon={{
             icon: 'folderPlus',
             iconClassName: '!text-energy-80 dark:!text-energy-20',
-            bgClassName: 'hover:bg-energy-10/50 dark:hover:bg-transparent',
+            bgClassName: 'bg-chalkboard-20/50 hover:bg-energy-10/50 dark:hover:bg-transparent',
           }}
-          className="!p-0 border-none bg-transparent !outline-none"
+          className="!p-0 bg-transparent !outline-none"
           onClick={createFolder}
         >
           <Tooltip position="inlineStart" delay={750}>

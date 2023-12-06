@@ -178,45 +178,38 @@ const Home = () => {
       <div className="w-full max-w-5xl px-4 mx-auto my-24 overflow-y-auto lg:px-0">
         <section className="flex justify-between">
           <h1 className="text-3xl text-bold">Your Projects</h1>
-          <div className="flex">
+          <div className="flex gap-2 items-center">
+            <small>Sort by</small>
             <ActionButton
               Element="button"
-              className={
-                !sort.includes('name')
+              className={'text-sm ' +
+                (!sort.includes('name')
                   ? 'text-chalkboard-80 dark:text-chalkboard-40'
-                  : ''
+                  : '')
               }
               onClick={() => setSearchParams(getNextSearchParams(sort, 'name'))}
               icon={{
                 icon: getSortIcon(sort, 'name'),
-                bgClassName: !sort?.includes('name')
-                  ? 'bg-liquid-50 dark:bg-liquid-70'
-                  : '',
-                iconClassName: !sort?.includes('name')
-                  ? 'text-liquid-80 dark:text-liquid-30'
-                  : '',
+                className: 'p-1.5',
+                size: 'sm',
               }}
             >
               Name
             </ActionButton>
             <ActionButton
               Element="button"
-              className={
-                !isSortByModified
+              className={'text-sm ' +
+                (!isSortByModified
                   ? 'text-chalkboard-80 dark:text-chalkboard-40'
-                  : ''
+                  : '')
               }
               onClick={() =>
                 setSearchParams(getNextSearchParams(sort, 'modified'))
               }
               icon={{
                 icon: sort ? getSortIcon(sort, 'modified') : faArrowDown,
-                bgClassName: !isSortByModified
-                  ? 'bg-liquid-50 dark:bg-liquid-70'
-                  : '',
-                iconClassName: !isSortByModified
-                  ? 'text-liquid-80 dark:text-liquid-30'
-                  : '',
+                className: 'p-1.5',
+                size: 'sm',
               }}
             >
               Last Modified
@@ -225,11 +218,11 @@ const Home = () => {
         </section>
         <section>
           <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
-            Are being saved at{' '}
-            <code className="text-liquid-80 dark:text-liquid-30">
+            Loaded from {' '}
+            <span className="text-energy-70 dark:text-energy-40">
               {defaultDirectory}
-            </code>
-            , which you can change in your <Link to="settings">Settings</Link>.
+            </span>
+            .{' '}<Link to="settings" className='underline underline-offset-2'>Edit in settings</Link>.
           </p>
           {state.matches('Reading projects') ? (
             <Loading>Loading your Projects...</Loading>
@@ -254,7 +247,7 @@ const Home = () => {
               <ActionButton
                 Element="button"
                 onClick={() => send('Create project')}
-                icon={{ icon: faPlus }}
+                icon={{ icon: faPlus, iconClassName: 'p-1 w-4' }}
                 data-testid="home-new-file"
               >
                 New file

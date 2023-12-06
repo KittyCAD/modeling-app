@@ -37,7 +37,7 @@ export const Toolbar = () => {
         ref={toolbarButtonsRef}
         onWheel={handleToolbarButtonsWheelEvent}
         className={
-          'm-0 py-1 flex gap-2 items-center overflow-x-auto ' + className
+          'm-0 py-1 rounded-l-sm flex gap-2 items-center overflow-x-auto ' + className
         }
         style={{ scrollbarWidth: 'thin' }}
       >
@@ -45,6 +45,7 @@ export const Toolbar = () => {
           <li className="contents">
             <ActionButton
               Element="button"
+              className="text-sm"
               onClick={() => send({ type: 'Enter sketch' })}
               icon={{
                 icon: 'sketch',
@@ -60,6 +61,7 @@ export const Toolbar = () => {
           <li className="contents">
             <ActionButton
               Element="button"
+              className="text-sm"
               onClick={() => send({ type: 'Enter sketch' })}
               icon={{
                 icon: 'sketch',
@@ -75,6 +77,7 @@ export const Toolbar = () => {
           <li className="contents">
             <ActionButton
               Element="button"
+              className="text-sm"
               onClick={() => send({ type: 'Cancel' })}
               icon={{
                 icon: 'arrowLeft',
@@ -90,6 +93,7 @@ export const Toolbar = () => {
           <li className="contents">
             <ActionButton
               Element="button"
+              className="text-sm"
               onClick={() =>
                 state.matches('Sketch.Line Tool')
                   ? send('CancelSketch')
@@ -111,6 +115,7 @@ export const Toolbar = () => {
           <li className="contents">
             <ActionButton
               Element="button"
+              className="text-sm"
               onClick={() =>
                 state.matches('Sketch.Move Tool')
                   ? send('CancelSketch')
@@ -154,6 +159,7 @@ export const Toolbar = () => {
               <li className="contents">
                 <ActionButton
                   Element="button"
+                  className="text-sm"
                   key={eventName}
                   onClick={() => send(eventName)}
                   disabled={
@@ -178,6 +184,7 @@ export const Toolbar = () => {
           <li className="contents">
             <ActionButton
               Element="button"
+              className="text-sm"
               onClick={() => send('extrude intent')}
               disabled={!state.can('extrude intent')}
               title={
@@ -200,12 +207,13 @@ export const Toolbar = () => {
   }
 
   return (
-    <div className="max-w-full flex items-stretch rounded-r-full bg-chalkboard-10 dark:bg-chalkboard-100 relative">
-      <menu className="flex-1 px-1 py-0 overflow-hidden whitespace-nowrap bg-chalkboard-10 dark:bg-chalkboard-100 border-solid border border-energy-10 dark:border-chalkboard-90 border-r-0">
+    <div className="max-w-full flex items-stretch rounded-l-sm rounded-r-full bg-chalkboard-10 dark:bg-chalkboard-100 relative">
+      <menu className="flex-1 px-1 py-0 overflow-hidden rounded-l-sm whitespace-nowrap bg-chalkboard-10 dark:bg-chalkboard-100 border-solid border border-energy-10 dark:border-chalkboard-90 border-r-0">
         <ToolbarButtons />
       </menu>
       <ActionButton
         Element="button"
+        className="text-sm"
         onClick={() => setCommandBarOpen(true)}
         className="rounded-r-full pr-4 self-stretch border-energy-10 hover:border-energy-10 dark:border-chalkboard-80 bg-energy-10/50 hover:bg-energy-10 dark:bg-chalkboard-80 dark:text-energy-10"
       >

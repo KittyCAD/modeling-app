@@ -185,14 +185,9 @@ export const Settings = () => {
                 />
                 <ActionButton
                   Element="button"
-                  className="bg-chalkboard-100 dark:bg-chalkboard-90 hover:bg-chalkboard-90 dark:hover:bg-chalkboard-80 !text-chalkboard-10 border-chalkboard-100 hover:border-chalkboard-70"
                   onClick={handleDirectorySelection}
                   icon={{
-                    icon: faFolder,
-                    bgClassName:
-                      'bg-liquid-20 group-hover:bg-liquid-10 hover:bg-liquid-10',
-                    iconClassName:
-                      'text-liquid-90 group-hover:text-liquid-90 hover:text-liquid-90',
+                    icon: 'folder',
                   }}
                 >
                   Choose a folder
@@ -305,7 +300,7 @@ export const Settings = () => {
           <ActionButton
             Element="button"
             onClick={restartOnboarding}
-            icon={{ icon: faArrowRotateBack }}
+            icon={{ icon: faArrowRotateBack, size: 'sm', className: 'p-1' }}
           >
             Replay Onboarding
           </ActionButton>

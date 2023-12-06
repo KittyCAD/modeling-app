@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react'
+import { FormEvent, useEffect, useRef, useState } from 'react'
 import { type ProjectWithEntryPointMetadata, paths } from '../Router'
 import { Link } from 'react-router-dom'
 import { ActionButton } from './ActionButton'
@@ -31,9 +31,11 @@ function ProjectCard({
   const [numberOfParts, setNumberOfParts] = useState(1)
   const [numberOfFolders, setNumberOfFolders] = useState(0)
 
+  let inputRef = useRef<HTMLInputElement>(null)
+
   function handleSave(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    handleRenameProject(e, project).then(() => setIsEditing(false))
+    void handleRenameProject(e, project).then(() => setIsEditing(false))
   }
 
   function getDisplayedTime(date: Date) {
@@ -52,36 +54,48 @@ function ProjectCard({
       setNumberOfParts(kclFileCount)
       setNumberOfFolders(kclDirCount)
     }
-    getNumberOfParts()
+    void getNumberOfParts()
   }, [project.path])
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus()
+      inputRef.current.select()
+    }
+  }, [inputRef])
 
   return (
     <li
       {...props}
-      className="group relative min-h-[5em] p-1 rounded-sm border border-chalkboard-20 dark:border-chalkboard-90 hover:border-chalkboard-30 dark:hover:border-chalkboard-80"
+      className="group relative min-h-[5em] p-1 rounded-sm border border-chalkboard-20 dark:border-chalkboard-90 hover:border-energy-10 dark:hover:border-chalkboard-70 hover:bg-energy-10/20 dark:hover:bg-chalkboard-90"
     >
       {isEditing ? (
         <form onSubmit={handleSave} className="flex gap-2 items-center">
           <input
-            className="dark:bg-chalkboard-80 dark:border-chalkboard-40 min-w-0 p-1"
+            className="dark:bg-chalkboard-80 dark:border-chalkboard-40 min-w-0 p-1 selection:bg-energy-10/20 focus:outline-none"
             type="text"
             id="newProjectName"
             name="newProjectName"
             autoCorrect="off"
             autoCapitalize="off"
             defaultValue={project.name}
-            autoFocus={true}
+            ref={inputRef}
           />
           <div className="flex gap-1 items-center">
             <ActionButton
               Element="button"
               type="submit"
-              icon={{ icon: faCheck, size: 'sm' }}
+              icon={{ icon: faCheck, size: 'sm', className: 'p-1' }}
               className="!p-0"
             ></ActionButton>
             <ActionButton
               Element="button"
-              icon={{ icon: faX, size: 'sm' }}
+              icon={{
+                icon: faX,
+                size: 'sm',
+                iconClassName: 'dark:!text-chalkboard-20',
+                className: 'p-1',
+              }}
               className="!p-0"
               onClick={() => setIsEditing(false)}
             />
@@ -91,8 +105,8 @@ function ProjectCard({
         <>
           <div className="p-1 flex flex-col h-full gap-2">
             <Link
+              className="flex-1 text-liquid-100 after:content-[''] after:absolute after:inset-0"
               to={`${paths.FILE}/${encodeURIComponent(project.path)}`}
-              className="flex-1 text-liquid-100"
             >
               {project.name?.replace(FILE_EXT, '')}
             </Link>
@@ -106,24 +120,38 @@ function ProjectCard({
             <span className="text-chalkboard-60 text-xs">
               Edited {getDisplayedTime(project.entrypointMetadata.modifiedAt)}
             </span>
-            <div className="absolute bottom-2 right-2 flex gap-1 items-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
+            <div className="absolute z-10 bottom-2 right-2 flex gap-1 items-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
               <ActionButton
                 Element="button"
-                icon={{ icon: faPenAlt, size: 'sm' }}
-                onClick={() => setIsEditing(true)}
+                icon={{
+                  icon: faPenAlt,
+                  className: 'p-1',
+                  iconClassName: 'dark:!text-chalkboard-20',
+                  size: 'xs',
+                }}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  e.nativeEvent.stopPropagation()
+                  setIsEditing(true)
+                }}
                 className="!p-0"
               />
               <ActionButton
                 Element="button"
                 icon={{
                   icon: faTrashAlt,
-                  size: 'sm',
-                  bgClassName: 'bg-destroy-80 hover:bg-destroy-70',
+                  className: 'p-1',
+                  size: 'xs',
+                  bgClassName: 'bg-destroy-80',
                   iconClassName:
-                    'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10 dark:text-destroy-20 dark:group-hover:text-destroy-10 dark:hover:text-destroy-10',
+                    'text-destroy-20 dark:text-destroy-40',
                 }}
                 className="!p-0 hover:border-destroy-40 dark:hover:border-destroy-40"
-                onClick={() => setIsConfirmingDelete(true)}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  e.nativeEvent.stopPropagation()
+                  setIsConfirmingDelete(true)
+                }}
               />
             </div>
           </div>
@@ -156,6 +184,8 @@ function ProjectCard({
                     icon={{
                       icon: faTrashAlt,
                       bgClassName: 'bg-destroy-80',
+                      className: 'p-1',
+                      size: 'sm',
                       iconClassName:
                         'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10 dark:text-destroy-20 dark:group-hover:text-destroy-10 dark:hover:text-destroy-10',
                     }}

@@ -80,12 +80,12 @@ button:disabled {
   @apply bg-chalkboard-90 text-chalkboard-40 border-chalkboard-70;
 }
 
-a {
-  @apply text-liquid-80 hover:text-liquid-70;
+a:not(.action-button) {
+  @apply text-energy-70 hover:text-energy-60;
 }
 
-.dark a {
-  @apply text-liquid-20 hover:text-liquid-10;
+.dark a:not(.action-button) {
+  @apply text-chalkboard-20 hover:text-energy-10;
 }
 
 .mono {

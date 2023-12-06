@@ -56,6 +56,7 @@ export const NetworkHealthIndicator = () => {
         <span className="sr-only">Network Health</span>
         <ActionIcon
           icon={faWifi}
+          className='p-1'
           iconClassName={
             hasIssues
               ? 'text-destroy-80 dark:text-destroy-30'
