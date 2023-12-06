@@ -255,7 +255,6 @@ jobs:
           cargo install tauri-driver
           source .env.${{ env.BUILD_RELEASE == 'true' && 'production' || 'development' }}
           export VITE_KC_API_BASE_URL
-          echo VITE_KC_API_BASE_URL
           xvfb-run yarn test:e2e:tauri
         env:
           E2E_APPLICATION: "./src-tauri/target/${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}/kittycad-modeling"
