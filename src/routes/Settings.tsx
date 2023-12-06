@@ -1,8 +1,4 @@
-import {
-  faArrowRotateBack,
-  faFolder,
-  faXmark,
-} from '@fortawesome/free-solid-svg-icons'
+import { faArrowRotateBack, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../components/ActionButton'
 import { AppHeader } from '../components/AppHeader'
 import { open } from '@tauri-apps/api/dialog'

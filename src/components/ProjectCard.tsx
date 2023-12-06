@@ -143,8 +143,7 @@ function ProjectCard({
                   className: 'p-1',
                   size: 'xs',
                   bgClassName: 'bg-destroy-80',
-                  iconClassName:
-                    'text-destroy-20 dark:text-destroy-40',
+                  iconClassName: 'text-destroy-20 dark:text-destroy-40',
                 }}
                 className="!p-0 hover:border-destroy-40 dark:hover:border-destroy-40"
                 onClick={(e) => {

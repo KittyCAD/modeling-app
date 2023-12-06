@@ -671,9 +671,7 @@ test('Command bar works and can change a setting', async ({ page }) => {
   await page.keyboard.press('Enter')
 
   // Check the toast appeared
-  await expect(
-    page.getByText(`Set Theme to "${Themes.Dark}"`)
-    ).toBeVisible()
+  await expect(page.getByText(`Set Theme to "${Themes.Dark}"`)).toBeVisible()
   // Check that the theme changed
   await expect(page.locator('body')).toHaveClass(`body-bg ${Themes.Dark}`)
 })

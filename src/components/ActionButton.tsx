@@ -57,7 +57,14 @@ export const ActionButton = (props: ActionButtonProps) => {
       )
     }
     case 'link': {
-      const { Element, to, icon, children, className: _className, ...rest } = props
+      const {
+        Element,
+        to,
+        icon,
+        children,
+        className: _className,
+        ...rest
+      } = props
       return (
         <Link to={to || paths.INDEX} className={classNames} {...rest}>
           {icon && <ActionIcon {...icon} />}
@@ -66,7 +73,14 @@ export const ActionButton = (props: ActionButtonProps) => {
       )
     }
     case 'externalLink': {
-      const { Element, to, icon, children, className: _className, ...rest } = props
+      const {
+        Element,
+        to,
+        icon,
+        children,
+        className: _className,
+        ...rest
+      } = props
       return (
         <Link
           to={to || paths.INDEX}

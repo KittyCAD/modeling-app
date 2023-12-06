@@ -1,11 +1,6 @@
 import { Popover, Transition } from '@headlessui/react'
 import { ActionButton } from './ActionButton'
-import {
-  faBars,
-  faBug,
-  faGear,
-  faSignOutAlt,
-} from '@fortawesome/free-solid-svg-icons'
+import { faBars, faBug, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment, useState } from 'react'
@@ -105,10 +100,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                   )}
 
                   <div>
-                    <p
-                      className="m-0 text-mono"
-                      data-testid="username"
-                    >
+                    <p className="m-0 text-mono" data-testid="username">
                       {displayedName || ''}
                     </p>
                     {displayedName !== user.email && (

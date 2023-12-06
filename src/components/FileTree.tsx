@@ -332,7 +332,8 @@ export const FileTree = ({
           icon={{
             icon: 'filePlus',
             iconClassName: '!text-energy-80 dark:!text-energy-20',
-            bgClassName: 'bg-chalkboard-20/50 hover:bg-energy-10/50 dark:hover:bg-transparent',
+            bgClassName:
+              'bg-chalkboard-20/50 hover:bg-energy-10/50 dark:hover:bg-transparent',
           }}
           className="!p-0 bg-transparent !outline-none"
           onClick={createFile}
@@ -347,7 +348,8 @@ export const FileTree = ({
           icon={{
             icon: 'folderPlus',
             iconClassName: '!text-energy-80 dark:!text-energy-20',
-            bgClassName: 'bg-chalkboard-20/50 hover:bg-energy-10/50 dark:hover:bg-transparent',
+            bgClassName:
+              'bg-chalkboard-20/50 hover:bg-energy-10/50 dark:hover:bg-transparent',
           }}
           className="!p-0 bg-transparent !outline-none"
           onClick={createFolder}

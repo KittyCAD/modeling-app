@@ -182,7 +182,8 @@ const Home = () => {
             <small>Sort by</small>
             <ActionButton
               Element="button"
-              className={'text-sm ' +
+              className={
+                'text-sm ' +
                 (!sort.includes('name')
                   ? 'text-chalkboard-80 dark:text-chalkboard-40'
                   : '')
@@ -192,8 +193,8 @@ const Home = () => {
                 icon: getSortIcon(sort, 'name'),
                 className: 'p-1.5',
                 iconClassName: !sort.includes('name')
-                ? '!text-chalkboard-40'
-                : '',
+                  ? '!text-chalkboard-40'
+                  : '',
                 size: 'sm',
               }}
             >
@@ -201,7 +202,8 @@ const Home = () => {
             </ActionButton>
             <ActionButton
               Element="button"
-              className={'text-sm ' +
+              className={
+                'text-sm ' +
                 (!isSortByModified
                   ? 'text-chalkboard-80 dark:text-chalkboard-40'
                   : '')
@@ -212,9 +214,7 @@ const Home = () => {
               icon={{
                 icon: sort ? getSortIcon(sort, 'modified') : faArrowDown,
                 className: 'p-1.5',
-                iconClassName: !isSortByModified
-                ? '!text-chalkboard-40'
-                : '',
+                iconClassName: !isSortByModified ? '!text-chalkboard-40' : '',
                 size: 'sm',
               }}
             >
@@ -224,11 +224,15 @@ const Home = () => {
         </section>
         <section>
           <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
-            Loaded from {' '}
+            Loaded from{' '}
             <span className="text-energy-70 dark:text-energy-40">
               {defaultDirectory}
             </span>
-            .{' '}<Link to="settings" className='underline underline-offset-2'>Edit in settings</Link>.
+            .{' '}
+            <Link to="settings" className="underline underline-offset-2">
+              Edit in settings
+            </Link>
+            .
           </p>
           {state.matches('Reading projects') ? (
             <Loading>Loading your Projects...</Loading>
