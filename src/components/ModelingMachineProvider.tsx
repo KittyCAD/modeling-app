@@ -288,6 +288,7 @@ export const ModelingMachineProvider = ({
             pathToNode: sketchPathToNode,
           })
           const _modifiedAst = newSketchLn.modifiedAst
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           kclManager.executeAstMock(_modifiedAst, true).then(() => {
             const lineCallExp = getNodeFromPath<CallExpression>(
               kclManager.ast,

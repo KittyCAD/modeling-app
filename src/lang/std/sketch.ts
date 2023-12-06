@@ -456,16 +456,19 @@ export const tangentialArcTo: SketchLineHelper = {
   }) => {
     const _node = { ...node }
     const getNode = getNodeFromPathCurry(_node, pathToNode)
-    const { node: pipe } = getNode<PipeExpression>('PipeExpression')
+    const { node: pipe } = getNode<PipeExpression | CallExpression>(
+      'PipeExpression'
+    )
+    const { node: varDec } = getNodeFromPath<VariableDeclarator>(
+      _node,
+      pathToNode,
+      'VariableDeclarator'
+    )
 
     const toX = createLiteral(roundOff(to[0], 2))
     const toY = createLiteral(roundOff(to[1], 2))
-    const newLine = createCallExpression('tangentialArcTo', [
-      createArrayExpression([toX, toY]),
-      createPipeSubstitution(),
-    ])
 
-    if (replaceExisting && createCallback) {
+    if (replaceExisting && createCallback && pipe.type !== 'CallExpression') {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       const { callExp, valueUsedInTransform } = createCallback(
         [toX, toY],
@@ -477,8 +480,23 @@ export const tangentialArcTo: SketchLineHelper = {
         pathToNode,
         valueUsedInTransform,
       }
-    } else {
+    }
+    const newLine = createCallExpression('tangentialArcTo', [
+      createArrayExpression([toX, toY]),
+      createPipeSubstitution(),
+    ])
+    if (pipe.type === 'PipeExpression') {
       pipe.body = [...pipe.body, newLine]
+      return {
+        modifiedAst: _node,
+        pathToNode: [
+          ...pathToNode,
+          ['body', 'PipeExpression'],
+          [pipe.body.length - 1, 'CallExpression'],
+        ],
+      }
+    } else {
+      varDec.init = createPipeExpression([varDec.init, newLine])
     }
     return {
       modifiedAst: _node,
@@ -488,21 +506,17 @@ export const tangentialArcTo: SketchLineHelper = {
   // TODO copy-paste from angledLine
   updateArgs: ({ node, pathToNode, to, from }) => {
     const _node = { ...node }
-    // const { node: callExpression } = getNodeFromPath<CallExpression>(
-    //   _node,
-    //   pathToNode
-    // )
-    // const angle = roundOff(getAngle(from, to), 0)
-    // const lineLength = roundOff(getLength(from, to), 2)
+    const { node: callExpression } = getNodeFromPath<CallExpression>(
+      _node,
+      pathToNode
+    )
+    const x = createLiteral(roundOff(to[0], 0))
+    const y = createLiteral(roundOff(to[1], 2))
 
-    // const angleLit = createLiteral(angle)
-    // const lengthLit = createLiteral(lineLength)
-
-    // const firstArg = callExpression.arguments?.[0]
-    // if (!mutateArrExp(firstArg, createArrayExpression([angleLit, lengthLit]))) {
-    //   mutateObjExpProp(firstArg, angleLit, 'angle')
-    //   mutateObjExpProp(firstArg, lengthLit, 'length')
-    // }
+    const firstArg = callExpression.arguments?.[0]
+    if (!mutateArrExp(firstArg, createArrayExpression([x, y]))) {
+      mutateObjExpProp(firstArg, createArrayExpression([x, y]), 'to')
+    }
 
     return {
       modifiedAst: _node,
