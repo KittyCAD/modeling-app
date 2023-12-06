@@ -8,9 +8,8 @@ import { CustomIcon, CustomIconName } from './CustomIcon'
 
 const iconSizes = {
   sm: 12,
-  md: 14.4,
-  lg: 20,
-  xl: 28,
+  md: 20,
+  lg: 24,
 }
 
 export interface ActionIconProps extends React.PropsWithChildren {
@@ -30,20 +29,14 @@ export const ActionIcon = ({
   children,
 }: ActionIconProps) => {
   // By default, we reverse the icon color and background color in dark mode
-  const computedIconClassName =
-    iconClassName ||
-    `text-liquid-20 h-auto group-hover:text-liquid-10 hover:text-liquid-10 dark:text-chalkboard-100 dark:group-hover:text-chalkboard-100 dark:hover:text-chalkboard-100 group-disabled:bg-chalkboard-50 dark:group-disabled:bg-chalkboard-60 group-hover:group-disabled:bg-chalkboard-50 dark:group-hover:group-disabled:bg-chalkboard-50`
+  const computedIconClassName = `h-auto dark:text-chalkboard-100 !group-disabled:text-chalkboard-60 !group-disabled:text-chalkboard-60 ${iconClassName}`
 
-  const computedBgClassName =
-    bgClassName ||
-    `bg-chalkboard-100 group-hover:bg-chalkboard-90 hover:bg-chalkboard-90 dark:bg-liquid-20 dark:group-hover:bg-liquid-10 dark:hover:bg-liquid-10 group-disabled:bg-chalkboard-80 dark:group-disabled:bg-chalkboard-80`
+  const computedBgClassName = `bg-chalkboard-20 dark:bg-liquid-20 !group-disabled:bg-chalkboard-30 !dark:group-disabled:bg-chalkboard-80 ${bgClassName}`
 
   return (
     <div
       className={
-        `p-${
-          size === 'xl' ? '2' : '1'
-        } w-fit inline-grid place-content-center ${className} ` +
+        `w-fit inline-grid place-content-center ${className} ` +
         computedBgClassName
       }
     >

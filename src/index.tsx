@@ -4,8 +4,6 @@ import reportWebVitals from './reportWebVitals'
 import { Toaster } from 'react-hot-toast'
 import { Router } from './Router'
 import { HotkeysProvider } from 'react-hotkeys-hook'
-import { inspect } from '@xstate/inspect'
-import { DEV } from 'env'
 
 // uncomment for xstate inspector
 // if (DEV)
@@ -32,7 +30,7 @@ root.render(
             secondary: 'oklch(24.49% 0.01405 158.7deg)',
           },
           duration: 1500,
-        }
+        },
       }}
     />
   </HotkeysProvider>

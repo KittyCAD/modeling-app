@@ -21,7 +21,7 @@ const ProjectSidebarMenu = ({
   return renderAsLink ? (
     <Link
       to={paths.HOME}
-      className="h-9 max-h-min min-w-max border-0 p-0.5 pr-2 flex items-center gap-4 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-energy-50"
+      className="h-9 mr-auto max-h-min min-w-max border-0 p-0.5 pr-2 flex items-center gap-4 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-energy-50"
       data-testid="project-sidebar-link"
     >
       <img
@@ -39,7 +39,7 @@ const ProjectSidebarMenu = ({
   ) : (
     <Popover className="relative">
       <Popover.Button
-        className="h-9 max-h-min min-w-max border-0 p-0.5 pr-2 flex items-center gap-4 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-energy-50"
+        className="h-9 mr-auto max-h-min min-w-max border-0 p-0.5 pr-2 flex items-center gap-4 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-energy-50"
         data-testid="project-sidebar-toggle"
       >
         <img

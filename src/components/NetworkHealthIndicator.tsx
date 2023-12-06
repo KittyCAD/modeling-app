@@ -62,9 +62,10 @@ export const NetworkHealthIndicator = () => {
               : 'text-succeed-80 dark:text-succeed-30'
           }
           bgClassName={
-            hasIssues
+            'bg-transparent ' +
+            (hasIssues
               ? 'hover:bg-destroy-10/50 hover:dark:bg-destroy-80/50 rounded'
-              : 'hover:bg-succeed-10/50 hover:dark:bg-succeed-80/50 rounded'
+              : 'hover:bg-succeed-10/50 hover:dark:bg-succeed-80/50 rounded')
           }
         />
       </Popover.Button>

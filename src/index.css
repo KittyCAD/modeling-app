@@ -57,11 +57,19 @@ select {
 }
 
 button {
-  @apply border border-chalkboard-100 m-0.5 px-3 rounded text-xs;
+  @apply border border-chalkboard-30 m-0.5 px-3 rounded text-xs;
+}
+
+button:hover {
+  @apply border-chalkboard-40 bg-energy-10/20;
 }
 
 .dark button {
-  @apply border-chalkboard-20 hover:border-chalkboard-10 hover:bg-chalkboard-90;
+  @apply border-chalkboard-70;
+}
+
+.dark button:hover {
+  @apply border-chalkboard-60;
 }
 
 button:disabled {
