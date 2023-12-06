@@ -76,7 +76,7 @@ interface CreateMachineCommandProps<T extends AnyStateMachine> {
 }
 
 // Creates a command with subcommands, ready for use in the CommandBar component,
-// from a more terse Command Bar Meta defintion.
+// from a more terse Command Bar Meta definition.
 export function createMachineCommand<T extends AnyStateMachine>({
   type,
   state,
