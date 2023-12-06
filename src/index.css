@@ -73,7 +73,7 @@ button:hover {
 }
 
 button:disabled {
-  @apply bg-chalkboard-20 text-chalkboard-60 border-chalkboard-20;
+  @apply cursor-not-allowed bg-chalkboard-20 text-chalkboard-60 border-chalkboard-20;
 }
 
 .dark button:disabled {

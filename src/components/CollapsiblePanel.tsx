@@ -30,7 +30,7 @@ export const PanelHeader = ({
           className='p-1'
           size='sm'
           bgClassName={
-            'dark:!bg-chalkboard-100 group-open:bg-chalkboard-80 dark:group-open:!bg-chalkboard-90 group-open:border dark:group-open:border-chalkboard-40 rounded-sm ' +
+            'dark:!bg-chalkboard-100 group-open:bg-chalkboard-80 dark:group-open:!bg-chalkboard-90 group-open:border dark:group-open:border-chalkboard-60 rounded-sm ' +
             (iconClassNames?.bg || '')
           }
           iconClassName={

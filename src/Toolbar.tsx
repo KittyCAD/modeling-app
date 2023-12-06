@@ -9,6 +9,8 @@ export const Toolbar = () => {
   const { setCommandBarOpen } = useCommandsContext()
   const { state, send, context } = useModelingContext()
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
+  const bgClassName =
+    'group-enabled:group-hover:bg-energy-10 group-pressed:bg-energy-10 dark:group-enabled:group-hover:bg-chalkboard-80 group-pressed:bg-chalkboard-80'
   const pathId = useMemo(
     () =>
       isCursorInSketchCommandRange(
@@ -37,7 +39,8 @@ export const Toolbar = () => {
         ref={toolbarButtonsRef}
         onWheel={handleToolbarButtonsWheelEvent}
         className={
-          'm-0 py-1 rounded-l-sm flex gap-2 items-center overflow-x-auto ' + className
+          'm-0 py-1 rounded-l-sm flex gap-2 items-center overflow-x-auto ' +
+          className
         }
         style={{ scrollbarWidth: 'thin' }}
       >
@@ -45,12 +48,10 @@ export const Toolbar = () => {
           <li className="contents">
             <ActionButton
               Element="button"
-              className="text-sm"
               onClick={() => send({ type: 'Enter sketch' })}
               icon={{
                 icon: 'sketch',
-                bgClassName:
-                  'group-enabled:group-hover:bg-energy-10 group-pressed:bg-energy-10',
+                bgClassName,
               }}
             >
               <span data-testid="start-sketch">Start Sketch</span>
@@ -61,12 +62,10 @@ export const Toolbar = () => {
           <li className="contents">
             <ActionButton
               Element="button"
-              className="text-sm"
               onClick={() => send({ type: 'Enter sketch' })}
               icon={{
                 icon: 'sketch',
-                bgClassName:
-                  'group-enabled:group-hover:bg-energy-10 group-pressed:bg-energy-10',
+                bgClassName,
               }}
             >
               Edit Sketch
@@ -77,12 +76,10 @@ export const Toolbar = () => {
           <li className="contents">
             <ActionButton
               Element="button"
-              className="text-sm"
               onClick={() => send({ type: 'Cancel' })}
               icon={{
                 icon: 'arrowLeft',
-                bgClassName:
-                  'group-enabled:group-hover:bg-energy-10 group-pressed:bg-energy-10',
+                bgClassName,
               }}
             >
               Exit Sketch
@@ -93,7 +90,6 @@ export const Toolbar = () => {
           <li className="contents">
             <ActionButton
               Element="button"
-              className="text-sm"
               onClick={() =>
                 state.matches('Sketch.Line Tool')
                   ? send('CancelSketch')
@@ -103,8 +99,7 @@ export const Toolbar = () => {
               className="pressed:bg-energy-10/20 dark:pressed:bg-energy-80"
               icon={{
                 icon: 'line',
-                bgClassName:
-                  'group-enabled:group-hover:bg-energy-10 group-pressed:bg-energy-10',
+                bgClassName,
               }}
             >
               Line
@@ -115,7 +110,6 @@ export const Toolbar = () => {
           <li className="contents">
             <ActionButton
               Element="button"
-              className="text-sm"
               onClick={() =>
                 state.matches('Sketch.Move Tool')
                   ? send('CancelSketch')
@@ -125,8 +119,7 @@ export const Toolbar = () => {
               className="pressed:bg-energy-10/20 dark:pressed:bg-energy-80"
               icon={{
                 icon: 'move',
-                bgClassName:
-                  'group-enabled:group-hover:bg-energy-10 group-pressed:bg-energy-10',
+                bgClassName,
               }}
             >
               Move
@@ -194,8 +187,7 @@ export const Toolbar = () => {
               }
               icon={{
                 icon: 'extrude',
-                bgClassName:
-                  'group-enabled:group-hover:bg-energy-10 group-pressed:bg-energy-10',
+                bgClassName,
               }}
             >
               Extrude
@@ -208,12 +200,11 @@ export const Toolbar = () => {
 
   return (
     <div className="max-w-full flex items-stretch rounded-l-sm rounded-r-full bg-chalkboard-10 dark:bg-chalkboard-100 relative">
-      <menu className="flex-1 px-1 py-0 overflow-hidden rounded-l-sm whitespace-nowrap bg-chalkboard-10 dark:bg-chalkboard-100 border-solid border border-energy-10 dark:border-chalkboard-90 border-r-0">
+      <menu className="flex-1 pl-1 pr-2 py-0 overflow-hidden rounded-l-sm whitespace-nowrap bg-chalkboard-10 dark:bg-chalkboard-100 border-solid border border-energy-10 dark:border-chalkboard-90 border-r-0">
         <ToolbarButtons />
       </menu>
       <ActionButton
         Element="button"
-        className="text-sm"
         onClick={() => setCommandBarOpen(true)}
         className="rounded-r-full pr-4 self-stretch border-energy-10 hover:border-energy-10 dark:border-chalkboard-80 bg-energy-10/50 hover:bg-energy-10 dark:bg-chalkboard-80 dark:text-energy-10"
       >

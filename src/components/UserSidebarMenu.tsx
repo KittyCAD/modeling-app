@@ -126,7 +126,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                 <ActionButton
                   Element="button"
                   icon={{ icon: 'gear' }}
-                  className="border-transparent hover:bg-transparent"
+                  className="border-transparent dark:border-transparent hover:bg-transparent"
                   onClick={() => {
                     // since /settings is a nested route the sidebar doesn't close
                     // automatically when navigating to it

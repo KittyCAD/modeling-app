@@ -191,6 +191,9 @@ const Home = () => {
               icon={{
                 icon: getSortIcon(sort, 'name'),
                 className: 'p-1.5',
+                iconClassName: !sort.includes('name')
+                ? '!text-chalkboard-40'
+                : '',
                 size: 'sm',
               }}
             >
@@ -209,6 +212,9 @@ const Home = () => {
               icon={{
                 icon: sort ? getSortIcon(sort, 'modified') : faArrowDown,
                 className: 'p-1.5',
+                iconClassName: !isSortByModified
+                ? '!text-chalkboard-40'
+                : '',
                 size: 'sm',
               }}
             >
