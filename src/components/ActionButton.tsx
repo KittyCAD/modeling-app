@@ -41,7 +41,7 @@ type ActionButtonProps =
 export const ActionButton = (props: ActionButtonProps) => {
   const classNames = `action-button m-0 group mono text-sm flex items-center gap-2 rounded-sm border-solid border border-chalkboard-30 hover:border-chalkboard-40 dark:border-chalkboard-70 dark:hover:border-chalkboard-60 dark:bg-chalkboard-90/50 p-[3px] text-chalkboard-100 dark:text-chalkboard-10 ${
     props.icon ? 'pr-2' : 'px-2'
-  } ${props.className || ''}`
+  } ${props.className ? props.className : ''}`
 
   switch (props.Element) {
     case 'button': {
