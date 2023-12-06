@@ -445,6 +445,73 @@ export const yLine: SketchLineHelper = {
   addTag: addTagWithTo('length'),
 }
 
+export const tangentialArcTo: SketchLineHelper = {
+  add: ({
+    node,
+    pathToNode,
+    to,
+    createCallback,
+    replaceExisting,
+    referencedSegment,
+  }) => {
+    const _node = { ...node }
+    const getNode = getNodeFromPathCurry(_node, pathToNode)
+    const { node: pipe } = getNode<PipeExpression>('PipeExpression')
+
+    const toX = createLiteral(roundOff(to[0], 2))
+    const toY = createLiteral(roundOff(to[1], 2))
+    const newLine = createCallExpression('tangentialArcTo', [
+      createArrayExpression([toX, toY]),
+      createPipeSubstitution(),
+    ])
+
+    if (replaceExisting && createCallback) {
+      const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
+      const { callExp, valueUsedInTransform } = createCallback(
+        [toX, toY],
+        referencedSegment
+      )
+      pipe.body[callIndex] = callExp
+      return {
+        modifiedAst: _node,
+        pathToNode,
+        valueUsedInTransform,
+      }
+    } else {
+      pipe.body = [...pipe.body, newLine]
+    }
+    return {
+      modifiedAst: _node,
+      pathToNode,
+    }
+  },
+  // TODO copy-paste from angledLine
+  updateArgs: ({ node, pathToNode, to, from }) => {
+    const _node = { ...node }
+    // const { node: callExpression } = getNodeFromPath<CallExpression>(
+    //   _node,
+    //   pathToNode
+    // )
+    // const angle = roundOff(getAngle(from, to), 0)
+    // const lineLength = roundOff(getLength(from, to), 2)
+
+    // const angleLit = createLiteral(angle)
+    // const lengthLit = createLiteral(lineLength)
+
+    // const firstArg = callExpression.arguments?.[0]
+    // if (!mutateArrExp(firstArg, createArrayExpression([angleLit, lengthLit]))) {
+    //   mutateObjExpProp(firstArg, angleLit, 'angle')
+    //   mutateObjExpProp(firstArg, lengthLit, 'length')
+    // }
+
+    return {
+      modifiedAst: _node,
+      pathToNode,
+    }
+  },
+  // TODO copy-paste from angledLine
+  addTag: addTagWithTo('angleLength'),
+}
 export const angledLine: SketchLineHelper = {
   add: ({
     node,
@@ -900,6 +967,7 @@ export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
   angledLineToX,
   angledLineToY,
   angledLineThatIntersects,
+  tangentialArcTo,
 } as const
 
 export function changeSketchArguments(
