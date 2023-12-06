@@ -20,6 +20,8 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { kclManager, useKclContext } from 'lang/KclSinglton'
 import { changeSketchArguments } from 'lang/std/sketch'
 
+type Point2d = Models['Point2d_type']
+
 export const Stream = ({ className = '' }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [clickCoords, setClickCoords] = useState<{ x: number; y: number }>()
@@ -195,8 +197,7 @@ export const Stream = ({ className = '' }) => {
               curve_id: entities_modified[0],
             },
           })
-          const coords: { x: number; y: number }[] =
-            curve.data.data.control_points
+          const coords: Point2d[] = curve.data.data.control_points
           // We need the normal for the plane we are on.
           const plane = await engineCommandManager.sendSceneCommand({
             type: 'modeling_cmd_req',
@@ -250,11 +251,8 @@ export const Stream = ({ className = '' }) => {
               curve_id: entities_modified[0],
             },
           })
-          interface Point {
-            x: number
-            y: number
-          }
-          const coords: { end: Point; start: Point } = curveEndpoints.data.data
+          const coords: { end: Point2d; start: Point2d; center: Point2d } =
+            curveEndpoints.data.data
           send({
             type: 'Add point',
             data: {
@@ -289,6 +287,7 @@ export const Stream = ({ className = '' }) => {
         type: 'handle_mouse_drag_end',
         window: { x, y },
       }
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       engineCommandManager.sendSceneCommand(command).then(async () => {
         if (!context.sketchPathToNode) return
         getNodeFromPath<VariableDeclarator>(
@@ -332,16 +331,14 @@ export const Stream = ({ className = '' }) => {
               type: 'modeling_cmd_req',
               cmd_id: uuidv4(),
               cmd: {
-                type: 'curve_get_control_points',
+                type: 'curve_get_end_points',
                 curve_id: segmentId,
               },
             })
-            const controlPoints: [
-              { x: number; y: number },
-              { x: number; y: number }
-            ] = response.data.data.control_points
+            const controlPoints: Models['CurveGetEndPoints_type'] =
+              response.data.data
             return {
-              controlPoints,
+              ...controlPoints,
               segmentId,
             }
           })
@@ -349,12 +346,11 @@ export const Stream = ({ className = '' }) => {
 
         let modifiedAst = { ...kclManager.ast }
         let code = kclManager.code
-        for (const controlPoint of segment2dInfo) {
-          const range =
-            engineCommandManager.artifactMap[controlPoint.segmentId].range
+        for (const info of segment2dInfo) {
+          const range = engineCommandManager.artifactMap[info.segmentId].range
           if (!range) continue
-          const from = controlPoint.controlPoints[0]
-          const to = controlPoint.controlPoints[1]
+          const from = info.start
+          const to = info.end
           const modded = changeSketchArguments(
             modifiedAst,
             kclManager.programMemory,
@@ -372,7 +368,7 @@ export const Stream = ({ className = '' }) => {
             astWithCurrentRanges,
             modded.pathToNode
           ).node
-          engineCommandManager.artifactMap[controlPoint.segmentId].range = [
+          engineCommandManager.artifactMap[info.segmentId].range = [
             updateNode.start,
             updateNode.end,
           ]

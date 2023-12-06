@@ -47,6 +47,7 @@ import {
   absDistanceInfo,
   applyConstraintAxisAlign,
 } from 'components/Toolbar/SetAbsDistance'
+import { Models } from '@kittycad/lib/dist/types/src'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -100,7 +101,7 @@ export type ModelingMachineEvent =
   | {
       type: 'Add point'
       data: {
-        coords: { x: number; y: number }[]
+        coords: Models['Point2d_type'][]
         axis: 'xy' | 'xz' | 'yz' | '-xy' | '-xz' | '-yz' | null
         segmentId?: string
       }
