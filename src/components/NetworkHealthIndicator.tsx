@@ -46,7 +46,7 @@ export const NetworkHealthIndicator = () => {
     <Popover className="relative">
       <Popover.Button
         className={
-          'p-0 border-none relative ' +
+          'p-0 border-none bg-transparent dark:bg-transparent relative ' +
           (hasIssues
             ? 'focus-visible:outline-destroy-80'
             : 'focus-visible:outline-succeed-80')
@@ -63,7 +63,7 @@ export const NetworkHealthIndicator = () => {
               : 'text-succeed-80 dark:text-succeed-30'
           }
           bgClassName={
-            'bg-transparent ' +
+            'bg-transparent dark:bg-transparent ' +
             (hasIssues
               ? 'hover:bg-destroy-10/50 hover:dark:bg-destroy-80/50 rounded'
               : 'hover:bg-succeed-10/50 hover:dark:bg-succeed-80/50 rounded')

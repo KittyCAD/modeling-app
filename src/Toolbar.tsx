@@ -10,7 +10,7 @@ export const Toolbar = () => {
   const { state, send, context } = useModelingContext()
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
   const bgClassName =
-    'group-enabled:group-hover:bg-energy-10 group-pressed:bg-energy-10 dark:group-enabled:group-hover:bg-chalkboard-80 group-pressed:bg-chalkboard-80'
+    'group-enabled:group-hover:bg-energy-10 group-pressed:bg-energy-10 dark:group-enabled:group-hover:bg-chalkboard-80 dark:group-pressed:bg-chalkboard-80'
   const pathId = useMemo(
     () =>
       isCursorInSketchCommandRange(
@@ -163,8 +163,7 @@ export const Toolbar = () => {
                   title={eventName}
                   icon={{
                     icon: 'line',
-                    bgClassName:
-                      'group-enabled:group-hover:bg-energy-10 group-pressed:bg-energy-10',
+                    bgClassName,
                   }}
                 >
                   {eventName
