@@ -58,14 +58,11 @@ fn add_to_composite_value() {
 
     // Write a point to memory.
     let point_before = Point3D { x: 2.0, y: 3.0, z: 4.0 };
-    let start_addr = Address(100);
+    let start_addr = Address(0);
     mem.set_composite(point_before, start_addr);
-    assert_eq!(
-        mem,
-        Memory(HashMap::from(
-            [(100, 2.0.into()), (101, 3.0.into()), (102, 4.0.into()),]
-        ))
-    );
+    assert_eq!(mem.0[0], Some(2.0.into()));
+    assert_eq!(mem.0[1], Some(3.0.into()));
+    assert_eq!(mem.0[2], Some(4.0.into()));
 
     // Update the point's x-value in memory.
     execute(
