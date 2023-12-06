@@ -1,7 +1,6 @@
-import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
-import { ActionButton } from '../../components/ActionButton'
 import {
   ONBOARDING_PROJECT_NAME,
+  OnboardingButtons,
   onboardingPaths,
   useDismiss,
   useNextClick,
@@ -65,31 +64,15 @@ function OnboardingWithNewFile() {
               We see you have some of your own code written in this project.
               Please save it somewhere else before continuing the onboarding.
             </p>
-            <div className="flex justify-between mt-6">
-              <ActionButton
-                Element="button"
-                onClick={dismiss}
-                icon={{
-                  icon: faXmark,
-                  bgClassName: 'bg-destroy-80',
-                  iconClassName:
-                    'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
-                }}
-                className="hover:border-destroy-40"
-              >
-                Dismiss
-              </ActionButton>
-              <ActionButton
-                Element="button"
-                onClick={() => {
-                  kclManager.setCodeAndExecute(bracket)
-                  next()
-                }}
-                icon={{ icon: faArrowRight }}
-              >
-                Overwrite code and continue
-              </ActionButton>
-            </div>
+            <OnboardingButtons
+              className="mt-6"
+              dismiss={dismiss}
+              next={() => {
+                kclManager.setCodeAndExecute(bracket)
+                next()
+              }}
+              nextText="Overwrite code and continue"
+            />
           </>
         ) : (
           <>
@@ -103,32 +86,16 @@ function OnboardingWithNewFile() {
                 click the button below.
               </p>
             </section>
-            <div className="flex justify-between mt-6">
-              <ActionButton
-                Element="button"
-                onClick={dismiss}
-                icon={{
-                  icon: faXmark,
-                  bgClassName: 'bg-destroy-80',
-                  iconClassName:
-                    'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
-                }}
-                className="hover:border-destroy-40"
-              >
-                Dismiss
-              </ActionButton>
-              <ActionButton
-                Element="button"
-                onClick={() => {
-                  createAndOpenNewProject()
-                  kclManager.setCode(bracket, false)
-                  dismiss()
-                }}
-                icon={{ icon: faArrowRight }}
-              >
-                Make a new project
-              </ActionButton>
-            </div>
+            <OnboardingButtons
+              className="mt-6"
+              dismiss={dismiss}
+              next={() => {
+                void createAndOpenNewProject()
+                kclManager.setCode(bracket, false)
+                dismiss()
+              }}
+              nextText="Make a new project"
+            />
           </>
         )}
       </div>
@@ -192,28 +159,12 @@ export default function Introduction() {
             release as early as possible to get feedback from users like you.
           </p>
         </section>
-        <div className="flex justify-between mt-6">
-          <ActionButton
-            Element="button"
-            onClick={dismiss}
-            icon={{
-              icon: faXmark,
-              bgClassName: 'bg-destroy-80',
-              iconClassName:
-                'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
-            }}
-            className="hover:border-destroy-40"
-          >
-            Dismiss
-          </ActionButton>
-          <ActionButton
-            Element="button"
-            onClick={next}
-            icon={{ icon: faArrowRight }}
-          >
-            Get Started
-          </ActionButton>
-        </div>
+        <OnboardingButtons
+          className="mt-6"
+          dismiss={dismiss}
+          next={next}
+          nextText="Camera"
+        />
       </div>
     </div>
   ) : (
