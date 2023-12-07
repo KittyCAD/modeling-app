@@ -177,10 +177,10 @@ export const Toolbar = () => {
             <ActionButton
               Element="button"
               className="text-sm"
-              onClick={() => send('extrude intent')}
-              disabled={!state.can('extrude intent')}
+              onClick={() => send('Extrude')}
+              disabled={!state.can('Extrude')}
               title={
-                state.can('extrude intent')
+                state.can('Extrude')
                   ? 'extrude'
                   : 'sketches need to be closed, or not already extruded'
               }

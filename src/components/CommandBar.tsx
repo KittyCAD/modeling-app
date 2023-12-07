@@ -11,6 +11,7 @@ import {
 import { useHotkeys } from 'react-hotkeys-hook'
 import Fuse from 'fuse.js'
 import {
+  CMD_BAR_STOP_EVENT_PREFIX,
   Command,
   CommandArgument,
   CommandArgumentOption,
@@ -28,6 +29,8 @@ export const CommandsContext = createContext(
     removeCommands: (commands: Command[]) => void
     commandBarOpen: boolean
     setCommandBarOpen: Dispatch<SetStateAction<boolean>>
+    currentCommand?: Command
+    setCurrentCommand: Dispatch<SetStateAction<Command | undefined>>
   }
 )
 
@@ -38,6 +41,7 @@ export const CommandBarProvider = ({
 }) => {
   const [commands, internalSetCommands] = useState([] as Command[])
   const [commandBarOpen, setCommandBarOpen] = useState(false)
+  const [currentCommand, setCurrentCommand] = useState<Command>()
 
   function sortCommands(a: Command, b: Command) {
     if (b.owner === 'auth') return -1
@@ -45,7 +49,19 @@ export const CommandBarProvider = ({
     return a.name.localeCompare(b.name)
   }
 
-  useEffect(() => console.log('commands updated', commands), [commands])
+  useEffect(() => {
+    // If we are in a command bar stop state,
+    // and set the current command to it
+    // to gather up the necessary data for to execture the command.
+    const foundCommandBarStopState = commands.find((c) =>
+      c.name.includes(CMD_BAR_STOP_EVENT_PREFIX)
+    )
+    if (!foundCommandBarStopState) return
+
+    console.log('command to be selected', foundCommandBarStopState)
+    setCommandBarOpen(true)
+    setCurrentCommand(foundCommandBarStopState)
+  }, [commands])
 
   const addCommands = (newCommands: Command[]) => {
     internalSetCommands((prevCommands) =>
@@ -68,6 +84,8 @@ export const CommandBarProvider = ({
         removeCommands,
         commandBarOpen,
         setCommandBarOpen,
+        currentCommand,
+        setCurrentCommand,
       }}
     >
       {children}
@@ -77,13 +95,18 @@ export const CommandBarProvider = ({
 }
 
 const CommandBar = () => {
-  const { commands, commandBarOpen, setCommandBarOpen } = useCommandsContext()
+  const {
+    commands,
+    commandBarOpen,
+    setCommandBarOpen,
+    currentCommand,
+    setCurrentCommand,
+  } = useCommandsContext()
   useHotkeys(['meta+k', 'meta+/'], () => {
     if (commands?.length === 0) return
     setCommandBarOpen(!commandBarOpen)
   })
 
-  const [selectedCommand, setSelectedCommand] = useState<Command>()
   const [commandArguments, setCommandArguments] = useState<CommandArgument[]>(
     []
   )
@@ -94,11 +117,16 @@ const CommandBar = () => {
 
   function clearState() {
     setCommandBarOpen(false)
-    setSelectedCommand(undefined)
+    setCurrentCommand(undefined)
     setCommandArguments([])
     setCommandArgumentData([])
     setCommandArgumentIndex(0)
   }
+
+  useEffect(() => {
+    if (!currentCommand) return
+    selectCommand(currentCommand)
+  }, [currentCommand])
 
   function selectCommand(command: Command) {
     console.log('selecting command', command)
@@ -106,16 +134,17 @@ const CommandBar = () => {
       submitCommand({ command })
     } else {
       setCommandArguments(command.args)
-      setSelectedCommand(command)
+      setCurrentCommand(command)
     }
   }
 
   function stepBack() {
-    if (!selectedCommand) {
+    if (!currentCommand) {
       clearState()
     } else {
       if (commandArgumentIndex === 0) {
-        setSelectedCommand(undefined)
+        if (currentCommand.cancelCallback) currentCommand.cancelCallback()
+        setCurrentCommand(undefined)
       } else {
         setCommandArgumentIndex((prevIndex) => Math.max(0, prevIndex - 1))
       }
@@ -146,7 +175,7 @@ const CommandBar = () => {
   }
 
   function submitCommand({
-    command = selectedCommand,
+    command = currentCommand,
     dataArr = commandArgumentData,
   }) {
     console.log('submitting command', command, dataArr)
@@ -175,13 +204,16 @@ const CommandBar = () => {
       )
     }
 
-    return command.name
+    return command.name.replace(CMD_BAR_STOP_EVENT_PREFIX, '')
   }
 
   return (
     <Transition.Root
       show={commandBarOpen || false}
-      afterLeave={() => clearState()}
+      afterLeave={() => {
+        if (currentCommand?.cancelCallback) currentCommand.cancelCallback()
+        clearState()
+      }}
       as={Fragment}
     >
       <Dialog
@@ -205,7 +237,7 @@ const CommandBar = () => {
             {!(
               commandArguments &&
               commandArguments.length &&
-              selectedCommand
+              currentCommand
             ) ? (
               <CommandComboBox
                 options={commands}
@@ -216,15 +248,15 @@ const CommandBar = () => {
               <>
                 <div className="px-4 text-sm flex flex-wrap gap-2">
                   <p className="pr-4 flex gap-2 items-center">
-                    {selectedCommand &&
-                      'icon' in selectedCommand &&
-                      selectedCommand.icon && (
+                    {currentCommand &&
+                      'icon' in currentCommand &&
+                      currentCommand.icon && (
                         <CustomIcon
-                          name={selectedCommand.icon}
+                          name={currentCommand.icon}
                           className="w-5 h-5"
                         />
                       )}
-                    {getDisplayValue(selectedCommand)}
+                    {getDisplayValue(currentCommand)}
                   </p>
                   {commandArguments.map((arg, i) => (
                     <p

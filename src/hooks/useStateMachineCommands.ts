@@ -1,6 +1,8 @@
 import { useEffect } from 'react'
 import { AnyStateMachine, StateFrom } from 'xstate'
 import {
+  CMD_BAR_STOP_EVENT_PREFIX,
+  CMD_BAR_STOP_STATE_PREFIX,
   Command,
   CommandBarConfig,
   createMachineCommand,
@@ -13,6 +15,7 @@ interface UseStateMachineCommandsArgs<T extends AnyStateMachine> {
   commandBarConfig?: CommandBarConfig<T>
   commands: Command[]
   owner: string
+  onCancelCallback?: () => void
 }
 
 export default function useStateMachineCommands<T extends AnyStateMachine>({
@@ -20,6 +23,7 @@ export default function useStateMachineCommands<T extends AnyStateMachine>({
   send,
   commandBarConfig,
   owner,
+  onCancelCallback,
 }: UseStateMachineCommandsArgs<T>) {
   const { addCommands, removeCommands } = useCommandsContext()
 
@@ -33,6 +37,7 @@ export default function useStateMachineCommands<T extends AnyStateMachine>({
           send,
           commandBarConfig,
           owner,
+          onCancelCallback,
         })
       )
       .filter((c) => c !== null) as Command[] // TS isn't smart enough to know this filter removes nulls

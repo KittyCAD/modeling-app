@@ -2,9 +2,12 @@ import { AnyStateMachine, ContextFrom, EventFrom, StateFrom } from 'xstate'
 import { isTauri } from './isTauri'
 import { CustomIconName } from 'components/CustomIcon'
 
+export const CMD_BAR_STOP_STATE_PREFIX = 'Command parameters:'
+export const CMD_BAR_STOP_EVENT_PREFIX = 'Execute command:'
+
 type Icon = CustomIconName
 type Platform = 'both' | 'web' | 'desktop'
-type InputType = 'select' | 'string' | 'interaction'
+type InputType = 'select' | 'string' | 'number' | 'selection'
 export type CommandArgumentOption = { name: string; isCurrent?: boolean }
 
 // Command arguments can either be defined manually
@@ -16,6 +19,7 @@ type CommandArgumentConfig<T extends AnyStateMachine> = {
   name: string // TODO: I would love for this to be strongly-typed so we could guarantee it's a valid data payload key on the event type.
   type: InputType
   description?: string
+  skip?: true
 } & (
   | {
       type: 'select'
@@ -25,11 +29,11 @@ type CommandArgumentConfig<T extends AnyStateMachine> = {
       getDefaultValueFromContext?: keyof ContextFrom<T>
     }
   | {
-      type: 'string'
-      defaultValue?: string
+      type: 'string' | 'number'
+      defaultValue?: string | number
       getDefaultValueFromContext?: keyof ContextFrom<T>
     }
-  | { type: 'interaction' }
+  | { type: 'selection'; multiple: boolean }
 )
 
 export type CommandBarConfig<T extends AnyStateMachine> = Partial<{
@@ -38,6 +42,7 @@ export type CommandBarConfig<T extends AnyStateMachine> = Partial<{
         args: CommandArgumentConfig<T>[]
         formatFunction?: (args: string[]) => string
         icon?: Icon
+        autoselect?: true
         hide?: Platform
       }
     | {
@@ -50,6 +55,8 @@ export type Command = {
   name: string
   callback: Function
   icon?: Icon
+  autoselect?: true
+  cancelCallback?: Function
   args?: CommandArgument[]
   formatFunction?: (args: string[]) => string
 }
@@ -73,6 +80,7 @@ interface CreateMachineCommandProps<T extends AnyStateMachine> {
   commandBarConfig?: CommandBarConfig<T>
   send: Function
   owner: string
+  onCancelCallback?: () => void
 }
 
 // Creates a command with subcommands, ready for use in the CommandBar component,
@@ -83,6 +91,7 @@ export function createMachineCommand<T extends AnyStateMachine>({
   commandBarConfig,
   send,
   owner,
+  onCancelCallback,
 }: CreateMachineCommandProps<T>): Command | null {
   const lookedUpMeta = commandBarConfig && commandBarConfig[type]
   if (!lookedUpMeta) return null
@@ -101,7 +110,7 @@ export function createMachineCommand<T extends AnyStateMachine>({
     ('formatFunction' in lookedUpMeta && lookedUpMeta.formatFunction) ||
     undefined
 
-  return {
+  const command: Command = {
     name: type,
     owner,
     icon,
@@ -119,6 +128,15 @@ export function createMachineCommand<T extends AnyStateMachine>({
         }
       : {}),
   }
+
+  if ('autoselect' in lookedUpMeta && lookedUpMeta.autoselect) {
+    command.autoselect = true
+  }
+  if (onCancelCallback) {
+    command.cancelCallback = onCancelCallback
+  }
+
+  return command
 }
 
 function getCommandArgumentValuesFromContext<T extends AnyStateMachine>(
@@ -140,10 +158,18 @@ function getCommandArgumentValuesFromContext<T extends AnyStateMachine>(
 
   return args.map((arg) => {
     switch (arg.type) {
-      case 'interaction':
+      case 'selection':
         return {
           name: arg.name,
-          type: 'interaction',
+          type: 'selection',
+        }
+      case 'number':
+        return {
+          name: arg.name,
+          type: arg.type,
+          defaultValue: arg.getDefaultValueFromContext
+            ? state.context[arg.getDefaultValueFromContext]
+            : arg.defaultValue,
         }
       case 'string':
         return {

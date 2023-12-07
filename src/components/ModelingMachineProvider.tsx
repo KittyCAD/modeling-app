@@ -8,7 +8,11 @@ import {
   StateFrom,
   assign,
 } from 'xstate'
-import { SetSelections, modelingMachine } from 'machines/modelingMachine'
+import {
+  SetSelections,
+  modelingMachine,
+  modelingMachineConfig,
+} from 'machines/modelingMachine'
 import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { isCursorInSketchCommandRange } from 'lang/util'
@@ -42,6 +46,8 @@ import { useStore } from 'useStore'
 import { handleSelectionBatch, handleSelectionWithShift } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
+import useStateMachineCommands from 'hooks/useStateMachineCommands'
+import { useCommandsContext } from 'hooks/useCommandsContext'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -68,7 +74,7 @@ export const ModelingMachineProvider = ({
     editorView: s.editorView,
   }))
 
-  // const { commands } = useCommandsContext()
+  const { commands } = useCommandsContext()
 
   // Settings machine setup
   // const retrievedSettings = useRef(
@@ -258,11 +264,6 @@ export const ModelingMachineProvider = ({
         kclManager.executeAst()
       },
       'set tool': () => {}, // TODO
-      'toast extrude failed': () => {
-        toast.error(
-          'Extrude failed, sketches need to be closed, or not already extruded'
-        )
-      },
       'Set selection': assign(({ selectionRanges }, event) => {
         if (event.type !== 'Set selection') return {} // this was needed for ts after adding 'Set selection' action to on done modal events
         const setSelections = event.data
@@ -392,6 +393,11 @@ export const ModelingMachineProvider = ({
           selectionRanges
         )
       },
+      'Has valid extrude parameters': (_, { data: { entityIds, distance } }) =>
+        entityIds &&
+        entityIds?.length > 0 &&
+        distance !== undefined &&
+        distance !== 0,
     },
     services: {
       'Get horizontal info': async ({
@@ -538,13 +544,14 @@ export const ModelingMachineProvider = ({
     })
   }, [modelingSend])
 
-  // useStateMachineCommands({
-  //   state: settingsState,
-  //   send: settingsSend,
-  //   commands,
-  //   owner: 'settings',
-  //   commandBarMeta: settingsCommandBarMeta,
-  // })
+  useStateMachineCommands({
+    state: modelingState,
+    send: modelingSend,
+    commands,
+    owner: 'modeling',
+    commandBarConfig: modelingMachineConfig,
+    onCancelCallback: () => modelingSend({ type: 'Cancel' }),
+  })
 
   return (
     <ModelingMachineContext.Provider
