@@ -4,6 +4,7 @@ import { EngineCommand } from '../../src/lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
 import { getUtils } from './test-utils'
 import waitOn from 'wait-on'
+import { Themes } from '../../src/lib/theme'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -630,4 +631,47 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
 
   // hover again and check it works
   await selectionSequence()
+})
+
+test('Command bar works and can change a setting', async ({ page }) => {
+  // Brief boilerplate
+  const u = getUtils(page)
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+
+  let cmdSearchBar = page.getByPlaceholder('Search commands')
+
+  // First try opening the command bar and closing it
+  await page.getByRole('button', { name: '⌘K' }).click()
+  await expect(cmdSearchBar).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(cmdSearchBar).not.toBeVisible()
+
+  // Now try the same, but with the keyboard shortcut, check focus
+  await page.keyboard.press('Meta+K')
+  await expect(cmdSearchBar).toBeVisible()
+  await expect(cmdSearchBar).toBeFocused()
+
+  // Try typing in the command bar
+  await page.keyboard.type('theme')
+  const themeOption = page.getByRole('option', { name: 'Set Theme' })
+  await expect(themeOption).toBeVisible()
+  await themeOption.click()
+  const themeInput = page.getByPlaceholder(Themes.System)
+  await expect(themeInput).toBeVisible()
+  await expect(themeInput).toBeFocused()
+  // Select dark theme
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowUp')
+  await expect(page.getByRole('option', { name: Themes.Dark })).toHaveAttribute(
+    'data-headlessui-state',
+    'active'
+  )
+  await page.keyboard.press('Enter')
+
+  // Check the toast appeared
+  await expect(page.getByText(`Set Theme to "${Themes.Dark}"`)).toBeVisible()
+  // Check that the theme changed
+  await expect(page.locator('body')).toHaveClass(`body-bg ${Themes.Dark}`)
 })

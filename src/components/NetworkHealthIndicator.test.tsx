@@ -1,5 +1,4 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import UserSidebarMenu from './UserSidebarMenu'
 import { BrowserRouter } from 'react-router-dom'
 import { GlobalStateProvider } from './GlobalStateProvider'
 import CommandBarProvider from './CommandBar'

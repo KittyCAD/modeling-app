@@ -1,7 +1,7 @@
 import {
   faArrowDown,
   faArrowUp,
-  faCircleDot,
+  faCircle,
 } from '@fortawesome/free-solid-svg-icons'
 import { ProjectWithEntryPointMetadata } from '../Router'
 
@@ -13,7 +13,7 @@ export function getSortIcon(currentSort: string, newSort: string) {
   } else if (currentSort === newSort + DESC) {
     return faArrowDown
   }
-  return faCircleDot
+  return faCircle
 }
 
 export function getNextSearchParams(currentSort: string, newSort: string) {

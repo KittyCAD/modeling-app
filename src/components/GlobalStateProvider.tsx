@@ -2,7 +2,7 @@ import { useMachine } from '@xstate/react'
 import { useNavigate } from 'react-router-dom'
 import { paths } from '../Router'
 import {
-  authCommandBarMeta,
+  authCommandBarConfig,
   authMachine,
   TOKEN_PERSIST_KEY,
 } from '../machines/authMachine'
@@ -11,7 +11,7 @@ import React, { createContext, useEffect, useRef } from 'react'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
 import {
   SETTINGS_PERSIST_KEY,
-  settingsCommandBarMeta,
+  settingsCommandBarConfig,
   settingsMachine,
 } from 'machines/settingsMachine'
 import { toast } from 'react-hot-toast'
@@ -85,7 +85,7 @@ export const GlobalStateProvider = ({
     send: settingsSend,
     commands,
     owner: 'settings',
-    commandBarMeta: settingsCommandBarMeta,
+    commandBarConfig: settingsCommandBarConfig,
   })
 
   // Listen for changes to the system theme and update the app theme accordingly
@@ -124,7 +124,7 @@ export const GlobalStateProvider = ({
     state: authState,
     send: authSend,
     commands,
-    commandBarMeta: authCommandBarMeta,
+    commandBarConfig: authCommandBarConfig,
     owner: 'auth',
   })
 

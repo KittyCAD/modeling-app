@@ -1,6 +1,4 @@
-import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
-import { ActionButton } from '../../components/ActionButton'
-import { onboardingPaths, useDismiss, useNextClick } from '.'
+import { OnboardingButtons, onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from 'useStore'
 import { useEffect } from 'react'
 import { kclManager } from 'lang/KclSinglton'
@@ -39,29 +37,12 @@ export default function Sketching() {
           Watch the code pane as you click. Point-and-click interactions are
           always just modifying and generating code in KittyCAD Modeling App.
         </p>
-        <div className="flex justify-between mt-6">
-          <ActionButton
-            Element="button"
-            onClick={dismiss}
-            icon={{
-              icon: faXmark,
-              bgClassName: 'bg-destroy-80',
-              iconClassName:
-                'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
-            }}
-            className="hover:border-destroy-40"
-          >
-            Dismiss
-          </ActionButton>
-          <ActionButton
-            Element="button"
-            onClick={next}
-            icon={{ icon: faArrowRight }}
-            data-testid="onboarding-next"
-          >
-            Next: Future Work
-          </ActionButton>
-        </div>
+        <OnboardingButtons
+          className="mt-6"
+          next={next}
+          dismiss={dismiss}
+          nextText="Next: Future Work"
+        />
       </div>
     </div>
   )

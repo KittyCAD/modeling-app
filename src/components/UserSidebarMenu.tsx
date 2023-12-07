@@ -1,11 +1,6 @@
 import { Popover, Transition } from '@headlessui/react'
 import { ActionButton } from './ActionButton'
-import {
-  faBars,
-  faBug,
-  faGear,
-  faSignOutAlt,
-} from '@fortawesome/free-solid-svg-icons'
+import { faBars, faBug, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment, useState } from 'react'
@@ -43,14 +38,14 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
     <Popover className="relative">
       {user?.image && !imageLoadFailed ? (
         <Popover.Button
-          className="border-0 rounded-full w-fit min-w-max p-0 focus:outline-none group"
+          className="border-0 rounded-full w-fit min-w-max p-0 group"
           data-testid="user-sidebar-toggle"
         >
-          <div className="rounded-full border border-chalkboard-70/50 hover:border-liquid-50 group-focus:border-liquid-50 overflow-hidden">
+          <div className="rounded-full border overflow-hidden">
             <img
               src={user?.image || ''}
               alt={user?.name || ''}
-              className="h-8 w-8"
+              className="h-8 w-8 rounded-full"
               referrerPolicy="no-referrer"
               onError={() => setImageLoadFailed(true)}
             />
@@ -87,11 +82,11 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
         leaveTo="opacity-0 translate-x-4"
         as={Fragment}
       >
-        <Popover.Panel className="fixed inset-0 left-auto z-30 w-64 bg-chalkboard-10 dark:bg-chalkboard-100 border border-liquid-100 dark:border-liquid-100/50 shadow-md rounded-l-lg overflow-hidden">
+        <Popover.Panel className="fixed inset-0 left-auto z-30 w-64 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-30 dark:border-chalkboard-80 shadow-md rounded-l-md overflow-hidden">
           {({ close }) => (
             <>
               {user && (
-                <div className="flex items-center gap-4 px-4 py-3 bg-liquid-100">
+                <div className="flex items-center gap-4 px-4 py-3 bg-chalkboard-20/50 dark:bg-chalkboard-80/50 border-b border-b-chalkboard-30 dark:border-b-chalkboard-80">
                   {user.image && !imageLoadFailed && (
                     <div className="rounded-full shadow-inner overflow-hidden">
                       <img
@@ -105,15 +100,12 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                   )}
 
                   <div>
-                    <p
-                      className="m-0 text-liquid-10 text-mono"
-                      data-testid="username"
-                    >
+                    <p className="m-0 text-mono" data-testid="username">
                       {displayedName || ''}
                     </p>
                     {displayedName !== user.email && (
                       <p
-                        className="m-0 text-liquid-40 text-xs"
+                        className="m-0 text-chalkboard-70 dark:text-chalkboard-40 text-xs"
                         data-testid="email"
                       >
                         {user.email}
@@ -125,8 +117,8 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
               <div className="p-4 flex flex-col gap-2">
                 <ActionButton
                   Element="button"
-                  icon={{ icon: faGear }}
-                  className="border-transparent dark:border-transparent dark:hover:border-liquid-60"
+                  icon={{ icon: 'gear' }}
+                  className="border-transparent dark:border-transparent hover:bg-transparent"
                   onClick={() => {
                     // since /settings is a nested route the sidebar doesn't close
                     // automatically when navigating to it
@@ -142,16 +134,16 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                 <ActionButton
                   Element="externalLink"
                   to="https://github.com/KittyCAD/modeling-app/discussions"
-                  icon={{ icon: faGithub }}
-                  className="border-transparent dark:border-transparent dark:hover:border-liquid-60"
+                  icon={{ icon: faGithub, className: 'p-1', size: 'sm' }}
+                  className="border-transparent dark:border-transparent"
                 >
                   Request a feature
                 </ActionButton>
                 <ActionButton
                   Element="externalLink"
                   to="https://github.com/KittyCAD/modeling-app/issues/new"
-                  icon={{ icon: faBug }}
-                  className="border-transparent dark:border-transparent dark:hover:border-liquid-60"
+                  icon={{ icon: faBug, className: 'p-1', size: 'sm' }}
+                  className="border-transparent dark:border-transparent"
                 >
                   Report a bug
                 </ActionButton>
@@ -160,11 +152,13 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                   onClick={() => send('Log out')}
                   icon={{
                     icon: faSignOutAlt,
+                    className: 'p-1',
                     bgClassName: 'bg-destroy-80',
+                    size: 'sm',
                     iconClassName:
                       'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
                   }}
-                  className="border-transparent dark:border-transparent hover:border-destroy-40 dark:hover:border-destroy-60"
+                  className="border-transparent dark:border-transparent hover:border-destroy-40 dark:hover:border-destroy-60 hover:bg-destroy-10/20 dark:hover:bg-destroy-80/20"
                   data-testid="user-sidebar-sign-out"
                 >
                   Sign out

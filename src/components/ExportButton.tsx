@@ -118,6 +118,8 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
         Element="button"
         icon={{
           icon: faFileExport,
+          className: 'p-1',
+          size: 'sm',
           iconClassName: className?.icon,
           bgClassName: className?.bg,
         }}
@@ -212,6 +214,7 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
               onClick={closeModal}
               icon={{
                 icon: faXmark,
+                className: 'p-1',
                 bgClassName: 'bg-destroy-80',
                 iconClassName:
                   'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
@@ -223,7 +226,7 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
             <ActionButton
               Element="button"
               type="submit"
-              icon={{ icon: faFileExport }}
+              icon={{ icon: faFileExport, className: 'p-1' }}
             >
               Export
             </ActionButton>
