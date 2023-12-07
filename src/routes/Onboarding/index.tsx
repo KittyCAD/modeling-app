@@ -17,6 +17,7 @@ import Export from './Export'
 import FutureWork from './FutureWork'
 import { paths } from 'Router'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
+import { ActionButton } from 'components/ActionButton'
 
 export const ONBOARDING_PROJECT_NAME = 'Tutorial Project $nn'
 
@@ -118,6 +119,45 @@ export function useDismiss() {
     })
     navigate(filePath)
   }, [send, navigate, filePath])
+}
+
+export function OnboardingButtons({
+  next,
+  nextText,
+  dismiss,
+  className,
+  ...props
+}: {
+  next: () => void
+  nextText?: string
+  dismiss: () => void
+  className?: string
+} & React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div className={'flex justify-between ' + (className ?? '')} {...props}>
+      <ActionButton
+        Element="button"
+        onClick={dismiss}
+        icon={{
+          icon: 'close',
+          bgClassName: 'bg-destroy-80',
+          iconClassName: 'text-destroy-20 group-hover:text-destroy-10',
+        }}
+        className="hover:border-destroy-40 hover:bg-destroy-10/50 dark:hover:bg-destroy-80/50"
+      >
+        Dismiss
+      </ActionButton>
+      <ActionButton
+        Element="button"
+        onClick={next}
+        icon={{ icon: 'arrowRight', bgClassName: 'dark:bg-chalkboard-80' }}
+        className="dark:hover:bg-chalkboard-80/50"
+        data-testid="onboarding-next"
+      >
+        {nextText ?? 'Next'}
+      </ActionButton>
+    </div>
+  )
 }
 
 const Onboarding = () => {

@@ -45,7 +45,7 @@ test('change camera, show planes', async ({ page, context }) => {
       type: 'default_camera_look_at',
       center: { x: 0, y: 0, z: 0 },
       up: { x: 0, y: 0, z: 1 },
-      vantage: { x: 0, y: 50, z: 50 },
+      vantage: { x: 0, y: 85, z: 85 },
     },
   }
 

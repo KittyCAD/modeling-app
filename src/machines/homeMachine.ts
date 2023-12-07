@@ -1,58 +1,54 @@
 import { assign, createMachine } from 'xstate'
 import { ProjectWithEntryPointMetadata } from '../Router'
-import { CommandBarMeta } from '../lib/commands'
+import { CommandBarConfig } from '../lib/commands'
 
-export const homeCommandMeta: CommandBarMeta = {
+export const homeCommandConfig: CommandBarConfig<typeof homeMachine> = {
   'Create project': {
-    displayValue: (args: string[]) => `Create project "${args[0]}"`,
+    icon: 'folderPlus',
     args: [
       {
         name: 'name',
         type: 'string',
-        description: '(default)',
-        options: 'defaultProjectName',
+        getDefaultValueFromContext: 'defaultProjectName',
       },
     ],
   },
   'Open project': {
-    displayValue: (args: string[]) => `Open project "${args[0]}"`,
+    icon: 'arrowRight',
     args: [
       {
         name: 'name',
         type: 'select',
-        options: 'projects',
+        getOptionsFromContext: 'projects',
       },
     ],
   },
   'Delete project': {
-    displayValue: (args: string[]) => `Delete project "${args[0]}"`,
+    icon: 'close',
     args: [
       {
         name: 'name',
         type: 'select',
-        options: 'projects',
+        getOptionsFromContext: 'projects',
       },
     ],
   },
   'Rename project': {
-    displayValue: (args: string[]) =>
+    icon: 'folder',
+    formatFunction: (args: string[]) =>
       `Rename project "${args[0]}" to "${args[1]}"`,
     args: [
       {
         name: 'oldName',
         type: 'select',
-        options: 'projects',
+        getOptionsFromContext: 'projects',
       },
       {
         name: 'newName',
         type: 'string',
-        description: '(default)',
-        options: 'defaultProjectName',
+        getDefaultValueFromContext: 'defaultProjectName',
       },
     ],
-  },
-  assign: {
-    hide: 'both',
   },
 }
 
