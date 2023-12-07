@@ -4,6 +4,7 @@ import { engineCommandManager } from './lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { ActionButton } from 'components/ActionButton'
+import { ActionIcon } from 'components/ActionIcon'
 
 export const Toolbar = () => {
   const { setCommandBarOpen } = useCommandsContext()
