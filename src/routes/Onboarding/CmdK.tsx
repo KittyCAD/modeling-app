@@ -1,6 +1,4 @@
-import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
-import { ActionButton } from '../../components/ActionButton'
-import { onboardingPaths, useDismiss, useNextClick } from '.'
+import { OnboardingButtons, onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from '../../useStore'
 import { Platform, platform } from '@tauri-apps/api/os'
 import { useEffect, useState } from 'react'
@@ -17,7 +15,7 @@ export default function CmdK() {
     async function getPlatform() {
       setPlatformName(await platform())
     }
-    getPlatform()
+    void getPlatform()
   }, [setPlatformName])
 
   return (
@@ -57,28 +55,11 @@ export default function CmdK() {
           management from the command bar, but we will be powering modeling
           commands with it soon.
         </p>
-        <div className="flex justify-between">
-          <ActionButton
-            Element="button"
-            onClick={dismiss}
-            icon={{
-              icon: faXmark,
-              bgClassName: 'bg-destroy-80',
-              iconClassName:
-                'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
-            }}
-            className="hover:border-destroy-40"
-          >
-            Dismiss
-          </ActionButton>
-          <ActionButton
-            Element="button"
-            onClick={next}
-            icon={{ icon: faArrowRight }}
-          >
-            Next: User Menu
-          </ActionButton>
-        </div>
+        <OnboardingButtons
+          dismiss={dismiss}
+          next={next}
+          nextText="Next: User Menu"
+        />
       </div>
     </div>
   )

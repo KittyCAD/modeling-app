@@ -55,7 +55,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
       - name: Install codespell
         run: |
             python -m pip install codespell
@@ -181,6 +181,9 @@ jobs:
           cd ../../
           cp src/wasm-lib/pkg/wasm_lib_bg.wasm public
 
+      - name: Run vite build (build:both)
+        run: yarn vite build --mode ${{ env.BUILD_RELEASE == 'true' && 'production' || 'development' }}
+
       - name: Fix format
         run: yarn fmt
 
@@ -250,10 +253,12 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           cargo install tauri-driver
+          source .env.${{ env.BUILD_RELEASE == 'true' && 'production' || 'development' }}
+          export VITE_KC_API_BASE_URL
           xvfb-run yarn test:e2e:tauri
         env:
           E2E_APPLICATION: "./src-tauri/target/${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}/kittycad-modeling"
-          KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN }}
+          KITTYCAD_API_TOKEN: ${{ env.BUILD_RELEASE == 'true' && secrets.KITTYCAD_API_TOKEN || secrets.KITTYCAD_API_TOKEN_DEV }}
 
 
   publish-apps-release:

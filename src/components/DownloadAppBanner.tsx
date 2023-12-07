@@ -1,7 +1,6 @@
 import { Dialog } from '@headlessui/react'
 import { useStore } from '../useStore'
 import { ActionButton } from './ActionButton'
-import { faX } from '@fortawesome/free-solid-svg-icons'
 
 const DownloadAppBanner = () => {
   const { isBannerDismissed, setBannerDismissed } = useStore((s) => ({
@@ -24,7 +23,8 @@ const DownloadAppBanner = () => {
             Element="button"
             onClick={() => setBannerDismissed(true)}
             icon={{
-              icon: faX,
+              icon: 'close',
+              className: 'p-1',
               bgClassName:
                 'bg-warn-70 hover:bg-warn-80 dark:bg-warn-70 dark:hover:bg-warn-80',
               iconClassName:

@@ -29,13 +29,14 @@ describe('KCMA (Tauri, Linux)', () => {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     }
-    const verifyUrl = `https://api.kittycad.io/oauth2/device/verify?user_code=${userCode}`
+    const apiBaseUrl = process.env.VITE_KC_API_BASE_URL
+    const verifyUrl = `${apiBaseUrl}/oauth2/device/verify?user_code=${userCode}`
     console.log(`GET ${verifyUrl}`)
     const vr = await fetch(verifyUrl, { headers })
     console.log(vr.status)
 
     // Device flow: confirm
-    const confirmUrl = 'https://api.kittycad.io/oauth2/device/confirm'
+    const confirmUrl = `${apiBaseUrl}/oauth2/device/confirm`
     const data = JSON.stringify({ user_code: userCode })
     console.log(`POST ${confirmUrl} ${data}`)
     const cr = await fetch(confirmUrl, {
