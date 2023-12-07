@@ -1,5 +1,5 @@
 import { assign, createMachine } from 'xstate'
-import { CommandBarMeta } from '../lib/commands'
+import { CommandBarConfig } from '../lib/commands'
 import { Themes, getSystemTheme, setThemeClass } from '../lib/theme'
 import { CameraSystem, cameraSystems } from 'lib/cameraControls'
 import { Models } from '@kittycad/lib'
@@ -24,25 +24,27 @@ export type Toggle = 'On' | 'Off'
 
 export const SETTINGS_PERSIST_KEY = 'SETTINGS_PERSIST_KEY'
 
-export const settingsCommandBarMeta: CommandBarMeta = {
+export const settingsCommandBarConfig: CommandBarConfig<
+  typeof settingsMachine
+> = {
   'Set Base Unit': {
-    displayValue: (args: string[]) => 'Set your default base unit',
+    icon: 'gear',
     args: [
       {
         name: 'baseUnit',
         type: 'select',
-        defaultValue: 'baseUnit',
+        getDefaultValueFromContext: 'baseUnit',
         options: Object.values(baseUnitsUnion).map((v) => ({ name: v })),
       },
     ],
   },
   'Set Camera Controls': {
-    displayValue: (args: string[]) => 'Set your camera controls',
+    icon: 'gear',
     args: [
       {
         name: 'cameraControls',
         type: 'select',
-        defaultValue: 'cameraControls',
+        getDefaultValueFromContext: 'cameraControls',
         options: Object.values(cameraSystems).map((v) => ({ name: v })),
       },
     ],
@@ -51,15 +53,13 @@ export const settingsCommandBarMeta: CommandBarMeta = {
     hide: 'both',
   },
   'Set Default Project Name': {
-    displayValue: (args: string[]) => 'Set a new default project name',
+    icon: 'gear',
     hide: 'web',
     args: [
       {
         name: 'defaultProjectName',
         type: 'string',
-        description: '(default)',
-        defaultValue: 'defaultProjectName',
-        options: 'defaultProjectName',
+        getDefaultValueFromContext: 'defaultProjectName',
       },
     ],
   },
@@ -67,23 +67,23 @@ export const settingsCommandBarMeta: CommandBarMeta = {
     hide: 'both',
   },
   'Set Text Wrapping': {
-    displayValue: (args: string[]) => 'Set whether text in the editor wraps',
+    icon: 'gear',
     args: [
       {
         name: 'textWrapping',
         type: 'select',
-        defaultValue: 'textWrapping',
+        getDefaultValueFromContext: 'textWrapping',
         options: [{ name: 'On' }, { name: 'Off' }],
       },
     ],
   },
   'Set Theme': {
-    displayValue: (args: string[]) => 'Change the app theme',
+    icon: 'gear',
     args: [
       {
         name: 'theme',
         type: 'select',
-        defaultValue: 'theme',
+        getDefaultValueFromContext: 'theme',
         options: Object.values(Themes).map((v): { name: string } => ({
           name: v,
         })),
@@ -91,12 +91,12 @@ export const settingsCommandBarMeta: CommandBarMeta = {
     ],
   },
   'Set Unit System': {
-    displayValue: (args: string[]) => 'Set your default unit system',
+    icon: 'gear',
     args: [
       {
         name: 'unitSystem',
         type: 'select',
-        defaultValue: 'unitSystem',
+        getDefaultValueFromContext: 'unitSystem',
         options: [{ name: UnitSystem.Imperial }, { name: UnitSystem.Metric }],
       },
     ],
@@ -126,7 +126,12 @@ export const settingsMachine = createMachine(
         on: {
           'Set Base Unit': {
             actions: [
-              assign({ baseUnit: (_, event) => event.data.baseUnit }),
+              assign({
+                baseUnit: (_, event) => {
+                  console.log('event', event)
+                  return event.data.baseUnit
+                },
+              }),
               'persistSettings',
               'toastSuccess',
             ],

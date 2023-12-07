@@ -4,18 +4,22 @@ import {
   Fragment,
   SetStateAction,
   createContext,
+  useEffect,
+  useRef,
   useState,
 } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { ActionIcon } from './ActionIcon'
-import { faSearch } from '@fortawesome/free-solid-svg-icons'
 import Fuse from 'fuse.js'
-import { Command, SubCommand } from '../lib/commands'
+import {
+  Command,
+  CommandArgument,
+  CommandArgumentOption,
+} from '../lib/commands'
 import { useCommandsContext } from 'hooks/useCommandsContext'
+import { CustomIcon } from './CustomIcon'
 
-export type SortedCommand = {
-  item: Partial<Command | SubCommand> & { name: string }
-}
+type ComboboxOption = Command | CommandArgumentOption
+type CommandArgumentData = [string, any]
 
 export const CommandsContext = createContext(
   {} as {
@@ -35,12 +39,24 @@ export const CommandBarProvider = ({
   const [commands, internalSetCommands] = useState([] as Command[])
   const [commandBarOpen, setCommandBarOpen] = useState(false)
 
+  function sortCommands(a: Command, b: Command) {
+    if (b.owner === 'auth') return -1
+    if (a.owner === 'auth') return 1
+    return a.name.localeCompare(b.name)
+  }
+
+  useEffect(() => console.log('commands updated', commands), [commands])
+
   const addCommands = (newCommands: Command[]) => {
-    internalSetCommands((prevCommands) => [...newCommands, ...prevCommands])
+    internalSetCommands((prevCommands) =>
+      [...newCommands, ...prevCommands].sort(sortCommands)
+    )
   }
   const removeCommands = (newCommands: Command[]) => {
     internalSetCommands((prevCommands) =>
-      prevCommands.filter((command) => !newCommands.includes(command))
+      prevCommands
+        .filter((command) => !newCommands.includes(command))
+        .sort(sortCommands)
     )
   }
 
@@ -63,152 +79,117 @@ export const CommandBarProvider = ({
 const CommandBar = () => {
   const { commands, commandBarOpen, setCommandBarOpen } = useCommandsContext()
   useHotkeys(['meta+k', 'meta+/'], () => {
-    if (commands.length === 0) return
+    if (commands?.length === 0) return
     setCommandBarOpen(!commandBarOpen)
   })
 
-  const [selectedCommand, setSelectedCommand] = useState<SortedCommand | null>(
-    null
+  const [selectedCommand, setSelectedCommand] = useState<Command>()
+  const [commandArguments, setCommandArguments] = useState<CommandArgument[]>(
+    []
   )
-  // keep track of the current subcommand index
-  const [subCommandIndex, setSubCommandIndex] = useState<number>()
-  const [subCommandData, setSubCommandData] = useState<{
-    [key: string]: string
-  }>({})
-
-  // if the subcommand index is null, we're not in a subcommand
-  const inSubCommand =
-    selectedCommand &&
-    'meta' in selectedCommand.item &&
-    selectedCommand.item.meta?.args !== undefined &&
-    subCommandIndex !== undefined
-  const currentSubCommand =
-    inSubCommand && 'meta' in selectedCommand.item
-      ? selectedCommand.item.meta?.args[subCommandIndex]
-      : undefined
-
-  const [query, setQuery] = useState('')
-
-  const availableCommands =
-    inSubCommand && currentSubCommand
-      ? currentSubCommand.type === 'string'
-        ? query
-          ? [{ name: query }]
-          : currentSubCommand.options
-        : currentSubCommand.options
-      : commands
-
-  const fuse = new Fuse(availableCommands || [], {
-    keys: ['name', 'description'],
-  })
-
-  const filteredCommands = query
-    ? fuse.search(query)
-    : availableCommands?.map((c) => ({ item: c } as SortedCommand))
+  const [commandArgumentData, setCommandArgumentData] = useState<
+    CommandArgumentData[]
+  >([])
+  const [commandArgumentIndex, setCommandArgumentIndex] = useState<number>(0)
 
   function clearState() {
-    setQuery('')
     setCommandBarOpen(false)
-    setSelectedCommand(null)
-    setSubCommandIndex(undefined)
-    setSubCommandData({})
+    setSelectedCommand(undefined)
+    setCommandArguments([])
+    setCommandArgumentData([])
+    setCommandArgumentIndex(0)
   }
 
-  function handleCommandSelection(entry: SortedCommand) {
-    // If we have subcommands and have not yet gathered all the
-    // data required from them, set the selected command to the
-    // current command and increment the subcommand index
-    if (selectedCommand === null && 'meta' in entry.item && entry.item.meta) {
-      setSelectedCommand(entry)
-      setSubCommandIndex(0)
-      setQuery('')
-      return
+  function selectCommand(command: Command) {
+    console.log('selecting command', command)
+    if (!('args' in command && command.args?.length)) {
+      submitCommand({ command })
+    } else {
+      setCommandArguments(command.args)
+      setSelectedCommand(command)
     }
+  }
 
-    const { item } = entry
-    // If we have just selected a command with no subcommands, run it
-    const isCommandWithoutSubcommands =
-      'callback' in item && !('meta' in item && item.meta)
-    if (isCommandWithoutSubcommands) {
-      if (item.callback === undefined) return
-      item.callback()
-      setCommandBarOpen(false)
-      return
-    }
-
-    // If we have subcommands and have not yet gathered all the
-    // data required from them, set the selected command to the
-    // current command and increment the subcommand index
-    if (
-      selectedCommand &&
-      subCommandIndex !== undefined &&
-      'meta' in selectedCommand.item
-    ) {
-      const subCommand = selectedCommand.item.meta?.args[subCommandIndex]
-
-      if (subCommand) {
-        const newSubCommandData = {
-          ...subCommandData,
-          [subCommand.name]: item.name,
-        }
-        const newSubCommandIndex = subCommandIndex + 1
-
-        // If we have subcommands and have gathered all the data required
-        // from them, run the command with the gathered data
-        if (
-          selectedCommand.item.callback &&
-          selectedCommand.item.meta?.args.length === newSubCommandIndex
-        ) {
-          selectedCommand.item.callback(newSubCommandData)
-          setCommandBarOpen(false)
-        } else {
-          // Otherwise, set the subcommand data and increment the subcommand index
-          setSubCommandData(newSubCommandData)
-          setSubCommandIndex(newSubCommandIndex)
-          setQuery('')
-        }
+  function stepBack() {
+    if (!selectedCommand) {
+      clearState()
+    } else {
+      if (commandArgumentIndex === 0) {
+        setSelectedCommand(undefined)
+      } else {
+        setCommandArgumentIndex((prevIndex) => Math.max(0, prevIndex - 1))
+      }
+      if (commandArgumentData.length > 0) {
+        setCommandArgumentData((prevData) => prevData.slice(0, -1))
       }
     }
   }
 
-  function getDisplayValue(command: Command) {
-    if (command.meta?.displayValue === undefined || !command.meta.args)
-      return command.name
-    return command.meta?.displayValue(
-      command.meta.args.map((c) =>
-        subCommandData[c.name] ? subCommandData[c.name] : `<${c.name}>`
+  function appendCommandArgumentData(data: { name: any }) {
+    const transformedData = [
+      commandArguments[commandArgumentIndex].name,
+      data.name,
+    ]
+    if (commandArgumentIndex + 1 === commandArguments.length) {
+      submitCommand({
+        dataArr: [
+          ...commandArgumentData,
+          transformedData,
+        ] as CommandArgumentData[],
+      })
+    } else {
+      setCommandArgumentData(
+        (prevData) => [...prevData, transformedData] as CommandArgumentData[]
       )
-    )
+      setCommandArgumentIndex((prevIndex) => prevIndex + 1)
+    }
+  }
+
+  function submitCommand({
+    command = selectedCommand,
+    dataArr = commandArgumentData,
+  }) {
+    console.log('submitting command', command, dataArr)
+    if (dataArr.length === 0) {
+      command?.callback()
+    } else {
+      const data = Object.fromEntries(dataArr)
+      console.log('submitting data', data)
+      command?.callback(data)
+    }
+    setCommandBarOpen(false)
+  }
+
+  function getDisplayValue(command: Command) {
+    if (
+      'args' in command &&
+      command.args &&
+      command.args?.length > 0 &&
+      'formatFunction' in command &&
+      command.formatFunction
+    ) {
+      command.formatFunction(
+        command.args.map((c, i) =>
+          commandArgumentData[i] ? commandArgumentData[i][0] : `<${c.name}>`
+        )
+      )
+    }
+
+    return command.name
   }
 
   return (
     <Transition.Root
-      show={
-        commandBarOpen &&
-        availableCommands?.length !== undefined &&
-        availableCommands.length > 0
-      }
-      as={Fragment}
+      show={commandBarOpen || false}
       afterLeave={() => clearState()}
+      as={Fragment}
     >
       <Dialog
         onClose={() => {
           setCommandBarOpen(false)
-          clearState()
         }}
-        className="fixed inset-0 z-40 overflow-y-auto p-4 pt-[25vh]"
+        className="fixed inset-0 z-40 overflow-y-auto pb-4 pt-1"
       >
-        <Transition.Child
-          enter="duration-100 ease-out"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="duration-75 ease-in"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-          as={Fragment}
-        >
-          <Dialog.Overlay className="fixed inset-0 bg-chalkboard-10/70 dark:bg-chalkboard-110/50" />
-        </Transition.Child>
         <Transition.Child
           enter="duration-100 ease-out"
           enterFrom="opacity-0 scale-95"
@@ -216,75 +197,208 @@ const CommandBar = () => {
           leave="duration-75 ease-in"
           leaveFrom="opacity-100 scale-100"
           leaveTo="opacity-0 scale-95"
-          as={Fragment}
         >
-          <Combobox
-            value={selectedCommand}
-            onChange={handleCommandSelection}
-            className="relative w-full max-w-xl p-2 mx-auto border rounded shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70"
+          <Dialog.Panel
+            className="relative w-full max-w-xl py-2 mx-auto border rounded shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70"
             as="div"
           >
-            <div className="flex items-center gap-2">
-              <ActionIcon icon={faSearch} size="xl" className="rounded-sm" />
-              <div>
-                {inSubCommand && (
-                  <p className="text-liquid-70 dark:text-liquid-30">
-                    {selectedCommand.item &&
-                      getDisplayValue(selectedCommand.item as Command)}
+            {!(
+              commandArguments &&
+              commandArguments.length &&
+              selectedCommand
+            ) ? (
+              <CommandComboBox
+                options={commands}
+                handleSelection={selectCommand}
+                stepBack={stepBack}
+              />
+            ) : (
+              <>
+                <div className="px-4 text-sm flex flex-wrap gap-2">
+                  <p className="pr-4 flex gap-2 items-center">
+                    {selectedCommand &&
+                      'icon' in selectedCommand &&
+                      selectedCommand.icon && (
+                        <CustomIcon
+                          name={selectedCommand.icon}
+                          className="w-5 h-5"
+                        />
+                      )}
+                    {getDisplayValue(selectedCommand)}
                   </p>
-                )}
-                <Combobox.Input
-                  onChange={(event) => setQuery(event.target.value)}
-                  className="w-full bg-transparent focus:outline-none"
-                  onKeyDown={(event) => {
-                    if (event.metaKey && event.key === 'k')
-                      setCommandBarOpen(false)
-                    if (
-                      inSubCommand &&
-                      event.key === 'Backspace' &&
-                      !event.currentTarget.value
-                    ) {
-                      setSubCommandIndex(subCommandIndex - 1)
-                      setSelectedCommand(null)
-                    }
-                  }}
-                  displayValue={(command: SortedCommand) =>
-                    command !== null ? command.item.name : ''
-                  }
-                  placeholder={
-                    inSubCommand
-                      ? `Enter <${currentSubCommand?.name}>`
-                      : 'Search for a command'
-                  }
-                  value={query}
-                  autoCapitalize="off"
-                  autoComplete="off"
-                  autoCorrect="off"
-                  spellCheck="false"
-                />
-              </div>
-            </div>
-            <Combobox.Options static className="overflow-y-auto max-h-96">
-              {filteredCommands?.map((commandResult) => (
-                <Combobox.Option
-                  key={commandResult.item.name}
-                  value={commandResult}
-                  className="px-2 py-1 my-2 first:mt-4 last:mb-4 ui-active:bg-liquid-10 dark:ui-active:bg-liquid-90"
-                >
-                  <p>{commandResult.item.name}</p>
-                  {(commandResult.item as SubCommand).description && (
-                    <p className="mt-0.5 text-liquid-70 dark:text-liquid-30 text-sm">
-                      {(commandResult.item as SubCommand).description}
+                  {commandArguments.map((arg, i) => (
+                    <p
+                      key={arg.name}
+                      className={`w-fit px-2 py-1 rounded-sm flex gap-2 items-center border ${
+                        i === commandArgumentIndex
+                          ? 'bg-energy-10/50 dark:bg-energy-10/20 border-energy-10 dark:border-energy-10'
+                          : 'bg-chalkboard-20/50 dark:bg-chalkboard-80/50 border-chalkboard-20 dark:border-chalkboard-80'
+                      }`}
+                    >
+                      {commandArgumentIndex >= i && commandArgumentData[i] ? (
+                        commandArgumentData[i][1]
+                      ) : arg.defaultValue ? (
+                        arg.defaultValue
+                      ) : (
+                        <em>{arg.name}</em>
+                      )}
                     </p>
-                  )}
-                </Combobox.Option>
-              ))}
-            </Combobox.Options>
-          </Combobox>
+                  ))}
+                </div>
+                <div className="block w-full my-2 h-[1px] bg-chalkboard-20 dark:bg-chalkboard-80" />
+                <Argument
+                  arg={commandArguments[commandArgumentIndex]}
+                  appendCommandArgumentData={appendCommandArgumentData}
+                  stepBack={stepBack}
+                />
+              </>
+            )}
+          </Dialog.Panel>
         </Transition.Child>
       </Dialog>
     </Transition.Root>
   )
 }
 
+function Argument({
+  arg,
+  appendCommandArgumentData,
+  stepBack,
+}: {
+  arg: CommandArgument
+  appendCommandArgumentData: Dispatch<SetStateAction<any>>
+  stepBack: () => void
+}) {
+  const { setCommandBarOpen } = useCommandsContext()
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus()
+      inputRef.current.select()
+    }
+  }, [arg, inputRef])
+
+  return arg.type === 'select' ? (
+    <CommandComboBox
+      options={arg.options}
+      handleSelection={appendCommandArgumentData}
+      stepBack={stepBack}
+      placeholder="Select an option"
+    />
+  ) : (
+    <form
+      onSubmit={(event) => {
+        event.preventDefault()
+
+        appendCommandArgumentData({ name: inputRef.current?.value })
+      }}
+    >
+      <label className="flex items-center mx-4 my-4">
+        <span className="px-2 py-1 rounded-l bg-chalkboard-100 dark:bg-chalkboard-80 text-chalkboard-10 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80">
+          {arg.name}
+        </span>
+        <input
+          ref={inputRef}
+          className="flex-grow px-2 py-1 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80 !bg-transparent focus:outline-none"
+          placeholder="Enter a value"
+          defaultValue={arg.defaultValue}
+          onKeyDown={(event) => {
+            if (event.metaKey && event.key === 'k') setCommandBarOpen(false)
+            if (event.key === 'Backspace' && !event.currentTarget.value) {
+              stepBack()
+            }
+          }}
+          autoFocus
+        />
+      </label>
+    </form>
+  )
+}
+
 export default CommandBarProvider
+
+function CommandComboBox({
+  options,
+  handleSelection,
+  stepBack,
+  placeholder,
+}: {
+  options: ComboboxOption[]
+  handleSelection: Dispatch<SetStateAction<any>>
+  stepBack: () => void
+  placeholder?: string
+}) {
+  const { setCommandBarOpen } = useCommandsContext()
+  const [query, setQuery] = useState('')
+  const [filteredOptions, setFilteredOptions] = useState<ComboboxOption[]>()
+
+  const defaultOption =
+    options.find((o) => 'isCurrent' in o && o.isCurrent) || null
+
+  const fuse = new Fuse(options, {
+    keys: ['name', 'description'],
+    threshold: 0.3,
+  })
+
+  useEffect(() => {
+    const results = fuse.search(query).map((result) => result.item)
+    setFilteredOptions(query.length > 0 ? results : options)
+  }, [query])
+
+  return (
+    <Combobox defaultValue={defaultOption} onChange={handleSelection}>
+      <div className="flex items-center gap-2 px-4 pb-2 border-solid border-0 border-b border-b-chalkboard-20 dark:border-b-chalkboard-80">
+        <CustomIcon
+          name="search"
+          className="w-5 h-5 bg-energy-10/50 dark:bg-chalkboard-90 dark:text-energy-10"
+        />
+        <Combobox.Input
+          onChange={(event) => setQuery(event.target.value)}
+          className="w-full bg-transparent focus:outline-none selection:bg-energy-10/50 dark:selection:bg-energy-10/20 dark:focus:outline-none"
+          onKeyDown={(event) => {
+            if (event.metaKey && event.key === 'k') setCommandBarOpen(false)
+            if (event.key === 'Backspace' && !event.currentTarget.value) {
+              stepBack()
+            }
+          }}
+          placeholder={
+            (defaultOption && defaultOption.name) ||
+            placeholder ||
+            'Search commands'
+          }
+          autoCapitalize="off"
+          autoComplete="off"
+          autoCorrect="off"
+          spellCheck="false"
+          autoFocus
+        />
+      </div>
+      <Combobox.Options
+        static
+        className="overflow-y-auto max-h-96 cursor-pointer"
+      >
+        {filteredOptions?.map((option) => (
+          <Combobox.Option
+            key={option.name}
+            value={option}
+            className="flex items-center gap-2 px-4 py-1 first:mt-2 last:mb-2 ui-active:bg-energy-10/50 dark:ui-active:bg-chalkboard-90"
+          >
+            {'icon' in option && option.icon && (
+              <CustomIcon
+                name={option.icon}
+                className="w-5 h-5 dark:text-energy-10"
+              />
+            )}
+            <p className="flex-grow">{option.name} </p>
+            {'isCurrent' in option && option.isCurrent && (
+              <small className="text-chalkboard-70 dark:text-chalkboard-50">
+                current
+              </small>
+            )}
+          </Combobox.Option>
+        ))}
+      </Combobox.Options>
+    </Combobox>
+  )
+}

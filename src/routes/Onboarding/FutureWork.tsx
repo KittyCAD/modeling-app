@@ -1,6 +1,4 @@
-import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
-import { ActionButton } from '../../components/ActionButton'
-import { useDismiss } from '.'
+import { OnboardingButtons, useDismiss } from '.'
 import { useEffect } from 'react'
 import { bracket } from 'lib/exampleKcl'
 import { kclManager } from 'lang/KclSinglton'
@@ -38,28 +36,12 @@ export default function FutureWork() {
           hardware design with us 💚.
         </p>
         <p className="my-4">— The KittyCAD Team</p>
-        <div className="flex justify-between mt-6">
-          <ActionButton
-            Element="button"
-            onClick={dismiss}
-            icon={{
-              icon: faXmark,
-              bgClassName: 'bg-destroy-80',
-              iconClassName:
-                'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
-            }}
-            className="hover:border-destroy-40"
-          >
-            Dismiss
-          </ActionButton>
-          <ActionButton
-            Element="button"
-            onClick={dismiss}
-            icon={{ icon: faArrowRight }}
-          >
-            Finish
-          </ActionButton>
-        </div>
+        <OnboardingButtons
+          className="mt-6"
+          dismiss={dismiss}
+          next={dismiss}
+          nextText="Finish"
+        />
       </div>
     </div>
   )

@@ -57,27 +57,35 @@ select {
 }
 
 button {
-  @apply border border-chalkboard-100 m-0.5 px-3 rounded text-xs;
+  @apply border border-chalkboard-30 m-0.5 px-3 rounded text-xs;
+}
+
+button:hover {
+  @apply border-chalkboard-40 bg-energy-10/20;
 }
 
 .dark button {
-  @apply border-chalkboard-20 hover:border-chalkboard-10 hover:bg-chalkboard-90;
+  @apply border-chalkboard-70;
+}
+
+.dark button:hover {
+  @apply border-chalkboard-60;
 }
 
 button:disabled {
-  @apply bg-chalkboard-20 text-chalkboard-60 border-chalkboard-20;
+  @apply cursor-not-allowed bg-chalkboard-20 text-chalkboard-60 border-chalkboard-20;
 }
 
 .dark button:disabled {
   @apply bg-chalkboard-90 text-chalkboard-40 border-chalkboard-70;
 }
 
-a {
-  @apply text-liquid-80 hover:text-liquid-70;
+a:not(.action-button) {
+  @apply text-energy-70 hover:text-energy-60;
 }
 
-.dark a {
-  @apply text-liquid-20 hover:text-liquid-10;
+.dark a:not(.action-button) {
+  @apply text-chalkboard-20 hover:text-energy-10;
 }
 
 .mono {

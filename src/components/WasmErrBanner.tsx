@@ -1,7 +1,6 @@
 import { Dialog } from '@headlessui/react'
 import { useState } from 'react'
 import { ActionButton } from './ActionButton'
-import { faX } from '@fortawesome/free-solid-svg-icons'
 import { useKclContext } from 'lang/KclSinglton'
 
 export function WasmErrBanner() {
@@ -26,7 +25,8 @@ export function WasmErrBanner() {
             Element="button"
             onClick={() => setBannerDismissed(true)}
             icon={{
-              icon: faX,
+              icon: 'close',
+              className: 'p-1',
               bgClassName:
                 'bg-warn-70 hover:bg-warn-80 dark:bg-warn-70 dark:hover:bg-warn-80',
               iconClassName:

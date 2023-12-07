@@ -1,14 +1,13 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "build": {
-    "beforeBuildCommand": "yarn build:both",
     "beforeDevCommand": "yarn start",
     "devPath": "http://localhost:3000",
     "distDir": "../build"
   },
   "package": {
     "productName": "kittycad-modeling",
-    "version": "0.12.0"
+    "version": "0.13.0"
   },
   "tauri": {
     "allowlist": {

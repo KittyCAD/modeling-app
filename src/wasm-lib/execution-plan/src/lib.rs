@@ -8,16 +8,22 @@
 
 use composite::Composite;
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, fmt};
+use std::fmt;
 
 mod composite;
 #[cfg(test)]
 mod tests;
 
 /// KCEP's program memory. A flat, linear list of values.
-#[derive(Default, Debug)]
+#[derive(Debug)]
 #[cfg_attr(test, derive(PartialEq))]
-pub struct Memory(HashMap<usize, Value>);
+pub struct Memory(Vec<Option<Value>>);
+
+impl Default for Memory {
+    fn default() -> Self {
+        Self(vec![None; 1024])
+    }
+}
 
 /// An address in KCEP's program memory.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -37,13 +43,17 @@ impl From<usize> for Address {
 
 impl Memory {
     /// Get a value from KCEP's program memory.
-    pub fn get(&self, addr: &Address) -> Option<&Value> {
-        self.0.get(&addr.0)
+    pub fn get(&self, Address(addr): &Address) -> Option<&Value> {
+        self.0[*addr].as_ref()
     }
 
     /// Store a value in KCEP's program memory.
-    pub fn set(&mut self, addr: Address, value: Value) {
-        self.0.insert(addr.0, value);
+    pub fn set(&mut self, Address(addr): Address, value: Value) {
+        // If isn't big enough for this value, double the size of memory until it is.
+        while addr > self.0.len() {
+            self.0.extend(vec![None; self.0.len()]);
+        }
+        self.0[addr] = Some(value);
     }
 
     /// Store a composite value (i.e. a value which takes up multiple addresses in memory).
@@ -51,23 +61,14 @@ impl Memory {
     pub fn set_composite<T: Composite>(&mut self, composite_value: T, start: Address) {
         let parts = composite_value.into_parts().into_iter();
         for (value, addr) in parts.zip(start.0..) {
-            self.0.insert(addr, value);
+            self.0[addr] = Some(value);
         }
     }
 
     /// Get a composite value (i.e. a value which takes up multiple addresses in memory).
     /// Its parts are stored in consecutive memory addresses starting at `start`.
     pub fn get_composite<T: Composite>(&self, start: Address) -> Result<T, ExecutionError> {
-        let addrs = start.0..start.0 + T::SIZE;
-        let values: Vec<Value> = addrs
-            .into_iter()
-            .map(|a| {
-                let addr = Address(a);
-                self.get(&addr)
-                    .map(|x| x.to_owned())
-                    .ok_or(ExecutionError::MemoryEmpty { addr })
-            })
-            .collect::<Result<_, _>>()?;
+        let values = &self.0[start.0..];
         T::from_parts(values)
     }
 }
@@ -204,7 +205,7 @@ impl Arithmetic {
 }
 
 /// Operations that can be applied to values in memory.
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone, Copy)]
 pub enum Operation {
     Add,
     Mul,
@@ -265,7 +266,7 @@ pub fn execute(mem: &mut Memory, plan: Vec<Instruction>) -> Result<(), Execution
 }
 
 /// Errors that could occur when executing a KittyCAD execution plan.
-#[derive(Debug, thiserror::Error)]
+#[derive(Debug, thiserror::Error, Clone)]
 pub enum ExecutionError {
     #[error("Memory address {addr} was not set")]
     MemoryEmpty { addr: Address },
@@ -273,6 +274,6 @@ pub enum ExecutionError {
     CannotApplyOperation { op: Operation, operands: Vec<Value> },
     #[error("Tried to read a '{expected}' from KCEP program memory, found an '{actual}' instead")]
     MemoryWrongType { expected: &'static str, actual: String },
-    #[error("Wrong size of memory trying to read value from KCEP program memory: got {actual} but wanted {expected}")]
-    MemoryWrongSize { expected: usize, actual: usize },
+    #[error("Wanted {expected} values but did not get enough")]
+    MemoryWrongSize { expected: usize },
 }
