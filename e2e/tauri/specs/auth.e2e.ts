@@ -55,7 +55,7 @@ describe('KCMA (Tauri, Linux)', () => {
     const newFileButton = await $('[data-testid="home-new-file"]')
     await newFileButton.waitForClickable()
     await browser.execute('arguments[0].click();', newFileButton)
-    await new Promise(resolve => setTimeout(resolve, 3000))
+    await new Promise((resolve) => setTimeout(resolve, 3000))
     // TODO: check that it worked, and oepen it
   })
 
