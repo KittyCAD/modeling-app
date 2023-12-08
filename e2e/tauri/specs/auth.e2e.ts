@@ -2,7 +2,7 @@ import { browser, $, expect } from '@wdio/globals'
 import fs from 'fs/promises'
 
 describe('KCMA (Tauri, Linux)', () => {
-  it('opens the auth page, signs in, and signs out', async () => {
+  it('opens the auth page and signs in', async () => {
     // Clean up previous tests
     await new Promise((resolve) => setTimeout(resolve, 100))
     await fs.rm('/tmp/kittycad_user_code', { force: true })
@@ -49,8 +49,17 @@ describe('KCMA (Tauri, Linux)', () => {
     // Now should be signed in
     const newFileButton = await $('[data-testid="home-new-file"]')
     expect(await newFileButton.getText()).toEqual('New file')
+  })
 
-    // So let's sign out!
+  it('creates a new file', async () => {
+    const newFileButton = await $('[data-testid="home-new-file"]')
+    await newFileButton.waitForClickable()
+    await browser.execute('arguments[0].click();', newFileButton)
+    await new Promise(resolve => setTimeout(resolve, 3000))
+    // TODO: check that it worked, and oepen it
+  })
+
+  it('signs out', async () => {
     const menuButton = await $('[data-testid="user-sidebar-toggle"]')
     await menuButton.waitForClickable()
     await browser.execute('arguments[0].click();', menuButton)
