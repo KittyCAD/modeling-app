@@ -77,8 +77,8 @@ export const NetworkHealthIndicator = () => {
             data-testid="network-good"
           >
             <ActionIcon
-              icon={faCheck}
-              bgClassName={'bg-succeed-10/50 dark:bg-succeed-80/50 rounded'}
+              icon="checkmark"
+              bgClassName={'bg-succeed-10/50 dark:bg-succeed-80/50 rounded-sm'}
               iconClassName={'text-succeed-80 dark:text-succeed-30'}
             />
             {NETWORK_CONTENT.good}

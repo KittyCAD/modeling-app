@@ -65,7 +65,7 @@ const SignIn = () => {
           <ActionButton
             Element="button"
             onClick={signInTauri}
-            icon={{ icon: faSignInAlt }}
+            icon={{ icon: 'arrowRight' }}
             className="w-fit mt-4"
             data-testid="sign-in-button"
           >
@@ -80,7 +80,7 @@ const SignIn = () => {
               typeof window !== 'undefined' &&
                 window.location.href.replace('signin', '')
             )}`}
-            icon={{ icon: faSignInAlt }}
+            icon={{ icon: 'arrowRight' }}
             className="w-fit mt-4"
           >
             Sign in
