@@ -1,51 +1,63 @@
 import { useEffect } from 'react'
-import { AnyStateMachine, StateFrom } from 'xstate'
-import {
-  CMD_BAR_STOP_EVENT_PREFIX,
-  CMD_BAR_STOP_STATE_PREFIX,
-  Command,
-  CommandBarConfig,
-  createMachineCommand,
-} from '../lib/commands'
+import { AnyStateMachine, InterpreterFrom, StateFrom } from 'xstate'
+import { createMachineCommand } from '../lib/createMachineCommand'
 import { useCommandsContext } from './useCommandsContext'
+import { modelingMachine } from 'machines/modelingMachine'
+import { authMachine } from 'machines/authMachine'
+import { settingsMachine } from 'machines/settingsMachine'
+import { homeMachine } from 'machines/homeMachine'
+import { Command, CommandSetConfig, CommandSetSchema } from 'lib/commandTypes'
+import { E } from '@tauri-apps/api/event-41a9edf5'
 
-interface UseStateMachineCommandsArgs<T extends AnyStateMachine> {
+export type AllMachines =
+  | typeof modelingMachine
+  | typeof settingsMachine
+  | typeof authMachine
+  | typeof homeMachine
+
+interface UseStateMachineCommandsArgs<
+  T extends AllMachines,
+  S extends CommandSetSchema<T>
+> {
   state: StateFrom<T>
   send: Function
-  commandBarConfig?: CommandBarConfig<T>
-  commands: Command[]
-  owner: string
-  onCancelCallback?: () => void
+  actor?: InterpreterFrom<T>
+  commandBarConfig?: CommandSetConfig<T, S>
+  onCancel?: () => void
 }
 
-export default function useStateMachineCommands<T extends AnyStateMachine>({
+export default function useStateMachineCommands<
+  T extends AnyStateMachine,
+  S extends CommandSetSchema<T>
+>({
   state,
   send,
+  actor,
   commandBarConfig,
-  owner,
-  onCancelCallback,
-}: UseStateMachineCommandsArgs<T>) {
-  const { addCommands, removeCommands } = useCommandsContext()
+  onCancel,
+}: UseStateMachineCommandsArgs<T, S>) {
+  const { commandBarSend } = useCommandsContext()
 
   useEffect(() => {
     const newCommands = state.nextEvents
       .filter((e) => !['done.', 'error.'].some((n) => e.includes(n)))
       .map((type) =>
-        createMachineCommand<T>({
+        createMachineCommand<T, S>({
+          owner: state.context.machine.id,
           type,
           state,
           send,
+          actor,
           commandBarConfig,
-          owner,
-          onCancelCallback,
+          onCancel,
         })
       )
-      .filter((c) => c !== null) as Command[] // TS isn't smart enough to know this filter removes nulls
+      .filter((c) => c !== null) as Command<T, S>[]
 
-    addCommands(newCommands)
+    commandBarSend({ type: 'Add commands', data: { commands: newCommands } })
 
     return () => {
-      removeCommands(newCommands)
+      commandBarSend({ type: 'Remove commands', data: { commands: newCommands } })
     }
   }, [state])
 }
