@@ -1,4 +1,4 @@
-import { Combobox, Dialog, Transition } from '@headlessui/react'
+import { Combobox, Dialog, Popover, Transition } from '@headlessui/react'
 import {
   Dispatch,
   Fragment,
@@ -10,82 +10,58 @@ import {
 } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import Fuse from 'fuse.js'
-import {
-  CMD_BAR_STOP_EVENT_PREFIX,
-  Command,
-  CommandArgument,
-  CommandArgumentOption,
-} from '../lib/commands'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CustomIcon } from './CustomIcon'
-
-type ComboboxOption = Command | CommandArgumentOption
+import { AllMachines } from 'hooks/useStateMachineCommands'
+import CommandBarSelectionInput from './CommandBarSelectionInput'
+import CommandBarBasicInput from './CommandBarBasicInput'
+import { useMachine } from '@xstate/react'
+import { commandBarMachine } from 'machines/commandBarMachine'
+import { EventFrom, StateFrom } from 'xstate'
 type CommandArgumentData = [string, any]
 
-export const CommandsContext = createContext(
-  {} as {
-    commands: Command[]
-    addCommands: (commands: Command[]) => void
-    removeCommands: (commands: Command[]) => void
-    commandBarOpen: boolean
-    setCommandBarOpen: Dispatch<SetStateAction<boolean>>
-    currentCommand?: Command
-    setCurrentCommand: Dispatch<SetStateAction<Command | undefined>>
-  }
-)
+type CommandsContextType = {
+  commandBarState: StateFrom<typeof commandBarMachine>
+  commandBarSend: (event: EventFrom<typeof commandBarMachine>) => void
+}
+
+export const CommandsContext = createContext<CommandsContextType>({
+  commandBarState: commandBarMachine.initialState,
+  commandBarSend: () => {},
+})
 
 export const CommandBarProvider = ({
   children,
 }: {
   children: React.ReactNode
 }) => {
-  const [commands, internalSetCommands] = useState([] as Command[])
-  const [commandBarOpen, setCommandBarOpen] = useState(false)
-  const [currentCommand, setCurrentCommand] = useState<Command>()
-
-  function sortCommands(a: Command, b: Command) {
-    if (b.owner === 'auth') return -1
-    if (a.owner === 'auth') return 1
-    return a.name.localeCompare(b.name)
-  }
-
-  useEffect(() => {
-    // If we are in a command bar stop state,
-    // and set the current command to it
-    // to gather up the necessary data for to execture the command.
-    const foundCommandBarStopState = commands.find((c) =>
-      c.name.includes(CMD_BAR_STOP_EVENT_PREFIX)
-    )
-    if (!foundCommandBarStopState) return
-
-    console.log('command to be selected', foundCommandBarStopState)
-    setCommandBarOpen(true)
-    setCurrentCommand(foundCommandBarStopState)
-  }, [commands])
-
-  const addCommands = (newCommands: Command[]) => {
-    internalSetCommands((prevCommands) =>
-      [...newCommands, ...prevCommands].sort(sortCommands)
-    )
-  }
-  const removeCommands = (newCommands: Command[]) => {
-    internalSetCommands((prevCommands) =>
-      prevCommands
-        .filter((command) => !newCommands.includes(command))
-        .sort(sortCommands)
-    )
-  }
+  const [commandBarState, commandBarSend] = useMachine(commandBarMachine, {
+    guards: {
+      'Arguments are ready': (context, _) => {
+        return context.selectedCommand?.args
+          ? context.argumentsToSubmit.length ===
+              Object.keys(context.selectedCommand.args)?.length
+          : false
+      },
+      'Command has no arguments': (
+        _,
+        event: EventFrom<typeof commandBarMachine>
+      ) => {
+        if (event.type !== 'Select command') return false
+        return (
+          !event.data.command.args ||
+          Object.keys(event.data.command.args).length === 0
+        )
+      },
+    },
+    actions: {},
+  })
 
   return (
     <CommandsContext.Provider
       value={{
-        commands,
-        addCommands,
-        removeCommands,
-        commandBarOpen,
-        setCommandBarOpen,
-        currentCommand,
-        setCurrentCommand,
+        commandBarState,
+        commandBarSend,
       }}
     >
       {children}
@@ -95,25 +71,23 @@ export const CommandBarProvider = ({
 }
 
 const CommandBar = () => {
-  const {
-    commands,
-    commandBarOpen,
-    setCommandBarOpen,
-    currentCommand,
-    setCurrentCommand,
-  } = useCommandsContext()
-  useHotkeys(['meta+k', 'meta+/'], () => {
+  const { commandBarState, commandBarSend } = useCommandsContext()
+  useHotkeys(['mod+k', 'mod+/'], () => {
     if (commands?.length === 0) return
     setCommandBarOpen(!commandBarOpen)
   })
 
-  const [commandArguments, setCommandArguments] = useState<CommandArgument[]>(
-    []
-  )
+  const [commandArguments, setCommandArguments] = useState<
+    CommandArgument<AllMachines>[]
+  >([])
   const [commandArgumentData, setCommandArgumentData] = useState<
     CommandArgumentData[]
   >([])
   const [commandArgumentIndex, setCommandArgumentIndex] = useState<number>(0)
+  const isSelectionArgument =
+    currentCommand?.args &&
+    currentCommand.args[commandArgumentIndex]?.type === 'selection'
+  const WrapperComponent = isSelectionArgument ? Popover : Dialog
 
   function clearState() {
     setCommandBarOpen(false)
@@ -123,12 +97,13 @@ const CommandBar = () => {
     setCommandArgumentIndex(0)
   }
 
+  // TODO: This seems like a risky pattern, find a more reliable way.
   useEffect(() => {
     if (!currentCommand) return
     selectCommand(currentCommand)
   }, [currentCommand])
 
-  function selectCommand(command: Command) {
+  function selectCommand(command: Command<AllMachines>) {
     console.log('selecting command', command)
     if (!('args' in command && command.args?.length)) {
       submitCommand({ command })
@@ -155,6 +130,7 @@ const CommandBar = () => {
   }
 
   function appendCommandArgumentData(data: { name: any }) {
+    console.log('appending data', data)
     const transformedData = [
       commandArguments[commandArgumentIndex].name,
       data.name,
@@ -186,10 +162,13 @@ const CommandBar = () => {
       console.log('submitting data', data)
       command?.callback(data)
     }
-    setCommandBarOpen(false)
+
+    if (!command?.keepCommandBarOpen) {
+      setCommandBarOpen(false)
+    }
   }
 
-  function getDisplayValue(command: Command) {
+  function getDisplayValue(command: Command<AllMachines>) {
     if (
       'args' in command &&
       command.args &&
@@ -216,11 +195,15 @@ const CommandBar = () => {
       }}
       as={Fragment}
     >
-      <Dialog
+      <WrapperComponent
         onClose={() => {
+          if (isSelectionArgument) return
           setCommandBarOpen(false)
         }}
-        className="fixed inset-0 z-40 overflow-y-auto pb-4 pt-1"
+        className={
+          'fixed inset-0 z-40 overflow-y-auto pb-4 pt-1 ' +
+          (isSelectionArgument ? 'pointer-events-none' : '')
+        }
       >
         <Transition.Child
           enter="duration-100 ease-out"
@@ -230,7 +213,7 @@ const CommandBar = () => {
           leaveFrom="opacity-100 scale-100"
           leaveTo="opacity-0 scale-95"
         >
-          <Dialog.Panel
+          <WrapperComponent.Panel
             className="relative w-full max-w-xl py-2 mx-auto border rounded shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70"
             as="div"
           >
@@ -268,9 +251,17 @@ const CommandBar = () => {
                       }`}
                     >
                       {commandArgumentIndex >= i && commandArgumentData[i] ? (
-                        commandArgumentData[i][1]
+                        typeof commandArgumentData[i][1] === 'object' ? (
+                          JSON.stringify(commandArgumentData[i][1])
+                        ) : (
+                          commandArgumentData[i][1]
+                        )
                       ) : arg.defaultValue ? (
-                        arg.defaultValue
+                        typeof arg.defaultValue === 'object' ? (
+                          JSON.stringify(arg.defaultValue)
+                        ) : (
+                          arg.defaultValue
+                        )
                       ) : (
                         <em>{arg.name}</em>
                       )}
@@ -285,9 +276,9 @@ const CommandBar = () => {
                 />
               </>
             )}
-          </Dialog.Panel>
+          </WrapperComponent.Panel>
         </Transition.Child>
-      </Dialog>
+      </WrapperComponent>
     </Transition.Root>
   )
 }
@@ -297,55 +288,37 @@ function Argument({
   appendCommandArgumentData,
   stepBack,
 }: {
-  arg: CommandArgument
+  arg: CommandArgument<AllMachines>
   appendCommandArgumentData: Dispatch<SetStateAction<any>>
   stepBack: () => void
 }) {
-  const { setCommandBarOpen } = useCommandsContext()
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus()
-      inputRef.current.select()
-    }
-  }, [arg, inputRef])
-
-  return arg.type === 'select' ? (
-    <CommandComboBox
-      options={arg.options}
-      handleSelection={appendCommandArgumentData}
-      stepBack={stepBack}
-      placeholder="Select an option"
-    />
-  ) : (
-    <form
-      onSubmit={(event) => {
-        event.preventDefault()
-
-        appendCommandArgumentData({ name: inputRef.current?.value })
-      }}
-    >
-      <label className="flex items-center mx-4 my-4">
-        <span className="px-2 py-1 rounded-l bg-chalkboard-100 dark:bg-chalkboard-80 text-chalkboard-10 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80">
-          {arg.name}
-        </span>
-        <input
-          ref={inputRef}
-          className="flex-grow px-2 py-1 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80 !bg-transparent focus:outline-none"
-          placeholder="Enter a value"
-          defaultValue={arg.defaultValue}
-          onKeyDown={(event) => {
-            if (event.metaKey && event.key === 'k') setCommandBarOpen(false)
-            if (event.key === 'Backspace' && !event.currentTarget.value) {
-              stepBack()
-            }
-          }}
-          autoFocus
+  switch (arg.type) {
+    case 'select':
+      return (
+        <CommandComboBox
+          options={arg.options}
+          handleSelection={appendCommandArgumentData}
+          stepBack={stepBack}
+          placeholder="Select an option"
         />
-      </label>
-    </form>
-  )
+      )
+    case 'selection':
+      return (
+        <CommandBarSelectionInput
+          arg={arg}
+          appendCommandArgumentData={appendCommandArgumentData}
+          stepBack={stepBack}
+        />
+      )
+    default:
+      return (
+        <CommandBarBasicInput
+          arg={arg}
+          appendCommandArgumentData={appendCommandArgumentData}
+          stepBack={stepBack}
+        />
+      )
+  }
 }
 
 export default CommandBarProvider
