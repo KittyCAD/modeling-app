@@ -245,7 +245,7 @@ export const Stream = ({ className = '' }) => {
       !didDragInStream &&
       (state.matches('Sketch.SketchIdle') ||
         state.matches('idle') ||
-        state.matches('awaiting selection'))
+        state.matches('Command parameters: Extrude'))
     ) {
       command.cmd = {
         type: 'select_with_point',
