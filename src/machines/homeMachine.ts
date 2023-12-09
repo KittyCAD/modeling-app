@@ -1,56 +1,5 @@
 import { assign, createMachine } from 'xstate'
 import { ProjectWithEntryPointMetadata } from '../Router'
-import { CommandBarConfig } from '../lib/commands'
-
-export const homeCommandConfig: CommandBarConfig<typeof homeMachine> = {
-  'Create project': {
-    icon: 'folderPlus',
-    args: [
-      {
-        name: 'name',
-        type: 'string',
-        getDefaultValueFromContext: 'defaultProjectName',
-      },
-    ],
-  },
-  'Open project': {
-    icon: 'arrowRight',
-    args: [
-      {
-        name: 'name',
-        type: 'select',
-        getOptionsFromContext: 'projects',
-      },
-    ],
-  },
-  'Delete project': {
-    icon: 'close',
-    args: [
-      {
-        name: 'name',
-        type: 'select',
-        getOptionsFromContext: 'projects',
-      },
-    ],
-  },
-  'Rename project': {
-    icon: 'folder',
-    formatFunction: (args: string[]) =>
-      `Rename project "${args[0]}" to "${args[1]}"`,
-    args: [
-      {
-        name: 'oldName',
-        type: 'select',
-        getOptionsFromContext: 'projects',
-      },
-      {
-        name: 'newName',
-        type: 'string',
-        getDefaultValueFromContext: 'defaultProjectName',
-      },
-    ],
-  },
-}
 
 export const homeMachine = createMachine(
   {
