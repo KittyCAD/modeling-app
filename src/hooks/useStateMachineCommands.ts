@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { AnyStateMachine, InterpreterFrom, StateFrom } from 'xstate'
+import { AnyStateMachine, EventFrom, InterpreterFrom, StateFrom } from 'xstate'
 import { createMachineCommand } from '../lib/createMachineCommand'
 import { useCommandsContext } from './useCommandsContext'
 import { modelingMachine } from 'machines/modelingMachine'
@@ -7,7 +7,6 @@ import { authMachine } from 'machines/authMachine'
 import { settingsMachine } from 'machines/settingsMachine'
 import { homeMachine } from 'machines/homeMachine'
 import { Command, CommandSetConfig, CommandSetSchema } from 'lib/commandTypes'
-import { E } from '@tauri-apps/api/event-41a9edf5'
 
 export type AllMachines =
   | typeof modelingMachine
@@ -19,6 +18,7 @@ interface UseStateMachineCommandsArgs<
   T extends AllMachines,
   S extends CommandSetSchema<T>
 > {
+  machineId: T['id']
   state: StateFrom<T>
   send: Function
   actor?: InterpreterFrom<T>
@@ -30,6 +30,7 @@ export default function useStateMachineCommands<
   T extends AnyStateMachine,
   S extends CommandSetSchema<T>
 >({
+  machineId,
   state,
   send,
   actor,
@@ -43,7 +44,7 @@ export default function useStateMachineCommands<
       .filter((e) => !['done.', 'error.'].some((n) => e.includes(n)))
       .map((type) =>
         createMachineCommand<T, S>({
-          owner: state.context.machine.id,
+          ownerMachine: machineId,
           type,
           state,
           send,
@@ -52,12 +53,15 @@ export default function useStateMachineCommands<
           onCancel,
         })
       )
-      .filter((c) => c !== null) as Command<T, S>[]
+      .filter((c) => c !== null) as Command<T, EventFrom<T>['type'], S>[]
 
     commandBarSend({ type: 'Add commands', data: { commands: newCommands } })
 
     return () => {
-      commandBarSend({ type: 'Remove commands', data: { commands: newCommands } })
+      commandBarSend({
+        type: 'Remove commands',
+        data: { commands: newCommands },
+      })
     }
   }, [state])
 }

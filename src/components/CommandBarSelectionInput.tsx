@@ -1,9 +1,8 @@
-import { useActor, useSelector } from '@xstate/react'
+import { useSelector } from '@xstate/react'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { AllMachines } from 'hooks/useStateMachineCommands'
 import { CommandArgument } from 'lib/commandTypes'
 import { modelingMachine } from 'machines/modelingMachine'
-import { Dispatch, SetStateAction, useRef } from 'react'
+import { useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { StateFrom } from 'xstate'
 
@@ -12,11 +11,9 @@ const selectionSelector = (snapshot: StateFrom<typeof modelingMachine>) =>
 
 function CommandBarSelectionInput({
   arg,
-  appendCommandArgumentData,
   stepBack,
 }: {
-  arg: CommandArgument<AllMachines, unknown> & { type: 'selection' }
-  appendCommandArgumentData: Dispatch<SetStateAction<any>>
+  arg: CommandArgument<unknown> & { inputType: 'selection'; name: string }
   stepBack: () => void
 }) {
   const buttonRef = useRef<HTMLButtonElement>(null)
@@ -33,7 +30,12 @@ function CommandBarSelectionInput({
 
     console.log('submitting selection form', e)
 
-    appendCommandArgumentData({ name: selection })
+    commandBarSend({
+      type: 'Submit argument',
+      data: {
+        [arg.name]: selection,
+      },
+    })
   }
 
   return (

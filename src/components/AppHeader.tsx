@@ -22,7 +22,7 @@ export const AppHeader = ({
   className = '',
   enableMenu = false,
 }: AppHeaderProps) => {
-  const { setCommandBarOpen } = useCommandsContext()
+  const { commandBarSend } = useCommandsContext()
   const { auth } = useGlobalStateContext()
   const user = auth?.context?.user
 
@@ -47,7 +47,7 @@ export const AppHeader = ({
         ) : (
           <ActionButton
             Element="button"
-            onClick={() => setCommandBarOpen(true)}
+            onClick={() => commandBarSend({ type: 'Open' })}
             className="text-sm self-center flex items-center w-fit gap-3"
           >
             Command Palette{' '}

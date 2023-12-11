@@ -14,7 +14,7 @@ interface CreateMachineCommandProps<
   S extends CommandSetSchema<T>
 > {
   type: EventFrom<T>['type']
-  owner: T['id']
+  ownerMachine: T['id']
   state: StateFrom<T>
   send: Function
   actor?: InterpreterFrom<T>
@@ -28,14 +28,18 @@ export function createMachineCommand<
   T extends AnyStateMachine,
   S extends CommandSetSchema<T>
 >({
-  owner,
+  ownerMachine,
   type,
   state,
   send,
   actor,
   commandBarConfig,
   onCancel,
-}: CreateMachineCommandProps<T, S>): Command<T, S[typeof type]> | null {
+}: CreateMachineCommandProps<T, S>): Command<
+  T,
+  typeof type,
+  S[typeof type]
+> | null {
   const commandConfig = commandBarConfig && commandBarConfig[type]
   if (!commandConfig) return null
 
@@ -50,9 +54,9 @@ export function createMachineCommand<
 
   const icon = ('icon' in commandConfig && commandConfig.icon) || undefined
 
-  const command: Command<T, S[typeof type], typeof type> = {
+  const command: Command<T, typeof type, S[typeof type]> = {
     name: type,
-    owner: owner,
+    ownerMachine: ownerMachine,
     icon,
     onSubmit: (data: EventFrom<T, typeof type>) => {
       if (data !== undefined && data !== null) {
@@ -64,12 +68,8 @@ export function createMachineCommand<
   }
 
   if (commandConfig.args) {
-    console.log(command.args)
     const newArgs = buildCommandArguments(state, commandConfig.args, actor)
 
-    // TODO: Figure out why this doesn't work
-    // Type 'keyof S' is not assignable to type 'keyof S[ResolveEventType<T>["type"]]'.
-    // Using type coercion because I'm fairly confident that `keyof S` is
     command.args = newArgs
   }
 
@@ -89,25 +89,28 @@ function buildCommandArguments<
   CommandName extends EventFrom<T>['type'] = EventFrom<T>['type']
 >(
   state: StateFrom<T>,
-  args: CommandConfig<T, S, CommandName>['args'],
+  args: CommandConfig<T, CommandName, S>['args'],
   actor?: InterpreterFrom<T>
-): Command<T, S>['args'] {
-  const newArgs = {} as Command<T, S>['args']
+): NonNullable<Command<T, CommandName, S>['args']> {
+  const newArgs = {} as NonNullable<Command<T, CommandName, S>['args']>
 
   for (const arg in args) {
-    const argConfig = args[arg] as CommandArgumentConfig<T, S[typeof arg]>
+    const argConfig = args[arg] as CommandArgumentConfig<S[typeof arg], T>
     const newArg = buildCommandArgument(argConfig, state, actor)
-    newArgs![arg] = newArg
+    newArgs[arg] = newArg
   }
 
   return newArgs
 }
 
-function buildCommandArgument<T extends AnyStateMachine, O>(
-  arg: CommandArgumentConfig<T, O>,
+function buildCommandArgument<
+  O extends CommandSetSchema<T>,
+  T extends AnyStateMachine
+>(
+  arg: CommandArgumentConfig<O, T>,
   state: StateFrom<T>,
   actor?: InterpreterFrom<T>
-): CommandArgument<T, O> & { inputType: typeof arg.inputType } {
+): CommandArgument<O, T> & { inputType: typeof arg.inputType } {
   const payload = getPayload(arg, state)
 
   if (arg.inputType === 'options') {
@@ -127,7 +130,7 @@ function buildCommandArgument<T extends AnyStateMachine, O>(
       skip: arg.skip,
       payload,
       options,
-    } as CommandArgument<T, O> & { inputType: 'options' }
+    } satisfies CommandArgument<O, T> & { inputType: 'options' }
   } else if (arg.inputType === 'selection') {
     if (!actor)
       throw new Error('Actor must be provided for selection input type')
@@ -137,8 +140,9 @@ function buildCommandArgument<T extends AnyStateMachine, O>(
       description: arg.description,
       skip: arg.skip,
       multiple: arg.multiple,
+      actor,
       payload,
-    } as CommandArgument<T, O> & { inputType: 'selection' }
+    } satisfies CommandArgument<O, T> & { inputType: 'selection' }
   } else {
     return {
       inputType: arg.inputType,
@@ -149,8 +153,8 @@ function buildCommandArgument<T extends AnyStateMachine, O>(
   }
 }
 
-function getPayload<T extends AnyStateMachine, O>(
-  arg: CommandArgumentConfig<T, O>,
+function getPayload<O, T extends AnyStateMachine>(
+  arg: CommandArgumentConfig<O, T>,
   state: StateFrom<T>
 ): NonNullable<O> {
   const payload = arg.payload

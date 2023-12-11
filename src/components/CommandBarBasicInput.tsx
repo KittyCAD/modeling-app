@@ -1,20 +1,24 @@
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { AllMachines } from 'hooks/useStateMachineCommands'
-import { CommandArgument } from 'lib/createMachineCommand'
-import { Dispatch, SetStateAction, useEffect, useRef } from 'react'
+import { CommandArgument } from 'lib/commandTypes'
+import { useEffect, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 function CommandBarBasicInput({
   arg,
-  appendCommandArgumentData,
   stepBack,
 }: {
-  arg: CommandArgument<AllMachines> & { type: 'number' | 'string' }
-  appendCommandArgumentData: Dispatch<SetStateAction<any>>
+  arg: CommandArgument<unknown> & {
+    inputType: 'number' | 'string'
+    name: string
+  }
   stepBack: () => void
 }) {
-  const { setCommandBarOpen } = useCommandsContext()
-  useHotkeys('mod + k, mod + /', () => setCommandBarOpen((prev) => !prev))
+  const { commandBarSend, commandBarState } = useCommandsContext()
+  useHotkeys('mod + k, mod + /', () =>
+    commandBarState.matches('Closed')
+      ? commandBarSend({ type: 'Open' })
+      : commandBarSend({ type: 'Close' })
+  )
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -33,11 +37,14 @@ function CommandBarBasicInput({
 
         console.log('submitting??', event)
 
-        appendCommandArgumentData({
-          name:
-            arg.type === 'number'
-              ? parseFloat(inputRef.current?.value || '5')
-              : inputRef.current?.value,
+        commandBarSend({
+          type: 'Submit argument',
+          data: {
+            [arg.name]:
+              arg.inputType === 'number'
+                ? parseFloat(inputRef.current?.value || '5')
+                : inputRef.current?.value,
+          },
         })
       }}
     >
@@ -47,14 +54,10 @@ function CommandBarBasicInput({
         </span>
         <input
           ref={inputRef}
-          type={arg.type === 'number' ? 'number' : 'text'}
+          type={arg.inputType === 'number' ? 'number' : 'text'}
           className="flex-grow px-2 py-1 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80 !bg-transparent focus:outline-none"
           placeholder="Enter a value"
-          defaultValue={
-            typeof arg.defaultValue === 'object'
-              ? JSON.stringify(arg.defaultValue)
-              : arg.defaultValue
-          }
+          defaultValue={JSON.stringify(arg.payload || '{}')}
           onKeyDown={(event) => {
             if (event.key === 'Backspace' && !event.currentTarget.value) {
               stepBack()

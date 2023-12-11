@@ -6,7 +6,7 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { ActionButton } from 'components/ActionButton'
 
 export const Toolbar = () => {
-  const { setCommandBarOpen } = useCommandsContext()
+  const { commandBarSend } = useCommandsContext()
   const { state, send, context } = useModelingContext()
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
   const bgClassName =
@@ -204,7 +204,7 @@ export const Toolbar = () => {
       </menu>
       <ActionButton
         Element="button"
-        onClick={() => setCommandBarOpen(true)}
+        onClick={() => commandBarSend({ type: 'Open' })}
         className="rounded-r-full pr-4 self-stretch border-energy-10 hover:border-energy-10 dark:border-chalkboard-80 bg-energy-10/50 hover:bg-energy-10 dark:bg-chalkboard-80 dark:text-energy-10"
       >
         ⌘K
