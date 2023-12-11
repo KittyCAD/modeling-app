@@ -94,6 +94,12 @@ impl From<String> for Value {
     }
 }
 
+impl From<f64> for Value {
+    fn from(value: f64) -> Self {
+        Self::NumericValue(NumericValue::Float(value))
+    }
+}
+
 impl TryFrom<Value> for String {
     type Error = ExecutionError;
 
@@ -135,13 +141,6 @@ impl TryFrom<Value> for f64 {
                 actual: format!("{value:?}"),
             })
         }
-    }
-}
-
-#[cfg(test)]
-impl From<f64> for Value {
-    fn from(value: f64) -> Self {
-        Self::NumericValue(NumericValue::Float(value))
     }
 }
 

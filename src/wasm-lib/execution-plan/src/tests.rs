@@ -1,4 +1,4 @@
-use kittycad::types::Point3D;
+use kittycad_modeling_cmds::{id::ModelingCmdId, shared::Point3d, ModelingCmd, MovePathPen};
 
 use super::*;
 
@@ -57,7 +57,11 @@ fn add_to_composite_value() {
     let mut mem = Memory::default();
 
     // Write a point to memory.
-    let point_before = Point3D { x: 2.0, y: 3.0, z: 4.0 };
+    let point_before = Point3d {
+        x: 2.0f64,
+        y: 3.0,
+        z: 4.0,
+    };
     let start_addr = Address(0);
     mem.set_composite(point_before, start_addr);
     assert_eq!(mem.0[0], Some(2.0.into()));
@@ -79,13 +83,35 @@ fn add_to_composite_value() {
     .unwrap();
 
     // Read the point out of memory, validate it.
-    let point_after: Point3D = mem.get_composite(start_addr).unwrap();
+    let point_after: Point3d<f64> = mem.get_composite(start_addr).unwrap();
     assert_eq!(
         point_after,
-        Point3D {
+        Point3d {
             x: 42.0,
             y: 3.0,
             z: 4.0
         }
     )
+}
+
+#[test]
+fn api_types() {
+    let mut mem = Memory::default();
+    let start_addr = Address(0);
+    let id = ModelingCmdId(Uuid::parse_str("6306afa2-3999-4b03-af30-1efad7cdc6fc").unwrap());
+    let p = Point3d {
+        x: 2.0f64,
+        y: 3.0,
+        z: 4.0,
+    };
+    let val_in = ModelingCmd::MovePathPen(MovePathPen { path: id, to: p });
+    mem.set_composite(val_in, start_addr);
+    let val_out: ModelingCmd = mem.get_composite(start_addr).unwrap();
+    match val_out {
+        ModelingCmd::MovePathPen(params) => {
+            assert_eq!(params.to, p);
+            assert_eq!(params.path, id);
+        }
+        _ => panic!("unexpected ModelingCmd variant"),
+    }
 }
