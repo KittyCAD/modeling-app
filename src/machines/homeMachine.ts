@@ -1,5 +1,6 @@
 import { assign, createMachine } from 'xstate'
 import { ProjectWithEntryPointMetadata } from '../Router'
+import { HomeCommandSchema } from 'lib/commandSchemas/homeCommandSchema'
 
 export const homeMachine = createMachine(
   {
@@ -137,10 +138,10 @@ export const homeMachine = createMachine(
 
     schema: {
       events: {} as
-        | { type: 'Open project'; data: { name: string } }
-        | { type: 'Rename project'; data: { oldName: string; newName: string } }
-        | { type: 'Create project'; data: { name: string } }
-        | { type: 'Delete project'; data: { name: string } }
+        | { type: 'Open project'; data: HomeCommandSchema['Open project'] }
+        | { type: 'Rename project'; data: HomeCommandSchema['Rename project'] }
+        | { type: 'Create project'; data: HomeCommandSchema['Create project'] }
+        | { type: 'Delete project'; data: HomeCommandSchema['Delete project'] }
         | { type: 'navigate'; data: { name: string } }
         | {
             type: 'done.invoke.read-projects'

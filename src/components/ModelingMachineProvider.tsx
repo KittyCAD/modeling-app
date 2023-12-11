@@ -390,14 +390,6 @@ export const ModelingMachineProvider = ({
             selectionRanges
           )
         },
-        'Has valid extrude parameters': (
-          _,
-          { data: { selectionRanges, distance } }
-        ) =>
-          selectionRanges &&
-          selectionRanges?.codeBasedSelections?.length > 0 &&
-          distance !== undefined &&
-          distance !== 0,
       },
       services: {
         'Get horizontal info': async ({

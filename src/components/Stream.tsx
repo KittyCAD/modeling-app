@@ -243,9 +243,7 @@ export const Stream = ({ className = '' }) => {
       })
     } else if (
       !didDragInStream &&
-      (state.matches('Sketch.SketchIdle') ||
-        state.matches('idle') ||
-        state.matches('Command parameters: Extrude'))
+      (state.matches('Sketch.SketchIdle') || state.matches('idle'))
     ) {
       command.cmd = {
         type: 'select_with_point',

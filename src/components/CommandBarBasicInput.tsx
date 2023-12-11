@@ -57,7 +57,11 @@ function CommandBarBasicInput({
           type={arg.inputType === 'number' ? 'number' : 'text'}
           className="flex-grow px-2 py-1 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80 !bg-transparent focus:outline-none"
           placeholder="Enter a value"
-          defaultValue={JSON.stringify(arg.payload || '{}')}
+          defaultValue={
+            (typeof arg.defaultValue !== 'object'
+              ? arg.defaultValue || ''
+              : JSON.stringify(arg.defaultValue || '{}')) as string
+          }
           onKeyDown={(event) => {
             if (event.key === 'Backspace' && !event.currentTarget.value) {
               stepBack()

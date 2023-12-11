@@ -1,5 +1,5 @@
 import { Dialog, Popover, Transition } from '@headlessui/react'
-import { Fragment, createContext } from 'react'
+import { Fragment, createContext, useEffect } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useMachine } from '@xstate/react'
@@ -7,6 +7,7 @@ import { commandBarMachine } from 'machines/commandBarMachine'
 import { EventFrom, StateFrom } from 'xstate'
 import CommandBarArgument from './CommandBarArgument'
 import CommandComboBox from './CommandComboBox'
+import CommandBarHeader from './CommandBarHeader'
 
 type CommandsContextType = {
   commandBarState: StateFrom<typeof commandBarMachine>
@@ -42,7 +43,6 @@ export const CommandBarProvider = ({
         )
       },
     },
-    actions: {},
   })
 
   return (
@@ -66,6 +66,8 @@ const CommandBar = () => {
   const isSelectionArgument = currentArgument?.inputType === 'selection'
   const WrapperComponent = isSelectionArgument ? Popover : Dialog
 
+  useEffect(() => console.log(commandBarState.value), [commandBarState.value])
+
   useHotkeys(['mod+k', 'mod+/'], () => {
     if (commandBarState.context.commands.length === 0) return
     if (commandBarState.matches('Closed')) {
@@ -80,10 +82,12 @@ const CommandBar = () => {
       show={!commandBarState.matches('Closed') || false}
       afterLeave={() => {
         if (selectedCommand?.onCancel) selectedCommand.onCancel()
+        commandBarSend({ type: 'Clear' })
       }}
       as={Fragment}
     >
       <WrapperComponent
+        open={!commandBarState.matches('Closed') || isSelectionArgument}
         onClose={() => {
           commandBarSend({ type: 'Close' })
         }}
@@ -104,10 +108,16 @@ const CommandBar = () => {
             className="relative w-full max-w-xl py-2 mx-auto border rounded shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70"
             as="div"
           >
-            {!(selectedCommand && currentArgument) ? (
+            {commandBarState.matches('Selecting command') ? (
               <CommandComboBox options={commands} />
-            ) : (
+            ) : commandBarState.matches('Gathering arguments') ? (
               <CommandBarArgument />
+            ) : commandBarState.matches('Review') ? (
+              <CommandBarHeader>
+                <p className="px-4 py-2">Confirm action</p>
+              </CommandBarHeader>
+            ) : (
+              <p>{JSON.stringify(commandBarState.value, null, 2)}</p>
             )}
           </WrapperComponent.Panel>
         </Transition.Child>

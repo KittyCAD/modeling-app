@@ -40,11 +40,14 @@ export const settingsCommandBarConfig: CommandSetConfig<
     args: {
       baseUnit: {
         inputType: 'options',
+        required: true,
         defaultValue: (context) => context.baseUnit,
-        options: Object.values(baseUnitsUnion).map((v) => ({
-          name: v,
-          value: v,
-        })),
+        options: (context) =>
+          Object.values(baseUnitsUnion).map((v) => ({
+            name: v,
+            value: v,
+            isCurrent: v === context.baseUnit,
+          })),
       },
     },
   },
@@ -53,11 +56,14 @@ export const settingsCommandBarConfig: CommandSetConfig<
     args: {
       cameraControls: {
         inputType: 'options',
+        required: true,
         defaultValue: (context) => context.cameraControls,
-        options: Object.values(cameraSystems).map((v) => ({
-          name: v,
-          value: v,
-        })),
+        options: (context) =>
+          Object.values(cameraSystems).map((v) => ({
+            name: v,
+            value: v,
+            isCurrent: v === context.cameraControls,
+          })),
       },
     },
   },
@@ -67,6 +73,7 @@ export const settingsCommandBarConfig: CommandSetConfig<
     args: {
       defaultProjectName: {
         inputType: 'string',
+        required: true,
         defaultValue: (context) => context.defaultProjectName,
       },
     },
@@ -76,10 +83,19 @@ export const settingsCommandBarConfig: CommandSetConfig<
     args: {
       textWrapping: {
         inputType: 'options',
+        required: true,
         defaultValue: (context) => context.textWrapping,
-        options: [
-          { name: 'On', value: 'On' as Toggle },
-          { name: 'Off', value: 'Off' as Toggle },
+        options: (context) => [
+          {
+            name: 'On',
+            value: 'On' as Toggle,
+            isCurrent: context.textWrapping === 'On',
+          },
+          {
+            name: 'Off',
+            value: 'Off' as Toggle,
+            isCurrent: context.textWrapping === 'Off',
+          },
         ],
       },
     },
@@ -89,11 +105,14 @@ export const settingsCommandBarConfig: CommandSetConfig<
     args: {
       theme: {
         inputType: 'options',
+        required: true,
         defaultValue: (context) => context.theme,
-        options: Object.values(Themes).map((v) => ({
-          name: v,
-          value: v,
-        })),
+        options: (context) =>
+          Object.values(Themes).map((v) => ({
+            name: v,
+            value: v,
+            isCurrent: v === context.theme,
+          })),
       },
     },
   },
@@ -102,10 +121,19 @@ export const settingsCommandBarConfig: CommandSetConfig<
     args: {
       unitSystem: {
         inputType: 'options',
+        required: true,
         defaultValue: (context) => context.unitSystem,
-        options: [
-          { name: 'Imperial', value: 'imperial' as UnitSystem },
-          { name: 'Metric', value: 'metric' as UnitSystem },
+        options: (context) => [
+          {
+            name: 'Imperial',
+            value: 'imperial' as UnitSystem,
+            isCurrent: context.unitSystem === 'imperial',
+          },
+          {
+            name: 'Metric',
+            value: 'metric' as UnitSystem,
+            isCurrent: context.unitSystem === 'metric',
+          },
         ],
       },
     },

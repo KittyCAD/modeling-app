@@ -1,5 +1,13 @@
 import { CommandSetConfig } from 'lib/commandTypes'
-import { EXTRUSION_RESULTS, modelingMachine } from 'machines/modelingMachine'
+import { Selection } from 'lib/selections'
+import { modelingMachine } from 'machines/modelingMachine'
+
+export const EXTRUSION_RESULTS = [
+  'new',
+  'add',
+  'subtract',
+  'intersect',
+] as const
 
 export type ModelingCommandsArgs = {
   Extrude: {
@@ -20,11 +28,12 @@ export const modelingMachineConfig: CommandSetConfig<
       selection: {
         inputType: 'selection',
         multiple: false, // TODO: multiple selection
-        payload: [],
+        required: true,
       },
       result: {
         inputType: 'options',
         payload: 'add',
+        required: true,
         options: EXTRUSION_RESULTS.map((r) => ({
           name: r,
           isCurrent: r === 'add',
@@ -34,6 +43,7 @@ export const modelingMachineConfig: CommandSetConfig<
       distance: {
         inputType: 'number',
         defaultValue: 5,
+        required: true,
       },
     },
   },

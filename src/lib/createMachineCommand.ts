@@ -58,7 +58,9 @@ export function createMachineCommand<
     name: type,
     ownerMachine: ownerMachine,
     icon,
-    onSubmit: (data: EventFrom<T, typeof type>) => {
+    needsReview: commandConfig.needsReview || false,
+    onSubmit: (data?: S[typeof type]) => {
+      console.log('sending', type, data)
       if (data !== undefined && data !== null) {
         send(type, { data })
       } else {
@@ -111,7 +113,15 @@ function buildCommandArgument<
   state: StateFrom<T>,
   actor?: InterpreterFrom<T>
 ): CommandArgument<O, T> & { inputType: typeof arg.inputType } {
-  const payload = getPayload(arg, state)
+  const baseCommandArgument = {
+    description: arg.description,
+    required: arg.required,
+    payload: arg.payload,
+    defaultValue:
+      arg.defaultValue instanceof Function
+        ? arg.defaultValue(state.context)
+        : arg.defaultValue,
+  } satisfies Omit<CommandArgument<O, T>, 'inputType'>
 
   if (arg.inputType === 'options') {
     const options = arg.options
@@ -126,9 +136,7 @@ function buildCommandArgument<
 
     return {
       inputType: arg.inputType,
-      description: arg.description,
-      skip: arg.skip,
-      payload,
+      ...baseCommandArgument,
       options,
     } satisfies CommandArgument<O, T> & { inputType: 'options' }
   } else if (arg.inputType === 'selection') {
@@ -137,36 +145,14 @@ function buildCommandArgument<
 
     return {
       inputType: arg.inputType,
-      description: arg.description,
-      skip: arg.skip,
+      ...baseCommandArgument,
       multiple: arg.multiple,
       actor,
-      payload,
     } satisfies CommandArgument<O, T> & { inputType: 'selection' }
   } else {
     return {
       inputType: arg.inputType,
-      description: arg.description,
-      skip: arg.skip,
-      payload,
+      ...baseCommandArgument,
     }
   }
-}
-
-function getPayload<O, T extends AnyStateMachine>(
-  arg: CommandArgumentConfig<O, T>,
-  state: StateFrom<T>
-): NonNullable<O> {
-  const payload = arg.payload
-    ? arg.payload
-    : arg.defaultValue
-    ? arg.defaultValue instanceof Function
-      ? arg.defaultValue(state.context)
-      : arg.defaultValue
-    : undefined
-
-  if (payload === undefined || payload === null) {
-    throw new Error('Either payload or default value must be provided')
-  }
-  return payload
 }

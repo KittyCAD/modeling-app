@@ -1,7 +1,7 @@
 import { CommandSetConfig } from 'lib/commandTypes'
 import { homeMachine } from 'machines/homeMachine'
 
-type HomeCommandSchema = {
+export type HomeCommandSchema = {
   'Create project': {
     name: string
   }
@@ -26,7 +26,13 @@ export const homeCommandBarConfig: CommandSetConfig<
     description: 'Open a project',
     args: {
       name: {
-        inputType: 'string',
+        inputType: 'options',
+        required: true,
+        options: (context) =>
+          context.projects.map((p) => ({
+            name: p.name!,
+            value: p.name!,
+          })),
       },
     },
   },
@@ -36,6 +42,7 @@ export const homeCommandBarConfig: CommandSetConfig<
     args: {
       name: {
         inputType: 'string',
+        required: true,
         defaultValue: (context) => context.defaultProjectName,
       },
     },
@@ -43,9 +50,16 @@ export const homeCommandBarConfig: CommandSetConfig<
   'Delete project': {
     icon: 'close',
     description: 'Delete a project',
+    needsReview: true,
     args: {
       name: {
-        inputType: 'string',
+        inputType: 'options',
+        required: true,
+        options: (context) =>
+          context.projects.map((p) => ({
+            name: p.name!,
+            value: p.name!,
+          })),
       },
     },
   },
@@ -54,10 +68,18 @@ export const homeCommandBarConfig: CommandSetConfig<
     description: 'Rename a project',
     args: {
       oldName: {
-        inputType: 'string',
+        inputType: 'options',
+        required: true,
+        options: (context) =>
+          context.projects.map((p) => ({
+            name: p.name!,
+            value: p.name!,
+          })),
       },
       newName: {
         inputType: 'string',
+        required: true,
+        defaultValue: (context) => context.defaultProjectName,
       },
     },
   },

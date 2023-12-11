@@ -46,7 +46,8 @@ export type Command<
 > = {
   name: CommandName
   ownerMachine: T['id']
-  onSubmit: (data: EventFrom<T>['type']) => void
+  needsReview: boolean
+  onSubmit: (data?: CommandSchema) => void
   onCancel?: () => void
   args?: {
     [ArgName in keyof CommandSchema]: CommandArgument<CommandSchema[ArgName], T>
@@ -62,8 +63,9 @@ export type CommandConfig<
   CommandSchema extends CommandSetSchema<T>[CommandName] = CommandSetSchema<T>[CommandName]
 > = Omit<
   Command<T, CommandName, CommandSchema>,
-  'name' | 'ownerMachine' | 'onSubmit' | 'onCancel' | 'args'
+  'name' | 'ownerMachine' | 'onSubmit' | 'onCancel' | 'args' | 'needsReview'
 > & {
+  needsReview?: true
   args?: {
     [ArgName in keyof CommandSchema]: CommandArgumentConfig<
       CommandSchema[ArgName],
@@ -78,6 +80,7 @@ export type CommandArgumentConfig<
 > =
   | {
       description?: string
+      required: boolean
       skip?: true
       defaultValue?: OutputType | ((context: ContextFrom<T>) => OutputType)
       payload?: OutputType
@@ -101,8 +104,9 @@ export type CommandArgument<
 > =
   | {
       description?: string
-      skip?: true
-      payload: OutputType
+      required: boolean
+      payload?: OutputType // Payload sets the initialized value and more importantly its type
+      defaultValue?: OutputType // Default value is used as the starting value for the input on this argument
     } & (
       | {
           inputType: Extract<CommandInputType, 'options'>
@@ -115,6 +119,13 @@ export type CommandArgument<
         }
       | { inputType: Exclude<CommandInputType, 'options' | 'selection'> }
     )
+
+export type CommandArgumentWithName<
+  OutputType,
+  T extends AnyStateMachine = AnyStateMachine
+> = CommandArgument<OutputType, T> & {
+  name: string
+}
 
 export type CommandArgumentOption<A> = {
   name: string
