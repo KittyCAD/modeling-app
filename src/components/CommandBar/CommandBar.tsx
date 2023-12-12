@@ -6,8 +6,9 @@ import { useMachine } from '@xstate/react'
 import { commandBarMachine } from 'machines/commandBarMachine'
 import { EventFrom, StateFrom } from 'xstate'
 import CommandBarArgument from './CommandBarArgument'
-import CommandComboBox from './CommandComboBox'
-import CommandBarHeader from './CommandBarHeader'
+import CommandComboBox from '../CommandComboBox'
+import { useLocation } from 'react-router-dom'
+import CommandBarReview from './CommandBarReview'
 
 type CommandsContextType = {
   commandBarState: StateFrom<typeof commandBarMachine>
@@ -24,6 +25,7 @@ export const CommandBarProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  const { pathname } = useLocation()
   const [commandBarState, commandBarSend] = useMachine(commandBarMachine, {
     guards: {
       'Arguments are ready': (context, _) => {
@@ -45,6 +47,11 @@ export const CommandBarProvider = ({
     },
   })
 
+  // Close the command bar when navigating
+  useEffect(() => {
+    commandBarSend({ type: 'Close' })
+  }, [pathname])
+
   return (
     <CommandsContext.Provider
       value={{
@@ -65,8 +72,6 @@ const CommandBar = () => {
   } = commandBarState
   const isSelectionArgument = currentArgument?.inputType === 'selection'
   const WrapperComponent = isSelectionArgument ? Popover : Dialog
-
-  useEffect(() => console.log(commandBarState.value), [commandBarState.value])
 
   useHotkeys(['mod+k', 'mod+/'], () => {
     if (commandBarState.context.commands.length === 0) return
@@ -92,7 +97,7 @@ const CommandBar = () => {
           commandBarSend({ type: 'Close' })
         }}
         className={
-          'fixed inset-0 z-40 overflow-y-auto pb-4 pt-1 ' +
+          'fixed inset-0 z-50 overflow-y-auto pb-4 pt-1 ' +
           (isSelectionArgument ? 'pointer-events-none' : '')
         }
       >
@@ -105,19 +110,15 @@ const CommandBar = () => {
           leaveTo="opacity-0 scale-95"
         >
           <WrapperComponent.Panel
-            className="relative w-full max-w-xl py-2 mx-auto border rounded shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70"
+            className="relative z-50 pointer-events-auto w-full max-w-xl py-2 mx-auto border rounded shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70"
             as="div"
           >
             {commandBarState.matches('Selecting command') ? (
               <CommandComboBox options={commands} />
             ) : commandBarState.matches('Gathering arguments') ? (
               <CommandBarArgument />
-            ) : commandBarState.matches('Review') ? (
-              <CommandBarHeader>
-                <p className="px-4 py-2">Confirm action</p>
-              </CommandBarHeader>
             ) : (
-              <p>{JSON.stringify(commandBarState.value, null, 2)}</p>
+              commandBarState.matches('Review') && <CommandBarReview />
             )}
           </WrapperComponent.Panel>
         </Transition.Child>

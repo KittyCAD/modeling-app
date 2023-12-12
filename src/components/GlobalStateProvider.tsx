@@ -16,8 +16,8 @@ import {
   StateFrom,
 } from 'xstate'
 import { isTauri } from 'lib/isTauri'
-import { settingsCommandBarConfig } from 'lib/commandSchemas/settingsCommandSchema'
-import { authCommandBarConfig } from 'lib/commandSchemas/authCommandSchema'
+import { settingsCommandBarConfig } from 'lib/commandBarConfigs/settingsCommandConfig'
+import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>

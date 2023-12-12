@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { AnyStateMachine, EventFrom, InterpreterFrom, StateFrom } from 'xstate'
+import { AnyStateMachine, InterpreterFrom, StateFrom } from 'xstate'
 import { createMachineCommand } from '../lib/createMachineCommand'
 import { useCommandsContext } from './useCommandsContext'
 import { modelingMachine } from 'machines/modelingMachine'
@@ -8,6 +8,7 @@ import { settingsMachine } from 'machines/settingsMachine'
 import { homeMachine } from 'machines/homeMachine'
 import { Command, CommandSetConfig, CommandSetSchema } from 'lib/commandTypes'
 
+// This might not be necessary, AnyStateMachine from xstate is working
 export type AllMachines =
   | typeof modelingMachine
   | typeof settingsMachine
@@ -53,7 +54,7 @@ export default function useStateMachineCommands<
           onCancel,
         })
       )
-      .filter((c) => c !== null) as Command<T, EventFrom<T>['type'], S>[]
+      .filter((c) => c !== null) as Command[]
 
     commandBarSend({ type: 'Add commands', data: { commands: newCommands } })
 

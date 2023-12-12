@@ -2,8 +2,7 @@ import { useSelector } from '@xstate/react'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CommandArgument } from 'lib/commandTypes'
 import { modelingMachine } from 'machines/modelingMachine'
-import { useRef } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
+import { useEffect, useRef } from 'react'
 import { StateFrom } from 'xstate'
 
 const selectionSelector = (snapshot: StateFrom<typeof modelingMachine>) =>
@@ -12,52 +11,48 @@ const selectionSelector = (snapshot: StateFrom<typeof modelingMachine>) =>
 function CommandBarSelectionInput({
   arg,
   stepBack,
+  onSubmit,
 }: {
   arg: CommandArgument<unknown> & { inputType: 'selection'; name: string }
   stepBack: () => void
+  onSubmit: (data: unknown) => void
 }) {
-  const buttonRef = useRef<HTMLButtonElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   const { commandBarSend } = useCommandsContext()
-  useHotkeys('esc', () => commandBarSend({ type: 'Close' }))
-  useHotkeys('Backspace', () => stepBack())
-  useHotkeys('enter', () => buttonRef.current?.click())
   const selection = useSelector(arg.actor, selectionSelector)
 
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [selection, inputRef])
+
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.nativeEvent?.preventDefault()
     e.preventDefault()
-    e.stopPropagation()
-
-    console.log('submitting selection form', e)
-
-    commandBarSend({
-      type: 'Submit argument',
-      data: {
-        [arg.name]: selection,
-      },
-    })
+    onSubmit(selection)
   }
 
   return (
-    <form id="selection-input-form" onSubmit={handleSubmit}>
-      <label className="flex items-center mx-4 my-4">
-        Please select a face
+    <form id="arg-form" onSubmit={handleSubmit}>
+      <label className="relative flex items-center mx-4 my-4">
         {selection.codeBasedSelections.length >= 1
-          ? `: ${JSON.stringify(selection.codeBasedSelections)}`
-          : ''}
+          ? `1 face selected: ${JSON.stringify(selection.codeBasedSelections)}`
+          : 'Please select a face'}
         <input
-          readOnly
-          hidden
-          placeholder="Enter a value"
+          id="selection"
+          name="selection"
+          ref={inputRef}
+          placeholder="Select an entity with your mouse"
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           onKeyDown={(event) => {
             if (event.key === 'Backspace') {
               stepBack()
+            } else if (event.key === 'Escape') {
+              commandBarSend({ type: 'Close' })
             }
           }}
-          autoFocus
+          onChange={() => inputRef.current?.focus()}
+          value={JSON.stringify(selection || {})}
         />
       </label>
-      <button ref={buttonRef} type="submit" hidden />
     </form>
   )
 }

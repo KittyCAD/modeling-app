@@ -1,5 +1,5 @@
 import { CommandSetConfig } from 'lib/commandTypes'
-import { Selection } from 'lib/selections'
+import { Selections } from 'lib/selections'
 import { modelingMachine } from 'machines/modelingMachine'
 
 export const EXTRUSION_RESULTS = [
@@ -9,9 +9,9 @@ export const EXTRUSION_RESULTS = [
   'intersect',
 ] as const
 
-export type ModelingCommandsArgs = {
+export type ModelingCommandSchema = {
   Extrude: {
-    selection: Selection[] // & { type: 'face' } would be cool to lock that down
+    selection: Selections // & { type: 'face' } would be cool to lock that down
     result: (typeof EXTRUSION_RESULTS)[number]
     distance: number
   }
@@ -19,11 +19,12 @@ export type ModelingCommandsArgs = {
 
 export const modelingMachineConfig: CommandSetConfig<
   typeof modelingMachine,
-  ModelingCommandsArgs
+  ModelingCommandSchema
 > = {
   Extrude: {
     description: 'Pull a sketch into 3D along its normal or perpendicular.',
     icon: 'extrude',
+    needsReview: true,
     args: {
       selection: {
         inputType: 'selection',

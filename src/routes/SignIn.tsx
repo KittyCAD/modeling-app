@@ -1,4 +1,3 @@
-import { faSignInAlt } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../components/ActionButton'
 import { isTauri } from '../lib/isTauri'
 import { invoke } from '@tauri-apps/api/tauri'

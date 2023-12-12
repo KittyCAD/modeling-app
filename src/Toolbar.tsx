@@ -177,7 +177,12 @@ export const Toolbar = () => {
             <ActionButton
               Element="button"
               className="text-sm"
-              onClick={() => send('Extrude')}
+              onClick={() =>
+                commandBarSend({
+                  type: 'Find and select command',
+                  data: { name: 'Extrude', ownerMachine: 'modeling' },
+                })
+              }
               disabled={!state.can('Extrude')}
               title={
                 state.can('Extrude')

@@ -66,6 +66,7 @@ export const homeCommandBarConfig: CommandSetConfig<
   'Rename project': {
     icon: 'folder',
     description: 'Rename a project',
+    needsReview: true,
     args: {
       oldName: {
         inputType: 'options',

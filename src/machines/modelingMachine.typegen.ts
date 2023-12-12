@@ -34,7 +34,7 @@
         missingImplementations: {
           actions: "AST add line segment" | "AST start new sketch" | "Modify AST" | "Set selection" | "Update code selection cursors" | "create path" | "set tool" | "show default planes" | "sketch exit execute";
           delays: never;
-          guards: "Selection contains axis" | "Selection contains edge" | "Selection contains face" | "Selection contains line" | "Selection contains point" | "Selection is not empty" | "Selection is one face";
+          guards: "Selection contains axis" | "Selection contains edge" | "Selection contains face" | "Selection contains line" | "Selection contains point" | "Selection is not empty" | "Selection is one face" | "has valid extrude selection";
           services: "Get ABS X info" | "Get ABS Y info" | "Get angle info" | "Get horizontal info" | "Get length info" | "Get perpendicular distance info" | "Get vertical info";
         };
         eventsCausingActions: {

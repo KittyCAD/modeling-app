@@ -30,7 +30,7 @@ import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { DEFAULT_PROJECT_NAME } from 'machines/settingsMachine'
 import { sep } from '@tauri-apps/api/path'
-import { homeCommandBarConfig } from 'lib/commandSchemas/homeCommandSchema'
+import { homeCommandBarConfig } from 'lib/commandBarConfigs/homeCommandConfig'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.

@@ -1,19 +1,24 @@
-import { AnyStateMachine, assign, createMachine } from 'xstate'
+import { assign, createMachine } from 'xstate'
 import {
   Command,
   CommandArgument,
   CommandArgumentWithName,
 } from 'lib/commandTypes'
+import { Selections } from 'lib/selections'
 
 export const commandBarMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QGED2BbdBDAdhABAEJYBOAxMgDaqxgDaADALqKgAONAlgC6eo6sQAD0QB2UQBoQAT0QBGAJwAmACwA6BSpUMFDFQA4FCgGwBWJQF8LUtJlwFi5AIIQCAYwzY8sRiyQgOWB4+AX8RBAU5UTVjY1ElE1E5U1MAZj0pWQQ5S2sQWy8HUjIAJTB0VAA3MHwPO29fQUDg-kFw3VS1VP1UlVMGU31RUwVTSRlEJTkGJTU9FSV4+ITjVNSrG097ImKqMFJG-2beVrDEXWM1UQZr1PEzfWM5VMzJhgZL0WNR-UVu-R6og2+S2eB2JDUVBokDIAHk2GAcId2FwTqFQOFkuodEpFv1ripjKpXtkiQorlN9EoiasBiogXkCttHGoAMpgShgNy8HBQWqgiBkdmc7n8+oQZEBVEhNqTSJqQYKfSmVapYwfBTjLJRS4jYaa9WGPoA4FMsEss0EWgi7gwgAicA5XO4YsKkuOMrOCFECzUWm0qgSSg1xhJzx6aiU+i0ilUchUo1ym3F4MhAvw1udMPd0tOGMmvwVhmVqvV3y1iEJsyGSjWayi3QY8dN6Yt6cz3Ozcj8KKCaNl2WSV1SI0WDEBKhHphJpmeMVSkUMpgMDBHLZTLIA4lhuAALMAkTi8-CkKAAV3QiO4sDUTgA7lhgsej2wz9whWeAEboHgnkjny8cG4HM+09fMEGMQtjAWJsclxEcbhJcRTAVTQVX+FUxgZZNClTbc9wPI8+VPC8rxvAA1LBKE4CAdyIsgIH4MA1CPSpUAAa2YyoqJoncwCcf9SKAkCWnRYR5HpdRribZQ9CiPQlBJb5PiWbpYhUORfhUddcK3Hd90PY8SMA681Eo6jaJ5KAyAPEhUAhNhKB3AAzez0DUbiLL4gSAKvET+y9SC5BiGC5Dg2t8SQqMrluEZCSbFIdOZUg1DKSpODAO8P2-X86jdZgmlzMTwgAWnjFDIi+X4G1Ebow00-Q1CGNJqR9X5ViS80UrSjKspcAhjL8gqjiKgdFkuAYRgUNUAUnEYXgmCDRkjeIwq0AYqrkTqighHrMtKcoqhqQbhOG3tRIHAwULkaC9FkmlaqU9I-RmsxeiSZJ1kZVturAdL9oAUQgX8TuAs6pVAvNxIQca5hSIwZujEdpqQ3QFUJfQBk0pV6QUbbU2Qfc3HYoj8B8oTrwYpiWJwNjOI8njLP4wSTJ8cGPSh8IxgYLoEgBHJxC0QYSSMS5uiUNIl002d8YtImSePcnWapnBmNYjiuMZ7yWbIuhu0KyHivOURyVnIl4z6VJgy0MMo06G7ehg9IE26WWUsJrkFb5JWyJskg7IcpzuFckh3M83jbR9oC2Z7CGLq9B3Zl6SrJKrNYSQXaIkliEdHjg6MrDyHBUAgOBBEtcEDfj8CSvSclscz2Jl36OQSUMFaMfVabCSVUw3YhKFaAgKuAprsKUNER5YmVEcnn6BQwxGFDgzC6Y1UgoY8e+jcUuFZ1Sby+wR7A6G4miR4xnSVRxCpCtsmXckEyGZSNOucx+7TFMO1tYeRsNgc4gkmDDzKIYVoJrF+KuJUH98IGVJqDeAf9q7Q3pDzJ4VYfS1mGDOZUVwxg5CpGFH0k8YH6UIkZHW0dbwPifHyF8b5j6c0QLORq6CiSYLuNORatVOgyWpNMaMHQvo4WShCWB5DiKUNMuZCORFGFGwQIYaIfQxiQQSPGOIiluGKA0DoPompNSY30B-Pad55EDhKvwtQDcDRmD6E2NugwVpNg0pSBcygP4e2JqTKO15zEJ1nNiYsGFJygJFu8SM6oxhPw0h8L6VggA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QGED2BbdBDAdhABAEJYBOAxMgDaqxgDaADALqKgAONAlgC6eo6sQAD0QBaAJwA6AGwAmAKwBmBoukAWafIAcDcSoA0IAJ6JZDaZIDs8hgzV6AjA61a1DWQF8PhtJlwFiciowUkYWJBAOWB4+AQiRBFF5CwdpcVkHS1lpVyU5QxNEh1lFGTUsrUUtOQd5SwZLLx8MbDwiUkkqGkgyAHk2MBwwwSiY-kEEswdJNWcNbPFLNMr5AsRFWUtJcVSdRR2VVMUmkF9WgI6u2ggyADFONv98WkowAGNufDeW-2GI0d443iiHESkktUUG1klTsSi0awQDgYWhmqkWjnUslBWhOZyegU61GuZAAghACN8-HhYH92FxAXFQAlRA5FpJ5FjFPYtNDpIpLOkEW4GNs4eJxJoGvJxOVcT82gSrj0AEpgdCoABuYC+8ogNOYI3psQmYlkGUkU2slhc6mkmUUCIyKLc4i0lkU8iUyjUHLlVIuJEkAGUwK8Pg8oDr-WQQ2HPpTzrTIkagUzEDkLHZkQK1CUtKCHAiNlsdjkVAdFEc-ed2oG8W0Xu9uD0ACJwUNNqOJg3-FOM4TpypWXOzBjS-nOR1jySqXNODTyZwONTV-GXXXPDsfHpJgHG4EISHTKoe-P8pb2EpCuSSLR1cw2B8ZaSrhXr-2buM7hzhOnRBkmoiKgiiUy7WjklblKsxiIPMt73q4y5qG65iNN4pwbgSADiWDcAAFmAJARvgpBQAAruggzcLAkgkgA7lgMQ4JGDxsGR3AxmRABG6A8CRJDkZRODcLufaAcuKi3lUfKpEiyFqA6MEIOUKIOB68i5rYEouCu6H1gGkg4fhhHEaRFFUTRABqWCUJwEC4RGZAQPwYCSA8GqoAA1q5Go2XZuFgCSAnmcJon-vuaaIpY5QzGaMrZDoY7LgiMkzu6NibIuWTHHpmEdEZBFEcx-GCRZkjWbZ9m8MxZCESQqCBmwlC4QAZg16CSL5lUBUFpWhT2f5jP2CTLtIIpVAlVQ6JoWRCpsVhZEsGU2Lkr4GaqGqcGAdGcTxfEJr8A3JuFqYDggljTNoY7SpsLjIpUCLuiK6jpPUyi6C6a21pIG1bTtZIEGZQkiUde6nQk4qlNCAo8nIshuPkSkCqUGgZkismyV9BK-dtZCquqWolSFIO-sdQ3iQwrJlGkehuq4eYpVyt4+jymQKUi1pYx0OM7QAohAfFA1RYXkwemjyOyY75uLrKgozajM3U4qzDYkLiFzdYEW8nnEb1xOwE5LluTgHneZ1flVYFwXA-qpNg8NiAaZdY4lMoTj1JOSl6BYCkympOhmDkni5R+ipazrxV6zbhs4K57leT5Fs9dbFl0D+honQ7CBYtsdqgos1guBp5QIi4sjsmktibKocgChrnTh7rKfCQbdUNZITWte15vdc2Uep6DYkHmBWz7Dkd7pIusIpRoMz1MK4olO46shzW2G4YVpnN9RFB4bgMBfGRJAkFRRPAyLAHD6oEuaGNai5pUd-wkpakihpJTRdi0hpHyXjoTgqAIBwEEPpWsGdRaRVEAsC0lMrQ2g0PaR00x5zmB9HYSo1QSj1yVBAcBl9IHFAtHma0qR6iemlNBQoHppgKVcJWDY+wzS6WaKHDosYmzEQOngPBEUzqzChtXLMdRaizSUtQ1EdC1IlHSPDbBG5Gzblwb2TOgFF4WmyvyZQd1tCOnUHPCa9h3B2HdPXAqJlipCxbjw8GiBihVBkEodIGgtDLkXI6VwVgKH7DHJoJcpiN7mMjJY6itEGJMRYjgNi3BrFZ2KGydS71kRmGSGoIUGxJDuFSN-F6lRNj+OMkVIJ28rJJ2qlAGJ4lpBLHBBKe+H0C78iFM4bYThqh5GrtFZhGFWGBh5hUsWmRwT33PDXLE0JHqLn0Z6bIGkMw4lXmuTW7wI6Rn7lY5RECzqpEmW4H0aQBSLGXLIR6WQZw2G-r7HkCk0IsLXvlAJhSz5lVjnRZ43AAr4AcP0yKxRqgOMYc41xhYlIchFNUWpLi0hcn2H-DwQA */
     context: {
       commands: [] as Command[],
       selectedCommand: undefined as Command | undefined,
       currentArgument: undefined as
         | (CommandArgument<unknown> & { name: string })
         | undefined,
+      selectionRanges: {
+        otherSelections: [],
+        codeBasedSelections: [],
+      } as Selections,
       argumentsToSubmit: {} as { [x: string]: unknown },
     },
     id: 'Command Bar',
@@ -23,31 +28,62 @@ export const commandBarMachine = createMachine(
         on: {
           Open: {
             target: 'Selecting command',
-            actions: ['Log context'],
+          },
+
+          'Find and select command': {
+            target: 'Command selected',
+            actions: [
+              'Find and select command',
+              'Initialize arguments to submit',
+            ],
+          },
+
+          'Add commands': {
+            target: 'Closed',
+
+            actions: [
+              assign({
+                commands: (context, event) =>
+                  [...context.commands, ...event.data.commands].sort(
+                    sortCommands
+                  ),
+              }),
+            ],
+
+            internal: true,
+          },
+
+          'Remove commands': {
+            target: 'Closed',
+
+            actions: [
+              assign({
+                commands: (context, event) =>
+                  context.commands.filter(
+                    (c) =>
+                      !event.data.commands.some(
+                        (c2) =>
+                          c2.name === c.name &&
+                          c2.ownerMachine === c.ownerMachine
+                      )
+                  ),
+              }),
+            ],
+
+            internal: true,
           },
         },
       },
+
       'Selecting command': {
         on: {
           'Select command': {
             target: 'Command selected',
-            actions: [
-              assign({
-                selectedCommand: (_c, e) => e.data.command,
-                argumentsToSubmit: (_c, e) => {
-                  const { command } = e.data
-                  if (!command.args) return {}
-                  const args: { [x: string]: unknown } = {}
-                  for (const [argName, arg] of Object.entries(command.args)) {
-                    args[argName] = arg.payload
-                  }
-                  return args
-                },
-              }),
-            ],
+            actions: ['Set selected command', 'Initialize arguments to submit'],
           },
         },
       },
+
       'Command selected': {
         always: [
           {
@@ -73,6 +109,7 @@ export const commandBarMachine = createMachine(
             ],
           },
         ],
+
         on: {
           'Deselect command': {
             target: 'Selecting command',
@@ -83,11 +120,9 @@ export const commandBarMachine = createMachine(
             ],
           },
         },
-        entry: ['Log context'],
       },
+
       'Gathering arguments': {
-        initial: 'Awaiting input',
-        entry: ['Log context'],
         states: {
           'Awaiting input': {
             on: {
@@ -96,6 +131,7 @@ export const commandBarMachine = createMachine(
               },
             },
           },
+
           Validating: {
             invoke: {
               src: 'Validate argument',
@@ -123,8 +159,21 @@ export const commandBarMachine = createMachine(
               ],
             },
           },
+
+          'new state 1': {},
+        },
+
+        initial: 'Awaiting input',
+
+        on: {
+          'Change current argument': {
+            target: 'Gathering arguments',
+            internal: true,
+            actions: ['Set current argument'],
+          },
         },
       },
+
       Review: {
         entry: ['Clear current argument'],
         on: {
@@ -132,10 +181,12 @@ export const commandBarMachine = createMachine(
             target: 'Closed',
             actions: ['Execute command'],
           },
+
           'Add argument': {
             target: 'Gathering arguments',
             actions: ['Set current argument'],
           },
+
           'Remove argument': {
             target: 'Review',
             actions: [
@@ -150,12 +201,14 @@ export const commandBarMachine = createMachine(
               }),
             ],
           },
+
           'Edit argument': {
             target: 'Gathering arguments',
             actions: ['Set current argument'],
           },
         },
       },
+
       'Checking Arguments': {
         invoke: {
           src: 'Validate all arguments',
@@ -182,32 +235,6 @@ export const commandBarMachine = createMachine(
     on: {
       Close: {
         target: '.Closed',
-      },
-
-      'Add commands': {
-        target: '#Command Bar',
-        actions: [
-          assign({
-            commands: (context, event) =>
-              [...context.commands, ...event.data.commands].sort(sortCommands),
-          }),
-        ],
-      },
-
-      'Remove commands': {
-        target: '#Command Bar',
-        actions: [
-          assign({
-            commands: (context, event) =>
-              context.commands.filter(
-                (c) =>
-                  !event.data.commands.some(
-                    (c2) =>
-                      c2.name === c.name && c2.ownerMachine === c.ownerMachine
-                  )
-              ),
-          }),
-        ],
       },
 
       Clear: {
@@ -255,6 +282,14 @@ export const commandBarMachine = createMachine(
         | {
             type: 'error.platform.validateArguments'
             data: { message: string; arg: CommandArgumentWithName<unknown> }
+          }
+        | {
+            type: 'Find and select command'
+            data: { name: string; ownerMachine: string }
+          }
+        | {
+            type: 'Change current argument'
+            data: { arg: CommandArgumentWithName<unknown> }
           },
     },
     predictableActionArguments: true,
@@ -287,6 +322,8 @@ export const commandBarMachine = createMachine(
               return event.data.arg
             case 'Edit argument':
               return event.data.arg
+            case 'Change current argument':
+              return event.data.arg
             default:
               return context.currentArgument
           }
@@ -297,7 +334,38 @@ export const commandBarMachine = createMachine(
         currentArgument: undefined,
         argumentsToSubmit: {},
       }),
-      'Log context': (context, event) => console.log(event.type, context),
+      'Set selected command': assign({
+        selectedCommand: (c, e) =>
+          e.type === 'Select command' ? e.data.command : c.selectedCommand,
+      }),
+      'Find and select command': assign({
+        selectedCommand: (c, e) => {
+          if (e.type !== 'Find and select command') return c.selectedCommand
+          const found = c.commands.find(
+            (cmd) =>
+              cmd.name == e.data.name && cmd.ownerMachine == e.data.ownerMachine
+          )
+
+          return !!found ? found : c.selectedCommand
+        },
+      }),
+      'Initialize arguments to submit': assign({
+        argumentsToSubmit: (c, e) => {
+          if (
+            e.type !== 'Select command' &&
+            e.type !== 'Find and select command'
+          )
+            return c.argumentsToSubmit
+          const command =
+            'command' in e.data ? e.data.command : c.selectedCommand!
+          if (!command.args) return {}
+          const args: { [x: string]: unknown } = {}
+          for (const [argName, arg] of Object.entries(command.args)) {
+            args[argName] = arg.payload
+          }
+          return args
+        },
+      }),
     },
     guards: {
       'Command needs review': (context, _) =>

@@ -23,13 +23,13 @@ import {
   PipeExpression,
   CallExpression,
 } from 'lang/wasm'
-import { getNodeFromPath } from 'lang/queryAst'
+import { doesPipeHaveCallExp, getNodeFromPath } from 'lang/queryAst'
 import {
   addCloseToPipe,
   addNewSketchLn,
   compareVec2Epsilon,
 } from 'lang/std/sketch'
-import { kclManager } from 'lang/KclSinglton'
+import { kclManager, useKclContext } from 'lang/KclSinglton'
 import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
 import {
   angleBetweenInfo,
@@ -43,7 +43,7 @@ import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
 import useStateMachineCommands from 'hooks/useStateMachineCommands'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { modelingMachineConfig } from 'lib/commandSchemas/modelingCommandSchema'
+import { modelingMachineConfig } from 'lib/commandBarConfigs/modelingCommandConfig'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -61,6 +61,7 @@ export const ModelingMachineProvider = ({
   children: React.ReactNode
 }) => {
   const { auth } = useGlobalStateContext()
+  const { code } = useKclContext()
   const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)
   useSetupEngineManager(streamRef, token)
@@ -263,6 +264,7 @@ export const ModelingMachineProvider = ({
         'set tool': () => {}, // TODO
         'Set selection': assign(({ selectionRanges }, event) => {
           if (event.type !== 'Set selection') return {} // this was needed for ts after adding 'Set selection' action to on done modal events
+          console.log('setting selection')
           const setSelections = event.data
           if (!editorView) return {}
           if (setSelections.selectionType === 'mirrorCodeMirrorSelections')
@@ -384,6 +386,34 @@ export const ModelingMachineProvider = ({
         'Selection contains line': () => true,
         'Selection contains point': () => true,
         'Selection is not empty': () => true,
+        'has valid extrude selection': ({ selectionRanges }) => {
+          // A user can begin extruding if they either have 1+ faces selected or nothing selected
+          // TODO: I believe this guard only allows for extruding a single face at a time
+          if (selectionRanges.codeBasedSelections.length < 1) return false
+          const isSketchPipe = isCursorInSketchCommandRange(
+            engineCommandManager.artifactMap,
+            selectionRanges
+          )
+          const isSelectionLastLine =
+            selectionRanges.codeBasedSelections[0].range[1] === code.length
+          if (isSelectionLastLine) return true
+
+          if (!isSketchPipe) return false
+
+          const common = {
+            selection: selectionRanges.codeBasedSelections[0],
+            ast: kclManager.ast,
+          }
+          const hasClose = doesPipeHaveCallExp({
+            calleeName: 'close',
+            ...common,
+          })
+          const hasExtrude = doesPipeHaveCallExp({
+            calleeName: 'extrude',
+            ...common,
+          })
+          return !!isSketchPipe && hasClose && !hasExtrude
+        },
         'Selection is one face': ({ selectionRanges }) => {
           return !!isCursorInSketchCommandRange(
             engineCommandManager.artifactMap,
@@ -548,7 +578,10 @@ export const ModelingMachineProvider = ({
     send: modelingSend,
     actor: modelingActor,
     commandBarConfig: modelingMachineConfig,
-    onCancel: () => modelingSend({ type: 'Cancel' }),
+    onCancel: () => {
+      console.log('firing onCancel!!')
+      modelingSend({ type: 'Cancel' })
+    },
   })
 
   return (

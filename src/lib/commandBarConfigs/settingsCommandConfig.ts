@@ -10,7 +10,7 @@ import { CameraSystem, cameraSystems } from '../cameraControls'
 import { Themes } from '../theme'
 
 // SETTINGS MACHINE
-export type SettingsCommandArgs = {
+export type SettingsCommandSchema = {
   'Set Base Unit': {
     baseUnit: BaseUnit
   }
@@ -33,7 +33,7 @@ export type SettingsCommandArgs = {
 
 export const settingsCommandBarConfig: CommandSetConfig<
   typeof settingsMachine,
-  SettingsCommandArgs
+  SettingsCommandSchema
 > = {
   'Set Base Unit': {
     icon: 'gear',
