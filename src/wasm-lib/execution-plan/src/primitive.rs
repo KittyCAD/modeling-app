@@ -85,3 +85,14 @@ pub enum NumericPrimitive {
     Integer(usize),
     Float(f64),
 }
+
+impl crate::value::Value for Primitive {
+    fn into_parts(self) -> Vec<Primitive> {
+        vec![self]
+    }
+
+    fn from_parts(values: &[Option<Primitive>]) -> Result<Self, ExecutionError> {
+        let v = values.get(0).ok_or(ExecutionError::MemoryWrongSize { expected: 1 })?;
+        v.to_owned().ok_or(ExecutionError::MemoryWrongSize { expected: 1 })
+    }
+}
