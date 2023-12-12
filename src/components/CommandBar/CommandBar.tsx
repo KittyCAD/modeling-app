@@ -82,6 +82,44 @@ const CommandBar = () => {
     }
   })
 
+  function stepBack() {
+    if (!currentArgument) {
+      if (commandBarState.matches('Review')) {
+        const entries = Object.entries(selectedCommand?.args || {})
+
+        commandBarSend({
+          type: commandBarState.matches('Review')
+            ? 'Edit argument'
+            : 'Change current argument',
+          data: {
+            arg: {
+              name: entries[entries.length - 1][0],
+              ...entries[entries.length - 1][1],
+            },
+          },
+        })
+      } else {
+        commandBarSend({ type: 'Deselect command' })
+      }
+    } else {
+      const entries = Object.entries(selectedCommand?.args || {})
+      const index = entries.findIndex(
+        ([key, _]) => key === currentArgument.name
+      )
+
+      if (index === 0) {
+        commandBarSend({ type: 'Deselect command' })
+      } else {
+        commandBarSend({
+          type: 'Change current argument',
+          data: {
+            arg: { name: entries[index - 1][0], ...entries[index - 1][1] },
+          },
+        })
+      }
+    }
+  }
+
   return (
     <Transition.Root
       show={!commandBarState.matches('Closed') || false}
@@ -116,9 +154,11 @@ const CommandBar = () => {
             {commandBarState.matches('Selecting command') ? (
               <CommandComboBox options={commands} />
             ) : commandBarState.matches('Gathering arguments') ? (
-              <CommandBarArgument />
+              <CommandBarArgument stepBack={stepBack} />
             ) : (
-              commandBarState.matches('Review') && <CommandBarReview />
+              commandBarState.matches('Review') && (
+                <CommandBarReview stepBack={stepBack} />
+              )
             )}
           </WrapperComponent.Panel>
         </Transition.Child>

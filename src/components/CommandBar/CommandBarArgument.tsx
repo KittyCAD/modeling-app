@@ -5,10 +5,10 @@ import { CommandArgument } from 'lib/commandTypes'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import CommandBarHeader from './CommandBarHeader'
 
-function CommandBarArgument() {
+function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
   const { commandBarState, commandBarSend } = useCommandsContext()
   const {
-    context: { currentArgument, selectedCommand },
+    context: { currentArgument },
   } = commandBarState
 
   function onSubmit(data: unknown) {
@@ -23,26 +23,6 @@ function CommandBarArgument() {
             : data,
       },
     })
-  }
-
-  function stepBack() {
-    if (!selectedCommand?.args || !currentArgument) {
-      commandBarSend({ type: 'Deselect command' })
-    } else {
-      const entries = Object.entries(selectedCommand.args || {})
-      const index = entries.findIndex(
-        ([key, _]) => key === currentArgument.name
-      )
-
-      if (index === 0) {
-        commandBarSend({ type: 'Deselect command' })
-      } else {
-        commandBarSend({
-          type: 'Edit argument',
-          data: { arg: { name: entries[index][0], ...entries[index][1] } },
-        })
-      }
-    }
   }
 
   return (

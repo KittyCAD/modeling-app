@@ -3,6 +3,7 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CommandArgument } from 'lib/commandTypes'
 import { modelingMachine } from 'machines/modelingMachine'
 import { useEffect, useRef } from 'react'
+import { useHotkeys } from 'react-hotkeys-hook'
 import { StateFrom } from 'xstate'
 
 const selectionSelector = (snapshot: StateFrom<typeof modelingMachine>) =>
@@ -20,6 +21,12 @@ function CommandBarSelectionInput({
   const inputRef = useRef<HTMLInputElement>(null)
   const { commandBarSend } = useCommandsContext()
   const selection = useSelector(arg.actor, selectionSelector)
+
+  useHotkeys('tab', () => onSubmit(selection), {
+    enableOnFormTags: true,
+    enableOnContentEditable: true,
+    keyup: true,
+  })
 
   useEffect(() => {
     inputRef.current?.focus()

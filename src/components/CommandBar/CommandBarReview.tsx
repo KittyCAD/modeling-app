@@ -2,11 +2,16 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import CommandBarHeader from './CommandBarHeader'
 import { useHotkeys } from 'react-hotkeys-hook'
 
-function CommandBarReview() {
+function CommandBarReview({ stepBack }: { stepBack: () => void }) {
   const { commandBarState, commandBarSend } = useCommandsContext()
   const {
     context: { argumentsToSubmit, selectedCommand },
   } = commandBarState
+
+  useHotkeys('backspace', stepBack, {
+    enableOnFormTags: true,
+    enableOnContentEditable: true,
+  })
 
   useHotkeys(
     '1, 2, 3, 4, 5, 6, 7, 8, 9, 0',

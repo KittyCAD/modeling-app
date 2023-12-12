@@ -141,10 +141,10 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
             icon={{
               icon: isReviewing ? 'checkmark' : 'arrowRight',
               bgClassName: `p-1 rounded-sm ${
-                isReviewing ? '!bg-chalkboard-100 dark:bg-chalkboard-10' : ''
+                isReviewing ? '!bg-chalkboard-100 dark:!bg-chalkboard-10' : ''
               }`,
               iconClassName: isReviewing
-                ? 'text-chalkboard-10 dark:text-chalkboard-100'
+                ? '!text-chalkboard-10 dark:!text-chalkboard-100'
                 : '',
             }}
           >

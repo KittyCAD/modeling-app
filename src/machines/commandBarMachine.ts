@@ -8,7 +8,7 @@ import { Selections } from 'lib/selections'
 
 export const commandBarMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QGED2BbdBDAdhABAEJYBOAxMgDaqxgDaADALqKgAONAlgC6eo6sQAD0QBaAJwA6AGwAmAKwBmBoukAWafIAcDcSoA0IAJ6JZDaZIDs8hgzV6AjA61a1DWQF8PhtJlwFiciowUkYWJBAOWB4+AQiRBFF5CwdpcVkHS1lpVyU5QxNEh1lFGTUsrUUtOQd5SwZLLx8MbDwiUkkqGkgyAHk2MBwwwSiY-kEEswdJNWcNbPFLNMr5AsRFWUtJcVSdRR2VVMUmkF9WgI6u2ggyADFONv98WkowAGNufDeW-2GI0d443iiHESkktUUG1klTsSi0awQDgYWhmqkWjnUslBWhOZyegU61GuZAAghACN8-HhYH92FxAXFQAlRA5FpJ5FjFPYtNDpIpLOkEW4GNs4eJxJoGvJxOVcT82gSrj0AEpgdCoABuYC+8ogNOYI3psQmYlkGUkU2slhc6mkmUUCIyKLc4i0lkU8iUyjUHLlVIuJEkAGUwK8Pg8oDr-WQQ2HPpTzrTIkagUzEDkLHZkQK1CUtKCHAiNlsdjkVAdFEc-ed2oG8W0Xu9uD0ACJwUNNqOJg3-FOM4TpypWXOzBjS-nOR1jySqXNODTyZwONTV-GXXXPDsfHpJgHG4EISHTKoe-P8pb2EpCuSSLR1cw2B8ZaSrhXr-2buM7hzhOnRBkmoiKgiiUy7WjklblKsxiIPMt73q4y5qG65iNN4pwbgSADiWDcAAFmAJARvgpBQAAruggzcLAkgkgA7lgMQ4JGDxsGR3AxmRABG6A8CRJDkZRODcLufaAcuKi3lUfKpEiyFqA6MEIOUKIOB68i5rYEouCu6H1gGkg4fhhHEaRFFUTRABqWCUJwEC4RGZAQPwYCSA8GqoAA1q5Go2XZuFgCSAnmcJon-vuaaIpY5QzGaMrZDoY7LgiMkzu6NibIuWTHHpmEdEZBFEcx-GCRZkjWbZ9m8MxZCESQqCBmwlC4QAZg16CSL5lUBUFpWhT2f5jP2CTLtIIpVAlVQ6JoWRCpsVhZEsGU2Lkr4GaqGqcGAdGcTxfEJr8A3JuFqYDggljTNoY7SpsLjIpUCLuiK6jpPUyi6C6a21pIG1bTtZIEGZQkiUde6nQk4qlNCAo8nIshuPkSkCqUGgZkismyV9BK-dtZCquqWolSFIO-sdQ3iQwrJlGkehuq4eYpVyt4+jymQKUi1pYx0OM7QAohAfFA1RYXkwemjyOyY75uLrKgozajM3U4qzDYkLiFzdYEW8nnEb1xOwE5LluTgHneZ1flVYFwXA-qpNg8NiAaZdY4lMoTj1JOSl6BYCkympOhmDkni5R+ipazrxV6zbhs4K57leT5Fs9dbFl0D+honQ7CBYtsdqgos1guBp5QIi4sjsmktibKocgChrnTh7rKfCQbdUNZITWte15vdc2Uep6DYkHmBWz7Dkd7pIusIpRoMz1MK4olO46shzW2G4YVpnN9RFB4bgMBfGRJAkFRRPAyLAHD6oEuaGNai5pUd-wkpakihpJTRdi0hpHyXjoTgqAIBwEEPpWsGdRaRVEAsC0lMrQ2g0PaR00x5zmB9HYSo1QSj1yVBAcBl9IHFAtHma0qR6iemlNBQoHppgKVcJWDY+wzS6WaKHDosYmzEQOngPBEUzqzChtXLMdRaizSUtQ1EdC1IlHSPDbBG5Gzblwb2TOgFF4WmyvyZQd1tCOnUHPCa9h3B2HdPXAqJlipCxbjw8GiBihVBkEodIGgtDLkXI6VwVgKH7DHJoJcpiN7mMjJY6itEGJMRYjgNi3BrFZ2KGydS71kRmGSGoIUGxJDuFSN-F6lRNj+OMkVIJ28rJJ2qlAGJ4lpBLHBBKe+H0C78iFM4bYThqh5GrtFZhGFWGBh5hUsWmRwT33PDXLE0JHqLn0Z6bIGkMw4lXmuTW7wI6Rn7lY5RECzqpEmW4H0aQBSLGXLIR6WQZw2G-r7HkCk0IsLXvlAJhSz5lVjnRZ43AAr4AcP0yKxRqgOMYc41xhYlIchFNUWpLi0hcn2H-DwQA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QGED2BbdBDAdhABAEJYBOAxMgDaqxgDaADALqKgAONAlgC6eo6sQAD0QBaAJwA6AGwAmAKwBmBoukAWafIAcDcSoA0IAJ6JZDaZIDs8hgzV6AjA61a1DWQF8PhtJlwFiciowUkYWJBAOWB4+AQiRBFF5CwdpcVkHS1lpVyU5QxNEh1lFGTUsrUUtOQd5SwZLLx8MbDwiUkkqGkgyAHk2MBwwwSiY-kEEswdJNWcNbPFLNMr5AsRFWUtJcVSdRR2VVMUmkF9WgI6u2ggyADFONv98WkowAGNufDeW-2GI0d443iiHESkktUUG1klTsSi0awQDgYWhmqkWjnUslBWhOZyegU61GuZAAghACN8-HhYH92FxAXFQAlRA5FpJ5FjFPYtNDpIpLOkEW4GNs4eJxJoGvJxOVcT82gSrj0AEpgdCoABuYC+8ogNOYI3psQmYlkGUkU2slhc6mkmUUCIyKLc4i0lkU8iUyjUHLlVIuJEkAGUwK8Pg8oDr-WQQ2HPpTzrTIkagUzEDkLHZkQK1CUtKCHAiNlsdjkVAdFEc-ed2oGAOJYbgACzAJAj+FIUAAruhBtxYGQACJwUPveO6pMA43AhA5UqWXOzBjS-nOR3LySqXNODTyZwONTV-GXXXPUcfHqTlOM4TrSublb5-lLewlIVySRaOrmGw-jLSI8FRPf0zzjS8HHCOlogZE1ERUEUSgPa05yQ1ZjEQeZP2-VwDzUN1zEabxTlPAkG2bVt207Hs+wHZAm1wGAvi7EgSD7DsSG7XscG4K9oOnNNEVUeQZGSOxc0qaQ7HhdDBJFeRc35extGkNI+UAgNJDIls2xwSMqK4-tJBJAB3LAYl0-AHjYLtuBjLsACN0B4djOL7XixhvBIDxUT8qj5VIkTwtQHRk8oUQcD15LMXQclcdTa00xttMojjqO42BJAANSwShOAgRsIzICB+DASQHg1VAAGtSo1HK8sbMASVSgz3JgmdMnKGYzRlbIdGXA8EX8zd3RsTY9yyY4iLxID6ySiiLP0misrq-LeF0shWxIVBAzYShGwAM229BJFq3LVsa5q3INf5r1gg9JIfXqqh0TQsiFTYrCyJZRpsXJ4oJVUNU4MBjLsxznITX5rqgjzYMsaZtGXaVNhcZFKgRd0RXUdJ6mUXQXX+jpAeB0GyQIRbuNa-jbwQcVSmhAUeTkWQ3HyGSBVKDQMyRAKAsJwNiZBshVXVLUXLSnjoeTPjUxpnmpFtcVs1cPNBq5T8fR5DrKwaHEppIomwCBoWAFEIGcinJcg6XYZnTRhJsbQJU9VlQTVtQNbqcVZhsSFxH5zoWzeSr2ya1z0qKkqypwCrqpOlaGrDiX9WtqdZYSeSEeXEplCceo1xkvQLGCmUIp0Mwck8fWQMVIOQ4spODIHYqcFK8qqpqhPuAu8P+zoCDDRlzzTCkCVWWlSxrBceTygRFxZHZNJbE2VQ5AFAO6PeevI0bmiNpY7bJF2g6jvjs7E8u9KqfTxAkK2fZYuRvdYUGjQZnqYVxRKdx-ZOHBUAgHAQQ00AyD1tgJUQCwLQMEyHUG0Gh7SOmmDuGB6gOTyVBMkDeRJIBgLahA4oFo8zWlSPUT00o0KFA9NMYKrhKwbH2GaQ81cawEljGOdskM8B4OpgkWY9MV5ZjqLUN6MlqGojoRFEo6QWYb1PC8McuCbpD1gosLYrhkTZCxNIawhYxEfW0HhCKKgzT8lBAHLS809KX37Dwm+iIWZSEinjTRy51BFnvNofM7hGZfgXBYuaOlrG9wyiZMya1IxWRsnY4eDi2TONsK45IaghQbEkO4VIKlsaVE2AE8iQTxZN2WufCJMS7o6JSBKNQLp7CT35EKZw2wnDVDyCvBczDmg10NsbYyZS7aZHBNU58q8sTQgxnud+kVsjyQzHrTprDLh11DjY+AyjwFy00DQ2EaQBSLAPLIDGWRNw2BUiXHkwVCJeCAA */
     context: {
       commands: [] as Command[],
       selectedCommand: undefined as Command | undefined,
@@ -109,17 +109,6 @@ export const commandBarMachine = createMachine(
             ],
           },
         ],
-
-        on: {
-          'Deselect command': {
-            target: 'Selecting command',
-            actions: [
-              assign({
-                selectedCommand: (_c, _e) => undefined,
-              }),
-            ],
-          },
-        },
       },
 
       'Gathering arguments': {
@@ -159,8 +148,6 @@ export const commandBarMachine = createMachine(
               ],
             },
           },
-
-          'new state 1': {},
         },
 
         initial: 'Awaiting input',
@@ -170,6 +157,15 @@ export const commandBarMachine = createMachine(
             target: 'Gathering arguments',
             internal: true,
             actions: ['Set current argument'],
+          },
+
+          'Deselect command': {
+            target: 'Selecting command',
+            actions: [
+              assign({
+                selectedCommand: (_c, _e) => undefined,
+              }),
+            ],
           },
         },
       },
@@ -298,7 +294,6 @@ export const commandBarMachine = createMachine(
   {
     actions: {
       'Execute command': (context, event) => {
-        console.log('Executing command', context, event.type)
         if (
           event.type !== 'Submit command' &&
           event.type !== 'done.invoke.validateArguments'
@@ -383,16 +378,11 @@ export const commandBarMachine = createMachine(
       },
       'Validate all arguments': (context, _) => {
         return new Promise((resolve, reject) => {
-          console.log(
-            'validating context.argumentsToSubmit',
-            context.argumentsToSubmit
-          )
           for (const [argName, arg] of Object.entries(
             context.argumentsToSubmit
           )) {
             let argConfig = context.selectedCommand!.args![argName]
 
-            console.log({ argName, arg, argConfig })
             if (
               typeof arg !== typeof argConfig.payload &&
               typeof arg !== typeof argConfig.defaultValue &&
@@ -418,8 +408,6 @@ export const commandBarMachine = createMachine(
               })
             }
           }
-
-          console.log('...and we are good to go')
 
           return resolve(context.argumentsToSubmit)
         })
