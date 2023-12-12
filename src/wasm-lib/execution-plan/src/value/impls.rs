@@ -1,21 +1,21 @@
 use kittycad_modeling_cmds::{id::ModelingCmdId, shared::Point3d, MovePathPen};
 use uuid::Uuid;
 
-use crate::{Address, ExecutionError, Value};
+use crate::{Address, ExecutionError, Primitive};
 
-use super::Composite;
+use super::Value;
 
-impl<T> Composite for kittycad_modeling_cmds::shared::Point3d<T>
+impl<T> Value for kittycad_modeling_cmds::shared::Point3d<T>
 where
-    Value: From<T>,
-    T: TryFrom<Value, Error = ExecutionError>,
+    Primitive: From<T>,
+    T: TryFrom<Primitive, Error = ExecutionError>,
 {
-    fn into_parts(self) -> Vec<Value> {
+    fn into_parts(self) -> Vec<Primitive> {
         let points = [self.x, self.y, self.z];
         points.into_iter().map(|component| component.into()).collect()
     }
 
-    fn from_parts(values: &[Option<Value>]) -> Result<Self, ExecutionError> {
+    fn from_parts(values: &[Option<Primitive>]) -> Result<Self, ExecutionError> {
         let err = ExecutionError::MemoryWrongSize { expected: 3 };
         let [x, y, z] = [0, 1, 2].map(|n| values.get(n).ok_or(err.clone()));
         let x = x?.to_owned().ok_or(err.clone())?.try_into()?;
@@ -28,17 +28,17 @@ where
 const START_PATH: &str = "StartPath";
 const MOVE_PATH_PEN: &str = "MovePathPen";
 
-impl Composite for MovePathPen {
-    fn into_parts(self) -> Vec<Value> {
+impl Value for MovePathPen {
+    fn into_parts(self) -> Vec<Primitive> {
         let MovePathPen { path, to } = self;
         let to = to.into_parts();
         let mut vals = Vec::with_capacity(1 + to.len());
-        vals.push(Value::Uuid(path.into()));
+        vals.push(Primitive::Uuid(path.into()));
         vals.extend(to);
         vals
     }
 
-    fn from_parts(values: &[Option<Value>]) -> Result<Self, ExecutionError> {
+    fn from_parts(values: &[Option<Primitive>]) -> Result<Self, ExecutionError> {
         let path = get_some(values, 0)?;
         let path = Uuid::try_from(path)?;
         let path = ModelingCmdId::from(path);
@@ -51,14 +51,14 @@ impl Composite for MovePathPen {
 /// Memory layout for modeling commands:
 /// Field 0 is the command's name.
 /// Fields 1 onwards are the command's fields.
-impl Composite for kittycad_modeling_cmds::ModelingCmd {
-    fn into_parts(self) -> Vec<Value> {
+impl Value for kittycad_modeling_cmds::ModelingCmd {
+    fn into_parts(self) -> Vec<Primitive> {
         let (endpoint_name, params) = match self {
             kittycad_modeling_cmds::ModelingCmd::StartPath => (START_PATH, vec![]),
             kittycad_modeling_cmds::ModelingCmd::MovePathPen(MovePathPen { path, to }) => {
                 let to = to.into_parts();
                 let mut vals = Vec::with_capacity(1 + to.len());
-                vals.push(Value::Uuid(path.into()));
+                vals.push(Primitive::Uuid(path.into()));
                 vals.extend(to);
                 (MOVE_PATH_PEN, vals)
             }
@@ -70,7 +70,7 @@ impl Composite for kittycad_modeling_cmds::ModelingCmd {
         out
     }
 
-    fn from_parts(values: &[Option<Value>]) -> Result<Self, ExecutionError> {
+    fn from_parts(values: &[Option<Primitive>]) -> Result<Self, ExecutionError> {
         // Check the array has an element at index 0
         let first_memory = values
             .get(0)
@@ -90,7 +90,7 @@ impl Composite for kittycad_modeling_cmds::ModelingCmd {
     }
 }
 
-fn get_some(values: &[Option<Value>], i: usize) -> Result<Value, ExecutionError> {
+fn get_some(values: &[Option<Primitive>], i: usize) -> Result<Primitive, ExecutionError> {
     let addr = Address(0); // TODO: pass the `start` addr in
     let v = values.get(i).ok_or(ExecutionError::MemoryEmpty { addr })?.to_owned();
     let v = v.ok_or(ExecutionError::MemoryEmpty { addr })?.to_owned();

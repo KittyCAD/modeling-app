@@ -1,4 +1,4 @@
-use crate::value::{NumericValue, Value};
+use crate::primitive::{NumericPrimitive, Primitive};
 use crate::{ExecutionError, Memory, Operand, Operation};
 use serde::{Deserialize, Serialize};
 
@@ -20,14 +20,20 @@ macro_rules! arithmetic_body {
             $arith.operand1.eval(&$mem)?.clone(),
         ) {
             // If both operands are numeric, then do the arithmetic operation.
-            (Value::NumericValue(x), Value::NumericValue(y)) => {
+            (Primitive::NumericValue(x), Primitive::NumericValue(y)) => {
                 let num = match (x, y) {
-                    (NumericValue::Integer(x), NumericValue::Integer(y)) => NumericValue::Integer(x.$method(y)),
-                    (NumericValue::Integer(x), NumericValue::Float(y)) => NumericValue::Float((x as f64).$method(y)),
-                    (NumericValue::Float(x), NumericValue::Integer(y)) => NumericValue::Float(x.$method(y as f64)),
-                    (NumericValue::Float(x), NumericValue::Float(y)) => NumericValue::Float(x.$method(y)),
+                    (NumericPrimitive::Integer(x), NumericPrimitive::Integer(y)) => {
+                        NumericPrimitive::Integer(x.$method(y))
+                    }
+                    (NumericPrimitive::Integer(x), NumericPrimitive::Float(y)) => {
+                        NumericPrimitive::Float((x as f64).$method(y))
+                    }
+                    (NumericPrimitive::Float(x), NumericPrimitive::Integer(y)) => {
+                        NumericPrimitive::Float(x.$method(y as f64))
+                    }
+                    (NumericPrimitive::Float(x), NumericPrimitive::Float(y)) => NumericPrimitive::Float(x.$method(y)),
                 };
-                Ok(Value::NumericValue(num))
+                Ok(Primitive::NumericValue(num))
             }
             // This operation can only be done on numeric types.
             _ => Err(ExecutionError::CannotApplyOperation {
@@ -43,7 +49,7 @@ macro_rules! arithmetic_body {
 impl Arithmetic {
     /// Calculate the the arithmetic equation.
     /// May read values from the given memory.
-    pub fn calculate(self, mem: &Memory) -> Result<Value, ExecutionError> {
+    pub fn calculate(self, mem: &Memory) -> Result<Primitive, ExecutionError> {
         use std::ops::{Add, Div, Mul, Sub};
         match self.operation {
             Operation::Add => {
