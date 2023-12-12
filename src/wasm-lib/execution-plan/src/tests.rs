@@ -1,4 +1,5 @@
 use kittycad_modeling_cmds::{id::ModelingCmdId, shared::Point3d, ModelingCmd, MovePathPen};
+use uuid::Uuid;
 
 use super::*;
 

@@ -6,14 +6,17 @@
 //! You can think of it as a domain-specific language for making KittyCAD API calls and using
 //! the results to make other API calls.
 
+use self::arithmetic::Arithmetic;
+use self::value::Value;
 use composite::Composite;
 use serde::{Deserialize, Serialize};
 use std::fmt;
-use uuid::Uuid;
 
+mod arithmetic;
 mod composite;
 #[cfg(test)]
 mod tests;
+mod value;
 
 /// KCEP's program memory. A flat, linear list of values.
 #[derive(Debug)]
@@ -74,89 +77,6 @@ impl Memory {
     }
 }
 
-/// A value stored in KCEP program memory.
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-pub enum Value {
-    String(String),
-    NumericValue(NumericValue),
-    Uuid(Uuid),
-}
-
-impl From<Uuid> for Value {
-    fn from(u: Uuid) -> Self {
-        Self::Uuid(u)
-    }
-}
-
-impl From<String> for Value {
-    fn from(value: String) -> Self {
-        Self::String(value)
-    }
-}
-
-impl From<f64> for Value {
-    fn from(value: f64) -> Self {
-        Self::NumericValue(NumericValue::Float(value))
-    }
-}
-
-impl TryFrom<Value> for String {
-    type Error = ExecutionError;
-
-    fn try_from(value: Value) -> Result<Self, Self::Error> {
-        if let Value::String(s) = value {
-            Ok(s)
-        } else {
-            Err(ExecutionError::MemoryWrongType {
-                expected: "string",
-                actual: format!("{value:?}"),
-            })
-        }
-    }
-}
-
-impl TryFrom<Value> for Uuid {
-    type Error = ExecutionError;
-
-    fn try_from(value: Value) -> Result<Self, Self::Error> {
-        if let Value::Uuid(u) = value {
-            Ok(u)
-        } else {
-            Err(ExecutionError::MemoryWrongType {
-                expected: "uuid",
-                actual: format!("{value:?}"),
-            })
-        }
-    }
-}
-impl TryFrom<Value> for f64 {
-    type Error = ExecutionError;
-
-    fn try_from(value: Value) -> Result<Self, Self::Error> {
-        if let Value::NumericValue(NumericValue::Float(x)) = value {
-            Ok(x)
-        } else {
-            Err(ExecutionError::MemoryWrongType {
-                expected: "float",
-                actual: format!("{value:?}"),
-            })
-        }
-    }
-}
-
-#[cfg(test)]
-impl From<usize> for Value {
-    fn from(value: usize) -> Self {
-        Self::NumericValue(NumericValue::Integer(value))
-    }
-}
-
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
-pub enum NumericValue {
-    Integer(usize),
-    Float(f64),
-}
-
 /// One step of the execution plan.
 #[derive(Serialize, Deserialize)]
 pub enum Instruction {
@@ -184,66 +104,6 @@ pub enum Instruction {
         /// Write the output to this memory address.
         destination: Address,
     },
-}
-
-/// Instruction to perform arithmetic on values in memory.
-#[derive(Deserialize, Serialize)]
-pub struct Arithmetic {
-    /// Apply this operation
-    pub operation: Operation,
-    /// First operand for the operation
-    pub operand0: Operand,
-    /// Second operand for the operation
-    pub operand1: Operand,
-}
-
-macro_rules! arithmetic_body {
-    ($arith:ident, $mem:ident, $method:ident) => {
-        match (
-            $arith.operand0.eval(&$mem)?.clone(),
-            $arith.operand1.eval(&$mem)?.clone(),
-        ) {
-            // If both operands are numeric, then do the arithmetic operation.
-            (Value::NumericValue(x), Value::NumericValue(y)) => {
-                let num = match (x, y) {
-                    (NumericValue::Integer(x), NumericValue::Integer(y)) => NumericValue::Integer(x.$method(y)),
-                    (NumericValue::Integer(x), NumericValue::Float(y)) => NumericValue::Float((x as f64).$method(y)),
-                    (NumericValue::Float(x), NumericValue::Integer(y)) => NumericValue::Float(x.$method(y as f64)),
-                    (NumericValue::Float(x), NumericValue::Float(y)) => NumericValue::Float(x.$method(y)),
-                };
-                Ok(Value::NumericValue(num))
-            }
-            // This operation can only be done on numeric types.
-            _ => Err(ExecutionError::CannotApplyOperation {
-                op: $arith.operation,
-                operands: vec![
-                    $arith.operand0.eval(&$mem)?.clone().to_owned(),
-                    $arith.operand1.eval(&$mem)?.clone().to_owned(),
-                ],
-            }),
-        }
-    };
-}
-impl Arithmetic {
-    /// Calculate the the arithmetic equation.
-    /// May read values from the given memory.
-    fn calculate(self, mem: &Memory) -> Result<Value, ExecutionError> {
-        use std::ops::{Add, Div, Mul, Sub};
-        match self.operation {
-            Operation::Add => {
-                arithmetic_body!(self, mem, add)
-            }
-            Operation::Mul => {
-                arithmetic_body!(self, mem, mul)
-            }
-            Operation::Sub => {
-                arithmetic_body!(self, mem, sub)
-            }
-            Operation::Div => {
-                arithmetic_body!(self, mem, div)
-            }
-        }
-    }
 }
 
 /// Operations that can be applied to values in memory.
