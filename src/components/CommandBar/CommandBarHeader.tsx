@@ -60,7 +60,10 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
       <>
         <div className="px-4 text-sm flex gap-4 items-start">
           <div className="flex flex-1 flex-wrap gap-2">
-            <p data-command-name={selectedCommand?.name} className="pr-4 flex gap-2 items-center">
+            <p
+              data-command-name={selectedCommand?.name}
+              className="pr-4 flex gap-2 items-center"
+            >
               {selectedCommand &&
                 'icon' in selectedCommand &&
                 selectedCommand.icon && (
