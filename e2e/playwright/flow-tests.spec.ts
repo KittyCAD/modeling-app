@@ -643,7 +643,9 @@ test('Command bar works and can change a setting', async ({ page }) => {
   let cmdSearchBar = page.getByPlaceholder('Search commands')
 
   // First try opening the command bar and closing it
-  await page.getByRole('button', { name: '⌘K' }).click()
+  // It has a different label on mac and windows/linux, "Meta+K" and "Ctrl+/" respectively,
+  // But both should work on Linux which CI runs on
+  await page.getByRole('button', { name: 'Ctrl+/' }).click()
   await expect(cmdSearchBar).toBeVisible()
   await page.keyboard.press('Escape')
   await expect(cmdSearchBar).not.toBeVisible()
