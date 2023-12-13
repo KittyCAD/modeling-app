@@ -38,11 +38,17 @@ import {
 import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
 import { pathMapToSelections } from 'lang/util'
 import { useStore } from 'useStore'
-import { handleSelectionBatch, handleSelectionWithShift } from 'lib/selections'
+import {
+  canExtrudeSelection,
+  handleSelectionBatch,
+  handleSelectionWithShift,
+  isSelectionLastLine,
+  isSketchPipe,
+  nodeHasExtrude,
+} from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
 import useStateMachineCommands from 'hooks/useStateMachineCommands'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { modelingMachineConfig } from 'lib/commandBarConfigs/modelingCommandConfig'
 
 type MachineContext<T extends AnyStateMachine> = {
@@ -390,29 +396,12 @@ export const ModelingMachineProvider = ({
           // A user can begin extruding if they either have 1+ faces selected or nothing selected
           // TODO: I believe this guard only allows for extruding a single face at a time
           if (selectionRanges.codeBasedSelections.length < 1) return false
-          const isSketchPipe = isCursorInSketchCommandRange(
-            engineCommandManager.artifactMap,
-            selectionRanges
-          )
-          const isSelectionLastLine =
-            selectionRanges.codeBasedSelections[0].range[1] === code.length
-          if (isSelectionLastLine) return true
+          const isPipe = isSketchPipe(selectionRanges)
 
-          if (!isSketchPipe) return false
+          if (isSelectionLastLine(selectionRanges, code)) return true
+          if (!isPipe) return false
 
-          const common = {
-            selection: selectionRanges.codeBasedSelections[0],
-            ast: kclManager.ast,
-          }
-          const hasClose = doesPipeHaveCallExp({
-            calleeName: 'close',
-            ...common,
-          })
-          const hasExtrude = doesPipeHaveCallExp({
-            calleeName: 'extrude',
-            ...common,
-          })
-          return !!isSketchPipe && hasClose && !hasExtrude
+          return canExtrudeSelection(selectionRanges)
         },
         'Selection is one face': ({ selectionRanges }) => {
           return !!isCursorInSketchCommandRange(

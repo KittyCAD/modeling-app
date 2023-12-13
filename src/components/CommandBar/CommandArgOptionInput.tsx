@@ -17,13 +17,14 @@ function CommandArgOptionInput({
   onSubmit: (data: unknown) => void
   placeholder?: string
 }) {
+  const { commandBarSend, commandBarState } = useCommandsContext()
   const inputRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
   const [argValue, setArgValue] = useState<(typeof options)[number]['value']>(
     options.find((o) => 'isCurrent' in o && o.isCurrent)?.value ||
+      commandBarState.context.argumentsToSubmit[argName] ||
       options[0].value
   )
-  const { commandBarSend } = useCommandsContext()
   const [query, setQuery] = useState('')
   const [filteredOptions, setFilteredOptions] = useState<typeof options>()
 

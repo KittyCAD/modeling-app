@@ -2,7 +2,7 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CustomIcon } from '../CustomIcon'
 import React, { useState } from 'react'
 import { ActionButton } from '../ActionButton'
-import { Selections } from 'lib/selections'
+import { Selections, getSelectionTypeDisplayText } from 'lib/selections'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
@@ -12,6 +12,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
   } = commandBarState
   const isReviewing = commandBarState.matches('Review')
   const [showShortcuts, setShowShortcuts] = useState(false)
+
   useHotkeys(
     'alt',
     () => setShowShortcuts(true),
@@ -92,15 +93,9 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                 >
                   {argumentsToSubmit[argName] ? (
                     arg.inputType === 'selection' ? (
-                      `${
-                        (argumentsToSubmit[argName] as Selections)
-                          .codeBasedSelections?.length || '0'
-                      } entit${
-                        (argumentsToSubmit[argName] as Selections)
-                          .codeBasedSelections.length === 1
-                          ? 'y'
-                          : 'ies'
-                      }`
+                      getSelectionTypeDisplayText(
+                        argumentsToSubmit[argName] as Selections
+                      )
                     ) : typeof argumentsToSubmit[argName] === 'object' ? (
                       JSON.stringify(argumentsToSubmit[argName])
                     ) : (
@@ -108,12 +103,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                     )
                   ) : arg.payload ? (
                     arg.inputType === 'selection' ? (
-                      `${arg.payload.codeBasedSelections?.length || '0'} entit${
-                        (argumentsToSubmit[argName] as Selections)
-                          .codeBasedSelections.length === 1
-                          ? 'y'
-                          : 'ies'
-                      }`
+                      getSelectionTypeDisplayText(arg.payload as Selections)
                     ) : typeof arg.payload === 'object' ? (
                       JSON.stringify(arg.payload)
                     ) : (
@@ -132,31 +122,49 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
               )
             )}
           </div>
-          <ActionButton
-            Element="button"
-            autoFocus={isReviewing}
-            type="submit"
-            form={isReviewing ? 'review-form' : 'arg-form'}
-            className="w-fit !p-0 rounded-sm"
-            icon={{
-              icon: isReviewing ? 'checkmark' : 'arrowRight',
-              bgClassName: `p-1 rounded-sm ${
-                isReviewing ? '!bg-chalkboard-100 dark:!bg-chalkboard-10' : ''
-              }`,
-              iconClassName: isReviewing
-                ? '!text-chalkboard-10 dark:!text-chalkboard-100'
-                : '',
-            }}
-          >
-            <span className="sr-only">
-              {isReviewing ? 'Submit command' : 'Continue'}
-            </span>
-          </ActionButton>
+          {isReviewing ? <ReviewingButton /> : <GatheringArgsButton />}
         </div>
         <div className="block w-full my-2 h-[1px] bg-chalkboard-20 dark:bg-chalkboard-80" />
         {children}
       </>
     )
+  )
+}
+
+function ReviewingButton() {
+  return (
+    <ActionButton
+      Element="button"
+      autoFocus
+      type="submit"
+      form="review-form"
+      className="w-fit !p-0 rounded-sm border !border-chalkboard-100 dark:!border-energy-10 hover:shadow"
+      icon={{
+        icon: 'checkmark',
+        bgClassName:
+          'p-1 rounded-sm !bg-chalkboard-100 hover:!bg-chalkboard-110 dark:!bg-energy-20 dark:hover:!bg-energy-10',
+        iconClassName: '!text-energy-10 dark:!text-chalkboard-100',
+      }}
+    >
+      <span className="sr-only">Submit command</span>
+    </ActionButton>
+  )
+}
+
+function GatheringArgsButton() {
+  return (
+    <ActionButton
+      Element="button"
+      type="submit"
+      form="arg-form"
+      className="w-fit !p-0 rounded-sm"
+      icon={{
+        icon: 'arrowRight',
+        bgClassName: 'p-1 rounded-sm',
+      }}
+    >
+      <span className="sr-only">Continue</span>
+    </ActionButton>
   )
 }
 

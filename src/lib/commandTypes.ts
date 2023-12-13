@@ -1,12 +1,12 @@
 import { CustomIconName } from 'components/CustomIcon'
 import { AllMachines } from 'hooks/useStateMachineCommands'
 import {
-  Actor,
   AnyStateMachine,
   ContextFrom,
   EventFrom,
   InterpreterFrom,
 } from 'xstate'
+import { Selection } from './selections'
 
 type Icon = CustomIconName
 const PLATFORMS = ['both', 'web', 'desktop'] as const
@@ -93,6 +93,7 @@ export type CommandArgumentConfig<
         }
       | {
           inputType: Extract<CommandInputType, 'selection'>
+          selectionTypes: Selection['type'][]
           multiple: boolean
         }
       | { inputType: Exclude<CommandInputType, 'options' | 'selection'> }
@@ -114,6 +115,7 @@ export type CommandArgument<
         }
       | {
           inputType: Extract<CommandInputType, 'selection'>
+          selectionTypes: Selection['type'][]
           actor: InterpreterFrom<T>
           multiple: boolean
         }

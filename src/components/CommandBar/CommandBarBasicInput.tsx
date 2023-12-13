@@ -15,7 +15,7 @@ function CommandBarBasicInput({
   stepBack: () => void
   onSubmit: (event: unknown) => void
 }) {
-  const { commandBarSend } = useCommandsContext()
+  const { commandBarSend, commandBarState } = useCommandsContext()
   useHotkeys('mod + k, mod + /', () => commandBarSend({ type: 'Close' }))
   const inputRef = useRef<HTMLInputElement>(null)
   const inputType = arg.inputType === 'number' ? 'number' : 'text'
@@ -43,9 +43,14 @@ function CommandBarBasicInput({
           name={inputType}
           ref={inputRef}
           type={inputType}
+          required
           className="flex-grow px-2 py-1 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80 !bg-transparent focus:outline-none"
           placeholder="Enter a value"
-          defaultValue={arg.defaultValue as string}
+          defaultValue={
+            (commandBarState.context.argumentsToSubmit[arg.name] as
+              | string
+              | undefined) || (arg.defaultValue as string)
+          }
           onKeyDown={(event) => {
             if (event.key === 'Backspace' && !event.currentTarget.value) {
               stepBack()

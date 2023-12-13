@@ -1,8 +1,15 @@
 import { useSelector } from '@xstate/react'
 import { useCommandsContext } from 'hooks/useCommandsContext'
+import { useKclContext } from 'lang/KclSinglton'
 import { CommandArgument } from 'lib/commandTypes'
+import {
+  ResolvedSelectionType,
+  canSubmitSelectionArg,
+  getSelectionType,
+  getSelectionTypeDisplayText,
+} from 'lib/selections'
 import { modelingMachine } from 'machines/modelingMachine'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { StateFrom } from 'xstate'
 
@@ -18,9 +25,21 @@ function CommandBarSelectionInput({
   stepBack: () => void
   onSubmit: (data: unknown) => void
 }) {
+  const { code } = useKclContext()
   const inputRef = useRef<HTMLInputElement>(null)
   const { commandBarSend } = useCommandsContext()
+  const [hasSubmitted, setHasSubmitted] = useState(false)
   const selection = useSelector(arg.actor, selectionSelector)
+  const [selectionsByType, setSelectionsByType] = useState<
+    'none' | ResolvedSelectionType[]
+  >(
+    selection.codeBasedSelections[0]?.range[1] === code.length
+      ? 'none'
+      : getSelectionType(selection)
+  )
+  const [canSubmitSelection, setCanSubmitSelection] = useState<boolean>(
+    canSubmitSelectionArg(selectionsByType, arg)
+  )
 
   useHotkeys('tab', () => onSubmit(selection), {
     enableOnFormTags: true,
@@ -32,21 +51,49 @@ function CommandBarSelectionInput({
     inputRef.current?.focus()
   }, [selection, inputRef])
 
+  useEffect(() => {
+    setSelectionsByType(
+      selection.codeBasedSelections[0]?.range[1] === code.length
+        ? 'none'
+        : getSelectionType(selection)
+    )
+  }, [selection])
+
+  useEffect(() => {
+    setCanSubmitSelection(canSubmitSelectionArg(selectionsByType, arg))
+  }, [selectionsByType, arg])
+
+  function handleChange() {
+    inputRef.current?.focus()
+  }
+
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+
+    if (!canSubmitSelection) {
+      setHasSubmitted(true)
+      return
+    }
+
     onSubmit(selection)
   }
 
   return (
     <form id="arg-form" onSubmit={handleSubmit}>
-      <label className="relative flex items-center mx-4 my-4">
-        {selection.codeBasedSelections.length >= 1
-          ? `1 face selected: ${JSON.stringify(selection.codeBasedSelections)}`
+      <label
+        className={
+          'relative flex items-center mx-4 my-4 ' +
+          (!hasSubmitted || canSubmitSelection || 'text-destroy-50')
+        }
+      >
+        {canSubmitSelection
+          ? getSelectionTypeDisplayText(selection) + ' selected'
           : 'Please select a face'}
         <input
           id="selection"
           name="selection"
           ref={inputRef}
+          required
           placeholder="Select an entity with your mouse"
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           onKeyDown={(event) => {
@@ -56,7 +103,7 @@ function CommandBarSelectionInput({
               commandBarSend({ type: 'Close' })
             }
           }}
-          onChange={() => inputRef.current?.focus()}
+          onChange={handleChange}
           value={JSON.stringify(selection || {})}
         />
       </label>

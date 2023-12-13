@@ -60,7 +60,6 @@ export function createMachineCommand<
     icon,
     needsReview: commandConfig.needsReview || false,
     onSubmit: (data?: S[typeof type]) => {
-      console.log('sending', type, data)
       if (data !== undefined && data !== null) {
         send(type, { data })
       } else {
@@ -147,6 +146,7 @@ function buildCommandArgument<
       inputType: arg.inputType,
       ...baseCommandArgument,
       multiple: arg.multiple,
+      selectionTypes: arg.selectionTypes,
       actor,
     } satisfies CommandArgument<O, T> & { inputType: 'selection' }
   } else {
