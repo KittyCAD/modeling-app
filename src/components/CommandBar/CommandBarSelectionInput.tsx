@@ -88,7 +88,7 @@ function CommandBarSelectionInput({
       >
         {canSubmitSelection
           ? getSelectionTypeDisplayText(selection) + ' selected'
-          : 'Please select a face'}
+          : `Please select ${arg.multiple ? 'one or more faces' : 'one face'}`}
         <input
           id="selection"
           name="selection"

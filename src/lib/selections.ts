@@ -495,7 +495,7 @@ export function canSubmitSelectionArg(
       const foundIndex = argument.selectionTypes.findIndex((s) => s === type)
       return (
         foundIndex !== -1 &&
-        (argument.multiple ? count < 2 && count > 0 : count > 0)
+        (!argument.multiple ? count < 2 && count > 0 : count > 0)
       )
     })
   )
