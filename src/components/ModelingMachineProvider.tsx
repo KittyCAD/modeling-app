@@ -22,7 +22,6 @@ import {
   Program,
   PipeExpression,
   CallExpression,
-  VariableDeclarator,
 } from 'lang/wasm'
 import { getNodeFromPath } from 'lang/queryAst'
 import {
