@@ -24,7 +24,7 @@ export const PanelHeader = ({
 }: CollapsiblePanelProps) => {
   return (
     <summary className={styles.header}>
-      <div className="flex gap-2 align-center flex-1">
+      <div className="flex gap-2 items-center flex-1">
         <ActionIcon
           icon={icon}
           className="p-1"

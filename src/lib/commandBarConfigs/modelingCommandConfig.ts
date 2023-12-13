@@ -12,7 +12,7 @@ export const EXTRUSION_RESULTS = [
 export type ModelingCommandSchema = {
   Extrude: {
     selection: Selections // & { type: 'face' } would be cool to lock that down
-    result: (typeof EXTRUSION_RESULTS)[number]
+    // result: (typeof EXTRUSION_RESULTS)[number]
     distance: number
   }
 }
@@ -32,16 +32,16 @@ export const modelingMachineConfig: CommandSetConfig<
         multiple: false, // TODO: multiple selection
         required: true,
       },
-      result: {
-        inputType: 'options',
-        payload: 'add',
-        required: true,
-        options: EXTRUSION_RESULTS.map((r) => ({
-          name: r,
-          isCurrent: r === 'add',
-          value: r,
-        })),
-      },
+      // result: {
+      //   inputType: 'options',
+      //   payload: 'add',
+      //   required: true,
+      //   options: EXTRUSION_RESULTS.map((r) => ({
+      //     name: r,
+      //     isCurrent: r === 'add',
+      //     value: r,
+      //   })),
+      // },
       distance: {
         inputType: 'number',
         defaultValue: 5,

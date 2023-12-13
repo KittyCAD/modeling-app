@@ -700,20 +700,20 @@ test('Can extrude from the command bar', async ({ page, context }) => {
 
   // Search for extrude command and choose it
   await page.getByRole('option', { name: 'Extrude' }).click()
-  await expect(page.locator('#arg-form > label')).toContainText('selected')
+  await expect(page.locator('#arg-form > label')).toContainText(
+    'Please select one face'
+  )
   await expect(page.getByRole('button', { name: 'selection' })).toBeDisabled()
 
   // Click to select face and set distance
-  await page.getByText('|> startProfileAt([-6.95, 4.98], %)').click()
+  await page.getByText('|> line([25.1, 0.41], %)').click()
   await page.keyboard.press('Enter')
   await expect(page.getByRole('button', { name: 'distance' })).toBeDisabled()
   await page.keyboard.press('Enter')
 
   // Review step and argument hotkeys
-  await page.keyboard.press('1')
-  await expect(page.getByRole('button', { name: '1 entity' })).toBeDisabled()
-  await page.keyboard.press('Alt+2')
-  await expect(page.getByRole('button', { name: 'add' })).toBeDisabled()
+  await page.keyboard.press('2')
+  await expect(page.getByRole('button', { name: '5' })).toBeDisabled()
   await page.keyboard.press('Enter')
 
   // Check that the code was updated
