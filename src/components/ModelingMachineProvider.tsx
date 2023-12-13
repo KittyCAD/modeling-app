@@ -43,6 +43,7 @@ import { useStore } from 'useStore'
 import { handleSelectionBatch, handleSelectionWithShift } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
+import { Models } from '@kittycad/lib'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -198,11 +199,12 @@ export const ModelingMachineProvider = ({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
-            type: 'curve_get_control_points',
+            type: 'curve_get_end_points',
             curve_id: firstSegment.command_id,
           },
         })
-        const startPathCoord = firstSegCoords?.data?.data?.control_points[0]
+        const resp: Models['CurveGetEndPoints_type'] = firstSegCoords.data.data
+        const startPathCoord = resp.start
 
         const isClose = compareVec2Epsilon(
           [startPathCoord.x, startPathCoord.y],

@@ -92,7 +92,8 @@ export const Toolbar = () => {
               <ActionButton
                 Element="button"
                 onClick={() =>
-                  state.matches('Sketch.Line Tool')
+                  state.matches('Sketch.Line Tool') &&
+                  context.tool === 'sketch_line'
                     ? send('CancelSketch')
                     : send({ type: 'Equip line tool', data: 'sketch_line' })
                 }
@@ -113,7 +114,8 @@ export const Toolbar = () => {
               <ActionButton
                 Element="button"
                 onClick={() =>
-                  state.matches('Sketch.Line Tool')
+                  state.matches('Sketch.Line Tool') &&
+                  context.tool === 'sketch_tangential_arc'
                     ? send('CancelSketch')
                     : send({
                         type: 'Equip tangential arc tool2',

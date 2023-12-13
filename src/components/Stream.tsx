@@ -169,22 +169,46 @@ export const Stream = ({ className = '' }) => {
         type: 'mouse_click',
         window: { x, y },
       }
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       engineCommandManager.sendSceneCommand(command).then(async (resp) => {
         const entities_modified = resp?.data?.data?.entities_modified
         if (!entities_modified) return
         if (state.matches('Sketch.Line Tool.No Points')) {
+          engineCommandManager
+            .sendSceneCommand({
+              cmd_id: uuidv4(),
+              type: 'modeling_cmd_req',
+              cmd: {
+                type: 'path_get_vertex_uuids',
+                path_id: context.sketchEnginePathId,
+              },
+            })
+            .then((resp) => {
+              engineCommandManager
+                .sendSceneCommand({
+                  cmd_id: uuidv4(),
+                  type: 'modeling_cmd_req',
+                  cmd: {
+                    type: 'path_get_info',
+                    path_id: context.sketchEnginePathId,
+                  },
+                })
+                .then((resp) => {
+                  console.log('path info', resp)
+                })
+              console.log('no points, do we get the one vertex?', resp)
+            })
           send('Add point')
         } else if (state.matches('Sketch.Line Tool.Point Added')) {
           const curve = await engineCommandManager.sendSceneCommand({
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
             cmd: {
-              type: 'curve_get_control_points',
+              type: 'curve_get_end_points',
               curve_id: entities_modified[0],
             },
           })
-          const coords: Point2d[] = curve.data.data.control_points
+          const coords: Models['CurveGetEndPoints_type'] = curve.data.data
+
           // We need the normal for the plane we are on.
           const plane = await engineCommandManager.sendSceneCommand({
             type: 'modeling_cmd_req',
@@ -221,7 +245,7 @@ export const Stream = ({ className = '' }) => {
           send({
             type: 'Add point',
             data: {
-              coords,
+              coords: [coords.start, coords.end],
               axis: currentAxis,
               segmentId: entities_modified[0],
             },
@@ -271,7 +295,6 @@ export const Stream = ({ className = '' }) => {
         type: 'handle_mouse_drag_end',
         window: { x, y },
       }
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       engineCommandManager.sendSceneCommand(command).then(async () => {
         if (!context.sketchPathToNode) return
         getNodeFromPath<VariableDeclarator>(
