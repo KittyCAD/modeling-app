@@ -36,13 +36,19 @@ import { sep } from '@tauri-apps/api/path'
 const Home = () => {
   const { commands, setCommandBarOpen } = useCommandsContext()
   const navigate = useNavigate()
-  const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
+  const { projects: loadedProjects, newDefaultDirectory } = useLoaderData() as HomeLoaderData
   const {
     settings: {
       context: { defaultDirectory, defaultProjectName },
       send: sendToSettings,
     },
   } = useGlobalStateContext()
+  if (newDefaultDirectory) {
+    sendToSettings({
+      type: 'Set Default Directory',
+      data: { defaultDirectory: newDefaultDirectory },
+    })
+  }
 
   const [state, send] = useMachine(homeMachine, {
     context: {

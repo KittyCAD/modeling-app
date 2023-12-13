@@ -112,6 +112,7 @@ export type ProjectWithEntryPointMetadata = FileEntry & {
 }
 export type HomeLoaderData = {
   projects: ProjectWithEntryPointMetadata[]
+  newDefaultDirectory?: string
 }
 
 type CreateBrowserRouterArg = Parameters<typeof createBrowserRouter>[0]
@@ -259,6 +260,7 @@ const router = createBrowserRouter(
         const projectDir = await initializeProjectDirectory(
           persistedSettings.defaultDirectory || ''
         )
+        let newDefaultDirectory: string | undefined = undefined
         if (projectDir !== persistedSettings.defaultDirectory) {
           localStorage.setItem(
             SETTINGS_PERSIST_KEY,
@@ -267,6 +269,7 @@ const router = createBrowserRouter(
               defaultDirectory: projectDir,
             })
           )
+          newDefaultDirectory = projectDir
         }
         const projectsNoMeta = (await readDir(projectDir)).filter(
           isProjectDirectory
@@ -282,6 +285,7 @@ const router = createBrowserRouter(
 
         return {
           projects,
+          newDefaultDirectory,
         }
       },
       children: [
