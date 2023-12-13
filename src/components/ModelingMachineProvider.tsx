@@ -30,20 +30,27 @@ import {
   addNewSketchLn,
   compareVec2Epsilon,
 } from 'lang/std/sketch'
-import { kclManager } from 'lang/KclSinglton'
+import { kclManager, useKclContext } from 'lang/KclSinglton'
 import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
 import {
   angleBetweenInfo,
   applyConstraintAngleBetween,
 } from './Toolbar/SetAngleBetween'
 import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
-import { toast } from 'react-hot-toast'
 import { pathMapToSelections } from 'lang/util'
 import { useStore } from 'useStore'
-import { handleSelectionBatch, handleSelectionWithShift } from 'lib/selections'
+import {
+  canExtrudeSelection,
+  handleSelectionBatch,
+  handleSelectionWithShift,
+  isSelectionLastLine,
+  isSketchPipe,
+} from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
 import { Models } from '@kittycad/lib'
+import useStateMachineCommands from 'hooks/useStateMachineCommands'
+import { modelingMachineConfig } from 'lib/commandBarConfigs/modelingCommandConfig'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -61,6 +68,7 @@ export const ModelingMachineProvider = ({
   children: React.ReactNode
 }) => {
   const { auth } = useGlobalStateContext()
+  const { code } = useKclContext()
   const token = auth?.context?.token
   const streamRef = useRef<HTMLDivElement>(null)
   useSetupEngineManager(streamRef, token)
@@ -69,8 +77,6 @@ export const ModelingMachineProvider = ({
     isShiftDown: s.isShiftDown,
     editorView: s.editorView,
   }))
-
-  // const { commands } = useCommandsContext()
 
   // Settings machine setup
   // const retrievedSettings = useRef(
@@ -291,11 +297,12 @@ export const ModelingMachineProvider = ({
         'sketch exit execute': () => {
           kclManager.executeAst()
         },
-        'toast extrude failed': () => {
-          toast.error(
-            'Extrude failed, sketches need to be closed, or not already extruded'
-          )
-        },
+        // 'toast extrude failed': () => {
+        //   toast.error(
+        //     'Extrude failed, sketches need to be closed, or not already extruded'
+        //   )
+        // },
+        // 'set tool': () => {}, // TODO
         'Set selection': assign(({ selectionRanges }, event) => {
           if (event.type !== 'Set selection') return {} // this was needed for ts after adding 'Set selection' action to on done modal events
           const setSelections = event.data
@@ -419,6 +426,17 @@ export const ModelingMachineProvider = ({
         'Selection contains line': () => true,
         'Selection contains point': () => true,
         'Selection is not empty': () => true,
+        'has valid extrude selection': ({ selectionRanges }) => {
+          // A user can begin extruding if they either have 1+ faces selected or nothing selected
+          // TODO: I believe this guard only allows for extruding a single face at a time
+          if (selectionRanges.codeBasedSelections.length < 1) return false
+          const isPipe = isSketchPipe(selectionRanges)
+
+          if (isSelectionLastLine(selectionRanges, code)) return true
+          if (!isPipe) return false
+
+          return canExtrudeSelection(selectionRanges)
+        },
         'Selection is one face': ({ selectionRanges }) => {
           return !!isCursorInSketchCommandRange(
             engineCommandManager.artifactMap,
@@ -577,13 +595,17 @@ export const ModelingMachineProvider = ({
     })
   }, [modelingSend])
 
-  // useStateMachineCommands({
-  //   state: settingsState,
-  //   send: settingsSend,
-  //   commands,
-  //   owner: 'settings',
-  //   commandBarMeta: settingsCommandBarMeta,
-  // })
+  useStateMachineCommands({
+    machineId: 'modeling',
+    state: modelingState,
+    send: modelingSend,
+    actor: modelingActor,
+    commandBarConfig: modelingMachineConfig,
+    onCancel: () => {
+      console.log('firing onCancel!!')
+      modelingSend({ type: 'Cancel' })
+    },
+  })
 
   return (
     <ModelingMachineContext.Provider

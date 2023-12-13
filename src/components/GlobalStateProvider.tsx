@@ -1,19 +1,11 @@
 import { useMachine } from '@xstate/react'
 import { useNavigate } from 'react-router-dom'
 import { paths } from '../Router'
-import {
-  authCommandBarConfig,
-  authMachine,
-  TOKEN_PERSIST_KEY,
-} from '../machines/authMachine'
+import { authMachine, TOKEN_PERSIST_KEY } from '../machines/authMachine'
 import withBaseUrl from '../lib/withBaseURL'
 import React, { createContext, useEffect, useRef } from 'react'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
-import {
-  SETTINGS_PERSIST_KEY,
-  settingsCommandBarConfig,
-  settingsMachine,
-} from 'machines/settingsMachine'
+import { SETTINGS_PERSIST_KEY, settingsMachine } from 'machines/settingsMachine'
 import { toast } from 'react-hot-toast'
 import { setThemeClass, Themes } from 'lib/theme'
 import {
@@ -23,8 +15,9 @@ import {
   Prop,
   StateFrom,
 } from 'xstate'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { isTauri } from 'lib/isTauri'
+import { settingsCommandBarConfig } from 'lib/commandBarConfigs/settingsCommandConfig'
+import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -45,7 +38,6 @@ export const GlobalStateProvider = ({
   children: React.ReactNode
 }) => {
   const navigate = useNavigate()
-  const { commands } = useCommandsContext()
 
   // Settings machine setup
   const retrievedSettings = useRef(
@@ -81,10 +73,9 @@ export const GlobalStateProvider = ({
   })
 
   useStateMachineCommands({
+    machineId: 'settings',
     state: settingsState,
     send: settingsSend,
-    commands,
-    owner: 'settings',
     commandBarConfig: settingsCommandBarConfig,
   })
 
@@ -121,11 +112,10 @@ export const GlobalStateProvider = ({
   })
 
   useStateMachineCommands({
+    machineId: 'auth',
     state: authState,
     send: authSend,
-    commands,
     commandBarConfig: authCommandBarConfig,
-    owner: 'auth',
   })
 
   return (

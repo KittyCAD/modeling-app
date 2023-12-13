@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { getUtils } from './test-utils'
 import waitOn from 'wait-on'
 import { Themes } from '../../src/lib/theme'
+import { platform } from '@tauri-apps/api/os'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -643,7 +644,11 @@ test('Command bar works and can change a setting', async ({ page }) => {
   let cmdSearchBar = page.getByPlaceholder('Search commands')
 
   // First try opening the command bar and closing it
-  await page.getByRole('button', { name: '⌘K' }).click()
+  // It has a different label on mac and windows/linux, "Meta+K" and "Ctrl+/" respectively
+  await page
+    .getByRole('button', { name: 'Ctrl+/' })
+    .or(page.getByRole('button', { name: '⌘K' }))
+    .click()
   await expect(cmdSearchBar).toBeVisible()
   await page.keyboard.press('Escape')
   await expect(cmdSearchBar).not.toBeVisible()
@@ -658,12 +663,12 @@ test('Command bar works and can change a setting', async ({ page }) => {
   const themeOption = page.getByRole('option', { name: 'Set Theme' })
   await expect(themeOption).toBeVisible()
   await themeOption.click()
-  const themeInput = page.getByPlaceholder(Themes.System)
+  const themeInput = page.getByPlaceholder('Select an option')
   await expect(themeInput).toBeVisible()
   await expect(themeInput).toBeFocused()
   // Select dark theme
   await page.keyboard.press('ArrowDown')
-  await page.keyboard.press('ArrowUp')
+  await page.keyboard.press('ArrowDown')
   await expect(page.getByRole('option', { name: Themes.Dark })).toHaveAttribute(
     'data-headlessui-state',
     'active'
@@ -674,4 +679,268 @@ test('Command bar works and can change a setting', async ({ page }) => {
   await expect(page.getByText(`Set Theme to "${Themes.Dark}"`)).toBeVisible()
   // Check that the theme changed
   await expect(page.locator('body')).toHaveClass(`body-bg ${Themes.Dark}`)
+})
+
+test('Can extrude from the command bar', async ({ page, context }) => {
+  await context.addInitScript(async (token) => {
+    localStorage.setItem(
+      'persistCode',
+      `const part001 = startSketchOn('-XZ')
+    |> startProfileAt([-6.95, 4.98], %)
+    |> line([25.1, 0.41], %)
+    |> line([0.73, -14.93], %)
+    |> line([-23.44, 0.52], %)
+    |> close(%)`
+    )
+  })
+
+  const u = getUtils(page)
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+
+  let cmdSearchBar = page.getByPlaceholder('Search commands')
+  await page.keyboard.press('Meta+K')
+  await expect(cmdSearchBar).toBeVisible()
+
+  // Search for extrude command and choose it
+  await page.getByRole('option', { name: 'Extrude' }).click()
+  await expect(page.locator('#arg-form > label')).toContainText(
+    'Please select one face'
+  )
+  await expect(page.getByRole('button', { name: 'selection' })).toBeDisabled()
+
+  // Click to select face and set distance
+  await u.openAndClearDebugPanel()
+  await page.getByText('|> line([25.1, 0.41], %)').click()
+  await u.waitForCmdReceive('select_add')
+  await u.closeDebugPanel()
+  await page.getByRole('button', { name: 'Continue' }).click()
+  await expect(page.getByRole('button', { name: 'distance' })).toBeDisabled()
+  await page.keyboard.press('Enter')
+
+  // Review step and argument hotkeys
+  await page.keyboard.press('2')
+  await expect(page.getByRole('button', { name: '5' })).toBeDisabled()
+  await page.keyboard.press('Enter')
+
+  // Check that the code was updated
+  await page.keyboard.press('Enter')
+  await expect(page.locator('.cm-content')).toHaveText(
+    `const part001 = startSketchOn('-XZ')
+    |> startProfileAt([-6.95, 4.98], %)
+    |> line([25.1, 0.41], %)
+    |> line([0.73, -14.93], %)
+    |> line([-23.44, 0.52], %)
+    |> close(%)
+    |> extrude(5, %)`
+  )
+})
+
+test('tangential arc can be added and moved', async ({ page }) => {
+  // Brief boilerplate
+  const u = getUtils(page)
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+  await u.openDebugPanel()
+  await u.waitForDefaultPlanesVisibilityChange()
+
+  await u.clearCommandLogs()
+  await page.getByRole('button', { name: 'Start Sketch' }).click()
+  await u.waitForDefaultPlanesVisibilityChange()
+
+  // select plane
+  await u.doAndWaitForCmd(() => page.mouse.click(700, 200), 'edit_mode_enter')
+
+  await expect(
+    page.getByRole('button', { name: 'Tangential Arc' })
+  ).toBeDisabled()
+  // select line tool
+  await u.doAndWaitForCmd(
+    () => page.getByRole('button', { name: 'Line' }).click(),
+    'set_tool'
+  )
+  type Coord = [number, number]
+  const _second: Coord = [750, 285]
+  const _third: Coord = [750, 385]
+  const firstPoint = () => page.mouse.click(650, 285)
+  const secondPoint = () => page.mouse.click(..._second)
+  const thirdPoint = () => page.mouse.click(..._third)
+  const forthPoint = () => page.mouse.click(650, 385)
+
+  const num1 = 8.61
+  const num2 = -6.03
+  const num3 = 17.23
+  const num4 = 25.84
+
+  await u.doAndWaitForCmd(firstPoint, 'mouse_click', false)
+  await expect(
+    page.getByRole('button', { name: 'Tangential Arc' })
+  ).toBeDisabled()
+  await secondPoint()
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt([${num1}, ${num2}], %)
+  |> line([${num3}, 0], %)`)
+  await expect(
+    page.getByRole('button', { name: 'Tangential Arc' })
+  ).not.toBeDisabled()
+
+  // select tangential arc tool
+  await u.doAndWaitForCmd(
+    () => page.getByRole('button', { name: 'Tangential Arc' }).click(),
+    'set_tool',
+    false
+  )
+
+  await thirdPoint()
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt([${num1}, ${num2}], %)
+  |> line([${num3}, 0], %)
+  |> tangentialArcTo([${num4}, -23.25], %)`)
+
+  await u.doAndWaitForCmd(
+    () => page.getByRole('button', { name: 'Line' }).click(),
+    'set_tool',
+    false
+  )
+  await forthPoint()
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt([${num1}, ${num2}], %)
+  |> line([${num3}, 0], %)
+  |> tangentialArcTo([25.84, -23.25], %)
+  |> line([-${num3}, 0], %)`)
+
+  // select move tool
+  await u.doAndWaitForCmd(
+    () => page.getByRole('button', { name: 'Move' }).click(),
+    'set_tool',
+    false
+  )
+
+  // drag the end of tangential line
+  await page.mouse.move(..._third)
+  await u.doAndWaitForCmd(
+    () => page.mouse.click(..._third),
+    'select_with_point',
+    false
+  )
+  await page.mouse.down()
+  await u.doAndWaitForCmd(
+    () => page.mouse.down(),
+    'handle_mouse_drag_start',
+    false
+  )
+  const _dragEnd: Coord = [900, 100]
+  await page.mouse.move(..._dragEnd, { steps: 10 })
+  await page.mouse.up()
+
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt([${num1}, ${num2}], %)
+  |> line([${num3}, 0], %)
+  |> tangentialArcTo([13, -25.32], %)
+  |> line([-${num3}, 0], %)`)
+
+  // drag the end of normal line
+  await u.doAndWaitForCmd(
+    () => page.mouse.click(..._second),
+    'select_with_point',
+    false
+  )
+  // await page.mouse.down()
+  await u.doAndWaitForCmd(
+    () => page.mouse.down(),
+    'handle_mouse_drag_start',
+    false
+  )
+  const _dragEnd2: Coord = [1000, 100]
+  await page.mouse.move(..._dragEnd2)
+  await page.mouse.up()
+
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt([${num1}, ${num2}], %)
+  |> line([21.7, -2.07], %)
+  |> tangentialArcTo([18, -27.39], %)
+  |> line([-${num3}, 0], %)`)
+
+  // exit sketch
+  await u.openAndClearDebugPanel()
+  await page.getByRole('button', { name: 'Exit Sketch' }).click()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+
+  // re-enter sketch
+  await u.doAndWaitForCmd(
+    () => page.getByText('line([21.7, -2.07], %)').click(),
+    'select_clear',
+    false
+  )
+
+  await u.doAndWaitForCmd(
+    () => page.getByRole('button', { name: 'Start Sketch' }).click(),
+    'edit_mode_enter',
+    false
+  )
+  await u.closeDebugPanel()
+
+  // select move tool
+  await u.doAndWaitForCmd(
+    () => page.getByRole('button', { name: 'Move' }).first().click(),
+    'set_tool',
+    false
+  )
+
+  // drag the end of normal line again
+  await u.doAndWaitForCmd(
+    () => page.mouse.click(776, 297),
+    'select_with_point',
+    false
+  )
+  await page.mouse.down()
+  await page.mouse.move(1000, 150)
+  await page.mouse.up()
+
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt([${num1}, ${num2}], %)
+  |> line([34.27, -12.75], %)
+  |> tangentialArcTo([31, -38.07], %)
+  |> line([-${num3}, 0], %)`)
+
+  // drag the end of tangential line again
+  await u.doAndWaitForCmd(
+    () => page.mouse.click(770, 491),
+    'select_with_point',
+    false
+  )
+  await page.mouse.down()
+  await page.mouse.move(1000, 100)
+  await page.mouse.up()
+
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt([${num1}, ${num2}], %)
+  |> line([34.27, -12.75], %)
+  |> tangentialArcTo([43, -40.14], %)
+  |> line([-${num3}, 0], %)`)
+
+  // select starting point expect it to close
+  await u.doAndWaitForCmd(
+    () => page.getByRole('button', { name: 'Tangential Arc' }).click(),
+    'set_tool',
+    false
+  )
+  await firstPoint()
+  await expect(page.locator('.cm-content'))
+    .toHaveText(`const part001 = startSketchOn('-XZ')
+  |> startProfileAt([${num1}, ${num2}], %)
+  |> line([34.27, -12.75], %)
+  |> tangentialArcTo([43, -40.14], %)
+  |> line([-${num3}, 0], %)
+  |> tangentialArcTo([${num1}, ${num2}], %)
+  |> close(%)`)
 })
