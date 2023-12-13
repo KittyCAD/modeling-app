@@ -338,7 +338,8 @@ export const commandBarMachine = createMachine(
           if (e.type !== 'Find and select command') return c.selectedCommand
           const found = c.commands.find(
             (cmd) =>
-              cmd.name == e.data.name && cmd.ownerMachine == e.data.ownerMachine
+              cmd.name === e.data.name &&
+              cmd.ownerMachine === e.data.ownerMachine
           )
 
           return !!found ? found : c.selectedCommand

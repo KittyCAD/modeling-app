@@ -1,4 +1,4 @@
-import { useMachine, useSelector } from '@xstate/react'
+import { useMachine } from '@xstate/react'
 import React, { createContext, useEffect, useRef } from 'react'
 import {
   AnyStateMachine,
@@ -23,7 +23,7 @@ import {
   PipeExpression,
   CallExpression,
 } from 'lang/wasm'
-import { doesPipeHaveCallExp, getNodeFromPath } from 'lang/queryAst'
+import { getNodeFromPath } from 'lang/queryAst'
 import {
   addCloseToPipe,
   addNewSketchLn,
@@ -44,7 +44,6 @@ import {
   handleSelectionWithShift,
   isSelectionLastLine,
   isSketchPipe,
-  nodeHasExtrude,
 } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'

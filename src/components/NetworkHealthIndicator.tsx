@@ -1,5 +1,4 @@
 import {
-  faCheck,
   faExclamation,
   faWifi,
 } from '@fortawesome/free-solid-svg-icons'
