@@ -177,7 +177,7 @@ export const ModelingMachineProvider = ({
         }
       ),
       'AST add line segment': async (
-        { sketchPathToNode, sketchEnginePathId },
+        { sketchPathToNode, sketchEnginePathId, tool },
         { data: { coords, segmentId } }
       ) => {
         if (!sketchPathToNode) return
@@ -216,7 +216,7 @@ export const ModelingMachineProvider = ({
             programMemory: kclManager.programMemory,
             to: [lastCoord.x, lastCoord.y],
             from: [coords[0].x, coords[0].y],
-            fnName: 'line',
+            fnName: tool === 'sketch_line' ? 'line' : 'tangentialArcTo',
             pathToNode: sketchPathToNode,
           })
           const _modifiedAst = newSketchLn.modifiedAst
@@ -288,7 +288,6 @@ export const ModelingMachineProvider = ({
             pathToNode: sketchPathToNode,
           })
           const _modifiedAst = newSketchLn.modifiedAst
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
           kclManager.executeAstMock(_modifiedAst, true).then(() => {
             const lineCallExp = getNodeFromPath<CallExpression>(
               kclManager.ast,

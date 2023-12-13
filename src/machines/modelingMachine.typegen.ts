@@ -32,7 +32,7 @@
 "Get vertical info": "done.invoke.get-vertical-info";
         };
         missingImplementations: {
-          actions: "AST add line segment" | "AST add tangential arc segment" | "AST start new sketch" | "Modify AST" | "Set selection" | "Update code selection cursors" | "create path" | "set tool" | "show default planes" | "sketch exit execute" | "toast extrude failed";
+          actions: "AST add line segment" | "AST add tangential arc segment" | "AST start new sketch" | "Modify AST" | "Set selection" | "Update code selection cursors" | "create path" | "show default planes" | "sketch exit execute" | "toast extrude failed";
           delays: never;
           guards: "Selection contains axis" | "Selection contains edge" | "Selection contains face" | "Selection contains line" | "Selection contains point" | "Selection is not empty" | "Selection is one face";
           services: "Get ABS X info" | "Get ABS Y info" | "Get angle info" | "Get horizontal info" | "Get length info" | "Get perpendicular distance info" | "Get vertical info";
@@ -69,8 +69,7 @@
 "set default plane id": "Select default plane";
 "set sketch metadata": "Enter sketch";
 "set sketchMetadata from pathToNode": "Re-execute";
-"set tool": "Equip new tool";
-"set tool line": "Equip line tool";
+"set tool line": "Equip line tool" | "Equip tangential arc tool2";
 "set tool move": "Equip move tool" | "Re-execute" | "Set selection";
 "set tool tangential arc": "Equip new tool" | "Equip tangential arc tool";
 "show default planes": "Enter sketch";
@@ -109,7 +108,7 @@
 "can move with execute": "";
 "has no selection": "extrude intent";
 "has valid extrude selection": "" | "extrude intent";
-"is editing existing sketch": "";
+"is editing existing sketch": "" | "Equip tangential arc tool2";
         };
         eventsCausingServices: {
           "Get ABS X info": "Constrain ABS X";

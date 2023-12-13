@@ -4,7 +4,6 @@ import { engineCommandManager } from './lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { ActionButton } from 'components/ActionButton'
-import { ActionIcon } from 'components/ActionIcon'
 
 export const Toolbar = () => {
   const { setCommandBarOpen } = useCommandsContext()
@@ -88,43 +87,59 @@ export const Toolbar = () => {
           </li>
         )}
         {state.matches('Sketch') && !state.matches('idle') && (
-          <li className="contents">
-            <ActionButton
-              Element="button"
-              onClick={() =>
-                state.matches('Sketch.Line Tool')
-                  ? send('CancelSketch')
-                  : send('Equip line tool')
-              }
-              aria-pressed={state.matches('Sketch.Line Tool')}
-              className="pressed:bg-energy-10/20 dark:pressed:bg-energy-80"
-              icon={{
-                icon: 'line',
-                bgClassName,
-              }}
-            >
-              Line
-            </ActionButton>
-          </li>
-        )}
-        {state.matches('Sketch') && !state.matches('idle') && (
-          <button
-            onClick={() =>
-              state.matches('Sketch.TangentialArc Tool')
-                ? send('CancelSketch')
-                : send('Equip tangential arc tool')
-            }
-            className={
-              'group ' +
-              (state.matches('Sketch.TangentialArc Tool')
-                ? '!text-fern-70 !bg-fern-10 !dark:text-fern-20 !border-fern-50'
-                : '')
-            }
-          >
-            {/* TODO: icon */}
-            <ActionIcon icon="line" className="!p-0.5" size="md" />
-            Tangential Arc
-          </button>
+          <>
+            <li className="contents">
+              <ActionButton
+                Element="button"
+                onClick={() =>
+                  state.matches('Sketch.Line Tool')
+                    ? send('CancelSketch')
+                    : send({ type: 'Equip line tool', data: 'sketch_line' })
+                }
+                aria-pressed={
+                  state.matches('Sketch.Line Tool') &&
+                  context.tool === 'sketch_line'
+                }
+                className="pressed:bg-energy-10/20 dark:pressed:bg-energy-80"
+                icon={{
+                  icon: 'line',
+                  bgClassName,
+                }}
+              >
+                Line
+              </ActionButton>
+            </li>
+            <li className="contents">
+              <ActionButton
+                Element="button"
+                onClick={() =>
+                  state.matches('Sketch.Line Tool')
+                    ? send('CancelSketch')
+                    : send({
+                        type: 'Equip tangential arc tool2',
+                        data: 'sketch_tangential_arc',
+                      })
+                }
+                disabled={
+                  !state.can({
+                    type: 'Equip tangential arc tool2',
+                    data: 'sketch_tangential_arc',
+                  })
+                }
+                aria-pressed={
+                  state.matches('Sketch.Line Tool') &&
+                  context.tool === 'sketch_tangential_arc'
+                }
+                className="pressed:bg-energy-10/20 dark:pressed:bg-energy-80"
+                icon={{
+                  icon: 'line',
+                  bgClassName,
+                }}
+              >
+                Tangential Arc
+              </ActionButton>
+            </li>
+          </>
         )}
         {state.matches('Sketch') && (
           <li className="contents">
