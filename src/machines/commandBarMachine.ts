@@ -294,17 +294,17 @@ export const commandBarMachine = createMachine(
   {
     actions: {
       'Execute command': (context, event) => {
-        if (
-          event.type !== 'Submit command' &&
-          event.type !== 'done.invoke.validateArguments'
-        )
-          return
         const { selectedCommand } = context
         if (!selectedCommand) return
-        if (selectedCommand.args) {
-          selectedCommand.onSubmit(event.data)
+        if (selectedCommand?.args) {
+          selectedCommand?.onSubmit(
+            event.type === 'Submit command' ||
+              event.type === 'done.invoke.validateArguments'
+              ? event.data
+              : undefined
+          )
         } else {
-          selectedCommand.onSubmit()
+          selectedCommand?.onSubmit()
         }
       },
       'Clear current argument': assign({

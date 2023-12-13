@@ -34,14 +34,10 @@ export const CommandBarProvider = ({
               Object.keys(context.selectedCommand.args)?.length
           : false
       },
-      'Command has no arguments': (
-        _,
-        event: EventFrom<typeof commandBarMachine>
-      ) => {
-        if (event.type !== 'Select command') return false
+      'Command has no arguments': (context, _event) => {
         return (
-          !event.data.command.args ||
-          Object.keys(event.data.command.args).length === 0
+          !context.selectedCommand?.args ||
+          Object.keys(context.selectedCommand?.args).length === 0
         )
       },
     },
