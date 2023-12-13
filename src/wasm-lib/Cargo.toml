@@ -31,7 +31,7 @@ uuid = { version = "1.6.1", features = ["v4", "js", "serde"] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 futures = "0.3.29"
-js-sys = "0.3.65"
+js-sys = "0.3.66"
 tower-lsp = { version = "0.20.0", default-features = false, features = ["runtime-agnostic"] }
 wasm-bindgen-futures = { version = "0.4.37", features = ["futures-core-03-stream"] }
 wasm-streams = "0.4.0"
