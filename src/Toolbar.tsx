@@ -93,7 +93,8 @@ export const Toolbar = () => {
                 Element="button"
                 onClick={() =>
                   state.matches('Sketch.Line Tool') &&
-                  context.tool === 'sketch_line'
+                  context.tool === 'sketch_line' &&
+                  !state.matches('Sketch.Move Tool')
                     ? send('CancelSketch')
                     : send({ type: 'Equip line tool', data: 'sketch_line' })
                 }
@@ -115,7 +116,8 @@ export const Toolbar = () => {
                 Element="button"
                 onClick={() =>
                   state.matches('Sketch.Line Tool') &&
-                  context.tool === 'sketch_tangential_arc'
+                  context.tool === 'sketch_tangential_arc' &&
+                  !state.matches('Sketch.Move Tool')
                     ? send('CancelSketch')
                     : send({
                         type: 'Equip tangential arc tool2',

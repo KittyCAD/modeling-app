@@ -238,8 +238,36 @@ export const ModelingMachineProvider = ({
               }
           })
         } else {
+          if (tool === 'sketch_tangential_arc') {
+            const newSketchLn = addNewSketchLn({
+              node: kclManager.ast,
+              programMemory: kclManager.programMemory,
+              to: [lastCoord.x, lastCoord.y],
+              from: [coords[0].x, coords[0].y],
+              fnName: 'tangentialArcTo',
+              pathToNode: sketchPathToNode,
+            })
+            _modifiedAst = newSketchLn.modifiedAst
+            kclManager.executeAstMock(_modifiedAst, true).then(() => {
+              const lineCallExp = getNodeFromPath<CallExpression>(
+                kclManager.ast,
+                newSketchLn.pathToNode
+              ).node
+              if (segmentId)
+                engineCommandManager.artifactMap[segmentId] = {
+                  type: 'result',
+                  range: [lineCallExp.start, lineCallExp.end],
+                  commandType: 'extend_path',
+                  parentId: sketchEnginePathId,
+                  data: null,
+                  raw: {} as any,
+                }
+            })
+          } else {
+            _modifiedAst = kclManager.ast
+          }
           _modifiedAst = addCloseToPipe({
-            node: kclManager.ast,
+            node: _modifiedAst,
             programMemory: kclManager.programMemory,
             pathToNode: sketchPathToNode,
           })
