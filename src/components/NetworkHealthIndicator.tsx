@@ -1,7 +1,4 @@
-import {
-  faExclamation,
-  faWifi,
-} from '@fortawesome/free-solid-svg-icons'
+import { faExclamation, faWifi } from '@fortawesome/free-solid-svg-icons'
 import { Popover } from '@headlessui/react'
 import { useEffect, useState } from 'react'
 import { ActionIcon } from './ActionIcon'

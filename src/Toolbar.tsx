@@ -4,8 +4,10 @@ import { engineCommandManager } from './lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { ActionButton } from 'components/ActionButton'
+import usePlatform from 'hooks/usePlatform'
 
 export const Toolbar = () => {
+  const platform = usePlatform()
   const { commandBarSend } = useCommandsContext()
   const { state, send, context } = useModelingContext()
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
@@ -212,7 +214,7 @@ export const Toolbar = () => {
         onClick={() => commandBarSend({ type: 'Open' })}
         className="rounded-r-full pr-4 self-stretch border-energy-10 hover:border-energy-10 dark:border-chalkboard-80 bg-energy-10/50 hover:bg-energy-10 dark:bg-chalkboard-80 dark:text-energy-10"
       >
-        ⌘K
+        {platform === 'darwin' ? '⌘K' : 'Ctrl+/'}
       </ActionButton>
     </div>
   )

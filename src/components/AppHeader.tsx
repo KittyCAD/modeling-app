@@ -7,6 +7,7 @@ import styles from './AppHeader.module.css'
 import { NetworkHealthIndicator } from './NetworkHealthIndicator'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { ActionButton } from './ActionButton'
+import usePlatform from 'hooks/usePlatform'
 
 interface AppHeaderProps extends React.PropsWithChildren {
   showToolbar?: boolean
@@ -22,6 +23,7 @@ export const AppHeader = ({
   className = '',
   enableMenu = false,
 }: AppHeaderProps) => {
+  const platform = usePlatform()
   const { commandBarSend } = useCommandsContext()
   const { auth } = useGlobalStateContext()
   const user = auth?.context?.user
@@ -52,7 +54,7 @@ export const AppHeader = ({
           >
             Command Palette{' '}
             <kbd className="bg-energy-10/50 dark:bg-chalkboard-100 dark:text-energy-10 inline-block px-1 py-0.5 border-energy-10 dark:border-chalkboard-90">
-              ⌘K
+              {platform === 'darwin' ? '⌘K' : 'Ctrl+/'}
             </kbd>
           </ActionButton>
         )}
