@@ -1,56 +1,6 @@
 import { assign, createMachine } from 'xstate'
 import { ProjectWithEntryPointMetadata } from '../Router'
-import { CommandBarConfig } from '../lib/commands'
-
-export const homeCommandConfig: CommandBarConfig<typeof homeMachine> = {
-  'Create project': {
-    icon: 'folderPlus',
-    args: [
-      {
-        name: 'name',
-        type: 'string',
-        getDefaultValueFromContext: 'defaultProjectName',
-      },
-    ],
-  },
-  'Open project': {
-    icon: 'arrowRight',
-    args: [
-      {
-        name: 'name',
-        type: 'select',
-        getOptionsFromContext: 'projects',
-      },
-    ],
-  },
-  'Delete project': {
-    icon: 'close',
-    args: [
-      {
-        name: 'name',
-        type: 'select',
-        getOptionsFromContext: 'projects',
-      },
-    ],
-  },
-  'Rename project': {
-    icon: 'folder',
-    formatFunction: (args: string[]) =>
-      `Rename project "${args[0]}" to "${args[1]}"`,
-    args: [
-      {
-        name: 'oldName',
-        type: 'select',
-        getOptionsFromContext: 'projects',
-      },
-      {
-        name: 'newName',
-        type: 'string',
-        getDefaultValueFromContext: 'defaultProjectName',
-      },
-    ],
-  },
-}
+import { HomeCommandSchema } from 'lib/commandBarConfigs/homeCommandConfig'
 
 export const homeMachine = createMachine(
   {
@@ -188,10 +138,10 @@ export const homeMachine = createMachine(
 
     schema: {
       events: {} as
-        | { type: 'Open project'; data: { name: string } }
-        | { type: 'Rename project'; data: { oldName: string; newName: string } }
-        | { type: 'Create project'; data: { name: string } }
-        | { type: 'Delete project'; data: { name: string } }
+        | { type: 'Open project'; data: HomeCommandSchema['Open project'] }
+        | { type: 'Rename project'; data: HomeCommandSchema['Rename project'] }
+        | { type: 'Create project'; data: HomeCommandSchema['Create project'] }
+        | { type: 'Delete project'; data: HomeCommandSchema['Delete project'] }
         | { type: 'navigate'; data: { name: string } }
         | {
             type: 'done.invoke.read-projects'

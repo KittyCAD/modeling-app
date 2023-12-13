@@ -8,7 +8,7 @@ import {
 } from 'react-router-dom'
 import { Models } from '@kittycad/lib'
 import { GlobalStateProvider } from './GlobalStateProvider'
-import CommandBarProvider from './CommandBar'
+import CommandBarProvider from './CommandBar/CommandBar'
 
 type User = Models['User_type']
 
