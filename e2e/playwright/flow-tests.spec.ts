@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { getUtils } from './test-utils'
 import waitOn from 'wait-on'
 import { Themes } from '../../src/lib/theme'
+import { platform } from '@tauri-apps/api/os'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -643,9 +644,11 @@ test('Command bar works and can change a setting', async ({ page }) => {
   let cmdSearchBar = page.getByPlaceholder('Search commands')
 
   // First try opening the command bar and closing it
-  // It has a different label on mac and windows/linux, "Meta+K" and "Ctrl+/" respectively,
-  // But both should work on Linux which CI runs on
-  await page.getByRole('button', { name: 'Ctrl+/' }).click()
+  // It has a different label on mac and windows/linux, "Meta+K" and "Ctrl+/" respectively
+  await page
+    .getByRole('button', { name: 'Ctrl+/' })
+    .or(page.getByRole('button', { name: '⌘K' }))
+    .click()
   await expect(cmdSearchBar).toBeVisible()
   await page.keyboard.press('Escape')
   await expect(cmdSearchBar).not.toBeVisible()
