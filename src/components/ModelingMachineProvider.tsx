@@ -255,78 +255,9 @@ export const ModelingMachineProvider = ({
           // updateAst(_modifiedAst, true)
         }
       },
-      'AST add tangential arc segment': (
-        { sketchPathToNode, sketchEnginePathId },
-        { data: { coords, segmentId } }
-      ) => {
-        if (!sketchPathToNode) return
-        const lastCoord = coords[coords.length - 1]
-
-        const { node: varDec } = getNodeFromPath<VariableDeclarator>(
-          kclManager.ast,
-          sketchPathToNode,
-          'VariableDeclarator'
-        )
-        const variableName = varDec.id.name
-        const sketchGroup = kclManager.programMemory.root[variableName]
-        if (!sketchGroup || sketchGroup.type !== 'SketchGroup') return
-        const initialCoords = sketchGroup.value[0].from
-
-        const isClose = compareVec2Epsilon(initialCoords, [
-          lastCoord.x,
-          lastCoord.y,
-        ])
-
-        let _modifiedAst: Program
-        if (!isClose) {
-          const newSketchLn = addNewSketchLn({
-            node: kclManager.ast,
-            programMemory: kclManager.programMemory,
-            to: [lastCoord.x, lastCoord.y],
-            from: [coords[0].x, coords[0].y],
-            fnName: 'tangentialArcTo',
-            pathToNode: sketchPathToNode,
-          })
-          const _modifiedAst = newSketchLn.modifiedAst
-          kclManager.executeAstMock(_modifiedAst, true).then(() => {
-            const lineCallExp = getNodeFromPath<CallExpression>(
-              kclManager.ast,
-              newSketchLn.pathToNode
-            ).node
-            if (segmentId)
-              engineCommandManager.artifactMap[segmentId] = {
-                type: 'result',
-                range: [lineCallExp.start, lineCallExp.end],
-                commandType: 'extend_path',
-                parentId: sketchEnginePathId,
-                data: null,
-                raw: {} as any,
-              }
-          })
-        } else {
-          _modifiedAst = addCloseToPipe({
-            node: kclManager.ast,
-            programMemory: kclManager.programMemory,
-            pathToNode: sketchPathToNode,
-          })
-          engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: { type: 'edit_mode_exit' },
-          })
-          engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: { type: 'default_camera_disable_sketch_mode' },
-          })
-          kclManager.executeAstMock(_modifiedAst, true)
-          // updateAst(_modifiedAst, true)
-        }
-      },
       'sketch exit execute': () => {
         kclManager.executeAst()
       },
-      'set tool': () => {}, // TODO
       'toast extrude failed': () => {
         toast.error(
           'Extrude failed, sketches need to be closed, or not already extruded'

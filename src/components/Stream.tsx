@@ -101,10 +101,7 @@ export const Stream = ({ className = '' }) => {
         },
         cmd_id: newId,
       })
-    } else if (
-      !state.matches('Sketch.Line Tool') &&
-      !state.matches('Sketch.TangentialArc Tool')
-    ) {
+    } else if (!state.matches('Sketch.Line Tool')) {
       engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
@@ -167,11 +164,7 @@ export const Stream = ({ className = '' }) => {
         selected_at_window: { x, y },
       }
       engineCommandManager.sendSceneCommand(command)
-    } else if (
-      !didDragInStream &&
-      (state.matches('Sketch.Line Tool') ||
-        state.matches('Sketch.TangentialArc Tool'))
-    ) {
+    } else if (!didDragInStream && state.matches('Sketch.Line Tool')) {
       command.cmd = {
         type: 'mouse_click',
         window: { x, y },
@@ -180,15 +173,9 @@ export const Stream = ({ className = '' }) => {
       engineCommandManager.sendSceneCommand(command).then(async (resp) => {
         const entities_modified = resp?.data?.data?.entities_modified
         if (!entities_modified) return
-        if (
-          state.matches('Sketch.Line Tool.No Points') ||
-          state.matches('Sketch.TangentialArc Tool.No Points')
-        ) {
+        if (state.matches('Sketch.Line Tool.No Points')) {
           send('Add point')
-        } else if (
-          state.matches('Sketch.Line Tool.Point Added') ||
-          state.matches('Sketch.TangentialArc Tool.Point Added')
-        ) {
+        } else if (state.matches('Sketch.Line Tool.Point Added')) {
           const curve = await engineCommandManager.sendSceneCommand({
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
@@ -239,10 +226,7 @@ export const Stream = ({ className = '' }) => {
               segmentId: entities_modified[0],
             },
           })
-        } else if (
-          state.matches('Sketch.Line Tool.Segment Added') ||
-          state.matches('Sketch.TangentialArc Tool.Segment Added')
-        ) {
+        } else if (state.matches('Sketch.Line Tool.Segment Added')) {
           const curveEndpoints = await engineCommandManager.sendSceneCommand({
             type: 'modeling_cmd_req',
             cmd_id: uuidv4(),
