@@ -54,7 +54,7 @@ export default function useStateMachineCommands<
           onCancel,
         })
       )
-      .filter((c) => c !== null) as Command[]
+      .filter((c) => c !== null) as Command[] // TS isn't smart enough to know this filter removes nulls
 
     commandBarSend({ type: 'Add commands', data: { commands: newCommands } })
 
