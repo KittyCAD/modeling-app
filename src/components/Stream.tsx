@@ -155,8 +155,6 @@ export const Stream = ({ className = '' }) => {
       cmd_id: newCmdId,
     }
 
-    console.log('mouse up in stream')
-
     if (!didDragInStream && state.matches('Sketch no face')) {
       command.cmd = {
         type: 'select_with_point',
@@ -253,7 +251,6 @@ export const Stream = ({ className = '' }) => {
         selection_type: 'add',
       }
 
-      console.log('selecting with point', command)
       engineCommandManager.sendSceneCommand(command)
     } else if (!didDragInStream && state.matches('Sketch.Move Tool')) {
       command.cmd = {

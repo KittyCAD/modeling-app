@@ -270,7 +270,6 @@ export const ModelingMachineProvider = ({
         'set tool': () => {}, // TODO
         'Set selection': assign(({ selectionRanges }, event) => {
           if (event.type !== 'Set selection') return {} // this was needed for ts after adding 'Set selection' action to on done modal events
-          console.log('setting selection')
           const setSelections = event.data
           if (!editorView) return {}
           if (setSelections.selectionType === 'mirrorCodeMirrorSelections')
