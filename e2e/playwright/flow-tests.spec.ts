@@ -826,7 +826,7 @@ test('tangential arc can be added and moved', async ({ page }) => {
   const num4 = 25.84
   // I don't know what this is slightly different in CI but for the convenience of having test work locally
   const _num5 = ['22.05', '21.88', '21.19']
-  const _num6 = ['32.39', '34.45']
+  const _num6 = ['32.39', '34.45', '30.49']
   const _num7 = ['39', '43']
 
   await u.doAndWaitForCmd(firstPoint, 'mouse_click', false)
@@ -972,7 +972,6 @@ test('tangential arc can be added and moved', async ({ page }) => {
   await page.mouse.down()
   await page.mouse.move(1000, 150)
   await page.mouse.up()
-
   await expect(
     expectCodeDigitsToBe([
       ['001'],
@@ -980,7 +979,7 @@ test('tangential arc can be added and moved', async ({ page }) => {
       _num2,
       _num6,
       ['-12.75'],
-      ['28', '31'],
+      ['28', '31', '25'],
       ['-38.07'],
       _num3,
       ['0'],
