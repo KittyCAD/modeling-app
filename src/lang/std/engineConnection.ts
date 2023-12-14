@@ -985,8 +985,7 @@ export class EngineCommandManager {
           command.cmd.type === 'camera_drag_move')
       )
     ) {
-      // highlight_set_entity and mouse_move are sent over the unreliable channel and are too noisy
-      console.log('sending command', command)
+      // highlight_set_entity, mouse_move and camera_drag_move are sent over the unreliable channel and are too noisy
       this.addCommandLog({
         type: 'send-scene',
         data: command,
