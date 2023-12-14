@@ -698,6 +698,9 @@ test('Can extrude from the command bar', async ({ page, context }) => {
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/')
   await u.waitForAuthSkipAppStart()
+  await u.openDebugPanel()
+  await u.waitForDefaultPlanesVisibilityChange()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
 
   let cmdSearchBar = page.getByPlaceholder('Search commands')
   await page.keyboard.press('Meta+K')
