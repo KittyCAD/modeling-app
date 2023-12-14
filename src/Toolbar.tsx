@@ -122,13 +122,13 @@ export const Toolbar = () => {
                   !state.matches('Sketch.Move Tool')
                     ? send('CancelSketch')
                     : send({
-                        type: 'Equip tangential arc tool2',
+                        type: 'Equip tangential arc tool',
                         data: 'sketch_tangential_arc',
                       })
                 }
                 disabled={
                   !state.can({
-                    type: 'Equip tangential arc tool2',
+                    type: 'Equip tangential arc tool',
                     data: 'sketch_tangential_arc',
                   })
                 }

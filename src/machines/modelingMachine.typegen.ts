@@ -66,9 +66,9 @@
 "hide default planes": "Cancel" | "Select default plane" | "Set selection" | "xstate.stop";
 "reset sketch metadata": "Cancel" | "Select default plane";
 "set default plane id": "Select default plane";
+"set segment tool": "Equip line tool" | "Equip tangential arc tool";
 "set sketch metadata": "Enter sketch";
 "set sketchMetadata from pathToNode": "Re-execute";
-"set tool line": "Equip line tool" | "Equip tangential arc tool2";
 "set tool move": "Equip move tool" | "Re-execute" | "Set selection";
 "show default planes": "Enter sketch";
 "sketch exit execute": "Cancel" | "Complete line" | "Set selection" | "xstate.stop";
@@ -104,7 +104,7 @@
 "can move": "";
 "can move with execute": "";
 "has valid extrude selection": "Extrude";
-"is editing existing sketch": "" | "Equip tangential arc tool2";
+"is editing existing sketch": "" | "Equip tangential arc tool";
         };
         eventsCausingServices: {
           "Get ABS X info": "Constrain ABS X";
