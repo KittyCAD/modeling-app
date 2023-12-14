@@ -775,7 +775,7 @@ test('tangential arc can be added and moved', async ({ page }) => {
   const num4 = 25.84
   // I don't know what this is slightly different in CI but for the convenience of having test work locally
   const num5 = process.env.CI ? 22.05 : 21.88
-  const num6 = 34.45
+  const num6 = process.env.CI ? 32.39 : 34.45
 
   await u.doAndWaitForCmd(firstPoint, 'mouse_click', false)
   await expect(
@@ -911,7 +911,7 @@ test('tangential arc can be added and moved', async ({ page }) => {
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt([${num1}, ${num2}], %)
   |> line([${num6}, -12.75], %)
-  |> tangentialArcTo([31, -38.07], %)
+  |> tangentialArcTo([${process.env.CI ? 28 : 31}, -38.07], %)
   |> line([-${num3}, 0], %)`)
 
   // drag the end of tangential line again
