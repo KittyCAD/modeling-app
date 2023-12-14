@@ -773,6 +773,8 @@ test('tangential arc can be added and moved', async ({ page }) => {
   const num2 = -6.03
   const num3 = 17.23
   const num4 = 25.84
+  const num5 = 21.88
+  const num6 = 34.45
 
   await u.doAndWaitForCmd(firstPoint, 'mouse_click', false)
   await expect(
@@ -857,14 +859,14 @@ test('tangential arc can be added and moved', async ({ page }) => {
     'handle_mouse_drag_start',
     false
   )
-  const _dragEnd2: Coord = [1000, 100]
+  const _dragEnd2: Coord = [1001, 100]
   await page.mouse.move(..._dragEnd2)
   await page.mouse.up()
 
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt([${num1}, ${num2}], %)
-  |> line([21.7, -2.07], %)
+  |> line([${num5}, -2.07], %)
   |> tangentialArcTo([18, -27.39], %)
   |> line([-${num3}, 0], %)`)
 
@@ -875,7 +877,7 @@ test('tangential arc can be added and moved', async ({ page }) => {
 
   // re-enter sketch
   await u.doAndWaitForCmd(
-    () => page.getByText('line([21.7, -2.07], %)').click(),
+    () => page.getByText(`line([${num5}, -2.07], %)`).click(),
     'select_clear',
     false
   )
@@ -907,7 +909,7 @@ test('tangential arc can be added and moved', async ({ page }) => {
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt([${num1}, ${num2}], %)
-  |> line([34.27, -12.75], %)
+  |> line([${num6}, -12.75], %)
   |> tangentialArcTo([31, -38.07], %)
   |> line([-${num3}, 0], %)`)
 
@@ -924,7 +926,7 @@ test('tangential arc can be added and moved', async ({ page }) => {
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt([${num1}, ${num2}], %)
-  |> line([34.27, -12.75], %)
+  |> line([${num6}, -12.75], %)
   |> tangentialArcTo([43, -40.14], %)
   |> line([-${num3}, 0], %)`)
 
@@ -938,7 +940,7 @@ test('tangential arc can be added and moved', async ({ page }) => {
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt([${num1}, ${num2}], %)
-  |> line([34.27, -12.75], %)
+  |> line([${num6}, -12.75], %)
   |> tangentialArcTo([43, -40.14], %)
   |> line([-${num3}, 0], %)
   |> tangentialArcTo([${num1}, ${num2}], %)
