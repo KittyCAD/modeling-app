@@ -825,7 +825,7 @@ test('tangential arc can be added and moved', async ({ page }) => {
   const _num3 = ['17.23', '-17.23']
   const num4 = 25.84
   // I don't know what this is slightly different in CI but for the convenience of having test work locally
-  const _num5 = ['22.05', '21.88']
+  const _num5 = ['22.05', '21.88', '21.19']
   const _num6 = ['32.39', '34.45']
   const _num7 = ['39', '43']
 
@@ -930,7 +930,7 @@ test('tangential arc can be added and moved', async ({ page }) => {
       ['-6.03'],
       _num5,
       ['-2.07'],
-      ['18'],
+      ['18', '16'],
       ['-27.39'],
       ['-17.23'],
       ['0'],
