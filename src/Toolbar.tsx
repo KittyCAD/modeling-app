@@ -90,7 +90,7 @@ export const Toolbar = () => {
         )}
         {state.matches('Sketch') && !state.matches('idle') && (
           <>
-            <li className="contents">
+            <li className="contents" key="line-button">
               <ActionButton
                 Element="button"
                 onClick={() =>
@@ -113,7 +113,7 @@ export const Toolbar = () => {
                 Line
               </ActionButton>
             </li>
-            <li className="contents">
+            <li className="contents" key="tangential-arc-button">
               <ActionButton
                 Element="button"
                 onClick={() =>

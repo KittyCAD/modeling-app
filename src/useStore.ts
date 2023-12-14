@@ -39,6 +39,7 @@ export const toolTips = [
   'xLineTo',
   'yLineTo',
   'angledLineThatIntersects',
+  'tangentialArcTo',
 ] as any as ToolTip[]
 
 export type PaneType =

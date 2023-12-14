@@ -1368,5 +1368,9 @@ export function getFirstArg(callExp: CallExpression): {
   if (['angledLineThatIntersects'].includes(name)) {
     return getAngledLineThatIntersects(callExp)
   }
+  if (['tangentialArcTo'].includes(name)) {
+    // TODO probably needs it's own implementation
+    return getFirstArgValuesForXYFns(callExp)
+  }
   throw new Error('unexpected call expression')
 }
