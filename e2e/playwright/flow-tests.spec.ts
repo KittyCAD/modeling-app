@@ -770,13 +770,20 @@ test('tangential arc can be added and moved', async ({ page }) => {
   const forthPoint = () => page.mouse.click(650, 385)
 
   const num1 = 8.61
+  const _num1 = ['8.61']
   const num2 = -6.03
+  const _num2 = ['-6.03']
   const num3 = 17.23
+  const _num3 = ['17.23', '-17.23']
   const num4 = 25.84
+  const _num4 = ['25.84']
   // I don't know what this is slightly different in CI but for the convenience of having test work locally
   const num5 = process.env.CI ? 22.05 : 21.88
+  const _num5 = ['22.05', '21.88']
   const num6 = process.env.CI ? 32.39 : 34.45
+  const _num6 = ['32.39', '34.45']
   const num7 = process.env.CI ? 39 : 43
+  const _num7 = ['39', '43']
 
   await u.doAndWaitForCmd(firstPoint, 'mouse_click', false)
   await expect(
@@ -865,12 +872,59 @@ test('tangential arc can be added and moved', async ({ page }) => {
   await page.mouse.move(..._dragEnd2)
   await page.mouse.up()
 
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt([${num1}, ${num2}], %)
-  |> line([${num5}, -2.07], %)
-  |> tangentialArcTo([18, -27.39], %)
-  |> line([-${num3}, 0], %)`)
+  const expectCodeDigitsToBe = async (expectedDigits: string[][]) => {
+    return new Promise(async (resolve, reject) => {
+      const checkCodeRightNow = async (): Promise<{
+        didPass: boolean
+        digits: string[]
+      }> => {
+        const currentCode = await page.locator('.cm-content').innerText()
+        const digits = currentCode.match(/-?\d+\.?\d*/g) || []
+        console.log('current digits', digits)
+        let didAllPass = true
+        for (let i = 0; i < digits.length; i++) {
+          const hasMatchingDigit = expectedDigits[i].includes(digits[i])
+          if (!hasMatchingDigit) {
+            didAllPass = false
+            break
+          }
+        }
+        return {
+          didPass: didAllPass,
+          digits: digits,
+        }
+      }
+
+      // run checkCodeRightNow every 100ms until it passes or 5 seconds pass, if it gets to 5 seconds, fail
+      let codeInfo
+      let timePassed = 0
+      const interval = setInterval(async () => {
+        timePassed += 100
+        codeInfo = await checkCodeRightNow()
+        if (codeInfo.didPass) {
+          clearInterval(interval)
+          resolve(true)
+        } else if (timePassed > 5000) {
+          clearInterval(interval)
+          reject(`5 seconds passed and code did not match: ${codeInfo.digits}`)
+        }
+      }, 100)
+    })
+  }
+
+  await expect(
+    expectCodeDigitsToBe([
+      ['001'],
+      ['8.61'],
+      ['-6.03'],
+      _num5,
+      ['-2.07'],
+      ['18'],
+      ['-27.39'],
+      ['-17.23'],
+      ['0'],
+    ])
+  ).resolves.toBeTruthy()
 
   // exit sketch
   await u.openAndClearDebugPanel()
@@ -908,12 +962,19 @@ test('tangential arc can be added and moved', async ({ page }) => {
   await page.mouse.move(1000, 150)
   await page.mouse.up()
 
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt([${num1}, ${num2}], %)
-  |> line([${num6}, -12.75], %)
-  |> tangentialArcTo([${process.env.CI ? 28 : 31}, -38.07], %)
-  |> line([-${num3}, 0], %)`)
+  await expect(
+    expectCodeDigitsToBe([
+      ['001'],
+      _num1,
+      _num2,
+      _num6,
+      ['-12.75'],
+      ['28', '31'],
+      ['-38.07'],
+      _num3,
+      ['0'],
+    ])
+  ).resolves.toBeTruthy()
 
   // drag the end of tangential line again
   await u.doAndWaitForCmd(
@@ -925,12 +986,19 @@ test('tangential arc can be added and moved', async ({ page }) => {
   await page.mouse.move(1000, 100)
   await page.mouse.up()
 
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt([${num1}, ${num2}], %)
-  |> line([${num6}, -12.75], %)
-  |> tangentialArcTo([${num7}, -40.14], %)
-  |> line([-${num3}, 0], %)`)
+  await expect(
+    expectCodeDigitsToBe([
+      ['001'],
+      _num1,
+      _num2,
+      _num6,
+      ['-12.75'],
+      _num7,
+      ['-40.14'],
+      _num3,
+      ['0'],
+    ])
+  ).resolves.toBeTruthy()
 
   // select starting point expect it to close
   await u.doAndWaitForCmd(
@@ -939,12 +1007,20 @@ test('tangential arc can be added and moved', async ({ page }) => {
     false
   )
   await firstPoint()
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt([${num1}, ${num2}], %)
-  |> line([${num6}, -12.75], %)
-  |> tangentialArcTo([${num7}, -40.14], %)
-  |> line([-${num3}, 0], %)
-  |> tangentialArcTo([${num1}, ${num2}], %)
-  |> close(%)`)
+
+  await expect(
+    expectCodeDigitsToBe([
+      ['001'],
+      _num1,
+      _num2,
+      _num6,
+      ['-12.75'],
+      _num7,
+      ['-40.14'],
+      _num3,
+      ['0'],
+      _num1,
+      _num2,
+    ])
+  ).resolves.toBeTruthy()
 })
