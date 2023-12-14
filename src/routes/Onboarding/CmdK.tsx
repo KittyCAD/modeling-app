@@ -1,7 +1,6 @@
+import usePlatform from 'hooks/usePlatform'
 import { OnboardingButtons, onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from '../../useStore'
-import { Platform, platform } from '@tauri-apps/api/os'
-import { useEffect, useState } from 'react'
 
 export default function CmdK() {
   const { buttonDownInStream } = useStore((s) => ({
@@ -9,14 +8,7 @@ export default function CmdK() {
   }))
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.USER_MENU)
-  const [platformName, setPlatformName] = useState<Platform | ''>('')
-
-  useEffect(() => {
-    async function getPlatform() {
-      setPlatformName(await platform())
-    }
-    void getPlatform()
-  }, [setPlatformName])
+  const platformName = usePlatform()
 
   return (
     <div className="fixed inset-0 z-50 grid items-end justify-center pointer-events-none">
@@ -29,13 +21,13 @@ export default function CmdK() {
         <h2 className="text-2xl">Command Bar</h2>
         <p className="my-4">
           Press{' '}
-          {platformName === 'win32' ? (
+          {platformName === 'darwin' ? (
             <>
-              <kbd>Win</kbd> + <kbd>/</kbd>
+              <kbd>⌘</kbd> + <kbd>K</kbd>
             </>
           ) : (
             <>
-              <kbd>OS</kbd> + <kbd>K</kbd>
+              <kbd>Ctrl</kbd> + <kbd>/</kbd>
             </>
           )}{' '}
           to open the command bar. Try changing your theme with it.

@@ -1,4 +1,3 @@
-import { faSignInAlt } from '@fortawesome/free-solid-svg-icons'
 import { ActionButton } from '../components/ActionButton'
 import { isTauri } from '../lib/isTauri'
 import { invoke } from '@tauri-apps/api/tauri'
@@ -65,7 +64,7 @@ const SignIn = () => {
           <ActionButton
             Element="button"
             onClick={signInTauri}
-            icon={{ icon: faSignInAlt }}
+            icon={{ icon: 'arrowRight' }}
             className="w-fit mt-4"
             data-testid="sign-in-button"
           >
@@ -80,7 +79,7 @@ const SignIn = () => {
               typeof window !== 'undefined' &&
                 window.location.href.replace('signin', '')
             )}`}
-            icon={{ icon: faSignInAlt }}
+            icon={{ icon: 'arrowRight' }}
             className="w-fit mt-4"
           >
             Sign in

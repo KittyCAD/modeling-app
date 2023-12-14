@@ -64,7 +64,7 @@ export const TextEditor = ({
 
   const { settings: { context: { textWrapping } = {} } = {} } =
     useGlobalStateContext()
-  const { setCommandBarOpen } = useCommandsContext()
+  const { commandBarSend } = useCommandsContext()
   const { enable: convertEnabled, handleClick: convertCallback } =
     useConvertToVariable()
 
@@ -136,7 +136,7 @@ export const TextEditor = ({
         {
           key: 'Meta-k',
           run: () => {
-            setCommandBarOpen(true)
+            commandBarSend({ type: 'Open' })
             return false
           },
         },

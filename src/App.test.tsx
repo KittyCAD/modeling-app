@@ -8,7 +8,7 @@ import {
   createRoutesFromElements,
 } from 'react-router-dom'
 import { GlobalStateProvider } from './components/GlobalStateProvider'
-import CommandBarProvider from 'components/CommandBar'
+import CommandBarProvider from 'components/CommandBar/CommandBar'
 import ModelingMachineProvider from 'components/ModelingMachineProvider'
 import { BROWSER_FILE_NAME } from 'Router'
 

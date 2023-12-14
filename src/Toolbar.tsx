@@ -4,9 +4,11 @@ import { engineCommandManager } from './lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { ActionButton } from 'components/ActionButton'
+import usePlatform from 'hooks/usePlatform'
 
 export const Toolbar = () => {
-  const { setCommandBarOpen } = useCommandsContext()
+  const platform = usePlatform()
+  const { commandBarSend } = useCommandsContext()
   const { state, send, context } = useModelingContext()
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
   const bgClassName =
@@ -177,10 +179,15 @@ export const Toolbar = () => {
             <ActionButton
               Element="button"
               className="text-sm"
-              onClick={() => send('extrude intent')}
-              disabled={!state.can('extrude intent')}
+              onClick={() =>
+                commandBarSend({
+                  type: 'Find and select command',
+                  data: { name: 'Extrude', ownerMachine: 'modeling' },
+                })
+              }
+              disabled={!state.can('Extrude')}
               title={
-                state.can('extrude intent')
+                state.can('Extrude')
                   ? 'extrude'
                   : 'sketches need to be closed, or not already extruded'
               }
@@ -204,10 +211,10 @@ export const Toolbar = () => {
       </menu>
       <ActionButton
         Element="button"
-        onClick={() => setCommandBarOpen(true)}
+        onClick={() => commandBarSend({ type: 'Open' })}
         className="rounded-r-full pr-4 self-stretch border-energy-10 hover:border-energy-10 dark:border-chalkboard-80 bg-energy-10/50 hover:bg-energy-10 dark:bg-chalkboard-80 dark:text-energy-10"
       >
-        ⌘K
+        {platform === 'darwin' ? '⌘K' : 'Ctrl+/'}
       </ActionButton>
     </div>
   )
