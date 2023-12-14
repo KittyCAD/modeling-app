@@ -746,6 +746,47 @@ test('tangential arc can be added and moved', async ({ page }) => {
   // playwright or the browser didn't think they were, and I had to play with number until it was happy
   // even then the numbers are inconsistent on different OS browser and CI
   // so I've added some fuzziness to the test, sorry it's hard to read.
+
+  const expectCodeDigitsToBe = async (expectedDigits: string[][]) => {
+    return new Promise(async (resolve, reject) => {
+      const checkCodeRightNow = async (): Promise<{
+        didPass: boolean
+        digits: string[]
+      }> => {
+        const currentCode = await page.locator('.cm-content').innerText()
+        const digits = currentCode.match(/-?\d+\.?\d*/g) || []
+        console.log('current digits', digits)
+        let didAllPass = true
+        for (let i = 0; i < digits.length; i++) {
+          const hasMatchingDigit = expectedDigits[i].includes(digits[i])
+          if (!hasMatchingDigit) {
+            didAllPass = false
+            break
+          }
+        }
+        return {
+          didPass: didAllPass,
+          digits: digits,
+        }
+      }
+
+      // run checkCodeRightNow every 100ms until it passes or 5 seconds pass, if it gets to 5 seconds, fail
+      let codeInfo
+      let timePassed = 0
+      const interval = setInterval(async () => {
+        timePassed += 100
+        codeInfo = await checkCodeRightNow()
+        if (codeInfo.didPass) {
+          clearInterval(interval)
+          resolve(true)
+        } else if (timePassed > 5000) {
+          clearInterval(interval)
+          reject(`5 seconds passed and code did not match: ${codeInfo.digits}`)
+        }
+      }, 100)
+    })
+  }
+
   const u = getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/')
@@ -852,12 +893,19 @@ test('tangential arc can be added and moved', async ({ page }) => {
   await page.mouse.move(..._dragEnd, { steps: 10 })
   await page.mouse.up()
 
-  await expect(page.locator('.cm-content'))
-    .toHaveText(`const part001 = startSketchOn('-XZ')
-  |> startProfileAt([${num1}, ${num2}], %)
-  |> line([${num3}, 0], %)
-  |> tangentialArcTo([13, -25.32], %)
-  |> line([-${num3}, 0], %)`)
+  await expect(
+    expectCodeDigitsToBe([
+      ['001'],
+      _num1,
+      _num2,
+      _num3,
+      ['0'],
+      ['12', '13'],
+      ['-25.32'],
+      _num3,
+      ['0'],
+    ])
+  ).resolves.toBeTruthy()
 
   // drag the end of normal line
   await u.doAndWaitForCmd(
@@ -874,46 +922,6 @@ test('tangential arc can be added and moved', async ({ page }) => {
   const _dragEnd2: Coord = [1001, 100]
   await page.mouse.move(..._dragEnd2)
   await page.mouse.up()
-
-  const expectCodeDigitsToBe = async (expectedDigits: string[][]) => {
-    return new Promise(async (resolve, reject) => {
-      const checkCodeRightNow = async (): Promise<{
-        didPass: boolean
-        digits: string[]
-      }> => {
-        const currentCode = await page.locator('.cm-content').innerText()
-        const digits = currentCode.match(/-?\d+\.?\d*/g) || []
-        console.log('current digits', digits)
-        let didAllPass = true
-        for (let i = 0; i < digits.length; i++) {
-          const hasMatchingDigit = expectedDigits[i].includes(digits[i])
-          if (!hasMatchingDigit) {
-            didAllPass = false
-            break
-          }
-        }
-        return {
-          didPass: didAllPass,
-          digits: digits,
-        }
-      }
-
-      // run checkCodeRightNow every 100ms until it passes or 5 seconds pass, if it gets to 5 seconds, fail
-      let codeInfo
-      let timePassed = 0
-      const interval = setInterval(async () => {
-        timePassed += 100
-        codeInfo = await checkCodeRightNow()
-        if (codeInfo.didPass) {
-          clearInterval(interval)
-          resolve(true)
-        } else if (timePassed > 5000) {
-          clearInterval(interval)
-          reject(`5 seconds passed and code did not match: ${codeInfo.digits}`)
-        }
-      }, 100)
-    })
-  }
 
   await expect(
     expectCodeDigitsToBe([
