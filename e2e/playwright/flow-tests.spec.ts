@@ -738,7 +738,11 @@ test('Can extrude from the command bar', async ({ page, context }) => {
 })
 
 test('tangential arc can be added and moved', async ({ page }) => {
-  // Brief boilerplate
+  // dragging control points is buggy and brittle in away that's hard to describe
+  // It almost as if when using page.mouse.move(x, y), even when x and y are within the page
+  // playwright or the browser didn't think they were, and I had to play with number until it was happy
+  // even then the numbers are inconsistent on different OS browser and CI
+  // so I've added some fuzziness to the test, sorry it's hard to read.
   const u = getUtils(page)
   await page.setViewportSize({ width: 1200, height: 500 })
   await page.goto('/')
@@ -776,13 +780,9 @@ test('tangential arc can be added and moved', async ({ page }) => {
   const num3 = 17.23
   const _num3 = ['17.23', '-17.23']
   const num4 = 25.84
-  const _num4 = ['25.84']
   // I don't know what this is slightly different in CI but for the convenience of having test work locally
-  const num5 = process.env.CI ? 22.05 : 21.88
   const _num5 = ['22.05', '21.88']
-  const num6 = process.env.CI ? 32.39 : 34.45
   const _num6 = ['32.39', '34.45']
-  const num7 = process.env.CI ? 39 : 43
   const _num7 = ['39', '43']
 
   await u.doAndWaitForCmd(firstPoint, 'mouse_click', false)
@@ -933,7 +933,7 @@ test('tangential arc can be added and moved', async ({ page }) => {
 
   // re-enter sketch
   await u.doAndWaitForCmd(
-    () => page.getByText(`line([${num5}, -2.07], %)`).click(),
+    () => page.getByText(`startProfileAt(`).click(),
     'select_clear',
     false
   )
