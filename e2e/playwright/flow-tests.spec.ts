@@ -755,7 +755,6 @@ test('tangential arc can be added and moved', async ({ page }) => {
       }> => {
         const currentCode = await page.locator('.cm-content').innerText()
         const digits = currentCode.match(/-?\d+\.?\d*/g) || []
-        console.log('current digits', digits)
         let didAllPass = true
         for (let i = 0; i < digits.length; i++) {
           const hasMatchingDigit = expectedDigits[i].includes(digits[i])
@@ -824,7 +823,6 @@ test('tangential arc can be added and moved', async ({ page }) => {
   const num3 = 17.23
   const _num3 = ['17.23', '-17.23']
   const num4 = 25.84
-  // I don't know what this is slightly different in CI but for the convenience of having test work locally
   const _num5 = ['22.05', '21.88', '21.19']
   const _num6 = ['32.39', '34.45', '30.49']
   const _num7 = ['39', '43', '35']

@@ -503,21 +503,9 @@ export const tangentialArcTo: SketchLineHelper = {
       pathToNode,
     }
   },
-  // TODO copy-paste from angledLine
   updateArgs: ({ node, pathToNode, to, from }) => {
     const _node = { ...node }
-    const { node: callExpression } = getNodeFromPath<CallExpression>(
-      _node,
-      pathToNode
-    )
-    const x = createLiteral(roundOff(to[0], 0))
-    const y = createLiteral(roundOff(to[1], 2))
-
-    const firstArg = callExpression.arguments?.[0]
-    if (!mutateArrExp(firstArg, createArrayExpression([x, y]))) {
-      mutateObjExpProp(firstArg, createArrayExpression([x, y]), 'to')
-    }
-
+    // TODO implementation
     return {
       modifiedAst: _node,
       pathToNode,

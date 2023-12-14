@@ -173,30 +173,6 @@ export const Stream = ({ className = '' }) => {
         const entities_modified = resp?.data?.data?.entities_modified
         if (!entities_modified) return
         if (state.matches('Sketch.Line Tool.No Points')) {
-          engineCommandManager
-            .sendSceneCommand({
-              cmd_id: uuidv4(),
-              type: 'modeling_cmd_req',
-              cmd: {
-                type: 'path_get_vertex_uuids',
-                path_id: context.sketchEnginePathId,
-              },
-            })
-            .then((resp) => {
-              engineCommandManager
-                .sendSceneCommand({
-                  cmd_id: uuidv4(),
-                  type: 'modeling_cmd_req',
-                  cmd: {
-                    type: 'path_get_info',
-                    path_id: context.sketchEnginePathId,
-                  },
-                })
-                .then((resp) => {
-                  console.log('path info', resp)
-                })
-              console.log('no points, do we get the one vertex?', resp)
-            })
           send('Add point')
         } else if (state.matches('Sketch.Line Tool.Point Added')) {
           const curve = await engineCommandManager.sendSceneCommand({

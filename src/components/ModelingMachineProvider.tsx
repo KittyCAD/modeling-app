@@ -296,12 +296,6 @@ export const ModelingMachineProvider = ({
         'sketch exit execute': () => {
           kclManager.executeAst()
         },
-        // 'toast extrude failed': () => {
-        //   toast.error(
-        //     'Extrude failed, sketches need to be closed, or not already extruded'
-        //   )
-        // },
-        // 'set tool': () => {}, // TODO
         'Set selection': assign(({ selectionRanges }, event) => {
           if (event.type !== 'Set selection') return {} // this was needed for ts after adding 'Set selection' action to on done modal events
           const setSelections = event.data
