@@ -824,7 +824,7 @@ test('tangential arc can be added and moved', async ({ page }) => {
   const _num3 = ['17.23', '-17.23']
   const num4 = 25.84
   const _num5 = ['22.05', '21.88', '21.19']
-  const _num6 = ['32.39', '34.45', '30.49']
+  const _num6 = ['32.39', '34.45', '34.62', '30.49']
   const _num7 = ['39', '43', '35']
 
   await u.doAndWaitForCmd(firstPoint, 'mouse_click', false)

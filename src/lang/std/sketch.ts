@@ -505,7 +505,17 @@ export const tangentialArcTo: SketchLineHelper = {
   },
   updateArgs: ({ node, pathToNode, to, from }) => {
     const _node = { ...node }
-    // TODO implementation
+    const { node: callExpression } = getNodeFromPath<CallExpression>(
+      _node,
+      pathToNode
+    )
+    const x = createLiteral(roundOff(to[0], 0))
+    const y = createLiteral(roundOff(to[1], 2))
+
+    const firstArg = callExpression.arguments?.[0]
+    if (!mutateArrExp(firstArg, createArrayExpression([x, y]))) {
+      mutateObjExpProp(firstArg, createArrayExpression([x, y]), 'to')
+    }
     return {
       modifiedAst: _node,
       pathToNode,
