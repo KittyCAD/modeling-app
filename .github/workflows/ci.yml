@@ -107,7 +107,7 @@ jobs:
           echo "$(jq --arg url 'https://dl.kittycad.io/releases/modeling-app/nightly/last_update.json' \
             '.tauri.updater.endpoints[]=$url' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: github.event_name == 'schedule'
         with:
           path: |
@@ -128,7 +128,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
 
       - name: Copy updated .json files
         if: github.event_name == 'schedule'
@@ -242,7 +242,7 @@ jobs:
         with:
           args: "${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }} ${{ env.TAURI_CONF_ARGS }}"
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         env:
           PREFIX: ${{ matrix.os == 'macos-latest' && 'src-tauri/target/universal-apple-darwin' || 'src-tauri/target' }}
           MODE: ${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}
@@ -272,7 +272,7 @@ jobs:
       NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Nightly build, commit {0}', github.sha) }}
       BUCKET_DIR: ${{ github.event_name == 'release' && 'dl.kittycad.io/releases/modeling-app' || 'dl.kittycad.io/releases/modeling-app/nightly' }}
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
 
       - name: Generate the update static endpoint
         run: |
@@ -350,12 +350,12 @@ jobs:
           credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
 
       - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1.1.1
+        uses: google-github-actions/setup-gcloud@v2.0.0
         with:
           project_id: kittycadapi
 
       - name: Upload release files to public bucket
-        uses: google-github-actions/upload-cloud-storage@v1.0.3
+        uses: google-github-actions/upload-cloud-storage@v2.0.0
         with:
           path: artifact
           glob: '*/*itty*'
@@ -363,13 +363,13 @@ jobs:
           destination: ${{ env.BUCKET_DIR }}/${{ env.VERSION }}
 
       - name: Upload update endpoint to public bucket
-        uses: google-github-actions/upload-cloud-storage@v1.0.3
+        uses: google-github-actions/upload-cloud-storage@v2.0.0
         with:
           path: last_update.json
           destination: ${{ env.BUCKET_DIR }}
 
       - name: Upload download endpoint to public bucket
-        uses: google-github-actions/upload-cloud-storage@v1.0.3
+        uses: google-github-actions/upload-cloud-storage@v2.0.0
         with:
           path: last_download.json
           destination: ${{ env.BUCKET_DIR }}

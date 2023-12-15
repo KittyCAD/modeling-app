@@ -3,6 +3,7 @@ export type CustomIconName =
   | 'arrowLeft'
   | 'arrowRight'
   | 'arrowUp'
+  | 'checkmark'
   | 'close'
   | 'equal'
   | 'extrude'
@@ -86,6 +87,22 @@ export const CustomIcon = ({
             fillRule="evenodd"
             clipRule="evenodd"
             d="M10 2.29288L10.3536 2.64643L13.8536 6.14643L13.1465 6.85354L10.5 4.20709V17H9.50004V4.20709L6.85359 6.85354L6.14648 6.14643L9.64648 2.64643L10 2.29288Z"
+            fill="currentColor"
+          />
+        </svg>
+      )
+    case 'checkmark':
+      return (
+        <svg
+          {...props}
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M8.29956 13.5388L13.9537 6L14.7537 6.6L8.75367 14.6L8.00012 14.6536L5 11.6536L5.70709 10.9465L8.29956 13.5388Z"
             fill="currentColor"
           />
         </svg>
