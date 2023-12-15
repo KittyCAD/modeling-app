@@ -38,7 +38,7 @@ import {
   settingsMachine,
 } from './machines/settingsMachine'
 import { ContextFrom } from 'xstate'
-import CommandBarProvider from 'components/CommandBar'
+import CommandBarProvider from 'components/CommandBar/CommandBar'
 import { TEST, VITE_KC_SENTRY_DSN } from './env'
 import * as Sentry from '@sentry/react'
 import ModelingMachineProvider from 'components/ModelingMachineProvider'

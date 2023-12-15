@@ -1,4 +1,4 @@
-![KittyCAD Modeling App](/public/kcma-logomark.png)
+![KittyCAD Modeling App](/public/kcma-logomark-outlined.png)
 
 ## KittyCAD Modeling App
 
