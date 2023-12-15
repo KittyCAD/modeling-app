@@ -1,7 +1,6 @@
 import { assign, createMachine } from 'xstate'
-import { CommandBarConfig } from '../lib/commands'
 import { Themes, getSystemTheme, setThemeClass } from '../lib/theme'
-import { CameraSystem, cameraSystems } from 'lib/cameraControls'
+import { CameraSystem } from 'lib/cameraControls'
 import { Models } from '@kittycad/lib'
 
 export const DEFAULT_PROJECT_NAME = 'project-$nnn'
@@ -23,85 +22,6 @@ export const baseUnitsUnion = Object.values(baseUnits).flatMap((v) => v)
 export type Toggle = 'On' | 'Off'
 
 export const SETTINGS_PERSIST_KEY = 'SETTINGS_PERSIST_KEY'
-
-export const settingsCommandBarConfig: CommandBarConfig<
-  typeof settingsMachine
-> = {
-  'Set Base Unit': {
-    icon: 'gear',
-    args: [
-      {
-        name: 'baseUnit',
-        type: 'select',
-        getDefaultValueFromContext: 'baseUnit',
-        options: Object.values(baseUnitsUnion).map((v) => ({ name: v })),
-      },
-    ],
-  },
-  'Set Camera Controls': {
-    icon: 'gear',
-    args: [
-      {
-        name: 'cameraControls',
-        type: 'select',
-        getDefaultValueFromContext: 'cameraControls',
-        options: Object.values(cameraSystems).map((v) => ({ name: v })),
-      },
-    ],
-  },
-  'Set Default Directory': {
-    hide: 'both',
-  },
-  'Set Default Project Name': {
-    icon: 'gear',
-    hide: 'web',
-    args: [
-      {
-        name: 'defaultProjectName',
-        type: 'string',
-        getDefaultValueFromContext: 'defaultProjectName',
-      },
-    ],
-  },
-  'Set Onboarding Status': {
-    hide: 'both',
-  },
-  'Set Text Wrapping': {
-    icon: 'gear',
-    args: [
-      {
-        name: 'textWrapping',
-        type: 'select',
-        getDefaultValueFromContext: 'textWrapping',
-        options: [{ name: 'On' }, { name: 'Off' }],
-      },
-    ],
-  },
-  'Set Theme': {
-    icon: 'gear',
-    args: [
-      {
-        name: 'theme',
-        type: 'select',
-        getDefaultValueFromContext: 'theme',
-        options: Object.values(Themes).map((v): { name: string } => ({
-          name: v,
-        })),
-      },
-    ],
-  },
-  'Set Unit System': {
-    icon: 'gear',
-    args: [
-      {
-        name: 'unitSystem',
-        type: 'select',
-        getDefaultValueFromContext: 'unitSystem',
-        options: [{ name: UnitSystem.Imperial }, { name: UnitSystem.Metric }],
-      },
-    ],
-  },
-}
 
 export const settingsMachine = createMachine(
   {

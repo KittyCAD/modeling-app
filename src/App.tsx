@@ -172,11 +172,8 @@ export function App() {
       <ModalContainer />
       <Resizable
         className={
-          'h-full flex flex-col flex-1 z-10 my-5 ml-5 pr-1 transition-opacity transition-duration-75 ' +
-          (buttonDownInStream || onboardingStatus === 'camera'
-            ? ' pointer-events-none '
-            : ' ') +
-          paneOpacity
+          'pointer-events-none h-full flex flex-col flex-1 z-10 my-5 ml-5 pr-1 transition-opacity transition-duration-75 ' +
+          +paneOpacity
         }
         defaultSize={{
           width: '550px',
@@ -188,10 +185,16 @@ export function App() {
         maxHeight={'auto'}
         handleClasses={{
           right:
-            'hover:bg-liquid-30/40 dark:hover:bg-liquid-10/40 bg-transparent transition-colors duration-100 transition-ease-out delay-100',
+            'hover:bg-chalkboard-10/50 bg-transparent transition-colors duration-75 transition-ease-out delay-100 ' +
+            (buttonDownInStream || onboardingStatus === 'camera'
+              ? 'pointer-events-none '
+              : 'pointer-events-auto'),
         }}
       >
-        <div id="code-pane" className="h-full flex flex-col justify-between">
+        <div
+          id="code-pane"
+          className="h-full flex flex-col justify-between pointer-events-none"
+        >
           <CollapsiblePanel
             title="Code"
             icon={faCode}

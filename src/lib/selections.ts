@@ -7,6 +7,10 @@ import { EditorSelection } from '@codemirror/state'
 import { kclManager } from 'lang/KclSinglton'
 import { SelectionRange } from '@uiw/react-codemirror'
 import { isOverlap } from 'lib/utils'
+import { isCursorInSketchCommandRange } from 'lang/util'
+import { Program } from 'lang/wasm'
+import { doesPipeHaveCallExp } from 'lang/queryAst'
+import { CommandArgument } from './commandTypes'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -370,4 +374,129 @@ function resetAndSetEngineEntitySelectionCmds(
       cmd_id: uuidv4(),
     },
   ]
+}
+
+export function isSketchPipe(selectionRanges: Selections) {
+  return isCursorInSketchCommandRange(
+    engineCommandManager.artifactMap,
+    selectionRanges
+  )
+}
+
+export function isSelectionLastLine(
+  selectionRanges: Selections,
+  code: string,
+  i = 0
+) {
+  return selectionRanges.codeBasedSelections[i].range[1] === code.length
+}
+
+export type CommonASTNode = {
+  selection: Selection
+  ast: Program
+}
+
+export function buildCommonNodeFromSelection(
+  selectionRanges: Selections,
+  i: number
+) {
+  return {
+    selection: selectionRanges.codeBasedSelections[i],
+    ast: kclManager.ast,
+  }
+}
+
+export function nodeHasExtrude(node: CommonASTNode) {
+  return doesPipeHaveCallExp({
+    calleeName: 'extrude',
+    ...node,
+  })
+}
+
+export function nodeHasClose(node: CommonASTNode) {
+  return doesPipeHaveCallExp({
+    calleeName: 'close',
+    ...node,
+  })
+}
+
+export function canExtrudeSelection(selection: Selections) {
+  const commonNodes = selection.codeBasedSelections.map((_, i) =>
+    buildCommonNodeFromSelection(selection, i)
+  )
+  return (
+    !!isSketchPipe(selection) &&
+    commonNodes.every((n) => nodeHasClose(n)) &&
+    commonNodes.every((n) => !nodeHasExtrude(n))
+  )
+}
+
+export function canExtrudeSelectionItem(selection: Selections, i: number) {
+  const commonNode = buildCommonNodeFromSelection(selection, i)
+
+  return (
+    !!isSketchPipe(selection) &&
+    nodeHasClose(commonNode) &&
+    !nodeHasExtrude(commonNode)
+  )
+}
+
+// This accounts for non-geometry selections under "other"
+export type ResolvedSelectionType = [Selection['type'] | 'other', number]
+
+/**
+ * In the future, I'd like this function to properly return the type of each selected entity based on
+ * its code source range, so that we can show something like "0 objects" or "1 face" or "1 line, 2 edges",
+ * and then validate the selection in CommandBarSelectionInput.tsx and show the proper label.
+ * @param selection
+ * @returns
+ */
+export function getSelectionType(
+  selection: Selections
+): ResolvedSelectionType[] {
+  return selection.codeBasedSelections
+    .map((s, i) => {
+      if (canExtrudeSelectionItem(selection, i)) {
+        return ['face', 1] as ResolvedSelectionType // This is implicitly determining what a face is, which is bad
+      } else {
+        return ['other', 1] as ResolvedSelectionType
+      }
+    })
+    .reduce((acc, [type, count]) => {
+      const foundIndex = acc.findIndex((item) => item && item[0] === type)
+
+      if (foundIndex === -1) {
+        return [...acc, [type, count]]
+      } else {
+        const temp = [...acc]
+        temp[foundIndex][1] += count
+        return temp
+      }
+    }, [] as ResolvedSelectionType[])
+}
+
+export function getSelectionTypeDisplayText(
+  selection: Selections
+): string | null {
+  const selectionsByType = getSelectionType(selection)
+
+  return (selectionsByType as Exclude<typeof selectionsByType, 'none'>)
+    .map(([type, count]) => `${count} ${type}${count > 1 ? 's' : ''}`)
+    .join(', ')
+}
+
+export function canSubmitSelectionArg(
+  selectionsByType: 'none' | ResolvedSelectionType[],
+  argument: CommandArgument<unknown> & { inputType: 'selection' }
+) {
+  return (
+    selectionsByType !== 'none' &&
+    selectionsByType.every(([type, count]) => {
+      const foundIndex = argument.selectionTypes.findIndex((s) => s === type)
+      return (
+        foundIndex !== -1 &&
+        (!argument.multiple ? count < 2 && count > 0 : count > 0)
+      )
+    })
+  )
 }

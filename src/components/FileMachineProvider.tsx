@@ -40,7 +40,7 @@ export const FileMachineProvider = ({
   children: React.ReactNode
 }) => {
   const navigate = useNavigate()
-  const { setCommandBarOpen } = useCommandsContext()
+  const { commandBarSend } = useCommandsContext()
   const { project } = useRouteLoaderData(paths.FILE) as IndexLoaderData
 
   const [state, send] = useMachine(fileMachine, {
@@ -54,7 +54,7 @@ export const FileMachineProvider = ({
         event: EventFrom<typeof fileMachine>
       ) => {
         if (event.data && 'name' in event.data) {
-          setCommandBarOpen(false)
+          commandBarSend({ type: 'Close' })
           navigate(
             `${paths.FILE}/${encodeURIComponent(
               context.selectedDirectory + sep + event.data.name
