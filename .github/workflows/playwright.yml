@@ -33,7 +33,7 @@ jobs:
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v3
       if: always()
       with:
         name: playwright-report
@@ -68,7 +68,7 @@ jobs:
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v3
       if: always()
       with:
         name: playwright-report
@@ -106,7 +106,7 @@ jobs:
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v3
       if: always()
       with:
         name: playwright-report
