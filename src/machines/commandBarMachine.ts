@@ -8,7 +8,7 @@ import { Selections } from 'lib/selections'
 
 export const commandBarMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QGED2BbdBDAdhABAEJYBOAxMgDaqxgDaADALqKgAONAlgC6eo6sQAD0QBaAJwA6AGwAmAKwBmBoukAWafIAcDcSoA0IAJ6JZDaZIDs8hgzV6AjA61a1DWQF8PhtJlwFiciowUkYWJBAOWB4+AQiRBFF5CwdpcVkHS1lpVyU5QxNEh1lFGTUsrUUtOQd5SwZLLx8MbDwiUkkqGkgyAHk2MBwwwSiY-kEEswdJNWcNbPFLNMr5AsRFWUtJcVSdRR2VVMUmkF9WgI6u2ggyADFONv98WkowAGNufDeW-2GI0d443iiHESkktUUG1klTsSi0awQDgYWhmqkWjnUslBWhOZyegU61GuZAAghACN8-HhYH92FxAXFQAlRA5FpJ5FjFPYtNDpIpLOkEW4GNs4eJxJoGvJxOVcT82gSrj0AEpgdCoABuYC+8ogNOYI3psQmYlkGUkU2slhc6mkmUUCIyKLc4i0lkU8iUyjUHLlVIuJEkAGUwK8Pg8oDr-WQQ2HPpTzrTIkagUzEDkLHZkQK1CUtKCHAiNlsdjkVAdFEc-ed2oGAOJYbgACzAJAj+FIUAAruhBtxYGQACJwUPveO6pMA43AhA5UqWXOzBjS-nOR3LySqXNODTyZwONTV-GXXXPUcfHqTlOM4TrSublb5-lLewlIVySRaOrmGw-jLSI8FRPf0zzjS8HHCOlogZE1ERUEUSgPa05yQ1ZjEQeZP2-VwDzUN1zEabxTlPAkG2bVt207Hs+wHZAm1wGAvi7EgSD7DsSG7XscG4K9oOnNNEVUeQZGSOxc0qaQ7HhdDBJFeRc35extGkNI+UAgNJDIls2xwSMqK4-tJBJAB3LAYl0-AHjYLtuBjLsACN0B4djOL7XixhvBIDxUT8qj5VIkTwtQHRk8oUQcD15LMXQclcdTa00xttMojjqO42BJAANSwShOAgRsIzICB+DASQHg1VAAGtSo1HK8sbMASVSgz3JgmdMnKGYzRlbIdGXA8EX8zd3RsTY9yyY4iLxID6ySiiLP0misrq-LeF0shWxIVBAzYShGwAM229BJFq3LVsa5q3INf5r1gg9JIfXqqh0TQsiFTYrCyJZRpsXJ4oJVUNU4MBjLsxznITX5rqgjzYMsaZtGXaVNhcZFKgRd0RXUdJ6mUXQXX+jpAeB0GyQIRbuNa-jbwQcVSmhAUeTkWQ3HyGSBVKDQMyRAKAsJwNiZBshVXVLUXLSnjoeTPjUxpnmpFtcVs1cPNBq5T8fR5DrKwaHEppIomwCBoWAFEIGcinJcg6XYZnTRhJsbQJU9VlQTVtQNbqcVZhsSFxH5zoWzeSr2ya1z0qKkqypwCrqpOlaGrDiX9WtqdZYSeSEeXEplCceo1xkvQLGCmUIp0Mwck8fWQMVIOQ4spODIHYqcFK8qqpqhPuAu8P+zoCDDRlzzTCkCVWWlSxrBceTygRFxZHZNJbE2VQ5AFAO6PeevI0bmiNpY7bJF2g6jvjs7E8u9KqfTxAkK2fZYuRvdYUGjQZnqYVxRKdx-ZOHBUAgHAQQ00AyD1tgJUQCwLQMEyHUG0Gh7SOmmDuGB6gOTyVBMkDeRJIBgLahA4oFo8zWlSPUT00o0KFA9NMYKrhKwbH2GaQ81cawEljGOdskM8B4OpgkWY9MV5ZjqLUN6MlqGojoRFEo6QWYb1PC8McuCbpD1gosLYrhkTZCxNIawhYxEfW0HhCKKgzT8lBAHLS809KX37Dwm+iIWZSEinjTRy51BFnvNofM7hGZfgXBYuaOlrG9wyiZMya1IxWRsnY4eDi2TONsK45IaghQbEkO4VIKlsaVE2AE8iQTxZN2WufCJMS7o6JSBKNQLp7CT35EKZw2wnDVDyCvBczDmg10NsbYyZS7aZHBNU58q8sTQgxnud+kVsjyQzHrTprDLh11DjY+AyjwFy00DQ2EaQBSLAPLIDGWRNw2BUiXHkwVCJeCAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QGED2BbdBDAdhABAEJYBOAxMgDaqxgDaADALqKgAONAlgC6eo6sQAD0QBaAJwA6AGwAmAKwBmBoukAWafIAcDcSoA0IAJ6JZDaZIDs8hgzV6AjA61a1DWQF8PhtJlwFiciowUkYWJBAOWB4+AQiRBFF5CwdpcVkHS1lpVyU5QxNEh1lFGTUsrUUtOQd5SwZLLx8MbDwiUkkqGkgyAHk2MBwwwSiY-kEEswdJNWcNbPFLNMr5AsRFWUtJcVSdRR2VVMUmkF9WgI6u2ggyADFONv98WkowAGNufDeW-2GI0d443iiHESkktUUG1klTsSi0awQDgYWhmqkWjnUslBWhOZyegU61GuZAAghACN8-HhYH92FxAXFQAlRA5FpJ5FjFPYtNDpIpLOkEW4GNs4eJxJoGvJxOVcT82gSrj0AEpgdCoABuYC+8ogNOYI3psQmYlkGUkU2slhc6mkmUUCIyKLc4i0lkU8iUyjUHLlVIuJEkAGUwK8Pg8oDr-WQQ2HPpTzrTIkagUzEDkLHZkQK1CUtKCHAiNlsdjkVAdFEc-ed2oG8W0Xu9uD0kwDjcCEJDplUPfn+Ut7CUhXJJFo6uYbBOMtJq-jLrrnqGmy2HOE6dEGSbESoRSUHOVqpV99Zh7JR+PXPu1G7zI1vKcFwSAOJYbgACzAJAj+FIUAAruggzcLAFBvrgMBfH+JAkEBP4kP+gE4NwrYpoywiIA4qjyDIyR2LmlTSHY8LGBhyjsrm-L2No0hpHys4Kh0L7vp+36-gBQEgQAInAS4fFGiYGv8qFbjkpSWLmswMNK-LOI6UmSKouZOBo8jOPu9EBpITEfl+OCRmxiHAZIJIAO5YDEen4A8bB-twMZ-gARugPBwQhQEoRu7ZpoibilJU1SVnaRFqA6JEIAe4IevIua2BKLhqBptZaa+OmsfB7FIbAkgAGpYJQnAQK+EZkBA-BgJIDwaqgADW5UanlBWvmAJLpYZHljGhCSZOUMxmjK2Q6FJ+4Iny3bujYmyqVkxz3vWmnaSxlkGRxOUNYVvB6WQn4kKggZsJQr4AGa7egkj1fl63Na17mCeuHVbvuhEKTyokuBOWRCpsVhZEsE02LkiUEqqGqcGAJn2U5LkJr8t3Jp5qboQgljTNoUnSpsb0uKFhTuiK6jpPUyi6C6gMdMDoPg2SBDLUh7Wbh24qlNCAovWabj5GFAqlBoGZIqkTh2qTgbk2DZCquqWquRlyGw22CNdQwrJlGkehuq4eYjVyo4+jy3WVg0OKzY+ZNgCDosAKIQC5NMy2ucP3R2mjYTY2gSp6rKgpraja3U4qzDYkLiELnQfm81Xfi1bmZSVZUVTgVW1Wda1NZH0v6nbcudYg0Uo1JJTKE49SyWFegWCFMqYToZg5J4Rv+klyCh+Hlmp4ZIGlTg5WVTVdXJ82rccXQq6GvDWcIFi2x2qCizWC40XlAiLhnskejuO6NGbEHdc1oqTcR9d0fbbtkj7UdJ1JxdKcH8BdNeYjx5bPsORjukqmwiNGgzPUwriiU7hb80euz4UqLX0tfEC4tNTahtrfeWpg7DTAlMeQ8XIOSrDCrsdk4gqjImRD6TCIVg4LV0mAqOwExZqigVLNqw8hKjwepoUo7g4SzE0EFQsGDpTbFcG6AhgUlheHvDgVAEA4CCDmrWEeDtvKiAWBaRWVobQaHtI6aYylzDFGUIpSsCVt5zjrESSAUj6YyOKBaPM1pUj1E9NKdBhQPTTBCq4SsGx9hs2DrGJs35oZ4GMXfBIswmabG9FJZGdRZBFlUqiZxmESjpFkLowBO95z10bB8IxdDpGIxntrZE2QsTSGsBw+xX1tDXkwioM0-JQREJASQ6hHE-FwMRAkqQUUiZ5KkuoIslZ2QuBlFaGiWQEm1OYvUm2WVTLmQ2pGaytkmlj2KGydpthOnJDUEKDYkh3CpBovjSomxRmpSWuA1al8ZkLIYUscEEo1AunsJYd0lghTOG2E4aoeRgniUSQ+IBJszYmUuY7TI4I7n9lUHIdIxEcZRPKFFbI0UMyGySfokO7xm6RgHplIF3laivMZgRNm7NsaIACgpV2SxajYMhDNLwQA */
     context: {
       commands: [] as Command[],
       selectedCommand: undefined as Command | undefined,
@@ -167,6 +167,19 @@ export const commandBarMachine = createMachine(
               }),
             ],
           },
+
+          'Remove argument': [
+            {
+              target: 'Review',
+              cond: 'Is current argument',
+              actions: 'Remove argument',
+            },
+            {
+              target: 'Gathering arguments',
+              internal: true,
+              actions: 'Remove argument',
+            },
+          ],
         },
       },
 
@@ -185,17 +198,7 @@ export const commandBarMachine = createMachine(
 
           'Remove argument': {
             target: 'Review',
-            actions: [
-              assign({
-                argumentsToSubmit: (context, event) => {
-                  const argName = Object.keys(event.data)[0]
-                  const { argumentsToSubmit } = context
-                  const newArgumentsToSubmit = { ...argumentsToSubmit }
-                  newArgumentsToSubmit[argName] = undefined
-                  return newArgumentsToSubmit
-                },
-              }),
-            ],
+            actions: ['Remove argument'],
           },
 
           'Edit argument': {
@@ -362,10 +365,25 @@ export const commandBarMachine = createMachine(
           return args
         },
       }),
+      'Remove argument': assign({
+        argumentsToSubmit: (context, event) => {
+          if (event.type !== 'Remove argument') return context.argumentsToSubmit
+          const argName = Object.keys(event.data)[0]
+          const { argumentsToSubmit } = context
+          const newArgumentsToSubmit = { ...argumentsToSubmit }
+          delete newArgumentsToSubmit[argName]
+          return newArgumentsToSubmit
+        },
+      }),
     },
     guards: {
       'Command needs review': (context, _) =>
         context.selectedCommand?.needsReview || false,
+      'Is current argument': (context, event) => {
+        if (event.type !== 'Remove argument') return false
+        const argName = Object.keys(event.data)[0]
+        return argName === context.currentArgument?.name
+      },
     },
     services: {
       'Validate argument': (context, event) => {
@@ -381,6 +399,10 @@ export const commandBarMachine = createMachine(
         return new Promise((resolve, reject) => {
           for (const [argName, arg] of Object.entries(
             context.argumentsToSubmit
+          ).filter(([argName, _]) =>
+            context.selectedCommand?.args
+              ? context.selectedCommand?.args[argName]?.required
+              : false
           )) {
             let argConfig = context.selectedCommand!.args![argName]
 

@@ -72,55 +72,78 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                 )}
               {selectedCommand?.name}
             </p>
-            {Object.entries(selectedCommand?.args || {}).map(
-              ([argName, arg], i) => (
-                <button
-                  disabled={!isReviewing && currentArgument?.name === argName}
-                  onClick={() => {
-                    commandBarSend({
-                      type: isReviewing
-                        ? 'Edit argument'
-                        : 'Change current argument',
-                      data: { arg: { ...arg, name: argName } },
-                    })
-                  }}
-                  key={argName}
-                  className={`relative w-fit px-2 py-1 rounded-sm flex gap-2 items-center border ${
-                    argName === currentArgument?.name
-                      ? 'disabled:bg-energy-10/50 dark:disabled:bg-energy-10/20 disabled:border-energy-10 dark:disabled:border-energy-10 disabled:text-chalkboard-100 dark:disabled:text-chalkboard-10'
-                      : 'bg-chalkboard-20/50 dark:bg-chalkboard-80/50 border-chalkboard-20 dark:border-chalkboard-80'
-                  }`}
-                >
-                  {argumentsToSubmit[argName] ? (
-                    arg.inputType === 'selection' ? (
-                      getSelectionTypeDisplayText(
-                        argumentsToSubmit[argName] as Selections
-                      )
-                    ) : typeof argumentsToSubmit[argName] === 'object' ? (
-                      JSON.stringify(argumentsToSubmit[argName])
-                    ) : (
-                      argumentsToSubmit[argName]
-                    )
-                  ) : arg.payload ? (
-                    arg.inputType === 'selection' ? (
-                      getSelectionTypeDisplayText(arg.payload as Selections)
-                    ) : typeof arg.payload === 'object' ? (
-                      JSON.stringify(arg.payload)
-                    ) : (
-                      arg.payload
-                    )
-                  ) : (
-                    <em>{argName}</em>
-                  )}
-                  {showShortcuts && (
-                    <small className="absolute -top-[1px] right-full translate-x-1/2 px-0.5 rounded-sm bg-chalkboard-80 text-chalkboard-10 dark:bg-energy-10 dark:text-chalkboard-100">
-                      <span className="sr-only">Hotkey: </span>
-                      {i + 1}
-                    </small>
-                  )}
-                </button>
+            {Object.entries(selectedCommand?.args || {})
+              .filter(([argName, _]) =>
+                selectedCommand?.args
+                  ? selectedCommand?.args[argName]?.required ||
+                    (argName in argumentsToSubmit && argumentsToSubmit[argName])
+                  : false
               )
-            )}
+              .map(([argName, arg], i) => (
+                <div className="relative group" key={argName}>
+                  <button
+                    disabled={!isReviewing && currentArgument?.name === argName}
+                    onClick={() => {
+                      commandBarSend({
+                        type: isReviewing
+                          ? 'Edit argument'
+                          : 'Change current argument',
+                        data: { arg: { ...arg, name: argName } },
+                      })
+                    }}
+                    className={`relative w-fit px-2 py-1 rounded-sm flex gap-2 items-center border ${
+                      argName === currentArgument?.name
+                        ? 'disabled:bg-energy-10/50 dark:disabled:bg-energy-10/20 disabled:border-energy-10 dark:disabled:border-energy-10 disabled:text-chalkboard-100 dark:disabled:text-chalkboard-10'
+                        : 'bg-chalkboard-20/50 dark:bg-chalkboard-80/50 border-chalkboard-20 dark:border-chalkboard-80'
+                    }`}
+                  >
+                    {argumentsToSubmit[argName] ? (
+                      arg.inputType === 'selection' ? (
+                        getSelectionTypeDisplayText(
+                          argumentsToSubmit[argName] as Selections
+                        )
+                      ) : typeof argumentsToSubmit[argName] === 'object' ? (
+                        JSON.stringify(argumentsToSubmit[argName])
+                      ) : (
+                        argumentsToSubmit[argName]
+                      )
+                    ) : arg.payload ? (
+                      arg.inputType === 'selection' ? (
+                        getSelectionTypeDisplayText(arg.payload as Selections)
+                      ) : typeof arg.payload === 'object' ? (
+                        JSON.stringify(arg.payload)
+                      ) : (
+                        arg.payload
+                      )
+                    ) : (
+                      <em>{argName}</em>
+                    )}
+                    {showShortcuts && (
+                      <small className="absolute -top-[1px] right-full translate-x-1/2 px-0.5 rounded-sm bg-chalkboard-80 text-chalkboard-10 dark:bg-energy-10 dark:text-chalkboard-100">
+                        <span className="sr-only">Hotkey: </span>
+                        {i + 1}
+                      </small>
+                    )}
+                  </button>
+                  {!arg.required && (
+                    <button
+                      onClick={() => {
+                        commandBarSend({
+                          type: 'Remove argument',
+                          data: { [argName]: { ...arg, name: argName } },
+                        })
+                      }}
+                      className="invisible group-hover:visible absolute top-0 right-0 -translate-y-1/2 !p-0 flex items-center justify-center rounded-sm border-none bg-none"
+                    >
+                      <CustomIcon
+                        name="close"
+                        className="w-4 h-4 bg-destroy-80 dark:bg-destroy-30 hover:bg-destroy-70 dark:hover:bg-destroy-0 text-destroy-10 dark:text-destroy-80"
+                      />
+                      <span className="sr-only">Remove argument</span>
+                    </button>
+                  )}
+                </div>
+              ))}
           </div>
           {isReviewing ? <ReviewingButton /> : <GatheringArgsButton />}
         </div>

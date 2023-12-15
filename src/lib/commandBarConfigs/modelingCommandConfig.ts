@@ -15,6 +15,7 @@ export type ModelingCommandSchema = {
     selection: Selections // & { type: 'face' } would be cool to lock that down
     // result: (typeof EXTRUSION_RESULTS)[number]
     distance: number
+    makeVariable?: string
   }
 }
 
@@ -51,6 +52,10 @@ export const modelingMachineConfig: CommandSetConfig<
         inputType: 'number',
         defaultValue: 5,
         required: true,
+      },
+      makeVariable: {
+        inputType: 'string',
+        required: false,
       },
     },
   },
