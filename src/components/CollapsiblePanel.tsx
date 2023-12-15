@@ -60,7 +60,9 @@ export const CollapsiblePanel = ({
     <details
       {...props}
       data-testid={detailsTestId}
-      className={styles.panel + ' group ' + (className || '')}
+      className={
+        styles.panel + ' pointer-events-auto group ' + (className || '')
+      }
     >
       <PanelHeader
         title={title}

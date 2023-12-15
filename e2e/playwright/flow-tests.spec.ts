@@ -5,7 +5,6 @@ import { v4 as uuidv4 } from 'uuid'
 import { getUtils } from './test-utils'
 import waitOn from 'wait-on'
 import { Themes } from '../../src/lib/theme'
-import { platform } from '@tauri-apps/api/os'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -712,7 +711,7 @@ test('Can extrude from the command bar', async ({ page, context }) => {
 
   // Click to select face and set distance
   await u.openAndClearDebugPanel()
-  await page.getByText('|> line([25.1, 0.41], %)').click()
+  await page.getByText('|> startProfileAt([-6.95, 4.98], %)').click()
   await u.waitForCmdReceive('select_add')
   await u.closeDebugPanel()
   await page.getByRole('button', { name: 'Continue' }).click()
