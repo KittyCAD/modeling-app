@@ -243,15 +243,14 @@ export const Stream = ({ className = '' }) => {
       })
     } else if (
       !didDragInStream &&
-      (state.matches('Sketch.SketchIdle') ||
-        state.matches('idle') ||
-        state.matches('awaiting selection'))
+      (state.matches('Sketch.SketchIdle') || state.matches('idle'))
     ) {
       command.cmd = {
         type: 'select_with_point',
         selected_at_window: { x, y },
         selection_type: 'add',
       }
+
       engineCommandManager.sendSceneCommand(command)
     } else if (!didDragInStream && state.matches('Sketch.Move Tool')) {
       command.cmd = {
