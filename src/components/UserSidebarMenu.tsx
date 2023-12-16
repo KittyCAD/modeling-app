@@ -128,6 +128,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                       : paths.HOME + paths.SETTINGS
                     navigate(targetPath)
                   }}
+                  data-testid="settings-button"
                 >
                   Settings
                 </ActionButton>

@@ -51,11 +51,27 @@ describe('KCMA (Tauri, Linux)', () => {
     expect(await newFileButton.getText()).toEqual('New file')
   })
 
+  it('opens the settings, checks the projecte dir, and closes the settings', async () => {
+    const menuButton = await $('[data-testid="user-sidebar-toggle"]')
+    await menuButton.waitForClickable()
+    await browser.execute('arguments[0].click();', menuButton)
+
+    const settingsButton = await $('[data-testid="settings-button"]')
+    await settingsButton.waitForClickable()
+    await browser.execute('arguments[0].click();', settingsButton)
+    const input = await $('[data-testid="default-directory-input"]')
+    expect(await input.getValue()).toEqual(`${process.env.HOME}/Documents/kittycad-modeling-projects`)
+
+    const closeButton = await $('[data-testid="close-button"]')
+    await closeButton.waitForClickable()
+    await browser.execute('arguments[0].click();', closeButton)
+  })
+
   it('creates a new file', async () => {
     const newFileButton = await $('[data-testid="home-new-file"]')
     await newFileButton.waitForClickable()
     await browser.execute('arguments[0].click();', newFileButton)
-    await new Promise((resolve) => setTimeout(resolve, 3000))
+    await new Promise((resolve) => setTimeout(resolve, 30000))
     // TODO: check that it worked, and oepen it
   })
 
