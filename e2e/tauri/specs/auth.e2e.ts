@@ -60,7 +60,9 @@ describe('KCMA (Tauri, Linux)', () => {
     await settingsButton.waitForClickable()
     await browser.execute('arguments[0].click();', settingsButton)
     const input = await $('[data-testid="default-directory-input"]')
-    expect(await input.getValue()).toEqual(`${process.env.HOME}/Documents/kittycad-modeling-projects`)
+    expect(await input.getValue()).toEqual(
+      `${process.env.HOME}/Documents/kittycad-modeling-projects`
+    )
 
     const closeButton = await $('[data-testid="close-button"]')
     await closeButton.waitForClickable()
