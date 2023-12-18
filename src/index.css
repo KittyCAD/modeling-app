@@ -57,7 +57,7 @@ select {
 }
 
 button {
-  @apply border border-chalkboard-30 m-0.5 px-3 rounded text-xs;
+  @apply border border-chalkboard-30 m-0.5 px-3 rounded text-xs focus-visible:ring-energy-10;
 }
 
 button:hover {
@@ -65,7 +65,7 @@ button:hover {
 }
 
 .dark button {
-  @apply border-chalkboard-70;
+  @apply border-chalkboard-70 focus-visible:ring-energy-10/50;
 }
 
 .dark button:hover {
@@ -86,6 +86,14 @@ a:not(.action-button) {
 
 .dark a:not(.action-button) {
   @apply text-chalkboard-20 hover:text-energy-10;
+}
+
+input {
+  @apply selection:bg-energy-10/50;
+}
+
+.dark input {
+  @apply selection:bg-energy-10/40;
 }
 
 .mono {

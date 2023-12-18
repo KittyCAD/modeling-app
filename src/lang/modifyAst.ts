@@ -248,7 +248,8 @@ export function mutateObjExpProp(
 export function extrudeSketch(
   node: Program,
   pathToNode: PathToNode,
-  shouldPipe = true
+  shouldPipe = true,
+  distance = 4
 ): {
   modifiedAst: Program
   pathToNode: PathToNode
@@ -274,7 +275,7 @@ export function extrudeSketch(
     getNodeFromPath<VariableDeclarator>(_node, pathToNode, 'VariableDeclarator')
 
   const extrudeCall = createCallExpressionStdLib('extrude', [
-    createLiteral(4),
+    createLiteral(distance),
     shouldPipe
       ? createPipeSubstitution()
       : {

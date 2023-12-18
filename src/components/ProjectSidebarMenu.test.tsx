@@ -3,7 +3,7 @@ import { BrowserRouter } from 'react-router-dom'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
 import { ProjectWithEntryPointMetadata } from '../Router'
 import { GlobalStateProvider } from './GlobalStateProvider'
-import CommandBarProvider from './CommandBar'
+import CommandBarProvider from './CommandBar/CommandBar'
 
 const now = new Date()
 const projectWellFormed = {

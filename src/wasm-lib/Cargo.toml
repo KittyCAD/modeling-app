@@ -54,7 +54,6 @@ members = [
 	"derive-docs",
 	"kcl",
   "kcl-macros",
-  "execution-plan",
 ]
 
 [workspace.dependencies]

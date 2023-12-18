@@ -17,7 +17,7 @@ import { Link } from 'react-router-dom'
 import { ProjectWithEntryPointMetadata, HomeLoaderData } from '../Router'
 import Loading from '../components/Loading'
 import { useMachine } from '@xstate/react'
-import { homeCommandConfig, homeMachine } from '../machines/homeMachine'
+import { homeMachine } from '../machines/homeMachine'
 import { ContextFrom, EventFrom } from 'xstate'
 import { paths } from '../Router'
 import {
@@ -30,11 +30,12 @@ import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { DEFAULT_PROJECT_NAME } from 'machines/settingsMachine'
 import { sep } from '@tauri-apps/api/path'
+import { homeCommandBarConfig } from 'lib/commandBarConfigs/homeCommandConfig'
 
 // This route only opens in the Tauri desktop context for now,
 // as defined in Router.tsx, so we can use the Tauri APIs and types.
 const Home = () => {
-  const { commands, setCommandBarOpen } = useCommandsContext()
+  const { commandBarSend } = useCommandsContext()
   const navigate = useNavigate()
   const { projects: loadedProjects, newDefaultDirectory } =
     useLoaderData() as HomeLoaderData
@@ -63,7 +64,7 @@ const Home = () => {
         event: EventFrom<typeof homeMachine>
       ) => {
         if (event.data && 'name' in event.data) {
-          setCommandBarOpen(false)
+          commandBarSend({ type: 'Close' })
           navigate(
             `${paths.FILE}/${encodeURIComponent(
               context.defaultDirectory + sep + event.data.name
@@ -150,12 +151,11 @@ const Home = () => {
 
   const isSortByModified = sort?.includes('modified') || !sort || sort === null
 
-  useStateMachineCommands<typeof homeMachine>({
-    commands,
+  useStateMachineCommands({
+    machineId: 'home',
     send,
     state,
-    commandBarConfig: homeCommandConfig,
-    owner: 'home',
+    commandBarConfig: homeCommandBarConfig,
   })
 
   useEffect(() => {
