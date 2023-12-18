@@ -38,7 +38,7 @@ export async function initializeProjectDirectory(directory: string) {
     docDirectory = await documentDir()
   } catch (e) {
     console.log('error', e)
-    docDirectory = `${await homeDir()}/Documents` // seems to work better on Linux
+    docDirectory = `${await homeDir()}Documents/` // seems to work better on Linux
   }
 
   const INITIAL_DEFAULT_DIR = docDirectory + PROJECT_FOLDER
