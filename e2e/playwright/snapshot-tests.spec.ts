@@ -6,6 +6,7 @@ import { getUtils } from './test-utils'
 import { Models } from '@kittycad/lib'
 import fsp from 'fs/promises'
 import { spawn } from 'child_process'
+import { APP_NAME } from 'lib/constants'
 
 test.beforeEach(async ({ context, page }) => {
   await context.addInitScript(async (token) => {
@@ -196,7 +197,7 @@ const part001 = startSketchOn('-XZ')
   await page.waitForTimeout(1000)
   await u.clearAndCloseDebugPanel()
 
-  await page.getByRole('button', { name: 'KittyCAD Modeling App' }).click()
+  await page.getByRole('button', { name: APP_NAME }).click()
 
   interface Paths {
     modelPath: string

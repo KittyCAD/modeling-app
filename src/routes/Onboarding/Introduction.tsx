@@ -21,6 +21,7 @@ import { paths } from 'Router'
 import { useEffect } from 'react'
 import { kclManager } from 'lang/KclSinglton'
 import { sep } from '@tauri-apps/api/path'
+import { APP_NAME } from 'lib/constants'
 
 function OnboardingWithNewFile() {
   const navigate = useNavigate()
@@ -129,8 +130,8 @@ export default function Introduction() {
       <div className="max-w-3xl p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
         <h1 className="flex flex-wrap items-center gap-4 text-2xl font-bold">
           <img
-            src={`/kcma-logomark${getLogoTheme()}.svg`}
-            alt="KittyCAD Modeling App"
+            src={`/zma-logomark${getLogoTheme()}.svg`}
+            alt={APP_NAME}
             className="h-20 max-w-full"
           />
           <span className="px-3 py-1 text-base rounded-full bg-energy-10 text-energy-80">
@@ -139,11 +140,11 @@ export default function Introduction() {
         </h1>
         <section className="my-12">
           <p className="my-4">
-            Welcome to KittyCAD Modeling App! This is a hardware design tool
-            that lets you edit visually, with code, or both. It's powered by the
-            first API created for anyone to build hardware design tools. The 3D
-            view is not running on your computer, but is instead being streamed
-            to you from a remote GPU as video.
+            Welcome to {APP_NAME}! This is a hardware design tool that lets you
+            edit visually, with code, or both. It's powered by the first API
+            created for anyone to build hardware design tools. The 3D view is
+            not running on your computer, but is instead being streamed to you
+            from a remote GPU as video.
           </p>
           <p className="my-4">
             This is an alpha release, so you will encounter bugs and missing

@@ -29,7 +29,7 @@ export default function ParametricModeling() {
       ></div>
       <div
         className={
-          'z-10 max-w-xl h-3/4 flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
+          'z-10 max-w-xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg h-3/4 flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
           (buttonDownInStream ? '' : ' pointer-events-auto')
         }
       >
