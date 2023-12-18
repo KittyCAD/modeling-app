@@ -4,6 +4,7 @@ import ProjectSidebarMenu from './ProjectSidebarMenu'
 import { ProjectWithEntryPointMetadata } from '../Router'
 import { GlobalStateProvider } from './GlobalStateProvider'
 import CommandBarProvider from './CommandBar/CommandBar'
+import { APP_NAME } from 'lib/constants'
 
 const now = new Date()
 const projectWellFormed = {
@@ -71,9 +72,7 @@ describe('ProjectSidebarMenu tests', () => {
 
     fireEvent.click(screen.getByTestId('project-sidebar-toggle'))
 
-    expect(screen.getByTestId('projectName')).toHaveTextContent(
-      'KittyCAD Modeling App'
-    )
+    expect(screen.getByTestId('projectName')).toHaveTextContent(APP_NAME)
   })
 
   test('Renders as a link if set to do so', () => {
