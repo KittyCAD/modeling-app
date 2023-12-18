@@ -33,6 +33,7 @@ jobs:
       env:
         CI: true
         token: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+        snapshottoken: ${{ secrets.KITTYCAD_API_TOKEN }}
     - uses: actions/upload-artifact@v3
       if: always()
       with:
