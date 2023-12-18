@@ -50,16 +50,16 @@ const SignIn = () => {
         </h1>
         <p className="py-4">
           ZMA is an open-source CAD application for creating accurate 3D models
-          for use in manufacturing. It is built on top of KittyCAD, the design API from Zoo.
-          Zoo is the first software infrastructure company built
+          for use in manufacturing. It is built on top of KittyCAD, the design
+          API from Zoo. Zoo is the first software infrastructure company built
           specifically for the needs of the manufacturing industry. With ZMA we
-          are showing how the KittyCAD API from Zoo can be used to build entirely new
-          kinds of software for manufacturing.
+          are showing how the KittyCAD API from Zoo can be used to build
+          entirely new kinds of software for manufacturing.
         </p>
         <p className="py-4">
-          ZMA is currently in development. If you would like to be notified
-          when ZMA is ready for production, please sign up for our mailing list
-          at <a href="https://zoo.dev">zoo.dev</a>.
+          ZMA is currently in development. If you would like to be notified when
+          ZMA is ready for production, please sign up for our mailing list at{' '}
+          <a href="https://zoo.dev">zoo.dev</a>.
         </p>
         {isTauri() ? (
           <ActionButton
