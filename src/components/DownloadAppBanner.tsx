@@ -19,7 +19,7 @@ const DownloadAppBanner = () => {
         <div className="max-w-3xl mx-auto">
           <div className="flex gap-2 justify-between items-start">
             <h2 className="text-xl font-bold mb-4">
-              KittyCAD Modeling App is better as a desktop app!
+              Zoo Modeling App is better as a desktop app!
             </h2>
             <ActionButton
               Element="button"
@@ -42,7 +42,7 @@ const DownloadAppBanner = () => {
             </code>
             , and isn't backed up anywhere! Visit{' '}
             <a
-              href="https://kittycad.io/modeling-app/download"
+              href="https://zoo.dev/modeling-app/download"
               rel="noopener noreferrer"
               target="_blank"
               className="!text-warn-80 dark:!text-warn-80 dark:hover:!text-warn-70 underline"

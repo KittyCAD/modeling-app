@@ -8,7 +8,7 @@ export const Auth = ({ children }: React.PropsWithChildren) => {
 
   return isLoggingIn ? (
     <Loading>
-      <span data-testid="initial-load">Loading KittyCAD Modeling App...</span>
+      <span data-testid="initial-load">Loading Modeling App...</span>
     </Loading>
   ) : (
     <>{children}</>
