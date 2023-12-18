@@ -337,18 +337,22 @@ const part001 = startSketchOn('-XZ')
       units: 'in',
     })
   )
+  exportLocations.push(
+    await doExport({
+      type: 'gltf',
+      storage: 'embedded',
+      presentation: 'pretty',
+    })
+  )
+  exportLocations.push(
+    await doExport({
+      type: 'gltf',
+      storage: 'binary',
+      presentation: 'pretty',
+    })
+  )
 
   // TODO: gltfs don't seem to work with snap shots. push onto exportLocations once it's figured out
-  await doExport({
-    type: 'gltf',
-    storage: 'embedded',
-    presentation: 'pretty',
-  })
-  await doExport({
-    type: 'gltf',
-    storage: 'binary',
-    presentation: 'pretty',
-  })
   await doExport({
     type: 'gltf',
     storage: 'standard',
@@ -361,7 +365,7 @@ const part001 = startSketchOn('-XZ')
   // snapshot exports, good compromise to capture that exports are healthy without getting bogged down in "did the formatting change" changes
   // context: https://github.com/KittyCAD/modeling-app/issues/1222
   for (const { modelPath, imagePath, outputType } of exportLocations) {
-    const cliCommand = `export KITTYCAD_TOKEN=${secrets.snapshottoken} && cat ${modelPath} | kittycad file snapshot --output-format=png --src-format=${outputType} - ${imagePath}`
+    const cliCommand = `export KITTYCAD_TOKEN=${secrets.snapshottoken} && kittycad file snapshot --output-format=png --src-format=${outputType} ${modelPath} ${imagePath}`
     const child = spawn(cliCommand, { shell: true })
     await new Promise((resolve, reject) => {
       child.on('error', (code: any, msg: any) => {
