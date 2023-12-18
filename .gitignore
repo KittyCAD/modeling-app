@@ -39,7 +39,6 @@ e2e/playwright/temp1.png
 e2e/playwright/temp2.png
 # exports from snapshot-tests.spec.ts
 e2e/playwright/export-snapshots/*.ply
-e2e/playwright/export-snapshots/*.gltf
 e2e/playwright/export-snapshots/*.obj
 e2e/playwright/export-snapshots/*.step
 e2e/playwright/export-snapshots/*.stl

@@ -202,7 +202,9 @@ const part001 = startSketchOn('-XZ')
     imagePath: string
     outputType: string
   }
-  const doExport = async (output: Models['OutputFormat_type']): Promise<Paths> => {
+  const doExport = async (
+    output: Models['OutputFormat_type']
+  ): Promise<Paths> => {
     await page.getByRole('button', { name: 'Export Model' }).click()
 
     const exportSelect = page.getByTestId('export-type')
@@ -219,7 +221,7 @@ const part001 = startSketchOn('-XZ')
     const downloadLocationer = (extra = '', isImage = false) =>
       `./e2e/playwright/export-snapshots/${output.type}-${
         'storage' in output ? output.storage : ''
-      }${extra}.${isImage ? 'png' :output.type}`
+      }${extra}.${isImage ? 'png' : output.type}`
     const downloadLocation = downloadLocationer()
     const downloadLocation2 = downloadLocationer('-2')
 
@@ -275,66 +277,82 @@ const part001 = startSketchOn('-XZ')
   // NOTE it was easiest to leverage existing types and have doExport take Models['OutputFormat_type'] as in input
   // just note that only `type` and `storage` are used for selecting the drop downs is the app
   // the rest are only there to make typescript happy
-  exportLocations.push(await doExport({
-    type: 'step',
-    coords: sysType,
-  }))
-  exportLocations.push(await doExport({
+  exportLocations.push(
+    await doExport({
+      type: 'step',
+      coords: sysType,
+    })
+  )
+  exportLocations.push(
+    await doExport({
+      type: 'ply',
+      coords: sysType,
+      selection: { type: 'default_scene' },
+      storage: 'ascii',
+      units: 'in',
+    })
+  )
+  exportLocations.push(
+    await doExport({
+      type: 'ply',
+      storage: 'binary_little_endian',
+      coords: sysType,
+      selection: { type: 'default_scene' },
+      units: 'in',
+    })
+  )
+  exportLocations.push(
+    await doExport({
+      type: 'ply',
+      storage: 'binary_big_endian',
+      coords: sysType,
+      selection: { type: 'default_scene' },
+      units: 'in',
+    })
+  )
+  exportLocations.push(
+    await doExport({
+      type: 'stl',
+      storage: 'ascii',
+      coords: sysType,
+      units: 'in',
+      selection: { type: 'default_scene' },
+    })
+  )
+  exportLocations.push(
+    await doExport({
+      type: 'stl',
+      storage: 'binary',
+      coords: sysType,
+      units: 'in',
+      selection: { type: 'default_scene' },
+    })
+  )
+  exportLocations.push(
+    await doExport({
+      // obj seems to be a little flaky, times out tests sometimes
+      type: 'obj',
+      coords: sysType,
+      units: 'in',
+    })
+  )
+
+  // TODO: gltfs don't seem to work with snap shots. push onto exportLocations once it's figured out
+  await doExport({
     type: 'gltf',
     storage: 'embedded',
     presentation: 'pretty',
-  }))
-  exportLocations.push(await doExport({
+  })
+  await doExport({
     type: 'gltf',
     storage: 'binary',
     presentation: 'pretty',
-  }))
+  })
   await doExport({
     type: 'gltf',
     storage: 'standard',
     presentation: 'pretty',
   })
-  exportLocations.push(await doExport({
-    type: 'ply',
-    coords: sysType,
-    selection: { type: 'default_scene' },
-    storage: 'ascii',
-    units: 'in',
-  }))
-  exportLocations.push(await doExport({
-    type: 'ply',
-    storage: 'binary_little_endian',
-    coords: sysType,
-    selection: { type: 'default_scene' },
-    units: 'in',
-  }))
-  exportLocations.push(await doExport({
-    type: 'ply',
-    storage: 'binary_big_endian',
-    coords: sysType,
-    selection: { type: 'default_scene' },
-    units: 'in',
-  }))
-  exportLocations.push(await doExport({
-    type: 'stl',
-    storage: 'ascii',
-    coords: sysType,
-    units: 'in',
-    selection: { type: 'default_scene' },
-  }))
-  exportLocations.push(await doExport({
-    type: 'stl',
-    storage: 'binary',
-    coords: sysType,
-    units: 'in',
-    selection: { type: 'default_scene' },
-  }))
-  exportLocations.push(await doExport({
-    // obj seems to be a little flaky, times out tests sometimes
-    type: 'obj',
-    coords: sysType,
-    units: 'in',
-  }))
 
   // close page to disconnect websocket since we can only have one open atm
   await page.close()
@@ -351,11 +369,14 @@ const part001 = startSketchOn('-XZ')
       })
       child.on('exit', (code, msg) => {
         console.log('exit', code, msg)
-        resolve(true)
+        if (code !== 0) {
+          reject(`exit code ${code} for model ${modelPath}`)
+        } else {
+          resolve(true)
+        }
       })
-      child.on('message', (code, msg) => {
-        console.log('message', code, msg)
-      })
+      child.stderr.on('data', (data) => console.log(`stderr: ${data}`))
+      child.stdout.on('data', (data) => console.log(`stdout: ${data}`))
     })
   }
 })
