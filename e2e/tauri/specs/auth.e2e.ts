@@ -1,19 +1,26 @@
 import { browser, $, expect } from '@wdio/globals'
 import fs from 'fs/promises'
 
+const defaultDir = `${process.env.HOME}/Documents/kittycad-modeling-projects`
+const userCodeDir = '/tmp/kittycad_user_code'
+
+async function click(element: WebdriverIO.Element): Promise<void> {
+  // Workaround for .click(), see https://github.com/tauri-apps/tauri/issues/6541
+  await element.waitForClickable()
+  await browser.execute('arguments[0].click();', element)
+}
+
 describe('KCMA (Tauri, Linux)', () => {
   it('opens the auth page and signs in', async () => {
-    // Clean up previous tests
+    // Clean up filesystem from previous tests
     await new Promise((resolve) => setTimeout(resolve, 100))
-    await fs.rm('/tmp/kittycad_user_code', { force: true })
-    // await browser.execute('window.localStorage.clear()')
+    await fs.rm(defaultDir, { force: true, recursive: true })
+    await fs.rm(userCodeDir, { force: true })
 
     const signInButton = await $('[data-testid="sign-in-button"]')
     expect(await signInButton.getText()).toEqual('Sign in')
 
-    // Workaround for .click(), see https://github.com/tauri-apps/tauri/issues/6541
-    await signInButton.waitForClickable()
-    await browser.execute('arguments[0].click();', signInButton)
+    await click(signInButton)
     await new Promise((resolve) => setTimeout(resolve, 2000))
 
     // Get from main.rs
@@ -53,38 +60,30 @@ describe('KCMA (Tauri, Linux)', () => {
 
   it('opens the settings, checks the projecte dir, and closes the settings', async () => {
     const menuButton = await $('[data-testid="user-sidebar-toggle"]')
-    await menuButton.waitForClickable()
-    await browser.execute('arguments[0].click();', menuButton)
+    await click(menuButton)
 
     const settingsButton = await $('[data-testid="settings-button"]')
-    await settingsButton.waitForClickable()
-    await browser.execute('arguments[0].click();', settingsButton)
+    await click(settingsButton)
     const input = await $('[data-testid="default-directory-input"]')
-    expect(await input.getValue()).toEqual(
-      `${process.env.HOME}/Documents/kittycad-modeling-projects`
-    )
+    expect(await input.getValue()).toEqual(defaultDir)
     await new Promise((resolve) => setTimeout(resolve, 3000))
 
     const closeButton = await $('[data-testid="close-button"]')
-    await closeButton.waitForClickable()
-    await browser.execute('arguments[0].click();', closeButton)
+    await click(closeButton)
   })
 
   it('creates a new file', async () => {
     const newFileButton = await $('[data-testid="home-new-file"]')
-    await newFileButton.waitForClickable()
-    await browser.execute('arguments[0].click();', newFileButton)
+    await click(newFileButton)
     await new Promise((resolve) => setTimeout(resolve, 3000))
     // TODO: check that it worked, and oepen it
   })
 
   it('signs out', async () => {
     const menuButton = await $('[data-testid="user-sidebar-toggle"]')
-    await menuButton.waitForClickable()
-    await browser.execute('arguments[0].click();', menuButton)
+    await click(menuButton)
     const signoutButton = await $('[data-testid="user-sidebar-sign-out"]')
-    await signoutButton.waitForClickable()
-    await browser.execute('arguments[0].click();', signoutButton)
+    await click(signoutButton)
     const newSignInButton = await $('[data-testid="sign-in-button"]')
     expect(await newSignInButton.getText()).toEqual('Sign in')
   })
