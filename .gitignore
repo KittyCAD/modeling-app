@@ -42,6 +42,8 @@ e2e/playwright/export-snapshots/*.ply
 e2e/playwright/export-snapshots/*.obj
 e2e/playwright/export-snapshots/*.step
 e2e/playwright/export-snapshots/*.stl
+e2e/playwright/export-snapshots/*binary.gltf
+e2e/playwright/export-snapshots/*embedded.gltf
 
 
 /test-results/
