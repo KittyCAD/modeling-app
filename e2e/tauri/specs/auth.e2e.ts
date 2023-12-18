@@ -6,7 +6,7 @@ describe('KCMA (Tauri, Linux)', () => {
     // Clean up previous tests
     await new Promise((resolve) => setTimeout(resolve, 100))
     await fs.rm('/tmp/kittycad_user_code', { force: true })
-    await browser.execute('window.localStorage.clear()')
+    // await browser.execute('window.localStorage.clear()')
 
     const signInButton = await $('[data-testid="sign-in-button"]')
     expect(await signInButton.getText()).toEqual('Sign in')
@@ -63,6 +63,7 @@ describe('KCMA (Tauri, Linux)', () => {
     expect(await input.getValue()).toEqual(
       `${process.env.HOME}/Documents/kittycad-modeling-projects`
     )
+    await new Promise((resolve) => setTimeout(resolve, 3000))
 
     const closeButton = await $('[data-testid="close-button"]')
     await closeButton.waitForClickable()
@@ -73,7 +74,7 @@ describe('KCMA (Tauri, Linux)', () => {
     const newFileButton = await $('[data-testid="home-new-file"]')
     await newFileButton.waitForClickable()
     await browser.execute('arguments[0].click();', newFileButton)
-    await new Promise((resolve) => setTimeout(resolve, 30000))
+    await new Promise((resolve) => setTimeout(resolve, 3000))
     // TODO: check that it worked, and oepen it
   })
 
