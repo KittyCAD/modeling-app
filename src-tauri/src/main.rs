@@ -76,7 +76,7 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
     // Here we're using an env var to enable the /tmp file (windows not supported for now)
     // and bypass the shell::open call as it fails on GitHub Actions.
     let e2e_tauri_enabled = env::var("E2E_TAURI_ENABLED").is_ok();
-    if (e2e_tauri_enabled) {
+    if e2e_tauri_enabled {
         println!(
             "E2E_TAURI_ENABLED is set, won't open {} externally",
             auth_uri.secret()
