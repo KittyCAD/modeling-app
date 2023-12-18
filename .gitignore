@@ -37,6 +37,15 @@ src/wasm-lib/lcov.info
 e2e/playwright/playwright-secrets.env
 e2e/playwright/temp1.png
 e2e/playwright/temp2.png
+# exports from snapshot-tests.spec.ts
+e2e/playwright/export-snapshots/*.ply
+e2e/playwright/export-snapshots/*.obj
+e2e/playwright/export-snapshots/*.step
+e2e/playwright/export-snapshots/*.stl
+e2e/playwright/export-snapshots/*binary.gltf
+e2e/playwright/export-snapshots/*embedded.gltf
+
+
 /test-results/
 /playwright-report/
 /blob-report/

@@ -1,4 +1,4 @@
-![KittyCAD Modeling App](/public/kcma-logomark.png)
+![KittyCAD Modeling App](/public/kcma-logomark-outlined.png)
 
 ## KittyCAD Modeling App
 
@@ -183,7 +183,7 @@ For more information on fuzzing you can check out
 First time running plawright locally, you'll need to add the secrets file
 ```bash
 touch ./e2e/playwright/playwright-secrets.env
-echo 'token="your-token"' > ./e2e/playwright/playwright-secrets.env
+echo 'token="your-token"\nsnapshottoken="your-snapshot-token"' > ./e2e/playwright/playwright-secrets2.env
 ```
 then replace "your-token" with a dev token from dev.kittycad.io/account/api-tokens
 

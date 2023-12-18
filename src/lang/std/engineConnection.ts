@@ -986,10 +986,11 @@ export class EngineCommandManager {
       !(
         command.type === 'modeling_cmd_req' &&
         (command.cmd.type === 'highlight_set_entity' ||
-          command.cmd.type === 'mouse_move')
+          command.cmd.type === 'mouse_move' ||
+          command.cmd.type === 'camera_drag_move')
       )
     ) {
-      // highlight_set_entity and mouse_move are sent over the unreliable channel and are too noisy
+      // highlight_set_entity, mouse_move and camera_drag_move are sent over the unreliable channel and are too noisy
       this.addCommandLog({
         type: 'send-scene',
         data: command,
