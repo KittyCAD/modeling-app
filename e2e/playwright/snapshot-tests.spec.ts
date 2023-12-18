@@ -138,6 +138,7 @@ test('change camera, show planes', async ({ page, context }) => {
 
 test('exports of each format should work', async ({ page, context }) => {
   // FYI this test doesn't work with only engine running locally
+  // And you will need to have the KittyCAD CLI installed
   const u = getUtils(page)
   await context.addInitScript(async () => {
     ;(window as any).playwrightSkipFilePicker = true

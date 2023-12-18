@@ -14,8 +14,7 @@ try {
 } catch (err) {
   // probably running in CI
   secrets.token = process.env.token || ''
-  secrets.snapshottoken = process.env.snapshottoken =
-    'your-snapshot-token' || ''
+  secrets.snapshottoken = process.env.snapshottoken || ''
   // add more env vars here to make them available in CI
 }
 
