@@ -18,7 +18,7 @@ export default function Export() {
         }
       >
         <section className="flex-1">
-          <h2 className="text-2xl">Export</h2>
+          <h2 className="text-2xl font-bold">Export</h2>
           <p className="my-4">
             Try opening the project menu and clicking "Export Model".
           </p>
