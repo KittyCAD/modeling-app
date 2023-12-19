@@ -1246,28 +1246,16 @@ async fn inner_tangential_arc_to(
 /// Data to draw a bezier curve.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(rename_all = "camelCase", untagged)]
-pub enum BezierData {
-    /// Points with a tag.
-    PointsWithTag {
-        /// The to point.
-        to: [f64; 2],
-        /// The first control point.
-        control1: [f64; 2],
-        /// The second control point.
-        control2: [f64; 2],
-        /// The tag.
-        tag: String,
-    },
-    /// Points.
-    Points {
-        /// The to point.
-        to: [f64; 2],
-        /// The first control point.
-        control1: [f64; 2],
-        /// The second control point.
-        control2: [f64; 2],
-    },
+#[serde(rename_all = "camelCase")]
+pub struct BezierData {
+    /// The to point.
+    to: [f64; 2],
+    /// The first control point.
+    control1: [f64; 2],
+    /// The second control point.
+    control2: [f64; 2],
+    /// The tag.
+    tag: Option<String>,
 }
 
 /// Draw a bezier curve.
@@ -1289,12 +1277,12 @@ async fn inner_bezier_curve(
 ) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
 
-    let (to, control1, control2) = match &data {
-        BezierData::PointsWithTag {
-            to, control1, control2, ..
-        } => (to, control1, control2),
-        BezierData::Points { to, control1, control2 } => (to, control1, control2),
-    };
+    let BezierData {
+        to,
+        control1,
+        control2,
+        tag,
+    } = data;
 
     let relative = true;
     let delta = to;
@@ -1307,21 +1295,9 @@ async fn inner_bezier_curve(
         ModelingCmd::ExtendPath {
             path: sketch_group.id,
             segment: kittycad::types::PathSegment::Bezier {
-                control1: Point3D {
-                    x: control1[0],
-                    y: control1[1],
-                    z: 0.0,
-                },
-                control2: Point3D {
-                    x: control2[0],
-                    y: control2[1],
-                    z: 0.0,
-                },
-                end: Point3D {
-                    x: delta[0],
-                    y: delta[1],
-                    z: 0.0,
-                },
+                control1: into_3d(control1, 0.0),
+                control2: into_3d(control2, 0.0),
+                end: into_3d(delta, 0.0),
                 relative,
             },
         },
@@ -1332,11 +1308,7 @@ async fn inner_bezier_curve(
         base: BasePath {
             from: from.into(),
             to,
-            name: if let BezierData::PointsWithTag { tag, .. } = data {
-                tag.to_string()
-            } else {
-                "".to_string()
-            },
+            name: tag.unwrap_or_default(),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -1392,6 +1364,11 @@ async fn inner_hole(
     // TODO: should we modify the sketch group to include the hole data, probably?
 
     Ok(sketch_group)
+}
+
+/// Make a 3D point from the given 2D (X,Y) point and a Z component.
+fn into_3d([x, y]: [f64; 2], z: f64) -> Point3D {
+    Point3D { x, y, z }
 }
 
 #[cfg(test)]
