@@ -81,11 +81,8 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
             "E2E_TAURI_ENABLED is set, won't open {} externally",
             auth_uri.secret()
         );
-        fs::write(
-            "/tmp/kittycad_user_code",
-            details.user_code().secret().to_string(),
-        )
-        .expect("Unable to write /tmp/kittycad_user_code file");
+        fs::write("/tmp/kittycad_user_code", details.user_code().secret())
+            .expect("Unable to write /tmp/kittycad_user_code file");
     } else {
         tauri::api::shell::open(&app.shell_scope(), auth_uri.secret(), None)
             .map_err(|e| InvokeError::from_anyhow(e.into()))?;
