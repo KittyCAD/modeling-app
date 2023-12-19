@@ -104,7 +104,7 @@ jobs:
         if: github.event_name == 'schedule'
         run: |
           VERSION=$(date +'%-y.%-m.%-d') yarn bump-jsons
-          echo "$(jq --arg url 'https://dl.kittycad.io/releases/modeling-app/nightly/last_update.json' \
+          echo "$(jq --arg url 'https://dl.zoo.dev/releases/modeling-app/nightly/last_update.json' \
             '.tauri.updater.endpoints[]=$url' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
 
       - uses: actions/upload-artifact@v3
@@ -271,6 +271,7 @@ jobs:
       PUB_DATE: ${{ github.event_name == 'release' && github.event.release.created_at || github.event.repository.updated_at }}
       NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Nightly build, commit {0}', github.sha) }}
       BUCKET_DIR: ${{ github.event_name == 'release' && 'dl.kittycad.io/releases/modeling-app' || 'dl.kittycad.io/releases/modeling-app/nightly' }}
+      WEBSITE_DIR: ${{ github.event_name == 'release' && 'dl.zoo.dev/releases/modeling-app' || 'dl.zoo.dev/releases/modeling-app/nightly' }}
     steps:
       - uses: actions/download-artifact@v3
 
@@ -280,7 +281,7 @@ jobs:
           DARWIN_SIG=`cat artifact/macos/*.app.tar.gz.sig`
           LINUX_SIG=`cat artifact/appimage/*.AppImage.tar.gz.sig`
           WINDOWS_SIG=`cat artifact/msi/*.msi.zip.sig`
-          RELEASE_DIR=https://${BUCKET_DIR}/${VERSION}
+          RELEASE_DIR=https://${WEBSITE_DIR}/${VERSION}
           jq --null-input \
             --arg version "${VERSION}" \
             --arg pub_date "${PUB_DATE}" \
@@ -318,7 +319,7 @@ jobs:
 
       - name: Generate the download static endpoint
         run: |
-          RELEASE_DIR=https://${BUCKET_DIR}/${VERSION}
+          RELEASE_DIR=https://${WEBSITE_DIR}/${VERSION}
           jq --null-input \
             --arg version "${VERSION}" \
             --arg pub_date "${PUB_DATE}" \
