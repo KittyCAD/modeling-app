@@ -4,7 +4,7 @@ use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
 use crate::executor::SourceRange;
 
-#[derive(Error, Debug, Serialize, Deserialize, ts_rs::TS, Clone)]
+#[derive(Error, Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq, Eq)]
 #[ts(export)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum KclError {
@@ -32,7 +32,7 @@ pub enum KclError {
     Internal(KclErrorDetails),
 }
 
-#[derive(Debug, Serialize, Deserialize, ts_rs::TS, Clone)]
+#[derive(Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq, Eq)]
 #[ts(export)]
 pub struct KclErrorDetails {
     #[serde(rename = "sourceRanges")]
