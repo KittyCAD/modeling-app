@@ -715,7 +715,7 @@ dependencies = [
 
 [[package]]
 name = "derive-docs"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "convert_case",
  "expectorate",
