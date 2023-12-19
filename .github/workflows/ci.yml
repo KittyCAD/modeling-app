@@ -261,6 +261,90 @@ jobs:
           KITTYCAD_API_TOKEN: ${{ env.BUILD_RELEASE == 'true' && secrets.KITTYCAD_API_TOKEN || secrets.KITTYCAD_API_TOKEN_DEV }}
 
 
+  test-json:
+    runs-on: ubuntu-latest
+    needs: [check-format, check-types, check-typos, build-test-web, prepare-json-files, build-test-apps]
+    env:
+      VERSION_NO_V: ${{ needs.prepare-json-files.outputs.version }}
+      VERSION: ${{ github.event_name == 'release' && format('v{0}', needs.prepare-json-files.outputs.version) || needs.prepare-json-files.outputs.version }}
+      PUB_DATE: test
+      NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Nightly build, commit {0}', github.sha) }}
+      BUCKET_DIR: ${{ github.event_name == 'release' && 'dl.kittycad.io/releases/modeling-app' || 'dl.kittycad.io/releases/modeling-app/nightly' }}
+      WEBSITE_DIR: ${{ github.event_name == 'release' && 'dl.zoo.dev/releases/modeling-app' || 'dl.zoo.dev/releases/modeling-app/nightly' }}
+    steps:
+      - uses: actions/download-artifact@v3
+
+      - name: Generate the update static endpoint
+        run: |
+          ls -l artifact/*/*oo*
+          DARWIN_SIG=`cat artifact/macos/*.app.tar.gz.sig`
+          LINUX_SIG=`cat artifact/appimage/*.AppImage.tar.gz.sig`
+          WINDOWS_SIG=`cat artifact/msi/*.msi.zip.sig`
+          RELEASE_DIR=https://${WEBSITE_DIR}/${VERSION}
+          jq --null-input \
+            --arg version "${VERSION}" \
+            --arg pub_date "${PUB_DATE}" \
+            --arg notes "${NOTES}" \
+            --arg darwin_sig "$DARWIN_SIG" \
+            --arg darwin_url "$RELEASE_DIR/macos/Zoo%20Modeling%20App.app.tar.gz" \
+            --arg linux_sig "$LINUX_SIG" \
+            --arg linux_url "$RELEASE_DIR/appimage/zoo-modeling-app_${VERSION_NO_V}_amd64.AppImage.tar.gz" \
+            --arg windows_sig "$WINDOWS_SIG" \
+            --arg windows_url "$RELEASE_DIR/msi/Zoo%20Modeling%20App_${VERSION_NO_V}_x64_en-US.msi.zip" \
+            '{
+              "version": $version,
+              "pub_date": $pub_date,
+              "notes": $notes,
+              "platforms": {
+                "darwin-x86_64": {
+                  "signature": $darwin_sig,
+                  "url": $darwin_url
+                },
+                "darwin-aarch64": {
+                  "signature": $darwin_sig,
+                  "url": $darwin_url
+                },
+                "linux-x86_64": {
+                  "signature": $linux_sig,
+                  "url": $linux_url
+                },
+                "windows-x86_64": {
+                  "signature": $windows_sig,
+                  "url": $windows_url
+                }
+              }
+            }' > last_update.json
+            cat last_update.json
+
+      - name: Generate the download static endpoint
+        run: |
+          RELEASE_DIR=https://${WEBSITE_DIR}/${VERSION}
+          jq --null-input \
+            --arg version "${VERSION}" \
+            --arg pub_date "${PUB_DATE}" \
+            --arg notes "${NOTES}" \
+            --arg darwin_url "$RELEASE_DIR/dmg/Zoo%20Modeling%20App_${VERSION_NO_V}_universal.dmg" \
+            --arg linux_url "$RELEASE_DIR/appimage/zoo-modeling-app_${VERSION_NO_V}_amd64.AppImage" \
+            --arg windows_url "$RELEASE_DIR/msi/Zoo%20Modeling%20App_${VERSION_NO_V}_x64_en-US.msi" \
+            '{
+              "version": $version,
+              "pub_date": $pub_date,
+              "notes": $notes,
+              "platforms": {
+                "dmg-universal": {
+                  "url": $darwin_url
+                },
+                "appimage-x86_64": {
+                  "url": $linux_url
+                },
+                "msi-x86_64": {
+                  "url": $windows_url
+                }
+              }
+            }' > last_download.json
+            cat last_download.json
+
+
   publish-apps-release:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'release' || github.event_name == 'schedule' }}
