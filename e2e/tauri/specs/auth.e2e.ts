@@ -83,7 +83,6 @@ describe('ZMA (Tauri, Linux)', () => {
     await click(newFileButton)
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
-
     expect(await homeSection.getText()).toContain('project-000')
     // TODO: check that it worked, and oepen it
   })
