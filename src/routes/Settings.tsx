@@ -211,6 +211,7 @@ export const Settings = () => {
                 }}
                 autoCapitalize="off"
                 autoComplete="off"
+                data-testid="name-input"
               />
             </SettingsSection>
           </>

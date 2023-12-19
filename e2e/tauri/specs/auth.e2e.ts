@@ -10,7 +10,7 @@ async function click(element: WebdriverIO.Element): Promise<void> {
   await browser.execute('arguments[0].click();', element)
 }
 
-describe('KCMA (Tauri, Linux)', () => {
+describe('ZMA (Tauri, Linux)', () => {
   it('opens the auth page and signs in', async () => {
     // Clean up filesystem from previous tests
     await new Promise((resolve) => setTimeout(resolve, 100))
@@ -58,24 +58,33 @@ describe('KCMA (Tauri, Linux)', () => {
     expect(await newFileButton.getText()).toEqual('New file')
   })
 
-  it('opens the settings, checks the projecte dir, and closes the settings', async () => {
+  it('opens the settings, checks file-system settings, and closes the settings', async () => {
     const menuButton = await $('[data-testid="user-sidebar-toggle"]')
     await click(menuButton)
 
     const settingsButton = await $('[data-testid="settings-button"]')
     await click(settingsButton)
-    const input = await $('[data-testid="default-directory-input"]')
-    expect(await input.getValue()).toEqual(defaultDir)
-    await new Promise((resolve) => setTimeout(resolve, 3000))
+
+    const defaultDirInput = await $('[data-testid="default-directory-input"]')
+    expect(await defaultDirInput.getValue()).toEqual(defaultDir)
+
+    const nameInput = await $('[data-testid="name-input"]')
+    expect(await nameInput.getValue()).toEqual('project-$nnn')
 
     const closeButton = await $('[data-testid="close-button"]')
     await click(closeButton)
   })
 
-  it('creates a new file', async () => {
+  it('checks that no file exists, creates a new file', async () => {
+    const homeSection = await $('[data-testid="home-section"]')
+    expect(await homeSection.getText()).toContain('No Projects found')
+
     const newFileButton = await $('[data-testid="home-new-file"]')
     await click(newFileButton)
-    await new Promise((resolve) => setTimeout(resolve, 3000))
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+
+
+    expect(await homeSection.getText()).toContain('project-000')
     // TODO: check that it worked, and oepen it
   })
 

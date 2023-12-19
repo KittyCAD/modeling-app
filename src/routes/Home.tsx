@@ -229,7 +229,7 @@ const Home = () => {
             </ActionButton>
           </div>
         </section>
-        <section>
+        <section data-testid="home-section">
           <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
             Loaded from{' '}
             <span className="text-energy-70 dark:text-energy-40">
