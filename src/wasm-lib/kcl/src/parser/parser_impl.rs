@@ -299,6 +299,15 @@ fn operand(i: TokenSlice) -> PResult<BinaryPart> {
                         message: TODO_783.to_owned(),
                     }))
                 }
+                Value::None(_) => {
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        source_ranges,
+                        // TODO: Better error message here.
+                        // Once we have ways to use None values (e.g. by replacing with a default value)
+                        // we should suggest one of them here.
+                        message: "cannot use a KCL None value as an operand".to_owned(),
+                    }));
+                }
                 Value::UnaryExpression(x) => BinaryPart::UnaryExpression(x),
                 Value::Literal(x) => BinaryPart::Literal(x),
                 Value::Identifier(x) => BinaryPart::Identifier(x),
