@@ -6,15 +6,17 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  @apply font-sans;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   @apply text-chalkboard-110;
   overflow: hidden;
   scrollbar-width: thin;
   scrollbar-color: var(--color-chalkboard-20) var(--color-chalkboard-40);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  @apply font-display;
 }
 
 .body-bg {

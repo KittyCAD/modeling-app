@@ -326,7 +326,7 @@ export function SettingsSection({
       }
     >
       <div className="w-80">
-        <h2 className="text-2xl">{title}</h2>
+        <h2 className="text-2xl font-bold">{title}</h2>
         <p className="mt-2 text-sm">{description}</p>
       </div>
       <div>{children}</div>

@@ -18,12 +18,12 @@ export default function ProjectMenu() {
         }
       >
         <section className="flex-1">
-          <h2 className="text-2xl">Project Menu</h2>
+          <h2 className="text-2xl font-bold">Project Menu</h2>
           <p className="my-4">
-            Click on Kitt in the upper left to open the project menu. You can
-            only {isTauri() && 'go home or '}export your model—which we'll talk
-            about next—for now. We'll add more options here soon, especially as
-            we add support for multi-file assemblies.
+            Click on the Zoo logo in the upper left to open the project menu.
+            You can only {isTauri() && 'go home or '}export your model—which
+            we'll talk about next—for now. We'll add more options here soon,
+            especially as we add support for multi-file assemblies.
           </p>
         </section>
         <OnboardingButtons

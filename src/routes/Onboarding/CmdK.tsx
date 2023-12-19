@@ -18,7 +18,7 @@ export default function CmdK() {
           (buttonDownInStream ? '' : ' pointer-events-auto')
         }
       >
-        <h2 className="text-2xl">Command Bar</h2>
+        <h2 className="text-2xl font-bold">Command Bar</h2>
         <p className="my-4">
           Press{' '}
           {platformName === 'darwin' ? (
