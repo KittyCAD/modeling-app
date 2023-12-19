@@ -21,17 +21,12 @@ use crate::{
 /// Data to draw a line to a point.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(rename_all = "camelCase", untagged)]
-pub enum LineToData {
-    /// A point with a tag.
-    PointWithTag {
-        /// The to point.
-        to: [f64; 2],
-        /// The tag.
-        tag: String,
-    },
-    /// A point.
-    Point([f64; 2]),
+#[serde(rename_all = "camelCase")]
+pub struct LineToData {
+    /// The to point.
+    to: [f64; 2],
+    /// The tag.
+    tag: Option<String>,
 }
 
 /// Draw a line to a point.
@@ -52,10 +47,6 @@ async fn inner_line_to(
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
-    let to = match data {
-        LineToData::PointWithTag { to, .. } => to,
-        LineToData::Point(to) => to,
-    };
 
     let id = uuid::Uuid::new_v4();
 
@@ -64,11 +55,7 @@ async fn inner_line_to(
         ModelingCmd::ExtendPath {
             path: sketch_group.id,
             segment: kittycad::types::PathSegment::Line {
-                end: Point3D {
-                    x: to[0],
-                    y: to[1],
-                    z: 0.0,
-                },
+                end: into_3d(data.to, 0.0),
                 relative: false,
             },
         },
@@ -78,12 +65,8 @@ async fn inner_line_to(
     let current_path = Path::ToPoint {
         base: BasePath {
             from: from.into(),
-            to,
-            name: if let LineToData::PointWithTag { tag, .. } = data {
-                tag.to_string()
-            } else {
-                "".to_string()
-            },
+            to: data.to,
+            name: data.tag.unwrap_or_default(),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -133,8 +116,14 @@ async fn inner_x_line_to(
     let from = sketch_group.get_coords_from_paths()?;
 
     let line_to_data = match data {
-        AxisLineToData::PointWithTag { to, tag } => LineToData::PointWithTag { to: [to, from.y], tag },
-        AxisLineToData::Point(data) => LineToData::Point([data, from.y]),
+        AxisLineToData::PointWithTag { to, tag } => LineToData {
+            to: [to, from.y],
+            tag: Some(tag),
+        },
+        AxisLineToData::Point(data) => LineToData {
+            to: [data, from.y],
+            tag: None,
+        },
     };
 
     let new_sketch_group = inner_line_to(line_to_data, sketch_group, args).await?;
@@ -162,8 +151,14 @@ async fn inner_y_line_to(
     let from = sketch_group.get_coords_from_paths()?;
 
     let line_to_data = match data {
-        AxisLineToData::PointWithTag { to, tag } => LineToData::PointWithTag { to: [from.x, to], tag },
-        AxisLineToData::Point(data) => LineToData::Point([from.x, data]),
+        AxisLineToData::PointWithTag { to, tag } => LineToData {
+            to: [to, from.y],
+            tag: Some(tag),
+        },
+        AxisLineToData::Point(data) => LineToData {
+            to: [data, from.y],
+            tag: None,
+        },
     };
 
     let new_sketch_group = inner_line_to(line_to_data, sketch_group, args).await?;
@@ -465,9 +460,15 @@ pub enum AngledLineToData {
 impl AngledLineToData {
     pub fn into_inner_line(self, x_to: f64, y_to: f64) -> LineToData {
         if let AngledLineToData::AngleWithTag { tag, .. } = self {
-            LineToData::PointWithTag { to: [x_to, y_to], tag }
+            LineToData {
+                to: [x_to, y_to],
+                tag: Some(tag),
+            }
         } else {
-            LineToData::Point([x_to, y_to])
+            LineToData {
+                to: [x_to, y_to],
+                tag: None,
+            }
         }
     }
 }
@@ -617,10 +618,9 @@ async fn inner_angled_line_that_intersects(
         from,
     );
 
-    let line_to_data = if let Some(tag) = data.tag {
-        LineToData::PointWithTag { to: to.into(), tag }
-    } else {
-        LineToData::Point(to.into())
+    let line_to_data = LineToData {
+        to: to.into(),
+        tag: data.tag,
     };
 
     let new_sketch_group = inner_line_to(line_to_data, sketch_group, args).await?;
