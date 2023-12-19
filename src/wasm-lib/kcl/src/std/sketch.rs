@@ -635,9 +635,9 @@ async fn inner_angled_line_that_intersects(
 
 /// Start a sketch at a given point.
 pub async fn start_sketch_at(args: Args) -> Result<MemoryItem, KclError> {
-    let data: LineData = args.get_data()?;
+    let (to, tag) = args.get_data_and_tag()?;
 
-    let sketch_group = inner_start_sketch_at(data, args).await?;
+    let sketch_group = inner_start_sketch_at(to, tag, args).await?;
     Ok(MemoryItem::SketchGroup(sketch_group))
 }
 
@@ -645,11 +645,11 @@ pub async fn start_sketch_at(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "startSketchAt",
 }]
-async fn inner_start_sketch_at(data: LineData, args: Args) -> Result<Box<SketchGroup>, KclError> {
+async fn inner_start_sketch_at(at: [f64; 2], tag: Option<String>, args: Args) -> Result<Box<SketchGroup>, KclError> {
     // Let's assume it's the XY plane for now, this is just for backwards compatibility.
     let xy_plane = PlaneData::XY;
     let plane = inner_start_sketch_on(xy_plane, args.clone()).await?;
-    let sketch_group = inner_start_profile_at(data, plane, args).await?;
+    let sketch_group = inner_start_profile_at(at, plane, tag, args).await?;
     Ok(sketch_group)
 }
 
@@ -826,9 +826,9 @@ async fn inner_start_sketch_on(data: PlaneData, args: Args) -> Result<Box<Plane>
 
 /// Start a profile at a given point.
 pub async fn start_profile_at(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, plane): (LineData, Box<Plane>) = args.get_data_and_plane()?;
+    let (data, plane, tag): ([f64; 2], Box<Plane>, _) = args.get_data_and_plane_then_tag()?;
 
-    let sketch_group = inner_start_profile_at(data, plane, args).await?;
+    let sketch_group = inner_start_profile_at(data, plane, tag, args).await?;
     Ok(MemoryItem::SketchGroup(sketch_group))
 }
 
@@ -836,11 +836,13 @@ pub async fn start_profile_at(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "startProfileAt",
 }]
-async fn inner_start_profile_at(data: LineData, plane: Box<Plane>, args: Args) -> Result<Box<SketchGroup>, KclError> {
-    let to = match &data {
-        LineData::PointWithTag { to, .. } => *to,
-        LineData::Point(to) => *to,
-    };
+async fn inner_start_profile_at(
+    point: [f64; 2],
+    plane: Box<Plane>,
+    tag: Option<String>,
+    args: Args,
+) -> Result<Box<SketchGroup>, KclError> {
+    let to = point;
 
     let id = uuid::Uuid::new_v4();
     let path_id = uuid::Uuid::new_v4();
@@ -862,11 +864,7 @@ async fn inner_start_profile_at(data: LineData, plane: Box<Plane>, args: Args) -
     let current_path = BasePath {
         from: to,
         to,
-        name: if let LineData::PointWithTag { tag, .. } = data {
-            tag.to_string()
-        } else {
-            "".to_string()
-        },
+        name: tag.unwrap_or_default(),
         geo_meta: GeoMeta {
             id,
             metadata: args.source_range.into(),
