@@ -186,11 +186,20 @@ pub enum LineData {
     Point([f64; 2]),
 }
 
+impl LineData {
+    fn to_and_tag(self) -> ([f64; 2], Option<String>) {
+        match self {
+            LineData::PointWithTag { to, tag } => (to, Some(tag)),
+            LineData::Point(to) => (to, None),
+        }
+    }
+}
+
 /// Draw a line.
 pub async fn line(args: Args) -> Result<MemoryItem, KclError> {
     let (data, sketch_group): (LineData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
-
-    let new_sketch_group = inner_line(data, sketch_group, args).await?;
+    let (to, tag) = data.to_and_tag();
+    let new_sketch_group = inner_line(to, sketch_group, tag, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
@@ -198,15 +207,16 @@ pub async fn line(args: Args) -> Result<MemoryItem, KclError> {
 #[stdlib {
     name = "line",
 }]
-async fn inner_line(data: LineData, sketch_group: Box<SketchGroup>, args: Args) -> Result<Box<SketchGroup>, KclError> {
+async fn inner_line(
+    to: [f64; 2],
+    sketch_group: Box<SketchGroup>,
+    tag: Option<String>,
+    args: Args,
+) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
-    let inner_args = match &data {
-        LineData::PointWithTag { to, .. } => *to,
-        LineData::Point(to) => *to,
-    };
 
-    let delta = inner_args;
-    let to = [from.x + inner_args[0], from.y + inner_args[1]];
+    let delta = to;
+    let to = [from.x + to[0], from.y + to[1]];
 
     let id = uuid::Uuid::new_v4();
 
@@ -230,11 +240,7 @@ async fn inner_line(data: LineData, sketch_group: Box<SketchGroup>, args: Args) 
         base: BasePath {
             from: from.into(),
             to,
-            name: if let LineData::PointWithTag { tag, .. } = data {
-                tag.to_string()
-            } else {
-                "".to_string()
-            },
+            name: tag.unwrap_or_default(),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -281,12 +287,12 @@ async fn inner_x_line(
     sketch_group: Box<SketchGroup>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
-    let line_data = match data {
-        AxisLineData::LengthWithTag { length, tag } => LineData::PointWithTag { to: [length, 0.0], tag },
-        AxisLineData::Length(length) => LineData::Point([length, 0.0]),
+    let (to, tag) = match data {
+        AxisLineData::LengthWithTag { length, tag } => ([length, 0.0], Some(tag)),
+        AxisLineData::Length(length) => ([length, 0.0], None),
     };
 
-    let new_sketch_group = inner_line(line_data, sketch_group, args).await?;
+    let new_sketch_group = inner_line(to, sketch_group, tag, args).await?;
     Ok(new_sketch_group)
 }
 
@@ -307,12 +313,12 @@ async fn inner_y_line(
     sketch_group: Box<SketchGroup>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
-    let line_data = match data {
-        AxisLineData::LengthWithTag { length, tag } => LineData::PointWithTag { to: [0.0, length], tag },
-        AxisLineData::Length(length) => LineData::Point([0.0, length]),
+    let (to, tag) = match data {
+        AxisLineData::LengthWithTag { length, tag } => ([0.0, length], Some(tag)),
+        AxisLineData::Length(length) => ([0.0, length], None),
     };
 
-    let new_sketch_group = inner_line(line_data, sketch_group, args).await?;
+    let new_sketch_group = inner_line(to, sketch_group, tag, args).await?;
     Ok(new_sketch_group)
 }
 
@@ -438,8 +444,8 @@ async fn inner_angled_line_of_x_length(
     };
 
     let to = get_y_component(Angle::from_degrees(angle), length);
-
-    let new_sketch_group = inner_line(data.into_inner_line(to.into()), sketch_group, args).await?;
+    let (to, tag) = data.into_inner_line(to.into()).to_and_tag();
+    let new_sketch_group = inner_line(to, sketch_group, tag, args).await?;
 
     Ok(new_sketch_group)
 }
@@ -527,8 +533,8 @@ async fn inner_angled_line_of_y_length(
     };
 
     let to = get_x_component(Angle::from_degrees(angle), length);
-
-    let new_sketch_group = inner_line(data.into_inner_line(to.into()), sketch_group, args).await?;
+    let (to, tag) = data.into_inner_line(to.into()).to_and_tag();
+    let new_sketch_group = inner_line(to, sketch_group, tag, args).await?;
 
     Ok(new_sketch_group)
 }
