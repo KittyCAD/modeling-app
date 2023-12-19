@@ -84,7 +84,16 @@ describe('ZMA (Tauri, Linux)', () => {
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
     expect(await homeSection.getText()).toContain('project-000')
-    // TODO: check that it worked, and oepen it
+  })
+
+  it('opens the new file and expects an error on Linux', async () => {
+    const projectLink = await $('[data-testid="project-link"]')
+    await click(projectLink)
+    const error = await $('h3')
+    expect(await error.getText()).toContain(
+      "Can't find variable: RTCPeerConnection"
+    )
+    await browser.back()
   })
 
   it('signs out', async () => {
