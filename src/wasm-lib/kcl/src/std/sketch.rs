@@ -83,17 +83,12 @@ async fn inner_line_to(
 /// Data to draw a line to a point on an axis.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(rename_all = "camelCase", untagged)]
-pub enum AxisLineToData {
-    /// A point with a tag.
-    PointWithTag {
-        /// The to point.
-        to: f64,
-        /// The tag.
-        tag: String,
-    },
-    /// A point.
-    Point(f64),
+#[serde(rename_all = "camelCase")]
+pub struct AxisLineToData {
+    /// The to point.
+    to: f64,
+    /// The tag.
+    tag: Option<String>,
 }
 
 /// Draw a line to a point on the x-axis.
@@ -115,15 +110,9 @@ async fn inner_x_line_to(
 ) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
 
-    let line_to_data = match data {
-        AxisLineToData::PointWithTag { to, tag } => LineToData {
-            to: [to, from.y],
-            tag: Some(tag),
-        },
-        AxisLineToData::Point(data) => LineToData {
-            to: [data, from.y],
-            tag: None,
-        },
+    let line_to_data = LineToData {
+        to: [data.to, from.y],
+        tag: data.tag,
     };
 
     let new_sketch_group = inner_line_to(line_to_data, sketch_group, args).await?;
@@ -150,15 +139,9 @@ async fn inner_y_line_to(
 ) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
 
-    let line_to_data = match data {
-        AxisLineToData::PointWithTag { to, tag } => LineToData {
-            to: [to, from.y],
-            tag: Some(tag),
-        },
-        AxisLineToData::Point(data) => LineToData {
-            to: [data, from.y],
-            tag: None,
-        },
+    let line_to_data = LineToData {
+        to: [data.to, from.y],
+        tag: data.tag,
     };
 
     let new_sketch_group = inner_line_to(line_to_data, sketch_group, args).await?;
