@@ -22,7 +22,7 @@ export default function InteractiveNumbers() {
         }
       >
         <section className="flex-1 overflow-y-auto mb-6">
-          <h2 className="text-2xl">Interactive Numbers</h2>
+          <h2 className="text-2xl font-bold">Interactive Numbers</h2>
           <p className="my-4">
             Let's do a little bit of hybrid editing to this part.
           </p>

@@ -177,7 +177,7 @@ const Home = () => {
       <AppHeader showToolbar={false} />
       <div className="w-full max-w-5xl px-4 mx-auto my-24 overflow-y-auto lg:px-0">
         <section className="flex justify-between">
-          <h1 className="text-3xl text-bold">Your Projects</h1>
+          <h1 className="text-3xl font-bold">Your Projects</h1>
           <div className="flex gap-2 items-center">
             <small>Sort by</small>
             <ActionButton

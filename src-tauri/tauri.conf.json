@@ -6,7 +6,7 @@
     "distDir": "../build"
   },
   "package": {
-    "productName": "kittycad-modeling",
+    "productName": "zoo-modeling-app",
     "version": "0.13.0"
   },
   "tauri": {
@@ -84,7 +84,7 @@
         "fullscreen": false,
         "height": 1200,
         "resizable": true,
-        "title": "KittyCAD Modeling",
+        "title": "Zoo Modeling App",
         "width": 1800
       }
     ]

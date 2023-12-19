@@ -22,7 +22,7 @@ export default function CodeEditor() {
         }
       >
         <section className="flex-1">
-          <h2 className="text-2xl">
+          <h2 className="text-2xl font-bold">
             Editing code with <code>kcl</code>
           </h2>
           <p className="my-4">

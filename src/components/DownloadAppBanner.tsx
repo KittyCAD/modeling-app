@@ -19,7 +19,7 @@ const DownloadAppBanner = () => {
         <div className="max-w-3xl mx-auto">
           <div className="flex gap-2 justify-between items-start">
             <h2 className="text-xl font-bold mb-4">
-              Zoo Modeling App is better as a desktop app!
+              Modeling App is better as a desktop app!
             </h2>
             <ActionButton
               Element="button"
