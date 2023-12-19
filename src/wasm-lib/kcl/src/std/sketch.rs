@@ -151,17 +151,12 @@ async fn inner_y_line_to(
 /// Data to draw a line.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(rename_all = "camelCase", untagged)]
-pub enum LineData {
-    /// A point with a tag.
-    PointWithTag {
-        /// The to point.
-        to: [f64; 2],
-        /// The tag.
-        tag: String,
-    },
-    /// A point.
-    Point([f64; 2]),
+#[serde(rename_all = "camelCase")]
+pub struct LineData {
+    /// The to point.
+    to: [f64; 2],
+    /// The tag.
+    tag: Option<String>,
 }
 
 /// Draw a line.
@@ -178,10 +173,7 @@ pub async fn line(args: Args) -> Result<MemoryItem, KclError> {
 }]
 async fn inner_line(data: LineData, sketch_group: Box<SketchGroup>, args: Args) -> Result<Box<SketchGroup>, KclError> {
     let from = sketch_group.get_coords_from_paths()?;
-    let inner_args = match &data {
-        LineData::PointWithTag { to, .. } => *to,
-        LineData::Point(to) => *to,
-    };
+    let inner_args = data.to;
 
     let delta = inner_args;
     let to = [from.x + inner_args[0], from.y + inner_args[1]];
@@ -208,11 +200,7 @@ async fn inner_line(data: LineData, sketch_group: Box<SketchGroup>, args: Args) 
         base: BasePath {
             from: from.into(),
             to,
-            name: if let LineData::PointWithTag { tag, .. } = data {
-                tag.to_string()
-            } else {
-                "".to_string()
-            },
+            name: data.tag.unwrap_or_default(),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -260,8 +248,14 @@ async fn inner_x_line(
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let line_data = match data {
-        AxisLineData::LengthWithTag { length, tag } => LineData::PointWithTag { to: [length, 0.0], tag },
-        AxisLineData::Length(length) => LineData::Point([length, 0.0]),
+        AxisLineData::LengthWithTag { length, tag } => LineData {
+            to: [length, 0.0],
+            tag: Some(tag),
+        },
+        AxisLineData::Length(length) => LineData {
+            to: [length, 0.0],
+            tag: None,
+        },
     };
 
     let new_sketch_group = inner_line(line_data, sketch_group, args).await?;
@@ -286,8 +280,14 @@ async fn inner_y_line(
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let line_data = match data {
-        AxisLineData::LengthWithTag { length, tag } => LineData::PointWithTag { to: [0.0, length], tag },
-        AxisLineData::Length(length) => LineData::Point([0.0, length]),
+        AxisLineData::LengthWithTag { length, tag } => LineData {
+            to: [length, 0.0],
+            tag: Some(tag),
+        },
+        AxisLineData::Length(length) => LineData {
+            to: [length, 0.0],
+            tag: None,
+        },
     };
 
     let new_sketch_group = inner_line(line_data, sketch_group, args).await?;
@@ -314,11 +314,12 @@ pub enum AngledLineData {
 
 impl AngledLineData {
     pub fn into_inner_line(self, to: [f64; 2]) -> LineData {
-        if let AngledLineData::AngleWithTag { tag, .. } = self {
-            LineData::PointWithTag { to, tag }
+        let tag = if let AngledLineData::AngleWithTag { tag, .. } = self {
+            Some(tag)
         } else {
-            LineData::Point(to)
-        }
+            None
+        };
+        LineData { to, tag }
     }
 }
 
@@ -814,10 +815,7 @@ pub async fn start_profile_at(args: Args) -> Result<MemoryItem, KclError> {
     name = "startProfileAt",
 }]
 async fn inner_start_profile_at(data: LineData, plane: Box<Plane>, args: Args) -> Result<Box<SketchGroup>, KclError> {
-    let to = match &data {
-        LineData::PointWithTag { to, .. } => *to,
-        LineData::Point(to) => *to,
-    };
+    let to = data.to;
 
     let id = uuid::Uuid::new_v4();
     let path_id = uuid::Uuid::new_v4();
@@ -827,11 +825,7 @@ async fn inner_start_profile_at(data: LineData, plane: Box<Plane>, args: Args) -
         id,
         ModelingCmd::MovePathPen {
             path: path_id,
-            to: Point3D {
-                x: to[0],
-                y: to[1],
-                z: 0.0,
-            },
+            to: into_3d(to, 0.0),
         },
     )
     .await?;
@@ -839,11 +833,7 @@ async fn inner_start_profile_at(data: LineData, plane: Box<Plane>, args: Args) -
     let current_path = BasePath {
         from: to,
         to,
-        name: if let LineData::PointWithTag { tag, .. } = data {
-            tag.to_string()
-        } else {
-            "".to_string()
-        },
+        name: data.tag.unwrap_or_default(),
         geo_meta: GeoMeta {
             id,
             metadata: args.source_range.into(),
@@ -1363,21 +1353,30 @@ mod tests {
 
     #[test]
     fn test_deserialize_line_data() {
-        let data = LineData::Point([0.0, 1.0]);
+        let data = LineData {
+            to: [0.0, 1.0],
+            tag: None,
+        };
         let mut str_json = serde_json::to_string(&data).unwrap();
         assert_eq!(str_json, "[0.0,1.0]");
 
         str_json = "[0, 1]".to_string();
         let data: LineData = serde_json::from_str(&str_json).unwrap();
-        assert_eq!(data, LineData::Point([0.0, 1.0]));
+        assert_eq!(
+            data,
+            LineData {
+                to: [0.0, 1.0],
+                tag: None
+            }
+        );
 
         str_json = "{ \"to\": [0.0, 1.0], \"tag\": \"thing\" }".to_string();
         let data: LineData = serde_json::from_str(&str_json).unwrap();
         assert_eq!(
             data,
-            LineData::PointWithTag {
+            LineData {
                 to: [0.0, 1.0],
-                tag: "thing".to_string()
+                tag: Some("thing".to_string()),
             }
         );
     }
