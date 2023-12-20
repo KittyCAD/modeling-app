@@ -33,7 +33,11 @@
         "scope": [
           "https://dev.kittycad.io/*",
           "https://kittycad.io/*",
-          "https://api.dev.kittycad.io/*"
+          "https://api.dev.kittycad.io/*",
+          "https://api.dev.zoo.dev/*",
+          "https://dev.zoo.dev/*",
+          "https://api.zoo.dev/*",
+          "https://zoo.dev/*"
         ]
       },
       "os": {

@@ -26,7 +26,7 @@ export default function Export() {
           <p className="my-4">
             KittyCAD Modeling App uses{' '}
             <a
-              href="https://kittycad.io/gltf-format-extension"
+              href="https://zoo.dev/gltf-format-extension"
               rel="noopener noreferrer"
               target="_blank"
             >
@@ -34,7 +34,7 @@ export default function Export() {
             </a>{' '}
             for the GLTF file format.{' '}
             <a
-              href="https://kittycad.io/docs/api/convert-cad-file"
+              href="https://zoo.dev/docs/api/convert-cad-file"
               rel="noopener noreferrer"
               target="_blank"
             >

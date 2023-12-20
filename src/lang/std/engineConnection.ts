@@ -117,7 +117,7 @@ export class EngineConnection {
         // command through the WebSocket connection. This will help both ends
         // of the connection maintain the TCP connection without hitting a
         // timeout condition.
-        this.send({ type: 'ping' })
+        // this.send({ type: 'ping' })
       }
     }, pingIntervalMs)
 
@@ -406,10 +406,10 @@ export class EngineConnection {
           return
         }
         this.webrtcStatsCollector().then((client_metrics) => {
-          this.send({
-            type: 'metrics_response',
-            metrics: client_metrics,
-          })
+          // this.send({
+          //   type: 'metrics_response',
+          //   metrics: client_metrics,
+          // })
         })
       }
     })

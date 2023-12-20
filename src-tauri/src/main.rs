@@ -6,7 +6,7 @@ use std::io::Read;
 use anyhow::Result;
 use oauth2::TokenResponse;
 use tauri::{InvokeError, Manager};
-const DEFAULT_HOST: &str = "https://api.kittycad.io";
+const DEFAULT_HOST: &str = "https://api.zoo.dev";
 
 /// This command returns the a json string parse from a toml file at the path.
 #[tauri::command]

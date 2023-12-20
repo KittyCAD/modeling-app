@@ -35,9 +35,8 @@ const SignIn = () => {
       <div className="max-w-2xl mx-auto">
         <div>
           <img
-            src={`/kittycad-logomark${
-              appliedTheme === Themes.Dark ? '-light' : ''
-            }.svg`}
+            src={`/kittycad-logomark${appliedTheme === Themes.Dark ? '-light' : ''
+              }.svg`}
             alt="KittyCAD"
             className="w-48 inline-block"
           />
@@ -59,7 +58,7 @@ const SignIn = () => {
         <p className="py-4">
           KCMA is currently in development. If you would like to be notified
           when KCMA is ready for production, please sign up for our mailing list
-          at <a href="https://kittycad.io">kittycad.io</a>.
+          at <a href="https://zoo.dev">zoo.dev</a>.
         </p>
         {isTauri() ? (
           <ActionButton
@@ -74,12 +73,11 @@ const SignIn = () => {
         ) : (
           <ActionButton
             Element="link"
-            to={`${VITE_KC_SITE_BASE_URL}${
-              paths.SIGN_IN
-            }?callbackUrl=${encodeURIComponent(
-              typeof window !== 'undefined' &&
+            to={`${VITE_KC_SITE_BASE_URL}${paths.SIGN_IN
+              }?callbackUrl=${encodeURIComponent(
+                typeof window !== 'undefined' &&
                 window.location.href.replace('signin', '')
-            )}`}
+              )}`}
             icon={{ icon: faSignInAlt }}
             className="w-fit mt-4"
           >
