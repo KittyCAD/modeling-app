@@ -7,7 +7,7 @@ import {
 } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { useStore } from '../useStore'
-import { getNormalisedCoordinates } from '../lib/utils'
+import { getNormalisedCoordinates, isOverlap } from '../lib/utils'
 import Loading from './Loading'
 import { cameraMouseDragGuards } from 'lib/cameraControls'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
@@ -19,6 +19,8 @@ import { engineCommandManager } from '../lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { kclManager, useKclContext } from 'lang/KclSinglton'
 import { changeSketchArguments } from 'lang/std/sketch'
+import toast from 'react-hot-toast'
+import { DragWarningToast } from './DragWarningToast'
 
 type Point2d = Models['Point2d_type']
 
@@ -86,13 +88,9 @@ export const Stream = ({ className = '' }) => {
       interaction = 'zoom'
     }
 
-    if (state.matches('Sketch.Move Tool')) {
-      if (
-        state.matches('Sketch.Move Tool.No move') ||
-        state.matches('Sketch.Move Tool.Move with execute')
-      ) {
-        return
-      }
+    if (state.matches('Sketch.Move Tool.No move')) {
+      // skip scene commands
+    } else if (state.matches('Sketch.Move Tool')) {
       engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
@@ -266,6 +264,16 @@ export const Stream = ({ className = '' }) => {
       }
       engineCommandManager.sendSceneCommand(command)
     } else if (didDragInStream && state.matches('Sketch.Move Tool')) {
+      if (state.matches('Sketch.Move Tool.No move')) {
+        const toastJsx = DragWarningToast(context.moveDescs)
+        if (toastJsx) {
+          toast.custom(toastJsx, {
+            position: 'bottom-center',
+            duration: 1000,
+            icon: '🔒',
+          })
+        }
+      }
       command.cmd = {
         type: 'handle_mouse_drag_end',
         window: { x, y },
@@ -331,6 +339,11 @@ export const Stream = ({ className = '' }) => {
         for (const info of segment2dInfo) {
           const range = engineCommandManager.artifactMap[info.segmentId].range
           if (!range) continue
+          const _isOverlap = context.selectionRanges.codeBasedSelections.some(
+            ({ range: selectionRange }) => isOverlap(range, selectionRange)
+          )
+          if (!_isOverlap) continue
+
           const from = info.start
           const to = info.end
           const modded = changeSketchArguments(
@@ -355,8 +368,11 @@ export const Stream = ({ className = '' }) => {
             updateNode.end,
           ]
         }
-
-        kclManager.executeAstMock(modifiedAst, true)
+        if (state.matches('Sketch.Move Tool.Move with execute')) {
+          kclManager.executeAst(modifiedAst, true)
+        } else {
+          kclManager.executeAstMock(modifiedAst, true)
+        }
       })
     } else {
       engineCommandManager.sendSceneCommand(command)

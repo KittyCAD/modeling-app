@@ -489,7 +489,7 @@ export function isLinesParallelAndConstrained(
     const constraintLevel = getConstraintLevelFromSourceRange(
       secondaryLine.range,
       ast
-    )
+    ).level
     const isConstrained =
       constraintType === 'angle' || constraintLevel === 'full'
 

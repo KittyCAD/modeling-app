@@ -134,9 +134,11 @@ export type ModelingMachineEvent =
   | { type: 'Re-execute' }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
 
+export type MoveDesc = { line: number; snippet: string }
+
 export const modelingMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogDMAVgDsAOmEiAjLMGCAHIIAsAJlHKANCACeiaQDZBEsctGrVATmmiaNQQF8H2tBhz4CAZTDsABLCwwck5uWgYkEBY2EJ4IgQRpZWFpcQVLe1V7SwVbYUttPQRBRMtxZUtlGkt0wVVpBTMnF3QsPChxbAhMMC8ff0Dgrlww3iiOId54pIVxe2lVYSNLDUFlgv1VAxSDUWE0wQM0ww0mkFdW-A6unoAROAG-Fjx2EYixmMmhA2FJGlEFP7KJLCZQA4TrBLSRTiTaWAwGZQiNRWVSnc7udqdboEO4BbrBXyQGCvZiscbcT5FeGzf5Q2zKb5mNa6fQ0RKpIyI4RsyxWeZoloYq7Y3EPXwkPjYWAkyJkj5xITmcS7OxVCyib4HAwQo5lMSZRYNESOZxnQVtYU9bz4x6oZ4y94TBUISo-Y7VYrZZaGbUsl2ZMoA0Se1SCNlQgVuC1Yq1iolgB1yp2gKY0GagxFpBSM5mFBHKcT5hTSP5QkHKaSRi6Y669G3iyXS+ijJMU52I1SFqqrBY8mgGfJ+kEzaTWAfCOpJQ4m5pRy4xutBPwAMxIlET0WT-EQlRmBjsagOYcsYekEI1glScOke33h12CirQoXAFFcOwwAAnfwAax85AACw3clYhTfREhSCoEVHCtjFWUQIVDAstmWRY8jyBQpGUJ9o1rN8P2-WA-3YQCqGkcJSU3NswIQadlWLb07FUYtwT9NQaELHJ4IZEtzFRU10VwkV7nrVd12bN5W1A7cilsQtagUdRVj2DRfUKU9xGME8ljURSBxw+da2tJdxUwTBgPlGjYJhTYxAaTIaGEJzEJoAteQMVQM0zZIaH42dq0tHERJMkgzIsrd4kUFIGVBLTfNkNTEGLSQHLmBpEn3GczTnGtsRfPh2E-ABXDBwuomT0s0nJ0kyWxjCkCFEiSGzbGLURDHmLYDPaTxiMA4gyEoTBev-ICJMokDKRsSpZjUbkNFctl1AhCpL12KRkgWKFLDEbrxBGkiAP2vqAIASSMsUnnfMrpPiepqnEaxRHMKQSyMVjClBDiFvqVYGna1y9oOwDjtG87sWMgkAigABbMBrvG2UqNu-Q0lKJ6XuKfskQhFQDELcpNjSJzMjhIGTtBw7wduYKCSul5Ecdcq7sw-GKlkDQFosRD6mVJjNix-t-kfATzUuYGjol6mgrxEzobhhGKKRybnXqUEYWDUcdisawPqS-HmIRawqlkRyRHJ0bKcA6WXwARyK7AmF8dwwF8dhUFQczGakykrGS+FgwndQ1BgiEK07bJXLqOpFN5UQLcOq2zrw+3Hd8GHUAAN1d93PZuykw2S2pNnUVyKwav0doLIEthBewEUU4QE5BqWLr8WXBlCb3kamioJH3Z7jB9Q5EoQDUOPmTD+xPBZ2srUWcqTpPpeQEg-36WH4b8bPP04chQvz1WWPEG8GREJCFEvhC-VkCsyjqb590w4om4XgKJeX2tV-X+Wt98ADUCfmwAAL24OwA+3cVY0RsNkSQAIezwgOFYPWCQsiFh2PIGOIhszxzfkKD+rdsREG4LAQqJA8D-0ASAsBoVfAQClOAigCZIGWRkjYXYXYBY2CcqeHmYhHr3k8jFJQexm6SxOtLYhuBSGfnIbgXwO8960PoaQwazClZMxRgkUQ6RJBQhsCILYDJR6ZBEGUYwu5-h+0vmIz+RCSFkIoQAQQAEKeF8AADUPtAgEbNlhKEOMkDBChELtXxjkVUlRigDh2LYwhPQpEyLkb4Vx7iACa3i2G+NSL5LyBx7CKUQlPeSORdhGIZLg-y+CKbxOIA42RFCyBQG6JklmCJHpAhvK5bIiw-iIVhCfdqAIbAeQnFlQS4sakSNrIkxx8juj4HYGNDRPsj57EegsE8JYJwDmDIhRQHFDibArDtRyBg4nTPsdIuZvgmBfjubgeh5AiqYBIN+FRjDxIrJ7qrFUsw8icmLp5UMiExD4yMMUOowY2TtQuWDGZ9TkkAKAaA98oVMA6FMtgKAwwWERX0P8cJYZ1DMThETFB8wgRlGmlYgEVRyhwqpgi65DT5GKOwPvMymLQrYtxd8qBWT7BlFcgHIWs9GrGmVLfFEIhkjZkZdbZlSSKGwFwCQJ27tPGtNRsYGEsq4QTmNmmRqz0OIqHMN6PYUSRZVItAQy5CTEUqrVRq1AvgMl4uZjqiQrliyOWYjo74g5Cj1A4TsewiwGTVDJngu1Uz4VXOVfIsA9taELKgEs7VCQ2qBkfi9LYp9GrTEkMkE8-YTZ2HGWLHq8amWJpuUwN56LqCeq0fUbkj0KgnKauoYN+h4RuhBDohYHZVjnNjZMy2tTZmst8J+MAGds6+HIE698TZ+WsLus9TsVrPKKBEDyEJN8nKlChJhbkPStjPQVcnbEAAlMAABaMAfAghFQ-Fm0NEgSxD2eqzGwqgIRbA4jxLMdRtI6JvTbVOGqmlb2wLQt55A3Yey9hu-FCBezoxPLYWuCx5Bh3mI9AEIcY4okqdld+FMAAyeBXYABVUMEDtg7J2i6c6oazfIS+kgrFOVHHsDK54lAn0ctjG8eRnrYQnTWy2tHcAMaYw+59r7nkftbb7TC6Y0wPy2EbGwjVvipFMOYf40a-KUeqXJujvhGOe3EAABTtO+FJEAMAQAIE4tztznMM3Q16ooyxSiZCSNYYljkzxsXkOYxI7UINhNsfJxT9nvCbxc159znnvP0yzRWZ6ypQwl0METLQfoVClDTGYM5KFiwNESzZuzmB9pgDS34DLkA6kwyYN0D8zs6O5cqIc74z0Tw9OSGHAMSRQQVEvk-NMFGJmycTkl2zqHmutdc5lljadGEwHfAhzA4pPzIdzmhlsPyrLFZPioQbiQrClZDQOTSBwz0IhhaserCnVspZawrNrbmOvbadi7FDecNPtlHJ2Z+vkdE6PsIhLYNJDZsjMIpCzi2l4rca+IU6uAOAEC4zIVIl9FjHn3GoCEG1nuZXrgpWJMnMcNbW7j-HZF-NaPkMUR6fxjy8gUpFz66zvjwP+p5HDn3ktNYAHJuqc88WAWWIA+ftODmixhfIFb-SCe8o4w6LGFSR3c5QgQ2ss3Gy2aAl2Nd6O3B4QwuMB07fIXynI8h9L9BoH4iJ9zT2KFxaTtrJ2J0t5LggymX1vvU+zguRpBnyHSNmeBo8hmBmR-6iwmxbEh++5gZjMG+tfdO7lvTs1ahAkLmoB7iBPfmMk89RYOjzYM4-tn63QO3Zwf24h47oOzuSQuzJCs+5icHB4hhFQ55mpcmWPXnYJ5X6B6WyDVva3s94FZ6rmSIhdHBgsFsUlKPGr9nBXCfsUTEirAD2boPy+s6S-EGvvH7ACfkXOwKyKoI3SejMETawvJGrzClCk6jYlAghWBZ53454P6QHr7P5UCqDR7OjYIzBpAeTGCeT1zw43yjiHKJ5dLFj6JVqLwfxOIADu5CfgyK1CaKh2HyaivgeAy4qABAEA3AYAHQuAmcqAf44gMA7Aj6VBqK4CmAj6jBqAWazEmwswQs0SmUt4PMyUGo5O7UGgQW46i+S8ZBFBlCKKNCtBDC9BYhBAX4n4gC4g3WJA7ATBn4MMvBPgAhVCQhoUohuATBEhekhYnMmCeaiQPMiIj0UgikXIDQRotiWhHACiX4Si+hqiTCDBrhzBrBCmHBXBPBfBj67KnKLhbhm+8QzE0WA4xYxcOQpgLkzUwsZgWwigxMYR5BERmRyiBhcRRhJhZhFhVhgCth6RDRIhYh7hKgmk8IaYJYZKdQKCDkBYfwl8AsFQ4YC+1+S+R04RbWbini8RTBLBbBKR3B7B6RJAAARrAI+nwNkeIbkYgPkTMMXGXgYteKEp5P8qPq5PuvMRjiQXUSse4h4uscwa0Z+OYa8h0TYXYfwQcUcScX0ecZhkoDMNUOxPxmqH2phjsDMOoF+qbD-rUdoaku6j8ZsckXgKkbsfYWCY+joKcf0RIGOH8P8OUOtEeoUJIaUOHNNHsKUgttWpoR8SkqsWkniX8QCZYdYV0SSYcWSRSVCZcXAjonkPUNrARn6CiD8NkMxNmLPFUK8Zye8doU0t0HiUkewYSTsSCY+rqU+pCYgTRFKdmIkGIPUPYApPsrzEaC9B1LKViREWafyZ+KYf8e0cKSaWaRKZaTJMxDNMckkAePMMGFXphr2rMJsDonNKMh6X4OmksvqVsUaWkfYemQBMGW-puhcQEp2mifuBUFaohDXI9BqCCFCDsFyFfm8RTMsc7PDBmgBN6b6YKUCSKfwXmQWf3u-sWbqkMYcHYJfM-OMZUAWGIHaSoMWOUJYKmbcvcvDE8i8m8nQk0ZQJmQSZwcaekXcp+A8hua8p+I+nQUwoORNEWZhrSXotmAyCCGGAiKCjkDCA0AOOWhOKCBycQS2dyceaeRypue8jua7C0T6W0YCQGUeWuY8qBeeZeRBTecrHeeoA0I+QiIyK+bGfhsFl+ekPuL+TkGIr4LgG6mJLGPWBgKuC8o8K8gpp+mLpIDtGrKOA0GfIRsqSWPWZhJPOYCaKaJRRgPABEItoWRhseJIDIHIPumoBoBCI+okBPEYGkDyJkGWKbhjjGFJQFgyDuqsELLsoYCoIIBKkYCfFYHYNYJfBfkQVRqNPpW2gOJ2FHPNDOUtNfIUI+hOOgooKcrxDtNYFBtcC5b3KGHqkMVCJznCD5YgLyBxAsFIJzm1EhBLjnhFUgQ5MKsGI-LyA0DtDqCkAEmqIYOHOUOoQsYzl9tjjcGwdlVZIglVKGCoK5LaSgsCIWHsNjFJhqMRZldjnLulgDhAE1VviWdHKsPIBanZXrmzGmP6q5LvkoENWtqln9ptpABNVMKOJeMBqfq6NpAtdzmCCFqtY5VZstkzvZizuwLtUIJ5NpvlYsIVeUF1R2uUGersJsBqd8OtfZjLr4CNewOJbedJWIMFskJxQsFtBZWxPrgnmXJVl2jpVqRTCvp7I9UUMYFSQsAiKpPlQLolVYB0nkHSccDSRAVbqvjAU-jjSoAsBspGkTS9kfu0jXCbLIJSjGhoS3pAdjtnqQRwAAu+nOk+hHmpmAIzbsG5BgfvqGmMhzdXAyP2JtBEocDTffsLaLYSKpu+jLUOXefVPjPNJfHzoiAZtgeoJpNtJUJ5IcD+trVAcDexrLfwhqV6K+XdgATxt7jkFUdGk2RjZbK2YIXodubEbuWITjaGLonYFCHYBCjeDeHwgWAsJhI7aoRUCuT0VHZ8pBQkXHVEgVg6SCIsNrAlZhuGI9BYo5D-sHPPPzYBdiasd8bHcbRhp5OyAiCoBrc9YBoqQOJeOrmyExDYMWNVc2WHdyTiXyZ3RDQFj3ZMVfFIOYNMNbYyYpN+ooLSOTvxv+U5YnK2V6Yvehd3XlifDUJqPdG9P0nJMGLYIGrFY0M3q3REXmT8SXbIAItUYPMsKCPsrArkHUIYAJYGiucBeuUhVuVeTHcXV3cvcYFcYaGGLUFhAyKCv4RCmmNEqncue-aNBRVRWuEbUvVonCDMIHGyEcKch5GHH8JpNkJUNeCWHUE4E4EAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogDMAVgDsAOmEiAjLMGCAHIIAsAJlHKANCACeiaQDZBEsctGrVATmmiaNQQF8H2tBhz4CAZTDsABLCwwck5uWgYkEBY2EJ4IgQRpZWFpcQVLe1V7SwVbYUttPQRBRMtxZUtlGkt0wVVpBTMnF3QsPChxbAhMMC8ff0Dgrlww3iiOId54pIVxe2lVYSNLDUFlgv1VAxSDUWE0wQM0ww0mkFdW-A6unoAROAG-Fjx2EYixmMmhA2FJGlEFP7KJLCZQA4TrBLSRTiTaWAwGZQiNRWVSnc7udqdboEO4BbrBXyQGCvZiscbcT5FeGzf5Q2zKb5mNa6fQ0RKpIyI4RsyxWeZoloYq7Y3EPXwkPjYWAkyJkj5xITmcS7OxVCyib4HAwQo5lMSZRYNESOZxnQVtYU9bz4x6oZ4y94TBUISo-Y7VYrZZaGbUsl2ZMoA0Se1SCNlQgVuC1Yq1iolgB1yp2gKY0GagxFpBSM5mFBHKcT5hTSP5QkHKaSRi6Y669G3iyXS+ijJMU52I1SFqqrBY8mgGfJ+kEzaTWAfCOpJQ4m5pRy4xutBPwAMxIlET0WT-EQlRmBjsagOYcsYekEI1glScOke33h12CirQoXAFFcOwwAAnfwAax85AACw3clYhTfREhSCoEVHCtjFWUQIVDAstmWRY8jyBQpGUJ9o1rN8P2-WA-3YQCqGkcJSU3NswIQadlWLb07FUYtwT9NQaELHJ4IZEtzFRU10VwkV7nrVd12bN5W1A7cilsQtagUdRVj2DRfUKU9xGME8ljURSBxw+da2tJdxUwTBgPlGjYJhTYxAaTIaGEJzEJoAteQMVQM0zZIaH42dq0tHERJMkgzIsrd4kUFIGVBLTfNkNTEGLSQHLmBpEn3GczTnGtsRfPh2E-ABXDBwuomT0s0nJ0kyWxjCkCFEiSGzbGLURDHmLYDPaTxiMA4gyEoTBev-ICJMokDKRsSpZjUbkNFctl1AhCpL12KRkgWKFLDEbrxBGkiAP2vqAIASSMsUnnfMrpPiepqnEaxRHMKQSyMVjClBDiFvqVYGna1y9oOwDjtG87sWMgkAigABbMBrvG2UqNu-Q0lKJ6XuKfskQhFQDELcpNjSJzMjhIGTtBw7wduYKCSul5Ecdcq7sw-GKlkDQFosRD6mVJjNix-t-kfATzUuYGjol6mgrxEzobhhGKKRybnXqUEYWDUcdisawPqS-HmIRawqlkRyRHJ0bKcA6WXwARyK7AmF8dwwF8dhUFQczGakykrGS+FgwndQ1BgiEK07bJXLqOpFN5UQLcOq2zrw+3Hd8GHUAAN1d93PZuykw2S2pNnUVyKwav0doLIEthBewEUU4QE5BqWLr8WXBlCb3kamioJH3Z7jB9Q5EoQDUOPmTD+xPBZ2srUWcqTpPpeQEg-36WH4b8bPP04chQvz1WWPEG8GREJCFEvhC-VkCsyjqb590w4om4XgKJeX2tV-X+Wt98ADUCfmwAAL24OwA+3cVY0RsNkSQAIezwgOFYPWCQsiFh2PIGOIhszxzfkKD+rdsREG4LAQqJA8D-0ASAsBoVfAQClOAigCZIGWRkjYXYXYBY2CcqeHmYhHr3k8jFJQexm6SxOtLYhuBSGfnIbgXwO8960PoaQwazClZMxRgkUQ6RJBQhsCILYDJR6ZBEGUYwu5-h+0vmIz+RCSFkIoQAQQAEKeF8AADUPtAgEbNlhKEOMkDBChELtXxjkVUlRigDh2LYwhPQpEyLkb4Vx7iACa3i2G+NSL5LyBx7CKUQlPeSORdhGIZLg-y+CKbxOIA42RFCyBQG6JklmCJHpAhvK5bIiw-iIVhCfdqAIbAeQnFlQS4sakSNrIkxx8juj4HYGNDRPsj57EegsE8JYJwDmDIhRQHFDibArDtRyBg4nTPsdIuZvgmBfjubgeh5AiqYBIN+FRjDxIrJ7qrFUsw8icmLp5UMiExD4yMMUOowY2TtQuWDGZ9TkkAKAaA98oVMA6FMtgKAwwWERX0P8cJYZ1DMThETFB8wgRlGmlYgEVRyhwqpgi65DT5GKOwPvMymLQrYtxd8qBWT7BlFcgHIWs9GrGmVLfFEIhkjZkZdbZlSSKGwFwCQJ27tPGtNRsYGEsq4QTmNmmRqz0OIqHMN6PYUSRZVItAQy5CTEUqrVRq1AvgMl4uZjqiQrliyOWYjo74g5Cj1A4TsewiwGTVDJngu1Uz4VXOVfIsA9taELKgEs7VCQ2qBkfi9LYp9GrTEkMkE8-YTZ2HGWLHq8amWJpuUwN56LqCeq0fUbkj0KgnKauoYN+h4RuhBDohYHZVjnNjZMy2tTZmst8J+MAGds6+HIE698TZ+WsLus9TsVrPKKBEDyEJN8nKlChJhbkPStjPQVcnbEAAlMAABaMAfAghFQ-Fm0NEgSxD2eqzGwqgIRbA4jxLMdRtI6JvTbVOGqmlb2wLQt55A3Yey9hu-FCBezoxPLYWuCx5Bh3mI9AEIcY4okqdld+FMAAyeBXYABVUMEDtg7J2i6c6oazfIS+kgrFOVHHsDK54lAn0ctjG8eRnrYQnTWy2tHcAMaYw+59r7nkftbb7TC6Y0wPy2EbGwjVvipFMOYf40a-KUeqXJujvhGOe3EAABTtO+FJEAMAQAIE4tztznMM3Q16ooyxSiZCSNYYljkzxsXkOYxI7UINhNsfJxT9nvCbxc159znnvP0yzRWZ6ypQwl0METLQfoVClDTGYM5KFiwNESzZuzmB9pgDS34DLkA6kwyYN0D8zs6O5cqIc74z0Tw9OSGHAMSRQQVEvk-NMFGJmycTkl2zqHmutdc5lljadGEwHfAhzA4pPzIdzmhlsPyrLFZPioQbiQrClZDQOTSBwz0IhhaserCnVspZawrNrbmOvbadi7FDecNPtlHJ2Z+vkdE6PsIhLYNJDZsjMIpCzi2l4rca+IU6uAOAEC4zIVIl9FjHn3GoCEG1nuZXrgpWJMnMcNbW7j-HZF-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 */
     id: 'Modeling',
 
     tsTypes: {} as import('./modelingMachine.typegen').Typegen0,
@@ -155,6 +157,7 @@ export const modelingMachine = createMachine(
       sketchPathToNode: null as PathToNode | null, // maybe too specific, and we should have a generic pathToNode, but being specific seems less risky when I'm not sure
       sketchEnginePathId: '' as string,
       sketchPlaneId: '' as string,
+      moveDescs: [] as MoveDesc[],
     },
 
     schema: {
@@ -593,9 +596,15 @@ export const modelingMachine = createMachine(
                   'No move',
                 ],
               },
-              'Move without re-execute': {},
-              'Move with execute': {},
-              'No move': {},
+              'Move without re-execute': {
+                entry: 'set move desc',
+              },
+              'Move with execute': {
+                entry: 'set move desc',
+              },
+              'No move': {
+                entry: 'set move desc',
+              },
             },
 
             initial: 'Move init',
@@ -792,16 +801,15 @@ export const modelingMachine = createMachine(
         // todo check all cursors are also in the right sketch
         selectionRanges.codeBasedSelections.every(
           (selection) =>
-            getConstraintLevelFromSourceRange(
-              selection.range,
-              kclManager.ast
-            ) === 'free'
+            getConstraintLevelFromSourceRange(selection.range, kclManager.ast)
+              .level === 'free'
         ),
       'can move with execute': ({ selectionRanges }) =>
         // todo check all cursors are also in the right sketch
         selectionRanges.codeBasedSelections.every((selection) =>
           ['partial', 'free'].includes(
             getConstraintLevelFromSourceRange(selection.range, kclManager.ast)
+              .level
           )
         ),
     },
@@ -1019,6 +1027,18 @@ export const modelingMachine = createMachine(
       },
       'set default plane id': assign({
         sketchPlaneId: (_, { data }) => data.planeId,
+      }),
+      'set move desc': assign({
+        moveDescs: ({ selectionRanges }) =>
+          selectionRanges.codeBasedSelections
+            .map((selection) =>
+              getConstraintLevelFromSourceRange(selection.range, kclManager.ast)
+            )
+            .filter(({ level }) => level === 'full')
+            .map(({ range }) => ({
+              snippet: kclManager.code.slice(range[0], range[1]),
+              line: kclManager.code.slice(0, range[0]).split('\n').length,
+            })),
       }),
     },
   }

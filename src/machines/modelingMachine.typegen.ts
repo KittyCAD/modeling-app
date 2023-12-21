@@ -66,6 +66,7 @@
 "hide default planes": "Cancel" | "Select default plane" | "Set selection" | "xstate.stop";
 "reset sketch metadata": "Cancel" | "Select default plane";
 "set default plane id": "Select default plane";
+"set move desc": "";
 "set segment tool": "Equip line tool" | "Equip tangential arc tool";
 "set sketch metadata": "Enter sketch";
 "set sketchMetadata from pathToNode": "Re-execute";
