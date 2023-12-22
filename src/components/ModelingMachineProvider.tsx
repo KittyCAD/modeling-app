@@ -22,8 +22,9 @@ import {
   Program,
   PipeExpression,
   CallExpression,
+  SourceRange,
 } from 'lang/wasm'
-import { getNodeFromPath } from 'lang/queryAst'
+import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 import {
   addCloseToPipe,
   addNewSketchLn,
@@ -155,29 +156,46 @@ export const ModelingMachineProvider = ({
                 exp.type === 'CallExpression' &&
                 exp.callee.name === 'startProfileAt'
             )
-            if (startProfileAtCallExp)
+            if (startProfileAtCallExp) {
+              const range: SourceRange = [
+                startProfileAtCallExp.start,
+                startProfileAtCallExp.end,
+              ]
+              const pathToNode = getNodePathFromSourceRange(
+                kclManager.ast,
+                range
+              )
               engineCommandManager.artifactMap[sketchEnginePathId] = {
                 type: 'result',
-                range: [startProfileAtCallExp.start, startProfileAtCallExp.end],
+                range,
+                pathToNode,
                 commandType: 'start_path',
                 data: null,
                 raw: {} as any,
               }
+            }
             const lineCallExp = updatedPipeNode.body.find(
               (exp) =>
                 exp.type === 'CallExpression' && exp.callee.name === 'line'
             )
-            if (lineCallExp)
+            if (lineCallExp) {
+              const range: SourceRange = [lineCallExp.start, lineCallExp.end]
+              const pathToNode = getNodePathFromSourceRange(
+                kclManager.ast,
+                range
+              )
               engineCommandManager.artifactMap[segmentId] = {
                 type: 'result',
-                range: [lineCallExp.start, lineCallExp.end],
+                range,
+                pathToNode,
                 commandType: 'extend_path',
                 parentId: sketchEnginePathId,
                 data: null,
                 raw: {} as any,
               }
+            }
 
-            kclManager.executeAstMock(astWithUpdatedSource, true)
+            kclManager.executeAstMock(astWithUpdatedSource, { updates: 'code' })
 
             return {
               sketchPathToNode: _pathToNode,
@@ -230,21 +248,33 @@ export const ModelingMachineProvider = ({
               pathToNode: sketchPathToNode,
             })
             const _modifiedAst = newSketchLn.modifiedAst
-            kclManager.executeAstMock(_modifiedAst, true).then(() => {
-              const lineCallExp = getNodeFromPath<CallExpression>(
-                kclManager.ast,
-                newSketchLn.pathToNode
-              ).node
-              if (segmentId)
-                engineCommandManager.artifactMap[segmentId] = {
-                  type: 'result',
-                  range: [lineCallExp.start, lineCallExp.end],
-                  commandType: 'extend_path',
-                  parentId: sketchEnginePathId,
-                  data: null,
-                  raw: {} as any,
+            kclManager
+              .executeAstMock(_modifiedAst, { updates: 'code' })
+              .then(() => {
+                const lineCallExp = getNodeFromPath<CallExpression>(
+                  kclManager.ast,
+                  newSketchLn.pathToNode
+                ).node
+                if (segmentId) {
+                  const range: SourceRange = [
+                    lineCallExp.start,
+                    lineCallExp.end,
+                  ]
+                  const pathToNode = getNodePathFromSourceRange(
+                    kclManager.ast,
+                    range
+                  )
+                  engineCommandManager.artifactMap[segmentId] = {
+                    type: 'result',
+                    range,
+                    pathToNode,
+                    commandType: 'extend_path',
+                    parentId: sketchEnginePathId,
+                    data: null,
+                    raw: {} as any,
+                  }
                 }
-            })
+              })
           } else {
             if (tool === 'sketch_tangential_arc') {
               const newSketchLn = addNewSketchLn({
@@ -256,21 +286,33 @@ export const ModelingMachineProvider = ({
                 pathToNode: sketchPathToNode,
               })
               _modifiedAst = newSketchLn.modifiedAst
-              kclManager.executeAstMock(_modifiedAst, true).then(() => {
-                const lineCallExp = getNodeFromPath<CallExpression>(
-                  kclManager.ast,
-                  newSketchLn.pathToNode
-                ).node
-                if (segmentId)
-                  engineCommandManager.artifactMap[segmentId] = {
-                    type: 'result',
-                    range: [lineCallExp.start, lineCallExp.end],
-                    commandType: 'extend_path',
-                    parentId: sketchEnginePathId,
-                    data: null,
-                    raw: {} as any,
+              kclManager
+                .executeAstMock(_modifiedAst, { updates: 'code' })
+                .then(() => {
+                  const lineCallExp = getNodeFromPath<CallExpression>(
+                    kclManager.ast,
+                    newSketchLn.pathToNode
+                  ).node
+                  if (segmentId) {
+                    const range: SourceRange = [
+                      lineCallExp.start,
+                      lineCallExp.end,
+                    ]
+                    const pathToNode = getNodePathFromSourceRange(
+                      kclManager.ast,
+                      range
+                    )
+                    engineCommandManager.artifactMap[segmentId] = {
+                      type: 'result',
+                      range,
+                      pathToNode,
+                      commandType: 'extend_path',
+                      parentId: sketchEnginePathId,
+                      data: null,
+                      raw: {} as any,
+                    }
                   }
-              })
+                })
             } else {
               _modifiedAst = kclManager.ast
             }
@@ -289,7 +331,7 @@ export const ModelingMachineProvider = ({
               cmd_id: uuidv4(),
               cmd: { type: 'default_camera_disable_sketch_mode' },
             })
-            kclManager.executeAstMock(_modifiedAst, true)
+            kclManager.executeAstMock(_modifiedAst, { updates: 'code' })
             // updateAst(_modifiedAst, true)
           }
         },

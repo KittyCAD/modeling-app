@@ -7,6 +7,7 @@ import {
 } from './std/engineConnection'
 import { deferExecution } from 'lib/utils'
 import {
+  CallExpression,
   initPromise,
   parse,
   PathToNode,
@@ -173,6 +174,9 @@ class KclManager {
     } else {
       this.code = storedCode
     }
+    this.ensureWasmInit().then(() => {
+      this.ast = this.safeParse(this.code) || this.ast
+    })
   }
   registerCallBacks({
     setCode,
@@ -251,13 +255,20 @@ class KclManager {
       data: null,
     })
   }
-  async executeAstMock(ast: Program = this._ast, updateCode = false) {
+  async executeAstMock(
+    ast: Program = this._ast,
+    {
+      updates,
+    }: {
+      updates: 'none' | 'code' | 'codeAndArtifactRanges'
+    } = { updates: 'none' }
+  ) {
     await this.ensureWasmInit()
     const newCode = recast(ast)
     const newAst = this.safeParse(newCode)
     if (!newAst) return
     await this?.engineCommandManager?.waitForReady
-    if (updateCode) {
+    if (updates !== 'none') {
       this.setCode(recast(ast))
     }
     this._ast = { ...newAst }
@@ -271,6 +282,25 @@ class KclManager {
     this._logs = logs
     this._kclErrors = errors
     this._programMemory = programMemory
+    if (updates !== 'codeAndArtifactRanges') return
+    Object.entries(engineCommandManager.artifactMap).forEach(
+      ([commandId, artifact]) => {
+        if (!artifact.pathToNode) return
+        const node = getNodeFromPath<CallExpression>(
+          kclManager.ast,
+          artifact.pathToNode,
+          'CallExpression'
+        ).node
+        if (node.type !== 'CallExpression') return
+        const [oldStart, oldEnd] = artifact.range
+        if (oldStart === 0 && oldEnd === 0) return
+        if (oldStart === node.start && oldEnd === node.end) return
+        engineCommandManager.artifactMap[commandId].range = [
+          node.start,
+          node.end,
+        ]
+      }
+    )
   }
   async executeCode(code?: string) {
     await this.ensureWasmInit()
@@ -366,7 +396,7 @@ class KclManager {
       // When we don't re-execute, we still want to update the program
       // memory with the new ast. So we will hit the mock executor
       // instead.
-      await this.executeAstMock(astWithUpdatedSource, true)
+      await this.executeAstMock(astWithUpdatedSource, { updates: 'code' })
     }
     return returnVal
   }

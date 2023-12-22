@@ -371,7 +371,9 @@ export const Stream = ({ className = '' }) => {
         if (state.matches('Sketch.Move Tool.Move with execute')) {
           kclManager.executeAst(modifiedAst, true)
         } else {
-          kclManager.executeAstMock(modifiedAst, true)
+          await kclManager.executeAstMock(modifiedAst, {
+            updates: 'codeAndArtifactRanges',
+          })
         }
       })
     } else {

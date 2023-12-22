@@ -1,16 +1,18 @@
-import { SourceRange } from 'lang/wasm'
+import { PathToNode, Program, SourceRange } from 'lang/wasm'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_CONNECTION_TIMEOUT_MS } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
 import { v4 as uuidv4 } from 'uuid'
 import * as Sentry from '@sentry/react'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
+import { getNodePathFromSourceRange } from 'lang/queryAst'
 
 let lastMessage = ''
 
 interface CommandInfo {
   commandType: CommandTypes
   range: SourceRange
+  pathToNode: PathToNode
   parentId?: string
 }
 
@@ -618,6 +620,7 @@ export type CommandLog =
 export class EngineCommandManager {
   artifactMap: ArtifactMap = {}
   lastArtifactMap: ArtifactMap = {}
+  private getAst: () => Program = () => ({ start: 0, end: 0, body: [] } as any)
   outSequence = 1
   inSequence = 1
   engineConnection?: EngineConnection
@@ -645,6 +648,11 @@ export class EngineCommandManager {
 
   constructor() {
     this.engineConnection = undefined
+    ;(async () => {
+      // circular dependency needs one to be lazy loaded
+      const { kclManager } = await import('lang/KclSinglton')
+      this.getAst = () => kclManager.ast
+    })()
   }
 
   start({
@@ -830,6 +838,7 @@ export class EngineCommandManager {
       this.artifactMap[id] = {
         type: 'result',
         range: command.range,
+        pathToNode: command.pathToNode,
         commandType: command.commandType,
         parentId: command.parentId ? command.parentId : undefined,
         data: modelingResponse,
@@ -847,6 +856,7 @@ export class EngineCommandManager {
         type: 'result',
         commandType: command?.commandType,
         range: command?.range,
+        pathToNode: command?.pathToNode,
         data: modelingResponse,
         raw: message,
       }
@@ -864,6 +874,7 @@ export class EngineCommandManager {
       this.artifactMap[id] = {
         type: 'failed',
         range: command.range,
+        pathToNode: command.pathToNode,
         commandType: command.commandType,
         parentId: command.parentId ? command.parentId : undefined,
         errors,
@@ -878,6 +889,7 @@ export class EngineCommandManager {
       this.artifactMap[id] = {
         type: 'failed',
         range: command.range,
+        pathToNode: command.pathToNode,
         commandType: command.commandType,
         parentId: command.parentId ? command.parentId : undefined,
         errors,
@@ -1040,10 +1052,12 @@ export class EngineCommandManager {
     id,
     range,
     command,
+    ast,
   }: {
     id: string
     range: SourceRange
     command: EngineCommand | string
+    ast: Program
   }): Promise<any> {
     if (this.engineConnection === undefined) {
       return Promise.resolve()
@@ -1065,17 +1079,18 @@ export class EngineCommandManager {
     }
     this.engineConnection?.send(command)
     if (typeof command !== 'string' && command.type === 'modeling_cmd_req') {
-      return this.handlePendingCommand(id, command?.cmd, range)
+      return this.handlePendingCommand(id, command?.cmd, ast, range)
     } else if (typeof command === 'string') {
       const parseCommand: EngineCommand = JSON.parse(command)
       if (parseCommand.type === 'modeling_cmd_req')
-        return this.handlePendingCommand(id, parseCommand?.cmd, range)
+        return this.handlePendingCommand(id, parseCommand?.cmd, ast, range)
     }
     throw Error('shouldnt reach here')
   }
   handlePendingCommand(
     id: string,
     command: Models['ModelingCmd_type'],
+    ast?: Program,
     range?: SourceRange
   ) {
     let resolve: (val: any) => void = () => {}
@@ -1088,8 +1103,12 @@ export class EngineCommandManager {
       }
       // TODO handle other commands that have a parent
     }
+    const pathToNode = ast
+      ? getNodePathFromSourceRange(ast, range || [0, 0])
+      : []
     this.artifactMap[id] = {
       range: range || [0, 0],
+      pathToNode,
       type: 'pending',
       commandType: command.type,
       parentId: getParentId(),
@@ -1118,9 +1137,12 @@ export class EngineCommandManager {
     const range: SourceRange = JSON.parse(rangeStr)
 
     // We only care about the modeling command response.
-    return this.sendModelingCommand({ id, range, command: commandStr }).then(
-      ({ raw }) => JSON.stringify(raw)
-    )
+    return this.sendModelingCommand({
+      id,
+      range,
+      command: commandStr,
+      ast: this.getAst(),
+    }).then(({ raw }) => JSON.stringify(raw))
   }
   commandResult(id: string): Promise<any> {
     const command = this.artifactMap[id]
