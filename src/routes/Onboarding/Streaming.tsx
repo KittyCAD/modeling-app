@@ -17,23 +17,23 @@ export default function Streaming() {
         }
       >
         <section className="flex-1">
-          <h2 className="text-2xl">Streaming Video</h2>
+          <h2 className="text-2xl font-bold">Streaming Video</h2>
           <p className="my-4">
             The 3D view is not running on your computer. Instead, our
-            infrastructure spins up the Zoo Geometry Engine on a remote GPU, Zoo
+            infrastructure spins up our Geometry Engine on a remote GPU,
             Modeling App sends it a series of commands via Websockets and
             WebRTC, and the Geometry Engine sends back a video stream of the 3D
             view.
           </p>
           <p className="my-4">
-            This means that you could run Zoo Modeling App on a Chromebook, a
+            This means that you could run our Modeling App on a Chromebook, a
             tablet, or even a phone, as long as you have a good internet
             connection.
           </p>
           <p className="my-4">
-            It also means that whatever tools you build on top of the Zoo
-            Geometry Engine will be able to run on any device with a browser,
-            and you won't have to worry about the performance of the device.
+            It also means that whatever tools you build on top of our Geometry
+            Engine will be able to run on any device with a browser, and you
+            won't have to worry about the performance of the device.
           </p>
         </section>
         <OnboardingButtons
