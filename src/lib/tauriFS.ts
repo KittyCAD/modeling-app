@@ -10,7 +10,7 @@ import { isTauri } from './isTauri'
 import { ProjectWithEntryPointMetadata } from '../Router'
 import { metadata } from 'tauri-plugin-fs-extra-api'
 
-const PROJECT_FOLDER = 'kittycad-modeling-projects'
+const PROJECT_FOLDER = 'zoo-modeling-app-projects'
 export const FILE_EXT = '.kcl'
 export const PROJECT_ENTRYPOINT = 'main' + FILE_EXT
 const INDEX_IDENTIFIER = '$n' // $nn.. will pad the number with 0s

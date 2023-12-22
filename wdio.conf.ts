@@ -5,7 +5,7 @@ import { spawn, ChildProcess } from 'child_process'
 let tauriDriver: ChildProcess
 
 const application =
-  process.env.E2E_APPLICATION || `./src-tauri/target/release/kittycad-modeling`
+  process.env.E2E_APPLICATION || `./src-tauri/target/release/zoo-modeling-app`
 
 export const config = {
   port: 4444,
