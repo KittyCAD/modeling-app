@@ -42,7 +42,7 @@ import CommandBarProvider from 'components/CommandBar/CommandBar'
 import { TEST, VITE_KC_SENTRY_DSN } from './env'
 import * as Sentry from '@sentry/react'
 import ModelingMachineProvider from 'components/ModelingMachineProvider'
-import { KclContextProvider, kclManager } from 'lang/KclSinglton'
+import { KclContextProvider, kclManager } from 'lang/KclSingleton'
 import FileMachineProvider from 'components/FileMachineProvider'
 import { sep } from '@tauri-apps/api/path'
 

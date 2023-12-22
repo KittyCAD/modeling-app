@@ -24,7 +24,7 @@ import { CSSRuleObject } from 'tailwindcss/types/config'
 import { useModelingContext } from 'hooks/useModelingContext'
 import interact from '@replit/codemirror-interact'
 import { engineCommandManager } from '../lang/std/engineConnection'
-import { kclManager, useKclContext } from 'lang/KclSinglton'
+import { kclManager, useKclContext } from 'lang/KclSingleton'
 
 export const editorShortcutMeta = {
   formatCode: {

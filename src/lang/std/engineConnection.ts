@@ -650,7 +650,7 @@ export class EngineCommandManager {
     this.engineConnection = undefined
     ;(async () => {
       // circular dependency needs one to be lazy loaded
-      const { kclManager } = await import('lang/KclSinglton')
+      const { kclManager } = await import('lang/KclSingleton')
       this.getAst = () => kclManager.ast
     })()
   }

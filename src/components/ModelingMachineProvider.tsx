@@ -30,7 +30,7 @@ import {
   addNewSketchLn,
   compareVec2Epsilon,
 } from 'lang/std/sketch'
-import { kclManager, useKclContext } from 'lang/KclSinglton'
+import { kclManager, useKclContext } from 'lang/KclSingleton'
 import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
 import {
   angleBetweenInfo,

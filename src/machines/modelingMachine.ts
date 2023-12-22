@@ -15,7 +15,7 @@ import {
   getNodePathFromSourceRange,
   hasExtrudeSketchGroup,
 } from 'lang/queryAst'
-import { kclManager } from 'lang/KclSinglton'
+import { kclManager } from 'lang/KclSingleton'
 import {
   horzVertInfo,
   applyConstraintHorzVert,
