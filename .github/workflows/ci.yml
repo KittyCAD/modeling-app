@@ -349,7 +349,7 @@ jobs:
         uses: google-github-actions/upload-cloud-storage@v2.0.0
         with:
           path: artifact
-          glob: '*/*'
+          glob: '*/Zoo*'
           parent: false
           destination: ${{ env.BUCKET_DIR }}/${{ env.VERSION }}
 
@@ -369,4 +369,4 @@ jobs:
         if: ${{ github.event_name == 'release' }}
         uses: softprops/action-gh-release@v1
         with:
-          files: artifact/*/*
+          files: 'artifact/*/Zoo*'
