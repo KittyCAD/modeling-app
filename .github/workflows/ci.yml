@@ -123,6 +123,7 @@ jobs:
     needs: [prepare-json-files]
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
     steps:
