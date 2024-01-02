@@ -4,9 +4,9 @@
 
 First off, thank you so much for your interest in being a part of the closed Alpha program! We are thrilled to have others use our product and see what you build with it (and truthfully, how you break it too).
 
-### KittyCAD Modeling App (KCMA)
+### Zoo Modeling App (ZMA)
 
-What we are introducing to you is our KittyCAD Modeling App (KCMA). KCMA is a CAD application that expresses a hybrid style of traditional CAD interface along with a code-CAD interface. KCMA is a great way for us to test our own APIs as well as inspire others to develop their own applications.
+What we are introducing to you is our Zoo Modeling App (ZMA). ZMA is a CAD application that expresses a hybrid style of traditional CAD interface along with a code-CAD interface. ZMA is a great way for us to test our own APIs as well as inspire others to develop their own applications.
 
 ### Why Code?
 
@@ -18,11 +18,11 @@ Plenty of you have professional CAD experience, and may not understand why codin
 - Reproducibility
 - Easier integration with other tools
 
-### Before You Use KCMA
+### Before You Use ZMA
 
 Before you dive straight into the app, we wanted to lay some expectations out for you. 
 
-- KCMA is in early development. Kurt pitched the idea back in January, and the team has been working hard on it since then. KCMA has really basic CAD features for now, but we have plenty of features on our roadmap. Most of the features that you may be currently used to in your CAD workflow today will be available down the road.
+- ZMA is in early development. Kurt pitched the idea back in January, and the team has been working hard on it since then. ZMA has really basic CAD features for now, but we have plenty of features on our roadmap. Most of the features that you may be currently used to in your CAD workflow today will be available down the road.
 - For a list of all scripting functions, please reference our [documentation](https://github.com/KittyCAD/modeling-app/blob/main/docs/kcl/std.md). For a basic rundown of our types, please reference [this document](https://github.com/KittyCAD/modeling-app/blob/main/docs/kcl/types.md).
 - With that being said, we have created an external new features list in [GH Discussions](https://github.com/KittyCAD/modeling-app/discussions). For our current priority list, please click [here](https://github.com/KittyCAD/modeling-app/blob/main/public/roadmap.md). Please upvote any features in the GH Discussions page that you would like to see implemented first. We will prioritize the highest upvoted items or items that are foundational for other features on the list. You can also add your own, but we will review it to make sure it’s not a duplicate or it’s feasible for the current state of the app.
 - Please report any and all bugs/issues you find. Even the smallest bugs are important! You can report them in a GH Issue [here](https://github.com/KittyCAD/modeling-app/issues/new). You are more than welcome to link your GH Issue in the **bugs** section of our Discord, but if you want to discuss the bug further, please keep that in the GH Issue thread. Please include the severity of the bug in your GH Issue ticket (High, Medium, or Low). If you are having trouble deciding what severity the bug is, use this guideline:

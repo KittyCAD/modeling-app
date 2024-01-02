@@ -33,7 +33,7 @@ export const AppHeader = ({
       className={
         'w-full grid ' +
         styles.header +
-        ' overlaid-panes sticky top-0 z-20 py-1 px-5 bg-chalkboard-10/70 dark:bg-chalkboard-100/50 border-b dark:border-b-2 border-chalkboard-30 dark:border-chalkboard-90 items-center ' +
+        ' overlaid-panes sticky top-0 z-20 py-1 px-2 bg-chalkboard-10/70 dark:bg-chalkboard-100/50 border-b dark:border-b-2 border-chalkboard-30 dark:border-chalkboard-90 items-center ' +
         className
       }
     >
