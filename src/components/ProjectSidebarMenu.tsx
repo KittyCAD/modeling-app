@@ -8,6 +8,8 @@ import { ExportButton } from './ExportButton'
 import { Fragment } from 'react'
 import { FileTree } from './FileTree'
 import { sep } from '@tauri-apps/api/path'
+import { Logo } from './Logo'
+import { APP_NAME } from 'lib/constants'
 
 const ProjectSidebarMenu = ({
   project,
@@ -21,37 +23,29 @@ const ProjectSidebarMenu = ({
   return renderAsLink ? (
     <Link
       to={paths.HOME}
-      className="h-9 max-h-min min-w-max border-0 p-0.5 pr-2 flex items-center gap-4 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-energy-50"
+      className="rounded-sm h-9 mr-auto max-h-min min-w-max border-0 py-1 px-2 flex items-center gap-3 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-energy-50 dark:hover:bg-chalkboard-90"
       data-testid="project-sidebar-link"
     >
-      <img
-        src="/kitt-8bit-winking.svg"
-        alt="KittyCAD App"
-        className="w-auto h-9"
-      />
+      <Logo />
       <span
         className="hidden text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
         data-testid="project-sidebar-link-name"
       >
-        {project?.name ? project.name : 'KittyCAD Modeling App'}
+        {project?.name ? project.name : APP_NAME}
       </span>
     </Link>
   ) : (
     <Popover className="relative">
       <Popover.Button
-        className="h-9 max-h-min min-w-max border-0 p-0.5 pr-2 flex items-center gap-4 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-energy-50"
+        className="rounded-sm h-9 mr-auto max-h-min min-w-max border-0 py-1 px-2 flex items-center gap-3 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-energy-50 dark:hover:bg-chalkboard-90"
         data-testid="project-sidebar-toggle"
       >
-        <img
-          src="/kitt-8bit-winking.svg"
-          alt="KittyCAD App"
-          className="w-auto h-full"
-        />
+        <Logo />
         <div className="flex flex-col items-start py-0.5">
           <span className="hidden text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block">
             {isTauri() && file?.name
               ? file.name.slice(file.name.lastIndexOf(sep) + 1)
-              : 'KittyCAD Modeling App'}
+              : APP_NAME}
           </span>
           {isTauri() && project?.name && (
             <span className="hidden text-xs text-chalkboard-70 dark:text-chalkboard-40 whitespace-nowrap lg:block">
@@ -82,24 +76,19 @@ const ProjectSidebarMenu = ({
         as={Fragment}
       >
         <Popover.Panel
-          className="fixed inset-0 right-auto z-30 grid w-64 h-screen max-h-screen grid-cols-1 border rounded-r-lg shadow-md bg-chalkboard-10 dark:bg-chalkboard-100 border-energy-100 dark:border-energy-100/50"
+          className="fixed inset-0 right-auto z-30 grid w-64 h-screen max-h-screen grid-cols-1 border rounded-r-md shadow-md bg-chalkboard-10 dark:bg-chalkboard-100 border-chalkboard-40 dark:border-chalkboard-80"
           style={{ gridTemplateRows: 'auto 1fr auto' }}
         >
           {({ close }) => (
             <>
-              <div className="flex items-center gap-4 px-4 py-3 bg-energy-10/25 dark:bg-energy-110">
-                <img
-                  src="/kitt-8bit-winking.svg"
-                  alt="KittyCAD App"
-                  className="w-auto h-9"
-                />
-
+              <div className="flex items-center gap-4 px-4 py-3">
+                <Logo />
                 <div>
                   <p
                     className="m-0 text-chalkboard-100 dark:text-energy-10 text-mono"
                     data-testid="projectName"
                   >
-                    {project?.name ? project.name : 'KittyCAD Modeling App'}
+                    {project?.name ? project.name : APP_NAME}
                   </p>
                   {project?.entrypointMetadata && (
                     <p
@@ -115,19 +104,16 @@ const ProjectSidebarMenu = ({
               {isTauri() ? (
                 <FileTree
                   file={file}
-                  className="overflow-hidden border-0 border-y border-energy-40 dark:border-energy-70"
+                  className="overflow-hidden border-0 border-y border-chalkboard-30 dark:border-chalkboard-80"
                   closePanel={close}
                 />
               ) : (
                 <div className="flex-1 overflow-hidden" />
               )}
-              <div className="flex flex-col gap-2 p-4 bg-energy-10/25 dark:bg-energy-110">
+              <div className="flex flex-col gap-2 p-4 dark:bg-chalkboard-90">
                 <ExportButton
                   className={{
-                    button:
-                      'border-transparent dark:border-transparent hover:border-energy-60',
-                    icon: 'text-energy-10 dark:text-energy-120',
-                    bg: 'bg-energy-120 dark:bg-energy-10',
+                    button: 'border-transparent dark:border-transparent',
                   }}
                 >
                   Export Model
@@ -138,10 +124,10 @@ const ProjectSidebarMenu = ({
                     to={paths.HOME}
                     icon={{
                       icon: faHome,
-                      iconClassName: 'text-energy-10 dark:text-energy-120',
-                      bgClassName: 'bg-energy-120 dark:bg-energy-10',
+                      className: 'p-1',
+                      size: 'sm',
                     }}
-                    className="border-transparent dark:border-transparent hover:border-energy-60"
+                    className="border-transparent dark:border-transparent hover:bg-energy-10/20 dark:hover:bg-chalkboard-90"
                   >
                     Go to Home
                   </ActionButton>

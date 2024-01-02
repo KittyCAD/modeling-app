@@ -1,3 +1,5 @@
+const plugin = require('tailwindcss/plugin')
+
 const themeColorRamps = [
   { name: 'chalkboard', stops: 12 },
   { name: 'energy', stops: 12 },
@@ -10,36 +12,57 @@ const themeColorRamps = [
   { name: 'warn', stops: 8 },
   { name: 'succeed', stops: 8 },
 ]
-const toOKLCHVar = val => `oklch(var(${val}) / <alpha-value>) `
+const toOKLCHVar = (val) => `oklch(var(${val}) / <alpha-value>) `
 
 const themeColors = Object.fromEntries(
-  themeColorRamps.map(({name, stops}) => [
-      name,
-      Object.fromEntries(
-          new Array(stops)
-              .fill(0)
-              .map((_, i) => [
-                  (i + 1) * 10,
-                  toOKLCHVar(`--_${name}-${(i + 1) * 10}`),
-              ])
-      ),
+  themeColorRamps.map(({ name, stops }) => [
+    name,
+    Object.fromEntries(
+      new Array(stops)
+        .fill(0)
+        .map((_, i) => [(i + 1) * 10, toOKLCHVar(`--_${name}-${(i + 1) * 10}`)])
+    ),
   ])
 )
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
-  ],
+  mode: 'jit',
+  content: ['./src/**/*.{js,jsx,ts,tsx}'],
   theme: {
     extend: {
       colors: {
         ...themeColors,
+      },
+      fontFamily: {
+        display: `'owners', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif`,
+        sans: `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif`,
       },
     },
   },
   darkMode: 'class',
   plugins: [
     require('@headlessui/tailwindcss'),
+    // custom plugin to add variants for aria-pressed
+    // To use, just add a class of 'group-pressed:<some-tailwind-class>' or 'pressed:<some-tailwind-class>'
+    // to your element. Based on https://dev.to/philw_/tying-tailwind-styling-to-aria-attributes-502f
+    plugin(function ({ addVariant, e }) {
+      addVariant('group-pressed', ({ modifySelectors, separator }) => {
+        modifySelectors(({ className }) => {
+          return `.group[aria-pressed='true'] .${e(
+            `group-pressed${separator}${className}`
+          )}`
+        })
+      })
+      addVariant('pressed', ({ modifySelectors, separator }) => {
+        modifySelectors(({ className }) => {
+          return `.${e(`pressed${separator}${className}`)}[aria-pressed='true']`
+        })
+      })
+    }),
   ],
 }

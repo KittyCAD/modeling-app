@@ -1,6 +1,4 @@
-import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
-import { ActionButton } from '../../components/ActionButton'
-import { onboardingPaths, useDismiss, useNextClick } from '.'
+import { OnboardingButtons, onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from '../../useStore'
 import { useBackdropHighlight } from 'hooks/useBackdropHighlight'
 
@@ -19,12 +17,12 @@ export default function CodeEditor() {
       ></div>
       <div
         className={
-          'z-10 max-w-xl h-3/4 flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
+          'z-10 max-w-xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg h-3/4 flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
           (buttonDownInStream ? '' : ' pointer-events-auto')
         }
       >
         <section className="flex-1">
-          <h2 className="text-2xl">
+          <h2 className="text-2xl font-bold">
             Editing code with <code>kcl</code>
           </h2>
           <p className="my-4">
@@ -57,28 +55,11 @@ export default function CodeEditor() {
             <kbd>Shift</kbd> + <kbd>C</kbd>.
           </p>
         </section>
-        <div className="flex justify-between">
-          <ActionButton
-            Element="button"
-            onClick={dismiss}
-            icon={{
-              icon: faXmark,
-              bgClassName: 'bg-destroy-80',
-              iconClassName:
-                'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
-            }}
-            className="hover:border-destroy-40"
-          >
-            Dismiss
-          </ActionButton>
-          <ActionButton
-            Element="button"
-            onClick={next}
-            icon={{ icon: faArrowRight }}
-          >
-            Next: Parametric Modeling
-          </ActionButton>
-        </div>
+        <OnboardingButtons
+          dismiss={dismiss}
+          next={next}
+          nextText="Next: Parametric Modeling"
+        />
       </div>
     </div>
   )

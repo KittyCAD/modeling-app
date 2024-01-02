@@ -677,9 +677,9 @@ dependencies = [
 
 [[package]]
 name = "data-encoding"
-version = "2.4.0"
+version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c2e66c9d817f1720209181c316d28635c050fa304f9c79e47a520882661b7308"
+checksum = "7e962a19be5cfc3f3bf6dd8f61eb50107f356ad6270fbb3ed41476571db78be5"
 
 [[package]]
 name = "databake"
@@ -715,14 +715,16 @@ dependencies = [
 
 [[package]]
 name = "derive-docs"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "convert_case",
  "expectorate",
+ "once_cell",
  "openapitor",
  "pretty_assertions",
  "proc-macro2",
  "quote",
+ "regex",
  "serde",
  "serde_tokenstream",
  "syn 2.0.39",
@@ -730,13 +732,15 @@ dependencies = [
 
 [[package]]
 name = "derive-docs"
-version = "0.1.4"
+version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c357dec14992ba88803535217ed83d6f6cd80efcb8fa8e3f8a30a9b84fadc1c7"
+checksum = "8511b1486a7ec6820e889c6a2b57b8b699ab5e5eab507ffd1daa0e07871d2305"
 dependencies = [
  "convert_case",
+ "once_cell",
  "proc-macro2",
  "quote",
+ "regex",
  "serde",
  "serde_tokenstream",
  "syn 2.0.39",
@@ -820,16 +824,6 @@ checksum = "ac3e13f66a2f95e32a39eaa81f6b95d42878ca0e1db0c7543723dfe12557e860"
 dependencies = [
  "libc",
  "windows-sys 0.48.0",
-]
-
-[[package]]
-name = "execution-plan"
-version = "0.1.0"
-dependencies = [
- "bytes",
- "kittycad",
- "serde",
- "thiserror",
 ]
 
 [[package]]
@@ -1446,7 +1440,7 @@ dependencies = [
  "criterion",
  "dashmap",
  "databake",
- "derive-docs 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "derive-docs 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "expectorate",
  "futures",
  "insta",
@@ -3969,18 +3963,18 @@ checksum = "09041cd90cf85f7f8b2df60c646f853b7f535ce68f85244eb6731cf89fa498ec"
 
 [[package]]
 name = "zerocopy"
-version = "0.7.12"
+version = "0.7.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8db0ac2df3d060f81ec0380ccc5b71c2a7c092cfced671feeee1320e95559c87"
+checksum = "1c4061bedbb353041c12f413700357bec76df2c7e2ca8e4df8bac24c6bf68e3d"
 dependencies = [
  "zerocopy-derive",
 ]
 
 [[package]]
 name = "zerocopy-derive"
-version = "0.7.12"
+version = "0.7.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6b6093bc6d5265ff40b479c834cdd25d8e20784781a2a29a8106327393d0a9ff"
+checksum = "b3c129550b3e6de3fd0ba67ba5c81818f9805e58b8d7fee80a3a59d2c9fc601a"
 dependencies = [
  "proc-macro2",
  "quote",

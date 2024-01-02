@@ -1,14 +1,22 @@
 export type CustomIconName =
-  | 'createFile'
-  | 'createFolder'
+  | 'arrowDown'
+  | 'arrowLeft'
+  | 'arrowRight'
+  | 'arrowUp'
+  | 'checkmark'
+  | 'close'
   | 'equal'
-  | 'exit'
   | 'extrude'
   | 'file'
+  | 'filePlus'
+  | 'folder'
+  | 'folderPlus'
+  | 'gear'
   | 'horizontal'
   | 'line'
   | 'move'
   | 'parallel'
+  | 'search'
   | 'sketch'
   | 'vertical'
 
@@ -19,7 +27,7 @@ export const CustomIcon = ({
   name: CustomIconName
 } & React.SVGProps<SVGSVGElement>) => {
   switch (name) {
-    case 'createFile':
+    case 'arrowDown':
       return (
         <svg
           {...props}
@@ -30,12 +38,12 @@ export const CustomIcon = ({
           <path
             fillRule="evenodd"
             clipRule="evenodd"
-            d="M4 3H4.5H11H11.2071L11.3536 3.14645L15.8536 7.64646L16 7.7929V8.00001V11.3773C15.6992 11.1362 15.3628 10.9376 15 10.7908V8.50001H11H10.5V8.00001V4H5V16H9.79076C9.93763 16.3628 10.1362 16.6992 10.3773 17H4.5H4V16.5V3.5V3ZM11.5 4.70711L14.2929 7.50001H11.5V4.70711ZM13 12V14H11V15H13V17H14V15H16V14H14V12H13Z"
+            d="M10 17.7071L9.64648 17.3535L6.14648 13.8535L6.85359 13.1464L9.50004 15.7929V2.99997H10.5V15.7929L13.1465 13.1464L13.8536 13.8535L10.3536 17.3535L10 17.7071Z"
             fill="currentColor"
           />
         </svg>
       )
-    case 'createFolder':
+    case 'arrowLeft':
       return (
         <svg
           {...props}
@@ -46,7 +54,71 @@ export const CustomIcon = ({
           <path
             fillRule="evenodd"
             clipRule="evenodd"
-            d="M3.5 3.5H4H7H7.16667L7.3 3.6L9.16667 5H16H16.5V5.5V7.5V10.3773C16.1992 10.1362 15.8628 9.93763 15.5 9.79076V8H4.5V15.5H10.5351C10.7529 15.8764 11.0302 16.2141 11.3542 16.5H4H3.5V16V7.5V4V3.5ZM4.5 4.5V7H15.5V6H9H8.83333L8.7 5.9L6.83333 4.5H4.5ZM13.5 11V13H11.5V14H13.5V16H14.5V14H16.5V13H14.5V11H13.5Z"
+            d="M2.29291 10L2.64646 9.64645L6.14646 6.14645L6.85357 6.85356L4.20712 9.50001L17 9.50001V10.5L4.20712 10.5L6.85357 13.1465L6.14646 13.8536L2.64646 10.3536L2.29291 10Z"
+            fill="currentColor"
+          />
+        </svg>
+      )
+    case 'arrowRight':
+      return (
+        <svg
+          {...props}
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M17.7071 10L17.3536 10.3536L13.8536 13.8536L13.1464 13.1465L15.7929 10.5H3V9.50001H15.7929L13.1464 6.85356L13.8536 6.14645L17.3536 9.64645L17.7071 10Z"
+            fill="currentColor"
+          />
+        </svg>
+      )
+    case 'arrowUp':
+      return (
+        <svg
+          {...props}
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M10 2.29288L10.3536 2.64643L13.8536 6.14643L13.1465 6.85354L10.5 4.20709V17H9.50004V4.20709L6.85359 6.85354L6.14648 6.14643L9.64648 2.64643L10 2.29288Z"
+            fill="currentColor"
+          />
+        </svg>
+      )
+    case 'checkmark':
+      return (
+        <svg
+          {...props}
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M8.29956 13.5388L13.9537 6L14.7537 6.6L8.75367 14.6L8.00012 14.6536L5 11.6536L5.70709 10.9465L8.29956 13.5388Z"
+            fill="currentColor"
+          />
+        </svg>
+      )
+    case 'close':
+      return (
+        <svg
+          {...props}
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M9.2929 10L6.46448 7.17158L7.17158 6.46448L10 9.2929L12.8284 6.46448L13.5355 7.17158L10.7071 10L13.5355 12.8284L12.8284 13.5355L10 10.7071L7.17158 13.5355L6.46448 12.8284L9.2929 10Z"
             fill="currentColor"
           />
         </svg>
@@ -65,21 +137,6 @@ export const CustomIcon = ({
           />
         </svg>
       )
-    case 'exit':
-      return (
-        <svg
-          {...props}
-          viewBox="0 0 20 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M17 10L3 10M3 10L6.5 6.5M3 10L6.5 13.5"
-            stroke="currentColor"
-          />
-        </svg>
-      )
-
     case 'extrude':
       return (
         <svg
@@ -105,8 +162,74 @@ export const CustomIcon = ({
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
-            d="M11 3.5H4.5V16.5H15.5V8.00001M11 3.5L15.5 8.00001M11 3.5V8.00001H15.5"
-            stroke="currentColor"
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M4 3H4.5H11H11.2071L11.3536 3.14645L15.8536 7.64646L16 7.7929V8.00001V16.5V17H15.5H4.5H4V16.5V3.5V3ZM5 4V16H15V8.50001H11H10.5V8.00001V4H5ZM11.5 4.70711L14.2929 7.50001H11.5V4.70711Z"
+            fill="currentColor"
+          />
+        </svg>
+      )
+    case 'filePlus':
+      return (
+        <svg
+          {...props}
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M4 3H4.5H11H11.2071L11.3536 3.14645L15.8536 7.64646L16 7.7929V8.00001V11.3773C15.6992 11.1362 15.3628 10.9376 15 10.7908V8.50001H11H10.5V8.00001V4H5V16H9.79076C9.93763 16.3628 10.1362 16.6992 10.3773 17H4.5H4V16.5V3.5V3ZM11.5 4.70711L14.2929 7.50001H11.5V4.70711ZM13 12V14H11V15H13V17H14V15H16V14H14V12H13Z"
+            fill="currentColor"
+          />
+        </svg>
+      )
+    case 'folder':
+      return (
+        <svg
+          {...props}
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M3.5 3.5H4H7H7.16667L7.3 3.6L9.16667 5H16H16.5V5.5V7.5V16V16.5H16H4H3.5V16V7.5V4V3.5ZM4.5 4.5V7H15.5V6H9H8.83333L8.7 5.9L6.83333 4.5H4.5ZM15.5 8H4.5V15.5H15.5V8Z"
+            fill="currentColor"
+          />
+        </svg>
+      )
+    case 'folderPlus':
+      return (
+        <svg
+          {...props}
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M3.5 3.5H4H7H7.16667L7.3 3.6L9.16667 5H16H16.5V5.5V7.5V10.3773C16.1992 10.1362 15.8628 9.93763 15.5 9.79076V8H4.5V15.5H10.5351C10.7529 15.8764 11.0302 16.2141 11.3542 16.5H4H3.5V16V7.5V4V3.5ZM4.5 4.5V7H15.5V6H9H8.83333L8.7 5.9L6.83333 4.5H4.5ZM13.5 11V13H11.5V14H13.5V16H14.5V14H16.5V13H14.5V11H13.5Z"
+            fill="currentColor"
+          />
+        </svg>
+      )
+    case 'gear':
+      return (
+        <svg
+          {...props}
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M8.61477 3.0884L5.87402 4.67077L6.50004 5.75505L5.25004 7.92011H4.0047V11.07H5.25004L6.50004 13.2351L5.86973 14.3268L8.62776 15.9191L9.24503 14.85H11.745L12.3647 15.9234L15.1416 14.3202L14.5151 13.2351L15.7651 11.07H16.9951V7.92011H15.7651L14.5151 5.75505L15.1373 4.67741L12.3778 3.08423L11.7451 4.18012H9.24508L8.61477 3.0884ZM10.4999 13C12.4329 13 13.9999 11.433 13.9999 9.50003C13.9999 7.56703 12.4329 6.00003 10.4999 6.00003C8.56687 6.00003 6.99986 7.56703 6.99986 9.50003C6.99986 11.433 8.56687 13 10.4999 13Z"
+            fill="currentColor"
           />
         </svg>
       )
@@ -170,6 +293,22 @@ export const CustomIcon = ({
             fillRule="evenodd"
             clipRule="evenodd"
             d="M8 16V4H6V16H8ZM14 16V4H12V16H14Z"
+            fill="currentColor"
+          />
+        </svg>
+      )
+    case 'search':
+      return (
+        <svg
+          {...props}
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M14.016 9.00482C14.016 10.662 12.6731 12.0048 11.0172 12.0048C9.3613 12.0048 8.01841 10.662 8.01841 9.00482C8.01841 7.34768 9.3613 6.00482 11.0172 6.00482C12.6731 6.00482 14.016 7.34768 14.016 9.00482ZM15.016 9.00482C15.016 11.214 13.2257 13.0048 11.0172 13.0048C10.082 13.0048 9.22178 12.6837 8.54074 12.1456L5.6912 14.9952L4.98409 14.2881L7.83921 11.433C7.32431 10.7597 7.01841 9.91799 7.01841 9.00482C7.01841 6.79568 8.80873 5.00482 11.0172 5.00482C13.2257 5.00482 15.016 6.79568 15.016 9.00482Z"
             fill="currentColor"
           />
         </svg>

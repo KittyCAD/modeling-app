@@ -4,8 +4,7 @@ import { EngineCommand } from '../../src/lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
 import { getUtils } from './test-utils'
 import waitOn from 'wait-on'
-import { Models } from '@kittycad/lib'
-import fsp from 'fs/promises'
+import { Themes } from '../../src/lib/theme'
 
 /*
 debug helper: unfortunately we do rely on exact coord mouse clicks in a few places
@@ -86,26 +85,26 @@ test('Basic sketch', async ({ page }) => {
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
 
-  const startAt = '[10.97, -14.79]'
-  const tenish = '11.07'
+  const startAt = '[18.26, -24.63]'
+  const num = '18.43'
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
-  |> line([${tenish}, 0], %)`)
+  |> line([${num}, 0], %)`)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
-  |> line([${tenish}, 0], %)
-  |> line([0, ${tenish}], %)`)
+  |> line([${num}, 0], %)
+  |> line([0, ${num}], %)`)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
-  |> line([${tenish}, 0], %)
-  |> line([0, ${tenish}], %)
-  |> line([-22.04, 0], %)`)
+  |> line([${num}, 0], %)
+  |> line([0, ${num}], %)
+  |> line([-36.69, 0], %)`)
 
   // deselect line tool
   await u.doAndWaitForCmd(
@@ -133,8 +132,8 @@ test('Basic sketch', async ({ page }) => {
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
-  |> line({ to: [${tenish}, 0], tag: 'seg01' }, %)
-  |> line([0, ${tenish}], %)
+  |> line({ to: [${num}, 0], tag: 'seg01' }, %)
+  |> line([0, ${num}], %)
   |> angledLine([180, segLen('seg01', %)], %)`)
 })
 
@@ -182,6 +181,26 @@ test('if you write invalid kcl you get inlined errors', async ({ page }) => {
   await page.keyboard.press('Backspace')
 
   // wait for .cm-lint-marker-error not to be visible
+  await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+  // let's check we get an error when defining the same variable twice
+  await page.getByText('const bottomAng = 25').click()
+  await page.keyboard.press('Enter')
+  await page.keyboard.type("// Let's define the same thing twice")
+  await page.keyboard.press('Enter')
+  await page.keyboard.type('const topAng = 42')
+
+  await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+  await expect(page.locator('.cm-lintRange.cm-lintRange-error')).toBeVisible()
+
+  await page.locator('.cm-lintRange.cm-lintRange-error').hover()
+  await expect(page.locator('.cm-diagnosticText')).toBeVisible()
+  await expect(page.getByText('Cannot redefine topAng')).toBeVisible()
+
+  const secondTopAng = await page.getByText('topAng').first()
+  await secondTopAng?.dblclick()
+  await page.keyboard.type('otherAng')
+
   await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 })
 
@@ -488,27 +507,27 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
 
-  const startAt = '[10.97, -14.79]'
-  const tenish = '11.07'
-  const twentyish = '22.04'
+  const startAt = '[18.26, -24.63]'
+  const num = '18.43'
+  const num2 = '36.69'
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
-  |> line([${tenish}, 0], %)`)
+  |> line([${num}, 0], %)`)
 
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
-  |> line([${tenish}, 0], %)
-  |> line([0, ${tenish}], %)`)
+  |> line([${num}, 0], %)
+  |> line([0, ${num}], %)`)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   await expect(page.locator('.cm-content'))
     .toHaveText(`const part001 = startSketchOn('-XZ')
   |> startProfileAt(${startAt}, %)
-  |> line([${tenish}, 0], %)
-  |> line([0, ${tenish}], %)
-  |> line([-${twentyish}, 0], %)`)
+  |> line([${num}, 0], %)
+  |> line([0, ${num}], %)
+  |> line([-${num2}, 0], %)`)
 
   // deselect line tool
   await u.doAndWaitForCmd(
@@ -561,7 +580,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
 
     // check the same selection again by putting cursor in code first then selecting axis
     await u.doAndWaitForCmd(
-      () => page.getByText(`  |> line([-${twentyish}, 0], %)`).click(),
+      () => page.getByText(`  |> line([-${num2}, 0], %)`).click(),
       'select_clear',
       false
     )
@@ -576,7 +595,7 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
 
     // select segment in editor than another segment in scene and check there are two cursors
     await u.doAndWaitForCmd(
-      () => page.getByText(`  |> line([-${twentyish}, 0], %)`).click(),
+      () => page.getByText(`  |> line([-${num2}, 0], %)`).click(),
       'select_clear',
       false
     )
@@ -612,4 +631,107 @@ test('Selections work on fresh and edited sketch', async ({ page }) => {
 
   // hover again and check it works
   await selectionSequence()
+})
+
+test('Command bar works and can change a setting', async ({ page }) => {
+  // Brief boilerplate
+  const u = getUtils(page)
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+
+  let cmdSearchBar = page.getByPlaceholder('Search commands')
+
+  // First try opening the command bar and closing it
+  // It has a different label on mac and windows/linux, "Meta+K" and "Ctrl+/" respectively
+  await page
+    .getByRole('button', { name: 'Ctrl+/' })
+    .or(page.getByRole('button', { name: '⌘K' }))
+    .click()
+  await expect(cmdSearchBar).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(cmdSearchBar).not.toBeVisible()
+
+  // Now try the same, but with the keyboard shortcut, check focus
+  await page.keyboard.press('Meta+K')
+  await expect(cmdSearchBar).toBeVisible()
+  await expect(cmdSearchBar).toBeFocused()
+
+  // Try typing in the command bar
+  await page.keyboard.type('theme')
+  const themeOption = page.getByRole('option', { name: 'Set Theme' })
+  await expect(themeOption).toBeVisible()
+  await themeOption.click()
+  const themeInput = page.getByPlaceholder('Select an option')
+  await expect(themeInput).toBeVisible()
+  await expect(themeInput).toBeFocused()
+  // Select dark theme
+  await page.keyboard.press('ArrowDown')
+  await page.keyboard.press('ArrowDown')
+  await expect(page.getByRole('option', { name: Themes.Dark })).toHaveAttribute(
+    'data-headlessui-state',
+    'active'
+  )
+  await page.keyboard.press('Enter')
+
+  // Check the toast appeared
+  await expect(page.getByText(`Set Theme to "${Themes.Dark}"`)).toBeVisible()
+  // Check that the theme changed
+  await expect(page.locator('body')).toHaveClass(`body-bg ${Themes.Dark}`)
+})
+
+test('Can extrude from the command bar', async ({ page, context }) => {
+  await context.addInitScript(async (token) => {
+    localStorage.setItem(
+      'persistCode',
+      `const part001 = startSketchOn('-XZ')
+    |> startProfileAt([-6.95, 4.98], %)
+    |> line([25.1, 0.41], %)
+    |> line([0.73, -14.93], %)
+    |> line([-23.44, 0.52], %)
+    |> close(%)`
+    )
+  })
+
+  const u = getUtils(page)
+  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.goto('/')
+  await u.waitForAuthSkipAppStart()
+
+  let cmdSearchBar = page.getByPlaceholder('Search commands')
+  await page.keyboard.press('Meta+K')
+  await expect(cmdSearchBar).toBeVisible()
+
+  // Search for extrude command and choose it
+  await page.getByRole('option', { name: 'Extrude' }).click()
+  await expect(page.locator('#arg-form > label')).toContainText(
+    'Please select one face'
+  )
+  await expect(page.getByRole('button', { name: 'selection' })).toBeDisabled()
+
+  // Click to select face and set distance
+  await u.openAndClearDebugPanel()
+  await page.getByText('|> startProfileAt([-6.95, 4.98], %)').click()
+  await u.waitForCmdReceive('select_add')
+  await u.closeDebugPanel()
+  await page.getByRole('button', { name: 'Continue' }).click()
+  await expect(page.getByRole('button', { name: 'distance' })).toBeDisabled()
+  await page.keyboard.press('Enter')
+
+  // Review step and argument hotkeys
+  await page.keyboard.press('2')
+  await expect(page.getByRole('button', { name: '5' })).toBeDisabled()
+  await page.keyboard.press('Enter')
+
+  // Check that the code was updated
+  await page.keyboard.press('Enter')
+  await expect(page.locator('.cm-content')).toHaveText(
+    `const part001 = startSketchOn('-XZ')
+    |> startProfileAt([-6.95, 4.98], %)
+    |> line([25.1, 0.41], %)
+    |> line([0.73, -14.93], %)
+    |> line([-23.44, 0.52], %)
+    |> close(%)
+    |> extrude(5, %)`
+  )
 })

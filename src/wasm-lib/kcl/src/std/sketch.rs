@@ -6,6 +6,7 @@ use kittycad::types::{Angle, ModelingCmd, Point3D};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+use crate::executor::SourceRange;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{
@@ -1122,7 +1123,7 @@ async fn inner_tangential_arc(
                     path: sketch_group.id,
                     segment: kittycad::types::PathSegment::TangentialArc {
                         radius: *radius,
-                        offset: kittycad::types::Angle {
+                        offset: Angle {
                             unit: kittycad::types::UnitAngle::Degrees,
                             value: *offset,
                         },
@@ -1178,27 +1179,32 @@ fn tan_arc_to(sketch_group: &SketchGroup, to: &[f64; 2]) -> ModelingCmd {
     }
 }
 
-/// Data to draw a tangential arc to a specific point.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, JsonSchema, ts_rs::TS)]
-#[ts(export)]
-#[serde(rename_all = "camelCase", untagged)]
-pub enum TangentialArcToData {
-    /// A point with a tag.
-    PointWithTag {
-        /// Where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.
-        to: [f64; 2],
-        /// The tag.
-        tag: String,
-    },
-    /// A point where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.
-    Point([f64; 2]),
+fn too_few_args(source_range: SourceRange) -> KclError {
+    KclError::Syntax(KclErrorDetails {
+        source_ranges: vec![source_range],
+        message: "too few arguments".to_owned(),
+    })
+}
+
+fn get_arg<I: Iterator>(it: &mut I, src: SourceRange) -> Result<I::Item, KclError> {
+    it.next().ok_or_else(|| too_few_args(src))
 }
 
 /// Draw a tangential arc to a specific point.
 pub async fn tangential_arc_to(args: Args) -> Result<MemoryItem, KclError> {
-    let (data, sketch_group): (TangentialArcToData, Box<SketchGroup>) = args.get_data_and_sketch_group()?;
+    let src = args.source_range;
 
-    let new_sketch_group = inner_tangential_arc_to(data, sketch_group, args).await?;
+    // Get arguments to function call
+    let mut it = args.args.iter();
+    let to: [f64; 2] = get_arg(&mut it, src)?.get_json()?;
+    let sketch_group: Box<SketchGroup> = get_arg(&mut it, src)?.get_json()?;
+    let tag = if let Ok(memory_item) = get_arg(&mut it, src) {
+        memory_item.get_json_opt()?
+    } else {
+        None
+    };
+
+    let new_sketch_group = inner_tangential_arc_to(to, sketch_group, tag, args).await?;
     Ok(MemoryItem::SketchGroup(new_sketch_group))
 }
 
@@ -1207,29 +1213,23 @@ pub async fn tangential_arc_to(args: Args) -> Result<MemoryItem, KclError> {
     name = "tangentialArcTo",
 }]
 async fn inner_tangential_arc_to(
-    data: TangentialArcToData,
+    to: [f64; 2],
     sketch_group: Box<SketchGroup>,
+    tag: Option<String>,
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from: Point2d = sketch_group.get_coords_from_paths()?;
-    let to = match &data {
-        TangentialArcToData::PointWithTag { to, .. } => to,
-        TangentialArcToData::Point(to) => to,
-    };
+    let [to_x, to_y] = to;
 
-    let delta = [to[0] - from.x, to[1] - from.y];
+    let delta = [to_x - from.x, to_y - from.y];
     let id = uuid::Uuid::new_v4();
     args.send_modeling_cmd(id, tan_arc_to(&sketch_group, &delta)).await?;
 
     let current_path = Path::ToPoint {
         base: BasePath {
             from: from.into(),
-            to: *to,
-            name: if let TangentialArcToData::PointWithTag { tag, .. } = data {
-                tag.to_string()
-            } else {
-                "".to_string()
-            },
+            to,
+            name: tag.unwrap_or_default(),
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),

@@ -1,7 +1,6 @@
 import { createMachine, assign } from 'xstate'
 import { Models } from '@kittycad/lib'
 import withBaseURL from '../lib/withBaseURL'
-import { CommandBarMeta } from '../lib/commands'
 import { isTauri } from 'lib/isTauri'
 import { invoke } from '@tauri-apps/api'
 import { VITE_KC_API_BASE_URL } from 'env'
@@ -39,12 +38,6 @@ export type Events =
 
 export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
 const persistedToken = localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
-
-export const authCommandBarMeta: CommandBarMeta = {
-  'Log in': {
-    hide: 'both',
-  },
-}
 
 export const authMachine = createMachine<UserContext, Events>(
   {

@@ -1,60 +1,6 @@
 import { assign, createMachine } from 'xstate'
 import { ProjectWithEntryPointMetadata } from '../Router'
-import { CommandBarMeta } from '../lib/commands'
-
-export const homeCommandMeta: CommandBarMeta = {
-  'Create project': {
-    displayValue: (args: string[]) => `Create project "${args[0]}"`,
-    args: [
-      {
-        name: 'name',
-        type: 'string',
-        description: '(default)',
-        options: 'defaultProjectName',
-      },
-    ],
-  },
-  'Open project': {
-    displayValue: (args: string[]) => `Open project "${args[0]}"`,
-    args: [
-      {
-        name: 'name',
-        type: 'select',
-        options: 'projects',
-      },
-    ],
-  },
-  'Delete project': {
-    displayValue: (args: string[]) => `Delete project "${args[0]}"`,
-    args: [
-      {
-        name: 'name',
-        type: 'select',
-        options: 'projects',
-      },
-    ],
-  },
-  'Rename project': {
-    displayValue: (args: string[]) =>
-      `Rename project "${args[0]}" to "${args[1]}"`,
-    args: [
-      {
-        name: 'oldName',
-        type: 'select',
-        options: 'projects',
-      },
-      {
-        name: 'newName',
-        type: 'string',
-        description: '(default)',
-        options: 'defaultProjectName',
-      },
-    ],
-  },
-  assign: {
-    hide: 'both',
-  },
-}
+import { HomeCommandSchema } from 'lib/commandBarConfigs/homeCommandConfig'
 
 export const homeMachine = createMachine(
   {
@@ -192,10 +138,10 @@ export const homeMachine = createMachine(
 
     schema: {
       events: {} as
-        | { type: 'Open project'; data: { name: string } }
-        | { type: 'Rename project'; data: { oldName: string; newName: string } }
-        | { type: 'Create project'; data: { name: string } }
-        | { type: 'Delete project'; data: { name: string } }
+        | { type: 'Open project'; data: HomeCommandSchema['Open project'] }
+        | { type: 'Rename project'; data: HomeCommandSchema['Rename project'] }
+        | { type: 'Create project'; data: HomeCommandSchema['Create project'] }
+        | { type: 'Delete project'; data: HomeCommandSchema['Delete project'] }
         | { type: 'navigate'; data: { name: string } }
         | {
             type: 'done.invoke.read-projects'

@@ -1,6 +1,4 @@
-import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
-import { ActionButton } from '../../components/ActionButton'
-import { onboardingPaths, useDismiss, useNextClick } from '.'
+import { OnboardingButtons, onboardingPaths, useDismiss, useNextClick } from '.'
 import { useStore } from '../../useStore'
 import { SettingsSection } from 'routes/Settings'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
@@ -29,7 +27,7 @@ export default function Units() {
     <div className="fixed inset-0 z-50 grid items-end justify-start px-4 pointer-events-none">
       <div
         className={
-          'max-w-2xl flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
+          'max-w-2xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
           (buttonDownInStream ? '' : ' pointer-events-auto')
         }
       >
@@ -70,28 +68,11 @@ export default function Units() {
             </li>
           </ul>
         </SettingsSection>
-        <div className="flex justify-between">
-          <ActionButton
-            Element="button"
-            onClick={dismiss}
-            icon={{
-              icon: faXmark,
-              bgClassName: 'bg-destroy-80',
-              iconClassName:
-                'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
-            }}
-            className="hover:border-destroy-40"
-          >
-            Dismiss
-          </ActionButton>
-          <ActionButton
-            Element="button"
-            onClick={next}
-            icon={{ icon: faArrowRight }}
-          >
-            Next: Streaming
-          </ActionButton>
-        </div>
+        <OnboardingButtons
+          dismiss={dismiss}
+          next={next}
+          nextText="Next: Streaming"
+        />
       </div>
     </div>
   )

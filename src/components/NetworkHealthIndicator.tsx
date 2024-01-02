@@ -1,8 +1,4 @@
-import {
-  faCheck,
-  faExclamation,
-  faWifi,
-} from '@fortawesome/free-solid-svg-icons'
+import { faExclamation, faWifi } from '@fortawesome/free-solid-svg-icons'
 import { Popover } from '@headlessui/react'
 import { useEffect, useState } from 'react'
 import { ActionIcon } from './ActionIcon'
@@ -46,7 +42,7 @@ export const NetworkHealthIndicator = () => {
     <Popover className="relative">
       <Popover.Button
         className={
-          'p-0 border-none relative ' +
+          'p-0 border-none bg-transparent dark:bg-transparent relative ' +
           (hasIssues
             ? 'focus-visible:outline-destroy-80'
             : 'focus-visible:outline-succeed-80')
@@ -56,15 +52,17 @@ export const NetworkHealthIndicator = () => {
         <span className="sr-only">Network Health</span>
         <ActionIcon
           icon={faWifi}
+          className="p-1"
           iconClassName={
             hasIssues
               ? 'text-destroy-80 dark:text-destroy-30'
               : 'text-succeed-80 dark:text-succeed-30'
           }
           bgClassName={
-            hasIssues
+            'bg-transparent dark:bg-transparent ' +
+            (hasIssues
               ? 'hover:bg-destroy-10/50 hover:dark:bg-destroy-80/50 rounded'
-              : 'hover:bg-succeed-10/50 hover:dark:bg-succeed-80/50 rounded'
+              : 'hover:bg-succeed-10/50 hover:dark:bg-succeed-80/50 rounded')
           }
         />
       </Popover.Button>
@@ -75,8 +73,8 @@ export const NetworkHealthIndicator = () => {
             data-testid="network-good"
           >
             <ActionIcon
-              icon={faCheck}
-              bgClassName={'bg-succeed-10/50 dark:bg-succeed-80/50 rounded'}
+              icon="checkmark"
+              bgClassName={'bg-succeed-10/50 dark:bg-succeed-80/50 rounded-sm'}
               iconClassName={'text-succeed-80 dark:text-succeed-30'}
             />
             {NETWORK_CONTENT.good}

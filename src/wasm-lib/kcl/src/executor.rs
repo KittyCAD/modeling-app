@@ -8,10 +8,11 @@ use kittycad::types::{Color, ModelingCmd, Point3D};
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use serde_json::Value as JValue;
 use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
-    ast::types::{BodyItem, FunctionExpression, Value},
+    ast::types::{BodyItem, FunctionExpression, KclNone, Value},
     engine::{EngineConnection, EngineManager},
     errors::{KclError, KclErrorDetails},
     std::{FunctionKind, StdLib},
@@ -49,6 +50,7 @@ impl ProgramMemory {
     }
 
     /// Get a value from the program memory.
+    /// Return Err if not found.
     pub fn get(&self, key: &str, source_range: SourceRange) -> Result<&MemoryItem, KclError> {
         self.root.get(key).ok_or_else(|| {
             KclError::UndefinedValue(KclErrorDetails {
@@ -347,6 +349,40 @@ impl MemoryItem {
                 })
             })
         }
+    }
+
+    /// Get a JSON value and deserialize it into some concrete type.
+    pub fn get_json<T: serde::de::DeserializeOwned>(&self) -> Result<T, KclError> {
+        let json = self.get_json_value()?;
+
+        serde_json::from_value(json).map_err(|e| {
+            KclError::Type(KclErrorDetails {
+                message: format!("Failed to deserialize struct from JSON: {}", e),
+                source_ranges: self.clone().into(),
+            })
+        })
+    }
+
+    /// Get a JSON value and deserialize it into some concrete type.
+    /// If it's a KCL None, return None. Otherwise return Some.
+    pub fn get_json_opt<T: serde::de::DeserializeOwned>(&self) -> Result<Option<T>, KclError> {
+        let json = self.get_json_value()?;
+        if let JValue::Object(ref o) = json {
+            if let Some(JValue::String(s)) = o.get("type") {
+                if s == "KclNone" {
+                    return Ok(None);
+                }
+            }
+        }
+
+        serde_json::from_value(json)
+            .map_err(|e| {
+                KclError::Type(KclErrorDetails {
+                    message: format!("Failed to deserialize struct from JSON: {}", e),
+                    source_ranges: self.clone().into(),
+                })
+            })
+            .map(Some)
     }
 
     /// If this memory item is a function, call it with the given arguments, return its val as Ok.
@@ -873,6 +909,9 @@ pub async fn execute(
                     let metadata = Metadata { source_range };
 
                     match &declaration.init {
+                        Value::None(none) => {
+                            memory.add(&var_name, none.into(), source_range)?;
+                        }
                         Value::Literal(literal) => {
                             memory.add(&var_name, literal.into(), source_range)?;
                         }
@@ -892,27 +931,8 @@ pub async fn execute(
                                  _metadata: Vec<Metadata>,
                                  ctx: ExecutorContext| {
                                     Box::pin(async move {
-                                        let mut fn_memory = memory.clone();
-
-                                        if args.len() != function_expression.params.len() {
-                                            return Err(KclError::Semantic(KclErrorDetails {
-                                                message: format!(
-                                                    "Expected {} arguments, got {}",
-                                                    function_expression.params.len(),
-                                                    args.len(),
-                                                ),
-                                                source_ranges: vec![(&function_expression).into()],
-                                            }));
-                                        }
-
-                                        // Add the arguments to the memory.
-                                        for (index, param) in function_expression.params.iter().enumerate() {
-                                            fn_memory.add(
-                                                &param.identifier.name,
-                                                args.get(index).unwrap().clone(),
-                                                (&param.identifier).into(),
-                                            )?;
-                                        }
+                                        let mut fn_memory =
+                                            assign_args_to_params(&function_expression, args, memory.clone())?;
 
                                         let result = execute(
                                             function_expression.body.clone(),
@@ -1010,6 +1030,9 @@ pub async fn execute(
                 }
                 Value::PipeSubstitution(_) => {}
                 Value::FunctionExpression(_) => {}
+                Value::None(none) => {
+                    memory.return_ = Some(ProgramReturn::Value(MemoryItem::from(none)));
+                }
             },
         }
     }
@@ -1017,9 +1040,66 @@ pub async fn execute(
     Ok(memory.clone())
 }
 
+/// For each argument given,
+/// assign it to a parameter of the function, in the given block of function memory.
+/// Returns Err if too few/too many arguments were given for the function.
+fn assign_args_to_params(
+    function_expression: &FunctionExpression,
+    args: Vec<MemoryItem>,
+    mut fn_memory: ProgramMemory,
+) -> Result<ProgramMemory, KclError> {
+    let num_args = function_expression.number_of_args();
+    let (min_params, max_params) = num_args.into_inner();
+    let n = args.len();
+
+    // Check if the user supplied too many arguments
+    // (we'll check for too few arguments below).
+    let err_wrong_number_args = KclError::Semantic(KclErrorDetails {
+        message: if min_params == max_params {
+            format!("Expected {min_params} arguments, got {n}")
+        } else {
+            format!("Expected {min_params}-{max_params} arguments, got {n}")
+        },
+        source_ranges: vec![function_expression.into()],
+    });
+    if n > max_params {
+        return Err(err_wrong_number_args);
+    }
+
+    // Add the arguments to the memory.
+    for (index, param) in function_expression.params.iter().enumerate() {
+        if let Some(arg) = args.get(index) {
+            // Argument was provided.
+            fn_memory.add(&param.identifier.name, arg.clone(), (&param.identifier).into())?;
+        } else {
+            // Argument was not provided.
+            if param.optional {
+                // If the corresponding parameter is optional,
+                // then it's fine, the user doesn't need to supply it.
+                let none = KclNone {
+                    start: param.identifier.start,
+                    end: param.identifier.end,
+                };
+                fn_memory.add(
+                    &param.identifier.name,
+                    MemoryItem::from(&none),
+                    (&param.identifier).into(),
+                )?;
+            } else {
+                // But if the corresponding parameter was required,
+                // then the user has called with too few arguments.
+                return Err(err_wrong_number_args);
+            }
+        }
+    }
+    Ok(fn_memory)
+}
+
 #[cfg(test)]
 mod tests {
     use pretty_assertions::assert_eq;
+
+    use crate::ast::types::{Identifier, Parameter};
 
     use super::*;
 
@@ -1565,5 +1645,123 @@ const bracket = startSketchOn('XY')
 show(bracket)
 "#;
         parse_execute(ast).await.unwrap();
+    }
+
+    #[test]
+    fn test_assign_args_to_params() {
+        // Set up a little framework for this test.
+        fn mem(number: usize) -> MemoryItem {
+            MemoryItem::UserVal(UserVal {
+                value: number.into(),
+                meta: Default::default(),
+            })
+        }
+        fn ident(s: &'static str) -> Identifier {
+            Identifier {
+                start: 0,
+                end: 0,
+                name: s.to_owned(),
+            }
+        }
+        fn opt_param(s: &'static str) -> Parameter {
+            Parameter {
+                identifier: ident(s),
+                optional: true,
+            }
+        }
+        fn req_param(s: &'static str) -> Parameter {
+            Parameter {
+                identifier: ident(s),
+                optional: false,
+            }
+        }
+        // Declare the test cases.
+        for (test_name, params, args, expected) in [
+            ("empty", Vec::new(), Vec::new(), Ok(ProgramMemory::new())),
+            (
+                "all params required, and all given, should be OK",
+                vec![req_param("x")],
+                vec![mem(1)],
+                Ok(ProgramMemory {
+                    return_: None,
+                    root: HashMap::from([("x".to_owned(), mem(1))]),
+                }),
+            ),
+            (
+                "all params required, none given, should error",
+                vec![req_param("x")],
+                vec![],
+                Err(KclError::Semantic(KclErrorDetails {
+                    source_ranges: vec![SourceRange([0, 0])],
+                    message: "Expected 1 arguments, got 0".to_owned(),
+                })),
+            ),
+            (
+                "all params optional, none given, should be OK",
+                vec![opt_param("x")],
+                vec![],
+                Ok(ProgramMemory {
+                    return_: None,
+                    root: HashMap::from([("x".to_owned(), MemoryItem::from(&KclNone::default()))]),
+                }),
+            ),
+            (
+                "mixed params, too few given",
+                vec![req_param("x"), opt_param("y")],
+                vec![],
+                Err(KclError::Semantic(KclErrorDetails {
+                    source_ranges: vec![SourceRange([0, 0])],
+                    message: "Expected 1-2 arguments, got 0".to_owned(),
+                })),
+            ),
+            (
+                "mixed params, minimum given, should be OK",
+                vec![req_param("x"), opt_param("y")],
+                vec![mem(1)],
+                Ok(ProgramMemory {
+                    return_: None,
+                    root: HashMap::from([
+                        ("x".to_owned(), mem(1)),
+                        ("y".to_owned(), MemoryItem::from(&KclNone::default())),
+                    ]),
+                }),
+            ),
+            (
+                "mixed params, maximum given, should be OK",
+                vec![req_param("x"), opt_param("y")],
+                vec![mem(1), mem(2)],
+                Ok(ProgramMemory {
+                    return_: None,
+                    root: HashMap::from([("x".to_owned(), mem(1)), ("y".to_owned(), mem(2))]),
+                }),
+            ),
+            (
+                "mixed params, too many given",
+                vec![req_param("x"), opt_param("y")],
+                vec![mem(1), mem(2), mem(3)],
+                Err(KclError::Semantic(KclErrorDetails {
+                    source_ranges: vec![SourceRange([0, 0])],
+                    message: "Expected 1-2 arguments, got 3".to_owned(),
+                })),
+            ),
+        ] {
+            // Run each test.
+            let func_expr = &FunctionExpression {
+                start: 0,
+                end: 0,
+                params,
+                body: crate::ast::types::Program {
+                    start: 0,
+                    end: 0,
+                    body: Vec::new(),
+                    non_code_meta: Default::default(),
+                },
+            };
+            let actual = assign_args_to_params(func_expr, args, ProgramMemory::new());
+            assert_eq!(
+                actual, expected,
+                "failed test '{test_name}':\ngot {actual:?}\nbut expected\n{expected:?}"
+            );
+        }
     }
 }

@@ -1,14 +1,13 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "build": {
-    "beforeBuildCommand": "yarn build:both",
     "beforeDevCommand": "yarn start",
     "devPath": "http://localhost:3000",
     "distDir": "../build"
   },
   "package": {
-    "productName": "kittycad-modeling",
-    "version": "0.12.0"
+    "productName": "zoo-modeling-app",
+    "version": "0.14.0"
   },
   "tauri": {
     "allowlist": {
@@ -85,7 +84,7 @@
         "fullscreen": false,
         "height": 1200,
         "resizable": true,
-        "title": "KittyCAD Modeling",
+        "title": "Zoo Modeling App",
         "width": 1800
       }
     ]

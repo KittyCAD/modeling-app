@@ -76,16 +76,13 @@ async fn login(app: tauri::AppHandle, host: &str) -> Result<String, InvokeError>
     // Here we're using an env var to enable the /tmp file (windows not supported for now)
     // and bypass the shell::open call as it fails on GitHub Actions.
     let e2e_tauri_enabled = env::var("E2E_TAURI_ENABLED").is_ok();
-    if (e2e_tauri_enabled) {
+    if e2e_tauri_enabled {
         println!(
             "E2E_TAURI_ENABLED is set, won't open {} externally",
             auth_uri.secret()
         );
-        fs::write(
-            "/tmp/kittycad_user_code",
-            details.user_code().secret().to_string(),
-        )
-        .expect("Unable to write /tmp/kittycad_user_code file");
+        fs::write("/tmp/kittycad_user_code", details.user_code().secret())
+            .expect("Unable to write /tmp/kittycad_user_code file");
     } else {
         tauri::api::shell::open(&app.shell_scope(), auth_uri.secret(), None)
             .map_err(|e| InvokeError::from_anyhow(e.into()))?;

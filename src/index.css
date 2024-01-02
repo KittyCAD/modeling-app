@@ -6,15 +6,22 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  @apply font-sans;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   @apply text-chalkboard-110;
   overflow: hidden;
   scrollbar-width: thin;
   scrollbar-color: var(--color-chalkboard-20) var(--color-chalkboard-40);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply font-display;
 }
 
 .body-bg {
@@ -57,27 +64,43 @@ select {
 }
 
 button {
-  @apply border border-chalkboard-100 m-0.5 px-3 rounded text-xs;
+  @apply border border-chalkboard-30 m-0.5 px-3 rounded text-xs focus-visible:ring-energy-10;
+}
+
+button:hover {
+  @apply border-chalkboard-40 bg-energy-10/20;
 }
 
 .dark button {
-  @apply border-chalkboard-20 hover:border-chalkboard-10 hover:bg-chalkboard-90;
+  @apply border-chalkboard-70 focus-visible:ring-energy-10/50;
+}
+
+.dark button:hover {
+  @apply border-chalkboard-60;
 }
 
 button:disabled {
-  @apply bg-chalkboard-20 text-chalkboard-60 border-chalkboard-20;
+  @apply cursor-not-allowed bg-chalkboard-20 text-chalkboard-60 border-chalkboard-20;
 }
 
 .dark button:disabled {
   @apply bg-chalkboard-90 text-chalkboard-40 border-chalkboard-70;
 }
 
-a {
-  @apply text-liquid-80 hover:text-liquid-70;
+a:not(.action-button) {
+  @apply text-energy-70 hover:text-energy-60;
 }
 
-.dark a {
-  @apply text-liquid-20 hover:text-liquid-10;
+.dark a:not(.action-button) {
+  @apply text-chalkboard-20 hover:text-energy-10;
+}
+
+input {
+  @apply selection:bg-energy-10/50;
+}
+
+.dark input {
+  @apply selection:bg-energy-10/40;
 }
 
 .mono {
