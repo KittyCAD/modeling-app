@@ -8,6 +8,8 @@ import { ExportButton } from './ExportButton'
 import { Fragment } from 'react'
 import { FileTree } from './FileTree'
 import { sep } from '@tauri-apps/api/path'
+import { Logo } from './Logo'
+import { APP_NAME } from 'lib/constants'
 
 const ProjectSidebarMenu = ({
   project,
@@ -21,37 +23,29 @@ const ProjectSidebarMenu = ({
   return renderAsLink ? (
     <Link
       to={paths.HOME}
-      className="rounded-sm h-9 mr-auto max-h-min min-w-max border-0 p-0.5 pr-2 flex items-center gap-4 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-energy-50 dark:hover:bg-chalkboard-90"
+      className="rounded-sm h-9 mr-auto max-h-min min-w-max border-0 py-1 px-2 flex items-center gap-3 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-energy-50 dark:hover:bg-chalkboard-90"
       data-testid="project-sidebar-link"
     >
-      <img
-        src="/kitt-8bit-winking.svg"
-        alt="KittyCAD App"
-        className="w-auto h-9"
-      />
+      <Logo />
       <span
         className="hidden text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
         data-testid="project-sidebar-link-name"
       >
-        {project?.name ? project.name : 'KittyCAD Modeling App'}
+        {project?.name ? project.name : APP_NAME}
       </span>
     </Link>
   ) : (
     <Popover className="relative">
       <Popover.Button
-        className="rounded-sm h-9 mr-auto max-h-min min-w-max border-0 p-0.5 pr-2 flex items-center gap-4 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-energy-50 dark:hover:bg-chalkboard-90"
+        className="rounded-sm h-9 mr-auto max-h-min min-w-max border-0 py-1 px-2 flex items-center gap-3 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-energy-50 dark:hover:bg-chalkboard-90"
         data-testid="project-sidebar-toggle"
       >
-        <img
-          src="/kitt-8bit-winking.svg"
-          alt="KittyCAD App"
-          className="w-auto h-full"
-        />
+        <Logo />
         <div className="flex flex-col items-start py-0.5">
           <span className="hidden text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block">
             {isTauri() && file?.name
               ? file.name.slice(file.name.lastIndexOf(sep) + 1)
-              : 'KittyCAD Modeling App'}
+              : APP_NAME}
           </span>
           {isTauri() && project?.name && (
             <span className="hidden text-xs text-chalkboard-70 dark:text-chalkboard-40 whitespace-nowrap lg:block">
@@ -88,18 +82,13 @@ const ProjectSidebarMenu = ({
           {({ close }) => (
             <>
               <div className="flex items-center gap-4 px-4 py-3">
-                <img
-                  src="/kitt-8bit-winking.svg"
-                  alt="KittyCAD App"
-                  className="w-auto h-9"
-                />
-
+                <Logo />
                 <div>
                   <p
                     className="m-0 text-chalkboard-100 dark:text-energy-10 text-mono"
                     data-testid="projectName"
                   >
-                    {project?.name ? project.name : 'KittyCAD Modeling App'}
+                    {project?.name ? project.name : APP_NAME}
                   </p>
                   {project?.entrypointMetadata && (
                     <p

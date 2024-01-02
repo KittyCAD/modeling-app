@@ -154,6 +154,7 @@ impl Default for StdLib {
     }
 }
 
+#[derive(Debug)]
 pub enum FunctionKind {
     Core(Box<dyn StdLibFn>),
     Std(Box<dyn KclStdLibFn>),

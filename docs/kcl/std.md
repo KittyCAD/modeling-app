@@ -3905,21 +3905,12 @@ Draw an arc.
 
 
 ```
-tangentialArcTo(data: TangentialArcToData, sketch_group: SketchGroup) -> SketchGroup
+tangentialArcTo(to: [number], sketch_group: SketchGroup, tag: String) -> SketchGroup
 ```
 
 #### Arguments
 
-* `data`: `TangentialArcToData` - Data to draw a tangential arc to a specific point.
-```
-{
-	// The tag.
-	tag: string,
-	// Where the arc should end. Must lie in the same plane as the current path pen position. Must not be colinear with current path pen position.
-	to: [number, number],
-} |
-[number, number]
-```
+* `to`: `[number]`
 * `sketch_group`: `SketchGroup` - A sketch group is a collection of paths.
 ```
 {
@@ -3985,6 +3976,7 @@ tangentialArcTo(data: TangentialArcToData, sketch_group: SketchGroup) -> SketchG
 }],
 }
 ```
+* `tag`: `String`
 
 #### Returns
 
