@@ -101,6 +101,8 @@ describe('ZMA (Tauri, Linux)', () => {
     await click(menuButton)
     const signoutButton = await $('[data-testid="user-sidebar-sign-out"]')
     await click(signoutButton)
+
+    await new Promise((resolve) => setTimeout(resolve, 1000))
     const newSignInButton = await $('[data-testid="sign-in-button"]')
     expect(await newSignInButton.getText()).toEqual('Sign in')
   })
