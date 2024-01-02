@@ -29,12 +29,14 @@ export default function ParametricModeling() {
       ></div>
       <div
         className={
-          'z-10 max-w-xl h-3/4 flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
+          'z-10 max-w-xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg h-3/4 flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
           (buttonDownInStream ? '' : ' pointer-events-auto')
         }
       >
         <section className="flex-1 overflow-y-auto mb-6">
-          <h2 className="text-2xl">Towards true parametric modeling</h2>
+          <h2 className="text-2xl font-bold">
+            Towards true parametric modeling
+          </h2>
           <p className="my-4">
             This example script shows how having access to the code
             representation of a part can allow us to do things that are tedious

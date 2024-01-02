@@ -1537,7 +1537,8 @@ export function isLiteralArrayOrStatic(
   if (!val) return false
 
   if (Array.isArray(val)) {
-    const [a, b] = val
+    const a = val[0]
+    const b = val[1]
     return isLiteralArrayOrStatic(a) && isLiteralArrayOrStatic(b)
   }
   return (
@@ -1550,7 +1551,8 @@ export function isNotLiteralArrayOrStatic(
   val: Value | [Value, Value] | [Value, Value, Value]
 ): boolean {
   if (Array.isArray(val)) {
-    const [a, b] = val
+    const a = val[0]
+    const b = val[1]
     return isNotLiteralArrayOrStatic(a) && isNotLiteralArrayOrStatic(b)
   }
   return (

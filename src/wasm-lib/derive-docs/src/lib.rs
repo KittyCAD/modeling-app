@@ -1,15 +1,11 @@
-// Copyright 2023 Oxide Computer Company
-
-//! This package defines macro attributes associated with HTTP handlers. These
-//! attributes are used both to define an HTTP API and to generate an OpenAPI
-//! Spec (OAS) v3 document that describes the API.
-
 // Clippy's style advice is definitely valuable, but not worth the trouble for
 // automated enforcement.
 #![allow(clippy::style)]
 
 use convert_case::Casing;
+use once_cell::sync::Lazy;
 use quote::{format_ident, quote, quote_spanned, ToTokens};
+use regex::Regex;
 use serde::Deserialize;
 use serde_tokenstream::{from_tokenstream, Error};
 use syn::{
@@ -209,6 +205,18 @@ fn do_stdlib_inner(
             quote! {
                Vec<#ty_ident>
             }
+        } else if ty_string.starts_with("Option<") {
+            let ty_string = ty_string.trim_start_matches("Option<").trim_end_matches('>');
+            let ty_ident = format_ident!("{}", ty_string);
+            quote! {
+               Option<#ty_ident>
+            }
+        } else if let Some((inner_array_type, num)) = parse_array_type(&ty_string) {
+            let ty_string = inner_array_type.to_owned();
+            let ty_ident = format_ident!("{}", ty_string);
+            quote! {
+               [#ty_ident; #num]
+            }
         } else if ty_string.starts_with("Box<") {
             let ty_string = ty_string.trim_start_matches("Box<").trim_end_matches('>');
             let ty_ident = format_ident!("{}", ty_string);
@@ -222,10 +230,13 @@ fn do_stdlib_inner(
             }
         };
 
-        let ty_string = clean_type(&ty_string);
+        let ty_string = rust_type_to_openapi_type(&ty_string);
 
         if ty_string != "Args" {
-            let schema = if ty_ident.to_string().starts_with("Vec < ") {
+            let schema = if ty_ident.to_string().starts_with("Vec < ")
+                || ty_ident.to_string().starts_with("Option <")
+                || ty_ident.to_string().starts_with('[')
+            {
                 quote! {
                    <#ty_ident>::json_schema(&mut generator)
                 }
@@ -263,7 +274,7 @@ fn do_stdlib_inner(
             ret_ty_string.trim().to_string()
         };
         let ret_ty_ident = format_ident!("{}", ret_ty_string);
-        let ret_ty_string = clean_type(&ret_ty_string);
+        let ret_ty_string = rust_type_to_openapi_type(&ret_ty_string);
         quote! {
             Some(#docs_crate::StdLibFnArg {
                 name: "".to_string(),
@@ -488,14 +499,21 @@ impl Parse for ItemFnForSignature {
     }
 }
 
-fn clean_type(t: &str) -> String {
+fn rust_type_to_openapi_type(t: &str) -> String {
     let mut t = t.to_string();
     // Turn vecs into arrays.
+    // TODO: handle nested types
     if t.starts_with("Vec<") {
         t = t.replace("Vec<", "[").replace('>', "]");
     }
     if t.starts_with("Box<") {
         t = t.replace("Box<", "").replace('>', "");
+    }
+    if t.starts_with("Option<") {
+        t = t.replace("Option<", "").replace('>', "");
+    }
+    if let Some((inner_type, _length)) = parse_array_type(&t) {
+        t = format!("[{inner_type}]")
     }
 
     if t == "f64" {
@@ -507,12 +525,33 @@ fn clean_type(t: &str) -> String {
     }
 }
 
+fn parse_array_type(type_name: &str) -> Option<(&str, usize)> {
+    static RE: Lazy<Regex> = Lazy::new(|| Regex::new(r"\[([a-zA-Z0-9<>]+); ?(\d+)\]").unwrap());
+    let cap = RE.captures(type_name)?;
+    let inner_type = cap.get(1)?;
+    let length = cap.get(2)?.as_str().parse().ok()?;
+    Some((inner_type.as_str(), length))
+}
+
 #[cfg(test)]
 mod tests {
 
     use quote::quote;
 
     use super::*;
+
+    #[test]
+    fn test_get_inner_array_type() {
+        for (expected, input) in [
+            (Some(("f64", 2)), "[f64;2]"),
+            (Some(("String", 2)), "[String; 2]"),
+            (Some(("Option<String>", 12)), "[Option<String>;12]"),
+            (Some(("Option<String>", 12)), "[Option<String>; 12]"),
+        ] {
+            let actual = parse_array_type(input);
+            assert_eq!(actual, expected);
+        }
+    }
 
     #[test]
     fn test_stdlib_line_to() {
@@ -607,5 +646,47 @@ mod tests {
 
         assert!(errors.is_empty());
         expectorate::assert_contents("tests/box.gen", &openapitor::types::get_text_fmt(&item).unwrap());
+    }
+
+    #[test]
+    fn test_stdlib_option() {
+        let (item, errors) = do_stdlib(
+            quote! {
+                name = "show",
+            },
+            quote! {
+                fn inner_show(
+                    /// The args to do shit to.
+                    args: Option<f64>
+                ) -> Box<f64> {
+                    args
+                }
+            },
+        )
+        .unwrap();
+
+        assert!(errors.is_empty());
+        expectorate::assert_contents("tests/option.gen", &openapitor::types::get_text_fmt(&item).unwrap());
+    }
+
+    #[test]
+    fn test_stdlib_array() {
+        let (item, errors) = do_stdlib(
+            quote! {
+                name = "show",
+            },
+            quote! {
+                fn inner_show(
+                    /// The args to do shit to.
+                    args: [f64; 2]
+                ) -> Box<f64> {
+                    args
+                }
+            },
+        )
+        .unwrap();
+
+        assert!(errors.is_empty());
+        expectorate::assert_contents("tests/array.gen", &openapitor::types::get_text_fmt(&item).unwrap());
     }
 }

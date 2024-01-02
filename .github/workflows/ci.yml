@@ -104,10 +104,10 @@ jobs:
         if: github.event_name == 'schedule'
         run: |
           VERSION=$(date +'%-y.%-m.%-d') yarn bump-jsons
-          echo "$(jq --arg url 'https://dl.kittycad.io/releases/modeling-app/nightly/last_update.json' \
+          echo "$(jq --arg url 'https://dl.zoo.dev/releases/modeling-app/nightly/last_update.json' \
             '.tauri.updater.endpoints[]=$url' src-tauri/tauri.release.conf.json --indent 2)" > src-tauri/tauri.release.conf.json
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v3
         if: github.event_name == 'schedule'
         with:
           path: |
@@ -123,12 +123,13 @@ jobs:
     needs: [prepare-json-files]
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v3
 
       - name: Copy updated .json files
         if: github.event_name == 'schedule'
@@ -242,7 +243,8 @@ jobs:
         with:
           args: "${{ matrix.os == 'macos-latest' && '--target universal-apple-darwin' || '' }} ${{ env.TAURI_CONF_ARGS }}"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v3
+        if: matrix.os != 'ubuntu-latest'
         env:
           PREFIX: ${{ matrix.os == 'macos-latest' && 'src-tauri/target/universal-apple-darwin' || 'src-tauri/target' }}
           MODE: ${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}
@@ -257,7 +259,7 @@ jobs:
           export VITE_KC_API_BASE_URL
           xvfb-run yarn test:e2e:tauri
         env:
-          E2E_APPLICATION: "./src-tauri/target/${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}/kittycad-modeling"
+          E2E_APPLICATION: "./src-tauri/target/${{ env.BUILD_RELEASE == 'true' && 'release' || 'debug' }}/zoo-modeling-app"
           KITTYCAD_API_TOKEN: ${{ env.BUILD_RELEASE == 'true' && secrets.KITTYCAD_API_TOKEN || secrets.KITTYCAD_API_TOKEN_DEV }}
 
 
@@ -271,26 +273,24 @@ jobs:
       PUB_DATE: ${{ github.event_name == 'release' && github.event.release.created_at || github.event.repository.updated_at }}
       NOTES: ${{ github.event_name == 'release' && github.event.release.body || format('Nightly build, commit {0}', github.sha) }}
       BUCKET_DIR: ${{ github.event_name == 'release' && 'dl.kittycad.io/releases/modeling-app' || 'dl.kittycad.io/releases/modeling-app/nightly' }}
+      WEBSITE_DIR: ${{ github.event_name == 'release' && 'dl.zoo.dev/releases/modeling-app' || 'dl.zoo.dev/releases/modeling-app/nightly' }}
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v3
 
       - name: Generate the update static endpoint
         run: |
-          ls -l artifact/*/*itty*
+          ls -l artifact/*/*oo*
           DARWIN_SIG=`cat artifact/macos/*.app.tar.gz.sig`
-          LINUX_SIG=`cat artifact/appimage/*.AppImage.tar.gz.sig`
           WINDOWS_SIG=`cat artifact/msi/*.msi.zip.sig`
-          RELEASE_DIR=https://${BUCKET_DIR}/${VERSION}
+          RELEASE_DIR=https://${WEBSITE_DIR}/${VERSION}
           jq --null-input \
             --arg version "${VERSION}" \
             --arg pub_date "${PUB_DATE}" \
             --arg notes "${NOTES}" \
             --arg darwin_sig "$DARWIN_SIG" \
-            --arg darwin_url "$RELEASE_DIR/macos/KittyCAD%20Modeling.app.tar.gz" \
-            --arg linux_sig "$LINUX_SIG" \
-            --arg linux_url "$RELEASE_DIR/appimage/kittycad-modeling_${VERSION_NO_V}_amd64.AppImage.tar.gz" \
+            --arg darwin_url "$RELEASE_DIR/macos/Zoo%20Modeling%20App.app.tar.gz" \
             --arg windows_sig "$WINDOWS_SIG" \
-            --arg windows_url "$RELEASE_DIR/msi/KittyCAD%20Modeling_${VERSION_NO_V}_x64_en-US.msi.zip" \
+            --arg windows_url "$RELEASE_DIR/msi/Zoo%20Modeling%20App_${VERSION_NO_V}_x64_en-US.msi.zip" \
             '{
               "version": $version,
               "pub_date": $pub_date,
@@ -304,10 +304,6 @@ jobs:
                   "signature": $darwin_sig,
                   "url": $darwin_url
                 },
-                "linux-x86_64": {
-                  "signature": $linux_sig,
-                  "url": $linux_url
-                },
                 "windows-x86_64": {
                   "signature": $windows_sig,
                   "url": $windows_url
@@ -318,14 +314,13 @@ jobs:
 
       - name: Generate the download static endpoint
         run: |
-          RELEASE_DIR=https://${BUCKET_DIR}/${VERSION}
+          RELEASE_DIR=https://${WEBSITE_DIR}/${VERSION}
           jq --null-input \
             --arg version "${VERSION}" \
             --arg pub_date "${PUB_DATE}" \
             --arg notes "${NOTES}" \
-            --arg darwin_url "$RELEASE_DIR/dmg/KittyCAD%20Modeling_${VERSION_NO_V}_universal.dmg" \
-            --arg linux_url "$RELEASE_DIR/appimage/kittycad-modeling_${VERSION_NO_V}_amd64.AppImage" \
-            --arg windows_url "$RELEASE_DIR/msi/KittyCAD%20Modeling_${VERSION_NO_V}_x64_en-US.msi" \
+            --arg darwin_url "$RELEASE_DIR/dmg/Zoo%20Modeling%20App_${VERSION_NO_V}_universal.dmg" \
+            --arg windows_url "$RELEASE_DIR/msi/Zoo%20Modeling%20App_${VERSION_NO_V}_x64_en-US.msi" \
             '{
               "version": $version,
               "pub_date": $pub_date,
@@ -333,9 +328,6 @@ jobs:
               "platforms": {
                 "dmg-universal": {
                   "url": $darwin_url
-                },
-                "appimage-x86_64": {
-                  "url": $linux_url
                 },
                 "msi-x86_64": {
                   "url": $windows_url
@@ -358,7 +350,7 @@ jobs:
         uses: google-github-actions/upload-cloud-storage@v2.0.0
         with:
           path: artifact
-          glob: '*/*itty*'
+          glob: '*/Zoo*'
           parent: false
           destination: ${{ env.BUCKET_DIR }}/${{ env.VERSION }}
 
@@ -378,4 +370,4 @@ jobs:
         if: ${{ github.event_name == 'release' }}
         uses: softprops/action-gh-release@v1
         with:
-          files: artifact/*/*itty*
+          files: 'artifact/*/Zoo*'
