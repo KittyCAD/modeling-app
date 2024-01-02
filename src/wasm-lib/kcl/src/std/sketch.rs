@@ -1031,10 +1031,8 @@ async fn inner_arc(data: ArcData, sketch_group: Box<SketchGroup>, args: Args) ->
         ModelingCmd::ExtendPath {
             path: sketch_group.id,
             segment: kittycad::types::PathSegment::Arc {
-                angle_start: angle_start.degrees(),
-                angle_end: angle_end.degrees(),
-                start: Some(angle_start),
-                end: Some(angle_end),
+                start: angle_start,
+                end: angle_end,
                 center: center.into(),
                 radius,
                 relative: false,
