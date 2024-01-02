@@ -1,7 +1,7 @@
 import { browser, $, expect } from '@wdio/globals'
 import fs from 'fs/promises'
 
-const defaultDir = `${process.env.HOME}/Documents/kittycad-modeling-projects`
+const defaultDir = `${process.env.HOME}/Documents/zoo-modeling-app-projects`
 const userCodeDir = '/tmp/kittycad_user_code'
 
 async function click(element: WebdriverIO.Element): Promise<void> {
