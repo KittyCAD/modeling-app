@@ -93,7 +93,7 @@ describe('ZMA (Tauri, Linux)', () => {
     expect(await error.getText()).toContain(
       "Can't find variable: RTCPeerConnection"
     )
-    await browser.back()
+    await browser.execute('window.location.href = "tauri://localhost/home"')
   })
 
   it('signs out', async () => {
@@ -101,8 +101,6 @@ describe('ZMA (Tauri, Linux)', () => {
     await click(menuButton)
     const signoutButton = await $('[data-testid="user-sidebar-sign-out"]')
     await click(signoutButton)
-
-    await new Promise((resolve) => setTimeout(resolve, 1000))
     const newSignInButton = await $('[data-testid="sign-in-button"]')
     expect(await newSignInButton.getText()).toEqual('Sign in')
   })
