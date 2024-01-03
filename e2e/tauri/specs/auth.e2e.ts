@@ -58,7 +58,7 @@ describe('ZMA (Tauri, Linux)', () => {
     expect(await newFileButton.getText()).toEqual('New file')
   })
 
-  it('opens the settings, checks file-system settings, and closes the settings', async () => {
+  it('opens the settings page, checks filesystem settings, and closes the settings page', async () => {
     const menuButton = await $('[data-testid="user-sidebar-toggle"]')
     await click(menuButton)
 
