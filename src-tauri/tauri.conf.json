@@ -22,8 +22,7 @@
       },
       "fs": {
         "scope": [
-          "$HOME/**/*",
-          "$APPDATA/**/*"
+          "**"
         ],
         "all": true
       },
