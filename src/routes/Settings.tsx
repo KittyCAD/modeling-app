@@ -113,6 +113,7 @@ export const Settings = () => {
               'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
           }}
           className="hover:border-destroy-40"
+          data-testid="close-button"
         >
           Close
         </ActionButton>
@@ -178,6 +179,7 @@ export const Settings = () => {
                   className="flex-1 px-2 bg-transparent"
                   value={defaultDirectory}
                   disabled
+                  data-testid="default-directory-input"
                 />
                 <ActionButton
                   Element="button"
@@ -209,6 +211,7 @@ export const Settings = () => {
                 }}
                 autoCapitalize="off"
                 autoComplete="off"
+                data-testid="name-input"
               />
             </SettingsSection>
           </>
