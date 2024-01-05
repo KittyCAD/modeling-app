@@ -227,7 +227,15 @@ export function App() {
           </section>
         </div>
       </Resizable>
-      {/* <Stream className="absolute inset-0 z-0" /> */}
+      <Stream className="absolute inset-0 z-0" />
+      {state.matches('Sketch')}
+      <div
+        className={`absolute inset-0 z-0 bg-black ${
+          state.matches('Sketch') ? 'opacity-80' : 'opacity-0'
+        }`}
+      >
+        <SketchCanvas />
+      </div>
       {showDebugPanel && (
         <DebugPanel
           title="Debug"
@@ -239,9 +247,6 @@ export function App() {
           open={openPanes.includes('debug')}
         />
       )}
-      <div className="absolute inset-0">
-        <SketchCanvas />
-      </div>
     </div>
   )
 }
