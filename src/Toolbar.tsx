@@ -190,7 +190,7 @@ export const Toolbar = () => {
               return 0
             })
             .map((eventName) => (
-              <li className="contents">
+              <li className="contents" key={eventName}>
                 <ActionButton
                   Element="button"
                   className="text-sm"

@@ -1,4 +1,11 @@
-import { PathToNode } from 'lang/wasm'
+import {
+  Path,
+  PathToNode,
+  Program,
+  ProgramMemory,
+  VariableDeclaration,
+  recast,
+} from 'lang/wasm'
 import { engineCommandManager } from 'lang/std/engineConnection'
 import { isReducedMotion } from 'lang/util'
 import {
@@ -49,6 +56,10 @@ import {
 } from 'components/Toolbar/SetAbsDistance'
 import { Models } from '@kittycad/lib/dist/types/src'
 import { ModelingCommandSchema } from 'lib/commandBarConfigs/modelingCommandConfig'
+import { sketchCanvasHelper } from 'components/SketchCanvas'
+import { executeAst } from 'useStore'
+import paper from 'paper'
+import { changeSketchArguments } from 'lang/std/sketch'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -133,12 +144,27 @@ export type ModelingMachineEvent =
   | { type: 'Constrain remove constraints' }
   | { type: 'Re-execute' }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
+  | {
+      type: 'Drag Segment Head'
+      data: {
+        pathToNode: PathToNode
+        from: [number, number]
+        to: [number, number]
+      }
+    }
 
 export type MoveDesc = { line: number; snippet: string }
 
+interface NodePathToPaperGroupMap {
+  [key: string]: {
+    pathToNode: PathToNode
+    group: paper.Group
+  }
+}
+
 export const modelingMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogDMAVgDsAOmEiAjLMGCAHIIAsAJlHKANCACeiaQDZBEsctGrVATmmiaNQQF8H2tBhz4CAZTDsABLCwwck5uWgYkEBY2EJ4IgQRpZWFpcQVLe1V7SwVbYUttPQRBRMtxZUtlGkt0wVVpBTMnF3QsPChxbAhMMC8ff0Dgrlww3iiOId54pIVxe2lVYSNLDUFlgv1VAxSDUWE0wQM0ww0mkFdW-A6unoAROAG-Fjx2EYixmMmhA2FJGlEFP7KJLCZQA4TrBLSRTiTaWAwGZQiNRWVSnc7udqdboEO4BbrBXyQGCvZiscbcT5FeGzf5Q2zKb5mNa6fQ0RKpIyI4RsyxWeZoloYq7Y3EPXwkPjYWAkyJkj5xITmcS7OxVCyib4HAwQo5lMSZRYNESOZxnQVtYU9bz4x6oZ4y94TBUISo-Y7VYrZZaGbUsl2ZMoA0Se1SCNlQgVuC1Yq1iolgB1yp2gKY0GagxFpBSM5mFBHKcT5hTSP5QkHKaSRi6Y669G3iyXS+ijJMU52I1SFqqrBY8mgGfJ+kEzaTWAfCOpJQ4m5pRy4xutBPwAMxIlET0WT-EQlRmBjsagOYcsYekEI1glScOke33h12CirQoXAFFcOwwAAnfwAax85AACw3clYhTfREhSCoEVHCtjFWUQIVDAstmWRY8jyBQpGUJ9o1rN8P2-WA-3YQCqGkcJSU3NswIQadlWLb07FUYtwT9NQaELHJ4IZEtzFRU10VwkV7nrVd12bN5W1A7cilsQtagUdRVj2DRfUKU9xGME8ljURSBxw+da2tJdxUwTBgPlGjYJhTYxAaTIaGEJzEJoAteQMVQM0zZIaH42dq0tHERJMkgzIsrd4kUFIGVBLTfNkNTEGLSQHLmBpEn3GczTnGtsRfPh2E-ABXDBwuomT0s0nJ0kyWxjCkCFEiSGzbGLURDHmLYDPaTxiMA4gyEoTBev-ICJMokDKRsSpZjUbkNFctl1AhCpL12KRkgWKFLDEbrxBGkiAP2vqAIASSMsUnnfMrpPiepqnEaxRHMKQSyMVjClBDiFvqVYGna1y9oOwDjtG87sWMgkAigABbMBrvG2UqNu-Q0lKJ6XuKfskQhFQDELcpNjSJzMjhIGTtBw7wduYKCSul5Ecdcq7sw-GKlkDQFosRD6mVJjNix-t-kfATzUuYGjol6mgrxEzobhhGKKRybnXqUEYWDUcdisawPqS-HmIRawqlkRyRHJ0bKcA6WXwARyK7AmF8dwwF8dhUFQczGakykrGS+FgwndQ1BgiEK07bJXLqOpFN5UQLcOq2zrw+3Hd8GHUAAN1d93PZuykw2S2pNnUVyKwav0doLIEthBewEUU4QE5BqWLr8WXBlCb3kamioJH3Z7jB9Q5EoQDUOPmTD+xPBZ2srUWcqTpPpeQEg-36WH4b8bPP04chQvz1WWPEG8GREJCFEvhC-VkCsyjqb590w4om4XgKJeX2tV-X+Wt98ADUCfmwAAL24OwA+3cVY0RsNkSQAIezwgOFYPWCQsiFh2PIGOIhszxzfkKD+rdsREG4LAQqJA8D-0ASAsBoVfAQClOAigCZIGWRkjYXYXYBY2CcqeHmYhHr3k8jFJQexm6SxOtLYhuBSGfnIbgXwO8960PoaQwazClZMxRgkUQ6RJBQhsCILYDJR6ZBEGUYwu5-h+0vmIz+RCSFkIoQAQQAEKeF8AADUPtAgEbNlhKEOMkDBChELtXxjkVUlRigDh2LYwhPQpEyLkb4Vx7iACa3i2G+NSL5LyBx7CKUQlPeSORdhGIZLg-y+CKbxOIA42RFCyBQG6JklmCJHpAhvK5bIiw-iIVhCfdqAIbAeQnFlQS4sakSNrIkxx8juj4HYGNDRPsj57EegsE8JYJwDmDIhRQHFDibArDtRyBg4nTPsdIuZvgmBfjubgeh5AiqYBIN+FRjDxIrJ7qrFUsw8icmLp5UMiExD4yMMUOowY2TtQuWDGZ9TkkAKAaA98oVMA6FMtgKAwwWERX0P8cJYZ1DMThETFB8wgRlGmlYgEVRyhwqpgi65DT5GKOwPvMymLQrYtxd8qBWT7BlFcgHIWs9GrGmVLfFEIhkjZkZdbZlSSKGwFwCQJ27tPGtNRsYGEsq4QTmNmmRqz0OIqHMN6PYUSRZVItAQy5CTEUqrVRq1AvgMl4uZjqiQrliyOWYjo74g5Cj1A4TsewiwGTVDJngu1Uz4VXOVfIsA9taELKgEs7VCQ2qBkfi9LYp9GrTEkMkE8-YTZ2HGWLHq8amWJpuUwN56LqCeq0fUbkj0KgnKauoYN+h4RuhBDohYHZVjnNjZMy2tTZmst8J+MAGds6+HIE698TZ+WsLus9TsVrPKKBEDyEJN8nKlChJhbkPStjPQVcnbEAAlMAABaMAfAghFQ-Fm0NEgSxD2eqzGwqgIRbA4jxLMdRtI6JvTbVOGqmlb2wLQt55A3Yey9hu-FCBezoxPLYWuCx5Bh3mI9AEIcY4okqdld+FMAAyeBXYABVUMEDtg7J2i6c6oazfIS+kgrFOVHHsDK54lAn0ctjG8eRnrYQnTWy2tHcAMaYw+59r7nkftbb7TC6Y0wPy2EbGwjVvipFMOYf40a-KUeqXJujvhGOe3EAABTtO+FJEAMAQAIE4tztznMM3Q16ooyxSiZCSNYYljkzxsXkOYxI7UINhNsfJxT9nvCbxc159znnvP0yzRWZ6ypQwl0METLQfoVClDTGYM5KFiwNESzZuzmB9pgDS34DLkA6kwyYN0D8zs6O5cqIc74z0Tw9OSGHAMSRQQVEvk-NMFGJmycTkl2zqHmutdc5lljadGEwHfAhzA4pPzIdzmhlsPyrLFZPioQbiQrClZDQOTSBwz0IhhaserCnVspZawrNrbmOvbadi7FDecNPtlHJ2Z+vkdE6PsIhLYNJDZsjMIpCzi2l4rca+IU6uAOAEC4zIVIl9FjHn3GoCEG1nuZXrgpWJMnMcNbW7j-HZF-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 */
+    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogDMAVgDsAOmEiAjLMGCAHIIAsAJlHKANCACeiaQDZBEsctGrVATmmiaNQQF8H2tBhz4CAZTDsABLCwwck5uWgYkEBY2EJ4IgQRpZWFpcQVLe1V7SwVbYUttPQRBRMtxZUtlGkt0wVVpBTMnF3QsPChxbAhMMC8ff0Dgrlww3iiOId54pIVxe2lVYSNLDUFlgv1VAxSDUWE0wQM0ww0mkFdW-A6unoAROAG-Fjx2EYixmMmhA2FJGlEFP7KJLCZQA4TrBLSRTiTaWAwGZQiNRWVSnc7udqdboEO4BbrBXyQGCvZiscbcT5FeGzf5Q2zKb5mNa6fQ0RKpIyI4RsyxWeZoloYq7Y3EPXwkPjYWAkyJkj5xITmcS7OxVCyib4HAwQo5lMSZRYNESOZxnQVtYU9bz4x6oZ4y94TBUISo-Y7VYrZZaGbUsl2ZMoA0Se1SCNlQgVuC1Yq1iolgB1yp2gKY0GagxFpBSM5mFBHKcT5hTSP5QkHKaSRi6Y669G3iyXS+ijJMU52I1SFqqrBY8mgGfJ+kEzaTWAfCOpJQ4m5pRy4xutBPwAMxIlET0WT-EQlRmBjsagOYcsYekEI1glScOke33h12CirQoXAFFcOwwAAnfwAax85AACw3clYhTfREhSCoEVHCtjFWUQIVDAstmWRY8jyBQpGUJ9o1rN8P2-WA-3YQCqGkcJSU3NswIQadlWLb07FUYtwT9NQaELHJ4IZEtzFRU10VwkV7nrVd12bN5W1A7cilsQtagUdRVj2DRfUKU9xGME8ljURSBxw+da2tJdxUwTBgPlGjYJhTYxAaTIaGEJzEJoAteQMVQM0zZIaH42dq0tHERJMkgzIsrd4kUFIGVBLTfNkNTEGLSQHLmBpEn3GczTnGtsRfPh2E-ABXDBwuomT0s0nJ0kyWxjCkCFEiSGzbGLURDHmLYDPaTxiMA4gyEoTBev-ICJMokDKRsSpZjUbkNFctl1AhCpL12KRkgWKFLDEbrxBGkiAP2vqAIASSMsUnnfMrpPiepqnEaxRHMKQSyMVjClBDiFvqVYGna1y9oOwDjtG87sWMgkAigABbMBrvG2UqNu-Q0lKJ6XuKfskQhFQDELcpNjSJzMjhIGTtBw7wduYKCSul5Ecdcq7sw-GKlkDQFosRD6mVJjNix-t-kfATzUuYGjol6mgrxEzobhhGKKRybnXqUEYWDUcdisawPqS-HmIRawqlkRyRHJ0bKcA6WXwARyK7AmF8dwwF8dhUFQczGakykrGS+FgwndQ1BgiEK07bJXLqOpFN5UQLcOq2zrw+3Hd8GHUAAN1d93PZuykw2S2pNnUVyKwav0doLIEthBewEUU4QE5BqWLr8WXBlCb3kamioJH3Z7jB9Q5EoQDUOPmTD+xPBZ2srUWcqTpPpeQEg-36WH4b8bPP04chQvz1WWPEG8GREJCFEvhC-VkCsyjqb590w4om4XgKJeX2tV-X+Wt98ADUCfmwAAL24OwA+3cVY0RsNkSQAIezwgOFYPWCQsiFh2PIGOIhszxzfkKD+rdsREG4LAQqJA8D-0ASAsBoVfAQClOAigCZIGWRkjYXYXYBY2CcqeHmYhHr3k8jFJQexm6SxOtLYhuBSGfnIbgXwO8960PoaQwazClZMxRgkUQ6RJBQhsCILYDJR6ZBEGUYwu5-h+0vmIz+RCSFkIoQAQQAEKeF8AADUPtAgEbNlhKEOMkDBChELtXxjkVUlRigDh2LYwhPQpEyLkb4Vx7iACa3i2G+NSL5LyBx7CKUQlPeSORdhGIZLg-y+CKbxOIA42RFCyBQG6JklmCJHpAhvK5bIiw-iIVhCfdqAIbAeQnFlQS4sakSNrIkxx8juj4HYGNDRPsj57EegsE8JYJwDmDIhRQHFDibArDtRyBg4nTPsdIuZvgmBfjubgeh5AiqYBIN+FRjDxIrJ7qrFUsw8icmLp5UMiExD4yMMUOowY2TtQuWDGZ9TkkAKAaA98oVMA6FMtgKAwwWERX0P8cJYZ1DMThETFB8wgRlGmlYgEVRyhwqpgi65DT5GKOwPvMymLQrYtxd8qBWT7BlFcgHIWs9GrGmVLfFEIhkjZkZdbZlSSKGwFwCQJ27tPGtNRsYGEsq4QTmNmmRqz0OIqHMN6PYUSRZVItAQy5CTEUqrVRq1AvgMl4uZjqiQrliyOWYjo74g5Cj1A4TsewiwGTVDJngu1Uz4VXOVfIsA9taELKgEs7VCQ2qBkfi9LYp9GrTEkMkE8-YTZ2HGWLHq8amWJpuUwN56LqCeq0fUbkj0KgnKauoYN+h4RuhBDohYHZVjnNjZMy2tTZmst8J+MAGds6+HIE698TZ+WsLus9TsVrPKKBEDyEJN8nKlChJhbkPStjPQVcnbEAAlMAABaMAfAghFQ-Fm0NEgSxD2eqzGwqgIRbA4jxLMdRtI6JvTbVOGqmlb2wLQt55A3Yey9hu-FCBezoxPLYWuCx5Bh3mI9AEIcY4okqdld+tbFUilkVAXw3hN7vl8AACTACQCAWaLCKWI6CPY6QykrRLIGPYWt9xoWwhOmtlsAAyeBXYABVUMEDtg7J2i6c6oazfIS+kgrFOVHKJhk54lAn0ctjG8eRnqSdtZOxOcncCKeUw+59r7nkftbb7TC6Y0wPy2EbGwjVvipFMOYf40a-KUeqbJ+TvglOe3EAABTtMxpxEAMAQAIGliAtyUsM3Q16ooyxSiZCSNYYljkzxsXkOYxI7UINhNsQ5pzCXGMKz8NlyAWX0u5ftJ59s7DlShhLoYImWg-QqFKGmMwZyULFgaE12L8XMD7TAExjr6WuvEJhkwboH5nbyazUCOw6CxA6L+gZsOAYkiggqJfJ+aYKMTOk-ZpbqHVvrZSZtzLqm06MJgO+BDmBxSfmQ7nNDLYflWVGyfFQlQ2RqAqEF0o8gtiKARDC1Yi3HNxfe21v+nWfswYOzj8HR3Rydmfr5HROj7CIS2DSQ2COrGRee0vZruOEunVwBwAg2mZCpEvosY8+41AQg2ppfJYYjyGye9W9nb2uc8-YHz8ikOBWRXkJBP4x5eQKSq59dZ3x4H-U8jh7HLWVsADk3XJeeLAbrOX6badsJ2ML-wQT3lHGHRYwqSO7nKECG1UW42WzQEu5bvR24PCGNpgOnb5C+U5HkPpfoNA-ERPuaexQuI2ZD3ZkG4fLcEBcy+t9HmCtaMUIiQZ8h0jZngaPIZgYmf+osJsWxRfOeYBU8Tl2KG879asv52atQgSFzUONwo6fzFWeeosc7r9bMvcL1nYvv3YP4Hg4h0HA+IeSShzJCs+5BcHB4hhFQ55mpcmWPPnYJ4l-55X0dLvy3xBd7wLz7TewRxbAaGIFQX6RqVyS8OECodIdCUMNMTvNfbvd-WAz-FXMiSvAuWKZUVYLZRyZ6HYClRIS8REbIDycOOQGAiPd7D-ZXPnVQFA50EQDhRPJyCNfcANRqCwfGWoYWTaA4CcYPNnD+JxAAd3IT8GRWoTRWBw+TUV8DwGXFQAIAgG4DAA6FwEzlQD-HEBgHYEfVENRXAUwEfRkNQC4z0lmCFmiUylvB5mSg1FF3ag0GK3HWXyXkEOEMoRRRoQkIYSkMMIIC-E-EAXEF2xIHYFkM-Bhg0J8G0KoV0NCgMNwFkOMM2ELE5kwTzUSB5hrx2kUD3StSNFsRcI4AUS-CUU8NUSYWkPiLkIUMc2UNUPUM0MfXZU5TiISKHxkmYhqwHGLGLhyFMBcmamFjMDR0vh2nyKEMKKaOUS8PKJ8L8ICKCJCMAXCIaMmP0MMOMJUE0nhDTBLDJTqBQQcgLD+EvgFgqHDEfz4IpgKI6zcU8QqNkPkMUNqLUKUIaJIAACNYBH0+AWijC2j4gOiZhi4x8DFrxQlPJ-kz8QCRExjXDUk7jZjPx-DPxAjXlFiwiIitCPivifj1j-jEBATO12IDM1Q+1MMdgZh1Av1TYzBWd5d+Dxibj0l7iqini8A6jXjIjsTH0dBfiNiJAxw-h-hyh1oj1ChmIrBqUoVphSk5dF4GS4Tbi0kWTfCkT5i0TQjliuTPieS+T8TMMlAZgVIdprAcFQxBBEJeQfhshmJsxZ4qgLj6SrjGTxR8BugVTqilD2SXjMTH0mlug9SaCaJCTsxEgxB6h7AFJ9leYjQXoOo8h54nCFTCj-TXZETkTUTgjNTfTUzAz1dN0CSGgOJjkkgDx5hgwp8CTe1ZhNgdE5pRlYTCj00lkPS2SVCfSGjmyAI8yD8NdCyDhO0qT9wKgrVEIa5HoNQQQoQdguQ89LjLZrjnZ4YM0AIVS5iUSFjszOzlylkeyJoCyDTdVtjDg7BL5n4DjKgCwxBwyVBixyhLBGzHh7l4YnkXk3k6FpjKBWyajvT6jIi7lPwHlXzXlPxH1JCmE9zlYDz1AGg9FswGQQQwwERQUcgYQGgBxy0JxQQ5SqMFyXSAKgKOU3z3lPy0zKjVSMzNyljfSCKXyiKQKwLSLILNFfZhS4KERGQkLKzMMpASt0L0hxNPIcgxFfBcA3UxJYx6wMBVwXlHhXlHNP0zdJAdo1ZRwGgz5CNrSSxpzMJJ5zATRTQxKMB4AIhnt8yMNjxJAZA5B901ANAIRH1EgJ4jA7TMha4B49oYxzLCsGQd1VghZdlDAVALSb4jwT4rA7BTS7z5AxFvK20BxOwo55pLylpr5ChH0Jx0F0cRBTl7s5ynSp0HU4re5Qw9VtioR5Ax00rEBeRiyeFKq2okILdu9iraCHJhVgxH5eQGgdodQUgAknLfJjZvhmq38bhFDWrh8jAqpzTLywyUFgRCw9hsZrMNQBLRr3s7dUtvtJqZJ90DZ5hVh5ALVTSfc2Y0x-VXJgwOiNrWs1t2svsMtdqphRxLxgM4RFo8gDgzrHoLqJwrqFIq15SKYOc39ucOBnqhAhKOruCEqeqFqO1ygz1dhNgHSRqpMFccc38bdfAtr2ATL9yLKxAStkg1KFgtoQrDdzr-dpsu1eCCrE5X9UNIaihjABSFgERVJOqDd9Zv0Kd6oHS6hSDLd4Cl1ECWaVAFgNlI0uaDgebUF2ka4TZZBKUY0kyKYmaEsu8BCOAAF3050n0y93MwAJbdhsNbBeQKhazqrUE2RCxRxDAZ5uQKTha4DtbdbCQ3N30TbeyDyLEJAo0gkLBihuKVb+4swLxRl5B8rgaw9YDsa3UNNTa4QpUbwH5dghjQ6Y5lQjBult0B0cLotE5FydCPCPyyivzDCWbQxdE7AoQ7AIUbwbw+ECwFhMJPIZzqgY7cLi6XTVjy7PkyLZDq6okhtIyQRFhtYbbMhZBHoLFHJaTg5Eyn9nCXT4SPEWSR72QEQVBNpFJQRAM-RYRLxjA66mIbBixHCV7kymT3VN7faMNPJ2Q0xejjBPJRNp7FJv1FBaRRcDNC7Q9e7XDUz77CbCsn7v0ahNR7o3p+k5JgxbBA0KrGgMab6lzFlVyq6H7wGKxIIXLSluIxSCS-o+YJwEpdLA1HzblnzHl6L3zwLK7Kjq7jAgTDRpd8Ma5QUa8IU0xokm6HzUGTpRLxK1wfawGtE4QZhA42QjhTkPIw4-hNJshKhrwSwhanAHAgA */
     id: 'Modeling',
 
     tsTypes: {} as import('./modelingMachine.typegen').Typegen0,
@@ -158,6 +184,7 @@ export const modelingMachine = createMachine(
       sketchEnginePathId: '' as string,
       sketchPlaneId: '' as string,
       moveDescs: [] as MoveDesc[],
+      NodePathToPaperGroupMap: {} as NodePathToPaperGroupMap,
     },
 
     schema: {
@@ -253,6 +280,7 @@ export const modelingMachine = createMachine(
                 'set sketch metadata',
                 'sketch mode enabled',
                 'edit mode enter',
+                'setup paper sketch',
               ],
             },
             'Sketch no face',
@@ -462,6 +490,12 @@ export const modelingMachine = createMachine(
                 target: 'Line Tool',
                 cond: 'is editing existing sketch',
                 actions: 'set segment tool',
+              },
+
+              'Drag Segment Head': {
+                target: 'SketchIdle',
+                internal: true,
+                actions: 'update for drag',
               },
             },
 
@@ -716,6 +750,7 @@ export const modelingMachine = createMachine(
               'set default plane id',
               'sketch mode enabled',
               'create path',
+              'setup paper sketch',
             ],
           },
         },
@@ -1040,6 +1075,105 @@ export const modelingMachine = createMachine(
               line: kclManager.code.slice(0, range[0]).split('\n').length,
             })),
       }),
+      'setup paper sketch': async ({ sketchPathToNode }) => {
+        const { truncatedAst, programMemoryOverride, variableDeclarationName } =
+          sketchCanvasHelper.prepareTruncatedMemoryAndAst(
+            sketchPathToNode || []
+          )
+        const { programMemory } = await executeAst({
+          ast: truncatedAst,
+          useFakeExecutor: true,
+          engineCommandManager: engineCommandManager,
+          defaultPlanes: kclManager.defaultPlanes,
+          programMemoryOverride,
+        })
+        const sketchGroup = programMemory.root[variableDeclarationName]
+          .value as Path[]
+        const nodePathToPaperGroupMap: NodePathToPaperGroupMap = {}
+        sketchGroup.forEach((segment) => {
+          const yo = sketchCanvasHelper.drawStraightSegment({
+            from: segment.from,
+            to: segment.to,
+            pathToNode: getNodePathFromSourceRange(
+              kclManager.ast,
+              segment.__geoMeta.sourceRange
+            ),
+          })
+          nodePathToPaperGroupMap[JSON.stringify(yo.pathToNode)] = yo
+        })
+        Object.values(nodePathToPaperGroupMap).forEach(
+          ({ group, pathToNode }) => {
+            const head = (group.children as any).head as paper.Path
+            const body = (group.children as any).body as paper.Path
+            head.onMouseDrag = (event: paper.MouseEvent) => {
+              const to: [number, number] = [event.point.x, -event.point.y]
+              const fromPoint = body.segments[0].point
+              sketchCanvasHelper.modelingSend({
+                type: 'Drag Segment Head',
+                data: {
+                  pathToNode,
+                  to,
+                  from: [fromPoint.x, -fromPoint.y],
+                },
+              })
+            }
+          }
+        )
+
+        // TODO, less hack way of keeping this for later
+        ;(window as any).nodePathToPaperGroupMap = nodePathToPaperGroupMap
+      },
+      'update for drag': async (
+        { sketchPathToNode },
+        { data: { pathToNode, to, from } }
+      ) => {
+        let modifiedAst = { ...kclManager.ast }
+        const node = getNodeFromPath<CallExpression>(
+          modifiedAst,
+          pathToNode,
+          'CallExpression'
+        ).node
+        const modded = changeSketchArguments(
+          modifiedAst,
+          kclManager.programMemory,
+          [node.start, node.end],
+          to,
+          from
+        )
+        modifiedAst = modded.modifiedAst
+        const { truncatedAst, programMemoryOverride, variableDeclarationName } =
+          sketchCanvasHelper.prepareTruncatedMemoryAndAst(
+            sketchPathToNode || []
+          )
+        const code = recast(modifiedAst)
+        kclManager.setCode(code, false)
+        const { programMemory } = await executeAst({
+          ast: truncatedAst,
+          useFakeExecutor: true,
+          engineCommandManager: engineCommandManager,
+          defaultPlanes: kclManager.defaultPlanes,
+          programMemoryOverride,
+        })
+        const sketchGroup = programMemory.root[variableDeclarationName]
+          .value as Path[]
+        sketchGroup.forEach((segment) => {
+          const segPathToNode = getNodePathFromSourceRange(
+            kclManager.ast,
+            segment.__geoMeta.sourceRange
+          )
+          const pathToNodeStr = JSON.stringify(segPathToNode)
+          const nodePathToPaperGroupMap: NodePathToPaperGroupMap = (
+            window as any
+          ).nodePathToPaperGroupMap
+          const { group } = nodePathToPaperGroupMap[pathToNodeStr]
+
+          sketchCanvasHelper.updateStraightSegment({
+            from: segment.from,
+            to: segment.to,
+            group: group,
+          })
+        })
+      },
     },
   }
 )

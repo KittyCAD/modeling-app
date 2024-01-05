@@ -31,6 +31,7 @@ import { Themes, getSystemTheme } from 'lib/theme'
 import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
 import { engineCommandManager } from './lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
+import { SketchCanvas } from 'components/SketchCanvas'
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData
@@ -226,7 +227,7 @@ export function App() {
           </section>
         </div>
       </Resizable>
-      <Stream className="absolute inset-0 z-0" />
+      {/* <Stream className="absolute inset-0 z-0" /> */}
       {showDebugPanel && (
         <DebugPanel
           title="Debug"
@@ -238,6 +239,9 @@ export function App() {
           open={openPanes.includes('debug')}
         />
       )}
+      <div className="absolute inset-0">
+        <SketchCanvas />
+      </div>
     </div>
   )
 }
