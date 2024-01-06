@@ -75,16 +75,36 @@ export const SketchCanvas = () => {
   useEffect(() => {
     paper.setup(canvasRef?.current as any)
 
-    // console.log('id', triangle.id, triangle.name, triangle.)
-    // setTimeout(() => {
-    //   paper.view.zoom = 2
-    // }, 2000)
-    // setTimeout(() => {
-    //   paper.view.zoom = 0.5
-    // }, 4000)
-
     paper.view.center = new paper.Point(0, 0)
-    paper.view.zoom = 6
+    paper.view.zoom = paper.view.viewSize.height * 0.0117
+
+    const setZoom = () => {
+      console.log('setting zoom')
+      const canvas = canvasRef.current
+      if (canvas) {
+        console.log('has canvas')
+        // Set the size of the canvas to fill its container
+        const viewportWidth =
+          window.innerWidth || document.documentElement.clientWidth
+        const viewportHeight =
+          window.innerHeight || document.documentElement.clientHeight
+        canvas.width = viewportWidth
+        canvas.height = viewportHeight
+
+        // Update the size of the paper.js view to match the canvas
+        paper.view.viewSize = new paper.Size(canvas.width, canvas.height)
+        paper.view.center = new paper.Point(0, 0)
+
+        // Adjust the zoom
+        paper.view.zoom = paper.view.viewSize.height * 0.01165
+      }
+    }
+    setZoom() // run once at the start
+
+    window.addEventListener('resize', setZoom)
+    return () => {
+      window.removeEventListener('resize', setZoom)
+    }
   }, [])
 
   return (

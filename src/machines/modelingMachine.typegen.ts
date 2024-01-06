@@ -75,6 +75,7 @@
 "show default planes": "Enter sketch";
 "sketch exit execute": "Cancel" | "Complete line" | "Set selection" | "xstate.stop";
 "sketch mode enabled": "Enter sketch" | "Re-execute" | "Select default plane";
+"tear down paper sketch": "Cancel" | "Complete line" | "Set selection" | "xstate.stop";
 "update for drag": "Drag Segment Head";
         };
         eventsCausingDelays: {
