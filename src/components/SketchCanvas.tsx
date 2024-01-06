@@ -116,6 +116,10 @@ export const SketchCanvas = () => {
   )
 }
 
+const triangleLength = 1.9
+const triangleWidth = 0.9
+const offset = 0
+
 export function drawStraightSegment({
   from: _from,
   to: _to,
@@ -130,7 +134,7 @@ export function drawStraightSegment({
 } {
   const from: [number, number] = [_from[0], -_from[1]]
   const to: [number, number] = [_to[0], -_to[1]]
-  const radius = 1
+
   const path = new paper.Path({
     segments: [from, to],
     strokeColor: 'white',
@@ -138,15 +142,32 @@ export function drawStraightSegment({
   path.strokeWidth = 0.1
   path.name = 'body'
   const direction = new paper.Point(to).subtract(from).normalize(1)
-  const triangle = new paper.Path.RegularPolygon({
-    center: new paper.Point(to).subtract(direction.multiply(radius * 0.9)),
-    sides: 3,
-    radius,
-  })
-  triangle.rotate(direction.angle + 90)
+
+  const triangleCenter = new paper.Point(0, 0)
+  const triangle = new paper.Path([
+    triangleCenter.add(
+      new paper.Point(-triangleWidth / 2, -triangleLength - offset)
+    ),
+    triangleCenter.add(new paper.Point(0, -offset)),
+    triangleCenter.add(
+      new paper.Point(triangleWidth / 2, -triangleLength - offset)
+    ),
+  ])
+  triangle.rotate(direction.angle - 90, new paper.Point(0, 0))
+  const target = new paper.Point(...to)
+  triangle.translate(target.subtract(triangleCenter))
   triangle.fillColor = new paper.Color('white')
   triangle.name = 'head'
-  const group = new paper.Group([path, triangle])
+
+  const radius = 0.35
+  const dot = new paper.Path.Circle({
+    center: to,
+    radius,
+    fillColor: 'white',
+  })
+  dot.name = 'dot'
+
+  const group = new paper.Group([path, triangle, dot])
   return {
     group,
     pathToNode,
@@ -165,10 +186,12 @@ export function updateStraightSegment({
   const from: [number, number] = [_from[0], -_from[1]]
   const to: [number, number] = [_to[0], -_to[1]]
   const direction = new paper.Point(to).subtract(from).normalize(1)
-  const radius = 1
 
   const path = (group.children as any).body as paper.Path
   const head = (group.children as any).head as paper.Path
+  const dot = (group.children as any).dot as paper.Path
+
+  const origin = new paper.Point(0, 0)
 
   // figure out previous direction in order to rotate the head the correct amount
   const prevFrom = path.segments[0]
@@ -176,9 +199,13 @@ export function updateStraightSegment({
   const prevDirection = new paper.Point(prevTo.point)
     .subtract(prevFrom.point)
     .normalize(1)
-  head.rotate(direction.angle - prevDirection.angle)
+  head.rotate(-prevDirection.angle + 90, origin)
+  head.position = new paper.Point(0, -triangleLength / 2 - offset)
+  head.rotate(direction.angle - 90, origin)
 
-  head.position = new paper.Point(to).subtract(direction.multiply(radius * 0.9))
+  dot.position = new paper.Point(...to)
+
+  head.translate(new paper.Point(...to).subtract(origin))
   path.segments[0].point = new paper.Point(...from)
   path.segments[1].point = new paper.Point(...to)
 }
