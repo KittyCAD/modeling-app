@@ -140,18 +140,14 @@ class SketchCanvasHelper {
   }
   async setupPaperSketch(sketchPathToNode: PathToNode, ast?: Program) {
     const { truncatedAst, programMemoryOverride, variableDeclarationName } =
-      sketchCanvasHelper.prepareTruncatedMemoryAndAst(
-        sketchPathToNode || [],
-        ast || kclManager.ast
-      )
+      sketchCanvasHelper.prepareTruncatedMemoryAndAst(sketchPathToNode || [])
     const { programMemory } = await executeAst({
       ast: truncatedAst,
       useFakeExecutor: true,
-      engineCommandManager,
+      engineCommandManager: engineCommandManager,
       defaultPlanes: kclManager.defaultPlanes,
       programMemoryOverride,
     })
-    this.canvasProgramMemory = programMemory
     const sketchGroup = programMemory.root[variableDeclarationName]
       .value as Path[]
     const nodePathToPaperGroupMap: NodePathToPaperGroupMap = {}
@@ -169,8 +165,6 @@ class SketchCanvasHelper {
     Object.values(nodePathToPaperGroupMap).forEach(({ group, pathToNode }) => {
       const head = (group.children as any).head as paper.Path
       const body = (group.children as any).body as paper.Path
-      const { truncatedAst, programMemoryOverride, variableDeclarationName } =
-        sketchCanvasHelper.prepareTruncatedMemoryAndAst(sketchPathToNode || [])
       head.onMouseDrag = (event: paper.MouseEvent) => {
         const to: [number, number] = [event.point.x, -event.point.y]
         const fromPoint = body.segments[0].point
@@ -189,6 +183,10 @@ class SketchCanvasHelper {
           from
         )
         modifiedAst = modded.modifiedAst
+        const { truncatedAst, programMemoryOverride, variableDeclarationName } =
+          sketchCanvasHelper.prepareTruncatedMemoryAndAst(
+            sketchPathToNode || []
+          )
         ;(async () => {
           const code = recast(modifiedAst)
           kclManager.setCode(code, false)
@@ -199,7 +197,6 @@ class SketchCanvasHelper {
             defaultPlanes: kclManager.defaultPlanes,
             programMemoryOverride,
           })
-          this.canvasProgramMemory = programMemory
           const sketchGroup = programMemory.root[variableDeclarationName]
             .value as Path[]
           sketchGroup.forEach((segment) => {
@@ -216,6 +213,15 @@ class SketchCanvasHelper {
               group: group,
             })
           })
+          const path = (sketchCanvasHelper.draftLine.children as any)
+            .body as paper.Path
+          const dot = (sketchCanvasHelper.draftLine.children as any)
+            .dot as paper.Path
+          const lastPoint = sketchGroup[sketchGroup.length - 1].to
+          const paperPoint = new paper.Point([lastPoint[0], -lastPoint[1]])
+          path.segments[0].point = paperPoint
+          path.segments[1].point = paperPoint
+          dot.position = paperPoint
         })()
       }
     })
