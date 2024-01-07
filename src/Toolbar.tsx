@@ -113,6 +113,25 @@ export const Toolbar = () => {
                 Line
               </ActionButton>
             </li>
+            <li className="contents" key="line-button-2">
+              <ActionButton
+                Element="button"
+                onClick={() =>
+                  state?.matches('Sketch.Line tool 2') &&
+                  !state?.matches('Sketch.Move Tool')
+                    ? send('CancelSketch')
+                    : send('Equip Line tool 2')
+                }
+                aria-pressed={state?.matches('Sketch.Line tool 2')}
+                className="pressed:bg-energy-10/20 dark:pressed:bg-energy-80"
+                icon={{
+                  icon: 'line',
+                  bgClassName,
+                }}
+              >
+                Line2
+              </ActionButton>
+            </li>
             <li className="contents" key="tangential-arc-button">
               <ActionButton
                 Element="button"

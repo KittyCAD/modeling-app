@@ -152,6 +152,7 @@ export type ModelingMachineEvent =
         to: [number, number]
       }
     }
+  | { type: 'Equip Line tool 2' }
 
 export type MoveDesc = { line: number; snippet: string }
 
@@ -164,7 +165,7 @@ interface NodePathToPaperGroupMap {
 
 export const modelingMachine = createMachine(
   {
-    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogDMAVgDsAOmEiAjLMGCAHIIAsAJlHKANCACeiaQDZBEsctGrVATmmiaNQQF8H2tBhz4CAZTDsABLCwwck5uWgYkEBY2EJ4IgQRpZWFpcQVLe1V7SwVbYUttPQRBRMtxZUtlGkt0wVVpBTMnF3QsPChxbAhMMC8ff0Dgrlww3iiOId54pIVxe2lVYSNLDUFlgv1VAxSDUWE0wQM0ww0mkFdW-A6unoAROAG-Fjx2EYixmMmhA2FJGlEFP7KJLCZQA4TrBLSRTiTaWAwGZQiNRWVSnc7udqdboEO4BbrBXyQGCvZiscbcT5FeGzf5Q2zKb5mNa6fQ0RKpIyI4RsyxWeZoloYq7Y3EPXwkPjYWAkyJkj5xITmcS7OxVCyib4HAwQo5lMSZRYNESOZxnQVtYU9bz4x6oZ4y94TBUISo-Y7VYrZZaGbUsl2ZMoA0Se1SCNlQgVuC1Yq1iolgB1yp2gKY0GagxFpBSM5mFBHKcT5hTSP5QkHKaSRi6Y669G3iyXS+ijJMU52I1SFqqrBY8mgGfJ+kEzaTWAfCOpJQ4m5pRy4xutBPwAMxIlET0WT-EQlRmBjsagOYcsYekEI1glScOke33h12CirQoXAFFcOwwAAnfwAax85AACw3clYhTfREhSCoEVHCtjFWUQIVDAstmWRY8jyBQpGUJ9o1rN8P2-WA-3YQCqGkcJSU3NswIQadlWLb07FUYtwT9NQaELHJ4IZEtzFRU10VwkV7nrVd12bN5W1A7cilsQtagUdRVj2DRfUKU9xGME8ljURSBxw+da2tJdxUwTBgPlGjYJhTYxAaTIaGEJzEJoAteQMVQM0zZIaH42dq0tHERJMkgzIsrd4kUFIGVBLTfNkNTEGLSQHLmBpEn3GczTnGtsRfPh2E-ABXDBwuomT0s0nJ0kyWxjCkCFEiSGzbGLURDHmLYDPaTxiMA4gyEoTBev-ICJMokDKRsSpZjUbkNFctl1AhCpL12KRkgWKFLDEbrxBGkiAP2vqAIASSMsUnnfMrpPiepqnEaxRHMKQSyMVjClBDiFvqVYGna1y9oOwDjtG87sWMgkAigABbMBrvG2UqNu-Q0lKJ6XuKfskQhFQDELcpNjSJzMjhIGTtBw7wduYKCSul5Ecdcq7sw-GKlkDQFosRD6mVJjNix-t-kfATzUuYGjol6mgrxEzobhhGKKRybnXqUEYWDUcdisawPqS-HmIRawqlkRyRHJ0bKcA6WXwARyK7AmF8dwwF8dhUFQczGakykrGS+FgwndQ1BgiEK07bJXLqOpFN5UQLcOq2zrw+3Hd8GHUAAN1d93PZuykw2S2pNnUVyKwav0doLIEthBewEUU4QE5BqWLr8WXBlCb3kamioJH3Z7jB9Q5EoQDUOPmTD+xPBZ2srUWcqTpPpeQEg-36WH4b8bPP04chQvz1WWPEG8GREJCFEvhC-VkCsyjqb590w4om4XgKJeX2tV-X+Wt98ADUCfmwAAL24OwA+3cVY0RsNkSQAIezwgOFYPWCQsiFh2PIGOIhszxzfkKD+rdsREG4LAQqJA8D-0ASAsBoVfAQClOAigCZIGWRkjYXYXYBY2CcqeHmYhHr3k8jFJQexm6SxOtLYhuBSGfnIbgXwO8960PoaQwazClZMxRgkUQ6RJBQhsCILYDJR6ZBEGUYwu5-h+0vmIz+RCSFkIoQAQQAEKeF8AADUPtAgEbNlhKEOMkDBChELtXxjkVUlRigDh2LYwhPQpEyLkb4Vx7iACa3i2G+NSL5LyBx7CKUQlPeSORdhGIZLg-y+CKbxOIA42RFCyBQG6JklmCJHpAhvK5bIiw-iIVhCfdqAIbAeQnFlQS4sakSNrIkxx8juj4HYGNDRPsj57EegsE8JYJwDmDIhRQHFDibArDtRyBg4nTPsdIuZvgmBfjubgeh5AiqYBIN+FRjDxIrJ7qrFUsw8icmLp5UMiExD4yMMUOowY2TtQuWDGZ9TkkAKAaA98oVMA6FMtgKAwwWERX0P8cJYZ1DMThETFB8wgRlGmlYgEVRyhwqpgi65DT5GKOwPvMymLQrYtxd8qBWT7BlFcgHIWs9GrGmVLfFEIhkjZkZdbZlSSKGwFwCQJ27tPGtNRsYGEsq4QTmNmmRqz0OIqHMN6PYUSRZVItAQy5CTEUqrVRq1AvgMl4uZjqiQrliyOWYjo74g5Cj1A4TsewiwGTVDJngu1Uz4VXOVfIsA9taELKgEs7VCQ2qBkfi9LYp9GrTEkMkE8-YTZ2HGWLHq8amWJpuUwN56LqCeq0fUbkj0KgnKauoYN+h4RuhBDohYHZVjnNjZMy2tTZmst8J+MAGds6+HIE698TZ+WsLus9TsVrPKKBEDyEJN8nKlChJhbkPStjPQVcnbEAAlMAABaMAfAghFQ-Fm0NEgSxD2eqzGwqgIRbA4jxLMdRtI6JvTbVOGqmlb2wLQt55A3Yey9hu-FCBezoxPLYWuCx5Bh3mI9AEIcY4okqdld+tbFUilkVAXw3hN7vl8AACTACQCAWaLCKWI6CPY6QykrRLIGPYWt9xoWwhOmtlsAAyeBXYABVUMEDtg7J2i6c6oazfIS+kgrFOVHKJhk54lAn0ctjG8eRnqSdtZOxOcncCKeUw+59r7nkftbb7TC6Y0wPy2EbGwjVvipFMOYf40a-KUeqbJ+TvglOe3EAABTtMxpxEAMAQAIGliAtyUsM3Q16ooyxSiZCSNYYljkzxsXkOYxI7UINhNsQ5pzCXGMKz8NlyAWX0u5ftJ59s7DlShhLoYImWg-QqFKGmMwZyULFgaE12L8XMD7TAExjr6WuvEJhkwboH5nbyazUCOw6CxA6L+gZsOAYkiggqJfJ+aYKMTOk-ZpbqHVvrZSZtzLqm06MJgO+BDmBxSfmQ7nNDLYflWVGyfFQlQ2RqAqEF0o8gtiKARDC1Yi3HNxfe21v+nWfswYOzj8HR3Rydmfr5HROj7CIS2DSQ2COrGRee0vZruOEunVwBwAg2mZCpEvosY8+41AQg2ppfJYYjyGye9W9nb2uc8-YHz8ikOBWRXkJBP4x5eQKSq59dZ3x4H-U8jh7HLWVsADk3XJeeLAbrOX6badsJ2ML-wQT3lHGHRYwqSO7nKECG1UW42WzQEu5bvR24PCGNpgOnb5C+U5HkPpfoNA-ERPuaexQuI2ZD3ZkG4fLcEBcy+t9HmCtaMUIiQZ8h0jZngaPIZgYmf+osJsWxRfOeYBU8Tl2KG879asv52atQgSFzUONwo6fzFWeeosc7r9bMvcL1nYvv3YP4Hg4h0HA+IeSShzJCs+5BcHB4hhFQ55mpcmWPPnYJ4l-55X0dLvy3xBd7wLz7TewRxbAaGIFQX6RqVyS8OECodIdCUMNMTvNfbvd-WAz-FXMiSvAuWKZUVYLZRyZ6HYClRIS8REbIDycOOQGAiPd7D-ZXPnVQFA50EQDhRPJyCNfcANRqCwfGWoYWTaA4CcYPNnD+JxAAd3IT8GRWoTRWBw+TUV8DwGXFQAIAgG4DAA6FwEzlQD-HEBgHYEfVENRXAUwEfRkNQC4z0lmCFmiUylvB5mSg1FF3ag0GK3HWXyXkEOEMoRRRoQkIYSkMMIIC-E-EAXEF2xIHYFkM-Bhg0J8G0KoV0NCgMNwFkOMM2ELE5kwTzUSB5hrx2kUD3StSNFsRcI4AUS-CUU8NUSYWkPiLkIUMc2UNUPUM0MfXZU5TiISKHxkmYhqwHGLGLhyFMBcmamFjMDR0vh2nyKEMKKaOUS8PKJ8L8ICKCJCMAXCIaMmP0MMOMJUE0nhDTBLDJTqBQQcgLD+EvgFgqHDEfz4IpgKI6zcU8QqNkPkMUNqLUKUIaJIAACNYBH0+AWijC2j4gOiZhi4x8DFrxQlPJ-kz8QCRExjXDUk7jZjPx-DPxAjXlFiwiIitCPivifj1j-jEBATO12IDM1Q+1MMdgZh1Av1TYzBWd5d+Dxibj0l7iqini8A6jXjIjsTH0dBfiNiJAxw-h-hyh1oj1ChmIrBqUoVphSk5dF4GS4Tbi0kWTfCkT5i0TQjliuTPieS+T8TMMlAZgVIdprAcFQxBBEJeQfhshmJsxZ4qgLj6SrjGTxR8BugVTqilD2SXjMTH0mlug9SaCaJCTsxEgxB6h7AFJ9leYjQXoOo8h54nCFTCj-TXZETkTUTgjNTfTUzAz1dN0CSGgOJjkkgDx5hgwp8CTe1ZhNgdE5pRlYTCj00lkPS2SVCfSGjmyAI8yD8NdCyDhO0qT9wKgrVEIa5HoNQQQoQdguQ89LjLZrjnZ4YM0AIVS5iUSFjszOzlylkeyJoCyDTdVtjDg7BL5n4DjKgCwxBwyVBixyhLBGzHh7l4YnkXk3k6FpjKBWyajvT6jIi7lPwHlXzXlPxH1JCmE9zlYDz1AGg9FswGQQQwwERQUcgYQGgBxy0JxQQ5SqMFyXSAKgKOU3z3lPy0zKjVSMzNyljfSCKXyiKQKwLSLILNFfZhS4KERGQkLKzMMpASt0L0hxNPIcgxFfBcA3UxJYx6wMBVwXlHhXlHNP0zdJAdo1ZRwGgz5CNrSSxpzMJJ5zATRTQxKMB4AIhnt8yMNjxJAZA5B901ANAIRH1EgJ4jAcgZt7AzAq1F4YxzLCsGQd1VghZdlDAVALSb4jwT4rA7BTS7z5AxEfK20BxOwo55pLylpr5ChH0Jx0Fq8hEk8z4oNrh4re5Qw9VtioR5Ax10rEBeRiyeEKq2okILdu8iraCHJhVgxH5eQGgdodQUgAk3oDkTYFgmq38bhFCWrh8jAqpzTLywyUFgRCw9hsZrMNQBKRr3s7dUtvsJqZJ90DZ5hVh5ALVTSfc2Y0x-VXJgwOj1rWs1t2svsMsdqphRxLxgM4RFo8gDhTrHpzqJxLqFJPLcLXscc39ucOAnqhAhL2ruDErur5qO1ygz1dhNgHTvgbrrdbc8sTL9yLKxAStkg1KFgtpQrDczr-dpsu1eCnSw9YDlsIaihjABSFgERVIOqDd9Zv1RwbwSVeirBSDLd4Cl1ED6aVAFgNlI1WaDh2bUF2ka4TZZBKUY0kyKZX9yDYCBCOAAF3050n0y93MwARbdhsNbBeQKhayqrUE2RCwuaBxahuQKT+a4Cu8NaWy9b30DbeyDyLEJAo0gkLBihuKFb+4swLxRl5A5zqbE5VaEsbd0419Da4QpVubjgh1kKb4Y5lQjBult0B0cLotE5FydCPCPyyivzDD6bQxdE7AoQ7AIUbwbw+ECwFhMJPIZzqgI75TnTXDViS7PkyLZCK6okhtIyQRFhtYLbMhZBHoLFHJaTg5Eyn9nCXT4SPEWTB72QEQVBNpFJQRAM-RYRLxjBq6mIbBixHDF7kymT3U17PaMNPJ2Q0xejjBPJRMJ7FJv1FBaRRcDM87Q8C6XTUyb6cbCt77v0ahNR7o3p+k5JgxbBA1yrGgpMl7XCuygGoK76KxIIXLSluIxSCS-o+YJwEpdLA1HzblnzHl6L3zwKy7KiK7jAgTDRpd8Ma5QUa8IU0xol66HykGJZRLxK1wPbgGtE4QZhA42QjhTkPIw4-hNJshKhrwSw6gnAnAgA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogDMAVgDsAOmEiAjLMGCAHIIAsAJlHKANCACeiaQDZBEsctGrVATmmiaNQQF8H2tBhz4CAZTDsABLCwwck5uWgYkEBY2EJ4IgQRpZWFpcQVLe1V7SwVbYUttPQRBRMtxZUtlGkt0wVVpBTMnF3QsPChxbAhMMC8ff0Dgrlww3iiOId54pIVxe2lVYSNLDUFlgv1VAxSDUWE0wQM0ww0mkFdW-A6unoAROAG-Fjx2EYixmMmhA2FJGlEFP7KJLCZQA4TrBLSRTiTaWAwGZQiNRWVSnc7udqdboEO4BbrBXyQGCvZiscbcT5FeGzf5Q2zKb5mNa6fQ0RKpIyI4RsyxWeZoloYq7Y3EPXwkPjYWAkyJkj5xITmcS7OxVCyib4HAwQo5lMSZRYNESOZxnQVtYU9bz4x6oZ4y94TBUISo-Y7VYrZZaGbUsl2ZMoA0Se1SCNlQgVuC1Yq1iolgB1yp2gKY0GagxFpBSM5mFBHKcT5hTSP5QkHKaSRi6Y669G3iyXS+ijJMU52I1SFqqrBY8mgGfJ+kEzaTWAfCOpJQ4m5pRy4xutBPwAMxIlET0WT-EQlRmBjsagOYcsYekEI1glScOke33h12CirQoXAFFcOwwAAnfwAax85AACw3clYhTfREhSCoEVHCtjFWUQIVDAstmWRY8jyBQpGUJ9o1rN8P2-WA-3YQCqGkcJSU3NswIQadlWLb07FUYtwT9NQaELHJ4IZEtzFRU10VwkV7nrVd12bN5W1A7cilsQtagUdRVj2DRfUKU9xGME8ljURSBxw+da2tJdxUwTBgPlGjYJhTYxAaTIaGEJzEJoAteQMVQM0zZIaH42dq0tHERJMkgzIsrd4kUFIGVBLTfNkNTEGLSQHLmBpEn3GczTnGtsRfPh2E-ABXDBwuomT0s0nJ0kyWxjCkCFEiSGzbGLURDHmLYDPaTxiMA4gyEoTBev-ICJMokDKRsSpZjUbkNFctl1AhCpL12KRkgWKFLDEbrxBGkiAP2vqAIASSMsUnnfMrpPiepqnEaxRHMKQSyMVjClBDiFvqVYGna1y9oOwDjtG87sWMgkAigABbMBrvG2UqNu-Q0lKJ6XuKfskQhFQDELcpNjSJzMjhIGTtBw7wduYKCSul5Ecdcq7sw-GKlkDQFosRD6mVJjNix-t-kfATzUuYGjol6mgrxEzobhhGKKRybnXqUEYWDUcdisawPqS-HmIRawqlkRyRHJ0bKcA6WXwARyK7AmF8dwwF8dhUFQczGakykrBBVImqsZFuwhCtO2yVy6jqRT3KywTxYpqW8Ptx3fBh1AADdXfdz2bspMNktqTZ1FcisGr9HaCyBLYQXsBFFOEC3Dqts6Lr8WXBlCb3kamioJH3Z7jB9Q5EoQDUOPmTD+xPBZ2srUWcpblvpeQEg-36WH4b8LPP04chQrz1WWPEG8GREJCFEvhC-VkCsyjqb590w4pG4XgKJeX2tV-X+Wt98ADUCfmwAAL24OwA+3cVY0RsNkSQAIezwgOH7RqWRCw7HkNHEQ2ZRBNxBknbERBuCwEKiQPA-9AEgLAaFXwEApTgIoAmSBlkZI2F2F2AWNgnKnh5mIR695PIxSUHsXBksTrS0IbgYhn5SG4F8DvPe1DaHEMGowpWTMUYJFEOkSQUIbAiC2AyUemQRBlGMLuf4VhL4i38kKD++CegSKkTI3wABBAAQp4XwAANQ+0CARs2WEoQ4yR0EKEQu1fGORVSVGKAOHYIjP4EKISQsh7jPEAE1fEsP8akXyXkDj2EUohKe8kci7AMQyHBb9bGJzEbWRxKTZFkCgN0LJLMESPSBDeVy2RFh-EQrCE+7UAQ2A8hOOOYseq1LBvU5J0iyHdHwOwMaaifZHz2I9BYJ4SwTgHMGRCigOKHE2BWHajkDAJPscQOZzimBfjubgWh5AiqYBIN+JR9DxKrJ7qrFUsw8iciLp5UMiExD4yMMUOowY2TtUuXUpJkjGnkKAaA98oVMA6FMtgKAwwmERX0P8SJYZ1DMThETPWCQBFlGmhYgEVRyhwpmQipxZD5HYH3mZTFoVsW4u+VA7J9gyiuXhLYbWYhGrGmVLfFEIhkjZkZVTWZiL5myNgLgEgTt3beLaajYwMJZVwgnMbNMjVnocRUOYb0ewYnWOyu-aZirmVIrVRqt2qBfCZLxczXVEhXLFkcsxLR3xByFHqGwnY9hFgMmqGTapFo7HwocTcshYB7bUMWVAZZOqEhtUDI-F6WxT6NWmJIZIJ5+wmzsBMxeCamVJuVbct56LqBeo0fUbkj0KinMDloxq8I3Qgi0QsDsqwLlxoTpbK5DSVW+E-GAdOWdfDkGTe+JsfLmF3Wep2a1nlFAiB5GEm+TlShQkwtyXpWxnoKutrWAASmAAAtGAPgQQiofmzWGiQJYh7PVZjYVQEItgcR4lmOo2ktHXtbnlFOmrmlb2wNQt55A3W51bb7c9nbjD9hvAseQod5iPQBGoeY9QURVJsfGh1N6RTSKgL4bwm93y+AABJgBIBAbNFhFKEdBHsdI5SVolkDHsLW+40LYXHVMy2AAZPArsAAqHtMAEDtg7J2C7s5KezfIS+kgLFOVHCJhk54lAn0ctjG8eRnoSYoxO5usncAKaUwQe9T6X3PPfWh50zENm7gflsI2Ng+0-EwpzdQaNeQJIc05z24gAAKdomMuIgBgCABBksQF8PTbTyxSiZCSNYYljkzxsXkKYxI7VwMRKi3J3winYsMYVn4DLkB0spay4lhm678UulYcqUMxdDBEy0H6FQpQ0xmHOShYsDQauObq0p-aYBGPNZS61whMMmDdA-M7OT2agR2DQWILRf0DOhwDEkUEFRL5PzTORu1NSZO1fq5gJbK3XFrbS6p1O9CYDvgQ5gcUn5kM5y9t171vWPInxUJUNkagKh9tKPILYigEQwtWHNmLr3Gt-xa19mDu35ug-26OTsz9fJaK0fYRCWwaSGzhxYvyD3KNPfmy98Qp1cAcAINpmQqRL6LGPPuNQEINqaQKWGI8ht7vxyk-Z57i3Ofc7IuDjR8hiiPT+MeXkCkSufQ2d8eB-1PInhl5Mpe0WFuxYAHLuoS88WAbXMvZa8zRLDnZzC-pBPeUcodFhCqI7ucoQJbWy6XmgRdL3ejtweEMbTIrMPEs5HkfpfoNA-ERPuaexQuI2eZ3ZkGEescucfc+19nnVf5yNEM+Q6RszwNHsMwM9OA0WE2AkovVvlPfadi7FDYOWw-KsgF2atQgQFzUCNwo6fTFWeeosE7r9bNy8L5nYvPe3Zwf+4h4H-eSf7n5wcHiGEVDnmalyZY8+dgniX-nlfR1O-s873gZXruZJYJHFsBoYgVC-RQYiPhCodIdCUMNMDvNfLvcQZ-LndgHnciQfflSKWKZUVYbZRyZ6HYClW+S8REbIDyMOOQcAyPRbaA5XVQSvZ0EQNheQRybkfRXyHIRqCwfGWoYWTaA4CcUPc3D+FxAAd1IT8AARRSoUBw+RUV8DwGXFQAIAgG4DAA6FwAzlQD-HEBgHYAfSEMoTRUwAfUkNQE4z0lmCFliUylvB5mSg1GF3ag0FyzHWXyXj4IEORS0PAVELoXEL0IIC-E-EAXEC2xIHYCkM-BhlUJ8A0IoVRVcN0NwCkIMM2ELE5gwXzUSB5gAJ2kUF3WtSNASUcI4DkS-AUTcOUQYQkJiOkNkMcwUKUJULUIfTZQ5WiNiLf3iGYjKwHGLCLhyFMBcmamFjMBR0vh2hyP4LyPqMUXcJKM8O8N8P8MCMARCNqLGJ0L0IMJUE0nhDTBLDJTqApQcgLD+EvgFgqHDFvzDx4JGOaw8W8VKKkJkLkKqOUPkNqJIAACNYAH0+BGj9DmjEBWiZgi4x89FrxwlPJ-kj9XI91TjuCKZcjLjPEvEbjpDpjPw-DXk5jgjQj1DXj3jPiVifiEA-jO12IDM1QQ1fidgZh1BP1TYzAmcziYSLjXErj0lES7jKi8BqiniwjsSH0dAvjViJAxw-h-hyh1pD1ChmIrBqUoVpgykzca0GSnC0kPVWTkTUSAigiFjuS3jeT+T8TCSVIdprBsFQxBBEJeQfhshmJsxZ4qgoSFTLZYTxR8BuhWSKj5COTHjMSH1mlug9SKCaJCTsxEgxB6h7AFIDleYjQXoOo8h557DzinDfTXYpjPwfCUTZjNTvTkz-SECN1fiGgOITkkgDx5hgwp9fj1BxtNgtE5oxlhinCM1lk3T7jPSaiwimyAJczJIh8ZJWiAkqT9wKhrVEJq5HoNQQQoQdguQ896THTGTOzVS0yZi0SszajOzuyJp8yCSlB+47w6UrENpRzXI9NQyVBixyhLAGy8i7lPwHknkXk3kaEJjKAWz2TFCvTajbz7z2VHzPwH0xCGFNzlZtzwsCw5UERGQwwERQUcgYQGgBwK0JxQR5T7V5ynDvz4YHzXl3kXyUyyivDlyMzVz5jvTMLHlfycKAK8LgL1FfYRSdFswGQQRoKKyCSpA8sEL0gxNPIcgRFfBcB3UxJYx6wMBVwXlHhXlHMP0TdJAdo1ZRwGgz58NLSSwpzMJJ5zBq00Lm4rkN9LdQdfBVBONNgOIzkQkyxitzxZBCx20t1JsISnBTRBKMB4AIhZc8yetjxJAZA5A901ANAIQH0fQT4jBqpLzjt29JNLRPKIcGRt1VghY9lDAVAzSb4jwT4rA7BjSLz5ARFYq20BxOxI55pKhKgyygr-g0FFBYosqkhFBINqYCre5Qx9UNioR1c4Rr5CheQiyuF1c2okJMcu9mrKCHIhVgxH5eQGgdodQUgglOFPJj1eRZzoTWcsdxAbg5DRrh8jAqpTSyqQyKVgRCw9hsZrMNRuLhr2d7cktPsdr38gkYR5hVh5BLVjS-c2Y0wA1XJgxWjrrFscc7rUsHqphRxLwgM4RFo8gDhPrNcwR8s-qlAAbYsld2BQahBeKJqOCiqZrjqO1yhT1dhTKdpvgUbXtbdfBbr2A3KtyvKxA8tkhFKFgto0r9cvrA8Jsu0uCHTm5H8lMMaihjBBSFgERVJJq9d9Yv1RxLNb5LVULHs+aICn8ICX90aezEChA5pNko1xaDhJaEh+wq4GQTZZB5hyg7C79w9laSCIDeCOAAE31Z1S93M30wBBb6p0ZlhSS1AdhurWQ2RbKxwZ5uQKSiCNrO97bmyy8PN3aNbtyzEJBo0QkLBig2Kzb+4swLwxl5BVrebV9iCbd3UNMPag0pUcNjhB0YKb5o5lQjAekt1+0FaWdm4nTNDIjxjijXy9DBbQxtE7AoQ7AIUbwbweECwFhMJPJpzqg86dKQYnSljnyu78KpDe6Yl+twyQRFhtZ-aCTwxHozFHJaT1AKxry4Trie746etPJ2QEQVBNpFJQQAM-RYRLwsM2QmIbBixLa5zW7GTlSWTL66aIcb79ir4pBzBpggsX7FIv1FBaRhcDNm6C8jonTkzES16bAT4ahNR7o3oBk5JgxbAg0OrGhorEy8jFygGQLr6KxIIwqyluJxTfi-o+YJwEoNKg0z6st7ksLKKnzALu6yje7jB-jDRJdcNq5QUACIU0xYkR6rzyGToBKhK1w47gGNE4QZhgxuQ8GzkPJQ4-hNJshKhrwSw6hhrDLVA16HoZakIsg0wySx41j76bwtFqhaz54nAgA */
     id: 'Modeling',
 
     tsTypes: {} as import('./modelingMachine.typegen').Typegen0,
@@ -185,6 +186,7 @@ export const modelingMachine = createMachine(
       sketchPlaneId: '' as string,
       moveDescs: [] as MoveDesc[],
       NodePathToPaperGroupMap: {} as NodePathToPaperGroupMap,
+      draftLine: {} as paper.Group,
     },
 
     schema: {
@@ -281,6 +283,7 @@ export const modelingMachine = createMachine(
                 'sketch mode enabled',
                 'edit mode enter',
                 'setup paper sketch',
+                'initialise draft line',
               ],
             },
             'Sketch no face',
@@ -496,6 +499,11 @@ export const modelingMachine = createMachine(
                 target: 'SketchIdle',
                 internal: true,
                 actions: 'update for drag',
+              },
+
+              'Equip Line tool 2': {
+                target: 'Line tool 2',
+                actions: 'set up draft line',
               },
             },
 
@@ -727,6 +735,10 @@ export const modelingMachine = createMachine(
               onError: 'SketchIdle',
             },
           },
+
+          'Line tool 2': {
+            exit: 'hide draft line',
+          },
         },
 
         initial: 'SketchIdle',
@@ -751,6 +763,7 @@ export const modelingMachine = createMachine(
               'sketch mode enabled',
               'create path',
               'setup paper sketch',
+              'initialise draft line',
             ],
           },
         },
@@ -1123,6 +1136,10 @@ export const modelingMachine = createMachine(
         // TODO, less hack way of keeping this for later
         ;(window as any).nodePathToPaperGroupMap = nodePathToPaperGroupMap
       },
+      'initialise draft line': assign({
+        draftLine: ({ sketchPathToNode }) =>
+          sketchCanvasHelper.addDraftLine(sketchPathToNode || []).group,
+      }),
       'update for drag': async (
         { sketchPathToNode },
         { data: { pathToNode, to, from } }
@@ -1176,6 +1193,23 @@ export const modelingMachine = createMachine(
       },
       'tear down paper sketch': () => {
         paper.project.clear()
+      },
+      'set up draft line': ({ draftLine }) => {
+        const path = (draftLine.children as any).body as paper.Path
+        const dot = (draftLine.children as any).dot as paper.Path
+        const white = new paper.Color('white')
+        path.strokeColor = white
+        dot.fillColor = white
+      },
+      'hide draft line': ({ draftLine }) => {
+        const path = (draftLine.children as any).body as paper.Path
+        const dot = (draftLine.children as any).dot as paper.Path
+        const transparent = new paper.Color('#FFFFFF00')
+        path.strokeColor = transparent
+        dot.fillColor = transparent
+        const point = path.segments[0].point.clone()
+        path.segments[1].point = point
+        dot.position = point
       },
     },
   }

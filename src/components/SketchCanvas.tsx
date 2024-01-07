@@ -5,6 +5,7 @@ import {
   ProgramMemory,
   Program,
   VariableDeclaration,
+  Path,
 } from 'lang/wasm'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { kclManager } from 'lang/KclSingleton'
@@ -61,16 +62,50 @@ class SketchCanvasHelper {
       variableDeclarationName,
     }
   }
+  addDraftLine(sketchPathToNode: PathToNode) {
+    const variableDeclarationName =
+      getNodeFromPath<VariableDeclaration>(
+        kclManager.ast,
+        sketchPathToNode || [],
+        'VariableDeclaration'
+      )?.node?.declarations?.[0]?.id?.name || ''
+    const sketchGroup = kclManager.programMemory.root[variableDeclarationName]
+      .value as Path[]
+    const finalLocation = sketchGroup[sketchGroup.length - 1].to
+    const newLine = drawStraightSegment({
+      from: finalLocation,
+      to: finalLocation,
+      pathToNode: sketchPathToNode,
+      isDraft: true,
+      // color: '#FFFFFF55',
+      color: '#FFFFFF00',
+    })
+    return newLine
+  }
 }
 
 export const sketchCanvasHelper = new SketchCanvasHelper()
 
 export const SketchCanvas = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const { send } = useModelingContext()
+  const { send, state, context } = useModelingContext()
   useEffect(() => {
     sketchCanvasHelper.setSend(send)
   }, [])
+
+  useEffect(() => {
+    if (paper?.view) {
+      paper.view.onMouseMove = ({ point }: paper.MouseEvent) => {
+        if (!state.matches('Sketch.Line tool 2')) return
+        if (!context?.draftLine) return
+        const draftLine = context.draftLine
+        const path = (draftLine.children as any).body as paper.Path
+        const dot = (draftLine.children as any).dot as paper.Path
+        path.segments[1].point = point
+        dot.position = point
+      }
+    }
+  }, [state, context?.draftLine])
 
   useEffect(() => {
     paper.setup(canvasRef?.current as any)
@@ -124,10 +159,14 @@ export function drawStraightSegment({
   from: _from,
   to: _to,
   pathToNode,
+  isDraft = false,
+  color = 'white',
 }: {
   from: [number, number]
   to: [number, number]
   pathToNode: PathToNode
+  isDraft?: boolean
+  color?: string
 }): {
   group: paper.Group
   pathToNode: PathToNode
@@ -137,37 +176,46 @@ export function drawStraightSegment({
 
   const path = new paper.Path({
     segments: [from, to],
-    strokeColor: 'white',
+    strokeColor: color,
   })
   path.strokeWidth = 0.1
+  if (isDraft) {
+    const dashLength = 0.755
+    path.dashArray = [dashLength / 2, dashLength / 2]
+  }
+
   path.name = 'body'
   const direction = new paper.Point(to).subtract(from).normalize(1)
-
-  const triangleCenter = new paper.Point(0, 0)
-  const triangle = new paper.Path([
-    triangleCenter.add(
-      new paper.Point(-triangleWidth / 2, -triangleLength - offset)
-    ),
-    triangleCenter.add(new paper.Point(0, -offset)),
-    triangleCenter.add(
-      new paper.Point(triangleWidth / 2, -triangleLength - offset)
-    ),
-  ])
-  triangle.rotate(direction.angle - 90, new paper.Point(0, 0))
-  const target = new paper.Point(...to)
-  triangle.translate(target.subtract(triangleCenter))
-  triangle.fillColor = new paper.Color('white')
-  triangle.name = 'head'
 
   const radius = 0.35
   const dot = new paper.Path.Circle({
     center: to,
     radius,
-    fillColor: 'white',
+    fillColor: color,
   })
   dot.name = 'dot'
 
-  const group = new paper.Group([path, triangle, dot])
+  const group = new paper.Group([path, dot])
+
+  if (!isDraft) {
+    const triangleCenter = new paper.Point(0, 0)
+    const triangle = new paper.Path([
+      triangleCenter.add(
+        new paper.Point(-triangleWidth / 2, -triangleLength - offset)
+      ),
+      triangleCenter.add(new paper.Point(0, -offset)),
+      triangleCenter.add(
+        new paper.Point(triangleWidth / 2, -triangleLength - offset)
+      ),
+    ])
+    triangle.rotate(direction.angle - 90, new paper.Point(0, 0))
+    const target = new paper.Point(...to)
+    triangle.translate(target.subtract(triangleCenter))
+    triangle.fillColor = new paper.Color(color)
+    triangle.name = 'head'
+    group.addChild(triangle)
+  }
+
   return {
     group,
     pathToNode,
