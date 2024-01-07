@@ -6,20 +6,43 @@ import {
   Program,
   VariableDeclaration,
   Path,
+  SketchGroup,
+  CallExpression,
+  recast,
 } from 'lang/wasm'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { kclManager } from 'lang/KclSingleton'
-import { getNodeFromPath } from 'lang/queryAst'
+import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
+import {
+  addNewSketchLn,
+  changeSketchArguments,
+  compareVec2Epsilon,
+} from 'lang/std/sketch'
+import { executeAst } from 'useStore'
+import { engineCommandManager } from 'lang/std/engineConnection'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
+interface NodePathToPaperGroupMap {
+  [key: string]: {
+    pathToNode: PathToNode
+    group: paper.Group
+  }
+}
+
 class SketchCanvasHelper {
+  canvasProgramMemory: ProgramMemory = { root: {}, return: null }
+  draftLine: paper.Group
   drawStraightSegment = drawStraightSegment
   updateStraightSegment = updateStraightSegment
   modelingSend: SendType = (() => {}) as any
   setSend(send: SendType) {
     this.modelingSend = send
   }
+  constructor() {
+    this.draftLine = {} as paper.Group
+  }
+
   prepareTruncatedMemoryAndAst(
     sketchPathToNode: PathToNode,
     ast?: Program
@@ -62,15 +85,18 @@ class SketchCanvasHelper {
       variableDeclarationName,
     }
   }
-  addDraftLine(sketchPathToNode: PathToNode) {
+  getSketchGroupFromNodePath(sketchPathToNode: PathToNode): SketchGroup {
     const variableDeclarationName =
       getNodeFromPath<VariableDeclaration>(
         kclManager.ast,
         sketchPathToNode || [],
         'VariableDeclaration'
       )?.node?.declarations?.[0]?.id?.name || ''
-    const sketchGroup = kclManager.programMemory.root[variableDeclarationName]
-      .value as Path[]
+    return kclManager.programMemory.root[variableDeclarationName] as SketchGroup
+  }
+
+  addDraftLine(sketchPathToNode: PathToNode, shouldHide = true) {
+    const sketchGroup = this.getSketchGroupFromNodePath(sketchPathToNode).value
     const finalLocation = sketchGroup[sketchGroup.length - 1].to
     const newLine = drawStraightSegment({
       from: finalLocation,
@@ -78,9 +104,121 @@ class SketchCanvasHelper {
       pathToNode: sketchPathToNode,
       isDraft: true,
       // color: '#FFFFFF55',
-      color: '#FFFFFF00',
+      color: shouldHide ? '#FFFFFF00' : 'white',
     })
-    return newLine
+    this.draftLine = newLine.group
+    return newLine.group
+  }
+  async addNewStraightSegment(
+    sketchPathToNode: PathToNode,
+    newPoint: [number, number]
+  ) {
+    const sketchGroup = this.getSketchGroupFromNodePath(sketchPathToNode).value
+    const startPathCoord = sketchGroup[0].from
+    const thing = (this.draftLine.children as any).body as paper.Path
+    const thing2 = thing.segments[0].point
+    const lastCoord: [number, number] = [thing2.x, -thing2.y]
+    const isClose = compareVec2Epsilon(startPathCoord, newPoint)
+    let _modifiedAst: Program
+    if (!isClose) {
+      const newSketchLn = addNewSketchLn({
+        node: kclManager.ast,
+        programMemory: kclManager.programMemory,
+        to: newPoint,
+        from: lastCoord,
+        fnName: 'line',
+        // fnName: tool === 'sketch_line' ? 'line' : 'tangentialArcTo',
+        pathToNode: sketchPathToNode,
+      })
+      await kclManager.executeAstMock(newSketchLn.modifiedAst, {
+        updates: 'code',
+      })
+      paper.project.clear()
+      this.setupPaperSketch(sketchPathToNode)
+      this.addDraftLine(sketchPathToNode, false)
+    }
+  }
+  async setupPaperSketch(sketchPathToNode: PathToNode, ast?: Program) {
+    const { truncatedAst, programMemoryOverride, variableDeclarationName } =
+      sketchCanvasHelper.prepareTruncatedMemoryAndAst(
+        sketchPathToNode || [],
+        ast || kclManager.ast
+      )
+    const { programMemory } = await executeAst({
+      ast: truncatedAst,
+      useFakeExecutor: true,
+      engineCommandManager,
+      defaultPlanes: kclManager.defaultPlanes,
+      programMemoryOverride,
+    })
+    this.canvasProgramMemory = programMemory
+    const sketchGroup = programMemory.root[variableDeclarationName]
+      .value as Path[]
+    const nodePathToPaperGroupMap: NodePathToPaperGroupMap = {}
+    sketchGroup.forEach((segment) => {
+      const yo = sketchCanvasHelper.drawStraightSegment({
+        from: segment.from,
+        to: segment.to,
+        pathToNode: getNodePathFromSourceRange(
+          kclManager.ast,
+          segment.__geoMeta.sourceRange
+        ),
+      })
+      nodePathToPaperGroupMap[JSON.stringify(yo.pathToNode)] = yo
+    })
+    Object.values(nodePathToPaperGroupMap).forEach(({ group, pathToNode }) => {
+      const head = (group.children as any).head as paper.Path
+      const body = (group.children as any).body as paper.Path
+      const { truncatedAst, programMemoryOverride, variableDeclarationName } =
+        sketchCanvasHelper.prepareTruncatedMemoryAndAst(sketchPathToNode || [])
+      head.onMouseDrag = (event: paper.MouseEvent) => {
+        const to: [number, number] = [event.point.x, -event.point.y]
+        const fromPoint = body.segments[0].point
+        const from: [number, number] = [fromPoint.x, -fromPoint.y]
+        let modifiedAst = { ...kclManager.ast }
+        const node = getNodeFromPath<CallExpression>(
+          modifiedAst,
+          pathToNode,
+          'CallExpression'
+        ).node
+        const modded = changeSketchArguments(
+          modifiedAst,
+          kclManager.programMemory,
+          [node.start, node.end],
+          to,
+          from
+        )
+        modifiedAst = modded.modifiedAst
+        ;(async () => {
+          const code = recast(modifiedAst)
+          kclManager.setCode(code, false)
+          const { programMemory } = await executeAst({
+            ast: truncatedAst,
+            useFakeExecutor: true,
+            engineCommandManager: engineCommandManager,
+            defaultPlanes: kclManager.defaultPlanes,
+            programMemoryOverride,
+          })
+          this.canvasProgramMemory = programMemory
+          const sketchGroup = programMemory.root[variableDeclarationName]
+            .value as Path[]
+          sketchGroup.forEach((segment) => {
+            const segPathToNode = getNodePathFromSourceRange(
+              kclManager.ast,
+              segment.__geoMeta.sourceRange
+            )
+            const pathToNodeStr = JSON.stringify(segPathToNode)
+            const { group } = nodePathToPaperGroupMap[pathToNodeStr]
+
+            sketchCanvasHelper.updateStraightSegment({
+              from: segment.from,
+              to: segment.to,
+              group: group,
+            })
+          })
+        })()
+      }
+    })
   }
 }
 
@@ -97,15 +235,22 @@ export const SketchCanvas = () => {
     if (paper?.view) {
       paper.view.onMouseMove = ({ point }: paper.MouseEvent) => {
         if (!state.matches('Sketch.Line tool 2')) return
-        if (!context?.draftLine) return
-        const draftLine = context.draftLine
+        if (!sketchCanvasHelper.draftLine) return
+        const draftLine = sketchCanvasHelper.draftLine
         const path = (draftLine.children as any).body as paper.Path
         const dot = (draftLine.children as any).dot as paper.Path
         path.segments[1].point = point
         dot.position = point
       }
+      paper.view.onClick = (a: paper.MouseEvent) => {
+        if (!state.matches('Sketch.Line tool 2')) return
+        sketchCanvasHelper.addNewStraightSegment(
+          context.sketchPathToNode || [],
+          [a.point.x, -a.point.y]
+        )
+      }
     }
-  }, [state, context?.draftLine])
+  }, [state, sketchCanvasHelper.draftLine])
 
   useEffect(() => {
     paper.setup(canvasRef?.current as any)
