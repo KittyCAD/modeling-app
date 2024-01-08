@@ -32,7 +32,7 @@
     "formik": "^2.4.3",
     "fuse.js": "^7.0.0",
     "http-server": "^14.1.1",
-    "json-rpc-2.0": "^1.6.0",
+    "json-rpc-2.0": "^1.7.0",
     "re-resizable": "^6.9.11",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
