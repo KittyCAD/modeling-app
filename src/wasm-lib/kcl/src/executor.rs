@@ -685,6 +685,11 @@ pub enum Path {
         #[serde(flatten)]
         base: BasePath,
     },
+    /// A arc that is tangential to the last path segment that goes to a point
+    TangentialArcTo {
+        #[serde(flatten)]
+        base: BasePath,
+    },
     /// A path that is horizontal.
     Horizontal {
         #[serde(flatten)]
@@ -715,6 +720,7 @@ impl Path {
             Path::Horizontal { base, .. } => base.geo_meta.id,
             Path::AngledLineTo { base, .. } => base.geo_meta.id,
             Path::Base { base } => base.geo_meta.id,
+            Path::TangentialArcTo { base } => base.geo_meta.id,
         }
     }
 
@@ -724,6 +730,7 @@ impl Path {
             Path::Horizontal { base, .. } => base.name.clone(),
             Path::AngledLineTo { base, .. } => base.name.clone(),
             Path::Base { base } => base.name.clone(),
+            Path::TangentialArcTo { base } => base.name.clone(),
         }
     }
 
@@ -733,6 +740,7 @@ impl Path {
             Path::Horizontal { base, .. } => base,
             Path::AngledLineTo { base, .. } => base,
             Path::Base { base } => base,
+            Path::TangentialArcTo { base } => base,
         }
     }
 }

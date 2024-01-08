@@ -20,6 +20,7 @@ import {
 } from 'lang/std/sketch'
 import { executeAst } from 'useStore'
 import { engineCommandManager } from 'lang/std/engineConnection'
+import { getTangentialArcToInfo } from 'lib/utils2d'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -27,6 +28,7 @@ interface NodePathToPaperGroupMap {
   [key: string]: {
     pathToNode: PathToNode
     group: paper.Group
+    type: 'tangentialArcTo' | 'line'
   }
 }
 
@@ -35,6 +37,132 @@ class SketchCanvasHelper {
   draftLine: paper.Group
   drawStraightSegment = drawStraightSegment
   updateStraightSegment = updateStraightSegment
+  drawTangentialArcToSegment({
+    previousPoint,
+    from: _from,
+    to: _to,
+    pathToNode,
+    isDraft = false,
+    color = 'white',
+  }: {
+    previousPoint: [number, number]
+    from: [number, number]
+    to: [number, number]
+    pathToNode: PathToNode
+    isDraft?: boolean
+    color?: string
+  }): {
+    group: paper.Group
+    pathToNode: PathToNode
+    type: 'tangentialArcTo'
+  } {
+    const from: [number, number] = [_from[0], -_from[1]]
+    const to: [number, number] = [_to[0], -_to[1]]
+    const {
+      arcMidPoint: [midX, midY],
+    } = getTangentialArcToInfo({
+      arcStartPoint: _from,
+      arcEndPoint: _to,
+      tanPreviousPoint: previousPoint,
+      obtuse: true,
+    })
+
+    const path = new paper.Path({
+      segments: [from],
+      strokeColor: color,
+    })
+    path.arcTo([midX, -midY], to)
+    path.strokeWidth = 0.1
+    if (isDraft) {
+      const dashLength = 0.755
+      path.dashArray = [dashLength / 2, dashLength / 2]
+    }
+
+    path.name = 'body'
+    const direction = new paper.Point(to).subtract(from).normalize(1)
+
+    const radius = 0.35
+    const dot = new paper.Path.Circle({
+      center: to,
+      radius,
+      fillColor: color,
+    })
+    dot.name = 'dot'
+
+    const group = new paper.Group([path, dot])
+
+    if (!isDraft) {
+      const triangleCenter = new paper.Point(0, 0)
+      const triangle = new paper.Path([
+        triangleCenter.add(
+          new paper.Point(-triangleWidth / 2, -triangleLength - offset)
+        ),
+        triangleCenter.add(new paper.Point(0, -offset)),
+        triangleCenter.add(
+          new paper.Point(triangleWidth / 2, -triangleLength - offset)
+        ),
+      ])
+      triangle.rotate(direction.angle - 90, new paper.Point(0, 0))
+      const target = new paper.Point(...to)
+      triangle.translate(target.subtract(triangleCenter))
+      triangle.fillColor = new paper.Color(color)
+      triangle.name = 'head'
+      group.addChild(triangle)
+    }
+
+    return {
+      group,
+      pathToNode,
+      type: 'tangentialArcTo',
+    }
+  }
+  updateTangentialArcToSegment({
+    previousPoint,
+    from: _from,
+    to: _to,
+    group,
+  }: {
+    previousPoint: [number, number]
+    from: [number, number]
+    to: [number, number]
+    group: paper.Group
+  }) {
+    const from: [number, number] = [_from[0], -_from[1]]
+    const to: [number, number] = [_to[0], -_to[1]]
+    const {
+      arcMidPoint: [midX, midY],
+    } = getTangentialArcToInfo({
+      arcStartPoint: _from,
+      arcEndPoint: _to,
+      tanPreviousPoint: previousPoint,
+      obtuse: true,
+    })
+    const direction = new paper.Point(to).subtract(from).normalize(1)
+
+    const path = (group.children as any).body as paper.Path
+    path.segments = [new paper.Segment(new paper.Point(...from))]
+    path.arcTo([midX, -midY], to)
+
+    const head = (group.children as any).head as paper.Path
+    const dot = (group.children as any).dot as paper.Path
+
+    const origin = new paper.Point(0, 0)
+
+    // figure out previous direction in order to rotate the head the correct amount
+    const prevFrom = path.segments[0]
+    const prevTo = path.segments[path.segments.length - 1]
+    const prevDirection = new paper.Point(prevTo.point)
+      .subtract(prevFrom.point)
+      .normalize(1)
+    head.rotate(-prevDirection.angle + 90, origin)
+    head.position = new paper.Point(0, -triangleLength / 2 - offset)
+    head.rotate(direction.angle - 90, origin)
+
+    dot.position = new paper.Point(...to)
+
+    head.translate(new paper.Point(...to).subtract(origin))
+  }
+
   modelingSend: SendType = (() => {}) as any
   setSend(send: SendType) {
     this.modelingSend = send
@@ -151,16 +279,28 @@ class SketchCanvasHelper {
     const sketchGroup = programMemory.root[variableDeclarationName]
       .value as Path[]
     const nodePathToPaperGroupMap: NodePathToPaperGroupMap = {}
-    sketchGroup.forEach((segment) => {
-      const yo = sketchCanvasHelper.drawStraightSegment({
-        from: segment.from,
-        to: segment.to,
-        pathToNode: getNodePathFromSourceRange(
-          kclManager.ast,
-          segment.__geoMeta.sourceRange
-        ),
-      })
-      nodePathToPaperGroupMap[JSON.stringify(yo.pathToNode)] = yo
+    sketchGroup.forEach((segment, index) => {
+      const prevSegment = sketchGroup.slice(index - 1)[0]
+      const seg =
+        segment.type === 'tangentialArcTo'
+          ? sketchCanvasHelper.drawTangentialArcToSegment({
+              previousPoint: prevSegment.from,
+              from: segment.from,
+              to: segment.to,
+              pathToNode: getNodePathFromSourceRange(
+                kclManager.ast,
+                segment.__geoMeta.sourceRange
+              ),
+            })
+          : sketchCanvasHelper.drawStraightSegment({
+              from: segment.from,
+              to: segment.to,
+              pathToNode: getNodePathFromSourceRange(
+                kclManager.ast,
+                segment.__geoMeta.sourceRange
+              ),
+            })
+      nodePathToPaperGroupMap[JSON.stringify(seg.pathToNode)] = seg
     })
     Object.values(nodePathToPaperGroupMap).forEach(({ group, pathToNode }) => {
       const head = (group.children as any).head as paper.Path
@@ -199,19 +339,28 @@ class SketchCanvasHelper {
           })
           const sketchGroup = programMemory.root[variableDeclarationName]
             .value as Path[]
-          sketchGroup.forEach((segment) => {
+          sketchGroup.forEach((segment, index) => {
             const segPathToNode = getNodePathFromSourceRange(
               kclManager.ast,
               segment.__geoMeta.sourceRange
             )
             const pathToNodeStr = JSON.stringify(segPathToNode)
-            const { group } = nodePathToPaperGroupMap[pathToNodeStr]
-
-            sketchCanvasHelper.updateStraightSegment({
-              from: segment.from,
-              to: segment.to,
-              group: group,
-            })
+            const { group, type } = nodePathToPaperGroupMap[pathToNodeStr]
+            const prevSegment = sketchGroup.slice(index - 1)[0]
+            if (type === 'tangentialArcTo') {
+              sketchCanvasHelper.updateTangentialArcToSegment({
+                previousPoint: prevSegment.from,
+                from: segment.from,
+                to: segment.to,
+                group: group,
+              })
+            } else {
+              sketchCanvasHelper.updateStraightSegment({
+                from: segment.from,
+                to: segment.to,
+                group: group,
+              })
+            }
           })
           const path = (sketchCanvasHelper.draftLine.children as any)
             .body as paper.Path
@@ -321,6 +470,7 @@ export function drawStraightSegment({
 }): {
   group: paper.Group
   pathToNode: PathToNode
+  type: 'line'
 } {
   const from: [number, number] = [_from[0], -_from[1]]
   const to: [number, number] = [_to[0], -_to[1]]
@@ -370,6 +520,7 @@ export function drawStraightSegment({
   return {
     group,
     pathToNode,
+    type: 'line',
   }
 }
 
@@ -394,7 +545,7 @@ export function updateStraightSegment({
 
   // figure out previous direction in order to rotate the head the correct amount
   const prevFrom = path.segments[0]
-  const prevTo = path.segments[1]
+  const prevTo = path.segments[path.segments.length - 1]
   const prevDirection = new paper.Point(prevTo.point)
     .subtract(prevFrom.point)
     .normalize(1)

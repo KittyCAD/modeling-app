@@ -1225,7 +1225,7 @@ async fn inner_tangential_arc_to(
     let id = uuid::Uuid::new_v4();
     args.send_modeling_cmd(id, tan_arc_to(&sketch_group, &delta)).await?;
 
-    let current_path = Path::ToPoint {
+    let current_path = Path::TangentialArcTo {
         base: BasePath {
             from: from.into(),
             to,
