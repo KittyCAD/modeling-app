@@ -1,4 +1,3 @@
-
 use super::*;
 use pretty_assertions::assert_eq;
 
@@ -7,7 +6,9 @@ fn must_plan(program: &str) -> Vec<Instruction> {
     let parser = kcl_lib::parser::Parser::new(tokens);
     let ast = parser.ast().unwrap();
     let mut p = Planner::new();
-    p.build_plan(ast).unwrap()
+    let instrs = p.build_plan(ast).unwrap();
+    dbg!(p.binding_scope);
+    instrs
 }
 
 fn should_not_compile(program: &str) -> CompileError {
@@ -247,6 +248,23 @@ fn aliases_dont_affect_plans() {
             let x = one + y",
     );
     assert_eq!(plan1, plan2);
+}
+
+#[test]
+fn store_object() {
+    let program = "const x0 = {a: 1, b: 2}";
+    let actual = must_plan(program);
+    let expected = vec![
+        Instruction::SetPrimitive {
+            address: Address::ZERO,
+            value: 1i64.into(),
+        },
+        Instruction::SetPrimitive {
+            address: Address::ZERO.offset(1),
+            value: 2i64.into(),
+        },
+    ];
+    assert_eq!(actual, expected);
 }
 
 #[ignore = "haven't done API calls or stdlib yet"]

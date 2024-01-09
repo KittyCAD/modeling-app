@@ -45,6 +45,7 @@ enum SingleValue {
 
 enum MultipleValue {
     ArrayExpression(Box<ast::types::ArrayExpression>),
+    ObjectExpression(Box<ast::types::ObjectExpression>),
 }
 
 enum KclValueBySize {
@@ -89,8 +90,8 @@ impl From<ast::types::Value> for KclValueBySize {
             ast::types::Value::None(e) => Self::Single(SingleValue::KclNoneExpression(e)),
             ast::types::Value::UnaryExpression(e) => Self::Single(SingleValue::UnaryExpression(e)),
             ast::types::Value::ArrayExpression(e) => Self::Multiple(MultipleValue::ArrayExpression(e)),
-            ast::types::Value::ObjectExpression(_)
-            | ast::types::Value::PipeSubstitution(_)
+            ast::types::Value::ObjectExpression(e) => Self::Multiple(MultipleValue::ObjectExpression(e)),
+            ast::types::Value::PipeSubstitution(_)
             | ast::types::Value::FunctionExpression(_)
             | ast::types::Value::MemberExpression(_) => todo!(),
         }
@@ -249,6 +250,8 @@ impl Planner {
                         Ok(acc)
                     }
                     KclValueBySize::Multiple(MultipleValue::ArrayExpression(expr)) => {
+                        // First, emit a plan to compute each element of the array.
+                        // Track which EP address each array element will be computed into.
                         let (instructions, addresses) = expr.elements.into_iter().try_fold(
                             (Vec::new(), Vec::new()),
                             |(mut acc_instrs, mut acc_addrs), element| {
@@ -262,8 +265,32 @@ impl Planner {
                                 Ok((acc_instrs, acc_addrs))
                             },
                         )?;
+                        // Then, bind all those addresses under this single KCL variable.
                         self.binding_scope
-                            .bind(declaration.id.name.clone(), EpBinding::Composite(addresses));
+                            .bind(declaration.id.name.clone(), EpBinding::Sequence(addresses));
+                        Ok(instructions)
+                    }
+                    KclValueBySize::Multiple(MultipleValue::ObjectExpression(expr)) => {
+                        // Convert the object to a sequence of key-value pairs.
+                        let mut kvs = expr.properties.into_iter().map(|prop| (prop.key, prop.value));
+                        let (instructions, addresses) = kvs.try_fold(
+                            (Vec::new(), HashMap::new()),
+                            |(mut acc_instrs, mut acc_addrs), (key, value)| {
+                                let value = match KclValueBySize::from(value) {
+                                    KclValueBySize::Single(v) => v,
+                                    KclValueBySize::Multiple(_) => {
+                                        todo!("handle objects where their values aren't scalars")
+                                    }
+                                };
+                                let (instructions, dst) = self.plan_to_compute_single(value)?;
+                                acc_instrs.extend(instructions);
+                                acc_addrs.insert(key.name, dst);
+                                Ok((acc_instrs, acc_addrs))
+                            },
+                        )?;
+                        // Then, bind all those addresses under this single KCL variable.
+                        self.binding_scope
+                            .bind(declaration.id.name.clone(), EpBinding::Map(addresses));
                         Ok(instructions)
                     }
                 }
@@ -342,24 +369,27 @@ struct EvalPlan {
     binding: EpBinding,
 }
 
-trait KclFunction {
+trait KclFunction: std::fmt::Debug {
     fn call(&self, next_addr: &mut Address, args: Vec<EpBinding>) -> Result<EvalPlan, CompileError>;
 }
 
 /// KCL values which can be written to KCEP memory.
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 enum EpBinding {
     /// A KCL value which gets stored in a particular address in KCEP memory.
     Single(Address),
-    /// A sequence of KCL values which get stored in a consecutive set of addresses in KCEP memory.
-    Composite(Vec<Address>),
+    /// A sequence of KCL values, indexed by their position in the sequence.
+    Sequence(Vec<Address>),
+    /// A sequence of KCL values, indexed by their identifier.
+    Map(HashMap<String, EpBinding>),
 }
 
 impl From<EpBinding> for Vec<Address> {
     fn from(value: EpBinding) -> Self {
         match value {
             EpBinding::Single(addr) => vec![addr],
-            EpBinding::Composite(addrs) => addrs,
+            EpBinding::Sequence(addrs) => addrs,
+            EpBinding::Map(addrs) => addrs.into_iter().flat_map(|(_k, v)| Vec::from(v)).collect(),
         }
     }
 }
@@ -375,6 +405,7 @@ impl From<EpBinding> for Vec<Address> {
 /// (e.g. the prelude of stdlib functions).
 ///
 /// These are called "Environments" in the "Crafting Interpreters" book.
+#[derive(Debug)]
 struct BindingScope {
     // KCL value which are stored in EP memory.
     ep_bindings: HashMap<String, EpBinding>,

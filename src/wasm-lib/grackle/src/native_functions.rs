@@ -7,6 +7,7 @@ use kittycad_execution_plan::{Address, Arithmetic, Instruction};
 use crate::{CompileError, EpBinding, EvalPlan, KclFunction};
 
 /// The identity function. Always returns its first input.
+#[derive(Debug)]
 pub struct Id;
 
 impl KclFunction for Id {
@@ -34,6 +35,7 @@ impl KclFunction for Id {
 }
 
 /// A test function that adds two numbers.
+#[derive(Debug)]
 pub struct Add;
 
 impl KclFunction for Add {
