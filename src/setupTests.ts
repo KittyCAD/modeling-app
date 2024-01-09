@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom'
 import { WebSocket } from 'ws'
+import 'vitest-canvas-mock'
 
 class MockRTCPeerConnection {
   createDataChannel() {

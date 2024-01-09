@@ -169,7 +169,6 @@ class KclManager {
       zustandStore.state.code = ''
       localStorage.setItem('store', JSON.stringify(zustandStore))
     } else if (storedCode === null) {
-      console.log('stored brack thing')
       this.code = bracket
     } else {
       this.code = storedCode

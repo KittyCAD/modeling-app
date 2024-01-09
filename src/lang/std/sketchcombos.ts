@@ -1510,12 +1510,10 @@ export function getConstraintLevelFromSourceRange(
     'CallExpression'
   )
   const name = sketchFnExp?.callee?.name as ToolTip
-  console.log('name', name)
   const range: [number, number] = [sketchFnExp.start, sketchFnExp.end]
   if (!toolTips.includes(name)) return { level: 'free', range: range }
 
   const firstArg = getFirstArg(sketchFnExp)
-  console.log('firstArg', firstArg)
 
   // check if the function is fully constrained
   if (isNotLiteralArrayOrStatic(firstArg.val)) {
