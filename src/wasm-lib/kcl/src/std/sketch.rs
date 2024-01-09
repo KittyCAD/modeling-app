@@ -1249,7 +1249,7 @@ async fn inner_tangential_arc_to(
             },
         },
         center: result.center,
-        CCW: is_points_ccw(&vec![tan_previous_point, [from.x, from.y], to]) > 0,
+        ccw: is_points_ccw(&vec![tan_previous_point, [from.x, from.y], to]) > 0,
     };
 
     let mut new_sketch_group = sketch_group.clone();
@@ -1603,8 +1603,8 @@ pub fn get_tangential_arc_to_info(input: TangentialArcInfoInput) -> TangentialAr
 
     let slope_mid_point_line = get_slope(input.arc_start_point, mid_point);
 
-    let mut center: Coords2d;
-    let mut radius: f64;
+    let center: Coords2d;
+    let radius: f64;
 
     if tangential_line_perp_slope == slope_mid_point_line.0 {
         // can't find the intersection of the two lines if they have the same gradient

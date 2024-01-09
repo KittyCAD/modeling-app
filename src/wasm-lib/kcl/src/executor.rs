@@ -479,10 +479,10 @@ impl SketchGroup {
         let index = self.value.len() - 1;
         if let Some(path) = self.value.get(index) {
             match path {
-                Path::TangentialArcTo { center, CCW, .. } => GetTangentialInfoFromPathsResult {
+                Path::TangentialArcTo { center, ccw, .. } => GetTangentialInfoFromPathsResult {
                     center_or_tangent_point: *center,
                     is_center: true,
-                    ccw: *CCW,
+                    ccw: *ccw,
                 },
                 _ => {
                     let base = path.get_base();
@@ -733,7 +733,7 @@ pub enum Path {
         #[ts(type = "[number, number]")]
         center: [f64; 2],
         /// arc's direction
-        CCW: bool,
+        ccw: bool,
     },
     /// A path that is horizontal.
     Horizontal {

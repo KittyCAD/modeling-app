@@ -168,7 +168,7 @@ class SketchCanvasHelper {
       prevSegment?.type === 'tangentialArcTo'
         ? getTangentPointFromPreviousArc(
             prevSegment.center,
-            prevSegment.CCW,
+            prevSegment.ccw,
             prevSegment.to
           )
         : prevSegment.from
@@ -249,7 +249,7 @@ class SketchCanvasHelper {
       prevSegment.type === 'tangentialArcTo'
         ? getTangentPointFromPreviousArc(
             prevSegment.center,
-            prevSegment.CCW,
+            prevSegment.ccw,
             prevSegment.to
           )
         : prevSegment.from
@@ -567,7 +567,7 @@ class SketchCanvasHelper {
       lastSeg.type === 'tangentialArcTo'
         ? getTangentPointFromPreviousArc(
             lastSeg.center,
-            lastSeg.CCW,
+            lastSeg.ccw,
             lastSeg.to
           )
         : lastSeg.from
