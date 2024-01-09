@@ -471,7 +471,7 @@ impl SketchGroup {
     pub fn get_tangential_info_from_paths(&self) -> GetTangentialInfoFromPathsResult {
         if self.value.is_empty() {
             return GetTangentialInfoFromPathsResult {
-                center_or_tangent_point: self.start.to.into(),
+                center_or_tangent_point: self.start.to,
                 is_center: false,
                 ccw: false,
             };
@@ -487,7 +487,7 @@ impl SketchGroup {
                 _ => {
                     let base = path.get_base();
                     GetTangentialInfoFromPathsResult {
-                        center_or_tangent_point: base.from.into(),
+                        center_or_tangent_point: base.from,
                         is_center: false,
                         ccw: false,
                     }
@@ -495,7 +495,7 @@ impl SketchGroup {
             }
         } else {
             GetTangentialInfoFromPathsResult {
-                center_or_tangent_point: self.start.to.into(),
+                center_or_tangent_point: self.start.to,
                 is_center: false,
                 ccw: false,
             }

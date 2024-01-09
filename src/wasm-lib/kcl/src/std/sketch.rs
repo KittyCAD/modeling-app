@@ -1249,7 +1249,7 @@ async fn inner_tangential_arc_to(
             },
         },
         center: result.center,
-        ccw: is_points_ccw(&vec![tan_previous_point, [from.x, from.y], to]) > 0,
+        ccw: is_points_ccw(&[tan_previous_point, [from.x, from.y], to]) > 0,
     };
 
     let mut new_sketch_group = sketch_group.clone();
@@ -1554,12 +1554,11 @@ fn get_mid_point(
 
     let rotation_direction_original_points = is_points_ccw(&[tan_previous_point, arc_start_point, arc_end_point]);
     let rotation_direction_points_on_arc = is_points_ccw(&[arc_start_point, shortest_arc_mid_point, arc_end_point]);
-    let arc_mid_point = if rotation_direction_original_points != rotation_direction_points_on_arc && obtuse {
+    if rotation_direction_original_points != rotation_direction_points_on_arc && obtuse {
         longest_arc_mid_point
     } else {
         shortest_arc_mid_point
-    };
-    arc_mid_point
+    }
 }
 
 fn intersect(point1: Coords2d, slope1: f64, point2: Coords2d, slope2: f64) -> Coords2d {
@@ -1587,8 +1586,8 @@ pub struct TangentialArcInfoInput {
 
 pub struct TangentialArcInfoOutput {
     center: Coords2d,
-    arc_mid_point: Coords2d,
-    radius: f64,
+    // arc_mid_point: Coords2d,
+    // radius: f64,
 }
 
 pub fn get_tangential_arc_to_info(input: TangentialArcInfoInput) -> TangentialArcInfoOutput {
@@ -1634,8 +1633,8 @@ pub fn get_tangential_arc_to_info(input: TangentialArcInfoInput) -> TangentialAr
 
     TangentialArcInfoOutput {
         center,
-        radius,
-        arc_mid_point,
+        // radius,
+        // arc_mid_point,
     }
 }
 
