@@ -148,7 +148,7 @@ export function getTangentialArcToInfo({
   let radius = 0
 
   if (tangentialLinePerpSlope === slopeMidPointLine.slope) {
-    // cant find the intersection of the two lines if they have the same gradient
+    // can't find the intersection of the two lines if they have the same gradient
     // but in this case the center is the midpoint anyway
     center = midPoint
     radius = Math.sqrt(
