@@ -470,23 +470,23 @@ impl SketchGroup {
 
     pub fn get_tangential_info_from_paths(&self) -> GetTangentialInfoFromPathsResult {
         if self.value.is_empty() {
-            return GetTangentialInfoFromPathsResult{
+            return GetTangentialInfoFromPathsResult {
                 center_or_tangent_point: self.start.to.into(),
                 is_center: false,
                 ccw: false,
-            }
+            };
         }
         let index = self.value.len() - 1;
         if let Some(path) = self.value.get(index) {
             match path {
-                Path::TangentialArcTo { center, CCW, .. } => GetTangentialInfoFromPathsResult{
+                Path::TangentialArcTo { center, CCW, .. } => GetTangentialInfoFromPathsResult {
                     center_or_tangent_point: *center,
                     is_center: true,
                     ccw: *CCW,
                 },
-                 _ => {
+                _ => {
                     let base = path.get_base();
-                    GetTangentialInfoFromPathsResult{
+                    GetTangentialInfoFromPathsResult {
                         center_or_tangent_point: base.from.into(),
                         is_center: false,
                         ccw: false,
@@ -494,7 +494,7 @@ impl SketchGroup {
                 }
             }
         } else {
-            GetTangentialInfoFromPathsResult{
+            GetTangentialInfoFromPathsResult {
                 center_or_tangent_point: self.start.to.into(),
                 is_center: false,
                 ccw: false,
@@ -502,8 +502,6 @@ impl SketchGroup {
         }
     }
 }
-
-    
 
 /// An extrude group is a collection of extrude surfaces.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
