@@ -26,7 +26,7 @@ kittycad = { workspace = true, default-features = true }
 pretty_assertions = "1.4.0"
 reqwest = { version = "0.11.22", default-features = false }
 tokio = { version = "1.34.0", features = ["rt-multi-thread", "macros", "time"] }
-twenty-twenty = "0.6.1"
+twenty-twenty = "0.7"
 uuid = { version = "1.6.1", features = ["v4", "js", "serde"] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]

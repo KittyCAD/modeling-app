@@ -43,17 +43,6 @@ jobs:
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2.6.1
 
-      - name: Install ffmpeg
-        run: |
-          sudo apt update
-          sudo apt install \
-            ffmpeg \
-            libavformat-dev \
-            libavutil-dev \
-            libclang-dev \
-            libswscale-dev \
-            --no-install-recommends
-
       - name: Run clippy
         run: |
           cd "${{ matrix.dir }}"
