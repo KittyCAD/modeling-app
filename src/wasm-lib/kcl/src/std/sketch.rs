@@ -1,5 +1,6 @@
 //! Functions related to sketching.
 
+use crate::std::utils::{is_points_ccw, Coords2d};
 use anyhow::Result;
 use derive_docs::stdlib;
 use kittycad::types::{Angle, ModelingCmd, Point3D};
@@ -1457,8 +1458,6 @@ mod tests {
     }
 }
 
-type Coords2d = [f64; 2];
-
 fn get_slope(start: Coords2d, end: Coords2d) -> (f64, f64) {
     let slope = if start[0] - end[0] == 0.0 {
         f64::INFINITY
@@ -1507,24 +1506,6 @@ fn normalize_rad(angle: f64) -> f64 {
 
 fn deg2rad(deg: f64) -> f64 {
     deg * (PI / 180.0)
-}
-
-fn is_points_ccw(points: &[Coords2d]) -> i32 {
-    let flattened_points: Vec<f64> = points.iter().flat_map(|&p| vec![p[0], p[1]]).collect();
-    is_points_ccw_wasm(&flattened_points)
-}
-
-pub fn is_points_ccw_wasm(points: &[f64]) -> i32 {
-    // CCW is positive as that the Math convention
-    // assert!(points.len() % 2 == 0, "Points array should have even length");
-
-    let mut sum = 0.0;
-    for i in 0..(points.len() / 2) {
-        let point1 = [points[2 * i], points[2 * i + 1]];
-        let point2 = [points[(2 * i + 2) % points.len()], points[(2 * i + 3) % points.len()]];
-        sum += (point2[0] + point1[0]) * (point2[1] - point1[1]);
-    }
-    sum.signum() as i32
 }
 
 fn get_mid_point(

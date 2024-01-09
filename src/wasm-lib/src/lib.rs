@@ -5,6 +5,7 @@ use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
 #[cfg(target_arch = "wasm32")]
 use kcl_lib::server::{get_completions_from_stdlib, get_signatures_from_stdlib, Backend};
+use kcl_lib::std::utils;
 #[cfg(target_arch = "wasm32")]
 use tower_lsp::{LspService, Server};
 use wasm_bindgen::prelude::*;
@@ -200,16 +201,5 @@ pub async fn lsp_run(config: ServerConfig) -> Result<(), JsValue> {
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 pub fn is_points_ccw(points: &[f64]) -> i32 {
-    // CCW is positive as that the Math convention
-    // assert!(points.len() % 2 == 0, "Points array should have even length");
-    // TODO the same function is defined in `src/wasm-lib/kcl/src/std/sketch.rs`, but I'm too bad a rust
-    // to figure out how to import one into the other
-
-    let mut sum = 0.0;
-    for i in 0..(points.len() / 2) {
-        let point1 = [points[2 * i], points[2 * i + 1]];
-        let point2 = [points[(2 * i + 2) % points.len()], points[(2 * i + 3) % points.len()]];
-        sum += (point2[0] + point1[0]) * (point2[1] - point1[1]);
-    }
-    sum.signum() as i32
+    utils::is_points_ccw_wasm(points)
 }
