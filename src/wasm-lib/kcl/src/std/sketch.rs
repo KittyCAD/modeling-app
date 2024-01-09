@@ -1602,25 +1602,35 @@ pub fn get_tangential_arc_to_info(input: TangentialArcInfoInput) -> TangentialAr
 
     let slope_mid_point_line = get_slope(input.arc_start_point, mid_point);
 
-    let center: Coords2d;
-    // let radius: f64;
-
-    if tangential_line_perp_slope == slope_mid_point_line.0 {
-        // can't find the intersection of the two lines if they have the same gradient
-        // but in this case the center is the midpoint anyway
-        center = mid_point;
-        // radius =
-        //     ((input.arc_start_point[0] - center[0]).powi(2) + (input.arc_start_point[1] - center[1]).powi(2)).sqrt();
+    let center: Coords2d = if tangential_line_perp_slope == slope_mid_point_line.0 {
+        mid_point
     } else {
-        center = intersect(
+        intersect(
             mid_point,
             slope_mid_point_line.1,
             input.arc_start_point,
             tangential_line_perp_slope,
-        );
-        // radius =
-        //     ((input.arc_start_point[0] - center[0]).powi(2) + (input.arc_start_point[1] - center[1]).powi(2)).sqrt();
-    }
+        )
+    };
+    // let center: Coords2d;
+    // // let radius: f64;
+
+    // if tangential_line_perp_slope == slope_mid_point_line.0 {
+    //     // can't find the intersection of the two lines if they have the same gradient
+    //     // but in this case the center is the midpoint anyway
+    //     center = mid_point;
+    //     // radius =
+    //     //     ((input.arc_start_point[0] - center[0]).powi(2) + (input.arc_start_point[1] - center[1]).powi(2)).sqrt();
+    // } else {
+    //     center = intersect(
+    //         mid_point,
+    //         slope_mid_point_line.1,
+    //         input.arc_start_point,
+    //         tangential_line_perp_slope,
+    //     );
+    //     // radius =
+    //     //     ((input.arc_start_point[0] - center[0]).powi(2) + (input.arc_start_point[1] - center[1]).powi(2)).sqrt();
+    // }
 
     // let arc_mid_point = get_mid_point(
     //     center,

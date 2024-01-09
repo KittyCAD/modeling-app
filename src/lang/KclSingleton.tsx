@@ -99,7 +99,7 @@ class KclManager {
           })
       })
     } else {
-      localStorage.setItem(PERSIST_CODE_TOKEN, code)
+      localStorage?.setItem(PERSIST_CODE_TOKEN, code)
     }
   }
 
