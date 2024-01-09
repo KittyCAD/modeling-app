@@ -1603,14 +1603,14 @@ pub fn get_tangential_arc_to_info(input: TangentialArcInfoInput) -> TangentialAr
     let slope_mid_point_line = get_slope(input.arc_start_point, mid_point);
 
     let center: Coords2d;
-    let radius: f64;
+    // let radius: f64;
 
     if tangential_line_perp_slope == slope_mid_point_line.0 {
         // can't find the intersection of the two lines if they have the same gradient
         // but in this case the center is the midpoint anyway
         center = mid_point;
-        radius =
-            ((input.arc_start_point[0] - center[0]).powi(2) + (input.arc_start_point[1] - center[1]).powi(2)).sqrt();
+        // radius =
+        //     ((input.arc_start_point[0] - center[0]).powi(2) + (input.arc_start_point[1] - center[1]).powi(2)).sqrt();
     } else {
         center = intersect(
             mid_point,
@@ -1618,18 +1618,18 @@ pub fn get_tangential_arc_to_info(input: TangentialArcInfoInput) -> TangentialAr
             input.arc_start_point,
             tangential_line_perp_slope,
         );
-        radius =
-            ((input.arc_start_point[0] - center[0]).powi(2) + (input.arc_start_point[1] - center[1]).powi(2)).sqrt();
+        // radius =
+        //     ((input.arc_start_point[0] - center[0]).powi(2) + (input.arc_start_point[1] - center[1]).powi(2)).sqrt();
     }
 
-    let arc_mid_point = get_mid_point(
-        center,
-        input.arc_start_point,
-        input.arc_end_point,
-        input.tan_previous_point,
-        radius,
-        input.obtuse,
-    );
+    // let arc_mid_point = get_mid_point(
+    //     center,
+    //     input.arc_start_point,
+    //     input.arc_end_point,
+    //     input.tan_previous_point,
+    //     radius,
+    //     input.obtuse,
+    // );
 
     TangentialArcInfoOutput {
         center,
@@ -1644,7 +1644,6 @@ pub fn get_tangent_point_from_previous_arc(
     last_arc_end: Coords2d,
 ) -> Coords2d {
     let angle_from_old_center_to_arc_start = get_angle(last_arc_center, last_arc_end);
-    // let tangential_angle = angle_from_old_center_to_arc_start + if last_arc_ccw { 90.0 } else { -90.0 };
     let tangential_angle = angle_from_old_center_to_arc_start + if last_arc_ccw { -90.0 } else { 90.0 };
     [
         tangential_angle.to_radians().cos() * 10.0 + last_arc_end[0],
