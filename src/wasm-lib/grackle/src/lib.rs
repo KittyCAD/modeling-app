@@ -28,7 +28,9 @@ pub async fn execute(ast: Program, session: Session) -> Result<(), Error> {
 
 /// Compiles KCL programs into Execution Plans.
 struct Planner {
+    /// Maps KCL identifiers to what they hold, and where in KCEP virtual memory they'll be written to.
     binding_scope: BindingScope,
+    /// Next available KCEP virtual machine memory address.
     next_addr: Address,
 }
 
