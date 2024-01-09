@@ -1,5 +1,6 @@
 import { Coords2d } from 'lang/std/sketch'
 import { getAngle } from './utils'
+import { isPointsCCW } from 'lang/wasm'
 
 function getSlope(
   start: Coords2d,
@@ -63,22 +64,54 @@ function deltaAngle({
   return provisional
 }
 
-function deg2Rad(deg: number): number {
+export function deg2Rad(deg: number): number {
   return (deg * Math.PI) / 180
 }
-function rad2Deg(rad: number): number {
+export function rad2Deg(rad: number): number {
   return (rad * 180) / Math.PI
 }
 
-//determine if a list of 3 or more points is clockwise or CCW
-export function isPointsCCW(list: Coords2d[]): number {
-  // CCW is positive as that the Math convention
-  let sum = 0
-  list.forEach((point, index) => {
-    const prevPoint = list.slice(index - 1)[0] // slice will loop back for negative indexes
-    sum += (prevPoint[0] + point[0]) * (prevPoint[1] - point[1])
+const getMidPoint = (
+  _center: Coords2d,
+  arcStartPoint: Coords2d,
+  arcEndPoint: Coords2d,
+  tanPreviousPoint: Coords2d,
+  _radius: number,
+  obtuse: boolean
+): Coords2d => {
+  const angleFromCenterToArcStart = getAngle(_center, arcStartPoint)
+  const angleFromCenterToArcEnd = getAngle(_center, arcEndPoint)
+  const _deltaAng = deltaAngle({
+    fromAngle: deg2Rad(angleFromCenterToArcStart),
+    toAngle: deg2Rad(angleFromCenterToArcEnd),
   })
-  return Math.sign(sum)
+  const deltaAng = _deltaAng / 2 + deg2Rad(angleFromCenterToArcStart)
+  const shortestArcMidPoint: [number, number] = [
+    Math.cos(deltaAng) * _radius + _center[0],
+    Math.sin(deltaAng) * _radius + _center[1],
+  ]
+  const oppositeDelta = deltaAng + Math.PI
+  const longestArcMidPoint: [number, number] = [
+    Math.cos(oppositeDelta) * _radius + _center[0],
+    Math.sin(oppositeDelta) * _radius + _center[1],
+  ]
+
+  const rotationDirectionOriginalPoints = isPointsCCW([
+    tanPreviousPoint,
+    arcStartPoint,
+    arcEndPoint,
+    // _center,
+  ])
+  const rotationDirectionPointsOnArc = isPointsCCW([
+    arcStartPoint,
+    shortestArcMidPoint,
+    arcEndPoint,
+  ])
+  let arcMidPoint =
+    rotationDirectionOriginalPoints !== rotationDirectionPointsOnArc && obtuse
+      ? longestArcMidPoint
+      : shortestArcMidPoint
+  return arcMidPoint
 }
 
 // tanPreviousPoint and arcStartPoint make up a straight segment leading into the arc (of which the arc should be tangential). The arc should start at arcStartPoint and end at, arcEndPoint
@@ -113,48 +146,10 @@ export function getTangentialArcToInfo({
 
   let center: Coords2d = [0, 0]
   let radius = 0
-  const getMidPoint = (
-    _center: Coords2d,
-    arcStartPoint: Coords2d,
-    arcEndPoint: Coords2d,
-    _radius: number,
-    obtuse: boolean
-  ): Coords2d => {
-    const angleFromCenterToArcStart = getAngle(_center, arcStartPoint)
-    const angleFromCenterToArcEnd = getAngle(_center, arcEndPoint)
-    const _deltaAng = deltaAngle({
-      fromAngle: deg2Rad(angleFromCenterToArcStart),
-      toAngle: deg2Rad(angleFromCenterToArcEnd),
-    })
-    const deltaAng = _deltaAng / 2 + deg2Rad(angleFromCenterToArcStart)
-    const shortestArcMidPoint: [number, number] = [
-      Math.cos(deltaAng) * _radius + _center[0],
-      Math.sin(deltaAng) * _radius + _center[1],
-    ]
-    const oppositeDelta = deltaAng + Math.PI
-    const longestArcMidPoint: [number, number] = [
-      Math.cos(oppositeDelta) * _radius + _center[0],
-      Math.sin(oppositeDelta) * _radius + _center[1],
-    ]
-
-    const rotationDirectionOriginalPoints = isPointsCCW([
-      tanPreviousPoint,
-      arcStartPoint,
-      arcEndPoint,
-    ])
-    const rotationDirectionPointsOnArc = isPointsCCW([
-      arcStartPoint,
-      shortestArcMidPoint,
-      arcEndPoint,
-    ])
-    let arcMidPoint =
-      rotationDirectionOriginalPoints !== rotationDirectionPointsOnArc && obtuse
-        ? longestArcMidPoint
-        : shortestArcMidPoint
-    return arcMidPoint
-  }
 
   if (tangentialLinePerpSlope === slopeMidPointLine.slope) {
+    // cant find the intersection of the two lines if they have the same gradient
+    // but in this case the center is the midpoint anyway
     center = midPoint
     radius = Math.sqrt(
       (arcStartPoint[0] - center[0]) ** 2 + (arcStartPoint[1] - center[1]) ** 2
@@ -163,6 +158,7 @@ export function getTangentialArcToInfo({
       center,
       arcStartPoint,
       arcEndPoint,
+      tanPreviousPoint,
       radius,
       obtuse
     )
@@ -186,6 +182,7 @@ export function getTangentialArcToInfo({
     center,
     arcStartPoint,
     arcEndPoint,
+    tanPreviousPoint,
     radius,
     obtuse
   )
@@ -194,4 +191,17 @@ export function getTangentialArcToInfo({
     radius,
     arcMidPoint,
   }
+}
+
+export function getTangentPointFromPreviousArc(
+  lastArcCenter: Coords2d,
+  lastArcCCW: boolean,
+  lastArcEnd: Coords2d
+): Coords2d {
+  const angleFromOldCenterToArcStart = getAngle(lastArcCenter, lastArcEnd)
+  const tangentialAngle = angleFromOldCenterToArcStart + (lastArcCCW ? -90 : 90)
+  return [
+    Math.cos(deg2Rad(tangentialAngle)) * 10 + lastArcEnd[0],
+    Math.sin(deg2Rad(tangentialAngle)) * 10 + lastArcEnd[1],
+  ]
 }

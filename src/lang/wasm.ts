@@ -4,6 +4,7 @@ import init, {
   execute_wasm,
   lexer_wasm,
   modify_ast_for_sketch_wasm,
+  is_points_ccw,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
@@ -13,6 +14,7 @@ import { MemoryItem } from '../wasm-lib/kcl/bindings/MemoryItem'
 import type { Program } from '../wasm-lib/kcl/bindings/Program'
 import type { Token } from '../wasm-lib/kcl/bindings/Token'
 import { DefaultPlanes } from '../wasm-lib/kcl/bindings/DefaultPlanes'
+import { Coords2d } from './std/sketch'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Value } from '../wasm-lib/kcl/bindings/Value'
@@ -211,4 +213,8 @@ export const modifyAstForSketch = async (
     console.log(kclError)
     throw kclError
   }
+}
+
+export function isPointsCCW(points: Coords2d[]): number {
+  return is_points_ccw(new Float64Array(points.flat()))
 }

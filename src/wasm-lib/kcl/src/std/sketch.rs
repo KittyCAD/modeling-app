@@ -5,6 +5,7 @@ use derive_docs::stdlib;
 use kittycad::types::{Angle, ModelingCmd, Point3D};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use std::f64::consts::PI;
 
 use crate::executor::SourceRange;
 use crate::{
@@ -1219,7 +1220,19 @@ async fn inner_tangential_arc_to(
     args: Args,
 ) -> Result<Box<SketchGroup>, KclError> {
     let from: Point2d = sketch_group.get_coords_from_paths()?;
+    let tangent_info = sketch_group.get_tangential_info_from_paths();
+    let tan_previous_point = if tangent_info.is_center {
+        get_tangent_point_from_previous_arc(tangent_info.center_or_tangent_point, tangent_info.ccw, from.into())
+    } else {
+        tangent_info.center_or_tangent_point
+    };
     let [to_x, to_y] = to;
+    let result = get_tangential_arc_to_info(TangentialArcInfoInput {
+        arc_start_point: [from.x, from.y],
+        arc_end_point: to,
+        tan_previous_point,
+        obtuse: true,
+    });
 
     let delta = [to_x - from.x, to_y - from.y];
     let id = uuid::Uuid::new_v4();
@@ -1235,6 +1248,8 @@ async fn inner_tangential_arc_to(
                 metadata: args.source_range.into(),
             },
         },
+        center: result.center,
+        CCW: is_points_ccw(&vec![tan_previous_point, [from.x, from.y], to]) > 0,
     };
 
     let mut new_sketch_group = sketch_group.clone();
@@ -1441,3 +1456,209 @@ mod tests {
         assert_eq!(data, PlaneData::NegXZ);
     }
 }
+
+type Coords2d = [f64; 2];
+
+fn get_slope(start: Coords2d, end: Coords2d) -> (f64, f64) {
+    let slope = if start[0] - end[0] == 0.0 {
+        f64::INFINITY
+    } else {
+        (start[1] - end[1]) / (start[0] - end[0])
+    };
+
+    let perp_slope = if slope == f64::INFINITY {
+        0.0
+    } else {
+        -1.0 / slope
+    };
+
+    (slope, perp_slope)
+}
+
+fn get_angle(point1: Coords2d, point2: Coords2d) -> f64 {
+    let delta_x = point2[0] - point1[0];
+    let delta_y = point2[1] - point1[1];
+    let angle = delta_y.atan2(delta_x);
+
+    let result = if angle < 0.0 {
+        angle + 2.0 * PI
+    } else {
+        angle
+    };
+    result * (180.0 / PI)
+    
+}
+
+fn delta_angle(from_angle: f64, to_angle: f64) -> f64 {
+    let norm_from_angle = normalize_rad(from_angle);
+    let norm_to_angle = normalize_rad(to_angle);
+    let provisional = norm_to_angle - norm_from_angle;
+
+    if provisional > -PI && provisional <= PI {
+        provisional
+    } else if provisional > PI {
+        provisional - 2.0 * PI
+    } else if provisional < -PI {
+        provisional + 2.0 * PI
+    } else {
+        0.0
+    }
+}
+
+fn normalize_rad(angle: f64) -> f64 {
+    let draft = angle % (2.0 * PI);
+    if draft < 0.0 {
+        draft + 2.0 * PI
+    } else {
+        draft
+    }
+}
+
+fn deg2rad(deg: f64) -> f64 {
+    deg * (PI / 180.0)
+}
+
+fn is_points_ccw(points: &[Coords2d]) -> i32 {
+    let flattened_points: Vec<f64> = points.iter().flat_map(|&p| vec![p[0], p[1]]).collect();
+    is_points_ccw_wasm(&flattened_points)
+}
+    
+pub fn is_points_ccw_wasm(points: &[f64]) -> i32 {
+    // CCW is positive as that the Math convention
+    // assert!(points.len() % 2 == 0, "Points array should have even length");
+
+    let mut sum = 0.0;
+    for i in 0..(points.len() / 2) {
+        let point1 = [points[2 * i], points[2 * i + 1]];
+        let point2 = [points[(2 * i + 2) % points.len()], points[(2 * i + 3) % points.len()]];
+        sum += (point2[0] + point1[0]) * (point2[1] - point1[1]);
+    }
+    sum.signum() as i32
+}
+
+fn get_mid_point(
+    center: Coords2d,
+    arc_start_point: Coords2d,
+    arc_end_point: Coords2d,
+    tan_previous_point: Coords2d,
+    radius: f64,
+    obtuse: bool
+) -> Coords2d {
+    let angle_from_center_to_arc_start = get_angle(center, arc_start_point);
+    let angle_from_center_to_arc_end = get_angle(center, arc_end_point);
+    let delta_ang = delta_angle(
+        deg2rad(angle_from_center_to_arc_start),
+        deg2rad(angle_from_center_to_arc_end),
+    );
+    let delta_ang = delta_ang / 2.0 + deg2rad(angle_from_center_to_arc_start);
+    let shortest_arc_mid_point: Coords2d = [
+        delta_ang.cos() * radius + center[0],
+        delta_ang.sin() * radius + center[1],
+    ];
+    let opposite_delta = delta_ang + PI;
+    let longest_arc_mid_point: Coords2d = [
+        opposite_delta.cos() * radius + center[0],
+        opposite_delta.sin() * radius + center[1],
+    ];
+
+    let rotation_direction_original_points = is_points_ccw(&[
+        tan_previous_point,
+        arc_start_point,
+        arc_end_point,
+    ]);
+    let rotation_direction_points_on_arc = is_points_ccw(&[
+        arc_start_point,
+        shortest_arc_mid_point,
+        arc_end_point,
+    ]);
+    let arc_mid_point = if rotation_direction_original_points != rotation_direction_points_on_arc && obtuse {
+        longest_arc_mid_point
+    } else {
+        shortest_arc_mid_point
+    };
+    arc_mid_point
+}
+
+fn intersect(
+    point1: Coords2d,
+    slope1: f64,
+    point2: Coords2d,
+    slope2: f64
+) -> Coords2d {
+    let x = if slope1.abs() == f64::INFINITY {
+        point1[0]
+    } else if slope2.abs() == f64::INFINITY {
+        point2[0]
+    } else {
+        (point2[1] - slope2 * point2[0] - point1[1] + slope1 * point1[0]) / (slope1 - slope2)
+    };
+    let y = if slope1.abs() != f64::INFINITY {
+        slope1 * x - slope1 * point1[0] + point1[1]
+    } else {
+        slope2 * x - slope2 * point2[0] + point2[1]
+    };
+    [x, y]
+}
+
+pub struct TangentialArcInfoInput {
+    arc_start_point: Coords2d,
+    arc_end_point: Coords2d,
+    tan_previous_point: Coords2d,
+    obtuse: bool,
+}
+
+
+pub struct TangentialArcInfoOutput {
+    center: Coords2d,
+    arc_mid_point: Coords2d,
+    radius: f64,
+}
+
+pub fn get_tangential_arc_to_info(input: TangentialArcInfoInput) -> TangentialArcInfoOutput {
+    let (_, perp_slope) = get_slope(input.tan_previous_point, input.arc_start_point);
+    let tangential_line_perp_slope = perp_slope;
+
+    // Calculate the midpoint of the line segment between arcStartPoint and arcEndPoint
+    let mid_point: Coords2d = [
+        (input.arc_start_point[0] + input.arc_end_point[0]) / 2.0,
+        (input.arc_start_point[1] + input.arc_end_point[1]) / 2.0,
+    ];
+
+    let slope_mid_point_line = get_slope(input.arc_start_point, mid_point);
+
+    let mut center: Coords2d;
+    let mut radius: f64;
+
+    if tangential_line_perp_slope == slope_mid_point_line.0 {
+        // can't find the intersection of the two lines if they have the same gradient
+        // but in this case the center is the midpoint anyway
+        center = mid_point;
+        radius = ((input.arc_start_point[0] - center[0]).powi(2) + (input.arc_start_point[1] - center[1]).powi(2)).sqrt();
+    } else {
+        center = intersect(mid_point, slope_mid_point_line.1, input.arc_start_point, tangential_line_perp_slope);
+        radius = ((input.arc_start_point[0] - center[0]).powi(2) + (input.arc_start_point[1] - center[1]).powi(2)).sqrt();
+    }
+
+    let arc_mid_point = get_mid_point(center, input.arc_start_point, input.arc_end_point, input.tan_previous_point, radius, input.obtuse);
+
+    TangentialArcInfoOutput {
+        center,
+        radius,
+        arc_mid_point,
+    }
+}
+
+pub fn get_tangent_point_from_previous_arc(
+    last_arc_center: Coords2d,
+    last_arc_ccw: bool,
+    last_arc_end: Coords2d
+) -> Coords2d {
+    let angle_from_old_center_to_arc_start = get_angle(last_arc_center, last_arc_end);
+    // let tangential_angle = angle_from_old_center_to_arc_start + if last_arc_ccw { 90.0 } else { -90.0 };
+    let tangential_angle = angle_from_old_center_to_arc_start + if last_arc_ccw { -90.0 } else { 90.0 };
+    [
+        tangential_angle.to_radians().cos() * 10.0 + last_arc_end[0],
+        tangential_angle.to_radians().sin() * 10.0 + last_arc_end[1],
+    ]
+}
+

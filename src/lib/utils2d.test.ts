@@ -1,6 +1,9 @@
 import { Coords2d } from 'lang/std/sketch'
 import { roundOff } from './utils'
-import { getTangentialArcToInfo, isPointsCCW } from './utils2d'
+import { getTangentialArcToInfo } from './utils2d'
+import { isPointsCCW, initPromise } from 'lang/wasm'
+
+beforeAll(() => initPromise)
 
 describe('testing getTangentialArcToInfo', () => {
   test('basic case', () => {
@@ -101,8 +104,8 @@ describe('test isPointsCW', () => {
       [0, -2],
     ]
     const pointsRev = [...points].reverse()
-    const CCW = isPointsCCW(points)
-    const CW = isPointsCCW(pointsRev)
+    const CCW = isPointsCCW(pointsRev)
+    const CW = isPointsCCW(points)
     expect(CCW).toBe(1)
     expect(CW).toBe(-1)
   })

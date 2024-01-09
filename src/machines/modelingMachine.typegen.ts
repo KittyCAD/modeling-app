@@ -66,6 +66,7 @@
 "equip select": "CancelSketch" | "Constrain equal length" | "Constrain horizontally align" | "Constrain parallel" | "Constrain remove constraints" | "Constrain snap to X" | "Constrain snap to Y" | "Constrain vertically align" | "Deselect point" | "Deselect segment" | "Enter sketch" | "Make segment horizontal" | "Make segment vertical" | "Re-execute" | "Select default plane" | "Select point" | "Select segment" | "Set selection" | "done.invoke.get-abs-x-info" | "done.invoke.get-abs-y-info" | "done.invoke.get-angle-info" | "done.invoke.get-horizontal-info" | "done.invoke.get-length-info" | "done.invoke.get-perpendicular-distance-info" | "done.invoke.get-vertical-info" | "error.platform.get-abs-x-info" | "error.platform.get-abs-y-info" | "error.platform.get-angle-info" | "error.platform.get-horizontal-info" | "error.platform.get-length-info" | "error.platform.get-perpendicular-distance-info" | "error.platform.get-vertical-info";
 "hide default planes": "Cancel" | "Select default plane" | "Set selection" | "xstate.stop";
 "hide draft line": "Cancel" | "CancelSketch" | "Set selection" | "xstate.stop";
+"initialise draft arc": "Cancel" | "CancelSketch" | "Enter sketch" | "Set selection" | "xstate.stop";
 "initialise draft line": "Cancel" | "CancelSketch" | "Enter sketch" | "Select default plane" | "Set selection" | "xstate.stop";
 "reset sketch metadata": "Cancel" | "Select default plane";
 "set default plane id": "Select default plane";
@@ -74,6 +75,7 @@
 "set sketch metadata": "Enter sketch";
 "set sketchMetadata from pathToNode": "Re-execute";
 "set tool move": "Equip move tool" | "Re-execute" | "Set selection";
+"set up draft arc": "Equip tangential arc to 2";
 "set up draft line": "Equip Line tool 2";
 "setup paper sketch": "Cancel" | "CancelSketch" | "Enter sketch" | "Select default plane" | "Set selection" | "xstate.stop";
 "show default planes": "Enter sketch";
@@ -122,7 +124,7 @@
 "Get perpendicular distance info": "Constrain perpendicular distance";
 "Get vertical info": "Constrain vertical distance";
         };
-        matchesStates: "Sketch" | "Sketch no face" | "Sketch.Await ABS X info" | "Sketch.Await ABS Y info" | "Sketch.Await angle info" | "Sketch.Await horizontal distance info" | "Sketch.Await length info" | "Sketch.Await perpendicular distance info" | "Sketch.Await vertical distance info" | "Sketch.Line Tool" | "Sketch.Line Tool.Done" | "Sketch.Line Tool.Init" | "Sketch.Line Tool.No Points" | "Sketch.Line Tool.Point Added" | "Sketch.Line Tool.Segment Added" | "Sketch.Line tool 2" | "Sketch.Move Tool" | "Sketch.Move Tool.Move init" | "Sketch.Move Tool.Move with execute" | "Sketch.Move Tool.Move without re-execute" | "Sketch.Move Tool.No move" | "Sketch.SketchIdle" | "idle" | { "Sketch"?: "Await ABS X info" | "Await ABS Y info" | "Await angle info" | "Await horizontal distance info" | "Await length info" | "Await perpendicular distance info" | "Await vertical distance info" | "Line Tool" | "Line tool 2" | "Move Tool" | "SketchIdle" | { "Line Tool"?: "Done" | "Init" | "No Points" | "Point Added" | "Segment Added";
+        matchesStates: "Sketch" | "Sketch no face" | "Sketch.Await ABS X info" | "Sketch.Await ABS Y info" | "Sketch.Await angle info" | "Sketch.Await horizontal distance info" | "Sketch.Await length info" | "Sketch.Await perpendicular distance info" | "Sketch.Await vertical distance info" | "Sketch.Line Tool" | "Sketch.Line Tool.Done" | "Sketch.Line Tool.Init" | "Sketch.Line Tool.No Points" | "Sketch.Line Tool.Point Added" | "Sketch.Line Tool.Segment Added" | "Sketch.Line tool 2" | "Sketch.Move Tool" | "Sketch.Move Tool.Move init" | "Sketch.Move Tool.Move with execute" | "Sketch.Move Tool.Move without re-execute" | "Sketch.Move Tool.No move" | "Sketch.SketchIdle" | "Sketch.tangential arc to 2" | "idle" | { "Sketch"?: "Await ABS X info" | "Await ABS Y info" | "Await angle info" | "Await horizontal distance info" | "Await length info" | "Await perpendicular distance info" | "Await vertical distance info" | "Line Tool" | "Line tool 2" | "Move Tool" | "SketchIdle" | "tangential arc to 2" | { "Line Tool"?: "Done" | "Init" | "No Points" | "Point Added" | "Segment Added";
 "Move Tool"?: "Move init" | "Move with execute" | "Move without re-execute" | "No move"; }; };
         tags: never;
       }

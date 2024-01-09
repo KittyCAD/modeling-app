@@ -431,6 +431,12 @@ pub struct SketchGroup {
     pub meta: Vec<Metadata>,
 }
 
+pub struct GetTangentialInfoFromPathsResult {
+    pub center_or_tangent_point: [f64; 2],
+    pub is_center: bool,
+    pub ccw: bool,
+}
+
 impl SketchGroup {
     pub fn get_path_by_id(&self, id: &uuid::Uuid) -> Option<&Path> {
         self.value.iter().find(|p| p.get_id() == *id)
@@ -461,7 +467,43 @@ impl SketchGroup {
             Ok(self.start.to.into())
         }
     }
+
+    pub fn get_tangential_info_from_paths(&self) -> GetTangentialInfoFromPathsResult {
+        if self.value.is_empty() {
+            return GetTangentialInfoFromPathsResult{
+                center_or_tangent_point: self.start.to.into(),
+                is_center: false,
+                ccw: false,
+            }
+        }
+        let index = self.value.len() - 1;
+        if let Some(path) = self.value.get(index) {
+            match path {
+                Path::TangentialArcTo { center, CCW, .. } => GetTangentialInfoFromPathsResult{
+                    center_or_tangent_point: *center,
+                    is_center: true,
+                    ccw: *CCW,
+                },
+                 _ => {
+                    let base = path.get_base();
+                    GetTangentialInfoFromPathsResult{
+                        center_or_tangent_point: base.from.into(),
+                        is_center: false,
+                        ccw: false,
+                    }
+                }
+            }
+        } else {
+            GetTangentialInfoFromPathsResult{
+                center_or_tangent_point: self.start.to.into(),
+                is_center: false,
+                ccw: false,
+            }
+        }
+    }
 }
+
+    
 
 /// An extrude group is a collection of extrude surfaces.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -689,6 +731,11 @@ pub enum Path {
     TangentialArcTo {
         #[serde(flatten)]
         base: BasePath,
+        /// the arc's center
+        #[ts(type = "[number, number]")]
+        center: [f64; 2],
+        /// arc's direction
+        CCW: bool,
     },
     /// A path that is horizontal.
     Horizontal {
@@ -720,7 +767,7 @@ impl Path {
             Path::Horizontal { base, .. } => base.geo_meta.id,
             Path::AngledLineTo { base, .. } => base.geo_meta.id,
             Path::Base { base } => base.geo_meta.id,
-            Path::TangentialArcTo { base } => base.geo_meta.id,
+            Path::TangentialArcTo { base, .. } => base.geo_meta.id,
         }
     }
 
@@ -730,7 +777,7 @@ impl Path {
             Path::Horizontal { base, .. } => base.name.clone(),
             Path::AngledLineTo { base, .. } => base.name.clone(),
             Path::Base { base } => base.name.clone(),
-            Path::TangentialArcTo { base } => base.name.clone(),
+            Path::TangentialArcTo { base, .. } => base.name.clone(),
         }
     }
 
@@ -740,7 +787,7 @@ impl Path {
             Path::Horizontal { base, .. } => base,
             Path::AngledLineTo { base, .. } => base,
             Path::Base { base } => base,
-            Path::TangentialArcTo { base } => base,
+            Path::TangentialArcTo { base, .. } => base,
         }
     }
 }
