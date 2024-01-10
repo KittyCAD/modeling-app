@@ -272,42 +272,42 @@ impl Planner {
                 // Track which EP address each array element will be computed into.
                 let (instructions, bindings) = expr.elements.into_iter().try_fold(
                     (Vec::new(), Vec::new()),
-                    |(mut acc_instrs, mut acc_bindings), element| match KclValueBySize::from(element) {
-                        KclValueBySize::Single(value) => {
-                            let EvalPlan { instructions, binding } = self.plan_to_compute_single(value)?;
-                            acc_instrs.extend(instructions);
-                            acc_bindings.push(binding);
-                            Ok((acc_instrs, acc_bindings))
-                        }
-                        KclValueBySize::Multiple(MultipleValue::ArrayExpression(expr)) => {
-                            let binding = expr
-                                .elements
-                                .into_iter()
-                                .try_fold(Vec::new(), |mut seq, child_element| {
-                                    let (instructions, binding) = self.plan_to_bind_one(child_element)?;
-                                    acc_instrs.extend(instructions);
-                                    seq.push(binding);
-                                    Ok(seq)
-                                })
-                                .map(EpBinding::Sequence)?;
-                            acc_bindings.push(binding);
-                            Ok((acc_instrs, acc_bindings))
-                        }
-                        KclValueBySize::Multiple(MultipleValue::ObjectExpression(expr)) => {
-                            let map = HashMap::with_capacity(expr.properties.len());
-                            let binding = expr
-                                .properties
-                                .into_iter()
-                                .try_fold(map, |mut map, property| {
-                                    let (instructions, binding) = self.plan_to_bind_one(property.value)?;
-                                    map.insert(property.key.name, binding);
-                                    acc_instrs.extend(instructions);
-                                    Ok(map)
-                                })
-                                .map(EpBinding::Map)?;
-                            acc_bindings.push(binding);
-                            Ok((acc_instrs, acc_bindings))
-                        }
+                    |(mut acc_instrs, mut acc_bindings), element| {
+                        match KclValueBySize::from(element) {
+                            KclValueBySize::Single(value) => {
+                                let EvalPlan { instructions, binding } = self.plan_to_compute_single(value)?;
+                                acc_instrs.extend(instructions);
+                                acc_bindings.push(binding);
+                            }
+                            KclValueBySize::Multiple(MultipleValue::ArrayExpression(expr)) => {
+                                let binding = expr
+                                    .elements
+                                    .into_iter()
+                                    .try_fold(Vec::new(), |mut seq, child_element| {
+                                        let (instructions, binding) = self.plan_to_bind_one(child_element)?;
+                                        acc_instrs.extend(instructions);
+                                        seq.push(binding);
+                                        Ok(seq)
+                                    })
+                                    .map(EpBinding::Sequence)?;
+                                acc_bindings.push(binding);
+                            }
+                            KclValueBySize::Multiple(MultipleValue::ObjectExpression(expr)) => {
+                                let map = HashMap::with_capacity(expr.properties.len());
+                                let binding = expr
+                                    .properties
+                                    .into_iter()
+                                    .try_fold(map, |mut map, property| {
+                                        let (instructions, binding) = self.plan_to_bind_one(property.value)?;
+                                        map.insert(property.key.name, binding);
+                                        acc_instrs.extend(instructions);
+                                        Ok(map)
+                                    })
+                                    .map(EpBinding::Map)?;
+                                acc_bindings.push(binding);
+                            }
+                        };
+                        Ok((acc_instrs, acc_bindings))
                     },
                 )?;
                 Ok((instructions, EpBinding::Sequence(bindings)))
@@ -317,43 +317,43 @@ impl Planner {
                 let mut kvs = expr.properties.into_iter().map(|prop| (prop.key, prop.value));
                 let (instructions, each_property_binding) = kvs.try_fold(
                     (Vec::new(), HashMap::new()),
-                    |(mut acc_instrs, mut acc_bindings), (key, value)| match KclValueBySize::from(value) {
-                        KclValueBySize::Single(value) => {
-                            let EvalPlan { instructions, binding } = self.plan_to_compute_single(value)?;
-                            acc_instrs.extend(instructions);
-                            acc_bindings.insert(key.name, binding);
-                            Ok((acc_instrs, acc_bindings))
-                        }
-                        KclValueBySize::Multiple(MultipleValue::ArrayExpression(expr)) => {
-                            let n = expr.elements.len();
-                            let binding = expr
-                                .elements
-                                .into_iter()
-                                .try_fold(Vec::with_capacity(n), |mut seq, child_element| {
-                                    let (instructions, binding) = self.plan_to_bind_one(child_element)?;
-                                    seq.push(binding);
-                                    acc_instrs.extend(instructions);
-                                    Ok(seq)
-                                })
-                                .map(EpBinding::Sequence)?;
-                            acc_bindings.insert(key.name, binding);
-                            Ok((acc_instrs, acc_bindings))
-                        }
-                        KclValueBySize::Multiple(MultipleValue::ObjectExpression(expr)) => {
-                            let n = expr.properties.len();
-                            let binding = expr
-                                .properties
-                                .into_iter()
-                                .try_fold(HashMap::with_capacity(n), |mut map, property| {
-                                    let (instructions, binding) = self.plan_to_bind_one(property.value)?;
-                                    map.insert(property.key.name, binding);
-                                    acc_instrs.extend(instructions);
-                                    Ok(map)
-                                })
-                                .map(EpBinding::Map)?;
-                            acc_bindings.insert(key.name, binding);
-                            Ok((acc_instrs, acc_bindings))
-                        }
+                    |(mut acc_instrs, mut acc_bindings), (key, value)| {
+                        match KclValueBySize::from(value) {
+                            KclValueBySize::Single(value) => {
+                                let EvalPlan { instructions, binding } = self.plan_to_compute_single(value)?;
+                                acc_instrs.extend(instructions);
+                                acc_bindings.insert(key.name, binding);
+                            }
+                            KclValueBySize::Multiple(MultipleValue::ArrayExpression(expr)) => {
+                                let n = expr.elements.len();
+                                let binding = expr
+                                    .elements
+                                    .into_iter()
+                                    .try_fold(Vec::with_capacity(n), |mut seq, child_element| {
+                                        let (instructions, binding) = self.plan_to_bind_one(child_element)?;
+                                        seq.push(binding);
+                                        acc_instrs.extend(instructions);
+                                        Ok(seq)
+                                    })
+                                    .map(EpBinding::Sequence)?;
+                                acc_bindings.insert(key.name, binding);
+                            }
+                            KclValueBySize::Multiple(MultipleValue::ObjectExpression(expr)) => {
+                                let n = expr.properties.len();
+                                let binding = expr
+                                    .properties
+                                    .into_iter()
+                                    .try_fold(HashMap::with_capacity(n), |mut map, property| {
+                                        let (instructions, binding) = self.plan_to_bind_one(property.value)?;
+                                        map.insert(property.key.name, binding);
+                                        acc_instrs.extend(instructions);
+                                        Ok(map)
+                                    })
+                                    .map(EpBinding::Map)?;
+                                acc_bindings.insert(key.name, binding);
+                            }
+                        };
+                        Ok((acc_instrs, acc_bindings))
                     },
                 )?;
                 Ok((instructions, EpBinding::Map(each_property_binding)))
