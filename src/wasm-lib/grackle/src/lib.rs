@@ -118,30 +118,30 @@ impl Planner {
 
     /// Emits instructions which, when run, compute a given KCL value and store it in memory.
     /// Returns the instructions, and the destination address of the value.
-    fn plan_to_compute_single(&mut self, value: SingleValue) -> Result<(Vec<Instruction>, EpBinding), CompileError> {
+    fn plan_to_compute_single(&mut self, value: SingleValue) -> Result<EvalPlan, CompileError> {
         match value {
             SingleValue::KclNoneExpression(KclNone { start: _, end: _ }) => {
                 let address = self.next_addr.offset_by(1);
-                Ok((
-                    vec![Instruction::SetPrimitive {
+                Ok(EvalPlan {
+                    instructions: vec![Instruction::SetPrimitive {
                         address,
                         value: ept::Primitive::Nil,
                     }],
-                    EpBinding::Single(address),
-                ))
+                    binding: EpBinding::Single(address),
+                })
             }
             SingleValue::Literal(expr) => {
                 let kcep_val = kcl_literal_to_kcep_literal(expr.value);
                 // KCEP primitives always have size of 1, because each address holds 1 primitive.
                 let size = 1;
                 let address = self.next_addr.offset_by(size);
-                Ok((
-                    vec![Instruction::SetPrimitive {
+                Ok(EvalPlan {
+                    instructions: vec![Instruction::SetPrimitive {
                         address,
                         value: kcep_val,
                     }],
-                    EpBinding::Single(address),
-                ))
+                    binding: EpBinding::Single(address),
+                })
             }
             SingleValue::Identifier(expr) => {
                 // This is just duplicating a binding.
@@ -151,27 +151,28 @@ impl Planner {
                     .binding_scope
                     .get(&expr.name)
                     .ok_or(CompileError::Undefined { name: expr.name })?;
-                Ok((Vec::new(), previously_bound_to.clone()))
+                Ok(EvalPlan {
+                    instructions: Vec::new(),
+                    binding: previously_bound_to.clone(),
+                })
             }
             SingleValue::BinaryExpression(expr) => {
-                let l = SingleValue::from(expr.left);
-                let r = SingleValue::from(expr.right);
-                let (l_plan, l_binding) = self.plan_to_compute_single(l)?;
-                let (r_plan, r_binding) = self.plan_to_compute_single(r)?;
-                let EpBinding::Single(l_binding) = l_binding else {
+                let l = self.plan_to_compute_single(SingleValue::from(expr.left))?;
+                let r = self.plan_to_compute_single(SingleValue::from(expr.right))?;
+                let EpBinding::Single(l_binding) = l.binding else {
                     return Err(CompileError::InvalidOperand(
                         "you tried to use a composite value (e.g. array or object) as the operand to some math",
                     ));
                 };
-                let EpBinding::Single(r_binding) = r_binding else {
+                let EpBinding::Single(r_binding) = r.binding else {
                     return Err(CompileError::InvalidOperand(
                         "you tried to use a composite value (e.g. array or object) as the operand to some math",
                     ));
                 };
                 let destination = self.next_addr.offset_by(1);
-                let mut plan = Vec::with_capacity(l_plan.len() + r_plan.len() + 1);
-                plan.extend(l_plan);
-                plan.extend(r_plan);
+                let mut plan = Vec::with_capacity(l.instructions.len() + r.instructions.len() + 1);
+                plan.extend(l.instructions);
+                plan.extend(r.instructions);
                 plan.push(Instruction::Arithmetic {
                     arithmetic: ep::Arithmetic {
                         operation: match expr.operator {
@@ -191,18 +192,24 @@ impl Planner {
                     },
                     destination,
                 });
-                Ok((plan, EpBinding::Single(destination)))
+                Ok(EvalPlan {
+                    instructions: plan,
+                    binding: EpBinding::Single(destination),
+                })
             }
             SingleValue::CallExpression(expr) => {
                 let (mut instructions, args) = expr.arguments.into_iter().try_fold(
                     (Vec::new(), Vec::new()),
                     |(mut acc_instrs, mut acc_args), argument| {
-                        let (new_instructions, arg_address) = match KclValueBySize::from(argument) {
+                        let EvalPlan {
+                            instructions: new_instructions,
+                            binding: arg,
+                        } = match KclValueBySize::from(argument) {
                             KclValueBySize::Single(value) => self.plan_to_compute_single(value)?,
                             KclValueBySize::Multiple(_) => todo!(),
                         };
                         acc_instrs.extend(new_instructions);
-                        acc_args.push(arg_address);
+                        acc_args.push(arg);
                         Ok((acc_instrs, acc_args))
                     },
                 )?;
@@ -225,7 +232,7 @@ impl Planner {
                     binding,
                 } = callee.call(&mut self.next_addr, args)?;
                 instructions.extend(eval_instrs);
-                Ok((instructions, binding))
+                Ok(EvalPlan { instructions, binding })
             }
             SingleValue::PipeExpression(_) => todo!(),
             SingleValue::UnaryExpression(_) => todo!(),
@@ -246,7 +253,7 @@ impl Planner {
             .try_fold(Vec::new(), |mut acc, declaration| {
                 match KclValueBySize::from(declaration.init) {
                     KclValueBySize::Single(init_value) => {
-                        let (instructions, binding) = self.plan_to_compute_single(init_value)?;
+                        let EvalPlan { instructions, binding } = self.plan_to_compute_single(init_value)?;
                         self.binding_scope.bind(declaration.id.name, binding);
                         acc.extend(instructions);
                         Ok(acc)
@@ -261,9 +268,9 @@ impl Planner {
                                     KclValueBySize::Single(v) => v,
                                     KclValueBySize::Multiple(_) => todo!("handle arrays of composite values"),
                                 };
-                                let (instructions, dst) = self.plan_to_compute_single(value)?;
+                                let EvalPlan { instructions, binding } = self.plan_to_compute_single(value)?;
                                 acc_instrs.extend(instructions);
-                                acc_addrs.extend(Vec::from(dst));
+                                acc_addrs.push(binding);
                                 Ok((acc_instrs, acc_addrs))
                             },
                         )?;
@@ -284,9 +291,9 @@ impl Planner {
                                         todo!("handle objects where their values aren't scalars")
                                     }
                                 };
-                                let (instructions, dst) = self.plan_to_compute_single(value)?;
+                                let EvalPlan { instructions, binding } = self.plan_to_compute_single(value)?;
                                 acc_instrs.extend(instructions);
-                                acc_addrs.insert(key.name, dst);
+                                acc_addrs.insert(key.name, binding);
                                 Ok((acc_instrs, acc_addrs))
                             },
                         )?;
@@ -376,24 +383,15 @@ trait KclFunction: std::fmt::Debug {
 }
 
 /// KCL values which can be written to KCEP memory.
+/// This is recursive. For example, the bound value might be an array, which itself contains bound values.
 #[derive(Debug, Clone)]
 enum EpBinding {
     /// A KCL value which gets stored in a particular address in KCEP memory.
     Single(Address),
     /// A sequence of KCL values, indexed by their position in the sequence.
-    Sequence(Vec<Address>),
+    Sequence(Vec<EpBinding>),
     /// A sequence of KCL values, indexed by their identifier.
     Map(HashMap<String, EpBinding>),
-}
-
-impl From<EpBinding> for Vec<Address> {
-    fn from(value: EpBinding) -> Self {
-        match value {
-            EpBinding::Single(addr) => vec![addr],
-            EpBinding::Sequence(addrs) => addrs,
-            EpBinding::Map(addrs) => addrs.into_iter().flat_map(|(_k, v)| Vec::from(v)).collect(),
-        }
-    }
 }
 
 /// A set of bindings in a particular scope.
