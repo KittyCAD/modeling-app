@@ -64,6 +64,29 @@ fn bind_array() {
 }
 
 #[test]
+fn bind_nested_array() {
+    let program = r#"let x = [44, [55, "sixty-six"]]"#;
+    let plan = must_plan(program);
+    assert_eq!(
+        plan,
+        vec![
+            Instruction::SetPrimitive {
+                address: Address::ZERO,
+                value: 44i64.into(),
+            },
+            Instruction::SetPrimitive {
+                address: Address::ZERO.offset(1),
+                value: 55i64.into(),
+            },
+            Instruction::SetPrimitive {
+                address: Address::ZERO.offset(2),
+                value: "sixty-six".to_owned().into(),
+            }
+        ]
+    );
+}
+
+#[test]
 fn name_not_found() {
     // Users can't assign `y` to anything because `y` is undefined.
     let err = should_not_compile("let x = y");

@@ -279,8 +279,19 @@ impl Planner {
                             acc_bindings.push(binding);
                             Ok((acc_instrs, acc_bindings))
                         }
-                        KclValueBySize::Multiple(MultipleValue::ArrayExpression(_expr)) => {
-                            todo!("handle arrays where their elements aren't scalars")
+                        KclValueBySize::Multiple(MultipleValue::ArrayExpression(expr)) => {
+                            let binding = expr
+                                .elements
+                                .into_iter()
+                                .try_fold(Vec::new(), |mut seq, child_element| {
+                                    let (instructions, binding) = self.plan_to_bind_one(child_element)?;
+                                    acc_instrs.extend(instructions);
+                                    seq.push(binding);
+                                    Ok(seq)
+                                })
+                                .map(EpBinding::Sequence)?;
+                            acc_bindings.push(binding);
+                            Ok((acc_instrs, acc_bindings))
                         }
                         KclValueBySize::Multiple(MultipleValue::ObjectExpression(_expr)) => {
                             todo!("handle arrays where their elements aren't scalars")
