@@ -284,17 +284,19 @@ impl Planner {
                         let mut kvs = expr.properties.into_iter().map(|prop| (prop.key, prop.value));
                         let (instructions, addresses) = kvs.try_fold(
                             (Vec::new(), HashMap::new()),
-                            |(mut acc_instrs, mut acc_addrs), (key, value)| {
-                                let value = match KclValueBySize::from(value) {
-                                    KclValueBySize::Single(v) => v,
-                                    KclValueBySize::Multiple(_) => {
-                                        todo!("handle objects where their values aren't scalars")
-                                    }
-                                };
-                                let EvalPlan { instructions, binding } = self.plan_to_compute_single(value)?;
-                                acc_instrs.extend(instructions);
-                                acc_addrs.insert(key.name, binding);
-                                Ok((acc_instrs, acc_addrs))
+                            |(mut acc_instrs, mut acc_addrs), (key, value)| match KclValueBySize::from(value) {
+                                KclValueBySize::Single(value) => {
+                                    let EvalPlan { instructions, binding } = self.plan_to_compute_single(value)?;
+                                    acc_instrs.extend(instructions);
+                                    acc_addrs.insert(key.name, binding);
+                                    Ok((acc_instrs, acc_addrs))
+                                }
+                                KclValueBySize::Multiple(MultipleValue::ArrayExpression(_expr)) => {
+                                    todo!("handle objects where their values aren't scalars")
+                                }
+                                KclValueBySize::Multiple(MultipleValue::ObjectExpression(_expr)) => {
+                                    todo!("handle objects where their values aren't scalars")
+                                }
                             },
                         )?;
                         // Then, bind all those addresses under this single KCL variable.
