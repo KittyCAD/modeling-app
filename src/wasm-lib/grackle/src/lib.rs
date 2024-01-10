@@ -327,8 +327,20 @@ impl Planner {
                         KclValueBySize::Multiple(MultipleValue::ArrayExpression(_expr)) => {
                             todo!("handle objects where their values aren't scalars")
                         }
-                        KclValueBySize::Multiple(MultipleValue::ObjectExpression(_expr)) => {
-                            todo!("handle objects where their values aren't scalars")
+                        KclValueBySize::Multiple(MultipleValue::ObjectExpression(expr)) => {
+                            let map = HashMap::with_capacity(expr.properties.len());
+                            let binding = expr
+                                .properties
+                                .into_iter()
+                                .try_fold(map, |mut map, property| {
+                                    let (instructions, binding) = self.plan_to_bind_one(property.value)?;
+                                    map.insert(property.key.name, binding);
+                                    acc_instrs.extend(instructions);
+                                    Ok(map)
+                                })
+                                .map(EpBinding::Map)?;
+                            acc_bindings.insert(key.name, binding);
+                            Ok((acc_instrs, acc_bindings))
                         }
                     },
                 )?;
@@ -416,6 +428,7 @@ trait KclFunction: std::fmt::Debug {
 /// KCL values which can be written to KCEP memory.
 /// This is recursive. For example, the bound value might be an array, which itself contains bound values.
 #[derive(Debug, Clone)]
+#[cfg_attr(test, derive(Eq, PartialEq))]
 enum EpBinding {
     /// A KCL value which gets stored in a particular address in KCEP memory.
     Single(Address),

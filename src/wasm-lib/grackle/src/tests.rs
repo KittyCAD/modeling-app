@@ -1,14 +1,13 @@
 use super::*;
 use pretty_assertions::assert_eq;
 
-fn must_plan(program: &str) -> Vec<Instruction> {
+fn must_plan(program: &str) -> (Vec<Instruction>, BindingScope) {
     let tokens = kcl_lib::token::lexer(program);
     let parser = kcl_lib::parser::Parser::new(tokens);
     let ast = parser.ast().unwrap();
     let mut p = Planner::new();
     let instrs = p.build_plan(ast).unwrap();
-    dbg!(p.binding_scope);
-    instrs
+    (instrs, p.binding_scope)
 }
 
 fn should_not_compile(program: &str) -> CompileError {
@@ -24,7 +23,7 @@ fn assignments() {
     let program = "
         let x = 1
         let y = 2";
-    let plan = must_plan(program);
+    let (plan, _scope) = must_plan(program);
     assert_eq!(
         plan,
         vec![
@@ -43,7 +42,7 @@ fn assignments() {
 #[test]
 fn bind_array() {
     let program = r#"let x = [44, 55, "sixty-six"]"#;
-    let plan = must_plan(program);
+    let (plan, _scope) = must_plan(program);
     assert_eq!(
         plan,
         vec![
@@ -66,7 +65,7 @@ fn bind_array() {
 #[test]
 fn bind_nested_array() {
     let program = r#"let x = [44, [55, "sixty-six"]]"#;
-    let plan = must_plan(program);
+    let (plan, _scope) = must_plan(program);
     assert_eq!(
         plan,
         vec![
@@ -89,7 +88,7 @@ fn bind_nested_array() {
 #[test]
 fn bind_arrays_with_objects_elements() {
     let program = r#"let x = [44, {a: 55, b: "sixty-six"}]"#;
-    let plan = must_plan(program);
+    let (plan, _scope) = must_plan(program);
     assert_eq!(
         plan,
         vec![
@@ -121,7 +120,7 @@ fn aliases() {
     let program = "
         let x = 1
         let y = x";
-    let plan = must_plan(program);
+    let (plan, _scope) = must_plan(program);
     assert_eq!(
         plan,
         vec![Instruction::SetPrimitive {
@@ -134,7 +133,7 @@ fn aliases() {
 #[test]
 fn use_native_function_add() {
     let program = "let x = add(1,2)";
-    let plan = must_plan(program);
+    let (plan, _scope) = must_plan(program);
     assert_eq!(
         plan,
         vec![
@@ -161,7 +160,7 @@ fn use_native_function_add() {
 #[test]
 fn use_native_function_id() {
     let program = "let x = id(2)";
-    let plan = must_plan(program);
+    let (plan, _scope) = must_plan(program);
     assert_eq!(
         plan,
         vec![Instruction::SetPrimitive {
@@ -174,7 +173,7 @@ fn use_native_function_id() {
 #[test]
 fn add_literals() {
     let program = "let x = 1 + 2";
-    let plan = must_plan(program);
+    let (plan, _scope) = must_plan(program);
     assert_eq!(
         plan,
         vec![
@@ -204,7 +203,7 @@ fn add_vars() {
         let one = 1
         let two = 2
         let x = one + two";
-    let plan = must_plan(program);
+    let (plan, _bindings) = must_plan(program);
     let addr0 = Address::ZERO;
     let addr1 = Address::ZERO.offset(1);
     assert_eq!(
@@ -238,7 +237,7 @@ fn composite_binary_exprs() {
         let z = 3
         let six = x + y + z
         ";
-    let plan = must_plan(program);
+    let (plan, _bindings) = must_plan(program);
     let addr0 = Address::ZERO;
     let addr1 = Address::ZERO.offset(1);
     let addr2 = Address::ZERO.offset(2);
@@ -282,12 +281,12 @@ fn composite_binary_exprs() {
 
 #[test]
 fn aliases_dont_affect_plans() {
-    let plan1 = must_plan(
+    let (plan1, _) = must_plan(
         "let one = 1
             let two = 2
             let x = one + two",
     );
-    let plan2 = must_plan(
+    let (plan2, _) = must_plan(
         "let one = 1
             let two = 2
             let y = two
@@ -298,8 +297,8 @@ fn aliases_dont_affect_plans() {
 
 #[test]
 fn store_object() {
-    let program = "const x0 = {a: 1, b: 2}";
-    let actual = must_plan(program);
+    let program = "const x0 = {a: 1, b: 2, c: {d: 3}}";
+    let (actual, bindings) = must_plan(program);
     let expected = vec![
         Instruction::SetPrimitive {
             address: Address::ZERO,
@@ -309,8 +308,27 @@ fn store_object() {
             address: Address::ZERO.offset(1),
             value: 2i64.into(),
         },
+        Instruction::SetPrimitive {
+            address: Address::ZERO.offset(2),
+            value: 3i64.into(),
+        },
     ];
     assert_eq!(actual, expected);
+    eprintln!("{bindings:#?}");
+    assert_eq!(
+        bindings.get("x0").unwrap(),
+        &EpBinding::Map(HashMap::from([
+            ("a".to_owned(), EpBinding::Single(Address::ZERO),),
+            ("b".to_owned(), EpBinding::Single(Address::ZERO.offset(1))),
+            (
+                "c".to_owned(),
+                EpBinding::Map(HashMap::from([(
+                    "d".to_owned(),
+                    EpBinding::Single(Address::ZERO.offset(2))
+                )]))
+            ),
+        ]))
+    )
 }
 
 #[ignore = "haven't done API calls or stdlib yet"]
