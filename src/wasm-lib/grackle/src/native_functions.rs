@@ -77,11 +77,12 @@ impl KclFunction for Add {
                 actual: len,
             });
         }
-        let not_enough_args = CompileError::NotEnoughArgs {
-            fn_name: "add".into(),
-            required: 2,
-            actual: len,
-        };
+        let not_enough_args =
+            CompileError::NotEnoughArgs {
+                fn_name: "add".into(),
+                required: 2,
+                actual: len,
+            };
         const ERR: &str = "cannot use composite values (e.g. array) as arguments to Add";
         let EpBinding::Single(arg1) = args.pop().ok_or(not_enough_args.clone())? else {
             return Err(CompileError::InvalidOperand(ERR));

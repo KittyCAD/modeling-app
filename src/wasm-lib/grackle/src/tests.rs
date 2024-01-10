@@ -1,5 +1,6 @@
-use super::*;
 use pretty_assertions::assert_eq;
+
+use super::*;
 
 fn must_plan(program: &str) -> (Vec<Instruction>, BindingScope) {
     let tokens = kcl_lib::token::lexer(program);
@@ -322,10 +323,7 @@ fn store_object() {
             ("b".to_owned(), EpBinding::Single(Address::ZERO.offset(1))),
             (
                 "c".to_owned(),
-                EpBinding::Map(HashMap::from([(
-                    "d".to_owned(),
-                    EpBinding::Single(Address::ZERO.offset(2))
-                )]))
+                EpBinding::Map(HashMap::from([("d".to_owned(), EpBinding::Single(Address::ZERO.offset(2)))]))
             ),
         ]))
     )

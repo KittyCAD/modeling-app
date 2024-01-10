@@ -1,21 +1,21 @@
+mod kcl_value_group;
 mod native_functions;
 #[cfg(test)]
 mod tests;
 
-use std::borrow::Cow;
-use std::collections::HashMap;
+use std::{borrow::Cow, collections::HashMap};
 
-use kcl_lib::ast::types::KclNone;
+use kcl_lib::{
+    ast,
+    ast::types::{BodyItem, KclNone, LiteralValue, Program, VariableDeclaration},
+};
 use kittycad_execution_plan as ep;
 use kittycad_execution_plan::{Address, ExecutionError, Instruction};
 use kittycad_execution_plan_traits as ept;
 use kittycad_execution_plan_traits::NumericPrimitive;
 use kittycad_modeling_session::Session;
 
-use kcl_lib::{
-    ast,
-    ast::types::{BinaryPart, BodyItem, LiteralValue, Program, VariableDeclaration},
-};
+use self::kcl_value_group::{KclValueGroup, SingleValue};
 
 /// Execute a KCL program by compiling into an execution plan, then running that.
 pub async fn execute(ast: Program, session: Session) -> Result<(), Error> {
@@ -32,68 +32,6 @@ struct Planner {
     binding_scope: BindingScope,
     /// Next available KCEP virtual machine memory address.
     next_addr: Address,
-}
-
-enum SingleValue {
-    Literal(Box<ast::types::Literal>),
-    Identifier(Box<ast::types::Identifier>),
-    BinaryExpression(Box<ast::types::BinaryExpression>),
-    CallExpression(Box<ast::types::CallExpression>),
-    PipeExpression(Box<ast::types::PipeExpression>),
-    UnaryExpression(Box<ast::types::UnaryExpression>),
-    KclNoneExpression(ast::types::KclNone),
-    MemberExpression(Box<ast::types::MemberExpression>),
-}
-
-enum KclValueGroup {
-    Single(SingleValue),
-    ArrayExpression(Box<ast::types::ArrayExpression>),
-    ObjectExpression(Box<ast::types::ObjectExpression>),
-}
-
-impl From<ast::types::BinaryPart> for KclValueGroup {
-    fn from(value: ast::types::BinaryPart) -> Self {
-        match value {
-            BinaryPart::Literal(e) => Self::Single(SingleValue::Literal(e)),
-            BinaryPart::Identifier(e) => Self::Single(SingleValue::Identifier(e)),
-            BinaryPart::BinaryExpression(e) => Self::Single(SingleValue::BinaryExpression(e)),
-            BinaryPart::CallExpression(e) => Self::Single(SingleValue::CallExpression(e)),
-            BinaryPart::UnaryExpression(e) => Self::Single(SingleValue::UnaryExpression(e)),
-            BinaryPart::MemberExpression(e) => Self::Single(SingleValue::MemberExpression(e)),
-        }
-    }
-}
-
-impl From<ast::types::BinaryPart> for SingleValue {
-    fn from(value: ast::types::BinaryPart) -> Self {
-        match value {
-            BinaryPart::Literal(e) => Self::Literal(e),
-            BinaryPart::Identifier(e) => Self::Identifier(e),
-            BinaryPart::BinaryExpression(e) => Self::BinaryExpression(e),
-            BinaryPart::CallExpression(e) => Self::CallExpression(e),
-            BinaryPart::UnaryExpression(e) => Self::UnaryExpression(e),
-            BinaryPart::MemberExpression(_) => todo!("support member expressions"),
-        }
-    }
-}
-
-impl From<ast::types::Value> for KclValueGroup {
-    fn from(value: ast::types::Value) -> Self {
-        match value {
-            ast::types::Value::Literal(e) => Self::Single(SingleValue::Literal(e)),
-            ast::types::Value::Identifier(e) => Self::Single(SingleValue::Identifier(e)),
-            ast::types::Value::BinaryExpression(e) => Self::Single(SingleValue::BinaryExpression(e)),
-            ast::types::Value::CallExpression(e) => Self::Single(SingleValue::CallExpression(e)),
-            ast::types::Value::PipeExpression(e) => Self::Single(SingleValue::PipeExpression(e)),
-            ast::types::Value::None(e) => Self::Single(SingleValue::KclNoneExpression(e)),
-            ast::types::Value::UnaryExpression(e) => Self::Single(SingleValue::UnaryExpression(e)),
-            ast::types::Value::ArrayExpression(e) => Self::ArrayExpression(e),
-            ast::types::Value::ObjectExpression(e) => Self::ObjectExpression(e),
-            ast::types::Value::PipeSubstitution(_)
-            | ast::types::Value::FunctionExpression(_)
-            | ast::types::Value::MemberExpression(_) => todo!(),
-        }
-    }
 }
 
 impl Planner {
@@ -334,7 +272,7 @@ impl Planner {
                                 acc_bindings.insert(key.name, binding);
                             }
                             KclValueGroup::ArrayExpression(expr) => {
-                                // If this value of the object is an array, then emit a plan to caclulate
+                                // If this value of the object is an array, then emit a plan to calculate
                                 // each element of that array. Collect their bindings, and bind them all
                                 // under one property of the parent object.
                                 let n = expr.elements.len();
