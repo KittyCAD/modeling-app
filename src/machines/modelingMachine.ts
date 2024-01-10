@@ -1120,9 +1120,12 @@ export const modelingMachine = createMachine(
           .body as paper.Path
         const dot = (sketchCanvasHelper.draftArc.children as any)
           .dot as paper.Path
+        const center = (sketchCanvasHelper.draftArc.children as any)
+          .center as paper.Path
         const white = new paper.Color('white')
         path.strokeColor = white
         dot.fillColor = white
+        center.fillColor = white
       },
       'hide draft line': () => {
         const path = (sketchCanvasHelper.draftLine.children as any)

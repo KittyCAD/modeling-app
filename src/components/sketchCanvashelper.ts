@@ -9,6 +9,7 @@ import {
   CallExpression,
   recast,
   getTangentialArcToInfo,
+  isPointsCCW,
 } from 'lang/wasm'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { kclManager } from 'lang/KclSingleton'
@@ -21,6 +22,7 @@ import {
 import { executeAst } from 'useStore'
 import { engineCommandManager } from 'lang/std/engineConnection'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
+import { getAngle } from 'lib/utils'
 
 const triangleLength = 1.9
 const triangleWidth = 0.9
@@ -174,6 +176,7 @@ class SketchCanvasHelper {
     const to: [number, number] = [_to[0], -_to[1]]
     const {
       arcMidPoint: [midX, midY],
+      center,
     } = getTangentialArcToInfo({
       arcStartPoint: _from,
       arcEndPoint: _to,
@@ -193,7 +196,6 @@ class SketchCanvasHelper {
     }
 
     path.name = 'body'
-    const direction = new paper.Point(to).subtract(from).normalize(1)
 
     const radius = 0.35
     const dot = new paper.Path.Circle({
@@ -216,12 +218,23 @@ class SketchCanvasHelper {
           new paper.Point(triangleWidth / 2, -triangleLength - offset)
         ),
       ])
-      triangle.rotate(direction.angle - 90, new paper.Point(0, 0))
+      const CCW = isPointsCCW([previousPoint, _from, _to])
+      let tangentAngle = 90 - getAngle(center, _to) + CCW * 90
+      triangle.rotate(tangentAngle, new paper.Point(0, 0))
+
       const target = new paper.Point(...to)
       triangle.translate(target.subtract(triangleCenter))
       triangle.fillColor = new paper.Color(color)
       triangle.name = 'head'
       group.addChild(triangle)
+    } else {
+      const centerPoint = new paper.Path.Circle({
+        center: to,
+        radius,
+        fillColor: color,
+      })
+      centerPoint.name = 'center'
+      group.addChild(centerPoint)
     }
 
     return {
@@ -253,13 +266,13 @@ class SketchCanvasHelper {
         : prevSegment.from
     const {
       arcMidPoint: [midX, midY],
+      center,
     } = getTangentialArcToInfo({
       arcStartPoint: _from,
       arcEndPoint: _to,
       tanPreviousPoint,
       obtuse: true,
     })
-    const direction = new paper.Point(to).subtract(from).normalize(1)
 
     const path = (group.children as any).body as paper.Path
     path.segments = [new paper.Segment(new paper.Point(...from))]
@@ -270,15 +283,19 @@ class SketchCanvasHelper {
 
     const origin = new paper.Point(0, 0)
 
-    // figure out previous direction in order to rotate the head the correct amount
-    const prevFrom = path.segments[0]
-    const prevTo = path.segments[path.segments.length - 1]
-    const prevDirection = new paper.Point(prevTo.point)
-      .subtract(prevFrom.point)
-      .normalize(1)
-    head.rotate(-prevDirection.angle + 90, origin)
+    head.segments = [
+      new paper.Segment(
+        new paper.Point(-triangleWidth / 2, -triangleLength - offset)
+      ),
+      new paper.Segment(new paper.Point(0, -offset)),
+      new paper.Segment(
+        new paper.Point(triangleWidth / 2, -triangleLength - offset)
+      ),
+    ]
     head.position = new paper.Point(0, -triangleLength / 2 - offset)
-    head.rotate(direction.angle - 90, origin)
+    const CCW = isPointsCCW([tanPreviousPoint, _from, _to])
+    let tangentAngle = 90 - getAngle(center, _to) + CCW * 90
+    head.rotate(tangentAngle, origin)
 
     dot.position = new paper.Point(...to)
 
@@ -516,7 +533,6 @@ class SketchCanvasHelper {
             const prevSegment = sketchGroup.slice(index - 1)[0]
             if (type === 'tangentialArcTo') {
               sketchCanvasHelper.updateTangentialArcToSegment({
-                // previousPoint: prevSegment.from,
                 prevSegment,
                 from: segment.from,
                 to: segment.to,
@@ -554,6 +570,7 @@ class SketchCanvasHelper {
     const draftArc = this.draftArc
     const path = (draftArc.children as any).body as paper.Path
     const dot = (draftArc.children as any).dot as paper.Path
+    const center = (draftArc.children as any).center as paper.Path
     dot.position = point
 
     const sketchGroup = sketchCanvasHelper.getSketchGroupFromNodePath(
@@ -572,12 +589,14 @@ class SketchCanvasHelper {
 
     const {
       arcMidPoint: [midX, midY],
+      center: _center,
     } = getTangentialArcToInfo({
       arcStartPoint: lastSeg.to,
       arcEndPoint: [point.x, -point.y],
       tanPreviousPoint: tangentPoint,
       obtuse: true,
     })
+    center.position = new paper.Point(_center[0], -_center[1])
 
     const from: [number, number] = [lastSeg.to[0], -lastSeg.to[1]]
     path.segments = [new paper.Segment(new paper.Point(...from))]
