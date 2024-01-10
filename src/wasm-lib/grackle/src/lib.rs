@@ -50,12 +50,12 @@ enum MultipleValue {
     ObjectExpression(Box<ast::types::ObjectExpression>),
 }
 
-enum KclValueBySize {
+enum KclValueGroup {
     Single(SingleValue),
     Multiple(MultipleValue),
 }
 
-impl From<ast::types::BinaryPart> for KclValueBySize {
+impl From<ast::types::BinaryPart> for KclValueGroup {
     fn from(value: ast::types::BinaryPart) -> Self {
         match value {
             BinaryPart::Literal(e) => Self::Single(SingleValue::Literal(e)),
@@ -81,7 +81,7 @@ impl From<ast::types::BinaryPart> for SingleValue {
     }
 }
 
-impl From<ast::types::Value> for KclValueBySize {
+impl From<ast::types::Value> for KclValueGroup {
     fn from(value: ast::types::Value) -> Self {
         match value {
             ast::types::Value::Literal(e) => Self::Single(SingleValue::Literal(e)),
@@ -204,9 +204,9 @@ impl Planner {
                         let EvalPlan {
                             instructions: new_instructions,
                             binding: arg,
-                        } = match KclValueBySize::from(argument) {
-                            KclValueBySize::Single(value) => self.plan_to_compute_single(value)?,
-                            KclValueBySize::Multiple(_) => todo!(),
+                        } = match KclValueGroup::from(argument) {
+                            KclValueGroup::Single(value) => self.plan_to_compute_single(value)?,
+                            KclValueGroup::Multiple(_) => todo!(),
                         };
                         acc_instrs.extend(new_instructions);
                         acc_args.push(arg);
@@ -262,24 +262,24 @@ impl Planner {
         &mut self,
         value_being_bound: ast::types::Value,
     ) -> Result<(Vec<Instruction>, EpBinding), CompileError> {
-        match KclValueBySize::from(value_being_bound) {
-            KclValueBySize::Single(init_value) => {
+        match KclValueGroup::from(value_being_bound) {
+            KclValueGroup::Single(init_value) => {
                 let EvalPlan { instructions, binding } = self.plan_to_compute_single(init_value)?;
                 Ok((instructions, binding))
             }
-            KclValueBySize::Multiple(MultipleValue::ArrayExpression(expr)) => {
+            KclValueGroup::Multiple(MultipleValue::ArrayExpression(expr)) => {
                 // First, emit a plan to compute each element of the array.
                 // Track which EP address each array element will be computed into.
                 let (instructions, bindings) = expr.elements.into_iter().try_fold(
                     (Vec::new(), Vec::new()),
                     |(mut acc_instrs, mut acc_bindings), element| {
-                        match KclValueBySize::from(element) {
-                            KclValueBySize::Single(value) => {
+                        match KclValueGroup::from(element) {
+                            KclValueGroup::Single(value) => {
                                 let EvalPlan { instructions, binding } = self.plan_to_compute_single(value)?;
                                 acc_instrs.extend(instructions);
                                 acc_bindings.push(binding);
                             }
-                            KclValueBySize::Multiple(MultipleValue::ArrayExpression(expr)) => {
+                            KclValueGroup::Multiple(MultipleValue::ArrayExpression(expr)) => {
                                 let binding = expr
                                     .elements
                                     .into_iter()
@@ -292,7 +292,7 @@ impl Planner {
                                     .map(EpBinding::Sequence)?;
                                 acc_bindings.push(binding);
                             }
-                            KclValueBySize::Multiple(MultipleValue::ObjectExpression(expr)) => {
+                            KclValueGroup::Multiple(MultipleValue::ObjectExpression(expr)) => {
                                 let map = HashMap::with_capacity(expr.properties.len());
                                 let binding = expr
                                     .properties
@@ -312,19 +312,19 @@ impl Planner {
                 )?;
                 Ok((instructions, EpBinding::Sequence(bindings)))
             }
-            KclValueBySize::Multiple(MultipleValue::ObjectExpression(expr)) => {
+            KclValueGroup::Multiple(MultipleValue::ObjectExpression(expr)) => {
                 // Convert the object to a sequence of key-value pairs.
                 let mut kvs = expr.properties.into_iter().map(|prop| (prop.key, prop.value));
                 let (instructions, each_property_binding) = kvs.try_fold(
                     (Vec::new(), HashMap::new()),
                     |(mut acc_instrs, mut acc_bindings), (key, value)| {
-                        match KclValueBySize::from(value) {
-                            KclValueBySize::Single(value) => {
+                        match KclValueGroup::from(value) {
+                            KclValueGroup::Single(value) => {
                                 let EvalPlan { instructions, binding } = self.plan_to_compute_single(value)?;
                                 acc_instrs.extend(instructions);
                                 acc_bindings.insert(key.name, binding);
                             }
-                            KclValueBySize::Multiple(MultipleValue::ArrayExpression(expr)) => {
+                            KclValueGroup::Multiple(MultipleValue::ArrayExpression(expr)) => {
                                 let n = expr.elements.len();
                                 let binding = expr
                                     .elements
@@ -338,7 +338,7 @@ impl Planner {
                                     .map(EpBinding::Sequence)?;
                                 acc_bindings.insert(key.name, binding);
                             }
-                            KclValueBySize::Multiple(MultipleValue::ObjectExpression(expr)) => {
+                            KclValueGroup::Multiple(MultipleValue::ObjectExpression(expr)) => {
                                 let n = expr.properties.len();
                                 let binding = expr
                                     .properties
