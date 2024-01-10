@@ -251,8 +251,8 @@ impl Planner {
             .declarations
             .into_iter()
             .try_fold(Vec::new(), |mut acc, declaration| {
-                let (instrs, (identifier, binding)) = self.plan_to_bind_one(declaration)?;
-                self.binding_scope.bind(identifier, binding);
+                let (instrs, binding) = self.plan_to_bind_one(declaration.init)?;
+                self.binding_scope.bind(declaration.id.name, binding);
                 acc.extend(instrs);
                 Ok(acc)
             })
@@ -260,12 +260,12 @@ impl Planner {
 
     fn plan_to_bind_one(
         &mut self,
-        declaration: ast::types::VariableDeclarator,
-    ) -> Result<(Vec<Instruction>, (String, EpBinding)), CompileError> {
-        match KclValueBySize::from(declaration.init) {
+        value_being_bound: ast::types::Value,
+    ) -> Result<(Vec<Instruction>, EpBinding), CompileError> {
+        match KclValueBySize::from(value_being_bound) {
             KclValueBySize::Single(init_value) => {
                 let EvalPlan { instructions, binding } = self.plan_to_compute_single(init_value)?;
-                Ok((instructions, (declaration.id.name, binding)))
+                Ok((instructions, binding))
             }
             KclValueBySize::Multiple(MultipleValue::ArrayExpression(expr)) => {
                 // First, emit a plan to compute each element of the array.
@@ -287,7 +287,7 @@ impl Planner {
                         }
                     },
                 )?;
-                Ok((instructions, (declaration.id.name, EpBinding::Sequence(bindings))))
+                Ok((instructions, EpBinding::Sequence(bindings)))
             }
             KclValueBySize::Multiple(MultipleValue::ObjectExpression(expr)) => {
                 // Convert the object to a sequence of key-value pairs.
@@ -309,10 +309,7 @@ impl Planner {
                         }
                     },
                 )?;
-                Ok((
-                    instructions,
-                    (declaration.id.name, EpBinding::Map(each_property_binding)),
-                ))
+                Ok((instructions, EpBinding::Map(each_property_binding)))
             }
         }
     }
