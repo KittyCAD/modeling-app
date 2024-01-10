@@ -24,10 +24,6 @@ import { engineCommandManager } from 'lang/std/engineConnection'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import { getAngle } from 'lib/utils'
 
-const triangleLength = 1.9
-const triangleWidth = 0.9
-const offset = 0
-
 type SendType = ReturnType<typeof useModelingContext>['send']
 
 interface NodePathToPaperGroupMap {
@@ -42,6 +38,19 @@ class SketchCanvasHelper {
   canvasProgramMemory: ProgramMemory = { root: {}, return: null }
   draftLine: paper.Group
   draftArc: paper.Group
+  scaledDimensions() {
+    const triangleLength = 1.9
+    const triangleWidth = 0.9
+    const offset = 0
+    const dotRadius = 0.35
+    const scalingFactor = 9 / paper.view.zoom
+    return {
+      triangleLength: triangleLength * scalingFactor,
+      triangleWidth: triangleWidth * scalingFactor,
+      offset: offset * scalingFactor,
+      dotRadius: dotRadius * scalingFactor,
+    }
+  }
   updateStraightSegment({
     from: _from,
     to: _to,
@@ -68,6 +77,7 @@ class SketchCanvasHelper {
       .subtract(prevFrom.point)
       .normalize(1)
     head.rotate(-prevDirection.angle + 90, origin)
+    const { triangleLength, offset } = this.scaledDimensions()
     head.position = new paper.Point(0, -triangleLength / 2 - offset)
     head.rotate(direction.angle - 90, origin)
 
@@ -94,6 +104,8 @@ class SketchCanvasHelper {
     pathToNode: PathToNode
     type: 'line'
   } {
+    const { triangleWidth, triangleLength, dotRadius, offset } =
+      this.scaledDimensions()
     const from: [number, number] = [_from[0], -_from[1]]
     const to: [number, number] = [_to[0], -_to[1]]
 
@@ -110,10 +122,9 @@ class SketchCanvasHelper {
     path.name = 'body'
     const direction = new paper.Point(to).subtract(from).normalize(1)
 
-    const radius = 0.35
     const dot = new paper.Path.Circle({
       center: to,
-      radius,
+      radius: dotRadius,
       fillColor: color,
     })
     dot.name = 'dot'
@@ -164,6 +175,8 @@ class SketchCanvasHelper {
     pathToNode: PathToNode
     type: 'tangentialArcTo'
   } {
+    const { dotRadius, triangleWidth, triangleLength, offset } =
+      this.scaledDimensions()
     const previousPoint =
       prevSegment?.type === 'tangentialArcTo'
         ? getTangentPointFromPreviousArc(
@@ -197,10 +210,9 @@ class SketchCanvasHelper {
 
     path.name = 'body'
 
-    const radius = 0.35
     const dot = new paper.Path.Circle({
       center: to,
-      radius,
+      radius: dotRadius,
       fillColor: color,
     })
     dot.name = 'dot'
@@ -230,7 +242,7 @@ class SketchCanvasHelper {
     } else {
       const centerPoint = new paper.Path.Circle({
         center: to,
-        radius,
+        radius: dotRadius,
         fillColor: color,
       })
       centerPoint.name = 'center'
@@ -282,7 +294,7 @@ class SketchCanvasHelper {
     const dot = (group.children as any).dot as paper.Path
 
     const origin = new paper.Point(0, 0)
-
+    const { triangleLength, triangleWidth, offset } = this.scaledDimensions()
     head.segments = [
       new paper.Segment(
         new paper.Point(-triangleWidth / 2, -triangleLength - offset)
