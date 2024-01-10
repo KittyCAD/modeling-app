@@ -272,15 +272,19 @@ impl Planner {
                 // Track which EP address each array element will be computed into.
                 let (instructions, bindings) = expr.elements.into_iter().try_fold(
                     (Vec::new(), Vec::new()),
-                    |(mut acc_instrs, mut acc_bindings), element| {
-                        let value = match KclValueBySize::from(element) {
-                            KclValueBySize::Single(v) => v,
-                            KclValueBySize::Multiple(_) => todo!("handle arrays of composite values"),
-                        };
-                        let EvalPlan { instructions, binding } = self.plan_to_compute_single(value)?;
-                        acc_instrs.extend(instructions);
-                        acc_bindings.push(binding);
-                        Ok((acc_instrs, acc_bindings))
+                    |(mut acc_instrs, mut acc_bindings), element| match KclValueBySize::from(element) {
+                        KclValueBySize::Single(value) => {
+                            let EvalPlan { instructions, binding } = self.plan_to_compute_single(value)?;
+                            acc_instrs.extend(instructions);
+                            acc_bindings.push(binding);
+                            Ok((acc_instrs, acc_bindings))
+                        }
+                        KclValueBySize::Multiple(MultipleValue::ArrayExpression(_expr)) => {
+                            todo!("handle arrays where their elements aren't scalars")
+                        }
+                        KclValueBySize::Multiple(MultipleValue::ObjectExpression(_expr)) => {
+                            todo!("handle arrays where their elements aren't scalars")
+                        }
                     },
                 )?;
                 Ok((instructions, (declaration.id.name, EpBinding::Sequence(bindings))))
