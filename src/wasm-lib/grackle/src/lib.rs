@@ -251,7 +251,8 @@ impl Planner {
             .declarations
             .into_iter()
             .try_fold(Vec::new(), |mut acc, declaration| {
-                let instrs = self.plan_to_bind_one(declaration)?;
+                let (instrs, (identifier, binding)) = self.plan_to_bind_one(declaration)?;
+                self.binding_scope.bind(identifier, binding);
                 acc.extend(instrs);
                 Ok(acc)
             })
@@ -260,12 +261,11 @@ impl Planner {
     fn plan_to_bind_one(
         &mut self,
         declaration: ast::types::VariableDeclarator,
-    ) -> Result<Vec<Instruction>, CompileError> {
+    ) -> Result<(Vec<Instruction>, (String, EpBinding)), CompileError> {
         match KclValueBySize::from(declaration.init) {
             KclValueBySize::Single(init_value) => {
                 let EvalPlan { instructions, binding } = self.plan_to_compute_single(init_value)?;
-                self.binding_scope.bind(declaration.id.name, binding);
-                Ok(instructions)
+                Ok((instructions, (declaration.id.name, binding)))
             }
             KclValueBySize::Multiple(MultipleValue::ArrayExpression(expr)) => {
                 // First, emit a plan to compute each element of the array.
@@ -283,10 +283,7 @@ impl Planner {
                         Ok((acc_instrs, acc_bindings))
                     },
                 )?;
-                // Then, combine all the bindings under this single KCL variable.
-                self.binding_scope
-                    .bind(declaration.id.name.clone(), EpBinding::Sequence(bindings));
-                Ok(instructions)
+                Ok((instructions, (declaration.id.name, EpBinding::Sequence(bindings))))
             }
             KclValueBySize::Multiple(MultipleValue::ObjectExpression(expr)) => {
                 // Convert the object to a sequence of key-value pairs.
@@ -308,10 +305,10 @@ impl Planner {
                         }
                     },
                 )?;
-                // Then, combine all the bindings under this single KCL variable.
-                self.binding_scope
-                    .bind(declaration.id.name.clone(), EpBinding::Map(each_property_binding));
-                Ok(instructions)
+                Ok((
+                    instructions,
+                    (declaration.id.name, EpBinding::Map(each_property_binding)),
+                ))
             }
         }
     }
