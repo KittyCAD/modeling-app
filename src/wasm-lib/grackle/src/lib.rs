@@ -324,15 +324,27 @@ impl Planner {
                             acc_bindings.insert(key.name, binding);
                             Ok((acc_instrs, acc_bindings))
                         }
-                        KclValueBySize::Multiple(MultipleValue::ArrayExpression(_expr)) => {
-                            todo!("handle objects where their values aren't scalars")
+                        KclValueBySize::Multiple(MultipleValue::ArrayExpression(expr)) => {
+                            let n = expr.elements.len();
+                            let binding = expr
+                                .elements
+                                .into_iter()
+                                .try_fold(Vec::with_capacity(n), |mut seq, child_element| {
+                                    let (instructions, binding) = self.plan_to_bind_one(child_element)?;
+                                    seq.push(binding);
+                                    acc_instrs.extend(instructions);
+                                    Ok(seq)
+                                })
+                                .map(EpBinding::Sequence)?;
+                            acc_bindings.insert(key.name, binding);
+                            Ok((acc_instrs, acc_bindings))
                         }
                         KclValueBySize::Multiple(MultipleValue::ObjectExpression(expr)) => {
-                            let map = HashMap::with_capacity(expr.properties.len());
+                            let n = expr.properties.len();
                             let binding = expr
                                 .properties
                                 .into_iter()
-                                .try_fold(map, |mut map, property| {
+                                .try_fold(HashMap::with_capacity(n), |mut map, property| {
                                     let (instructions, binding) = self.plan_to_bind_one(property.value)?;
                                     map.insert(property.key.name, binding);
                                     acc_instrs.extend(instructions);

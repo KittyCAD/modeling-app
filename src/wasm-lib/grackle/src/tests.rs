@@ -331,6 +331,41 @@ fn store_object() {
     )
 }
 
+#[test]
+fn store_object_with_array_property() {
+    let program = "const x0 = {a: 1, b: [2, 3]}";
+    let (actual, bindings) = must_plan(program);
+    let expected = vec![
+        Instruction::SetPrimitive {
+            address: Address::ZERO,
+            value: 1i64.into(),
+        },
+        Instruction::SetPrimitive {
+            address: Address::ZERO.offset(1),
+            value: 2i64.into(),
+        },
+        Instruction::SetPrimitive {
+            address: Address::ZERO.offset(2),
+            value: 3i64.into(),
+        },
+    ];
+    assert_eq!(actual, expected);
+    eprintln!("{bindings:#?}");
+    assert_eq!(
+        bindings.get("x0").unwrap(),
+        &EpBinding::Map(HashMap::from([
+            ("a".to_owned(), EpBinding::Single(Address::ZERO),),
+            (
+                "b".to_owned(),
+                EpBinding::Sequence(vec![
+                    EpBinding::Single(Address::ZERO.offset(1)),
+                    EpBinding::Single(Address::ZERO.offset(2)),
+                ])
+            ),
+        ]))
+    )
+}
+
 #[ignore = "haven't done API calls or stdlib yet"]
 #[test]
 fn stdlib_api_calls() {
