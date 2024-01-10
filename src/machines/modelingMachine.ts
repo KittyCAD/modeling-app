@@ -1110,7 +1110,7 @@ export const modelingMachine = createMachine(
       'tear down paper sketch': () => {
         paper.project.clear()
       },
-      'set up draft line': () => {
+      'set up draft line': ({ sketchPathToNode }) => {
         const path = (sketchCanvasHelper.draftLine.children as any)
           .body as paper.Path
         const dot = (sketchCanvasHelper.draftLine.children as any)
@@ -1118,8 +1118,13 @@ export const modelingMachine = createMachine(
         const white = new paper.Color('white')
         path.strokeColor = white
         dot.fillColor = white
+        sketchCanvasHelper.updateDraftLine(
+          new paper.Point(0, 0),
+          sketchPathToNode || [],
+          true
+        )
       },
-      'set up draft arc': () => {
+      'set up draft arc': ({ sketchPathToNode }) => {
         const path = (sketchCanvasHelper.draftArc.children as any)
           .body as paper.Path
         const dot = (sketchCanvasHelper.draftArc.children as any)
@@ -1130,6 +1135,11 @@ export const modelingMachine = createMachine(
         path.strokeColor = white
         dot.fillColor = white
         center.fillColor = white
+        sketchCanvasHelper.updateDraftArc(
+          new paper.Point(0, 0),
+          sketchPathToNode || [],
+          true
+        )
       },
       'hide draft line': () => {
         const path = (sketchCanvasHelper.draftLine.children as any)

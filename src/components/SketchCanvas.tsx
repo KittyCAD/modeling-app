@@ -17,9 +17,15 @@ export const SketchCanvas = () => {
         const isArcToolState = state.matches('Sketch.tangential arc to 2')
 
         if (isLineToolState) {
-          sketchCanvasHelper.updateDraftLine(point)
+          sketchCanvasHelper.updateDraftLine(
+            point,
+            context.sketchPathToNode || []
+          )
         } else if (isArcToolState) {
-          sketchCanvasHelper.updateDraftArc(point, context.sketchPathToNode)
+          sketchCanvasHelper.updateDraftArc(
+            point,
+            context.sketchPathToNode || []
+          )
         }
       }
 

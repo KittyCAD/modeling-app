@@ -365,14 +365,18 @@ class SketchCanvasHelper {
       variableDeclarationName,
     }
   }
-  getSketchGroupFromNodePath(sketchPathToNode: PathToNode): SketchGroup {
+  getSketchGroupFromNodePath(
+    sketchPathToNode: PathToNode,
+    programMemory?: ProgramMemory
+  ): SketchGroup {
     const variableDeclarationName =
       getNodeFromPath<VariableDeclaration>(
         kclManager.ast,
         sketchPathToNode || [],
         'VariableDeclaration'
       )?.node?.declarations?.[0]?.id?.name || ''
-    return kclManager.programMemory.root[variableDeclarationName] as SketchGroup
+    const _programMemory = programMemory || kclManager.programMemory
+    return _programMemory.root[variableDeclarationName] as SketchGroup
   }
 
   addDraftLine(sketchPathToNode: PathToNode, shouldHide = true) {
@@ -472,6 +476,7 @@ class SketchCanvasHelper {
       defaultPlanes: kclManager.defaultPlanes,
       programMemoryOverride,
     })
+    this.canvasProgramMemory = programMemory
     const sketchGroup = programMemory.root[variableDeclarationName]
       .value as Path[]
     const nodePathToPaperGroupMap: NodePathToPaperGroupMap = {}
@@ -533,6 +538,7 @@ class SketchCanvasHelper {
             defaultPlanes: kclManager.defaultPlanes,
             programMemoryOverride,
           })
+          this.canvasProgramMemory = programMemory
           const sketchGroup = programMemory.root[variableDeclarationName]
             .value as Path[]
           sketchGroup.forEach((segment, index) => {
@@ -571,14 +577,33 @@ class SketchCanvasHelper {
       }
     })
   }
-  updateDraftLine(point: paper.Point) {
+  updateDraftLine(
+    point: paper.Point,
+    sketchPathToNode?: PathToNode,
+    collapseTo = false
+  ) {
+    const sketchGroup = this.getSketchGroupFromNodePath(
+      sketchPathToNode || [],
+      this.canvasProgramMemory
+    ).value
+    const finalLocation = sketchGroup[sketchGroup.length - 1]
     const draftLine = this.draftLine
     const path = (draftLine.children as any).body as paper.Path
     const dot = (draftLine.children as any).dot as paper.Path
-    path.segments[1].point = point
-    dot.position = point
+    const startPoint = new paper.Point(
+      finalLocation.to[0],
+      -finalLocation.to[1]
+    )
+    path.segments[0].point = startPoint
+    const endPoint = collapseTo ? startPoint : point
+    path.segments[1].point = endPoint
+    dot.position = endPoint
   }
-  updateDraftArc(point: paper.Point, sketchPathToNode: any) {
+  updateDraftArc(
+    point: paper.Point,
+    sketchPathToNode: PathToNode,
+    collapseTo = false
+  ) {
     const draftArc = this.draftArc
     const path = (draftArc.children as any).body as paper.Path
     const dot = (draftArc.children as any).dot as paper.Path
@@ -586,7 +611,8 @@ class SketchCanvasHelper {
     dot.position = point
 
     const sketchGroup = sketchCanvasHelper.getSketchGroupFromNodePath(
-      sketchPathToNode || []
+      sketchPathToNode || [],
+      this.canvasProgramMemory
     ).value
 
     const lastSeg = sketchGroup[sketchGroup.length - 1]
@@ -612,7 +638,9 @@ class SketchCanvasHelper {
 
     const from: [number, number] = [lastSeg.to[0], -lastSeg.to[1]]
     path.segments = [new paper.Segment(new paper.Point(...from))]
-    path.arcTo([midX, -midY], point)
+    if (!collapseTo) {
+      path.arcTo([midX, -midY], point)
+    }
   }
 }
 
