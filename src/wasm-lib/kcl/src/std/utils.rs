@@ -36,7 +36,6 @@ pub fn normalize(angle: Angle) -> Angle {
 ///     Angle::from_radians(PI / 8.0)
 /// );
 /// ```
-#[allow(dead_code)]
 pub fn delta(from_angle: Angle, to_angle: Angle) -> Angle {
     let norm_from_angle = normalize_rad(from_angle.radians());
     let norm_to_angle = normalize_rad(to_angle.radians());
@@ -54,7 +53,6 @@ pub fn delta(from_angle: Angle, to_angle: Angle) -> Angle {
     Angle::ZERO
 }
 
-#[allow(dead_code)]
 pub fn clockwise_sign(points: &[Point2d]) -> i32 {
     let mut sum = 0.0;
     for i in 0..points.len() {
@@ -69,7 +67,6 @@ pub fn clockwise_sign(points: &[Point2d]) -> i32 {
     }
 }
 
-#[allow(dead_code)]
 pub fn normalize_rad(angle: f64) -> f64 {
     let draft = angle % (2.0 * PI);
     if draft < 0.0 {
@@ -463,4 +460,285 @@ pub fn is_points_ccw_wasm(points: &[f64]) -> i32 {
 pub fn is_points_ccw(points: &[Coords2d]) -> i32 {
     let flattened_points: Vec<f64> = points.iter().flat_map(|&p| vec![p[0], p[1]]).collect();
     is_points_ccw_wasm(&flattened_points)
+}
+
+fn get_slope(start: Coords2d, end: Coords2d) -> (f64, f64) {
+    let slope = if start[0] - end[0] == 0.0 {
+        f64::INFINITY
+    } else {
+        (start[1] - end[1]) / (start[0] - end[0])
+    };
+
+    let perp_slope = if slope == f64::INFINITY { 0.0 } else { -1.0 / slope };
+
+    (slope, perp_slope)
+}
+
+fn get_angle(point1: Coords2d, point2: Coords2d) -> f64 {
+    let delta_x = point2[0] - point1[0];
+    let delta_y = point2[1] - point1[1];
+    let angle = delta_y.atan2(delta_x);
+
+    let result = if angle < 0.0 { angle + 2.0 * PI } else { angle };
+    result * (180.0 / PI)
+}
+
+fn delta_angle(from_angle: f64, to_angle: f64) -> f64 {
+    let norm_from_angle = normalize_rad(from_angle);
+    let norm_to_angle = normalize_rad(to_angle);
+    let provisional = norm_to_angle - norm_from_angle;
+
+    if provisional > -PI && provisional <= PI {
+        provisional
+    } else if provisional > PI {
+        provisional - 2.0 * PI
+    } else if provisional < -PI {
+        provisional + 2.0 * PI
+    } else {
+        provisional
+    }
+}
+
+fn deg2rad(deg: f64) -> f64 {
+    deg * (PI / 180.0)
+}
+
+fn get_mid_point(
+    center: Coords2d,
+    arc_start_point: Coords2d,
+    arc_end_point: Coords2d,
+    tan_previous_point: Coords2d,
+    radius: f64,
+    obtuse: bool,
+) -> Coords2d {
+    let angle_from_center_to_arc_start = get_angle(center, arc_start_point);
+    let angle_from_center_to_arc_end = get_angle(center, arc_end_point);
+    let delta_ang = delta_angle(
+        deg2rad(angle_from_center_to_arc_start),
+        deg2rad(angle_from_center_to_arc_end),
+    );
+    let delta_ang = delta_ang / 2.0 + deg2rad(angle_from_center_to_arc_start);
+    let shortest_arc_mid_point: Coords2d = [
+        delta_ang.cos() * radius + center[0],
+        delta_ang.sin() * radius + center[1],
+    ];
+    let opposite_delta = delta_ang + PI;
+    let longest_arc_mid_point: Coords2d = [
+        opposite_delta.cos() * radius + center[0],
+        opposite_delta.sin() * radius + center[1],
+    ];
+
+    let rotation_direction_original_points = is_points_ccw(&[tan_previous_point, arc_start_point, arc_end_point]);
+    let rotation_direction_points_on_arc = is_points_ccw(&[arc_start_point, shortest_arc_mid_point, arc_end_point]);
+    if rotation_direction_original_points != rotation_direction_points_on_arc && obtuse {
+        longest_arc_mid_point
+    } else {
+        shortest_arc_mid_point
+    }
+}
+
+fn intersect_point_n_slope(point1: Coords2d, slope1: f64, point2: Coords2d, slope2: f64) -> Coords2d {
+    let x = if slope1.abs() == f64::INFINITY {
+        point1[0]
+    } else if slope2.abs() == f64::INFINITY {
+        point2[0]
+    } else {
+        (point2[1] - slope2 * point2[0] - point1[1] + slope1 * point1[0]) / (slope1 - slope2)
+    };
+    let y = if slope1.abs() != f64::INFINITY {
+        slope1 * x - slope1 * point1[0] + point1[1]
+    } else {
+        slope2 * x - slope2 * point2[0] + point2[1]
+    };
+    [x, y]
+}
+
+/// Structure to hold input data for calculating tangential arc information.
+pub struct TangentialArcInfoInput {
+    /// The starting point of the arc.
+    pub arc_start_point: Coords2d,
+    /// The ending point of the arc.
+    pub arc_end_point: Coords2d,
+    /// The point from which the tangent is drawn.
+    pub tan_previous_point: Coords2d,
+    /// Flag to determine if the arc is obtuse. Obtuse means it flows smoothly from the previous segment.
+    pub obtuse: bool,
+}
+
+/// Structure to hold the output data from calculating tangential arc information.
+pub struct TangentialArcInfoOutput {
+    /// The center point of the arc.
+    pub center: Coords2d,
+    /// The midpoint on the arc.
+    pub arc_mid_point: Coords2d,
+    /// The radius of the arc.
+    pub radius: f64,
+}
+
+// tanPreviousPoint and arcStartPoint make up a straight segment leading into the arc (of which the arc should be tangential). The arc should start at arcStartPoint and end at, arcEndPoint
+// With this information we should everything we need to calculate the arc's center and radius. However there is two tangential arcs possible, that just varies on their direction
+// One is obtuse where the arc smoothly flows from the straight segment, and the other would be acute that immediately cuts back in the other direction. The obtuse boolean is there to control for this.
+pub fn get_tangential_arc_to_info(input: TangentialArcInfoInput) -> TangentialArcInfoOutput {
+    let (_, perp_slope) = get_slope(input.tan_previous_point, input.arc_start_point);
+    let tangential_line_perp_slope = perp_slope;
+
+    // Calculate the midpoint of the line segment between arcStartPoint and arcEndPoint
+    let mid_point: Coords2d = [
+        (input.arc_start_point[0] + input.arc_end_point[0]) / 2.0,
+        (input.arc_start_point[1] + input.arc_end_point[1]) / 2.0,
+    ];
+
+    let slope_mid_point_line = get_slope(input.arc_start_point, mid_point);
+
+    let center: Coords2d;
+    let radius: f64;
+
+    if tangential_line_perp_slope == slope_mid_point_line.0 {
+        // can't find the intersection of the two lines if they have the same gradient
+        // but in this case the center is the midpoint anyway
+        center = mid_point;
+        radius =
+            ((input.arc_start_point[0] - center[0]).powi(2) + (input.arc_start_point[1] - center[1]).powi(2)).sqrt();
+    } else {
+        center = intersect_point_n_slope(
+            mid_point,
+            slope_mid_point_line.1,
+            input.arc_start_point,
+            tangential_line_perp_slope,
+        );
+        radius =
+            ((input.arc_start_point[0] - center[0]).powi(2) + (input.arc_start_point[1] - center[1]).powi(2)).sqrt();
+    }
+
+    let arc_mid_point = get_mid_point(
+        center,
+        input.arc_start_point,
+        input.arc_end_point,
+        input.tan_previous_point,
+        radius,
+        input.obtuse,
+    );
+
+    TangentialArcInfoOutput {
+        center,
+        radius,
+        arc_mid_point,
+    }
+}
+
+#[cfg(test)]
+mod get_tangential_arc_to_info_tests {
+    use super::*;
+    use approx::assert_relative_eq;
+
+    fn roundToThreeDecimals(num: f64) -> f64 {
+        (num * 1000.0).round() / 1000.0
+    }
+
+    #[test]
+    fn test_basic_case() {
+        let result = get_tangential_arc_to_info(TangentialArcInfoInput {
+            tan_previous_point: [0.0, -5.0],
+            arc_start_point: [0.0, 0.0],
+            arc_end_point: [4.0, 0.0],
+            obtuse: true,
+        });
+        assert_relative_eq!(result.center[0], 2.0);
+        assert_relative_eq!(result.center[1], 0.0);
+        assert_relative_eq!(result.arc_mid_point[0], 2.0);
+        assert_relative_eq!(result.arc_mid_point[1], 2.0);
+        assert_relative_eq!(result.radius, 2.0);
+    }
+
+    #[test]
+    fn basic_case_with_arc_centered_at_0_0_and_the_tangential_line_being_45_degrees() {
+        let result = get_tangential_arc_to_info(TangentialArcInfoInput {
+            tan_previous_point: [0.0, -4.0],
+            arc_start_point: [2.0, -2.0],
+            arc_end_point: [-2.0, 2.0],
+            obtuse: true,
+        });
+        assert_relative_eq!(result.center[0], 0.0);
+        assert_relative_eq!(result.center[1], 0.0);
+        assert_relative_eq!(roundToThreeDecimals(result.arc_mid_point[0]), 2.0);
+        assert_relative_eq!(roundToThreeDecimals(result.arc_mid_point[1]), 2.0);
+        assert_relative_eq!(result.radius, (2.0f64 * 2.0 + 2.0 * 2.0).sqrt());
+    }
+
+    #[test]
+    fn test_get_tangential_arc_to_info_moving_arc_end_point() {
+        let result = get_tangential_arc_to_info(TangentialArcInfoInput {
+            tan_previous_point: [0.0, -4.0],
+            arc_start_point: [2.0, -2.0],
+            arc_end_point: [2.0, 2.0],
+            obtuse: true,
+        });
+        let expected_radius = (2.0f64 * 2.0 + 2.0 * 2.0).sqrt();
+        assert_relative_eq!(roundToThreeDecimals(result.center[0]), 0.0);
+        assert_relative_eq!(result.center[1], 0.0);
+        assert_relative_eq!(result.arc_mid_point[0], expected_radius);
+        assert_relative_eq!(roundToThreeDecimals(result.arc_mid_point[1]), -0.0);
+        assert_relative_eq!(result.radius, expected_radius);
+    }
+
+    #[test]
+    fn test_get_tangential_arc_to_info_moving_arc_end_point_again() {
+        let result = get_tangential_arc_to_info(TangentialArcInfoInput {
+            tan_previous_point: [0.0, -4.0],
+            arc_start_point: [2.0, -2.0],
+            arc_end_point: [-2.0, -2.0],
+            obtuse: true,
+        });
+        let expected_radius = (2.0f64 * 2.0 + 2.0 * 2.0).sqrt();
+        assert_relative_eq!(result.center[0], 0.0);
+        assert_relative_eq!(result.center[1], 0.0);
+        assert_relative_eq!(result.radius, expected_radius);
+        assert_relative_eq!(roundToThreeDecimals(result.arc_mid_point[0]), 0.0);
+        assert_relative_eq!(result.arc_mid_point[1], expected_radius);
+    }
+
+    #[test]
+    fn test_get_tangential_arc_to_info_acute_moving_arc_end_point() {
+        let result = get_tangential_arc_to_info(TangentialArcInfoInput {
+            tan_previous_point: [0.0, -4.0],
+            arc_start_point: [2.0, -2.0],
+            arc_end_point: [-2.0, -2.0],
+            obtuse: false,
+        });
+        let expected_radius = (2.0f64 * 2.0 + 2.0 * 2.0).sqrt();
+        assert_relative_eq!(result.center[0], 0.0);
+        assert_relative_eq!(result.center[1], 0.0);
+        assert_relative_eq!(result.radius, expected_radius);
+        assert_relative_eq!(roundToThreeDecimals(result.arc_mid_point[0]), -0.0);
+        assert_relative_eq!(result.arc_mid_point[1], -expected_radius);
+    }
+
+    #[test]
+    fn test_get_tangential_arc_to_info_obtuse_with_wrap_around() {
+        let arc_end = (std::f64::consts::PI / 4.0).cos() * 2.0;
+        let result = get_tangential_arc_to_info(TangentialArcInfoInput {
+            tan_previous_point: [2.0, -4.0],
+            arc_start_point: [2.0, 0.0],
+            arc_end_point: [0.0, -2.0],
+            obtuse: true,
+        });
+        assert_relative_eq!(result.center[0], -0.0);
+        assert_relative_eq!(result.center[1], 0.0);
+        assert_relative_eq!(result.radius, 2.0);
+        assert_relative_eq!(result.arc_mid_point[0], -arc_end);
+        assert_relative_eq!(result.arc_mid_point[1], arc_end);
+    }
+}
+
+pub fn get_tangent_point_from_previous_arc(
+    last_arc_center: Coords2d,
+    last_arc_ccw: bool,
+    last_arc_end: Coords2d,
+) -> Coords2d {
+    let angle_from_old_center_to_arc_start = get_angle(last_arc_center, last_arc_end);
+    let tangential_angle = angle_from_old_center_to_arc_start + if last_arc_ccw { -90.0 } else { 90.0 };
+    [
+        tangential_angle.to_radians().cos() * 10.0 + last_arc_end[0],
+        tangential_angle.to_radians().sin() * 10.0 + last_arc_end[1],
+    ]
 }

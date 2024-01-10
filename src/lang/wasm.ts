@@ -5,6 +5,9 @@ import init, {
   lexer_wasm,
   modify_ast_for_sketch_wasm,
   is_points_ccw,
+  get_tangential_arc_to_info,
+  TangentialArcInfoInputWasm,
+  Xy,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
@@ -217,4 +220,34 @@ export const modifyAstForSketch = async (
 
 export function isPointsCCW(points: Coords2d[]): number {
   return is_points_ccw(new Float64Array(points.flat()))
+}
+
+export function getTangentialArcToInfo({
+  arcStartPoint,
+  arcEndPoint,
+  tanPreviousPoint,
+  obtuse = true,
+}: {
+  arcStartPoint: Coords2d
+  arcEndPoint: Coords2d
+  tanPreviousPoint: Coords2d
+  obtuse?: boolean
+}): {
+  center: Coords2d
+  arcMidPoint: Coords2d
+  radius: number
+} {
+  const result = get_tangential_arc_to_info(
+    new TangentialArcInfoInputWasm(
+      new Xy(arcStartPoint[0], arcStartPoint[1]),
+      new Xy(arcEndPoint[0], arcEndPoint[1]),
+      new Xy(tanPreviousPoint[0], tanPreviousPoint[1]),
+      obtuse
+    )
+  )
+  return {
+    center: [result.center.x, result.center.y],
+    arcMidPoint: [result.arc_mid_point.x, result.arc_mid_point.y],
+    radius: result.radius,
+  }
 }

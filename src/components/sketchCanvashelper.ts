@@ -8,6 +8,7 @@ import {
   SketchGroup,
   CallExpression,
   recast,
+  getTangentialArcToInfo,
 } from 'lang/wasm'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { kclManager } from 'lang/KclSingleton'
@@ -19,10 +20,7 @@ import {
 } from 'lang/std/sketch'
 import { executeAst } from 'useStore'
 import { engineCommandManager } from 'lang/std/engineConnection'
-import {
-  getTangentPointFromPreviousArc,
-  getTangentialArcToInfo,
-} from 'lib/utils2d'
+import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 
 const triangleLength = 1.9
 const triangleWidth = 0.9

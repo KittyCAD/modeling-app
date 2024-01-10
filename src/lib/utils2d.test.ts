@@ -1,9 +1,10 @@
 import { Coords2d } from 'lang/std/sketch'
 import { roundOff } from './utils'
-import { getTangentialArcToInfo } from './utils2d'
-import { isPointsCCW, initPromise } from 'lang/wasm'
+import { isPointsCCW, initPromise, getTangentialArcToInfo } from 'lang/wasm'
 
 beforeAll(() => initPromise)
+
+const rounder = (a: number[]) => a.map((a) => roundOff(a, 3))
 
 describe('testing getTangentialArcToInfo', () => {
   test('basic case', () => {
@@ -39,7 +40,7 @@ describe('testing getTangentialArcToInfo', () => {
     })
     const expectedRadius = Math.sqrt(2 * 2 + 2 * 2)
     expect(result.center).toEqual([0, 0])
-    expect(result.arcMidPoint).toEqual([expectedRadius, 0])
+    expect(rounder(result.arcMidPoint)).toEqual(rounder([expectedRadius, -0]))
     expect(result.radius).toBe(expectedRadius)
   })
   test('same as last test again, just moving the arcEndPoint', () => {
@@ -69,18 +70,16 @@ describe('testing getTangentialArcToInfo', () => {
     expect(result.center).toEqual([0, 0])
     expect(result.radius).toBe(expectedRadius)
     expect(result.arcMidPoint.map((a) => roundOff(a, 3))).toEqual([
-      0,
+      -0,
       roundOff(-expectedRadius, 3),
     ])
   })
   test('obtuse test with lots of wrap around', () => {
     // this test is working correctly, the implementation of getTangentialArcToInfo is incorrect
     const arcEnd = Math.cos(Math.PI / 4) * 2
-    console.log('arcEnd', arcEnd)
     const result = getTangentialArcToInfo({
       tanPreviousPoint: [2, -4],
       arcStartPoint: [2, 0],
-      // arcEndPoint: [arcEnd, -arcEnd],
       arcEndPoint: [0, -2],
       obtuse: true,
     })
@@ -89,10 +88,6 @@ describe('testing getTangentialArcToInfo', () => {
     expect(result.arcMidPoint.map((a) => roundOff(a, 3))).toEqual(
       [-arcEnd, arcEnd].map((a) => roundOff(a, 3))
     )
-    // expect(result.arcMidPoint.map((a) => roundOff(a, 3))).toEqual([
-    //   -arcEnd,
-    //   arcEnd,
-    // ])
   })
 })
 

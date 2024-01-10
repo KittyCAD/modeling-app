@@ -203,3 +203,89 @@ pub async fn lsp_run(config: ServerConfig) -> Result<(), JsValue> {
 pub fn is_points_ccw(points: &[f64]) -> i32 {
     utils::is_points_ccw_wasm(points)
 }
+
+#[derive(Copy, Clone)]
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen]
+pub struct Xy {
+    pub x: f64,
+    pub y: f64,
+}
+
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen]
+impl Xy {
+    #[wasm_bindgen(constructor)]
+    pub fn new(x: f64, y: f64) -> Self {
+        Self { x, y }
+    }
+}
+
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen]
+pub struct TangentialArcInfoInputWasm {
+    /// The starting point of the arc.
+    pub arc_start_point: Xy,
+    /// The ending point of the arc.
+    pub arc_end_point: Xy,
+    /// The point from which the tangent is drawn.
+    pub tan_previous_point: Xy,
+    /// Flag to determine if the arc is obtuse. Obtuse means it flows smoothly from the previous segment.
+    pub obtuse: bool,
+}
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen]
+impl TangentialArcInfoInputWasm {
+    #[wasm_bindgen(constructor)]
+    pub fn new(arc_start_point: Xy, arc_end_point: Xy, tan_previous_point: Xy, obtuse: bool) -> Self {
+        Self {
+            arc_start_point,
+            arc_end_point,
+            tan_previous_point,
+            obtuse,
+        }
+    }
+}
+
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen]
+pub struct TangentialArcInfoOutputWasm {
+    pub center: Xy,
+    pub arc_mid_point: Xy,
+    pub radius: f64,
+}
+
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen]
+impl TangentialArcInfoOutputWasm {
+    #[wasm_bindgen(constructor)]
+    pub fn new(center: Xy, arc_mid_point: Xy, radius: f64) -> Self {
+        Self {
+            center,
+            arc_mid_point,
+            radius,
+        }
+    }
+}
+
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen]
+pub fn get_tangential_arc_to_info(input: TangentialArcInfoInputWasm) -> TangentialArcInfoOutputWasm {
+    let result = utils::get_tangential_arc_to_info(utils::TangentialArcInfoInput {
+        arc_start_point: [input.arc_start_point.x, input.arc_start_point.y],
+        arc_end_point: [input.arc_end_point.x, input.arc_end_point.y],
+        tan_previous_point: [input.tan_previous_point.x, input.tan_previous_point.y],
+        obtuse: input.obtuse,
+    });
+    TangentialArcInfoOutputWasm {
+        center: Xy {
+            x: result.center[0],
+            y: result.center[1],
+        },
+        arc_mid_point: Xy {
+            x: result.arc_mid_point[0],
+            y: result.arc_mid_point[1],
+        },
+        radius: result.radius,
+    }
+}
