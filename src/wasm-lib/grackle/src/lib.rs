@@ -293,8 +293,20 @@ impl Planner {
                             acc_bindings.push(binding);
                             Ok((acc_instrs, acc_bindings))
                         }
-                        KclValueBySize::Multiple(MultipleValue::ObjectExpression(_expr)) => {
-                            todo!("handle arrays where their elements aren't scalars")
+                        KclValueBySize::Multiple(MultipleValue::ObjectExpression(expr)) => {
+                            let map = HashMap::with_capacity(expr.properties.len());
+                            let binding = expr
+                                .properties
+                                .into_iter()
+                                .try_fold(map, |mut map, property| {
+                                    let (instructions, binding) = self.plan_to_bind_one(property.value)?;
+                                    map.insert(property.key.name, binding);
+                                    acc_instrs.extend(instructions);
+                                    Ok(map)
+                                })
+                                .map(EpBinding::Map)?;
+                            acc_bindings.push(binding);
+                            Ok((acc_instrs, acc_bindings))
                         }
                     },
                 )?;
