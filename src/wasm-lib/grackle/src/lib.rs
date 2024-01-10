@@ -45,14 +45,10 @@ enum SingleValue {
     MemberExpression(Box<ast::types::MemberExpression>),
 }
 
-enum MultipleValue {
-    ArrayExpression(Box<ast::types::ArrayExpression>),
-    ObjectExpression(Box<ast::types::ObjectExpression>),
-}
-
 enum KclValueGroup {
     Single(SingleValue),
-    Multiple(MultipleValue),
+    ArrayExpression(Box<ast::types::ArrayExpression>),
+    ObjectExpression(Box<ast::types::ObjectExpression>),
 }
 
 impl From<ast::types::BinaryPart> for KclValueGroup {
@@ -91,8 +87,8 @@ impl From<ast::types::Value> for KclValueGroup {
             ast::types::Value::PipeExpression(e) => Self::Single(SingleValue::PipeExpression(e)),
             ast::types::Value::None(e) => Self::Single(SingleValue::KclNoneExpression(e)),
             ast::types::Value::UnaryExpression(e) => Self::Single(SingleValue::UnaryExpression(e)),
-            ast::types::Value::ArrayExpression(e) => Self::Multiple(MultipleValue::ArrayExpression(e)),
-            ast::types::Value::ObjectExpression(e) => Self::Multiple(MultipleValue::ObjectExpression(e)),
+            ast::types::Value::ArrayExpression(e) => Self::ArrayExpression(e),
+            ast::types::Value::ObjectExpression(e) => Self::ObjectExpression(e),
             ast::types::Value::PipeSubstitution(_)
             | ast::types::Value::FunctionExpression(_)
             | ast::types::Value::MemberExpression(_) => todo!(),
@@ -206,7 +202,8 @@ impl Planner {
                             binding: arg,
                         } = match KclValueGroup::from(argument) {
                             KclValueGroup::Single(value) => self.plan_to_compute_single(value)?,
-                            KclValueGroup::Multiple(_) => todo!(),
+                            KclValueGroup::ArrayExpression(_) => todo!(),
+                            KclValueGroup::ObjectExpression(_) => todo!(),
                         };
                         acc_instrs.extend(new_instructions);
                         acc_args.push(arg);
@@ -264,22 +261,30 @@ impl Planner {
     ) -> Result<(Vec<Instruction>, EpBinding), CompileError> {
         match KclValueGroup::from(value_being_bound) {
             KclValueGroup::Single(init_value) => {
+                // Simple! Just evaluate it, note where the final value will be stored in KCEP memory,
+                // and bind it to the KCL identifier.
                 let EvalPlan { instructions, binding } = self.plan_to_compute_single(init_value)?;
                 Ok((instructions, binding))
             }
-            KclValueGroup::Multiple(MultipleValue::ArrayExpression(expr)) => {
+            KclValueGroup::ArrayExpression(expr) => {
                 // First, emit a plan to compute each element of the array.
-                // Track which EP address each array element will be computed into.
+                // Collect all the bindings from each element too.
                 let (instructions, bindings) = expr.elements.into_iter().try_fold(
                     (Vec::new(), Vec::new()),
                     |(mut acc_instrs, mut acc_bindings), element| {
                         match KclValueGroup::from(element) {
                             KclValueGroup::Single(value) => {
+                                // If this element of the array is a single value, then binding it is
+                                // straightforward -- you got a single binding, no need to change anything.
                                 let EvalPlan { instructions, binding } = self.plan_to_compute_single(value)?;
                                 acc_instrs.extend(instructions);
                                 acc_bindings.push(binding);
                             }
-                            KclValueGroup::Multiple(MultipleValue::ArrayExpression(expr)) => {
+                            KclValueGroup::ArrayExpression(expr) => {
+                                // If this element of the array is _itself_ an array, then we need to
+                                // emit a plan to calculate each element of this child array.
+                                // Then we collect the child array's bindings, and bind them to one
+                                // element of the parent array.
                                 let binding = expr
                                     .elements
                                     .into_iter()
@@ -292,7 +297,11 @@ impl Planner {
                                     .map(EpBinding::Sequence)?;
                                 acc_bindings.push(binding);
                             }
-                            KclValueGroup::Multiple(MultipleValue::ObjectExpression(expr)) => {
+                            KclValueGroup::ObjectExpression(expr) => {
+                                // If this element of the array is an object, then we need to
+                                // emit a plan to calculate each value of each property of the object.
+                                // Then we collect the bindings for each child value, and bind them to one
+                                // element of the parent array.
                                 let map = HashMap::with_capacity(expr.properties.len());
                                 let binding = expr
                                     .properties
@@ -312,7 +321,7 @@ impl Planner {
                 )?;
                 Ok((instructions, EpBinding::Sequence(bindings)))
             }
-            KclValueGroup::Multiple(MultipleValue::ObjectExpression(expr)) => {
+            KclValueGroup::ObjectExpression(expr) => {
                 // Convert the object to a sequence of key-value pairs.
                 let mut kvs = expr.properties.into_iter().map(|prop| (prop.key, prop.value));
                 let (instructions, each_property_binding) = kvs.try_fold(
@@ -324,7 +333,10 @@ impl Planner {
                                 acc_instrs.extend(instructions);
                                 acc_bindings.insert(key.name, binding);
                             }
-                            KclValueGroup::Multiple(MultipleValue::ArrayExpression(expr)) => {
+                            KclValueGroup::ArrayExpression(expr) => {
+                                // If this value of the object is an array, then emit a plan to caclulate
+                                // each element of that array. Collect their bindings, and bind them all
+                                // under one property of the parent object.
                                 let n = expr.elements.len();
                                 let binding = expr
                                     .elements
@@ -338,7 +350,11 @@ impl Planner {
                                     .map(EpBinding::Sequence)?;
                                 acc_bindings.insert(key.name, binding);
                             }
-                            KclValueGroup::Multiple(MultipleValue::ObjectExpression(expr)) => {
+                            KclValueGroup::ObjectExpression(expr) => {
+                                // If this value of the object is _itself_ an object, then we need to
+                                // emit a plan to calculate each value of each property of the child object.
+                                // Then we collect the bindings for each child value, and bind them to one
+                                // property of the parent object.
                                 let n = expr.properties.len();
                                 let binding = expr
                                     .properties
