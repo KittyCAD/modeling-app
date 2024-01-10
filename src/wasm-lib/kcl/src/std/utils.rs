@@ -631,7 +631,7 @@ mod get_tangential_arc_to_info_tests {
     use super::*;
     use approx::assert_relative_eq;
 
-    fn roundToThreeDecimals(num: f64) -> f64 {
+    fn round_to_three_decimals(num: f64) -> f64 {
         (num * 1000.0).round() / 1000.0
     }
 
@@ -660,8 +660,8 @@ mod get_tangential_arc_to_info_tests {
         });
         assert_relative_eq!(result.center[0], 0.0);
         assert_relative_eq!(result.center[1], 0.0);
-        assert_relative_eq!(roundToThreeDecimals(result.arc_mid_point[0]), 2.0);
-        assert_relative_eq!(roundToThreeDecimals(result.arc_mid_point[1]), 2.0);
+        assert_relative_eq!(round_to_three_decimals(result.arc_mid_point[0]), 2.0);
+        assert_relative_eq!(round_to_three_decimals(result.arc_mid_point[1]), 2.0);
         assert_relative_eq!(result.radius, (2.0f64 * 2.0 + 2.0 * 2.0).sqrt());
     }
 
@@ -674,10 +674,10 @@ mod get_tangential_arc_to_info_tests {
             obtuse: true,
         });
         let expected_radius = (2.0f64 * 2.0 + 2.0 * 2.0).sqrt();
-        assert_relative_eq!(roundToThreeDecimals(result.center[0]), 0.0);
+        assert_relative_eq!(round_to_three_decimals(result.center[0]), 0.0);
         assert_relative_eq!(result.center[1], 0.0);
         assert_relative_eq!(result.arc_mid_point[0], expected_radius);
-        assert_relative_eq!(roundToThreeDecimals(result.arc_mid_point[1]), -0.0);
+        assert_relative_eq!(round_to_three_decimals(result.arc_mid_point[1]), -0.0);
         assert_relative_eq!(result.radius, expected_radius);
     }
 
@@ -693,7 +693,7 @@ mod get_tangential_arc_to_info_tests {
         assert_relative_eq!(result.center[0], 0.0);
         assert_relative_eq!(result.center[1], 0.0);
         assert_relative_eq!(result.radius, expected_radius);
-        assert_relative_eq!(roundToThreeDecimals(result.arc_mid_point[0]), 0.0);
+        assert_relative_eq!(round_to_three_decimals(result.arc_mid_point[0]), 0.0);
         assert_relative_eq!(result.arc_mid_point[1], expected_radius);
     }
 
@@ -709,7 +709,7 @@ mod get_tangential_arc_to_info_tests {
         assert_relative_eq!(result.center[0], 0.0);
         assert_relative_eq!(result.center[1], 0.0);
         assert_relative_eq!(result.radius, expected_radius);
-        assert_relative_eq!(roundToThreeDecimals(result.arc_mid_point[0]), -0.0);
+        assert_relative_eq!(round_to_three_decimals(result.arc_mid_point[0]), -0.0);
         assert_relative_eq!(result.arc_mid_point[1], -expected_radius);
     }
 
