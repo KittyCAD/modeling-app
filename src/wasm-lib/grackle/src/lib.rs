@@ -261,35 +261,35 @@ impl Planner {
                     KclValueBySize::Multiple(MultipleValue::ArrayExpression(expr)) => {
                         // First, emit a plan to compute each element of the array.
                         // Track which EP address each array element will be computed into.
-                        let (instructions, addresses) = expr.elements.into_iter().try_fold(
+                        let (instructions, bindings) = expr.elements.into_iter().try_fold(
                             (Vec::new(), Vec::new()),
-                            |(mut acc_instrs, mut acc_addrs), element| {
+                            |(mut acc_instrs, mut acc_bindings), element| {
                                 let value = match KclValueBySize::from(element) {
                                     KclValueBySize::Single(v) => v,
                                     KclValueBySize::Multiple(_) => todo!("handle arrays of composite values"),
                                 };
                                 let EvalPlan { instructions, binding } = self.plan_to_compute_single(value)?;
                                 acc_instrs.extend(instructions);
-                                acc_addrs.push(binding);
-                                Ok((acc_instrs, acc_addrs))
+                                acc_bindings.push(binding);
+                                Ok((acc_instrs, acc_bindings))
                             },
                         )?;
-                        // Then, bind all those addresses under this single KCL variable.
+                        // Then, combine all the bindings under this single KCL variable.
                         self.binding_scope
-                            .bind(declaration.id.name.clone(), EpBinding::Sequence(addresses));
+                            .bind(declaration.id.name.clone(), EpBinding::Sequence(bindings));
                         Ok(instructions)
                     }
                     KclValueBySize::Multiple(MultipleValue::ObjectExpression(expr)) => {
                         // Convert the object to a sequence of key-value pairs.
                         let mut kvs = expr.properties.into_iter().map(|prop| (prop.key, prop.value));
-                        let (instructions, addresses) = kvs.try_fold(
+                        let (instructions, each_property_binding) = kvs.try_fold(
                             (Vec::new(), HashMap::new()),
-                            |(mut acc_instrs, mut acc_addrs), (key, value)| match KclValueBySize::from(value) {
+                            |(mut acc_instrs, mut acc_bindings), (key, value)| match KclValueBySize::from(value) {
                                 KclValueBySize::Single(value) => {
                                     let EvalPlan { instructions, binding } = self.plan_to_compute_single(value)?;
                                     acc_instrs.extend(instructions);
-                                    acc_addrs.insert(key.name, binding);
-                                    Ok((acc_instrs, acc_addrs))
+                                    acc_bindings.insert(key.name, binding);
+                                    Ok((acc_instrs, acc_bindings))
                                 }
                                 KclValueBySize::Multiple(MultipleValue::ArrayExpression(_expr)) => {
                                     todo!("handle objects where their values aren't scalars")
@@ -299,9 +299,9 @@ impl Planner {
                                 }
                             },
                         )?;
-                        // Then, bind all those addresses under this single KCL variable.
+                        // Then, combine all the bindings under this single KCL variable.
                         self.binding_scope
-                            .bind(declaration.id.name.clone(), EpBinding::Map(addresses));
+                            .bind(declaration.id.name.clone(), EpBinding::Map(each_property_binding));
                         Ok(instructions)
                     }
                 }
