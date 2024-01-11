@@ -323,7 +323,10 @@ fn store_object() {
             ("b".to_owned(), EpBinding::Single(Address::ZERO.offset(1))),
             (
                 "c".to_owned(),
-                EpBinding::Map(HashMap::from([("d".to_owned(), EpBinding::Single(Address::ZERO.offset(2)))]))
+                EpBinding::Map(HashMap::from([(
+                    "d".to_owned(),
+                    EpBinding::Single(Address::ZERO.offset(2))
+                )]))
             ),
         ]))
     )
