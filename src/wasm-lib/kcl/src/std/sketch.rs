@@ -3,6 +3,7 @@
 use anyhow::Result;
 use derive_docs::stdlib;
 use kittycad::types::{Angle, ModelingCmd, Point3D};
+use kittycad_execution_plan_macros::ExecutionPlanValue;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -648,7 +649,7 @@ async fn inner_start_sketch_at(data: LineData, args: Args) -> Result<Box<SketchG
 }
 
 /// Data for a plane.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, ExecutionPlanValue)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub enum PlaneData {
