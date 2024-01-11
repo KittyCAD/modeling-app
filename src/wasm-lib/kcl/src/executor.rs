@@ -287,6 +287,7 @@ impl DefaultPlanes {
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct UserVal {
+    #[ts(type = "any")]
     pub value: serde_json::Value,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
