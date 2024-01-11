@@ -29,7 +29,7 @@ schemars = { version = "0.8.16", features = ["impl_json_schema", "url", "uuid1"]
 serde = { version = "1.0.193", features = ["derive"] }
 serde_json = "1.0.108"
 thiserror = "1.0.50"
-ts-rs = { version = "7", package = "ts-rs-json-value", features = ["serde-json-impl", "schemars-impl", "uuid-impl"] }
+ts-rs = { version = "7", features = ["uuid-impl"] }
 uuid = { version = "1.6.1", features = ["v4", "js", "serde"] }
 winnow = "0.5.18"
 

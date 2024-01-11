@@ -42,6 +42,7 @@ pub struct StdLibFnArg {
     /// The type of the argument.
     pub type_: String,
     /// The schema of the argument.
+    #[ts(type = "any")]
     pub schema: schemars::schema::Schema,
     /// If the argument is required.
     pub required: bool,
