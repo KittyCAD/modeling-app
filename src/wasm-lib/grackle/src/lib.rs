@@ -1,13 +1,14 @@
+mod binding_scope;
 mod kcl_value_group;
 mod native_functions;
 #[cfg(test)]
 mod tests;
 
-use std::{borrow::Cow, collections::HashMap};
+use std::collections::HashMap;
 
 use kcl_lib::{
     ast,
-    ast::types::{BodyItem, KclNone, LiteralValue, Program, VariableDeclaration},
+    ast::types::{BodyItem, KclNone, LiteralValue, Program},
 };
 use kittycad_execution_plan as ep;
 use kittycad_execution_plan::{Address, ExecutionError, Instruction};
@@ -15,6 +16,7 @@ use kittycad_execution_plan_traits as ept;
 use kittycad_execution_plan_traits::NumericPrimitive;
 use kittycad_modeling_session::Session;
 
+use self::binding_scope::{BindingScope, EpBinding, GetFnResult};
 use self::kcl_value_group::{KclValueGroup, SingleValue};
 
 /// Execute a KCL program by compiling into an execution plan, then running that.
@@ -43,11 +45,19 @@ impl Planner {
     }
 
     fn build_plan(&mut self, program: Program) -> PlanRes {
-        let mut instructions = Vec::new();
-        for item in program.body {
-            instructions.extend(self.visit_body_item(item)?);
-        }
-        Ok(instructions)
+        program.body.into_iter().try_fold(Vec::new(), |mut instructions, item| {
+            let instructions_for_this_node = match item {
+                BodyItem::ExpressionStatement(node) => match KclValueGroup::from(node.expression) {
+                    KclValueGroup::Single(value) => self.plan_to_compute_single(value)?.instructions,
+                    KclValueGroup::ArrayExpression(_) => todo!(),
+                    KclValueGroup::ObjectExpression(_) => todo!(),
+                },
+                BodyItem::VariableDeclaration(node) => self.plan_to_bind(node)?,
+                BodyItem::ReturnStatement(_) => todo!(),
+            };
+            instructions.extend(instructions_for_this_node);
+            Ok(instructions)
+        })
     }
 
     /// Emits instructions which, when run, compute a given KCL value and store it in memory.
@@ -346,28 +356,7 @@ pub enum Error {
     Execution(#[from] ExecutionError),
 }
 
-/// Something that can traverse expression trees, visiting nodes.
-/// When a node gets visited, it returns some type R.
-trait ExprVisitor<R> {
-    fn visit_body_item(&mut self, item: BodyItem) -> R;
-    fn visit_variable_declaration(&mut self, vd: VariableDeclaration) -> R;
-}
-
 type PlanRes = Result<Vec<Instruction>, CompileError>;
-
-impl ExprVisitor<PlanRes> for Planner {
-    fn visit_body_item(&mut self, item: BodyItem) -> PlanRes {
-        match item {
-            BodyItem::VariableDeclaration(vd) => self.visit_variable_declaration(vd),
-            BodyItem::ExpressionStatement(_) => todo!(),
-            BodyItem::ReturnStatement(_) => todo!(),
-        }
-    }
-
-    fn visit_variable_declaration(&mut self, variable_declaration: VariableDeclaration) -> PlanRes {
-        self.plan_to_bind(variable_declaration)
-    }
-}
 
 /// Every KCL literal value is equivalent to an Execution Plan value, and therefore can be
 /// bound to some KCL name and Execution Plan address.
@@ -391,111 +380,5 @@ trait KclFunction: std::fmt::Debug {
     fn call(&self, next_addr: &mut Address, args: Vec<EpBinding>) -> Result<EvalPlan, CompileError>;
 }
 
-/// KCL values which can be written to KCEP memory.
-/// This is recursive. For example, the bound value might be an array, which itself contains bound values.
-#[derive(Debug, Clone)]
-#[cfg_attr(test, derive(Eq, PartialEq))]
-enum EpBinding {
-    /// A KCL value which gets stored in a particular address in KCEP memory.
-    Single(Address),
-    /// A sequence of KCL values, indexed by their position in the sequence.
-    Sequence(Vec<EpBinding>),
-    /// A sequence of KCL values, indexed by their identifier.
-    Map(HashMap<String, EpBinding>),
-}
-
-/// A set of bindings in a particular scope.
-/// Bindings are KCL values that get "compiled" into KCEP values, which are stored in KCEP memory
-/// at a particular KCEP address.
-/// Bindings are referenced by the name of their KCL identifier.
-///
-/// KCL has multiple scopes -- each function has a scope for its own local variables and parameters.
-/// So when referencing a variable, it might be in this scope, or the parent scope. So, each environment
-/// has to keep track of parent environments. The root environment has no parent, and is used for KCL globals
-/// (e.g. the prelude of stdlib functions).
-///
-/// These are called "Environments" in the "Crafting Interpreters" book.
-#[derive(Debug)]
-struct BindingScope {
-    // KCL value which are stored in EP memory.
-    ep_bindings: HashMap<String, EpBinding>,
-    /// KCL functions. They do NOT get stored in EP memory.
-    function_bindings: HashMap<String2, Box<dyn KclFunction>>,
-    parent: Option<Box<BindingScope>>,
-}
-
 /// Either an owned string, or a static string. Either way it can be read and moved around.
-type String2 = Cow<'static, str>;
-
-impl BindingScope {
-    /// The parent scope for every program, before the user has defined anything.
-    /// Only includes some stdlib functions.
-    /// This is usually known as the "prelude" in other languages. It's the stdlib functions that
-    /// are already imported for you when you start coding.
-    pub fn prelude() -> Self {
-        Self {
-            // TODO: Actually put the stdlib prelude in here,
-            // things like `startSketchAt` and `line`.
-            function_bindings: HashMap::from([
-                ("id".into(), Box::new(native_functions::Id) as _),
-                ("add".into(), Box::new(native_functions::Add) as _),
-            ]),
-            ep_bindings: Default::default(),
-            parent: None,
-        }
-    }
-
-    /// Add a new scope, e.g. for new function calls.
-    #[allow(dead_code)] // TODO: when we implement function expressions.
-    pub fn add_scope(self) -> Self {
-        Self {
-            function_bindings: Default::default(),
-            ep_bindings: Default::default(),
-            parent: Some(Box::new(self)),
-        }
-    }
-
-    //// Remove a scope, e.g. when exiting a function call.
-    #[allow(dead_code)] // TODO: when we implement function expressions.
-    pub fn remove_scope(self) -> Self {
-        *self.parent.unwrap()
-    }
-
-    /// Add a binding (e.g. defining a new variable)
-    pub fn bind(&mut self, identifier: String, binding: EpBinding) {
-        self.ep_bindings.insert(identifier, binding);
-    }
-
-    /// Look up a binding.
-    pub fn get(&self, identifier: &str) -> Option<&EpBinding> {
-        if let Some(b) = self.ep_bindings.get(identifier) {
-            // The name was found in this scope.
-            Some(b)
-        } else if let Some(ref parent) = self.parent {
-            // Check the next scope outwards.
-            parent.get(identifier)
-        } else {
-            // There's no outer scope, and it wasn't found, so there's nowhere else to look.
-            None
-        }
-    }
-
-    /// Look up a function bound to the given identifier.
-    fn get_fn(&self, identifier: &str) -> GetFnResult {
-        if let Some(f) = self.function_bindings.get(identifier) {
-            GetFnResult::Found(f.as_ref())
-        } else if self.get(identifier).is_some() {
-            GetFnResult::NonCallable
-        } else if let Some(ref parent) = self.parent {
-            parent.get_fn(identifier)
-        } else {
-            GetFnResult::NotFound
-        }
-    }
-}
-
-enum GetFnResult<'a> {
-    Found(&'a dyn KclFunction),
-    NonCallable,
-    NotFound,
-}
+pub type String2 = std::borrow::Cow<'static, str>;
