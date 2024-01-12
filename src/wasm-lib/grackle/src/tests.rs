@@ -172,6 +172,49 @@ fn use_native_function_id() {
 }
 
 #[test]
+fn member_expressions_object() {
+    let program = r#"
+    let obj = {x: 1, y: 2}
+    let prop = obj["y"]
+    "#;
+    let (_plan, scope) = must_plan(program);
+    match scope.get("prop").unwrap() {
+        EpBinding::Single(addr) => {
+            assert_eq!(*addr, Address::ZERO + 1);
+        }
+        other => {
+            panic!("expected 'number' bound to 0x0 but it was bound to {other:?}");
+        }
+    }
+}
+
+#[test]
+fn member_expressions_array() {
+    let program = "
+    let array = [[1,2],[3,4]]
+    let first = array[0][0]
+    let last = array[1][1]
+    ";
+    let (_plan, scope) = must_plan(program);
+    match scope.get("first").unwrap() {
+        EpBinding::Single(addr) => {
+            assert_eq!(*addr, Address::ZERO);
+        }
+        other => {
+            panic!("expected 'number' bound to 0x0 but it was bound to {other:?}");
+        }
+    }
+    match scope.get("last").unwrap() {
+        EpBinding::Single(addr) => {
+            assert_eq!(*addr, Address::ZERO + 3);
+        }
+        other => {
+            panic!("expected 'number' bound to 0x3 but it was bound to {other:?}");
+        }
+    }
+}
+
+#[test]
 fn add_literals() {
     let program = "let x = 1 + 2";
     let (plan, _scope) = must_plan(program);
