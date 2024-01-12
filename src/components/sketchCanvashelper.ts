@@ -22,7 +22,8 @@ import {
 import { executeAst } from 'useStore'
 import { engineCommandManager } from 'lang/std/engineConnection'
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
-import { getAngle } from 'lib/utils'
+import { getAngle, throttle } from 'lib/utils'
+import { v4 as uuidv4 } from 'uuid'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -34,10 +35,53 @@ interface NodePathToPaperGroupMap {
   }
 }
 
+const sendIt = throttle(({x, y}: {x: number, y: number}) => engineCommandManager.sendSceneCommand({
+  type: 'modeling_cmd_req',
+  cmd_id: uuidv4(),
+  cmd: {
+    type: 'default_camera_look_at',
+    center: { x, z: y, y: 0 },
+    up: { x: 0, y: 0, z: 1 },
+    // vantage: { x: paper.view.center.x, y: paper.view.center.x, z: 30 },
+    vantage: { x, z: y, y: -137 },
+  },
+}), 30)
+
 class SketchCanvasHelper {
   canvasProgramMemory: ProgramMemory = { root: {}, return: null }
   draftLine: paper.Group
   draftArc: paper.Group
+  nodePathToPaperGroupMap: NodePathToPaperGroupMap = {}
+  tool = new paper.Tool()
+
+  constructor() {
+    this.draftLine = {} as paper.Group
+    this.draftArc = {} as paper.Group
+    this.tool.onMouseDrag = (event: paper.MouseEvent) => {
+      const offset = event.point.subtract((event as any).downPoint)
+      paper.view.center = paper.view.center.subtract(offset)
+      sendIt({x: paper.view.center.x , y: -paper.view.center.y})
+    }
+    this.tool.onMouseDown = (event: paper.MouseEvent) => {
+      this.changeColourNodePathToPaperGroupMap('#FFFFFF00')
+    }
+    this.tool.onMouseUp = (event: paper.MouseEvent) => {
+      this.changeColourNodePathToPaperGroupMap('white')
+    }
+  }
+  changeColourNodePathToPaperGroupMap(color: string) {
+    Object.values(this.nodePathToPaperGroupMap).forEach(({ group }) => {
+      group.children.forEach((child) => {
+        if(child.name === 'head') {
+          child.fillColor = new paper.Color(color)
+        } else if (child.name === 'body') {
+          child.strokeColor = new paper.Color(color)
+        } else if (child.name === 'dot') {
+          child.fillColor = new paper.Color(color)
+        }
+      })
+    })
+  }
   scaledDimensions() {
     const triangleLength = 1.9
     const triangleWidth = 0.9
@@ -318,10 +362,6 @@ class SketchCanvasHelper {
   setSend(send: SendType) {
     this.modelingSend = send
   }
-  constructor() {
-    this.draftLine = {} as paper.Group
-    this.draftArc = {} as paper.Group
-  }
 
   prepareTruncatedMemoryAndAst(
     sketchPathToNode: PathToNode,
@@ -503,6 +543,7 @@ class SketchCanvasHelper {
             })
       nodePathToPaperGroupMap[JSON.stringify(seg.pathToNode)] = seg
     })
+    this.nodePathToPaperGroupMap = nodePathToPaperGroupMap
     Object.values(nodePathToPaperGroupMap).forEach(({ group, pathToNode }) => {
       const head = (group.children as any).head as paper.Path
       const body = (group.children as any).body as paper.Path

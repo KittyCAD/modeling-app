@@ -83,7 +83,11 @@ export const SketchCanvas = () => {
     <canvas
       ref={canvasRef}
       id="paper-canvas"
-      className="w-full h-full"
+      className={`w-full h-full ${
+        state.matches('Sketch')
+          ? 'pointer-events-auto'
+          : 'opacity-pointer-events-auto'
+      }`}
     ></canvas>
   )
 }

@@ -230,7 +230,7 @@ export function App() {
       <Stream className="absolute inset-0 z-0" />
       {state.matches('Sketch')}
       <div
-        className={`absolute inset-0 z-0 bg-black ${
+        className={`absolute inset-0 z-0 bg-black pointer-events-none ${
           state.matches('Sketch') ? 'opacity-80' : 'opacity-0'
         }`}
       >
