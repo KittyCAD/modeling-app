@@ -32,6 +32,7 @@ import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubsc
 import { engineCommandManager } from './lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { SketchCanvas } from 'components/SketchCanvas'
+import { ClientSideScene } from 'components/clientSideScene'
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData
@@ -228,14 +229,14 @@ export function App() {
         </div>
       </Resizable>
       <Stream className="absolute inset-0 z-0" />
-      {state.matches('Sketch')}
-      <div
+      {/* <div
         className={`absolute inset-0 z-0 bg-black pointer-events-none ${
           state.matches('Sketch') ? 'opacity-80' : 'opacity-0'
         }`}
       >
         <SketchCanvas />
-      </div>
+      </div> */}
+      <ClientSideScene />
       {showDebugPanel && (
         <DebugPanel
           title="Debug"

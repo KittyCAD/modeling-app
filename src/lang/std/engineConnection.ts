@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid'
 import * as Sentry from '@sentry/react'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
+import { sceneSingleton } from 'components/clientSideScene'
 
 let lastMessage = ''
 
@@ -709,6 +710,7 @@ export class EngineCommandManager {
             gizmo_mode: true,
           },
         })
+        sceneSingleton.onStreamStart()
 
         // Initialize the planes.
         this.initPlanes().then(() => {
