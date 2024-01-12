@@ -43,7 +43,6 @@ class SceneSingleton {
   scene: THREE.Scene
   camera: THREE.PerspectiveCamera
   renderer: THREE.WebGLRenderer
-  cube: THREE.Mesh
 
   constructor() {
     // SCENE
@@ -65,20 +64,26 @@ class SceneSingleton {
     this.renderer.setClearColor(0x000000, 0) // Set clear color to black with 0 alpha (fully transparent)
     window.addEventListener('resize', this.onWindowResize)
 
-    const geometry = new THREE.BoxGeometry(1, 1, 25)
-    const material = new THREE.MeshBasicMaterial({ color: 0x0000ff })
-    const geometry2 = new THREE.BoxGeometry(1, 100, 1)
-    const material2 = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
-    const geometry3 = new THREE.BoxGeometry(100, 1, 1)
-    const material3 = new THREE.MeshBasicMaterial({ color: 0xff0000 })
-    this.cube = new THREE.Mesh(geometry, material)
-    const cube2 = new THREE.Mesh(geometry2, material2)
-    const cube3 = new THREE.Mesh(geometry3, material3)
-    this.scene.add(this.cube)
-    this.scene.add(cube2)
-    this.scene.add(cube3)
+    const makeCube = (
+      size: [number, number, number],
+      color: THREE.ColorRepresentation
+    ) =>
+      new THREE.Mesh(
+        new THREE.BoxGeometry(...size),
+        new THREE.MeshBasicMaterial({ color })
+      )
+    this.scene.add(makeCube([1, 1, 25], 0x0000ff))
+    this.scene.add(makeCube([1, 100, 1], 0x00ff00))
+    this.scene.add(makeCube([100, 1, 1], 0xff0000))
 
-    const light = new THREE.AmbientLight(0x404040) // soft white light
+    const size = 100
+    const divisions = 10
+
+    const gridHelper = new THREE.GridHelper(size, divisions)
+    gridHelper.rotation.x = Math.PI / 2
+    this.scene.add(gridHelper)
+
+    const light = new THREE.AmbientLight(0x505050) // soft white light
     this.scene.add(light)
 
     const controls = new OrbitControls(this.camera, this.renderer.domElement)
