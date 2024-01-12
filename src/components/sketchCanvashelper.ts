@@ -35,17 +35,21 @@ interface NodePathToPaperGroupMap {
   }
 }
 
-const sendIt = throttle(({x, y}: {x: number, y: number}) => engineCommandManager.sendSceneCommand({
-  type: 'modeling_cmd_req',
-  cmd_id: uuidv4(),
-  cmd: {
-    type: 'default_camera_look_at',
-    center: { x, z: y, y: 0 },
-    up: { x: 0, y: 0, z: 1 },
-    // vantage: { x: paper.view.center.x, y: paper.view.center.x, z: 30 },
-    vantage: { x, z: y, y: -137 },
-  },
-}), 30)
+const sendIt = throttle(
+  ({ x, y }: { x: number; y: number }) =>
+    engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        center: { x, z: y, y: 0 },
+        up: { x: 0, y: 0, z: 1 },
+        // vantage: { x: paper.view.center.x, y: paper.view.center.x, z: 30 },
+        vantage: { x, z: y, y: -137 },
+      },
+    }),
+  30
+)
 
 class SketchCanvasHelper {
   canvasProgramMemory: ProgramMemory = { root: {}, return: null }
@@ -60,7 +64,7 @@ class SketchCanvasHelper {
     this.tool.onMouseDrag = (event: paper.MouseEvent) => {
       const offset = event.point.subtract((event as any).downPoint)
       paper.view.center = paper.view.center.subtract(offset)
-      sendIt({x: paper.view.center.x , y: -paper.view.center.y})
+      sendIt({ x: paper.view.center.x, y: -paper.view.center.y })
     }
     this.tool.onMouseDown = (event: paper.MouseEvent) => {
       this.changeColourNodePathToPaperGroupMap('#FFFFFF00')
@@ -72,7 +76,7 @@ class SketchCanvasHelper {
   changeColourNodePathToPaperGroupMap(color: string) {
     Object.values(this.nodePathToPaperGroupMap).forEach(({ group }) => {
       group.children.forEach((child) => {
-        if(child.name === 'head') {
+        if (child.name === 'head') {
           child.fillColor = new paper.Color(color)
         } else if (child.name === 'body') {
           child.strokeColor = new paper.Color(color)
