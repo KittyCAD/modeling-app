@@ -179,9 +179,35 @@ impl Planner {
                 instructions.extend(eval_instrs);
                 Ok(EvalPlan { instructions, binding })
             }
+            SingleValue::MemberExpression(mut expr) => {
+                let parse = move || {
+                    let mut stack = Vec::new();
+                    loop {
+                        stack.push((expr.property, expr.computed));
+                        match expr.object {
+                            ast::types::MemberObject::MemberExpression(subexpr) => {
+                                expr = subexpr;
+                            }
+                            ast::types::MemberObject::Identifier(id) => return (stack, id),
+                        }
+                    }
+                };
+                let (properties, id) = parse();
+                let name = id.name;
+                let mut binding = self.binding_scope.get(&name).ok_or(CompileError::Undefined { name })?;
+                for (property, computed) in properties {
+                    if computed {
+                        todo!("Support computed properties");
+                    }
+                    binding = binding.property_of(property)?;
+                }
+                Ok(EvalPlan {
+                    instructions: Vec::new(),
+                    binding: binding.clone(),
+                })
+            }
             SingleValue::PipeExpression(_) => todo!(),
             SingleValue::UnaryExpression(_) => todo!(),
-            SingleValue::MemberExpression(_) => todo!(),
         }
     }
 
@@ -326,7 +352,7 @@ impl Planner {
     }
 }
 
-#[derive(Debug, thiserror::Error, Eq, PartialEq, Clone)]
+#[derive(Debug, thiserror::Error, PartialEq, Clone)]
 pub enum CompileError {
     #[error("the name {name} was not defined")]
     Undefined { name: String },
@@ -346,6 +372,20 @@ pub enum CompileError {
     NotCallable { name: String },
     #[error("you're trying to use an operand that isn't compatible with the given arithmetic operator: {0}")]
     InvalidOperand(&'static str),
+    #[error("you cannot use the value {0} as an index")]
+    InvalidIndex(String),
+    #[error("you tried to index into a value that isn't an array. Only arrays have numeric indices!")]
+    CannotIndex,
+    #[error("you tried to get the element {i} but that index is out of bounds. The array only has a length of {len}")]
+    IndexOutOfBounds { i: usize, len: usize },
+    #[error("you tried to access the property of a value that doesn't have any properties")]
+    NoProperties,
+    #[error("you tried to access a property of an array, but arrays don't have properties. They do have numeric indexes though, try using an index e.g. [0]")]
+    ArrayDoesNotHaveProperties,
+    #[error(
+        "you tried to read the '.{property}' of an object, but the object doesn't have any properties with that key"
+    )]
+    UndefinedProperty { property: String },
 }
 
 #[derive(Debug, thiserror::Error)]

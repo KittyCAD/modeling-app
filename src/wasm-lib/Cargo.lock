@@ -1943,7 +1943,7 @@ dependencies = [
 [[package]]
 name = "kittycad-execution-plan"
 version = "0.1.0"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#627d6b1c861ac1d534b4fecc280aa8c9b7d5df03"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#9200b9540fa5ae99b692db276c625223116f467f"
 dependencies = [
  "bytes",
  "insta",
@@ -1972,7 +1972,7 @@ dependencies = [
 [[package]]
 name = "kittycad-execution-plan-macros"
 version = "0.1.2"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#627d6b1c861ac1d534b4fecc280aa8c9b7d5df03"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#9200b9540fa5ae99b692db276c625223116f467f"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1993,7 +1993,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds"
 version = "0.1.11"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#627d6b1c861ac1d534b4fecc280aa8c9b7d5df03"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#9200b9540fa5ae99b692db276c625223116f467f"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2020,7 +2020,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-session"
 version = "0.1.0"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#627d6b1c861ac1d534b4fecc280aa8c9b7d5df03"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#9200b9540fa5ae99b692db276c625223116f467f"
 dependencies = [
  "futures",
  "kittycad",

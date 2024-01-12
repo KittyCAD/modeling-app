@@ -58,9 +58,8 @@ impl From<ast::types::Value> for KclValueGroup {
             ast::types::Value::UnaryExpression(e) => Self::Single(SingleValue::UnaryExpression(e)),
             ast::types::Value::ArrayExpression(e) => Self::ArrayExpression(e),
             ast::types::Value::ObjectExpression(e) => Self::ObjectExpression(e),
-            ast::types::Value::PipeSubstitution(_)
-            | ast::types::Value::FunctionExpression(_)
-            | ast::types::Value::MemberExpression(_) => todo!(),
+            ast::types::Value::MemberExpression(e) => Self::Single(SingleValue::MemberExpression(e)),
+            ast::types::Value::PipeSubstitution(_) | ast::types::Value::FunctionExpression(_) => todo!(),
         }
     }
 }
