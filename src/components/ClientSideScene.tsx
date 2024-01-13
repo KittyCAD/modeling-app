@@ -1,9 +1,29 @@
-import * as THREE from 'three'
+import {
+  AmbientLight,
+  BoxGeometry,
+  Color,
+  ColorRepresentation,
+  Euler,
+  GridHelper,
+  Mesh,
+  MeshBasicMaterial,
+  OrthographicCamera,
+  PerspectiveCamera,
+  Quaternion,
+  Scene,
+  Vector3,
+  WebGLRenderer,
+} from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { useRef, useEffect } from 'react'
 import { engineCommandManager } from 'lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
 import { throttle } from 'lib/utils'
+
+// 63.5 is definitely a bit of a magic number, play with it until it looked right
+// if it were 64, that would feel like it's something in the engine where a random
+// power of 2 is used, but it's the 0.5 seems to make things look much more correct
+const ZOOM_MAGIC_NUMBER = 63.5
 
 const updateEngineCamera = throttle(
   ({
@@ -12,21 +32,21 @@ const updateEngineCamera = throttle(
     zoom,
     isPerspective,
   }: {
-    position: THREE.Vector3
-    quaternion: THREE.Quaternion
+    position: Vector3
+    quaternion: Quaternion
     zoom: number
     isPerspective: boolean
   }) => {
-    const euler = new THREE.Euler().setFromQuaternion(quaternion, 'XYZ')
+    const euler = new Euler().setFromQuaternion(quaternion, 'XYZ')
 
     // Calculate the lookAt vector (the point the camera is looking at)
-    const lookAtVector = new THREE.Vector3(0, 0, -1)
+    const lookAtVector = new Vector3(0, 0, -1)
       .applyEuler(euler)
       .normalize()
       .add(position)
 
     // Calculate the up vector for the camera
-    const upVector = new THREE.Vector3(0, 1, 0).applyEuler(euler).normalize()
+    const upVector = new Vector3(0, 1, 0).applyEuler(euler).normalize()
     // Send the look_at command to the engine with corrected axis for Z-up convention
     if (isPerspective) {
       engineCommandManager.sendSceneCommand({
@@ -41,7 +61,7 @@ const updateEngineCamera = throttle(
       })
     } else if (!isPerspective) {
       // Calculate the new vantage point based on the zoom level
-      const zoomFactor = -63.5 / zoom // 63.5 is definitely a bit of a magic number, play with it until it looked right
+      const zoomFactor = -ZOOM_MAGIC_NUMBER / zoom
       const direction = lookAtVector.clone().sub(position).normalize()
       const newVantage = position
         .clone()
@@ -65,19 +85,19 @@ const updateEngineCamera = throttle(
 
 class SceneSingleton {
   static instance: SceneSingleton
-  scene: THREE.Scene
-  camera: THREE.PerspectiveCamera | THREE.OrthographicCamera
-  renderer: THREE.WebGLRenderer
+  scene: Scene
+  camera: PerspectiveCamera | OrthographicCamera
+  renderer: WebGLRenderer
   controls: OrbitControls
   isPerspective = true
 
   constructor() {
     // SCENE
-    this.scene = new THREE.Scene()
-    this.scene.background = new THREE.Color(0x000000)
+    this.scene = new Scene()
+    this.scene.background = new Color(0x000000)
     this.scene.background = null
     // CAMERA
-    this.camera = new THREE.PerspectiveCamera(
+    this.camera = new PerspectiveCamera(
       45,
       window.innerWidth / window.innerHeight,
       0.1,
@@ -86,19 +106,15 @@ class SceneSingleton {
     this.camera.up.set(0, 0, 1)
     this.camera.position.set(0, -128, 64)
     // RENDERER
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }) // Enable transparency
+    this.renderer = new WebGLRenderer({ antialias: true, alpha: true }) // Enable transparency
     this.renderer.setSize(window.innerWidth, window.innerHeight)
     this.renderer.setClearColor(0x000000, 0) // Set clear color to black with 0 alpha (fully transparent)
     window.addEventListener('resize', this.onWindowResize)
 
     const makeCube = (
       size: [number, number, number],
-      color: THREE.ColorRepresentation
-    ) =>
-      new THREE.Mesh(
-        new THREE.BoxGeometry(...size),
-        new THREE.MeshBasicMaterial({ color })
-      )
+      color: ColorRepresentation
+    ) => new Mesh(new BoxGeometry(...size), new MeshBasicMaterial({ color }))
     // this.scene.add(makeCube([1, 1, 25], 0x0000ff))
     // this.scene.add(makeCube([1, 100, 1], 0x00ff00))
     // this.scene.add(makeCube([100, 1, 1], 0xff0000))
@@ -106,11 +122,11 @@ class SceneSingleton {
     const size = 100
     const divisions = 10
 
-    const gridHelper = new THREE.GridHelper(size, divisions, 0x0000ff, 0x0000ff)
+    const gridHelper = new GridHelper(size, divisions, 0x0000ff, 0x0000ff)
     gridHelper.rotation.x = Math.PI / 2
     this.scene.add(gridHelper)
 
-    const light = new THREE.AmbientLight(0x505050) // soft white light
+    const light = new AmbientLight(0x505050) // soft white light
     this.scene.add(light)
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
@@ -139,9 +155,9 @@ class SceneSingleton {
   }
 
   onWindowResize = () => {
-    if (this.camera instanceof THREE.PerspectiveCamera) {
+    if (this.camera instanceof PerspectiveCamera) {
       this.camera.aspect = window.innerWidth / window.innerHeight
-    } else if (this.camera instanceof THREE.OrthographicCamera) {
+    } else if (this.camera instanceof OrthographicCamera) {
       this.camera.left = -window.innerWidth / 2
       this.camera.right = window.innerWidth / 2
       this.camera.top = window.innerHeight / 2
@@ -168,7 +184,7 @@ class SceneSingleton {
     const { x: qx, y: qy, z: qz, w: qw } = this.camera.quaternion
     const aspect = window.innerWidth / window.innerHeight
     const d = 20 // size of the orthographic view
-    this.camera = new THREE.OrthographicCamera(
+    this.camera = new OrthographicCamera(
       -d * aspect,
       d * aspect,
       d,
@@ -179,6 +195,10 @@ class SceneSingleton {
     this.camera.up.set(0, 0, 1)
     this.camera.position.set(px, py, pz)
     this.camera.quaternion.set(qx, qy, qz, qw)
+    const distance = this.camera.position.distanceTo(new Vector3(0, 0, 0))
+    this.camera.zoom = ZOOM_MAGIC_NUMBER / distance
+    this.camera.updateProjectionMatrix()
+
     this.controls.dispose() // Dispose the old controls
     this.controls = new OrbitControls(this.camera, this.renderer.domElement) // Create new controls for the orthographic camera
     this.controls.addEventListener('change', () => {
@@ -210,7 +230,7 @@ class SceneSingleton {
     this.isPerspective = true
     const { x: px, y: py, z: pz } = this.camera.position
     const { x: qx, y: qy, z: qz, w: qw } = this.camera.quaternion
-    this.camera = new THREE.PerspectiveCamera(
+    this.camera = new PerspectiveCamera(
       45,
       window.innerWidth / window.innerHeight,
       0.1,
