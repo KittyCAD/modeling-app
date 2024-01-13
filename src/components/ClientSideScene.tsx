@@ -25,61 +25,23 @@ import { throttle } from 'lib/utils'
 // power of 2 is used, but it's the 0.5 seems to make things look much more correct
 const ZOOM_MAGIC_NUMBER = 63.5
 
-const updateEngineCamera = throttle(
-  ({
-    position,
-    quaternion,
-    zoom,
-    isPerspective,
-  }: {
-    position: Vector3
-    quaternion: Quaternion
-    zoom: number
-    isPerspective: boolean
-  }) => {
-    const euler = new Euler().setFromQuaternion(quaternion, 'XYZ')
+interface ThreeCamValues {
+  position: Vector3
+  quaternion: Quaternion
+  zoom: number
+  isPerspective: boolean
+}
 
-    // Calculate the lookAt vector (the point the camera is looking at)
-    const lookAtVector = new Vector3(0, 0, -1)
-      .applyEuler(euler)
-      .normalize()
-      .add(position)
-
-    // Calculate the up vector for the camera
-    const upVector = new Vector3(0, 1, 0).applyEuler(euler).normalize()
-    // Send the look_at command to the engine with corrected axis for Z-up convention
-    if (isPerspective) {
-      engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_look_at',
-          center: lookAtVector,
-          up: upVector,
-          vantage: position,
-        },
-      })
-    } else if (!isPerspective) {
-      // Calculate the new vantage point based on the zoom level
-      const zoomFactor = -ZOOM_MAGIC_NUMBER / zoom
-      const direction = lookAtVector.clone().sub(position).normalize()
-      const newVantage = position
-        .clone()
-        .add(direction.multiplyScalar(zoomFactor))
-
-      // Send the zoom command to the engine with the new vantage point
-      engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_look_at',
-          center: lookAtVector,
-          up: upVector,
-          vantage: newVantage,
-        },
-      })
-    }
-  },
+const throttledUpdateEngineCamera = throttle(
+  (threeValues: ThreeCamValues) =>
+    engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        ...convertThreeCamValuesToEngineCam(threeValues),
+      },
+    }),
   1000 / 30
 )
 
@@ -130,23 +92,15 @@ class SceneSingleton {
     this.scene.add(light)
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement)
-    this.controls.addEventListener('change', () => {
-      // Extract the position and orientation of the camera
-      const position = this.camera.position
-      const quaternion = this.camera.quaternion
-
-      updateEngineCamera({
-        position,
-        quaternion,
-        zoom: this.camera.zoom,
-        isPerspective: this.isPerspective,
-      })
-    })
+    this.controls.addEventListener('change', this.updateEngineCamera)
 
     SceneSingleton.instance = this
   }
   onStreamStart = () => {
-    updateEngineCamera({
+    this.updateEngineCamera()
+  }
+  updateEngineCamera = () => {
+    throttledUpdateEngineCamera({
       quaternion: this.camera.quaternion,
       position: this.camera.position,
       zoom: this.camera.zoom,
@@ -204,16 +158,7 @@ class SceneSingleton {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement) // Create new controls for the orthographic camera
     this.controls.target.set(tx, ty, tz)
     this.controls.update()
-    this.controls.addEventListener('change', () => {
-      const position = this.camera.position
-      const quaternion = this.camera.quaternion
-      updateEngineCamera({
-        position,
-        quaternion,
-        zoom: this.camera.zoom,
-        isPerspective: this.isPerspective,
-      })
-    })
+    this.controls.addEventListener('change', this.updateEngineCamera)
 
     engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
@@ -222,12 +167,7 @@ class SceneSingleton {
         type: 'default_camera_set_orthographic',
       },
     })
-    updateEngineCamera({
-      quaternion: this.camera.quaternion,
-      position: this.camera.position,
-      zoom: this.camera.zoom,
-      isPerspective: this.isPerspective,
-    })
+    this.updateEngineCamera()
   }
   usePerspectiveCamera = () => {
     this.isPerspective = true
@@ -248,16 +188,7 @@ class SceneSingleton {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement) // Create new controls for the perspective camera
     this.controls.target.set(tx, ty, tz)
     this.controls.update()
-    this.controls.addEventListener('change', () => {
-      const position = this.camera.position
-      const quaternion = this.camera.quaternion
-      updateEngineCamera({
-        position,
-        quaternion,
-        zoom: this.camera.zoom,
-        isPerspective: this.isPerspective,
-      })
-    })
+    this.controls.addEventListener('change', this.updateEngineCamera)
     engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
@@ -270,12 +201,7 @@ class SceneSingleton {
         },
       },
     })
-    updateEngineCamera({
-      quaternion: this.camera.quaternion,
-      position: this.camera.position,
-      zoom: this.camera.zoom,
-      isPerspective: this.isPerspective,
-    })
+    this.updateEngineCamera()
   }
 }
 
@@ -291,4 +217,45 @@ export const ClientSideScene = () => {
   }, [])
 
   return <div ref={canvasRef} className="absolute inset-0 h-full w-full"></div>
+}
+
+function convertThreeCamValuesToEngineCam({
+  position,
+  quaternion,
+  zoom,
+  isPerspective,
+}: ThreeCamValues): {
+  center: Vector3
+  up: Vector3
+  vantage: Vector3
+} {
+  // Something to consider is that the orbit controls have a target,
+  // we're kind of deriving the target/lookAtVector here when it might not be needed
+  // leaving for now since it's working but maybe revisit later
+  const euler = new Euler().setFromQuaternion(quaternion, 'XYZ')
+
+  // Calculate the lookAt vector (the point the camera is looking at)
+  const lookAtVector = new Vector3(0, 0, -1)
+    .applyEuler(euler)
+    .normalize()
+    .add(position)
+
+  // Calculate the up vector for the camera
+  const upVector = new Vector3(0, 1, 0).applyEuler(euler).normalize()
+  if (isPerspective) {
+    return {
+      center: lookAtVector,
+      up: upVector,
+      vantage: position,
+    }
+  }
+  // Calculate the new vantage point based on the zoom level
+  const zoomFactor = -ZOOM_MAGIC_NUMBER / zoom
+  const direction = lookAtVector.clone().sub(position).normalize()
+  const newVantage = position.clone().add(direction.multiplyScalar(zoomFactor))
+  return {
+    center: lookAtVector,
+    up: upVector,
+    vantage: newVantage,
+  }
 }
