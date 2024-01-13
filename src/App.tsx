@@ -31,8 +31,9 @@ import { Themes, getSystemTheme } from 'lib/theme'
 import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
 import { engineCommandManager } from './lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
-import { SketchCanvas } from 'components/SketchCanvas'
+// import { SketchCanvas } from 'components/SketchCanvas'
 import { ClientSideScene } from 'components/clientSideScene'
+import { CamToggle } from 'components/CamToggle'
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData
@@ -248,6 +249,7 @@ export function App() {
           open={openPanes.includes('debug')}
         />
       )}
+      <CamToggle />
     </div>
   )
 }

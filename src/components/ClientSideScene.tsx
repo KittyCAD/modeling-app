@@ -9,9 +9,13 @@ const updateEngineCamera = throttle(
   ({
     position,
     quaternion,
+    zoom,
+    isPerspective,
   }: {
     position: THREE.Vector3
     quaternion: THREE.Quaternion
+    zoom: number
+    isPerspective: boolean
   }) => {
     const euler = new THREE.Euler().setFromQuaternion(quaternion, 'XYZ')
 
@@ -24,16 +28,37 @@ const updateEngineCamera = throttle(
     // Calculate the up vector for the camera
     const upVector = new THREE.Vector3(0, 1, 0).applyEuler(euler).normalize()
     // Send the look_at command to the engine with corrected axis for Z-up convention
-    engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_look_at',
-        center: lookAtVector,
-        up: upVector,
-        vantage: position,
-      },
-    })
+    if (isPerspective) {
+      engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_look_at',
+          center: lookAtVector,
+          up: upVector,
+          vantage: position,
+        },
+      })
+    } else if (!isPerspective) {
+      // Calculate the new vantage point based on the zoom level
+      const zoomFactor = -63.5 / zoom // 63.5 is definitely a bit of a magic number, play with it until it looked right
+      const direction = lookAtVector.clone().sub(position).normalize()
+      const newVantage = position
+        .clone()
+        .add(direction.multiplyScalar(zoomFactor))
+
+      // Send the zoom command to the engine with the new vantage point
+      engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_look_at',
+          center: lookAtVector,
+          up: upVector,
+          vantage: newVantage,
+        },
+      })
+    }
   },
   1000 / 30
 )
@@ -41,8 +66,10 @@ const updateEngineCamera = throttle(
 class SceneSingleton {
   static instance: SceneSingleton
   scene: THREE.Scene
-  camera: THREE.PerspectiveCamera
+  camera: THREE.PerspectiveCamera | THREE.OrthographicCamera
   renderer: THREE.WebGLRenderer
+  controls: OrbitControls
+  isPerspective = true
 
   constructor() {
     // SCENE
@@ -72,39 +99,32 @@ class SceneSingleton {
         new THREE.BoxGeometry(...size),
         new THREE.MeshBasicMaterial({ color })
       )
-    this.scene.add(makeCube([1, 1, 25], 0x0000ff))
-    this.scene.add(makeCube([1, 100, 1], 0x00ff00))
-    this.scene.add(makeCube([100, 1, 1], 0xff0000))
+    // this.scene.add(makeCube([1, 1, 25], 0x0000ff))
+    // this.scene.add(makeCube([1, 100, 1], 0x00ff00))
+    // this.scene.add(makeCube([100, 1, 1], 0xff0000))
 
     const size = 100
     const divisions = 10
 
-    const gridHelper = new THREE.GridHelper(size, divisions)
+    const gridHelper = new THREE.GridHelper(size, divisions, 0x0000ff, 0x0000ff)
     gridHelper.rotation.x = Math.PI / 2
     this.scene.add(gridHelper)
 
     const light = new THREE.AmbientLight(0x505050) // soft white light
     this.scene.add(light)
 
-    const controls = new OrbitControls(this.camera, this.renderer.domElement)
-    controls.addEventListener('change', () => {
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement)
+    this.controls.addEventListener('change', () => {
       // Extract the position and orientation of the camera
       const position = this.camera.position
       const quaternion = this.camera.quaternion
 
-      updateEngineCamera({ position, quaternion })
-
-      //const zoomMagnitude = // TODO this will become more important with an orthographic camera
-
-      // Send the zoom command to the engine
-      // engineCommandManager.sendSceneCommand({
-      //   type: 'modeling_cmd_req',
-      //   cmd_id: uuidv4(),
-      //   cmd: {
-      //     type: 'default_camera_zoom',
-      //     magnitude: zoomMagnitude,
-      //   },
-      // })
+      updateEngineCamera({
+        position,
+        quaternion,
+        zoom: this.camera.zoom,
+        isPerspective: this.isPerspective,
+      })
     })
 
     SceneSingleton.instance = this
@@ -113,11 +133,20 @@ class SceneSingleton {
     updateEngineCamera({
       quaternion: this.camera.quaternion,
       position: this.camera.position,
+      zoom: this.camera.zoom,
+      isPerspective: this.isPerspective,
     })
   }
 
   onWindowResize = () => {
-    this.camera.aspect = window.innerWidth / window.innerHeight
+    if (this.camera instanceof THREE.PerspectiveCamera) {
+      this.camera.aspect = window.innerWidth / window.innerHeight
+    } else if (this.camera instanceof THREE.OrthographicCamera) {
+      this.camera.left = -window.innerWidth / 2
+      this.camera.right = window.innerWidth / 2
+      this.camera.top = window.innerHeight / 2
+      this.camera.bottom = -window.innerHeight / 2
+    }
     this.camera.updateProjectionMatrix()
     this.renderer.setSize(window.innerWidth, window.innerHeight)
   }
@@ -131,6 +160,95 @@ class SceneSingleton {
     this.renderer.dispose()
     window.removeEventListener('resize', this.onWindowResize)
     // Dispose of any other resources like geometries, materials, textures
+  }
+
+  useOrthographicCamera = () => {
+    this.isPerspective = false
+    const { x: px, y: py, z: pz } = this.camera.position
+    const { x: qx, y: qy, z: qz, w: qw } = this.camera.quaternion
+    const aspect = window.innerWidth / window.innerHeight
+    const d = 20 // size of the orthographic view
+    this.camera = new THREE.OrthographicCamera(
+      -d * aspect,
+      d * aspect,
+      d,
+      -d,
+      1,
+      1000
+    )
+    this.camera.up.set(0, 0, 1)
+    this.camera.position.set(px, py, pz)
+    this.camera.quaternion.set(qx, qy, qz, qw)
+    this.controls.dispose() // Dispose the old controls
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement) // Create new controls for the orthographic camera
+    this.controls.addEventListener('change', () => {
+      const position = this.camera.position
+      const quaternion = this.camera.quaternion
+      updateEngineCamera({
+        position,
+        quaternion,
+        zoom: this.camera.zoom,
+        isPerspective: this.isPerspective,
+      })
+    })
+
+    engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_set_orthographic',
+      },
+    })
+    updateEngineCamera({
+      quaternion: this.camera.quaternion,
+      position: this.camera.position,
+      zoom: this.camera.zoom,
+      isPerspective: this.isPerspective,
+    })
+  }
+  usePerspectiveCamera = () => {
+    this.isPerspective = true
+    const { x: px, y: py, z: pz } = this.camera.position
+    const { x: qx, y: qy, z: qz, w: qw } = this.camera.quaternion
+    this.camera = new THREE.PerspectiveCamera(
+      45,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    )
+    this.camera.up.set(0, 0, 1)
+    this.camera.position.set(px, py, pz)
+    this.camera.quaternion.set(qx, qy, qz, qw)
+    this.controls.dispose() // Dispose the old controls
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement) // Create new controls for the perspective camera
+    this.controls.addEventListener('change', () => {
+      const position = this.camera.position
+      const quaternion = this.camera.quaternion
+      updateEngineCamera({
+        position,
+        quaternion,
+        zoom: this.camera.zoom,
+        isPerspective: this.isPerspective,
+      })
+    })
+    engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_set_perspective',
+        parameters: {
+          fov_y: 45,
+          z_near: 0.1,
+          z_far: 1000,
+        },
+      },
+    })
+    updateEngineCamera({
+      quaternion: this.camera.quaternion,
+      position: this.camera.position,
+      zoom: this.camera.zoom,
+      isPerspective: this.isPerspective,
+    })
   }
 }
 
