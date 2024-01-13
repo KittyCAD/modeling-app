@@ -149,7 +149,7 @@ class SceneSingleton {
     )
     this.camera.up.set(0, 0, 1)
     this.camera.position.set(px, py, pz)
-    const distance = this.camera.position.distanceTo(new Vector3(0, 0, 0))
+    const distance = this.camera.position.distanceTo(new Vector3(tx, ty, tz))
     this.camera.zoom = ZOOM_MAGIC_NUMBER / distance
     this.camera.quaternion.set(qx, qy, qz, qw)
     this.camera.updateProjectionMatrix()
