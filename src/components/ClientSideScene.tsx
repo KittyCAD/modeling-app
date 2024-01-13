@@ -182,6 +182,7 @@ class SceneSingleton {
     this.isPerspective = false
     const { x: px, y: py, z: pz } = this.camera.position
     const { x: qx, y: qy, z: qz, w: qw } = this.camera.quaternion
+    const { x: tx, y: ty, z: tz } = this.controls.target
     const aspect = window.innerWidth / window.innerHeight
     const d = 20 // size of the orthographic view
     this.camera = new OrthographicCamera(
@@ -194,13 +195,15 @@ class SceneSingleton {
     )
     this.camera.up.set(0, 0, 1)
     this.camera.position.set(px, py, pz)
-    this.camera.quaternion.set(qx, qy, qz, qw)
     const distance = this.camera.position.distanceTo(new Vector3(0, 0, 0))
     this.camera.zoom = ZOOM_MAGIC_NUMBER / distance
+    this.camera.quaternion.set(qx, qy, qz, qw)
     this.camera.updateProjectionMatrix()
 
     this.controls.dispose() // Dispose the old controls
     this.controls = new OrbitControls(this.camera, this.renderer.domElement) // Create new controls for the orthographic camera
+    this.controls.target.set(tx, ty, tz)
+    this.controls.update()
     this.controls.addEventListener('change', () => {
       const position = this.camera.position
       const quaternion = this.camera.quaternion
@@ -230,6 +233,7 @@ class SceneSingleton {
     this.isPerspective = true
     const { x: px, y: py, z: pz } = this.camera.position
     const { x: qx, y: qy, z: qz, w: qw } = this.camera.quaternion
+    const { x: tx, y: ty, z: tz } = this.controls.target
     this.camera = new PerspectiveCamera(
       45,
       window.innerWidth / window.innerHeight,
@@ -239,8 +243,11 @@ class SceneSingleton {
     this.camera.up.set(0, 0, 1)
     this.camera.position.set(px, py, pz)
     this.camera.quaternion.set(qx, qy, qz, qw)
+
     this.controls.dispose() // Dispose the old controls
     this.controls = new OrbitControls(this.camera, this.renderer.domElement) // Create new controls for the perspective camera
+    this.controls.target.set(tx, ty, tz)
+    this.controls.update()
     this.controls.addEventListener('change', () => {
       const position = this.camera.position
       const quaternion = this.camera.quaternion
