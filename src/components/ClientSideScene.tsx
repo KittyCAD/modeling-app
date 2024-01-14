@@ -16,7 +16,7 @@ import {
 } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { useRef, useEffect } from 'react'
-import { engineCommandManager } from 'lang/std/engineConnection'
+import { EngineCommand, engineCommandManager } from 'lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
 import { throttle } from 'lib/utils'
 
@@ -52,6 +52,7 @@ class SceneSingleton {
   renderer: WebGLRenderer
   controls: OrbitControls
   isPerspective = true
+  fov = 45
 
   constructor() {
     // SCENE
@@ -59,11 +60,13 @@ class SceneSingleton {
     this.scene.background = new Color(0x000000)
     this.scene.background = null
     // CAMERA
+
+    const { z_near, z_far } = calculateNearFarFromFOV(this.fov)
     this.camera = new PerspectiveCamera(
-      45,
+      this.fov,
       window.innerWidth / window.innerHeight,
-      0.1,
-      1000
+      z_near,
+      z_far
     )
     this.camera.up.set(0, 0, 1)
     this.camera.position.set(0, -128, 64)
@@ -139,18 +142,20 @@ class SceneSingleton {
     const { x: tx, y: ty, z: tz } = this.controls.target
     const aspect = window.innerWidth / window.innerHeight
     const d = 20 // size of the orthographic view
+    const { z_near, z_far } = calculateNearFarFromFOV(this.fov)
     this.camera = new OrthographicCamera(
       -d * aspect,
       d * aspect,
       d,
       -d,
-      1,
-      1000
+      z_near,
+      z_far
     )
     this.camera.up.set(0, 0, 1)
     this.camera.position.set(px, py, pz)
     const distance = this.camera.position.distanceTo(new Vector3(tx, ty, tz))
-    this.camera.zoom = ZOOM_MAGIC_NUMBER / distance
+    const fovFactor = 45 / this.fov
+    this.camera.zoom = (ZOOM_MAGIC_NUMBER * fovFactor) / distance
     this.camera.quaternion.set(qx, qy, qz, qw)
     this.camera.updateProjectionMatrix()
 
@@ -160,6 +165,21 @@ class SceneSingleton {
     this.controls.update()
     this.controls.addEventListener('change', this.updateEngineCamera)
 
+    engineCommandManager.sendSceneCommand({
+      // we have to change set the perspective camera first purely to update the z_near
+      // after which we set the orthographic camera
+      // TODO make an engine issue that allows z_near, z_far to be set on the orthographic camera
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_set_perspective',
+        parameters: {
+          fov_y: this.fov,
+          z_near: 0.1,
+          z_far: 1000,
+        },
+      },
+    })
     engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
@@ -174,11 +194,12 @@ class SceneSingleton {
     const { x: px, y: py, z: pz } = this.camera.position
     const { x: qx, y: qy, z: qz, w: qw } = this.camera.quaternion
     const { x: tx, y: ty, z: tz } = this.controls.target
+    const { z_near, z_far } = calculateNearFarFromFOV(this.fov)
     this.camera = new PerspectiveCamera(
-      45,
+      this.fov,
       window.innerWidth / window.innerHeight,
-      0.1,
-      1000
+      z_near,
+      z_far
     )
     this.camera.up.set(0, 0, 1)
     this.camera.position.set(px, py, pz)
@@ -195,13 +216,87 @@ class SceneSingleton {
       cmd: {
         type: 'default_camera_set_perspective',
         parameters: {
-          fov_y: 45,
-          z_near: 0.1,
-          z_far: 1000,
+          fov_y: this.camera.fov,
+          ...calculateNearFarFromFOV(this.fov),
         },
       },
     })
     this.updateEngineCamera()
+  }
+  dollyZoom = (newFov: number) => {
+    if (!(this.camera instanceof PerspectiveCamera)) {
+      console.warn('Dolly zoom is only applicable to perspective cameras.')
+      return
+    }
+    this.fov = newFov
+
+    // Calculate the direction vector from the camera towards the controls target
+    const direction = new Vector3()
+      .subVectors(this.controls.target, this.camera.position)
+      .normalize()
+
+    // Calculate the distance to the controls target before changing the FOV
+    const distanceBefore = this.camera.position.distanceTo(this.controls.target)
+
+    // Calculate the scale factor for the new FOV compared to the old one
+    // This needs to be calculated before updating the camera's FOV
+    const oldFov = this.camera.fov
+    const scaleFactor =
+      Math.tan((oldFov / 2) * (Math.PI / 180)) /
+      Math.tan((newFov / 2) * (Math.PI / 180))
+
+    // Update the FOV and the camera's projection matrix
+    this.camera.fov = newFov
+    this.camera.updateProjectionMatrix()
+
+    // Calculate the new distance required to maintain the perceived zoom level
+    const distanceAfter = distanceBefore * scaleFactor
+
+    // Calculate the new camera position
+    const newPosition = this.controls.target
+      .clone()
+      .add(direction.multiplyScalar(-distanceAfter))
+
+    // Update the camera position
+    this.camera.position.copy(newPosition)
+
+    const { z_near, z_far } = calculateNearFarFromFOV(this.fov)
+    this.camera.near = z_near
+    this.camera.far = z_far
+
+    // Since the camera has moved, update the engine camera as well
+    const engineVal = convertThreeCamValuesToEngineCam({
+      position: newPosition,
+      quaternion: this.camera.quaternion,
+      zoom: this.camera.zoom,
+      isPerspective: true,
+    })
+
+    const fovCmd: EngineCommand = {
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_set_perspective',
+        parameters: {
+          fov_y: newFov,
+          ...calculateNearFarFromFOV(newFov),
+        },
+      },
+    }
+
+    const lookAtCmd: EngineCommand = {
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        ...engineVal,
+      },
+    }
+    // TODO - these should be sent together in a batch because other was there is a single
+    // frame of jank, but it doesn't work at all when sent together
+    // check in with the backend team.
+    engineCommandManager.sendSceneCommand(lookAtCmd)
+    engineCommandManager.sendSceneCommand(fovCmd)
   }
 }
 
@@ -258,4 +353,11 @@ function convertThreeCamValuesToEngineCam({
     up: upVector,
     vantage: newVantage,
   }
+}
+
+function calculateNearFarFromFOV(fov: number) {
+  const nearFarRatio = (fov - 3) / (45 - 3)
+  const z_near = 0.1 + nearFarRatio * (5 - 0.1)
+  const z_far = 1000 + nearFarRatio * (100000 - 1000)
+  return { z_near, z_far }
 }

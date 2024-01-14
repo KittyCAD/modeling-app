@@ -89,7 +89,7 @@ export function App() {
     engineCommandManager.sendSceneCommand(message)
   }, 16)
   const handleMouseMove: MouseEventHandler<HTMLDivElement> = (e) => {
-    e.nativeEvent.preventDefault()
+    // e.nativeEvent.preventDefault()
 
     const { x, y } = getNormalisedCoordinates({
       clientX: e.clientX,
