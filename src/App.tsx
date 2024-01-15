@@ -32,7 +32,7 @@ import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubsc
 import { engineCommandManager } from './lang/std/engineConnection'
 import { useModelingContext } from 'hooks/useModelingContext'
 // import { SketchCanvas } from 'components/SketchCanvas'
-import { ClientSideScene } from 'components/clientSideScene'
+import { ClientSideScene } from 'components/ClientSideScene'
 import { CamToggle } from 'components/CamToggle'
 
 export function App() {
