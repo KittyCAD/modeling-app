@@ -5,6 +5,7 @@ import {
   ColorRepresentation,
   Euler,
   GridHelper,
+  LineBasicMaterial,
   Mesh,
   MeshBasicMaterial,
   OrthographicCamera,
@@ -24,6 +25,7 @@ import { throttle } from 'lib/utils'
 // if it were 64, that would feel like it's something in the engine where a random
 // power of 2 is used, but it's the 0.5 seems to make things look much more correct
 const ZOOM_MAGIC_NUMBER = 63.5
+const FRAMES_TO_ANIMATE_IN = 30
 
 interface ThreeCamValues {
   position: Vector3
@@ -45,6 +47,16 @@ const throttledUpdateEngineCamera = throttle(
   1000 / 30
 )
 
+const throttledUpdateEngineFov = throttle(
+  (vals: {
+    position: Vector3
+    quaternion: Quaternion
+    zoom: number
+    fov: number
+  }) => updateEngineFov(vals),
+  1000 / 15
+)
+
 class SceneSingleton {
   static instance: SceneSingleton
   scene: Scene
@@ -53,6 +65,8 @@ class SceneSingleton {
   controls: OrbitControls
   isPerspective = true
   fov = 45
+  fovBeforeAnimate = 45
+  isFovAnimationInProgress = false
 
   constructor() {
     // SCENE
@@ -87,17 +101,34 @@ class SceneSingleton {
     const size = 100
     const divisions = 10
 
-    const gridHelper = new GridHelper(size, divisions, 0x0000ff, 0x0000ff)
+    const gridHelperMaterial = new LineBasicMaterial({
+      color: 0x0000ff,
+      transparent: true,
+      opacity: 0.5,
+    })
+
+    const gridHelper = new GridHelper(size, divisions, 0x0000ff, 0xffffff)
+    gridHelper.material = gridHelperMaterial
     gridHelper.rotation.x = Math.PI / 2
-    this.scene.add(gridHelper)
+    // this.scene.add(gridHelper)
 
     const light = new AmbientLight(0x505050) // soft white light
     this.scene.add(light)
 
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement)
-    this.controls.addEventListener('change', this.updateEngineCamera)
+    this.controls = this.setupOrbitControls()
 
     SceneSingleton.instance = this
+  }
+  setupOrbitControls = (target?: [number, number, number]): OrbitControls => {
+    if (this.controls) this.controls.dispose() // Dispose the old controls
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement) // Create new controls for the orthographic camera
+    if (target) {
+      console.log('setting target', target)
+      this.controls.target.set(...target)
+    }
+    this.controls.update()
+    this.controls.addEventListener('change', this.updateEngineCamera)
+    return this.controls
   }
   onStreamStart = () => {
     this.updateEngineCamera()
@@ -126,7 +157,68 @@ class SceneSingleton {
 
   animate = () => {
     requestAnimationFrame(this.animate)
-    this.renderer.render(this.scene, this.camera)
+    if (!this.isFovAnimationInProgress)
+      this.renderer.render(this.scene, this.camera)
+  }
+  animateToOrthographic = () => {
+    this.isFovAnimationInProgress = true
+    let currentFov = this.fov
+    this.fovBeforeAnimate = this.fov
+
+    const targetFov = 4 // Target FOV of 4 degrees
+    const fovAnimationStep = (currentFov - targetFov) / FRAMES_TO_ANIMATE_IN
+
+    const animateFovChange = () => {
+      if (this.camera instanceof PerspectiveCamera) {
+        if (this.camera.fov > targetFov) {
+          // Decrease the FOV
+          currentFov = Math.max(currentFov - fovAnimationStep, targetFov)
+          this.camera.updateProjectionMatrix()
+          this._dollyZoom(currentFov) // Use the existing dollyZoom method to adjust position
+          // this.dollyZoom(currentFov) // Use the existing dollyZoom method to adjust position
+          requestAnimationFrame(animateFovChange) // Continue the animation
+        } else {
+          this.updateEngineCamera()
+          // Once the target FOV is reached, switch to the orthographic camera
+          setTimeout(() => {
+            this.useOrthographicCamera()
+          }, 100)
+          // Set the flag to false as the FOV animation is complete
+          this.isFovAnimationInProgress = false
+        }
+      }
+    }
+
+    animateFovChange() // Start the animation
+  }
+  animateToPerspective = () => {
+    this.isFovAnimationInProgress = true
+    // Immediately set the camera to perspective with a very low FOV
+    this.fov = 4
+    let currentFov = 4
+    this.camera.updateProjectionMatrix()
+    const targetFov = this.fovBeforeAnimate // Target FOV for perspective
+    const fovAnimationStep = (targetFov - currentFov) / FRAMES_TO_ANIMATE_IN
+    this.usePerspectiveCamera()
+
+    const animateFovChange = () => {
+      if (this.camera instanceof OrthographicCamera) {
+      } else {
+        if (this.camera.fov < targetFov) {
+          // Increase the FOV
+          currentFov = Math.min(currentFov + fovAnimationStep, targetFov)
+          // this.camera.fov = currentFov
+          this.camera.updateProjectionMatrix()
+          this._dollyZoom(currentFov) // Use the existing dollyZoom method to adjust position
+          requestAnimationFrame(animateFovChange) // Continue the animation
+        } else {
+          // Set the flag to false as the FOV animation is complete
+          this.isFovAnimationInProgress = false
+        }
+      }
+    }
+
+    animateFovChange() // Start the animation
   }
   dispose = () => {
     // Dispose of scene resources, renderer, and controls
@@ -155,15 +247,11 @@ class SceneSingleton {
     this.camera.position.set(px, py, pz)
     const distance = this.camera.position.distanceTo(new Vector3(tx, ty, tz))
     const fovFactor = 45 / this.fov
-    this.camera.zoom = (ZOOM_MAGIC_NUMBER * fovFactor) / distance
+    this.camera.zoom = (ZOOM_MAGIC_NUMBER * fovFactor * 0.8) / distance
     this.camera.quaternion.set(qx, qy, qz, qw)
     this.camera.updateProjectionMatrix()
 
-    this.controls.dispose() // Dispose the old controls
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement) // Create new controls for the orthographic camera
-    this.controls.target.set(tx, ty, tz)
-    this.controls.update()
-    this.controls.addEventListener('change', this.updateEngineCamera)
+    this.setupOrbitControls([tx, ty, tz])
 
     engineCommandManager.sendSceneCommand({
       // we have to change set the perspective camera first purely to update the z_near
@@ -205,11 +293,8 @@ class SceneSingleton {
     this.camera.position.set(px, py, pz)
     this.camera.quaternion.set(qx, qy, qz, qw)
 
-    this.controls.dispose() // Dispose the old controls
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement) // Create new controls for the perspective camera
-    this.controls.target.set(tx, ty, tz)
-    this.controls.update()
-    this.controls.addEventListener('change', this.updateEngineCamera)
+    this.setupOrbitControls([tx, ty, tz])
+
     engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
@@ -223,6 +308,8 @@ class SceneSingleton {
     })
     this.updateEngineCamera()
   }
+  _dollyZoom = throttle((newFov: number) => this.dollyZoom(newFov), 1000 / 15)
+
   dollyZoom = (newFov: number) => {
     if (!(this.camera instanceof PerspectiveCamera)) {
       console.warn('Dolly zoom is only applicable to perspective cameras.')
@@ -264,39 +351,12 @@ class SceneSingleton {
     this.camera.near = z_near
     this.camera.far = z_far
 
-    // Since the camera has moved, update the engine camera as well
-    const engineVal = convertThreeCamValuesToEngineCam({
+    throttledUpdateEngineFov({
+      fov: newFov,
       position: newPosition,
       quaternion: this.camera.quaternion,
       zoom: this.camera.zoom,
-      isPerspective: true,
     })
-
-    const fovCmd: EngineCommand = {
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_set_perspective',
-        parameters: {
-          fov_y: newFov,
-          ...calculateNearFarFromFOV(newFov),
-        },
-      },
-    }
-
-    const lookAtCmd: EngineCommand = {
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_look_at',
-        ...engineVal,
-      },
-    }
-    // TODO - these should be sent together in a batch because other was there is a single
-    // frame of jank, but it doesn't work at all when sent together
-    // check in with the backend team.
-    engineCommandManager.sendSceneCommand(lookAtCmd)
-    engineCommandManager.sendSceneCommand(fovCmd)
   }
 }
 
@@ -360,4 +420,43 @@ function calculateNearFarFromFOV(fov: number) {
   const z_near = 0.1 + nearFarRatio * (5 - 0.1)
   const z_far = 1000 + nearFarRatio * (100000 - 1000)
   return { z_near, z_far }
+}
+
+function updateEngineFov(args: {
+  position: Vector3
+  quaternion: Quaternion
+  zoom: number
+  fov: number
+}) {
+  // Since the camera has moved, update the engine camera as well
+  const engineVal = convertThreeCamValuesToEngineCam({
+    ...args,
+    isPerspective: true,
+  })
+
+  const fovCmd: EngineCommand = {
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_set_perspective',
+      parameters: {
+        fov_y: args.fov,
+        ...calculateNearFarFromFOV(args.fov),
+      },
+    },
+  }
+
+  const lookAtCmd: EngineCommand = {
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_look_at',
+      ...engineVal,
+    },
+  }
+  // TODO - these should be sent together in a batch because other was there is a single
+  // frame of jank, but it doesn't work at all when sent together
+  // check in with the backend team.
+  engineCommandManager.sendSceneCommand(lookAtCmd)
+  engineCommandManager.sendSceneCommand(fovCmd)
 }

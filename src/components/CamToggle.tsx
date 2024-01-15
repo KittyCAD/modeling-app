@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { sceneSingleton } from './ClientSideScene'
 import { engineCommandManager } from 'lang/std/engineConnection'
-import { throttle } from 'lib/utils'
+import { throttle, isReducedMotion } from 'lib/utils'
 
 const updateDollyZoom = throttle(
   (newFov: number) => sceneSingleton.dollyZoom(newFov),
@@ -10,7 +10,7 @@ const updateDollyZoom = throttle(
 
 export const CamToggle = () => {
   const [isPerspective, setIsPerspective] = useState(true)
-  const [fov, setFov] = useState(12)
+  const [fov, setFov] = useState(40)
 
   useEffect(() => {
     engineCommandManager.waitForReady.then(async () => {
@@ -20,9 +20,13 @@ export const CamToggle = () => {
 
   const toggleCamera = () => {
     if (isPerspective) {
-      sceneSingleton.useOrthographicCamera()
+      isReducedMotion()
+        ? sceneSingleton.useOrthographicCamera()
+        : sceneSingleton.animateToOrthographic()
     } else {
-      sceneSingleton.usePerspectiveCamera()
+      isReducedMotion()
+        ? sceneSingleton.usePerspectiveCamera()
+        : sceneSingleton.animateToPerspective()
     }
     setIsPerspective(!isPerspective)
   }
@@ -40,7 +44,7 @@ export const CamToggle = () => {
             type="range"
             min="4"
             max="90"
-            step={1}
+            step={0.5}
             value={fov}
             onChange={(e) => handleFovChange(Number(e.target.value))}
             className="w-full cursor-pointer pointer-events-auto"
