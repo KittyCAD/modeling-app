@@ -1022,12 +1022,26 @@ interface CreateLineFnCallArgs {
 
 export function compareVec2Epsilon(
   vec1: [number, number],
-  vec2: [number, number]
+  vec2: [number, number],
+  compareEpsilon = 0.015625 // or 2^-6
 ) {
-  const compareEpsilon = 0.015625 // or 2^-6
   const xDifference = Math.abs(vec1[0] - vec2[0])
   const yDifference = Math.abs(vec1[1] - vec2[1])
   return xDifference < compareEpsilon && yDifference < compareEpsilon
+}
+
+// this version uses this distance of the two points instead of comparing x and y separately
+export function compareVec2Epsilon2(
+  vec1: [number, number],
+  vec2: [number, number],
+  compareEpsilon = 0.015625 // or 2^-6
+) {
+  const xDifference = Math.abs(vec1[0] - vec2[0])
+  const yDifference = Math.abs(vec1[1] - vec2[1])
+  const distance = Math.sqrt(
+    xDifference * xDifference + yDifference * yDifference
+  )
+  return distance < compareEpsilon
 }
 
 export function addNewSketchLn({

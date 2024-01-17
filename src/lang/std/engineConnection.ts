@@ -1018,6 +1018,12 @@ export class EngineCommandManager {
       console.log('sending command', command.cmd.type)
       lastMessage = command.cmd.type
     }
+    if (command.type === 'modeling_cmd_batch_req') {
+      this.engineConnection?.send(command)
+      // TODO - handlePendingCommands does not handle batch commands
+      // return this.handlePendingCommand(command.requests[0].cmd_id, command.cmd)
+      return Promise.resolve()
+    }
     if (command.type !== 'modeling_cmd_req') return Promise.resolve()
     const cmd = command.cmd
     if (
