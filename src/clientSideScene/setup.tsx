@@ -22,6 +22,7 @@ import { throttle } from 'lib/utils'
 import { compareVec2Epsilon2 } from 'lang/std/sketch'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { deg2Rad } from 'lib/utils2d'
+import * as TWEEN from '@tweenjs/tween.js'
 
 // 63.5 is definitely a bit of a magic number, play with it until it looked right
 // if it were 64, that would feel like it's something in the engine where a random
@@ -33,6 +34,8 @@ const ORTHOGRAPHIC_CAMERA_SIZE = 20
 export const INTERSECTION_PLANE_LAYER = 1
 export const SKETCH_LAYER = 2
 const DEBUG_SHOW_INTERSECTION_PLANE = false
+
+const tempQuaternion = new Quaternion() // just used for maths
 
 interface ThreeCamValues {
   position: Vector3
@@ -205,9 +208,45 @@ class SetupSingleton {
 
   animate = () => {
     requestAnimationFrame(this.animate)
+    TWEEN.update() // This will update all tweens during the animation loop
     if (!this.isFovAnimationInProgress)
       this.renderer.render(this.scene, this.camera)
   }
+  tweenCameraToQuaternion(
+    targetQuaternion: Quaternion = new Quaternion(),
+    duration: number = 500
+  ) {
+    const camera = this.camera
+    const initialQuaternion = camera.quaternion.clone()
+    const controlsTarget = this.controls.target.clone()
+    const initialDistance = controlsTarget.distanceTo(camera.position.clone())
+
+    new TWEEN.Tween({ t: 0 })
+      .to({ t: 1 }, duration)
+      .easing(TWEEN.Easing.Quadratic.InOut)
+      .onUpdate((obj) => {
+        const currentQ = tempQuaternion.slerpQuaternions(
+          initialQuaternion,
+          targetQuaternion,
+          obj.t
+        )
+        this.camera.position
+          .set(0, 0, 1)
+          .applyQuaternion(currentQ)
+          .multiplyScalar(initialDistance)
+          .add(controlsTarget)
+
+        this.camera.up.set(0, 1, 0).applyQuaternion(currentQ).normalize()
+        this.camera.quaternion.copy(currentQ)
+        this.controls.update()
+      })
+      .onComplete(() => {
+        this.camera.up.set(0, 0, 1)
+        this.useOrthographicCamera()
+      })
+      .start()
+  }
+
   animateToOrthographic = () => {
     this.isFovAnimationInProgress = true
     let currentFov = this.fov
