@@ -388,7 +388,7 @@ class SetupSingleton {
       */
       return Math.tan(deg2Rad(fov / 2))
     }
-    const scaleFactor = viewHeightFactor(oldFov) / viewHeightFactor(newFov / 2)
+    const scaleFactor = viewHeightFactor(oldFov) / viewHeightFactor(newFov)
 
     this.camera.fov = newFov
     this.camera.updateProjectionMatrix()
