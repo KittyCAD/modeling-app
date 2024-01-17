@@ -484,7 +484,7 @@ class SetupSingleton {
     )
 
     if (intersects.length > 0) {
-      console.log('hover on', intersects[0])
+      // console.log('hover on', intersects[0])
     }
 
     // const intersect = intersects[0]?.object
