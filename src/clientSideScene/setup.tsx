@@ -373,18 +373,18 @@ class SetupSingleton {
     const oldFov = this.camera.fov
 
     const viewHeightFactor = (fov: number) => {
-      /*             * 
-                    /|
-                   / |
-                  /  |
-                 /   |
-                /    | viewHeight/2
-               /     |
-              /      |
-             /       |
-      fov/2 /________|
-            \        |
-             \._._._.|
+      /*       * 
+              /|
+             / |
+            /  |
+           /   |
+          /    | viewHeight/2
+         /     |
+        /      |
+       /↙️fov/2 |
+      /________|
+      \        |
+       \._._._.|
       */
       return Math.tan(deg2Rad(fov / 2))
     }
