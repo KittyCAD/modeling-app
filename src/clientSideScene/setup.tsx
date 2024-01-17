@@ -225,13 +225,12 @@ class SetupSingleton {
           this.dollyZoom(currentFov)
           requestAnimationFrame(animateFovChange) // Continue the animation
         } else {
-          this.updateEngineCamera()
-          // Once the target FOV is reached, switch to the orthographic camera
           setTimeout(() => {
+            // Once the target FOV is reached, switch to the orthographic camera
+            // Needs to wait a frame a couple frames after the FOV animation is complete
             this.useOrthographicCamera()
-          })
-          // Set the flag to false as the FOV animation is complete
-          this.isFovAnimationInProgress = false
+            this.isFovAnimationInProgress = false
+          }, 50)
         }
       }
     }

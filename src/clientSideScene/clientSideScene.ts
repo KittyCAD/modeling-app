@@ -27,18 +27,11 @@ import { engineCommandManager } from 'lang/std/engineConnection'
 import { straightSegment } from './segments'
 import { changeSketchArguments } from 'lang/std/sketch'
 
-interface NodePathToPaperGroupMap {
-  [key: string]: {
-    pathToNode: PathToNode
-    group: paper.Group
-    type: 'tangentialArcTo' | 'line'
-  }
-}
-
 class ClientSideScene {
   scene: Scene
   sceneProgramMemory: ProgramMemory = { root: {}, return: null }
   activeSegments: { [key: string]: Group } = {}
+  intersectionPlane: Mesh | null = null
   constructor() {
     this.scene = setupSingleton.scene
   }
@@ -51,10 +44,10 @@ class ClientSideScene {
       transparent: true,
       opacity: 0.5,
     })
-    const plane = new Mesh(planeGeometry, planeMaterial)
-    plane.userData = { type: 'raycastable-plane' }
-    plane.layers.set(INTERSECTION_PLANE_LAYER)
-    this.scene.add(plane)
+    this.intersectionPlane = new Mesh(planeGeometry, planeMaterial)
+    this.intersectionPlane.userData = { type: 'raycastable-plane' }
+    this.intersectionPlane.layers.set(INTERSECTION_PLANE_LAYER)
+    this.scene.add(this.intersectionPlane)
 
     const { truncatedAst, programMemoryOverride, variableDeclarationName } =
       this.prepareTruncatedMemoryAndAst(sketchPathToNode || [])
@@ -223,6 +216,12 @@ class ClientSideScene {
         extrudePath: line,
       }
     )
+  }
+  tearDownSketch() {
+    Object.values(this.activeSegments).forEach((seg) => {
+      this.scene.remove(seg)
+    })
+    if (this.intersectionPlane) this.scene.remove(this.intersectionPlane)
   }
 }
 
