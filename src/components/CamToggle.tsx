@@ -1,32 +1,33 @@
 import { useState, useEffect } from 'react'
-import { sceneSingleton } from './ClientSideScene'
+import { setupSingleton } from '../clientSideScene/setup'
 import { engineCommandManager } from 'lang/std/engineConnection'
 import { throttle, isReducedMotion } from 'lib/utils'
 
 const updateDollyZoom = throttle(
-  (newFov: number) => sceneSingleton.dollyZoom(newFov),
+  (newFov: number) => setupSingleton.dollyZoom(newFov),
   1000 / 15
 )
 
 export const CamToggle = () => {
   const [isPerspective, setIsPerspective] = useState(true)
   const [fov, setFov] = useState(40)
+  const [enableRotate, setEnableRotate] = useState(true)
 
   useEffect(() => {
     engineCommandManager.waitForReady.then(async () => {
-      sceneSingleton.dollyZoom(fov)
+      setupSingleton.dollyZoom(fov)
     })
   }, [])
 
   const toggleCamera = () => {
     if (isPerspective) {
       isReducedMotion()
-        ? sceneSingleton.useOrthographicCamera()
-        : sceneSingleton.animateToOrthographic()
+        ? setupSingleton.useOrthographicCamera()
+        : setupSingleton.animateToOrthographic()
     } else {
       isReducedMotion()
-        ? sceneSingleton.usePerspectiveCamera()
-        : sceneSingleton.animateToPerspective()
+        ? setupSingleton.usePerspectiveCamera()
+        : setupSingleton.animateToPerspective()
     }
     setIsPerspective(!isPerspective)
   }
@@ -55,6 +56,19 @@ export const CamToggle = () => {
         {isPerspective
           ? 'Switch to Orthographic Camera'
           : 'Switch to Perspective Camera'}
+      </button>
+      <button
+        onClick={() => {
+          if (enableRotate) {
+            setupSingleton.controls.enableRotate = false
+          } else {
+            setupSingleton.controls.enableRotate = true
+          }
+          setEnableRotate(!enableRotate)
+        }}
+        className=""
+      >
+        {enableRotate ? 'Disable Rotation' : 'Enable Rotation'}
       </button>
     </div>
   )

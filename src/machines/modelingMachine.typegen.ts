@@ -63,7 +63,7 @@
 "default_camera_disable_sketch_mode": "Cancel";
 "edit mode enter": "Enter sketch" | "Re-execute";
 "edit_mode_exit": "Cancel";
-"equip select": "CancelSketch" | "Constrain equal length" | "Constrain horizontally align" | "Constrain parallel" | "Constrain remove constraints" | "Constrain snap to X" | "Constrain snap to Y" | "Constrain vertically align" | "Deselect point" | "Deselect segment" | "Enter sketch" | "Make segment horizontal" | "Make segment vertical" | "Re-execute" | "Select default plane" | "Select point" | "Select segment" | "Set selection" | "done.invoke.get-abs-x-info" | "done.invoke.get-abs-y-info" | "done.invoke.get-angle-info" | "done.invoke.get-horizontal-info" | "done.invoke.get-length-info" | "done.invoke.get-perpendicular-distance-info" | "done.invoke.get-vertical-info" | "error.platform.get-abs-x-info" | "error.platform.get-abs-y-info" | "error.platform.get-angle-info" | "error.platform.get-horizontal-info" | "error.platform.get-length-info" | "error.platform.get-perpendicular-distance-info" | "error.platform.get-vertical-info";
+"equip select": "CancelSketch" | "Enter sketch" | "Select default plane" | "done.invoke.get-abs-x-info" | "done.invoke.get-abs-y-info" | "done.invoke.get-angle-info" | "done.invoke.get-horizontal-info" | "done.invoke.get-length-info" | "done.invoke.get-perpendicular-distance-info" | "done.invoke.get-vertical-info" | "error.platform.get-abs-x-info" | "error.platform.get-abs-y-info" | "error.platform.get-angle-info" | "error.platform.get-horizontal-info" | "error.platform.get-length-info" | "error.platform.get-perpendicular-distance-info" | "error.platform.get-vertical-info";
 "hide default planes": "Cancel" | "Select default plane" | "Set selection" | "xstate.stop";
 "hide draft line": "Cancel" | "CancelSketch" | "Equip Line tool 2" | "Equip tangential arc to 2" | "Set selection" | "xstate.stop";
 "initialise draft arc": "Cancel" | "CancelSketch" | "Enter sketch" | "Equip Line tool 2" | "Equip tangential arc to 2" | "Set selection" | "xstate.stop";
@@ -74,9 +74,10 @@
 "set segment tool": "Equip line tool" | "Equip tangential arc tool";
 "set sketch metadata": "Enter sketch";
 "set sketchMetadata from pathToNode": "Re-execute";
-"set tool move": "Equip move tool" | "Re-execute" | "Set selection";
-"set up draft arc": "Equip tangential arc to 2" | "Set selection";
-"set up draft line": "Equip Line tool 2" | "Set selection";
+"set tool move": "Equip move tool";
+"set up draft arc": "Equip tangential arc to 2";
+"set up draft line": "Equip Line tool 2";
+"setup client side sketch": "Enter sketch";
 "setup paper sketch": "Cancel" | "CancelSketch" | "Enter sketch" | "Equip Line tool 2" | "Equip tangential arc to 2" | "Select default plane" | "Set selection" | "xstate.stop";
 "show default planes": "Enter sketch";
 "sketch exit execute": "Cancel" | "Complete line" | "Set selection" | "xstate.stop";
