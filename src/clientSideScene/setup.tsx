@@ -668,34 +668,19 @@ function updateEngineFov(args: {
   zoom: number
   fov: number
 }) {
-  // Since the camera has moved, update the engine camera as well
-  // TODO - even though these are sent together in a batch they seem to get applied in two separate frames
-  // causing a lot of jank and jitter on fov changes
-  // check in with the backend team.
-
-  engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_batch_req',
-    requests: [
-      {
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_look_at',
-          ...convertThreeCamValuesToEngineCam({
-            ...args,
-            isPerspective: true,
-          }),
-        },
+  engineCommandManager.sendSceneCommand(
+    {
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_perspective_settings',
+        ...convertThreeCamValuesToEngineCam({
+          ...args,
+          isPerspective: true,
+        }),
+        fov_y: args.fov,
+        ...calculateNearFarFromFOV(args.fov),
       },
-      {
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_set_perspective',
-          parameters: {
-            fov_y: args.fov,
-            ...calculateNearFarFromFOV(args.fov),
-          },
-        },
-      },
-    ],
-  })
+    } as any /* TODO - this command isn't in the spec yet, remove any when it is */
+  )
 }
