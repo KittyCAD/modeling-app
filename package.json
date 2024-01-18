@@ -144,7 +144,7 @@
     "vite": "^4.5.0",
     "vite-plugin-eslint": "^1.8.1",
     "vite-tsconfig-paths": "^4.2.1",
-    "vitest-canvas-mock": "^0.3.3",
+    "vitest-webgl-canvas-mock": "^1.1.0",
     "wait-on": "^7.2.0",
     "yarn": "^1.22.19"
   }

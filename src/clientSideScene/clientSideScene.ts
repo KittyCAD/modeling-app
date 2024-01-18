@@ -9,7 +9,7 @@ import {
   Scene,
   Vector2,
   Vector3,
-} from 'three' //
+} from 'three'
 import { INTERSECTION_PLANE_LAYER, SKETCH_LAYER, setupSingleton } from './setup'
 import {
   CallExpression,
@@ -33,7 +33,7 @@ class ClientSideScene {
   activeSegments: { [key: string]: Group } = {}
   intersectionPlane: Mesh | null = null
   constructor() {
-    this.scene = setupSingleton.scene
+    this.scene = setupSingleton?.scene
   }
 
   async setupSketch(sketchPathToNode: PathToNode, ast?: Program) {
