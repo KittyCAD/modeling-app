@@ -213,36 +213,41 @@ class SetupSingleton {
       this.renderer.render(this.scene, this.camera)
   }
   tweenCameraToQuaternion(
-    targetQuaternion: Quaternion = new Quaternion(),
+    targetQuaternion: Quaternion = new Quaternion(0, 0, 0, 1).normalize(), // look from top
     duration: number = 500
   ) {
     const camera = this.camera
     const initialQuaternion = camera.quaternion.clone()
+    const isVertical = isQuaternionVertical(targetQuaternion)
+    let tweenEnd = isVertical ? 0.99 : 1
     const controlsTarget = this.controls.target.clone()
     const initialDistance = controlsTarget.distanceTo(camera.position.clone())
 
-    new TWEEN.Tween({ t: 0 })
-      .to({ t: 1 }, duration)
-      .easing(TWEEN.Easing.Quadratic.InOut)
-      .onUpdate((obj) => {
-        const currentQ = tempQuaternion.slerpQuaternions(
-          initialQuaternion,
-          targetQuaternion,
-          obj.t
-        )
-        this.camera.position
-          .set(0, 0, 1)
-          .applyQuaternion(currentQ)
-          .multiplyScalar(initialDistance)
-          .add(controlsTarget)
+    const cameraAtTime = (animationProgress: number /* 0 - 1 */) => {
+      const currentQ = tempQuaternion.slerpQuaternions(
+        initialQuaternion,
+        targetQuaternion,
+        animationProgress
+      )
+      this.camera.position
+        .set(0, 0, 1)
+        .applyQuaternion(currentQ)
+        .multiplyScalar(initialDistance)
+        .add(controlsTarget)
+      this.camera.up.set(0, 1, 0).applyQuaternion(currentQ).normalize()
+      this.camera.quaternion.copy(currentQ)
+      this.controls.target.copy(controlsTarget)
+      this.controls.update()
+    }
 
-        this.camera.up.set(0, 1, 0).applyQuaternion(currentQ).normalize()
-        this.camera.quaternion.copy(currentQ)
-        this.controls.update()
-      })
+    new TWEEN.Tween({ t: 0 })
+      .to({ t: tweenEnd }, duration)
+      .easing(TWEEN.Easing.Quadratic.InOut)
+      .onUpdate(({ t }) => cameraAtTime(t))
       .onComplete(() => {
         this.camera.up.set(0, 0, 1)
         this.useOrthographicCamera()
+        if (isVertical) cameraAtTime(1)
       })
       .start()
   }
@@ -335,10 +340,12 @@ class SetupSingleton {
     const distance = this.camera.position.distanceTo(new Vector3(tx, ty, tz))
     const fovFactor = 45 / this.fov
     this.camera.zoom = (ZOOM_MAGIC_NUMBER * fovFactor * 0.8) / distance
-    this.camera.quaternion.set(qx, qy, qz, qw)
-    this.camera.updateProjectionMatrix()
 
     this.setupOrbitControls([tx, ty, tz])
+    // in the case where I want to set the quaternion looking up i.e. new Quaternion(1, 0, 0, 0)
+    this.camera.quaternion.set(qx, qy, qz, qw)
+    this.camera.updateProjectionMatrix()
+    this.controls.update()
 
     engineCommandManager.sendSceneCommand({
       // we have to change set the perspective camera first purely to update the z_near
@@ -683,4 +690,10 @@ function updateEngineFov(args: {
       },
     } as any /* TODO - this command isn't in the spec yet, remove any when it is */
   )
+}
+
+export function isQuaternionVertical(q: Quaternion) {
+  const v = new Vector3(0, 0, 1).applyQuaternion(q)
+  // no x or y components means it's vertical
+  return compareVec2Epsilon2([v.x, v.y], [0, 0])
 }
