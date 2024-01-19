@@ -422,8 +422,14 @@ pub struct SketchGroup {
     pub start: BasePath,
     /// The position of the sketch group.
     pub position: Position,
-    /// The rotation of the sketch group.
+    /// The rotation of the sketch group base plane.
     pub rotation: Rotation,
+    /// The x-axis of the sketch group base plane in the 3D space
+    pub x_axis: Position,
+    /// The y-axis of the sketch group base plane in the 3D space
+    pub y_axis: Position,
+    /// The z-axis of the sketch group base plane in the 3D space
+    pub z_axis: Position,
     /// The plane id of the sketch group.
     pub plane_id: Option<uuid::Uuid>,
     /// Metadata.

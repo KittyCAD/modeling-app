@@ -49,6 +49,7 @@ import { sketchCanvasHelper } from 'components/sketchCanvashelper'
 import paper from 'paper'
 import { clientSideScene } from 'clientSideScene/clientSideScene'
 import { setupSingleton } from 'clientSideScene/setup'
+import { Quaternion } from 'three'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -1108,9 +1109,52 @@ export const modelingMachine = createMachine(
         // sketchCanvasHelper.setupPaperSketch(sketchPathToNode || [])
       },
       'setup client side sketch': ({ sketchPathToNode }) => {
-        //clientSideScene
         clientSideScene.setupSketch(sketchPathToNode || [])
-        setupSingleton.tweenCameraToQuaternion()
+        const variableDeclarationName =
+          getNodeFromPath<VariableDeclaration>(
+            kclManager.ast,
+            sketchPathToNode || [],
+            'VariableDeclaration'
+          )?.node?.declarations?.[0]?.id?.name || ''
+        const sketchQuaternion = kclManager.programMemory.root[
+          variableDeclarationName
+        ] as SketchGroup
+
+        // this is extremely hacky way of setting setting the camera quaternion
+        // for the default planes, but is a temporary measure until I figure
+        // what's going on with the axis returned from the engine
+        const stringAxes = JSON.stringify([
+          sketchQuaternion.xAxis,
+          sketchQuaternion.yAxis,
+          sketchQuaternion.zAxis,
+        ])
+        const isXyPos = stringAxes === '[[1,0,0],[0,1,0],[0,0,1]]'
+        const isXyNeg = stringAxes === '[[1,0,0],[0,1,0],[0,0,-1]]'
+
+        const isXzPos = stringAxes === '[[1,0,0],[0,0,1],[0,1,0]]'
+        const isXzNeg = stringAxes === '[[1,0,0],[0,0,1],[0,-1,0]]'
+
+        const isYzPos = stringAxes === '[[0,1,0],[0,0,1],[1,0,0]]'
+        const isYzNeg = stringAxes === '[[0,1,0],[0,0,1],[-1,0,0]]'
+
+        const a = Math.cos(Math.PI / 4)
+        const quatArgs: [number, number, number, number] = isXyPos
+          ? [0, 0, 0, 1]
+          : isXyNeg
+          ? [1, 0, 0, 0]
+          : isXzPos
+          ? [0, a, a, 0]
+          : isXzNeg
+          ? [a, 0, 0, a]
+          : isYzPos
+          ? [0.5, 0.5, 0.5, 0.5]
+          : isYzNeg
+          ? [-0.5, 0.5, 0.5, -0.5]
+          : [0, 0, 0, 1] // fall back
+
+        setupSingleton.tweenCameraToQuaternion(
+          new Quaternion(...quatArgs).normalize()
+        )
       },
       'initialise draft line': ({ sketchPathToNode }) => {},
       // sketchCanvasHelper.addDraftLine(sketchPathToNode || []),

@@ -213,7 +213,7 @@ class SetupSingleton {
       this.renderer.render(this.scene, this.camera)
   }
   tweenCameraToQuaternion(
-    targetQuaternion: Quaternion = new Quaternion(0, 0, 0, 1).normalize(), // look from top
+    targetQuaternion: Quaternion,
     duration: number = 500
   ) {
     const camera = this.camera
