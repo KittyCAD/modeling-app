@@ -245,9 +245,9 @@ class SetupSingleton {
       .easing(TWEEN.Easing.Quadratic.InOut)
       .onUpdate(({ t }) => cameraAtTime(t))
       .onComplete(() => {
-        this.camera.up.set(0, 0, 1)
         this.useOrthographicCamera()
         if (isVertical) cameraAtTime(1)
+        this.camera.up.set(0, 0, 1)
       })
       .start()
   }

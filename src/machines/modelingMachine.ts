@@ -1,4 +1,4 @@
-import { PathToNode } from 'lang/wasm'
+import { PathToNode, SketchGroup, VariableDeclaration } from 'lang/wasm'
 import { engineCommandManager } from 'lang/std/engineConnection'
 import { isReducedMotion } from 'lib/utils'
 import {
@@ -48,8 +48,8 @@ import { ModelingCommandSchema } from 'lib/commandBarConfigs/modelingCommandConf
 import { sketchCanvasHelper } from 'components/sketchCanvashelper'
 import paper from 'paper'
 import { clientSideScene } from 'clientSideScene/clientSideScene'
-import { setupSingleton } from 'clientSideScene/setup'
-import { Quaternion } from 'three'
+import { isQuaternionVertical, setupSingleton } from 'clientSideScene/setup'
+import { PerspectiveCamera } from 'three'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -1120,41 +1120,24 @@ export const modelingMachine = createMachine(
           variableDeclarationName
         ] as SketchGroup
 
-        // this is extremely hacky way of setting setting the camera quaternion
-        // for the default planes, but is a temporary measure until I figure
-        // what's going on with the axis returned from the engine
-        const stringAxes = JSON.stringify([
-          sketchQuaternion.xAxis,
-          sketchQuaternion.yAxis,
-          sketchQuaternion.zAxis,
-        ])
-        const isXyPos = stringAxes === '[[1,0,0],[0,1,0],[0,0,1]]'
-        const isXyNeg = stringAxes === '[[1,0,0],[0,1,0],[0,0,-1]]'
+        const dummyCam = new PerspectiveCamera()
+        dummyCam.up.set(0, 0, 1)
+        dummyCam.position.set(...sketchQuaternion.zAxis)
+        dummyCam.lookAt(0, 0, 0)
+        dummyCam.updateMatrix()
+        const quaternion = dummyCam.quaternion.clone()
 
-        const isXzPos = stringAxes === '[[1,0,0],[0,0,1],[0,1,0]]'
-        const isXzNeg = stringAxes === '[[1,0,0],[0,0,1],[0,-1,0]]'
+        const isVert = isQuaternionVertical(quaternion)
 
-        const isYzPos = stringAxes === '[[0,1,0],[0,0,1],[1,0,0]]'
-        const isYzNeg = stringAxes === '[[0,1,0],[0,0,1],[-1,0,0]]'
+        // because vertical quaternions are a gimbal lock, for the orbit controls
+        // it's best to set them explicitly to the vertical position with a known good camera up
+        if (isVert && sketchQuaternion.zAxis[2] < 0) {
+          quaternion.set(0, 1, 0, 0)
+        } else if (isVert) {
+          quaternion.set(0, 0, 0, 1)
+        }
 
-        const a = Math.cos(Math.PI / 4)
-        const quatArgs: [number, number, number, number] = isXyPos
-          ? [0, 0, 0, 1]
-          : isXyNeg
-          ? [1, 0, 0, 0]
-          : isXzPos
-          ? [0, a, a, 0]
-          : isXzNeg
-          ? [a, 0, 0, a]
-          : isYzPos
-          ? [0.5, 0.5, 0.5, 0.5]
-          : isYzNeg
-          ? [-0.5, 0.5, 0.5, -0.5]
-          : [0, 0, 0, 1] // fall back
-
-        setupSingleton.tweenCameraToQuaternion(
-          new Quaternion(...quatArgs).normalize()
-        )
+        setupSingleton.tweenCameraToQuaternion(quaternion)
       },
       'initialise draft line': ({ sketchPathToNode }) => {},
       // sketchCanvasHelper.addDraftLine(sketchPathToNode || []),
