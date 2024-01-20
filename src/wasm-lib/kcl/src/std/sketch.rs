@@ -779,109 +779,38 @@ async fn inner_start_sketch_on(data: PlaneData, args: Args) -> Result<Box<Plane>
     let id = uuid::Uuid::new_v4();
     let default_origin = Point3D { x: 0.0, y: 0.0, z: 0.0 };
 
+    let (x_axis, y_axis) = match data {
+        PlaneData::XY => (Point3D { x: 1.0, y: 0.0, z: 0.0 }, Point3D { x: 0.0, y: 1.0, z: 0.0 }),
+        PlaneData::NegXY => (
+            Point3D {
+                x: -1.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Point3D { x: 0.0, y: 1.0, z: 0.0 },
+        ),
+        PlaneData::XZ => (Point3D { x: 1.0, y: 0.0, z: 0.0 }, Point3D { x: 0.0, y: 0.0, z: 1.0 }),
+        PlaneData::NegXZ => (
+            Point3D {
+                x: -1.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Point3D { x: 0.0, y: 0.0, z: 1.0 },
+        ),
+        PlaneData::YZ => (Point3D { x: 0.0, y: 1.0, z: 0.0 }, Point3D { x: 0.0, y: 0.0, z: 1.0 }),
+        PlaneData::NegYZ => (
+            Point3D {
+                x: 0.0,
+                y: -1.0,
+                z: 0.0,
+            },
+            Point3D { x: 0.0, y: 0.0, z: 1.0 },
+        ),
+        _ => (Point3D { x: 1.0, y: 0.0, z: 0.0 }, Point3D { x: 0.0, y: 1.0, z: 0.0 }),
+    };
+
     plane.id = match data {
-        PlaneData::XY => {
-            args.send_modeling_cmd(
-                id,
-                ModelingCmd::MakePlane {
-                    clobber: false,
-                    origin: default_origin,
-                    size: 60.0,
-                    x_axis: Point3D { x: 1.0, y: 0.0, z: 0.0 },
-                    y_axis: Point3D { x: 0.0, y: 1.0, z: 0.0 },
-                    hide: Some(true),
-                },
-            )
-            .await?;
-            id
-        }
-        PlaneData::NegXY => {
-            args.send_modeling_cmd(
-                id,
-                ModelingCmd::MakePlane {
-                    clobber: false,
-                    origin: default_origin,
-                    size: 60.0,
-                    x_axis: Point3D {
-                        x: -1.0,
-                        y: 0.0,
-                        z: 0.0,
-                    },
-                    y_axis: Point3D { x: 0.0, y: 1.0, z: 0.0 },
-                    hide: Some(true),
-                },
-            )
-            .await?;
-            id
-        }
-        PlaneData::XZ => {
-            args.send_modeling_cmd(
-                id,
-                ModelingCmd::MakePlane {
-                    clobber: false,
-                    origin: default_origin,
-                    size: 60.0,
-                    x_axis: Point3D { x: 1.0, y: 0.0, z: 0.0 },
-                    y_axis: Point3D { x: 0.0, y: 0.0, z: 1.0 },
-                    hide: Some(true),
-                },
-            )
-            .await?;
-            id
-        }
-        PlaneData::NegXZ => {
-            args.send_modeling_cmd(
-                id,
-                ModelingCmd::MakePlane {
-                    clobber: false,
-                    origin: default_origin,
-                    size: 60.0,
-                    x_axis: Point3D {
-                        x: -1.0,
-                        y: 0.0,
-                        z: 0.0,
-                    },
-                    y_axis: Point3D { x: 0.0, y: 0.0, z: 1.0 },
-                    hide: Some(true),
-                },
-            )
-            .await?;
-            id
-        }
-        PlaneData::YZ => {
-            args.send_modeling_cmd(
-                id,
-                ModelingCmd::MakePlane {
-                    clobber: false,
-                    origin: default_origin,
-                    size: 60.0,
-                    x_axis: Point3D { x: 0.0, y: 1.0, z: 0.0 },
-                    y_axis: Point3D { x: 0.0, y: 0.0, z: 1.0 },
-                    hide: Some(true),
-                },
-            )
-            .await?;
-            id
-        }
-        PlaneData::NegYZ => {
-            args.send_modeling_cmd(
-                id,
-                ModelingCmd::MakePlane {
-                    clobber: false,
-                    origin: default_origin,
-                    size: 60.0,
-                    x_axis: Point3D {
-                        x: 0.0,
-                        y: -1.0,
-                        z: 0.0,
-                    },
-                    y_axis: Point3D { x: 0.0, y: 0.0, z: 1.0 },
-                    hide: Some(true),
-                },
-            )
-            .await?;
-            id
-        }
         PlaneData::Plane {
             origin,
             x_axis,
@@ -896,6 +825,21 @@ async fn inner_start_sketch_on(data: PlaneData, args: Args) -> Result<Box<Plane>
                     size: 60.0,
                     x_axis: (*x_axis).into(),
                     y_axis: (*y_axis).into(),
+                    hide: Some(true),
+                },
+            )
+            .await?;
+            id
+        }
+        _ => {
+            args.send_modeling_cmd(
+                id,
+                ModelingCmd::MakePlane {
+                    clobber: false,
+                    origin: default_origin,
+                    size: 60.0,
+                    x_axis,
+                    y_axis,
                     hide: Some(true),
                 },
             )
