@@ -776,19 +776,118 @@ pub async fn start_sketch_on(args: Args) -> Result<MemoryItem, KclError> {
 }]
 async fn inner_start_sketch_on(data: PlaneData, args: Args) -> Result<Box<Plane>, KclError> {
     let mut plane: Plane = data.clone().into();
+    let id = uuid::Uuid::new_v4();
+    let default_origin = Point3D { x: 0.0, y: 0.0, z: 0.0 };
 
     plane.id = match data {
-        PlaneData::XY | PlaneData::NegXY => args.ctx.planes.xy,
-        PlaneData::XZ | PlaneData::NegXZ => args.ctx.planes.xz,
-        PlaneData::YZ | PlaneData::NegYZ => args.ctx.planes.yz,
+        PlaneData::XY => {
+            args.send_modeling_cmd(
+                id,
+                ModelingCmd::MakePlane {
+                    clobber: false,
+                    origin: default_origin,
+                    size: 60.0,
+                    x_axis: Point3D { x: 1.0, y: 0.0, z: 0.0 },
+                    y_axis: Point3D { x: 0.0, y: 1.0, z: 0.0 },
+                    hide: Some(true),
+                },
+            )
+            .await?;
+            id
+        }
+        PlaneData::NegXY => {
+            args.send_modeling_cmd(
+                id,
+                ModelingCmd::MakePlane {
+                    clobber: false,
+                    origin: default_origin,
+                    size: 60.0,
+                    x_axis: Point3D {
+                        x: -1.0,
+                        y: 0.0,
+                        z: 0.0,
+                    },
+                    y_axis: Point3D { x: 0.0, y: 1.0, z: 0.0 },
+                    hide: Some(true),
+                },
+            )
+            .await?;
+            id
+        }
+        PlaneData::XZ => {
+            args.send_modeling_cmd(
+                id,
+                ModelingCmd::MakePlane {
+                    clobber: false,
+                    origin: default_origin,
+                    size: 60.0,
+                    x_axis: Point3D { x: 1.0, y: 0.0, z: 0.0 },
+                    y_axis: Point3D { x: 0.0, y: 0.0, z: 1.0 },
+                    hide: Some(true),
+                },
+            )
+            .await?;
+            id
+        }
+        PlaneData::NegXZ => {
+            args.send_modeling_cmd(
+                id,
+                ModelingCmd::MakePlane {
+                    clobber: false,
+                    origin: default_origin,
+                    size: 60.0,
+                    x_axis: Point3D {
+                        x: -1.0,
+                        y: 0.0,
+                        z: 0.0,
+                    },
+                    y_axis: Point3D { x: 0.0, y: 0.0, z: 1.0 },
+                    hide: Some(true),
+                },
+            )
+            .await?;
+            id
+        }
+        PlaneData::YZ => {
+            args.send_modeling_cmd(
+                id,
+                ModelingCmd::MakePlane {
+                    clobber: false,
+                    origin: default_origin,
+                    size: 60.0,
+                    x_axis: Point3D { x: 0.0, y: 1.0, z: 0.0 },
+                    y_axis: Point3D { x: 0.0, y: 0.0, z: 1.0 },
+                    hide: Some(true),
+                },
+            )
+            .await?;
+            id
+        }
+        PlaneData::NegYZ => {
+            args.send_modeling_cmd(
+                id,
+                ModelingCmd::MakePlane {
+                    clobber: false,
+                    origin: default_origin,
+                    size: 60.0,
+                    x_axis: Point3D {
+                        x: 0.0,
+                        y: -1.0,
+                        z: 0.0,
+                    },
+                    y_axis: Point3D { x: 0.0, y: 0.0, z: 1.0 },
+                    hide: Some(true),
+                },
+            )
+            .await?;
+            id
+        }
         PlaneData::Plane {
             origin,
             x_axis,
             y_axis,
             z_axis: _,
         } => {
-            let id = uuid::Uuid::new_v4();
-            // Create the plane.
             args.send_modeling_cmd(
                 id,
                 ModelingCmd::MakePlane {

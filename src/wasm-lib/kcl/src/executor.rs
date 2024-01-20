@@ -4,7 +4,6 @@ use std::{collections::HashMap, sync::Arc};
 
 use anyhow::Result;
 use async_recursion::async_recursion;
-use kittycad::types::{Color, ModelingCmd, Point3D};
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -13,7 +12,7 @@ use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 use crate::{
     ast::types::{BodyItem, FunctionExpression, KclNone, Value},
-    engine::{EngineConnection, EngineManager},
+    engine::EngineConnection,
     errors::{KclError, KclErrorDetails},
     std::{FunctionKind, StdLib},
 };
@@ -162,124 +161,6 @@ pub enum PlaneType {
     #[serde(rename = "Custom")]
     #[display("Custom")]
     Custom,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub struct DefaultPlanes {
-    pub xy: uuid::Uuid,
-    pub xz: uuid::Uuid,
-    pub yz: uuid::Uuid,
-}
-
-impl DefaultPlanes {
-    pub async fn new(engine: &EngineConnection) -> Result<Self, KclError> {
-        // Create new default planes.
-        let default_size = 60.0;
-        let default_origin = Point3D { x: 0.0, y: 0.0, z: 0.0 };
-
-        // Create xy plane.
-        let xy = uuid::Uuid::new_v4();
-        engine
-            .send_modeling_cmd(
-                xy,
-                SourceRange::default(),
-                ModelingCmd::MakePlane {
-                    clobber: false,
-                    origin: default_origin,
-                    size: default_size,
-                    x_axis: Point3D { x: 1.0, y: 0.0, z: 0.0 },
-                    y_axis: Point3D { x: 0.0, y: 1.0, z: 0.0 },
-                    hide: Some(true),
-                },
-            )
-            .await?;
-        // Set the color.
-        engine
-            .send_modeling_cmd(
-                uuid::Uuid::new_v4(),
-                SourceRange::default(),
-                ModelingCmd::PlaneSetColor {
-                    color: Color {
-                        r: 0.7,
-                        g: 0.28,
-                        b: 0.28,
-                        a: 0.4,
-                    },
-                    plane_id: xy,
-                },
-            )
-            .await?;
-
-        // Create yz plane.
-        let yz = uuid::Uuid::new_v4();
-        engine
-            .send_modeling_cmd(
-                yz,
-                SourceRange::default(),
-                ModelingCmd::MakePlane {
-                    clobber: false,
-                    origin: default_origin,
-                    size: default_size,
-                    x_axis: Point3D { x: 0.0, y: 1.0, z: 0.0 },
-                    y_axis: Point3D { x: 0.0, y: 0.0, z: 1.0 },
-                    hide: Some(true),
-                },
-            )
-            .await?;
-        // Set the color.
-        engine
-            .send_modeling_cmd(
-                uuid::Uuid::new_v4(),
-                SourceRange::default(),
-                ModelingCmd::PlaneSetColor {
-                    color: Color {
-                        r: 0.28,
-                        g: 0.7,
-                        b: 0.28,
-                        a: 0.4,
-                    },
-                    plane_id: yz,
-                },
-            )
-            .await?;
-
-        // Create xz plane.
-        let xz = uuid::Uuid::new_v4();
-        engine
-            .send_modeling_cmd(
-                xz,
-                SourceRange::default(),
-                ModelingCmd::MakePlane {
-                    clobber: false,
-                    origin: default_origin,
-                    size: default_size,
-                    x_axis: Point3D { x: 1.0, y: 0.0, z: 0.0 },
-                    y_axis: Point3D { x: 0.0, y: 0.0, z: 1.0 },
-                    hide: Some(true),
-                },
-            )
-            .await?;
-        // Set the color.
-        engine
-            .send_modeling_cmd(
-                uuid::Uuid::new_v4(),
-                SourceRange::default(),
-                ModelingCmd::PlaneSetColor {
-                    color: Color {
-                        r: 0.28,
-                        g: 0.28,
-                        b: 0.7,
-                        a: 0.4,
-                    },
-                    plane_id: xz,
-                },
-            )
-            .await?;
-
-        Ok(Self { xy, xz, yz })
-    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -872,7 +753,6 @@ impl Default for PipeInfo {
 #[derive(Debug, Clone)]
 pub struct ExecutorContext {
     pub engine: EngineConnection,
-    pub planes: DefaultPlanes,
     pub stdlib: Arc<StdLib>,
 }
 
@@ -1168,10 +1048,8 @@ mod tests {
         let program = parser.ast()?;
         let mut mem: ProgramMemory = Default::default();
         let engine = EngineConnection::new().await?;
-        let planes = DefaultPlanes::new(&engine).await?;
         let ctx = ExecutorContext {
             engine,
-            planes,
             stdlib: Arc::new(StdLib::default()),
         };
         let memory = execute(program, &mut mem, BodyType::Root, &ctx).await?;

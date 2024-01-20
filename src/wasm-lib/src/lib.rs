@@ -17,13 +17,11 @@ pub async fn execute_wasm(
     program_str: &str,
     memory_str: &str,
     manager: kcl_lib::engine::conn_wasm::EngineCommandManager,
-    planes_str: &str,
 ) -> Result<JsValue, String> {
     // deserialize the ast from a stringified json
 
     use kcl_lib::executor::ExecutorContext;
     let program: kcl_lib::ast::types::Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
-    let planes: kcl_lib::executor::DefaultPlanes = serde_json::from_str(planes_str).map_err(|e| e.to_string())?;
     let mut mem: kcl_lib::executor::ProgramMemory = serde_json::from_str(memory_str).map_err(|e| e.to_string())?;
 
     let engine = kcl_lib::engine::EngineConnection::new(manager)
@@ -31,7 +29,6 @@ pub async fn execute_wasm(
         .map_err(|e| format!("{:?}", e))?;
     let ctx = ExecutorContext {
         engine,
-        planes,
         stdlib: std::sync::Arc::new(kcl_lib::std::StdLib::new()),
     };
 
