@@ -789,10 +789,17 @@ async fn inner_start_sketch_on(data: PlaneData, args: Args) -> Result<Box<Plane>
             },
             Point3D { x: 0.0, y: 1.0, z: 0.0 },
         ),
-        PlaneData::XZ => (Point3D { x: 1.0, y: 0.0, z: 0.0 }, Point3D { x: 0.0, y: 0.0, z: 1.0 }),
-        PlaneData::NegXZ => (
+        PlaneData::XZ => (
             Point3D {
                 x: -1.0,
+                y: 0.0,
+                z: 0.0,
+            },
+            Point3D { x: 0.0, y: 0.0, z: 1.0 },
+        ), // TODO x component for x_axis shouldn't be negative
+        PlaneData::NegXZ => (
+            Point3D {
+                x: 1.0, // TODO this should be -1.0
                 y: 0.0,
                 z: 0.0,
             },

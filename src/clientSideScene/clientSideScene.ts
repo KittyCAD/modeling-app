@@ -3,9 +3,11 @@ import {
   ExtrudeGeometry,
   Group,
   LineCurve3,
+  Matrix4,
   Mesh,
   MeshBasicMaterial,
   PlaneGeometry,
+  Quaternion,
   Scene,
   Vector2,
   Vector3,
@@ -17,6 +19,7 @@ import {
   PathToNode,
   Program,
   ProgramMemory,
+  SketchGroup,
   VariableDeclaration,
   recast,
 } from 'lang/wasm'
@@ -59,9 +62,11 @@ class ClientSideScene {
       programMemoryOverride,
     })
     this.sceneProgramMemory = programMemory
-    const sketchGroup = programMemory.root[variableDeclarationName]
-      .value as Path[]
-    sketchGroup.forEach((segment, index) => {
+    const sketchGroup = programMemory.root[
+      variableDeclarationName
+    ] as SketchGroup
+    const group = new Group()
+    sketchGroup.value.forEach((segment, index) => {
       const segPathToNode = getNodePathFromSourceRange(
         kclManager.ast,
         segment.__geoMeta.sourceRange
@@ -77,9 +82,22 @@ class ClientSideScene {
         child.layers.set(SKETCH_LAYER)
       })
 
-      this.scene.add(seg)
+      group.add(seg)
       this.activeSegments[JSON.stringify(segPathToNode)] = seg
     })
+    const zAxisVec = new Vector3(...sketchGroup.zAxis)
+    const yAxisVec = new Vector3(...sketchGroup.yAxis)
+    const xAxisVec = new Vector3().crossVectors(yAxisVec, zAxisVec).normalize()
+
+    let yAxisVecNormalized = yAxisVec.clone().normalize()
+    let zAxisVecNormalized = zAxisVec.clone().normalize()
+
+    let rotationMatrix = new Matrix4()
+    rotationMatrix.makeBasis(xAxisVec, yAxisVecNormalized, zAxisVecNormalized)
+    const quaternion = new Quaternion().setFromRotationMatrix(rotationMatrix)
+    group.setRotationFromQuaternion(quaternion)
+
+    this.scene.add(group)
     setupSingleton.setOnDragCallback((args) => {
       this.onDragSegment({
         ...args,
