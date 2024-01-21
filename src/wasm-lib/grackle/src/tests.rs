@@ -172,6 +172,44 @@ fn use_native_function_id() {
 }
 
 #[test]
+#[ignore = "haven't done computed properties yet"]
+fn computed_array_index() {
+    let program = r#"
+    let array = ["a", "b", "c"]
+    let index = 1+1
+    let prop = array[index]
+    "#;
+    let (_plan, scope) = must_plan(program);
+    match scope.get("prop").unwrap() {
+        EpBinding::Single(addr) => {
+            assert_eq!(*addr, Address::ZERO + 1);
+        }
+        other => {
+            panic!("expected 'prop' bound to 0x0 but it was bound to {other:?}");
+        }
+    }
+}
+
+#[test]
+#[ignore = "haven't done computed properties yet"]
+fn computed_member_expressions() {
+    let program = r#"
+    let obj = {x: 1, y: 2}
+    let index = "x"
+    let prop = obj[index]
+    "#;
+    let (_plan, scope) = must_plan(program);
+    match scope.get("prop").unwrap() {
+        EpBinding::Single(addr) => {
+            assert_eq!(*addr, Address::ZERO + 1);
+        }
+        other => {
+            panic!("expected 'prop' bound to 0x0 but it was bound to {other:?}");
+        }
+    }
+}
+
+#[test]
 fn member_expressions_object() {
     let program = r#"
     let obj = {x: 1, y: 2}
@@ -183,7 +221,7 @@ fn member_expressions_object() {
             assert_eq!(*addr, Address::ZERO + 1);
         }
         other => {
-            panic!("expected 'number' bound to 0x0 but it was bound to {other:?}");
+            panic!("expected 'prop' bound to 0x0 but it was bound to {other:?}");
         }
     }
 }
