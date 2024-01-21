@@ -197,9 +197,10 @@ impl Planner {
                 let mut binding = self.binding_scope.get(&name).ok_or(CompileError::Undefined { name })?;
                 for (property, computed) in properties {
                     if computed {
-                        todo!("Support computed properties");
+                        todo!("Support computed properties like '{:?}'", property);
+                    } else {
+                        binding = binding.property_of(property)?;
                     }
-                    binding = binding.property_of(property)?;
                 }
                 Ok(EvalPlan {
                     instructions: Vec::new(),
