@@ -29,6 +29,7 @@ import { executeAst } from 'useStore'
 import { engineCommandManager } from 'lang/std/engineConnection'
 import { straightSegment } from './segments'
 import { changeSketchArguments } from 'lang/std/sketch'
+import { isReducedMotion } from 'lib/utils'
 
 class ClientSideScene {
   scene: Scene
@@ -105,6 +106,7 @@ class ClientSideScene {
         sketchPathToNode,
       })
     })
+    setupSingleton.controls.enableRotate = false
   }
   prepareTruncatedMemoryAndAst = (
     sketchPathToNode: PathToNode,
@@ -236,11 +238,18 @@ class ClientSideScene {
       }
     )
   }
-  tearDownSketch() {
-    Object.values(this.activeSegments).forEach((seg) => {
-      this.scene.remove(seg)
-    })
+  async tearDownSketch() {
+    if (isReducedMotion()) {
+      setupSingleton.usePerspectiveCamera()
+    } else {
+      await setupSingleton.animateToPerspective()
+    }
+    const aChild = Object.values(this.activeSegments)[0]
+    if (aChild && aChild.parent) {
+      this.scene.remove(aChild.parent)
+    }
     if (this.intersectionPlane) this.scene.remove(this.intersectionPlane)
+    setupSingleton.controls.enableRotate = true
   }
 }
 

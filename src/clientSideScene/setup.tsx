@@ -18,7 +18,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { useRef, useEffect } from 'react'
 import { engineCommandManager } from 'lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
-import { throttle } from 'lib/utils'
+import { isReducedMotion, throttle } from 'lib/utils'
 import { compareVec2Epsilon2 } from 'lang/std/sketch'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { deg2Rad } from 'lib/utils2d'
@@ -229,84 +229,99 @@ class SetupSingleton {
         targetQuaternion,
         animationProgress
       )
-      this.camera.position
-        .set(0, 0, 1)
-        .applyQuaternion(currentQ)
-        .multiplyScalar(initialDistance)
-        .add(controlsTarget)
+      if (this.camera instanceof PerspectiveCamera)
+        // changing the camera position back when it's orthographic doesn't do anything
+        // and it messes up animating back to perspective later
+        this.camera.position
+          .set(0, 0, 1)
+          .applyQuaternion(currentQ)
+          .multiplyScalar(initialDistance)
+          .add(controlsTarget)
+
       this.camera.up.set(0, 1, 0).applyQuaternion(currentQ).normalize()
       this.camera.quaternion.copy(currentQ)
       this.controls.target.copy(controlsTarget)
       this.controls.update()
+      this.camera.updateProjectionMatrix()
     }
 
     new TWEEN.Tween({ t: 0 })
       .to({ t: tweenEnd }, duration)
       .easing(TWEEN.Easing.Quadratic.InOut)
       .onUpdate(({ t }) => cameraAtTime(t))
-      .onComplete(() => {
-        this.useOrthographicCamera()
+      .onComplete(async () => {
+        if (isReducedMotion()) {
+          this.useOrthographicCamera()
+        } else {
+          await this.animateToOrthographic()
+        }
         if (isVertical) cameraAtTime(1)
         this.camera.up.set(0, 0, 1)
+        this.controls.enableRotate = false
       })
       .start()
   }
 
-  animateToOrthographic = () => {
-    this.isFovAnimationInProgress = true
-    let currentFov = this.fov
-    this.fovBeforeAnimate = this.fov
+  animateToOrthographic = () =>
+    new Promise((resolve) => {
+      this.isFovAnimationInProgress = true
+      let currentFov = this.fov
+      this.fovBeforeAnimate = this.fov
 
-    const targetFov = 4
-    const fovAnimationStep = (currentFov - targetFov) / FRAMES_TO_ANIMATE_IN
+      const targetFov = 4
+      const fovAnimationStep = (currentFov - targetFov) / FRAMES_TO_ANIMATE_IN
 
-    const animateFovChange = () => {
-      if (this.camera instanceof PerspectiveCamera) {
-        if (this.camera.fov > targetFov) {
-          // Decrease the FOV
-          currentFov = Math.max(currentFov - fovAnimationStep, targetFov)
+      const animateFovChange = () => {
+        if (this.camera instanceof PerspectiveCamera) {
+          if (this.camera.fov > targetFov) {
+            // Decrease the FOV
+            currentFov = Math.max(currentFov - fovAnimationStep, targetFov)
+            this.camera.updateProjectionMatrix()
+            this.dollyZoom(currentFov)
+            requestAnimationFrame(animateFovChange) // Continue the animation
+          } else {
+            setTimeout(() => {
+              // Once the target FOV is reached, switch to the orthographic camera
+              // Needs to wait a frame a couple frames after the FOV animation is complete
+              this.useOrthographicCamera()
+              this.isFovAnimationInProgress = false
+              resolve(true)
+            }, 100)
+          }
+        }
+      }
+
+      animateFovChange() // Start the animation
+    })
+
+  animateToPerspective = () =>
+    new Promise((resolve) => {
+      this.isFovAnimationInProgress = true
+      // Immediately set the camera to perspective with a very low FOV
+      this.fov = 4
+      let currentFov = 4
+      this.camera.updateProjectionMatrix()
+      const targetFov = this.fovBeforeAnimate // Target FOV for perspective
+      const fovAnimationStep = (targetFov - currentFov) / 150
+      this.usePerspectiveCamera()
+
+      const animateFovChange = () => {
+        if (this.camera instanceof OrthographicCamera) return
+        if (this.camera.fov < targetFov) {
+          // Increase the FOV
+          currentFov = Math.min(currentFov + fovAnimationStep, targetFov)
+          // this.camera.fov = currentFov
           this.camera.updateProjectionMatrix()
           this.dollyZoom(currentFov)
           requestAnimationFrame(animateFovChange) // Continue the animation
         } else {
-          setTimeout(() => {
-            // Once the target FOV is reached, switch to the orthographic camera
-            // Needs to wait a frame a couple frames after the FOV animation is complete
-            this.useOrthographicCamera()
-            this.isFovAnimationInProgress = false
-          }, 50)
+          // Set the flag to false as the FOV animation is complete
+          this.isFovAnimationInProgress = false
+          resolve(true)
         }
       }
-    }
-
-    animateFovChange() // Start the animation
-  }
-  animateToPerspective = () => {
-    this.isFovAnimationInProgress = true
-    // Immediately set the camera to perspective with a very low FOV
-    this.fov = 4
-    let currentFov = 4
-    this.camera.updateProjectionMatrix()
-    const targetFov = this.fovBeforeAnimate // Target FOV for perspective
-    const fovAnimationStep = (targetFov - currentFov) / FRAMES_TO_ANIMATE_IN
-    this.usePerspectiveCamera()
-
-    const animateFovChange = () => {
-      if (this.camera instanceof OrthographicCamera) return
-      if (this.camera.fov < targetFov) {
-        // Increase the FOV
-        currentFov = Math.min(currentFov + fovAnimationStep, targetFov)
-        // this.camera.fov = currentFov
-        this.camera.updateProjectionMatrix()
-        this.dollyZoom(currentFov)
-        requestAnimationFrame(animateFovChange) // Continue the animation
-      } else {
-        // Set the flag to false as the FOV animation is complete
-        this.isFovAnimationInProgress = false
-      }
-    }
-    animateFovChange() // Start the animation
-  }
+      animateFovChange() // Start the animation
+    })
   dispose = () => {
     // Dispose of scene resources, renderer, and controls
     this.renderer.dispose()
