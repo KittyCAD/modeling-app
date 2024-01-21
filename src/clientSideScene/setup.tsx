@@ -302,7 +302,7 @@ class SetupSingleton {
       let currentFov = 4
       this.camera.updateProjectionMatrix()
       const targetFov = this.fovBeforeAnimate // Target FOV for perspective
-      const fovAnimationStep = (targetFov - currentFov) / 150
+      const fovAnimationStep = (targetFov - currentFov) / FRAMES_TO_ANIMATE_IN
       this.usePerspectiveCamera()
 
       const animateFovChange = () => {
@@ -361,22 +361,6 @@ class SetupSingleton {
     this.camera.quaternion.set(qx, qy, qz, qw)
     this.camera.updateProjectionMatrix()
     this.controls.update()
-
-    engineCommandManager.sendSceneCommand({
-      // we have to change set the perspective camera first purely to update the z_near
-      // after which we set the orthographic camera
-      // TODO make an engine issue that allows z_near, z_far to be set on the orthographic camera
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_set_perspective',
-        parameters: {
-          fov_y: this.fov,
-          z_near: 0.1,
-          z_far: 1000,
-        },
-      },
-    })
     engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
@@ -384,7 +368,6 @@ class SetupSingleton {
         type: 'default_camera_set_orthographic',
       },
     })
-    this.updateEngineCamera()
   }
   usePerspectiveCamera = () => {
     this.isPerspective = true
