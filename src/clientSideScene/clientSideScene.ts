@@ -96,6 +96,7 @@ class ClientSideScene {
     rotationMatrix.makeBasis(xAxisVec, yAxisVecNormalized, zAxisVecNormalized)
     const quaternion = new Quaternion().setFromRotationMatrix(rotationMatrix)
     group.setRotationFromQuaternion(quaternion)
+    this.intersectionPlane.setRotationFromQuaternion(quaternion)
 
     this.scene.add(group)
     setupSingleton.setOnDragCallback((args) => {
