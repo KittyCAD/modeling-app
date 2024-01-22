@@ -123,15 +123,13 @@ export interface ProgramMemory {
 export const executor = async (
   node: Program,
   programMemory: ProgramMemory = { root: {}, return: null },
-  engineCommandManager: EngineCommandManager,
-  planes: DefaultPlanes
+  engineCommandManager: EngineCommandManager
 ): Promise<ProgramMemory> => {
   engineCommandManager.startNewSession()
   const _programMemory = await _executor(
     node,
     programMemory,
-    engineCommandManager,
-    planes
+    engineCommandManager
   )
   await engineCommandManager.waitForAllCommands()
 
@@ -142,15 +140,13 @@ export const executor = async (
 export const _executor = async (
   node: Program,
   programMemory: ProgramMemory = { root: {}, return: null },
-  engineCommandManager: EngineCommandManager,
-  planes: DefaultPlanes
+  engineCommandManager: EngineCommandManager
 ): Promise<ProgramMemory> => {
   try {
     const memory: ProgramMemory = await execute_wasm(
       JSON.stringify(node),
       JSON.stringify(programMemory),
-      engineCommandManager,
-      JSON.stringify(planes)
+      engineCommandManager
     )
     return memory
   } catch (e: any) {

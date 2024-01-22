@@ -183,13 +183,11 @@ export async function executeCode({
   engineCommandManager,
   code,
   lastAst,
-  defaultPlanes,
   force,
 }: {
   code: string
   lastAst: Program
   engineCommandManager: EngineCommandManager
-  defaultPlanes: DefaultPlanes
   force?: boolean
 }): Promise<
   | {
@@ -239,7 +237,6 @@ export async function executeCode({
   const { logs, errors, programMemory } = await executeAst({
     ast,
     engineCommandManager,
-    defaultPlanes,
   })
   return {
     ast,
@@ -253,13 +250,11 @@ export async function executeCode({
 export async function executeAst({
   ast,
   engineCommandManager,
-  defaultPlanes,
   useFakeExecutor = false,
   programMemoryOverride,
 }: {
   ast: Program
   engineCommandManager: EngineCommandManager
-  defaultPlanes: DefaultPlanes
   useFakeExecutor?: boolean
   programMemoryOverride?: ProgramMemory
 }): Promise<{
@@ -286,8 +281,7 @@ export async function executeAst({
             root: defaultProgramMemory,
             return: null,
           },
-          engineCommandManager,
-          defaultPlanes
+          engineCommandManager
         ))
 
     await engineCommandManager.waitForAllCommands()
