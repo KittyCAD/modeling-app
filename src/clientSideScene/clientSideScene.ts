@@ -91,7 +91,7 @@ class ClientSideScene {
     const group = new Group()
     sketchGroup.value.forEach((segment, index) => {
       let segPathToNode = getNodePathFromSourceRange(
-        kclManager.ast,
+        draftSegment ? truncatedAst : kclManager.ast,
         segment.__geoMeta.sourceRange
       )
       if (index === sketchGroup.value.length - 1 && draftSegment) {
@@ -346,7 +346,7 @@ function prepareTruncatedMemoryAndAst(
   variableDeclarationName: string
 } {
   const bodyIndex = Number(sketchPathToNode?.[1]?.[0]) || 0
-  let _ast = { ...ast }
+  const _ast = JSON.parse(JSON.stringify(ast))
   if (draftSegment === 'line') {
     // truncatedAst needs to setup with another segment at the end
     const newSegment = createCallExpressionStdLib('line', [
@@ -357,9 +357,28 @@ function prepareTruncatedMemoryAndAst(
       (_ast.body[bodyIndex] as VariableDeclaration).declarations[0]
         .init as PipeExpression
     ).body.push(newSegment)
-    _ast = parse(recast(_ast)) // get source ranges correct since unfortunately we still rely on them
+    // update source ranges to section we just added.
+    // hacks like this wouldn't be needed if the AST put pathToNode info in memory/sketchGroup segments
+    const updatedSrcRangeAst = parse(recast(_ast)) // get source ranges correct since unfortunately we still rely on them
+    const lastPipeItem = (
+      (updatedSrcRangeAst.body[bodyIndex] as VariableDeclaration)
+        .declarations[0].init as PipeExpression
+    ).body.slice(-1)[0]
+
+    ;(
+      (_ast.body[bodyIndex] as VariableDeclaration).declarations[0]
+        .init as PipeExpression
+    ).body.slice(-1)[0].start = lastPipeItem.start
+
+    _ast.end = lastPipeItem.end
+    const varDec = _ast.body[bodyIndex] as VariableDeclaration
+    varDec.end = lastPipeItem.end
+    const declarator = varDec.declarations[0]
+    declarator.end = lastPipeItem.end
+    const init = declarator.init as PipeExpression
+    init.end = lastPipeItem.end
+    init.body.slice(-1)[0].end = lastPipeItem.end
   }
-  // const _ast = ast || kclManager.ast
   const variableDeclarationName =
     getNodeFromPath<VariableDeclaration>(
       _ast,
