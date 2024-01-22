@@ -80,13 +80,14 @@ impl Planner {
                     end: _,
                     params_required,
                     params_optional,
-                    body: _,
+                    body,
                 } = expr.into_parts().map_err(CompileError::BadParamOrder)?;
                 Ok(EvalPlan {
                     instructions: Vec::new(),
                     binding: EpBinding::Function(UserDefinedFunction {
                         params_optional,
                         params_required,
+                        body,
                     }),
                 })
             }
@@ -443,14 +444,22 @@ trait KclFunction: std::fmt::Debug {
 pub type String2 = std::borrow::Cow<'static, str>;
 
 #[derive(Debug, Clone)]
-#[cfg_attr(test, derive(Eq, PartialEq))]
 struct UserDefinedFunction {
     params_optional: Vec<ast::types::Parameter>,
     params_required: Vec<ast::types::Parameter>,
+    body: ast::types::Program,
 }
+
+impl PartialEq for UserDefinedFunction {
+    fn eq(&self, other: &Self) -> bool {
+        self.params_optional == other.params_optional && self.params_required == other.params_required
+    }
+}
+
+impl Eq for UserDefinedFunction {}
 
 impl KclFunction for UserDefinedFunction {
     fn call(&self, next_addr: &mut Address, args: Vec<EpBinding>) -> Result<EvalPlan, CompileError> {
-        todo!()
+        todo!("Emit a plan to execute user-defined KCL functions")
     }
 }

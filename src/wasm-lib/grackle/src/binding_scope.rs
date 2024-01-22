@@ -133,8 +133,11 @@ impl BindingScope {
     pub fn get_fn(&self, identifier: &str) -> GetFnResult {
         if let Some(f) = self.function_bindings.get(identifier) {
             GetFnResult::Found(f.as_ref())
-        } else if self.get(identifier).is_some() {
-            GetFnResult::NonCallable
+        } else if let Some(x) = self.get(identifier) {
+            match x {
+                EpBinding::Function(f) => GetFnResult::Found(f),
+                _ => GetFnResult::NonCallable,
+            }
         } else if let Some(ref parent) = self.parent {
             parent.get_fn(identifier)
         } else {
