@@ -196,25 +196,25 @@ export const Stream = ({ className = '' }) => {
           // Get the current axis.
           let currentAxis: 'xy' | 'xz' | 'yz' | '-xy' | '-xz' | '-yz' | null =
             null
-          if (context.sketchPlaneId === kclManager.getPlaneId('xy')) {
-            if (z_axis.z === -1) {
-              currentAxis = '-xy'
-            } else {
-              currentAxis = 'xy'
-            }
-          } else if (context.sketchPlaneId === kclManager.getPlaneId('yz')) {
-            if (z_axis.x === -1) {
-              currentAxis = '-yz'
-            } else {
-              currentAxis = 'yz'
-            }
-          } else if (context.sketchPlaneId === kclManager.getPlaneId('xz')) {
-            if (z_axis.y === -1) {
-              currentAxis = '-xz'
-            } else {
-              currentAxis = 'xz'
-            }
-          }
+          // if (context.sketchPlaneId === kclManager.getPlaneId('xy')) {
+          //   if (z_axis.z === -1) {
+          //     currentAxis = '-xy'
+          //   } else {
+          //     currentAxis = 'xy'
+          //   }
+          // } else if (context.sketchPlaneId === kclManager.getPlaneId('yz')) {
+          //   if (z_axis.x === -1) {
+          //     currentAxis = '-yz'
+          //   } else {
+          //     currentAxis = 'yz'
+          //   }
+          // } else if (context.sketchPlaneId === kclManager.getPlaneId('xz')) {
+          //   if (z_axis.y === -1) {
+          //     currentAxis = '-xz'
+          //   } else {
+          //     currentAxis = 'xz'
+          //   }
+          // }
 
           send({
             type: 'Add point',
@@ -287,13 +287,13 @@ export const Stream = ({ className = '' }) => {
         )
         // Get the current plane string for plane we are on.
         let currentPlaneString = ''
-        if (context.sketchPlaneId === kclManager.getPlaneId('xy')) {
-          currentPlaneString = 'XY'
-        } else if (context.sketchPlaneId === kclManager.getPlaneId('yz')) {
-          currentPlaneString = 'YZ'
-        } else if (context.sketchPlaneId === kclManager.getPlaneId('xz')) {
-          currentPlaneString = 'XZ'
-        }
+        // if (context.sketchPlaneId === kclManager.getPlaneId('xy')) {
+        //   currentPlaneString = 'XY'
+        // } else if (context.sketchPlaneId === kclManager.getPlaneId('yz')) {
+        //   currentPlaneString = 'YZ'
+        // } else if (context.sketchPlaneId === kclManager.getPlaneId('xz')) {
+        //   currentPlaneString = 'XZ'
+        // }
 
         // Do not supporting editing/moving lines on a non-default plane.
         // Eventually we can support this but for now we will just throw an

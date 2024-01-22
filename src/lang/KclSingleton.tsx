@@ -111,10 +111,6 @@ class KclManager {
     this._programMemoryCallBack(programMemory)
   }
 
-  get defaultPlanes() {
-    return this?.engineCommandManager?.defaultPlanes
-  }
-
   get logs() {
     return this._logs
   }
@@ -238,7 +234,6 @@ class KclManager {
     const { logs, errors, programMemory } = await executeAst({
       ast,
       engineCommandManager: this.engineCommandManager,
-      defaultPlanes: this.defaultPlanes,
     })
     this.isExecuting = false
     this.logs = logs
@@ -275,7 +270,6 @@ class KclManager {
     const { logs, errors, programMemory } = await executeAst({
       ast: newAst,
       engineCommandManager: this.engineCommandManager,
-      defaultPlanes: this.defaultPlanes,
       useFakeExecutor: true,
     })
     this._logs = logs
@@ -309,7 +303,6 @@ class KclManager {
       engineCommandManager,
       code: code || this._code,
       lastAst: this._ast,
-      defaultPlanes: this.defaultPlanes,
       force: false,
     })
     if (!result.isChange) return
@@ -398,22 +391,6 @@ class KclManager {
       await this.executeAstMock(astWithUpdatedSource, { updates: 'code' })
     }
     return returnVal
-  }
-
-  getPlaneId(axis: 'xy' | 'xz' | 'yz'): string {
-    return this.defaultPlanes[axis]
-  }
-
-  showPlanes() {
-    this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, false)
-    this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, false)
-    this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, false)
-  }
-
-  hidePlanes() {
-    this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, true)
-    this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, true)
-    this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, true)
   }
 }
 

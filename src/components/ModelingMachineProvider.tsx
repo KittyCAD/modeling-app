@@ -98,7 +98,7 @@ export const ModelingMachineProvider = ({
         'Modify AST': () => {},
         'Update code selection cursors': () => {},
         'show default planes': () => {
-          kclManager.showPlanes()
+          // kclManager.showPlanes()
         },
         'create path': assign({
           sketchEnginePathId: () => {

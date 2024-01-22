@@ -148,7 +148,7 @@ export function useCalc({
       executeAst({
         ast,
         engineCommandManager,
-        defaultPlanes: kclManager.defaultPlanes,
+        // defaultPlanes: kclManager.defaultPlanes,
         useFakeExecutor: true,
         programMemoryOverride: JSON.parse(
           JSON.stringify(kclManager.programMemory)

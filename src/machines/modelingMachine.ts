@@ -945,7 +945,7 @@ export const modelingMachine = createMachine(
           })
       },
       'hide default planes': () => {
-        kclManager.hidePlanes()
+        // kclManager.hidePlanes()
       },
       edit_mode_exit: () =>
         engineCommandManager.sendSceneCommand({
@@ -1178,21 +1178,21 @@ function getSketchMetadataFromPathToNode(
     (e) => e.type === 'CallExpression' && e.callee.name === 'startSketchOn'
   ) as CallExpression
   if (!sketchCallExpression) return {}
-  const firstArg = sketchCallExpression.arguments[0]
+  // const firstArg = sketchCallExpression.arguments[0]
   let planeId = ''
-  if (firstArg.type === 'Literal' && firstArg.value) {
-    const planeStrCleaned = firstArg.value
-      .toString()
-      .toLowerCase()
-      .replace('-', '')
-    if (
-      planeStrCleaned === 'xy' ||
-      planeStrCleaned === 'xz' ||
-      planeStrCleaned === 'yz'
-    ) {
-      planeId = kclManager.getPlaneId(planeStrCleaned)
-    }
-  }
+  // if (firstArg.type === 'Literal' && firstArg.value) {
+  // const planeStrCleaned = firstArg.value
+  //   .toString()
+  //   .toLowerCase()
+  //   .replace('-', '')
+  // if (
+  //   planeStrCleaned === 'xy' ||
+  //   planeStrCleaned === 'xz' ||
+  //   planeStrCleaned === 'yz'
+  // ) {
+  //   planeId = kclManager.getPlaneId(planeStrCleaned)
+  // }
+  // }
 
   let sketchEnginePathId: string
   if (selectionRanges) {
