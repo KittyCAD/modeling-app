@@ -316,12 +316,14 @@ class ClientSideScene {
       }
     )
   }
-  async tearDownSketch() {
+  async animateAfterSketch() {
     if (isReducedMotion()) {
       setupSingleton.usePerspectiveCamera()
     } else {
       await setupSingleton.animateToPerspective()
     }
+  }
+  async tearDownSketch() {
     const aChild = Object.values(this.activeSegments)[0]
     if (aChild && aChild.parent) {
       this.scene.remove(aChild.parent)
