@@ -67,6 +67,19 @@ const throttledUpdateEngineFov = throttle(
   1000 / 15
 )
 
+interface OnDragCallbackArgs {
+  object: any
+  event: any
+  intersectPoint: Vector3
+  intersection2d: Vector2
+}
+
+interface onMoveCallbackArgs {
+  event: any
+  intersectPoint: Vector3
+  intersection2d: Vector2
+}
+
 class SetupSingleton {
   static instance: SetupSingleton
   scene: Scene
@@ -77,21 +90,14 @@ class SetupSingleton {
   fov = 45
   fovBeforeAnimate = 45
   isFovAnimationInProgress = false
-  onDragCallback: (arg: {
-    object: any
-    event: any
-    intersectPoint: Vector3
-    intersection2d: Vector2
-  }) => void = () => {}
-  setOnDragCallback = (
-    callback: (arg: {
-      object: any
-      event: any
-      intersectPoint: Vector3
-      intersection2d: Vector2
-    }) => void
-  ) => {
-    this.onDragCallback = callback
+  onDragCallback: (arg: OnDragCallbackArgs) => void = () => {}
+  onMoveCallback: (arg: onMoveCallbackArgs) => void = () => {}
+  setCallbacks = (callbacks: {
+    onDrag?: (arg: OnDragCallbackArgs) => void
+    onMove?: (arg: onMoveCallbackArgs) => void
+  }) => {
+    this.onDragCallback = callbacks.onDrag || this.onDragCallback
+    this.onMoveCallback = callbacks.onMove || this.onMoveCallback
   }
 
   hoveredObject: null | Group = null
@@ -518,6 +524,11 @@ class SetupSingleton {
           ...planeIntersectPoint,
         })
       }
+    } else if (planeIntersectPoint) {
+      this.onMoveCallback({
+        event,
+        ...planeIntersectPoint,
+      })
     }
 
     // TODO hover logic later
@@ -620,7 +631,7 @@ export const ClientSideScene = () => {
     <div
       ref={canvasRef}
       className={`absolute inset-0 h-full w-full ${
-        state.matches('Sketch') ? 'bg-black/80' : ''
+        state.matches('Sketch') ? 'bg-black/50' : ''
       }`}
     ></div>
   )

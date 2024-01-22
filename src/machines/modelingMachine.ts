@@ -135,6 +135,7 @@ export type ModelingMachineEvent =
   | { type: 'Re-execute' }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
   | { type: 'Equip Line tool 2' }
+  | { type: 'Equip Line tool 3' }
   | { type: 'Equip tangential arc to 2' }
 
 export type MoveDesc = { line: number; snippet: string }
@@ -481,8 +482,8 @@ export const modelingMachine = createMachine(
               },
 
               'Equip Line tool 2': 'Line tool 2',
-
               'Equip tangential arc to 2': 'tangential arc to 2',
+              'Equip Line tool 3': 'Line tool 3',
             },
 
             entry: 'equip select',
@@ -754,6 +755,10 @@ export const modelingMachine = createMachine(
             ],
 
             entry: 'set up draft arc',
+          },
+
+          'Line tool 3': {
+            entry: 'set up draft line 2',
           },
         },
 
@@ -1109,7 +1114,9 @@ export const modelingMachine = createMachine(
         // sketchCanvasHelper.setupPaperSketch(sketchPathToNode || [])
       },
       'setup client side sketch': ({ sketchPathToNode }) => {
-        clientSideScene.setupSketch(sketchPathToNode || [])
+        clientSideScene.setupSketch({
+          sketchPathToNode: sketchPathToNode || [],
+        })
         const variableDeclarationName =
           getNodeFromPath<VariableDeclaration>(
             kclManager.ast,

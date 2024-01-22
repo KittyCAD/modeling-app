@@ -17,10 +17,12 @@ import {
   CallExpression,
   Path,
   PathToNode,
+  PipeExpression,
   Program,
   ProgramMemory,
   SketchGroup,
   VariableDeclaration,
+  parse,
   recast,
 } from 'lang/wasm'
 import { kclManager } from 'lang/KclSingleton'
@@ -30,6 +32,14 @@ import { engineCommandManager } from 'lang/std/engineConnection'
 import { straightSegment } from './segments'
 import { changeSketchArguments } from 'lang/std/sketch'
 import { isReducedMotion } from 'lib/utils'
+import {
+  createArrayExpression,
+  createCallExpressionStdLib,
+  createLiteral,
+  createPipeSubstitution,
+} from 'lang/modifyAst'
+
+type DraftSegment = 'line' | 'tangentialArcTo'
 
 class ClientSideScene {
   scene: Scene
@@ -40,7 +50,16 @@ class ClientSideScene {
     this.scene = setupSingleton?.scene
   }
 
-  async setupSketch(sketchPathToNode: PathToNode, ast?: Program) {
+  async setupSketch({
+    sketchPathToNode,
+    ast,
+    // is draft line assumes the last segment is a draft line, and mods it as the user moves the mouse
+    draftSegment,
+  }: {
+    sketchPathToNode: PathToNode
+    ast?: Program
+    draftSegment?: DraftSegment
+  }) {
     const planeGeometry = new PlaneGeometry(100000, 100000)
     const planeMaterial = new MeshBasicMaterial({
       color: 0xff0000,
@@ -54,12 +73,15 @@ class ClientSideScene {
     this.scene.add(this.intersectionPlane)
 
     const { truncatedAst, programMemoryOverride, variableDeclarationName } =
-      this.prepareTruncatedMemoryAndAst(sketchPathToNode || [])
+      this.prepareTruncatedMemoryAndAst(
+        sketchPathToNode || [],
+        kclManager.ast,
+        draftSegment
+      )
     const { programMemory } = await executeAst({
       ast: truncatedAst,
       useFakeExecutor: true,
       engineCommandManager,
-      defaultPlanes: kclManager.defaultPlanes,
       programMemoryOverride,
     })
     this.sceneProgramMemory = programMemory
@@ -68,10 +90,21 @@ class ClientSideScene {
     ] as SketchGroup
     const group = new Group()
     sketchGroup.value.forEach((segment, index) => {
-      const segPathToNode = getNodePathFromSourceRange(
+      let segPathToNode = getNodePathFromSourceRange(
         kclManager.ast,
         segment.__geoMeta.sourceRange
       )
+      if (index === sketchGroup.value.length - 1 && draftSegment) {
+        // hacks like this are still needed because we rely on source ranges
+        // if we stored pathToNode info memory/sketchGroup segments this would not be needed
+        const prevSegPath = getNodePathFromSourceRange(
+          kclManager.ast,
+          sketchGroup.value[index - 1].__geoMeta.sourceRange
+        )
+        const pipeBodyIndex = Number(prevSegPath[prevSegPath.length - 1][0])
+        prevSegPath[prevSegPath.length - 1][0] = pipeBodyIndex + 1
+        segPathToNode = prevSegPath
+      }
       const seg = straightSegment({
         from: segment.from,
         to: segment.to,
@@ -100,22 +133,51 @@ class ClientSideScene {
     this.intersectionPlane.setRotationFromQuaternion(quaternion)
 
     this.scene.add(group)
-    setupSingleton.setOnDragCallback((args) => {
-      this.onDragSegment({
-        ...args,
-        sketchPathToNode,
+    if (!draftSegment) {
+      setupSingleton.setCallbacks({
+        onDrag: (args) => {
+          this.onDragSegment({
+            ...args,
+            sketchPathToNode,
+          })
+        },
+        onMove: () => {},
       })
-    })
+    } else {
+      setupSingleton.setCallbacks({
+        onDrag: () => {},
+        onMove: (args) => {
+          this.onDragSegment({
+            ...args,
+            object: Object.values(this.activeSegments).slice(-1)[0],
+            sketchPathToNode,
+            draftInfo: {
+              draftSegment,
+              truncatedAst,
+              programMemoryOverride,
+              variableDeclarationName,
+            },
+          })
+        },
+      })
+    }
     setupSingleton.controls.enableRotate = false
   }
+  setUpDraftLine = async (sketchPathToNode: PathToNode) => {
+    await this.tearDownSketch() // todo remove animation part of tearDownSketch
+    this.setupSketch({ sketchPathToNode, draftSegment: 'line' })
+  }
+  onDraftLineMouseMove = () => {}
   prepareTruncatedMemoryAndAst = (
     sketchPathToNode: PathToNode,
-    ast?: Program
+    ast?: Program,
+    draftSegment?: DraftSegment
   ) =>
     prepareTruncatedMemoryAndAst(
       sketchPathToNode,
       ast || kclManager.ast,
-      kclManager.programMemory
+      kclManager.programMemory,
+      draftSegment
     )
   onDragSegment({
     object,
@@ -123,29 +185,43 @@ class ClientSideScene {
     intersectPoint,
     intersection2d,
     sketchPathToNode,
+    draftInfo,
   }: {
     object: any
     event: any
     intersectPoint: Vector3
     intersection2d: Vector2
     sketchPathToNode: PathToNode
+    draftInfo?: {
+      draftSegment: DraftSegment
+      truncatedAst: Program
+      programMemoryOverride: ProgramMemory
+      variableDeclarationName: string
+    }
   }) {
     const group = getParentGroup(object)
     if (!group) return
-    const pathToNode: PathToNode = group.userData.pathToNode
+    const pathToNode: PathToNode = JSON.parse(
+      JSON.stringify(group.userData.pathToNode)
+    )
+    const varDecIndex = JSON.parse(JSON.stringify(pathToNode[1][0]))
+    if (draftInfo) {
+      pathToNode[1][0] = 0
+    }
 
     const from: [number, number] = [
       group.userData.from[0],
       group.userData.from[1],
     ]
     const to: [number, number] = [intersection2d.x, intersection2d.y]
-    let modifiedAst = { ...kclManager.ast }
+    let modifiedAst = draftInfo ? draftInfo.truncatedAst : { ...kclManager.ast }
 
     const node = getNodeFromPath<CallExpression>(
       modifiedAst,
       pathToNode,
       'CallExpression'
     ).node
+
     const modded = changeSketchArguments(
       modifiedAst,
       kclManager.programMemory,
@@ -155,15 +231,19 @@ class ClientSideScene {
     )
     modifiedAst = modded.modifiedAst
     const { truncatedAst, programMemoryOverride, variableDeclarationName } =
-      this.prepareTruncatedMemoryAndAst(sketchPathToNode || [])
+      draftInfo
+        ? draftInfo
+        : this.prepareTruncatedMemoryAndAst(sketchPathToNode || [])
     ;(async () => {
       const code = recast(modifiedAst)
-      kclManager.setCode(code, false)
+      if (!draftInfo)
+        // don't want to mode the user's code yet as they have't committed to the change yet
+        // plus this would be the truncated ast being recast, it would be wrong
+        kclManager.setCode(code, false)
       const { programMemory } = await executeAst({
         ast: truncatedAst,
         useFakeExecutor: true,
         engineCommandManager: engineCommandManager,
-        defaultPlanes: kclManager.defaultPlanes,
         programMemoryOverride,
       })
       this.sceneProgramMemory = programMemory
@@ -171,9 +251,10 @@ class ClientSideScene {
         .value as Path[]
       sketchGroup.forEach((segment, index) => {
         const segPathToNode = getNodePathFromSourceRange(
-          kclManager.ast,
+          modifiedAst,
           segment.__geoMeta.sourceRange
         )
+        segPathToNode[1][0] = varDecIndex
         const pathToNodeStr = JSON.stringify(segPathToNode)
         const group = this.activeSegments[pathToNodeStr]
         // const prevSegment = sketchGroup.slice(index - 1)[0]
@@ -257,14 +338,27 @@ export const clientSideScene = new ClientSideScene()
 function prepareTruncatedMemoryAndAst(
   sketchPathToNode: PathToNode,
   ast: Program,
-  programMemory: ProgramMemory
+  programMemory: ProgramMemory,
+  draftSegment?: DraftSegment
 ): {
   truncatedAst: Program
   programMemoryOverride: ProgramMemory
   variableDeclarationName: string
 } {
   const bodyIndex = Number(sketchPathToNode?.[1]?.[0]) || 0
-  const _ast = ast
+  let _ast = { ...ast }
+  if (draftSegment === 'line') {
+    // truncatedAst needs to setup with another segment at the end
+    const newSegment = createCallExpressionStdLib('line', [
+      createArrayExpression([createLiteral(5), createLiteral(5)]),
+      createPipeSubstitution(),
+    ])
+    ;(
+      (_ast.body[bodyIndex] as VariableDeclaration).declarations[0]
+        .init as PipeExpression
+    ).body.push(newSegment)
+    _ast = parse(recast(_ast)) // get source ranges correct since unfortunately we still rely on them
+  }
   // const _ast = ast || kclManager.ast
   const variableDeclarationName =
     getNodeFromPath<VariableDeclaration>(
