@@ -511,6 +511,7 @@ fn define_recursive_function() {
     let (plan, _scope) = must_plan(program);
     assert_eq!(plan, Vec::new())
 }
+
 #[test]
 fn use_kcl_function_as_param() {
     let program = "fn wrapper = (f) => {
@@ -536,6 +537,142 @@ fn use_kcl_function_as_param() {
             value: 222i64.into()
         }]
     )
+}
+
+fn use_kcl_function_y_combinator() {
+    let program = "
+        // TRUE := λx.λy.x
+        fn _TRUE = (x) => {
+          return (y) => { return x }
+        }
+
+        // FALSE := λx.λy.y
+        fn _FALSE = (x) => {
+          return (y) => { return y }
+        }
+
+        // constant false (no matter what is applied, the falsey value is returned)
+        fn cFalse = (x) => {
+          return _FALSE
+        }
+
+        // ISZERO := λn.n (λx.FALSE) TRUE
+        fn is_zero = (n) => {
+          let fa = n(cFalse)
+          return fa(_TRUE)
+        }
+
+        // IFTHENELSE := λp.λa.λb.p a b
+        fn ifthenelse = (p) => {
+          return (a) => {
+            return (b) => {
+              let fa = p(a)
+              return fa(b)
+            }
+          }
+        }
+
+        // SUCC := λn.λf.λx.f (n f x)
+        // Inserts another (f x) in the church numeral chain
+        fn succ = (n) => {
+          return (f) => {
+            return (x) => {
+              let fa = n(f)
+              let fb = fa(x)
+              return f(fb)
+            }
+          }
+        }
+
+        // PLUS := λm.λn.m SUCC n
+        fn plus = (m) => {
+          return (n) => {
+            let fa = m(succ)
+            return fa(n)
+          }
+        }
+
+        // 0 := λf.λx.x
+        fn _0 = (f) => {
+          return (x) => { return x }
+        }
+
+        fn cZero = (x) => {
+          return _0
+        }
+
+        // 1 := λf.λx.f x
+        fn _1 = (f) => {
+          return (x) => { return f(x) }
+        }
+
+        let _2 = succ(_1)
+        let _3 = succ(_2)
+        let _4 = succ(_3)
+        let _5 = succ(_4)
+        let _6 = succ(_5)
+        // ...
+
+
+
+        // PRED := λn.n (λg.λk.ISZERO (g 1) k (PLUS (g k) 1)) (λv.0) 0
+        fn pred = (n) => {
+          fn f1 = (g) => {
+            return (k) => {
+              let fa = is_zero(g(_1))
+              let fb = fa(k)
+              let fc1 = plus(g(k))
+              let fc2 = fc1(_1)
+              let fc = fb(fc2)
+              return fc
+            }
+          }
+          let f2 = n(f1)
+          let f3 = f2(cZero)
+          let f4 = f3(_0)
+          return f4
+        }
+
+        // MUL := λm.λn.m (PLUS n) 0
+        fn mul = (m) => {
+          return (n) => {
+            let fa = m(plus(n))
+            let fb = fa(_0)
+            return fb
+          }
+        }
+
+        // G := λr. λn.(1, if n = 0; else n × (r (n−1)))
+        fn G = (r) => {
+          return (n) => {
+            let fa = ifthenelse(n)
+            let fb = fa(_1)
+            let fc1 = mul(n)
+            let fc2 = fc1(r(pred(n)))
+            let fc = fb(fc2)
+            return fc
+          }
+        }
+
+        // Y := λg.(λx.g (x x)) (λx.g (x x))
+        fn Y = (g) => {
+          fn f1 = (x) => { return g(x(x)) }
+          let f2 = g(f1)
+          let f3 = f2(f1)
+          return f3
+        }
+
+        fn fact = (n) => {
+          let fa = Y(G)
+          return fa(n)
+        }
+
+        // x should be _6
+        let x = fact(_3)
+        ";
+
+    let (plan, scope) = must_plan(program);
+    // Somehow check the result is the same as _6 definition
 }
 
 #[test]
