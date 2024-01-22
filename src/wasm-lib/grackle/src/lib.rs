@@ -84,11 +84,11 @@ impl Planner {
                 } = expr.into_parts().map_err(CompileError::BadParamOrder)?;
                 Ok(EvalPlan {
                     instructions: Vec::new(),
-                    binding: EpBinding::Function(UserDefinedFunction {
+                    binding: EpBinding::from(KclFunction::UserDefined(UserDefinedFunction {
                         params_optional,
                         params_required,
                         body,
-                    }),
+                    })),
                 })
             }
             SingleValue::Literal(expr) => {
@@ -436,10 +436,6 @@ struct EvalPlan {
     binding: EpBinding,
 }
 
-trait KclFunction: std::fmt::Debug {
-    fn call(&self, next_addr: &mut Address, args: Vec<EpBinding>) -> Result<EvalPlan, CompileError>;
-}
-
 /// Either an owned string, or a static string. Either way it can be read and moved around.
 pub type String2 = std::borrow::Cow<'static, str>;
 
@@ -458,8 +454,25 @@ impl PartialEq for UserDefinedFunction {
 
 impl Eq for UserDefinedFunction {}
 
-impl KclFunction for UserDefinedFunction {
+#[derive(Debug, Clone)]
+#[cfg_attr(test, derive(Eq, PartialEq))]
+pub enum KclFunction {
+    Id(native_functions::Id),
+    StartSketchAt(native_functions::StartSketchAt),
+    Add(native_functions::Add),
+    UserDefined(UserDefinedFunction),
+}
+
+impl KclFunction {
     fn call(&self, next_addr: &mut Address, args: Vec<EpBinding>) -> Result<EvalPlan, CompileError> {
-        todo!("Emit a plan to execute user-defined KCL functions")
+        use native_functions::Callable;
+        match self {
+            KclFunction::Id(f) => f.call(next_addr, args),
+            KclFunction::StartSketchAt(f) => f.call(next_addr, args),
+            KclFunction::Add(f) => f.call(next_addr, args),
+            KclFunction::UserDefined(_f) => {
+                todo!("impl calling user-defined functions")
+            }
+        }
     }
 }

@@ -2,12 +2,10 @@ use kcl_lib::ast::types::LiteralIdentifier;
 use kcl_lib::ast::types::LiteralValue;
 
 use crate::CompileError;
-use crate::UserDefinedFunction;
+use crate::KclFunction;
 
 use super::native_functions;
 use super::Address;
-use super::KclFunction;
-use super::String2;
 
 use std::collections::HashMap;
 
@@ -23,7 +21,13 @@ pub enum EpBinding {
     /// A sequence of KCL values, indexed by their identifier.
     Map(HashMap<String, EpBinding>),
     /// Not associated with a KCEP address.
-    Function(UserDefinedFunction),
+    Function(KclFunction),
+}
+
+impl From<KclFunction> for EpBinding {
+    fn from(f: KclFunction) -> Self {
+        Self::Function(f)
+    }
 }
 
 impl EpBinding {
@@ -72,7 +76,6 @@ pub struct BindingScope {
     // KCL value which are stored in EP memory.
     ep_bindings: HashMap<String, EpBinding>,
     /// KCL functions. They do NOT get stored in EP memory.
-    function_bindings: HashMap<String2, Box<dyn KclFunction>>,
     parent: Option<Box<BindingScope>>,
 }
 
@@ -85,11 +88,10 @@ impl BindingScope {
         Self {
             // TODO: Actually put the stdlib prelude in here,
             // things like `startSketchAt` and `line`.
-            function_bindings: HashMap::from([
-                ("id".into(), Box::new(native_functions::Id) as _),
-                ("add".into(), Box::new(native_functions::Add) as _),
+            ep_bindings: HashMap::from([
+                ("id".into(), EpBinding::from(KclFunction::Id(native_functions::Id))),
+                ("add".into(), EpBinding::from(KclFunction::Add(native_functions::Add))),
             ]),
-            ep_bindings: Default::default(),
             parent: None,
         }
     }
@@ -98,7 +100,6 @@ impl BindingScope {
     #[allow(dead_code)] // TODO: when we implement function expressions.
     pub fn add_scope(self) -> Self {
         Self {
-            function_bindings: Default::default(),
             ep_bindings: Default::default(),
             parent: Some(Box::new(self)),
         }
@@ -131,9 +132,7 @@ impl BindingScope {
 
     /// Look up a function bound to the given identifier.
     pub fn get_fn(&self, identifier: &str) -> GetFnResult {
-        if let Some(f) = self.function_bindings.get(identifier) {
-            GetFnResult::Found(f.as_ref())
-        } else if let Some(x) = self.get(identifier) {
+        if let Some(x) = self.get(identifier) {
             match x {
                 EpBinding::Function(f) => GetFnResult::Found(f),
                 _ => GetFnResult::NonCallable,
@@ -147,7 +146,7 @@ impl BindingScope {
 }
 
 pub enum GetFnResult<'a> {
-    Found(&'a dyn KclFunction),
+    Found(&'a KclFunction),
     NonCallable,
     NotFound,
 }

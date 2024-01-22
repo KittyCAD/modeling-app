@@ -381,7 +381,7 @@ fn define_kcl_functions() {
     let (plan, scope) = must_plan("fn triple = (x) => { return x * 3 }");
     assert!(plan.is_empty());
     match scope.get("triple").unwrap() {
-        EpBinding::Function(expr) => {
+        EpBinding::Function(KclFunction::UserDefined(expr)) => {
             assert!(expr.params_optional.is_empty());
             assert_eq!(expr.params_required.len(), 1);
         }

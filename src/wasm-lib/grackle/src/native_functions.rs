@@ -6,13 +6,18 @@ use kcl_lib::std::sketch::PlaneData;
 use kittycad_execution_plan::{Address, Arithmetic, Instruction};
 use kittycad_execution_plan_traits::Value;
 
-use crate::{CompileError, EpBinding, EvalPlan, KclFunction};
+use crate::{CompileError, EpBinding, EvalPlan};
 
 /// The identity function. Always returns its first input.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
+#[cfg_attr(test, derive(Eq, PartialEq))]
 pub struct Id;
 
-impl KclFunction for Id {
+pub trait Callable {
+    fn call(&self, next_addr: &mut Address, args: Vec<EpBinding>) -> Result<EvalPlan, CompileError>;
+}
+
+impl Callable for Id {
     fn call(&self, _: &mut Address, args: Vec<EpBinding>) -> Result<EvalPlan, CompileError> {
         if args.len() > 1 {
             return Err(CompileError::TooManyArgs {
@@ -36,10 +41,11 @@ impl KclFunction for Id {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
+#[cfg_attr(test, derive(Eq, PartialEq))]
 pub struct StartSketchAt;
 
-impl KclFunction for StartSketchAt {
+impl Callable for StartSketchAt {
     fn call(&self, next_addr: &mut Address, _args: Vec<EpBinding>) -> Result<EvalPlan, CompileError> {
         let mut instructions = Vec::new();
         // Store the plane.
@@ -64,10 +70,11 @@ impl KclFunction for StartSketchAt {
 }
 
 /// A test function that adds two numbers.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
+#[cfg_attr(test, derive(Eq, PartialEq))]
 pub struct Add;
 
-impl KclFunction for Add {
+impl Callable for Add {
     fn call(&self, next_address: &mut Address, mut args: Vec<EpBinding>) -> Result<EvalPlan, CompileError> {
         let len = args.len();
         if len > 2 {
