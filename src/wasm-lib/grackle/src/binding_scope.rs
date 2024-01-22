@@ -2,6 +2,7 @@ use kcl_lib::ast::types::LiteralIdentifier;
 use kcl_lib::ast::types::LiteralValue;
 
 use crate::CompileError;
+use crate::UserDefinedFunction;
 
 use super::native_functions;
 use super::Address;
@@ -21,6 +22,8 @@ pub enum EpBinding {
     Sequence(Vec<EpBinding>),
     /// A sequence of KCL values, indexed by their identifier.
     Map(HashMap<String, EpBinding>),
+    /// Not associated with a KCEP address.
+    Function(UserDefinedFunction),
 }
 
 impl EpBinding {
@@ -31,16 +34,18 @@ impl EpBinding {
             LiteralIdentifier::Literal(litval) => match litval.value {
                 // Arrays can be indexed by integers.
                 LiteralValue::IInteger(i) => match self {
-                    EpBinding::Single(_) => Err(CompileError::CannotIndex),
                     EpBinding::Sequence(seq) => {
                         let i = usize::try_from(i).map_err(|_| CompileError::InvalidIndex(i.to_string()))?;
                         seq.get(i).ok_or(CompileError::IndexOutOfBounds { i, len: seq.len() })
                     }
                     EpBinding::Map(_) => Err(CompileError::CannotIndex),
+                    EpBinding::Single(_) => Err(CompileError::CannotIndex),
+                    EpBinding::Function(_) => Err(CompileError::CannotIndex),
                 },
                 // Objects can be indexed by string properties.
                 LiteralValue::String(property) => match self {
                     EpBinding::Single(_) => Err(CompileError::NoProperties),
+                    EpBinding::Function(_) => Err(CompileError::NoProperties),
                     EpBinding::Sequence(_) => Err(CompileError::ArrayDoesNotHaveProperties),
                     EpBinding::Map(map) => map.get(&property).ok_or(CompileError::UndefinedProperty { property }),
                 },

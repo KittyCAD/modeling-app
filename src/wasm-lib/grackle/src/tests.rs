@@ -362,6 +362,21 @@ fn composite_binary_exprs() {
 }
 
 #[test]
+fn define_kcl_functions() {
+    let (plan, scope) = must_plan("fn triple = (x) => { return x * 3 }");
+    assert!(plan.is_empty());
+    match scope.get("triple").unwrap() {
+        EpBinding::Function(expr) => {
+            assert!(expr.params_optional.is_empty());
+            assert_eq!(expr.params_required.len(), 1);
+        }
+        other => {
+            panic!("expected 'triple' bound to a user-defined KCL function but it was bound to {other:?}");
+        }
+    }
+}
+
+#[test]
 fn aliases_dont_affect_plans() {
     let (plan1, _) = must_plan(
         "let one = 1

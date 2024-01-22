@@ -8,7 +8,7 @@ use std::collections::HashMap;
 
 use kcl_lib::{
     ast,
-    ast::types::{BodyItem, KclNone, LiteralValue, Program},
+    ast::types::{BodyItem, FunctionExpressionParts, KclNone, LiteralValue, Program, RequiredParamAfterOptionalParam},
 };
 use kittycad_execution_plan as ep;
 use kittycad_execution_plan::{Address, ExecutionError, Instruction};
@@ -72,6 +72,22 @@ impl Planner {
                         value: ept::Primitive::Nil,
                     }],
                     binding: EpBinding::Single(address),
+                })
+            }
+            SingleValue::FunctionExpression(expr) => {
+                let FunctionExpressionParts {
+                    start: _,
+                    end: _,
+                    params_required,
+                    params_optional,
+                    body: _,
+                } = expr.into_parts().map_err(CompileError::BadParamOrder)?;
+                Ok(EvalPlan {
+                    instructions: Vec::new(),
+                    binding: EpBinding::Function(UserDefinedFunction {
+                        params_optional,
+                        params_required,
+                    }),
                 })
             }
             SingleValue::Literal(expr) => {
@@ -387,6 +403,8 @@ pub enum CompileError {
         "you tried to read the '.{property}' of an object, but the object doesn't have any properties with that key"
     )]
     UndefinedProperty { property: String },
+    #[error("{0}")]
+    BadParamOrder(RequiredParamAfterOptionalParam),
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -423,3 +441,16 @@ trait KclFunction: std::fmt::Debug {
 
 /// Either an owned string, or a static string. Either way it can be read and moved around.
 pub type String2 = std::borrow::Cow<'static, str>;
+
+#[derive(Debug, Clone)]
+#[cfg_attr(test, derive(Eq, PartialEq))]
+struct UserDefinedFunction {
+    params_optional: Vec<ast::types::Parameter>,
+    params_required: Vec<ast::types::Parameter>,
+}
+
+impl KclFunction for UserDefinedFunction {
+    fn call(&self, next_addr: &mut Address, args: Vec<EpBinding>) -> Result<EvalPlan, CompileError> {
+        todo!()
+    }
+}

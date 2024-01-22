@@ -2631,7 +2631,7 @@ async fn execute_pipe_body(
 }
 
 /// Parameter of a KCL function.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(tag = "type")]
@@ -2655,12 +2655,59 @@ pub struct FunctionExpression {
 
 impl_value_meta!(FunctionExpression);
 
+pub struct FunctionExpressionParts {
+    pub start: usize,
+    pub end: usize,
+    pub params_required: Vec<Parameter>,
+    pub params_optional: Vec<Parameter>,
+    pub body: Program,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct RequiredParamAfterOptionalParam(pub Parameter);
+
+impl std::fmt::Display for RequiredParamAfterOptionalParam {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "KCL functions must declare any optional parameters after all the required parameters. But your required parameter {} is _after_ an optional parameter. You must move it to before the optional parameters instead.", self.0.identifier.name)
+    }
+}
+
 impl FunctionExpression {
     /// Function expressions don't really apply.
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         ConstraintLevel::Ignore {
             source_ranges: vec![self.into()],
         }
+    }
+
+    pub fn into_parts(self) -> Result<FunctionExpressionParts, RequiredParamAfterOptionalParam> {
+        let Self {
+            start,
+            end,
+            params,
+            body,
+        } = self;
+        let mut params_required = Vec::with_capacity(params.len());
+        let mut params_optional = Vec::with_capacity(params.len());
+        for param in params {
+            if param.optional {
+                params_optional.push(param);
+            } else {
+                if !params_optional.is_empty() {
+                    return Err(RequiredParamAfterOptionalParam(param));
+                }
+                params_required.push(param);
+            }
+        }
+        params_required.shrink_to_fit();
+        params_optional.shrink_to_fit();
+        Ok(FunctionExpressionParts {
+            start,
+            end,
+            params_required,
+            params_optional,
+            body,
+        })
     }
 
     /// Required parameters must be declared before optional parameters.
