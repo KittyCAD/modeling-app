@@ -19,7 +19,7 @@ describe('isQuaternionVertical', () => {
       new Quaternion(0.7, 0, 0, 0.7).normalize(), // front
       new Quaternion(0, 0.7, 0.7, 0).normalize(), // back
       new Quaternion(-0.5, 0.5, 0.5, -0.5).normalize(), // left side
-      new Quaternion(0.5, 0.5, 0.5, 0.5).normalize(), // left side
+      new Quaternion(0.5, 0.5, 0.5, 0.5).normalize(), // right side
     ]
     nonVerticalQuaternions.forEach((quaternion) => {
       expect(isQuaternionVertical(quaternion)).toBe(false)
