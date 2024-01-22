@@ -7,7 +7,7 @@ fn must_plan(program: &str) -> (Vec<Instruction>, BindingScope) {
     let parser = kcl_lib::parser::Parser::new(tokens);
     let ast = parser.ast().unwrap();
     let mut p = Planner::new();
-    let instrs = p.build_plan(ast).unwrap();
+    let (instrs, _) = p.build_plan(ast).unwrap();
     (instrs, p.binding_scope)
 }
 
@@ -362,15 +362,22 @@ fn composite_binary_exprs() {
 }
 
 #[test]
-#[ignore = "reason"]
-fn use_kcl_functions() {
+fn use_kcl_functions_zero_params() {
     let (plan, scope) = must_plan(
-        "fn triple = (x) => { return x * 3 }
-    let x = triple(1)",
+        "fn triple = () => { return 123 }
+    let x = triple()",
     );
-    assert!(plan.is_empty());
+    assert_eq!(
+        plan,
+        vec![Instruction::SetPrimitive {
+            address: Address::ZERO,
+            value: 123i64.into()
+        }]
+    );
     match scope.get("x").unwrap() {
-        EpBinding::Single(_addr) => {}
+        EpBinding::Single(addr) => {
+            assert_eq!(addr, &Address::ZERO);
+        }
         other => {
             panic!("expected 'x' bound to an address but it was bound to {other:?}");
         }

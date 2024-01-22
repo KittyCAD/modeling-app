@@ -91,24 +91,36 @@ impl BindingScope {
             ep_bindings: HashMap::from([
                 ("id".into(), EpBinding::from(KclFunction::Id(native_functions::Id))),
                 ("add".into(), EpBinding::from(KclFunction::Add(native_functions::Add))),
+                (
+                    "startSketchAt".into(),
+                    EpBinding::from(KclFunction::StartSketchAt(native_functions::StartSketchAt)),
+                ),
             ]),
             parent: None,
         }
     }
 
     /// Add a new scope, e.g. for new function calls.
-    #[allow(dead_code)] // TODO: when we implement function expressions.
-    pub fn add_scope(self) -> Self {
-        Self {
-            ep_bindings: Default::default(),
-            parent: Some(Box::new(self)),
-        }
+    pub fn add_scope(&mut self) {
+        // Move all data from `self` into `this`.
+        let this_parent = self.parent.take();
+        let this_ep_bindings = self.ep_bindings.drain().collect();
+        let this = Self {
+            ep_bindings: this_ep_bindings,
+            parent: this_parent,
+        };
+        // Turn `self` into a new scope, with the old `self` as its parent.
+        self.parent = Some(Box::new(this));
     }
 
     //// Remove a scope, e.g. when exiting a function call.
-    #[allow(dead_code)] // TODO: when we implement function expressions.
-    pub fn remove_scope(self) -> Self {
-        *self.parent.unwrap()
+    pub fn remove_scope(&mut self) {
+        // The scope is finished, so erase all its local variables.
+        self.ep_bindings.clear();
+        // Pop the stack -- the parent scope is now the current scope.
+        let p = self.parent.take().expect("cannot remove the root scope");
+        self.parent = p.parent;
+        self.ep_bindings = p.ep_bindings;
     }
 
     /// Add a binding (e.g. defining a new variable)

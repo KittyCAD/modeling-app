@@ -22,7 +22,7 @@ use self::kcl_value_group::{KclValueGroup, SingleValue};
 /// Execute a KCL program by compiling into an execution plan, then running that.
 pub async fn execute(ast: Program, session: Session) -> Result<(), Error> {
     let mut planner = Planner::new();
-    let plan = planner.build_plan(ast)?;
+    let (plan, _retval) = planner.build_plan(ast)?;
     let mut mem = kittycad_execution_plan::Memory::default();
     kittycad_execution_plan::execute(&mut mem, plan, session).await?;
     Ok(())
@@ -44,20 +44,36 @@ impl Planner {
         }
     }
 
-    fn build_plan(&mut self, program: Program) -> PlanRes {
-        program.body.into_iter().try_fold(Vec::new(), |mut instructions, item| {
-            let instructions_for_this_node = match item {
-                BodyItem::ExpressionStatement(node) => match KclValueGroup::from(node.expression) {
-                    KclValueGroup::Single(value) => self.plan_to_compute_single(value)?.instructions,
-                    KclValueGroup::ArrayExpression(_) => todo!(),
-                    KclValueGroup::ObjectExpression(_) => todo!(),
-                },
-                BodyItem::VariableDeclaration(node) => self.plan_to_bind(node)?,
-                BodyItem::ReturnStatement(_) => todo!(),
-            };
-            instructions.extend(instructions_for_this_node);
-            Ok(instructions)
-        })
+    /// If successful, return the KCEP instructions for executing the given program.
+    /// If the program is a function with a return, then it also returns the KCL function's return value.
+    fn build_plan(&mut self, program: Program) -> Result<(Vec<Instruction>, Option<EpBinding>), CompileError> {
+        program
+            .body
+            .into_iter()
+            .try_fold((Vec::new(), None), |(mut instructions, mut retval), item| {
+                if retval.is_some() {
+                    return Err(CompileError::MultipleReturns);
+                }
+                let instructions_for_this_node = match item {
+                    BodyItem::ExpressionStatement(node) => match KclValueGroup::from(node.expression) {
+                        KclValueGroup::Single(value) => self.plan_to_compute_single(value)?.instructions,
+                        KclValueGroup::ArrayExpression(_) => todo!(),
+                        KclValueGroup::ObjectExpression(_) => todo!(),
+                    },
+                    BodyItem::VariableDeclaration(node) => self.plan_to_bind(node)?,
+                    BodyItem::ReturnStatement(node) => match KclValueGroup::from(node.argument) {
+                        KclValueGroup::Single(value) => {
+                            let EvalPlan { instructions, binding } = self.plan_to_compute_single(value)?;
+                            retval = Some(binding);
+                            instructions
+                        }
+                        KclValueGroup::ArrayExpression(_) => todo!(),
+                        KclValueGroup::ObjectExpression(_) => todo!(),
+                    },
+                };
+                instructions.extend(instructions_for_this_node);
+                Ok((instructions, retval))
+            })
     }
 
     /// Emits instructions which, when run, compute a given KCL value and store it in memory.
@@ -159,6 +175,7 @@ impl Planner {
                 })
             }
             SingleValue::CallExpression(expr) => {
+                // Make a plan to compute all the arguments to this call.
                 let (mut instructions, args) = expr.arguments.into_iter().try_fold(
                     (Vec::new(), Vec::new()),
                     |(mut acc_instrs, mut acc_args), argument| {
@@ -175,6 +192,7 @@ impl Planner {
                         Ok((acc_instrs, acc_args))
                     },
                 )?;
+                // Look up the function being called.
                 let callee = match self.binding_scope.get_fn(&expr.callee.name) {
                     GetFnResult::Found(f) => f,
                     GetFnResult::NonCallable => {
@@ -189,10 +207,32 @@ impl Planner {
                     }
                 };
 
+                // Emit instructions to call that function with the given arguments.
+                use native_functions::Callable;
                 let EvalPlan {
                     instructions: eval_instrs,
                     binding,
-                } = callee.call(&mut self.next_addr, args)?;
+                } = match callee {
+                    KclFunction::Id(f) => f.call(&mut self.next_addr, args)?,
+                    KclFunction::StartSketchAt(f) => f.call(&mut self.next_addr, args)?,
+                    KclFunction::Add(f) => f.call(&mut self.next_addr, args)?,
+                    KclFunction::UserDefined(f) => {
+                        let function_body = f.body.clone();
+                        self.binding_scope.add_scope();
+                        // TODO: bind the call's arguments to the names of the function's parameters.
+                        let (instructions, retval) = self.build_plan(function_body)?;
+                        let Some(retval) = retval else {
+                            return Err(CompileError::NoReturnStmt);
+                        };
+                        self.binding_scope.remove_scope();
+                        EvalPlan {
+                            instructions,
+                            binding: retval,
+                        }
+                    }
+                };
+
+                // Combine the "evaluate arguments" plan with the "call function" plan.
                 instructions.extend(eval_instrs);
                 Ok(EvalPlan { instructions, binding })
             }
@@ -406,6 +446,10 @@ pub enum CompileError {
     UndefinedProperty { property: String },
     #[error("{0}")]
     BadParamOrder(RequiredParamAfterOptionalParam),
+    #[error("A KCL function cannot have anything after its return value")]
+    MultipleReturns,
+    #[error("A KCL function must end with a return statement, but your function doesn't have one.")]
+    NoReturnStmt,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -415,8 +459,6 @@ pub enum Error {
     #[error("{0}")]
     Execution(#[from] ExecutionError),
 }
-
-type PlanRes = Result<Vec<Instruction>, CompileError>;
 
 /// Every KCL literal value is equivalent to an Execution Plan value, and therefore can be
 /// bound to some KCL name and Execution Plan address.
@@ -456,23 +498,9 @@ impl Eq for UserDefinedFunction {}
 
 #[derive(Debug, Clone)]
 #[cfg_attr(test, derive(Eq, PartialEq))]
-pub enum KclFunction {
+enum KclFunction {
     Id(native_functions::Id),
     StartSketchAt(native_functions::StartSketchAt),
     Add(native_functions::Add),
     UserDefined(UserDefinedFunction),
-}
-
-impl KclFunction {
-    fn call(&self, next_addr: &mut Address, args: Vec<EpBinding>) -> Result<EvalPlan, CompileError> {
-        use native_functions::Callable;
-        match self {
-            KclFunction::Id(f) => f.call(next_addr, args),
-            KclFunction::StartSketchAt(f) => f.call(next_addr, args),
-            KclFunction::Add(f) => f.call(next_addr, args),
-            KclFunction::UserDefined(_f) => {
-                todo!("impl calling user-defined functions")
-            }
-        }
-    }
 }
