@@ -390,16 +390,31 @@ fn use_kcl_functions_with_params() {
         "fn triple = (x) => { return x*3 }
     let x = triple(1)",
     );
+    let destination = Address::ZERO + 2;
     assert_eq!(
         plan,
-        vec![Instruction::SetPrimitive {
-            address: Address::ZERO,
-            value: 123i64.into()
-        }]
+        vec![
+            Instruction::SetPrimitive {
+                address: Address::ZERO,
+                value: 1i64.into(),
+            },
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 1,
+                value: 3i64.into(),
+            },
+            Instruction::Arithmetic {
+                arithmetic: ep::Arithmetic {
+                    operation: ep::Operation::Mul,
+                    operand0: ep::Operand::Reference(Address::ZERO),
+                    operand1: ep::Operand::Reference(Address::ZERO.offset(1))
+                },
+                destination,
+            }
+        ]
     );
     match scope.get("x").unwrap() {
         EpBinding::Single(addr) => {
-            assert_eq!(addr, &Address::ZERO);
+            assert_eq!(addr, &destination);
         }
         other => {
             panic!("expected 'x' bound to an address but it was bound to {other:?}");

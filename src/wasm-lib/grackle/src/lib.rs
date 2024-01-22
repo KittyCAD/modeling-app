@@ -217,9 +217,30 @@ impl Planner {
                     KclFunction::StartSketchAt(f) => f.call(&mut self.next_addr, args)?,
                     KclFunction::Add(f) => f.call(&mut self.next_addr, args)?,
                     KclFunction::UserDefined(f) => {
-                        let function_body = f.body.clone();
+                        let UserDefinedFunction {
+                            params_optional,
+                            params_required,
+                            body: function_body,
+                        } = f.clone();
+                        let num_required_params = params_required.len();
                         self.binding_scope.add_scope();
-                        // TODO: bind the call's arguments to the names of the function's parameters.
+
+                        // Bind the call's arguments to the names of the function's parameters.
+                        let num_actual_params = args.len();
+                        let mut arg_iter = args.into_iter();
+
+                        // Bind required parameters
+                        for param in params_required {
+                            let arg = arg_iter.next().ok_or(CompileError::NotEnoughArgs {
+                                fn_name: "".into(),
+                                required: num_required_params,
+                                actual: num_actual_params,
+                            })?;
+                            self.binding_scope.bind(param.identifier.name, arg);
+                        }
+
+                        // TODO: Bind optional parameters
+
                         let (instructions, retval) = self.build_plan(function_body)?;
                         let Some(retval) = retval else {
                             return Err(CompileError::NoReturnStmt);
