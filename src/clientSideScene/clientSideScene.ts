@@ -9,6 +9,7 @@ import {
   PlaneGeometry,
   Quaternion,
   Scene,
+  Shape,
   Vector2,
   Vector3,
 } from 'three'
@@ -29,7 +30,7 @@ import { kclManager } from 'lang/KclSingleton'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 import { executeAst } from 'useStore'
 import { engineCommandManager } from 'lang/std/engineConnection'
-import { straightSegment } from './segments'
+import { dashed, straightSegment } from './segments'
 import { changeSketchArguments } from 'lang/std/sketch'
 import { isReducedMotion } from 'lib/utils'
 import {
@@ -94,7 +95,9 @@ class ClientSideScene {
         draftSegment ? truncatedAst : kclManager.ast,
         segment.__geoMeta.sourceRange
       )
-      if (index === sketchGroup.value.length - 1 && draftSegment) {
+      const isDraftSegment =
+        draftSegment && index === sketchGroup.value.length - 1
+      if (isDraftSegment) {
         // hacks like this are still needed because we rely on source ranges
         // if we stored pathToNode info memory/sketchGroup segments this would not be needed
         const prevSegPath = getNodePathFromSourceRange(
@@ -110,6 +113,7 @@ class ClientSideScene {
         to: segment.to,
         id: segment.__geoMeta.id,
         pathToNode: segPathToNode,
+        isDraftSegment,
       })
       seg.layers.set(SKETCH_LAYER)
       seg.traverse((child) => {
@@ -303,18 +307,29 @@ class ClientSideScene {
     const straightSegmentBody = group.children.find(
       (child) => child.userData.type === 'straight-segment-body'
     ) as Mesh
-    const line = new LineCurve3(
-      new Vector3(from[0], from[1], 0),
-      new Vector3(to[0], to[1], 0)
-    )
-    straightSegmentBody.geometry = new ExtrudeGeometry(
-      (straightSegmentBody.geometry as ExtrudeGeometry).parameters.shapes,
-      {
-        steps: 100,
-        bevelEnabled: false,
-        extrudePath: line,
-      }
-    )
+    if (straightSegmentBody) {
+      const line = new LineCurve3(
+        new Vector3(from[0], from[1], 0),
+        new Vector3(to[0], to[1], 0)
+      )
+      straightSegmentBody.geometry = new ExtrudeGeometry(
+        (straightSegmentBody.geometry as ExtrudeGeometry).parameters.shapes,
+        {
+          steps: 100,
+          bevelEnabled: false,
+          extrudePath: line,
+        }
+      )
+    }
+    const straightSegmentBodyDashed = group.children.find(
+      (child) => child.userData.type === 'straight-segment-body-dashed'
+    ) as Mesh
+    if (straightSegmentBodyDashed) {
+      const shape = new Shape()
+      shape.moveTo(0, -0.08)
+      shape.lineTo(0, 0.08) // The width of the line
+      straightSegmentBodyDashed.geometry = dashed(from, to, shape)
+    }
   }
   async animateAfterSketch() {
     if (isReducedMotion()) {
@@ -352,7 +367,7 @@ function prepareTruncatedMemoryAndAst(
   if (draftSegment === 'line') {
     // truncatedAst needs to setup with another segment at the end
     const newSegment = createCallExpressionStdLib('line', [
-      createArrayExpression([createLiteral(5), createLiteral(5)]),
+      createArrayExpression([createLiteral(0), createLiteral(0)]),
       createPipeSubstitution(),
     ])
     ;(

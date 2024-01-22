@@ -1,15 +1,18 @@
 import { Coords2d } from 'lang/std/sketch'
 import {
+  BufferGeometry,
   ConeGeometry,
   ExtrudeGeometry,
   Group,
   LineCurve3,
   Mesh,
   MeshBasicMaterial,
+  NormalBufferAttributes,
   Shape,
   SphereGeometry,
   Vector3,
 } from 'three'
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { PathToNode } from 'lang/wasm'
 
 export function straightSegment({
@@ -17,11 +20,13 @@ export function straightSegment({
   to,
   id,
   pathToNode,
+  isDraftSegment,
 }: {
   from: Coords2d
   to: Coords2d
   id: string
   pathToNode: PathToNode
+  isDraftSegment?: boolean
 }): Group {
   const group = new Group()
 
@@ -29,20 +34,27 @@ export function straightSegment({
   shape.moveTo(0, -0.08)
   shape.lineTo(0, 0.08) // The width of the line
 
-  const line = new LineCurve3(
-    new Vector3(from[0], from[1], 0),
-    new Vector3(to[0], to[1], 0)
-  )
+  let geometry
+  if (isDraftSegment) {
+    geometry = dashed(from, to, shape)
+  } else {
+    const line = new LineCurve3(
+      new Vector3(from[0], from[1], 0),
+      new Vector3(to[0], to[1], 0)
+    )
 
-  const geometry = new ExtrudeGeometry(shape, {
-    steps: 100,
-    bevelEnabled: false,
-    extrudePath: line,
-  })
+    geometry = new ExtrudeGeometry(shape, {
+      steps: 100,
+      bevelEnabled: false,
+      extrudePath: line,
+    })
+  }
 
   const material = new MeshBasicMaterial({ color: 0xffffff })
   const mesh = new Mesh(geometry, material)
-  mesh.userData.type = 'straight-segment-body'
+  mesh.userData.type = isDraftSegment
+    ? 'straight-segment-body-dashed'
+    : 'straight-segment-body'
 
   group.userData = {
     type: 'straight-segment',
@@ -70,4 +82,38 @@ export function straightSegment({
   group.add(mesh, arrowGroup)
 
   return group
+}
+
+export function dashed(
+  from: Coords2d,
+  to: Coords2d,
+  shape: Shape
+): BufferGeometry<NormalBufferAttributes> {
+  const dashSize = 0.8
+  const gapSize = 0.8
+  const dashLine = new LineCurve3(
+    new Vector3(from[0], from[1], 0),
+    new Vector3(to[0], to[1], 0)
+  )
+  const length = dashLine.getLength()
+  const numberOfPoints = (length / (dashSize + gapSize)) * 2
+  const dashGeometries = []
+  for (let i = 0; i <= numberOfPoints - 1; i += 2) {
+    const dashComponent = (xOrY: number, pointIndex: number) =>
+      ((to[xOrY] - from[xOrY]) / numberOfPoints) * pointIndex + from[xOrY]
+    const start = new Vector3(dashComponent(0, i), dashComponent(1, i), 0)
+    let end = new Vector3(dashComponent(0, i + 1), dashComponent(1, i + 1), 0)
+    if (end) {
+      const dashCurve = new LineCurve3(start, end)
+      const dashGeometry = new ExtrudeGeometry(shape, {
+        steps: 1,
+        bevelEnabled: false,
+        extrudePath: dashCurve,
+      })
+      dashGeometries.push(dashGeometry)
+    }
+  }
+  return dashGeometries.length
+    ? mergeGeometries(dashGeometries)
+    : new BufferGeometry()
 }
