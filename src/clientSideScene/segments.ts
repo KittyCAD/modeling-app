@@ -89,8 +89,8 @@ export function dashed(
   to: Coords2d,
   shape: Shape
 ): BufferGeometry<NormalBufferAttributes> {
-  const dashSize = 0.8
-  const gapSize = 0.8
+  const dashSize = 1.2
+  const gapSize = 1.2 // todo: gabSize is not respected
   const dashLine = new LineCurve3(
     new Vector3(from[0], from[1], 0),
     new Vector3(to[0], to[1], 0)
@@ -98,13 +98,22 @@ export function dashed(
   const length = dashLine.getLength()
   const numberOfPoints = (length / (dashSize + gapSize)) * 2
   const dashGeometries = []
-  for (let i = 0; i <= numberOfPoints - 1; i += 2) {
+  for (let i = 0; i <= numberOfPoints; i += 2) {
     const dashComponent = (xOrY: number, pointIndex: number) =>
       ((to[xOrY] - from[xOrY]) / numberOfPoints) * pointIndex + from[xOrY]
-    const start = new Vector3(dashComponent(0, i), dashComponent(1, i), 0)
-    let end = new Vector3(dashComponent(0, i + 1), dashComponent(1, i + 1), 0)
-    if (end) {
-      const dashCurve = new LineCurve3(start, end)
+    const dashStart = new Vector3(dashComponent(0, i), dashComponent(1, i), 0)
+    let dashEnd = new Vector3(
+      dashComponent(0, i + 1),
+      dashComponent(1, i + 1),
+      0
+    )
+    const startOfLine = new Vector3(from[0], from[1], 0)
+    const endOfLine = new Vector3(to[0], to[1], 0)
+    if (startOfLine.distanceTo(dashEnd) > startOfLine.distanceTo(endOfLine))
+      dashEnd = endOfLine
+
+    if (dashEnd) {
+      const dashCurve = new LineCurve3(dashStart, dashEnd)
       const dashGeometry = new ExtrudeGeometry(shape, {
         steps: 1,
         bevelEnabled: false,
