@@ -110,6 +110,17 @@ fn bind_arrays_with_objects_elements() {
 }
 
 #[test]
+fn statement_after_return() {
+    let program = "fn f = () => {
+        return 1
+        let x = 2
+    }
+    f()";
+    let err = should_not_compile(program);
+    assert_eq!(err, CompileError::MultipleReturns);
+}
+
+#[test]
 fn name_not_found() {
     // Users can't assign `y` to anything because `y` is undefined.
     let err = should_not_compile("let x = y");
@@ -443,6 +454,66 @@ fn use_kcl_functions_with_too_many_params() {
             ..
         }
     ))
+}
+
+#[test]
+fn use_kcl_function_as_return_value() {
+    let program = "fn twotwotwo = () => {
+            return () => { return 222 }
+        }
+        let f = twotwotwo()
+        let x = f()";
+    let (plan, scope) = must_plan(program);
+    match scope.get("x").unwrap() {
+        EpBinding::Single(addr) => {
+            assert_eq!(addr, &Address::ZERO);
+        }
+        other => {
+            panic!("expected 'x' bound to an address but it was bound to {other:?}, so failed test");
+        }
+    }
+    assert_eq!(
+        plan,
+        vec![Instruction::SetPrimitive {
+            address: Address::ZERO,
+            value: 222i64.into()
+        }]
+    )
+}
+
+#[test]
+fn define_recursive_function() {
+    let program = "fn add_infinitely = (i) => {
+            return add_infinitely(i+1)
+        }";
+    let (plan, _scope) = must_plan(program);
+    assert_eq!(plan, Vec::new())
+}
+#[test]
+fn use_kcl_function_as_param() {
+    let program = "fn wrapper = (f) => {
+            return f()
+        }
+        fn twotwotwo = () => { 
+            return 222
+        }
+        let x = wrapper(twotwotwo)";
+    let (plan, scope) = must_plan(program);
+    match scope.get("x").unwrap() {
+        EpBinding::Single(addr) => {
+            assert_eq!(addr, &Address::ZERO);
+        }
+        other => {
+            panic!("expected 'x' bound to an address but it was bound to {other:?}, so failed test");
+        }
+    }
+    assert_eq!(
+        plan,
+        vec![Instruction::SetPrimitive {
+            address: Address::ZERO,
+            value: 222i64.into()
+        }]
+    )
 }
 
 #[test]
