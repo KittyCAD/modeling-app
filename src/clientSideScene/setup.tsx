@@ -460,6 +460,44 @@ class SetupSingleton {
     this.currentMouseVector.x = (event.clientX / window.innerWidth) * 2 - 1
     this.currentMouseVector.y = -(event.clientY / window.innerHeight) * 2 + 1
 
+    const planeIntersectPoint = ((): {
+      intersection2d: Vector2
+      intersectPoint: Vector3
+    } | null => {
+      this.planeRaycaster.setFromCamera(
+        this.currentMouseVector,
+        setupSingleton.camera
+      )
+      const planeIntersects = this.planeRaycaster.intersectObjects(
+        this.scene.children,
+        true
+      )
+      if (
+        !(
+          planeIntersects.length > 0 &&
+          planeIntersects[0].object.userData.type === 'raycastable-plane'
+        )
+      )
+        return null
+      const planePosition = planeIntersects[0].object.position
+      const inversePlaneQuaternion = planeIntersects[0].object.quaternion
+        .clone()
+        .invert()
+      const intersectPoint = planeIntersects[0].point
+      let transformedPoint = intersectPoint.clone()
+      if (transformedPoint) {
+        transformedPoint.applyQuaternion(inversePlaneQuaternion)
+        transformedPoint?.sub(
+          new Vector3(...planePosition).applyQuaternion(inversePlaneQuaternion)
+        )
+      }
+
+      return {
+        intersection2d: new Vector2(transformedPoint.x, transformedPoint.y), // z should be 0
+        intersectPoint,
+      }
+    })()
+
     if (this.selected) {
       const hasBeenDragged = !compareVec2Epsilon2(
         [this.currentMouseVector.x, this.currentMouseVector.y],
@@ -471,48 +509,14 @@ class SetupSingleton {
         // this is where we could fire a onDragStart event
         // console.log('onDragStart', this.selected)
       }
-      if (hasBeenDragged) {
-        // TODO - this is where we could fire a onDrag event
-        this.planeRaycaster.setFromCamera(
-          this.currentMouseVector,
-          setupSingleton.camera
-        )
-        const intersects = this.planeRaycaster.intersectObjects(
-          this.scene.children,
-          true
-        )
-        // console.log('onDrag', this.selected)
-        if (
-          intersects.length > 0 &&
-          intersects[0].object.userData.type === 'raycastable-plane'
-        ) {
-          const planePosition = intersects[0].object.position
-          const inversePlaneQuaternion = intersects[0].object.quaternion
-            .clone()
-            .invert()
-          const intersectPoint = intersects[0].point
-          let transformedPoint = intersectPoint.clone()
-          if (transformedPoint) {
-            transformedPoint.applyQuaternion(inversePlaneQuaternion)
-            transformedPoint?.sub(
-              new Vector3(...planePosition).applyQuaternion(
-                inversePlaneQuaternion
-              )
-            )
-          }
+      if (hasBeenDragged && planeIntersectPoint) {
+        // // console.log('onDrag', this.selected)
 
-          const intersection2d = new Vector2(
-            transformedPoint.x,
-            transformedPoint.y
-          ) // z should be 0
-
-          this.onDragCallback({
-            object: this.selected.object,
-            event,
-            intersectPoint,
-            intersection2d,
-          })
-        }
+        this.onDragCallback({
+          object: this.selected.object,
+          event,
+          ...planeIntersectPoint,
+        })
       }
     }
 

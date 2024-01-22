@@ -133,7 +133,6 @@ class ClientSideScene {
     const group = getParentGroup(object)
     if (!group) return
     const pathToNode: PathToNode = group.userData.pathToNode
-    console.log('dragging', object, event, intersectPoint, intersection2d)
 
     const from: [number, number] = [
       group.userData.from[0],
@@ -205,9 +204,7 @@ class ClientSideScene {
     from: [number, number]
     to: [number, number]
     group: Group
-    // group: paper.Group
   }) {
-    console.log('okay just need to update it', from, to, group)
     const arrowGroup = group.children.find(
       (child) => child.userData.type === 'arrowhead'
     ) as Group
