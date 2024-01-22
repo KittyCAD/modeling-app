@@ -383,6 +383,30 @@ fn use_kcl_functions_zero_params() {
         }
     }
 }
+
+#[test]
+fn use_kcl_functions_with_params() {
+    let (plan, scope) = must_plan(
+        "fn triple = (x) => { return x*3 }
+    let x = triple(1)",
+    );
+    assert_eq!(
+        plan,
+        vec![Instruction::SetPrimitive {
+            address: Address::ZERO,
+            value: 123i64.into()
+        }]
+    );
+    match scope.get("x").unwrap() {
+        EpBinding::Single(addr) => {
+            assert_eq!(addr, &Address::ZERO);
+        }
+        other => {
+            panic!("expected 'x' bound to an address but it was bound to {other:?}");
+        }
+    }
+}
+
 #[test]
 fn define_kcl_functions() {
     let (plan, scope) = must_plan("fn triple = (x) => { return x * 3 }");
