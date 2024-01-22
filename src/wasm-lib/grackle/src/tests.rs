@@ -385,39 +385,108 @@ fn use_kcl_functions_zero_params() {
 }
 
 #[test]
+fn use_kcl_functions_with_optional_params() {
+    for (i, program) in ["fn triple = (x, y?) => { return x*3 }
+    let x = triple(1, 888)"]
+    .into_iter()
+    .enumerate()
+    {
+        let (plan, scope) = must_plan(program);
+        let destination = Address::ZERO + 3;
+        assert_eq!(
+            plan,
+            vec![
+                Instruction::SetPrimitive {
+                    address: Address::ZERO,
+                    value: 1i64.into(),
+                },
+                Instruction::SetPrimitive {
+                    address: Address::ZERO + 1,
+                    value: 888i64.into(),
+                },
+                Instruction::SetPrimitive {
+                    address: Address::ZERO + 2,
+                    value: 3i64.into(),
+                },
+                Instruction::Arithmetic {
+                    arithmetic: ep::Arithmetic {
+                        operation: ep::Operation::Mul,
+                        operand0: ep::Operand::Reference(Address::ZERO),
+                        operand1: ep::Operand::Reference(Address::ZERO + 2)
+                    },
+                    destination,
+                }
+            ],
+            "failed test {i}"
+        );
+        match scope.get("x").unwrap() {
+            EpBinding::Single(addr) => {
+                assert_eq!(addr, &destination, "failed test {i}");
+            }
+            other => {
+                panic!("expected 'x' bound to an address but it was bound to {other:?}, so failed test {i}");
+            }
+        }
+    }
+}
+
+#[test]
+fn use_kcl_functions_with_too_many_params() {
+    let program = "fn triple = (x, y?) => { return x*3 }
+    let x = triple(1, 2, 3)";
+    let err = should_not_compile(program);
+    assert!(matches!(
+        err,
+        CompileError::TooManyArgs {
+            maximum: 2,
+            actual: 3,
+            ..
+        }
+    ))
+}
+
+#[test]
 fn use_kcl_functions_with_params() {
-    let (plan, scope) = must_plan(
+    for (i, program) in [
         "fn triple = (x) => { return x*3 }
     let x = triple(1)",
-    );
-    let destination = Address::ZERO + 2;
-    assert_eq!(
-        plan,
-        vec![
-            Instruction::SetPrimitive {
-                address: Address::ZERO,
-                value: 1i64.into(),
-            },
-            Instruction::SetPrimitive {
-                address: Address::ZERO + 1,
-                value: 3i64.into(),
-            },
-            Instruction::Arithmetic {
-                arithmetic: ep::Arithmetic {
-                    operation: ep::Operation::Mul,
-                    operand0: ep::Operand::Reference(Address::ZERO),
-                    operand1: ep::Operand::Reference(Address::ZERO.offset(1))
+        "fn triple = (x,y?) => { return x*3 }
+    let x = triple(1)",
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        let (plan, scope) = must_plan(program);
+        let destination = Address::ZERO + 2;
+        assert_eq!(
+            plan,
+            vec![
+                Instruction::SetPrimitive {
+                    address: Address::ZERO,
+                    value: 1i64.into(),
                 },
-                destination,
+                Instruction::SetPrimitive {
+                    address: Address::ZERO + 1,
+                    value: 3i64.into(),
+                },
+                Instruction::Arithmetic {
+                    arithmetic: ep::Arithmetic {
+                        operation: ep::Operation::Mul,
+                        operand0: ep::Operand::Reference(Address::ZERO),
+                        operand1: ep::Operand::Reference(Address::ZERO.offset(1))
+                    },
+                    destination,
+                }
+            ],
+            "failed test {i}"
+        );
+        match scope.get("x").unwrap() {
+            EpBinding::Single(addr) => {
+                assert_eq!(addr, &destination, "failed test {i}");
             }
-        ]
-    );
-    match scope.get("x").unwrap() {
-        EpBinding::Single(addr) => {
-            assert_eq!(addr, &destination);
-        }
-        other => {
-            panic!("expected 'x' bound to an address but it was bound to {other:?}");
+            other => {
+                panic!("expected 'x' bound to an address but it was bound to {other:?}, so failed test {i}");
+            }
         }
     }
 }

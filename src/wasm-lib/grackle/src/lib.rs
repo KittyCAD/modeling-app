@@ -228,6 +228,14 @@ impl Planner {
                         // Bind the call's arguments to the names of the function's parameters.
                         let num_actual_params = args.len();
                         let mut arg_iter = args.into_iter();
+                        let max_params = params_required.len() + params_optional.len();
+                        if num_actual_params > max_params {
+                            return Err(CompileError::TooManyArgs {
+                                fn_name: "".into(),
+                                maximum: max_params,
+                                actual: num_actual_params,
+                            });
+                        }
 
                         // Bind required parameters
                         for param in params_required {
@@ -239,7 +247,13 @@ impl Planner {
                             self.binding_scope.bind(param.identifier.name, arg);
                         }
 
-                        // TODO: Bind optional parameters
+                        // Bind optional parameters
+                        for param in params_optional {
+                            let Some(arg) = arg_iter.next() else {
+                                break;
+                            };
+                            self.binding_scope.bind(param.identifier.name, arg);
+                        }
 
                         let (instructions, retval) = self.build_plan(function_body)?;
                         let Some(retval) = retval else {
