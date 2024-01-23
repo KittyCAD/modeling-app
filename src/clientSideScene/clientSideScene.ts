@@ -90,6 +90,10 @@ class ClientSideScene {
       variableDeclarationName
     ] as SketchGroup
     const group = new Group()
+    group.userData = {
+      type: 'sketch-group-segments',
+      pathToNode: sketchPathToNode,
+    }
     sketchGroup.value.forEach((segment, index) => {
       let segPathToNode = getNodePathFromSourceRange(
         draftSegment ? truncatedAst : kclManager.ast,
@@ -225,6 +229,7 @@ class ClientSideScene {
       pathToNode,
       'CallExpression'
     ).node
+    if (node.type !== 'CallExpression') return
 
     const modded = changeSketchArguments(
       modifiedAst,
@@ -258,9 +263,13 @@ class ClientSideScene {
           modifiedAst,
           segment.__geoMeta.sourceRange
         )
+        const originalPathToNodeStr = JSON.stringify(segPathToNode)
         segPathToNode[1][0] = varDecIndex
         const pathToNodeStr = JSON.stringify(segPathToNode)
-        const group = this.activeSegments[pathToNodeStr]
+        // more hacks to hopefully be solved by proper pathToNode info in memory/sketchGroup segments
+        const group =
+          this.activeSegments[pathToNodeStr] ||
+          this.activeSegments[originalPathToNodeStr]
         // const prevSegment = sketchGroup.slice(index - 1)[0]
         const { type, from, to } = group.userData
         // if (type === 'tangentialArcTo') {
@@ -338,13 +347,28 @@ class ClientSideScene {
       await setupSingleton.animateToPerspective()
     }
   }
-  async tearDownSketch() {
-    const aChild = Object.values(this.activeSegments)[0]
-    if (aChild && aChild.parent) {
-      this.scene.remove(aChild.parent)
+  async tearDownSketch(callDepth = 0) {
+    const sketchSegments = this.scene.children.find(
+      ({ userData }) => userData?.type === 'sketch-group-segments'
+    )
+    if (sketchSegments) {
+      this.scene.remove(sketchSegments)
+    } else {
+      const delay = 100
+      const maxTimeRetries = 3000 // 3 seconds
+      const maxCalls = maxTimeRetries / delay
+      if (callDepth < maxCalls)
+        setTimeout(() => {
+          this.tearDownSketch(callDepth + 1)
+        }, delay)
     }
     if (this.intersectionPlane) this.scene.remove(this.intersectionPlane)
     setupSingleton.controls.enableRotate = true
+    this.activeSegments = {}
+    setupSingleton.setCallbacks({
+      onDrag: () => {},
+      onMove: () => {},
+    })
   }
 }
 

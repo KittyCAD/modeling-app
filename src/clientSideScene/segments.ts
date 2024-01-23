@@ -97,18 +97,18 @@ export function dashed(
   )
   const length = dashLine.getLength()
   const numberOfPoints = (length / (dashSize + gapSize)) * 2
+  const startOfLine = new Vector3(from[0], from[1], 0)
+  const endOfLine = new Vector3(to[0], to[1], 0)
   const dashGeometries = []
-  for (let i = 0; i <= numberOfPoints; i += 2) {
-    const dashComponent = (xOrY: number, pointIndex: number) =>
-      ((to[xOrY] - from[xOrY]) / numberOfPoints) * pointIndex + from[xOrY]
+  const dashComponent = (xOrY: number, pointIndex: number) =>
+    ((to[xOrY] - from[xOrY]) / numberOfPoints) * pointIndex + from[xOrY]
+  for (let i = 0; i < numberOfPoints; i += 2) {
     const dashStart = new Vector3(dashComponent(0, i), dashComponent(1, i), 0)
     let dashEnd = new Vector3(
       dashComponent(0, i + 1),
       dashComponent(1, i + 1),
       0
     )
-    const startOfLine = new Vector3(from[0], from[1], 0)
-    const endOfLine = new Vector3(to[0], to[1], 0)
     if (startOfLine.distanceTo(dashEnd) > startOfLine.distanceTo(endOfLine))
       dashEnd = endOfLine
 
@@ -122,7 +122,9 @@ export function dashed(
       dashGeometries.push(dashGeometry)
     }
   }
-  return dashGeometries.length
+  const geo = dashGeometries.length
     ? mergeGeometries(dashGeometries)
     : new BufferGeometry()
+  geo.userData.type = 'dashed'
+  return geo
 }

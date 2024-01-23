@@ -79,12 +79,13 @@
 "set up draft arc": "Equip tangential arc to 2";
 "set up draft line": "Equip Line tool 2";
 "set up draft line 2": "Equip Line tool 3";
-"setup client side sketch": "Enter sketch";
+"setup client side sketch camera": "Enter sketch" | "Select default plane";
+"setup client side sketch segments": "Cancel" | "CancelSketch" | "Enter sketch" | "Select default plane" | "Set selection" | "xstate.stop";
 "setup paper sketch": "Cancel" | "CancelSketch" | "Equip Line tool 2" | "Equip tangential arc to 2" | "Select default plane" | "Set selection" | "xstate.stop";
 "show default planes": "Enter sketch";
 "sketch exit execute": "Cancel" | "Complete line" | "Set selection" | "xstate.stop";
 "sketch mode enabled": "Re-execute" | "Select default plane";
-"tear down client sketch": "Cancel" | "Complete line" | "Set selection" | "xstate.stop";
+"tear down client sketch": "Cancel" | "CancelSketch" | "Complete line" | "Set selection" | "xstate.stop";
         };
         eventsCausingDelays: {
           
