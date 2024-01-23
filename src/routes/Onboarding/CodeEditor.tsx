@@ -29,7 +29,7 @@ export default function CodeEditor() {
             The left pane is where you write your code. It's a code editor with
             syntax highlighting and autocompletion. We've decided to take the
             difficult route of writing our own language—called <code>kcl</code>
-            —for describing geometry, because don't want to inherit all the
+            —for describing geometry, because we don't want to inherit all the
             other functionality from existing languages. We have a lot of ideas
             about how <code>kcl</code> will evolve, and we want to hear your
             thoughts on it.
