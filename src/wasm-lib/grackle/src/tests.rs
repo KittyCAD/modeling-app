@@ -585,6 +585,13 @@ fn use_kcl_functions_with_params() {
 }
 
 #[test]
+fn pipe_substitution_outside_pipe_expression() {
+    let program = "let x = add(1, %)";
+    let err = should_not_compile(program);
+    assert!(matches!(err, CompileError::NotInPipeline));
+}
+
+#[test]
 fn unsugar_pipe_expressions() {
     // These two programs should be equivalent,
     // because that's just the definition of the |> operator.
