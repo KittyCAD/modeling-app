@@ -133,6 +133,9 @@ impl Planner {
                     binding: previously_bound_to.clone(),
                 })
             }
+            SingleValue::UnaryExpression(_expr) => {
+                todo!("Implement unary operations")
+            }
             SingleValue::BinaryExpression(expr) => {
                 let l = self.plan_to_compute_single(SingleValue::from(expr.left))?;
                 let r = self.plan_to_compute_single(SingleValue::from(expr.right))?;
@@ -150,13 +153,13 @@ impl Planner {
                 let mut plan = Vec::with_capacity(l.instructions.len() + r.instructions.len() + 1);
                 plan.extend(l.instructions);
                 plan.extend(r.instructions);
-                plan.push(Instruction::Arithmetic {
-                    arithmetic: ep::Arithmetic {
+                plan.push(Instruction::BinaryArithmetic {
+                    arithmetic: ep::BinaryArithmetic {
                         operation: match expr.operator {
-                            ast::types::BinaryOperator::Add => ep::Operation::Add,
-                            ast::types::BinaryOperator::Sub => ep::Operation::Sub,
-                            ast::types::BinaryOperator::Mul => ep::Operation::Mul,
-                            ast::types::BinaryOperator::Div => ep::Operation::Div,
+                            ast::types::BinaryOperator::Add => ep::BinaryOperation::Add,
+                            ast::types::BinaryOperator::Sub => ep::BinaryOperation::Sub,
+                            ast::types::BinaryOperator::Mul => ep::BinaryOperation::Mul,
+                            ast::types::BinaryOperator::Div => ep::BinaryOperation::Div,
                             ast::types::BinaryOperator::Mod => {
                                 todo!("execution plan instruction set doesn't support Mod yet")
                             }
@@ -300,7 +303,6 @@ impl Planner {
                 })
             }
             SingleValue::PipeExpression(_) => todo!(),
-            SingleValue::UnaryExpression(_) => todo!(),
         }
     }
 

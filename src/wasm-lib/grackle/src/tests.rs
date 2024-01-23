@@ -157,9 +157,9 @@ fn use_native_function_add() {
                 address: Address::ZERO.offset(1),
                 value: 2i64.into()
             },
-            Instruction::Arithmetic {
-                arithmetic: ep::Arithmetic {
-                    operation: ep::Operation::Add,
+            Instruction::BinaryArithmetic {
+                arithmetic: ep::BinaryArithmetic {
+                    operation: ep::BinaryOperation::Add,
                     operand0: ep::Operand::Reference(Address::ZERO),
                     operand1: ep::Operand::Reference(Address::ZERO.offset(1))
                 },
@@ -278,9 +278,9 @@ fn add_literals() {
                 address: Address::ZERO.offset(1),
                 value: 2i64.into()
             },
-            Instruction::Arithmetic {
-                arithmetic: ep::Arithmetic {
-                    operation: ep::Operation::Add,
+            Instruction::BinaryArithmetic {
+                arithmetic: ep::BinaryArithmetic {
+                    operation: ep::BinaryOperation::Add,
                     operand0: ep::Operand::Reference(Address::ZERO),
                     operand1: ep::Operand::Reference(Address::ZERO.offset(1)),
                 },
@@ -310,9 +310,9 @@ fn add_vars() {
                 address: addr1,
                 value: 2i64.into(),
             },
-            Instruction::Arithmetic {
-                arithmetic: ep::Arithmetic {
-                    operation: ep::Operation::Add,
+            Instruction::BinaryArithmetic {
+                arithmetic: ep::BinaryArithmetic {
+                    operation: ep::BinaryOperation::Add,
                     operand0: ep::Operand::Reference(addr0),
                     operand1: ep::Operand::Reference(addr1),
                 },
@@ -351,18 +351,18 @@ fn composite_binary_exprs() {
                 value: 3i64.into(),
             },
             // Adds 1 + 2
-            Instruction::Arithmetic {
-                arithmetic: ep::Arithmetic {
-                    operation: ep::Operation::Add,
+            Instruction::BinaryArithmetic {
+                arithmetic: ep::BinaryArithmetic {
+                    operation: ep::BinaryOperation::Add,
                     operand0: ep::Operand::Reference(addr0),
                     operand1: ep::Operand::Reference(addr1),
                 },
                 destination: addr3,
             },
             // Adds `x` + 3, where `x` is (1 + 2)
-            Instruction::Arithmetic {
-                arithmetic: ep::Arithmetic {
-                    operation: ep::Operation::Add,
+            Instruction::BinaryArithmetic {
+                arithmetic: ep::BinaryArithmetic {
+                    operation: ep::BinaryOperation::Add,
                     operand0: ep::Operand::Reference(addr3),
                     operand1: ep::Operand::Reference(addr2),
                 },
@@ -419,9 +419,9 @@ fn use_kcl_functions_with_optional_params() {
                     address: Address::ZERO + 2,
                     value: 3i64.into(),
                 },
-                Instruction::Arithmetic {
-                    arithmetic: ep::Arithmetic {
-                        operation: ep::Operation::Mul,
+                Instruction::BinaryArithmetic {
+                    arithmetic: ep::BinaryArithmetic {
+                        operation: ep::BinaryOperation::Mul,
                         operand0: ep::Operand::Reference(Address::ZERO),
                         operand1: ep::Operand::Reference(Address::ZERO + 2)
                     },
@@ -540,9 +540,9 @@ fn use_kcl_functions_with_params() {
                     address: Address::ZERO + 1,
                     value: 3i64.into(),
                 },
-                Instruction::Arithmetic {
-                    arithmetic: ep::Arithmetic {
-                        operation: ep::Operation::Mul,
+                Instruction::BinaryArithmetic {
+                    arithmetic: ep::BinaryArithmetic {
+                        operation: ep::BinaryOperation::Mul,
                         operand0: ep::Operand::Reference(Address::ZERO),
                         operand1: ep::Operand::Reference(Address::ZERO.offset(1))
                     },
