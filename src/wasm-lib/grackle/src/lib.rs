@@ -133,8 +133,29 @@ impl Planner {
                     binding: previously_bound_to.clone(),
                 })
             }
-            SingleValue::UnaryExpression(_expr) => {
-                todo!("Implement unary operations")
+            SingleValue::UnaryExpression(expr) => {
+                let operand = self.plan_to_compute_single(SingleValue::from(expr.argument))?;
+                let EpBinding::Single(binding) = operand.binding else {
+                    return Err(CompileError::InvalidOperand(
+                        "you tried to use a composite value (e.g. array or object) as the operand to some math",
+                    ));
+                };
+                let destination = self.next_addr.offset_by(1);
+                let mut plan = operand.instructions;
+                plan.push(Instruction::UnaryArithmetic {
+                    arithmetic: ep::UnaryArithmetic {
+                        operation: match expr.operator {
+                            ast::types::UnaryOperator::Neg => ep::UnaryOperation::Neg,
+                            ast::types::UnaryOperator::Not => ep::UnaryOperation::Not,
+                        },
+                        operand: ep::Operand::Reference(binding),
+                    },
+                    destination,
+                });
+                Ok(EvalPlan {
+                    instructions: plan,
+                    binding: EpBinding::Single(destination),
+                })
             }
             SingleValue::BinaryExpression(expr) => {
                 let l = self.plan_to_compute_single(SingleValue::from(expr.left))?;

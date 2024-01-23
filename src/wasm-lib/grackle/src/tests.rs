@@ -1,3 +1,4 @@
+use ep::UnaryArithmetic;
 use pretty_assertions::assert_eq;
 
 use super::*;
@@ -261,6 +262,27 @@ fn member_expressions_array() {
             panic!("expected 'number' bound to 0x3 but it was bound to {other:?}");
         }
     }
+}
+
+#[test]
+fn compile_flipped_sign() {
+    let program = "let x = 3
+    let y = -x";
+    let (plan, _scope) = must_plan(program);
+    let expected = vec![
+        Instruction::SetPrimitive {
+            address: Address::ZERO,
+            value: 3i64.into(),
+        },
+        Instruction::UnaryArithmetic {
+            arithmetic: UnaryArithmetic {
+                operation: ep::UnaryOperation::Neg,
+                operand: ep::Operand::Reference(Address::ZERO),
+            },
+            destination: Address::ZERO + 1,
+        },
+    ];
+    assert_eq!(plan, expected);
 }
 
 #[test]
