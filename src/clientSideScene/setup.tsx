@@ -13,6 +13,12 @@ import {
   Raycaster,
   Vector2,
   Group,
+  PlaneGeometry,
+  EdgesGeometry,
+  MeshBasicMaterial,
+  Mesh,
+  LineSegments,
+  DoubleSide,
 } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { useRef, useEffect } from 'react'
@@ -621,6 +627,59 @@ class SetupSingleton {
         ...planeIntersectPoint,
       })
     }
+  }
+  showDefaultPlanes() {
+    const addPlane = (
+      color: [number, number, number],
+      rotation: { x: number; y: number; z: number }, //
+      type: string
+    ): Mesh => {
+      const planeGeometry = new PlaneGeometry(100, 100)
+      const planeEdges = new EdgesGeometry(planeGeometry)
+      const lineMaterial = new LineBasicMaterial({
+        color: new Color(...color.map((c) => c * 4.5)),
+        opacity: 0.9,
+      })
+      const planeMaterial = new MeshBasicMaterial({
+        color: new Color(...color),
+        transparent: true,
+        opacity: 0.4,
+        side: DoubleSide,
+      })
+      const plane = new Mesh(planeGeometry, planeMaterial)
+      const edges = new LineSegments(planeEdges, lineMaterial)
+      plane.add(edges)
+      plane.rotation.x = rotation.x
+      plane.rotation.y = rotation.y
+      plane.rotation.z = rotation.z
+      plane.userData.type = type
+      return plane
+    }
+    const lotCh = 0.1
+
+    const planes = [
+      addPlane([0.7, lotCh, lotCh], { x: 0, y: 0, z: 0 }, 'xy-default-plane'),
+      addPlane(
+        [lotCh, lotCh, 0.7],
+        { x: Math.PI / 2, y: 0, z: 0 },
+        'xz-default-plane'
+      ),
+      addPlane(
+        [lotCh, 0.7, lotCh],
+        { x: 0, y: Math.PI / 2, z: 0 },
+        'yz-default-plane'
+      ),
+    ]
+    const planesGroup = new Group()
+    planesGroup.userData.type = 'default-planes'
+    planesGroup.add(...planes)
+    this.scene.add(planesGroup)
+  }
+  removeDefaultPlanes() {
+    const planesGroup = this.scene.children.find(
+      ({ userData }) => userData.type === 'default-planes'
+    )
+    if (planesGroup) this.scene.remove(planesGroup)
   }
 }
 

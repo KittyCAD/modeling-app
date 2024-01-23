@@ -97,9 +97,9 @@ export const ModelingMachineProvider = ({
       actions: {
         'Modify AST': () => {},
         'Update code selection cursors': () => {},
-        'show default planes': () => {
-          // kclManager.showPlanes()
-        },
+        // 'show default planes': () => {
+        //   // kclManager.showPlanes()
+        // },
         'create path': assign({
           sketchEnginePathId: () => {
             const sketchUuid = uuidv4()
