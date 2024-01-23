@@ -54,16 +54,17 @@ impl Planner {
                 if retval.is_some() {
                     return Err(CompileError::MultipleReturns);
                 }
+                let ctx = Context::default();
                 let instructions_for_this_node = match item {
                     BodyItem::ExpressionStatement(node) => match KclValueGroup::from(node.expression) {
-                        KclValueGroup::Single(value) => self.plan_to_compute_single(value)?.instructions,
+                        KclValueGroup::Single(value) => self.plan_to_compute_single(ctx, value)?.instructions,
                         KclValueGroup::ArrayExpression(_) => todo!(),
                         KclValueGroup::ObjectExpression(_) => todo!(),
                     },
                     BodyItem::VariableDeclaration(node) => self.plan_to_bind(node)?,
                     BodyItem::ReturnStatement(node) => match KclValueGroup::from(node.argument) {
                         KclValueGroup::Single(value) => {
-                            let EvalPlan { instructions, binding } = self.plan_to_compute_single(value)?;
+                            let EvalPlan { instructions, binding } = self.plan_to_compute_single(ctx, value)?;
                             retval = Some(binding);
                             instructions
                         }
@@ -78,7 +79,7 @@ impl Planner {
 
     /// Emits instructions which, when run, compute a given KCL value and store it in memory.
     /// Returns the instructions, and the destination address of the value.
-    fn plan_to_compute_single(&mut self, value: SingleValue) -> Result<EvalPlan, CompileError> {
+    fn plan_to_compute_single(&mut self, ctx: Context, value: SingleValue) -> Result<EvalPlan, CompileError> {
         match value {
             SingleValue::KclNoneExpression(KclNone { start: _, end: _ }) => {
                 let address = self.next_addr.offset_by(1);
@@ -134,7 +135,7 @@ impl Planner {
                 })
             }
             SingleValue::UnaryExpression(expr) => {
-                let operand = self.plan_to_compute_single(SingleValue::from(expr.argument))?;
+                let operand = self.plan_to_compute_single(ctx, SingleValue::from(expr.argument))?;
                 let EpBinding::Single(binding) = operand.binding else {
                     return Err(CompileError::InvalidOperand(
                         "you tried to use a composite value (e.g. array or object) as the operand to some math",
@@ -158,8 +159,8 @@ impl Planner {
                 })
             }
             SingleValue::BinaryExpression(expr) => {
-                let l = self.plan_to_compute_single(SingleValue::from(expr.left))?;
-                let r = self.plan_to_compute_single(SingleValue::from(expr.right))?;
+                let l = self.plan_to_compute_single(ctx.clone(), SingleValue::from(expr.left))?;
+                let r = self.plan_to_compute_single(ctx, SingleValue::from(expr.right))?;
                 let EpBinding::Single(l_binding) = l.binding else {
                     return Err(CompileError::InvalidOperand(
                         "you tried to use a composite value (e.g. array or object) as the operand to some math",
@@ -207,7 +208,7 @@ impl Planner {
                             instructions: new_instructions,
                             binding: arg,
                         } = match KclValueGroup::from(argument) {
-                            KclValueGroup::Single(value) => self.plan_to_compute_single(value)?,
+                            KclValueGroup::Single(value) => self.plan_to_compute_single(ctx.clone(), value)?,
                             KclValueGroup::ArrayExpression(_) => todo!(),
                             KclValueGroup::ObjectExpression(_) => todo!(),
                         };
@@ -330,7 +331,7 @@ impl Planner {
                 let mut bodies = expr.body.into_iter();
                 let first = bodies.next().expect("Pipe expression must have > 1 item");
                 let mut plan = match KclValueGroup::from(first) {
-                    KclValueGroup::Single(v) => self.plan_to_compute_single(v)?,
+                    KclValueGroup::Single(v) => self.plan_to_compute_single(ctx.clone(), v)?,
                     KclValueGroup::ArrayExpression(_) => todo!(),
                     KclValueGroup::ObjectExpression(_) => todo!(),
                 };
@@ -340,7 +341,7 @@ impl Planner {
                         KclValueGroup::ArrayExpression(_) => todo!(),
                         KclValueGroup::ObjectExpression(_) => todo!(),
                     };
-                    let EvalPlan { instructions, binding } = self.plan_to_compute_single(value)?;
+                    let EvalPlan { instructions, binding } = self.plan_to_compute_single(ctx.clone(), value)?;
                     plan.instructions.extend(instructions);
                     plan.binding = binding;
                 }
@@ -356,11 +357,12 @@ impl Planner {
         &mut self,
         declarations: ast::types::VariableDeclaration,
     ) -> Result<Vec<Instruction>, CompileError> {
+        let ctx = Context::default();
         declarations
             .declarations
             .into_iter()
             .try_fold(Vec::new(), |mut acc, declaration| {
-                let (instrs, binding) = self.plan_to_bind_one(declaration.init)?;
+                let (instrs, binding) = self.plan_to_bind_one(ctx.clone(), declaration.init)?;
                 self.binding_scope.bind(declaration.id.name, binding);
                 acc.extend(instrs);
                 Ok(acc)
@@ -369,13 +371,14 @@ impl Planner {
 
     fn plan_to_bind_one(
         &mut self,
+        ctx: Context,
         value_being_bound: ast::types::Value,
     ) -> Result<(Vec<Instruction>, EpBinding), CompileError> {
         match KclValueGroup::from(value_being_bound) {
             KclValueGroup::Single(init_value) => {
                 // Simple! Just evaluate it, note where the final value will be stored in KCEP memory,
                 // and bind it to the KCL identifier.
-                let EvalPlan { instructions, binding } = self.plan_to_compute_single(init_value)?;
+                let EvalPlan { instructions, binding } = self.plan_to_compute_single(ctx, init_value)?;
                 Ok((instructions, binding))
             }
             KclValueGroup::ArrayExpression(expr) => {
@@ -388,7 +391,8 @@ impl Planner {
                             KclValueGroup::Single(value) => {
                                 // If this element of the array is a single value, then binding it is
                                 // straightforward -- you got a single binding, no need to change anything.
-                                let EvalPlan { instructions, binding } = self.plan_to_compute_single(value)?;
+                                let EvalPlan { instructions, binding } =
+                                    self.plan_to_compute_single(ctx.clone(), value)?;
                                 acc_instrs.extend(instructions);
                                 acc_bindings.push(binding);
                             }
@@ -401,7 +405,8 @@ impl Planner {
                                     .elements
                                     .into_iter()
                                     .try_fold(Vec::new(), |mut seq, child_element| {
-                                        let (instructions, binding) = self.plan_to_bind_one(child_element)?;
+                                        let (instructions, binding) =
+                                            self.plan_to_bind_one(ctx.clone(), child_element)?;
                                         acc_instrs.extend(instructions);
                                         seq.push(binding);
                                         Ok(seq)
@@ -419,7 +424,8 @@ impl Planner {
                                     .properties
                                     .into_iter()
                                     .try_fold(map, |mut map, property| {
-                                        let (instructions, binding) = self.plan_to_bind_one(property.value)?;
+                                        let (instructions, binding) =
+                                            self.plan_to_bind_one(ctx.clone(), property.value)?;
                                         map.insert(property.key.name, binding);
                                         acc_instrs.extend(instructions);
                                         Ok(map)
@@ -441,7 +447,8 @@ impl Planner {
                     |(mut acc_instrs, mut acc_bindings), (key, value)| {
                         match KclValueGroup::from(value) {
                             KclValueGroup::Single(value) => {
-                                let EvalPlan { instructions, binding } = self.plan_to_compute_single(value)?;
+                                let EvalPlan { instructions, binding } =
+                                    self.plan_to_compute_single(ctx.clone(), value)?;
                                 acc_instrs.extend(instructions);
                                 acc_bindings.insert(key.name, binding);
                             }
@@ -454,7 +461,8 @@ impl Planner {
                                     .elements
                                     .into_iter()
                                     .try_fold(Vec::with_capacity(n), |mut seq, child_element| {
-                                        let (instructions, binding) = self.plan_to_bind_one(child_element)?;
+                                        let (instructions, binding) =
+                                            self.plan_to_bind_one(ctx.clone(), child_element)?;
                                         seq.push(binding);
                                         acc_instrs.extend(instructions);
                                         Ok(seq)
@@ -472,7 +480,8 @@ impl Planner {
                                     .properties
                                     .into_iter()
                                     .try_fold(HashMap::with_capacity(n), |mut map, property| {
-                                        let (instructions, binding) = self.plan_to_bind_one(property.value)?;
+                                        let (instructions, binding) =
+                                            self.plan_to_bind_one(ctx.clone(), property.value)?;
                                         map.insert(property.key.name, binding);
                                         acc_instrs.extend(instructions);
                                         Ok(map)
@@ -584,3 +593,6 @@ enum KclFunction {
     Add(native_functions::Add),
     UserDefined(UserDefinedFunction),
 }
+
+#[derive(Default, Debug, Clone)]
+struct Context {}
