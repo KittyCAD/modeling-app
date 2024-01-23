@@ -133,6 +133,30 @@ impl Planner {
                     binding: previously_bound_to.clone(),
                 })
             }
+            SingleValue::UnaryExpression(expr) => {
+                let operand = self.plan_to_compute_single(SingleValue::from(expr.argument))?;
+                let EpBinding::Single(binding) = operand.binding else {
+                    return Err(CompileError::InvalidOperand(
+                        "you tried to use a composite value (e.g. array or object) as the operand to some math",
+                    ));
+                };
+                let destination = self.next_addr.offset_by(1);
+                let mut plan = operand.instructions;
+                plan.push(Instruction::UnaryArithmetic {
+                    arithmetic: ep::UnaryArithmetic {
+                        operation: match expr.operator {
+                            ast::types::UnaryOperator::Neg => ep::UnaryOperation::Neg,
+                            ast::types::UnaryOperator::Not => ep::UnaryOperation::Not,
+                        },
+                        operand: ep::Operand::Reference(binding),
+                    },
+                    destination,
+                });
+                Ok(EvalPlan {
+                    instructions: plan,
+                    binding: EpBinding::Single(destination),
+                })
+            }
             SingleValue::BinaryExpression(expr) => {
                 let l = self.plan_to_compute_single(SingleValue::from(expr.left))?;
                 let r = self.plan_to_compute_single(SingleValue::from(expr.right))?;
@@ -150,13 +174,13 @@ impl Planner {
                 let mut plan = Vec::with_capacity(l.instructions.len() + r.instructions.len() + 1);
                 plan.extend(l.instructions);
                 plan.extend(r.instructions);
-                plan.push(Instruction::Arithmetic {
-                    arithmetic: ep::Arithmetic {
+                plan.push(Instruction::BinaryArithmetic {
+                    arithmetic: ep::BinaryArithmetic {
                         operation: match expr.operator {
-                            ast::types::BinaryOperator::Add => ep::Operation::Add,
-                            ast::types::BinaryOperator::Sub => ep::Operation::Sub,
-                            ast::types::BinaryOperator::Mul => ep::Operation::Mul,
-                            ast::types::BinaryOperator::Div => ep::Operation::Div,
+                            ast::types::BinaryOperator::Add => ep::BinaryOperation::Add,
+                            ast::types::BinaryOperator::Sub => ep::BinaryOperation::Sub,
+                            ast::types::BinaryOperator::Mul => ep::BinaryOperation::Mul,
+                            ast::types::BinaryOperator::Div => ep::BinaryOperation::Div,
                             ast::types::BinaryOperator::Mod => {
                                 todo!("execution plan instruction set doesn't support Mod yet")
                             }
@@ -300,7 +324,6 @@ impl Planner {
                 })
             }
             SingleValue::PipeExpression(_) => todo!(),
-            SingleValue::UnaryExpression(_) => todo!(),
         }
     }
 
