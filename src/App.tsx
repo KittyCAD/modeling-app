@@ -91,6 +91,10 @@ export function App() {
   const handleMouseMove: MouseEventHandler<HTMLDivElement> = (e) => {
     // e.nativeEvent.preventDefault()
 
+    if (state.matches('Sketch')) {
+      return
+    }
+
     const { x, y } = getNormalisedCoordinates({
       clientX: e.clientX,
       clientY: e.clientY,

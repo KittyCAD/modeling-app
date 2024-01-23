@@ -31,7 +31,7 @@ import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 import { executeAst } from 'useStore'
 import { engineCommandManager } from 'lang/std/engineConnection'
 import { dashed, straightSegment } from './segments'
-import { changeSketchArguments } from 'lang/std/sketch'
+import { addNewSketchLn, changeSketchArguments } from 'lang/std/sketch'
 import { isReducedMotion } from 'lib/utils'
 import {
   createArrayExpression,
@@ -155,7 +155,21 @@ class ClientSideScene {
     } else {
       setupSingleton.setCallbacks({
         onDrag: () => {},
-        onClick: () => {},
+        onClick: async ({ intersection2d }) => {
+          const lastSegment = sketchGroup.value.slice(-1)[0]
+          const newSketchLn = addNewSketchLn({
+            node: kclManager.ast,
+            programMemory: kclManager.programMemory,
+            to: [intersection2d.x, intersection2d.y],
+            from: [lastSegment.to[0], lastSegment.to[1]],
+            fnName: 'line',
+            pathToNode: sketchPathToNode,
+          })
+          const _modifiedAst = newSketchLn.modifiedAst
+          kclManager.executeAstMock(_modifiedAst, { updates: 'code' })
+          await this.tearDownSketch()
+          this.setupSketch({ sketchPathToNode, draftSegment })
+        },
         onMove: (args) => {
           this.onDragSegment({
             ...args,
@@ -349,28 +363,39 @@ class ClientSideScene {
       await setupSingleton.animateToPerspective()
     }
   }
-  async tearDownSketch(callDepth = 0) {
+  private _tearDownSketch(
+    callDepth = 0,
+    resolve: (val: unknown) => void,
+    reject: () => void
+  ) {
     const sketchSegments = this.scene.children.find(
       ({ userData }) => userData?.type === 'sketch-group-segments'
     )
+    let shouldResolve = false
     if (sketchSegments) {
       this.scene.remove(sketchSegments)
+      shouldResolve = true
     } else {
       const delay = 100
       const maxTimeRetries = 3000 // 3 seconds
       const maxCalls = maxTimeRetries / delay
-      if (callDepth < maxCalls)
+      if (callDepth < maxCalls) {
         setTimeout(() => {
-          this.tearDownSketch(callDepth + 1)
+          this._tearDownSketch(callDepth + 1, resolve, reject)
         }, delay)
+      } else {
+        reject()
+      }
     }
     if (this.intersectionPlane) this.scene.remove(this.intersectionPlane)
     setupSingleton.controls.enableRotate = true
     this.activeSegments = {}
-    setupSingleton.setCallbacks({
-      onDrag: () => {},
-      onMove: () => {},
-      onClick: () => {},
+    // maybe should reset onMove etc handlers
+    if (shouldResolve) resolve(true)
+  }
+  async tearDownSketch() {
+    return new Promise((resolve, reject) => {
+      this._tearDownSketch(0, resolve, reject)
     })
   }
 }

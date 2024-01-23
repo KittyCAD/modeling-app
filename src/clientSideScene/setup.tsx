@@ -101,6 +101,7 @@ class SetupSingleton {
     this.onDragCallback = callbacks.onDrag || this.onDragCallback
     this.onMoveCallback = callbacks.onMove || this.onMoveCallback
     this.onClickCallback = callbacks.onClick || this.onClickCallback
+    this.selected = null // following selections between callbacks being set is too tricky
   }
 
   hoveredObject: null | Group = null
@@ -156,10 +157,6 @@ class SetupSingleton {
 
     const light = new AmbientLight(0x505050) // soft white light
     this.scene.add(light)
-
-    window.addEventListener('mousemove', this.onMouseMove, false)
-    window.addEventListener('mousedown', this.onMouseDown, false)
-    window.addEventListener('mouseup', this.onMouseUp, false)
 
     SetupSingleton.instance = this
   }
@@ -335,9 +332,6 @@ class SetupSingleton {
     // Dispose of scene resources, renderer, and controls
     this.renderer.dispose()
     window.removeEventListener('resize', this.onWindowResize)
-    window.removeEventListener('mousemove', this.onMouseMove)
-    window.removeEventListener('mousedown', this.onMouseDown)
-    window.removeEventListener('mouseup', this.onMouseUp)
     // Dispose of any other resources like geometries, materials, textures
   }
 
@@ -638,8 +632,17 @@ export const ClientSideScene = () => {
 
   useEffect(() => {
     if (!canvasRef.current) return
-    canvasRef.current.appendChild(setupSingleton.renderer.domElement)
+    const canvas = canvasRef.current
+    canvas.appendChild(setupSingleton.renderer.domElement)
     setupSingleton.animate()
+    canvas.addEventListener('mousemove', setupSingleton.onMouseMove, false)
+    canvas.addEventListener('mousedown', setupSingleton.onMouseDown, false)
+    canvas.addEventListener('mouseup', setupSingleton.onMouseUp, false)
+    return () => {
+      canvas?.removeEventListener('mousemove', setupSingleton.onMouseMove)
+      canvas?.removeEventListener('mousedown', setupSingleton.onMouseDown)
+      canvas?.removeEventListener('mouseup', setupSingleton.onMouseUp)
+    }
   }, [])
 
   return (
