@@ -324,8 +324,15 @@ impl Planner {
                     binding: binding.clone(),
                 })
             }
-            SingleValue::PipeSubstitution(expr) => {
-                todo!("Resolve % symbol")
+            SingleValue::PipeSubstitution(_expr) => {
+                if let Some(ref binding) = ctx.pipe_substitution {
+                    Ok(EvalPlan {
+                        instructions: Vec::new(),
+                        binding: binding.clone(),
+                    })
+                } else {
+                    Err(CompileError::NotInPipeline)
+                }
             }
             SingleValue::PipeExpression(expr) => {
                 let mut bodies = expr.body.into_iter();
@@ -341,7 +348,12 @@ impl Planner {
                         KclValueGroup::ArrayExpression(_) => todo!(),
                         KclValueGroup::ObjectExpression(_) => todo!(),
                     };
-                    let EvalPlan { instructions, binding } = self.plan_to_compute_single(ctx.clone(), value)?;
+                    let EvalPlan { instructions, binding } = self.plan_to_compute_single(
+                        Context {
+                            pipe_substitution: Some(plan.binding.clone()),
+                        },
+                        value,
+                    )?;
                     plan.instructions.extend(instructions);
                     plan.binding = binding;
                 }
@@ -539,6 +551,8 @@ pub enum CompileError {
     MultipleReturns,
     #[error("A KCL function must end with a return statement, but your function doesn't have one.")]
     NoReturnStmt,
+    #[error("You used the %, which means \"substitute this argument for the value to the left in this |> pipeline\". But there is no such value, because you're not calling a pipeline.")]
+    NotInPipeline,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -595,4 +609,6 @@ enum KclFunction {
 }
 
 #[derive(Default, Debug, Clone)]
-struct Context {}
+struct Context {
+    pipe_substitution: Option<EpBinding>,
+}
