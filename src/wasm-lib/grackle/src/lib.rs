@@ -323,7 +323,7 @@ impl Planner {
                     binding: binding.clone(),
                 })
             }
-            SingleValue::PipeExpression(_) => todo!(),
+            SingleValue::PipeExpression(_) => todo!("Implement pipe expressions"),
         }
     }
 
