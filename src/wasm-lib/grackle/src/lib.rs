@@ -8,7 +8,7 @@ use std::collections::HashMap;
 
 use kcl_lib::{
     ast,
-    ast::types::{BodyItem, KclNone, LiteralValue, Program},
+    ast::types::{BodyItem, FunctionExpressionParts, KclNone, LiteralValue, Program, RequiredParamAfterOptionalParam},
 };
 use kittycad_execution_plan as ep;
 use kittycad_execution_plan::{Address, ExecutionError, Instruction};
@@ -22,7 +22,7 @@ use self::kcl_value_group::{KclValueGroup, SingleValue};
 /// Execute a KCL program by compiling into an execution plan, then running that.
 pub async fn execute(ast: Program, session: Session) -> Result<(), Error> {
     let mut planner = Planner::new();
-    let plan = planner.build_plan(ast)?;
+    let (plan, _retval) = planner.build_plan(ast)?;
     let mut mem = kittycad_execution_plan::Memory::default();
     kittycad_execution_plan::execute(&mut mem, plan, session).await?;
     Ok(())
@@ -44,20 +44,36 @@ impl Planner {
         }
     }
 
-    fn build_plan(&mut self, program: Program) -> PlanRes {
-        program.body.into_iter().try_fold(Vec::new(), |mut instructions, item| {
-            let instructions_for_this_node = match item {
-                BodyItem::ExpressionStatement(node) => match KclValueGroup::from(node.expression) {
-                    KclValueGroup::Single(value) => self.plan_to_compute_single(value)?.instructions,
-                    KclValueGroup::ArrayExpression(_) => todo!(),
-                    KclValueGroup::ObjectExpression(_) => todo!(),
-                },
-                BodyItem::VariableDeclaration(node) => self.plan_to_bind(node)?,
-                BodyItem::ReturnStatement(_) => todo!(),
-            };
-            instructions.extend(instructions_for_this_node);
-            Ok(instructions)
-        })
+    /// If successful, return the KCEP instructions for executing the given program.
+    /// If the program is a function with a return, then it also returns the KCL function's return value.
+    fn build_plan(&mut self, program: Program) -> Result<(Vec<Instruction>, Option<EpBinding>), CompileError> {
+        program
+            .body
+            .into_iter()
+            .try_fold((Vec::new(), None), |(mut instructions, mut retval), item| {
+                if retval.is_some() {
+                    return Err(CompileError::MultipleReturns);
+                }
+                let instructions_for_this_node = match item {
+                    BodyItem::ExpressionStatement(node) => match KclValueGroup::from(node.expression) {
+                        KclValueGroup::Single(value) => self.plan_to_compute_single(value)?.instructions,
+                        KclValueGroup::ArrayExpression(_) => todo!(),
+                        KclValueGroup::ObjectExpression(_) => todo!(),
+                    },
+                    BodyItem::VariableDeclaration(node) => self.plan_to_bind(node)?,
+                    BodyItem::ReturnStatement(node) => match KclValueGroup::from(node.argument) {
+                        KclValueGroup::Single(value) => {
+                            let EvalPlan { instructions, binding } = self.plan_to_compute_single(value)?;
+                            retval = Some(binding);
+                            instructions
+                        }
+                        KclValueGroup::ArrayExpression(_) => todo!(),
+                        KclValueGroup::ObjectExpression(_) => todo!(),
+                    },
+                };
+                instructions.extend(instructions_for_this_node);
+                Ok((instructions, retval))
+            })
     }
 
     /// Emits instructions which, when run, compute a given KCL value and store it in memory.
@@ -72,6 +88,23 @@ impl Planner {
                         value: ept::Primitive::Nil,
                     }],
                     binding: EpBinding::Single(address),
+                })
+            }
+            SingleValue::FunctionExpression(expr) => {
+                let FunctionExpressionParts {
+                    start: _,
+                    end: _,
+                    params_required,
+                    params_optional,
+                    body,
+                } = expr.into_parts().map_err(CompileError::BadParamOrder)?;
+                Ok(EvalPlan {
+                    instructions: Vec::new(),
+                    binding: EpBinding::from(KclFunction::UserDefined(UserDefinedFunction {
+                        params_optional,
+                        params_required,
+                        body,
+                    })),
                 })
             }
             SingleValue::Literal(expr) => {
@@ -142,6 +175,7 @@ impl Planner {
                 })
             }
             SingleValue::CallExpression(expr) => {
+                // Make a plan to compute all the arguments to this call.
                 let (mut instructions, args) = expr.arguments.into_iter().try_fold(
                     (Vec::new(), Vec::new()),
                     |(mut acc_instrs, mut acc_args), argument| {
@@ -158,6 +192,7 @@ impl Planner {
                         Ok((acc_instrs, acc_args))
                     },
                 )?;
+                // Look up the function being called.
                 let callee = match self.binding_scope.get_fn(&expr.callee.name) {
                     GetFnResult::Found(f) => f,
                     GetFnResult::NonCallable => {
@@ -172,10 +207,67 @@ impl Planner {
                     }
                 };
 
+                // Emit instructions to call that function with the given arguments.
+                use native_functions::Callable;
                 let EvalPlan {
                     instructions: eval_instrs,
                     binding,
-                } = callee.call(&mut self.next_addr, args)?;
+                } = match callee {
+                    KclFunction::Id(f) => f.call(&mut self.next_addr, args)?,
+                    KclFunction::StartSketchAt(f) => f.call(&mut self.next_addr, args)?,
+                    KclFunction::Add(f) => f.call(&mut self.next_addr, args)?,
+                    KclFunction::UserDefined(f) => {
+                        let UserDefinedFunction {
+                            params_optional,
+                            params_required,
+                            body: function_body,
+                        } = f.clone();
+                        let num_required_params = params_required.len();
+                        self.binding_scope.add_scope();
+
+                        // Bind the call's arguments to the names of the function's parameters.
+                        let num_actual_params = args.len();
+                        let mut arg_iter = args.into_iter();
+                        let max_params = params_required.len() + params_optional.len();
+                        if num_actual_params > max_params {
+                            return Err(CompileError::TooManyArgs {
+                                fn_name: "".into(),
+                                maximum: max_params,
+                                actual: num_actual_params,
+                            });
+                        }
+
+                        // Bind required parameters
+                        for param in params_required {
+                            let arg = arg_iter.next().ok_or(CompileError::NotEnoughArgs {
+                                fn_name: "".into(),
+                                required: num_required_params,
+                                actual: num_actual_params,
+                            })?;
+                            self.binding_scope.bind(param.identifier.name, arg);
+                        }
+
+                        // Bind optional parameters
+                        for param in params_optional {
+                            let Some(arg) = arg_iter.next() else {
+                                break;
+                            };
+                            self.binding_scope.bind(param.identifier.name, arg);
+                        }
+
+                        let (instructions, retval) = self.build_plan(function_body)?;
+                        let Some(retval) = retval else {
+                            return Err(CompileError::NoReturnStmt);
+                        };
+                        self.binding_scope.remove_scope();
+                        EvalPlan {
+                            instructions,
+                            binding: retval,
+                        }
+                    }
+                };
+
+                // Combine the "evaluate arguments" plan with the "call function" plan.
                 instructions.extend(eval_instrs);
                 Ok(EvalPlan { instructions, binding })
             }
@@ -387,6 +479,12 @@ pub enum CompileError {
         "you tried to read the '.{property}' of an object, but the object doesn't have any properties with that key"
     )]
     UndefinedProperty { property: String },
+    #[error("{0}")]
+    BadParamOrder(RequiredParamAfterOptionalParam),
+    #[error("A KCL function cannot have anything after its return value")]
+    MultipleReturns,
+    #[error("A KCL function must end with a return statement, but your function doesn't have one.")]
+    NoReturnStmt,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -396,8 +494,6 @@ pub enum Error {
     #[error("{0}")]
     Execution(#[from] ExecutionError),
 }
-
-type PlanRes = Result<Vec<Instruction>, CompileError>;
 
 /// Every KCL literal value is equivalent to an Execution Plan value, and therefore can be
 /// bound to some KCL name and Execution Plan address.
@@ -417,9 +513,29 @@ struct EvalPlan {
     binding: EpBinding,
 }
 
-trait KclFunction: std::fmt::Debug {
-    fn call(&self, next_addr: &mut Address, args: Vec<EpBinding>) -> Result<EvalPlan, CompileError>;
-}
-
 /// Either an owned string, or a static string. Either way it can be read and moved around.
 pub type String2 = std::borrow::Cow<'static, str>;
+
+#[derive(Debug, Clone)]
+struct UserDefinedFunction {
+    params_optional: Vec<ast::types::Parameter>,
+    params_required: Vec<ast::types::Parameter>,
+    body: ast::types::Program,
+}
+
+impl PartialEq for UserDefinedFunction {
+    fn eq(&self, other: &Self) -> bool {
+        self.params_optional == other.params_optional && self.params_required == other.params_required
+    }
+}
+
+impl Eq for UserDefinedFunction {}
+
+#[derive(Debug, Clone)]
+#[cfg_attr(test, derive(Eq, PartialEq))]
+enum KclFunction {
+    Id(native_functions::Id),
+    StartSketchAt(native_functions::StartSketchAt),
+    Add(native_functions::Add),
+    UserDefined(UserDefinedFunction),
+}

@@ -2,11 +2,10 @@ use kcl_lib::ast::types::LiteralIdentifier;
 use kcl_lib::ast::types::LiteralValue;
 
 use crate::CompileError;
+use crate::KclFunction;
 
 use super::native_functions;
 use super::Address;
-use super::KclFunction;
-use super::String2;
 
 use std::collections::HashMap;
 
@@ -21,6 +20,14 @@ pub enum EpBinding {
     Sequence(Vec<EpBinding>),
     /// A sequence of KCL values, indexed by their identifier.
     Map(HashMap<String, EpBinding>),
+    /// Not associated with a KCEP address.
+    Function(KclFunction),
+}
+
+impl From<KclFunction> for EpBinding {
+    fn from(f: KclFunction) -> Self {
+        Self::Function(f)
+    }
 }
 
 impl EpBinding {
@@ -31,16 +38,18 @@ impl EpBinding {
             LiteralIdentifier::Literal(litval) => match litval.value {
                 // Arrays can be indexed by integers.
                 LiteralValue::IInteger(i) => match self {
-                    EpBinding::Single(_) => Err(CompileError::CannotIndex),
                     EpBinding::Sequence(seq) => {
                         let i = usize::try_from(i).map_err(|_| CompileError::InvalidIndex(i.to_string()))?;
                         seq.get(i).ok_or(CompileError::IndexOutOfBounds { i, len: seq.len() })
                     }
                     EpBinding::Map(_) => Err(CompileError::CannotIndex),
+                    EpBinding::Single(_) => Err(CompileError::CannotIndex),
+                    EpBinding::Function(_) => Err(CompileError::CannotIndex),
                 },
                 // Objects can be indexed by string properties.
                 LiteralValue::String(property) => match self {
                     EpBinding::Single(_) => Err(CompileError::NoProperties),
+                    EpBinding::Function(_) => Err(CompileError::NoProperties),
                     EpBinding::Sequence(_) => Err(CompileError::ArrayDoesNotHaveProperties),
                     EpBinding::Map(map) => map.get(&property).ok_or(CompileError::UndefinedProperty { property }),
                 },
@@ -67,7 +76,6 @@ pub struct BindingScope {
     // KCL value which are stored in EP memory.
     ep_bindings: HashMap<String, EpBinding>,
     /// KCL functions. They do NOT get stored in EP memory.
-    function_bindings: HashMap<String2, Box<dyn KclFunction>>,
     parent: Option<Box<BindingScope>>,
 }
 
@@ -80,29 +88,39 @@ impl BindingScope {
         Self {
             // TODO: Actually put the stdlib prelude in here,
             // things like `startSketchAt` and `line`.
-            function_bindings: HashMap::from([
-                ("id".into(), Box::new(native_functions::Id) as _),
-                ("add".into(), Box::new(native_functions::Add) as _),
+            ep_bindings: HashMap::from([
+                ("id".into(), EpBinding::from(KclFunction::Id(native_functions::Id))),
+                ("add".into(), EpBinding::from(KclFunction::Add(native_functions::Add))),
+                (
+                    "startSketchAt".into(),
+                    EpBinding::from(KclFunction::StartSketchAt(native_functions::StartSketchAt)),
+                ),
             ]),
-            ep_bindings: Default::default(),
             parent: None,
         }
     }
 
     /// Add a new scope, e.g. for new function calls.
-    #[allow(dead_code)] // TODO: when we implement function expressions.
-    pub fn add_scope(self) -> Self {
-        Self {
-            function_bindings: Default::default(),
-            ep_bindings: Default::default(),
-            parent: Some(Box::new(self)),
-        }
+    pub fn add_scope(&mut self) {
+        // Move all data from `self` into `this`.
+        let this_parent = self.parent.take();
+        let this_ep_bindings = self.ep_bindings.drain().collect();
+        let this = Self {
+            ep_bindings: this_ep_bindings,
+            parent: this_parent,
+        };
+        // Turn `self` into a new scope, with the old `self` as its parent.
+        self.parent = Some(Box::new(this));
     }
 
     //// Remove a scope, e.g. when exiting a function call.
-    #[allow(dead_code)] // TODO: when we implement function expressions.
-    pub fn remove_scope(self) -> Self {
-        *self.parent.unwrap()
+    pub fn remove_scope(&mut self) {
+        // The scope is finished, so erase all its local variables.
+        self.ep_bindings.clear();
+        // Pop the stack -- the parent scope is now the current scope.
+        let p = self.parent.take().expect("cannot remove the root scope");
+        self.parent = p.parent;
+        self.ep_bindings = p.ep_bindings;
     }
 
     /// Add a binding (e.g. defining a new variable)
@@ -126,10 +144,11 @@ impl BindingScope {
 
     /// Look up a function bound to the given identifier.
     pub fn get_fn(&self, identifier: &str) -> GetFnResult {
-        if let Some(f) = self.function_bindings.get(identifier) {
-            GetFnResult::Found(f.as_ref())
-        } else if self.get(identifier).is_some() {
-            GetFnResult::NonCallable
+        if let Some(x) = self.get(identifier) {
+            match x {
+                EpBinding::Function(f) => GetFnResult::Found(f),
+                _ => GetFnResult::NonCallable,
+            }
         } else if let Some(ref parent) = self.parent {
             parent.get_fn(identifier)
         } else {
@@ -139,7 +158,7 @@ impl BindingScope {
 }
 
 pub enum GetFnResult<'a> {
-    Found(&'a dyn KclFunction),
+    Found(&'a KclFunction),
     NonCallable,
     NotFound,
 }
