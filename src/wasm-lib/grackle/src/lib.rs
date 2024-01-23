@@ -54,16 +54,17 @@ impl Planner {
                 if retval.is_some() {
                     return Err(CompileError::MultipleReturns);
                 }
+                let mut ctx = Context::default();
                 let instructions_for_this_node = match item {
                     BodyItem::ExpressionStatement(node) => match KclValueGroup::from(node.expression) {
-                        KclValueGroup::Single(value) => self.plan_to_compute_single(value)?.instructions,
+                        KclValueGroup::Single(value) => self.plan_to_compute_single(&mut ctx, value)?.instructions,
                         KclValueGroup::ArrayExpression(_) => todo!(),
                         KclValueGroup::ObjectExpression(_) => todo!(),
                     },
                     BodyItem::VariableDeclaration(node) => self.plan_to_bind(node)?,
                     BodyItem::ReturnStatement(node) => match KclValueGroup::from(node.argument) {
                         KclValueGroup::Single(value) => {
-                            let EvalPlan { instructions, binding } = self.plan_to_compute_single(value)?;
+                            let EvalPlan { instructions, binding } = self.plan_to_compute_single(&mut ctx, value)?;
                             retval = Some(binding);
                             instructions
                         }
@@ -78,7 +79,7 @@ impl Planner {
 
     /// Emits instructions which, when run, compute a given KCL value and store it in memory.
     /// Returns the instructions, and the destination address of the value.
-    fn plan_to_compute_single(&mut self, value: SingleValue) -> Result<EvalPlan, CompileError> {
+    fn plan_to_compute_single(&mut self, ctx: &mut Context, value: SingleValue) -> Result<EvalPlan, CompileError> {
         match value {
             SingleValue::KclNoneExpression(KclNone { start: _, end: _ }) => {
                 let address = self.next_addr.offset_by(1);
@@ -134,7 +135,7 @@ impl Planner {
                 })
             }
             SingleValue::UnaryExpression(expr) => {
-                let operand = self.plan_to_compute_single(SingleValue::from(expr.argument))?;
+                let operand = self.plan_to_compute_single(ctx, SingleValue::from(expr.argument))?;
                 let EpBinding::Single(binding) = operand.binding else {
                     return Err(CompileError::InvalidOperand(
                         "you tried to use a composite value (e.g. array or object) as the operand to some math",
@@ -158,8 +159,8 @@ impl Planner {
                 })
             }
             SingleValue::BinaryExpression(expr) => {
-                let l = self.plan_to_compute_single(SingleValue::from(expr.left))?;
-                let r = self.plan_to_compute_single(SingleValue::from(expr.right))?;
+                let l = self.plan_to_compute_single(ctx, SingleValue::from(expr.left))?;
+                let r = self.plan_to_compute_single(ctx, SingleValue::from(expr.right))?;
                 let EpBinding::Single(l_binding) = l.binding else {
                     return Err(CompileError::InvalidOperand(
                         "you tried to use a composite value (e.g. array or object) as the operand to some math",
@@ -207,7 +208,7 @@ impl Planner {
                             instructions: new_instructions,
                             binding: arg,
                         } = match KclValueGroup::from(argument) {
-                            KclValueGroup::Single(value) => self.plan_to_compute_single(value)?,
+                            KclValueGroup::Single(value) => self.plan_to_compute_single(ctx, value)?,
                             KclValueGroup::ArrayExpression(_) => todo!(),
                             KclValueGroup::ObjectExpression(_) => todo!(),
                         };
@@ -323,7 +324,56 @@ impl Planner {
                     binding: binding.clone(),
                 })
             }
-            SingleValue::PipeExpression(_) => todo!(),
+            SingleValue::PipeSubstitution(_expr) => {
+                if let Some(ref binding) = ctx.pipe_substitution {
+                    Ok(EvalPlan {
+                        instructions: Vec::new(),
+                        binding: binding.clone(),
+                    })
+                } else {
+                    Err(CompileError::NotInPipeline)
+                }
+            }
+            SingleValue::PipeExpression(expr) => {
+                let mut bodies = expr.body.into_iter();
+
+                // Get the first expression (i.e. body) of the pipeline.
+                let first = bodies.next().expect("Pipe expression must have > 1 item");
+                let EvalPlan {
+                    mut instructions,
+                    binding: mut current_value,
+                } = match KclValueGroup::from(first) {
+                    KclValueGroup::Single(v) => self.plan_to_compute_single(ctx, v)?,
+                    KclValueGroup::ArrayExpression(_) => todo!(),
+                    KclValueGroup::ObjectExpression(_) => todo!(),
+                };
+
+                // Handle the remaining bodies.
+                for body in bodies {
+                    let value = match KclValueGroup::from(body) {
+                        KclValueGroup::Single(v) => v,
+                        KclValueGroup::ArrayExpression(_) => todo!(),
+                        KclValueGroup::ObjectExpression(_) => todo!(),
+                    };
+                    // This body will probably contain a % (pipe substitution character).
+                    // So it needs to know what the previous pipeline body's value is,
+                    // to replace the % with that value.
+                    ctx.pipe_substitution = Some(current_value.clone());
+                    let EvalPlan {
+                        instructions: instructions_for_this_body,
+                        binding,
+                    } = self.plan_to_compute_single(ctx, value)?;
+                    instructions.extend(instructions_for_this_body);
+                    current_value = binding;
+                }
+                // Before we return, clear the pipe substitution, because nothing outside this
+                // pipeline should be able to use it anymore.
+                ctx.pipe_substitution = None;
+                Ok(EvalPlan {
+                    instructions,
+                    binding: current_value,
+                })
+            }
         }
     }
 
@@ -334,11 +384,12 @@ impl Planner {
         &mut self,
         declarations: ast::types::VariableDeclaration,
     ) -> Result<Vec<Instruction>, CompileError> {
+        let mut ctx = Context::default();
         declarations
             .declarations
             .into_iter()
             .try_fold(Vec::new(), |mut acc, declaration| {
-                let (instrs, binding) = self.plan_to_bind_one(declaration.init)?;
+                let (instrs, binding) = self.plan_to_bind_one(&mut ctx, declaration.init)?;
                 self.binding_scope.bind(declaration.id.name, binding);
                 acc.extend(instrs);
                 Ok(acc)
@@ -347,13 +398,14 @@ impl Planner {
 
     fn plan_to_bind_one(
         &mut self,
+        ctx: &mut Context,
         value_being_bound: ast::types::Value,
     ) -> Result<(Vec<Instruction>, EpBinding), CompileError> {
         match KclValueGroup::from(value_being_bound) {
             KclValueGroup::Single(init_value) => {
                 // Simple! Just evaluate it, note where the final value will be stored in KCEP memory,
                 // and bind it to the KCL identifier.
-                let EvalPlan { instructions, binding } = self.plan_to_compute_single(init_value)?;
+                let EvalPlan { instructions, binding } = self.plan_to_compute_single(ctx, init_value)?;
                 Ok((instructions, binding))
             }
             KclValueGroup::ArrayExpression(expr) => {
@@ -366,7 +418,7 @@ impl Planner {
                             KclValueGroup::Single(value) => {
                                 // If this element of the array is a single value, then binding it is
                                 // straightforward -- you got a single binding, no need to change anything.
-                                let EvalPlan { instructions, binding } = self.plan_to_compute_single(value)?;
+                                let EvalPlan { instructions, binding } = self.plan_to_compute_single(ctx, value)?;
                                 acc_instrs.extend(instructions);
                                 acc_bindings.push(binding);
                             }
@@ -379,7 +431,7 @@ impl Planner {
                                     .elements
                                     .into_iter()
                                     .try_fold(Vec::new(), |mut seq, child_element| {
-                                        let (instructions, binding) = self.plan_to_bind_one(child_element)?;
+                                        let (instructions, binding) = self.plan_to_bind_one(ctx, child_element)?;
                                         acc_instrs.extend(instructions);
                                         seq.push(binding);
                                         Ok(seq)
@@ -397,7 +449,7 @@ impl Planner {
                                     .properties
                                     .into_iter()
                                     .try_fold(map, |mut map, property| {
-                                        let (instructions, binding) = self.plan_to_bind_one(property.value)?;
+                                        let (instructions, binding) = self.plan_to_bind_one(ctx, property.value)?;
                                         map.insert(property.key.name, binding);
                                         acc_instrs.extend(instructions);
                                         Ok(map)
@@ -419,7 +471,7 @@ impl Planner {
                     |(mut acc_instrs, mut acc_bindings), (key, value)| {
                         match KclValueGroup::from(value) {
                             KclValueGroup::Single(value) => {
-                                let EvalPlan { instructions, binding } = self.plan_to_compute_single(value)?;
+                                let EvalPlan { instructions, binding } = self.plan_to_compute_single(ctx, value)?;
                                 acc_instrs.extend(instructions);
                                 acc_bindings.insert(key.name, binding);
                             }
@@ -432,7 +484,7 @@ impl Planner {
                                     .elements
                                     .into_iter()
                                     .try_fold(Vec::with_capacity(n), |mut seq, child_element| {
-                                        let (instructions, binding) = self.plan_to_bind_one(child_element)?;
+                                        let (instructions, binding) = self.plan_to_bind_one(ctx, child_element)?;
                                         seq.push(binding);
                                         acc_instrs.extend(instructions);
                                         Ok(seq)
@@ -450,7 +502,7 @@ impl Planner {
                                     .properties
                                     .into_iter()
                                     .try_fold(HashMap::with_capacity(n), |mut map, property| {
-                                        let (instructions, binding) = self.plan_to_bind_one(property.value)?;
+                                        let (instructions, binding) = self.plan_to_bind_one(ctx, property.value)?;
                                         map.insert(property.key.name, binding);
                                         acc_instrs.extend(instructions);
                                         Ok(map)
@@ -508,6 +560,8 @@ pub enum CompileError {
     MultipleReturns,
     #[error("A KCL function must end with a return statement, but your function doesn't have one.")]
     NoReturnStmt,
+    #[error("You used the %, which means \"substitute this argument for the value to the left in this |> pipeline\". But there is no such value, because you're not calling a pipeline.")]
+    NotInPipeline,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -561,4 +615,10 @@ enum KclFunction {
     StartSketchAt(native_functions::StartSketchAt),
     Add(native_functions::Add),
     UserDefined(UserDefinedFunction),
+}
+
+/// Context used when compiling KCL.
+#[derive(Default, Debug)]
+struct Context {
+    pipe_substitution: Option<EpBinding>,
 }
