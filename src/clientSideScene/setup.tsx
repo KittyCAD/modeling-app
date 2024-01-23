@@ -92,12 +92,15 @@ class SetupSingleton {
   isFovAnimationInProgress = false
   onDragCallback: (arg: OnDragCallbackArgs) => void = () => {}
   onMoveCallback: (arg: onMoveCallbackArgs) => void = () => {}
+  onClickCallback: (arg: OnDragCallbackArgs) => void = () => {}
   setCallbacks = (callbacks: {
     onDrag?: (arg: OnDragCallbackArgs) => void
     onMove?: (arg: onMoveCallbackArgs) => void
+    onClick?: (arg: OnDragCallbackArgs) => void
   }) => {
     this.onDragCallback = callbacks.onDrag || this.onDragCallback
     this.onMoveCallback = callbacks.onMove || this.onMoveCallback
+    this.onClickCallback = callbacks.onClick || this.onClickCallback
   }
 
   hoveredObject: null | Group = null
@@ -462,47 +465,48 @@ class SetupSingleton {
       zoom: this.camera.zoom,
     })
   }
+  getPlaneIntersectPoint = (): {
+    intersection2d: Vector2
+    intersectPoint: Vector3
+  } | null => {
+    this.planeRaycaster.setFromCamera(
+      this.currentMouseVector,
+      setupSingleton.camera
+    )
+    const planeIntersects = this.planeRaycaster.intersectObjects(
+      this.scene.children,
+      true
+    )
+    if (
+      !(
+        planeIntersects.length > 0 &&
+        planeIntersects[0].object.userData.type === 'raycastable-plane'
+      )
+    )
+      return null
+    const planePosition = planeIntersects[0].object.position
+    const inversePlaneQuaternion = planeIntersects[0].object.quaternion
+      .clone()
+      .invert()
+    const intersectPoint = planeIntersects[0].point
+    let transformedPoint = intersectPoint.clone()
+    if (transformedPoint) {
+      transformedPoint.applyQuaternion(inversePlaneQuaternion)
+      transformedPoint?.sub(
+        new Vector3(...planePosition).applyQuaternion(inversePlaneQuaternion)
+      )
+    }
+
+    return {
+      intersection2d: new Vector2(transformedPoint.x, transformedPoint.y), // z should be 0
+      intersectPoint,
+    }
+  }
   onMouseMove = (event: MouseEvent) => {
     this.currentMouseVector.x = (event.clientX / window.innerWidth) * 2 - 1
     this.currentMouseVector.y = -(event.clientY / window.innerHeight) * 2 + 1
 
-    const planeIntersectPoint = ((): {
-      intersection2d: Vector2
-      intersectPoint: Vector3
-    } | null => {
-      this.planeRaycaster.setFromCamera(
-        this.currentMouseVector,
-        setupSingleton.camera
-      )
-      const planeIntersects = this.planeRaycaster.intersectObjects(
-        this.scene.children,
-        true
-      )
-      if (
-        !(
-          planeIntersects.length > 0 &&
-          planeIntersects[0].object.userData.type === 'raycastable-plane'
-        )
-      )
-        return null
-      const planePosition = planeIntersects[0].object.position
-      const inversePlaneQuaternion = planeIntersects[0].object.quaternion
-        .clone()
-        .invert()
-      const intersectPoint = planeIntersects[0].point
-      let transformedPoint = intersectPoint.clone()
-      if (transformedPoint) {
-        transformedPoint.applyQuaternion(inversePlaneQuaternion)
-        transformedPoint?.sub(
-          new Vector3(...planePosition).applyQuaternion(inversePlaneQuaternion)
-        )
-      }
-
-      return {
-        intersection2d: new Vector2(transformedPoint.x, transformedPoint.y), // z should be 0
-        intersectPoint,
-      }
-    })()
+    const planeIntersectPoint = this.getPlaneIntersectPoint()
 
     if (this.selected) {
       const hasBeenDragged = !compareVec2Epsilon2(
@@ -607,10 +611,21 @@ class SetupSingleton {
   }
 
   onMouseUp = (event: MouseEvent) => {
+    this.currentMouseVector.x = (event.clientX / window.innerWidth) * 2 - 1
+    this.currentMouseVector.y = -(event.clientY / window.innerHeight) * 2 + 1
+    const planeIntersectPoint = this.getPlaneIntersectPoint()
+
     if (this.selected && this.selected.hasBeenDragged) {
       // this is where we could fire a onDragEnd event
       // console.log('onDragEnd', this.selected)
       this.selected = null
+    } else if (planeIntersectPoint) {
+      // fire onClick event as there was no drags
+      this.onClickCallback({
+        object: this.selected?.object,
+        event,
+        ...planeIntersectPoint,
+      })
     }
   }
 }

@@ -150,10 +150,12 @@ class ClientSideScene {
           })
         },
         onMove: () => {},
+        onClick: () => {},
       })
     } else {
       setupSingleton.setCallbacks({
         onDrag: () => {},
+        onClick: () => {},
         onMove: (args) => {
           this.onDragSegment({
             ...args,
@@ -368,6 +370,7 @@ class ClientSideScene {
     setupSingleton.setCallbacks({
       onDrag: () => {},
       onMove: () => {},
+      onClick: () => {},
     })
   }
 }
