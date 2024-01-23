@@ -1171,6 +1171,7 @@ export const modelingMachine = createMachine(
       'clear paper project': () => {},
       'show default planes': () => {
         setupSingleton.showDefaultPlanes()
+        clientSideScene.setupDefaultPlaneHover()
       },
     },
     // end actions

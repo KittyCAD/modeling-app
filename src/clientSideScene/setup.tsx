@@ -19,6 +19,9 @@ import {
   Mesh,
   LineSegments,
   DoubleSide,
+  Intersection,
+  Object3D,
+  Object3DEventMap,
 } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { useRef, useEffect } from 'react'
@@ -73,17 +76,21 @@ const throttledUpdateEngineFov = throttle(
   1000 / 15
 )
 
-interface OnDragCallbackArgs {
+interface BaseCallbackArgs {
   object: any
   event: any
+}
+interface OnDragCallbackArgs extends BaseCallbackArgs {
+  intersection2d?: Vector2
   intersectPoint: Vector3
-  intersection2d: Vector2
+  intersection: Intersection<Object3D<Object3DEventMap>>
 }
 
 interface onMoveCallbackArgs {
   event: any
+  intersection2d?: Vector2
   intersectPoint: Vector3
-  intersection2d: Vector2
+  intersection: Intersection<Object3D<Object3DEventMap>>
 }
 
 class SetupSingleton {
@@ -99,18 +106,24 @@ class SetupSingleton {
   onDragCallback: (arg: OnDragCallbackArgs) => void = () => {}
   onMoveCallback: (arg: onMoveCallbackArgs) => void = () => {}
   onClickCallback: (arg: OnDragCallbackArgs) => void = () => {}
+  onMouseEnter: (arg: BaseCallbackArgs) => void = () => {}
+  onMouseLeave: (arg: BaseCallbackArgs) => void = () => {}
   setCallbacks = (callbacks: {
     onDrag?: (arg: OnDragCallbackArgs) => void
     onMove?: (arg: onMoveCallbackArgs) => void
     onClick?: (arg: OnDragCallbackArgs) => void
+    onMouseEnter?: (arg: BaseCallbackArgs) => void
+    onMouseLeave?: (arg: BaseCallbackArgs) => void
   }) => {
     this.onDragCallback = callbacks.onDrag || this.onDragCallback
     this.onMoveCallback = callbacks.onMove || this.onMoveCallback
     this.onClickCallback = callbacks.onClick || this.onClickCallback
+    this.onMouseEnter = callbacks.onMouseEnter || this.onMouseEnter
+    this.onMouseLeave = callbacks.onMouseLeave || this.onMouseLeave
     this.selected = null // following selections between callbacks being set is too tricky
   }
 
-  hoveredObject: null | Group = null
+  hoveredObject: null | any = null
   raycaster = new Raycaster()
   planeRaycaster = new Raycaster()
   currentMouseVector = new Vector2()
@@ -142,6 +155,7 @@ class SetupSingleton {
 
     // RAYCASTERS
     this.raycaster.layers.enable(SKETCH_LAYER)
+    this.raycaster.layers.disable(0)
     this.planeRaycaster.layers.enable(INTERSECTION_PLANE_LAYER)
 
     // CONTROLS
@@ -466,8 +480,9 @@ class SetupSingleton {
     })
   }
   getPlaneIntersectPoint = (): {
-    intersection2d: Vector2
+    intersection2d?: Vector2
     intersectPoint: Vector3
+    intersection: Intersection<Object3D<Object3DEventMap>>
   } | null => {
     this.planeRaycaster.setFromCamera(
       this.currentMouseVector,
@@ -477,6 +492,16 @@ class SetupSingleton {
       this.scene.children,
       true
     )
+    if (
+      planeIntersects.length > 0 &&
+      planeIntersects[0].object.userData.type !== 'raycastable-plane'
+    ) {
+      const intersect = planeIntersects[0]
+      return {
+        intersectPoint: intersect.point,
+        intersection: intersect,
+      }
+    }
     if (
       !(
         planeIntersects.length > 0 &&
@@ -500,6 +525,7 @@ class SetupSingleton {
     return {
       intersection2d: new Vector2(transformedPoint.x, transformedPoint.y), // z should be 0
       intersectPoint,
+      intersection: planeIntersects[0],
     }
   }
   onMouseMove = (event: MouseEvent) => {
@@ -546,43 +572,29 @@ class SetupSingleton {
     )
 
     if (intersects.length > 0) {
-      // console.log('hover on', intersects[0])
+      const firstIntersectObject = intersects[0].object
+      if (this.hoveredObject !== firstIntersectObject) {
+        if (this.hoveredObject) {
+          this.onMouseLeave({
+            object: this.hoveredObject,
+            event,
+          })
+        }
+        this.hoveredObject = firstIntersectObject
+        this.onMouseEnter({
+          object: this.hoveredObject,
+          event,
+        })
+      }
+    } else {
+      if (this.hoveredObject) {
+        this.onMouseLeave({
+          object: this.hoveredObject,
+          event,
+        })
+        this.hoveredObject = null
+      }
     }
-
-    // const intersect = intersects[0]?.object
-
-    // if (intersects.length > 0) {
-    //   const intersectParent = intersect.parent as Group
-    //   if (!intersectParent.isGroup) {
-    //     console.warn('intersectParent is not a group', intersectParent)
-    //   }
-    //   // give priority to something being dragged
-    //   if (this.mouseDownVector ) {
-    //     // Potentially mouse move need to get the epsilon value from mouseDownVector
-    //     const isDragged = compareVec2Epsilon([this.currentMouseVector.x, this.currentMouseVector.y], [this.mouseDownVector.x, this.mouseDownVector.y])
-    //   }
-
-    //   console.log('intersectParent', intersectParent)
-
-    //   // console.log(intersects)
-    //   if (this.hoveredObject !== intersectParent) {
-    //     // leave logic needed for oldHoveredObject
-    //     this.hoveredObject = intersectParent
-    //     // enter logic needed for newHoveredObject
-
-    //     // Mouse leave
-    //     // this.hoveredObject?.userData?.onMouseLeave?.(this.hoveredObject)
-    //     // // Mouse enter
-    //     // intersect.userData.onMouseEnter?.(this.hoveredObject)
-    //   } if (this.hoveredObject === null) {
-    //     // Mouse enter logic needed for newHoveredObject
-    //   }
-
-    // } else {
-    //   // Mouse leave
-    //   // this.hoveredObject?.userData?.onMouseLeave?.(this.hoveredObject)
-    //   this.hoveredObject = null
-    // }
   }
 
   onMouseDown = (event: MouseEvent) => {
@@ -630,21 +642,21 @@ class SetupSingleton {
   }
   showDefaultPlanes() {
     const addPlane = (
-      color: [number, number, number],
       rotation: { x: number; y: number; z: number }, //
-      type: string
+      type: DefaultPlane
     ): Mesh => {
       const planeGeometry = new PlaneGeometry(100, 100)
       const planeEdges = new EdgesGeometry(planeGeometry)
       const lineMaterial = new LineBasicMaterial({
-        color: new Color(...color.map((c) => c * 4.5)),
+        color: defaultPlaneColor(type, 0.45, 1),
         opacity: 0.9,
       })
       const planeMaterial = new MeshBasicMaterial({
-        color: new Color(...color),
+        color: defaultPlaneColor(type),
         transparent: true,
-        opacity: 0.4,
+        opacity: 0.35,
         side: DoubleSide,
+        // blendAlpha: true,
       })
       const plane = new Mesh(planeGeometry, planeMaterial)
       const edges = new LineSegments(planeEdges, lineMaterial)
@@ -655,24 +667,20 @@ class SetupSingleton {
       plane.userData.type = type
       return plane
     }
-    const lotCh = 0.1
-
     const planes = [
-      addPlane([0.7, lotCh, lotCh], { x: 0, y: 0, z: 0 }, 'xy-default-plane'),
-      addPlane(
-        [lotCh, lotCh, 0.7],
-        { x: Math.PI / 2, y: 0, z: 0 },
-        'xz-default-plane'
-      ),
-      addPlane(
-        [lotCh, 0.7, lotCh],
-        { x: 0, y: Math.PI / 2, z: 0 },
-        'yz-default-plane'
-      ),
+      addPlane({ x: 0, y: Math.PI / 2, z: 0 }, YZ_PLANE),
+      addPlane({ x: 0, y: 0, z: 0 }, XY_PLANE),
+      addPlane({ x: -Math.PI / 2, y: 0, z: 0 }, XZ_PLANE),
     ]
     const planesGroup = new Group()
     planesGroup.userData.type = 'default-planes'
     planesGroup.add(...planes)
+    planesGroup.traverse((child) => {
+      if (child instanceof Mesh) {
+        child.layers.enable(SKETCH_LAYER)
+      }
+    })
+    planesGroup.layers.enable(SKETCH_LAYER)
     this.scene.add(planesGroup)
   }
   removeDefaultPlanes() {
@@ -786,4 +794,29 @@ export function isQuaternionVertical(q: Quaternion) {
   const v = new Vector3(0, 0, 1).applyQuaternion(q)
   // no x or y components means it's vertical
   return compareVec2Epsilon2([v.x, v.y], [0, 0])
+}
+
+export type DefaultPlane =
+  | 'xy-default-plane'
+  | 'xz-default-plane'
+  | 'yz-default-plane'
+
+export const XY_PLANE: DefaultPlane = 'xy-default-plane'
+export const XZ_PLANE: DefaultPlane = 'xz-default-plane'
+export const YZ_PLANE: DefaultPlane = 'yz-default-plane'
+
+export function defaultPlaneColor(
+  plane: DefaultPlane,
+  lowCh = 0.1,
+  highCh = 0.7
+): Color {
+  switch (plane) {
+    case XY_PLANE:
+      return new Color(highCh, lowCh, lowCh)
+    case XZ_PLANE:
+      return new Color(lowCh, lowCh, highCh)
+    case YZ_PLANE:
+      return new Color(lowCh, highCh, lowCh)
+  }
+  return new Color(lowCh, lowCh, lowCh)
 }

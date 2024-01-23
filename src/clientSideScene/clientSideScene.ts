@@ -13,18 +13,27 @@ import {
   Vector2,
   Vector3,
 } from 'three'
-import { INTERSECTION_PLANE_LAYER, SKETCH_LAYER, setupSingleton } from './setup'
+import {
+  DefaultPlane,
+  defaultPlaneColor,
+  INTERSECTION_PLANE_LAYER,
+  setupSingleton,
+  SKETCH_LAYER,
+  XY_PLANE,
+  XZ_PLANE,
+  YZ_PLANE,
+} from './setup'
 import {
   CallExpression,
+  parse,
   Path,
   PathToNode,
   PipeExpression,
   Program,
   ProgramMemory,
+  recast,
   SketchGroup,
   VariableDeclaration,
-  parse,
-  recast,
 } from 'lang/wasm'
 import { kclManager } from 'lang/KclSingleton'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
@@ -396,6 +405,33 @@ class ClientSideScene {
   async tearDownSketch() {
     return new Promise((resolve, reject) => {
       this._tearDownSketch(0, resolve, reject)
+    })
+  }
+  setupDefaultPlaneHover() {
+    setupSingleton.setCallbacks({
+      onMouseEnter: ({ object }) => {
+        if (object.parent.userData.type !== 'default-planes') return
+        const type: DefaultPlane = object.userData.type
+        object.material.color = defaultPlaneColor(type, 0.5, 1)
+      },
+      onMouseLeave: ({ object }) => {
+        if (object.parent.userData.type !== 'default-planes') return
+        const type: DefaultPlane = object.userData.type
+        object.material.color = defaultPlaneColor(type)
+      },
+      onClick: ({ object, event, intersection }) => {
+        let planeString = 'XY'
+        const type = object?.userData?.type || ''
+        const posNorm = Number(intersection.normal?.z) > 0
+        if (type === XY_PLANE) {
+          planeString = posNorm ? 'XY' : '-XY'
+        } else if (type === YZ_PLANE) {
+          planeString = posNorm ? 'YZ' : '-YZ'
+        } else if (type === XZ_PLANE) {
+          planeString = posNorm ? 'XZ' : '-XZ'
+        }
+        console.log(planeString)
+      },
     })
   }
 }
