@@ -323,7 +323,29 @@ impl Planner {
                     binding: binding.clone(),
                 })
             }
-            SingleValue::PipeExpression(_) => todo!("Implement pipe expressions"),
+            SingleValue::PipeSubstitution(expr) => {
+                todo!("Resolve % symbol")
+            }
+            SingleValue::PipeExpression(expr) => {
+                let mut bodies = expr.body.into_iter();
+                let first = bodies.next().expect("Pipe expression must have > 1 item");
+                let mut plan = match KclValueGroup::from(first) {
+                    KclValueGroup::Single(v) => self.plan_to_compute_single(v)?,
+                    KclValueGroup::ArrayExpression(_) => todo!(),
+                    KclValueGroup::ObjectExpression(_) => todo!(),
+                };
+                for body in bodies {
+                    let value = match KclValueGroup::from(body) {
+                        KclValueGroup::Single(v) => v,
+                        KclValueGroup::ArrayExpression(_) => todo!(),
+                        KclValueGroup::ObjectExpression(_) => todo!(),
+                    };
+                    let EvalPlan { instructions, binding } = self.plan_to_compute_single(value)?;
+                    plan.instructions.extend(instructions);
+                    plan.binding = binding;
+                }
+                Ok(plan)
+            }
         }
     }
 

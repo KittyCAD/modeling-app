@@ -588,15 +588,17 @@ fn use_kcl_functions_with_params() {
 fn unsugar_pipe_expressions() {
     // These two programs should be equivalent,
     // because that's just the definition of the |> operator.
-    let program1 = "
-    fn triple = (x) => { return x * 3 }
-    fn one = () => { return 1 }
-    let x = triple(triple(one())) // should be 9
-    ";
     let program2 = "
+    fn double = (x) => { return x * 2 }
     fn triple = (x) => { return x * 3 }
     fn one = () => { return 1 }
-    let x = one() |> triple(%) |> triple(%)
+    let x = one() |> double(%) |> triple(%) // should be 6
+    ";
+    let program1 = "
+    fn double = (x) => { return x * 2 }
+    fn triple = (x) => { return x * 3 }
+    fn one = () => { return 1 }
+    let x = triple(double(one())) // should be 6
     ";
     // So, check that they are.
     let (plan1, _) = must_plan(program1);
