@@ -129,6 +129,20 @@ fn name_not_found() {
 }
 
 #[test]
+fn assign_bool() {
+    let program = "
+        let x = true";
+    let (plan, _scope) = must_plan(program);
+    assert_eq!(
+        plan,
+        vec![Instruction::SetPrimitive {
+            address: Address::ZERO,
+            value: true.into(),
+        }]
+    );
+}
+
+#[test]
 fn aliases() {
     let program = "
         let x = 1
