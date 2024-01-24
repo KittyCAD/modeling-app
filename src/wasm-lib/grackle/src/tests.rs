@@ -188,6 +188,13 @@ fn use_native_function_add() {
 }
 
 #[test]
+fn arrays_as_parametesr() {
+    let program = "fn identity = (x) => { return x }
+    let x = identity([1,2,3])";
+    must_plan(program);
+}
+
+#[test]
 fn use_native_function_id() {
     let program = "let x = id(2)";
     let (plan, _scope) = must_plan(program);
