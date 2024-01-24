@@ -231,7 +231,7 @@ impl Planner {
                             binding: arg,
                         } = match KclValueGroup::from(argument) {
                             KclValueGroup::Single(value) => self.plan_to_compute_single(ctx, value)?,
-                            KclValueGroup::ArrayExpression(expr) => self.plan_to_bind_array(ctx, expr)?,
+                            KclValueGroup::ArrayExpression(expr) => self.plan_to_bind_array(ctx, *expr)?,
                             KclValueGroup::ObjectExpression(_) => todo!(),
                         };
                         acc_instrs.extend(new_instructions);
@@ -429,7 +429,7 @@ impl Planner {
                 // and bind it to the KCL identifier.
                 self.plan_to_compute_single(ctx, init_value)
             }
-            KclValueGroup::ArrayExpression(expr) => self.plan_to_bind_array(ctx, expr),
+            KclValueGroup::ArrayExpression(expr) => self.plan_to_bind_array(ctx, *expr),
             KclValueGroup::ObjectExpression(expr) => {
                 // Convert the object to a sequence of key-value pairs.
                 let mut kvs = expr.properties.into_iter().map(|prop| (prop.key, prop.value));
@@ -494,7 +494,7 @@ impl Planner {
     fn plan_to_bind_array(
         &mut self,
         ctx: &mut Context,
-        expr: Box<ast::types::ArrayExpression>,
+        expr: ast::types::ArrayExpression,
     ) -> Result<EvalPlan, CompileError> {
         // First, emit a plan to compute each element of the array.
         // Collect all the bindings from each element too.
