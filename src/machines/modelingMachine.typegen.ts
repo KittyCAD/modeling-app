@@ -32,7 +32,7 @@
 "Get vertical info": "done.invoke.get-vertical-info";
         };
         missingImplementations: {
-          actions: "AST add line segment" | "AST start new sketch" | "Modify AST" | "Set selection" | "Update code selection cursors" | "create path" | "sketch exit execute";
+          actions: "AST add line segment" | "AST start new sketch" | "Modify AST" | "Set selection" | "Update code selection cursors" | "sketch exit execute";
           delays: never;
           guards: "Selection contains axis" | "Selection contains edge" | "Selection contains face" | "Selection contains line" | "Selection contains point" | "Selection is not empty" | "Selection is one face" | "has valid extrude selection";
           services: "Get ABS X info" | "Get ABS Y info" | "Get angle info" | "Get horizontal info" | "Get length info" | "Get perpendicular distance info" | "Get vertical info";
@@ -41,6 +41,7 @@
           "AST add line segment": "Add point";
 "AST extrude": "Extrude";
 "AST start new sketch": "Add point";
+"AST startSketchOn default plane": "Select default plane";
 "Add to code-based selection": "Deselect point" | "Deselect segment" | "Select all" | "Select edge" | "Select face" | "Select point" | "Select segment";
 "Add to other selection": "Select axis";
 "Clear selection": "Deselect all";
@@ -60,17 +61,15 @@
 "Update code selection cursors": "Complete line" | "Deselect all" | "Deselect axis" | "Deselect edge" | "Deselect face" | "Deselect point" | "Deselect segment" | "Select edge" | "Select face" | "Select point" | "Select segment";
 "animate after sketch": "Cancel" | "Complete line" | "Set selection" | "xstate.stop";
 "clear paper project": "Cancel" | "CancelSketch" | "Equip Line tool 2" | "Equip tangential arc to 2" | "Set selection" | "xstate.stop";
-"create path": "Select default plane";
 "default_camera_disable_sketch_mode": "Cancel";
 "edit mode enter": "Re-execute";
 "edit_mode_exit": "Cancel";
-"equip select": "CancelSketch" | "Enter sketch" | "Select default plane" | "done.invoke.get-abs-x-info" | "done.invoke.get-abs-y-info" | "done.invoke.get-angle-info" | "done.invoke.get-horizontal-info" | "done.invoke.get-length-info" | "done.invoke.get-perpendicular-distance-info" | "done.invoke.get-vertical-info" | "error.platform.get-abs-x-info" | "error.platform.get-abs-y-info" | "error.platform.get-angle-info" | "error.platform.get-horizontal-info" | "error.platform.get-length-info" | "error.platform.get-perpendicular-distance-info" | "error.platform.get-vertical-info";
+"equip select": "" | "CancelSketch" | "Select default plane" | "done.invoke.get-abs-x-info" | "done.invoke.get-abs-y-info" | "done.invoke.get-angle-info" | "done.invoke.get-horizontal-info" | "done.invoke.get-length-info" | "done.invoke.get-perpendicular-distance-info" | "done.invoke.get-vertical-info" | "error.platform.get-abs-x-info" | "error.platform.get-abs-y-info" | "error.platform.get-angle-info" | "error.platform.get-horizontal-info" | "error.platform.get-length-info" | "error.platform.get-perpendicular-distance-info" | "error.platform.get-vertical-info";
 "hide default planes": "Cancel" | "Select default plane" | "Set selection" | "xstate.stop";
 "hide draft line": "Cancel" | "CancelSketch" | "Equip Line tool 2" | "Equip tangential arc to 2" | "Set selection" | "xstate.stop";
 "initialise draft arc": "Cancel" | "CancelSketch" | "Equip Line tool 2" | "Equip tangential arc to 2" | "Set selection" | "xstate.stop";
-"initialise draft line": "Cancel" | "CancelSketch" | "Equip Line tool 2" | "Equip tangential arc to 2" | "Select default plane" | "Set selection" | "xstate.stop";
+"initialise draft line": "Cancel" | "CancelSketch" | "Equip Line tool 2" | "Equip tangential arc to 2" | "Set selection" | "xstate.stop";
 "reset sketch metadata": "Cancel" | "Select default plane";
-"set default plane id": "Select default plane";
 "set move desc": "";
 "set segment tool": "Equip line tool" | "Equip tangential arc tool";
 "set sketch metadata": "Enter sketch";
@@ -78,13 +77,15 @@
 "set tool move": "Equip move tool";
 "set up draft arc": "Equip tangential arc to 2";
 "set up draft line": "Equip Line tool 2";
-"set up draft line 2": "Equip Line tool 3";
+"set up draft line 2": "";
+"set up draft line without teardown": "Add start point";
 "setup client side sketch camera": "Enter sketch" | "Select default plane";
 "setup client side sketch segments": "Cancel" | "CancelSketch" | "Enter sketch" | "Select default plane" | "Set selection" | "xstate.stop";
-"setup paper sketch": "Cancel" | "CancelSketch" | "Equip Line tool 2" | "Equip tangential arc to 2" | "Select default plane" | "Set selection" | "xstate.stop";
+"setup noPoints onClick listener": "";
+"setup paper sketch": "Cancel" | "CancelSketch" | "Equip Line tool 2" | "Equip tangential arc to 2" | "Set selection" | "xstate.stop";
 "show default planes": "Enter sketch";
 "sketch exit execute": "Cancel" | "Complete line" | "Set selection" | "xstate.stop";
-"sketch mode enabled": "Re-execute" | "Select default plane";
+"sketch mode enabled": "Re-execute";
 "tear down client sketch": "Cancel" | "CancelSketch" | "Complete line" | "Set selection" | "xstate.stop";
         };
         eventsCausingDelays: {
@@ -128,7 +129,8 @@
 "Get perpendicular distance info": "Constrain perpendicular distance";
 "Get vertical info": "Constrain vertical distance";
         };
-        matchesStates: "Sketch" | "Sketch no face" | "Sketch.Await ABS X info" | "Sketch.Await ABS Y info" | "Sketch.Await angle info" | "Sketch.Await horizontal distance info" | "Sketch.Await length info" | "Sketch.Await perpendicular distance info" | "Sketch.Await vertical distance info" | "Sketch.Line Tool" | "Sketch.Line Tool.Done" | "Sketch.Line Tool.Init" | "Sketch.Line Tool.No Points" | "Sketch.Line Tool.Point Added" | "Sketch.Line Tool.Segment Added" | "Sketch.Line tool 2" | "Sketch.Line tool 3" | "Sketch.Move Tool" | "Sketch.Move Tool.Move init" | "Sketch.Move Tool.Move with execute" | "Sketch.Move Tool.Move without re-execute" | "Sketch.Move Tool.No move" | "Sketch.SketchIdle" | "Sketch.tangential arc to 2" | "idle" | { "Sketch"?: "Await ABS X info" | "Await ABS Y info" | "Await angle info" | "Await horizontal distance info" | "Await length info" | "Await perpendicular distance info" | "Await vertical distance info" | "Line Tool" | "Line tool 2" | "Line tool 3" | "Move Tool" | "SketchIdle" | "tangential arc to 2" | { "Line Tool"?: "Done" | "Init" | "No Points" | "Point Added" | "Segment Added";
+        matchesStates: "Sketch" | "Sketch no face" | "Sketch.Await ABS X info" | "Sketch.Await ABS Y info" | "Sketch.Await angle info" | "Sketch.Await horizontal distance info" | "Sketch.Await length info" | "Sketch.Await perpendicular distance info" | "Sketch.Await vertical distance info" | "Sketch.Init" | "Sketch.Line Tool" | "Sketch.Line Tool.Done" | "Sketch.Line Tool.Init" | "Sketch.Line Tool.No Points" | "Sketch.Line Tool.Point Added" | "Sketch.Line Tool.Segment Added" | "Sketch.Line tool 2" | "Sketch.Line tool 3" | "Sketch.Line tool 3.Init" | "Sketch.Line tool 3.No Points" | "Sketch.Line tool 3.normal" | "Sketch.Move Tool" | "Sketch.Move Tool.Move init" | "Sketch.Move Tool.Move with execute" | "Sketch.Move Tool.Move without re-execute" | "Sketch.Move Tool.No move" | "Sketch.SketchIdle" | "Sketch.tangential arc to 2" | "idle" | { "Sketch"?: "Await ABS X info" | "Await ABS Y info" | "Await angle info" | "Await horizontal distance info" | "Await length info" | "Await perpendicular distance info" | "Await vertical distance info" | "Init" | "Line Tool" | "Line tool 2" | "Line tool 3" | "Move Tool" | "SketchIdle" | "tangential arc to 2" | { "Line Tool"?: "Done" | "Init" | "No Points" | "Point Added" | "Segment Added";
+"Line tool 3"?: "Init" | "No Points" | "normal";
 "Move Tool"?: "Move init" | "Move with execute" | "Move without re-execute" | "No move"; }; };
         tags: never;
       }

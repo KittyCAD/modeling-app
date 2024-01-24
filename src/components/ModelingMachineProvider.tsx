@@ -100,27 +100,27 @@ export const ModelingMachineProvider = ({
         // 'show default planes': () => {
         //   // kclManager.showPlanes()
         // },
-        'create path': assign({
-          sketchEnginePathId: () => {
-            const sketchUuid = uuidv4()
-            engineCommandManager.sendSceneCommand({
-              type: 'modeling_cmd_req',
-              cmd_id: sketchUuid,
-              cmd: {
-                type: 'start_path',
-              },
-            })
-            engineCommandManager.sendSceneCommand({
-              type: 'modeling_cmd_req',
-              cmd_id: uuidv4(),
-              cmd: {
-                type: 'edit_mode_enter',
-                target: sketchUuid,
-              },
-            })
-            return sketchUuid
-          },
-        }),
+        // 'create path': assign({
+        //   sketchEnginePathId: () => {
+        //     const sketchUuid = uuidv4()
+        //     engineCommandManager.sendSceneCommand({
+        //       type: 'modeling_cmd_req',
+        //       cmd_id: sketchUuid,
+        //       cmd: {
+        //         type: 'start_path',
+        //       },
+        //     })
+        //     engineCommandManager.sendSceneCommand({
+        //       type: 'modeling_cmd_req',
+        //       cmd_id: uuidv4(),
+        //       cmd: {
+        //         type: 'edit_mode_enter',
+        //         target: sketchUuid,
+        //       },
+        //     })
+        //     return sketchUuid
+        //   },
+        // }),
         'AST start new sketch': assign(
           ({ sketchEnginePathId }, { data: { coords, axis, segmentId } }) => {
             if (!axis) {
@@ -613,16 +613,16 @@ export const ModelingMachineProvider = ({
     }
   )
 
-  useEffect(() => {
-    engineCommandManager.onPlaneSelected((plane_id: string) => {
-      if (modelingState.nextEvents.includes('Select default plane')) {
-        modelingSend({
-          type: 'Select default plane',
-          data: { planeId: plane_id },
-        })
-      }
-    })
-  }, [modelingSend, modelingState.nextEvents])
+  // useEffect(() => {
+  //   engineCommandManager.onPlaneSelected((plane_id: string) => {
+  //     if (modelingState.nextEvents.includes('Select default plane')) {
+  //       modelingSend({
+  //         type: 'Select default plane',
+  //         data: { planeId: plane_id },
+  //       })
+  //     }
+  //   })
+  // }, [modelingSend, modelingState.nextEvents])
 
   useEffect(() => {
     kclManager.registerExecuteCallback(() => {

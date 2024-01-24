@@ -19,7 +19,6 @@ import {
   INTERSECTION_PLANE_LAYER,
   setupSingleton,
   SKETCH_LAYER,
-  XY_PLANE,
   XZ_PLANE,
   YZ_PLANE,
 } from './setup'
@@ -60,16 +59,7 @@ class ClientSideScene {
     this.scene = setupSingleton?.scene
   }
 
-  async setupSketch({
-    sketchPathToNode,
-    ast,
-    // is draft line assumes the last segment is a draft line, and mods it as the user moves the mouse
-    draftSegment,
-  }: {
-    sketchPathToNode: PathToNode
-    ast?: Program
-    draftSegment?: DraftSegment
-  }) {
+  createIntersectionPlane() {
     const planeGeometry = new PlaneGeometry(100000, 100000)
     const planeMaterial = new MeshBasicMaterial({
       color: 0xff0000,
@@ -81,6 +71,25 @@ class ClientSideScene {
     this.intersectionPlane.userData = { type: 'raycastable-plane' }
     this.intersectionPlane.layers.set(INTERSECTION_PLANE_LAYER)
     this.scene.add(this.intersectionPlane)
+  }
+  removeIntersectionPlane() {
+    const intersectionPlane = this.scene.children.find(
+      ({ userData }) => userData?.type === 'raycastable-plane'
+    )
+    if (intersectionPlane) this.scene.remove(intersectionPlane)
+  }
+
+  async setupSketch({
+    sketchPathToNode,
+    ast,
+    // is draft line assumes the last segment is a draft line, and mods it as the user moves the mouse
+    draftSegment,
+  }: {
+    sketchPathToNode: PathToNode
+    ast?: Program
+    draftSegment?: DraftSegment
+  }) {
+    this.createIntersectionPlane()
 
     const { truncatedAst, programMemoryOverride, variableDeclarationName } =
       this.prepareTruncatedMemoryAndAst(
@@ -110,17 +119,6 @@ class ClientSideScene {
       )
       const isDraftSegment =
         draftSegment && index === sketchGroup.value.length - 1
-      if (isDraftSegment) {
-        // hacks like this are still needed because we rely on source ranges
-        // if we stored pathToNode info memory/sketchGroup segments this would not be needed
-        const prevSegPath = getNodePathFromSourceRange(
-          kclManager.ast,
-          sketchGroup.value[index - 1].__geoMeta.sourceRange
-        )
-        const pipeBodyIndex = Number(prevSegPath[prevSegPath.length - 1][0])
-        prevSegPath[prevSegPath.length - 1][0] = pipeBodyIndex + 1
-        segPathToNode = prevSegPath
-      }
       const seg = straightSegment({
         from: segment.from,
         to: segment.to,
@@ -136,18 +134,11 @@ class ClientSideScene {
       group.add(seg)
       this.activeSegments[JSON.stringify(segPathToNode)] = seg
     })
-    const zAxisVec = new Vector3(...sketchGroup.zAxis)
-    const yAxisVec = new Vector3(...sketchGroup.yAxis)
-    const xAxisVec = new Vector3().crossVectors(yAxisVec, zAxisVec).normalize()
 
-    let yAxisVecNormalized = yAxisVec.clone().normalize()
-    let zAxisVecNormalized = zAxisVec.clone().normalize()
-
-    let rotationMatrix = new Matrix4()
-    rotationMatrix.makeBasis(xAxisVec, yAxisVecNormalized, zAxisVecNormalized)
-    const quaternion = new Quaternion().setFromRotationMatrix(rotationMatrix)
+    const quaternion = quaternionFromSketchGroup(sketchGroup)
     group.setRotationFromQuaternion(quaternion)
-    this.intersectionPlane.setRotationFromQuaternion(quaternion)
+    this.intersectionPlane &&
+      this.intersectionPlane.setRotationFromQuaternion(quaternion)
 
     this.scene.add(group)
     if (!draftSegment) {
@@ -165,6 +156,7 @@ class ClientSideScene {
       setupSingleton.setCallbacks({
         onDrag: () => {},
         onClick: async ({ intersection2d }) => {
+          if (!intersection2d) return
           const lastSegment = sketchGroup.value.slice(-1)[0]
           const newSketchLn = addNewSketchLn({
             node: kclManager.ast,
@@ -403,6 +395,10 @@ class ClientSideScene {
     if (shouldResolve) resolve(true)
   }
   async tearDownSketch() {
+    // I think promisifying this is mostly a side effect of not having
+    // "setupSketch" correctly capture a promise when it's done
+    // so we're effectively waiting for to be finished setting up the scene just to tear it down
+    // TODO is to fix that
     return new Promise((resolve, reject) => {
       this._tearDownSketch(0, resolve, reject)
     })
@@ -420,21 +416,30 @@ class ClientSideScene {
         object.material.color = defaultPlaneColor(type)
       },
       onClick: ({ object, event, intersection }) => {
-        let planeString = 'XY'
         const type = object?.userData?.type || ''
         const posNorm = Number(intersection.normal?.z) > 0
-        if (type === XY_PLANE) {
-          planeString = posNorm ? 'XY' : '-XY'
-        } else if (type === YZ_PLANE) {
+        let planeString: DefaultPlaneStr = posNorm ? 'XY' : '-XY'
+        let normal: [number, number, number] = posNorm ? [0, 0, 1] : [0, 0, -1]
+        if (type === YZ_PLANE) {
           planeString = posNorm ? 'YZ' : '-YZ'
+          normal = posNorm ? [1, 0, 0] : [-1, 0, 0]
         } else if (type === XZ_PLANE) {
           planeString = posNorm ? 'XZ' : '-XZ'
+          normal = posNorm ? [0, 1, 0] : [0, -1, 0]
         }
-        console.log(planeString)
+        setupSingleton.modelingSend({
+          type: 'Select default plane',
+          data: {
+            plane: planeString,
+            normal,
+          },
+        })
       },
     })
   }
 }
+
+export type DefaultPlaneStr = 'XY' | 'XZ' | 'YZ' | '-XY' | '-XZ' | '-YZ'
 
 export const clientSideScene = new ClientSideScene()
 
@@ -525,4 +530,25 @@ function getParentGroup(object: any): Group | null {
     return getParentGroup(object.parent)
   }
   return null
+}
+
+export function quaternionFromSketchGroup(
+  sketchGroup: SketchGroup
+): Quaternion {
+  // TODO figure what is happening in the executor that it's some times returning
+  // [x,y,z] and sometimes {x,y,z}
+  const massageFormats = (a: any): Vector3 =>
+    Array.isArray(a)
+      ? new Vector3(a[0], a[1], a[2])
+      : new Vector3(a.x, a.y, a.z)
+  const zAxisVec = massageFormats(sketchGroup.zAxis)
+  const yAxisVec = massageFormats(sketchGroup.yAxis)
+  const xAxisVec = new Vector3().crossVectors(yAxisVec, zAxisVec).normalize()
+
+  let yAxisVecNormalized = yAxisVec.clone().normalize()
+  let zAxisVecNormalized = zAxisVec.clone().normalize()
+
+  let rotationMatrix = new Matrix4()
+  rotationMatrix.makeBasis(xAxisVec, yAxisVecNormalized, zAxisVecNormalized)
+  return new Quaternion().setFromRotationMatrix(rotationMatrix)
 }

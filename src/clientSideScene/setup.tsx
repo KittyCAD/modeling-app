@@ -33,6 +33,8 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { deg2Rad } from 'lib/utils2d'
 import * as TWEEN from '@tweenjs/tween.js'
 
+type SendType = ReturnType<typeof useModelingContext>['send']
+
 // 63.5 is definitely a bit of a magic number, play with it until it looked right
 // if it were 64, that would feel like it's something in the engine where a random
 // power of 2 is used, but it's the 0.5 seems to make things look much more correct
@@ -81,6 +83,11 @@ interface BaseCallbackArgs {
   event: any
 }
 interface OnDragCallbackArgs extends BaseCallbackArgs {
+  intersection2d: Vector2
+  intersectPoint: Vector3
+  intersection: Intersection<Object3D<Object3DEventMap>>
+}
+interface OnClickCallbackArgs extends BaseCallbackArgs {
   intersection2d?: Vector2
   intersectPoint: Vector3
   intersection: Intersection<Object3D<Object3DEventMap>>
@@ -88,7 +95,7 @@ interface OnDragCallbackArgs extends BaseCallbackArgs {
 
 interface onMoveCallbackArgs {
   event: any
-  intersection2d?: Vector2
+  intersection2d: Vector2
   intersectPoint: Vector3
   intersection: Intersection<Object3D<Object3DEventMap>>
 }
@@ -105,13 +112,13 @@ class SetupSingleton {
   isFovAnimationInProgress = false
   onDragCallback: (arg: OnDragCallbackArgs) => void = () => {}
   onMoveCallback: (arg: onMoveCallbackArgs) => void = () => {}
-  onClickCallback: (arg: OnDragCallbackArgs) => void = () => {}
+  onClickCallback: (arg: OnClickCallbackArgs) => void = () => {}
   onMouseEnter: (arg: BaseCallbackArgs) => void = () => {}
   onMouseLeave: (arg: BaseCallbackArgs) => void = () => {}
   setCallbacks = (callbacks: {
     onDrag?: (arg: OnDragCallbackArgs) => void
     onMove?: (arg: onMoveCallbackArgs) => void
-    onClick?: (arg: OnDragCallbackArgs) => void
+    onClick?: (arg: OnClickCallbackArgs) => void
     onMouseEnter?: (arg: BaseCallbackArgs) => void
     onMouseLeave?: (arg: BaseCallbackArgs) => void
   }) => {
@@ -121,6 +128,11 @@ class SetupSingleton {
     this.onMouseEnter = callbacks.onMouseEnter || this.onMouseEnter
     this.onMouseLeave = callbacks.onMouseLeave || this.onMouseLeave
     this.selected = null // following selections between callbacks being set is too tricky
+  }
+
+  modelingSend: SendType = (() => {}) as any
+  setSend(send: SendType) {
+    this.modelingSend = send
   }
 
   hoveredObject: null | any = null
@@ -545,18 +557,24 @@ class SetupSingleton {
         // this is where we could fire a onDragStart event
         // console.log('onDragStart', this.selected)
       }
-      if (hasBeenDragged && planeIntersectPoint) {
+      if (
+        hasBeenDragged &&
+        planeIntersectPoint &&
+        planeIntersectPoint.intersection2d
+      ) {
         // // console.log('onDrag', this.selected)
 
         this.onDragCallback({
           object: this.selected.object,
           event,
+          intersection2d: planeIntersectPoint.intersection2d,
           ...planeIntersectPoint,
         })
       }
-    } else if (planeIntersectPoint) {
+    } else if (planeIntersectPoint && planeIntersectPoint.intersection2d) {
       this.onMoveCallback({
         event,
+        intersection2d: planeIntersectPoint.intersection2d,
         ...planeIntersectPoint,
       })
     }
@@ -695,7 +713,7 @@ export const setupSingleton = new SetupSingleton()
 
 export const ClientSideScene = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
-  const { state } = useModelingContext()
+  const { state, send } = useModelingContext()
 
   useEffect(() => {
     if (!canvasRef.current) return
@@ -705,6 +723,7 @@ export const ClientSideScene = () => {
     canvas.addEventListener('mousemove', setupSingleton.onMouseMove, false)
     canvas.addEventListener('mousedown', setupSingleton.onMouseDown, false)
     canvas.addEventListener('mouseup', setupSingleton.onMouseUp, false)
+    setupSingleton.setSend(send)
     return () => {
       canvas?.removeEventListener('mousemove', setupSingleton.onMouseMove)
       canvas?.removeEventListener('mousedown', setupSingleton.onMouseDown)
