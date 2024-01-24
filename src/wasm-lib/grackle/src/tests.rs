@@ -208,8 +208,40 @@ fn use_native_function_add() {
 #[test]
 fn arrays_as_parameters() {
     let program = "fn identity = (x) => { return x }
-    let x = identity([1,2,3])";
-    must_plan(program);
+    let array = identity([1,2,3])";
+    let (plan, scope) = must_plan(program);
+    let expected_plan = vec![
+        // Array length
+        Instruction::SetPrimitive {
+            address: Address::ZERO,
+            value: 3usize.into(),
+        },
+        // Array contents
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 1,
+            value: 1i64.into(),
+        },
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 2,
+            value: 2i64.into(),
+        },
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 3,
+            value: 3i64.into(),
+        },
+    ];
+    assert_eq!(plan, expected_plan);
+    assert_eq!(
+        scope.get("array").unwrap(),
+        &EpBinding::Sequence {
+            length_at: Address::ZERO,
+            elements: vec![
+                EpBinding::Single(Address::ZERO + 1),
+                EpBinding::Single(Address::ZERO + 2),
+                EpBinding::Single(Address::ZERO + 3),
+            ]
+        }
+    )
 }
 
 #[test]

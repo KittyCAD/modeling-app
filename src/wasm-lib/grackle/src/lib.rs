@@ -231,7 +231,7 @@ impl Planner {
                             binding: arg,
                         } = match KclValueGroup::from(argument) {
                             KclValueGroup::Single(value) => self.plan_to_compute_single(ctx, value)?,
-                            KclValueGroup::ArrayExpression(expr) => todo!(),
+                            KclValueGroup::ArrayExpression(expr) => self.plan_to_bind_array(ctx, *expr)?,
                             KclValueGroup::ObjectExpression(_) => todo!(),
                         };
                         acc_instrs.extend(new_instructions);
@@ -429,80 +429,7 @@ impl Planner {
                 // and bind it to the KCL identifier.
                 self.plan_to_compute_single(ctx, init_value)
             }
-            KclValueGroup::ArrayExpression(expr) => {
-                let length_at = self.next_addr.offset_by(1);
-                let mut instructions = vec![Instruction::SetPrimitive {
-                    address: length_at,
-                    value: expr.elements.len().into(),
-                }];
-                // First, emit a plan to compute each element of the array.
-                // Collect all the bindings from each element too.
-                let (instrs, bindings) = expr.elements.into_iter().try_fold(
-                    (Vec::new(), Vec::new()),
-                    |(mut acc_instrs, mut acc_bindings), element| {
-                        match KclValueGroup::from(element) {
-                            KclValueGroup::Single(value) => {
-                                // If this element of the array is a single value, then binding it is
-                                // straightforward -- you got a single binding, no need to change anything.
-                                let EvalPlan { instructions, binding } = self.plan_to_compute_single(ctx, value)?;
-                                acc_instrs.extend(instructions);
-                                acc_bindings.push(binding);
-                            }
-                            KclValueGroup::ArrayExpression(expr) => {
-                                // If this element of the array is _itself_ an array, then we need to
-                                // emit a plan to calculate each element of this child array.
-                                // Then we collect the child array's bindings, and bind them to one
-                                // element of the parent array.
-                                let length_at = self.next_addr.offset_by(1);
-                                acc_instrs.push(Instruction::SetPrimitive {
-                                    address: length_at,
-                                    value: expr.elements.len().into(),
-                                });
-                                let binding = expr
-                                    .elements
-                                    .into_iter()
-                                    .try_fold(Vec::new(), |mut seq, child_element| {
-                                        let EvalPlan { instructions, binding } =
-                                            self.plan_to_bind_one(ctx, child_element)?;
-                                        acc_instrs.extend(instructions);
-                                        seq.push(binding);
-                                        Ok(seq)
-                                    })
-                                    .map(|elements| EpBinding::Sequence { length_at, elements })?;
-                                acc_bindings.push(binding);
-                            }
-                            KclValueGroup::ObjectExpression(expr) => {
-                                // If this element of the array is an object, then we need to
-                                // emit a plan to calculate each value of each property of the object.
-                                // Then we collect the bindings for each child value, and bind them to one
-                                // element of the parent array.
-                                let map = HashMap::with_capacity(expr.properties.len());
-                                let binding = expr
-                                    .properties
-                                    .into_iter()
-                                    .try_fold(map, |mut map, property| {
-                                        let EvalPlan { instructions, binding } =
-                                            self.plan_to_bind_one(ctx, property.value)?;
-                                        map.insert(property.key.name, binding);
-                                        acc_instrs.extend(instructions);
-                                        Ok(map)
-                                    })
-                                    .map(EpBinding::Map)?;
-                                acc_bindings.push(binding);
-                            }
-                        };
-                        Ok((acc_instrs, acc_bindings))
-                    },
-                )?;
-                instructions.extend(instrs);
-                Ok(EvalPlan {
-                    instructions,
-                    binding: EpBinding::Sequence {
-                        length_at,
-                        elements: bindings,
-                    },
-                })
-            }
+            KclValueGroup::ArrayExpression(expr) => self.plan_to_bind_array(ctx, *expr),
             KclValueGroup::ObjectExpression(expr) => {
                 // Convert the object to a sequence of key-value pairs.
                 let mut kvs = expr.properties.into_iter().map(|prop| (prop.key, prop.value));
@@ -567,6 +494,83 @@ impl Planner {
                 })
             }
         }
+    }
+
+    fn plan_to_bind_array(
+        &mut self,
+        ctx: &mut Context,
+        expr: ast::types::ArrayExpression,
+    ) -> Result<EvalPlan, CompileError> {
+        let length_at = self.next_addr.offset_by(1);
+        let mut instructions = vec![Instruction::SetPrimitive {
+            address: length_at,
+            value: expr.elements.len().into(),
+        }];
+        // First, emit a plan to compute each element of the array.
+        // Collect all the bindings from each element too.
+        let (instrs, bindings) = expr.elements.into_iter().try_fold(
+            (Vec::new(), Vec::new()),
+            |(mut acc_instrs, mut acc_bindings), element| {
+                match KclValueGroup::from(element) {
+                    KclValueGroup::Single(value) => {
+                        // If this element of the array is a single value, then binding it is
+                        // straightforward -- you got a single binding, no need to change anything.
+                        let EvalPlan { instructions, binding } = self.plan_to_compute_single(ctx, value)?;
+                        acc_instrs.extend(instructions);
+                        acc_bindings.push(binding);
+                    }
+                    KclValueGroup::ArrayExpression(expr) => {
+                        // If this element of the array is _itself_ an array, then we need to
+                        // emit a plan to calculate each element of this child array.
+                        // Then we collect the child array's bindings, and bind them to one
+                        // element of the parent array.
+                        let length_at = self.next_addr.offset_by(1);
+                        acc_instrs.push(Instruction::SetPrimitive {
+                            address: length_at,
+                            value: expr.elements.len().into(),
+                        });
+                        let binding = expr
+                            .elements
+                            .into_iter()
+                            .try_fold(Vec::new(), |mut seq, child_element| {
+                                let EvalPlan { instructions, binding } = self.plan_to_bind_one(ctx, child_element)?;
+                                acc_instrs.extend(instructions);
+                                seq.push(binding);
+                                Ok(seq)
+                            })
+                            .map(|elements| EpBinding::Sequence { length_at, elements })?;
+                        acc_bindings.push(binding);
+                    }
+                    KclValueGroup::ObjectExpression(expr) => {
+                        // If this element of the array is an object, then we need to
+                        // emit a plan to calculate each value of each property of the object.
+                        // Then we collect the bindings for each child value, and bind them to one
+                        // element of the parent array.
+                        let map = HashMap::with_capacity(expr.properties.len());
+                        let binding = expr
+                            .properties
+                            .into_iter()
+                            .try_fold(map, |mut map, property| {
+                                let EvalPlan { instructions, binding } = self.plan_to_bind_one(ctx, property.value)?;
+                                map.insert(property.key.name, binding);
+                                acc_instrs.extend(instructions);
+                                Ok(map)
+                            })
+                            .map(EpBinding::Map)?;
+                        acc_bindings.push(binding);
+                    }
+                };
+                Ok((acc_instrs, acc_bindings))
+            },
+        )?;
+        instructions.extend(instrs);
+        Ok(EvalPlan {
+            instructions,
+            binding: EpBinding::Sequence {
+                length_at,
+                elements: bindings,
+            },
+        })
     }
 }
 
