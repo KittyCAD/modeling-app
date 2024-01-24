@@ -1301,7 +1301,6 @@ export const modelingMachine = createMachine(
 
           setupSingleton.setCallbacks({
             onClick: async ({ intersection2d }) => {
-              console.log('intersection2d', intersection2d)
               if (!intersection2d || !sketchPathToNode) return
               const { modifiedAst } = addStartProfileAt(
                 kclManager.ast,
@@ -1370,11 +1369,6 @@ function getSketchMetadataFromPathToNode(
         _selectionRanges
       ) || ''
   }
-  console.log('returning:', {
-    sketchPathToNode: pathToNode,
-    sketchEnginePathId,
-    sketchPlaneId: planeId,
-  })
   return {
     sketchPathToNode: pathToNode,
     sketchEnginePathId,
