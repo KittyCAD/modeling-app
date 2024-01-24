@@ -707,14 +707,11 @@ fn store_object() {
     assert_eq!(
         bindings.get("x0").unwrap(),
         &EpBinding::Map(HashMap::from([
-            ("a".to_owned(), EpBinding::Single(Address::ZERO),),
-            ("b".to_owned(), EpBinding::Single(Address::ZERO.offset(1))),
+            ("a".to_owned(), EpBinding::Single(Address::ZERO)),
+            ("b".to_owned(), EpBinding::Single(Address::ZERO + 1)),
             (
                 "c".to_owned(),
-                EpBinding::Map(HashMap::from([(
-                    "d".to_owned(),
-                    EpBinding::Single(Address::ZERO.offset(2))
-                )]))
+                EpBinding::Map(HashMap::from([("d".to_owned(), EpBinding::Single(Address::ZERO + 2))]))
             ),
         ]))
     )

@@ -427,8 +427,7 @@ impl Planner {
             KclValueGroup::Single(init_value) => {
                 // Simple! Just evaluate it, note where the final value will be stored in KCEP memory,
                 // and bind it to the KCL identifier.
-                let EvalPlan { instructions, binding } = self.plan_to_compute_single(ctx, init_value)?;
-                Ok(EvalPlan { instructions, binding })
+                self.plan_to_compute_single(ctx, init_value)
             }
             KclValueGroup::ArrayExpression(expr) => {
                 let length_at = self.next_addr.offset_by(1);
