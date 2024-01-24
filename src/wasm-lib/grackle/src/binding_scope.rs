@@ -17,7 +17,12 @@ pub enum EpBinding {
     /// A KCL value which gets stored in a particular address in KCEP memory.
     Single(Address),
     /// A sequence of KCL values, indexed by their position in the sequence.
-    Sequence { elements: Vec<EpBinding> },
+    Sequence {
+        /// Address where the length of the array is stored.
+        length_at: Address,
+        /// Where is each element in the array bound?
+        elements: Vec<EpBinding>,
+    },
     /// A sequence of KCL values, indexed by their identifier.
     Map(HashMap<String, EpBinding>),
     /// Not associated with a KCEP address.
@@ -38,7 +43,7 @@ impl EpBinding {
             LiteralIdentifier::Literal(litval) => match litval.value {
                 // Arrays can be indexed by integers.
                 LiteralValue::IInteger(i) => match self {
-                    EpBinding::Sequence { elements } => {
+                    EpBinding::Sequence { length_at, elements } => {
                         let i = usize::try_from(i).map_err(|_| CompileError::InvalidIndex(i.to_string()))?;
                         elements
                             .get(i)

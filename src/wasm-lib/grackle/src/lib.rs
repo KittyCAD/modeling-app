@@ -431,9 +431,14 @@ impl Planner {
                 Ok((instructions, binding))
             }
             KclValueGroup::ArrayExpression(expr) => {
+                let length_at = self.next_addr.offset_by(1);
+                let mut instructions = vec![Instruction::SetPrimitive {
+                    address: length_at,
+                    value: expr.elements.len().into(),
+                }];
                 // First, emit a plan to compute each element of the array.
                 // Collect all the bindings from each element too.
-                let (instructions, bindings) = expr.elements.into_iter().try_fold(
+                let (instrs, bindings) = expr.elements.into_iter().try_fold(
                     (Vec::new(), Vec::new()),
                     |(mut acc_instrs, mut acc_bindings), element| {
                         match KclValueGroup::from(element) {
@@ -449,6 +454,11 @@ impl Planner {
                                 // emit a plan to calculate each element of this child array.
                                 // Then we collect the child array's bindings, and bind them to one
                                 // element of the parent array.
+                                let length_at = self.next_addr.offset_by(1);
+                                acc_instrs.push(Instruction::SetPrimitive {
+                                    address: length_at,
+                                    value: expr.elements.len().into(),
+                                });
                                 let binding = expr
                                     .elements
                                     .into_iter()
@@ -458,7 +468,7 @@ impl Planner {
                                         seq.push(binding);
                                         Ok(seq)
                                     })
-                                    .map(|elements| EpBinding::Sequence { elements })?;
+                                    .map(|elements| EpBinding::Sequence { length_at, elements })?;
                                 acc_bindings.push(binding);
                             }
                             KclValueGroup::ObjectExpression(expr) => {
@@ -483,7 +493,14 @@ impl Planner {
                         Ok((acc_instrs, acc_bindings))
                     },
                 )?;
-                Ok((instructions, EpBinding::Sequence { elements: bindings }))
+                instructions.extend(instrs);
+                Ok((
+                    instructions,
+                    EpBinding::Sequence {
+                        length_at,
+                        elements: bindings,
+                    },
+                ))
             }
             KclValueGroup::ObjectExpression(expr) => {
                 // Convert the object to a sequence of key-value pairs.
@@ -502,6 +519,11 @@ impl Planner {
                                 // each element of that array. Collect their bindings, and bind them all
                                 // under one property of the parent object.
                                 let n = expr.elements.len();
+                                let length_at = self.next_addr.offset_by(1);
+                                acc_instrs.push(Instruction::SetPrimitive {
+                                    address: length_at,
+                                    value: n.into(),
+                                });
                                 let binding = expr
                                     .elements
                                     .into_iter()
@@ -511,7 +533,7 @@ impl Planner {
                                         acc_instrs.extend(instructions);
                                         Ok(seq)
                                     })
-                                    .map(|elements| EpBinding::Sequence { elements })?;
+                                    .map(|elements| EpBinding::Sequence { length_at, elements })?;
                                 acc_bindings.insert(key.name, binding);
                             }
                             KclValueGroup::ObjectExpression(expr) => {
