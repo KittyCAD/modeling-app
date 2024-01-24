@@ -9,6 +9,7 @@ pub enum KclValueGroup {
     ObjectExpression(Box<ast::types::ObjectExpression>),
 }
 
+#[derive(Debug)]
 pub enum SingleValue {
     Literal(Box<ast::types::Literal>),
     Identifier(Box<ast::types::Identifier>),

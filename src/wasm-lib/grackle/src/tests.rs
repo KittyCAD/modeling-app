@@ -129,6 +129,23 @@ fn name_not_found() {
 }
 
 #[test]
+fn assign_bool() {
+    // Check that Grackle properly compiles KCL bools to EP bools.
+    for (str, val) in [("true", true), ("false", false)] {
+        let program = format!("let x = {str}");
+        let (plan, scope) = must_plan(&program);
+        assert_eq!(
+            plan,
+            vec![Instruction::SetPrimitive {
+                address: Address::ZERO,
+                value: val.into(),
+            }]
+        );
+        assert_eq!(scope.get("x"), Some(&EpBinding::Single(Address::ZERO)));
+    }
+}
+
+#[test]
 fn aliases() {
     let program = "
         let x = 1
