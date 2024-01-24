@@ -743,3 +743,34 @@ fn stdlib_api_calls() {
       show(x6)";
     must_plan(program);
 }
+
+#[test]
+fn arrays_as_parameters() {
+    let program = "fn identity = (x) => { return x }
+    let array = identity([1,2,3])";
+    let (plan, scope) = must_plan(program);
+    let expected_plan = vec![
+        // Array contents
+        Instruction::SetPrimitive {
+            address: Address::ZERO,
+            value: 1i64.into(),
+        },
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 1,
+            value: 2i64.into(),
+        },
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 2,
+            value: 3i64.into(),
+        },
+    ];
+    assert_eq!(plan, expected_plan);
+    assert_eq!(
+        scope.get("array").unwrap(),
+        &EpBinding::Sequence(vec![
+            EpBinding::Single(Address::ZERO),
+            EpBinding::Single(Address::ZERO + 1),
+            EpBinding::Single(Address::ZERO + 2),
+        ])
+    )
+}
