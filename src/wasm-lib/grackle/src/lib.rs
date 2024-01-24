@@ -411,9 +411,9 @@ impl Planner {
             .declarations
             .into_iter()
             .try_fold(Vec::new(), |mut acc, declaration| {
-                let (instrs, binding) = self.plan_to_bind_one(&mut ctx, declaration.init)?;
+                let EvalPlan { instructions, binding } = self.plan_to_bind_one(&mut ctx, declaration.init)?;
                 self.binding_scope.bind(declaration.id.name, binding);
-                acc.extend(instrs);
+                acc.extend(instructions);
                 Ok(acc)
             })
     }
@@ -422,13 +422,12 @@ impl Planner {
         &mut self,
         ctx: &mut Context,
         value_being_bound: ast::types::Value,
-    ) -> Result<(Vec<Instruction>, EpBinding), CompileError> {
+    ) -> Result<EvalPlan, CompileError> {
         match KclValueGroup::from(value_being_bound) {
             KclValueGroup::Single(init_value) => {
                 // Simple! Just evaluate it, note where the final value will be stored in KCEP memory,
                 // and bind it to the KCL identifier.
-                let EvalPlan { instructions, binding } = self.plan_to_compute_single(ctx, init_value)?;
-                Ok((instructions, binding))
+                self.plan_to_compute_single(ctx, init_value)
             }
             KclValueGroup::ArrayExpression(expr) => self.plan_to_bind_array(ctx, expr),
             KclValueGroup::ObjectExpression(expr) => {
@@ -452,7 +451,8 @@ impl Planner {
                                     .elements
                                     .into_iter()
                                     .try_fold(Vec::with_capacity(n), |mut seq, child_element| {
-                                        let (instructions, binding) = self.plan_to_bind_one(ctx, child_element)?;
+                                        let EvalPlan { instructions, binding } =
+                                            self.plan_to_bind_one(ctx, child_element)?;
                                         seq.push(binding);
                                         acc_instrs.extend(instructions);
                                         Ok(seq)
@@ -470,7 +470,8 @@ impl Planner {
                                     .properties
                                     .into_iter()
                                     .try_fold(HashMap::with_capacity(n), |mut map, property| {
-                                        let (instructions, binding) = self.plan_to_bind_one(ctx, property.value)?;
+                                        let EvalPlan { instructions, binding } =
+                                            self.plan_to_bind_one(ctx, property.value)?;
                                         map.insert(property.key.name, binding);
                                         acc_instrs.extend(instructions);
                                         Ok(map)
@@ -482,7 +483,10 @@ impl Planner {
                         Ok((acc_instrs, acc_bindings))
                     },
                 )?;
-                Ok((instructions, EpBinding::Map(each_property_binding)))
+                Ok(EvalPlan {
+                    instructions,
+                    binding: EpBinding::Map(each_property_binding),
+                })
             }
         }
     }
@@ -491,7 +495,7 @@ impl Planner {
         &mut self,
         ctx: &mut Context,
         expr: Box<ast::types::ArrayExpression>,
-    ) -> Result<(Vec<Instruction>, EpBinding), CompileError> {
+    ) -> Result<EvalPlan, CompileError> {
         // First, emit a plan to compute each element of the array.
         // Collect all the bindings from each element too.
         let (instructions, bindings) = expr.elements.into_iter().try_fold(
@@ -514,7 +518,7 @@ impl Planner {
                             .elements
                             .into_iter()
                             .try_fold(Vec::new(), |mut seq, child_element| {
-                                let (instructions, binding) = self.plan_to_bind_one(ctx, child_element)?;
+                                let EvalPlan { instructions, binding } = self.plan_to_bind_one(ctx, child_element)?;
                                 acc_instrs.extend(instructions);
                                 seq.push(binding);
                                 Ok(seq)
@@ -532,7 +536,7 @@ impl Planner {
                             .properties
                             .into_iter()
                             .try_fold(map, |mut map, property| {
-                                let (instructions, binding) = self.plan_to_bind_one(ctx, property.value)?;
+                                let EvalPlan { instructions, binding } = self.plan_to_bind_one(ctx, property.value)?;
                                 map.insert(property.key.name, binding);
                                 acc_instrs.extend(instructions);
                                 Ok(map)
@@ -544,7 +548,10 @@ impl Planner {
                 Ok((acc_instrs, acc_bindings))
             },
         )?;
-        Ok((instructions, EpBinding::Sequence(bindings)))
+        Ok(EvalPlan {
+            instructions,
+            binding: EpBinding::Sequence(bindings),
+        })
     }
 }
 
