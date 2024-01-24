@@ -122,7 +122,27 @@ impl Planner {
                 })
             }
             SingleValue::Identifier(expr) => {
-                // This is just duplicating a binding.
+                // The KCL parser interprets bools as identifiers.
+                // Consider changing them to be KCL literals instead.
+                let b = if expr.name == "true" {
+                    Some(true)
+                } else if expr.name == "false" {
+                    Some(false)
+                } else {
+                    None
+                };
+                if let Some(b) = b {
+                    let address = self.next_addr.offset_by(1);
+                    return Ok(EvalPlan {
+                        instructions: vec![Instruction::SetPrimitive {
+                            address,
+                            value: ept::Primitive::Bool(b),
+                        }],
+                        binding: EpBinding::Single(address),
+                    });
+                }
+
+                // This identifier is just duplicating a binding.
                 // So, don't emit any instructions, because the value has already been computed.
                 // Just return the address that it was stored at after being computed.
                 let previously_bound_to = self
