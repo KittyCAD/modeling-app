@@ -11,6 +11,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JValue;
 use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
+// use either::Either;
 
 use crate::{
     ast::types::{BodyItem, FunctionExpression, KclNone, Value},
@@ -632,6 +633,18 @@ impl From<Point3d> for kittycad::types::Point3D {
     }
 }
 
+/// number or string
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+pub enum NumberOrString {
+    Num(i32), // assuming 'number' is equivalent to a 32-bit integer
+    Str(String),
+}
+
+/// PathToNode
+pub type PathToNode = Vec<(NumberOrString, String)>;
+
+
 /// Metadata.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -639,11 +652,16 @@ impl From<Point3d> for kittycad::types::Point3D {
 pub struct Metadata {
     /// The source range.
     pub source_range: SourceRange,
+    /// The path to node for this memory Item
+    pub path_to_node: PathToNode,
 }
 
 impl From<SourceRange> for Metadata {
     fn from(source_range: SourceRange) -> Self {
-        Self { source_range }
+        Self {
+            source_range,
+            path_to_node: Vec::new()
+        }
     }
 }
 
@@ -829,12 +847,17 @@ pub async fn execute(
 ) -> Result<ProgramMemory, KclError> {
     let mut pipe_info = PipeInfo::default();
 
+    // let path_to_Node: PathToNode = vec![("body".to_string(), "".to_string())];
+    let path_to_node: PathToNode = vec![(NumberOrString::Str("body".to_string()), "".to_string())];
+
     // Iterate over the body of the program.
-    for statement in &program.body {
+    for (index, statement) in program.body.iter().enumerate() {
+        let mut with_body_path_to_node = path_to_node.clone();
+        with_body_path_to_node.push((NumberOrString::Num(index as i32), "index".to_string()));
         match statement {
             BodyItem::ExpressionStatement(expression_statement) => {
                 if let Value::PipeExpression(pipe_expr) = &expression_statement.expression {
-                    pipe_expr.get_result(memory, &mut pipe_info, ctx).await?;
+                    pipe_expr.get_result(memory, &mut pipe_info, ctx, with_body_path_to_node).await?;
                 } else if let Value::CallExpression(call_expr) = &expression_statement.expression {
                     let fn_name = call_expr.callee.name.to_string();
                     let mut args: Vec<MemoryItem> = Vec::new();
@@ -905,10 +928,15 @@ pub async fn execute(
                 }
             }
             BodyItem::VariableDeclaration(variable_declaration) => {
-                for declaration in &variable_declaration.declarations {
+                
+                for (index, declaration) in variable_declaration.declarations.iter().enumerate() {
                     let var_name = declaration.id.name.to_string();
                     let source_range: SourceRange = declaration.init.clone().into();
-                    let metadata = Metadata { source_range };
+                    let mut with_dec_path_to_node = with_body_path_to_node.clone();
+                    with_dec_path_to_node.push((NumberOrString::Str("declarations".to_string()), "VariableDeclaration".to_string()));
+                    with_dec_path_to_node.push((NumberOrString::Num(index as i32), "index".to_string()));
+                    with_dec_path_to_node.push((NumberOrString::Str("init".to_string()), "".to_string()));
+                    let metadata = Metadata { source_range, path_to_node: with_dec_path_to_node.clone() };
 
                     match &declaration.init {
                         Value::None(none) => {
@@ -963,7 +991,7 @@ pub async fn execute(
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::PipeExpression(pipe_expression) => {
-                            let result = pipe_expression.get_result(memory, &mut pipe_info, ctx).await?;
+                            let result = pipe_expression.get_result(memory, &mut pipe_info, ctx, with_dec_path_to_node).await?;
                             memory.add(&var_name, result, source_range)?;
                         }
                         Value::PipeSubstitution(pipe_substitution) => {
@@ -1027,7 +1055,7 @@ pub async fn execute(
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::PipeExpression(pipe_expr) => {
-                    let result = pipe_expr.get_result(memory, &mut pipe_info, ctx).await?;
+                    let result = pipe_expr.get_result(memory, &mut pipe_info, ctx, with_body_path_to_node).await?;
                     memory.return_ = Some(ProgramReturn::Value(result));
                 }
                 Value::PipeSubstitution(_) => {}

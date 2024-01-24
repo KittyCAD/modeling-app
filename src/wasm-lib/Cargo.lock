@@ -1864,6 +1864,7 @@ dependencies = [
  "dashmap",
  "databake",
  "derive-docs 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "either",
  "expectorate",
  "futures",
  "insta",

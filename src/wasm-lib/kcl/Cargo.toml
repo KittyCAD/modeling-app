@@ -32,6 +32,7 @@ thiserror = "1.0.50"
 ts-rs = { version = "7", features = ["uuid-impl"] }
 uuid = { version = "1.6.1", features = ["v4", "js", "serde"] }
 winnow = "0.5.18"
+either = "1.6.1"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 js-sys = { version = "0.3.65" }

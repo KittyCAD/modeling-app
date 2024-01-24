@@ -190,6 +190,7 @@ impl Args {
             value: j,
             meta: vec![Metadata {
                 source_range: self.source_range,
+                path_to_node: Vec::new()
             }],
         }))
     }

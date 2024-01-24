@@ -19,6 +19,7 @@ use crate::{
     parser::PIPE_OPERATOR,
     std::{kcl_stdlib::KclStdLibFn, FunctionKind},
 };
+use crate::executor::PathToNode;
 
 mod literal_value;
 mod none;
@@ -1433,6 +1434,7 @@ impl From<Literal> for MemoryItem {
             value: JValue::from(literal.value.clone()),
             meta: vec![Metadata {
                 source_range: literal.into(),
+                path_to_node: vec![],
             }],
         })
     }
@@ -1444,6 +1446,7 @@ impl From<&Box<Literal>> for MemoryItem {
             value: JValue::from(literal.value.clone()),
             meta: vec![Metadata {
                 source_range: literal.into(),
+                path_to_node: vec![],
             }],
         })
     }
@@ -1641,7 +1644,7 @@ impl ArrayExpression {
                 Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, ctx).await?,
                 Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, ctx).await?,
                 Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, ctx).await?,
-                Value::PipeExpression(pipe_expression) => pipe_expression.get_result(memory, pipe_info, ctx).await?,
+                Value::PipeExpression(pipe_expression) => pipe_expression.get_result(memory, pipe_info, ctx, vec![]).await?,
                 Value::PipeSubstitution(pipe_substitution) => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: format!("PipeSubstitution not implemented here: {:?}", pipe_substitution),
@@ -1665,6 +1668,7 @@ impl ArrayExpression {
             value: results.into(),
             meta: vec![Metadata {
                 source_range: self.into(),
+                path_to_node: vec![],
             }],
         }))
     }
@@ -1794,7 +1798,7 @@ impl ObjectExpression {
                 Value::UnaryExpression(unary_expression) => unary_expression.get_result(memory, pipe_info, ctx).await?,
                 Value::ObjectExpression(object_expression) => object_expression.execute(memory, pipe_info, ctx).await?,
                 Value::ArrayExpression(array_expression) => array_expression.execute(memory, pipe_info, ctx).await?,
-                Value::PipeExpression(pipe_expression) => pipe_expression.get_result(memory, pipe_info, ctx).await?,
+                Value::PipeExpression(pipe_expression) => pipe_expression.get_result(memory, pipe_info, ctx, vec![]).await?,
                 Value::PipeSubstitution(pipe_substitution) => {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: format!("PipeSubstitution not implemented here: {:?}", pipe_substitution),
@@ -1822,6 +1826,7 @@ impl ObjectExpression {
             value: object.into(),
             meta: vec![Metadata {
                 source_range: self.into(),
+                path_to_node: vec![],
             }],
         }))
     }
@@ -2031,6 +2036,7 @@ impl MemberExpression {
                     value: value.clone(),
                     meta: vec![Metadata {
                         source_range: self.into(),
+                        path_to_node: vec![],
                     }],
                 }))
             } else {
@@ -2087,6 +2093,7 @@ impl MemberExpression {
                     value: value.clone(),
                     meta: vec![Metadata {
                         source_range: self.into(),
+                        path_to_node: vec![],
                     }],
                 }))
             } else {
@@ -2251,6 +2258,7 @@ impl BinaryExpression {
                     value,
                     meta: vec![Metadata {
                         source_range: self.into(),
+                        path_to_node: vec![],
                     }],
                 }));
             }
@@ -2272,6 +2280,7 @@ impl BinaryExpression {
             value,
             meta: vec![Metadata {
                 source_range: self.into(),
+                path_to_node: vec![],
             }],
         }))
     }
@@ -2435,6 +2444,7 @@ impl UnaryExpression {
             value: (-(num)).into(),
             meta: vec![Metadata {
                 source_range: self.into(),
+                path_to_node: vec![],
             }],
         }))
     }
@@ -2564,11 +2574,12 @@ impl PipeExpression {
         memory: &mut ProgramMemory,
         pipe_info: &mut PipeInfo,
         ctx: &ExecutorContext,
+        path_to_node: PathToNode,
     ) -> Result<MemoryItem, KclError> {
         // Reset the previous results.
         pipe_info.previous_results = vec![];
         pipe_info.index = 0;
-        execute_pipe_body(memory, &self.body, pipe_info, self.into(), ctx).await
+        execute_pipe_body(memory, &self.body, pipe_info, self.into(), ctx, path_to_node).await
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -2586,6 +2597,8 @@ async fn execute_pipe_body(
     pipe_info: &mut PipeInfo,
     source_range: SourceRange,
     ctx: &ExecutorContext,
+    path_to_node: PathToNode,
+    
 ) -> Result<MemoryItem, KclError> {
     if pipe_info.index == body.len() {
         pipe_info.is_in_pipe = false;
