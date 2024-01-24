@@ -43,7 +43,7 @@ impl EpBinding {
             LiteralIdentifier::Literal(litval) => match litval.value {
                 // Arrays can be indexed by integers.
                 LiteralValue::IInteger(i) => match self {
-                    EpBinding::Sequence { length_at, elements } => {
+                    EpBinding::Sequence { length_at: _, elements } => {
                         let i = usize::try_from(i).map_err(|_| CompileError::InvalidIndex(i.to_string()))?;
                         elements
                             .get(i)
