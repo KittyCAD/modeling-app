@@ -188,7 +188,7 @@ fn use_native_function_add() {
 }
 
 #[test]
-fn arrays_as_parametesr() {
+fn arrays_as_parameters() {
     let program = "fn identity = (x) => { return x }
     let x = identity([1,2,3])";
     must_plan(program);
@@ -728,10 +728,12 @@ fn store_object_with_array_property() {
             ("a".to_owned(), EpBinding::Single(Address::ZERO),),
             (
                 "b".to_owned(),
-                EpBinding::Sequence(vec![
-                    EpBinding::Single(Address::ZERO.offset(1)),
-                    EpBinding::Single(Address::ZERO.offset(2)),
-                ])
+                EpBinding::Sequence {
+                    elements: vec![
+                        EpBinding::Single(Address::ZERO.offset(1)),
+                        EpBinding::Single(Address::ZERO.offset(2)),
+                    ]
+                }
             ),
         ]))
     )
