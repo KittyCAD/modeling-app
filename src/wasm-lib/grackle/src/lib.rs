@@ -231,7 +231,7 @@ impl Planner {
                             binding: arg,
                         } = match KclValueGroup::from(argument) {
                             KclValueGroup::Single(value) => self.plan_to_compute_single(ctx, value)?,
-                            KclValueGroup::ArrayExpression(_) => todo!(),
+                            KclValueGroup::ArrayExpression(expr) => self.plan_to_bind_array(ctx, expr)?,
                             KclValueGroup::ObjectExpression(_) => todo!(),
                         };
                         acc_instrs.extend(new_instructions);
