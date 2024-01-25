@@ -745,6 +745,25 @@ fn stdlib_api_calls() {
 }
 
 #[test]
+fn objects_as_parameters() {
+    let program = "fn identity = (x) => { return x }
+    let obj = identity({x: 1})";
+    let (plan, scope) = must_plan(program);
+    let expected_plan = vec![
+        // Object contents
+        Instruction::SetPrimitive {
+            address: Address::ZERO,
+            value: 1i64.into(),
+        },
+    ];
+    assert_eq!(plan, expected_plan);
+    assert_eq!(
+        scope.get("obj").unwrap(),
+        &EpBinding::Map(HashMap::from([("x".to_owned(), EpBinding::Single(Address::ZERO)),]))
+    )
+}
+
+#[test]
 fn arrays_as_parameters() {
     let program = "fn identity = (x) => { return x }
     let array = identity([1,2,3])";
