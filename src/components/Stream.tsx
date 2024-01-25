@@ -60,6 +60,7 @@ export const Stream = ({ className = '' }) => {
   const handleMouseDown: MouseEventHandler<HTMLVideoElement> = (e) => {
     if (!videoRef.current) return
     if (state.matches('Sketch')) return
+    if (state.matches('Sketch no face')) return
     const { x, y } = getNormalisedCoordinates({
       clientX: e.clientX,
       clientY: e.clientY,
@@ -137,6 +138,7 @@ export const Stream = ({ className = '' }) => {
     if (!videoRef.current) return
     setButtonDownInStream(undefined)
     if (state.matches('Sketch')) return
+    if (state.matches('Sketch no face')) return
     const { x, y } = getNormalisedCoordinates({
       clientX,
       clientY,
@@ -388,6 +390,7 @@ export const Stream = ({ className = '' }) => {
 
   const handleMouseMove: MouseEventHandler<HTMLVideoElement> = (e) => {
     if (state.matches('Sketch')) return
+    if (state.matches('Sketch no face')) return
     if (!clickCoords) return
 
     const delta =

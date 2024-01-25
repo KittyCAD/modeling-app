@@ -25,6 +25,7 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import interact from '@replit/codemirror-interact'
 import { engineCommandManager } from '../lang/std/engineConnection'
 import { kclManager, useKclContext } from 'lang/KclSingleton'
+import { ModelingMachineEvent } from 'machines/modelingMachine'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -60,6 +61,7 @@ export const TextEditor = ({
   const {
     context: { selectionRanges, selectionRangeTypeMap },
     send,
+    state,
   } = useModelingContext()
 
   const { settings: { context: { textWrapping } = {} } = {} } =
@@ -122,7 +124,8 @@ export const TextEditor = ({
       isShiftDown,
     })
     if (!eventInfo) return
-
+    const ignoreEvents: ModelingMachineEvent['type'][] = ['Equip Line tool 3']
+    if (ignoreEvents.includes(state.event.type)) return
     send(eventInfo.modelingEvent)
     eventInfo.engineEvents.forEach((event) =>
       engineCommandManager.sendSceneCommand(event)
