@@ -465,7 +465,7 @@ impl Planner {
                                 acc_instrs.extend(instructions);
                                 Ok(seq)
                             })
-                            .map(EpBinding::Sequence)?;
+                            .map(|elements| EpBinding::Sequence { elements })?;
                         acc_bindings.insert(key.name, binding);
                     }
                     KclValueGroup::ObjectExpression(expr) => {
@@ -528,7 +528,7 @@ impl Planner {
                                 seq.push(binding);
                                 Ok(seq)
                             })
-                            .map(EpBinding::Sequence)?;
+                            .map(|elements| EpBinding::Sequence { elements })?;
                         acc_bindings.push(binding);
                     }
                     KclValueGroup::ObjectExpression(expr) => {
@@ -555,7 +555,7 @@ impl Planner {
         )?;
         Ok(EvalPlan {
             instructions,
-            binding: EpBinding::Sequence(bindings),
+            binding: EpBinding::Sequence { elements: bindings },
         })
     }
 }
