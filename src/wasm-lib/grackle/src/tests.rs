@@ -721,10 +721,12 @@ fn store_object_with_array_property() {
             ("a".to_owned(), EpBinding::Single(Address::ZERO),),
             (
                 "b".to_owned(),
-                EpBinding::Sequence(vec![
-                    EpBinding::Single(Address::ZERO.offset(1)),
-                    EpBinding::Single(Address::ZERO.offset(2)),
-                ])
+                EpBinding::Sequence {
+                    elements: vec![
+                        EpBinding::Single(Address::ZERO.offset(1)),
+                        EpBinding::Single(Address::ZERO.offset(2)),
+                    ]
+                }
             ),
         ]))
     )
@@ -786,10 +788,12 @@ fn arrays_as_parameters() {
     assert_eq!(plan, expected_plan);
     assert_eq!(
         scope.get("array").unwrap(),
-        &EpBinding::Sequence(vec![
-            EpBinding::Single(Address::ZERO),
-            EpBinding::Single(Address::ZERO + 1),
-            EpBinding::Single(Address::ZERO + 2),
-        ])
+        &EpBinding::Sequence {
+            elements: vec![
+                EpBinding::Single(Address::ZERO),
+                EpBinding::Single(Address::ZERO + 1),
+                EpBinding::Single(Address::ZERO + 2),
+            ]
+        }
     )
 }

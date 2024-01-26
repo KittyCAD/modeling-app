@@ -17,7 +17,7 @@ pub enum EpBinding {
     /// A KCL value which gets stored in a particular address in KCEP memory.
     Single(Address),
     /// A sequence of KCL values, indexed by their position in the sequence.
-    Sequence(Vec<EpBinding>),
+    Sequence { elements: Vec<EpBinding> },
     /// A sequence of KCL values, indexed by their identifier.
     Map(HashMap<String, EpBinding>),
     /// Not associated with a KCEP address.
@@ -38,9 +38,11 @@ impl EpBinding {
             LiteralIdentifier::Literal(litval) => match litval.value {
                 // Arrays can be indexed by integers.
                 LiteralValue::IInteger(i) => match self {
-                    EpBinding::Sequence(seq) => {
+                    EpBinding::Sequence { elements } => {
                         let i = usize::try_from(i).map_err(|_| CompileError::InvalidIndex(i.to_string()))?;
-                        seq.get(i).ok_or(CompileError::IndexOutOfBounds { i, len: seq.len() })
+                        elements
+                            .get(i)
+                            .ok_or(CompileError::IndexOutOfBounds { i, len: elements.len() })
                     }
                     EpBinding::Map(_) => Err(CompileError::CannotIndex),
                     EpBinding::Single(_) => Err(CompileError::CannotIndex),
@@ -50,7 +52,7 @@ impl EpBinding {
                 LiteralValue::String(property) => match self {
                     EpBinding::Single(_) => Err(CompileError::NoProperties),
                     EpBinding::Function(_) => Err(CompileError::NoProperties),
-                    EpBinding::Sequence(_) => Err(CompileError::ArrayDoesNotHaveProperties),
+                    EpBinding::Sequence { .. } => Err(CompileError::ArrayDoesNotHaveProperties),
                     EpBinding::Map(map) => map.get(&property).ok_or(CompileError::UndefinedProperty { property }),
                 },
                 // It's never valid to index by a fractional number.
