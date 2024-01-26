@@ -48,16 +48,22 @@ fn bind_array() {
     assert_eq!(
         plan,
         vec![
+            // Array length
             Instruction::SetPrimitive {
                 address: Address::ZERO,
+                value: 3usize.into()
+            },
+            // Array contents
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 1,
                 value: 44i64.into(),
             },
             Instruction::SetPrimitive {
-                address: Address::ZERO.offset(1),
+                address: Address::ZERO + 2,
                 value: 55i64.into(),
             },
             Instruction::SetPrimitive {
-                address: Address::ZERO.offset(2),
+                address: Address::ZERO + 3,
                 value: "sixty-six".to_owned().into(),
             }
         ]
@@ -71,16 +77,28 @@ fn bind_nested_array() {
     assert_eq!(
         plan,
         vec![
+            // Outer array length
             Instruction::SetPrimitive {
                 address: Address::ZERO,
+                value: 2usize.into(),
+            },
+            // Outer array contents
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 1,
                 value: 44i64.into(),
             },
+            // Inner array length
             Instruction::SetPrimitive {
-                address: Address::ZERO.offset(1),
+                address: Address::ZERO + 2,
+                value: 2usize.into(),
+            },
+            // Inner array length
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 3,
                 value: 55i64.into(),
             },
             Instruction::SetPrimitive {
-                address: Address::ZERO.offset(2),
+                address: Address::ZERO + 4,
                 value: "sixty-six".to_owned().into(),
             }
         ]
@@ -94,16 +112,22 @@ fn bind_arrays_with_objects_elements() {
     assert_eq!(
         plan,
         vec![
+            // Array length
             Instruction::SetPrimitive {
                 address: Address::ZERO,
+                value: 2usize.into()
+            },
+            // Array contents
+            Instruction::SetPrimitive {
+                address: Address::ZERO + 1,
                 value: 44i64.into(),
             },
             Instruction::SetPrimitive {
-                address: Address::ZERO.offset(1),
+                address: Address::ZERO + 2,
                 value: 55i64.into(),
             },
             Instruction::SetPrimitive {
-                address: Address::ZERO.offset(2),
+                address: Address::ZERO + 3,
                 value: "sixty-six".to_owned().into(),
             }
         ]
@@ -265,7 +289,7 @@ fn member_expressions_array() {
     let (_plan, scope) = must_plan(program);
     match scope.get("first").unwrap() {
         EpBinding::Single(addr) => {
-            assert_eq!(*addr, Address::ZERO);
+            assert_eq!(*addr, Address::ZERO + 2);
         }
         other => {
             panic!("expected 'number' bound to 0x0 but it was bound to {other:?}");
@@ -273,7 +297,7 @@ fn member_expressions_array() {
     }
     match scope.get("last").unwrap() {
         EpBinding::Single(addr) => {
-            assert_eq!(*addr, Address::ZERO + 3);
+            assert_eq!(*addr, Address::ZERO + 6);
         }
         other => {
             panic!("expected 'number' bound to 0x3 but it was bound to {other:?}");
@@ -704,17 +728,21 @@ fn store_object_with_array_property() {
             address: Address::ZERO,
             value: 1i64.into(),
         },
+        // Array length
         Instruction::SetPrimitive {
-            address: Address::ZERO.offset(1),
+            address: Address::ZERO + 1,
+            value: 2usize.into(),
+        },
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 2,
             value: 2i64.into(),
         },
         Instruction::SetPrimitive {
-            address: Address::ZERO.offset(2),
+            address: Address::ZERO + 3,
             value: 3i64.into(),
         },
     ];
     assert_eq!(actual, expected);
-    eprintln!("{bindings:#?}");
     assert_eq!(
         bindings.get("x0").unwrap(),
         &EpBinding::Map(HashMap::from([
@@ -722,9 +750,10 @@ fn store_object_with_array_property() {
             (
                 "b".to_owned(),
                 EpBinding::Sequence {
+                    length_at: Address::ZERO + 1,
                     elements: vec![
-                        EpBinding::Single(Address::ZERO.offset(1)),
-                        EpBinding::Single(Address::ZERO.offset(2)),
+                        EpBinding::Single(Address::ZERO + 2),
+                        EpBinding::Single(Address::ZERO + 3),
                     ]
                 }
             ),
@@ -771,17 +800,22 @@ fn arrays_as_parameters() {
     let array = identity([1,2,3])";
     let (plan, scope) = must_plan(program);
     let expected_plan = vec![
-        // Array contents
+        // Array length
         Instruction::SetPrimitive {
             address: Address::ZERO,
+            value: 3usize.into(),
+        },
+        // Array contents
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 1,
             value: 1i64.into(),
         },
         Instruction::SetPrimitive {
-            address: Address::ZERO + 1,
+            address: Address::ZERO + 2,
             value: 2i64.into(),
         },
         Instruction::SetPrimitive {
-            address: Address::ZERO + 2,
+            address: Address::ZERO + 3,
             value: 3i64.into(),
         },
     ];
@@ -789,10 +823,11 @@ fn arrays_as_parameters() {
     assert_eq!(
         scope.get("array").unwrap(),
         &EpBinding::Sequence {
+            length_at: Address::ZERO,
             elements: vec![
-                EpBinding::Single(Address::ZERO),
                 EpBinding::Single(Address::ZERO + 1),
                 EpBinding::Single(Address::ZERO + 2),
+                EpBinding::Single(Address::ZERO + 3),
             ]
         }
     )
