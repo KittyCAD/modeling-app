@@ -7,6 +7,7 @@ mod tests;
 
 use std::collections::HashMap;
 
+use ep::Destination;
 use kcl_lib::{
     ast,
     ast::types::{BodyItem, FunctionExpressionParts, KclNone, LiteralValue, Program},
@@ -173,7 +174,7 @@ impl Planner {
                         },
                         operand: ep::Operand::Reference(binding),
                     },
-                    destination,
+                    destination: Destination::Address(destination),
                 });
                 Ok(EvalPlan {
                     instructions: plan,
@@ -214,7 +215,7 @@ impl Planner {
                         operand0: ep::Operand::Reference(l_binding),
                         operand1: ep::Operand::Reference(r_binding),
                     },
-                    destination,
+                    destination: Destination::Address(destination),
                 });
                 Ok(EvalPlan {
                     instructions: plan,

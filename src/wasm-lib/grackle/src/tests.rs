@@ -1,4 +1,4 @@
-use ep::UnaryArithmetic;
+use ep::{Destination, UnaryArithmetic};
 use pretty_assertions::assert_eq;
 
 use super::*;
@@ -181,7 +181,7 @@ fn use_native_function_add() {
                     operand0: ep::Operand::Reference(Address::ZERO),
                     operand1: ep::Operand::Reference(Address::ZERO.offset(1))
                 },
-                destination: Address::ZERO.offset(2),
+                destination: Destination::Address(Address::ZERO.offset(2)),
             }
         ]
     );
@@ -296,7 +296,7 @@ fn compile_flipped_sign() {
                 operation: ep::UnaryOperation::Neg,
                 operand: ep::Operand::Reference(Address::ZERO),
             },
-            destination: Address::ZERO + 1,
+            destination: Destination::Address(Address::ZERO + 1),
         },
     ];
     assert_eq!(plan, expected);
@@ -323,7 +323,7 @@ fn add_literals() {
                     operand0: ep::Operand::Reference(Address::ZERO),
                     operand1: ep::Operand::Reference(Address::ZERO.offset(1)),
                 },
-                destination: Address::ZERO.offset(2),
+                destination: Destination::Address(Address::ZERO.offset(2)),
             }
         ]
     );
@@ -355,7 +355,7 @@ fn add_vars() {
                     operand0: ep::Operand::Reference(addr0),
                     operand1: ep::Operand::Reference(addr1),
                 },
-                destination: Address::ZERO.offset(2),
+                destination: Destination::Address(Address::ZERO.offset(2)),
             }
         ]
     );
@@ -396,7 +396,7 @@ fn composite_binary_exprs() {
                     operand0: ep::Operand::Reference(addr0),
                     operand1: ep::Operand::Reference(addr1),
                 },
-                destination: addr3,
+                destination: Destination::Address(addr3),
             },
             // Adds `x` + 3, where `x` is (1 + 2)
             Instruction::BinaryArithmetic {
@@ -405,7 +405,7 @@ fn composite_binary_exprs() {
                     operand0: ep::Operand::Reference(addr3),
                     operand1: ep::Operand::Reference(addr2),
                 },
-                destination: Address::ZERO.offset(4),
+                destination: Destination::Address(Address::ZERO.offset(4)),
             }
         ]
     );
@@ -464,7 +464,7 @@ fn use_kcl_functions_with_optional_params() {
                         operand0: ep::Operand::Reference(Address::ZERO),
                         operand1: ep::Operand::Reference(Address::ZERO + 2)
                     },
-                    destination,
+                    destination: Destination::Address(destination),
                 }
             ],
             "failed test {i}"
@@ -585,7 +585,7 @@ fn use_kcl_functions_with_params() {
                         operand0: ep::Operand::Reference(Address::ZERO),
                         operand1: ep::Operand::Reference(Address::ZERO.offset(1))
                     },
-                    destination,
+                    destination: Destination::Address(destination),
                 }
             ],
             "failed test {i}"
