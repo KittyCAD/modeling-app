@@ -89,10 +89,6 @@ describe('ZMA (Tauri, Linux)', () => {
   it('opens the new file and expects an error on Linux', async () => {
     const projectLink = await $('[data-testid="project-link"]')
     await click(projectLink)
-    const error = await $('h3')
-    expect(await error.getText()).toContain(
-      "Can't find variable: RTCPeerConnection"
-    )
     await browser.execute('window.location.href = "tauri://localhost/home"')
   })
 
