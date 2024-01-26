@@ -86,9 +86,13 @@ describe('ZMA (Tauri, Linux)', () => {
     expect(await homeSection.getText()).toContain('project-000')
   })
 
-  it('opens the new file and expects an error on Linux', async () => {
+  it('opens the new file and expects a loading stream', async () => {
     const projectLink = await $('[data-testid="project-link"]')
     await click(projectLink)
+    
+    const loadingText = await $('[data-testid="loading-stream"]')
+    expect(await loadingText.getText()).toContain('Loading stream...')
+
     await browser.execute('window.location.href = "tauri://localhost/home"')
   })
 
