@@ -33,6 +33,7 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { deg2Rad } from 'lib/utils2d'
 import * as TWEEN from '@tweenjs/tween.js'
 import { MouseGuard, cameraMouseDragGuards } from 'lib/cameraControls'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import { SourceRange } from 'lang/wasm'
 import { useStore } from 'useStore'
 
@@ -773,7 +774,13 @@ function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   return { hideClient: !hideServer, hideServer }
 }
 
-export const ClientSideScene = () => {
+export const ClientSideScene = ({
+  cameraControls,
+}: {
+  cameraControls: ReturnType<
+    typeof useGlobalStateContext
+  >['settings']['context']['cameraControls']
+}) => {
   const canvasRef = useRef<HTMLDivElement>(null)
   const { state, send } = useModelingContext()
   const { hideClient, hideServer } = useShouldHideScene()
@@ -781,6 +788,12 @@ export const ClientSideScene = () => {
     setHighlightRange: s.setHighlightRange,
     highlightRange: s.highlightRange,
   }))
+
+  // Listen for changes to the camera controls setting
+  // and update the client-side scene's controls accordingly.
+  useEffect(() => {
+    setupSingleton.setInteractionGuards(cameraMouseDragGuards[cameraControls])
+  }, [cameraControls])
 
   useEffect(() => {
     if (!canvasRef.current) return

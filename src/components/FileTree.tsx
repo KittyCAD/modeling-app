@@ -1,4 +1,5 @@
-import { IndexLoaderData, paths } from 'Router'
+import { type IndexLoaderData } from 'lib/types'
+import { paths } from 'lib/paths'
 import { ActionButton } from './ActionButton'
 import Tooltip from './Tooltip'
 import { FileEntry } from '@tauri-apps/api/fs'

@@ -18,7 +18,7 @@ import {
 import { bracket } from 'lib/exampleKcl'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { getNodeFromPath } from './queryAst'
-import { IndexLoaderData } from 'Router'
+import { type IndexLoaderData } from 'lib/types'
 import { Params, useLoaderData } from 'react-router-dom'
 import { isTauri } from 'lib/isTauri'
 import { writeTextFile } from '@tauri-apps/api/fs'
