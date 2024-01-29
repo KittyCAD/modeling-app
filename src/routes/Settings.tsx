@@ -10,7 +10,8 @@ import {
 import { Toggle } from '../components/Toggle/Toggle'
 import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { IndexLoaderData, paths } from '../Router'
+import { type IndexLoaderData } from 'lib/types'
+import { paths } from 'lib/paths'
 import { Themes } from '../lib/theme'
 import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 import {

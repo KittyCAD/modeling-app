@@ -7,7 +7,7 @@ import {
 } from '@tauri-apps/api/fs'
 import { documentDir, homeDir, sep } from '@tauri-apps/api/path'
 import { isTauri } from './isTauri'
-import { ProjectWithEntryPointMetadata } from '../Router'
+import { type ProjectWithEntryPointMetadata } from 'lib/types'
 import { metadata } from 'tauri-plugin-fs-extra-api'
 
 const PROJECT_FOLDER = 'zoo-modeling-app-projects'

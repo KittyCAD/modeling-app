@@ -14,12 +14,15 @@ import { AppHeader } from '../components/AppHeader'
 import ProjectCard from '../components/ProjectCard'
 import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-import { ProjectWithEntryPointMetadata, HomeLoaderData } from '../Router'
+import {
+  type ProjectWithEntryPointMetadata,
+  type HomeLoaderData,
+} from 'lib/types'
 import Loading from '../components/Loading'
 import { useMachine } from '@xstate/react'
 import { homeMachine } from '../machines/homeMachine'
 import { ContextFrom, EventFrom } from 'xstate'
-import { paths } from '../Router'
+import { paths } from 'lib/paths'
 import {
   getNextSearchParams,
   getSortFunction,

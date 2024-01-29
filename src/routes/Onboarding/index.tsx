@@ -15,7 +15,7 @@ import UserMenu from './UserMenu'
 import ProjectMenu from './ProjectMenu'
 import Export from './Export'
 import FutureWork from './FutureWork'
-import { paths } from 'Router'
+import { paths } from 'lib/paths'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { ActionButton } from 'components/ActionButton'
 

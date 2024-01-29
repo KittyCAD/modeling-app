@@ -17,7 +17,7 @@ import {
 } from 'lib/tauriFS'
 import { isTauri } from 'lib/isTauri'
 import { useNavigate } from 'react-router-dom'
-import { paths } from 'Router'
+import { paths } from 'lib/paths'
 import { useEffect } from 'react'
 import { kclManager } from 'lang/KclSingleton'
 import { sep } from '@tauri-apps/api/path'

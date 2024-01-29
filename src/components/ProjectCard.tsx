@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useRef, useState } from 'react'
-import { type ProjectWithEntryPointMetadata, paths } from '../Router'
+import { type ProjectWithEntryPointMetadata } from 'lib/types'
+import { paths } from 'lib/paths'
 import { Link } from 'react-router-dom'
 import { ActionButton } from './ActionButton'
 import {

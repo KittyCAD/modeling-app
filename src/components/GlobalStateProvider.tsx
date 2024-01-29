@@ -1,6 +1,6 @@
 import { useMachine } from '@xstate/react'
 import { useNavigate } from 'react-router-dom'
-import { paths } from '../Router'
+import { paths } from 'lib/paths'
 import { authMachine, TOKEN_PERSIST_KEY } from '../machines/authMachine'
 import withBaseUrl from '../lib/withBaseURL'
 import React, { createContext, useEffect, useRef } from 'react'
