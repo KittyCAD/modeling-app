@@ -33,6 +33,8 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { deg2Rad } from 'lib/utils2d'
 import * as TWEEN from '@tweenjs/tween.js'
 import { MouseGuard, cameraMouseDragGuards } from 'lib/cameraControls'
+import { SourceRange } from 'lang/wasm'
+import { useStore } from 'useStore'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -131,6 +133,10 @@ class SetupSingleton {
     this.onMouseEnter = callbacks.onMouseEnter || this.onMouseEnter
     this.onMouseLeave = callbacks.onMouseLeave || this.onMouseLeave
     this.selected = null // following selections between callbacks being set is too tricky
+  }
+  highlightCallback: (a: SourceRange) => void = () => {}
+  setHighlightCallback(cb: (a: SourceRange) => void) {
+    this.highlightCallback = cb
   }
 
   modelingSend: SendType = (() => {}) as any
@@ -771,12 +777,17 @@ export const ClientSideScene = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
   const { state, send } = useModelingContext()
   const { hideClient, hideServer } = useShouldHideScene()
+  const { setHighlightRange } = useStore((s) => ({
+    setHighlightRange: s.setHighlightRange,
+    highlightRange: s.highlightRange,
+  }))
 
   useEffect(() => {
     if (!canvasRef.current) return
     const canvas = canvasRef.current
     canvas.appendChild(setupSingleton.renderer.domElement)
     setupSingleton.animate()
+    setupSingleton.setHighlightCallback(setHighlightRange)
     canvas.addEventListener('mousemove', setupSingleton.onMouseMove, false)
     canvas.addEventListener('mousedown', setupSingleton.onMouseDown, false)
     canvas.addEventListener('mouseup', setupSingleton.onMouseUp, false)
