@@ -110,18 +110,18 @@ const router = createBrowserRouter(
     {
       path: paths.FILE + '/:id',
       element: (
-        <Auth>
-          <FileMachineProvider>
-            <KclContextProvider>
+        <KclContextProvider>
+          <Auth>
+            <FileMachineProvider>
               <ModelingMachineProvider>
                 <Outlet />
                 <App />
               </ModelingMachineProvider>
               <WasmErrBanner />
-            </KclContextProvider>
-          </FileMachineProvider>
-          {!isTauri() && import.meta.env.PROD && <DownloadAppBanner />}
-        </Auth>
+            </FileMachineProvider>
+            {!isTauri() && import.meta.env.PROD && <DownloadAppBanner />}
+          </Auth>
+        </KclContextProvider>
       ),
       id: paths.FILE,
       loader: async ({

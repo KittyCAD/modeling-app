@@ -241,7 +241,7 @@ export function App() {
       >
         <SketchCanvas />
       </div> */}
-      <ClientSideScene />
+      <ClientSideScene cameraControls={settings.context.cameraControls} />
       {showDebugPanel && (
         <DebugPanel
           title="Debug"

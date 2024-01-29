@@ -33,6 +33,7 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { deg2Rad } from 'lib/utils2d'
 import * as TWEEN from '@tweenjs/tween.js'
 import { MouseGuard, cameraMouseDragGuards } from 'lib/cameraControls'
+import { useGlobalStateContext } from 'hooks/useGlobalStateContext'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -722,9 +723,21 @@ class SetupSingleton {
 
 export const setupSingleton = new SetupSingleton()
 
-export const ClientSideScene = () => {
+export const ClientSideScene = ({
+  cameraControls,
+}: {
+  cameraControls: ReturnType<
+    typeof useGlobalStateContext
+  >['settings']['context']['cameraControls']
+}) => {
   const canvasRef = useRef<HTMLDivElement>(null)
   const { state, send } = useModelingContext()
+
+  // Listen for changes to the camera controls setting
+  // and update the client-side scene's controls accordingly.
+  useEffect(() => {
+    setupSingleton.setInteractionGuards(cameraMouseDragGuards[cameraControls])
+  }, [cameraControls])
 
   useEffect(() => {
     if (!canvasRef.current) return
