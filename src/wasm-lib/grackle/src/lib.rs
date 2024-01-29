@@ -9,6 +9,7 @@ use kcl_lib::{
     ast,
     ast::types::{BodyItem, FunctionExpressionParts, KclNone, LiteralValue, Program},
 };
+use kcl_value_group::into_single_value;
 use kittycad_execution_plan::{self as ep, Address, Destination, Instruction};
 use kittycad_execution_plan_traits as ept;
 use kittycad_execution_plan_traits::NumericPrimitive;
@@ -76,7 +77,7 @@ impl Planner {
     /// Returns the instructions, and the destination address of the value.
     fn plan_to_compute_single(&mut self, ctx: &mut Context, value: SingleValue) -> Result<EvalPlan, CompileError> {
         match value {
-            SingleValue::KclNoneExpression(KclNone { start: _, end: _ }) => {
+            SingleValue::None(KclNone { start: _, end: _ }) => {
                 let address = self.next_addr.offset_by(1);
                 Ok(EvalPlan {
                     instructions: vec![Instruction::SetPrimitive {
@@ -150,7 +151,7 @@ impl Planner {
                 })
             }
             SingleValue::UnaryExpression(expr) => {
-                let operand = self.plan_to_compute_single(ctx, SingleValue::from(expr.argument))?;
+                let operand = self.plan_to_compute_single(ctx, into_single_value(expr.argument))?;
                 let EpBinding::Single(binding) = operand.binding else {
                     return Err(CompileError::InvalidOperand(
                         "you tried to use a composite value (e.g. array or object) as the operand to some math",
@@ -174,8 +175,8 @@ impl Planner {
                 })
             }
             SingleValue::BinaryExpression(expr) => {
-                let l = self.plan_to_compute_single(ctx, SingleValue::from(expr.left))?;
-                let r = self.plan_to_compute_single(ctx, SingleValue::from(expr.right))?;
+                let l = self.plan_to_compute_single(ctx, into_single_value(expr.left))?;
+                let r = self.plan_to_compute_single(ctx, into_single_value(expr.right))?;
                 let EpBinding::Single(l_binding) = l.binding else {
                     return Err(CompileError::InvalidOperand(
                         "you tried to use a composite value (e.g. array or object) as the operand to some math",
