@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { setupSingleton } from '../clientSideScene/setup'
 import { engineCommandManager } from 'lang/std/engineConnection'
 import { throttle, isReducedMotion } from 'lib/utils'
+import { cameraMouseDragGuards } from 'lib/cameraControls'
 
 const updateDollyZoom = throttle(
   (newFov: number) => setupSingleton.dollyZoom(newFov),
@@ -12,6 +13,7 @@ export const CamToggle = () => {
   const [isPerspective, setIsPerspective] = useState(true)
   const [fov, setFov] = useState(40)
   const [enableRotate, setEnableRotate] = useState(true)
+  const [useOnShapeControls, setUseOnShapeControls] = useState(false)
 
   useEffect(() => {
     engineCommandManager.waitForReady.then(async () => {
@@ -39,6 +41,18 @@ export const CamToggle = () => {
 
   return (
     <div className="absolute right-14 bottom-3">
+      <button
+        onClick={() => {
+          setupSingleton.setInteractionGuards(
+            useOnShapeControls
+              ? cameraMouseDragGuards.KittyCAD
+              : cameraMouseDragGuards.OnShape
+          )
+          setUseOnShapeControls(!useOnShapeControls)
+        }}
+      >
+        change to {useOnShapeControls ? 'KittyCAD' : 'OnShape'} controls
+      </button>
       {isPerspective && (
         <div className="">
           <input

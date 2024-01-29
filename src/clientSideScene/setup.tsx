@@ -32,6 +32,7 @@ import { compareVec2Epsilon2 } from 'lang/std/sketch'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { deg2Rad } from 'lib/utils2d'
 import * as TWEEN from '@tweenjs/tween.js'
+import { MouseGuard, cameraMouseDragGuards } from 'lib/cameraControls'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -110,6 +111,7 @@ class SetupSingleton {
   fov = 45
   fovBeforeAnimate = 45
   isFovAnimationInProgress = false
+  interactionGuards: MouseGuard = cameraMouseDragGuards.KittyCAD
   onDragCallback: (arg: OnDragCallbackArgs) => void = () => {}
   onMoveCallback: (arg: onMoveCallbackArgs) => void = () => {}
   onClickCallback: (arg: OnClickCallbackArgs) => void = () => {}
@@ -192,6 +194,12 @@ class SetupSingleton {
 
     SetupSingleton.instance = this
   }
+  setInteractionGuards = (guard: MouseGuard) => {
+    this.interactionGuards = guard
+    // setMouseGuards is oun patch-package patch to orbit controls
+    // see patches/three+0.160.0.patch
+    ;(this.controls as any).setMouseGuards(guard)
+  }
   private createPerspectiveCamera = () => {
     const { z_near, z_far } = calculateNearFarFromFOV(this.fov)
     this.camera = new PerspectiveCamera(
@@ -218,6 +226,9 @@ class SetupSingleton {
     }
     this.controls.update()
     this.controls.addEventListener('change', this.updateEngineCamera)
+    // setMouseGuards is oun patch-package patch to orbit controls
+    // see patches/three+0.160.0.patch
+    ;(this.controls as any).setMouseGuards(this.interactionGuards)
     return this.controls
   }
   onStreamStart = () => this.updateEngineCamera()
