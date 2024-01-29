@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use ep::{Destination, UnaryArithmetic};
 use ept::ListHeader;
 use pretty_assertions::assert_eq;
