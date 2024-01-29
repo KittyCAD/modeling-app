@@ -24,7 +24,7 @@ import {
   Object3DEventMap,
 } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { engineCommandManager } from 'lang/std/engineConnection'
 import { v4 as uuidv4 } from 'uuid'
 import { isReducedMotion, throttle } from 'lib/utils'
@@ -46,6 +46,7 @@ const ORTHOGRAPHIC_CAMERA_SIZE = 20
 export const INTERSECTION_PLANE_LAYER = 1
 export const SKETCH_LAYER = 2
 const DEBUG_SHOW_INTERSECTION_PLANE = false
+export const DEBUG_SHOW_BOTH_SCENES = false
 
 const tempQuaternion = new Quaternion() // just used for maths
 
@@ -187,12 +188,17 @@ class SetupSingleton {
     const gridHelper = new GridHelper(size, divisions, 0x0000ff, 0xffffff)
     gridHelper.material = gridHelperMaterial
     gridHelper.rotation.x = Math.PI / 2
-    this.scene.add(gridHelper) // more of a debug thing, but maybe useful
+    // this.scene.add(gridHelper) // more of a debug thing, but maybe useful
 
     const light = new AmbientLight(0x505050) // soft white light
     this.scene.add(light)
 
     SetupSingleton.instance = this
+  }
+  private _isCamMovingCallback: (isMoving: boolean, isTween: boolean) => void =
+    () => {}
+  setIsCamMovingCallback(cb: (isMoving: boolean, isTween: boolean) => void) {
+    this._isCamMovingCallback = cb
   }
   setInteractionGuards = (guard: MouseGuard) => {
     this.interactionGuards = guard
@@ -226,6 +232,13 @@ class SetupSingleton {
     }
     this.controls.update()
     this.controls.addEventListener('change', this.updateEngineCamera)
+    this.controls.addEventListener('start', () =>
+      this._isCamMovingCallback(true, false)
+    )
+    this.controls.addEventListener('end', () =>
+      this._isCamMovingCallback(false, false)
+    )
+
     // setMouseGuards is oun patch-package patch to orbit controls
     // see patches/three+0.160.0.patch
     ;(this.controls as any).setMouseGuards(this.interactionGuards)
@@ -266,6 +279,7 @@ class SetupSingleton {
     duration: number = 500
   ) {
     const camera = this.camera
+    this._isCamMovingCallback(true, true)
     const initialQuaternion = camera.quaternion.clone()
     const isVertical = isQuaternionVertical(targetQuaternion)
     let tweenEnd = isVertical ? 0.99 : 1
@@ -307,6 +321,7 @@ class SetupSingleton {
         if (isVertical) cameraAtTime(1)
         this.camera.up.set(0, 0, 1)
         this.controls.enableRotate = false
+        this._isCamMovingCallback(false, true)
       })
       .start()
   }
@@ -722,9 +737,33 @@ class SetupSingleton {
 
 export const setupSingleton = new SetupSingleton()
 
+function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
+  const [isCamMoving, setIsCamMoving] = useState(false)
+  const [isTween, setIsTween] = useState(false)
+
+  const { state } = useModelingContext()
+
+  useEffect(() => {
+    setupSingleton.setIsCamMovingCallback((isMoving, isTween) => {
+      setIsCamMoving(isMoving)
+      setIsTween(isTween)
+    })
+  }, [])
+
+  if (DEBUG_SHOW_BOTH_SCENES || !isCamMoving)
+    return { hideClient: false, hideServer: false }
+  let hideServer = state.matches('Sketch')
+  if (isTween) {
+    hideServer = false
+  }
+
+  return { hideClient: !hideServer, hideServer }
+}
+
 export const ClientSideScene = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
   const { state, send } = useModelingContext()
+  const { hideClient, hideServer } = useShouldHideScene()
 
   useEffect(() => {
     if (!canvasRef.current) return
@@ -745,8 +784,12 @@ export const ClientSideScene = () => {
   return (
     <div
       ref={canvasRef}
-      className={`absolute inset-0 h-full w-full ${
-        state.matches('Sketch') ? 'bg-black/50' : ''
+      className={`absolute inset-0 h-full w-full transition-all duration-300 ${
+        hideClient ? 'opacity-0' : 'opacity-100'
+      } ${hideServer ? 'bg-black' : ''} ${
+        !hideClient && !hideServer && state.matches('Sketch')
+          ? 'bg-black/50'
+          : ''
       }`}
     ></div>
   )
