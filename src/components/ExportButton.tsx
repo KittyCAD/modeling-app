@@ -52,7 +52,7 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
   }
   const formik = useFormik({
     initialValues,
-    onSubmit: (values: OutputFormat) => {
+    onSubmit: async (values: OutputFormat) => {
       // Set the default coords.
       if (
         values.type === 'obj' ||
@@ -93,7 +93,7 @@ export const ExportButton = ({ children, className }: ExportButtonProps) => {
       if (values.type === 'ply' || values.type === 'stl') {
         values.selection = { type: 'default_scene' }
       }
-      engineCommandManager.sendSceneCommand({
+      await engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
           type: 'export',
