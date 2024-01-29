@@ -232,12 +232,19 @@ class SetupSingleton {
     }
     this.controls.update()
     this.controls.addEventListener('change', this.updateEngineCamera)
-    this.controls.addEventListener('start', () =>
+    // debounce is needed because the start and end events are fired too often for zoom on scroll
+    let debounceTimer = 0
+    const handleStart = () => {
+      if (debounceTimer) clearTimeout(debounceTimer)
       this._isCamMovingCallback(true, false)
-    )
-    this.controls.addEventListener('end', () =>
-      this._isCamMovingCallback(false, false)
-    )
+    }
+    const handleEnd = () => {
+      debounceTimer = setTimeout(() => {
+        this._isCamMovingCallback(false, false)
+      }, 200) as any as number
+    }
+    this.controls.addEventListener('start', handleStart)
+    this.controls.addEventListener('end', handleEnd)
 
     // setMouseGuards is oun patch-package patch to orbit controls
     // see patches/three+0.160.0.patch
@@ -788,7 +795,7 @@ export const ClientSideScene = () => {
         hideClient ? 'opacity-0' : 'opacity-100'
       } ${hideServer ? 'bg-black' : ''} ${
         !hideClient && !hideServer && state.matches('Sketch')
-          ? 'bg-black/50'
+          ? 'bg-black/80'
           : ''
       }`}
     ></div>
