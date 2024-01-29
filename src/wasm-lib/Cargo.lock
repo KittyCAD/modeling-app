@@ -431,6 +431,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7f30e7476521f6f8af1a1c4c0b8cc94f0bee37d91763d0ca2665f299b6cd8aec"
 
 [[package]]
+name = "bytecount"
+version = "0.6.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e1e5f035d16fc623ae5f74981db80a439803888314e3a555fd6f04acd51a3205"
+
+[[package]]
 name = "bytemuck"
 version = "1.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1426,6 +1432,7 @@ dependencies = [
  "kittycad-modeling-session",
  "pretty_assertions",
  "thiserror",
+ "tokio",
 ]
 
 [[package]]
@@ -1943,7 +1950,7 @@ dependencies = [
 [[package]]
 name = "kittycad-execution-plan"
 version = "0.1.0"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#cd3e2c339b4794478e995247ca693d17c6b8ac4d"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#0a891ad3d4a189410f457e00b644ff4e116e7175"
 dependencies = [
  "bytes",
  "insta",
@@ -1953,6 +1960,7 @@ dependencies = [
  "kittycad-modeling-session",
  "parse-display-derive",
  "serde",
+ "tabled",
  "thiserror",
  "tokio",
  "uuid",
@@ -1972,7 +1980,7 @@ dependencies = [
 [[package]]
 name = "kittycad-execution-plan-macros"
 version = "0.1.2"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#cd3e2c339b4794478e995247ca693d17c6b8ac4d"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#0a891ad3d4a189410f457e00b644ff4e116e7175"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1981,9 +1989,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-execution-plan-traits"
-version = "0.1.3"
+version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1486416eacecf481188a253199461fde5dbbc9bccaf176d60c48181cd0465273"
+checksum = "29dc558ca98b726d998fe9617f7cab0c427f54b49b42fb68d0a69d85e1b52dc7"
 dependencies = [
  "serde",
  "thiserror",
@@ -1993,7 +2001,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds"
 version = "0.1.12"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#cd3e2c339b4794478e995247ca693d17c6b8ac4d"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#0a891ad3d4a189410f457e00b644ff4e116e7175"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2020,7 +2028,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-session"
 version = "0.1.0"
-source = "git+https://github.com/KittyCAD/modeling-api?branch=main#cd3e2c339b4794478e995247ca693d17c6b8ac4d"
+source = "git+https://github.com/KittyCAD/modeling-api?branch=main#0a891ad3d4a189410f457e00b644ff4e116e7175"
 dependencies = [
  "futures",
  "kittycad",
@@ -2525,6 +2533,17 @@ dependencies = [
  "elliptic-curve",
  "primeorder",
  "sha2",
+]
+
+[[package]]
+name = "papergrid"
+version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a2ccbe15f2b6db62f9a9871642746427e297b0ceb85f9a7f1ee5ff47d184d0c8"
+dependencies = [
+ "bytecount",
+ "fnv",
+ "unicode-width",
 ]
 
 [[package]]
@@ -3918,6 +3937,30 @@ checksum = "a75fb188eb626b924683e3b95e3a48e63551fcfb51949de2f06a9d91dbee93c9"
 dependencies = [
  "core-foundation-sys",
  "libc",
+]
+
+[[package]]
+name = "tabled"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dfe9c3632da101aba5131ed63f9eed38665f8b3c68703a6bb18124835c1a5d22"
+dependencies = [
+ "papergrid",
+ "tabled_derive",
+ "unicode-width",
+]
+
+[[package]]
+name = "tabled_derive"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "99f688a08b54f4f02f0a3c382aefdb7884d3d69609f785bd253dc033243e3fe4"
+dependencies = [
+ "heck",
+ "proc-macro-error",
+ "proc-macro2",
+ "quote",
+ "syn 1.0.109",
 ]
 
 [[package]]

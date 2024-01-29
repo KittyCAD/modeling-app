@@ -5,7 +5,6 @@ use kcl_lib::ast::{self, types::BinaryPart};
 /// You can convert losslessly between KclValueGroup and `kcl_lib::ast::types::Value` with From/Into.
 pub enum KclValueGroup {
     Single(SingleValue),
-    ArrayExpression(Box<ast::types::ArrayExpression>),
     ObjectExpression(Box<ast::types::ObjectExpression>),
 }
 
@@ -21,6 +20,7 @@ pub enum SingleValue {
     MemberExpression(Box<ast::types::MemberExpression>),
     FunctionExpression(Box<ast::types::FunctionExpression>),
     PipeSubstitution(Box<ast::types::PipeSubstitution>),
+    ArrayExpression(Box<ast::types::ArrayExpression>),
 }
 
 impl From<ast::types::BinaryPart> for KclValueGroup {
@@ -59,7 +59,7 @@ impl From<ast::types::Value> for KclValueGroup {
             ast::types::Value::PipeExpression(e) => Self::Single(SingleValue::PipeExpression(e)),
             ast::types::Value::None(e) => Self::Single(SingleValue::KclNoneExpression(e)),
             ast::types::Value::UnaryExpression(e) => Self::Single(SingleValue::UnaryExpression(e)),
-            ast::types::Value::ArrayExpression(e) => Self::ArrayExpression(e),
+            ast::types::Value::ArrayExpression(e) => Self::Single(SingleValue::ArrayExpression(e)),
             ast::types::Value::ObjectExpression(e) => Self::ObjectExpression(e),
             ast::types::Value::MemberExpression(e) => Self::Single(SingleValue::MemberExpression(e)),
             ast::types::Value::FunctionExpression(e) => Self::Single(SingleValue::FunctionExpression(e)),
@@ -82,8 +82,8 @@ impl From<KclValueGroup> for ast::types::Value {
                 SingleValue::MemberExpression(e) => ast::types::Value::MemberExpression(e),
                 SingleValue::FunctionExpression(e) => ast::types::Value::FunctionExpression(e),
                 SingleValue::PipeSubstitution(e) => ast::types::Value::PipeSubstitution(e),
+                SingleValue::ArrayExpression(e) => ast::types::Value::ArrayExpression(e),
             },
-            KclValueGroup::ArrayExpression(e) => ast::types::Value::ArrayExpression(e),
             KclValueGroup::ObjectExpression(e) => ast::types::Value::ObjectExpression(e),
         }
     }
