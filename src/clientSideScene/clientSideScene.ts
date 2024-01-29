@@ -151,6 +151,24 @@ class ClientSideScene {
         },
         onMove: () => {},
         onClick: () => {},
+        onMouseEnter: ({ object }) => {
+          // TODO change the color of the segment to yellow?
+          // Give a few pixels grace around each of the segments
+          // for hover.
+          const parent = getParentGroup(object)
+          if (parent?.userData?.pathToNode) {
+            const updatedAst = parse(recast(kclManager.ast))
+            const node = getNodeFromPath<CallExpression>(
+              updatedAst,
+              parent.userData.pathToNode,
+              'CallExpression'
+            ).node
+            setupSingleton.highlightCallback([node.start, node.end])
+            return
+          }
+          setupSingleton.highlightCallback([0, 0])
+        },
+        onMouseLeave: () => setupSingleton.highlightCallback([0, 0]),
       })
     } else {
       setupSingleton.setCallbacks({
@@ -524,7 +542,7 @@ function prepareTruncatedMemoryAndAst(
 }
 
 function getParentGroup(object: any): Group | null {
-  if (['straight-segment'].includes(object.userData.type)) {
+  if (['straight-segment'].includes(object?.userData?.type)) {
     return object
   } else if (object.parent) {
     return getParentGroup(object.parent)
