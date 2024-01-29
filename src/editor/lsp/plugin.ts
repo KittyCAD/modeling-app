@@ -60,9 +60,7 @@ export class LanguageServerPlugin implements PluginValue {
     this.languageId = this.view.state.facet(languageId)
     this.documentVersion = 0
 
-    this.client.attachPlugin(this)
-
-    (async () => {
+    this.client.attachPlugin(this)(async () => {
       await this.initialize({
         documentText: this.view.state.doc.toString(),
       })

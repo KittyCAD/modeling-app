@@ -138,7 +138,7 @@ export function useCalc({
   }, [kclManager.ast, kclManager.programMemory, selectionRange])
 
   useEffect(() => {
-    (async () => {
+    ;(async () => {
       try {
         const code = `const __result__ = ${value}`
         const ast = parse(code)
