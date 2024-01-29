@@ -5,6 +5,8 @@ mod native_functions;
 #[cfg(test)]
 mod tests;
 
+use std::collections::HashMap;
+
 use kcl_lib::{
     ast,
     ast::types::{BodyItem, FunctionExpressionParts, KclNone, LiteralValue, Program},
@@ -428,9 +430,10 @@ impl Planner {
                 let key_count = expr.properties.len();
                 // Compute elements
                 let (instructions_for_each_element, bindings, keys) = expr.properties.into_iter().try_fold(
-                    (Vec::new(), Vec::new(), Vec::with_capacity(key_count)),
-                    |(mut acc_instrs, mut acc_bindings, mut acc_keys), property| {
-                        acc_keys.push(property.key.name);
+                    (Vec::new(), HashMap::new(), Vec::with_capacity(key_count)),
+                    |(mut acc_instrs, mut acc_properties, mut acc_keys), property| {
+                        let key = property.key.name;
+                        acc_keys.push(key.clone());
 
                         // Some elements will have their own length header (e.g. arrays).
                         // For all other elements, we'll need to add a length header.
@@ -446,7 +449,7 @@ impl Planner {
                             // straightforward -- you got a single binding, no need to change anything.
                             let EvalPlan { instructions, binding } =
                                 self.plan_to_compute_single(ctx, SingleValue::from(property.value))?;
-                            acc_bindings.push(binding);
+                            acc_properties.insert(key, binding);
                             instructions
                         };
                         // If we decided to add a length header for this element,
@@ -461,7 +464,7 @@ impl Planner {
                         }
                         // Append element's value
                         acc_instrs.extend(instrs_for_this_element);
-                        Ok((acc_instrs, acc_bindings, acc_keys))
+                        Ok((acc_instrs, acc_properties, acc_keys))
                     },
                 )?;
                 // The array's overall instructions are:
@@ -476,9 +479,9 @@ impl Planner {
                     .into(),
                 }];
                 instructions.extend(instructions_for_each_element);
-                let binding = EpBinding::Sequence {
+                let binding = EpBinding::Map {
                     length_at,
-                    elements: bindings,
+                    properties: bindings,
                 };
                 Ok(EvalPlan { instructions, binding })
             }

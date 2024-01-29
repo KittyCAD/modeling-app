@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use ep::{Destination, UnaryArithmetic};
-use ept::ListHeader;
+use ept::{ListHeader, ObjectHeader};
 use pretty_assertions::assert_eq;
 
 use super::*;
@@ -835,32 +835,69 @@ fn store_object() {
     let expected = vec![
         Instruction::SetPrimitive {
             address: Address::ZERO,
+            value: ObjectHeader {
+                properties: vec!["a".to_owned(), "b".to_owned(), "c".to_owned()],
+                size: 7,
+            }
+            .into(),
+        },
+        // Key a header
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 1,
+            value: 1usize.into(),
+        },
+        // Key a value
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 2,
             value: 1i64.into(),
         },
+        // Key b header
         Instruction::SetPrimitive {
-            address: Address::ZERO.offset(1),
+            address: Address::ZERO + 3,
+            value: 1usize.into(),
+        },
+        // Key b value
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 4,
             value: 2i64.into(),
         },
+        // Inner object (i.e. key c) header
         Instruction::SetPrimitive {
-            address: Address::ZERO.offset(2),
+            address: Address::ZERO + 5,
+            value: ObjectHeader {
+                properties: vec!["d".to_owned()],
+                size: 2,
+            }
+            .into(),
+        },
+        // Key d header
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 6,
+            value: 1usize.into(),
+        },
+        // Key d value
+        Instruction::SetPrimitive {
+            address: Address::ZERO + 7,
             value: 3i64.into(),
         },
     ];
     assert_eq!(actual, expected);
-    assert_eq!(
-        bindings.get("x0").unwrap(),
-        &EpBinding::Map(HashMap::from([
-            ("a".to_owned(), EpBinding::Single(Address::ZERO),),
-            ("b".to_owned(), EpBinding::Single(Address::ZERO.offset(1))),
+    let actual = bindings.get("x0").unwrap();
+    let expected = EpBinding::Map {
+        length_at: Address::ZERO,
+        properties: HashMap::from([
+            ("a".to_owned(), EpBinding::Single(Address::ZERO + 2)),
+            ("b".to_owned(), EpBinding::Single(Address::ZERO + 4)),
             (
                 "c".to_owned(),
-                EpBinding::Map(HashMap::from([(
-                    "d".to_owned(),
-                    EpBinding::Single(Address::ZERO.offset(2))
-                )]))
+                EpBinding::Map {
+                    length_at: Address::ZERO + 5,
+                    properties: HashMap::from([("d".to_owned(), EpBinding::Single(Address::ZERO + 7))]),
+                },
             ),
-        ]))
-    )
+        ]),
+    };
+    assert_eq!(actual, &expected)
 }
 
 #[test]
@@ -897,19 +934,22 @@ fn store_object_with_array_property() {
     assert_eq!(actual, expected);
     assert_eq!(
         bindings.get("x0").unwrap(),
-        &EpBinding::Map(HashMap::from([
-            ("a".to_owned(), EpBinding::Single(Address::ZERO),),
-            (
-                "b".to_owned(),
-                EpBinding::Sequence {
-                    length_at: Address::ZERO + 1,
-                    elements: vec![
-                        EpBinding::Single(Address::ZERO + 3),
-                        EpBinding::Single(Address::ZERO + 5),
-                    ]
-                }
-            ),
-        ]))
+        &EpBinding::Map {
+            length_at: Address::ZERO,
+            properties: HashMap::from([
+                ("a".to_owned(), EpBinding::Single(Address::ZERO),),
+                (
+                    "b".to_owned(),
+                    EpBinding::Sequence {
+                        length_at: Address::ZERO + 1,
+                        elements: vec![
+                            EpBinding::Single(Address::ZERO + 3),
+                            EpBinding::Single(Address::ZERO + 5),
+                        ]
+                    }
+                ),
+            ])
+        }
     )
 }
 
@@ -942,7 +982,10 @@ fn objects_as_parameters() {
     assert_eq!(plan, expected_plan);
     assert_eq!(
         scope.get("obj").unwrap(),
-        &EpBinding::Map(HashMap::from([("x".to_owned(), EpBinding::Single(Address::ZERO)),]))
+        &EpBinding::Map {
+            length_at: Address::ZERO + 1,
+            properties: HashMap::from([("x".to_owned(), EpBinding::Single(Address::ZERO))])
+        }
     )
 }
 
