@@ -145,7 +145,7 @@ export function useCalc({
       availableVarInfo.variables.forEach(({ key, value }) => {
         _programMem.root[key] = { type: 'userVal', value, __meta: [] }
       })
-      const programMemory = await executeAst({
+      const { programMemory } = await executeAst({
         ast,
         engineCommandManager,
         defaultPlanes: kclManager.defaultPlanes,
