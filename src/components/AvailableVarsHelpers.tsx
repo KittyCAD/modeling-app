@@ -166,7 +166,7 @@ export function useCalc({
       setCalcResult(typeof result === 'number' ? String(result) : 'NAN')
       init && setValueNode(init)
     }
-    execAstAndSetResult().catch((e) => {
+    execAstAndSetResult().catch(() => {
       setCalcResult('NAN')
       setValueNode(null)
     })

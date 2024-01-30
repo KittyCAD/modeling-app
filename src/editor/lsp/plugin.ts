@@ -60,17 +60,17 @@ export class LanguageServerPlugin implements PluginValue {
     this.languageId = this.view.state.facet(languageId)
     this.documentVersion = 0
 
-    this.client.attachPlugin(this)(async () => {
-      await this.initialize({
-        documentText: this.view.state.doc.toString(),
-      })
+    this.client.attachPlugin(this)
+
+    void this.initialize({
+      documentText: this.view.state.doc.toString(),
     })
   }
 
-  async update({ docChanged }: ViewUpdate) {
+  update({ docChanged }: ViewUpdate) {
     if (!docChanged) return
 
-    await this.sendChange({
+    void this.sendChange({
       documentText: this.view.state.doc.toString(),
     })
   }
@@ -126,8 +126,8 @@ export class LanguageServerPlugin implements PluginValue {
     }
   }
 
-  async requestDiagnostics(view: EditorView) {
-    await this.sendChange({ documentText: view.state.doc.toString() })
+  requestDiagnostics(view: EditorView) {
+    void this.sendChange({ documentText: view.state.doc.toString() })
   }
 
   async requestHoverTooltip(
